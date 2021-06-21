@@ -136,6 +136,7 @@
   * [page.content()](#pagecontent)
   * [page.cookies([...urls])](#pagecookiesurls)
   * [page.coverage](#pagecoverage)
+  * [page.createPDFStream([options])](#pagecreatepdfstreamoptions)
   * [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
   * [page.emulate(options)](#pageemulateoptions)
   * [page.emulateIdleState(overrides)](#pageemulateidlestateoverrides)
@@ -162,7 +163,6 @@
   * [page.metrics()](#pagemetrics)
   * [page.mouse](#pagemouse)
   * [page.pdf([options])](#pagepdfoptions)
-  * [page.pdfReadable([options])](#pagepdfreadableoptions)
   * [page.queryObjects(prototypeHandle)](#pagequeryobjectsprototypehandle)
   * [page.reload([options])](#pagereloadoptions)
   * [page.screenshot([options])](#pagescreenshotoptions)
@@ -1489,6 +1489,35 @@ If URLs are specified, only cookies for those URLs are returned.
 
 - returns: <[Coverage]>
 
+#### page.createPDFStream([options])
+- `options` <[Object]> Options object which might have the following properties:
+  - `path` <[string]> The file path to save the PDF to. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the PDF won't be saved to the disk.
+  - `scale` <[number]> Scale of the webpage rendering. Defaults to `1`. Scale amount must be between 0.1 and 2.
+  - `displayHeaderFooter` <[boolean]> Display header and footer. Defaults to `false`.
+  - `headerTemplate` <[string]> HTML template for the print header. Should be valid HTML markup with following classes used to inject printing values into them:
+    - `date` formatted print date
+    - `title` document title
+    - `url` document location
+    - `pageNumber` current page number
+    - `totalPages` total pages in the document
+  - `footerTemplate` <[string]> HTML template for the print footer. Should use the same format as the `headerTemplate`.
+  - `printBackground` <[boolean]> Print background graphics. Defaults to `false`.
+  - `landscape` <[boolean]> Paper orientation. Defaults to `false`.
+  - `pageRanges` <[string]> Paper ranges to print, e.g., '1-5, 8, 11-13'. Defaults to the empty string, which means print all pages.
+  - `format` <[string]> Paper format. If set, takes priority over `width` or `height` options. Defaults to 'Letter'.
+  - `width` <[string]|[number]> Paper width, accepts values labeled with units.
+  - `height` <[string]|[number]> Paper height, accepts values labeled with units.
+  - `margin` <[Object]> Paper margins, defaults to none.
+    - `top` <[string]|[number]> Top margin, accepts values labeled with units.
+    - `right` <[string]|[number]> Right margin, accepts values labeled with units.
+    - `bottom` <[string]|[number]> Bottom margin, accepts values labeled with units.
+    - `left` <[string]|[number]> Left margin, accepts values labeled with units.
+  - `preferCSSPageSize` <[boolean]> Give any CSS `@page` size declared in the page priority over what is declared in `width` and `height` or `format` options. Defaults to `false`, which will scale the content to fit the paper size.
+  - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
+- returns: <[Promise]<[Readable]>> Promise which resolves with a Node.js stream for the PDF file.
+
+> **NOTE** This method is identical to [page.pdf](#pagepdfoptions), except it returns the PDF as a readable stream of binary data. If you are generating very large PDFs, it may be useful to use a stream to avoid high memory usage. This version will ignore the `path` option.
+
 #### page.deleteCookie(...cookies)
 
 - `...cookies` <...[Object]>
@@ -1979,7 +2008,6 @@ Page is guaranteed to have a main frame which persists during navigations.
 - returns: <[Mouse]>
 
 #### page.pdf([options])
-
 - `options` <[Object]> Options object which might have the following properties:
   - `path` <[string]> The file path to save the PDF to. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the PDF won't be saved to the disk.
   - `scale` <[number]> Scale of the webpage rendering. Defaults to `1`. Scale amount must be between 0.1 and 2.
@@ -2011,6 +2039,8 @@ Page is guaranteed to have a main frame which persists during navigations.
 `page.pdf()` generates a pdf of the page with `print` CSS media. To generate a pdf with `screen` media, call [page.emulateMediaType('screen')](#pageemulatemediatypetype) before calling `page.pdf()`:
 
 > **NOTE** By default, `page.pdf()` generates a pdf with modified colors for printing. Use the [`-webkit-print-color-adjust`](https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-print-color-adjust) property to force rendering of exact colors.
+
+> **NOTE** If you are generating very large PDFs, it may be useful to use the streaming version of this function ([page.createPDFStream](#pagecreatepdfstreamoptions)) to avoid high memory usage.
 
 ```js
 // Generates a PDF with 'screen' media type.
@@ -2051,33 +2081,6 @@ The `format` options are:
 >
 > 1. Script tags inside templates are not evaluated.
 > 2. Page styles are not visible inside templates.
-
-#### page.pdfReadable([options])
-- `options` <[Object]> Options object which might have the following properties:
-  - `scale` <[number]> Scale of the webpage rendering. Defaults to `1`. Scale amount must be between 0.1 and 2.
-  - `displayHeaderFooter` <[boolean]> Display header and footer. Defaults to `false`.
-  - `headerTemplate` <[string]> HTML template for the print header. Should be valid HTML markup with following classes used to inject printing values into them:
-    - `date` formatted print date
-    - `title` document title
-    - `url` document location
-    - `pageNumber` current page number
-    - `totalPages` total pages in the document
-  - `footerTemplate` <[string]> HTML template for the print footer. Should use the same format as the `headerTemplate`.
-  - `printBackground` <[boolean]> Print background graphics. Defaults to `false`.
-  - `landscape` <[boolean]> Paper orientation. Defaults to `false`.
-  - `pageRanges` <[string]> Paper ranges to print, e.g., '1-5, 8, 11-13'. Defaults to the empty string, which means print all pages.
-  - `format` <[string]> Paper format. If set, takes priority over `width` or `height` options. Defaults to 'Letter'.
-  - `width` <[string]|[number]> Paper width, accepts values labeled with units.
-  - `height` <[string]|[number]> Paper height, accepts values labeled with units.
-  - `margin` <[Object]> Paper margins, defaults to none.
-    - `top` <[string]|[number]> Top margin, accepts values labeled with units.
-    - `right` <[string]|[number]> Right margin, accepts values labeled with units.
-    - `bottom` <[string]|[number]> Bottom margin, accepts values labeled with units.
-    - `left` <[string]|[number]> Left margin, accepts values labeled with units.
-  - `preferCSSPageSize` <[boolean]> Give any CSS `@page` size declared in the page priority over what is declared in `width` and `height` or `format` options. Defaults to `false`, which will scale the content to fit the paper size.
-- returns: <[Promise]<[Readable]>> Promise which resolves with a Readable stream
-
-This method is identical to [page.pdf](#pagepdfoptions), except it returns the PDF as a readable stream of binary data. If you are generating very large PDFs, it may be useful to use a stream to avoid high memory usage.
 
 #### page.queryObjects(prototypeHandle)
 

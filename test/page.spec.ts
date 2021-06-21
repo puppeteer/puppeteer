@@ -1524,7 +1524,7 @@ describe('Page', function () {
       const stream = await page.createPDFStream();
       let size = 0;
       for await (const chunk of stream) {
-        size += chunk.size;
+        size += chunk.length;
       }
       expect(size).toBeGreaterThan(0);
     });
