@@ -408,4 +408,34 @@ describe('Emulation', () => {
       await page.emulateNetworkConditions(null);
     });
   });
+
+  describeFailsFirefox('Page.emulateCPUThrottling', function () {
+    it('should slow down execution', async () => {
+      const { page } = getTestState();
+
+      async function measure() {
+        const start = new Date();
+        await page.evaluate(() => {
+          let i = 0;
+          while (i < 1000) {
+            i++;
+          }
+        });
+
+        const end = new Date();
+        return +end - +start;
+      }
+
+      const baseline = await measure();
+      await page.emulateCPUThrottling(100);
+      const throttledTime = await measure();
+      await page.emulateCPUThrottling(null);
+      const timeWithoutThrottle = await measure();
+
+      // Throttling is not super precise. 20 has been chosen as very loose
+      // threshold just to make sure that throttling has at least _some_ effect.
+      expect(throttledTime / baseline).toBeGreaterThan(20);
+      expect(timeWithoutThrottle / baseline).toBeLessThan(20);
+    });
+  });
 });
