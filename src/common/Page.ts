@@ -1569,6 +1569,12 @@ export class Page extends EventEmitter {
     });
   }
 
+  /**
+   *
+   * @returns
+   * @remarks Shortcut for
+   * {@link Frame.url | page.mainFrame().url()}.
+   */
   url(): string {
     return this.mainFrame().url();
   }
@@ -1642,7 +1648,7 @@ export class Page extends EventEmitter {
    *
    * - `referer` : Referer header value. If provided it will take preference
    *   over the referer header value set by
-   *   {@link page.setExtraHTTPHeaders |page.setExtraHTTPHeaders()}.
+   *   {@link Page.setExtraHTTPHeaders |page.setExtraHTTPHeaders()}.
    *
    * `page.goto` will throw an error if:
    * - there's an SSL error (e.g. in case of self-signed certificates).
@@ -1858,9 +1864,9 @@ export class Page extends EventEmitter {
 
   /**
    * Emulates given device metrics and user agent. This method is a shortcut for
-   * calling two methods: {@link page.setUserAgent} and {@link page.setViewport}
+   * calling two methods: {@link Page.setUserAgent} and {@link Page.setViewport}
    * To aid emulation, Puppeteer provides a list of device descriptors that can
-   * be obtained via the {@link puppeteer.devices} `page.emulate` will resize
+   * be obtained via the {@link Puppeteer.devices} `page.emulate` will resize
    * the page. A lot of websites don't expect phones to change size, so you
    * should emulate before navigating to the page.
    * @example
@@ -2125,12 +2131,70 @@ export class Page extends EventEmitter {
     }
   }
 
+  /**
+   * `page.setViewport` will resize the page. A lot of websites don't expect
+   * phones to change size, so you should set the viewport before navigating to
+   * the page.
+   *
+   * In the case of multiple pages in a single browser, each page can have its
+   * own viewport size.
+   * @example
+   * ```js
+   * const page = await browser.newPage();
+   * await page.setViewport({
+   * width: 640,
+   * height: 480,
+   * deviceScaleFactor: 1,
+   * });
+   * await page.goto('https://example.com');
+   * ```
+   *
+   * @param viewport
+   * @remarks
+   * Argument viewport have following properties:
+   *
+   * - `width`: page width in pixels. required
+   *
+   * - `height`: page height in pixels. required
+   *
+   * - `deviceScaleFactor`: Specify device scale factor (can be thought of as
+   *   DPR). Defaults to `1`.
+   *
+   * - `isMobile`: Whether the meta viewport tag is taken into account. Defaults
+   *   to `false`.
+   *
+   * - `hasTouch`: Specifies if viewport supports touch events. Defaults to `false`
+   *
+   * - `isLandScape`: Specifies if viewport is in landscape mode. Defaults to false.
+   *
+   * NOTE: in certain cases, setting viewport will reload the page in order to
+   * set the isMobile or hasTouch properties.
+   */
   async setViewport(viewport: Viewport): Promise<void> {
     const needsReload = await this._emulationManager.emulateViewport(viewport);
     this._viewport = viewport;
     if (needsReload) await this.reload();
   }
 
+  /**
+   * @returns
+   *
+   * - `width`: page's width in pixels
+   *
+   * - `height`: page's height in pixels
+   *
+   * - `deviceScalarFactor`: Specify device scale factor (can be though of as
+   *   dpr). Defaults to `1`.
+   *
+   * - `isMobile`: Whether the meta viewport tag is taken into account. Defaults
+   *   to `false`.
+   *
+   * - `hasTouch`: Specifies if viewport supports touch events. Defaults to
+   *   `false`.
+   *
+   * - `isLandScape`: Specifies if viewport is in landscape mode. Defaults to
+   *   `false`.
+   */
   viewport(): Viewport | null {
     return this._viewport;
   }
@@ -2534,6 +2598,11 @@ export class Page extends EventEmitter {
     return await helper.readProtocolStream(this._client, result.stream, path);
   }
 
+  /**
+   * @returns The page's title
+   * @remarks
+   * Shortcut for {@link Frame.title | page.mainFrame().title()}.
+   */
   async title(): Promise<string> {
     return this.mainFrame().title();
   }
@@ -2570,7 +2639,7 @@ export class Page extends EventEmitter {
 
   /**
    * This method fetches an element with `selector`, scrolls it into view if
-   * needed, and then uses {@link page.mouse} to click in the center of the
+   * needed, and then uses {@link Page.mouse} to click in the center of the
    * element. If there's no element matching `selector`, the method throws an
    * error.
    * @remarks Bear in mind that if `click()` triggers a navigation event and
@@ -2621,7 +2690,7 @@ export class Page extends EventEmitter {
 
   /**
    * This method fetches an element with `selector`, scrolls it into view if
-   * needed, and then uses {@link page.mouse} to hover over the center of the element.
+   * needed, and then uses {@link Page.mouse} to hover over the center of the element.
    * If there's no element matching `selector`, the method throws an error.
    * @param selector - A
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
@@ -2642,7 +2711,7 @@ export class Page extends EventEmitter {
    * selected. If there's no `<select>` element matching `selector`, the method
    * throws an error.
    *
-   * @examples
+   * @example
    * ```js
    * page.select('select#colors', 'blue'); // single selection
    * page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
@@ -2661,10 +2730,43 @@ export class Page extends EventEmitter {
     return this.mainFrame().select(selector, ...values);
   }
 
+  /**
+   * This method fetches an element with `selector`, scrolls it into view if
+   * needed, and then uses {@link Page.touchscreen} to tap in the center of the element.
+   * If there's no element matching `selector`, the method throws an error.
+   * @param selector - A
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | Selector}
+   * to search for element to tap. If there are multiple elements satisfying the
+   * selector, the first will be tapped.
+   * @returns
+   * @remarks
+   * Shortcut for {@link Frame.tap | page.mainFrame().tap(selector)}.
+   */
   tap(selector: string): Promise<void> {
     return this.mainFrame().tap(selector);
   }
 
+  /**
+   * Sends a `keydown`, `keypress/input`, and `keyup` event for each character
+   * in the text.
+   *
+   * To press a special key, like `Control` or `ArrowDown`, use {@link Keyboard.press}.
+   * @example
+   * ```
+   * await page.type('#mytextarea', 'Hello');
+   * // Types instantly
+   * await page.type('#mytextarea', 'World', { delay: 100 });
+   * // Types slower, like a user
+   * ```
+   * @param selector - A
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
+   * of an element to type into. If there are multiple elements satisfying the
+   * selector, the first will be used.
+   * @param text - A text to type into a focused element.
+   * @param options - have property `delay` which is the Time to wait between
+   * key presses in milliseconds. Defaults to `0`.
+   * @returns
+   */
   type(
     selector: string,
     text: string,
