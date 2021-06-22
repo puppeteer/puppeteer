@@ -410,7 +410,7 @@ describe('Emulation', () => {
   });
 
   describeFailsFirefox('Page.emulateCPUThrottling', function () {
-    it('should slow down execution', async () => {
+    it('should change the CPU throttling rate successfully', async () => {
       const { page } = getTestState();
 
       await page.emulateCPUThrottling(100);
