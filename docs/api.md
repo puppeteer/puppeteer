@@ -138,6 +138,7 @@
   * [page.coverage](#pagecoverage)
   * [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
   * [page.emulate(options)](#pageemulateoptions)
+  * [page.emulateCPUThrottling(factor)](#pageemulatecputhrottlingfactor)
   * [page.emulateIdleState(overrides)](#pageemulateidlestateoverrides)
   * [page.emulateMediaFeatures(features)](#pageemulatemediafeaturesfeatures)
   * [page.emulateMediaType(type)](#pageemulatemediatypetype)
@@ -1534,6 +1535,27 @@ const iPhone = puppeteer.devices['iPhone 6'];
 ```
 
 List of all available devices is available in the source code: [src/common/DeviceDescriptors.ts](https://github.com/puppeteer/puppeteer/blob/main/src/common/DeviceDescriptors.ts).
+
+#### page.emulateCPUThrottling(factor)
+
+- `factor` <?[number]> Factor at which the CPU will be throttled (2x, 2.5x. 3x, ...). Passing `null` disables cpu throttling.
+- returns: <[Promise]>
+
+> **NOTE** Real device CPU performance is impacted by many factors that are not trivial to emulate via the Chrome DevTools Protocol / Puppeteer. e.g core count, L1/L2 cache, thermal throttling impacting performance, architecture etc. Simulating CPU performance can be a good guideline, but ideally also verify any numbers you see on a real mobile device.
+
+```js
+const puppeteer = require('puppeteer');
+const slow3G = puppeteer.networkConditions['Slow 3G'];
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.emulateCPUThrottling(2);
+  await page.goto('https://www.google.com');
+  // other actions...
+  await browser.close();
+})();
+```
 
 #### page.emulateIdleState(overrides)
 
