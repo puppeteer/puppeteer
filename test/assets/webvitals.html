@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebVitals Test</title>
+  </head>
+  <body>
+    <h1>Hello World</h1>
+    <img id="image" src="" width="500" height="500" style="display: none;" />
+    <button id="button">This is a button</button>
+    <script>
+        window.setTimeout(() => {
+          const image = document.getElementById('image');
+          image.style.display = 'block';
+        }, 100);
+        window.setTimeout(() => {
+          const div = document.createElement('div');
+          div.id = 'done';
+          document.body.appendChild(div);
+        }, 200);
+        window.setInterval(() => {
+          const image = document.getElementById('image');
+          image.style.position = 'absolute';
+          image.style.top = parseInt(image.style.top) + 100 + 'px';
+        }, 20);
+    </script>
+  </body>
+</html>

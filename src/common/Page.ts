@@ -382,6 +382,10 @@ class ScreenshotTaskQueue {
   }
 }
 
+export const WEBVITALS_EXECUTION_CONTEXT_NAME =
+  '__puppeteer_web_vitals_context__';
+export const WEBVITALS_BINDING_NAME = 'reportWebVitalsMetric';
+
 /**
  * Page provides methods to interact with a single tab or
  * {@link https://developer.chrome.com/extensions/background_pages | extension background page} in Chromium.
@@ -464,6 +468,9 @@ export class Page extends EventEmitter {
 
   private _disconnectPromise?: Promise<Error>;
   private _userDragInterceptionEnabled = false;
+  private _webVitalsReportScope: EventEmitter = new EventEmitter();
+  private _webVitalsScriptIdentifier: Protocol.Page.ScriptIdentifier | null =
+    null;
 
   /**
    * @internal
@@ -603,6 +610,62 @@ export class Page extends EventEmitter {
    */
   public isJavaScriptEnabled(): boolean {
     return this._javascriptEnabled;
+  }
+
+  public async enableWebVitalsReporting(
+    enabledMetrics?: string[]
+  ): Promise<void> {
+    if (!isNode) {
+      throw new Error(
+        'Cannot enable Web Vitals reporting outside of Node.js environment.'
+      );
+    }
+
+    const fs = await helper.importFSModule();
+    const webVitalsScript = await fs.promises.readFile(
+      __dirname +
+        '/../../../../node_modules/web-vitals/dist/web-vitals.iife.js',
+      { encoding: 'utf8' }
+    );
+
+    let source = `
+      ${webVitalsScript};
+      function reportMetrics(metric) {
+        ${WEBVITALS_BINDING_NAME}(JSON.stringify(metric));
+      }
+    `;
+
+    const availableMetrics = ['CLS', 'FCP', 'FID', 'LCP', 'TTFB'];
+    for (const metric of availableMetrics) {
+      if (!enabledMetrics || enabledMetrics.includes(metric)) {
+        source += `\nwebVitals.get${metric}(reportMetrics);`;
+      }
+    }
+
+    await this._client.send('Runtime.addBinding', {
+      name: WEBVITALS_BINDING_NAME,
+      executionContextName: WEBVITALS_EXECUTION_CONTEXT_NAME,
+    });
+
+    const { identifier } = await this._client.send(
+      'Page.addScriptToEvaluateOnNewDocument',
+      {
+        source,
+        worldName: WEBVITALS_EXECUTION_CONTEXT_NAME,
+      }
+    );
+
+    this._webVitalsScriptIdentifier = identifier;
+  }
+
+  public async disableWebVitalsReporting(): Promise<void> {
+    if (!this._webVitalsScriptIdentifier) return;
+
+    const identifier = this._webVitalsScriptIdentifier;
+    this._webVitalsScriptIdentifier = null;
+    await this._client.send('Page.removeScriptToEvaluateOnNewDocument', {
+      identifier,
+    });
   }
 
   /**
@@ -1315,6 +1378,21 @@ export class Page extends EventEmitter {
       // called before our wrapper was initialized.
       return;
     }
+
+    const context = this._frameManager.executionContextById(
+      event.executionContextId
+    );
+
+    if (
+      context._contextName === WEBVITALS_EXECUTION_CONTEXT_NAME &&
+      event.name === WEBVITALS_BINDING_NAME
+    ) {
+      // Only emit events if Web Vitals reporting has not been disabled yet.
+      if (this._webVitalsScriptIdentifier) {
+        this._webVitalsReportScope.emit(payload.name, payload);
+      }
+    }
+
     const { type, name, seq, args } = payload;
     if (type !== 'exposedFun' || !this._pageBindings.has(name)) return;
     let expression = null;
@@ -2128,6 +2206,10 @@ export class Page extends EventEmitter {
 
   get mouse(): Mouse {
     return this._mouse;
+  }
+
+  get webvitals(): EventEmitter {
+    return this._webVitalsReportScope;
   }
 
   /**

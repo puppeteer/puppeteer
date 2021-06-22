@@ -137,6 +137,7 @@
   * [page.cookies([...urls])](#pagecookiesurls)
   * [page.coverage](#pagecoverage)
   * [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
+  * [page.disableWebVitalsReporting()](#pagedisablewebvitalsreporting)
   * [page.emulate(options)](#pageemulateoptions)
   * [page.emulateCPUThrottling(factor)](#pageemulatecputhrottlingfactor)
   * [page.emulateIdleState(overrides)](#pageemulateidlestateoverrides)
@@ -145,6 +146,7 @@
   * [page.emulateNetworkConditions(networkConditions)](#pageemulatenetworkconditionsnetworkconditions)
   * [page.emulateTimezone(timezoneId)](#pageemulatetimezonetimezoneid)
   * [page.emulateVisionDeficiency(type)](#pageemulatevisiondeficiencytype)
+  * [page.enableWebVitalsReporting(enabledMetrics)](#pageenablewebvitalsreportingenabledmetrics)
   * [page.evaluate(pageFunction[, ...args])](#pageevaluatepagefunction-args)
   * [page.evaluateHandle(pageFunction[, ...args])](#pageevaluatehandlepagefunction-args)
   * [page.evaluateOnNewDocument(pageFunction[, ...args])](#pageevaluateonnewdocumentpagefunction-args)
@@ -198,6 +200,7 @@
   * [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
   * [page.waitForTimeout(milliseconds)](#pagewaitfortimeoutmilliseconds)
   * [page.waitForXPath(xpath[, options])](#pagewaitforxpathxpath-options)
+  * [page.webvitals](#pagewebvitals)
   * [page.workers()](#pageworkers)
   * [GeolocationOptions](#geolocationoptions)
   * [WaitTimeoutOptions](#waittimeoutoptions)
@@ -1498,6 +1501,12 @@ If URLs are specified, only cookies for those URLs are returned.
   - `path` <[string]>
 - returns: <[Promise]>
 
+#### page.disableWebVitalsReporting()
+
+- returns: <[Promise]>
+
+Disables the reporting of Web Vitals after a previous call to [page.enableWebVitalsReporting(enabledMetrics)](#pageenablewebvitalsreportingenabledmetrics).
+
 #### page.emulate(options)
 
 - `options` <[Object]>
@@ -1693,6 +1702,30 @@ const puppeteer = require('puppeteer');
   await page.emulateVisionDeficiency('blurredVision');
   await page.screenshot({ path: 'blurred-vision.png' });
 
+  await browser.close();
+})();
+```
+
+#### page.enableWebVitalsReporting(enabledMetrics)
+
+- `enabledMetrics` <?[Array]<[string]>> Enable Web Vitals reporting. Supported metrics are `'CLS'`, `'FCP'`, `'LCP'`, `'FID'`, and `'TTFB'`. If omitted, all metrics will be reported.
+- returns: <[Promise]>
+
+*** Note *** The metrics will be emitted on [page.webvitals](#pagewebvitals).
+
+```js
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  page.webvitals.on('LCP', ({value}) => {
+    console.log('LCP:', value);
+  })
+  await page.enableWebVitalsReporting();
+  await page.goto('https://v8.dev/blog/10-years');
+  // Some metrics will only be reported when navigating away from a page
+  await page.goto('about:blank');
   await browser.close();
 })();
 ```
@@ -2681,6 +2714,12 @@ const puppeteer = require('puppeteer');
 ```
 
 Shortcut for [page.mainFrame().waitForXPath(xpath[, options])](#framewaitforxpathxpath-options).
+
+#### page.webvitals
+
+- returns: <[EventEmitter]>
+
+Emitted events will have the metric in their payload. Information can be found in the [Web Vitals library](https://github.com/GoogleChrome/web-vitals#metric) documentation. Supported metrics are: `'CLS'`, `'FCP'`, `'LCP'`, `'FID'`, and `'TTFB'`.
 
 #### page.workers()
 
