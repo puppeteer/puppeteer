@@ -1587,6 +1587,16 @@ export class Page extends EventEmitter {
     });
   }
 
+  async emulateCPUThrottling(factor: number | null): Promise<void> {
+    assert(
+      factor === null || factor >= 1,
+      'Throttling rate should be greater or equal to 1'
+    );
+    await this._client.send('Emulation.setCPUThrottlingRate', {
+      rate: factor !== null ? factor : 1,
+    });
+  }
+
   /**
    * @param features - `<?Array<Object>>` Given an array of media feature
    * objects, emulates CSS media features on the page. Each media feature object
