@@ -666,6 +666,10 @@ export class Page extends EventEmitter {
     await this._client.send('Page.removeScriptToEvaluateOnNewDocument', {
       identifier,
     });
+
+    await this._client.send('Runtime.removeBinding', {
+      name: WEBVITALS_BINDING_NAME,
+    });
   }
 
   /**
