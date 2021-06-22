@@ -2766,6 +2766,7 @@ export class Page extends EventEmitter {
    * @param options - have property `delay` which is the Time to wait between
    * key presses in milliseconds. Defaults to `0`.
    * @returns
+   * {@link page.mainFrame().type(selector, text[, options])}
    */
   type(
     selector: string,
