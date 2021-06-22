@@ -1536,9 +1536,9 @@ const iPhone = puppeteer.devices['iPhone 6'];
 
 List of all available devices is available in the source code: [src/common/DeviceDescriptors.ts](https://github.com/puppeteer/puppeteer/blob/main/src/common/DeviceDescriptors.ts).
 
-#### page.emulateCPUThrottling(rate)
+#### page.emulateCPUThrottling(factor)
 
-- `rate` <?[number]> Rate at which the CPU will be throttled (2x, 3x, ...). Passing `null` disables cpu throttling.
+- `factor` <?[number]> Factor at which the CPU will be throttled (2x, 2.5x. 3x, ...). Passing `null` disables cpu throttling.
 - returns: <[Promise]>
 
 > **NOTE** Real device CPU performance is impacted by many factors that are not trivial to emulate via the Chrome DevTools Protocol / Puppeteer. e.g core count, L1/L2 cache, thermal throttling impacting performance, architecture etc. Simulating CPU performance can be a good guideline, but ideally also verify any numbers you see on a real mobile device.
