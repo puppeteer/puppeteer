@@ -408,4 +408,13 @@ describe('Emulation', () => {
       await page.emulateNetworkConditions(null);
     });
   });
+
+  describeFailsFirefox('Page.emulateCPUThrottling', function () {
+    it('should change the CPU throttling rate successfully', async () => {
+      const { page } = getTestState();
+
+      await page.emulateCPUThrottling(100);
+      await page.emulateCPUThrottling(null);
+    });
+  });
 });
