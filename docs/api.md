@@ -138,7 +138,7 @@
   * [page.coverage](#pagecoverage)
   * [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
   * [page.emulate(options)](#pageemulateoptions)
-  * [page.emulateCPUThrottling(rate)](#pageemulatecputhrottlingrate)
+  * [page.emulateCPUThrottling(factor)](#pageemulatecputhrottlingfactor)
   * [page.emulateIdleState(overrides)](#pageemulateidlestateoverrides)
   * [page.emulateMediaFeatures(features)](#pageemulatemediafeaturesfeatures)
   * [page.emulateMediaType(type)](#pageemulatemediatypetype)

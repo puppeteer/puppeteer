@@ -1587,13 +1587,13 @@ export class Page extends EventEmitter {
     });
   }
 
-  async emulateCPUThrottling(rate: number | null): Promise<void> {
+  async emulateCPUThrottling(factor: number | null): Promise<void> {
     assert(
-      rate === null || rate >= 1,
+      factor === null || factor >= 1,
       'Throttling rate should be greater or equal to 1'
     );
     await this._client.send('Emulation.setCPUThrottlingRate', {
-      rate: rate !== null ? rate : 1,
+      rate: factor !== null ? factor : 1,
     });
   }
 
