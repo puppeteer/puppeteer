@@ -346,6 +346,8 @@ async function getReadableFromProtocolStream(
   client: CDPSession,
   handle: string
 ): Promise<Readable> {
+  // TODO:
+  // This restriction can be lifted once https://github.com/nodejs/node/pull/39062 has landed
   if (!isNode) {
     throw new Error('Cannot create a stream outside of Node.js environment.');
   }

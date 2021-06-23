@@ -1519,6 +1519,21 @@ If URLs are specified, only cookies for those URLs are returned.
 
 > **NOTE** This method is identical to [page.pdf](#pagepdfoptions), except it returns the PDF as a readable stream of binary data. If you are generating very large PDFs, it may be useful to use a stream to avoid high memory usage. This version will ignore the `path` option.
 
+```js
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+
+  // Stream a PDF into a file
+  const pdfStream = await page.createPDFStream();
+  const writeStream = fs.createWriteStream('test.pdf');
+  pdfStream.pipe(writeStream);
+  await browser.close();
+})();
+```
+
 #### page.deleteCookie(...cookies)
 
 - `...cookies` <...[Object]>
