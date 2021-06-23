@@ -633,7 +633,7 @@ export class Page extends EventEmitter {
    * choosing. The following example clicks a button that issues a file chooser
    * and then responds with `/tmp/myfile.pdf` as if a user has selected this file.
    *
-   * ```
+   * ```js
    * const [fileChooser] = await Promise.all([
    * page.waitForFileChooser(),
    * page.click('#upload-file-button'),
@@ -782,10 +782,11 @@ export class Page extends EventEmitter {
 
   /**
    * @returns all of the dedicated
-   * {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API | WebWorkers}
+   * {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API |
+   * WebWorkers}
    * associated with the page.
-   * @remarks This does not contain ServiceWorkers
-   * NOTE:
+   * @remarks
+   * NOTE: This does not contain ServiceWorkers
    */
   workers(): WebWorker[] {
     return Array.from(this._workers.values());
@@ -1743,7 +1744,7 @@ export class Page extends EventEmitter {
    * This resolves when the page navigates to a new URL or reloads. It is useful
    * when you run code that will indirectly cause the page to navigate. Consider
    * this example:
-   * ```
+   * ```js
    * const [response] = await Promise.all([
    * page.waitForNavigation(), // The promise resolves after navigation has finished
    * page.click('a.my-link'), // Clicking the link will indirectly cause a navigation
@@ -1779,12 +1780,11 @@ export class Page extends EventEmitter {
     return this._disconnectPromise;
   }
 /**
- *
  * @param urlOrPredicate - A URL or predicate to wait for.
  * @param options - Optional waiting parameters
  * @returns Promise which resolves to the matched response.
  * @example
- * ```
+ * ```js
  * const firstResponse = await page.waitForResponse(
  * 'https://example.com/resource'
  * );
@@ -1801,8 +1801,8 @@ export class Page extends EventEmitter {
  * Optional Waiting Parameters have:
  *
  * - `timeout`: Maximum wait time in milliseconds, defaults to `30` seconds, pass
- *   `0` to disable the timeout. The default value can be changed by using the
- *   {@link Page.setDefaultTimeout} method.
+ * `0` to disable the timeout. The default value can be changed by using the
+ * {@link Page.setDefaultTimeout} method.
  */
   async waitForRequest(
     urlOrPredicate: string | ((req: HTTPRequest) => boolean | Promise<boolean>),
@@ -1825,12 +1825,11 @@ export class Page extends EventEmitter {
   }
 
   /**
-   *
    * @param urlOrPredicate - A URL or predicate to wait for.
    * @param options - Optional waiting parameters
    * @returns Promise which resolves to the matched response.
    * @example
-   * ```
+   * ```js
    * const firstResponse = await page.waitForResponse(
    * 'https://example.com/resource'
    * );
@@ -1847,8 +1846,8 @@ export class Page extends EventEmitter {
    * Optional Parameter have:
    *
    * - `timeout`: Maximum wait time in milliseconds, defaults to `30` seconds,
-   *   pass `0` to disable the timeout. The default value can be changed by using
-   *   the {@link Page.setDefaultTimeout} method.
+   * pass `0` to disable the timeout. The default value can be changed by using
+   * the {@link Page.setDefaultTimeout} method.
    */
   async waitForResponse(
     urlOrPredicate:
@@ -2964,7 +2963,7 @@ export class Page extends EventEmitter {
    * function will throw.
    *
    * This method works across navigations:
-   * ```
+   * ```js
    * const puppeteer = require('puppeteer');
    * (async () => {
    * const browser = await puppeteer.launch();
@@ -2994,16 +2993,16 @@ export class Page extends EventEmitter {
    * The optional Parameter in Arguments `options` are :
    *
    * - `Visible`: A boolean wait for element to be present in DOM and to be
-   *   visible, i.e. to not have `display: none` or `visibility: hidden` CSS
-   *   properties. Defaults to `false`.
+   * visible, i.e. to not have `display: none` or `visibility: hidden` CSS
+   * properties. Defaults to `false`.
    *
    * - `hidden`: ait for element to not be found in the DOM or to be hidden,
-   *   i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to
-   *   `false`.
+   * i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to
+   * `false`.
    *
    * - `timeout`: maximum time to wait for in milliseconds. Defaults to `30000`
-   *   (30 seconds). Pass `0` to disable timeout. The default value can be changed
-   *   by using the {@link Page.setDefaultTimeout} method.
+   * (30 seconds). Pass `0` to disable timeout. The default value can be changed
+   * by using the {@link Page.setDefaultTimeout} method.
    */
   waitForSelector(
     selector: string,
@@ -3023,7 +3022,7 @@ export class Page extends EventEmitter {
    * function will throw.
    *
    * This method works across navigation
-   * ```
+   * ```js
    * const puppeteer = require('puppeteer');
    * (async () => {
    * const browser = await puppeteer.launch();
@@ -3053,16 +3052,16 @@ export class Page extends EventEmitter {
    * The optional Argument `options` have properties:
    *
    * - `visible`: A boolean to wait for element to be present in DOM and to be
-   *   visible, i.e. to not have `display: none` or `visibility: hidden` CSS
-   *   properties. Defaults to `false`.
+   * visible, i.e. to not have `display: none` or `visibility: hidden` CSS
+   * properties. Defaults to `false`.
    *
    * - `hidden`: A boolean wait for element to not be found in the DOM or to be
-   *   hidden, i.e. have `display: none` or `visibility: hidden` CSS properties.
-   *   Defaults to `false`.
+   * hidden, i.e. have `display: none` or `visibility: hidden` CSS properties.
+   * Defaults to `false`.
    *
    * - `timeout`: A number which is maximum time to wait for in milliseconds.
-   *   Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The default
-   *   value can be changed by using the {@link Page.setDefaultTimeout} method.
+   * Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The default
+   * value can be changed by using the {@link Page.setDefaultTimeout} method.
    */
   waitForXPath(
     xpath: string,
@@ -3136,9 +3135,9 @@ export class Page extends EventEmitter {
    *    - `mutation`: to execute pageFunction on every DOM mutation.
    *
    * - `timeout`: maximum time to wait for in milliseconds. Defaults to `30000`
-   *   (30 seconds). Pass `0` to disable timeout. The default value can be changed
-   *   by using the
-   *   {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)} method.
+   * (30 seconds). Pass `0` to disable timeout. The default value can be changed
+   * by using the
+   * {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)} method.
    *
    */
   waitForFunction(
