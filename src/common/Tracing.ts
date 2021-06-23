@@ -106,10 +106,17 @@ export class Tracing {
       fulfill = x;
       reject = y;
     });
-    this._client.once('Tracing.tracingComplete', (event) => {
-      helper
-        .readProtocolStream(this._client, event.stream, this._path)
-        .then(fulfill, reject);
+    this._client.once('Tracing.tracingComplete', async (event) => {
+      try {
+        const readable = await helper.getReadableFromProtocolStream(
+          this._client,
+          event.stream
+        );
+        const buffer = await helper.getReadableAsBuffer(readable, this._path);
+        fulfill(buffer);
+      } catch (error) {
+        reject(error);
+      }
     });
     await this._client.send('Tracing.end');
     this._recording = false;
