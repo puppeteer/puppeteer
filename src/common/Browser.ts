@@ -480,7 +480,7 @@ export class Browser extends EventEmitter {
     const { timeout = 30000 } = options;
     const existingTarget = this.targets().find(predicate);
     if (existingTarget) return existingTarget;
-    let resolve;
+    let resolve: (value: Target | PromiseLike<Target>) => void;
     const targetPromise = new Promise<Target>((x) => (resolve = x));
     this.on(BrowserEmittedEvents.TargetCreated, check);
     this.on(BrowserEmittedEvents.TargetChanged, check);
