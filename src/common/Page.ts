@@ -1780,6 +1780,31 @@ export class Page extends EventEmitter {
     return this._disconnectPromise;
   }
 
+ /**
+  * @param urlOrPredicate - A URL or predicate to wait for
+  * @param options - Optional waiting parameters
+  * @returns Promise which resolves to the matched response
+  * @example
+  * ```js
+  * const firstResponse = await page.waitForResponse(
+  * 'https://example.com/resource'
+  * );
+  * const finalResponse = await page.waitForResponse(
+  * (response) =>
+  * response.url() === 'https://example.com' && response.status() === 200
+  * );
+  * const finalResponse = await page.waitForResponse(async (response) => {
+  * return (await response.text()).includes('<html>');
+  * });
+  * return finalResponse.ok();
+  * ```
+  * @remarks
+  * Optional Waiting Parameters have:
+  *
+  * - `timeout`: Maximum wait time in milliseconds, defaults to `30` seconds, pass
+  * `0` to disable the timeout. The default value can be changed by using the
+  * {@link Page.setDefaultTimeout} method.
+  */
   async waitForRequest(
     urlOrPredicate: string | ((req: HTTPRequest) => boolean | Promise<boolean>),
     options: { timeout?: number } = {}
