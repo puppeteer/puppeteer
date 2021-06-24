@@ -1599,7 +1599,8 @@ export class Page extends EventEmitter {
    *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
    *   methods.
    *
-   * - `waitUntil`: <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array>
+   * - `waitUntil`:
+   *   <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array>
    *   When to consider setting markup succeeded, defaults to `load`. Given an
    *   array of event strings, setting content is considered to be successful
    *   after all events have been fired. Events can be either:<br/>
@@ -1610,7 +1611,9 @@ export class Page extends EventEmitter {
    *  - `networkidle0` : consider setting content to be finished when there are no
    *   more than 0 network connections for at least `500` ms.<br/>
    *  - `networkidle2` : consider setting content to be finished when there are no
-   *   more than 2 network connections for at least `500` ms.
+   *   more than 2 network connections for at least `500` ms.<br/>
+   *  - `interactive` : the browser itself considers the page to be ready for
+   *   interaction. See https://web.dev/interactive/ for details.
    */
   async setContent(html: string, options: WaitForOptions = {}): Promise<void> {
     await this._frameManager.mainFrame().setContent(html, options);
@@ -1635,8 +1638,8 @@ export class Page extends EventEmitter {
    *   methods.
    *
    * - `waitUntil`:
-   *   <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array> When to
-   *   consider navigation succeeded, defaults to `load`. Given an array of
+   *   <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array>
+   *   When to consider navigation succeeded, defaults to `load`. Given an array of
    *   event strings, navigation is considered to be successful after all events
    *   have been fired. Events can be either:<br/>
    *  - `load` : consider navigation to be finished when the load event is
@@ -1646,7 +1649,9 @@ export class Page extends EventEmitter {
    *  - `networkidle0` : consider navigation to be finished when there are no
    *    more than 0 network connections for at least `500` ms.<br/>
    *  - `networkidle2` : consider navigation to be finished when there are no
-   *    more than 2 network connections for at least `500` ms.
+   *    more than 2 network connections for at least `500` ms.<br/>
+   *  - `interactive` : the browser itself considers the page to be ready for
+   *   interaction. See https://web.dev/interactive/ for details.
    *
    * - `referer` : Referer header value. If provided it will take preference
    *   over the referer header value set by
@@ -1698,7 +1703,8 @@ export class Page extends EventEmitter {
    *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
    *   methods.
    *
-   * - `waitUntil`: <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array>
+   * - `waitUntil`:
+   *   <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array>
    *   When to consider navigation succeeded, defaults to `load`. Given an array
    *   of event strings, navigation is considered to be successful after all
    *   events have been fired. Events can be either:<br/>
@@ -1708,7 +1714,9 @@ export class Page extends EventEmitter {
    *  - `networkidle0` : consider navigation to be finished when there are no
    *   more than 0 network connections for at least `500` ms.<br/>
    *  - `networkidle2` : consider navigation to be finished when there are no
-   *   more than 2 network connections for at least `500` ms.
+   *   more than 2 network connections for at least `500` ms.<br/>
+   *  - `interactive` : the browser itself considers the page to be ready for
+   *   interaction. See https://web.dev/interactive/ for details.
    */
   async reload(options?: WaitForOptions): Promise<HTTPResponse | null> {
     const result = await Promise.all<HTTPResponse, void>([
@@ -1794,7 +1802,8 @@ export class Page extends EventEmitter {
    *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
    *   methods.
    *
-   * - `waitUntil` : <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array>
+   * - `waitUntil`:
+   *   <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array>
    *   When to consider navigation succeeded, defaults to `load`. Given an array
    *   of event strings, navigation is considered to be successful after all
    *   events have been fired. Events can be either:<br/>
@@ -1804,7 +1813,9 @@ export class Page extends EventEmitter {
    *  - `networkidle0` : consider navigation to be finished when there are no
    *   more than 0 network connections for at least `500` ms.<br/>
    *  - `networkidle2` : consider navigation to be finished when there are no
-   *   more than 2 network connections for at least `500` ms.
+   *   more than 2 network connections for at least `500` ms.<br/>
+   *  - `interactive` : the browser itself considers the page to be ready for
+   *   interaction. See https://web.dev/interactive/ for details.
    */
   async goBack(options: WaitForOptions = {}): Promise<HTTPResponse | null> {
     return this._go(-1, options);
@@ -1827,7 +1838,8 @@ export class Page extends EventEmitter {
    *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
    *   methods.
    *
-   * - `waitUntil`: <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array>
+   * - `waitUntil`:
+   *   <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array>
    *   When to consider navigation succeeded, defaults to `load`. Given an array
    *   of event strings, navigation is considered to be successful after all
    *   events have been fired. Events can be either:<br/>
@@ -1837,7 +1849,9 @@ export class Page extends EventEmitter {
    *  - `networkidle0` : consider navigation to be finished when there are no
    *   more than 0 network connections for at least `500` ms.<br/>
    *  - `networkidle2` : consider navigation to be finished when there are no
-   *   more than 2 network connections for at least `500` ms.
+   *   more than 2 network connections for at least `500` ms.<br/>
+   *  - `interactive` : the browser itself considers the page to be ready for
+   *   interaction. See https://web.dev/interactive/ for details.
    */
   async goForward(options: WaitForOptions = {}): Promise<HTTPResponse | null> {
     return this._go(+1, options);

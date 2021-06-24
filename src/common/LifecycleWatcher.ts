@@ -33,7 +33,8 @@ export type PuppeteerLifeCycleEvent =
   | 'load'
   | 'domcontentloaded'
   | 'networkidle0'
-  | 'networkidle2';
+  | 'networkidle2'
+  | 'interactive';
 
 /**
  * @public
@@ -42,7 +43,8 @@ export type ProtocolLifeCycleEvent =
   | 'load'
   | 'DOMContentLoaded'
   | 'networkIdle'
-  | 'networkAlmostIdle';
+  | 'networkAlmostIdle'
+  | 'InteractiveTime';
 
 const puppeteerToProtocolLifecycle = new Map<
   PuppeteerLifeCycleEvent,
@@ -52,6 +54,7 @@ const puppeteerToProtocolLifecycle = new Map<
   ['domcontentloaded', 'DOMContentLoaded'],
   ['networkidle0', 'networkIdle'],
   ['networkidle2', 'networkAlmostIdle'],
+  ['interactive', 'InteractiveTime'],
 ]);
 
 /**

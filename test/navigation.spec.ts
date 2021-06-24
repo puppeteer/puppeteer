@@ -135,6 +135,17 @@ describe('navigation', function () {
         expect(response.status()).toBe(200);
       }
     );
+    itFailsFirefox(
+      'should navigate to empty page with interactive',
+      async () => {
+        const { page, server } = getTestState();
+
+        const response = await page.goto(server.EMPTY_PAGE, {
+          waitUntil: 'interactive',
+        });
+        expect(response.status()).toBe(200);
+      }
+    );
     itFailsFirefox('should fail when navigating to bad url', async () => {
       const { page, isChrome } = getTestState();
 

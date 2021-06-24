@@ -571,27 +571,27 @@ function compareDocumentations(actual, expected) {
         'Method Frame.goto() options.waitUntil',
         {
           actualName:
-            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array',
+            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array',
           expectedName:
-            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array<PuppeteerLifeCycleEvent>',
+            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array<PuppeteerLifeCycleEvent>',
         },
       ],
       [
         'Method Frame.waitForNavigation() options.waitUntil',
         {
           actualName:
-            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array',
+            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array',
           expectedName:
-            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array<PuppeteerLifeCycleEvent>',
+            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array<PuppeteerLifeCycleEvent>',
         },
       ],
       [
         'Method Frame.setContent() options.waitUntil',
         {
           actualName:
-            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array',
+            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array',
           expectedName:
-            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array<PuppeteerLifeCycleEvent>',
+            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array<PuppeteerLifeCycleEvent>',
         },
       ],
       [
@@ -605,54 +605,54 @@ function compareDocumentations(actual, expected) {
         'Method Page.goBack() options.waitUntil',
         {
           actualName:
-            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array',
+            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array',
           expectedName:
-            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array<PuppeteerLifeCycleEvent>',
+            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array<PuppeteerLifeCycleEvent>',
         },
       ],
       [
         'Method Page.goForward() options.waitUntil',
         {
           actualName:
-            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array',
+            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array',
           expectedName:
-            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array<PuppeteerLifeCycleEvent>',
+            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array<PuppeteerLifeCycleEvent>',
         },
       ],
       [
         'Method Page.goto() options.waitUntil',
         {
           actualName:
-            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array',
+            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array',
           expectedName:
-            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array<PuppeteerLifeCycleEvent>',
+            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array<PuppeteerLifeCycleEvent>',
         },
       ],
       [
         'Method Page.reload() options.waitUntil',
         {
           actualName:
-            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array',
+            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array',
           expectedName:
-            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array<PuppeteerLifeCycleEvent>',
+            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array<PuppeteerLifeCycleEvent>',
         },
       ],
       [
         'Method Page.setContent() options.waitUntil',
         {
           actualName:
-            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array',
+            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array',
           expectedName:
-            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array<PuppeteerLifeCycleEvent>',
+            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array<PuppeteerLifeCycleEvent>',
         },
       ],
       [
         'Method Page.waitForNavigation() options.waitUntil',
         {
           actualName:
-            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array',
+            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array',
           expectedName:
-            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array<PuppeteerLifeCycleEvent>',
+            '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|"interactive"|Array<PuppeteerLifeCycleEvent>',
         },
       ],
       [
