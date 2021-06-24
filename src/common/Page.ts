@@ -641,7 +641,7 @@ export class Page extends EventEmitter {
       });
 
     const { timeout = this._timeoutSettings.timeout() } = options;
-    let callback;
+    let callback: (value: FileChooser | PromiseLike<FileChooser>) => void;
     const promise = new Promise<FileChooser>((x) => (callback = x));
     this._fileChooserInterceptors.add(callback);
     return helper
