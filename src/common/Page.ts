@@ -62,6 +62,7 @@ import {
 } from './EvalTypes.js';
 import { PDFOptions, paperFormats } from './PDFOptions.js';
 import { isNode } from '../environment.js';
+import { WebVitals } from './WebVitals.js';
 
 /**
  * @public
@@ -379,14 +380,10 @@ class ScreenshotTaskQueue {
     task: () => Promise<Buffer | string>
   ): Promise<Buffer | string | void> {
     const result = this._chain.then(task);
-    this._chain = result.catch(() => {});
+    this._chain = result.catch(() => { });
     return result;
   }
 }
-
-export const WEBVITALS_EXECUTION_CONTEXT_NAME =
-  '__puppeteer_web_vitals_context__';
-export const WEBVITALS_BINDING_NAME = 'reportWebVitalsMetric';
 
 /**
  * Page provides methods to interact with a single tab or
@@ -464,15 +461,13 @@ export class Page extends EventEmitter {
   private _viewport: Viewport | null;
   private _screenshotTaskQueue: ScreenshotTaskQueue;
   private _workers = new Map<string, WebWorker>();
+  private _webVitals: WebVitals;
   // TODO: improve this typedef - it's a function that takes a file chooser or
   // something?
   private _fileChooserInterceptors = new Set<Function>();
 
   private _disconnectPromise?: Promise<Error>;
   private _userDragInterceptionEnabled = false;
-  private _webVitalsReportScope: EventEmitter = new EventEmitter();
-  private _webVitalsScriptIdentifier: Protocol.Page.ScriptIdentifier | null =
-    null;
 
   /**
    * @internal
@@ -494,6 +489,7 @@ export class Page extends EventEmitter {
     this._emulationManager = new EmulationManager(client);
     this._tracing = new Tracing(client);
     this._coverage = new Coverage(client);
+    this._webVitals = new WebVitals(client, this._frameManager);
     this._screenshotTaskQueue = new ScreenshotTaskQueue();
     this._viewport = null;
 
@@ -612,66 +608,6 @@ export class Page extends EventEmitter {
    */
   public isJavaScriptEnabled(): boolean {
     return this._javascriptEnabled;
-  }
-
-  public async enableWebVitalsReporting(
-    enabledMetrics?: string[]
-  ): Promise<void> {
-    if (!isNode) {
-      throw new Error(
-        'Cannot enable Web Vitals reporting outside of Node.js environment.'
-      );
-    }
-
-    const fs = await helper.importFSModule();
-    const webVitalsScript = await fs.promises.readFile(
-      __dirname +
-        '/../../../../node_modules/web-vitals/dist/web-vitals.iife.js',
-      { encoding: 'utf8' }
-    );
-
-    let source = `
-      ${webVitalsScript};
-      function reportMetrics(metric) {
-        ${WEBVITALS_BINDING_NAME}(JSON.stringify(metric));
-      }
-    `;
-
-    const availableMetrics = ['CLS', 'FCP', 'FID', 'LCP', 'TTFB'];
-    for (const metric of availableMetrics) {
-      if (!enabledMetrics || enabledMetrics.includes(metric)) {
-        source += `\nwebVitals.get${metric}(reportMetrics);`;
-      }
-    }
-
-    await this._client.send('Runtime.addBinding', {
-      name: WEBVITALS_BINDING_NAME,
-      executionContextName: WEBVITALS_EXECUTION_CONTEXT_NAME,
-    });
-
-    const { identifier } = await this._client.send(
-      'Page.addScriptToEvaluateOnNewDocument',
-      {
-        source,
-        worldName: WEBVITALS_EXECUTION_CONTEXT_NAME,
-      }
-    );
-
-    this._webVitalsScriptIdentifier = identifier;
-  }
-
-  public async disableWebVitalsReporting(): Promise<void> {
-    if (!this._webVitalsScriptIdentifier) return;
-
-    const identifier = this._webVitalsScriptIdentifier;
-    this._webVitalsScriptIdentifier = null;
-    await this._client.send('Page.removeScriptToEvaluateOnNewDocument', {
-      identifier,
-    });
-
-    await this._client.send('Runtime.removeBinding', {
-      name: WEBVITALS_BINDING_NAME,
-    });
   }
 
   /**
@@ -816,6 +752,10 @@ export class Page extends EventEmitter {
 
   get accessibility(): Accessibility {
     return this._accessibility;
+  }
+
+  get webVitals(): WebVitals {
+    return this._webVitals;
   }
 
   get isDragInterceptionEnabled(): boolean {
@@ -1528,6 +1468,10 @@ export class Page extends EventEmitter {
   private async _onBindingCalled(
     event: Protocol.Runtime.BindingCalledEvent
   ): Promise<void> {
+    if (this.webVitals.interceptBindingCalled(event)) {
+      return;
+    }
+
     let payload: { type: string; name: string; seq: number; args: unknown[] };
     try {
       payload = JSON.parse(event.payload);
@@ -1535,20 +1479,6 @@ export class Page extends EventEmitter {
       // The binding was either called by something in the page or it was
       // called before our wrapper was initialized.
       return;
-    }
-
-    const context = this._frameManager.executionContextById(
-      event.executionContextId
-    );
-
-    if (
-      context._contextName === WEBVITALS_EXECUTION_CONTEXT_NAME &&
-      event.name === WEBVITALS_BINDING_NAME
-    ) {
-      // Only emit events if Web Vitals reporting has not been disabled yet.
-      if (this._webVitalsScriptIdentifier) {
-        this._webVitalsReportScope.emit(payload.name, payload);
-      }
     }
 
     const { type, name, seq, args } = payload;
@@ -2470,13 +2400,13 @@ export class Page extends EventEmitter {
       assert(
         screenshotType === 'jpeg',
         'options.quality is unsupported for the ' +
-          screenshotType +
-          ' screenshots'
+        screenshotType +
+        ' screenshots'
       );
       assert(
         typeof options.quality === 'number',
         'Expected options.quality to be a number but found ' +
-          typeof options.quality
+        typeof options.quality
       );
       assert(
         Number.isInteger(options.quality),
@@ -2485,7 +2415,7 @@ export class Page extends EventEmitter {
       assert(
         options.quality >= 0 && options.quality <= 100,
         'Expected options.quality to be between 0 and 100 (inclusive), got ' +
-          options.quality
+        options.quality
       );
     }
     assert(
@@ -2496,22 +2426,22 @@ export class Page extends EventEmitter {
       assert(
         typeof options.clip.x === 'number',
         'Expected options.clip.x to be a number but found ' +
-          typeof options.clip.x
+        typeof options.clip.x
       );
       assert(
         typeof options.clip.y === 'number',
         'Expected options.clip.y to be a number but found ' +
-          typeof options.clip.y
+        typeof options.clip.y
       );
       assert(
         typeof options.clip.width === 'number',
         'Expected options.clip.width to be a number but found ' +
-          typeof options.clip.width
+        typeof options.clip.width
       );
       assert(
         typeof options.clip.height === 'number',
         'Expected options.clip.height to be a number but found ' +
-          typeof options.clip.height
+        typeof options.clip.height
       );
       assert(
         options.clip.width !== 0,
@@ -2738,10 +2668,6 @@ export class Page extends EventEmitter {
 
   get mouse(): Mouse {
     return this._mouse;
-  }
-
-  get webvitals(): EventEmitter {
-    return this._webVitalsReportScope;
   }
 
   /**
