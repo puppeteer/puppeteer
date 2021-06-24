@@ -3,6 +3,7 @@
   "mainEntryPointFilePath": "<projectFolder>/lib/cjs/puppeteer/api-docs-entry.d.ts",
   "bundledPackages": ["devtools-protocol"],
 
+
   "apiReport": {
     "enabled": false
   },
