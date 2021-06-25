@@ -180,7 +180,7 @@
   * [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
   * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled)
   * [page.setRequestInterception(value)](#pagesetrequestinterceptionvalue)
-  * [page.setUserAgent(userAgent[, userAgentData])](#pagesetuseragentuseragent-useragentdata)
+  * [page.setUserAgent(userAgent[, userAgentMetadata])](#pagesetuseragentuseragent-useragentmetadata)
   * [page.setViewport(viewport)](#pagesetviewportviewport)
   * [page.tap(selector)](#pagetapselector)
   * [page.target()](#pagetarget)
@@ -2344,10 +2344,10 @@ const puppeteer = require('puppeteer');
 })();
 ```
 
-#### page.setUserAgent(userAgent[, userAgentData])
+#### page.setUserAgent(userAgent[, userAgentMetadata])
 
 - `userAgent` <[string]> Specific user agent to use in this page
-- `userAgentData` <[Object]> Optional user agent data to use in this page. Any
+- `userAgentMetadata` <[Object]> Optional user agent data to use in this page. Any
   values not provided will use the client's default.
   - `brands` <...[Object]>
     - `brand` <[string|> Browser or client brand name.

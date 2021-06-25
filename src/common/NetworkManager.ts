@@ -219,12 +219,12 @@ export class NetworkManager extends EventEmitter {
 
   async setUserAgent(
     userAgent: string,
-    userAgentData?: Protocol.Emulation.UserAgentMetadata
+    userAgentMetadata?: Protocol.Emulation.UserAgentMetadata
   ): Promise<void> {
     const params = { userAgent: userAgent };
 
-    if (userAgentData !== undefined) {
-      params['userAgentData'] = userAgentData;
+    if (userAgentMetadata !== undefined) {
+      params['userAgentMetadata'] = userAgentMetadata;
     }
 
     await this._client.send('Network.setUserAgentOverride', params);

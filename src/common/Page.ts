@@ -1368,11 +1368,11 @@ export class Page extends EventEmitter {
    */
   async setUserAgent(
     userAgent: string,
-    userAgentData?: Protocol.Emulation.UserAgentMetadata
+    userAgentMetadata?: Protocol.Emulation.UserAgentMetadata
   ): Promise<void> {
     return this._frameManager
       .networkManager()
-      .setUserAgent(userAgent, userAgentData);
+      .setUserAgent(userAgent, userAgentMetadata);
   }
 
   /**
