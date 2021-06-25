@@ -629,8 +629,26 @@ export class Page extends EventEmitter {
   }
 
   /**
+   * This method is typically coupled with an action that triggers file
+   * choosing. The following example clicks a button that issues a file chooser
+   * and then responds with `/tmp/myfile.pdf` as if a user has selected this file.
+   *
+   * ```js
+   * const [fileChooser] = await Promise.all([
+   * page.waitForFileChooser(),
+   * page.click('#upload-file-button'),
+   * // some button that triggers file selection
+   * ]);
+   * await fileChooser.accept(['/tmp/myfile.pdf']);
+   * ```
+   *
+   * NOTE: This must be called before the file chooser is launched. It will not
+   * return a currently active file chooser.
    * @param options - Optional waiting parameters
    * @returns Resolves after a page requests a file picker.
+   * @remarks
+   * NOTE: In non-headless Chromium, this method results in the native file picker
+   * dialog `not showing up` for the user.
    */
   async waitForFileChooser(
     options: WaitTimeoutOptions = {}
@@ -641,7 +659,7 @@ export class Page extends EventEmitter {
       });
 
     const { timeout = this._timeoutSettings.timeout() } = options;
-    let callback;
+    let callback: (value: FileChooser | PromiseLike<FileChooser>) => void;
     const promise = new Promise<FileChooser>((x) => (callback = x));
     this._fileChooserInterceptors.add(callback);
     return helper
@@ -764,8 +782,11 @@ export class Page extends EventEmitter {
 
   /**
    * @returns all of the dedicated
-   * {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API | WebWorkers}
+   * {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API |
+   * WebWorkers}
    * associated with the page.
+   * @remarks
+   * NOTE: This does not contain ServiceWorkers
    */
   workers(): WebWorker[] {
     return Array.from(this._workers.values());
@@ -1726,6 +1747,30 @@ export class Page extends EventEmitter {
     return result[0];
   }
 
+  /**
+   * This resolves when the page navigates to a new URL or reloads. It is useful
+   * when you run code that will indirectly cause the page to navigate. Consider
+   * this example:
+   * ```js
+   * const [response] = await Promise.all([
+   * page.waitForNavigation(), // The promise resolves after navigation has finished
+   * page.click('a.my-link'), // Clicking the link will indirectly cause a navigation
+   * ]);
+   * ```
+   *
+   * @param options - Navigation parameters which might have the following properties:
+   * @returns Promise which resolves to the main resource response. In case of
+   * multiple redirects, the navigation will resolve with the response of the
+   * last redirect. In case of navigation to a different anchor or navigation
+   * due to History API usage, the navigation will resolve with `null`.
+   * @remarks
+   * NOTE: Usage of the
+   * {@link https://developer.mozilla.org/en-US/docs/Web/API/History_API | History API}
+   * to change the URL is considered a navigation.
+   *
+   * Shortcut for
+   * {@link Frame.waitForNavigation | page.mainFrame().waitForNavigation(options)}.
+   */
   async waitForNavigation(
     options: WaitForOptions = {}
   ): Promise<HTTPResponse | null> {
@@ -1742,6 +1787,31 @@ export class Page extends EventEmitter {
     return this._disconnectPromise;
   }
 
+  /**
+   * @param urlOrPredicate - A URL or predicate to wait for
+   * @param options - Optional waiting parameters
+   * @returns Promise which resolves to the matched response
+   * @example
+   * ```js
+   * const firstResponse = await page.waitForResponse(
+   * 'https://example.com/resource'
+   * );
+   * const finalResponse = await page.waitForResponse(
+   * (response) =>
+   * response.url() === 'https://example.com' && response.status() === 200
+   * );
+   * const finalResponse = await page.waitForResponse(async (response) => {
+   * return (await response.text()).includes('<html>');
+   * });
+   * return finalResponse.ok();
+   * ```
+   * @remarks
+   * Optional Waiting Parameters have:
+   *
+   * - `timeout`: Maximum wait time in milliseconds, defaults to `30` seconds, pass
+   * `0` to disable the timeout. The default value can be changed by using the
+   * {@link Page.setDefaultTimeout} method.
+   */
   async waitForRequest(
     urlOrPredicate: string | ((req: HTTPRequest) => boolean | Promise<boolean>),
     options: { timeout?: number } = {}
@@ -1762,6 +1832,31 @@ export class Page extends EventEmitter {
     );
   }
 
+  /**
+   * @param urlOrPredicate - A URL or predicate to wait for.
+   * @param options - Optional waiting parameters
+   * @returns Promise which resolves to the matched response.
+   * @example
+   * ```js
+   * const firstResponse = await page.waitForResponse(
+   * 'https://example.com/resource'
+   * );
+   * const finalResponse = await page.waitForResponse(
+   * (response) =>
+   * response.url() === 'https://example.com' && response.status() === 200
+   * );
+   * const finalResponse = await page.waitForResponse(async (response) => {
+   * return (await response.text()).includes('<html>');
+   * });
+   * return finalResponse.ok();
+   * ```
+   * @remarks
+   * Optional Parameter have:
+   *
+   * - `timeout`: Maximum wait time in milliseconds, defaults to `30` seconds,
+   * pass `0` to disable the timeout. The default value can be changed by using
+   * the {@link Page.setDefaultTimeout} method.
+   */
   async waitForResponse(
     urlOrPredicate:
       | string
@@ -2618,7 +2713,7 @@ export class Page extends EventEmitter {
 
   /**
    * @param {!PDFOptions=} options
-   * @return {!Promise<!Buffer>}
+   * @returns {!Promise<!Buffer>}
    */
   async pdf(options: PDFOptions = {}): Promise<Buffer> {
     const { path = undefined } = options;
@@ -2869,6 +2964,54 @@ export class Page extends EventEmitter {
     return this.mainFrame().waitForTimeout(milliseconds);
   }
 
+  /**
+   * Wait for the `selector` to appear in page. If at the moment of calling the
+   * method the `selector` already exists, the method will return immediately. If
+   * the `selector` doesn't appear after the `timeout` milliseconds of waiting, the
+   * function will throw.
+   *
+   * This method works across navigations:
+   * ```js
+   * const puppeteer = require('puppeteer');
+   * (async () => {
+   * const browser = await puppeteer.launch();
+   * const page = await browser.newPage();
+   * let currentURL;
+   * page
+   * .waitForSelector('img')
+   * .then(() => console.log('First URL with image: ' + currentURL));
+   * for (currentURL of [
+   * 'https://example.com',
+   * 'https://google.com',
+   * 'https://bbc.com',
+   * ]) {
+   * await page.goto(currentURL);
+   * }
+   * await browser.close();
+   * })();
+   * ```
+   * @param selector - A
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
+   * of an element to wait for
+   * @param options - Optional waiting parameters
+   * @returns Promise which resolves when element specified by selector string
+   * is added to DOM. Resolves to `null` if waiting for hidden: `true` and
+   * selector is not found in DOM.
+   * @remarks
+   * The optional Parameter in Arguments `options` are :
+   *
+   * - `Visible`: A boolean wait for element to be present in DOM and to be
+   * visible, i.e. to not have `display: none` or `visibility: hidden` CSS
+   * properties. Defaults to `false`.
+   *
+   * - `hidden`: ait for element to not be found in the DOM or to be hidden,
+   * i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to
+   * `false`.
+   *
+   * - `timeout`: maximum time to wait for in milliseconds. Defaults to `30000`
+   * (30 seconds). Pass `0` to disable timeout. The default value can be changed
+   * by using the {@link Page.setDefaultTimeout} method.
+   */
   waitForSelector(
     selector: string,
     options: {
@@ -2880,6 +3023,54 @@ export class Page extends EventEmitter {
     return this.mainFrame().waitForSelector(selector, options);
   }
 
+  /**
+   * Wait for the `xpath` to appear in page. If at the moment of calling the
+   * method the `xpath` already exists, the method will return immediately. If
+   * the `xpath` doesn't appear after the `timeout` milliseconds of waiting, the
+   * function will throw.
+   *
+   * This method works across navigation
+   * ```js
+   * const puppeteer = require('puppeteer');
+   * (async () => {
+   * const browser = await puppeteer.launch();
+   * const page = await browser.newPage();
+   * let currentURL;
+   * page
+   * .waitForXPath('//img')
+   * .then(() => console.log('First URL with image: ' + currentURL));
+   * for (currentURL of [
+   * 'https://example.com',
+   * 'https://google.com',
+   * 'https://bbc.com',
+   * ]) {
+   * await page.goto(currentURL);
+   * }
+   * await browser.close();
+   * })();
+   * ```
+   * @param xpath - A
+   * {@link https://developer.mozilla.org/en-US/docs/Web/XPath | xpath} of an
+   * element to wait for
+   * @param options - Optional waiting parameters
+   * @returns Promise which resolves when element specified by xpath string is
+   * added to DOM. Resolves to `null` if waiting for `hidden: true` and xpath is
+   * not found in DOM.
+   * @remarks
+   * The optional Argument `options` have properties:
+   *
+   * - `visible`: A boolean to wait for element to be present in DOM and to be
+   * visible, i.e. to not have `display: none` or `visibility: hidden` CSS
+   * properties. Defaults to `false`.
+   *
+   * - `hidden`: A boolean wait for element to not be found in the DOM or to be
+   * hidden, i.e. have `display: none` or `visibility: hidden` CSS properties.
+   * Defaults to `false`.
+   *
+   * - `timeout`: A number which is maximum time to wait for in milliseconds.
+   * Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The default
+   * value can be changed by using the {@link Page.setDefaultTimeout} method.
+   */
   waitForXPath(
     xpath: string,
     options: {
@@ -2891,6 +3082,72 @@ export class Page extends EventEmitter {
     return this.mainFrame().waitForXPath(xpath, options);
   }
 
+  /**
+   * The `waitForFunction` can be used to observe viewport size change:
+   *
+   * ```
+   * const puppeteer = require('puppeteer');
+   * (async () => {
+   * const browser = await puppeteer.launch();
+   * const page = await browser.newPage();
+   * const watchDog = page.waitForFunction('window.innerWidth < 100');
+   * await page.setViewport({ width: 50, height: 50 });
+   * await watchDog;
+   * await browser.close();
+   * })();
+   * ```
+   * To pass arguments from node.js to the predicate of `page.waitForFunction` function:
+   * ```
+   * const selector = '.foo';
+   * await page.waitForFunction(
+   * (selector) => !!document.querySelector(selector),
+   * {},
+   * selector
+   * );
+   * ```
+   * The predicate of `page.waitForFunction` can be asynchronous too:
+   * ```
+   * const username = 'github-username';
+   * await page.waitForFunction(
+   * async (username) => {
+   * const githubResponse = await fetch(
+   *  `https://api.github.com/users/${username}`
+   * );
+   * const githubUser = await githubResponse.json();
+   * // show the avatar
+   * const img = document.createElement('img');
+   * img.src = githubUser.avatar_url;
+   * // wait 3 seconds
+   * await new Promise((resolve, reject) => setTimeout(resolve, 3000));
+   * img.remove();
+   * },
+   * {},
+   * username
+   * );
+   * ```
+   * @param pageFunction - Function to be evaluated in browser context
+   * @param options - Optional waiting parameters
+   * @param args -  Arguments to pass to `pageFunction`
+   * @returns Promise which resolves when the `pageFunction` returns a truthy
+   * value. It resolves to a JSHandle of the truthy value.
+   *
+   * The optional waiting parameter can be:
+   *
+   * - `Polling`: An interval at which the `pageFunction` is executed, defaults to
+   *   `raf`. If `polling` is a number, then it is treated as an interval in
+   *   milliseconds at which the function would be executed. If polling is a
+   *   string, then it can be one of the following values:<br/>
+   *    - `raf`: to constantly execute `pageFunction` in `requestAnimationFrame`
+   *      callback. This is the tightest polling mode which is suitable to
+   *      observe styling changes.<br/>
+   *    - `mutation`: to execute pageFunction on every DOM mutation.
+   *
+   * - `timeout`: maximum time to wait for in milliseconds. Defaults to `30000`
+   * (30 seconds). Pass `0` to disable timeout. The default value can be changed
+   * by using the
+   * {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)} method.
+   *
+   */
   waitForFunction(
     pageFunction: Function | string,
     options: {
