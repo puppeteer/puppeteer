@@ -2349,15 +2349,15 @@ const puppeteer = require('puppeteer');
 - `userAgent` <[string]> Specific user agent to use in this page
 - `userAgentMetadata` <[Object]> Optional user agent data to use in this page. Any
   values not provided will use the client's default.
-  - `brands` <...[Object]>
-    - `brand` <[string|> Browser or client brand name.
-    - `version` <[string|> Browser or client major version.
-  - `fullVersion` <[string|> Browser or client full version.
-  - `platform` <[string|> Operating system name.
-  - `platformVersion` <[string|> Operating system version.
-  - `architecture` <[string|> CPU architecture.
-  - `model` <[string|> Device model.
-  - `mobile` <[boolean|> Indicate if this is a mobile device.
+  - `brands` <[Array]<[Object]>> Optional brand information
+    - `brand` <[string]> Browser or client brand name.
+    - `version` <[string]> Browser or client major version.
+  - `fullVersion` <[string]> Optional browser or client full version.
+  - `platform` <[string]> Operating system name.
+  - `platformVersion` <[string]> Operating system version.
+  - `architecture` <[string]> CPU architecture.
+  - `model` <[string]> Device model.
+  - `mobile` <[boolean]> Indicate if this is a mobile device.
 - returns: <[Promise]> Promise which resolves when the user agent is set.
 
 #### page.setViewport(viewport)

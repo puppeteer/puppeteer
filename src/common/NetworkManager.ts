@@ -47,6 +47,7 @@ export interface NetworkConditions {
 export interface InternalNetworkConditions extends NetworkConditions {
   offline: boolean;
 }
+
 /**
  * We use symbols to prevent any external parties listening to these events.
  * They are internal to Puppeteer.
@@ -221,13 +222,10 @@ export class NetworkManager extends EventEmitter {
     userAgent: string,
     userAgentMetadata?: Protocol.Emulation.UserAgentMetadata
   ): Promise<void> {
-    const params = { userAgent: userAgent };
-
-    if (userAgentMetadata !== undefined) {
-      params['userAgentMetadata'] = userAgentMetadata;
-    }
-
-    await this._client.send('Network.setUserAgentOverride', params);
+    await this._client.send('Network.setUserAgentOverride', {
+      userAgent: userAgent,
+      userAgentMetadata: userAgentMetadata,
+    });
   }
 
   async setCacheEnabled(enabled: boolean): Promise<void> {

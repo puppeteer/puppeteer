@@ -998,6 +998,37 @@ describe('Page', function () {
         'iPhone'
       );
     });
+    it('should work with additional userAgentMetdata', async () => {
+      const { page, server } = getTestState();
+
+
+      await page.setUserAgent('MockBrowser', {
+        architecture: 'Mock1',
+        mobile: false,
+        model: 'Mockbook',
+        platform: 'MockOS',
+        platformVersion: '3.1',
+      });
+      const [request] = await Promise.all([
+        server.waitForRequest('/empty.html'),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+      const uaData = await page.evaluate(() =>
+        // @ts-ignore: userAgentData not yet in TypeScript DOM API
+        navigator.userAgentData.getHighEntropyValues([
+          'architecture',
+          'model',
+          'platform',
+          'platformVersion',
+        ])
+      );
+      expect(uaData['architecture']).toBe('Mock1');
+      expect(uaData.mobile).toBeFalsy();
+      expect(uaData['model']).toBe('Mockbook');
+      expect(uaData['platform']).toBe('MockOS');
+      expect(uaData['platformVersion']).toBe('3.1');
+      expect(request.headers['user-agent']).toBe('MockBrowser');
+    });
   });
 
   describe('Page.setContent', function () {
