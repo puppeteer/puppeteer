@@ -180,7 +180,7 @@
   * [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
   * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled)
   * [page.setRequestInterception(value)](#pagesetrequestinterceptionvalue)
-  * [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
+  * [page.setUserAgent(userAgent[, userAgentData])](#pagesetuseragentuseragent-useragentdata)
   * [page.setViewport(viewport)](#pagesetviewportviewport)
   * [page.tap(selector)](#pagetapselector)
   * [page.target()](#pagetarget)
@@ -942,7 +942,7 @@ the method will return an array with all the targets in all browser contexts.
 
 - returns: <[Promise]<[string]>> Promise which resolves to the browser's original user agent.
 
-> **NOTE** Pages can override browser user agent with [page.setUserAgent](#pagesetuseragentuseragent)
+> **NOTE** Pages can override browser user agent with [page.setUserAgent](#pagesetuseragentuseragent-useragentdata)
 
 #### browser.version()
 
@@ -1558,7 +1558,7 @@ const puppeteer = require('puppeteer');
 
 Emulates given device metrics and user agent. This method is a shortcut for calling two methods:
 
-- [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
+- [page.setUserAgent(userAgent)](#pagesetuseragentuseragent-useragentdata)
 - [page.setViewport(viewport)](#pagesetviewportviewport)
 
 To aid emulation, Puppeteer provides a list of device descriptors that can be obtained via the [`puppeteer.devices`](#puppeteerdevices).
@@ -2344,9 +2344,20 @@ const puppeteer = require('puppeteer');
 })();
 ```
 
-#### page.setUserAgent(userAgent)
+#### page.setUserAgent(userAgent[, userAgentData])
 
 - `userAgent` <[string]> Specific user agent to use in this page
+- `userAgentData` <[Object]> Optional user agent data to use in this page. Any
+  values not provided will use the client's default.
+  - `brands` <...[Object]>
+    - `brand` <[string|> Browser or client brand name.
+    - `version` <[string|> Browser or client major version.
+  - `fullVersion` <[string|> Browser or client full version.
+  - `platform` <[string|> Operating system name.
+  - `platformVersion` <[string|> Operating system version.
+  - `architecture` <[string|> CPU architecture.
+  - `model` <[string|> Device model.
+  - `mobile` <[boolean|> Indicate if this is a mobile device.
 - returns: <[Promise]> Promise which resolves when the user agent is set.
 
 #### page.setViewport(viewport)
