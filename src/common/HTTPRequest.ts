@@ -382,8 +382,9 @@ export class HTTPRequest {
    * ```
    *
    * @param overrides - optional overrides to apply to the request.
-   * @param priority - (optional, default 0). Priority 0 will execute immediately.
-   * Priorities > 0 will be resolved using coopeative handling rules.
+   * @param priority - If provided, intercept will be resolved using
+   * coopeative handling rules. Otherwise, intercept will be resovled
+   * immediately.
    */
   async continue(
     overrides: ContinueRequestOverrides = {},
@@ -409,7 +410,6 @@ export class HTTPRequest {
       ) {
         return;
       }
-      this._currentPriority = priority;
       this._currentStrategy = 'continue';
     }
     return;
@@ -468,8 +468,9 @@ export class HTTPRequest {
    * Calling `request.respond` for a dataURL request is a noop.
    *
    * @param response - the response to fulfill the request with.
-   * @param priority - (optional, default 0). Priority 0 will execute immediately.
-   * Priorities > 0 will be resolved using coopeative handling rules.
+   * @param priority - If provided, intercept will be resolved using
+   * coopeative handling rules. Otherwise, intercept will be resovled
+   * immediately.
    */
   async respond(
     response: Partial<ResponseForRequest>,
@@ -493,7 +494,6 @@ export class HTTPRequest {
         return;
       }
       this._currentStrategy = 'respond';
-      this._currentPriority = priority;
     }
   }
 
@@ -544,8 +544,9 @@ export class HTTPRequest {
    * throw an exception immediately.
    *
    * @param errorCode - optional error code to provide.
-   * @param priority - (optional, default 0). Priority 0 will execute immediately.
-   * Priorities > 0 will be resolved using coopeative handling rules.
+   * @param priority - If provided, intercept will be resolved using
+   * coopeative handling rules. Otherwise, intercept will be resovled
+   * immediately.
    */
   async abort(
     errorCode: ErrorCode = 'failed',
