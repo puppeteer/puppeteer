@@ -2458,11 +2458,11 @@ page.on('request', (interceptedRequest) => {
     interceptedRequest.url().endsWith('.png') ||
     interceptedRequest.url().endsWith('.jpg')
   )
-    interceptedRequest.abort('failed', DEFAULT_INTERCEPT_RESOLUTION_PRIORITY);
+    interceptedRequest.abort('failed', 0);
   else
     interceptedRequest.continue(
       interceptedRequest.continueRequestOverrides(),
-      DEFAULT_INTERCEPT_RESOLUTION_PRIORITY
+      0
     );
 });
 ```
@@ -2480,9 +2480,8 @@ To resolve both of these issues, our recommended approach is to export a `setInt
 import { DEFAULT_INTERCEPT_RESOLUTION_PRIORITY } from 'puppeteer';
 
 let _priority = undefined; // Defaults to undefined which preserves legacy mode behavior
-export const setInterceptResolutionStrategy = (
-  defaultPriority = DEFAULT_INTERCEPT_RESOLUTION_PRIORITY
-) => (_priority = defaultPriority);
+export const setInterceptResolutionStrategy = (defaultPriority = 0) =>
+  (_priority = defaultPriority);
 
 page.on('request', (interceptedRequest) => {
   if (
