@@ -2360,9 +2360,9 @@ const puppeteer = require('puppeteer');
 - The highest priority interception resolution "wins", ie, the interception will ultimately be aborted/responded/continued according to which resolution was given the highest priority.
 - In the event of a tie, `abort` > `respond` > `continue`
 
-For standardization, when specifying a Cooperative Mode priority use `DEFAULT_INTERCEPT_RESOLUTION_PRIORITY` (currently 10) unless you have a clear reason to use a higher priority. This will gracefully prefer `respond` over `continue` and `abort` over `respond`. If you do intentionally want to use a higher priority, `DEFAULT_INTERCEPT_RESOLUTION_PRIORITY + n` is the recommended approach. For example, `continue({}, DEFAULT_INTERCEPT_RESOLUTION_PRIORITY + 4)` rather than `continue({}, 14)`.
+For standardization, when specifying a Cooperative Mode priority use `0` unless you have a clear reason to use a higher priority. This will gracefully prefer `respond` over `continue` and `abort` over `respond`. If you do intentionally want to use a different priority, higher priorities win over lower priorities. Negative priorities are allowed. For example, `continue({}, 4)` would win over `continue({}, -2)`.
 
-To preserve backward compatibility, Cooperative Mode is only used when ALL intercept resolutions include the `priority` parameter. If any handler resolves the intercept without specifying `priority`, Legacy Mode (immediate resolution) will prevail.
+To preserve backward compatibility, any handler resolving the intercept without specifying `priority` (Legacy Mode) will cause immediate resolution. For Cooperative Mode to work, all resolutions must use a `priority`.
 
 In this example, Legacy Mode prevails and the request is aborted immediately because at least one handler omits `priority` when resolving the intercept:
 
@@ -2374,6 +2374,7 @@ page.on('request', (request) => {
 });
 page.on('request', (request) => {
   console.log(request.interceptResolution()); // ['already-handled'], meaning a legacy resolution has taken place
+  request.continue({}, 0); // Legacy behavior: throws an exception becasue abort() was already called
 });
 ```
 
@@ -2383,11 +2384,11 @@ In this example, Legacy Mode prevails and the request is continued because at le
 // Final outcome: immediate continue()
 page.setRequestInterception(true);
 page.on('request', (request) => {
-  request.abort('failed', DEFAULT_INTERCEPT_RESOLUTION_PRIORITY); // Cooperative behavior: would execute at priority 10
+  request.abort('failed', 0); // Cooperative behavior: would execute at priority 0, but instead will throw an exception because legacy continue() gets called
 });
 page.on('request', (request) => {
-  console.log(request.interceptResolution()); // ['abort', 10], meaning an abort @ 10 is the current winning resolution
-  request.continue({}); // Legacy behavior: would execute immediately
+  console.log(request.interceptResolution()); // ['abort', 0], meaning an abort @ 0 is the current winning resolution
+  request.continue({}); // Legacy behavior: executes immediately, causing the previous cooperative abort() to throw an exception
 });
 ```
 
@@ -2397,16 +2398,13 @@ In this example, Cooperative Mode is active because all handlers specify a `prio
 // Final outcome: cooperative continue()
 page.setRequestInterception(true);
 page.on('request', (request) => {
-  request.abort('failed', DEFAULT_INTERCEPT_RESOLUTION_PRIORITY); // Cooperative behavior: aborts at priority 10
+  request.abort('failed', 0); // Cooperative behavior: aborts at priority 10
 });
 page.on('request', (request) => {
-  request.continue(
-    request.continueRequestOverrides(),
-    DEFAULT_INTERCEPT_RESOLUTION_PRIORITY + 5
-  ); // Cooperative behavior: continues at priority 5
+  request.continue(request.continueRequestOverrides(), 5); // Cooperative behavior: continues at priority 5
 });
 page.on('request', (request) => {
-  console.log(request.interceptResolution()); // ['continue', 15], because continue @ 15 > abort @ 10
+  console.log(request.interceptResolution()); // ['continue', 5], because continue @ 5 > abort @ 0
 });
 ```
 
@@ -2419,16 +2417,10 @@ page.on('request', (request) => {
   request.abort('failed', 10); // Cooperative behavior: aborts at priority 10
 });
 page.on('request', (request) => {
-  request.continue(
-    request.continueRequestOverrides(),
-    DEFAULT_INTERCEPT_RESOLUTION_PRIORITY + 5
-  ); // Cooperative behavior: continues at priority 5
+  request.continue(request.continueRequestOverrides(), 15); // Cooperative behavior: continues at priority 15
 });
 page.on('request', (request) => {
-  request.respond(
-    request.responseForRequest(),
-    DEFAULT_INTERCEPT_RESOLUTION_PRIORITY + 5
-  ); // Cooperative behavior: responds at priority 5
+  request.respond(request.responseForRequest(), 15); // Cooperative behavior: responds at priority 15
 });
 page.on('request', (request) => {
   console.log(request.interceptResolution()); // ['respond', 15], because respond @ 15 > continue @ 15 > abort @ 10
@@ -2477,8 +2469,6 @@ However, we recommend a slightly more robust solution because the above introduc
 To resolve both of these issues, our recommended approach is to export a `setInterceptResolutionStrategy()` from your package. The user can then call `setInterceptResolutionStrategy()` to explicitly activate Cooperative Mode in your package so they aren't surprised by changes in how the interception is resolved. They can also optionally specify a custom priority using `setInterceptResolutionStrategy(priority)` that works for their use case:
 
 ```ts
-import { DEFAULT_INTERCEPT_RESOLUTION_PRIORITY } from 'puppeteer';
-
 let _priority = undefined; // Defaults to undefined which preserves legacy mode behavior
 export const setInterceptResolutionStrategy = (defaultPriority = 0) =>
   (_priority = defaultPriority);
@@ -2500,12 +2490,10 @@ page.on('request', (interceptedRequest) => {
 If your package calls for more fine-grained control resolution priorities, use a config pattern like this:
 
 ```ts
-import { DEFAULT_INTERCEPT_RESOLUTION_PRIORITY } from 'puppeteer';
-
 // Defaults to undefined which preserves legacy mode behavior
 const DEFAULT_PRIORITIES = {
-  abortPriority: DEFAULT_INTERCEPT_RESOLUTION_PRIORITY,
-  continuePriority: DEFAULT_INTERCEPT_RESOLUTION_PRIORITY,
+  abortPriority: 0,
+  continuePriority: 0,
 };
 let _priorities: Partial<typeof DEFAULT_PRIORITIES> = {};
 
