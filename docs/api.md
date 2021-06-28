@@ -337,6 +337,7 @@
   * [httpRequest.finalizeInterceptions()](#httprequestfinalizeinterceptions)
   * [httpRequest.frame()](#httprequestframe)
   * [httpRequest.headers()](#httprequestheaders)
+  * [httpRequest.interceptResolution()](#httprequestinterceptresolution)
   * [httpRequest.isNavigationRequest()](#httprequestisnavigationrequest)
   * [httpRequest.method()](#httprequestmethod)
   * [httpRequest.postData()](#httprequestpostdata)
@@ -345,9 +346,6 @@
   * [httpRequest.respond(response)](#httprequestrespondresponse)
   * [httpRequest.response()](#httprequestresponse)
   * [httpRequest.responseForRequest()](#httprequestresponseforrequest)
-  * [httpRequest.shouldAbort()](#httprequestshouldabort)
-  * [httpRequest.shouldContinue()](#httprequestshouldcontinue)
-  * [httpRequest.shouldRespond()](#httprequestshouldrespond)
   * [httpRequest.url()](#httprequesturl)
 - [class: HTTPResponse](#class-httpresponse)
   * [httpResponse.buffer()](#httpresponsebuffer)
@@ -1499,6 +1497,7 @@ If URLs are specified, only cookies for those URLs are returned.
 - returns: <[Coverage]>
 
 #### page.createPDFStream([options])
+
 - `options` <[Object]> Options object which might have the following properties:
   - `path` <[string]> The file path to save the PDF to. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the PDF won't be saved to the disk.
   - `scale` <[number]> Scale of the webpage rendering. Defaults to `1`. Scale amount must be between 0.1 and 2.
@@ -2053,6 +2052,7 @@ Page is guaranteed to have a main frame which persists during navigations.
 - returns: <[Mouse]>
 
 #### page.pdf([options])
+
 - `options` <[Object]> Options object which might have the following properties:
   - `path` <[string]> The file path to save the PDF to. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the PDF won't be saved to the disk.
   - `scale` <[number]> Scale of the webpage rendering. Defaults to `1`. Scale amount must be between 0.1 and 2.
@@ -2351,6 +2351,184 @@ const puppeteer = require('puppeteer');
   await browser.close();
 })();
 ```
+
+##### Cooperative Intercept Mode and Legacy Intercept Mode
+
+`request.respond`, `request.abort`, and `request.continue` can accept an optional `priority` to activate Cooperative Intercept Mode. In Cooperative Mode, all intercept handlers are guaraneed to run and the interception will be resolved to the highest priority resolution. Here are the rules of Cooperative Mode:
+
+- Async handlers will finish before intercept resolution is finalized
+- The highest priority interception resolution "wins", ie, the interception will ultimately be aborted/responded/continued according to which resolution was given the highest priority.
+- In the event of a tie, `abort` > `respond` > `continue`
+
+For standardization, when specifying a Cooperative Mode priority use `DEFAULT_INTERCEPT_RESOLUTION_PRIORITY` (currently 10) unless you have a clear reason to use a higher priority. This will gracefully prefer `respond` over `continue` and `abort` over `respond`. If you do intentionally want to use a higher priority, `DEFAULT_INTERCEPT_RESOLUTION_PRIORITY + n` is the recommended approach. For example, `continue({}, DEFAULT_INTERCEPT_RESOLUTION_PRIORITY + 4)` rather than `continue({}, 14)`.
+
+To preserve backward compatibility, Cooperative Mode is only used when ALL intercept resolutions include the `priority` parameter. If any handler resolves the intercept without specifying `priority`, Legacy Mode (immediate resolution) will prevail.
+
+In this example, Legacy Mode prevails and the request is aborted immediately because at least one handler omits `priority` when resolving the intercept:
+
+```ts
+// Final outcome: immediate abort()
+page.setRequestInterception(true);
+page.on('request', (request) => {
+  request.abort('failed'); // Legacy behavior: would execute immediately
+});
+page.on('request', (request) => {
+  console.log(request.interceptResolution()); // ['already-handled'], meaning a legacy resolution has taken place
+});
+```
+
+In this example, Legacy Mode prevails and the request is continued because at least one handler does not specify a `priority`:
+
+```ts
+// Final outcome: immediate continue()
+page.setRequestInterception(true);
+page.on('request', (request) => {
+  request.abort('failed', DEFAULT_INTERCEPT_RESOLUTION_PRIORITY); // Cooperative behavior: would execute at priority 10
+});
+page.on('request', (request) => {
+  console.log(request.interceptResolution()); // ['abort', 10], meaning an abort @ 10 is the current winning resolution
+  request.continue({}); // Legacy behavior: would execute immediately
+});
+```
+
+In this example, Cooperative Mode is active because all handlers specify a `priority`. `continue()` wins because it has a higher priority than `abort()`.
+
+```ts
+// Final outcome: cooperative continue()
+page.setRequestInterception(true);
+page.on('request', (request) => {
+  request.abort('failed', DEFAULT_INTERCEPT_RESOLUTION_PRIORITY); // Cooperative behavior: aborts at priority 10
+});
+page.on('request', (request) => {
+  request.continue(
+    request.continueRequestOverrides(),
+    DEFAULT_INTERCEPT_RESOLUTION_PRIORITY + 5
+  ); // Cooperative behavior: continues at priority 5
+});
+page.on('request', (request) => {
+  console.log(request.interceptResolution()); // ['continue', 15], because continue @ 15 > abort @ 10
+});
+```
+
+In this example, Cooperative Mode is active because all handlers specify `priority`. `respond()` wins because its priority ties with `continue()`, but `respond()` beats `continue()`.
+
+```ts
+// Final outcome: cooperative respond()
+page.setRequestInterception(true);
+page.on('request', (request) => {
+  request.abort('failed', 10); // Cooperative behavior: aborts at priority 10
+});
+page.on('request', (request) => {
+  request.continue(
+    request.continueRequestOverrides(),
+    DEFAULT_INTERCEPT_RESOLUTION_PRIORITY + 5
+  ); // Cooperative behavior: continues at priority 5
+});
+page.on('request', (request) => {
+  request.respond(
+    request.responseForRequest(),
+    DEFAULT_INTERCEPT_RESOLUTION_PRIORITY + 5
+  ); // Cooperative behavior: responds at priority 5
+});
+page.on('request', (request) => {
+  console.log(request.interceptResolution()); // ['respond', 15], because respond @ 15 > continue @ 15 > abort @ 10
+});
+```
+
+##### Upgrading to Cooperative Mode for Package Maintainers
+
+If you are package maintainer and your package uses intercept handlers, you can update your intercept handlers to use Cooperative Mode. Suppose you have the following existing handler:
+
+```ts
+page.on('request', (interceptedRequest) => {
+  if (
+    interceptedRequest.url().endsWith('.png') ||
+    interceptedRequest.url().endsWith('.jpg')
+  )
+    interceptedRequest.abort();
+  else interceptedRequest.continue();
+});
+```
+
+To use Cooperative Mode, upgrade `continue()` and `abort()`:
+
+```ts
+page.on('request', (interceptedRequest) => {
+  if (
+    interceptedRequest.url().endsWith('.png') ||
+    interceptedRequest.url().endsWith('.jpg')
+  )
+    interceptedRequest.abort('failed', DEFAULT_INTERCEPT_RESOLUTION_PRIORITY);
+  else
+    interceptedRequest.continue(
+      interceptedRequest.continueRequestOverrides(),
+      DEFAULT_INTERCEPT_RESOLUTION_PRIORITY
+    );
+});
+```
+
+With those simiple upgrades, your handler will use Cooperative Mode instead.
+
+However, we recommend a slightly more robust solution because the above introduces two subtle issues:
+
+1. **Backward compatibility.** Cooperative Mode resolves interceptions only if no Legacy Mode resolution has taken place. If any handler uses a Legacy Mode resolution (ie, does not specify a priority), that handler will resolve the interception immediately even if your handler runs first. This could cause disconcerting behavior for your users because suddenly your handler is not resolving the interception and a different handler is taking priority when all they did was upgrade your package.
+2. **Hard-coded priority.** Your package user has no ability to specify the default resolution priority for your handlers. This can become important when the user wishes to manipulate the priorities based on use case. For example, one user might want your package to take a high priority while another user might want it to take a low priority.
+
+To resolve both of these issues, our recommended approach is to export a `setInterceptResolutionStrategy()` from your package. The user can then call `setInterceptResolutionStrategy()` to explicitly activate Cooperative Mode in your package so they aren't surprised by changes in how the interception is resolved. They can also optionally specify a custom priority using `setInterceptResolutionStrategy(priority)` that works for their use case:
+
+```ts
+import { DEFAULT_INTERCEPT_RESOLUTION_PRIORITY } from 'puppeteer';
+
+let _priority = undefined; // Defaults to undefined which preserves legacy mode behavior
+export const setInterceptResolutionStrategy = (
+  defaultPriority = DEFAULT_INTERCEPT_RESOLUTION_PRIORITY
+) => (_priority = defaultPriority);
+
+page.on('request', (interceptedRequest) => {
+  if (
+    interceptedRequest.url().endsWith('.png') ||
+    interceptedRequest.url().endsWith('.jpg')
+  )
+    interceptedRequest.abort('failed', _priority);
+  else
+    interceptedRequest.continue(
+      interceptedRequest.continueRequestOverrides(),
+      _priority
+    );
+});
+```
+
+If your package calls for more fine-grained control resolution priorities, use a config pattern like this:
+
+```ts
+import { DEFAULT_INTERCEPT_RESOLUTION_PRIORITY } from 'puppeteer';
+
+// Defaults to undefined which preserves legacy mode behavior
+const DEFAULT_PRIORITIES = {
+  abortPriority: DEFAULT_INTERCEPT_RESOLUTION_PRIORITY,
+  continuePriority: DEFAULT_INTERCEPT_RESOLUTION_PRIORITY,
+};
+let _priorities: Partial<typeof DEFAULT_PRIORITIES> = {};
+
+export const setInterceptResolutionStrategy = (
+  config?: Partial<typeof DEFAULT_PRIORITIES>
+) => (_priorities = { ...DEFAULT_PRIORITIES, ...config });
+
+page.on('request', (interceptedRequest) => {
+  if (
+    interceptedRequest.url().endsWith('.png') ||
+    interceptedRequest.url().endsWith('.jpg')
+  )
+    interceptedRequest.abort('failed', _priorities.abortPriority);
+  else
+    interceptedRequest.continue(
+      interceptedRequest.continueRequestOverrides(),
+      _priorities.continuePriority
+    );
+});
+```
+
+The above solution will ensure that your package continues to work as expected with other legacy handlers while also allowing the user to adjust the importance of your package in the resolution chain when Cooperative Mode is being used.
 
 #### page.setUserAgent(userAgent)
 
@@ -3843,14 +4021,6 @@ const puppeteer = require('puppeteer');
 })();
 ```
 
-### type: ErrorReason
-
-One of:
-
-```
-'Failed' | 'Aborted' | 'TimedOut' | 'AccessDenied' | 'ConnectionClosed' | 'ConnectionReset' | 'ConnectionRefused' | 'ConnectionAborted' | 'ConnectionFailed' | 'NameNotResolved' | 'InternetDisconnected' | 'AddressUnreachable' | 'BlockedByClient' | 'BlockedByResponse'
-```
-
 ### class: ExecutionContext
 
 The class represents a context for JavaScript execution. A [Page] might have many execution contexts:
@@ -4429,7 +4599,7 @@ If request fails at some point, then instead of `'requestfinished'` event (and p
 
 If request gets a 'redirect' response, the request is successfully finished with the 'requestfinished' event, and a new request is issued to a redirected URL.
 
-#### httpRequest.abort([errorCode])
+#### httpRequest.abort([errorCode], [priority])
 
 - `errorCode` <[string]> Optional error code. Defaults to `failed`, could be
   one of the following:
@@ -4448,6 +4618,7 @@ If request gets a 'redirect' response, the request is successfully finished with
   - `namenotresolved` - The host name could not be resolved.
   - `timedout` - An operation timed out.
   - `failed` - A generic failure occurred.
+- `priority` <[number]> - Optional intercept abort priority. If provided, intercept will be resolved using coopeative handling rules. Otherwise, intercept will be resovled immediately.
 - returns: <[Promise]>
 
 Aborts request. To use this, request interception should be enabled with `page.setRequestInterception`.
@@ -4455,17 +4626,18 @@ Exception is immediately thrown if the request interception is not enabled.
 
 #### httpRequest.abortErrorReason()
 
-- returns: <[string]> of type `Protocol.Network.ErrorReason`.
+- returns: <[string]> of type [Protocol.Network.ErrorReason](https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-ErrorReason).
 
 Returns the most recent reason for aborting the request.
 
-#### httpRequest.continue([overrides])
+#### httpRequest.continue([overrides], [priority])
 
 - `overrides` <[Object]> Optional request overwrites, which can be one of the following:
   - `url` <[string]> If set changes the request URL. This is not a redirect. The request will be silently forwarded to the new URL. For example, the address bar will show the original URL.
   - `method` <[string]> If set changes the request method (e.g. `GET` or `POST`).
   - `postData` <[string]> If set changes the post data of request.
   - `headers` <[Object]> If set changes the request HTTP headers. Header values will be converted to a string.
+- `priority` <[number]> - Optional intercept abort priority. If provided, intercept will be resolved using coopeative handling rules. Otherwise, intercept will be resovled immediately.
 - returns: <[Promise]>
 
 Continues request with optional request overrides. To use this, request interception should be enabled with `page.setRequestInterception`.
@@ -4558,13 +4730,14 @@ console.log(chain.length); // 0
 Contains the request's resource type as it was perceived by the rendering engine.
 ResourceType will be one of the following: `document`, `stylesheet`, `image`, `media`, `font`, `script`, `texttrack`, `xhr`, `fetch`, `eventsource`, `websocket`, `manifest`, `other`.
 
-#### httpRequest.respond(response)
+#### httpRequest.respond(response, [priority])
 
 - `response` <[Object]> Response that will fulfill this request
   - `status` <[number]> Response status code, defaults to `200`.
   - `headers` <[Object]> Optional response headers. Header values will be converted to a string.
   - `contentType` <[string]> If set, equals to setting `Content-Type` response header
   - `body` <[string]|[Buffer]> Optional response body
+- `priority` <[number]> - Optional intercept abort priority. If provided, intercept will be resolved using coopeative handling rules. Otherwise, intercept will be resovled immediately.
 - returns: <[Promise]>
 
 Fulfills request with given response. To use this, request interception should

@@ -635,7 +635,7 @@ const errorReasons: Record<ErrorCode, Protocol.Network.ErrorReason> = {
 } as const;
 
 export type ActionResult = 'continue' | 'abort' | 'respond';
-export const DEFAULT_INTERCEPT_PRIORITY = 10;
+export const DEFAULT_INTERCEPT_RESOLUTION_PRIORITY = 10;
 
 function headersArray(
   headers: Record<string, string>
