@@ -2500,21 +2500,21 @@ const DEFAULT_STRATEGY: ResolutionStrategy = {
 };
 
 // Defaults to undefined which preserves legacy mode behavior
-let _priorities: Partial<ResolutionStrategy> = {};
+let _strategy: Partial<ResolutionStrategy> = {};
 
 export const setInterceptResolutionStrategy = (strategy: ResolutionStrategy) =>
-  (_priorities = { ...DEFAULT_STRATEGY, ...strategy });
+  (_strategy = { ...DEFAULT_STRATEGY, ...strategy });
 
 page.on('request', (interceptedRequest) => {
   if (
     interceptedRequest.url().endsWith('.png') ||
     interceptedRequest.url().endsWith('.jpg')
   )
-    interceptedRequest.abort('failed', _priorities.abortPriority);
+    interceptedRequest.abort('failed', _strategy.abortPriority);
   else
     interceptedRequest.continue(
       interceptedRequest.continueRequestOverrides(),
-      _priorities.continuePriority
+      _strategy.continuePriority
     );
 });
 ```
