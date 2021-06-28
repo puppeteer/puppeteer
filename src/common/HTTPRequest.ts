@@ -398,7 +398,10 @@ export class HTTPRequest {
       return this._continue(overrides);
     }
     this._continueRequestOverrides = overrides;
-    if (priority > this._currentPriority) {
+    if (
+      priority > this._currentPriority ||
+      this._currentPriority === undefined
+    ) {
       this._currentStrategy = 'continue';
       this._currentPriority = priority;
       return;
@@ -484,7 +487,10 @@ export class HTTPRequest {
       return this._respond(response);
     }
     this._responseForRequest = response;
-    if (priority > this._currentPriority) {
+    if (
+      priority > this._currentPriority ||
+      this._currentPriority === undefined
+    ) {
       this._currentStrategy = 'respond';
       this._currentPriority = priority;
       return;
@@ -562,7 +568,10 @@ export class HTTPRequest {
       return this._abort(errorReason);
     }
     this._abortErrorReason = errorReason;
-    if (priority >= this._currentPriority) {
+    if (
+      priority >= this._currentPriority ||
+      this._currentPriority === undefined
+    ) {
       this._currentStrategy = 'abort';
       this._currentPriority = priority;
       return;
