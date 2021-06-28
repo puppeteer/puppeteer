@@ -2490,11 +2490,12 @@ page.on('request', (interceptedRequest) => {
 If your package calls for more fine-grained control resolution priorities, use a config pattern like this:
 
 ```ts
-// Defaults to undefined which preserves legacy mode behavior
 const DEFAULT_PRIORITIES = {
   abortPriority: 0,
   continuePriority: 0,
 };
+
+// Defaults to undefined which preserves legacy mode behavior
 let _priorities: Partial<typeof DEFAULT_PRIORITIES> = {};
 
 export const setInterceptResolutionStrategy = (
