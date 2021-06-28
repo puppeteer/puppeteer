@@ -332,7 +332,7 @@
   * [httpRequest.abortErrorReason()](#httprequestaborterrorreason)
   * [httpRequest.continue([overrides])](#httprequestcontinueoverrides)
   * [httpRequest.continueRequestOverrides()](#httprequestcontinuerequestoverrides)
-  * [httpRequest.enqueueInterceptAction()](#httprequestnequeueinterceptaction)
+  * [httpRequest.enqueueInterceptAction(handler)](#httprequestnequeueinterceptactionhandler)
   * [httpRequest.failure()](#httprequestfailure)
   * [httpRequest.finalizeInterceptions()](#httprequestfinalizeinterceptions)
   * [httpRequest.frame()](#httprequestframe)
@@ -4627,7 +4627,7 @@ Exception is immediately thrown if the request interception is not enabled.
 
 - returns: <[string]> of type [Protocol.Network.ErrorReason](https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-ErrorReason).
 
-Returns the most recent reason for aborting the request.
+Returns the most recent reason for aborting set by the previous call to abort() in Cooperative Mode.
 
 #### httpRequest.continue([overrides], [priority])
 
@@ -4654,6 +4654,25 @@ page.on('request', (request) => {
 });
 ```
 
+#### httpRequest.continueRequestOverrides()
+
+- returns: <[overrides]>
+
+- `overrides` <[Object]> Optional request overwrites, which can be one of the following:
+  - `url` <[string]> If set changes the request URL. This is not a redirect. The request will be silently forwarded to the new URL. For example, the address bar will show the original URL.
+  - `method` <[string]> If set changes the request method (e.g. `GET` or `POST`).
+  - `postData` <[string]> If set changes the post data of request.
+  - `headers` <[Object]> If set changes the request HTTP headers. Header values will be converted to a string.
+
+Returns the most recent set of request overrides set with a previous call to continue() in Cooperative Mode.
+
+#### httpRequest.enqueueInterceptAction(handler)
+
+- `handler` <[function]> The request interception handler to enqueue
+- returns: <[void]>
+
+Enqueues a request handler for processing. This facilitates proper execution of async handlers.
+
 #### httpRequest.failure()
 
 - returns: <?[Object]> Object describing request failure, if any
@@ -4669,6 +4688,12 @@ page.on('requestfailed', (request) => {
   console.log(request.url() + ' ' + request.failure().errorText);
 });
 ```
+
+#### httpRequest.finalizeInterceptions()
+
+- returns: <[Promise<unknown>]>
+
+When in Cooperative Mode, awaits pending interception handlers and then decides how to fulfill the request interception.
 
 #### httpRequest.frame()
 
@@ -4762,6 +4787,12 @@ page.on('request', (request) => {
 #### httpRequest.response()
 
 - returns: <?[HTTPResponse]> A matching [HTTPResponse] object, or `null` if the response has not been received yet.
+
+#### httpRequest.responseForRequest()
+
+- returns: <?[HTTPResponse]> A matching [HTTPResponse] object, or `null` if the response has not been received yet.
+
+Returns the current response object set by the previous call to respond() in Cooperative Mode.
 
 #### httpRequest.url()
 
