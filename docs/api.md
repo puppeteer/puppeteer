@@ -180,6 +180,8 @@
   * [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
   * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled)
   * [page.setRequestInterception(value)](#pagesetrequestinterceptionvalue)
+    - [Cooperative Intercept Mode and Legacy Intercept Mode](#cooperative-intercept-mode-and-legacy-intercept-mode)
+    - [Upgrading to Cooperative Mode for Package Maintainers](#upgrading-to-cooperative-mode-for-package-maintainers)
   * [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
   * [page.setViewport(viewport)](#pagesetviewportviewport)
   * [page.tap(selector)](#pagetapselector)
@@ -328,22 +330,21 @@
   * [elementHandle.type(text[, options])](#elementhandletypetext-options)
   * [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
 - [class: HTTPRequest](#class-httprequest)
-  * [httpRequest.abort([errorCode])](#httprequestaborterrorcode)
+  * [httpRequest.abort([errorCode], [priority])](#httprequestaborterrorcode-priority)
   * [httpRequest.abortErrorReason()](#httprequestaborterrorreason)
-  * [httpRequest.continue([overrides])](#httprequestcontinueoverrides)
+  * [httpRequest.continue([overrides], [priority])](#httprequestcontinueoverrides-priority)
   * [httpRequest.continueRequestOverrides()](#httprequestcontinuerequestoverrides)
-  * [httpRequest.enqueueInterceptAction(handler)](#httprequestnequeueinterceptactionhandler)
+  * [httpRequest.enqueueInterceptAction(pendingHandler)](#httprequestenqueueinterceptactionpendinghandler)
   * [httpRequest.failure()](#httprequestfailure)
   * [httpRequest.finalizeInterceptions()](#httprequestfinalizeinterceptions)
   * [httpRequest.frame()](#httprequestframe)
   * [httpRequest.headers()](#httprequestheaders)
-  * [httpRequest.interceptResolution()](#httprequestinterceptresolution)
   * [httpRequest.isNavigationRequest()](#httprequestisnavigationrequest)
   * [httpRequest.method()](#httprequestmethod)
   * [httpRequest.postData()](#httprequestpostdata)
   * [httpRequest.redirectChain()](#httprequestredirectchain)
   * [httpRequest.resourceType()](#httprequestresourcetype)
-  * [httpRequest.respond(response)](#httprequestrespondresponse)
+  * [httpRequest.respond(response, [priority])](#httprequestrespondresponse-priority)
   * [httpRequest.response()](#httprequestresponse)
   * [httpRequest.responseForRequest()](#httprequestresponseforrequest)
   * [httpRequest.url()](#httprequesturl)
@@ -4648,9 +4649,7 @@ page.on('request', (request) => {
 
 #### httpRequest.continueRequestOverrides()
 
-- returns: <[overrides]>
-
-- `overrides` <[Object]> Optional request overwrites, which can be one of the following:
+- returns: <[Object]> Optional request overwrites, which can be one of the following:
   - `url` <[string]> If set changes the request URL. This is not a redirect. The request will be silently forwarded to the new URL. For example, the address bar will show the original URL.
   - `method` <[string]> If set changes the request method (e.g. `GET` or `POST`).
   - `postData` <[string]> If set changes the post data of request.
@@ -4658,10 +4657,9 @@ page.on('request', (request) => {
 
 Returns the most recent set of request overrides set with a previous call to continue() in Cooperative Mode.
 
-#### httpRequest.enqueueInterceptAction(handler)
+#### httpRequest.enqueueInterceptAction(pendingHandler)
 
-- `handler` <[function]> The request interception handler to enqueue
-- returns: <[void]>
+- `pendingHandler` <[function]> The request interception handler to enqueue
 
 Enqueues a request handler for processing. This facilitates proper execution of async handlers.
 

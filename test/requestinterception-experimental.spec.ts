@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 Google Inc. All rights reserved.
+ * Copyright 2021 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ describe('request interception', function () {
     const expectedActions: ActionResult[] = ['abort', 'continue', 'respond'];
     while (expectedActions.length > 0) {
       const expectedAction = expectedActions.pop();
-      console.log(`Testing ${expectedAction}`);
       it(`should cooperatively ${expectedAction} by priority`, async () => {
         const { page, server } = getTestState();
 
@@ -809,11 +808,7 @@ describe('request interception', function () {
   });
 });
 
-/**
- * @param {string} path
- * @returns {string}
- */
-function pathToFileURL(path) {
+function pathToFileURL(path: string): string {
   let pathName = path.replace(/\\/g, '/');
   // Windows drive letter must be prefixed with a slash.
   if (!pathName.startsWith('/')) pathName = '/' + pathName;
