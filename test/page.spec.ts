@@ -998,7 +998,7 @@ describe('Page', function () {
         'iPhone'
       );
     });
-    it('should work with additional userAgentMetdata', async () => {
+    itFailsFirefox('should work with additional userAgentMetdata', async () => {
       const { page, server } = getTestState();
 
       await page.setUserAgent('MockBrowser', {
