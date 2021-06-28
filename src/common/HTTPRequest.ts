@@ -127,12 +127,8 @@ export class HTTPRequest {
   private _continueRequestOverrides: ContinueRequestOverrides;
   private _responseForRequest: Partial<ResponseForRequest>;
   private _abortErrorReason: Protocol.Network.ErrorReason;
-  private _continueRequested: boolean;
-  private _continuePriority: number;
-  private _respondRequested: boolean;
-  private _respondPriority: number;
-  private _abortRequested: boolean;
-  private _abortPriority: number;
+  private _currentStrategy: InterceptResolutionStrategy;
+  private _currentPriority: number | undefined;
   private _interceptActions: Array<() => void | PromiseLike<any>>;
 
   /**
@@ -159,12 +155,8 @@ export class HTTPRequest {
     this._frame = frame;
     this._redirectChain = redirectChain;
     this._continueRequestOverrides = {};
-    this._continueRequested = false;
-    this._continuePriority = DEFAULT_INTERCEPT_PRIORITY;
-    this._respondRequested = false;
-    this._respondPriority = DEFAULT_INTERCEPT_PRIORITY;
-    this._abortRequested = false;
-    this._abortPriority = DEFAULT_INTERCEPT_PRIORITY;
+    this._currentStrategy = 'none';
+    this._currentPriority = undefined;
     this._interceptActions = [];
 
     for (const key of Object.keys(event.request.headers))
@@ -211,55 +203,10 @@ export class HTTPRequest {
    * `[strategy,priority]`. Strategy is one of: `abort`, `respond`, `continue`,
    *  `disabled`, `none`, or `already-handled`.
    */
-  private interceptResolution(): [
-    'abort' | 'respond' | 'continue' | 'disabled' | 'none' | 'alreay-handled',
-    number?
-  ] {
+  private interceptResolution(): [InterceptResolutionStrategy, number?] {
     if (!this._allowInterception) return ['disabled'];
     if (this._interceptionHandled) return ['alreay-handled'];
-    const willAbort = (() => {
-      if (!this._abortRequested) return false;
-      if (this._respondRequested && this._respondPriority < this._abortPriority)
-        return false;
-      if (
-        this._continueRequested &&
-        this._continuePriority < this._abortPriority
-      )
-        return false;
-      return true;
-    })();
-    if (willAbort) {
-      return ['abort', this._abortPriority];
-    }
-    const willRespond = (() => {
-      if (!this._respondRequested) return false;
-      if (
-        this._continueRequested &&
-        this._continuePriority < this._respondPriority
-      )
-        return false;
-      if (this._abortRequested && this._abortPriority <= this._respondPriority)
-        return false;
-      return true;
-    })();
-    if (willRespond) {
-      return ['respond', this._respondPriority];
-    }
-    const willContinue = (() => {
-      if (!this._continueRequested) return false;
-      if (this._abortRequested && this._abortPriority <= this._continuePriority)
-        return false;
-      if (
-        this._respondRequested &&
-        this._respondPriority <= this._continuePriority
-      )
-        return false;
-      return true;
-    })();
-    if (willContinue) {
-      return ['continue', this._continuePriority];
-    }
-    return ['none'];
+    return [this._currentStrategy, this._currentPriority];
   }
 
   /**
@@ -268,7 +215,9 @@ export class HTTPRequest {
    * but they are guarnateed to resolve before the request interception
    * is finalized.
    */
-  enqueueInterceptAction(pendingHandler: () => void | PromiseLike<any>): void {
+  enqueueInterceptAction(
+    pendingHandler: () => void | PromiseLike<unknown>
+  ): void {
     this._interceptActions.push(pendingHandler);
   }
 
@@ -438,19 +387,32 @@ export class HTTPRequest {
    */
   async continue(
     overrides: ContinueRequestOverrides = {},
-    priority = LEGACYY_DEFAULT_INTERCEPT_PRIORITY
+    priority?: number
   ): Promise<void> {
     // Request interception is not supported for data: urls.
     if (this._url.startsWith('data:')) return;
     assert(this._allowInterception, 'Request Interception is not enabled!');
     assert(!this._interceptionHandled, 'Request is already handled!');
-    if (priority > 0) {
-      this._continueRequestOverrides = overrides;
-      this._continueRequested = true;
-      this._continuePriority = Math.max(this._continuePriority, priority);
+    if (priority === undefined) {
+      return this._continue(overrides);
+    }
+    this._continueRequestOverrides = overrides;
+    if (priority > this._currentPriority) {
+      this._currentStrategy = 'continue';
+      this._currentPriority = priority;
       return;
     }
-    return this._continue(overrides);
+    if (priority === this._currentPriority) {
+      if (
+        this._currentStrategy === 'abort' ||
+        this._currentStrategy === 'respond'
+      ) {
+        return;
+      }
+      this._currentPriority = priority;
+      this._currentStrategy = 'continue';
+    }
+    return;
   }
 
   private async _continue(
@@ -511,19 +473,28 @@ export class HTTPRequest {
    */
   async respond(
     response: Partial<ResponseForRequest>,
-    priority = LEGACYY_DEFAULT_INTERCEPT_PRIORITY
+    priority?: number
   ): Promise<void> {
     // Mocking responses for dataURL requests is not currently supported.
     if (this._url.startsWith('data:')) return;
     assert(this._allowInterception, 'Request Interception is not enabled!');
     assert(!this._interceptionHandled, 'Request is already handled!');
-    if (priority > 0) {
-      this._responseForRequest = response;
-      this._respondRequested = true;
-      this._respondPriority = Math.max(this._respondPriority, priority);
+    if (priority === undefined) {
+      return this._respond(response);
+    }
+    this._responseForRequest = response;
+    if (priority > this._currentPriority) {
+      this._currentStrategy = 'respond';
+      this._currentPriority = priority;
       return;
     }
-    return this._respond(response);
+    if (priority === this._currentPriority) {
+      if (this._currentStrategy === 'abort') {
+        return;
+      }
+      this._currentStrategy = 'respond';
+      this._currentPriority = priority;
+    }
   }
 
   private async _respond(response: Partial<ResponseForRequest>): Promise<void> {
@@ -578,7 +549,7 @@ export class HTTPRequest {
    */
   async abort(
     errorCode: ErrorCode = 'failed',
-    priority = LEGACYY_DEFAULT_INTERCEPT_PRIORITY
+    priority?: number
   ): Promise<void> {
     // Request interception is not supported for data: urls.
     if (this._url.startsWith('data:')) return;
@@ -586,12 +557,15 @@ export class HTTPRequest {
     assert(errorReason, 'Unknown error code: ' + errorCode);
     assert(this._allowInterception, 'Request Interception is not enabled!');
     assert(!this._interceptionHandled, 'Request is already handled!');
-    if (priority > 0) {
-      this._abortRequested = true;
-      this._abortPriority = Math.max(this._abortPriority, priority);
+    if (priority === undefined) {
+      return this._abort(errorReason);
+    }
+    this._abortErrorReason = errorReason;
+    if (priority >= this._currentPriority) {
+      this._currentStrategy = 'abort';
+      this._currentPriority = priority;
       return;
     }
-    return this._abort(errorReason);
   }
 
   private async _abort(
@@ -611,6 +585,17 @@ export class HTTPRequest {
       });
   }
 }
+
+/**
+ * @public
+ */
+export type InterceptResolutionStrategy =
+  | 'abort'
+  | 'respond'
+  | 'continue'
+  | 'disabled'
+  | 'none'
+  | 'alreay-handled';
 
 /**
  * @public
@@ -650,7 +635,6 @@ const errorReasons: Record<ErrorCode, Protocol.Network.ErrorReason> = {
 
 export type ActionResult = 'continue' | 'abort' | 'respond';
 export const DEFAULT_INTERCEPT_PRIORITY = 10;
-export const LEGACYY_DEFAULT_INTERCEPT_PRIORITY = 0; // Immediate
 
 function headersArray(
   headers: Record<string, string>
