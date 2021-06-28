@@ -1001,7 +1001,6 @@ describe('Page', function () {
     it('should work with additional userAgentMetdata', async () => {
       const { page, server } = getTestState();
 
-
       await page.setUserAgent('MockBrowser', {
         architecture: 'Mock1',
         mobile: false,
@@ -1013,17 +1012,25 @@ describe('Page', function () {
         server.waitForRequest('/empty.html'),
         page.goto(server.EMPTY_PAGE),
       ]);
-      const uaData = await page.evaluate(() =>
+      expect(
+        await page.evaluate(() => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore: userAgentData not yet in TypeScript DOM API
+          return navigator.userAgentData.mobile;
+        })
+      ).toBe(false);
+
+      const uaData = await page.evaluate(() => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore: userAgentData not yet in TypeScript DOM API
-        navigator.userAgentData.getHighEntropyValues([
+        return navigator.userAgentData.getHighEntropyValues([
           'architecture',
           'model',
           'platform',
           'platformVersion',
-        ])
-      );
+        ]);
+      });
       expect(uaData['architecture']).toBe('Mock1');
-      expect(uaData.mobile).toBeFalsy();
       expect(uaData['model']).toBe('Mockbook');
       expect(uaData['platform']).toBe('MockOS');
       expect(uaData['platformVersion']).toBe('3.1');
