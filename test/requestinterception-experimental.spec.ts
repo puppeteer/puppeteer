@@ -26,7 +26,7 @@ import {
 } from './mocha-utils'; // eslint-disable-line import/extensions
 import { ActionResult } from '../lib/cjs/puppeteer/api-docs-entry.js';
 
-describe('request interception', function () {
+describe.only('request interception', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
   describeFailsFirefox('Page.setRequestInterception', function () {
@@ -138,6 +138,8 @@ describe('request interception', function () {
           foo: 'bar',
         });
         request.continue({ headers }, 0);
+
+        expect(request.continueRequestOverrides()).toEqual({ headers });
       });
       await page.goto(server.PREFIX + '/rrredirect');
     });
@@ -253,6 +255,21 @@ describe('request interception', function () {
       expect(response.request().failure()).toBe(null);
       expect(failedRequests).toBe(1);
     });
+    it('should be able to access the error reason', async () => {
+      const { page, server } = getTestState();
+
+      await page.setRequestInterception(true);
+      page.on('request', (request) => {
+        request.abort('failed', 0);
+      });
+      let abortReason = null;
+      page.on('request', (request) => {
+        abortReason = request.abortErrorReason();
+        request.continue({}, 0);
+      });
+      await page.goto(server.EMPTY_PAGE).catch(() => {});
+      expect(abortReason).toBe('Failed');
+    });
     it('should be abortable with custom error codes', async () => {
       const { page, server } = getTestState();
 
@@ -262,7 +279,7 @@ describe('request interception', function () {
       });
       let failedRequest = null;
       page.on('requestfailed', (request) => (failedRequest = request));
-      await page.goto(server.EMPTY_PAGE).catch(() => {});
+      await page.goto(server.EMPTY_PAGE).catch(() => { });
       expect(failedRequest).toBeTruthy();
       expect(failedRequest.failure().errorText).toBe(
         'net::ERR_INTERNET_DISCONNECTED'
@@ -709,6 +726,27 @@ describe('request interception', function () {
       expect(await page.evaluate(() => document.body.textContent)).toBe(
         'Yo, page!'
       );
+    });
+    it('should be able to access the response', async () => {
+      const { page, server } = getTestState();
+
+      await page.setRequestInterception(true);
+      page.on('request', (request) => {
+        request.respond(
+          {
+            status: 200,
+            body: 'Yo, page!',
+          },
+          0
+        );
+      });
+      let response = null;
+      page.on('request', (request) => {
+        response = request.responseForRequest();
+        request.continue({}, 0);
+      });
+      await page.goto(server.EMPTY_PAGE);
+      expect(response).toEqual({ status: 200, body: 'Yo, page!' });
     });
     it('should work with status code 422', async () => {
       const { page, server } = getTestState();
