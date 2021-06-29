@@ -314,7 +314,7 @@ describe('Page', function () {
       ]);
     });
     itFailsFirefox(
-      'should isolate permissions between browser contexs',
+      'should isolate permissions between browser contexts',
       async () => {
         const { page, server, context, browser } = getTestState();
 
@@ -397,28 +397,6 @@ describe('Page', function () {
       expect(await page.evaluate(() => window.navigator.onLine)).toBe(false);
       await page.setOfflineMode(false);
       expect(await page.evaluate(() => window.navigator.onLine)).toBe(true);
-    });
-  });
-
-  describeFailsFirefox('Page.emulateNetworkConditions', function () {
-    it('should change navigator.connection.effectiveType', async () => {
-      const { page, puppeteer } = getTestState();
-
-      const slow3G = puppeteer.networkConditions['Slow 3G'];
-      const fast3G = puppeteer.networkConditions['Fast 3G'];
-
-      expect(
-        await page.evaluate('window.navigator.connection.effectiveType')
-      ).toBe('4g');
-      await page.emulateNetworkConditions(fast3G);
-      expect(
-        await page.evaluate('window.navigator.connection.effectiveType')
-      ).toBe('3g');
-      await page.emulateNetworkConditions(slow3G);
-      expect(
-        await page.evaluate('window.navigator.connection.effectiveType')
-      ).toBe('2g');
-      await page.emulateNetworkConditions(null);
     });
   });
 
@@ -751,7 +729,6 @@ describe('Page', function () {
       await page.goto(server.EMPTY_PAGE);
       const [response] = await Promise.all([
         page.waitForResponse(async (response) => {
-          console.log(response.url());
           return response.url() === server.PREFIX + '/digits/2.png';
         }),
         page.evaluate(() => {
@@ -1537,6 +1514,20 @@ describe('Page', function () {
       expect(fs.readFileSync(outputFile).byteLength).toBeGreaterThan(0);
       fs.unlinkSync(outputFile);
     });
+
+    it('can print to PDF and stream the result', async () => {
+      // Printing to pdf is currently only supported in headless
+      const { isHeadless, page } = getTestState();
+
+      if (!isHeadless) return;
+
+      const stream = await page.createPDFStream();
+      let size = 0;
+      for await (const chunk of stream) {
+        size += chunk.length;
+      }
+      expect(size).toBeGreaterThan(0);
+    });
   });
 
   describe('Page.title', function () {
@@ -1762,7 +1753,7 @@ describe('Page', function () {
   });
 
   describe('Page.browserContext', function () {
-    it('should return the correct browser instance', async () => {
+    it('should return the correct browser context instance', async () => {
       const { page, context } = getTestState();
 
       expect(page.browserContext()).toBe(context);

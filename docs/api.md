@@ -10,6 +10,8 @@
 
 <!-- GEN:versions-per-release -->
 - Releases per Chromium version:
+  * Chromium 92.0.4512.0 - [Puppeteer v10.0.0](https://github.com/puppeteer/puppeteer/blob/v10.0.0/docs/api.md)
+  * Chromium 91.0.4469.0 - [Puppeteer v9.0.0](https://github.com/puppeteer/puppeteer/blob/v9.0.0/docs/api.md)
   * Chromium 90.0.4427.0 - [Puppeteer v8.0.0](https://github.com/puppeteer/puppeteer/blob/v8.0.0/docs/api.md)
   * Chromium 90.0.4403.0 - [Puppeteer v7.0.0](https://github.com/puppeteer/puppeteer/blob/v7.0.0/docs/api.md)
   * Chromium 89.0.4389.0 - [Puppeteer v6.0.0](https://github.com/puppeteer/puppeteer/blob/v6.0.0/docs/api.md)
@@ -134,8 +136,10 @@
   * [page.content()](#pagecontent)
   * [page.cookies([...urls])](#pagecookiesurls)
   * [page.coverage](#pagecoverage)
+  * [page.createPDFStream([options])](#pagecreatepdfstreamoptions)
   * [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
   * [page.emulate(options)](#pageemulateoptions)
+  * [page.emulateCPUThrottling(factor)](#pageemulatecputhrottlingfactor)
   * [page.emulateIdleState(overrides)](#pageemulateidlestateoverrides)
   * [page.emulateMediaFeatures(features)](#pageemulatemediafeaturesfeatures)
   * [page.emulateMediaType(type)](#pageemulatemediatypetype)
@@ -153,6 +157,7 @@
   * [page.goto(url[, options])](#pagegotourl-options)
   * [page.hover(selector)](#pagehoverselector)
   * [page.isClosed()](#pageisclosed)
+  * [page.isDragInterceptionEnabled](#pageisdraginterceptionenabled)
   * [page.isJavaScriptEnabled()](#pageisjavascriptenabled)
   * [page.keyboard](#pagekeyboard)
   * [page.mainFrame()](#pagemainframe)
@@ -169,11 +174,12 @@
   * [page.setCookie(...cookies)](#pagesetcookiecookies)
   * [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout)
   * [page.setDefaultTimeout(timeout)](#pagesetdefaulttimeouttimeout)
+  * [page.setDragInterception(enabled)](#pagesetdraginterceptionenabled)
   * [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
   * [page.setGeolocation(options)](#pagesetgeolocationoptions)
   * [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
   * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled)
-  * [page.setRequestInterception(value[, cacheSafe])](#pagesetrequestinterceptionvalue-cachesafe)
+  * [page.setRequestInterception(value)](#pagesetrequestinterceptionvalue)
   * [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
   * [page.setViewport(viewport)](#pagesetviewportviewport)
   * [page.tap(selector)](#pagetapselector)
@@ -212,6 +218,11 @@
 - [class: Mouse](#class-mouse)
   * [mouse.click(x, y[, options])](#mouseclickx-y-options)
   * [mouse.down([options])](#mousedownoptions)
+  * [mouse.drag(start, target)](#mousedragstart-target)
+  * [mouse.dragAndDrop(start, target[, options])](#mousedraganddropstart-target-options)
+  * [mouse.dragEnter(target, data)](#mousedragentertarget-data)
+  * [mouse.dragOver(target, data)](#mousedragovertarget-data)
+  * [mouse.drop(target, data)](#mousedroptarget-data)
   * [mouse.move(x, y[, options])](#mousemovex-y-options)
   * [mouse.up([options])](#mouseupoptions)
   * [mouse.wheel([options])](#mousewheeloptions)
@@ -292,8 +303,14 @@
   * [elementHandle.boundingBox()](#elementhandleboundingbox)
   * [elementHandle.boxModel()](#elementhandleboxmodel)
   * [elementHandle.click([options])](#elementhandleclickoptions)
+  * [elementHandle.clickablePoint()](#elementhandleclickablepoint)
   * [elementHandle.contentFrame()](#elementhandlecontentframe)
   * [elementHandle.dispose()](#elementhandledispose)
+  * [elementHandle.drag(target)](#elementhandledragtarget)
+  * [elementHandle.dragAndDrop(target[, options])](#elementhandledraganddroptarget-options)
+  * [elementHandle.dragEnter([data])](#elementhandledragenterdata)
+  * [elementHandle.dragOver([data])](#elementhandledragoverdata)
+  * [elementHandle.drop([data])](#elementhandledropdata)
   * [elementHandle.evaluate(pageFunction[, ...args])](#elementhandleevaluatepagefunction-args)
   * [elementHandle.evaluateHandle(pageFunction[, ...args])](#elementhandleevaluatehandlepagefunction-args)
   * [elementHandle.executionContext()](#elementhandleexecutioncontext)
@@ -356,6 +373,7 @@
   * [target.url()](#targeturl)
   * [target.worker()](#targetworker)
 - [class: CDPSession](#class-cdpsession)
+  * [cdpSession.connection()](#cdpsessionconnection)
   * [cdpSession.detach()](#cdpsessiondetach)
   * [cdpSession.send(method[, ...paramArgs])](#cdpsessionsendmethod-paramargs)
 - [class: Coverage](#class-coverage)
@@ -515,6 +533,7 @@ Clears all registered handlers.
   - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
   - `transport` <[ConnectionTransport]> **Experimental** Specify a custom transport object for Puppeteer to use.
   - `product` <[string]> Possible values are: `chrome`, `firefox`. Defaults to `chrome`.
+  - `targetFilter` <?[function]\([Protocol.Target.TargetInfo]\):[boolean]> Use this function to decide if Puppeteer should connect to the given target. If a `targetFilter` is provided, Puppeteer only connects to targets for which `targetFilter` returns `true`. By default, Puppeteer connects to all available targets.
 - returns: <[Promise]<[Browser]>>
 
 This methods attaches Puppeteer to an existing browser instance.
@@ -622,6 +641,8 @@ try {
   - `devtools` <[boolean]> Whether to auto-open a DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
   - `pipe` <[boolean]> Connects to the browser over a pipe instead of a WebSocket. Defaults to `false`.
   - `extraPrefsFirefox` <[Object]> Additional [preferences](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/Preference_reference) that can be passed to Firefox (see `PUPPETEER_PRODUCT`)
+  - `targetFilter` <?[function]\([Protocol.Target.TargetInfo]\):[boolean]> Use this function to decide if Puppeteer should connect to the given target. If a `targetFilter` is provided, Puppeteer only connects to targets for which `targetFilter` returns `true`. By default, Puppeteer connects to all available targets.
+  - `waitForInitialPage` <[boolean]> Whether to wait for the initial page to be ready. Defaults to `true`.
 - returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
 
 You can use `ignoreDefaultArgs` to filter out `--mute-audio` from default arguments:
@@ -1469,6 +1490,50 @@ If URLs are specified, only cookies for those URLs are returned.
 
 - returns: <[Coverage]>
 
+#### page.createPDFStream([options])
+- `options` <[Object]> Options object which might have the following properties:
+  - `path` <[string]> The file path to save the PDF to. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the PDF won't be saved to the disk.
+  - `scale` <[number]> Scale of the webpage rendering. Defaults to `1`. Scale amount must be between 0.1 and 2.
+  - `displayHeaderFooter` <[boolean]> Display header and footer. Defaults to `false`.
+  - `headerTemplate` <[string]> HTML template for the print header. Should be valid HTML markup with following classes used to inject printing values into them:
+    - `date` formatted print date
+    - `title` document title
+    - `url` document location
+    - `pageNumber` current page number
+    - `totalPages` total pages in the document
+  - `footerTemplate` <[string]> HTML template for the print footer. Should use the same format as the `headerTemplate`.
+  - `printBackground` <[boolean]> Print background graphics. Defaults to `false`.
+  - `landscape` <[boolean]> Paper orientation. Defaults to `false`.
+  - `pageRanges` <[string]> Paper ranges to print, e.g., '1-5, 8, 11-13'. Defaults to the empty string, which means print all pages.
+  - `format` <[string]> Paper format. If set, takes priority over `width` or `height` options. Defaults to 'Letter'.
+  - `width` <[string]|[number]> Paper width, accepts values labeled with units.
+  - `height` <[string]|[number]> Paper height, accepts values labeled with units.
+  - `margin` <[Object]> Paper margins, defaults to none.
+    - `top` <[string]|[number]> Top margin, accepts values labeled with units.
+    - `right` <[string]|[number]> Right margin, accepts values labeled with units.
+    - `bottom` <[string]|[number]> Bottom margin, accepts values labeled with units.
+    - `left` <[string]|[number]> Left margin, accepts values labeled with units.
+  - `preferCSSPageSize` <[boolean]> Give any CSS `@page` size declared in the page priority over what is declared in `width` and `height` or `format` options. Defaults to `false`, which will scale the content to fit the paper size.
+  - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
+- returns: <[Promise]<[Readable]>> Promise which resolves with a Node.js stream for the PDF file.
+
+> **NOTE** This method is identical to [page.pdf](#pagepdfoptions), except it returns the PDF as a readable stream of binary data. If you are generating very large PDFs, it may be useful to use a stream to avoid high memory usage. This version will ignore the `path` option.
+
+```js
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+
+  // Stream a PDF into a file
+  const pdfStream = await page.createPDFStream();
+  const writeStream = fs.createWriteStream('test.pdf');
+  pdfStream.pipe(writeStream);
+  await browser.close();
+})();
+```
+
 #### page.deleteCookie(...cookies)
 
 - `...cookies` <...[Object]>
@@ -1515,6 +1580,27 @@ const iPhone = puppeteer.devices['iPhone 6'];
 ```
 
 List of all available devices is available in the source code: [src/common/DeviceDescriptors.ts](https://github.com/puppeteer/puppeteer/blob/main/src/common/DeviceDescriptors.ts).
+
+#### page.emulateCPUThrottling(factor)
+
+- `factor` <?[number]> Factor at which the CPU will be throttled (2x, 2.5x. 3x, ...). Passing `null` disables cpu throttling.
+- returns: <[Promise]>
+
+> **NOTE** Real device CPU performance is impacted by many factors that are not trivial to emulate via the Chrome DevTools Protocol / Puppeteer. e.g core count, L1/L2 cache, thermal throttling impacting performance, architecture etc. Simulating CPU performance can be a good guideline, but ideally also verify any numbers you see on a real mobile device.
+
+```js
+const puppeteer = require('puppeteer');
+const slow3G = puppeteer.networkConditions['Slow 3G'];
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.emulateCPUThrottling(2);
+  await page.goto('https://www.google.com');
+  // other actions...
+  await browser.close();
+})();
+```
 
 #### page.emulateIdleState(overrides)
 
@@ -1913,6 +1999,12 @@ Shortcut for [page.mainFrame().hover(selector)](#framehoverselector).
 
 Indicates that the page has been closed.
 
+#### page.isDragInterceptionEnabled
+
+- returns: <[boolean]>
+
+Indicates that drag events are being intercepted.
+
 #### page.isJavaScriptEnabled()
 
 - returns: <[boolean]>
@@ -1953,7 +2045,6 @@ Page is guaranteed to have a main frame which persists during navigations.
 - returns: <[Mouse]>
 
 #### page.pdf([options])
-
 - `options` <[Object]> Options object which might have the following properties:
   - `path` <[string]> The file path to save the PDF to. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the PDF won't be saved to the disk.
   - `scale` <[number]> Scale of the webpage rendering. Defaults to `1`. Scale amount must be between 0.1 and 2.
@@ -1985,6 +2076,8 @@ Page is guaranteed to have a main frame which persists during navigations.
 `page.pdf()` generates a pdf of the page with `print` CSS media. To generate a pdf with `screen` media, call [page.emulateMediaType('screen')](#pageemulatemediatypetype) before calling `page.pdf()`:
 
 > **NOTE** By default, `page.pdf()` generates a pdf with modified colors for printing. Use the [`-webkit-print-color-adjust`](https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-print-color-adjust) property to force rendering of exact colors.
+
+> **NOTE** If you are generating very large PDFs, it may be useful to use the streaming version of this function ([page.createPDFStream](#pagecreatepdfstreamoptions)) to avoid high memory usage.
 
 ```js
 // Generates a PDF with 'screen' media type.
@@ -2177,12 +2270,21 @@ This setting will change the default maximum time for the following methods and 
 
 > **NOTE** [`page.setDefaultNavigationTimeout`](#pagesetdefaultnavigationtimeouttimeout) takes priority over [`page.setDefaultTimeout`](#pagesetdefaulttimeouttimeout)
 
+#### page.setDragInterception(enabled)
+
+- `enabled` <[boolean]>
+- returns: <[Promise]>
+
+Enables the Input.drag methods. This provides the capability to cpature drag events emitted on the page, which can then be used to simulate drag-and-drop.
+
 #### page.setExtraHTTPHeaders(headers)
 
 - `headers` <[Object]> An object containing additional HTTP headers to be sent with every request. All header values must be strings.
 - returns: <[Promise]>
 
 The extra HTTP headers will be sent with every request the page initiates.
+
+> **NOTE** All HTTP header names are lowercased. (HTTP headers are case-insensitive, so this shouldn’t impact your server code.)
 
 > **NOTE** page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
 
@@ -2211,10 +2313,9 @@ await page.setGeolocation({ latitude: 59.95, longitude: 30.31667 });
 - `enabled` <[boolean]> When `true`, enables offline mode for the page.
 - returns: <[Promise]>
 
-#### page.setRequestInterception(value[, cacheSafe])
+#### page.setRequestInterception(value)
 
 - `value` <[boolean]> Whether to enable request interception.
-- `cacheSafe` <[boolean]> Whether to trust browser caching. If set to false, enabling request interception disables page caching. Defaults to false.
 - returns: <[Promise]>
 
 Activating request interception enables `request.abort`, `request.continue` and
@@ -2242,8 +2343,6 @@ const puppeteer = require('puppeteer');
   await browser.close();
 })();
 ```
-
-> **NOTE** Enabling request interception disables page caching.
 
 #### page.setUserAgent(userAgent)
 
@@ -2952,6 +3051,62 @@ Shortcut for [`mouse.move`](#mousemovex-y-options), [`mouse.down`](#mousedownopt
 - returns: <[Promise]>
 
 Dispatches a `mousedown` event.
+
+#### mouse.drag(start, target)
+
+- `start` <[Object]> the position to start dragging from
+  - `x` <[number]> x coordinate
+  - `y` <[number]> y coordinate
+- `target` <[Object]> the position to drag to
+  - `x` <[number]> x coordinate
+  - `y` <[number]> y coordinate
+- returns: <[Promise<[DragData]>]>
+
+This method creates and captures a dragevent from a given point.
+
+#### mouse.dragAndDrop(start, target[, options])
+
+- `start` <[Object]>
+  - `x` <[number]> x coordinate
+  - `y` <[number]> y coordinate
+- `target` <[Object]>
+  - `x` <[number]> x coordinate
+  - `y` <[number]> y coordinate
+- `options` <[Object]>
+  - `delay` <[number]> how long to delay before dropping onto the target point
+- returns: <[Promise<[DragData]>]>
+
+This method drags from a given start point and drops onto a target point.
+
+#### mouse.dragEnter(target, data)
+
+- `target` <[Object]>
+  - `x` <[number]> x coordinate
+  - `y` <[number]> y coordinate
+- `data` <[Object]>
+- returns: <[Promise]]>
+
+This method triggers a dragenter event from the target point.
+
+#### mouse.dragOver(target, data)
+
+- `target` <[Object]>
+  - `x` <[number]> x coordinate
+  - `y` <[number]> y coordinate
+- `data` <[Object]>
+- returns: <[Promise]]>
+
+This method triggers a dragover event from the target point.
+
+#### mouse.drop(target, data)
+
+- `target` <[Object]>
+  - `x` <[number]> x coordinate
+  - `y` <[number]> y coordinate
+- `data` <[Object]>
+- returns: <[Promise]]>
+
+This method triggers a drop event from the target point.
 
 #### mouse.move(x, y[, options])
 
@@ -4028,6 +4183,10 @@ This method returns boxes of the element, or `null` if the element is not visibl
 This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to click in the center of the element.
 If the element is detached from DOM, the method throws an error.
 
+#### elementHandle.clickablePoint()
+
+- returns: <[Promise<[Point]>]> Resolves to the x, y point that describes the element's position.
+
 #### elementHandle.contentFrame()
 
 - returns: <[Promise]<?[Frame]>> Resolves to the content frame for element handles referencing iframe nodes, or null otherwise
@@ -4037,6 +4196,45 @@ If the element is detached from DOM, the method throws an error.
 - returns: <[Promise]> Promise which resolves when the element handle is successfully disposed.
 
 The `elementHandle.dispose` method stops referencing the element handle.
+
+#### elementHandle.drag(target)
+
+- `target` <[Object]>
+  - `x` <[number]> x coordinate
+  - `y` <[number]> y coordinate
+- returns: <[Promise<[DragData]>]>
+
+This method creates and captures a drag event from the element.
+
+#### elementHandle.dragAndDrop(target[, options])
+
+- `target` <[ElementHandle]>
+- `options` <[Object]>
+  - `delay` <[number]> how long to delay before dropping onto the target element
+- returns: <[Promise]>
+
+This method will drag a given element and drop it onto a target element.
+
+#### elementHandle.dragEnter([data])
+
+- `data` <[Object]> drag data created from `element.drag`
+- returns: <[Promise]>
+
+This method will trigger a dragenter event from the given element.
+
+#### elementHandle.dragOver([data])
+
+- `data` <[Object]> drag data created from `element.drag`
+- returns: <[Promise]>
+
+This method will trigger a dragover event from the given element.
+
+#### elementHandle.drop([data])
+
+- `data` <[Object]> drag data created from `element.drag`
+- returns: <[Promise]>
+
+This method will trigger a drop event from the given element.
 
 #### elementHandle.evaluate(pageFunction[, ...args])
 
@@ -4553,6 +4751,12 @@ await client.send('Animation.setPlaybackRate', {
   playbackRate: response.playbackRate / 2,
 });
 ```
+
+#### cdpSession.connection()
+
+- returns: <[Connection]>
+
+Returns the underlying connection associated with the session. Can be used to obtain other related sessions.
 
 #### cdpSession.detach()
 

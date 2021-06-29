@@ -20,6 +20,6 @@ type Revisions = Readonly<{
 }>;
 
 export const PUPPETEER_REVISIONS: Revisions = {
-  chromium: '856583',
+  chromium: '884014',
   firefox: 'latest',
 };
