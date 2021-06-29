@@ -2360,6 +2360,23 @@ const puppeteer = require('puppeteer');
   - `mobile` <[boolean]> Indicate if this is a mobile device.
 - returns: <[Promise]> Promise which resolves when the user agent is set.
 
+> **NOTE** support for `userAgentMetadata` is experimental in the DevTools
+> protocol and more properties will be added.
+
+Providing the optional `userAgentMetadata` header will update the related
+entries in `navigator.userAgentData` and associated `Sec-CH-UA`* headers.
+
+```js
+const page = await browser.newPage();
+await page.setUserAgent('MyBrowser', {
+  architecture: 'My1',
+  mobile: false,
+  model: 'Mybook',
+  platform: 'MyOS',
+  platformVersion: '3.1',
+});
+```
+
 #### page.setViewport(viewport)
 
 - `viewport` <[Object]>
