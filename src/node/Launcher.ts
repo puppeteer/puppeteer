@@ -27,6 +27,7 @@ const writeFileAsync = promisify(fs.writeFile);
 
 import {
   BrowserLaunchArgumentOptions,
+  ChromeReleaseChannel,
   PuppeteerNodeLaunchOptions,
 } from './LaunchOptions.js';
 import { Product } from '../common/Product.js';
@@ -37,7 +38,7 @@ import { Product } from '../common/Product.js';
  */
 export interface ProductLauncher {
   launch(object: PuppeteerNodeLaunchOptions);
-  executablePath: () => string;
+  executablePath: (string?) => string;
   defaultArgs(object: BrowserLaunchArgumentOptions);
   product: Product;
 }
@@ -65,6 +66,7 @@ class ChromeLauncher implements ProductLauncher {
       ignoreDefaultArgs = false,
       args = [],
       dumpio = false,
+      channel = null,
       executablePath = null,
       pipe = false,
       env = process.env,
@@ -110,6 +112,8 @@ class ChromeLauncher implements ProductLauncher {
       // Chromium builds are available.
       if (os.platform() !== 'darwin' && os.arch() === 'arm64') {
         chromeExecutable = '/usr/bin/chromium-browser';
+      } else if (channel) {
+        chromeExecutable = executablePathForChannel(channel);
       } else {
         const { missingText, executablePath } = resolveExecutablePath(this);
         if (missingText) throw new Error(missingText);
@@ -204,8 +208,12 @@ class ChromeLauncher implements ProductLauncher {
     return chromeArguments;
   }
 
-  executablePath(): string {
-    return resolveExecutablePath(this).executablePath;
+  executablePath(channel?: ChromeReleaseChannel): string {
+    if (channel) {
+      return executablePathForChannel(channel);
+    } else {
+      return resolveExecutablePath(this).executablePath;
+    }
   }
 
   get product(): Product {
@@ -585,6 +593,48 @@ class FirefoxLauncher implements ProductLauncher {
     );
     return profilePath;
   }
+}
+
+function executablePathForChannel(channel: ChromeReleaseChannel): string {
+  const platform = os.platform();
+
+  switch (platform) {
+    case 'win32':
+      switch (channel) {
+        case 'chrome':
+          return `${process.env.PROGRAMFILES}\\Google\\Chrome\\Application\\chrome.exe`;
+        case 'chrome-beta':
+          return `${process.env.PROGRAMFILES}\\Google\\Chrome Beta\\Application\\chrome.exe`;
+        case 'chrome-canary':
+          return `${process.env.PROGRAMFILES}\\Google\\Chrome SxS\\Application\\chrome.exe`;
+        case 'chrome-dev':
+          return `${process.env.PROGRAMFILES}\\Google\\Chrome Dev\\Application\\chrome.exe`;
+      }
+    case 'darwin':
+      switch (channel) {
+        case 'chrome':
+          return '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+        case 'chrome-beta':
+          return '/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta';
+        case 'chrome-canary':
+          return '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary';
+        case 'chrome-dev':
+          return '/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev';
+      }
+    case 'linux':
+      switch (channel) {
+        case 'chrome':
+          return '/opt/google/chrome/chrome';
+        case 'chrome-beta':
+          return '/opt/google/chrome-beta/chrome';
+        case 'chrome-dev':
+          return '/opt/google/chrome-unstable/chrome';
+      }
+  }
+
+  throw new Error(
+    `Unable to detect browser executable path for '${channel}' on ${platform}.`
+  );
 }
 
 function resolveExecutablePath(launcher: ChromeLauncher | FirefoxLauncher): {
