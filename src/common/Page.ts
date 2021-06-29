@@ -1383,10 +1383,17 @@ export class Page extends EventEmitter {
 
   /**
    * @param userAgent - Specific user agent to use in this page
+   * @param userAgentData - Specific user agent client hint data to use in this
+   * page
    * @returns Promise which resolves when the user agent is set.
    */
-  async setUserAgent(userAgent: string): Promise<void> {
-    return this._frameManager.networkManager().setUserAgent(userAgent);
+  async setUserAgent(
+    userAgent: string,
+    userAgentMetadata?: Protocol.Emulation.UserAgentMetadata
+  ): Promise<void> {
+    return this._frameManager
+      .networkManager()
+      .setUserAgent(userAgent, userAgentMetadata);
   }
 
   /**

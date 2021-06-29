@@ -698,6 +698,13 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method Page.setUserAgent() userAgentMetadata',
+        {
+          actualName: 'Object',
+          expectedName: 'UserAgentMetadata',
+        },
+      ],
+      [
         'Method Page.setViewport() options.viewport',
         {
           actualName: 'Object',
