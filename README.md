@@ -41,7 +41,7 @@ npm i puppeteer
 # or "yarn add puppeteer"
 ```
 
-Note: When you install Puppeteer, it downloads a recent version of Chromium (~170MB Mac, ~282MB Linux, ~280MB Win) that is guaranteed to work with the API. To skip the download, or to download a different browser, see [Environment variables](https://github.com/puppeteer/puppeteer/blob/v10.1.0/docs/api.md#environment-variables).
+Note: When you install Puppeteer, it downloads a recent version of Chromium (~170MB Mac, ~282MB Linux, ~280MB Win) that is guaranteed to work with the API. To skip the download, download into another path, or download a different browser, see [Environment variables](https://github.com/puppeteer/puppeteer/blob/v10.1.0/docs/api.md#environment-variables).
 
 ### puppeteer-core
 
