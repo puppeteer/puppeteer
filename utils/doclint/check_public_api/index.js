@@ -775,6 +775,13 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method Page.createPDFStream() options',
+        {
+          actualName: 'Object',
+          expectedName: 'PDFOptions',
+        },
+      ],
+      [
         'Method Page.screenshot() options',
         {
           actualName: 'Object',

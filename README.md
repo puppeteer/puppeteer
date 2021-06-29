@@ -440,6 +440,27 @@ You may find that Puppeteer does not behave as expected when controlling pages t
 
 We have a [troubleshooting](https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md) guide for various operating systems that lists the required dependencies.
 
+#### Q: Chromium gets downloaded on every `npm ci` run. How can I cache the download?
+
+The default download path is `node_modules/puppeteer/.local-chromium`. However, you can change that path with the `PUPPETTER_DOWNLOAD_PATH` environment variable.
+
+Puppeteer uses that variable to resolve the Chromium executable location during launch, so you don’t need to specify `PUPPETEER_EXECUTABLE_PATH` as well.
+
+For example, if you wish to keep the Chromium download in `~/.npm/chromium`:
+
+```sh
+export PUPPETEER_DOWNLOAD_PATH=~/.npm/chromium
+npm ci
+
+# by default the Chromium executable path is inferred
+# from the download path
+npm test
+
+# a new run of npm ci will check for the existence of
+# Chromium in ~/.npm/chromium
+npm ci
+```
+
 #### Q: How do I try/test a prerelease version of Puppeteer?
 
 You can check out this repo or install the latest prerelease from npm:
