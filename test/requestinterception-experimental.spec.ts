@@ -26,7 +26,7 @@ import {
 } from './mocha-utils'; // eslint-disable-line import/extensions
 import { ActionResult } from '../lib/cjs/puppeteer/api-docs-entry.js';
 
-describe.only('request interception', function () {
+describe('request interception', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
   describeFailsFirefox('Page.setRequestInterception', function () {
@@ -279,7 +279,7 @@ describe.only('request interception', function () {
       });
       let failedRequest = null;
       page.on('requestfailed', (request) => (failedRequest = request));
-      await page.goto(server.EMPTY_PAGE).catch(() => { });
+      await page.goto(server.EMPTY_PAGE).catch(() => {});
       expect(failedRequest).toBeTruthy();
       expect(failedRequest.failure().errorText).toBe(
         'net::ERR_INTERNET_DISCONNECTED'
