@@ -218,8 +218,14 @@ export class NetworkManager extends EventEmitter {
     });
   }
 
-  async setUserAgent(userAgent: string): Promise<void> {
-    await this._client.send('Network.setUserAgentOverride', { userAgent });
+  async setUserAgent(
+    userAgent: string,
+    userAgentMetadata?: Protocol.Emulation.UserAgentMetadata
+  ): Promise<void> {
+    await this._client.send('Network.setUserAgentOverride', {
+      userAgent: userAgent,
+      userAgentMetadata: userAgentMetadata,
+    });
   }
 
   async setCacheEnabled(enabled: boolean): Promise<void> {
