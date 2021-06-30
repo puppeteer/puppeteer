@@ -2561,8 +2561,8 @@ export class Page extends EventEmitter {
 
     if (options.fullPage) {
       const metrics = await this._client.send('Page.getLayoutMetrics');
-      const width = Math.ceil(metrics.contentSize.width);
-      const height = Math.ceil(metrics.contentSize.height);
+      // Fallback to `contentSize` in case of using Firefox.
+      const { width, height } = metrics.cssContentSize || metrics.contentSize;
 
       // Overwrite clip for full page.
       clip = { x: 0, y: 0, width, height, scale: 1 };
