@@ -2327,10 +2327,10 @@ await page.setGeolocation({ latitude: 59.95, longitude: 30.31667 });
 - `value` <[boolean]> Whether to enable request interception.
 - returns: <[Promise]>
 
-Activating request interception enables `request.abort`, `request.continue` and
-`request.respond` methods. This provides the capability to modify network requests that are made by a page.
+Activating request interception enables `request.abort`, `request.continue` and `request.respond` methods. This provides the capability to modify network requests that are made by a page.
 
 Once request interception is enabled, every request will stall unless it's continued, responded or aborted.
+
 An example of a naïve request interceptor that aborts all image requests:
 
 ```js
@@ -2355,7 +2355,7 @@ const puppeteer = require('puppeteer');
 
 ##### Cooperative Intercept Mode and Legacy Intercept Mode
 
-`request.respond`, `request.abort`, and `request.continue` can accept an optional `priority` to activate Cooperative Intercept Mode. In Cooperative Mode, all intercept handlers are guaranteed to run and the interception is resolved to the highest-priority resolution. Here are the rules of Cooperative Mode:
+`request.respond`, `request.abort`, and `request.continue` can accept an optional `priority` to activate Cooperative Intercept Mode. In Cooperative Mode, all intercept handlers are guaranteed to run and all async handlers are awaited. The interception is resolved to the highest-priority resolution. Here are the rules of Cooperative Mode:
 
 - Async handlers finish before intercept resolution is finalized.
 - The highest priority interception resolution "wins", i.e. the interception is ultimately aborted/responded/continued according to which resolution was given the highest priority.
@@ -2371,11 +2371,18 @@ In this example, Legacy Mode prevails and the request is aborted immediately bec
 // Final outcome: immediate abort()
 page.setRequestInterception(true);
 page.on('request', (request) => {
-  request.abort('failed'); // Legacy behavior: would execute immediately
+  // Legacy Mode: interception is aborted immediately.
+  request.abort('failed');
 });
 page.on('request', (request) => {
-  console.log(request.interceptResolution()); // ['already-handled'], meaning a legacy resolution has taken place
-  request.continue({}, 0); // Legacy behavior: throws an exception becasue abort() was already called
+  // ['already-handled'], meaning a legacy resolution has taken place
+  console.log(request.interceptResolution());
+
+  // Cooperative Mode: votes for continue at priority 0.
+  // Ultimately throws an exception after all handlers have finished
+  // running and Cooperative Mode resolutions are evaluated becasue
+  // abort() was called using Legacy Mode.
+  request.continue({}, 0);
 });
 ```
 
@@ -2385,46 +2392,64 @@ In this example, Legacy Mode prevails and the request is continued because at le
 // Final outcome: immediate continue()
 page.setRequestInterception(true);
 page.on('request', (request) => {
-  request.abort('failed', 0); // Cooperative behavior: would execute at priority 0, but instead will throw an exception because legacy continue() gets called
+  // Cooperative Mode: votes to abort at priority 0.
+  // Ultimately throws an exception after all handlers have finished
+  // running and Cooperative Mode resolutions are evaluated becasue
+  // continue() was called using Legacy Mode.
+  request.abort('failed', 0);
 });
 page.on('request', (request) => {
-  console.log(request.interceptResolution()); // ['abort', 0], meaning an abort @ 0 is the current winning resolution
-  request.continue({}); // Legacy behavior: executes immediately, causing the previous cooperative abort() to throw an exception
+  // ['abort', 0], meaning an abort @ 0 is the current winning resolution
+  console.log(request.interceptResolution());
+
+  // Legacy Mode: intercept continues immediately.
+  request.continue({});
 });
 ```
 
 In this example, Cooperative Mode is active because all handlers specify a `priority`. `continue()` wins because it has a higher priority than `abort()`.
 
 ```ts
-// Final outcome: cooperative continue()
+// Final outcome: cooperative continue() @ 5
 page.setRequestInterception(true);
 page.on('request', (request) => {
-  request.abort('failed', 0); // Cooperative behavior: aborts at priority 10
+  // Cooperative Mode: votes to abort at priority 10
+  request.abort('failed', 0);
 });
 page.on('request', (request) => {
-  request.continue(request.continueRequestOverrides(), 5); // Cooperative behavior: continues at priority 5
+  // Cooperative Mode: votes to continue at priority 5
+  request.continue(request.continueRequestOverrides(), 5);
 });
 page.on('request', (request) => {
-  console.log(request.interceptResolution()); // ['continue', 5], because continue @ 5 > abort @ 0
+  // ['continue', 5], because continue @ 5 > abort @ 0
+  console.log(request.interceptResolution());
 });
 ```
 
 In this example, Cooperative Mode is active because all handlers specify `priority`. `respond()` wins because its priority ties with `continue()`, but `respond()` beats `continue()`.
 
 ```ts
-// Final outcome: cooperative respond()
+// Final outcome: cooperative respond() @ 15
 page.setRequestInterception(true);
 page.on('request', (request) => {
-  request.abort('failed', 10); // Cooperative behavior: aborts at priority 10
+  // Cooperative Mode: votes to abort at priority 10
+  request.abort('failed', 10);
 });
 page.on('request', (request) => {
-  request.continue(request.continueRequestOverrides(), 15); // Cooperative behavior: continues at priority 15
+  // Cooperative Mode: votes to continue at priority 15
+  request.continue(request.continueRequestOverrides(), 15);
 });
 page.on('request', (request) => {
-  request.respond(request.responseForRequest(), 15); // Cooperative behavior: responds at priority 15
+  // Cooperative Mode: votes to respond at priority 15
+  request.respond(request.responseForRequest(), 15);
 });
 page.on('request', (request) => {
-  console.log(request.interceptResolution()); // ['respond', 15], because respond @ 15 > continue @ 15 > abort @ 10
+  // Cooperative Mode: votes to respond at priority 12
+  request.respond(request.responseForRequest(), 12);
+});
+page.on('request', (request) => {
+  // ['respond', 15], because respond @ 15 > continue @ 15 > respond @ 12 > abort @ 10
+  console.log(request.interceptResolution());
 });
 ```
 
@@ -2470,7 +2495,10 @@ However, we recommend a slightly more robust solution because the above introduc
 To resolve both of these issues, our recommended approach is to export a `setInterceptResolutionStrategy()` from your package. The user can then call `setInterceptResolutionStrategy()` to explicitly activate Cooperative Mode in your package so they aren't surprised by changes in how the interception is resolved. They can also optionally specify a custom priority using `setInterceptResolutionStrategy(priority)` that works for their use case:
 
 ```ts
-let _priority = undefined; // Defaults to undefined which preserves legacy mode behavior
+// Defaults to undefined which preserves Legacy Mode behavior
+let _priority = undefined;
+
+// Export a module configuration function
 export const setInterceptResolutionStrategy = (defaultPriority = 0) =>
   (_priority = defaultPriority);
 
@@ -2495,12 +2523,16 @@ interface ResolutionStrategy {
   abortPriority: number;
   continuePriority: number;
 }
+
+// This strategy supports multiple priorities based on situational
+// differences. You could, for example, create a strategy that
+// allowed separate priorities for PNG vs JPG.
 const DEFAULT_STRATEGY: ResolutionStrategy = {
   abortPriority: 0,
   continuePriority: 0,
 };
 
-// Defaults to undefined which preserves legacy mode behavior
+// Defaults to undefined which preserves Legacy Mode behavior
 let _strategy: Partial<ResolutionStrategy> = {};
 
 export const setInterceptResolutionStrategy = (strategy: ResolutionStrategy) =>
@@ -2520,7 +2552,7 @@ page.on('request', (interceptedRequest) => {
 });
 ```
 
-The above solution ensures that your package continues to work as expected with other legacy handlers while also allowing the user to adjust the importance of your package in the resolution chain when Cooperative Mode is being used.
+The above solution ensures backward compatibility while also allowing the user to adjust the importance of your package in the resolution chain when Cooperative Mode is being used. Your package continues to work as expected until the user has fully upgraded their code and all third party packages to use Cooperative Mode. If any handler or package still uses Legacy Mode, your package can still operate in Legacy Mode too.
 
 #### page.setUserAgent(userAgent[, userAgentMetadata])
 
@@ -2542,7 +2574,7 @@ The above solution ensures that your package continues to work as expected with 
 > protocol and more properties will be added.
 
 Providing the optional `userAgentMetadata` header will update the related
-entries in `navigator.userAgentData` and associated `Sec-CH-UA`* headers.
+entries in `navigator.userAgentData` and associated `Sec-CH-UA`\* headers.
 
 ```js
 const page = await browser.newPage();
