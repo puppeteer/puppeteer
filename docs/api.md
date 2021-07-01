@@ -2460,7 +2460,7 @@ page.on('request', (interceptedRequest) => {
 });
 ```
 
-With those simple upgrades, your handler will use Cooperative Mode instead.
+With those simple upgrades, your handler now uses Cooperative Mode instead.
 
 However, we recommend a slightly more robust solution because the above introduces two subtle issues:
 
