@@ -470,8 +470,8 @@ export class HTTPRequest {
    * Calling `request.respond` for a dataURL request is a noop.
    *
    * @param response - the response to fulfill the request with.
-   * @param priority - If provided, intercept will be resolved using
-   * coopeative handling rules. Otherwise, intercept will be resovled
+   * @param priority - If provided, intercept is resolved using
+   * cooperative handling rules. Otherwise, intercept is resolved
    * immediately.
    */
   async respond(
