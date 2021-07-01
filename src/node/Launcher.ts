@@ -107,13 +107,14 @@ class ChromeLauncher implements ProductLauncher {
     }
 
     let chromeExecutable = executablePath;
-    if (!executablePath) {
+
+    if (channel) {
+      chromeExecutable = executablePathForChannel(channel);
+    } else if (!executablePath) {
       // Use Intel x86 builds on Apple M1 until native macOS arm64
       // Chromium builds are available.
       if (os.platform() !== 'darwin' && os.arch() === 'arm64') {
         chromeExecutable = '/usr/bin/chromium-browser';
-      } else if (channel) {
-        chromeExecutable = executablePathForChannel(channel);
       } else {
         const { missingText, executablePath } = resolveExecutablePath(this);
         if (missingText) throw new Error(missingText);
