@@ -181,9 +181,8 @@ export class HTTPRequest {
   }
 
   /**
-   * @returns the `ResponseForRequest` that will be used
-   * if the interception is allowed to respond (ie, `abort()` is not
-   * called).
+   * @returns The `ResponseForRequest` that gets used if the
+   * interception is allowed to respond (ie, `abort()` is not called).
    */
   responseForRequest(): Partial<ResponseForRequest> {
     assert(this._allowInterception, 'Request Interception is not enabled!');
