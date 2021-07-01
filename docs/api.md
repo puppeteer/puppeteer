@@ -2355,7 +2355,7 @@ const puppeteer = require('puppeteer');
 
 ##### Cooperative Intercept Mode and Legacy Intercept Mode
 
-`request.respond`, `request.abort`, and `request.continue` can accept an optional `priority` to activate Cooperative Intercept Mode. In Cooperative Mode, all intercept handlers are guaraneed to run and the interception will be resolved to the highest priority resolution. Here are the rules of Cooperative Mode:
+`request.respond`, `request.abort`, and `request.continue` can accept an optional `priority` to activate Cooperative Intercept Mode. In Cooperative Mode, all intercept handlers are guaranteed to run and the interception is resolved to the highest-priority resolution. Here are the rules of Cooperative Mode:
 
 - Async handlers will finish before intercept resolution is finalized
 - The highest priority interception resolution "wins", ie, the interception will ultimately be aborted/responded/continued according to which resolution was given the highest priority.
