@@ -2428,7 +2428,7 @@ page.on('request', (request) => {
 });
 ```
 
-##### Upgrading to Cooperative Mode for Package Maintainers
+##### Upgrading to Cooperative Mode for package maintainers
 
 If you are package maintainer and your package uses intercept handlers, you can update your intercept handlers to use Cooperative Mode. Suppose you have the following existing handler:
 
