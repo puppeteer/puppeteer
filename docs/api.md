@@ -2357,13 +2357,13 @@ const puppeteer = require('puppeteer');
 
 `request.respond`, `request.abort`, and `request.continue` can accept an optional `priority` to activate Cooperative Intercept Mode. In Cooperative Mode, all intercept handlers are guaranteed to run and the interception is resolved to the highest-priority resolution. Here are the rules of Cooperative Mode:
 
-- Async handlers will finish before intercept resolution is finalized
-- The highest priority interception resolution "wins", ie, the interception will ultimately be aborted/responded/continued according to which resolution was given the highest priority.
-- In the event of a tie, `abort` > `respond` > `continue`
+- Async handlers finish before intercept resolution is finalized.
+- The highest priority interception resolution "wins", i.e. the interception is ultimately aborted/responded/continued according to which resolution was given the highest priority.
+- In the event of a tie, `abort` > `respond` > `continue`.
 
-For standardization, when specifying a Cooperative Mode priority use `0` unless you have a clear reason to use a higher priority. This will gracefully prefer `respond` over `continue` and `abort` over `respond`. If you do intentionally want to use a different priority, higher priorities win over lower priorities. Negative priorities are allowed. For example, `continue({}, 4)` would win over `continue({}, -2)`.
+For standardization, when specifying a Cooperative Mode priority use `0` unless you have a clear reason to use a higher priority. This gracefully prefers `respond` over `continue` and `abort` over `respond`. If you do intentionally want to use a different priority, higher priorities win over lower priorities. Negative priorities are allowed. For example, `continue({}, 4)` would win over `continue({}, -2)`.
 
-To preserve backward compatibility, any handler resolving the intercept without specifying `priority` (Legacy Mode) will cause immediate resolution. For Cooperative Mode to work, all resolutions must use a `priority`.
+To preserve backward compatibility, any handler resolving the intercept without specifying `priority` (Legacy Mode) causes immediate resolution. For Cooperative Mode to work, all resolutions must use a `priority`.
 
 In this example, Legacy Mode prevails and the request is aborted immediately because at least one handler omits `priority` when resolving the intercept:
 
