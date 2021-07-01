@@ -598,43 +598,75 @@ class FirefoxLauncher implements ProductLauncher {
 function executablePathForChannel(channel: ChromeReleaseChannel): string {
   const platform = os.platform();
 
+  let chromePath: string | undefined;
   switch (platform) {
     case 'win32':
       switch (channel) {
         case 'chrome':
-          return `${process.env.PROGRAMFILES}\\Google\\Chrome\\Application\\chrome.exe`;
+          chromePath = `${process.env.PROGRAMFILES}\\Google\\Chrome\\Application\\chrome.exe`;
+          break;
         case 'chrome-beta':
-          return `${process.env.PROGRAMFILES}\\Google\\Chrome Beta\\Application\\chrome.exe`;
+          chromePath = `${process.env.PROGRAMFILES}\\Google\\Chrome Beta\\Application\\chrome.exe`;
+          break;
         case 'chrome-canary':
-          return `${process.env.PROGRAMFILES}\\Google\\Chrome SxS\\Application\\chrome.exe`;
+          chromePath = `${process.env.PROGRAMFILES}\\Google\\Chrome SxS\\Application\\chrome.exe`;
+          break;
         case 'chrome-dev':
-          return `${process.env.PROGRAMFILES}\\Google\\Chrome Dev\\Application\\chrome.exe`;
+          chromePath = `${process.env.PROGRAMFILES}\\Google\\Chrome Dev\\Application\\chrome.exe`;
+          break;
       }
+      break;
     case 'darwin':
       switch (channel) {
         case 'chrome':
-          return '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+          chromePath =
+            '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+          break;
         case 'chrome-beta':
-          return '/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta';
+          chromePath =
+            '/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta';
+          break;
         case 'chrome-canary':
-          return '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary';
+          chromePath =
+            '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary';
+          break;
         case 'chrome-dev':
-          return '/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev';
+          chromePath =
+            '/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev';
+          break;
       }
+      break;
     case 'linux':
       switch (channel) {
         case 'chrome':
-          return '/opt/google/chrome/chrome';
+          chromePath = '/opt/google/chrome/chrome';
+          break;
         case 'chrome-beta':
-          return '/opt/google/chrome-beta/chrome';
+          chromePath = '/opt/google/chrome-beta/chrome';
+          break;
         case 'chrome-dev':
-          return '/opt/google/chrome-unstable/chrome';
+          chromePath = '/opt/google/chrome-unstable/chrome';
+          break;
       }
+      break;
   }
 
-  throw new Error(
-    `Unable to detect browser executable path for '${channel}' on ${platform}.`
-  );
+  if (!chromePath) {
+    throw new Error(
+      `Unable to detect browser executable path for '${channel}' on ${platform}.`
+    );
+  }
+
+  // Check if Chrome exists and is accessible.
+  try {
+    fs.accessSync(chromePath);
+  } catch (error) {
+    throw new Error(
+      `Could not find Google Chrome executable for channel '${channel}' at '${chromePath}'.`
+    );
+  }
+
+  return chromePath;
 }
 
 function resolveExecutablePath(launcher: ChromeLauncher | FirefoxLauncher): {
