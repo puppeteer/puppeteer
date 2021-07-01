@@ -549,8 +549,8 @@ export class HTTPRequest {
    * throw an exception immediately.
    *
    * @param errorCode - optional error code to provide.
-   * @param priority - If provided, intercept will be resolved using
-   * coopeative handling rules. Otherwise, intercept will be resovled
+   * @param priority - If provided, intercept is resolved using
+   * cooperative handling rules. Otherwise, intercept is resolved
    * immediately.
    */
   async abort(
