@@ -384,7 +384,6 @@ export class NetworkManager extends EventEmitter {
     this.emit(NetworkManagerEmittedEvents.Request, request);
     request.finalizeInterceptions().catch((error) => {
       // This should never happen, but catch just in case.
-      console.error(error);
       debugError(error);
     });
   }
