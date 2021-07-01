@@ -381,8 +381,8 @@ export class HTTPRequest {
    * ```
    *
    * @param overrides - optional overrides to apply to the request.
-   * @param priority - If provided, intercept will be resolved using
-   * coopeative handling rules. Otherwise, intercept will be resovled
+   * @param priority - If provided, intercept is resolved using
+   * cooperative handling rules. Otherwise, intercept is resolved
    * immediately.
    */
   async continue(
