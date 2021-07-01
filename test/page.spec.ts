@@ -998,6 +998,44 @@ describe('Page', function () {
         'iPhone'
       );
     });
+    itFailsFirefox('should work with additional userAgentMetdata', async () => {
+      const { page, server } = getTestState();
+
+      await page.setUserAgent('MockBrowser', {
+        architecture: 'Mock1',
+        mobile: false,
+        model: 'Mockbook',
+        platform: 'MockOS',
+        platformVersion: '3.1',
+      });
+      const [request] = await Promise.all([
+        server.waitForRequest('/empty.html'),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+      expect(
+        await page.evaluate(() => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore: userAgentData not yet in TypeScript DOM API
+          return navigator.userAgentData.mobile;
+        })
+      ).toBe(false);
+
+      const uaData = await page.evaluate(() => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore: userAgentData not yet in TypeScript DOM API
+        return navigator.userAgentData.getHighEntropyValues([
+          'architecture',
+          'model',
+          'platform',
+          'platformVersion',
+        ]);
+      });
+      expect(uaData['architecture']).toBe('Mock1');
+      expect(uaData['model']).toBe('Mockbook');
+      expect(uaData['platform']).toBe('MockOS');
+      expect(uaData['platformVersion']).toBe('3.1');
+      expect(request.headers['user-agent']).toBe('MockBrowser');
+    });
   });
 
   describe('Page.setContent', function () {

@@ -182,7 +182,7 @@
   * [page.setRequestInterception(value)](#pagesetrequestinterceptionvalue)
     - [Cooperative Intercept Mode and Legacy Intercept Mode](#cooperative-intercept-mode-and-legacy-intercept-mode)
     - [Upgrading to Cooperative Mode for Package Maintainers](#upgrading-to-cooperative-mode-for-package-maintainers)
-  * [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
+  * [page.setUserAgent(userAgent[, userAgentMetadata])](#pagesetuseragentuseragent-useragentmetadata)
   * [page.setViewport(viewport)](#pagesetviewportviewport)
   * [page.tap(selector)](#pagetapselector)
   * [page.target()](#pagetarget)
@@ -949,7 +949,7 @@ the method will return an array with all the targets in all browser contexts.
 
 - returns: <[Promise]<[string]>> Promise which resolves to the browser's original user agent.
 
-> **NOTE** Pages can override browser user agent with [page.setUserAgent](#pagesetuseragentuseragent)
+> **NOTE** Pages can override browser user agent with [page.setUserAgent](#pagesetuseragentuseragent-useragentdata)
 
 #### browser.version()
 
@@ -1566,7 +1566,7 @@ const puppeteer = require('puppeteer');
 
 Emulates given device metrics and user agent. This method is a shortcut for calling two methods:
 
-- [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
+- [page.setUserAgent(userAgent)](#pagesetuseragentuseragent-useragentdata)
 - [page.setViewport(viewport)](#pagesetviewportviewport)
 
 To aid emulation, Puppeteer provides a list of device descriptors that can be obtained via the [`puppeteer.devices`](#puppeteerdevices).
@@ -2522,10 +2522,38 @@ page.on('request', (interceptedRequest) => {
 
 The above solution ensures that your package continues to work as expected with other legacy handlers while also allowing the user to adjust the importance of your package in the resolution chain when Cooperative Mode is being used.
 
-#### page.setUserAgent(userAgent)
+#### page.setUserAgent(userAgent[, userAgentMetadata])
 
 - `userAgent` <[string]> Specific user agent to use in this page
+- `userAgentMetadata` <[Object]> Optional user agent data to use in this page. Any
+  values not provided will use the client's default.
+  - `brands` <[Array]<[Object]>> Optional brand information
+    - `brand` <[string]> Browser or client brand name.
+    - `version` <[string]> Browser or client major version.
+  - `fullVersion` <[string]> Optional browser or client full version.
+  - `platform` <[string]> Operating system name.
+  - `platformVersion` <[string]> Operating system version.
+  - `architecture` <[string]> CPU architecture.
+  - `model` <[string]> Device model.
+  - `mobile` <[boolean]> Indicate if this is a mobile device.
 - returns: <[Promise]> Promise which resolves when the user agent is set.
+
+> **NOTE** support for `userAgentMetadata` is experimental in the DevTools
+> protocol and more properties will be added.
+
+Providing the optional `userAgentMetadata` header will update the related
+entries in `navigator.userAgentData` and associated `Sec-CH-UA`* headers.
+
+```js
+const page = await browser.newPage();
+await page.setUserAgent('MyBrowser', {
+  architecture: 'My1',
+  mobile: false,
+  model: 'Mybook',
+  platform: 'MyOS',
+  platformVersion: '3.1',
+});
+```
 
 #### page.setViewport(viewport)
 
