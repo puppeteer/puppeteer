@@ -2520,7 +2520,7 @@ page.on('request', (interceptedRequest) => {
 });
 ```
 
-The above solution will ensure that your package continues to work as expected with other legacy handlers while also allowing the user to adjust the importance of your package in the resolution chain when Cooperative Mode is being used.
+The above solution ensures that your package continues to work as expected with other legacy handlers while also allowing the user to adjust the importance of your package in the resolution chain when Cooperative Mode is being used.
 
 #### page.setUserAgent(userAgent)
 
