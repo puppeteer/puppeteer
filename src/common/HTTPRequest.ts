@@ -230,7 +230,6 @@ export class HTTPRequest {
         promiseChain.then(interceptAction).catch((error) => {
           // This is here so cooperative handlers that fail do not stop other handlers
           // from running
-          console.error(error);
           debugError(error);
         }),
       Promise.resolve()
