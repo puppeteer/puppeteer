@@ -98,7 +98,10 @@ export class BrowserRunner {
         if (this._tempDirectory) {
           removeFolderAsync(this._tempDirectory)
             .then(() => fulfill())
-            .catch((error) => console.error(error));
+            .catch((error) => {
+              console.error(error);
+              fulfill();
+            });
         } else {
           fulfill();
         }
