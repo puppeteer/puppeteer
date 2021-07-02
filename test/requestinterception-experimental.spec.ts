@@ -110,6 +110,7 @@ describe('request interception', function () {
       expect(response.ok()).toBe(true);
       expect(response.remoteAddress().port).toBe(server.PORT);
     });
+    // @see https://github.com/puppeteer/puppeteer/pull/3105
     it('should work when POST is redirected with 302', async () => {
       const { page, server } = getTestState();
 
@@ -141,6 +142,7 @@ describe('request interception', function () {
 
         expect(request.continueRequestOverrides()).toEqual({ headers });
       });
+      // Make sure that the goto does not time out.
       await page.goto(server.PREFIX + '/rrredirect');
     });
     // @see https://github.com/puppeteer/puppeteer/issues/4743
