@@ -22,6 +22,6 @@ const files = glob.sync(`./new-docs/*.md`);
 
 for (const file of files) {
   const content = fs.readFileSync(file, 'utf8');
-  const updated = content.replaceAll('<!-- -->', '');
+  const updated = content.replace(/<!-- -->/g, '');
   fs.writeFileSync(file, updated);
 }
