@@ -14,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- const glob = require('glob');
- const fs = require('fs');
+const glob = require('glob');
+const fs = require('fs');
 
- //look for all .md files in the given location.
- const files = glob.sync(`./new-docs/*.md`);
+// look for all .md files in the given location.
+const files = glob.sync(`./new-docs/*.md`);
 
- for (const file of files) {
-   const content = fs.readFileSync(file, 'utf8');
-   const updated = content.replaceAll('<!-- -->', '');
-   fs.writeFileSync(file, updated);
- }
+for (const file of files) {
+  const content = fs.readFileSync(file, 'utf8');
+  const updated = content.replaceAll('<!-- -->', '');
+  fs.writeFileSync(file, updated);
+}
