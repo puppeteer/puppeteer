@@ -610,12 +610,20 @@ export class Page extends EventEmitter {
   /**
    * Listen to page events.
    */
+  // Note: this method exists to define event typings and handle
+  // proper wireup of cooperative request interception. Actual event listening and
+  // dispatching is delegated to EventEmitter.
   public on<K extends keyof PageEventObject>(
     eventName: K,
     handler: (event: PageEventObject[K]) => void
   ): EventEmitter {
-    // Note: this method only exists to define the types; we delegate the impl
-    // to EventEmitter.
+    if (eventName === 'request') {
+      return super.on(eventName, (event: HTTPRequest) => {
+        event.enqueueInterceptAction(() =>
+          handler(event as PageEventObject[K])
+        );
+      });
+    }
     return super.on(eventName, handler);
   }
 
