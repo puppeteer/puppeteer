@@ -17,6 +17,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs';
 
+import { assert } from '../common/assert.js';
 import { BrowserFetcher } from './BrowserFetcher.js';
 import { Browser } from '../common/Browser.js';
 import { BrowserRunner } from './BrowserRunner.js';
@@ -109,6 +110,12 @@ class ChromeLauncher implements ProductLauncher {
     let chromeExecutable = executablePath;
 
     if (channel) {
+      // executablePath is detected by channel, so it should not be specified by user.
+      assert(
+        !executablePath,
+        '`executablePath` must not be specified when `channel` is given.'
+      );
+
       chromeExecutable = executablePathForChannel(channel);
     } else if (!executablePath) {
       // Use Intel x86 builds on Apple M1 until native macOS arm64
