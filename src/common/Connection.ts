@@ -263,6 +263,9 @@ export class CDPSession extends EventEmitter {
     this._sessionId = sessionId;
   }
 
+  /**
+   * @internal
+   */
   connection(): Connection {
     return this._connection;
   }

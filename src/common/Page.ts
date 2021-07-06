@@ -840,7 +840,7 @@ export class Page extends EventEmitter {
    * @param enabled - Whether to enable drag interception.
    *
    * @remarks
-   * Activating drag interception enables the {@link Input.drag},
+   * Activating drag interception enables the `Input.drag`,
    * methods  This provides the capability to capture drag events emitted
    * on the page, which can then be used to simulate drag-and-drop.
    */
@@ -1407,32 +1407,33 @@ export class Page extends EventEmitter {
   /**
    * @returns Object containing metrics as key/value pairs.
    *
-   * - `Timestamp` : <number> The timestamp when the metrics sample was taken.
+   * - `Timestamp` : <number> The timestamp when the metrics sample was taken.</number>
    *
-   * - `Documents` : <number> Number of documents in the page.
+   * - `Documents` : <number> Number of documents in the page.</number>
    *
-   * - `Frames` : <number> Number of frames in the page.
+   * - `Frames` : <number> Number of frames in the page.</number>
    *
-   * - `JSEventListeners` : <number> Number of events in the page.
+   * - `JSEventListeners` : <number> Number of events in the page.</number>
    *
-   * - `Nodes` : <number> Number of DOM nodes in the page.
+   * - `Nodes` : <number> Number of DOM nodes in the page.</number>
    *
-   * - `LayoutCount` : <number> Total number of full or partial page layout.
+   * - `LayoutCount` : <number> Total number of full or partial page layout.</number>
    *
-   * - `RecalcStyleCount` : <number> Total number of page style recalculations.
+   * - `RecalcStyleCount` : <number> Total number of page style recalculations.</number>
    *
-   * - `LayoutDuration` : <number> Combined durations of all page layouts.
+   * - `LayoutDuration` : <number> Combined durations of all page layouts.</number>
    *
    * - `RecalcStyleDuration` : <number> Combined duration of all page style
-   *   recalculations.
+   *   recalculations.</number>
    *
-   * - `ScriptDuration` : <number> Combined duration of JavaScript execution.
+   * - `ScriptDuration` : <number> Combined duration of JavaScript execution.</number>
    *
    * - `TaskDuration` : <number> Combined duration of all tasks performed by the browser.
+   * </number>
    *
-   * - `JSHeapUsedSize` : <number> Used JavaScript heap size.
+   * - `JSHeapUsedSize` : <number> Used JavaScript heap size.</number>
    *
-   * - `JSHeapTotalSize` : <number> Total JavaScript heap size.
+   * - `JSHeapTotalSize` : <number> Total JavaScript heap size.</number>
    * @remarks
    * NOTE: All timestamps are in monotonic time: monotonically increasing time
    * in seconds since an arbitrary point in the past.
@@ -2438,26 +2439,26 @@ export class Page extends EventEmitter {
    *   If no path is provided, the image won't be saved to the disk.
    *
    * - `type` : <string> Specify screenshot type, can be either `jpeg` or `png`.
-   *   Defaults to 'png'.
+   *   Defaults to 'png'.</string>
    *
    * - `quality` : <number> The quality of the image, between 0-100. Not
-   *   applicable to `png` images.
+   *   applicable to `png` images.</number>
    *
    * - `fullPage` : <boolean> When true, takes a screenshot of the full
-   *   scrollable page. Defaults to `false`
+   *   scrollable page. Defaults to `false`</boolean>
    *
    * - `clip` : <Object> An object which specifies clipping region of the page.
-   *   Should have the following fields:<br/>
-   *  - `x` : <number> x-coordinate of top-left corner of clip area.<br/>
-   *  - `y` :  <number> y-coordinate of top-left corner of clip area.<br/>
-   *  - `width` : <number> width of clipping area.<br/>
-   *  - `height` : <number> height of clipping area.
+   *   Should have the following fields:</Object><br/>
+   *  - `x` : <number> x-coordinate of top-left corner of clip area.</number><br/>
+   *  - `y` :  <number> y-coordinate of top-left corner of clip area.</number><br/>
+   *  - `width` : <number> width of clipping area.</number><br/>
+   *  - `height` : <number> height of clipping area.</number>
    *
    * - `omitBackground` : <boolean> Hides default white background and allows
-   *   capturing screenshots with transparency. Defaults to `false`
+   *   capturing screenshots with transparency. Defaults to `false`</boolean>
    *
    * - `encoding` : <string> The encoding of the image, can be either base64 or
-   *   binary. Defaults to `binary`.
+   *   binary. Defaults to `binary`.</string>
    *
    *
    * NOTE: Screenshots take at least 1/6 second on OS X. See
