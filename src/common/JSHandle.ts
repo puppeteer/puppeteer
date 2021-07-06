@@ -499,6 +499,12 @@ export class ElementHandle<
     await this._page.mouse.click(x, y, options);
   }
 
+  async move(options: MoveOptions = {}): Promise<void> {
+    await this._scrollIntoViewIfNeeded();
+    const { x, y } = await this.clickablePoint();
+    await this._page.mouse.move(x, y, options);
+  }
+
   /**
    * This method creates and captures a dragevent from the element.
    */
@@ -1028,6 +1034,18 @@ export interface ClickOptions {
    * @defaultValue 1
    */
   clickCount?: number;
+}
+
+/**
+ * @public
+ */
+export interface MoveOptions {
+  /**
+   * Sends intermediate `mousemove` events when set to 1
+   *
+   * @defaultValue 1
+   */
+  steps?: number;
 }
 
 /**

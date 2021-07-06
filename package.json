@@ -112,11 +112,5 @@
     "text-diff": "1.0.1",
     "ts-node": "9.1.1",
     "typescript": "4.2.4"
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint --env HUSKY_GIT_PARAMS",
-      "pre-push": "npm run ensure-pinned-deps"
-    }
   }
 }

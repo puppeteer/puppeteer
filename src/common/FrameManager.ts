@@ -940,6 +940,34 @@ export class Frame {
   }
 
   /**
+   * This method moves mouse to provided element
+   *
+   * @remarks
+   * If there's no element matching `selector`, the method throws an error.
+   *
+   * @param selector - the selector for the element to move. If there are
+   * multiple elements, the first will be focused.
+   */
+
+  async move(selector: string, options: { steps?: number }): Promise<void> {
+    return this._secondaryWorld.move(selector, options);
+  }
+
+  /**
+   * This method fires mouse down event
+   *
+   * @remarks
+   * If there's no element matching `selector`, the method throws an error.
+   *
+   * @param selector - the selector for the element to move. If there are
+   * multiple elements, the first will be focused.
+   */
+
+  async down(selector: string, options: { button?: string, clickCount?: number }): Promise<void> {
+    return this._secondaryWorld.move(selector, options);
+  }
+
+  /**
    * This method fetches an element with `selector` and focuses it.
    *
    * @remarks

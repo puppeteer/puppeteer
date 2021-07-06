@@ -441,6 +441,13 @@ export class DOMWorld {
     await handle.dispose();
   }
 
+  async move(selector: string, options: { steps?: number }): Promise<void> {
+    const handle = await this.$(selector);
+    assert(handle, 'No node found for selector: ' + selector);
+    await handle.move(options);
+    await handle.dispose();
+  }
+
   async focus(selector: string): Promise<void> {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);
