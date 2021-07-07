@@ -63,8 +63,12 @@ describeChromeOnly('Tracing', function () {
     const traceJson = JSON.parse(
       fs.readFileSync(outputFile, { encoding: 'utf8' })
     );
-    expect(traceJson.metadata['trace-config']).toContain(
-      'disabled-by-default-v8.cpu_profiler.hires'
+    const traceConfig = JSON.parse(traceJson.metadata['trace-config'])
+    expect(traceConfig.included_categories).toEqual(
+      ['disabled-by-default-v8.cpu_profiler.hires']
+    );
+    expect(traceConfig.excluded_categories).toEqual(
+      ['*']
     );
   });
   it('should throw if tracing on two pages', async () => {

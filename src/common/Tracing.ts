@@ -91,7 +91,10 @@ export class Tracing {
     this._recording = true;
     await this._client.send('Tracing.start', {
       transferMode: 'ReturnAsStream',
-      categories: categories.join(','),
+      traceConfig: {
+        excludedCategories: ['*'],
+        includedCategories: categories
+      }
     });
   }
 
