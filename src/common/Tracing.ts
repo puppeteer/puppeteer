@@ -93,8 +93,8 @@ export class Tracing {
       transferMode: 'ReturnAsStream',
       traceConfig: {
         excludedCategories: ['*'],
-        includedCategories: categories
-      }
+        includedCategories: categories,
+      },
     });
   }
 
