@@ -53,7 +53,7 @@ describeChromeOnly('Tracing', function () {
     expect(fs.existsSync(outputFile)).toBe(true);
   });
 
-  it.only('should run with custom categories if provided', async () => {
+  it('should run with custom categories if provided', async () => {
     await page.tracing.start({
       path: outputFile,
       categories: ['-*', 'disabled-by-default-v8.cpu_profiler.hires'],
@@ -75,7 +75,7 @@ describeChromeOnly('Tracing', function () {
     );
   });
 
-  it.only('should run with default categories', async () => {
+  it('should run with default categories', async () => {
     await page.tracing.start({
       path: outputFile,
     });
