@@ -87,13 +87,18 @@ export class Tracing {
 
     if (screenshots) categories.push('disabled-by-default-devtools.screenshot');
 
+    const excludedCategories = categories
+      .filter((cat) => cat.startsWith('-'))
+      .map((cat) => cat.slice(1));
+    const includedCategories = categories.filter((cat) => !cat.startsWith('-'));
+
     this._path = path;
     this._recording = true;
     await this._client.send('Tracing.start', {
       transferMode: 'ReturnAsStream',
       traceConfig: {
-        excludedCategories: ['*'],
-        includedCategories: categories,
+        excludedCategories,
+        includedCategories,
       },
     });
   }

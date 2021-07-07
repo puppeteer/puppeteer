@@ -53,10 +53,10 @@ describeChromeOnly('Tracing', function () {
     expect(fs.existsSync(outputFile)).toBe(true);
   });
 
-  it('should run with custom categories if provided', async () => {
+  it.only('should run with custom categories if provided', async () => {
     await page.tracing.start({
       path: outputFile,
-      categories: ['disabled-by-default-v8.cpu_profiler.hires'],
+      categories: ['-*', 'disabled-by-default-v8.cpu_profiler.hires'],
     });
     await page.tracing.stop();
 
@@ -68,6 +68,27 @@ describeChromeOnly('Tracing', function () {
       'disabled-by-default-v8.cpu_profiler.hires',
     ]);
     expect(traceConfig.excluded_categories).toEqual(['*']);
+    expect(traceJson.traceEvents).not.toContainEqual(
+      expect.objectContaining({
+        cat: 'toplevel',
+      })
+    );
+  });
+
+  it.only('should run with default categories', async () => {
+    await page.tracing.start({
+      path: outputFile,
+    });
+    await page.tracing.stop();
+
+    const traceJson = JSON.parse(
+      fs.readFileSync(outputFile, { encoding: 'utf8' })
+    );
+    expect(traceJson.traceEvents).toContainEqual(
+      expect.objectContaining({
+        cat: 'toplevel',
+      })
+    );
   });
   it('should throw if tracing on two pages', async () => {
     await page.tracing.start({ path: outputFile });
