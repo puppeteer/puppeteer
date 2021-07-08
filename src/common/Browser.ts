@@ -433,7 +433,7 @@ export class Browser extends EventEmitter {
       url: 'about:blank',
       browserContextId: contextId || undefined,
     });
-    const target = this._targets.get(targetId);
+    const target = await this._targets.get(targetId);
     assert(
       await target._initializedPromise,
       'Failed to create target for page'
