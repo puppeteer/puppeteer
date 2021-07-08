@@ -1407,33 +1407,33 @@ export class Page extends EventEmitter {
   /**
    * @returns Object containing metrics as key/value pairs.
    *
-   * - `Timestamp` : <number> The timestamp when the metrics sample was taken.</number>
+   * - `Timestamp` : The timestamp when the metrics sample was taken.
    *
-   * - `Documents` : <number> Number of documents in the page.</number>
+   * - `Documents` : Number of documents in the page.
    *
-   * - `Frames` : <number> Number of frames in the page.</number>
+   * - `Frames` : Number of frames in the page.
    *
-   * - `JSEventListeners` : <number> Number of events in the page.</number>
+   * - `JSEventListeners` : Number of events in the page.
    *
-   * - `Nodes` : <number> Number of DOM nodes in the page.</number>
+   * - `Nodes` : Number of DOM nodes in the page.
    *
-   * - `LayoutCount` : <number> Total number of full or partial page layout.</number>
+   * - `LayoutCount` : Total number of full or partial page layout.
    *
-   * - `RecalcStyleCount` : <number> Total number of page style recalculations.</number>
+   * - `RecalcStyleCount` : Total number of page style recalculations.
    *
-   * - `LayoutDuration` : <number> Combined durations of all page layouts.</number>
+   * - `LayoutDuration` : Combined durations of all page layouts.
    *
-   * - `RecalcStyleDuration` : <number> Combined duration of all page style
-   *   recalculations.</number>
+   * - `RecalcStyleDuration` : Combined duration of all page style
+   *   recalculations.
    *
-   * - `ScriptDuration` : <number> Combined duration of JavaScript execution.</number>
+   * - `ScriptDuration` : Combined duration of JavaScript execution.
    *
-   * - `TaskDuration` : <number> Combined duration of all tasks performed by the browser.
-   * </number>
+   * - `TaskDuration` : Combined duration of all tasks performed by the browser.
    *
-   * - `JSHeapUsedSize` : <number> Used JavaScript heap size.</number>
    *
-   * - `JSHeapTotalSize` : <number> Total JavaScript heap size.</number>
+   * - `JSHeapUsedSize` : Used JavaScript heap size.
+   *
+   * - `JSHeapTotalSize` : Total JavaScript heap size.
    * @remarks
    * NOTE: All timestamps are in monotonic time: monotonically increasing time
    * in seconds since an arbitrary point in the past.
@@ -2431,34 +2431,34 @@ export class Page extends EventEmitter {
    * @remarks
    * Options object which might have the following properties:
    *
-   * - `path` : <string> The file path to save the image to. The screenshot type
+   * - `path` : The file path to save the image to. The screenshot type
    *   will be inferred from file extension. If `path` is a relative path, then
    *   it is resolved relative to
    *   {@link https://nodejs.org/api/process.html#process_process_cwd
    *   | current working directory}.
    *   If no path is provided, the image won't be saved to the disk.
    *
-   * - `type` : <string> Specify screenshot type, can be either `jpeg` or `png`.
-   *   Defaults to 'png'.</string>
+   * - `type` : Specify screenshot type, can be either `jpeg` or `png`.
+   *   Defaults to 'png'.
    *
-   * - `quality` : <number> The quality of the image, between 0-100. Not
-   *   applicable to `png` images.</number>
+   * - `quality` : The quality of the image, between 0-100. Not
+   *   applicable to `png` images.
    *
-   * - `fullPage` : <boolean> When true, takes a screenshot of the full
-   *   scrollable page. Defaults to `false`</boolean>
+   * - `fullPage` : When true, takes a screenshot of the full
+   *   scrollable page. Defaults to `false`
    *
-   * - `clip` : <Object> An object which specifies clipping region of the page.
-   *   Should have the following fields:</Object><br/>
-   *  - `x` : <number> x-coordinate of top-left corner of clip area.</number><br/>
-   *  - `y` :  <number> y-coordinate of top-left corner of clip area.</number><br/>
-   *  - `width` : <number> width of clipping area.</number><br/>
-   *  - `height` : <number> height of clipping area.</number>
+   * - `clip` : An object which specifies clipping region of the page.
+   *   Should have the following fields:<br/>
+   *  - `x` : x-coordinate of top-left corner of clip area.<br/>
+   *  - `y` :  y-coordinate of top-left corner of clip area.<br/>
+   *  - `width` : width of clipping area.<br/>
+   *  - `height` : height of clipping area.
    *
-   * - `omitBackground` : <boolean> Hides default white background and allows
-   *   capturing screenshots with transparency. Defaults to `false`</boolean>
+   * - `omitBackground` : Hides default white background and allows
+   *   capturing screenshots with transparency. Defaults to `false`
    *
-   * - `encoding` : <string> The encoding of the image, can be either base64 or
-   *   binary. Defaults to `binary`.</string>
+   * - `encoding` : The encoding of the image, can be either base64 or
+   *   binary. Defaults to `binary`.
    *
    *
    * NOTE: Screenshots take at least 1/6 second on OS X. See
