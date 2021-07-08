@@ -48,7 +48,7 @@ export const ConnectionEmittedEvents = {
 } as const;
 
 /**
- * @internal
+ * @public
  */
 export class Connection extends EventEmitter {
   _url: string;
@@ -263,9 +263,6 @@ export class CDPSession extends EventEmitter {
     this._sessionId = sessionId;
   }
 
-  /**
-   * @internal
-   */
   connection(): Connection {
     return this._connection;
   }
