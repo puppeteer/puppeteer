@@ -46,11 +46,21 @@ export interface BrowserLaunchArgumentOptions {
   args?: string[];
 }
 
+export type ChromeReleaseChannel =
+  | 'chrome'
+  | 'chrome-beta'
+  | 'chrome-canary'
+  | 'chrome-dev';
+
 /**
  * Generic launch options that can be passed when launching any browser.
  * @public
  */
 export interface LaunchOptions {
+  /**
+   * Chrome Release Channel
+   */
+  channel?: ChromeReleaseChannel;
   /**
    * Path to a browser executable to use instead of the bundled Chromium. Note
    * that Puppeteer is only guaranteed to work with the bundled Chromium, so use
