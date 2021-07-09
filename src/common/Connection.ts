@@ -48,7 +48,7 @@ export const ConnectionEmittedEvents = {
 } as const;
 
 /**
- * @internal
+ * @public
  */
 export class Connection extends EventEmitter {
   _url: string;
