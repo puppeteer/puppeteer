@@ -1636,10 +1636,9 @@ export class Page extends EventEmitter {
    *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
    *   methods.
    *
-   * - `waitUntil`: <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array>
-   *   When to consider setting markup succeeded, defaults to `load`. Given an
-   *   array of event strings, setting content is considered to be successful
-   *   after all events have been fired. Events can be either:<br/>
+   * - `waitUntil`: When to consider setting markup succeeded, defaults to `load`.
+   *    Given an array of event strings, setting content is considered to be
+   *    successful after all events have been fired. Events can be either:<br/>
    *  - `load` : consider setting content to be finished when the `load` event is
    *    fired.<br/>
    *  - `domcontentloaded` : consider setting content to be finished when the
@@ -1671,11 +1670,9 @@ export class Page extends EventEmitter {
    *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
    *   methods.
    *
-   * - `waitUntil`:
-   *   <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array> When to
-   *   consider navigation succeeded, defaults to `load`. Given an array of
-   *   event strings, navigation is considered to be successful after all events
-   *   have been fired. Events can be either:<br/>
+   * - `waitUntil`:When to consider navigation succeeded, defaults to `load`.
+   *    Given an array of event strings, navigation is considered to be successful
+   *    after all events have been fired. Events can be either:<br/>
    *  - `load` : consider navigation to be finished when the load event is
    *    fired.<br/>
    *  - `domcontentloaded` : consider navigation to be finished when the
@@ -1735,10 +1732,9 @@ export class Page extends EventEmitter {
    *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
    *   methods.
    *
-   * - `waitUntil`: <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array>
-   *   When to consider navigation succeeded, defaults to `load`. Given an array
-   *   of event strings, navigation is considered to be successful after all
-   *   events have been fired. Events can be either:<br/>
+   * - `waitUntil`: When to consider navigation succeeded, defaults to `load`.
+   *    Given an array of event strings, navigation is considered to be
+   *    successful after all events have been fired. Events can be either:<br/>
    *  - `load` : consider navigation to be finished when the load event is fired.<br/>
    *  - `domcontentloaded` : consider navigation to be finished when the
    *   DOMContentLoaded event is fired.<br/>
@@ -1905,10 +1901,9 @@ export class Page extends EventEmitter {
    *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
    *   methods.
    *
-   * - `waitUntil` : <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array>
-   *   When to consider navigation succeeded, defaults to `load`. Given an array
-   *   of event strings, navigation is considered to be successful after all
-   *   events have been fired. Events can be either:<br/>
+   * - `waitUntil` : When to consider navigation succeeded, defaults to `load`.
+   *    Given an array of event strings, navigation is considered to be
+   *    successful after all events have been fired. Events can be either:<br/>
    *  - `load` : consider navigation to be finished when the load event is fired.<br/>
    *  - `domcontentloaded` : consider navigation to be finished when the
    *   DOMContentLoaded event is fired.<br/>
@@ -1938,10 +1933,9 @@ export class Page extends EventEmitter {
    *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
    *   methods.
    *
-   * - `waitUntil`: <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array>
-   *   When to consider navigation succeeded, defaults to `load`. Given an array
-   *   of event strings, navigation is considered to be successful after all
-   *   events have been fired. Events can be either:<br/>
+   * - `waitUntil`: When to consider navigation succeeded, defaults to `load`.
+   *    Given an array of event strings, navigation is considered to be
+   *    successful after all events have been fired. Events can be either:<br/>
    *  - `load` : consider navigation to be finished when the load event is fired.<br/>
    *  - `domcontentloaded` : consider navigation to be finished when the
    *   DOMContentLoaded event is fired.<br/>
@@ -2272,7 +2266,7 @@ export class Page extends EventEmitter {
    * await page.goto('https://example.com');
    * ```
    *
-   * @param viewport
+   * @param viewport -
    * @remarks
    * Argument viewport have following properties:
    *
@@ -2721,7 +2715,7 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @param {!PDFOptions=} options
+   * @param {!PDFOptions=} options -
    * @returns {!Promise<!Buffer>}
    */
   async pdf(options: PDFOptions = {}): Promise<Buffer> {
@@ -2848,8 +2842,9 @@ export class Page extends EventEmitter {
    * page.select('select#colors', 'blue'); // single selection
    * page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
    * ```
-   * @param selector - A {@link https://developer.mozilla.org/en-US/docs/Web/CSS/
-   * CSS_Selectors | Selector} to query the page for
+   * @param selector - A
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | Selector}
+   * to query the page for
    * @param values - Values of options to select. If the `<select>` has the
    * `multiple` attribute, all values are considered, otherwise only the first one
    * is taken into account.
@@ -2898,7 +2893,8 @@ export class Page extends EventEmitter {
    * @param options - have property `delay` which is the Time to wait between
    * key presses in milliseconds. Defaults to `0`.
    * @returns
-   * {@link page.mainFrame().type(selector, text[, options])}
+   * @remarks
+   * Shortcut for {@link page.mainFrame().type(selector, text[, options])}
    */
   type(
     selector: string,
