@@ -504,7 +504,7 @@ export class ElementHandle<
    */
   async drag(target: Point): Promise<Protocol.Input.DragData> {
     assert(
-      this._page.isDragInterceptionEnabled,
+      this._page.isDragInterceptionEnabled(),
       'Drag Interception is not enabled!'
     );
     await this._scrollIntoViewIfNeeded();

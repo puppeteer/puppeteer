@@ -601,6 +601,13 @@ export class Page extends EventEmitter {
   }
 
   /**
+   * @returns `true` if drag events are being intercepted, `false` otherwise.
+   */
+  isDragInterceptionEnabled(): boolean {
+    return this._userDragInterceptionEnabled;
+  }
+
+  /**
    * @returns `true` if the page has JavaScript enabled, `false` otherwise.
    */
   public isJavaScriptEnabled(): boolean {
@@ -775,10 +782,6 @@ export class Page extends EventEmitter {
 
   get accessibility(): Accessibility {
     return this._accessibility;
-  }
-
-  get isDragInterceptionEnabled(): boolean {
-    return this._userDragInterceptionEnabled;
   }
 
   /**
