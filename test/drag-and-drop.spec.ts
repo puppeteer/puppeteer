@@ -41,7 +41,9 @@ describeChromeOnly('Input.drag', function () {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
+    expect(page.isDragInterceptionEnabled()).toBe(false);
     await page.setDragInterception(true);
+    expect(page.isDragInterceptionEnabled()).toBe(true);
     const draggable = await page.$('#drag');
     const data = await draggable.drag({ x: 1, y: 1 });
 
@@ -52,7 +54,9 @@ describeChromeOnly('Input.drag', function () {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
+    expect(page.isDragInterceptionEnabled()).toBe(false);
     await page.setDragInterception(true);
+    expect(page.isDragInterceptionEnabled()).toBe(true);
     const draggable = await page.$('#drag');
     const data = await draggable.drag({ x: 1, y: 1 });
     const dropzone = await page.$('#drop');
@@ -65,7 +69,9 @@ describeChromeOnly('Input.drag', function () {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
+    expect(page.isDragInterceptionEnabled()).toBe(false);
     await page.setDragInterception(true);
+    expect(page.isDragInterceptionEnabled()).toBe(true);
     const draggable = await page.$('#drag');
     const data = await draggable.drag({ x: 1, y: 1 });
     const dropzone = await page.$('#drop');
@@ -80,7 +86,9 @@ describeChromeOnly('Input.drag', function () {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
+    expect(page.isDragInterceptionEnabled()).toBe(false);
     await page.setDragInterception(true);
+    expect(page.isDragInterceptionEnabled()).toBe(true);
     const draggable = await page.$('#drag');
     const dropzone = await page.$('#drop');
     const data = await draggable.drag({ x: 1, y: 1 });
@@ -97,7 +105,9 @@ describeChromeOnly('Input.drag', function () {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
+    expect(page.isDragInterceptionEnabled()).toBe(false);
     await page.setDragInterception(true);
+    expect(page.isDragInterceptionEnabled()).toBe(true);
     const draggable = await page.$('#drag');
     const dropzone = await page.$('#drop');
     await draggable.dragAndDrop(dropzone);
@@ -111,7 +121,9 @@ describeChromeOnly('Input.drag', function () {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
+    expect(page.isDragInterceptionEnabled()).toBe(false);
     await page.setDragInterception(true);
+    expect(page.isDragInterceptionEnabled()).toBe(true);
     const draggable = await page.$('#drag');
     await draggable.drag({ x: 1, y: 1 });
     await page.setDragInterception(false);
