@@ -157,7 +157,7 @@
   * [page.goto(url[, options])](#pagegotourl-options)
   * [page.hover(selector)](#pagehoverselector)
   * [page.isClosed()](#pageisclosed)
-  * [page.isDragInterceptionEnabled](#pageisdraginterceptionenabled)
+  * [page.isDragInterceptionEnabled()](#pageisdraginterceptionenabled)
   * [page.isJavaScriptEnabled()](#pageisjavascriptenabled)
   * [page.keyboard](#pagekeyboard)
   * [page.mainFrame()](#pagemainframe)
@@ -2008,7 +2008,7 @@ Shortcut for [page.mainFrame().hover(selector)](#framehoverselector).
 
 Indicates that the page has been closed.
 
-#### page.isDragInterceptionEnabled
+#### page.isDragInterceptionEnabled()
 
 - returns: <[boolean]>
 
