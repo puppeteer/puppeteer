@@ -242,6 +242,38 @@ describe('Emulation', () => {
           () => matchMedia('(prefers-color-scheme: dark)').matches
         )
       ).toBe(false);
+      await page.emulateMediaFeatures([{ name: 'color-gamut', value: 'srgb' }]);
+      expect(
+        await page.evaluate(() => matchMedia('(color-gamut: p3)').matches)
+      ).toBe(false);
+      expect(
+        await page.evaluate(() => matchMedia('(color-gamut: srgb)').matches)
+      ).toBe(true);
+      expect(
+        await page.evaluate(() => matchMedia('(color-gamut: rec2020)').matches)
+      ).toBe(false);
+      await page.emulateMediaFeatures([{ name: 'color-gamut', value: 'p3' }]);
+      expect(
+        await page.evaluate(() => matchMedia('(color-gamut: p3)').matches)
+      ).toBe(true);
+      expect(
+        await page.evaluate(() => matchMedia('(color-gamut: srgb)').matches)
+      ).toBe(true);
+      expect(
+        await page.evaluate(() => matchMedia('(color-gamut: rec2020)').matches)
+      ).toBe(false);
+      await page.emulateMediaFeatures([
+        { name: 'color-gamut', value: 'rec2020' },
+      ]);
+      expect(
+        await page.evaluate(() => matchMedia('(color-gamut: p3)').matches)
+      ).toBe(true);
+      expect(
+        await page.evaluate(() => matchMedia('(color-gamut: srgb)').matches)
+      ).toBe(true);
+      expect(
+        await page.evaluate(() => matchMedia('(color-gamut: rec2020)').matches)
+      ).toBe(true);
     });
     it('should throw in case of bad argument', async () => {
       const { page } = getTestState();
@@ -352,6 +384,37 @@ describe('Emulation', () => {
         .emulateVisionDeficiency('invalid')
         .catch((error_) => (error = error_));
       expect(error.message).toBe('Unsupported vision deficiency: invalid');
+    });
+  });
+
+  describeFailsFirefox('Page.emulateNetworkConditions', function () {
+    it('should change navigator.connection.effectiveType', async () => {
+      const { page, puppeteer } = getTestState();
+
+      const slow3G = puppeteer.networkConditions['Slow 3G'];
+      const fast3G = puppeteer.networkConditions['Fast 3G'];
+
+      expect(
+        await page.evaluate('window.navigator.connection.effectiveType')
+      ).toBe('4g');
+      await page.emulateNetworkConditions(fast3G);
+      expect(
+        await page.evaluate('window.navigator.connection.effectiveType')
+      ).toBe('3g');
+      await page.emulateNetworkConditions(slow3G);
+      expect(
+        await page.evaluate('window.navigator.connection.effectiveType')
+      ).toBe('2g');
+      await page.emulateNetworkConditions(null);
+    });
+  });
+
+  describeFailsFirefox('Page.emulateCPUThrottling', function () {
+    it('should change the CPU throttling rate successfully', async () => {
+      const { page } = getTestState();
+
+      await page.emulateCPUThrottling(100);
+      await page.emulateCPUThrottling(null);
     });
   });
 });

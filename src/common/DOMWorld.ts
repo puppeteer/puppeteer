@@ -115,6 +115,7 @@ export class DOMWorld {
 
   async _setContext(context?: ExecutionContext): Promise<void> {
     if (context) {
+      this._ctxBindings.clear();
       this._contextResolveCallback.call(null, context);
       this._contextResolveCallback = null;
       for (const waitTask of this._waitTasks) waitTask.rerun();
@@ -165,9 +166,11 @@ export class DOMWorld {
     );
   }
 
-  async $(selector: string): Promise<ElementHandle | null> {
+  async $<T extends Element = Element>(
+    selector: string
+  ): Promise<ElementHandle<T> | null> {
     const document = await this._document();
-    const value = await document.$(selector);
+    const value = await document.$<T>(selector);
     return value;
   }
 
@@ -215,9 +218,11 @@ export class DOMWorld {
     return value;
   }
 
-  async $$(selector: string): Promise<ElementHandle[]> {
+  async $$<T extends Element = Element>(
+    selector: string
+  ): Promise<Array<ElementHandle<T>>> {
     const document = await this._document();
-    const value = await document.$$(selector);
+    const value = await document.$$<T>(selector);
     return value;
   }
 
@@ -479,9 +484,8 @@ export class DOMWorld {
     selector: string,
     options: WaitForSelectorOptions
   ): Promise<ElementHandle | null> {
-    const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
-      selector
-    );
+    const { updatedSelector, queryHandler } =
+      getQueryHandlerAndSelector(selector);
     return queryHandler.waitFor(this, updatedSelector, options);
   }
 
@@ -512,9 +516,12 @@ export class DOMWorld {
     const bind = async (name: string) => {
       const expression = helper.pageBindingInitString('internal', name);
       try {
+        // TODO: In theory, it would be enough to call this just once
         await context._client.send('Runtime.addBinding', {
           name,
-          executionContextId: context._contextId,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore The protocol definition is not up to date.
+          executionContextName: context._contextName,
         });
         await context.evaluate(expression);
       } catch (error) {
@@ -679,10 +686,8 @@ export class DOMWorld {
     options: { polling?: string | number; timeout?: number } = {},
     ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle> {
-    const {
-      polling = 'raf',
-      timeout = this._timeoutSettings.timeout(),
-    } = options;
+    const { polling = 'raf', timeout = this._timeoutSettings.timeout() } =
+      options;
     const waitTaskOptions: WaitTaskOptions = {
       domWorld: this,
       predicateBody: pageFunction,

@@ -28,10 +28,12 @@ const EXCLUDE_PROPERTIES = new Set([
   'Page.create',
   'JSHandle.toString',
   'TimeoutError.name',
-  /* This isn't an actual property, but a TypeScript generic.
+  /* These are not actual properties, but a TypeScript generic.
    * DocLint incorrectly parses it as a property.
    */
   'ElementHandle.ElementType',
+  'ElementHandle.HandleObjectType',
+  'JSHandle.HandleObjectType',
 ]);
 
 /**
@@ -384,6 +386,41 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method ElementHandle.drag() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method ElementHandle.dragAndDrop() target',
+        {
+          actualName: 'ElementHandle',
+          expectedName: 'ElementHandle<Element>',
+        },
+      ],
+      [
+        'Method ElementHandle.dragEnter() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
+        },
+      ],
+      [
+        'Method ElementHandle.dragOver() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
+        },
+      ],
+      [
+        'Method ElementHandle.drop() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
+        },
+      ],
+      [
         'Method Keyboard.down() key',
         {
           actualName: 'string',
@@ -409,6 +446,83 @@ function compareDocumentations(actual, expected) {
         {
           actualName: 'Object',
           expectedName: 'MouseOptions',
+        },
+      ],
+      [
+        'Method Mouse.drag() start',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.drag() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragAndDrop() start',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragAndDrop() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragAndDrop() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragEnter() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragEnter() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
+        },
+      ],
+      [
+        'Method Mouse.dragOver() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragOver() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
+        },
+      ],
+      [
+        'Method Mouse.drop() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.drop() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
         },
       ],
       [
@@ -584,6 +698,13 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method Page.setUserAgent() userAgentMetadata',
+        {
+          actualName: 'Object',
+          expectedName: 'UserAgentMetadata',
+        },
+      ],
+      [
         'Method Page.setViewport() options.viewport',
         {
           actualName: 'Object',
@@ -661,6 +782,13 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method Page.createPDFStream() options',
+        {
+          actualName: 'Object',
+          expectedName: 'PDFOptions',
+        },
+      ],
+      [
         'Method Page.screenshot() options',
         {
           actualName: 'Object',
@@ -685,7 +813,8 @@ function compareDocumentations(actual, expected) {
         'Method Page.emulateVisionDeficiency() type',
         {
           actualName: 'string',
-          expectedName: 'Object',
+          expectedName:
+            '"none"|"achromatopsia"|"blurredVision"|"deuteranopia"|"protanopia"|"tritanopia"',
         },
       ],
       [
@@ -840,6 +969,62 @@ function compareDocumentations(actual, expected) {
         {
           actualName: 'Object',
           expectedName: 'ConnectOptions',
+        },
+      ],
+      [
+        'Method Page.deleteCookie() ...cookies',
+        {
+          actualName: '...Object',
+          expectedName: '...DeleteCookiesRequest',
+        },
+      ],
+      [
+        'Method BrowserContext.overridePermissions() permissions',
+        {
+          actualName: 'Array<string>',
+          expectedName: 'Array<Permission>',
+        },
+      ],
+      [
+        'Method HTTPRequest.respond() response.body',
+        {
+          actualName: 'string|Buffer',
+          expectedName: 'Object',
+        },
+      ],
+      [
+        'Method HTTPRequest.respond() response.contentType',
+        {
+          actualName: 'string',
+          expectedName: 'Object',
+        },
+      ],
+      [
+        'Method HTTPRequest.respond() response.status',
+        {
+          actualName: 'number',
+          expectedName: 'Object',
+        },
+      ],
+      [
+        'Method EventEmitter.emit() eventData',
+        {
+          actualName: 'Object',
+          expectedName: 'unknown',
+        },
+      ],
+      [
+        'Method Page.queryObjects() prototypeHandle',
+        {
+          actualName: 'JSHandle',
+          expectedName: 'JSHandle<unknown>',
+        },
+      ],
+      [
+        'Method ExecutionContext.queryObjects() prototypeHandle',
+        {
+          actualName: 'JSHandle',
+          expectedName: 'JSHandle<unknown>',
         },
       ],
     ]);

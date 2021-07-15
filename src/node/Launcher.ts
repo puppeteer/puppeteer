@@ -17,6 +17,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs';
 
+import { assert } from '../common/assert.js';
 import { BrowserFetcher } from './BrowserFetcher.js';
 import { Browser } from '../common/Browser.js';
 import { BrowserRunner } from './BrowserRunner.js';
@@ -25,8 +26,11 @@ import { promisify } from 'util';
 const mkdtempAsync = promisify(fs.mkdtemp);
 const writeFileAsync = promisify(fs.writeFile);
 
-import { ChromeArgOptions, LaunchOptions } from './LaunchOptions.js';
-import { BrowserOptions } from '../common/BrowserConnector.js';
+import {
+  BrowserLaunchArgumentOptions,
+  ChromeReleaseChannel,
+  PuppeteerNodeLaunchOptions,
+} from './LaunchOptions.js';
 import { Product } from '../common/Product.js';
 
 /**
@@ -34,9 +38,9 @@ import { Product } from '../common/Product.js';
  * @public
  */
 export interface ProductLauncher {
-  launch(object);
-  executablePath: () => string;
-  defaultArgs(object);
+  launch(object: PuppeteerNodeLaunchOptions);
+  executablePath: (string?) => string;
+  defaultArgs(object: BrowserLaunchArgumentOptions);
   product: Product;
 }
 
@@ -58,13 +62,12 @@ class ChromeLauncher implements ProductLauncher {
     this._isPuppeteerCore = isPuppeteerCore;
   }
 
-  async launch(
-    options: LaunchOptions & ChromeArgOptions & BrowserOptions = {}
-  ): Promise<Browser> {
+  async launch(options: PuppeteerNodeLaunchOptions = {}): Promise<Browser> {
     const {
       ignoreDefaultArgs = false,
       args = [],
       dumpio = false,
+      channel = null,
       executablePath = null,
       pipe = false,
       env = process.env,
@@ -75,6 +78,7 @@ class ChromeLauncher implements ProductLauncher {
       defaultViewport = { width: 800, height: 600 },
       slowMo = 0,
       timeout = 30000,
+      waitForInitialPage = true,
     } = options;
 
     const profilePath = path.join(os.tmpdir(), 'puppeteer_dev_chrome_profile-');
@@ -104,8 +108,19 @@ class ChromeLauncher implements ProductLauncher {
     }
 
     let chromeExecutable = executablePath;
-    if (!executablePath) {
-      if (os.arch() === 'arm64') {
+
+    if (channel) {
+      // executablePath is detected by channel, so it should not be specified by user.
+      assert(
+        !executablePath,
+        '`executablePath` must not be specified when `channel` is given.'
+      );
+
+      chromeExecutable = executablePathForChannel(channel);
+    } else if (!executablePath) {
+      // Use Intel x86 builds on Apple M1 until native macOS arm64
+      // Chromium builds are available.
+      if (os.platform() !== 'darwin' && os.arch() === 'arm64') {
         chromeExecutable = '/usr/bin/chromium-browser';
       } else {
         const { missingText, executablePath } = resolveExecutablePath(this);
@@ -116,6 +131,7 @@ class ChromeLauncher implements ProductLauncher {
 
     const usePipe = chromeArguments.includes('--remote-debugging-pipe');
     const runner = new BrowserRunner(
+      this.product,
       chromeExecutable,
       chromeArguments,
       temporaryUserDataDir
@@ -144,7 +160,8 @@ class ChromeLauncher implements ProductLauncher {
         runner.proc,
         runner.close.bind(runner)
       );
-      await browser.waitForTarget((t) => t.type() === 'page');
+      if (waitForInitialPage)
+        await browser.waitForTarget((t) => t.type() === 'page');
       return browser;
     } catch (error) {
       runner.kill();
@@ -152,11 +169,7 @@ class ChromeLauncher implements ProductLauncher {
     }
   }
 
-  /**
-   * @param {!Launcher.ChromeArgOptions=} options
-   * @returns {!Array<string>}
-   */
-  defaultArgs(options: ChromeArgOptions = {}): string[] {
+  defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
     const chromeArguments = [
       '--disable-background-networking',
       '--enable-features=NetworkService,NetworkServiceInProcess',
@@ -203,8 +216,12 @@ class ChromeLauncher implements ProductLauncher {
     return chromeArguments;
   }
 
-  executablePath(): string {
-    return resolveExecutablePath(this).executablePath;
+  executablePath(channel?: ChromeReleaseChannel): string {
+    if (channel) {
+      return executablePathForChannel(channel);
+    } else {
+      return resolveExecutablePath(this).executablePath;
+    }
   }
 
   get product(): Product {
@@ -230,13 +247,7 @@ class FirefoxLauncher implements ProductLauncher {
     this._isPuppeteerCore = isPuppeteerCore;
   }
 
-  async launch(
-    options: LaunchOptions &
-      ChromeArgOptions &
-      BrowserOptions & {
-        extraPrefsFirefox?: { [x: string]: unknown };
-      } = {}
-  ): Promise<Browser> {
+  async launch(options: PuppeteerNodeLaunchOptions = {}): Promise<Browser> {
     const {
       ignoreDefaultArgs = false,
       args = [],
@@ -252,6 +263,7 @@ class FirefoxLauncher implements ProductLauncher {
       slowMo = 0,
       timeout = 30000,
       extraPrefsFirefox = {},
+      waitForInitialPage = true,
     } = options;
 
     const firefoxArguments = [];
@@ -291,6 +303,7 @@ class FirefoxLauncher implements ProductLauncher {
     }
 
     const runner = new BrowserRunner(
+      this.product,
       firefoxExecutable,
       firefoxArguments,
       temporaryUserDataDir
@@ -319,7 +332,8 @@ class FirefoxLauncher implements ProductLauncher {
         runner.proc,
         runner.close.bind(runner)
       );
-      await browser.waitForTarget((t) => t.type() === 'page');
+      if (waitForInitialPage)
+        await browser.waitForTarget((t) => t.type() === 'page');
       return browser;
     } catch (error) {
       runner.kill();
@@ -346,7 +360,7 @@ class FirefoxLauncher implements ProductLauncher {
     return 'firefox';
   }
 
-  defaultArgs(options: ChromeArgOptions = {}): string[] {
+  defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
     const firefoxArguments = ['--no-remote', '--foreground'];
     if (os.platform().startsWith('win')) {
       firefoxArguments.push('--wait-for-browser');
@@ -540,8 +554,8 @@ class FirefoxLauncher implements ProductLauncher {
 
       'privacy.trackingprotection.enabled': false,
 
-      // Enable Remote Agent
-      // https://bugzilla.mozilla.org/show_bug.cgi?id=1544393
+      // Can be removed once Firefox 89 is no longer supported
+      // https://bugzilla.mozilla.org/show_bug.cgi?id=1710839
       'remote.enabled': true,
 
       // Don't do network connections for mitm priming
@@ -589,9 +603,84 @@ class FirefoxLauncher implements ProductLauncher {
   }
 }
 
-function resolveExecutablePath(
-  launcher: ChromeLauncher | FirefoxLauncher
-): { executablePath: string; missingText?: string } {
+function executablePathForChannel(channel: ChromeReleaseChannel): string {
+  const platform = os.platform();
+
+  let chromePath: string | undefined;
+  switch (platform) {
+    case 'win32':
+      switch (channel) {
+        case 'chrome':
+          chromePath = `${process.env.PROGRAMFILES}\\Google\\Chrome\\Application\\chrome.exe`;
+          break;
+        case 'chrome-beta':
+          chromePath = `${process.env.PROGRAMFILES}\\Google\\Chrome Beta\\Application\\chrome.exe`;
+          break;
+        case 'chrome-canary':
+          chromePath = `${process.env.PROGRAMFILES}\\Google\\Chrome SxS\\Application\\chrome.exe`;
+          break;
+        case 'chrome-dev':
+          chromePath = `${process.env.PROGRAMFILES}\\Google\\Chrome Dev\\Application\\chrome.exe`;
+          break;
+      }
+      break;
+    case 'darwin':
+      switch (channel) {
+        case 'chrome':
+          chromePath =
+            '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+          break;
+        case 'chrome-beta':
+          chromePath =
+            '/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta';
+          break;
+        case 'chrome-canary':
+          chromePath =
+            '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary';
+          break;
+        case 'chrome-dev':
+          chromePath =
+            '/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev';
+          break;
+      }
+      break;
+    case 'linux':
+      switch (channel) {
+        case 'chrome':
+          chromePath = '/opt/google/chrome/chrome';
+          break;
+        case 'chrome-beta':
+          chromePath = '/opt/google/chrome-beta/chrome';
+          break;
+        case 'chrome-dev':
+          chromePath = '/opt/google/chrome-unstable/chrome';
+          break;
+      }
+      break;
+  }
+
+  if (!chromePath) {
+    throw new Error(
+      `Unable to detect browser executable path for '${channel}' on ${platform}.`
+    );
+  }
+
+  // Check if Chrome exists and is accessible.
+  try {
+    fs.accessSync(chromePath);
+  } catch (error) {
+    throw new Error(
+      `Could not find Google Chrome executable for channel '${channel}' at '${chromePath}'.`
+    );
+  }
+
+  return chromePath;
+}
+
+function resolveExecutablePath(launcher: ChromeLauncher | FirefoxLauncher): {
+  executablePath: string;
+  missingText?: string;
+} {
   let downloadPath: string;
   // puppeteer-core doesn't take into account PUPPETEER_* env variables.
   if (!launcher._isPuppeteerCore) {
@@ -615,6 +704,7 @@ function resolveExecutablePath(
     product: launcher.product,
     path: downloadPath,
   });
+
   if (!launcher._isPuppeteerCore && launcher.product === 'chrome') {
     const revision = process.env['PUPPETEER_CHROMIUM_REVISION'];
     if (revision) {
@@ -627,8 +717,13 @@ function resolveExecutablePath(
     }
   }
   const revisionInfo = browserFetcher.revisionInfo(launcher._preferredRevision);
+
+  const firefoxHelp = `Run \`PUPPETEER_PRODUCT=firefox npm install\` to download a supported Firefox browser binary.`;
+  const chromeHelp = `Run \`npm install\` to download the correct Chromium revision (${launcher._preferredRevision}).`;
   const missingText = !revisionInfo.local
-    ? `Could not find browser revision ${launcher._preferredRevision}. Run "PUPPETEER_PRODUCT=firefox npm install" or "PUPPETEER_PRODUCT=firefox yarn install" to download a supported Firefox browser binary.`
+    ? `Could not find expected browser (${launcher.product}) locally. ${
+        launcher.product === 'chrome' ? chromeHelp : firefoxHelp
+      }`
     : null;
   return { executablePath: revisionInfo.executablePath, missingText };
 }

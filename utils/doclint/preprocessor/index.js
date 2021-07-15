@@ -20,7 +20,8 @@ const IS_RELEASE = Boolean(process.env.IS_RELEASE);
 
 module.exports.ensureReleasedAPILinks = function (sources, version) {
   // Release version is everything that doesn't include "-".
-  const apiLinkRegex = /https:\/\/github.com\/puppeteer\/puppeteer\/blob\/v[^/]*\/docs\/api.md/gi;
+  const apiLinkRegex =
+    /https:\/\/github.com\/puppeteer\/puppeteer\/blob\/v[^/]*\/docs\/api.md/gi;
   const lastReleasedAPI = `https://github.com/puppeteer/puppeteer/blob/v${
     version.split('-')[0]
   }/docs/api.md`;

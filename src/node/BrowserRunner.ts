@@ -24,6 +24,7 @@ import { LaunchOptions } from './LaunchOptions.js';
 import { Connection } from '../common/Connection.js';
 import { NodeWebSocketTransport as WebSocketTransport } from '../node/NodeWebSocketTransport.js';
 import { PipeTransport } from './PipeTransport.js';
+import { Product } from '../common/Product.js';
 import * as readline from 'readline';
 import { TimeoutError } from '../common/Errors.js';
 import { promisify } from 'util';
@@ -36,6 +37,7 @@ Please check your open processes and ensure that the browser processes that Pupp
 If you think this is a bug, please report it on the Puppeteer issue tracker.`;
 
 export class BrowserRunner {
+  private _product: Product;
   private _executablePath: string;
   private _processArguments: string[];
   private _tempDirectory?: string;
@@ -48,24 +50,20 @@ export class BrowserRunner {
   private _processClosing: Promise<void>;
 
   constructor(
+    product: Product,
     executablePath: string,
     processArguments: string[],
     tempDirectory?: string
   ) {
+    this._product = product;
     this._executablePath = executablePath;
     this._processArguments = processArguments;
     this._tempDirectory = tempDirectory;
   }
 
   start(options: LaunchOptions): void {
-    const {
-      handleSIGINT,
-      handleSIGTERM,
-      handleSIGHUP,
-      dumpio,
-      env,
-      pipe,
-    } = options;
+    const { handleSIGINT, handleSIGTERM, handleSIGHUP, dumpio, env, pipe } =
+      options;
     let stdio: Array<'ignore' | 'pipe'> = ['pipe', 'pipe', 'pipe'];
     if (pipe) {
       if (dumpio) stdio = ['ignore', 'pipe', 'pipe', 'pipe', 'pipe'];
@@ -128,7 +126,7 @@ export class BrowserRunner {
 
   close(): Promise<void> {
     if (this._closed) return Promise.resolve();
-    if (this._tempDirectory) {
+    if (this._tempDirectory && this._product !== 'firefox') {
       this.kill();
     } else if (this.connection) {
       // Attempt to close the browser gracefully

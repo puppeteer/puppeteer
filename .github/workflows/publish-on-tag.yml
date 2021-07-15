@@ -3,7 +3,7 @@ name: publish-on-tag
 on:
   push:
     tags:
-    - '*'
+      - '*'
 
 jobs:
   publish:
@@ -19,6 +19,7 @@ jobs:
         env:
           NPM_TOKEN: ${{secrets.NPM_TOKEN_PUPPETEER}}
         run: |
+          npm config set registry 'https://wombat-dressing-room.appspot.com/'
           npm config set '//wombat-dressing-room.appspot.com/:_authToken' '${NPM_TOKEN}'
           npm publish
       - name: Publish puppeteer-core
@@ -26,5 +27,6 @@ jobs:
           NPM_TOKEN: ${{secrets.NPM_TOKEN_PUPPETEER_CORE}}
         run: |
           utils/prepare_puppeteer_core.js
+          npm config set registry 'https://wombat-dressing-room.appspot.com/'
           npm config set '//wombat-dressing-room.appspot.com/:_authToken' '${NPM_TOKEN}'
           npm publish
