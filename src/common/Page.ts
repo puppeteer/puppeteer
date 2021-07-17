@@ -601,6 +601,13 @@ export class Page extends EventEmitter {
   }
 
   /**
+   * @returns `true` if drag events are being intercepted, `false` otherwise.
+   */
+  isDragInterceptionEnabled(): boolean {
+    return this._userDragInterceptionEnabled;
+  }
+
+  /**
    * @returns `true` if the page has JavaScript enabled, `false` otherwise.
    */
   public isJavaScriptEnabled(): boolean {
@@ -777,10 +784,6 @@ export class Page extends EventEmitter {
     return this._accessibility;
   }
 
-  get isDragInterceptionEnabled(): boolean {
-    return this._userDragInterceptionEnabled;
-  }
-
   /**
    * @returns An array of all frames attached to the page.
    */
@@ -840,7 +843,7 @@ export class Page extends EventEmitter {
    * @param enabled - Whether to enable drag interception.
    *
    * @remarks
-   * Activating drag interception enables the {@link Input.drag},
+   * Activating drag interception enables the `Input.drag`,
    * methods  This provides the capability to capture drag events emitted
    * on the page, which can then be used to simulate drag-and-drop.
    */
@@ -1407,32 +1410,33 @@ export class Page extends EventEmitter {
   /**
    * @returns Object containing metrics as key/value pairs.
    *
-   * - `Timestamp` : <number> The timestamp when the metrics sample was taken.
+   * - `Timestamp` : The timestamp when the metrics sample was taken.
    *
-   * - `Documents` : <number> Number of documents in the page.
+   * - `Documents` : Number of documents in the page.
    *
-   * - `Frames` : <number> Number of frames in the page.
+   * - `Frames` : Number of frames in the page.
    *
-   * - `JSEventListeners` : <number> Number of events in the page.
+   * - `JSEventListeners` : Number of events in the page.
    *
-   * - `Nodes` : <number> Number of DOM nodes in the page.
+   * - `Nodes` : Number of DOM nodes in the page.
    *
-   * - `LayoutCount` : <number> Total number of full or partial page layout.
+   * - `LayoutCount` : Total number of full or partial page layout.
    *
-   * - `RecalcStyleCount` : <number> Total number of page style recalculations.
+   * - `RecalcStyleCount` : Total number of page style recalculations.
    *
-   * - `LayoutDuration` : <number> Combined durations of all page layouts.
+   * - `LayoutDuration` : Combined durations of all page layouts.
    *
-   * - `RecalcStyleDuration` : <number> Combined duration of all page style
+   * - `RecalcStyleDuration` : Combined duration of all page style
    *   recalculations.
    *
-   * - `ScriptDuration` : <number> Combined duration of JavaScript execution.
+   * - `ScriptDuration` : Combined duration of JavaScript execution.
    *
-   * - `TaskDuration` : <number> Combined duration of all tasks performed by the browser.
+   * - `TaskDuration` : Combined duration of all tasks performed by the browser.
    *
-   * - `JSHeapUsedSize` : <number> Used JavaScript heap size.
    *
-   * - `JSHeapTotalSize` : <number> Total JavaScript heap size.
+   * - `JSHeapUsedSize` : Used JavaScript heap size.
+   *
+   * - `JSHeapTotalSize` : Total JavaScript heap size.
    * @remarks
    * NOTE: All timestamps are in monotonic time: monotonically increasing time
    * in seconds since an arbitrary point in the past.
@@ -1635,10 +1639,9 @@ export class Page extends EventEmitter {
    *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
    *   methods.
    *
-   * - `waitUntil`: <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array>
-   *   When to consider setting markup succeeded, defaults to `load`. Given an
-   *   array of event strings, setting content is considered to be successful
-   *   after all events have been fired. Events can be either:<br/>
+   * - `waitUntil`: When to consider setting markup succeeded, defaults to `load`.
+   *    Given an array of event strings, setting content is considered to be
+   *    successful after all events have been fired. Events can be either:<br/>
    *  - `load` : consider setting content to be finished when the `load` event is
    *    fired.<br/>
    *  - `domcontentloaded` : consider setting content to be finished when the
@@ -1670,11 +1673,9 @@ export class Page extends EventEmitter {
    *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
    *   methods.
    *
-   * - `waitUntil`:
-   *   <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array> When to
-   *   consider navigation succeeded, defaults to `load`. Given an array of
-   *   event strings, navigation is considered to be successful after all events
-   *   have been fired. Events can be either:<br/>
+   * - `waitUntil`:When to consider navigation succeeded, defaults to `load`.
+   *    Given an array of event strings, navigation is considered to be successful
+   *    after all events have been fired. Events can be either:<br/>
    *  - `load` : consider navigation to be finished when the load event is
    *    fired.<br/>
    *  - `domcontentloaded` : consider navigation to be finished when the
@@ -1734,10 +1735,9 @@ export class Page extends EventEmitter {
    *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
    *   methods.
    *
-   * - `waitUntil`: <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array>
-   *   When to consider navigation succeeded, defaults to `load`. Given an array
-   *   of event strings, navigation is considered to be successful after all
-   *   events have been fired. Events can be either:<br/>
+   * - `waitUntil`: When to consider navigation succeeded, defaults to `load`.
+   *    Given an array of event strings, navigation is considered to be
+   *    successful after all events have been fired. Events can be either:<br/>
    *  - `load` : consider navigation to be finished when the load event is fired.<br/>
    *  - `domcontentloaded` : consider navigation to be finished when the
    *   DOMContentLoaded event is fired.<br/>
@@ -1904,10 +1904,9 @@ export class Page extends EventEmitter {
    *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
    *   methods.
    *
-   * - `waitUntil` : <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array>
-   *   When to consider navigation succeeded, defaults to `load`. Given an array
-   *   of event strings, navigation is considered to be successful after all
-   *   events have been fired. Events can be either:<br/>
+   * - `waitUntil` : When to consider navigation succeeded, defaults to `load`.
+   *    Given an array of event strings, navigation is considered to be
+   *    successful after all events have been fired. Events can be either:<br/>
    *  - `load` : consider navigation to be finished when the load event is fired.<br/>
    *  - `domcontentloaded` : consider navigation to be finished when the
    *   DOMContentLoaded event is fired.<br/>
@@ -1937,10 +1936,9 @@ export class Page extends EventEmitter {
    *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
    *   methods.
    *
-   * - `waitUntil`: <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array>
-   *   When to consider navigation succeeded, defaults to `load`. Given an array
-   *   of event strings, navigation is considered to be successful after all
-   *   events have been fired. Events can be either:<br/>
+   * - `waitUntil`: When to consider navigation succeeded, defaults to `load`.
+   *    Given an array of event strings, navigation is considered to be
+   *    successful after all events have been fired. Events can be either:<br/>
    *  - `load` : consider navigation to be finished when the load event is fired.<br/>
    *  - `domcontentloaded` : consider navigation to be finished when the
    *   DOMContentLoaded event is fired.<br/>
@@ -2271,7 +2269,7 @@ export class Page extends EventEmitter {
    * await page.goto('https://example.com');
    * ```
    *
-   * @param viewport
+   * @param viewport -
    * @remarks
    * Argument viewport have following properties:
    *
@@ -2430,33 +2428,33 @@ export class Page extends EventEmitter {
    * @remarks
    * Options object which might have the following properties:
    *
-   * - `path` : <string> The file path to save the image to. The screenshot type
+   * - `path` : The file path to save the image to. The screenshot type
    *   will be inferred from file extension. If `path` is a relative path, then
    *   it is resolved relative to
    *   {@link https://nodejs.org/api/process.html#process_process_cwd
    *   | current working directory}.
    *   If no path is provided, the image won't be saved to the disk.
    *
-   * - `type` : <string> Specify screenshot type, can be either `jpeg` or `png`.
+   * - `type` : Specify screenshot type, can be either `jpeg` or `png`.
    *   Defaults to 'png'.
    *
-   * - `quality` : <number> The quality of the image, between 0-100. Not
+   * - `quality` : The quality of the image, between 0-100. Not
    *   applicable to `png` images.
    *
-   * - `fullPage` : <boolean> When true, takes a screenshot of the full
+   * - `fullPage` : When true, takes a screenshot of the full
    *   scrollable page. Defaults to `false`
    *
-   * - `clip` : <Object> An object which specifies clipping region of the page.
+   * - `clip` : An object which specifies clipping region of the page.
    *   Should have the following fields:<br/>
-   *  - `x` : <number> x-coordinate of top-left corner of clip area.<br/>
-   *  - `y` :  <number> y-coordinate of top-left corner of clip area.<br/>
-   *  - `width` : <number> width of clipping area.<br/>
-   *  - `height` : <number> height of clipping area.
+   *  - `x` : x-coordinate of top-left corner of clip area.<br/>
+   *  - `y` :  y-coordinate of top-left corner of clip area.<br/>
+   *  - `width` : width of clipping area.<br/>
+   *  - `height` : height of clipping area.
    *
-   * - `omitBackground` : <boolean> Hides default white background and allows
+   * - `omitBackground` : Hides default white background and allows
    *   capturing screenshots with transparency. Defaults to `false`
    *
-   * - `encoding` : <string> The encoding of the image, can be either base64 or
+   * - `encoding` : The encoding of the image, can be either base64 or
    *   binary. Defaults to `binary`.
    *
    *
@@ -2720,7 +2718,7 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @param {!PDFOptions=} options
+   * @param {!PDFOptions=} options -
    * @returns {!Promise<!Buffer>}
    */
   async pdf(options: PDFOptions = {}): Promise<Buffer> {
@@ -2847,8 +2845,9 @@ export class Page extends EventEmitter {
    * page.select('select#colors', 'blue'); // single selection
    * page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
    * ```
-   * @param selector - A {@link https://developer.mozilla.org/en-US/docs/Web/CSS/
-   * CSS_Selectors | Selector} to query the page for
+   * @param selector - A
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | Selector}
+   * to query the page for
    * @param values - Values of options to select. If the `<select>` has the
    * `multiple` attribute, all values are considered, otherwise only the first one
    * is taken into account.
@@ -2897,7 +2896,8 @@ export class Page extends EventEmitter {
    * @param options - have property `delay` which is the Time to wait between
    * key presses in milliseconds. Defaults to `0`.
    * @returns
-   * {@link page.mainFrame().type(selector, text[, options])}
+   * @remarks
+   * Shortcut for {@link page.mainFrame().type(selector, text[, options])}
    */
   type(
     selector: string,

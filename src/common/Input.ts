@@ -492,7 +492,6 @@ export class Mouse {
    * Dispatches a `drag` event.
    * @param start - starting point for drag
    * @param target - point to drag to
-   * ```
    */
   async drag(start: Point, target: Point): Promise<Protocol.Input.DragData> {
     const promise = new Promise<Protocol.Input.DragData>((resolve) => {
@@ -509,7 +508,6 @@ export class Mouse {
   /**
    * Dispatches a `dragenter` event.
    * @param target - point for emitting `dragenter` event
-   * ```
    */
   async dragEnter(target: Point, data: Protocol.Input.DragData): Promise<void> {
     await this._client.send('Input.dispatchDragEvent', {
@@ -524,7 +522,6 @@ export class Mouse {
   /**
    * Dispatches a `dragover` event.
    * @param target - point for emitting `dragover` event
-   * ```
    */
   async dragOver(target: Point, data: Protocol.Input.DragData): Promise<void> {
     await this._client.send('Input.dispatchDragEvent', {
@@ -543,7 +540,6 @@ export class Mouse {
    * @param options - An object of options. Accepts delay which,
    * if specified, is the time to wait between `dragover` and `drop` in milliseconds.
    * Defaults to 0.
-   * ```
    */
   async drop(target: Point, data: Protocol.Input.DragData): Promise<void> {
     await this._client.send('Input.dispatchDragEvent', {
@@ -562,7 +558,6 @@ export class Mouse {
    * @param options - An object of options. Accepts delay which,
    * if specified, is the time to wait between `dragover` and `drop` in milliseconds.
    * Defaults to 0.
-   * ```
    */
   async dragAndDrop(
     start: Point,
