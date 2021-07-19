@@ -2718,8 +2718,8 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @param {!PDFOptions=} options -
-   * @returns {!Promise<!Buffer>}
+   * @param options -
+   * @returns
    */
   async pdf(options: PDFOptions = {}): Promise<Buffer> {
     const { path = undefined } = options;
@@ -2897,7 +2897,6 @@ export class Page extends EventEmitter {
    * key presses in milliseconds. Defaults to `0`.
    * @returns
    * @remarks
-   * Shortcut for {@link page.mainFrame().type(selector, text[, options])}
    */
   type(
     selector: string,

@@ -45,7 +45,9 @@ export interface BrowserLaunchArgumentOptions {
    */
   args?: string[];
 }
-
+/**
+ * @public
+ */
 export type ChromeReleaseChannel =
   | 'chrome'
   | 'chrome-beta'
