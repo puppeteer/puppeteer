@@ -12,11 +12,13 @@ jobs:
         uses: actions/checkout@v2
       - name: Build
         run: |
+          # Ensure all the top level pptr deps are installed
           npm install
-          # This will be replaced with the actual documentation builder once it's
-          # configured
-          mkdir -p docs-dist/
-          cp website/index.html docs-dist/index.html
+          # cd into Docusaurus folder and install its deps
+          cd website
+          npm install
+          # Instruct Docusaurus to generate the docs-dist/ built site.
+          npm run build
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.4.1
         with:
