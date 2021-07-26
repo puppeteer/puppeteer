@@ -14,11 +14,8 @@ jobs:
         run: |
           # Ensure all the top level pptr deps are installed
           npm install
-          # cd into Docusaurus folder and install its deps
-          cd website
-          npm install
-          # Instruct Docusaurus to generate the docs-dist/ built site.
-          npm run build
+          npm run install-docusuarus-deps
+          npm run build-docusaurus-production
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.4.1
         with:
