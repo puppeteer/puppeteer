@@ -12,10 +12,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Build
         run: |
-          # Ensure all the top level pptr deps are installed
           npm install
-          npm run install-docusuarus-deps
-          npm run build-docusaurus-production
+          npm run build-docs-production
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.4.1
         with:
