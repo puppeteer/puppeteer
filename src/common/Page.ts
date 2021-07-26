@@ -201,7 +201,10 @@ export interface ScreenshotOptions {
  * @public
  */
 export const enum PageEmittedEvents {
-  /** Emitted when the page closes. */
+  /**
+   * @eventProperty
+   * Emitted when the page closes.
+   */
   Close = 'close',
   /**
    * Emitted when JavaScript within the page calls one of console API methods,

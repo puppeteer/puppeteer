@@ -171,6 +171,16 @@ To format the documentation markdown and its code snippets, use:
 npm run markdownlint-fix
 ```
 
+## Writing TSDoc Comments
+
+When commenting, consider the following:
+
+- If there is a new release which hasn't been given any tag and its throwing some warning then mark that as `@public`
+- Avoid use of HTML tags.
+- If column size comment is exceeding 90 try to use multiple lines instead of placing all in one line.
+- Prefixing your comments with `FIXME` or `TODO` helps other developers quickly understand if you’re pointing out a problem that needs to be revisited, or if you’re suggesting a solution to the problem that needs to be implemented.
+- For better insight of TSDoc syntax please refer There's a [API Extractor](https://api-extractor.com/pages/tsdoc/doc_comment_syntax/)
+
 ## Adding New Dependencies
 
 For all dependencies (both installation and development):
