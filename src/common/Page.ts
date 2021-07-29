@@ -379,7 +379,7 @@ class ScreenshotTaskQueue {
     task: () => Promise<Buffer | string>
   ): Promise<Buffer | string | void> {
     const result = this._chain.then(task);
-    this._chain = result.catch(() => { });
+    this._chain = result.catch(() => {});
     return result;
   }
 }
@@ -2501,13 +2501,13 @@ export class Page extends EventEmitter {
       assert(
         screenshotType === 'jpeg',
         'options.quality is unsupported for the ' +
-        screenshotType +
-        ' screenshots'
+          screenshotType +
+          ' screenshots'
       );
       assert(
         typeof options.quality === 'number',
         'Expected options.quality to be a number but found ' +
-        typeof options.quality
+          typeof options.quality
       );
       assert(
         Number.isInteger(options.quality),
@@ -2516,7 +2516,7 @@ export class Page extends EventEmitter {
       assert(
         options.quality >= 0 && options.quality <= 100,
         'Expected options.quality to be between 0 and 100 (inclusive), got ' +
-        options.quality
+          options.quality
       );
     }
     assert(
@@ -2527,22 +2527,22 @@ export class Page extends EventEmitter {
       assert(
         typeof options.clip.x === 'number',
         'Expected options.clip.x to be a number but found ' +
-        typeof options.clip.x
+          typeof options.clip.x
       );
       assert(
         typeof options.clip.y === 'number',
         'Expected options.clip.y to be a number but found ' +
-        typeof options.clip.y
+          typeof options.clip.y
       );
       assert(
         typeof options.clip.width === 'number',
         'Expected options.clip.width to be a number but found ' +
-        typeof options.clip.width
+          typeof options.clip.width
       );
       assert(
         typeof options.clip.height === 'number',
         'Expected options.clip.height to be a number but found ' +
-        typeof options.clip.height
+          typeof options.clip.height
       );
       assert(
         options.clip.width !== 0,
