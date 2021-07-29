@@ -1704,7 +1704,8 @@ await page.evaluate(() => matchMedia('print').matches);
   - `latency` <[number]> Latency (ms), `0` to disable
 - returns: <[Promise]>
 
-> **NOTE** This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644)
+> **NOTE** This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644). To set the page offline, you can use [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled).
+
 
 ```js
 const puppeteer = require('puppeteer');
@@ -2321,8 +2322,10 @@ await page.setGeolocation({ latitude: 59.95, longitude: 30.31667 });
 
 #### page.setOfflineMode(enabled)
 
-- `enabled` <[boolean]> When `true`, enables offline mode for the page.
+- `enabled` <[boolean]> When `true`, enables offline mode for the page. 
 - returns: <[Promise]>
+
+> **NOTE** while this method sets the network connection to offline, it does not change the parameters used in [page.emulateNetworkConditions(networkConditions)](#pageemulatenetworkconditionsnetworkconditions).
 
 #### page.setRequestInterception(value)
 
