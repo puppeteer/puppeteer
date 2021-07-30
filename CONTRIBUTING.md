@@ -174,14 +174,10 @@ npm run markdownlint-fix
 
 ## Writing TSDoc Comments
 
-When commenting, consider the following:
+Each change to Puppeteer should be thoroughly documented using TSDoc comments. Refer to the [API Extractor documentation](https://api-extractor.com/pages/tsdoc/doc_comment_syntax/) for information on the exact syntax.
 
-- Every new method needs to have either `@public` or `@internal` added depending on if it is part of the public API
-- Use Markdown syntax when writing documentation.
-- If column size comment is exceeding 90 please split it over multiple lines instead of placing all in one line. One can use Rewrap plugin for comment formatting.
-- Prefixing your comments with `FIXME` or `TODO` helps other developers quickly understand if you’re pointing out a problem that needs to be revisited, or if you’re suggesting a solution to the problem that needs to be implemented.
-- please refer to the [API Extractor](https://api-extractor.com/pages/tsdoc/doc_comment_syntax/) documentation.
-
+- Every new method needs to have either `@public` or `@internal` added as a tag depending on if it is part of the public API.
+- Keep each line in a comment to no more than 90 characters (ESLint will warn you if you go over this). If you're a VSCode user the [Rewrap plugin](https://marketplace.visualstudio.com/items?itemName=stkb.rewrap) is highly recommended!
 
 ## Adding New Dependencies
 
