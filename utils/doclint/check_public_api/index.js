@@ -698,6 +698,13 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method Page.setUserAgent() userAgentMetadata',
+        {
+          actualName: 'Object',
+          expectedName: 'UserAgentMetadata',
+        },
+      ],
+      [
         'Method Page.setViewport() options.viewport',
         {
           actualName: 'Object',
@@ -769,6 +776,13 @@ function compareDocumentations(actual, expected) {
       ],
       [
         'Method Page.pdf() options',
+        {
+          actualName: 'Object',
+          expectedName: 'PDFOptions',
+        },
+      ],
+      [
+        'Method Page.createPDFStream() options',
         {
           actualName: 'Object',
           expectedName: 'PDFOptions',
