@@ -872,6 +872,8 @@ a single instance of [BrowserContext].
 
 Closes Chromium and all of its pages (if any were opened). The [Browser] object itself is considered to be disposed and cannot be used anymore.
 
+During the process of closing the browser, it will attempt to delete the temp folder created exclusively for this browser instance. If this fails (either because a file in the temp folder is locked by another process or because of insufficient permissions) it will log the error in the console and throw back the exception. This implies that: a) the folder and/or its content will not be fully deleted; and b) the connection with the browser will not be properly disposed (see [browser.disconnect()](#browserdisconnect)).
+
 #### browser.createIncognitoBrowserContext()
 
 - returns: <[Promise]<[BrowserContext]>>
