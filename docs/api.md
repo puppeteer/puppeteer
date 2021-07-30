@@ -882,6 +882,8 @@ a single instance of [BrowserContext].
 
 Closes Chromium and all of its pages (if any were opened). The [Browser] object itself is considered to be disposed and cannot be used anymore.
 
+During the process of closing the browser, Puppeteer attempts to delete the temp folder created exclusively for this browser instance. If this fails (either because a file in the temp folder is locked by another process or because of insufficient permissions) an error is logged. This implies that: a) the folder and/or its content is not fully deleted; and b) the connection with the browser is not properly disposed (see [browser.disconnect()](#browserdisconnect)).
+
 #### browser.createIncognitoBrowserContext()
 
 - returns: <[Promise]<[BrowserContext]>>
