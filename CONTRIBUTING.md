@@ -13,6 +13,7 @@
   * [API guidelines](#api-guidelines)
   * [Commit Messages](#commit-messages)
   * [Writing Documentation](#writing-documentation)
+  * [Writing TSDoc Comments](#writing-tsdoc-comments)
   * [Adding New Dependencies](#adding-new-dependencies)
   * [Running & Writing Tests](#running--writing-tests)
   * [Public API Coverage](#public-api-coverage)
@@ -170,6 +171,17 @@ To format the documentation markdown and its code snippets, use:
 ```bash
 npm run markdownlint-fix
 ```
+
+## Writing TSDoc Comments
+
+When commenting, consider the following:
+
+- Every new method needs to have either `@public` or `@internal` added depending on if it is part of the public API
+- Use Markdown syntax when writing documentation.
+- If column size comment is exceeding 90 please split it over multiple lines instead of placing all in one line. One can use Rewrap plugin for comment formatting.
+- Prefixing your comments with `FIXME` or `TODO` helps other developers quickly understand if you’re pointing out a problem that needs to be revisited, or if you’re suggesting a solution to the problem that needs to be implemented.
+- please refer to the [API Extractor](https://api-extractor.com/pages/tsdoc/doc_comment_syntax/) documentation.
+
 
 ## Adding New Dependencies
 
