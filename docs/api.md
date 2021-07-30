@@ -882,6 +882,8 @@ a single instance of [BrowserContext].
 
 Closes Chromium and all of its pages (if any were opened). The [Browser] object itself is considered to be disposed and cannot be used anymore.
 
+During the process of closing the browser, Puppeteer attempts to delete the temp folder created exclusively for this browser instance. If this fails (either because a file in the temp folder is locked by another process or because of insufficient permissions) an error is logged. This implies that: a) the folder and/or its content is not fully deleted; and b) the connection with the browser is not properly disposed (see [browser.disconnect()](#browserdisconnect)).
+
 #### browser.createIncognitoBrowserContext()
 
 - returns: <[Promise]<[BrowserContext]>>
@@ -1704,7 +1706,8 @@ await page.evaluate(() => matchMedia('print').matches);
   - `latency` <[number]> Latency (ms), `0` to disable
 - returns: <[Promise]>
 
-> **NOTE** This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644)
+> **NOTE** This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644). To set the page offline, you can use [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled).
+
 
 ```js
 const puppeteer = require('puppeteer');
@@ -2321,8 +2324,10 @@ await page.setGeolocation({ latitude: 59.95, longitude: 30.31667 });
 
 #### page.setOfflineMode(enabled)
 
-- `enabled` <[boolean]> When `true`, enables offline mode for the page.
+- `enabled` <[boolean]> When `true`, enables offline mode for the page. 
 - returns: <[Promise]>
+
+> **NOTE** while this method sets the network connection to offline, it does not change the parameters used in [page.emulateNetworkConditions(networkConditions)](#pageemulatenetworkconditionsnetworkconditions).
 
 #### page.setRequestInterception(value)
 
