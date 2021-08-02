@@ -29,7 +29,7 @@ module.exports = {
   projectName: 'puppeteer', // Usually your repo name.
   themeConfig: {
     navbar: {
-      style:"primary",
+      style: "primary",
       title: 'Puppeteer',
       logo: {
         alt: 'My Site Logo',
@@ -37,31 +37,31 @@ module.exports = {
       },
       items: [
         {
-          to: "docs/puppeteer.puppeteer",
+          to: 'docs/puppeteer.puppeteer',
           // activeBasePath: "docs",
-          label: "APIs",
-          position: "left",
+          label: 'APIs',
+          position: 'left',
         },
         {
-          to: "blog/contributing",
+          to: 'blog/contributing',
           // activeBasePath: "docs",
-          label: "Contribute",
-          position: "left",
+          label: 'Contribute',
+          position: 'left',
         },
         {
-          label: "Github",
-          href: "https://github.com/puppeteer/puppeteer",
-          position: "right",
+          label: 'Github',
+          href: 'https://github.com/puppeteer/puppeteer',
+          position: 'right',
         },
         {
-        label: "Stack",
-        href: "https://stackoverflow.com/questions/tagged/puppeteer",
-        position: "right"
+        label: 'Stack',
+        href: 'https://stackoverflow.com/questions/tagged/puppeteer',
+        position: 'right'
         },
         {
-        label: "Version 1.0",
-        href: "https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md",
-        position: "right"
+        label: 'Version 1.0',
+        href: 'https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md',
+        position: 'right'
         }
       ],
     },
