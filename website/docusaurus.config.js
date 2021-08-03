@@ -22,30 +22,49 @@ module.exports = {
   tagline: 'Note: this documentation is WIP. Please use https://pptr.dev.',
   url: 'https://puppeteer.github.io/',
   baseUrl: '/puppeteer/',
-  onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenLinks: 'ignore',
+  onBrokenMarkdownLinks: 'ignore',
   favicon: 'img/favicon.ico',
   organizationName: 'puppeteer', // Usually your GitHub org/user name.
   projectName: 'puppeteer', // Usually your repo name.
   themeConfig: {
+    hideableSidebar: true,
     navbar: {
+      style: "primary",
       title: 'Puppeteer',
       logo: {
         alt: 'My Site Logo',
         src: 'img/logo.svg',
       },
+      hideOnScroll: true,
       items: [
         {
-          type: 'doc',
-          docId: 'intro',
+          to: 'docs/puppeteer.puppeteer',
+          // activeBasePath: "docs",
+          label: 'APIs',
           position: 'left',
-          label: 'Tutorial',
         },
         {
+          to: 'blog/contributing',
+          // activeBasePath: "docs",
+          label: 'Contribute',
+          position: 'left',
+        },
+        {
+          label: 'Github',
           href: 'https://github.com/puppeteer/puppeteer',
-          label: 'GitHub',
           position: 'right',
         },
+        {
+        label: 'Stack',
+        href: 'https://stackoverflow.com/questions/tagged/puppeteer',
+        position: 'right'
+        },
+        {
+        label: 'Version 1.0',
+        href: 'https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md',
+        position: 'right'
+        }
       ],
     },
     footer: {
@@ -65,6 +84,9 @@ module.exports = {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl: 'https://github.com/facebook/puppeteer/edit/main/website/',
+        },
+        theme: {
+          customCss: require.resolve("./src/css/custom.css"),
         },
       },
     ],
