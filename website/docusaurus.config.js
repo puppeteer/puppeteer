@@ -40,13 +40,11 @@ module.exports = {
       items: [
         {
           to: 'docs/puppeteer.puppeteer',
-          // activeBasePath: "docs",
           label: 'APIs',
           position: 'left',
         },
         {
           to: 'blog/contributing',
-          // activeBasePath: "docs",
           label: 'Contribute',
           position: 'left',
         },
