@@ -34,6 +34,7 @@ import createHttpsProxyAgent, {
 } from 'https-proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
 import { assert } from '../common/assert.js';
+import { PUPPETEER_REVISIONS } from '../revisions.js';
 
 const debugFetcher = debug(`puppeteer:fetcher`);
 
@@ -344,10 +345,12 @@ export class BrowserFetcher {
   }
 
   /**
-   * @param revision - The revision to get info for.
+   * @param revision? - The revision to get info for. If not set, the latest
+   * revision info is returned.
    * @returns The revision info for the given revision.
    */
-  revisionInfo(revision: string): BrowserFetcherRevisionInfo {
+  revisionInfo(revision?: string): BrowserFetcherRevisionInfo {
+    if (!revision) revision = PUPPETEER_REVISIONS[this._product];
     const folderPath = this._getFolderPath(revision);
     let executablePath = '';
     if (this._product === 'chrome') {
