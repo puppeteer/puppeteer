@@ -696,6 +696,227 @@ module.exports = {
             ]
           },
         ],
+        "Keyboard": [
+          {
+            type: 'doc',
+            id: 'puppeteer.keyboard',
+            label: 'keyboard',
+          },
+          {
+            Methods: [
+              {
+                type: 'doc',
+                id: 'puppeteer.keyboard.down',
+                label: 'down',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.keyboard.press',
+                label: 'press',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.keyboard.sendcharacter',
+                label: 'sendCharacter',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.keyboard.type',
+                label: 'type',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.keyboard.up',
+                label: 'up',
+              },
+            ]
+          },
+        ],
+        "Mouse": [
+          {
+            type: 'doc',
+            id: 'puppeteer.mouse',
+            label: 'mouse',
+          },
+          {
+            Methods: [
+              {
+                type: 'doc',
+                id: 'puppeteer.mouse.click',
+                label: 'click',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.mouse.down',
+                label: 'down',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.mouse.drag',
+                label: 'drag',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.mouse.draganddrop',
+                label: 'dragAndDrop',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.mouse.dragenter',
+                label: 'dragEnter',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.mouse.dragover',
+                label: 'dragOver',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.mouse.drop',
+                label: 'drop',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.mouse.move',
+                label: 'move',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.mouse.up',
+                label: 'up',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.mouse.wheel',
+                label: 'wheel',
+              },
+            ]
+          },
+        ],
+        "TouchScreen": [
+          {
+            type: 'doc',
+            id: 'puppeteer.touchscreen',
+            label: 'touchScreen',
+          },
+          {
+            Methods: [
+              {
+                type: 'doc',
+                id: 'puppeteer.touchscreen.tap',
+                label: 'tap'
+              }
+            ]
+          },
+        ],
+        "Tracing": [
+          {
+            type: 'doc',
+            id: 'puppeteer.tracing',
+            label: 'Tracing',
+          },
+          {
+            Methods: [
+              {
+                type: 'doc',
+                id: 'puppeteer.tracing._client',
+                label: 'client',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.tracing._path',
+                label: 'path',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.tracing._recording',
+                label: 'recording',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.tracing.start',
+                label: 'start',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.tracing.stop',
+                label: 'stop',
+              },
+            ]
+          },
+        ],
+        "Dialog": [
+          {
+            type: 'doc',
+            id: 'puppeteer.dialog',
+            label: 'dialog',
+          },
+          {
+            Methods: [
+              {
+                type: 'doc',
+                id: 'puppeteer.dialog.accept',
+                label: 'accept',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.dialog.defaultvalue',
+                label: 'defaultValue',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.dialog.dismiss',
+                label: 'dismiss',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.dialog.message',
+                label: 'message',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.dialog.type',
+                label: 'type',
+              },
+            ]
+          },
+        ],
+        "ConsoleMessage": [
+          {
+            type: 'doc',
+            id: 'puppeteer.consolemessage',
+            label: 'consoleMessage',
+          },
+          {
+            Methods: [
+              {
+                type: 'doc',
+                id: 'puppeteer.consolemessage.args',
+                label: 'args',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.consolemessage.location',
+                label: 'location',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.consolemessage.stacktrace',
+                label: 'stackTrace',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.consolemessage.text',
+                label: 'text',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.consolemessage.type',
+                label: 'type',
+              },
+            ]
+          },
+        ],
         "FileChooser": [
           {
             type: 'doc',
