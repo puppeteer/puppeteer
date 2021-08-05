@@ -917,6 +917,172 @@ module.exports = {
             ]
           },
         ],
+        "Frame": [
+          {
+            type: 'doc',
+            id: 'puppeteer.frame',
+            label: 'frame',
+          },
+          {
+            Methods: [
+              {
+                type: 'doc',
+                id: 'puppeteer.frame._',
+                label: '$',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.__',
+                label: '$$',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.__eval',
+                label: '$$eval',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame._eval',
+                label: '$eval',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame._x',
+                label: '$x',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.addscripttag',
+                label: 'addScriptTag',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.addstyletag',
+                label: 'addStyleTag',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.childframes',
+                label: 'childFrames',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.click',
+                label: 'click',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.content',
+                label: 'content',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.evaluate',
+                label: 'evaluate',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.evaluatehandle',
+                label: 'evaluateHandle',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.executioncontext',
+                label: 'executionContext',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.focus',
+                label: 'focus',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.goto',
+                label: 'goTo',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.hover',
+                label: 'hover',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.isdetached',
+                label: 'isDetached',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.name',
+                label: 'name',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.parentframe',
+                label: 'parentFrame',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.select',
+                label: 'select',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.setcontent',
+                label: 'setContent',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.tap',
+                label: 'tap',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.title',
+                label: 'title',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.type',
+                label: 'type',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.url',
+                label: 'url',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.waitfor',
+                label: 'waitFor',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.waitforfunction',
+                label: 'waitForFunction',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.waitfornavigation',
+                label: 'waitForNavigation',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.waitforselector',
+                label: 'waitForSelector',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.waitfortimeout',
+                label: 'waitForTimeOut',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.frame.waitforxpath',
+                label: 'waitForXPath',
+              },
+            ]
+          }
+        ],
         "FileChooser": [
           {
             type: 'doc',
