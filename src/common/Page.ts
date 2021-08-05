@@ -854,6 +854,10 @@ export class Page extends EventEmitter {
 
   /**
    * @param enabled - When `true`, enables offline mode for the page.
+   * @remarks
+   * NOTE: while this method sets the network connection to offline, it does
+   * not change the parameters used in [page.emulateNetworkConditions(networkConditions)]
+   * (#pageemulatenetworkconditionsnetworkconditions)
    */
   setOfflineMode(enabled: boolean): Promise<void> {
     return this._frameManager.networkManager().setOfflineMode(enabled);
@@ -877,7 +881,8 @@ export class Page extends EventEmitter {
    * ```
    * @remarks
    * NOTE: This does not affect WebSockets and WebRTC PeerConnections (see
-   * https://crbug.com/563644)
+   * https://crbug.com/563644). To set the page offline, you can use
+   * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled).
    */
   emulateNetworkConditions(
     networkConditions: NetworkConditions | null

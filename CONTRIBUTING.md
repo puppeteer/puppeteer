@@ -13,6 +13,7 @@
   * [API guidelines](#api-guidelines)
   * [Commit Messages](#commit-messages)
   * [Writing Documentation](#writing-documentation)
+  * [Writing TSDoc Comments](#writing-tsdoc-comments)
   * [Adding New Dependencies](#adding-new-dependencies)
   * [Running & Writing Tests](#running--writing-tests)
   * [Public API Coverage](#public-api-coverage)
@@ -170,6 +171,13 @@ To format the documentation markdown and its code snippets, use:
 ```bash
 npm run markdownlint-fix
 ```
+
+## Writing TSDoc Comments
+
+Each change to Puppeteer should be thoroughly documented using TSDoc comments. Refer to the [API Extractor documentation](https://api-extractor.com/pages/tsdoc/doc_comment_syntax/) for information on the exact syntax.
+
+- Every new method needs to have either `@public` or `@internal` added as a tag depending on if it is part of the public API.
+- Keep each line in a comment to no more than 90 characters (ESLint will warn you if you go over this). If you're a VSCode user the [Rewrap plugin](https://marketplace.visualstudio.com/items?itemName=stkb.rewrap) is highly recommended!
 
 ## Adding New Dependencies
 

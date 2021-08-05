@@ -1,6 +1,6 @@
 {
   "name": "puppeteer",
-  "version": "10.1.0-post",
+  "version": "10.2.0-post",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "main": "./cjs-entry.js",
   "types": "lib/types.d.ts",
@@ -35,9 +35,9 @@
     "tsc-esm": "tsc -b src/tsconfig.esm.json",
     "apply-next-version": "node utils/apply_next_version.js",
     "test-install": "scripts/test-install.sh",
-    "clean-docs": "rimraf new-docs && rimraf docs-api-json",
+    "clean-docs": "rimraf website/docs && rimraf docs-api-json",
     "generate-d-ts": "npm run clean-docs && api-extractor run --local --verbose",
-    "generate-docs": "npm run generate-d-ts && api-documenter markdown -i docs-api-json -o new-docs && node utils/remove-tag.js",
+    "generate-docs": "npm run generate-d-ts && api-documenter markdown -i docs-api-json -o website/docs && node utils/remove-tag.js",
     "ensure-correct-devtools-protocol-revision": "ts-node -s scripts/ensure-correct-devtools-protocol-package",
     "ensure-pinned-deps": "ts-node -s scripts/ensure-pinned-deps",
     "test-types-file": "ts-node -s scripts/test-ts-definition-files.ts",
@@ -59,7 +59,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "debug": "4.3.1",
-    "devtools-protocol": "0.0.883894",
+    "devtools-protocol": "0.0.901419",
     "extract-zip": "2.0.1",
     "https-proxy-agent": "5.0.0",
     "node-fetch": "2.6.1",
