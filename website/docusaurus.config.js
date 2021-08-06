@@ -22,7 +22,7 @@ module.exports = {
   tagline: 'Note: this documentation is WIP. Please use https://pptr.dev.',
   url: 'https://puppeteer.github.io/',
   baseUrl: '/puppeteer/',
-  onBrokenLinks: 'ignore',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'ignore',
   favicon: 'img/favicon.ico',
   organizationName: 'puppeteer', // Usually your GitHub org/user name.
@@ -47,6 +47,9 @@ module.exports = {
           to: 'blog/contributing',
           label: 'Contribute',
           position: 'left',
+        },
+        {
+          type: 'docsVersionDropdown',
         },
         {
           label: 'Github',

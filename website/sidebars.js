@@ -473,6 +473,11 @@ module.exports = {
               },
               {
                 type: 'doc',
+                id: 'puppeteer.page.once',
+                label: 'once',
+              },
+              {
+                type: 'doc',
                 id: 'puppeteer.page.pdf',
                 label: 'PDF',
               },
