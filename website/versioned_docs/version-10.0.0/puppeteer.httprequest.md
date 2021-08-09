@@ -9,7 +9,7 @@ Represents an HTTP request sent by a page.
 <b>Signature:</b>
 
 ```typescript
-export declare class HTTPRequest 
+export declare class HTTPRequest
 ```
 
 ## Remarks
@@ -37,12 +37,8 @@ The constructor for this class is marked as internal. Third-party code should no
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
 |  [abort(errorCode, priority)](./puppeteer.httprequest.abort.md) |  | Aborts a request. |
-|  [abortErrorReason()](./puppeteer.httprequest.aborterrorreason.md) |  |  |
 |  [continue(overrides, priority)](./puppeteer.httprequest.continue.md) |  | Continues request with optional request overrides. |
-|  [continueRequestOverrides()](./puppeteer.httprequest.continuerequestoverrides.md) |  |  |
-|  [enqueueInterceptAction(pendingHandler)](./puppeteer.httprequest.enqueueinterceptaction.md) |  | Adds an async request handler to the processing queue. Deferred handlers are not guaranteed to execute in any particular order, but they are guarnateed to resolve before the request interception is finalized. |
 |  [failure()](./puppeteer.httprequest.failure.md) |  | Access information about the request's failure. |
-|  [finalizeInterceptions()](./puppeteer.httprequest.finalizeinterceptions.md) |  | Awaits pending interception handlers and then decides how to fulfill the request interception. |
 |  [frame()](./puppeteer.httprequest.frame.md) |  |  |
 |  [headers()](./puppeteer.httprequest.headers.md) |  |  |
 |  [isNavigationRequest()](./puppeteer.httprequest.isnavigationrequest.md) |  |  |
@@ -52,6 +48,3 @@ The constructor for this class is marked as internal. Third-party code should no
 |  [resourceType()](./puppeteer.httprequest.resourcetype.md) |  | Contains the request's resource type as it was perceived by the rendering engine. |
 |  [respond(response, priority)](./puppeteer.httprequest.respond.md) |  | Fulfills a request with the given response. |
 |  [response()](./puppeteer.httprequest.response.md) |  |  |
-|  [responseForRequest()](./puppeteer.httprequest.responseforrequest.md) |  |  |
-|  [url()](./puppeteer.httprequest.url.md) |  |  |
-

@@ -1163,8 +1163,12 @@ module.exports = {
         "HTTPRequest": [
             'puppeteer.httprequest',
         'puppeteer.httprequest.abort',
+        'puppeteer.httprequest.aborterrorreason',
         'puppeteer.httprequest.continue',
+        'puppeteer.httprequest.continuerequestoverrides',
+        'puppeteer.httprequest.enqueueinterceptaction',
         'puppeteer.httprequest.failure',
+        'puppeteer.httprequest.finalizeinterceptions',
         'puppeteer.httprequest.frame',
         'puppeteer.httprequest.headers',
         'puppeteer.httprequest.isnavigationrequest',
@@ -1174,6 +1178,7 @@ module.exports = {
         'puppeteer.httprequest.resourcetype',
         'puppeteer.httprequest.respond',
         'puppeteer.httprequest.response',
+        'puppeteer.httprequest.responseforrequest',
         'puppeteer.httprequest.url',
         ],
         "HTTPRespose": [
