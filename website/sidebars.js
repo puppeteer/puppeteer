@@ -1115,88 +1115,394 @@ module.exports = {
           },
         ],
         "ExecutionContext": [
-            'puppeteer.executioncontext',
-        'puppeteer.executioncontext.evaluate',
-        'puppeteer.executioncontext.evaluatehandle',
-        'puppeteer.executioncontext.frame',
-        'puppeteer.executioncontext.queryobjects',
+          {
+            type: 'doc',
+            id: 'puppeteer.executioncontext',
+            label: 'executionContext',
+          },
+          {
+            Methods: [
+              {
+                type: 'doc',
+                id: 'puppeteer.executioncontext.evaluate',
+                label: 'evaluate',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.executioncontext.evaluatehandle',
+                label: 'evaluateHandle',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.executioncontext.frame',
+                label: 'frame',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.executioncontext.queryobjects',
+                label: 'queryobjects',
+              },
+            ]
+          },
         ],
         "JSHandle": [
-            'puppeteer.jshandle',
-        'puppeteer.jshandle.aselement',
-        'puppeteer.jshandle.dispose',
-        'puppeteer.jshandle.evaluate',
-        'puppeteer.jshandle.evaluatehandle',
-        'puppeteer.jshandle.executioncontext',
-        'puppeteer.jshandle.getproperties',
-        'puppeteer.jshandle.getproperty',
-        'puppeteer.jshandle.jsonvalue',
+          {
+            type: 'doc',
+            id: 'puppeteer.jshandle',
+            label: 'JSHandle',
+          },
+          {
+            Methods: [
+              {
+                type: 'doc',
+                id: 'puppeteer.jshandle.aselement',
+                label: 'asElement',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.jshandle.dispose',
+                label: 'dispose',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.jshandle.evaluate',
+                label: 'evaluate',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.jshandle.evaluatehandle',
+                label: 'evaluateHandle',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.jshandle.executioncontext',
+                label: 'executionContext',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.jshandle.getproperties',
+                label: 'getProperties',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.jshandle.getproperty',
+                label: 'getProperty',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.jshandle.jsonvalue',
+                label: 'JSONValue',
+              },
+            ]
+          },
         ],
         "ElementHandle": [
-            'puppeteer.elementhandle',
-        'puppeteer.elementhandle._',
-        'puppeteer.elementhandle.__',
-        'puppeteer.elementhandle.__eval',
-        'puppeteer.elementhandle._eval',
-        'puppeteer.elementhandle._x',
-        'puppeteer.elementhandle.aselement',
-        'puppeteer.elementhandle.boundingbox',
-        'puppeteer.elementhandle.boxmodel',
-        'puppeteer.elementhandle.click',
-        'puppeteer.elementhandle.contentframe',
-        'puppeteer.elementhandle.focus',
-        'puppeteer.elementhandle.hover',
-        'puppeteer.elementhandle.clickablepoint',
-        'puppeteer.elementhandle.drag',
-        'puppeteer.elementhandle.draganddrop',
-        'puppeteer.elementhandle.dragenter',
-        'puppeteer.elementhandle.dragover',
-        'puppeteer.elementhandle.drop',
-        'puppeteer.elementhandle.isintersectingviewport',
-        'puppeteer.elementhandle.press',
-        'puppeteer.elementhandle.screenshot',
-        'puppeteer.elementhandle.select',
-        'puppeteer.elementhandle.tap',
-        'puppeteer.elementhandle.type',
-        'puppeteer.elementhandle.uploadfile',
+          {
+            type: 'doc',
+            id: 'puppeteer.elementhandle',
+            label: 'elementHandle',
+          },
+          {
+            Methods: [
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle._',
+                label: '$',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.__',
+                label: '$$',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.__eval',
+                label: '$$eval',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle._eval',
+                label: '$eval',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle._x',
+                label: '$x',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.aselement',
+                label: 'asElement',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.boundingbox',
+                label: 'boundingBox',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.boxmodel',
+                label: 'boxModel',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.click',
+                label: 'click',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.contentframe',
+                label: 'contentFrame',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.focus',
+                label: 'focus',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.hover',
+                label: 'hover',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.clickablepoint',
+                label: 'clickablePoint',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.drag',
+                label: 'drag',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.draganddrop',
+                label: 'dragAndDrop',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.dragenter',
+                label: 'dragEnter',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.dragover',
+                label: 'dragOver',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.drop',
+                label: 'drop',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.isintersectingviewport',
+                label: 'isIntersectingViewPort',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.press',
+                label: 'press',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.screenshot',
+                label: 'screenshot',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.select',
+                label: 'select',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.tap',
+                label: 'tap',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.type',
+                label: 'type',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.elementhandle.uploadfile',
+                label: 'uploadFile',
+              },
+            ]
+          },
         ],
         "HTTPRequest": [
-            'puppeteer.httprequest',
-        'puppeteer.httprequest.abort',
-        'puppeteer.httprequest.aborterrorreason',
-        'puppeteer.httprequest.continue',
-        'puppeteer.httprequest.continuerequestoverrides',
-        'puppeteer.httprequest.enqueueinterceptaction',
-        'puppeteer.httprequest.failure',
-        'puppeteer.httprequest.finalizeinterceptions',
-        'puppeteer.httprequest.frame',
-        'puppeteer.httprequest.headers',
-        'puppeteer.httprequest.isnavigationrequest',
-        'puppeteer.httprequest.method',
-        'puppeteer.httprequest.postdata',
-        'puppeteer.httprequest.redirectchain',
-        'puppeteer.httprequest.resourcetype',
-        'puppeteer.httprequest.respond',
-        'puppeteer.httprequest.response',
-        'puppeteer.httprequest.responseforrequest',
-        'puppeteer.httprequest.url',
+          {
+            type: 'doc',
+            id: 'puppeteer.httprequest',
+            label: 'httpRequest',
+          },
+          {
+            Methods: [
+              {
+                type: 'doc',
+                id: 'puppeteer.httprequest.abort',
+                label: 'abort',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httprequest.aborterrorreason',
+                label: 'abortErrorReason',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httprequest.enqueueinterceptaction',
+                label: 'enqueueInterCeptaction',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httprequest.failure',
+                label: 'failure',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httprequest.finalizeinterceptions',
+                label: 'finalizeInterception',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httprequest.frame',
+                label: 'frame',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httprequest.headers',
+                label: 'headers',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httprequest.isnavigationrequest',
+                label: 'isNavigationRequest',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httprequest.method',
+                label: 'method',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httprequest.postdata',
+                label: 'postData',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httprequest.redirectchain',
+                label: 'redirectChain',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httprequest.resourcetype',
+                label: 'resourceType',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httprequest.respond',
+                label: 'respond',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httprequest.response',
+                label: 'response',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httprequest.responseforrequest',
+                label: 'responseForRequest',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httprequest.url',
+                label: 'hurl',
+              },
+            ]
+          },
         ],
         "HTTPRespose": [
-            'puppeteer.httpresponse',
-        'puppeteer.httpresponse.buffer',
-        'puppeteer.httpresponse.frame',
-        'puppeteer.httpresponse.fromcache',
-        'puppeteer.httpresponse.fromserviceworker',
-        'puppeteer.httpresponse.headers',
-        'puppeteer.httpresponse.json',
-        'puppeteer.httpresponse.ok',
-        'puppeteer.httpresponse.remoteaddress',
-        'puppeteer.httpresponse.request',
-        'puppeteer.httpresponse.securitydetails',
-        'puppeteer.httpresponse.status',
-        'puppeteer.httpresponse.statustext',
-        'puppeteer.httpresponse.text',
-        'puppeteer.httpresponse.url',
+          {
+            type: 'doc',
+            id: 'puppeteer.httpresponse',
+            label: 'httpResponse',
+          },
+          {
+            Methods: [
+              {
+                type: 'doc',
+                id: 'puppeteer.httpresponse.buffer',
+                label: 'buffer',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httpresponse.frame',
+                label: 'frame',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httpresponse.fromcache',
+                label: 'fromCache',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httpresponse.fromserviceworker',
+                label: 'fromServiceWorker',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httpresponse.headers',
+                label: 'headers',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httpresponse.json',
+                label: 'JSON',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httpresponse.ok',
+                label: 'OK',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httpresponse.remoteaddress',
+                label: 'remoteAddress',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httpresponse.request',
+                label: 'request',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httpresponse.securitydetails',
+                label: 'securityDetails',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httpresponse.status',
+                label: 'status',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httpresponse.statustext',
+                label: 'statusText',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httpresponse.text',
+                label: 'text',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.httpresponse.url',
+                label: 'URL',
+              },
+            ]
+          },
         ],
         "SecurityDetails": [
             'puppeteer.securitydetails',
