@@ -1505,52 +1505,210 @@ module.exports = {
           },
         ],
         "SecurityDetails": [
-            'puppeteer.securitydetails',
-        'puppeteer.securitydetails.issuer',
-        'puppeteer.securitydetails.protocol',
-        'puppeteer.securitydetails.subjectalternativenames',
-        'puppeteer.securitydetails.subjectname',
-        'puppeteer.securitydetails.validfrom',
-        'puppeteer.securitydetails.validto',
+          {
+            type: 'doc',
+            id: 'puppeteer.securitydetails',
+            label: 'securityDetails',
+          },
+          {
+            Methods: [
+              {
+                type: 'doc',
+                id: 'puppeteer.securitydetails.issuer',
+                label: 'issuer',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.securitydetails.protocol',
+                label: 'protocol',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.securitydetails.subjectalternativenames',
+                label: 'subjectAlternativeNames',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.securitydetails.subjectname',
+                label: 'subjectName',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.securitydetails.validfrom',
+                label: 'validFrom',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.securitydetails.validto',
+                label: 'validTo',
+              },
+            ]
+          },
         ],
         "Target": [
-            'puppeteer.target',
-        'puppeteer.target.browser',
-        'puppeteer.target.browsercontext',
-        'puppeteer.target.createcdpsession',
-        'puppeteer.target.opener',
-        'puppeteer.target.page',
-        'puppeteer.target.type',
-        'puppeteer.target.url',
-        'puppeteer.target.worker',
+          {
+            type: 'doc',
+            id: 'puppeteer.target',
+            label: 'target',
+          },
+          {
+            Methods: [
+              {
+                type: 'doc',
+                id: 'puppeteer.target.browser',
+                label: 'browser',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.target.browsercontext',
+                label: 'browserContext',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.target.createcdpsession',
+                label: 'createCDPSSession',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.target.opener',
+                label: 'opener',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.target.page',
+                label: 'page',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.target.type',
+                label: 'type',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.target.url',
+                label: 'url',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.target.worker',
+                label: 'worker',
+              },
+            ]
+          },
         ],
         "CDPSession": [
-            'puppeteer.cdpsession',
-        'puppeteer.cdpsession.connection',
-        'puppeteer.cdpsession.detach',
-        'puppeteer.cdpsession.send',
+          {
+            type: 'doc',
+            id: 'puppeteer.cdpsession',
+            label: 'CDPSession',
+          },
+          {
+            Methods: [
+              {
+                type: 'doc',
+                id: 'puppeteer.cdpsession.connection',
+                label: 'connection',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.cdpsession.detach',
+                label: 'detach',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.cdpsession.send',
+                label: 'send',
+              },
+            ]
+          },
         ],
         "Coverage": [
-            'puppeteer.coverage',
-        'puppeteer.coverage.startcsscoverage',
-        'puppeteer.coverage.startjscoverage',
-        'puppeteer.coverage.stopcsscoverage',
-        'puppeteer.coverage.stopjscoverage',
+          {
+            type: 'doc',
+            id: 'puppeteer.coverage',
+            label: 'coverage',
+          },
+          {
+            Methods: [
+              {
+                type: 'doc',
+                id: 'puppeteer.coverage.startcsscoverage',
+                label: 'startCSSCoverage',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.coverage.startjscoverage',
+                label: 'startJSCoverage',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.coverage.stopcsscoverage',
+                label: 'stopCSSCoverage',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.coverage.stopjscoverage',
+                label: 'stopJSCoverage',
+              },
+            ]
+          },
         ],
         "TimeOutError": [
-            'puppeteer.timeouterror'
+          {
+            type: 'doc',
+            id: 'puppeteer.timeouterror',
+            label: 'timeOutError',
+          },
         ],
         "EventEmitter": [
-            'puppeteer.eventemitter',
-        'puppeteer.eventemitter.addlistener',
-        'puppeteer.eventemitter.emit',
-        'puppeteer.eventemitter.addlistener',
-        'puppeteer.eventemitter.listenercount',
-        'puppeteer.eventemitter.off',
-        'puppeteer.eventemitter.on',
-        'puppeteer.eventemitter.once',
-        'puppeteer.eventemitter.removelistener',
-        'puppeteer.eventemitter.removealllisteners',
+          {
+            type: 'doc',
+            id: 'puppeteer.eventemitter',
+            label: 'eventEmitter',
+          },
+          {
+            Methods: [
+              {
+                type: 'doc',
+                id: 'puppeteer.eventemitter.addlistener',
+                label: 'addListener',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.eventemitter.emit',
+                label: 'emit',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.eventemitter.listenercount',
+                label: 'listenerCount',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.eventemitter.off',
+                label: 'off',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.eventemitter.on',
+                label: 'on',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.eventemitter.once',
+                label: 'once',
+              },
+              {
+                type: 'doc',
+                id: 'puppeteer.eventemitter.removelistener',
+                label: 'removeListener',
+              },{
+                type: 'doc',
+                id: 'puppeteer.eventemitter.removealllisteners',
+                label: 'removeAllListener',
+              },
+            ]
+          },
         ],
     },
 };
