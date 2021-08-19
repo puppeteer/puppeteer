@@ -62,6 +62,7 @@ import {
 } from './EvalTypes.js';
 import { PDFOptions, paperFormats } from './PDFOptions.js';
 import { isNode } from '../environment.js';
+import { TimeoutError } from './Errors.js';
 
 /**
  * @public
@@ -2729,9 +2730,27 @@ export class Page extends EventEmitter {
    * @returns
    */
   async pdf(options: PDFOptions = {}): Promise<Buffer> {
-    const { path = undefined } = options;
-    const readable = await this.createPDFStream(options);
-    return await helper.getReadableAsBuffer(readable, path);
+    const { path = undefined, timeout = 30000 } = options;
+
+    const readPromise: Promise<Buffer> = new Promise(async (fulfill) => {
+      const readable = await this.createPDFStream(options);
+      const buffer = await helper.getReadableAsBuffer(readable, path);
+      fulfill(buffer);
+    });
+
+    const timeoutPromise = new Promise((fulfill) => {
+      setTimeout(() => {
+        fulfill(new TimeoutError(`pdf render timeout ${timeout} ms`));
+      }, timeout);
+    });
+
+    const result = await Promise.race([readPromise, timeoutPromise]);
+
+    if (Buffer.isBuffer(result)) {
+      return result;
+    } else {
+      throw result;
+    }
   }
 
   /**
