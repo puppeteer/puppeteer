@@ -14,6 +14,7 @@
   * [Commit Messages](#commit-messages)
   * [Writing Documentation](#writing-documentation)
   * [Writing TSDoc Comments](#writing-tsdoc-comments)
+  * [Running New Documentation website locally](#running-new-documentation-website-locally)
   * [Adding New Dependencies](#adding-new-dependencies)
   * [Running & Writing Tests](#running--writing-tests)
   * [Public API Coverage](#public-api-coverage)
