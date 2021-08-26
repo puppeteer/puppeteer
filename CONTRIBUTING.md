@@ -179,6 +179,13 @@ Each change to Puppeteer should be thoroughly documented using TSDoc comments. R
 - Every new method needs to have either `@public` or `@internal` added as a tag depending on if it is part of the public API.
 - Keep each line in a comment to no more than 90 characters (ESLint will warn you if you go over this). If you're a VSCode user the [Rewrap plugin](https://marketplace.visualstudio.com/items?itemName=stkb.rewrap) is highly recommended!
 
+## Running New Documentation website locally
+
+- In the Puppeteer's folder, install all dependencies with `npm i`.
+- run `npm run generate-docs` which will generate all the `.md`  files on `puppeteer/website/docs`.
+- run `npm i` on `puppeteer/website`.
+- run `npm start` on `puppeteer/website`.
+
 ## Adding New Dependencies
 
 For all dependencies (both installation and development):
