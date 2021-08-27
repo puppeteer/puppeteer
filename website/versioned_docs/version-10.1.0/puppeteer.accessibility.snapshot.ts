@@ -9,7 +9,7 @@ Captures the current state of the accessibility tree. The returned object repres
 <b>Signature:</b>
 
 ```typescript
-snapshot(options?: SnapshotOptions): Promise<SerializedAXNode>;
+snapshot(options?: SnapshotOptions): Promise<SerializedAXNode>
 ```
 
 ## Parameters
@@ -33,29 +33,29 @@ An AXNode object representing the snapshot.
 An example of dumping the entire accessibility tree:
 
 ```js
-const snapshot = await page.accessibility.snapshot();
-console.log(snapshot);
+     snapshot page.accessibility.snapshot()
+console.log(snapshot)
 
 ```
 
 ## Example 2
 
-An example of logging the focused node's name:
+An example of logging the focused node's name
 
 ```js
-const snapshot = await page.accessibility.snapshot();
-const node = findFocusedNode(snapshot);
-console.log(node && node.name);
+      snapshot  page.accessibility.snapshot()
+      node  findFocusedNode(snapshot)
+console.log(node  node.name)
 
-function findFocusedNode(node) {
-  if (node.focused)
-    return node;
-  for (const child of node.children || []) {
-    const foundNode = findFocusedNode(child);
-    return foundNode;
-  }
-  return null;
-}
+        findFocusedNode(node) 
+      (node.focused)
+           node
+      (    child of node.children || []) 
+           foundNode = findFocusedNode(child)
+           foundNode
+  
+           null
+
 
 ```
 
