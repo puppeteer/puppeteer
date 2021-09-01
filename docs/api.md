@@ -1542,7 +1542,9 @@ const puppeteer = require('puppeteer');
   const pdfStream = await page.createPDFStream();
   const writeStream = fs.createWriteStream('test.pdf');
   pdfStream.pipe(writeStream);
-  await browser.close();
+  pdfStream.on('end', async () => {
+    await browser.close();
+  });
 })();
 ```
 
