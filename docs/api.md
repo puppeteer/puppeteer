@@ -2756,7 +2756,7 @@ await fileChooser.accept(['/tmp/myfile.pdf']);
 
 > **NOTE** This must be called _before_ the file chooser is launched. It will not return a currently active file chooser.
 
-> **NOTE** "File picker" refers to the operating system's file selection UI that lets you browse to a folder and select file(s) to be shared with the web app. It’s not the "Save file" dialog.
+> **NOTE** “File picker” refers to the operating system’s file selection UI that lets you browse to a folder and select file(s) to be shared with the web app. It’s not the “Save file” dialog.
 
 #### page.waitForFunction(pageFunction[, options[, ...args]])
 
@@ -3439,7 +3439,7 @@ Only one trace can be active at a time per browser.
 
 [FileChooser] objects are returned via the ['page.waitForFileChooser'](#pagewaitforfilechooseroptions) method.
 
-File choosers let you react to the page requesting for file(s) to be loaded to the browser. (This file chooser does not cover "Save file" dialog.)
+File choosers let you react to the page requesting for file(s) to be loaded by the web app. (This file chooser does not cover the “Save file” dialog.)
 
 An example of using [FileChooser]:
 
