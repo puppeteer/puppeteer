@@ -20,7 +20,7 @@ export interface LaunchOptions
 |  [dumpio?](./puppeteer.launchoptions.dumpio.md) | boolean | <i>(Optional)</i> If true, pipes the browser process stdout and stderr to <code>process.stdout</code> and <code>process.stderr</code>. |
 |  [env?](./puppeteer.launchoptions.env.md) | Record&lt;string, string \| undefined&gt; | <i>(Optional)</i> Specify environment variables that will be visible to the browser. |
 |  [executablePath?](./puppeteer.launchoptions.executablepath.md) | string | <i>(Optional)</i> Path to a browser executable to use instead of the bundled Chromium. Note that Puppeteer is only guaranteed to work with the bundled Chromium, so use this setting at your own risk. |
-|  [extraPrefsFirefox?](./puppeteer.launchoptions.extraprefsfirefox.md) | Record&lt;string, unknown&gt; | <i>(Optional)</i> [Additional preferences](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/Preference_reference) that can be passed when launching with Firefox. |
+|  [extraPrefsFirefox?](./puppeteer.launchoptions.extraprefsfirefox.md) | Record&lt;string, unknown&gt; | <i>(Optional)</i> [Additional preferences](https://searchfox.org/mozilla-release/source/modules/libpref/init/all.js) that can be passed when launching with Firefox. |
 |  [handleSIGHUP?](./puppeteer.launchoptions.handlesighup.md) | boolean | <i>(Optional)</i> Close the browser process on <code>SIGHUP</code>. |
 |  [handleSIGINT?](./puppeteer.launchoptions.handlesigint.md) | boolean | <i>(Optional)</i> Close the browser process on <code>Ctrl+C</code>. |
 |  [handleSIGTERM?](./puppeteer.launchoptions.handlesigterm.md) | boolean | <i>(Optional)</i> Close the browser process on <code>SIGTERM</code>. |
