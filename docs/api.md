@@ -2738,11 +2738,11 @@ Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options[, .
 #### page.waitForFileChooser([options])
 
 - `options` <[WaitTimeoutOptions](####WaitTimeoutOptions)> Optional waiting parameters
-- returns: <[Promise]<[FileChooser]>> A promise that resolves after a page requests a file picker _due to file upload_.
+- returns: <[Promise]<[FileChooser]>> A promise that resolves after a page requests a file picker.
 
 > **NOTE** In non-headless Chromium, this method results in the native file picker dialog **not showing up** for the user.
 
-This method is typically coupled with an action that triggers file choosing due to file _upload_.
+This method is typically coupled with an action that triggers file choosing.
 The following example clicks a button that issues a file chooser and then
 responds with `/tmp/myfile.pdf` as if a user has selected this file.
 
@@ -2756,7 +2756,7 @@ await fileChooser.accept(['/tmp/myfile.pdf']);
 
 > **NOTE** This must be called _before_ the file chooser is launched. It will not return a currently active file chooser.
 
-> **NOTE** The returned promise resolves only if file picker shows up due to file _upload_. However, it won't resolve in case of file _download_.
+> **NOTE** "File picker" refers to the operating system's file selection UI that lets you browse to a folder and select file(s) to be shared with the web app. It’s not the "Save file" dialog.
 
 #### page.waitForFunction(pageFunction[, options[, ...args]])
 
@@ -3439,7 +3439,7 @@ Only one trace can be active at a time per browser.
 
 [FileChooser] objects are returned via the ['page.waitForFileChooser'](#pagewaitforfilechooseroptions) method.
 
-File choosers let you react to the page requesting for a file to be _uploaded_.
+File choosers let you react to the page requesting for file(s) to be loaded to the browser. (This file chooser does not cover "Save file" dialog.)
 
 An example of using [FileChooser]:
 
