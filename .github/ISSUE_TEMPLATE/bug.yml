@@ -1,0 +1,54 @@
+name: Bug report
+description: File a bug report
+title: '[Bug]: '
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: summary
+    attributes:
+      label: Bug description
+      description: What did you do? What did you expect to happen? What actually happened instead?
+      value: |
+        Steps to reproduce the problem:
+
+        1. …
+    validations:
+      required: true
+  - type: dropdown
+    id: version
+    attributes:
+      label: Puppeteer version
+      description: What version of Puppeteer are you running?
+    validations:
+      required: true
+    attributes:
+      label: Node.js version
+      description: What version of Node.js are you running?
+      validations:
+        required: true
+    attributes:
+      label: npm version
+      description: What version of npm are you running?
+      validations:
+        required: true
+    validations:
+      required: true
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: What operating system are you seeing the problem on?
+      multiple: true
+      options:
+        - Linux
+        - macOS
+        - Windows
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
