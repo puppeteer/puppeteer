@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import os from 'os';
 import https from 'https';
 import ProgressBar from 'progress';
 import puppeteer from '../node.js';
@@ -90,13 +89,9 @@ export async function downloadBrowser(): Promise<void> {
     if (NPM_NO_PROXY) process.env.NO_PROXY = NPM_NO_PROXY;
 
     function onSuccess(localRevisions: string[]): void {
-      // Use Intel x86 builds on Apple M1 until native macOS arm64
-      // Chromium builds are available.
-      if (os.platform() !== 'darwin' && os.arch() !== 'arm64') {
-        logPolitely(
-          `${supportedProducts[product]} (${revisionInfo.revision}) downloaded to ${revisionInfo.folderPath}`
-        );
-      }
+      logPolitely(
+        `${supportedProducts[product]} (${revisionInfo.revision}) downloaded to ${revisionInfo.folderPath}`
+      );
       localRevisions = localRevisions.filter(
         (revision) => revision !== revisionInfo.revision
       );
