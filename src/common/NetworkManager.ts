@@ -110,6 +110,31 @@ export class NetworkManager extends EventEmitter {
   >();
   _requestIdToRequest = new Map<string, HTTPRequest>();
 
+  /*
+   * The below maps are used to reconcile Network.responseReceivedExtraInfo
+   * events with their corresponding request. Each response and redirect
+   * response gets an ExtraInfo event, and we don't know which will come first.
+   * This means that we have to store a Response or an ExtraInfo for each
+   * response, and emit the event when we get both of them. In addition, to
+   * handle redirects, we have to make them Arrays to represent the chain of
+   * events.
+   */
+  _requestIdToResponseReceivedExtraInfo = new Map<
+    string,
+    Protocol.Network.ResponseReceivedExtraInfoEvent[]
+  >();
+  _requestIdToResponseReceived = new Map<
+    string,
+    Protocol.Network.ResponseReceivedEvent
+  >();
+  _requestIdToRedirectInfoMap = new Map<
+    string,
+    Array<{
+      request: HTTPRequest;
+      response: Protocol.Network.Response;
+    }>
+  >();
+
   _extraHTTPHeaders: Record<string, string> = {};
   _credentials?: Credentials = null;
   _attemptedAuthentications = new Set<string>();
@@ -152,6 +177,10 @@ export class NetworkManager extends EventEmitter {
       this._onLoadingFinished.bind(this)
     );
     this._client.on('Network.loadingFailed', this._onLoadingFailed.bind(this));
+    this._client.on(
+      'Network.responseReceivedExtraInfo',
+      this._onResponseReceivedExtraInfo.bind(this)
+    );
   }
 
   async initialize(): Promise<void> {
@@ -361,18 +390,81 @@ export class NetworkManager extends EventEmitter {
     }
   }
 
+  _requestIdToRedirectInfo(requestId: string): Array<{
+    request: HTTPRequest;
+    response: Protocol.Network.Response;
+  }> {
+    if (!this._requestIdToRedirectInfoMap.has(requestId)) {
+      this._requestIdToRedirectInfoMap.set(requestId, []);
+    }
+    return this._requestIdToRedirectInfoMap.get(requestId);
+  }
+
+  _requestIdToResponseExtraInfo(
+    requestId: string
+  ): Protocol.Network.ResponseReceivedExtraInfo[] {
+    if (!this._requestIdToResponseReceivedExtraInfo.has(requestId)) {
+      this._requestIdToResponseReceivedExtraInfo.set(requestId, []);
+    }
+    return this._requestIdToResponseReceivedExtraInfo.get(requestId);
+  }
+
+  _emitRedirectResponse(
+    request: HTTPRequest,
+    responsePayload: Protocol.Network.Response,
+    extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent
+  ): void {
+    const response = new HTTPResponse(
+      this._client,
+      request,
+      responsePayload,
+      extraInfo
+    );
+    request._response = response;
+    request._redirectChain.push(request);
+    response._resolveBody(
+      new Error('Response body is unavailable for redirect responses')
+    );
+    this._forgetRequest(request, false);
+    this.emit(NetworkManagerEmittedEvents.Response, response);
+    this.emit(NetworkManagerEmittedEvents.RequestFinished, request);
+  }
+
+  _handleRequestWithRedirect(
+    event: Protocol.Network.RequestWillBeSentEvent
+  ): void {
+    const lastRequest = this._requestIdToRequest.get(event.requestId);
+    // If we connect late to the target, we could have missed the
+    // requestWillBeSent event.
+    if (!lastRequest) return;
+
+    let extraInfo = null;
+    // @ts-ignore TODO roll protocol
+    if (event.redirectHasExtraInfo) {
+      extraInfo = this._requestIdToResponseExtraInfo(event.requestId).shift();
+      if (!extraInfo) {
+        // Wait for the corresponding ExtraInfo event before emitting the response.
+        this._requestIdToRedirectInfo(event.requestId).push({
+          request: lastRequest,
+          response: event.redirectResponse,
+        });
+        return;
+      }
+    }
+
+    this._emitRedirectResponse(lastRequest, event.redirectResponse, null);
+  }
+
   _onRequest(
     event: Protocol.Network.RequestWillBeSentEvent,
     interceptionId?: string
   ): void {
     let redirectChain = [];
     if (event.redirectResponse) {
-      const request = this._requestIdToRequest.get(event.requestId);
-      // If we connect late to the target, we could have missed the
-      // requestWillBeSent event.
-      if (request) {
-        this._handleRequestRedirect(request, event.redirectResponse);
-        redirectChain = request._redirectChain;
+      const lastRequest = this._requestIdToRequest.get(event.requestId);
+      if (lastRequest) {
+        this._handleRequestWithRedirect(event);
+        redirectChain = lastRequest._redirectChain;
       }
     }
     const frame = event.frameId
@@ -399,28 +491,62 @@ export class NetworkManager extends EventEmitter {
     this.emit(NetworkManagerEmittedEvents.RequestServedFromCache, request);
   }
 
-  _handleRequestRedirect(
-    request: HTTPRequest,
-    responsePayload: Protocol.Network.Response
+  _emitResponseEvent(
+    responseReceived: Protocol.Network.ResponseReceivedEvent,
+    extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent
   ): void {
-    const response = new HTTPResponse(this._client, request, responsePayload);
-    request._response = response;
-    request._redirectChain.push(request);
-    response._resolveBody(
-      new Error('Response body is unavailable for redirect responses')
+    const request = this._requestIdToRequest.get(responseReceived.requestId);
+    // FileUpload sends a response without a matching request.
+    if (!request) return;
+
+    const response = new HTTPResponse(
+      this._client,
+      request,
+      responseReceived.response,
+      extraInfo
     );
-    this._forgetRequest(request, false);
+    request._response = response;
     this.emit(NetworkManagerEmittedEvents.Response, response);
-    this.emit(NetworkManagerEmittedEvents.RequestFinished, request);
   }
 
   _onResponseReceived(event: Protocol.Network.ResponseReceivedEvent): void {
     const request = this._requestIdToRequest.get(event.requestId);
-    // FileUpload sends a response without a matching request.
-    if (!request) return;
-    const response = new HTTPResponse(this._client, request, event.response);
-    request._response = response;
-    this.emit(NetworkManagerEmittedEvents.Response, response);
+    let extraInfo = null;
+    // @ts-ignore TODO roll protocol
+    if (request && !request._fromMemoryCache && event.hasExtraInfo) {
+      extraInfo = this._requestIdToResponseExtraInfo(event.requestId).shift();
+      if (!extraInfo) {
+        // Wait until we get the corresponding ExtraInfo event.
+        this._requestIdToResponseReceived.set(event.requestId, event);
+        return;
+      }
+    }
+    this._emitResponseEvent(event, extraInfo);
+  }
+
+  _onResponseReceivedExtraInfo(
+    event: Protocol.Network.ResponseReceivedExtraInfoEvent
+  ): void {
+    const redirectInfo = this._requestIdToRedirectInfo(event.requestId).shift();
+    if (redirectInfo) {
+      this._emitRedirectResponse(
+        redirectInfo.request,
+        redirectInfo.response,
+        event
+      );
+      return;
+    }
+
+    const responseReceived = this._requestIdToResponseReceived.get(
+      event.requestId
+    );
+    if (responseReceived) {
+      this._emitResponseEvent(responseReceived, event);
+      return;
+    }
+
+    // Wait until we get a corresponding response event.
+    this._requestIdToResponseExtraInfo(event.requestId).push(event);
   }
 
   _forgetRequest(request: HTTPRequest, events: boolean): void {
@@ -433,6 +559,9 @@ export class NetworkManager extends EventEmitter {
     if (events) {
       this._requestIdToRequestWillBeSentEvent.delete(requestId);
       this._requestIdToRequestPausedEvent.delete(requestId);
+      this._requestIdToResponseReceived.delete(requestId);
+      this._requestIdToResponseReceivedExtraInfo.delete(requestId);
+      this._requestIdToRedirectInfoMap.delete(requestId);
     }
   }
 
