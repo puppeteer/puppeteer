@@ -85,7 +85,8 @@ if (argv.script && !fs.existsSync(scriptPath)) {
 (async (scriptPath, good, bad, pattern, noCache) => {
   const span = Math.abs(good - bad);
   console.log(
-    `Bisecting ${COLOR_YELLOW}${span}${COLOR_RESET} revisions in ${COLOR_YELLOW}~${span.toString(2).length
+    `Bisecting ${COLOR_YELLOW}${span}${COLOR_RESET} revisions in ${COLOR_YELLOW}~${
+      span.toString(2).length
     }${COLOR_RESET} iterations`
   );
 
@@ -119,7 +120,8 @@ if (argv.script && !fs.existsSync(scriptPath)) {
       toText = COLOR_GREEN + good + COLOR_RESET;
     }
     console.log(
-      `- ${COLOR_YELLOW}r${revision}${COLOR_RESET} was ${outcome}. Bisecting [${fromText}, ${toText}] - ${COLOR_YELLOW}${span}${COLOR_RESET} revisions and ${COLOR_YELLOW}~${span.toString(2).length
+      `- ${COLOR_YELLOW}r${revision}${COLOR_RESET} was ${outcome}. Bisecting [${fromText}, ${toText}] - ${COLOR_YELLOW}${span}${COLOR_RESET} revisions and ${COLOR_YELLOW}~${
+        span.toString(2).length
       }${COLOR_RESET} iterations`
     );
   }
