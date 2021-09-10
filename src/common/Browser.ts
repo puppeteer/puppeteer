@@ -296,14 +296,14 @@ export class Browser extends EventEmitter {
    * ```
    */
   async createIncognitoBrowserContext(
-    server?: string,
-    bypassList?: string
+    proxyServer?: string,
+    proxyBypassList?: string
   ): Promise<BrowserContext> {
     const { browserContextId } = await this._connection.send(
       'Target.createBrowserContext',
       {
-        proxyServer: server || undefined,
-        proxyBypassList: bypassList || undefined,
+        proxyServer,
+        proxyBypassList,
       }
     );
     const context = new BrowserContext(
