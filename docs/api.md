@@ -888,8 +888,8 @@ During the process of closing the browser, Puppeteer attempts to delete the temp
 
 #### browser.createIncognitoBrowserContext()
 
-- `proxyServer` <[string]> Proxy server with optional port to use for all requests. username and password can be set in ['page.authenticate'].
-- `proxyBypassList` <[string]> Bypass the proxy for the given semi-colon-separated list of hosts.
+- `proxyServer` <[string]> Optional proxy server with optional port to use for all requests. Username and password can be set in [page.authenticate(credentials)](#pageauthenticatecredentials).
+- `proxyBypassList` <[string]> Optional: Bypass the proxy for the given semi-colon-separated list of hosts.
 - returns: <[Promise]<[BrowserContext]>>
 
 Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.
