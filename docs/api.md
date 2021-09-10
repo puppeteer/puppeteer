@@ -10,6 +10,7 @@
 
 <!-- GEN:versions-per-release -->
 - Releases per Chromium version:
+  * Chromium 93.0.4577.0 - [Puppeteer v10.2.0](https://github.com/puppeteer/puppeteer/blob/v10.2.0/docs/api.md)
   * Chromium 92.0.4512.0 - [Puppeteer v10.0.0](https://github.com/puppeteer/puppeteer/blob/v10.0.0/docs/api.md)
   * Chromium 91.0.4469.0 - [Puppeteer v9.0.0](https://github.com/puppeteer/puppeteer/blob/v9.0.0/docs/api.md)
   * Chromium 90.0.4427.0 - [Puppeteer v8.0.0](https://github.com/puppeteer/puppeteer/blob/v8.0.0/docs/api.md)
@@ -157,7 +158,7 @@
   * [page.goto(url[, options])](#pagegotourl-options)
   * [page.hover(selector)](#pagehoverselector)
   * [page.isClosed()](#pageisclosed)
-  * [page.isDragInterceptionEnabled](#pageisdraginterceptionenabled)
+  * [page.isDragInterceptionEnabled()](#pageisdraginterceptionenabled)
   * [page.isJavaScriptEnabled()](#pageisjavascriptenabled)
   * [page.keyboard](#pagekeyboard)
   * [page.mainFrame()](#pagemainframe)
@@ -454,7 +455,7 @@ When using `puppeteer-core`, remember to change the _include_ line:
 const puppeteer = require('puppeteer-core');
 ```
 
-You will then need to call [`puppeteer.connect([options])`](#puppeteerconnectoptions) or [`puppeteer.launch([options])`](#puppeteerlaunchoptions) with an explicit `executablePath` option.
+You will then need to call [`puppeteer.connect([options])`](#puppeteerconnectoptions) or [`puppeteer.launch([options])`](#puppeteerlaunchoptions) with an explicit `executablePath` or `channel` option.
 
 ### Environment Variables
 
@@ -627,6 +628,7 @@ try {
   - `product` <[string]> Which browser to launch. At this time, this is either `chrome` or `firefox`. See also `PUPPETEER_PRODUCT`.
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
   - `headless` <[boolean]> Whether to run browser in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`.
+  - `channel` <[string]> When specified, Puppeteer will search for the locally installed release channel of Google Chrome and use it to launch. Available values are `chrome`, `chrome-beta`, `chrome-canary`, `chrome-dev`. When channel is specified, `executablePath` cannot be specified.
   - `executablePath` <[string]> Path to a browser executable to run instead of the bundled Chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/puppeteer/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
   - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
   - `defaultViewport` <?[Object]> Sets a consistent viewport for each page. Defaults to an 800x600 viewport. `null` disables the default viewport.
@@ -647,7 +649,7 @@ try {
   - `env` <[Object]> Specify environment variables that will be visible to the browser. Defaults to `process.env`.
   - `devtools` <[boolean]> Whether to auto-open a DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
   - `pipe` <[boolean]> Connects to the browser over a pipe instead of a WebSocket. Defaults to `false`.
-  - `extraPrefsFirefox` <[Object]> Additional [preferences](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/Preference_reference) that can be passed to Firefox (see `PUPPETEER_PRODUCT`)
+  - `extraPrefsFirefox` <[Object]> Additional [preferences](https://searchfox.org/mozilla-release/source/modules/libpref/init/all.js) that can be passed to Firefox (see `PUPPETEER_PRODUCT`)
   - `targetFilter` <?[function]\([Protocol.Target.TargetInfo]\):[boolean]> Use this function to decide if Puppeteer should connect to the given target. If a `targetFilter` is provided, Puppeteer only connects to targets for which `targetFilter` returns `true`. By default, Puppeteer connects to all available targets.
   - `waitForInitialPage` <[boolean]> Whether to wait for the initial page to be ready. Defaults to `true`.
 - returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
@@ -660,7 +662,7 @@ const browser = await puppeteer.launch({
 });
 ```
 
-> **NOTE** Puppeteer can also be used to control the Chrome browser, but it works best with the version of Chromium it is bundled with. There is no guarantee it will work with any other version. Use `executablePath` option with extreme caution.
+> **NOTE** Puppeteer can also be used to control the Chrome browser, but it works best with the version of Chromium it is bundled with. There is no guarantee it will work with any other version. Use `executablePath` or `channel` option with extreme caution.
 >
 > If Google Chrome (rather than Chromium) is preferred, a [Chrome Canary](https://www.google.com/chrome/browser/canary.html) or [Dev Channel](https://www.chromium.org/getting-involved/dev-channel) build is suggested.
 >
@@ -880,6 +882,8 @@ a single instance of [BrowserContext].
 - returns: <[Promise]>
 
 Closes Chromium and all of its pages (if any were opened). The [Browser] object itself is considered to be disposed and cannot be used anymore.
+
+During the process of closing the browser, Puppeteer attempts to delete the temp folder created exclusively for this browser instance. If this fails (either because a file in the temp folder is locked by another process or because of insufficient permissions) an error is logged. This implies that: a) the folder and/or its content is not fully deleted; and b) the connection with the browser is not properly disposed (see [browser.disconnect()](#browserdisconnect)).
 
 #### browser.createIncognitoBrowserContext()
 
@@ -1538,7 +1542,9 @@ const puppeteer = require('puppeteer');
   const pdfStream = await page.createPDFStream();
   const writeStream = fs.createWriteStream('test.pdf');
   pdfStream.pipe(writeStream);
-  await browser.close();
+  pdfStream.on('end', async () => {
+    await browser.close();
+  });
 })();
 ```
 
@@ -1703,7 +1709,8 @@ await page.evaluate(() => matchMedia('print').matches);
   - `latency` <[number]> Latency (ms), `0` to disable
 - returns: <[Promise]>
 
-> **NOTE** This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644)
+> **NOTE** This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644). To set the page offline, you can use [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled).
+
 
 ```js
 const puppeteer = require('puppeteer');
@@ -2007,7 +2014,7 @@ Shortcut for [page.mainFrame().hover(selector)](#framehoverselector).
 
 Indicates that the page has been closed.
 
-#### page.isDragInterceptionEnabled
+#### page.isDragInterceptionEnabled()
 
 - returns: <[boolean]>
 
@@ -2320,8 +2327,10 @@ await page.setGeolocation({ latitude: 59.95, longitude: 30.31667 });
 
 #### page.setOfflineMode(enabled)
 
-- `enabled` <[boolean]> When `true`, enables offline mode for the page.
+- `enabled` <[boolean]> When `true`, enables offline mode for the page. 
 - returns: <[Promise]>
+
+> **NOTE** while this method sets the network connection to offline, it does not change the parameters used in [page.emulateNetworkConditions(networkConditions)](#pageemulatenetworkconditionsnetworkconditions).
 
 #### page.setRequestInterception(value)
 
@@ -2748,6 +2757,8 @@ await fileChooser.accept(['/tmp/myfile.pdf']);
 ```
 
 > **NOTE** This must be called _before_ the file chooser is launched. It will not return a currently active file chooser.
+
+> **NOTE** “File picker” refers to the operating system’s file selection UI that lets you browse to a folder and select file(s) to be shared with the web app. It’s not the “Save file” dialog.
 
 #### page.waitForFunction(pageFunction[, options[, ...args]])
 
@@ -3430,7 +3441,7 @@ Only one trace can be active at a time per browser.
 
 [FileChooser] objects are returned via the ['page.waitForFileChooser'](#pagewaitforfilechooseroptions) method.
 
-File choosers let you react to the page requesting for a file.
+File choosers let you react to the page requesting for file(s) to be loaded by the web app. (This file chooser does not cover the “Save file” dialog.)
 
 An example of using [FileChooser]:
 
