@@ -339,6 +339,10 @@ export class CDPSession extends EventEmitter {
     this._connection = null;
     this.emit(CDPSessionEmittedEvents.Disconnected);
   }
+
+  id(): string {
+    return this._sessionId;
+  }
 }
 
 /**

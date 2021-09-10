@@ -510,15 +510,17 @@ export class Page extends EventEmitter {
           .catch(debugError);
         return;
       }
-      const session = Connection.fromSession(client).session(event.sessionId);
-      const worker = new WebWorker(
-        session,
-        event.targetInfo.url,
-        this._addConsoleMessage.bind(this),
-        this._handleException.bind(this)
-      );
-      this._workers.set(event.sessionId, worker);
-      this.emit(PageEmittedEvents.WorkerCreated, worker);
+      if (event.targetInfo.type === 'worker') {
+        const session = Connection.fromSession(client).session(event.sessionId);
+        const worker = new WebWorker(
+          session,
+          event.targetInfo.url,
+          this._addConsoleMessage.bind(this),
+          this._handleException.bind(this)
+        );
+        this._workers.set(event.sessionId, worker);
+        this.emit(PageEmittedEvents.WorkerCreated, worker);
+      }
     });
     client.on('Target.detachedFromTarget', (event) => {
       const worker = this._workers.get(event.sessionId);
@@ -581,7 +583,7 @@ export class Page extends EventEmitter {
       this._frameManager.initialize(),
       this._client.send('Target.setAutoAttach', {
         autoAttach: true,
-        waitForDebuggerOnStart: false,
+        waitForDebuggerOnStart: true,
         flatten: true,
       }),
       this._client.send('Performance.enable'),
