@@ -201,7 +201,9 @@ export interface ScreenshotOptions {
  * @public
  */
 export const enum PageEmittedEvents {
-  /** Emitted when the page closes. */
+  /** Emitted when the page closes.
+   * @eventProperty
+   */
   Close = 'close',
   /**
    * Emitted when JavaScript within the page calls one of console API methods,
@@ -854,6 +856,10 @@ export class Page extends EventEmitter {
 
   /**
    * @param enabled - When `true`, enables offline mode for the page.
+   * @remarks
+   * NOTE: while this method sets the network connection to offline, it does
+   * not change the parameters used in [page.emulateNetworkConditions(networkConditions)]
+   * (#pageemulatenetworkconditionsnetworkconditions)
    */
   setOfflineMode(enabled: boolean): Promise<void> {
     return this._frameManager.networkManager().setOfflineMode(enabled);
@@ -877,7 +883,8 @@ export class Page extends EventEmitter {
    * ```
    * @remarks
    * NOTE: This does not affect WebSockets and WebRTC PeerConnections (see
-   * https://crbug.com/563644)
+   * https://crbug.com/563644). To set the page offline, you can use
+   * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled).
    */
   emulateNetworkConditions(
     networkConditions: NetworkConditions | null
@@ -2718,8 +2725,8 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @param {!PDFOptions=} options -
-   * @returns {!Promise<!Buffer>}
+   * @param options -
+   * @returns
    */
   async pdf(options: PDFOptions = {}): Promise<Buffer> {
     const { path = undefined } = options;
@@ -2897,7 +2904,6 @@ export class Page extends EventEmitter {
    * key presses in milliseconds. Defaults to `0`.
    * @returns
    * @remarks
-   * Shortcut for {@link page.mainFrame().type(selector, text[, options])}
    */
   type(
     selector: string,

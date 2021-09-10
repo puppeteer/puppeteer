@@ -10,6 +10,7 @@
 
 <!-- GEN:versions-per-release -->
 - Releases per Chromium version:
+  * Chromium 93.0.4577.0 - [Puppeteer v10.2.0](https://github.com/puppeteer/puppeteer/blob/v10.2.0/docs/api.md)
   * Chromium 92.0.4512.0 - [Puppeteer v10.0.0](https://github.com/puppeteer/puppeteer/blob/v10.0.0/docs/api.md)
   * Chromium 91.0.4469.0 - [Puppeteer v9.0.0](https://github.com/puppeteer/puppeteer/blob/v9.0.0/docs/api.md)
   * Chromium 90.0.4427.0 - [Puppeteer v8.0.0](https://github.com/puppeteer/puppeteer/blob/v8.0.0/docs/api.md)
@@ -648,7 +649,7 @@ try {
   - `env` <[Object]> Specify environment variables that will be visible to the browser. Defaults to `process.env`.
   - `devtools` <[boolean]> Whether to auto-open a DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
   - `pipe` <[boolean]> Connects to the browser over a pipe instead of a WebSocket. Defaults to `false`.
-  - `extraPrefsFirefox` <[Object]> Additional [preferences](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/Preference_reference) that can be passed to Firefox (see `PUPPETEER_PRODUCT`)
+  - `extraPrefsFirefox` <[Object]> Additional [preferences](https://searchfox.org/mozilla-release/source/modules/libpref/init/all.js) that can be passed to Firefox (see `PUPPETEER_PRODUCT`)
   - `targetFilter` <?[function]\([Protocol.Target.TargetInfo]\):[boolean]> Use this function to decide if Puppeteer should connect to the given target. If a `targetFilter` is provided, Puppeteer only connects to targets for which `targetFilter` returns `true`. By default, Puppeteer connects to all available targets.
   - `waitForInitialPage` <[boolean]> Whether to wait for the initial page to be ready. Defaults to `true`.
 - returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
@@ -881,6 +882,8 @@ a single instance of [BrowserContext].
 - returns: <[Promise]>
 
 Closes Chromium and all of its pages (if any were opened). The [Browser] object itself is considered to be disposed and cannot be used anymore.
+
+During the process of closing the browser, Puppeteer attempts to delete the temp folder created exclusively for this browser instance. If this fails (either because a file in the temp folder is locked by another process or because of insufficient permissions) an error is logged. This implies that: a) the folder and/or its content is not fully deleted; and b) the connection with the browser is not properly disposed (see [browser.disconnect()](#browserdisconnect)).
 
 #### browser.createIncognitoBrowserContext()
 
@@ -1539,7 +1542,9 @@ const puppeteer = require('puppeteer');
   const pdfStream = await page.createPDFStream();
   const writeStream = fs.createWriteStream('test.pdf');
   pdfStream.pipe(writeStream);
-  await browser.close();
+  pdfStream.on('end', async () => {
+    await browser.close();
+  });
 })();
 ```
 
@@ -1704,7 +1709,8 @@ await page.evaluate(() => matchMedia('print').matches);
   - `latency` <[number]> Latency (ms), `0` to disable
 - returns: <[Promise]>
 
-> **NOTE** This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644)
+> **NOTE** This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644). To set the page offline, you can use [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled).
+
 
 ```js
 const puppeteer = require('puppeteer');
@@ -2321,8 +2327,10 @@ await page.setGeolocation({ latitude: 59.95, longitude: 30.31667 });
 
 #### page.setOfflineMode(enabled)
 
-- `enabled` <[boolean]> When `true`, enables offline mode for the page.
+- `enabled` <[boolean]> When `true`, enables offline mode for the page. 
 - returns: <[Promise]>
+
+> **NOTE** while this method sets the network connection to offline, it does not change the parameters used in [page.emulateNetworkConditions(networkConditions)](#pageemulatenetworkconditionsnetworkconditions).
 
 #### page.setRequestInterception(value)
 
@@ -2749,6 +2757,8 @@ await fileChooser.accept(['/tmp/myfile.pdf']);
 ```
 
 > **NOTE** This must be called _before_ the file chooser is launched. It will not return a currently active file chooser.
+
+> **NOTE** “File picker” refers to the operating system’s file selection UI that lets you browse to a folder and select file(s) to be shared with the web app. It’s not the “Save file” dialog.
 
 #### page.waitForFunction(pageFunction[, options[, ...args]])
 
@@ -3431,7 +3441,7 @@ Only one trace can be active at a time per browser.
 
 [FileChooser] objects are returned via the ['page.waitForFileChooser'](#pagewaitforfilechooseroptions) method.
 
-File choosers let you react to the page requesting for a file.
+File choosers let you react to the page requesting for file(s) to be loaded by the web app. (This file chooser does not cover the “Save file” dialog.)
 
 An example of using [FileChooser]:
 
