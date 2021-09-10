@@ -17,6 +17,7 @@
 - [Running Puppeteer in the cloud](#running-puppeteer-in-the-cloud)
   * [Running Puppeteer on Google App Engine](#running-puppeteer-on-google-app-engine)
   * [Running Puppeteer on Google Cloud Functions](#running-puppeteer-on-google-cloud-functions)
+  * [Running Puppeteer on Google Cloud Run](#running-puppeteer-on-google-cloud-run)
   * [Running Puppeteer on Heroku](#running-puppeteer-on-heroku)
   * [Running Puppeteer on AWS Lambda](#running-puppeteer-on-aws-lambda)
   * [Running Puppeteer on AWS EC2 instance running Amazon-Linux](#running-puppeteer-on-aws-ec2-instance-running-amazon-linux)
@@ -400,6 +401,10 @@ To use `puppeteer`, simply list the module as a dependency in your `package.json
 The Node.js 10 runtime of [Google Cloud Functions](https://cloud.google.com/functions/docs/) comes with all system packages needed to run Headless Chrome.
 
 To use `puppeteer`, simply list the module as a dependency in your `package.json` and deploy your function to Google Cloud Functions using the `nodejs10` runtime.
+
+### Running Puppeteer on Google Cloud Run
+
+The default Node.js runtime of [Google Cloud Run](https://cloud.google.com/run/docs/) does not come with the system packages needed to run Headless Chrome. You will need to set up your own `Dockerfile` and [include the missing dependencies](#chrome-headless-doesnt-launch-on-unix).
 
 ### Running Puppeteer on Heroku
 

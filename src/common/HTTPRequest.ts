@@ -641,6 +641,9 @@ const errorReasons: Record<ErrorCode, Protocol.Network.ErrorReason> = {
   failed: 'Failed',
 } as const;
 
+/**
+ * @public
+ */
 export type ActionResult = 'continue' | 'abort' | 'respond';
 
 function headersArray(
