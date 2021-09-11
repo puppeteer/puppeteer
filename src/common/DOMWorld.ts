@@ -166,9 +166,11 @@ export class DOMWorld {
     );
   }
 
-  async $(selector: string): Promise<ElementHandle | null> {
+  async $<T extends Element = Element>(
+    selector: string
+  ): Promise<ElementHandle<T> | null> {
     const document = await this._document();
-    const value = await document.$(selector);
+    const value = await document.$<T>(selector);
     return value;
   }
 
@@ -216,9 +218,11 @@ export class DOMWorld {
     return value;
   }
 
-  async $$(selector: string): Promise<ElementHandle[]> {
+  async $$<T extends Element = Element>(
+    selector: string
+  ): Promise<Array<ElementHandle<T>>> {
     const document = await this._document();
-    const value = await document.$$(selector);
+    const value = await document.$$<T>(selector);
     return value;
   }
 
@@ -480,9 +484,8 @@ export class DOMWorld {
     selector: string,
     options: WaitForSelectorOptions
   ): Promise<ElementHandle | null> {
-    const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
-      selector
-    );
+    const { updatedSelector, queryHandler } =
+      getQueryHandlerAndSelector(selector);
     return queryHandler.waitFor(this, updatedSelector, options);
   }
 
@@ -683,10 +686,8 @@ export class DOMWorld {
     options: { polling?: string | number; timeout?: number } = {},
     ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle> {
-    const {
-      polling = 'raf',
-      timeout = this._timeoutSettings.timeout(),
-    } = options;
+    const { polling = 'raf', timeout = this._timeoutSettings.timeout() } =
+      options;
     const waitTaskOptions: WaitTaskOptions = {
       domWorld: this,
       predicateBody: pageFunction,

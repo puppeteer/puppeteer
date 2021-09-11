@@ -166,6 +166,8 @@ module.exports = {
             default: 'array-simple',
           },
         ],
+        // By default this is a warning but we want it to error.
+        '@typescript-eslint/explicit-module-boundary-types': 2,
       },
     },
     {

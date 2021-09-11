@@ -171,7 +171,8 @@ describe('ElementHandle specs', function () {
   });
 
   describe('ElementHandle.click', function () {
-    it('should work', async () => {
+    // See https://github.com/puppeteer/puppeteer/issues/7175
+    itFailsFirefox('should work', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/input/button.html');
@@ -319,7 +320,8 @@ describe('ElementHandle specs', function () {
           )
         );
       }
-      const handlerNamesAfterUnregistering = puppeteer.customQueryHandlerNames();
+      const handlerNamesAfterUnregistering =
+        puppeteer.customQueryHandlerNames();
       expect(handlerNamesAfterUnregistering.includes('getById')).toBeFalsy();
     });
     it('should throw with invalid query names', () => {

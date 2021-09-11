@@ -38,6 +38,7 @@ export interface ConsoleMessageLocation {
 
 /**
  * The supported types for console messages.
+ * @public
  */
 export type ConsoleMessageType =
   | 'log'
