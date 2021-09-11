@@ -165,8 +165,8 @@ export class PuppeteerNode extends Puppeteer {
    * The browser binary might not be there if the download was skipped with
    * the `PUPPETEER_SKIP_DOWNLOAD` environment variable.
    */
-  executablePath(): string {
-    return this._launcher.executablePath();
+  executablePath(channel?: string): string {
+    return this._launcher.executablePath(channel);
   }
 
   /**
