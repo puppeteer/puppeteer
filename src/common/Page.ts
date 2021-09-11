@@ -1898,21 +1898,21 @@ export class Page extends EventEmitter {
    * @param options - Optional waiting parameters
    * @returns Promise which resolves when network is idle
    */
-  async waitForNetworkIdle(options: { idleTime?: number, timeout?: number } = {}) {
-    const {
-      idleTime = 500,
-      timeout = this._timeoutSettings.timeout(),
-    } = options;
+  async waitForNetworkIdle(
+    options: { idleTime?: number; timeout?: number } = {}
+  ) {
+    const { idleTime = 500, timeout = this._timeoutSettings.timeout() } =
+      options;
 
     const networkManager = this._frameManager.networkManager();
 
     let idleResolveCallback;
-    const idlePromise = new Promise(resolve => {
+    const idlePromise = new Promise((resolve) => {
       idleResolveCallback = resolve;
     });
 
     let abortRejectCallback;
-    const abortPromise = new Promise((_, reject) => {
+    const abortPromise = new Promise<Error>((_, reject) => {
       abortRejectCallback = reject;
     });
 
@@ -1928,7 +1928,6 @@ export class Page extends EventEmitter {
       idleTimer && clearTimeout(idleTimer);
       if (networkManager.numRequestsInProgress() === 0)
         idleTimer = setTimeout(onIdle, idleTime);
-
     };
 
     evaluate();
@@ -1937,19 +1936,37 @@ export class Page extends EventEmitter {
       evaluate();
       return false;
     };
-    const listenToEvent = event => helper.waitForEvent(networkManager, event, eventHandler, timeout, abortPromise);
+    const listenToEvent = (event) =>
+      helper.waitForEvent(
+        networkManager,
+        event,
+        eventHandler,
+        timeout,
+        abortPromise
+      );
     const eventPromises = [];
     eventPromises.push(listenToEvent(NetworkManagerEmittedEvents.Request));
-    eventPromises.push(listenToEvent(NetworkManagerEmittedEvents.RequestFinished));
-    eventPromises.push(listenToEvent(NetworkManagerEmittedEvents.RequestFailed));
+    eventPromises.push(
+      listenToEvent(NetworkManagerEmittedEvents.RequestFinished)
+    );
+    eventPromises.push(
+      listenToEvent(NetworkManagerEmittedEvents.RequestFailed)
+    );
 
-    await Promise.race([idlePromise, ...eventPromises, this._sessionClosePromise()]).then(r => {
-      cleanup();
-      return r;
-    }, e => {
-      cleanup();
-      throw e;
-    });
+    await Promise.race([
+      idlePromise,
+      ...eventPromises,
+      this._sessionClosePromise(),
+    ]).then(
+      (r) => {
+        cleanup();
+        return r;
+      },
+      (e) => {
+        cleanup();
+        throw e;
+      }
+    );
   }
 
   /**
