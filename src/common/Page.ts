@@ -1936,6 +1936,7 @@ export class Page extends EventEmitter {
       evaluate();
       return false;
     };
+
     const listenToEvent = (event) =>
       helper.waitForEvent(
         networkManager,
@@ -1944,14 +1945,10 @@ export class Page extends EventEmitter {
         timeout,
         abortPromise
       );
+
     const eventPromises = [];
     eventPromises.push(listenToEvent(NetworkManagerEmittedEvents.Request));
-    eventPromises.push(
-      listenToEvent(NetworkManagerEmittedEvents.RequestFinished)
-    );
-    eventPromises.push(
-      listenToEvent(NetworkManagerEmittedEvents.RequestFailed)
-    );
+    eventPromises.push(listenToEvent(NetworkManagerEmittedEvents.Response));
 
     await Promise.race([
       idlePromise,
