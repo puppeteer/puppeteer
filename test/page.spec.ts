@@ -339,6 +339,13 @@ describe('Page', function () {
         await otherContext.close();
       }
     );
+    itFailsFirefox('should grant durable-storage', async () => {
+      const { page, server, context } = getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await context.overridePermissions(server.EMPTY_PAGE, ['durable-storage']);
+      expect(await getPermission(page, 'durable-storage')).toBe('granted');
+    });
   });
 
   describe('Page.setGeolocation', function () {
