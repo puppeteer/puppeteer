@@ -23,14 +23,14 @@
 
 const puppeteer = require('puppeteer');
 
-(async() => {
+(async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
   await page.goto('https://developers.google.com/web/');
 
   // Type into search box.
-  await page.type('#searchbox input', 'Headless Chrome');
+  await page.type('.devsite-searchbox input', 'Headless Chrome');
 
   // Wait for suggest overlay to appear and click "show all results".
   const allResultsSelector = '.devsite-suggest-all-results';
@@ -42,9 +42,9 @@ const puppeteer = require('puppeteer');
   await page.waitForSelector(resultsSelector);
 
   // Extract the results from the page.
-  const links = await page.evaluate(resultsSelector => {
+  const links = await page.evaluate((resultsSelector) => {
     const anchors = Array.from(document.querySelectorAll(resultsSelector));
-    return anchors.map(anchor => {
+    return anchors.map((anchor) => {
       const title = anchor.textContent.split('|')[0].trim();
       return `${title} - ${anchor.href}`;
     });

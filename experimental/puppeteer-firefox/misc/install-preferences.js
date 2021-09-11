@@ -1,14 +1,14 @@
 const os = require('os');
 const fs = require('fs');
 const path = require('path');
+const util = require('util');
 
 // Install browser preferences after downloading and unpacking
 // firefox instances.
 // Based on:   https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Enterprise_deployment_before_60#Configuration
 async function installFirefoxPreferences(executablePath) {
   const firefoxFolder = path.dirname(executablePath);
-  const {helper} = require('../lib/helper');
-  const mkdirAsync = helper.promisify(fs.mkdir.bind(fs));
+  const mkdirAsync = util.promisify(fs.mkdir.bind(fs));
 
   let prefPath = '';
   let configPath = '';
