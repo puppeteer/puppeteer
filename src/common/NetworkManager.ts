@@ -189,7 +189,9 @@ export class NetworkManager extends EventEmitter {
   }
 
   numRequestsInProgress(): number {
-    return this._requestIdToRequest.size;
+    return [...this._requestIdToRequest].filter(([, request]) => {
+      return !request.response();
+    }).length;
   }
 
   async setOfflineMode(value: boolean): Promise<void> {
