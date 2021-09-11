@@ -825,6 +825,79 @@ describe('Page', function () {
     });
   });
 
+  describe('Page.waitForNetworkIdle', function () {
+    it('should work', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      let res;
+      const [t1, t2] = await Promise.all([
+        page.waitForNetworkIdle().then((r) => {
+          res = r;
+          return Date.now();
+        }),
+        page
+          .evaluate(() =>
+            (async () => {
+              await Promise.all([
+                fetch('/digits/1.png'),
+                fetch('/digits/2.png'),
+              ]);
+              await new Promise((resolve) => setTimeout(resolve, 200));
+              await fetch('/digits/3.png');
+              await new Promise((resolve) => setTimeout(resolve, 400));
+              await fetch('/digits/4.png');
+            })()
+          )
+          .then(() => Date.now()),
+      ]);
+      expect(res).toBe(undefined);
+      expect(t1).toBeGreaterThan(t2);
+      expect(t1 - t2).toBeGreaterThanOrEqual(400);
+    });
+    it('should respect timeout', async () => {
+      const { page, puppeteer } = getTestState();
+      let error = null;
+      await page
+        .waitForNetworkIdle({ timeout: 1 })
+        .catch((error_) => (error = error_));
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+    });
+    it('should respect idleTime', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      const [t1, t2] = await Promise.all([
+        page.waitForNetworkIdle({ idleTime: 10 }).then(() => Date.now()),
+        page
+          .evaluate(() =>
+            (async () => {
+              await Promise.all([
+                fetch('/digits/1.png'),
+                fetch('/digits/2.png'),
+              ]);
+              await new Promise((resolve) => setTimeout(resolve, 250));
+            })()
+          )
+          .then(() => Date.now()),
+      ]);
+      expect(t2).toBeGreaterThan(t1);
+    });
+    it('should work with no timeout', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      const [result] = await Promise.all([
+        page.waitForNetworkIdle({ timeout: 0 }),
+        page.evaluate(() =>
+          setTimeout(() => {
+            fetch('/digits/1.png');
+            fetch('/digits/2.png');
+            fetch('/digits/3.png');
+          }, 50)
+        ),
+      ]);
+      expect(result).toBe(undefined);
+    });
+  });
+
   describeFailsFirefox('Page.exposeFunction', function () {
     it('should work', async () => {
       const { page } = getTestState();
