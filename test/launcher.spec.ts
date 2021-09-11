@@ -660,6 +660,12 @@ describe('Launcher specs', function () {
         expect(fs.existsSync(executablePath)).toBe(true);
         expect(fs.realpathSync(executablePath)).toBe(executablePath);
       });
+      it('returns executablePath for channel', () => {
+        const { puppeteer } = getTestState();
+
+        const executablePath = puppeteer.executablePath('chrome');
+        expect(executablePath).toBeTruthy();
+      });
     });
   });
 

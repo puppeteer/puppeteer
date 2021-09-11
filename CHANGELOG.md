@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [10.2.0](https://github.com/puppeteer/puppeteer/compare/v10.1.0...v10.2.0) (2021-08-04)
+
+
+### Features
+
+* **api:** make `page.isDragInterceptionEnabled` a method ([#7419](https://github.com/puppeteer/puppeteer/issues/7419)) ([dd470c7](https://github.com/puppeteer/puppeteer/commit/dd470c7a226a8422a938a7b0fffa58ffc6b78512)), closes [#7150](https://github.com/puppeteer/puppeteer/issues/7150)
+* **chromium:** roll to Chromium 93.0.4577.0 (r901912) ([#7387](https://github.com/puppeteer/puppeteer/issues/7387)) ([e10faad](https://github.com/puppeteer/puppeteer/commit/e10faad4f239b1120491bb54fcba0216acd3a646))
+* add channel parameter for puppeteer.launch ([#7389](https://github.com/puppeteer/puppeteer/issues/7389)) ([d70f60e](https://github.com/puppeteer/puppeteer/commit/d70f60e0619b8659d191fa492e3db4bc221ae982))
+* add cooperative request intercepts ([#6735](https://github.com/puppeteer/puppeteer/issues/6735)) ([b5e6474](https://github.com/puppeteer/puppeteer/commit/b5e6474374ae6a88fc73cdb1a9906764c2ac5d70))
+* add support for useragentdata ([#7378](https://github.com/puppeteer/puppeteer/issues/7378)) ([7200b1a](https://github.com/puppeteer/puppeteer/commit/7200b1a6fb9dfdfb65d50f0000339333e71b1b2a))
+
+
+### Bug Fixes
+
+* **browser-runner:** reject promise on error ([#7338](https://github.com/puppeteer/puppeteer/issues/7338)) ([5eb20e2](https://github.com/puppeteer/puppeteer/commit/5eb20e29a21ea0e0368fa8937ef38f7c7693ab34))
+* add script to remove html comments from docs markdown ([#7394](https://github.com/puppeteer/puppeteer/issues/7394)) ([ea3df80](https://github.com/puppeteer/puppeteer/commit/ea3df80ed136a03d7698d2319106af5df8d48b58))
+
+## [10.1.0](https://github.com/puppeteer/puppeteer/compare/v10.0.0...v10.1.0) (2021-06-29)
+
+
+### Features
+
+* add a streaming version for page.pdf ([e3699e2](https://github.com/puppeteer/puppeteer/commit/e3699e248bc9c1f7a6ead9a07d68ae8b65905443))
+* add drag-and-drop support ([#7150](https://github.com/puppeteer/puppeteer/issues/7150)) ([a91b8ac](https://github.com/puppeteer/puppeteer/commit/a91b8aca3728b2c2e310e9446897d729bf983377))
+* add page.emulateCPUThrottling ([#7343](https://github.com/puppeteer/puppeteer/issues/7343)) ([4ce4110](https://github.com/puppeteer/puppeteer/commit/4ce41106288938b9d366c550e7a424812920683d))
+
+
+### Bug Fixes
+
+* remove redundant await while fetching target ([#7351](https://github.com/puppeteer/puppeteer/issues/7351)) ([083b297](https://github.com/puppeteer/puppeteer/commit/083b297a6741c6b1dd23867f441130655fac8f7d))
+
 ## [10.0.0](https://github.com/puppeteer/puppeteer/compare/v9.1.1...v10.0.0) (2021-05-31)
 
 
