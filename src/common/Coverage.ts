@@ -123,8 +123,8 @@ export class Coverage {
   }
 
   /**
-   * @param options - Set of configurable options for coverage defaults to `{
-   * resetOnNavigation : true, reportAnonymousScripts : false }`
+   * @param options - Set of configurable options for coverage defaults to
+   * `resetOnNavigation : true, reportAnonymousScripts : false`
    * @returns Promise that resolves when coverage is started.
    *
    * @remarks
@@ -150,8 +150,8 @@ export class Coverage {
   }
 
   /**
-   * @param options - Set of configurable options for coverage, defaults to `{
-   * resetOnNavigation : true }`
+   * @param options - Set of configurable options for coverage, defaults to
+   * `resetOnNavigation : true`
    * @returns Promise that resolves when coverage is started.
    */
   async startCSSCoverage(options: CSSCoverageOptions = {}): Promise<void> {

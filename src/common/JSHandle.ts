@@ -423,7 +423,9 @@ export class ElementHandle<
     if (!result || !result.quads.length)
       throw new Error('Node is either not visible or not an HTMLElement');
     // Filter out quads that have too small area to click into.
-    const { clientWidth, clientHeight } = layoutMetrics.layoutViewport;
+    // Fallback to `layoutViewport` in case of using Firefox.
+    const { clientWidth, clientHeight } =
+      layoutMetrics.cssLayoutViewport || layoutMetrics.layoutViewport;
     const quads = result.quads
       .map((quad) => this._fromProtocolQuad(quad))
       .map((quad) =>
@@ -502,7 +504,7 @@ export class ElementHandle<
    */
   async drag(target: Point): Promise<Protocol.Input.DragData> {
     assert(
-      this._page.isDragInterceptionEnabled,
+      this._page.isDragInterceptionEnabled(),
       'Drag Interception is not enabled!'
     );
     await this._scrollIntoViewIfNeeded();
@@ -815,9 +817,10 @@ export class ElementHandle<
     assert(boundingBox.width !== 0, 'Node has 0 width.');
     assert(boundingBox.height !== 0, 'Node has 0 height.');
 
-    const {
-      layoutViewport: { pageX, pageY },
-    } = await this._client.send('Page.getLayoutMetrics');
+    const layoutMetrics = await this._client.send('Page.getLayoutMetrics');
+    // Fallback to `layoutViewport` in case of using Firefox.
+    const { pageX, pageY } =
+      layoutMetrics.cssLayoutViewport || layoutMetrics.layoutViewport;
 
     const clip = Object.assign({}, boundingBox);
     clip.x += pageX;

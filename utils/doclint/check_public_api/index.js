@@ -698,6 +698,13 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method Page.setUserAgent() userAgentMetadata',
+        {
+          actualName: 'Object',
+          expectedName: 'UserAgentMetadata',
+        },
+      ],
+      [
         'Method Page.setViewport() options.viewport',
         {
           actualName: 'Object',
@@ -775,6 +782,13 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method Page.createPDFStream() options',
+        {
+          actualName: 'Object',
+          expectedName: 'PDFOptions',
+        },
+      ],
+      [
         'Method Page.screenshot() options',
         {
           actualName: 'Object',
@@ -799,8 +813,7 @@ function compareDocumentations(actual, expected) {
         'Method Page.emulateVisionDeficiency() type',
         {
           actualName: 'string',
-          expectedName:
-            '"none"|"achromatopsia"|"blurredVision"|"deuteranopia"|"protanopia"|"tritanopia"',
+          expectedName: 'Object',
         },
       ],
       [
@@ -1058,6 +1071,7 @@ function compareDocumentations(actual, expected) {
       'Method Page.deleteCookie() ...cookies',
       'Method Page.setCookie() ...cookies',
       'Method Puppeteer.connect() options',
+      'Method Page.setUserAgent() userAgentMetadata',
     ]);
     if (skipPropertyChecksOnMethods.has(source)) return;
 
