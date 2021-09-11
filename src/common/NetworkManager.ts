@@ -188,7 +188,7 @@ export class NetworkManager extends EventEmitter {
     return Object.assign({}, this._extraHTTPHeaders);
   }
 
-  numRequestsInProgress() {
+  numRequestsInProgress(): number {
     return this._requestIdToRequest.size;
   }
 

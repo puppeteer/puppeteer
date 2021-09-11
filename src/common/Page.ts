@@ -1900,7 +1900,7 @@ export class Page extends EventEmitter {
    */
   async waitForNetworkIdle(
     options: { idleTime?: number; timeout?: number } = {}
-  ) {
+  ): Promise<void> {
     const { idleTime = 500, timeout = this._timeoutSettings.timeout() } =
       options;
 
@@ -1962,9 +1962,9 @@ export class Page extends EventEmitter {
         cleanup();
         return r;
       },
-      (e) => {
+      (error) => {
         cleanup();
-        throw e;
+        throw error;
       }
     );
   }
