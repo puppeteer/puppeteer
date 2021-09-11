@@ -74,10 +74,9 @@ describe('Page.click', function () {
     const { page } = getTestState();
 
     const newPage = await page.browser().newPage();
-    await Promise.all([
-      newPage.close(),
-      newPage.mouse.click(1, 2),
-    ]).catch(() => {});
+    await Promise.all([newPage.close(), newPage.mouse.click(1, 2)]).catch(
+      () => {}
+    );
   });
   it('should click the button after navigation ', async () => {
     const { page, server } = getTestState();
@@ -239,7 +238,8 @@ describe('Page.click', function () {
       )
     ).toBe('clicked');
   });
-  it('should double click the button', async () => {
+  // See https://github.com/puppeteer/puppeteer/issues/7175
+  itFailsFirefox('should double click the button', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/button.html');
