@@ -10,6 +10,10 @@ const EXPECTED_ERRORS = new Map<string, string[]>([
       "bad.ts(6,35): error TS2551: Property 'launh' does not exist on type",
       "bad.ts(8,29): error TS2551: Property 'devics' does not exist on type",
       'bad.ts(12,39): error TS2554: Expected 0 arguments, but got 1.',
+      "bad.ts(20,5): error TS2345: Argument of type '(divElem: number) => any' is not assignable to parameter of type 'EvaluateFn<HTMLAnchorElement>",
+      "bad.ts(20,34): error TS2339: Property 'innerText' does not exist on type 'number'.",
+      "bad.ts(24,45): error TS2344: Type '(x: number) => string' does not satisfy the constraint 'EvaluateFn<HTMLAnchorElement>'.",
+      "bad.ts(27,34): error TS2339: Property 'innerText' does not exist on type 'number'.",
     ],
   ],
   [
@@ -34,7 +38,9 @@ const EXPECTED_ERRORS = new Map<string, string[]>([
       "bad.js(5,35): error TS2551: Property 'launh' does not exist on type",
       "bad.js(7,29): error TS2551: Property 'devics' does not exist on type",
       'bad.js(11,39): error TS2554: Expected 0 arguments, but got 1.',
-      "bad.js(15,9): error TS2322: Type 'ElementHandle<Element> | null' is not assignable to type 'ElementHandle<HTMLElement>'",
+      "bad.js(15,9): error TS2322: Type 'ElementHandle<HTMLElement> | null' is not assignable to type 'ElementHandle<HTMLElement>'",
+      "bad.js(22,5): error TS2345: Argument of type '(divElem: number) => any' is not assignable to parameter of type 'EvaluateFn<HTMLElement>'.",
+      "bad.js(22,26): error TS2339: Property 'innerText' does not exist on type 'number'.",
     ],
   ],
   [
@@ -43,7 +49,7 @@ const EXPECTED_ERRORS = new Map<string, string[]>([
       "bad.js(5,35): error TS2551: Property 'launh' does not exist on type",
       "bad.js(7,29): error TS2551: Property 'devics' does not exist on type",
       'bad.js(11,39): error TS2554: Expected 0 arguments, but got 1.',
-      "bad.js(15,9): error TS2322: Type 'ElementHandle<Element> | null' is not assignable to type 'ElementHandle<HTMLElement>'",
+      "bad.js(15,9): error TS2322: Type 'ElementHandle<HTMLElement> | null' is not assignable to type 'ElementHandle<HTMLElement>'",
     ],
   ],
   [
@@ -52,7 +58,7 @@ const EXPECTED_ERRORS = new Map<string, string[]>([
       "bad.js(5,35): error TS2551: Property 'launh' does not exist on type",
       "bad.js(7,29): error TS2551: Property 'devics' does not exist on type",
       'bad.js(11,39): error TS2554: Expected 0 arguments, but got 1.',
-      "bad.js(15,9): error TS2322: Type 'ElementHandle<Element> | null' is not assignable to type 'ElementHandle<HTMLElement>'",
+      "bad.js(15,9): error TS2322: Type 'ElementHandle<HTMLElement> | null' is not assignable to type 'ElementHandle<HTMLElement>'",
     ],
   ],
   [
@@ -61,11 +67,18 @@ const EXPECTED_ERRORS = new Map<string, string[]>([
       "bad.js(5,35): error TS2551: Property 'launh' does not exist on type",
       "bad.js(7,29): error TS2551: Property 'devics' does not exist on type",
       'bad.js(11,39): error TS2554: Expected 0 arguments, but got 1.',
-      "bad.js(15,9): error TS2322: Type 'ElementHandle<Element> | null' is not assignable to type 'ElementHandle<HTMLElement>'",
+      "bad.js(15,9): error TS2322: Type 'ElementHandle<HTMLElement> | null' is not assignable to type 'ElementHandle<HTMLElement>'",
     ],
   ],
 ]);
 const PROJECT_FOLDERS = [...EXPECTED_ERRORS.keys()];
+
+if (!process.env.CI) {
+  console.log(`IMPORTANT: this script assumes you have compiled Puppeteer
+and its types file before running. Make sure you have run:
+=> npm run tsc && npm run generate-d-ts
+before executing this script locally.`);
+}
 
 function packPuppeteer() {
   console.log('Packing Puppeteer');

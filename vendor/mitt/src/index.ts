@@ -1,7 +1,14 @@
+
+/**
+ * @public
+ */
 export type EventType = string | symbol;
 
 // An event handler can take an optional event argument
 // and should not return a value
+/**
+ * @public
+ */
 export type Handler<T = any> = (event?: T) => void;
 export type WildcardHandler = (type: EventType, event?: any) => void;
 
