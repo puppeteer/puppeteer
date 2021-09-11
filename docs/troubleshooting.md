@@ -143,7 +143,7 @@ Chrome/Chromium requires `--use-gl=egl` to [enable GPU acceleration in headless 
 ```js
 const browser = await puppeteer.launch({
   headless: true,
-  args: ['--use-gl=egl']
+  args: ['--use-gl=egl'],
 });
 ```
 
