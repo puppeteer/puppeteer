@@ -1946,9 +1946,10 @@ export class Page extends EventEmitter {
         abortPromise
       );
 
-    const eventPromises = [];
-    eventPromises.push(listenToEvent(NetworkManagerEmittedEvents.Request));
-    eventPromises.push(listenToEvent(NetworkManagerEmittedEvents.Response));
+    const eventPromises = [
+      listenToEvent(NetworkManagerEmittedEvents.Request),
+      listenToEvent(NetworkManagerEmittedEvents.Response),
+    ];
 
     await Promise.race([
       idlePromise,
