@@ -838,17 +838,14 @@ describe('Page', function () {
         page
           .evaluate(() =>
             (async () => {
-              // TODO why does this break with local url?
-              const url =
-                'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_150x54dp.png';
               await Promise.all([
-                fetch(url, { mode: 'no-cors' }),
-                fetch(url, { mode: 'no-cors' }),
+                fetch('/digits/1.png'),
+                fetch('/digits/2.png'),
               ]);
               await new Promise((resolve) => setTimeout(resolve, 200));
-              await fetch(url, { mode: 'no-cors' });
+              await fetch('/digits/3.png');
               await new Promise((resolve) => setTimeout(resolve, 400));
-              await fetch(url, { mode: 'no-cors' });
+              await fetch('/digits/4.png');
             })()
           )
           .then(() => Date.now()),
@@ -873,12 +870,9 @@ describe('Page', function () {
         page
           .evaluate(() =>
             (async () => {
-              // TODO why does this break with local url?
-              const url =
-                'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_150x54dp.png';
               await Promise.all([
-                fetch(url, { mode: 'no-cors' }),
-                fetch(url, { mode: 'no-cors' }),
+                fetch('/digits/1.png'),
+                fetch('/digits/2.png'),
               ]);
               await new Promise((resolve) => setTimeout(resolve, 250));
             })()
@@ -894,12 +888,9 @@ describe('Page', function () {
         page.waitForNetworkIdle({ timeout: 0 }),
         page.evaluate(() =>
           setTimeout(() => {
-            // TODO why does this break with local url?
-            const url =
-              'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_150x54dp.png';
-            fetch(url, { mode: 'no-cors' });
-            fetch(url, { mode: 'no-cors' });
-            fetch(url, { mode: 'no-cors' });
+            fetch('/digits/1.png');
+            fetch('/digits/2.png');
+            fetch('/digits/3.png');
           }, 50)
         ),
       ]);
