@@ -67,10 +67,7 @@ describe('Page', function () {
       expect(dialog.type()).toBe('beforeunload');
       expect(dialog.defaultValue()).toBe('');
       if (isChrome) expect(dialog.message()).toBe('');
-      else
-        expect(dialog.message()).toBe(
-          'This page is asking you to confirm that you want to leave - data you have entered may not be saved.'
-        );
+      else expect(dialog.message()).toBeTruthy();
       await dialog.accept();
       await pageClosingPromise;
     });
@@ -176,11 +173,25 @@ describe('Page', function () {
       expect(await page.evaluate(() => !!window.opener)).toBe(false);
       expect(await popup.evaluate(() => !!window.opener)).toBe(false);
     });
-    it('should work with clicking target=_blank', async () => {
+    it('should work with clicking target=_blank and without rel=opener', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       await page.setContent('<a target=_blank href="/one-style.html">yo</a>');
+      const [popup] = await Promise.all([
+        new Promise<Page>((x) => page.once('popup', x)),
+        page.click('a'),
+      ]);
+      expect(await page.evaluate(() => !!window.opener)).toBe(false);
+      expect(await popup.evaluate(() => !!window.opener)).toBe(false);
+    });
+    it('should work with clicking target=_blank and with rel=opener', async () => {
+      const { page, server } = getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent(
+        '<a target=_blank rel=opener href="/one-style.html">yo</a>'
+      );
       const [popup] = await Promise.all([
         new Promise<Page>((x) => page.once('popup', x)),
         page.click('a'),
@@ -246,6 +257,7 @@ describe('Page', function () {
       await page.goto(server.EMPTY_PAGE);
       let error = null;
       await context
+        // @ts-expect-error purposeful bad input for test
         .overridePermissions(server.EMPTY_PAGE, ['foo'])
         .catch((error_) => (error = error_));
       expect(error.message).toBe('Unknown permission: foo');
@@ -302,7 +314,7 @@ describe('Page', function () {
       ]);
     });
     itFailsFirefox(
-      'should isolate permissions between browser contexs',
+      'should isolate permissions between browser contexts',
       async () => {
         const { page, server, context, browser } = getTestState();
 
@@ -712,6 +724,21 @@ describe('Page', function () {
         .catch((error_) => (error = error_));
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
+    it('should work with async predicate', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      const [response] = await Promise.all([
+        page.waitForResponse(async (response) => {
+          return response.url() === server.PREFIX + '/digits/2.png';
+        }),
+        page.evaluate(() => {
+          fetch('/digits/1.png');
+          fetch('/digits/2.png');
+          fetch('/digits/3.png');
+        }),
+      ]);
+      expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
+    });
     it('should work with no timeout', async () => {
       const { page, server } = getTestState();
 
@@ -795,6 +822,79 @@ describe('Page', function () {
         ),
       ]);
       expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
+    });
+  });
+
+  describe('Page.waitForNetworkIdle', function () {
+    it('should work', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      let res;
+      const [t1, t2] = await Promise.all([
+        page.waitForNetworkIdle().then((r) => {
+          res = r;
+          return Date.now();
+        }),
+        page
+          .evaluate(() =>
+            (async () => {
+              await Promise.all([
+                fetch('/digits/1.png'),
+                fetch('/digits/2.png'),
+              ]);
+              await new Promise((resolve) => setTimeout(resolve, 200));
+              await fetch('/digits/3.png');
+              await new Promise((resolve) => setTimeout(resolve, 400));
+              await fetch('/digits/4.png');
+            })()
+          )
+          .then(() => Date.now()),
+      ]);
+      expect(res).toBe(undefined);
+      expect(t1).toBeGreaterThan(t2);
+      expect(t1 - t2).toBeGreaterThanOrEqual(400);
+    });
+    it('should respect timeout', async () => {
+      const { page, puppeteer } = getTestState();
+      let error = null;
+      await page
+        .waitForNetworkIdle({ timeout: 1 })
+        .catch((error_) => (error = error_));
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+    });
+    it('should respect idleTime', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      const [t1, t2] = await Promise.all([
+        page.waitForNetworkIdle({ idleTime: 10 }).then(() => Date.now()),
+        page
+          .evaluate(() =>
+            (async () => {
+              await Promise.all([
+                fetch('/digits/1.png'),
+                fetch('/digits/2.png'),
+              ]);
+              await new Promise((resolve) => setTimeout(resolve, 250));
+            })()
+          )
+          .then(() => Date.now()),
+      ]);
+      expect(t2).toBeGreaterThan(t1);
+    });
+    it('should work with no timeout', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      const [result] = await Promise.all([
+        page.waitForNetworkIdle({ timeout: 0 }),
+        page.evaluate(() =>
+          setTimeout(() => {
+            fetch('/digits/1.png');
+            fetch('/digits/2.png');
+            fetch('/digits/3.png');
+          }, 50)
+        ),
+      ]);
+      expect(result).toBe(undefined);
     });
   });
 
@@ -970,6 +1070,44 @@ describe('Page', function () {
       expect(await page.evaluate(() => navigator.userAgent)).toContain(
         'iPhone'
       );
+    });
+    itFailsFirefox('should work with additional userAgentMetdata', async () => {
+      const { page, server } = getTestState();
+
+      await page.setUserAgent('MockBrowser', {
+        architecture: 'Mock1',
+        mobile: false,
+        model: 'Mockbook',
+        platform: 'MockOS',
+        platformVersion: '3.1',
+      });
+      const [request] = await Promise.all([
+        server.waitForRequest('/empty.html'),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+      expect(
+        await page.evaluate(() => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore: userAgentData not yet in TypeScript DOM API
+          return navigator.userAgentData.mobile;
+        })
+      ).toBe(false);
+
+      const uaData = await page.evaluate(() => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore: userAgentData not yet in TypeScript DOM API
+        return navigator.userAgentData.getHighEntropyValues([
+          'architecture',
+          'model',
+          'platform',
+          'platformVersion',
+        ]);
+      });
+      expect(uaData['architecture']).toBe('Mock1');
+      expect(uaData['model']).toBe('Mockbook');
+      expect(uaData['platform']).toBe('MockOS');
+      expect(uaData['platformVersion']).toBe('3.1');
+      expect(request.headers['user-agent']).toBe('MockBrowser');
     });
   });
 
@@ -1487,6 +1625,20 @@ describe('Page', function () {
       expect(fs.readFileSync(outputFile).byteLength).toBeGreaterThan(0);
       fs.unlinkSync(outputFile);
     });
+
+    it('can print to PDF and stream the result', async () => {
+      // Printing to pdf is currently only supported in headless
+      const { isHeadless, page } = getTestState();
+
+      if (!isHeadless) return;
+
+      const stream = await page.createPDFStream();
+      let size = 0;
+      for await (const chunk of stream) {
+        size += chunk.length;
+      }
+      expect(size).toBeGreaterThan(0);
+    });
   });
 
   describe('Page.title', function () {
@@ -1712,7 +1864,7 @@ describe('Page', function () {
   });
 
   describe('Page.browserContext', function () {
-    it('should return the correct browser instance', async () => {
+    it('should return the correct browser context instance', async () => {
       const { page, context } = getTestState();
 
       expect(page.browserContext()).toBe(context);

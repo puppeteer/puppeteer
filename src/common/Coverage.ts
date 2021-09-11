@@ -22,6 +22,11 @@ import { CDPSession } from './Connection.js';
 import { EVALUATION_SCRIPT_URL } from './ExecutionContext.js';
 
 /**
+ * @internal
+ */
+export { PuppeteerEventListener };
+
+/**
  * The CoverageEntry class represents one entry of the coverage report.
  * @public
  */
@@ -133,8 +138,8 @@ export class Coverage {
   }
 
   /**
-   * @param options - defaults to
-   * `{ resetOnNavigation : true, reportAnonymousScripts : false }`
+   * @param options - Set of configurable options for coverage defaults to
+   * `resetOnNavigation : true, reportAnonymousScripts : false`
    * @returns Promise that resolves when coverage is started.
    *
    * @remarks
@@ -160,7 +165,8 @@ export class Coverage {
   }
 
   /**
-   * @param options - defaults to `{ resetOnNavigation : true }`
+   * @param options - Set of configurable options for coverage, defaults to
+   * `resetOnNavigation : true`
    * @returns Promise that resolves when coverage is started.
    */
   async startCSSCoverage(options: CSSCoverageOptions = {}): Promise<void> {
@@ -179,7 +185,10 @@ export class Coverage {
   }
 }
 
-class JSCoverage {
+/**
+ * @public
+ */
+export class JSCoverage {
   _client: CDPSession;
   _enabled = false;
   _scriptURLs = new Map<string, string>();
@@ -300,7 +309,10 @@ class JSCoverage {
   }
 }
 
-class CSSCoverage {
+/**
+ * @public
+ */
+export class CSSCoverage {
   _client: CDPSession;
   _enabled = false;
   _stylesheetURLs = new Map<string, string>();

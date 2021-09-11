@@ -28,5 +28,5 @@ fs.writeFileSync(
 );
 
 console.log(
-  'IMPORTANT: you should update the pinned version of devtools-protocol to match the new revsion.'
+  'IMPORTANT: you should update the pinned version of devtools-protocol to match the new revision.'
 );

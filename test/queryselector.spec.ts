@@ -411,7 +411,14 @@ describe('querySelector', function () {
     };
     before(() => {
       const { puppeteer } = getTestState();
-      puppeteer.__experimental_registerCustomQueryHandler('allArray', handler);
+      puppeteer.registerCustomQueryHandler('allArray', handler);
+    });
+
+    it('should have registered handler', async () => {
+      const { puppeteer } = getTestState();
+      expect(
+        puppeteer.customQueryHandlerNames().includes('allArray')
+      ).toBeTruthy();
     });
     it('$$ should query existing elements', async () => {
       const { page } = getTestState();
