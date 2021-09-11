@@ -15,18 +15,11 @@
  */
 import * as os from 'os';
 import * as path from 'path';
-import * as http from 'http';
-import * as https from 'https';
-import * as URL from 'url';
 import * as fs from 'fs';
 
-import { BrowserFetcher } from './BrowserFetcher.js';
-import { Connection } from '../common/Connection.js';
-import { Browser } from '../common/Browser.js';
 import { assert } from '../common/assert.js';
-import { debugError } from '../common/helper.js';
-import { ConnectionTransport } from '../common/ConnectionTransport.js';
-import { WebSocketTransport } from '../common/WebSocketTransport.js';
+import { BrowserFetcher } from './BrowserFetcher.js';
+import { Browser } from '../common/Browser.js';
 import { BrowserRunner } from './BrowserRunner.js';
 import { promisify } from 'util';
 
@@ -34,21 +27,21 @@ const mkdtempAsync = promisify(fs.mkdtemp);
 const writeFileAsync = promisify(fs.writeFile);
 
 import {
-  ChromeArgOptions,
-  LaunchOptions,
-  BrowserOptions,
+  BrowserLaunchArgumentOptions,
+  ChromeReleaseChannel,
+  PuppeteerNodeLaunchOptions,
 } from './LaunchOptions.js';
+import { Product } from '../common/Product.js';
 
 /**
  * Describes a launcher - a class that is able to create and launch a browser instance.
  * @public
  */
 export interface ProductLauncher {
-  launch(object);
-  connect(object);
-  executablePath: () => string;
-  defaultArgs(object);
-  product: string;
+  launch(object: PuppeteerNodeLaunchOptions);
+  executablePath: (string?) => string;
+  defaultArgs(object: BrowserLaunchArgumentOptions);
+  product: Product;
 }
 
 /**
@@ -69,13 +62,12 @@ class ChromeLauncher implements ProductLauncher {
     this._isPuppeteerCore = isPuppeteerCore;
   }
 
-  async launch(
-    options: LaunchOptions & ChromeArgOptions & BrowserOptions = {}
-  ): Promise<Browser> {
+  async launch(options: PuppeteerNodeLaunchOptions = {}): Promise<Browser> {
     const {
       ignoreDefaultArgs = false,
       args = [],
       dumpio = false,
+      channel = null,
       executablePath = null,
       pipe = false,
       env = process.env,
@@ -86,6 +78,7 @@ class ChromeLauncher implements ProductLauncher {
       defaultViewport = { width: 800, height: 600 },
       slowMo = 0,
       timeout = 30000,
+      waitForInitialPage = true,
     } = options;
 
     const profilePath = path.join(os.tmpdir(), 'puppeteer_dev_chrome_profile-');
@@ -115,16 +108,30 @@ class ChromeLauncher implements ProductLauncher {
     }
 
     let chromeExecutable = executablePath;
-    if (os.arch() === 'arm64') {
-      chromeExecutable = '/usr/bin/chromium-browser';
+
+    if (channel) {
+      // executablePath is detected by channel, so it should not be specified by user.
+      assert(
+        !executablePath,
+        '`executablePath` must not be specified when `channel` is given.'
+      );
+
+      chromeExecutable = executablePathForChannel(channel);
     } else if (!executablePath) {
-      const { missingText, executablePath } = resolveExecutablePath(this);
-      if (missingText) throw new Error(missingText);
-      chromeExecutable = executablePath;
+      // Use Intel x86 builds on Apple M1 until native macOS arm64
+      // Chromium builds are available.
+      if (os.platform() !== 'darwin' && os.arch() === 'arm64') {
+        chromeExecutable = '/usr/bin/chromium-browser';
+      } else {
+        const { missingText, executablePath } = resolveExecutablePath(this);
+        if (missingText) throw new Error(missingText);
+        chromeExecutable = executablePath;
+      }
     }
 
     const usePipe = chromeArguments.includes('--remote-debugging-pipe');
     const runner = new BrowserRunner(
+      this.product,
       chromeExecutable,
       chromeArguments,
       temporaryUserDataDir
@@ -153,7 +160,8 @@ class ChromeLauncher implements ProductLauncher {
         runner.proc,
         runner.close.bind(runner)
       );
-      await browser.waitForTarget((t) => t.type() === 'page');
+      if (waitForInitialPage)
+        await browser.waitForTarget((t) => t.type() === 'page');
       return browser;
     } catch (error) {
       runner.kill();
@@ -161,11 +169,7 @@ class ChromeLauncher implements ProductLauncher {
     }
   }
 
-  /**
-   * @param {!Launcher.ChromeArgOptions=} options
-   * @returns {!Array<string>}
-   */
-  defaultArgs(options: ChromeArgOptions = {}): string[] {
+  defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
     const chromeArguments = [
       '--disable-background-networking',
       '--enable-features=NetworkService,NetworkServiceInProcess',
@@ -177,7 +181,7 @@ class ChromeLauncher implements ProductLauncher {
       '--disable-default-apps',
       '--disable-dev-shm-usage',
       '--disable-extensions',
-      '--disable-features=TranslateUI',
+      '--disable-features=Translate',
       '--disable-hang-monitor',
       '--disable-ipc-flooding-protection',
       '--disable-popup-blocking',
@@ -190,6 +194,9 @@ class ChromeLauncher implements ProductLauncher {
       '--enable-automation',
       '--password-store=basic',
       '--use-mock-keychain',
+      // TODO(sadym): remove '--enable-blink-features=IdleDetection'
+      // once IdleDetection is turned on by default.
+      '--enable-blink-features=IdleDetection',
     ];
     const {
       devtools = false,
@@ -197,7 +204,8 @@ class ChromeLauncher implements ProductLauncher {
       args = [],
       userDataDir = null,
     } = options;
-    if (userDataDir) chromeArguments.push(`--user-data-dir=${userDataDir}`);
+    if (userDataDir)
+      chromeArguments.push(`--user-data-dir=${path.resolve(userDataDir)}`);
     if (devtools) chromeArguments.push('--auto-open-devtools-for-tabs');
     if (headless) {
       chromeArguments.push('--headless', '--hide-scrollbars', '--mute-audio');
@@ -208,69 +216,16 @@ class ChromeLauncher implements ProductLauncher {
     return chromeArguments;
   }
 
-  executablePath(): string {
-    return resolveExecutablePath(this).executablePath;
+  executablePath(channel?: ChromeReleaseChannel): string {
+    if (channel) {
+      return executablePathForChannel(channel);
+    } else {
+      return resolveExecutablePath(this).executablePath;
+    }
   }
 
-  get product(): string {
+  get product(): Product {
     return 'chrome';
-  }
-
-  async connect(
-    options: BrowserOptions & {
-      browserWSEndpoint?: string;
-      browserURL?: string;
-      transport?: ConnectionTransport;
-    }
-  ): Promise<Browser> {
-    const {
-      browserWSEndpoint,
-      browserURL,
-      ignoreHTTPSErrors = false,
-      defaultViewport = { width: 800, height: 600 },
-      transport,
-      slowMo = 0,
-    } = options;
-
-    assert(
-      Number(!!browserWSEndpoint) +
-        Number(!!browserURL) +
-        Number(!!transport) ===
-        1,
-      'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect'
-    );
-
-    let connection = null;
-    if (transport) {
-      connection = new Connection('', transport, slowMo);
-    } else if (browserWSEndpoint) {
-      const connectionTransport = await WebSocketTransport.create(
-        browserWSEndpoint
-      );
-      connection = new Connection(
-        browserWSEndpoint,
-        connectionTransport,
-        slowMo
-      );
-    } else if (browserURL) {
-      const connectionURL = await getWSEndpoint(browserURL);
-      const connectionTransport = await WebSocketTransport.create(
-        connectionURL
-      );
-      connection = new Connection(connectionURL, connectionTransport, slowMo);
-    }
-
-    const { browserContextIds } = await connection.send(
-      'Target.getBrowserContexts'
-    );
-    return Browser.create(
-      connection,
-      browserContextIds,
-      ignoreHTTPSErrors,
-      defaultViewport,
-      null,
-      () => connection.send('Browser.close').catch(debugError)
-    );
   }
 }
 
@@ -292,13 +247,7 @@ class FirefoxLauncher implements ProductLauncher {
     this._isPuppeteerCore = isPuppeteerCore;
   }
 
-  async launch(
-    options: LaunchOptions &
-      ChromeArgOptions &
-      BrowserOptions & {
-        extraPrefsFirefox?: { [x: string]: unknown };
-      } = {}
-  ): Promise<Browser> {
+  async launch(options: PuppeteerNodeLaunchOptions = {}): Promise<Browser> {
     const {
       ignoreDefaultArgs = false,
       args = [],
@@ -314,6 +263,7 @@ class FirefoxLauncher implements ProductLauncher {
       slowMo = 0,
       timeout = 30000,
       extraPrefsFirefox = {},
+      waitForInitialPage = true,
     } = options;
 
     const firefoxArguments = [];
@@ -353,6 +303,7 @@ class FirefoxLauncher implements ProductLauncher {
     }
 
     const runner = new BrowserRunner(
+      this.product,
       firefoxExecutable,
       firefoxArguments,
       temporaryUserDataDir
@@ -381,69 +332,13 @@ class FirefoxLauncher implements ProductLauncher {
         runner.proc,
         runner.close.bind(runner)
       );
-      await browser.waitForTarget((t) => t.type() === 'page');
+      if (waitForInitialPage)
+        await browser.waitForTarget((t) => t.type() === 'page');
       return browser;
     } catch (error) {
       runner.kill();
       throw error;
     }
-  }
-
-  async connect(
-    options: BrowserOptions & {
-      browserWSEndpoint?: string;
-      browserURL?: string;
-      transport?: ConnectionTransport;
-    }
-  ): Promise<Browser> {
-    const {
-      browserWSEndpoint,
-      browserURL,
-      ignoreHTTPSErrors = false,
-      defaultViewport = { width: 800, height: 600 },
-      transport,
-      slowMo = 0,
-    } = options;
-
-    assert(
-      Number(!!browserWSEndpoint) +
-        Number(!!browserURL) +
-        Number(!!transport) ===
-        1,
-      'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect'
-    );
-
-    let connection = null;
-    if (transport) {
-      connection = new Connection('', transport, slowMo);
-    } else if (browserWSEndpoint) {
-      const connectionTransport = await WebSocketTransport.create(
-        browserWSEndpoint
-      );
-      connection = new Connection(
-        browserWSEndpoint,
-        connectionTransport,
-        slowMo
-      );
-    } else if (browserURL) {
-      const connectionURL = await getWSEndpoint(browserURL);
-      const connectionTransport = await WebSocketTransport.create(
-        connectionURL
-      );
-      connection = new Connection(connectionURL, connectionTransport, slowMo);
-    }
-
-    const { browserContextIds } = await connection.send(
-      'Target.getBrowserContexts'
-    );
-    return Browser.create(
-      connection,
-      browserContextIds,
-      ignoreHTTPSErrors,
-      defaultViewport,
-      null,
-      () => connection.send('Browser.close').catch(debugError)
-    );
   }
 
   executablePath(): string {
@@ -461,12 +356,15 @@ class FirefoxLauncher implements ProductLauncher {
     }
   }
 
-  get product(): string {
+  get product(): Product {
     return 'firefox';
   }
 
-  defaultArgs(options: ChromeArgOptions = {}): string[] {
+  defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
     const firefoxArguments = ['--no-remote', '--foreground'];
+    if (os.platform().startsWith('win')) {
+      firefoxArguments.push('--wait-for-browser');
+    }
     const {
       devtools = false,
       headless = !devtools,
@@ -513,7 +411,7 @@ class FirefoxLauncher implements ProductLauncher {
       // https://bugzilla.mozilla.org/show_bug.cgi?id=1543115
       'browser.dom.window.dump.enabled': true,
       // Disable topstories
-      'browser.newtabpage.activity-stream.feeds.section.topstories': false,
+      'browser.newtabpage.activity-stream.feeds.system.topstories': false,
       // Always display a blank page
       'browser.newtabpage.enabled': false,
       // Background thumbnails in particular cause grief: and disabling
@@ -560,16 +458,15 @@ class FirefoxLauncher implements ProductLauncher {
       // Do not warn on quitting Firefox
       'browser.warnOnQuit': false,
 
-      // Do not show datareporting policy notifications which can
-      // interfere with tests
-      'datareporting.healthreport.about.reportUrl': `http://${server}/dummy/abouthealthreport/`,
+      // Defensively disable data reporting systems
       'datareporting.healthreport.documentServerURI': `http://${server}/dummy/healthreport/`,
       'datareporting.healthreport.logging.consoleEnabled': false,
       'datareporting.healthreport.service.enabled': false,
       'datareporting.healthreport.service.firstRun': false,
       'datareporting.healthreport.uploadEnabled': false,
+
+      // Do not show datareporting policy notifications which can interfere with tests
       'datareporting.policy.dataSubmissionEnabled': false,
-      'datareporting.policy.dataSubmissionPolicyAccepted': false,
       'datareporting.policy.dataSubmissionPolicyBypassNotification': true,
 
       // DevTools JSONViewer sometimes fails to load dependencies with its require.js.
@@ -613,6 +510,9 @@ class FirefoxLauncher implements ProductLauncher {
       // Make sure opening about:addons will not hit the network
       'extensions.webservice.discoverURL': `http://${server}/dummy/discoveryURL`,
 
+      // Force disable Fission until the Remote Agent is compatible
+      'fission.autostart': false,
+
       // Allow the application to have focus even it runs in the background
       'focusmanager.testmode': true,
       // Disable useragent updates
@@ -633,6 +533,9 @@ class FirefoxLauncher implements ProductLauncher {
       // jest-puppeteer asserts that no error message is emitted by the console
       'network.cookie.cookieBehavior': 0,
 
+      // Disable experimental feature that is only available in Nightly
+      'network.cookie.sameSite.laxByDefault': false,
+
       // Do not prompt for temporary redirects
       'network.http.prompt-temp-redirect': false,
 
@@ -651,8 +554,8 @@ class FirefoxLauncher implements ProductLauncher {
 
       'privacy.trackingprotection.enabled': false,
 
-      // Enable Remote Agent
-      // https://bugzilla.mozilla.org/show_bug.cgi?id=1544393
+      // Can be removed once Firefox 89 is no longer supported
+      // https://bugzilla.mozilla.org/show_bug.cgi?id=1710839
       'remote.enabled': true,
 
       // Don't do network connections for mitm priming
@@ -682,8 +585,6 @@ class FirefoxLauncher implements ProductLauncher {
       // Disable browser animations (tabs, fullscreen, sliding alerts)
       'toolkit.cosmeticAnimations.enabled': false,
 
-      // We want to collect telemetry, but we don't want to send in the results
-      'toolkit.telemetry.server': `https://${server}/dummy/telemetry/`,
       // Prevent starting into safe mode after application crashes
       'toolkit.startup.max_resumed_crashes': -1,
     };
@@ -702,45 +603,85 @@ class FirefoxLauncher implements ProductLauncher {
   }
 }
 
-function getWSEndpoint(browserURL: string): Promise<string> {
-  let resolve, reject;
-  const promise = new Promise<string>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
+function executablePathForChannel(channel: ChromeReleaseChannel): string {
+  const platform = os.platform();
 
-  const endpointURL = URL.resolve(browserURL, '/json/version');
-  const protocol = endpointURL.startsWith('https') ? https : http;
-  const requestOptions = Object.assign(URL.parse(endpointURL), {
-    method: 'GET',
-  });
-  const request = protocol.request(requestOptions, (res) => {
-    let data = '';
-    if (res.statusCode !== 200) {
-      // Consume response data to free up memory.
-      res.resume();
-      reject(new Error('HTTP ' + res.statusCode));
-      return;
-    }
-    res.setEncoding('utf8');
-    res.on('data', (chunk) => (data += chunk));
-    res.on('end', () => resolve(JSON.parse(data).webSocketDebuggerUrl));
-  });
+  let chromePath: string | undefined;
+  switch (platform) {
+    case 'win32':
+      switch (channel) {
+        case 'chrome':
+          chromePath = `${process.env.PROGRAMFILES}\\Google\\Chrome\\Application\\chrome.exe`;
+          break;
+        case 'chrome-beta':
+          chromePath = `${process.env.PROGRAMFILES}\\Google\\Chrome Beta\\Application\\chrome.exe`;
+          break;
+        case 'chrome-canary':
+          chromePath = `${process.env.PROGRAMFILES}\\Google\\Chrome SxS\\Application\\chrome.exe`;
+          break;
+        case 'chrome-dev':
+          chromePath = `${process.env.PROGRAMFILES}\\Google\\Chrome Dev\\Application\\chrome.exe`;
+          break;
+      }
+      break;
+    case 'darwin':
+      switch (channel) {
+        case 'chrome':
+          chromePath =
+            '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+          break;
+        case 'chrome-beta':
+          chromePath =
+            '/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta';
+          break;
+        case 'chrome-canary':
+          chromePath =
+            '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary';
+          break;
+        case 'chrome-dev':
+          chromePath =
+            '/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev';
+          break;
+      }
+      break;
+    case 'linux':
+      switch (channel) {
+        case 'chrome':
+          chromePath = '/opt/google/chrome/chrome';
+          break;
+        case 'chrome-beta':
+          chromePath = '/opt/google/chrome-beta/chrome';
+          break;
+        case 'chrome-dev':
+          chromePath = '/opt/google/chrome-unstable/chrome';
+          break;
+      }
+      break;
+  }
 
-  request.on('error', reject);
-  request.end();
+  if (!chromePath) {
+    throw new Error(
+      `Unable to detect browser executable path for '${channel}' on ${platform}.`
+    );
+  }
 
-  return promise.catch((error) => {
-    error.message =
-      `Failed to fetch browser webSocket url from ${endpointURL}: ` +
-      error.message;
-    throw error;
-  });
+  // Check if Chrome exists and is accessible.
+  try {
+    fs.accessSync(chromePath);
+  } catch (error) {
+    throw new Error(
+      `Could not find Google Chrome executable for channel '${channel}' at '${chromePath}'.`
+    );
+  }
+
+  return chromePath;
 }
 
-function resolveExecutablePath(
-  launcher: ChromeLauncher | FirefoxLauncher
-): { executablePath: string; missingText?: string } {
+function resolveExecutablePath(launcher: ChromeLauncher | FirefoxLauncher): {
+  executablePath: string;
+  missingText?: string;
+} {
+  let downloadPath: string;
   // puppeteer-core doesn't take into account PUPPETEER_* env variables.
   if (!launcher._isPuppeteerCore) {
     const executablePath =
@@ -754,10 +695,16 @@ function resolveExecutablePath(
         : null;
       return { executablePath, missingText };
     }
+    downloadPath =
+      process.env.PUPPETEER_DOWNLOAD_PATH ||
+      process.env.npm_config_puppeteer_download_path ||
+      process.env.npm_package_config_puppeteer_download_path;
   }
   const browserFetcher = new BrowserFetcher(launcher._projectRoot, {
     product: launcher.product,
+    path: downloadPath,
   });
+
   if (!launcher._isPuppeteerCore && launcher.product === 'chrome') {
     const revision = process.env['PUPPETEER_CHROMIUM_REVISION'];
     if (revision) {
@@ -770,8 +717,13 @@ function resolveExecutablePath(
     }
   }
   const revisionInfo = browserFetcher.revisionInfo(launcher._preferredRevision);
+
+  const firefoxHelp = `Run \`PUPPETEER_PRODUCT=firefox npm install\` to download a supported Firefox browser binary.`;
+  const chromeHelp = `Run \`npm install\` to download the correct Chromium revision (${launcher._preferredRevision}).`;
   const missingText = !revisionInfo.local
-    ? `Could not find browser revision ${launcher._preferredRevision}. Run "PUPPETEER_PRODUCT=firefox npm install" or "PUPPETEER_PRODUCT=firefox yarn install" to download a supported Firefox browser binary.`
+    ? `Could not find expected browser (${launcher.product}) locally. ${
+        launcher.product === 'chrome' ? chromeHelp : firefoxHelp
+      }`
     : null;
   return { executablePath: revisionInfo.executablePath, missingText };
 }

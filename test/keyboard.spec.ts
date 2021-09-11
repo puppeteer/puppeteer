@@ -127,7 +127,7 @@ describe('Keyboard', function () {
       await page.evaluate(() => document.querySelector('textarea').value)
     ).toBe('嗨a');
   });
-  it('should report shiftKey', async () => {
+  itFailsFirefox('should report shiftKey', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/keyboard.html');
@@ -333,16 +333,16 @@ describe('Keyboard', function () {
     const { page } = getTestState();
 
     let error = await page.keyboard
-      // @ts-expect-error
+      // @ts-expect-error bad input
       .press('NotARealKey')
       .catch((error_) => error_);
     expect(error.message).toBe('Unknown key: "NotARealKey"');
 
-    // @ts-expect-error
+    // @ts-expect-error bad input
     error = await page.keyboard.press('ё').catch((error_) => error_);
     expect(error && error.message).toBe('Unknown key: "ё"');
 
-    // @ts-expect-error
+    // @ts-expect-error bad input
     error = await page.keyboard.press('😊').catch((error_) => error_);
     expect(error && error.message).toBe('Unknown key: "😊"');
   });

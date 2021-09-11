@@ -22,7 +22,7 @@ cd $TMPDIR
 PUPPETEER_PRODUCT=firefox npm install --loglevel silent "${tarball}"
 node --eval="require('puppeteer')"
 rm "${tarball}"
-ls $TMPDIR/node_modules/puppeteer/.local-firefox/
+ls $TMPDIR/node_modules/puppeteer/.local-firefox/linux-*/firefox/firefox
 
 # Again for puppeteer-core
 cd $ROOTDIR

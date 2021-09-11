@@ -19,6 +19,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils'; // eslint-disable-line import/extensions
+import { CustomQueryHandler } from '../lib/cjs/puppeteer/common/QueryHandler.js';
 
 describe('querySelector', function () {
   setupTestBrowserHooks();
@@ -67,6 +68,48 @@ describe('querySelector', function () {
     });
   });
 
+  describe('pierceHandler', function () {
+    beforeEach(async () => {
+      const { page } = getTestState();
+      await page.setContent(
+        `<script>
+        const div = document.createElement('div');
+        const shadowRoot = div.attachShadow({mode: 'open'});
+        const div1 = document.createElement('div');
+        div1.textContent = 'Hello';
+        div1.className = 'foo';
+        const div2 = document.createElement('div');
+        div2.textContent = 'World';
+        div2.className = 'foo';
+        shadowRoot.appendChild(div1);
+        shadowRoot.appendChild(div2);
+        document.documentElement.appendChild(div);
+        </script>`
+      );
+    });
+    it('should find first element in shadow', async () => {
+      const { page } = getTestState();
+      const div = await page.$('pierce/.foo');
+      const text = await div.evaluate(
+        (element: Element) => element.textContent
+      );
+      expect(text).toBe('Hello');
+    });
+    it('should find all elements in shadow', async () => {
+      const { page } = getTestState();
+      const divs = await page.$$('pierce/.foo');
+      const text = await Promise.all(
+        divs.map((div) =>
+          div.evaluate((element: Element) => element.textContent)
+        )
+      );
+      expect(text.join(' ')).toBe('Hello World');
+    });
+  });
+
+  // The tests for $$eval are repeated later in this file in the test group 'QueryAll'.
+  // This is done to also test a query handler where QueryAll returns an Element[]
+  // as opposed to NodeListOf<Element>.
   describe('Page.$$eval', function () {
     it('should work', async () => {
       const { page } = getTestState();
@@ -76,6 +119,52 @@ describe('querySelector', function () {
       );
       const divsCount = await page.$$eval('div', (divs) => divs.length);
       expect(divsCount).toBe(3);
+    });
+    it('should accept extra arguments', async () => {
+      const { page } = getTestState();
+      await page.setContent(
+        '<div>hello</div><div>beautiful</div><div>world!</div>'
+      );
+      const divsCountPlus5 = await page.$$eval(
+        'div',
+        (divs, two: number, three: number) => divs.length + two + three,
+        2,
+        3
+      );
+      expect(divsCountPlus5).toBe(8);
+    });
+    it('should accept ElementHandles as arguments', async () => {
+      const { page } = getTestState();
+      await page.setContent(
+        '<section>2</section><section>2</section><section>1</section><div>3</div>'
+      );
+      const divHandle = await page.$('div');
+      const sum = await page.$$eval(
+        'section',
+        (sections, div: HTMLElement) =>
+          sections.reduce(
+            (acc, section) => acc + Number(section.textContent),
+            0
+          ) + Number(div.textContent),
+        divHandle
+      );
+      expect(sum).toBe(8);
+    });
+    it('should handle many elements', async () => {
+      const { page } = getTestState();
+      await page.evaluate(
+        `
+        for (var i = 0; i <= 1000; i++) {
+            const section = document.createElement('section');
+            section.textContent = i;
+            document.body.appendChild(section);
+        }
+        `
+      );
+      const sum = await page.$$eval('section', (sections) =>
+        sections.reduce((acc, section) => acc + Number(section.textContent), 0)
+      );
+      expect(sum).toBe(500500);
     });
   });
 
@@ -310,6 +399,109 @@ describe('querySelector', function () {
       const html = await page.$('html');
       const second = await html.$x(`/div[contains(@class, 'third')]`);
       expect(second).toEqual([]);
+    });
+  });
+
+  // This is the same tests for `$$eval` and `$$` as above, but with a queryAll
+  // handler that returns an array instead of a list of nodes.
+  describe('QueryAll', function () {
+    const handler: CustomQueryHandler = {
+      queryAll: (element: Element, selector: string) =>
+        Array.from(element.querySelectorAll(selector)),
+    };
+    before(() => {
+      const { puppeteer } = getTestState();
+      puppeteer.registerCustomQueryHandler('allArray', handler);
+    });
+
+    it('should have registered handler', async () => {
+      const { puppeteer } = getTestState();
+      expect(
+        puppeteer.customQueryHandlerNames().includes('allArray')
+      ).toBeTruthy();
+    });
+    it('$$ should query existing elements', async () => {
+      const { page } = getTestState();
+
+      await page.setContent(
+        '<html><body><div>A</div><br/><div>B</div></body></html>'
+      );
+      const html = await page.$('html');
+      const elements = await html.$$('allArray/div');
+      expect(elements.length).toBe(2);
+      const promises = elements.map((element) =>
+        page.evaluate((e: HTMLElement) => e.textContent, element)
+      );
+      expect(await Promise.all(promises)).toEqual(['A', 'B']);
+    });
+
+    it('$$ should return empty array for non-existing elements', async () => {
+      const { page } = getTestState();
+
+      await page.setContent(
+        '<html><body><span>A</span><br/><span>B</span></body></html>'
+      );
+      const html = await page.$('html');
+      const elements = await html.$$('allArray/div');
+      expect(elements.length).toBe(0);
+    });
+    it('$$eval should work', async () => {
+      const { page } = getTestState();
+
+      await page.setContent(
+        '<div>hello</div><div>beautiful</div><div>world!</div>'
+      );
+      const divsCount = await page.$$eval(
+        'allArray/div',
+        (divs) => divs.length
+      );
+      expect(divsCount).toBe(3);
+    });
+    it('$$eval should accept extra arguments', async () => {
+      const { page } = getTestState();
+      await page.setContent(
+        '<div>hello</div><div>beautiful</div><div>world!</div>'
+      );
+      const divsCountPlus5 = await page.$$eval(
+        'allArray/div',
+        (divs, two: number, three: number) => divs.length + two + three,
+        2,
+        3
+      );
+      expect(divsCountPlus5).toBe(8);
+    });
+    it('$$eval should accept ElementHandles as arguments', async () => {
+      const { page } = getTestState();
+      await page.setContent(
+        '<section>2</section><section>2</section><section>1</section><div>3</div>'
+      );
+      const divHandle = await page.$('div');
+      const sum = await page.$$eval(
+        'allArray/section',
+        (sections, div: HTMLElement) =>
+          sections.reduce(
+            (acc, section) => acc + Number(section.textContent),
+            0
+          ) + Number(div.textContent),
+        divHandle
+      );
+      expect(sum).toBe(8);
+    });
+    it('$$eval should handle many elements', async () => {
+      const { page } = getTestState();
+      await page.evaluate(
+        `
+        for (var i = 0; i <= 1000; i++) {
+            const section = document.createElement('section');
+            section.textContent = i;
+            document.body.appendChild(section);
+        }
+        `
+      );
+      const sum = await page.$$eval('allArray/section', (sections) =>
+        sections.reduce((acc, section) => acc + Number(section.textContent), 0)
+      );
+      expect(sum).toBe(500500);
     });
   });
 });

@@ -57,6 +57,7 @@ const MODULES_TO_CHECK_FOR_COVERAGE = {
   Mouse: '../lib/cjs/puppeteer/common/Input',
   Page: '../lib/cjs/puppeteer/common/Page',
   Puppeteer: '../lib/cjs/puppeteer/common/Puppeteer',
+  PuppeteerNode: '../lib/cjs/puppeteer/node/Puppeteer',
   HTTPRequest: '../lib/cjs/puppeteer/common/HTTPRequest',
   HTTPResponse: '../lib/cjs/puppeteer/common/HTTPResponse',
   SecurityDetails: '../lib/cjs/puppeteer/common/SecurityDetails',
