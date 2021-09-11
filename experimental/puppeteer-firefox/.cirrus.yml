@@ -2,30 +2,30 @@ env:
   DISPLAY: :99.0
 
 task:
-  name: node8 (linux)
+  name: node10 (linux)
   container:
-    dockerfile: .ci/node8/Dockerfile.linux
+    dockerfile: .ci/node10/Dockerfile.linux
   xvfb_start_background_script: Xvfb :99 -ac -screen 0 1024x768x24
   install_script: npm install
-  test_script: npm run funit
+  test_script: npm run fjunit
 
 task:
-  name: node8 (macOS)
+  name: node10 (macOS)
   osx_instance:
     image: high-sierra-base
   env:
     HOMEBREW_NO_AUTO_UPDATE: 1
   node_install_script:
-    - brew install node@8
-    - brew link --force node@8
+    - brew install node@10
+    - brew link --force node@10
   install_script: npm install
-  test_script: npm run funit
+  test_script: npm run fjunit
 
 # task:
 #   allow_failures: true
 #  windows_container:
-#    dockerfile: .ci/node8/Dockerfile.windows
+#    dockerfile: .ci/node10/Dockerfile.windows
 #    os_version: 2016
-#  name: node8 (windows)
+#  name: node10 (windows)
 #  install_script: npm install --unsafe-perm
-#  test_script: npm run funit
+#  test_script: npm run fjunit

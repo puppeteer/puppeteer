@@ -2,11 +2,9 @@
 
 # Prototype: Puppeteer for Firefox
 
-> Use Puppeteer's API with Firefox
+**⚠️ The puppeteer-firefox package has been deprecated**: Firefox support is gradually transitioning to the puppeteer package. As of puppeteer v2.1.0 you can interact with Firefox Nightly. The puppeteer-firefox package will remain available until the transition is complete, but it is no longer actively maintained. For more information visit https://wiki.mozilla.org/Remote
 
-**⚠️ BEWARE**: Experimental. Just for preview. Installation and usage will change.
-
-This project is a feasibility prototype to guide the work of implementing Puppeteer endpoints into Firefox's code base. Mozilla's [bug 1545057](https://bugzilla.mozilla.org/show_bug.cgi?id=1545057) tracks the initial milestone, which will be based on a CDP-based [remote protocol](https://wiki.mozilla.org/Remote).
+This project is an experimental feasibility prototype to guide the work of implementing Puppeteer endpoints into Firefox's code base. Mozilla's [bug 1545057](https://bugzilla.mozilla.org/show_bug.cgi?id=1545057) tracks the initial milestone, which will be based on a CDP-based [remote protocol](https://wiki.mozilla.org/Remote).
 
 ## Getting Started
 
@@ -23,7 +21,7 @@ Note: When you install puppeteer-firefox, it downloads a [custom-built Firefox](
 
 ### Usage
 
-**Example** - navigating to https://example.com and saving a screenshot as *example.png*:
+**Example** - navigating to https://example.com and saving a screenshot as `example.png`:
 
 Save file as **example.js**
 
@@ -34,7 +32,7 @@ const pptrFirefox = require('puppeteer-firefox');
   const browser = await pptrFirefox.launch();
   const page = await browser.newPage();
   await page.goto('https://example.com');
-  await page.screenshot({path: 'example.png'});
+  await page.screenshot({ path: 'example.png' });
   await browser.close();
 })();
 ```
@@ -44,12 +42,6 @@ Execute script on the command line
 ```bash
 node example.js
 ```
-
-
-### API Status
-
-Current tip-of-tree status of Puppeteer-Firefox is available at [isPuppeteerFirefoxReady?](https://aslushnikov.github.io/ispuppeteerfirefoxready/)
-
 
 ### Credits
 

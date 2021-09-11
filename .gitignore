@@ -1,8 +1,11 @@
 /node_modules/
+test-ts-types/**/node_modules
+test-ts-types/**/dist/
 /test/output-chromium
 /test/output-firefox
 /test/test-user-data-dir*
 /.local-chromium/
+/.local-firefox/
 /.dev_profile*
 .DS_Store
 *.swp
@@ -11,6 +14,12 @@
 package-lock.json
 yarn.lock
 /node6
-/lib/protocol.d.ts
 /utils/browser/puppeteer-web.js
-/index.d.ts
+/lib
+test/coverage.json
+temp/
+new-docs/
+puppeteer.tgz
+docs-api-json/
+docs-dist/
+website/docs

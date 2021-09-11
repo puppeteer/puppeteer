@@ -21,7 +21,7 @@ const pptr = require('..');
 const browserFetcher = pptr.createBrowserFetcher();
 const path = require('path');
 const fs = require('fs');
-const {fork} = require('child_process');
+const { fork } = require('child_process');
 
 const COLOR_RESET = '\x1b[0m';
 const COLOR_RED = '\x1b[31m';
@@ -49,39 +49,49 @@ if (argv.h || argv.help) {
 }
 
 if (typeof argv.good !== 'number') {
-  console.log(COLOR_RED + 'ERROR: expected --good argument to be a number' + COLOR_RESET);
+  console.log(
+    COLOR_RED + 'ERROR: expected --good argument to be a number' + COLOR_RESET
+  );
   console.log(help);
   process.exit(1);
 }
 
 if (typeof argv.bad !== 'number') {
-  console.log(COLOR_RED + 'ERROR: expected --bad argument to be a number' + COLOR_RESET);
+  console.log(
+    COLOR_RED + 'ERROR: expected --bad argument to be a number' + COLOR_RESET
+  );
   console.log(help);
   process.exit(1);
 }
 
 const scriptPath = path.resolve(argv._[0]);
 if (!fs.existsSync(scriptPath)) {
-  console.log(COLOR_RED + 'ERROR: Expected to be given a path to a script to run' + COLOR_RESET);
+  console.log(
+    COLOR_RED +
+      'ERROR: Expected to be given a path to a script to run' +
+      COLOR_RESET
+  );
   console.log(help);
   process.exit(1);
 }
 
-(async(scriptPath, good, bad) => {
+(async (scriptPath, good, bad) => {
   const span = Math.abs(good - bad);
-  console.log(`Bisecting ${COLOR_YELLOW}${span}${COLOR_RESET} revisions in ${COLOR_YELLOW}~${span.toString(2).length}${COLOR_RESET} iterations`);
+  console.log(
+    `Bisecting ${COLOR_YELLOW}${span}${COLOR_RESET} revisions in ${COLOR_YELLOW}~${
+      span.toString(2).length
+    }${COLOR_RESET} iterations`
+  );
 
   while (true) {
     const middle = Math.round((good + bad) / 2);
     const revision = await findDownloadableRevision(middle, good, bad);
-    if (!revision || revision === good || revision === bad)
-      break;
+    if (!revision || revision === good || revision === bad) break;
     let info = browserFetcher.revisionInfo(revision);
     const shouldRemove = !info.local;
     info = await downloadRevision(revision);
     const exitCode = await runScript(scriptPath, info);
-    if (shouldRemove)
-      await browserFetcher.remove(revision);
+    if (shouldRemove) await browserFetcher.remove(revision);
     let outcome;
     if (exitCode) {
       bad = revision;
@@ -100,14 +110,20 @@ if (!fs.existsSync(scriptPath)) {
       fromText = COLOR_RED + bad + COLOR_RESET;
       toText = COLOR_GREEN + good + COLOR_RESET;
     }
-    console.log(`- ${COLOR_YELLOW}r${revision}${COLOR_RESET} was ${outcome}. Bisecting [${fromText}, ${toText}] - ${COLOR_YELLOW}${span}${COLOR_RESET} revisions and ${COLOR_YELLOW}~${span.toString(2).length}${COLOR_RESET} iterations`);
+    console.log(
+      `- ${COLOR_YELLOW}r${revision}${COLOR_RESET} was ${outcome}. Bisecting [${fromText}, ${toText}] - ${COLOR_YELLOW}${span}${COLOR_RESET} revisions and ${COLOR_YELLOW}~${
+        span.toString(2).length
+      }${COLOR_RESET} iterations`
+    );
   }
 
   const [fromSha, toSha] = await Promise.all([
     revisionToSha(Math.min(good, bad)),
     revisionToSha(Math.max(good, bad)),
   ]);
-  console.log(`RANGE: https://chromium.googlesource.com/chromium/src/+log/${fromSha}..${toSha}`);
+  console.log(
+    `RANGE: https://chromium.googlesource.com/chromium/src/+log/${fromSha}..${toSha}`
+  );
 })(scriptPath, argv.good, argv.bad);
 
 function runScript(scriptPath, revisionInfo) {
@@ -121,8 +137,8 @@ function runScript(scriptPath, revisionInfo) {
     },
   });
   return new Promise((resolve, reject) => {
-    child.on('error', err => reject(err));
-    child.on('exit', code => resolve(code));
+    child.on('error', (err) => reject(err));
+    child.on('exit', (code) => resolve(code));
   });
 }
 
@@ -131,20 +147,28 @@ async function downloadRevision(revision) {
   log(`Downloading ${revision}`);
   let progressBar = null;
   let lastDownloadedBytes = 0;
-  return await browserFetcher.download(revision, (downloadedBytes, totalBytes) => {
-    if (!progressBar) {
-      const ProgressBar = require('progress');
-      progressBar = new ProgressBar(`- downloading Chromium r${revision} - ${toMegabytes(totalBytes)} [:bar] :percent :etas `, {
-        complete: '=',
-        incomplete: ' ',
-        width: 20,
-        total: totalBytes,
-      });
+  return await browserFetcher.download(
+    revision,
+    (downloadedBytes, totalBytes) => {
+      if (!progressBar) {
+        const ProgressBar = require('progress');
+        progressBar = new ProgressBar(
+          `- downloading Chromium r${revision} - ${toMegabytes(
+            totalBytes
+          )} [:bar] :percent :etas `,
+          {
+            complete: '=',
+            incomplete: ' ',
+            width: 20,
+            total: totalBytes,
+          }
+        );
+      }
+      const delta = downloadedBytes - lastDownloadedBytes;
+      lastDownloadedBytes = downloadedBytes;
+      progressBar.tick(delta);
     }
-    const delta = downloadedBytes - lastDownloadedBytes;
-    lastDownloadedBytes = downloadedBytes;
-    progressBar.tick(delta);
-  });
+  );
   function toMegabytes(bytes) {
     const mb = bytes / 1024 / 1024;
     return `${Math.round(mb * 10) / 10} Mb`;
@@ -156,8 +180,7 @@ async function findDownloadableRevision(rev, from, to) {
   const min = Math.min(from, to);
   const max = Math.max(from, to);
   log(`Looking around ${rev} from [${min}, ${max}]`);
-  if (await browserFetcher.canDownload(rev))
-    return rev;
+  if (await browserFetcher.canDownload(rev)) return rev;
   let down = rev;
   let up = rev;
   while (min <= down || up <= max) {
@@ -165,10 +188,8 @@ async function findDownloadableRevision(rev, from, to) {
       down > min ? probe(--down) : Promise.resolve(false),
       up < max ? probe(++up) : Promise.resolve(false),
     ]);
-    if (downOk)
-      return down;
-    if (upOk)
-      return up;
+    if (downOk) return down;
+    if (upOk) return up;
   }
   return null;
 
@@ -180,25 +201,29 @@ async function findDownloadableRevision(rev, from, to) {
 }
 
 async function revisionToSha(revision) {
-  const json = await fetchJSON('https://cr-rev.appspot.com/_ah/api/crrev/v1/redirect/' + revision);
+  const json = await fetchJSON(
+    'https://cr-rev.appspot.com/_ah/api/crrev/v1/redirect/' + revision
+  );
   return json.git_sha;
 }
 
 function fetchJSON(url) {
   return new Promise((resolve, reject) => {
-    const agent = url.startsWith('https://') ? require('https') : require('http');
+    const agent = url.startsWith('https://')
+      ? require('https')
+      : require('http');
     const options = URL.parse(url);
     options.method = 'GET';
     options.headers = {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     };
-    const req = agent.request(options, function(res) {
+    const req = agent.request(options, function (res) {
       let result = '';
       res.setEncoding('utf8');
-      res.on('data', chunk => result += chunk);
+      res.on('data', (chunk) => (result += chunk));
       res.on('end', () => resolve(JSON.parse(result)));
     });
-    req.on('error', err => reject(err));
+    req.on('error', (err) => reject(err));
     req.end();
   });
 }
