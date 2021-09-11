@@ -103,4 +103,11 @@ describeChromeOnly('Target.createCDPSession', function () {
       await client.send('ThisCommand.DoesNotExist');
     }
   });
+
+  it('should expose the underlying connection', async () => {
+    const { page } = getTestState();
+
+    const client = await page.target().createCDPSession();
+    expect(client.connection()).toBeTruthy();
+  });
 });

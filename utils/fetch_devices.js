@@ -222,11 +222,9 @@ function loadFromJSONV1(json) {
 
   const result = {};
   result.type = /** @type {string} */ (parseValue(json, 'type', 'string'));
-  result.userAgent = /** @type {string} */ (parseValue(
-    json,
-    'user-agent',
-    'string'
-  ));
+  result.userAgent = /** @type {string} */ (
+    parseValue(json, 'user-agent', 'string')
+  );
 
   const capabilities = parseValue(json, 'capabilities', 'object', []);
   if (!Array.isArray(capabilities))
@@ -238,11 +236,9 @@ function loadFromJSONV1(json) {
     result.capabilities.push(capabilities[i]);
   }
 
-  result.deviceScaleFactor = /** @type {number} */ (parseValue(
-    json['screen'],
-    'device-pixel-ratio',
-    'number'
-  ));
+  result.deviceScaleFactor = /** @type {number} */ (
+    parseValue(json['screen'], 'device-pixel-ratio', 'number')
+  );
   if (result.deviceScaleFactor < 0 || result.deviceScaleFactor > 100)
     throw new Error(
       'Emulated device has wrong deviceScaleFactor: ' + result.deviceScaleFactor
