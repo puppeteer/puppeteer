@@ -9,7 +9,7 @@ from httpx import Response as HttpxResponse
 # ========================================================= #
 
 
-class PolygonClient:
+class PolygonClient puppeteer:
     def __init__(self, api_key: str, use_async: bool = False):
         """
         Initiates a Client to be used to access all the endpoints.
