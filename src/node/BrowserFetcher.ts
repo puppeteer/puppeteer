@@ -58,8 +58,7 @@ const browserConfig = {
     destination: '.local-chromium',
   },
   firefox: {
-    host:
-      'https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central',
+    host: 'https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central',
     destination: '.local-firefox',
   },
 } as const;
@@ -221,14 +220,16 @@ export class BrowserFetcher {
   }
 
   /**
-   * @returns Returns the current `Platform`.
+   * @returns Returns the current `Platform`, which is one of `mac`, `linux`,
+   * `win32` or `win64`.
    */
   platform(): Platform {
     return this._platform;
   }
 
   /**
-   * @returns Returns the current `Product`.
+   * @returns Returns the current `Product`, which is one of `chrome` or
+   * `firefox`.
    */
   product(): Product {
     return this._product;
@@ -293,7 +294,10 @@ export class BrowserFetcher {
     if (await existsAsync(outputPath)) return this.revisionInfo(revision);
     if (!(await existsAsync(this._downloadsFolder)))
       await mkdirAsync(this._downloadsFolder);
-    if (os.arch() === 'arm64') {
+
+    // Use Intel x86 builds on Apple M1 until native macOS arm64
+    // Chromium builds are available.
+    if (os.platform() !== 'darwin' && os.arch() === 'arm64') {
       handleArm64();
       return;
     }

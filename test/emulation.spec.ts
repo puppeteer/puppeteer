@@ -386,4 +386,35 @@ describe('Emulation', () => {
       expect(error.message).toBe('Unsupported vision deficiency: invalid');
     });
   });
+
+  describeFailsFirefox('Page.emulateNetworkConditions', function () {
+    it('should change navigator.connection.effectiveType', async () => {
+      const { page, puppeteer } = getTestState();
+
+      const slow3G = puppeteer.networkConditions['Slow 3G'];
+      const fast3G = puppeteer.networkConditions['Fast 3G'];
+
+      expect(
+        await page.evaluate('window.navigator.connection.effectiveType')
+      ).toBe('4g');
+      await page.emulateNetworkConditions(fast3G);
+      expect(
+        await page.evaluate('window.navigator.connection.effectiveType')
+      ).toBe('3g');
+      await page.emulateNetworkConditions(slow3G);
+      expect(
+        await page.evaluate('window.navigator.connection.effectiveType')
+      ).toBe('2g');
+      await page.emulateNetworkConditions(null);
+    });
+  });
+
+  describeFailsFirefox('Page.emulateCPUThrottling', function () {
+    it('should change the CPU throttling rate successfully', async () => {
+      const { page } = getTestState();
+
+      await page.emulateCPUThrottling(100);
+      await page.emulateCPUThrottling(null);
+    });
+  });
 });

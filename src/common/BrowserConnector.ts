@@ -15,7 +15,7 @@
  */
 
 import { ConnectionTransport } from './ConnectionTransport.js';
-import { Browser } from './Browser.js';
+import { Browser, TargetFilterCallback } from './Browser.js';
 import { assert } from './assert.js';
 import { debugError } from '../common/helper.js';
 import { Connection } from './Connection.js';
@@ -37,12 +37,16 @@ export interface BrowserConnectOptions {
   /**
    * Sets the viewport for each page.
    */
-  defaultViewport?: Viewport;
+  defaultViewport?: Viewport | null;
   /**
    * Slows down Puppeteer operations by the specified amount of milliseconds to
    * aid debugging.
    */
   slowMo?: number;
+  /**
+   * Callback to decide if Puppeteer should connect to a given target or not.
+   */
+  targetFilter?: TargetFilterCallback;
 }
 
 const getWebSocketTransportClass = async () => {
@@ -71,6 +75,7 @@ export const connectToBrowser = async (
     defaultViewport = { width: 800, height: 600 },
     transport,
     slowMo = 0,
+    targetFilter,
   } = options;
 
   assert(
@@ -84,16 +89,14 @@ export const connectToBrowser = async (
     connection = new Connection('', transport, slowMo);
   } else if (browserWSEndpoint) {
     const WebSocketClass = await getWebSocketTransportClass();
-    const connectionTransport: ConnectionTransport = await WebSocketClass.create(
-      browserWSEndpoint
-    );
+    const connectionTransport: ConnectionTransport =
+      await WebSocketClass.create(browserWSEndpoint);
     connection = new Connection(browserWSEndpoint, connectionTransport, slowMo);
   } else if (browserURL) {
     const connectionURL = await getWSEndpoint(browserURL);
     const WebSocketClass = await getWebSocketTransportClass();
-    const connectionTransport: ConnectionTransport = await WebSocketClass.create(
-      connectionURL
-    );
+    const connectionTransport: ConnectionTransport =
+      await WebSocketClass.create(connectionURL);
     connection = new Connection(connectionURL, connectionTransport, slowMo);
   }
 
@@ -106,7 +109,8 @@ export const connectToBrowser = async (
     ignoreHTTPSErrors,
     defaultViewport,
     null,
-    () => connection.send('Browser.close').catch(debugError)
+    () => connection.send('Browser.close').catch(debugError),
+    targetFilter
   );
 };
 

@@ -15,6 +15,7 @@
  */
 import expect from 'expect';
 import {
+  expectCookieEquals,
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
@@ -24,14 +25,14 @@ import {
 describe('DefaultBrowserContext', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
-  itFailsFirefox('page.cookies() should work', async () => {
+  it('page.cookies() should work', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     await page.evaluate(() => {
       document.cookie = 'username=John Doe';
     });
-    expect(await page.cookies()).toEqual([
+    expectCookieEquals(await page.cookies(), [
       {
         name: 'username',
         value: 'John Doe',
@@ -43,6 +44,8 @@ describe('DefaultBrowserContext', function () {
         httpOnly: false,
         secure: false,
         session: true,
+        sourcePort: 8907,
+        sourceScheme: 'NonSecure',
       },
     ]);
   });
@@ -57,7 +60,7 @@ describe('DefaultBrowserContext', function () {
     expect(await page.evaluate(() => document.cookie)).toBe(
       'username=John Doe'
     );
-    expect(await page.cookies()).toEqual([
+    expectCookieEquals(await page.cookies(), [
       {
         name: 'username',
         value: 'John Doe',
@@ -69,6 +72,8 @@ describe('DefaultBrowserContext', function () {
         httpOnly: false,
         secure: false,
         session: true,
+        sourcePort: 80,
+        sourceScheme: 'NonSecure',
       },
     ]);
   });
@@ -89,7 +94,7 @@ describe('DefaultBrowserContext', function () {
     expect(await page.evaluate('document.cookie')).toBe('cookie1=1; cookie2=2');
     await page.deleteCookie({ name: 'cookie2' });
     expect(await page.evaluate('document.cookie')).toBe('cookie1=1');
-    expect(await page.cookies()).toEqual([
+    expectCookieEquals(await page.cookies(), [
       {
         name: 'cookie1',
         value: '1',
@@ -101,6 +106,8 @@ describe('DefaultBrowserContext', function () {
         httpOnly: false,
         secure: false,
         session: true,
+        sourcePort: 80,
+        sourceScheme: 'NonSecure',
       },
     ]);
   });
