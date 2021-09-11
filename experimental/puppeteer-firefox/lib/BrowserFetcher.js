@@ -289,13 +289,12 @@ function downloadFile(url, destinationPath, progressCallback) {
  * @param {string} folderPath
  * @return {!Promise<?Error>}
  */
-function extractZip(zipPath, folderPath) {
-  return new Promise((fulfill, reject) => extract(zipPath, {dir: folderPath}, err => {
-    if (err)
-      reject(err);
-    else
-      fulfill();
-  }));
+async function extractZip(zipPath, folderPath) {
+  try {
+    await extract(zipPath, {dir: folderPath});
+  } catch (error) {
+    return error;
+  }
 }
 
 function httpRequest(url, method, response) {

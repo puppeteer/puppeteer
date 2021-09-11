@@ -1,0 +1,141 @@
+{
+  "_from": "mitt@latest",
+  "_id": "mitt@2.1.0",
+  "_inBundle": false,
+  "_integrity": "sha512-ILj2TpLiysu2wkBbWjAmww7TkZb65aiQO+DkVdUTBpBXq+MHYiETENkKFMtsJZX1Lf4pe4QOrTSjIfUwN5lRdg==",
+  "_location": "/mitt",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "mitt@latest",
+    "name": "mitt",
+    "escapedName": "mitt",
+    "rawSpec": "latest",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/mitt/-/mitt-2.1.0.tgz",
+  "_shasum": "f740577c23176c6205b121b2973514eade1b2230",
+  "_spec": "mitt@latest",
+  "_where": "/Users/jacktfranklin/src/puppeteer",
+  "authors": [
+    "Jason Miller <jason@developit.ca>"
+  ],
+  "bugs": {
+    "url": "https://github.com/developit/mitt/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Tiny 200b functional Event Emitter / pubsub.",
+  "devDependencies": {
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^7.0.2",
+    "@types/sinon": "^9.0.4",
+    "@types/sinon-chai": "^3.2.4",
+    "@typescript-eslint/eslint-plugin": "^3.0.1",
+    "@typescript-eslint/parser": "^3.0.1",
+    "chai": "^4.2.0",
+    "documentation": "^13.0.0",
+    "eslint": "^7.1.0",
+    "eslint-config-developit": "^1.2.0",
+    "esm": "^3.2.25",
+    "microbundle": "^0.12.3",
+    "mocha": "^8.0.1",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2",
+    "sinon": "^9.0.2",
+    "sinon-chai": "^3.5.0",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.3"
+  },
+  "eslintConfig": {
+    "extends": [
+      "developit",
+      "plugin:@typescript-eslint/eslint-recommended",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "sourceType": "module"
+    },
+    "env": {
+      "browser": true,
+      "mocha": true,
+      "jest": false,
+      "es6": true
+    },
+    "globals": {
+      "expect": true
+    },
+    "rules": {
+      "semi": [
+        2,
+        "always"
+      ],
+      "jest/valid-expect": 0,
+      "@typescript-eslint/no-explicit-any": 0,
+      "@typescript-eslint/explicit-function-return-type": 0,
+      "@typescript-eslint/explicit-module-boundary-types": 0,
+      "@typescript-eslint/no-empty-function": 0
+    }
+  },
+  "eslintIgnore": [
+    "dist",
+    "index.d.ts"
+  ],
+  "esmodules": "dist/mitt.modern.js",
+  "files": [
+    "src",
+    "dist",
+    "index.d.ts"
+  ],
+  "homepage": "https://github.com/developit/mitt",
+  "jsnext:main": "dist/mitt.es.js",
+  "keywords": [
+    "events",
+    "eventemitter",
+    "emitter",
+    "pubsub"
+  ],
+  "license": "MIT",
+  "main": "dist/mitt.js",
+  "mocha": {
+    "extension": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register",
+      "esm"
+    ],
+    "spec": [
+      "test/*_test.ts"
+    ]
+  },
+  "module": "dist/mitt.es.js",
+  "name": "mitt",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/developit/mitt.git"
+  },
+  "scripts": {
+    "build": "npm-run-all --silent clean -p bundle -s docs",
+    "bundle": "microbundle",
+    "clean": "rimraf dist",
+    "docs": "documentation readme src/index.ts --section API -q --parse-extension ts",
+    "lint": "eslint src test --ext ts --ext js",
+    "mocha": "mocha test",
+    "release": "npm run -s build -s && npm t && git commit -am $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm publish",
+    "test": "npm-run-all --silent typecheck lint mocha test-types",
+    "test-types": "tsc test/test-types-compilation.ts --noEmit",
+    "typecheck": "tsc --noEmit"
+  },
+  "source": "src/index.ts",
+  "typings": "index.d.ts",
+  "umd:main": "dist/mitt.umd.js",
+  "version": "2.1.0"
+}
