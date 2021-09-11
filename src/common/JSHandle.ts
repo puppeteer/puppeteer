@@ -577,10 +577,10 @@ export class ElementHandle<
       assert(
         helper.isString(value),
         'Values must be strings. Found value "' +
-        value +
-        '" of type "' +
-        typeof value +
-        '"'
+          value +
+          '" of type "' +
+          typeof value +
+          '"'
       );
 
     return this.evaluate<(element: Element, values: string[]) => string[]>(
