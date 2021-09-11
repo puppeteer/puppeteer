@@ -2676,6 +2676,7 @@ export class Page extends EventEmitter {
       preferCSSPageSize = false,
       margin = {},
       omitBackground = false,
+      timeout = 30000,
     } = options;
 
     let paperWidth = 8.5;
@@ -2700,7 +2701,7 @@ export class Page extends EventEmitter {
       await this._setTransparentBackgroundColor();
     }
 
-    const result = await this._client.send('Page.printToPDF', {
+    const printCommandPromise = this._client.send('Page.printToPDF', {
       transferMode: 'ReturnAsStream',
       landscape,
       displayHeaderFooter,
@@ -2718,6 +2719,12 @@ export class Page extends EventEmitter {
       preferCSSPageSize,
     });
 
+    const result = await helper.waitWithTimeout(
+      printCommandPromise,
+      'Page.printToPDF',
+      timeout
+    );
+
     if (omitBackground) {
       await this._resetDefaultBackgroundColor();
     }
@@ -2730,27 +2737,9 @@ export class Page extends EventEmitter {
    * @returns
    */
   async pdf(options: PDFOptions = {}): Promise<Buffer> {
-    const { path = undefined, timeout = 30000 } = options;
-
-    const readPromise: Promise<Buffer> = new Promise(async (fulfill) => {
-      const readable = await this.createPDFStream(options);
-      const buffer = await helper.getReadableAsBuffer(readable, path);
-      fulfill(buffer);
-    });
-
-    const timeoutPromise = new Promise((fulfill) => {
-      setTimeout(() => {
-        fulfill(new TimeoutError(`pdf render timeout ${timeout} ms`));
-      }, timeout);
-    });
-
-    const result = await Promise.race([readPromise, timeoutPromise]);
-
-    if (Buffer.isBuffer(result)) {
-      return result;
-    } else {
-      throw result;
-    }
+    const { path = undefined } = options;
+    const readable = await this.createPDFStream(options);
+    return await helper.getReadableAsBuffer(readable, path);
   }
 
   /**
