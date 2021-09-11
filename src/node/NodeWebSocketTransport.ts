@@ -20,6 +20,7 @@ export class NodeWebSocketTransport implements ConnectionTransport {
   static create(url: string): Promise<NodeWebSocketTransport> {
     return new Promise((resolve, reject) => {
       const ws = new NodeWebSocket(url, [], {
+        followRedirects: true,
         perMessageDeflate: false,
         maxPayload: 256 * 1024 * 1024, // 256Mb
       });

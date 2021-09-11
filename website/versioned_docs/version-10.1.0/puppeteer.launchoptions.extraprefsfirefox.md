@@ -4,7 +4,7 @@
 
 ## LaunchOptions.extraPrefsFirefox property
 
-[Additional preferences](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/Preference_reference) that can be passed when launching with Firefox.
+[Additional preferences](https://searchfox.org/mozilla-release/source/modules/libpref/init/all.js) that can be passed when launching with Firefox.
 
 <b>Signature:</b>
 
