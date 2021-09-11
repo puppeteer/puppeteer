@@ -17,12 +17,13 @@ More complex and use case driven examples can be found at [github.com/GoogleChro
 ## Rendering and web scraping
 
 - [Puppetron](https://github.com/cheeaun/puppetron) - Demo site that shows how to use Puppeteer and Headless Chrome to render pages. Inspired by [GoogleChrome/rendertron](https://github.com/GoogleChrome/rendertron).
-- [Thal](https://medium.com/@e_mad_ehsan/getting-started-with-puppeteer-and-chrome-headless-for-web-scrapping-6bf5979dee3e "An article on medium") - Getting started with Puppeteer and Chrome Headless for Web Scraping.
+- [Thal](https://medium.com/@e_mad_ehsan/getting-started-with-puppeteer-and-chrome-headless-for-web-scrapping-6bf5979dee3e 'An article on medium') - Getting started with Puppeteer and Chrome Headless for Web Scraping.
 - [pupperender](https://github.com/LasaleFamine/pupperender) - Express middleware that checks the User-Agent header of incoming requests, and if it matches one of a configurable set of bots, render the page using Puppeteer. Useful for PWA rendering.
 - [headless-chrome-crawler](https://github.com/yujiosaka/headless-chrome-crawler) - Crawler that provides simple APIs to manipulate Headless Chrome and allows you to crawl dynamic websites.
 - [puppeteer-examples](https://github.com/checkly/puppeteer-examples) - Puppeteer Headless Chrome examples for real life use cases such as getting useful info from the web pages or common login scenarios.
 - [browserless](https://github.com/joelgriffith/browserless) - Headless Chrome as a service letting you execute Puppeteer scripts remotely. Provides a docker image with configuration for concurrency, launch arguments and more.
 - [Puppeteer Sandbox](https://puppeteersandbox.com) - Puppeteer sandbox environment as a service. Runs Puppeteer scripts and allows saving and embedding them in external sites and markdown files.
+- [Apify SDK](https://github.com/apifytech/apify-js) - The scalable web crawling and scraping library for JavaScript. Automatically manages a pool of Puppeteer browsers and provides easy error handling, task management, proxy rotation and more.
 
 ## Testing
 
@@ -32,6 +33,8 @@ More complex and use case driven examples can be found at [github.com/GoogleChro
 - [jest-puppeteer](https://github.com/smooth-code/jest-puppeteer) - (almost) Zero configuration tool for setting up and running Jest and Puppeteer easily. Also includes an assertion library for Puppeteer.
 - [puppeteer-har](https://github.com/Everettss/puppeteer-har) - Generate HAR file with puppeteer.
 - [puppetry](https://puppetry.app/) - A desktop app to build Puppeteer/Jest driven tests without coding.
+- [cucumber-puppeteer-example](https://github.com/mlampedx/cucumber-puppeteer-example) - Example repository demonstrating how to use Puppeeteer and Cucumber for integration testing.
 
 ## Services
+
 - [Checkly](https://checklyhq.com) - Monitoring SaaS that uses Puppeteer to check availability and correctness of web pages and apps.

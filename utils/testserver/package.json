@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/GoogleChrome/puppeteer/tree/master/utils/testserver"
+    "url": "https://github.com/puppeteer/puppeteer/tree/main/utils/testserver"
   },
   "author": "The Chromium Authors",
   "license": "Apache-2.0"
