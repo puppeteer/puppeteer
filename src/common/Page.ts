@@ -62,7 +62,6 @@ import {
 } from './EvalTypes.js';
 import { PDFOptions, paperFormats } from './PDFOptions.js';
 import { isNode } from '../environment.js';
-import { TimeoutError } from './Errors.js';
 
 /**
  * @public
