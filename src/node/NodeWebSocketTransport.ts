@@ -18,6 +18,7 @@ import NodeWebSocket from 'ws';
 
 export class NodeWebSocketTransport implements ConnectionTransport {
   static create(url: string): Promise<NodeWebSocketTransport> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const pkg = require('../../../../package.json');
     return new Promise((resolve, reject) => {
       const ws = new NodeWebSocket(url, [], {
