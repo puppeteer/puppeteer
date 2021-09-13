@@ -1280,6 +1280,7 @@ export class Page extends EventEmitter {
     path?: string;
     content?: string;
     type?: string;
+    id?: string;
   }): Promise<ElementHandle> {
     return this.mainFrame().addScriptTag(options);
   }
