@@ -157,7 +157,7 @@ export interface ScreenshotOptions {
   /**
    * @defaultValue 'png'
    */
-  type?: 'png' | 'jpeg';
+  type?: 'png' | 'jpeg' | 'webp';
   /**
    * The file path to save the image to. The screenshot type will be inferred
    * from file extension. If path is a relative path, then it is resolved
@@ -2552,7 +2552,9 @@ export class Page extends EventEmitter {
     // (i.e. as a temp file).
     if (options.type) {
       assert(
-        options.type === 'png' || options.type === 'jpeg',
+        options.type === 'png' ||
+          options.type === 'jpeg' ||
+          options.type === 'webp',
         'Unknown options.type value: ' + options.type
       );
       screenshotType = options.type;
@@ -2564,6 +2566,7 @@ export class Page extends EventEmitter {
       if (extension === 'png') screenshotType = 'png';
       else if (extension === 'jpg' || extension === 'jpeg')
         screenshotType = 'jpeg';
+      else if (extension === 'webp') screenshotType = 'webp';
       assert(
         screenshotType,
         `Unsupported screenshot type for extension \`.${extension}\``
@@ -2634,7 +2637,7 @@ export class Page extends EventEmitter {
   }
 
   private async _screenshotTask(
-    format: 'png' | 'jpeg',
+    format: 'png' | 'jpeg' | 'webp',
     options?: ScreenshotOptions
   ): Promise<Buffer | string> {
     await this._client.send('Target.activateTarget', {
