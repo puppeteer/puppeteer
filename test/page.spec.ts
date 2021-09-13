@@ -24,7 +24,6 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   itFailsFirefox,
-  itChromeOnly,
   describeFailsFirefox,
 } from './mocha-utils'; // eslint-disable-line import/extensions
 import { Page, Metrics } from '../lib/cjs/puppeteer/common/Page.js';
@@ -1641,13 +1640,11 @@ describe('Page', function () {
       expect(size).toBeGreaterThan(0);
     });
 
-    itChromeOnly('should respect timeout', async () => {
+    it('should respect timeout', async () => {
       const { isHeadless, page, server, puppeteer } = getTestState();
       if (!isHeadless) return;
 
-      await page.goto(server.PREFIX + '/pdf.html', {
-        waitUntil: 'networkidle0',
-      });
+      await page.goto(server.PREFIX + '/pdf.html');
 
       let error = null;
       await page.pdf({ timeout: 1 }).catch((_error) => (error = _error));
