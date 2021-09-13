@@ -5,6 +5,7 @@
 <!-- GEN:toc -->
 - [Chrome headless doesn't launch on Windows](#chrome-headless-doesnt-launch-on-windows)
 - [Chrome headless doesn't launch on UNIX](#chrome-headless-doesnt-launch-on-unix)
+- [Chrome headless disables GPU compositing](#chrome-headless-disables-gpu-compositing)
 - [Chrome is downloaded but fails to launch on Node.js 14](#chrome-is-downloaded-but-fails-to-launch-on-nodejs-14)
 - [Setting Up Chrome Linux Sandbox](#setting-up-chrome-linux-sandbox)
   * [[recommended] Enable user namespace cloning](#recommended-enable-user-namespace-cloning)
@@ -134,6 +135,17 @@ yum update nss -y
 - [#391](https://github.com/puppeteer/puppeteer/issues/391) - CentOS troubleshooting <br/>
 - [#379](https://github.com/puppeteer/puppeteer/issues/379) - Alpine troubleshooting <br/>
 </details>
+
+## Chrome headless disables GPU compositing
+
+Chrome/Chromium requires `--use-gl=egl` to [enable GPU acceleration in headless mode](https://github.com/chromium/chromium/commit/19671359ae25aa1e30bde90f8ff92453eeaac2ba).
+
+```js
+const browser = await puppeteer.launch({
+  headless: true,
+  args: ['--use-gl=egl'],
+});
+```
 
 ## Chrome is downloaded but fails to launch on Node.js 14
 
