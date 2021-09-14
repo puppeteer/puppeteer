@@ -142,7 +142,7 @@ module.exports = {
         '@typescript-eslint/ban-ts-ignore': 0,
         /**
          * This is the default options (as per
-         * https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/ban-types.md),
+         * https://github.com/typescript-eslint/typescript-eslint/blob/HEAD/packages/eslint-plugin/docs/rules/ban-types.md),
          *
          * Unfortunately there's no way to
          */
