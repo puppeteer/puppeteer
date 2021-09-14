@@ -209,7 +209,8 @@
       "items": [
         {
           "type": "doc",
-          "id": "version-9.1.1/puppeteer.browsercontext"
+          "id": "version-9.1.1/puppeteer.browsercontext",
+          "label": "browsercontext"
         },
         {
           "collapsed": true,
@@ -218,39 +219,48 @@
           "items": [
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.browsercontext.browser"
+              "id": "version-9.1.1/puppeteer.browsercontext.browser",
+              "label": "browser"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.browsercontext.overridepermissions"
+              "id": "version-9.1.1/puppeteer.browsercontext.overridepermissions",
+              "label": "overridepermissions"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.browsercontext.close"
+              "id": "version-9.1.1/puppeteer.browsercontext.close",
+              "label": "close"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.browsercontext.isincognito"
+              "id": "version-9.1.1/puppeteer.browsercontext.isincognito",
+              "label": "isincognito"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.browsercontext.newpage"
+              "id": "version-9.1.1/puppeteer.browsercontext.newpage",
+              "label": "newpage"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.browsercontext.overridepermissions"
+              "id": "version-9.1.1/puppeteer.browsercontext.overridepermissions",
+              "label": "overridepermissions"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.browsercontext.pages"
+              "id": "version-9.1.1/puppeteer.browsercontext.pages",
+              "label": "pages"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.browsercontext.targets"
+              "id": "version-9.1.1/puppeteer.browsercontext.targets",
+              "label": "targets"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.browsercontext.waitfortarget"
+              "id": "version-9.1.1/puppeteer.browsercontext.waitfortarget",
+              "label": "waitfortarget"
             }
           ]
         }
@@ -263,7 +273,8 @@
       "items": [
         {
           "type": "doc",
-          "id": "version-9.1.1/puppeteer.page"
+          "id": "version-9.1.1/puppeteer.page",
+          "label": "page"
         },
         {
           "collapsed": true,
@@ -272,27 +283,33 @@
           "items": [
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.accessibility"
+              "id": "version-9.1.1/puppeteer.page.accessibility",
+              "label": "accessibility"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.coverage"
+              "id": "version-9.1.1/puppeteer.page.coverage",
+              "label": "Coverage"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.keyboard"
+              "id": "version-9.1.1/puppeteer.page.keyboard",
+              "label": "Keyboard"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.mouse"
+              "id": "version-9.1.1/puppeteer.page.mouse",
+              "label": "mouse"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.touchscreen"
+              "id": "version-9.1.1/puppeteer.page.touchscreen",
+              "label": "touchScreen"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.tracing"
+              "id": "version-9.1.1/puppeteer.page.tracing",
+              "label": "tracing"
             }
           ]
         },
@@ -303,287 +320,358 @@
           "items": [
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page._"
+              "id": "version-9.1.1/puppeteer.page._",
+              "label": "$"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.__"
+              "id": "version-9.1.1/puppeteer.page.__",
+              "label": "$$"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.__eval"
+              "id": "version-9.1.1/puppeteer.page.__eval",
+              "label": "$$eval"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page._eval"
+              "id": "version-9.1.1/puppeteer.page._eval",
+              "label": "$eval"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page._x"
+              "id": "version-9.1.1/puppeteer.page._x",
+              "label": "$x"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.addscripttag"
+              "id": "version-9.1.1/puppeteer.page.addscripttag",
+              "label": "addscripttag"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.addstyletag"
+              "id": "version-9.1.1/puppeteer.page.addstyletag",
+              "label": "addstyletag"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.authenticate"
+              "id": "version-9.1.1/puppeteer.page.authenticate",
+              "label": "authenticate"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.bringtofront"
+              "id": "version-9.1.1/puppeteer.page.bringtofront",
+              "label": "bringtofront"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.browser"
+              "id": "version-9.1.1/puppeteer.page.browser",
+              "label": "browser"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.browsercontext"
+              "id": "version-9.1.1/puppeteer.page.browsercontext",
+              "label": "browsercontext"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.click"
+              "id": "version-9.1.1/puppeteer.page.click",
+              "label": "click"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.close"
+              "id": "version-9.1.1/puppeteer.page.close",
+              "label": "close"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.content"
+              "id": "version-9.1.1/puppeteer.page.content",
+              "label": "content"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.cookies"
+              "id": "version-9.1.1/puppeteer.page.cookies",
+              "label": "cookies"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.deletecookie"
+              "id": "version-9.1.1/puppeteer.page.deletecookie",
+              "label": "deletecookie"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.emulate"
+              "id": "version-9.1.1/puppeteer.page.emulate",
+              "label": "emulate"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.emulateidlestate"
+              "id": "version-9.1.1/puppeteer.page.emulateidlestate",
+              "label": "emulateidlestate"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.emulatemediafeatures"
+              "id": "version-9.1.1/puppeteer.page.emulatemediafeatures",
+              "label": "emulatemediafeatures"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.emulatenetworkconditions"
+              "id": "version-9.1.1/puppeteer.page.emulatenetworkconditions",
+              "label": "emulatenetworkconditions"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.emulatetimezone"
+              "id": "version-9.1.1/puppeteer.page.emulatetimezone",
+              "label": "emulatetimezone"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.emulatevisiondeficiency"
+              "id": "version-9.1.1/puppeteer.page.emulatevisiondeficiency",
+              "label": "emulatevisiondefinciency"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.evaluate"
+              "id": "version-9.1.1/puppeteer.page.evaluate",
+              "label": "evaluate"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.evaluatehandle"
+              "id": "version-9.1.1/puppeteer.page.evaluatehandle",
+              "label": "evaluatehandle"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.evaluateonnewdocument"
+              "id": "version-9.1.1/puppeteer.page.evaluateonnewdocument",
+              "label": "evaluateonnewdocument"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.exposefunction"
+              "id": "version-9.1.1/puppeteer.page.exposefunction",
+              "label": "exposefunction"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.focus"
+              "id": "version-9.1.1/puppeteer.page.focus",
+              "label": "focus"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.frames"
+              "id": "version-9.1.1/puppeteer.page.frames",
+              "label": "frames"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.goback"
+              "id": "version-9.1.1/puppeteer.page.goback",
+              "label": "goback"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.goforward"
+              "id": "version-9.1.1/puppeteer.page.goforward",
+              "label": "goforward"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.goto"
+              "id": "version-9.1.1/puppeteer.page.goto",
+              "label": "goto"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.hover"
+              "id": "version-9.1.1/puppeteer.page.hover",
+              "label": "hover"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.isclosed"
+              "id": "version-9.1.1/puppeteer.page.isclosed",
+              "label": "isclosed"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.isjavascriptenabled"
+              "id": "version-9.1.1/puppeteer.page.isjavascriptenabled",
+              "label": "isjavascriptenabled"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.mainframe"
+              "id": "version-9.1.1/puppeteer.page.mainframe",
+              "label": "mainframe"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.metrics"
+              "id": "version-9.1.1/puppeteer.page.metrics",
+              "label": "metrics"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.once"
+              "id": "version-9.1.1/puppeteer.page.once",
+              "label": "once"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.pdf"
+              "id": "version-9.1.1/puppeteer.page.pdf",
+              "label": "pdf"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.queryobjects"
+              "id": "version-9.1.1/puppeteer.page.queryobjects",
+              "label": "queryobjects"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.reload"
+              "id": "version-9.1.1/puppeteer.page.reload",
+              "label": "reload"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.screenshot"
+              "id": "version-9.1.1/puppeteer.page.screenshot",
+              "label": "screenshot"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.select"
+              "id": "version-9.1.1/puppeteer.page.select",
+              "label": "select"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.setbypasscsp"
+              "id": "version-9.1.1/puppeteer.page.setbypasscsp",
+              "label": "setbypasscsp"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.setcacheenabled"
+              "id": "version-9.1.1/puppeteer.page.setcacheenabled",
+              "label": "setcacheenabled"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.setcontent"
+              "id": "version-9.1.1/puppeteer.page.setcontent",
+              "label": "setcontent"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.setcookie"
+              "id": "version-9.1.1/puppeteer.page.setcookie",
+              "label": "setcookie"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.setdefaultnavigationtimeout"
+              "id": "version-9.1.1/puppeteer.page.setdefaultnavigationtimeout",
+              "label": "setdefaultnavigationtimeout"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.setdefaulttimeout"
+              "id": "version-9.1.1/puppeteer.page.setdefaulttimeout",
+              "label": "setdefaulttimeout"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.setextrahttpheaders"
+              "id": "version-9.1.1/puppeteer.page.setextrahttpheaders",
+              "label": "setextrahttpheaders"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.setgeolocation"
+              "id": "version-9.1.1/puppeteer.page.setgeolocation",
+              "label": "setgeolocation"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.setjavascriptenabled"
+              "id": "version-9.1.1/puppeteer.page.setjavascriptenabled",
+              "label": "setjavascriptenabled"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.setofflinemode"
+              "id": "version-9.1.1/puppeteer.page.setofflinemode",
+              "label": "setofflinemode"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.setrequestinterception"
+              "id": "version-9.1.1/puppeteer.page.setrequestinterception",
+              "label": "setrequestinterception"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.setuseragent"
+              "id": "version-9.1.1/puppeteer.page.setuseragent",
+              "label": "setuseragent"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.setviewport"
+              "id": "version-9.1.1/puppeteer.page.setviewport",
+              "label": "setviewport"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.tap"
+              "id": "version-9.1.1/puppeteer.page.tap",
+              "label": "tap"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.target"
+              "id": "version-9.1.1/puppeteer.page.target",
+              "label": "target"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.title"
+              "id": "version-9.1.1/puppeteer.page.title",
+              "label": "title"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.type"
+              "id": "version-9.1.1/puppeteer.page.type",
+              "label": "type"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.url"
+              "id": "version-9.1.1/puppeteer.page.url",
+              "label": "url"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.viewport"
+              "id": "version-9.1.1/puppeteer.page.viewport",
+              "label": "viewport"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.waitfor"
+              "id": "version-9.1.1/puppeteer.page.waitfor",
+              "label": "waitfor"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.waitforfilechooser"
+              "id": "version-9.1.1/puppeteer.page.waitforfilechooser",
+              "label": "waitforfilechooser"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.waitforfunction"
+              "id": "version-9.1.1/puppeteer.page.waitforfunction",
+              "label": "waitforfunction"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.waitfornavigation"
+              "id": "version-9.1.1/puppeteer.page.waitfornavigation",
+              "label": "waitfornavigation"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.waitforrequest"
+              "id": "version-9.1.1/puppeteer.page.waitforrequest",
+              "label": "waitforrequest"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.waitforresponse"
+              "id": "version-9.1.1/puppeteer.page.waitforresponse",
+              "label": "waitforresponse"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.waitforselector"
+              "id": "version-9.1.1/puppeteer.page.waitforselector",
+              "label": "waitforselector"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.waitfortimeout"
+              "id": "version-9.1.1/puppeteer.page.waitfortimeout",
+              "label": "waitfortimeout"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.waitforxpath"
+              "id": "version-9.1.1/puppeteer.page.waitforxpath",
+              "label": "waitforxpath"
             },
             {
               "type": "doc",
-              "id": "version-9.1.1/puppeteer.page.workers"
+              "id": "version-9.1.1/puppeteer.page.workers",
+              "label": "workers"
             }
           ]
         }
