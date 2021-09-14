@@ -295,6 +295,8 @@ The following steps are needed to update the Chromium version.
 Sometimes, performing a Chromium roll causes tests to fail. To figure out the cause, you need to bisect Chromium revisions to figure out the earliest possible revision that changed the behavior. The script in `utils/bisect.js` can be helpful here. Given a pattern for one or more unit tests, it will automatically bisect the current range:
 
 ```sh
+node utils/bisect.js --good 686378 --bad 706915 script.js
+
 node utils/bisect.js --unit-test Response.fromCache
 ```
 

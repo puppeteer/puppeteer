@@ -53,18 +53,32 @@ if (argv.h || argv.help) {
 }
 
 if (typeof argv.good !== 'number') {
-  argv.good = getChromiumRevision();
+  argv.good = getChromiumRevision('main');
+  if (typeof argv.good !== 'number') {
+    console.log(
+      COLOR_RED + 'ERROR: Could not parse current Chromium revision' + COLOR_RESET
+    );
+    console.log(help);
+    process.exit(1);
+  }
 }
 
 if (typeof argv.bad !== 'number') {
-  argv.bad = getChromiumRevision('main');
+  argv.bad = getChromiumRevision();
+  if (typeof argv.bad !== 'number') {
+    console.log(
+      COLOR_RED + 'ERROR: Could not parse Chromium revision in the main branch' + COLOR_RESET
+    );
+    console.log(help);
+    process.exit(1);
+  }
 }
 
 if (!argv.script && !argv['unit-test']) {
   console.log(
     COLOR_RED +
-      'ERROR: Expected to be given a script or a unit test to run' +
-      COLOR_RESET
+    'ERROR: Expected to be given a script or a unit test to run' +
+    COLOR_RESET
   );
   console.log(help);
   process.exit(1);
@@ -75,8 +89,8 @@ const scriptPath = argv.script ? path.resolve(argv.script) : null;
 if (argv.script && !fs.existsSync(scriptPath)) {
   console.log(
     COLOR_RED +
-      'ERROR: Expected to be given a path to a script to run' +
-      COLOR_RESET
+    'ERROR: Expected to be given a path to a script to run' +
+    COLOR_RESET
   );
   console.log(help);
   process.exit(1);
@@ -85,8 +99,7 @@ if (argv.script && !fs.existsSync(scriptPath)) {
 (async (scriptPath, good, bad, pattern, noCache) => {
   const span = Math.abs(good - bad);
   console.log(
-    `Bisecting ${COLOR_YELLOW}${span}${COLOR_RESET} revisions in ${COLOR_YELLOW}~${
-      span.toString(2).length
+    `Bisecting ${COLOR_YELLOW}${span}${COLOR_RESET} revisions in ${COLOR_YELLOW}~${span.toString(2).length
     }${COLOR_RESET} iterations`
   );
 
@@ -120,8 +133,7 @@ if (argv.script && !fs.existsSync(scriptPath)) {
       toText = COLOR_GREEN + good + COLOR_RESET;
     }
     console.log(
-      `- ${COLOR_YELLOW}r${revision}${COLOR_RESET} was ${outcome}. Bisecting [${fromText}, ${toText}] - ${COLOR_YELLOW}${span}${COLOR_RESET} revisions and ${COLOR_YELLOW}~${
-        span.toString(2).length
+      `- ${COLOR_YELLOW}r${revision}${COLOR_RESET} was ${outcome}. Bisecting [${fromText}, ${toText}] - ${COLOR_YELLOW}${span}${COLOR_RESET} revisions and ${COLOR_YELLOW}~${span.toString(2).length
       }${COLOR_RESET} iterations`
     );
   }
@@ -265,5 +277,6 @@ function getChromiumRevision(gitRevision = null) {
   });
 
   const m = result.match(/chromium: '(\d+)'/);
+  if (!m) return null;
   return parseInt(m[1], 10);
 }
