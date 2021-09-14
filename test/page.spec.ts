@@ -844,7 +844,7 @@ describe('Page', function () {
               ]);
               await new Promise((resolve) => setTimeout(resolve, 200));
               await fetch('/digits/3.png');
-              await new Promise((resolve) => setTimeout(resolve, 400));
+              await new Promise((resolve) => setTimeout(resolve, 200));
               await fetch('/digits/4.png');
             })()
           )
