@@ -59,10 +59,7 @@ describe('request interception', function () {
       server.setRedirect('/rredirect', '/empty.html');
       await page.goto(server.EMPTY_PAGE);
       await page.setRequestInterception(true);
-      page.on('request', (request) => {
-        console.log(request.method(), request.url());
-        request.continue();
-      });
+      page.on('request', (request) => request.continue());
       await page.setContent(`
         <form action='/rredirect' method='post'>
           <input type="hidden" id="foo" name="foo" value="FOOBAR">
