@@ -75,7 +75,7 @@
   * [event: 'targetdestroyed'](#event-targetdestroyed)
   * [browser.browserContexts()](#browserbrowsercontexts)
   * [browser.close()](#browserclose)
-  * [browser.createIncognitoBrowserContext()](#browsercreateincognitobrowsercontext)
+  * [browser.createIncognitoBrowserContext([options])](#browsercreateincognitobrowsercontextoptions)
   * [browser.defaultBrowserContext()](#browserdefaultbrowsercontext)
   * [browser.disconnect()](#browserdisconnect)
   * [browser.isConnected()](#browserisconnected)
@@ -886,10 +886,10 @@ Closes Chromium and all of its pages (if any were opened). The [Browser] object 
 
 During the process of closing the browser, Puppeteer attempts to delete the temp folder created exclusively for this browser instance. If this fails (either because a file in the temp folder is locked by another process or because of insufficient permissions) an error is logged. This implies that: a) the folder and/or its content is not fully deleted; and b) the connection with the browser is not properly disposed (see [browser.disconnect()](#browserdisconnect)).
 
-#### browser.createIncognitoBrowserContext()
-
-- `proxyServer` <[string]> Optional proxy server with optional port to use for all requests. Username and password can be set in [page.authenticate(credentials)](#pageauthenticatecredentials).
-- `proxyBypassList` <[string]> Optional: Bypass the proxy for the given semi-colon-separated list of hosts.
+#### browser.createIncognitoBrowserContext([options])
+- `options` <[Object]> Set of configurable options to set on the browserContext. Can have the following fields:
+  - `proxyServer` <[string]> Optional proxy server with optional port to use for all requests. Username and password can be set in [page.authenticate(credentials)](#pageauthenticatecredentials).
+  - `proxyBypassList` <[string]> Optional: Bypass the proxy for the given semi-colon-separated list of hosts.
 - returns: <[Promise]<[BrowserContext]>>
 
 Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.

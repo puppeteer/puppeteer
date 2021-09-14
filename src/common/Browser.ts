@@ -23,6 +23,7 @@ import { Protocol } from 'devtools-protocol';
 import { Page } from './Page.js';
 import { ChildProcess } from 'child_process';
 import { Viewport } from './PuppeteerViewport.js';
+import { BrowserContextOptions } from './BrowserContextOptions.js';
 
 /**
  * @internal
@@ -296,9 +297,13 @@ export class Browser extends EventEmitter {
    * ```
    */
   async createIncognitoBrowserContext(
-    proxyServer?: string,
-    proxyBypassList?: string
-  ): Promise<BrowserContext> {
+   options: BrowserContextOptions = {}
+   ): Promise<BrowserContext> {
+    const {
+      proxyServer = '',
+      proxyBypassList = '',
+    } = options;
+
     const { browserContextId } = await this._connection.send(
       'Target.createBrowserContext',
       {
