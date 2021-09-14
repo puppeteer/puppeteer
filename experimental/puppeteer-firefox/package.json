@@ -1,15 +1,15 @@
 {
   "name": "puppeteer-firefox",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Puppeteer API for Firefox",
   "main": "index.js",
-  "repository": "github:GoogleChrome/puppeteer",
-  "homepage": "https://github.com/GoogleChrome/puppeteer/tree/master/experimental/puppeteer-firefox",
+  "repository": "github:puppeteer/puppeteer",
+  "homepage": "https://github.com/puppeteer/puppeteer/tree/main/experimental/puppeteer-firefox",
   "engines": {
-    "node": ">=8.9.4"
+    "node": ">=10.18.1"
   },
   "puppeteer": {
-    "firefox_revision": "765beffcf39dc68cb2005b2b5343e283e26df7a3"
+    "firefox_revision": "v0.0.1"
   },
   "scripts": {
     "install": "node install.js",
