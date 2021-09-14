@@ -565,7 +565,7 @@ This methods attaches Puppeteer to an existing browser instance.
 - `options` <[Object]> Set of configurable options to set on the browser. Can have the following fields:
   - `headless` <[boolean]> Whether to run browser in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`.
   - `args` <[Array]<[string]>> Additional arguments to pass to the browser instance. The list of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
-  - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md).
+  - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/user_data_dir.md).
   - `devtools` <[boolean]> Whether to auto-open a DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
 - returns: <[Array]<[string]>>
 
@@ -646,7 +646,7 @@ try {
   - `handleSIGHUP` <[boolean]> Close the browser process on SIGHUP. Defaults to `true`.
   - `timeout` <[number]> Maximum time in milliseconds to wait for the browser instance to start. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
   - `dumpio` <[boolean]> Whether to pipe the browser process stdout and stderr into `process.stdout` and `process.stderr`. Defaults to `false`.
-  - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md).
+  - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/user_data_dir.md).
   - `env` <[Object]> Specify environment variables that will be visible to the browser. Defaults to `process.env`.
   - `devtools` <[boolean]> Whether to auto-open a DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
   - `pipe` <[boolean]> Connects to the browser over a pipe instead of a WebSocket. Defaults to `false`.
@@ -1712,7 +1712,6 @@ await page.evaluate(() => matchMedia('print').matches);
 
 > **NOTE** This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644). To set the page offline, you can use [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled).
 
-
 ```js
 const puppeteer = require('puppeteer');
 const slow3G = puppeteer.networkConditions['Slow 3G'];
@@ -2086,6 +2085,7 @@ Page is guaranteed to have a main frame which persists during navigations.
     - `left` <[string]|[number]> Left margin, accepts values labeled with units.
   - `preferCSSPageSize` <[boolean]> Give any CSS `@page` size declared in the page priority over what is declared in `width` and `height` or `format` options. Defaults to `false`, which will scale the content to fit the paper size.
   - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
+  - `timeout` <[number]> Maximum time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
 - returns: <[Promise]<[Buffer]>> Promise which resolves with PDF buffer.
 
 > **NOTE** Generating a pdf is currently only supported in Chrome headless.
@@ -2328,7 +2328,7 @@ await page.setGeolocation({ latitude: 59.95, longitude: 30.31667 });
 
 #### page.setOfflineMode(enabled)
 
-- `enabled` <[boolean]> When `true`, enables offline mode for the page. 
+- `enabled` <[boolean]> When `true`, enables offline mode for the page.
 - returns: <[Promise]>
 
 > **NOTE** while this method sets the network connection to offline, it does not change the parameters used in [page.emulateNetworkConditions(networkConditions)](#pageemulatenetworkconditionsnetworkconditions).
@@ -5036,7 +5036,7 @@ The `CDPSession` instances are used to talk raw Chrome Devtools Protocol:
 Useful links:
 
 - Documentation on DevTools Protocol can be found here: [DevTools Protocol Viewer](https://chromedevtools.github.io/devtools-protocol/).
-- Getting Started with DevTools Protocol: https://github.com/aslushnikov/getting-started-with-cdp/blob/master/README.md
+- Getting Started with DevTools Protocol: https://github.com/aslushnikov/getting-started-with-cdp/blob/HEAD/README.md
 
 ```js
 const client = await page.target().createCDPSession();

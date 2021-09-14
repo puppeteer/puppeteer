@@ -501,7 +501,7 @@ export class Page extends EventEmitter {
         // We still want to attach to workers for emitting events.
         // We still want to attach to iframes so sessions may interact with them.
         // We detach from all other types out of an abundance of caution.
-        // See https://source.chromium.org/chromium/chromium/src/+/master:content/browser/devtools/devtools_agent_host_impl.cc?q=f:devtools%20-f:out%20%22::kTypePage%5B%5D%22&ss=chromium
+        // See https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&q=f:devtools%20-f:out%20%22::kTypePage%5B%5D%22
         // for the complete list of available types.
         client
           .send('Target.detachFromTarget', {
@@ -1098,7 +1098,7 @@ export class Page extends EventEmitter {
        *
        * TODO(@jackfranklin): We could fix this by using overloads like
        * DefinitelyTyped does:
-       * https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/puppeteer/index.d.ts#L114
+       * https://github.com/DefinitelyTyped/DefinitelyTyped/blob/HEAD/types/puppeteer/index.d.ts#L114
        */
       ...args: unknown[]
     ) => ReturnType | Promise<ReturnType>,
@@ -2748,6 +2748,7 @@ export class Page extends EventEmitter {
       preferCSSPageSize = false,
       margin = {},
       omitBackground = false,
+      timeout = 30000,
     } = options;
 
     let paperWidth = 8.5;
@@ -2772,7 +2773,7 @@ export class Page extends EventEmitter {
       await this._setTransparentBackgroundColor();
     }
 
-    const result = await this._client.send('Page.printToPDF', {
+    const printCommandPromise = this._client.send('Page.printToPDF', {
       transferMode: 'ReturnAsStream',
       landscape,
       displayHeaderFooter,
@@ -2789,6 +2790,12 @@ export class Page extends EventEmitter {
       pageRanges,
       preferCSSPageSize,
     });
+
+    const result = await helper.waitWithTimeout(
+      printCommandPromise,
+      'Page.printToPDF',
+      timeout
+    );
 
     if (omitBackground) {
       await this._resetDefaultBackgroundColor();
