@@ -339,14 +339,14 @@ how to run this Dockerfile from a webserver running on App Engine Flex (Node).
 
 ### Running on Alpine
 
-The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 89, which corresponds to [Puppeteer v6.0.0](https://github.com/puppeteer/puppeteer/releases/tag/v6.0.0).
+The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 92, which corresponds to [Puppeteer v10.0.0](https://github.com/puppeteer/puppeteer/releases/tag/v10.0.0).
 
 Example Dockerfile:
 
 ```Dockerfile
 FROM alpine
 
-# Installs latest Chromium (89) package.
+# Installs latest Chromium (92) package.
 RUN apk add --no-cache \
       chromium \
       nss \
@@ -363,8 +363,8 @@ RUN apk add --no-cache \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-# Puppeteer v6.0.0 works with Chromium 89.
-RUN yarn add puppeteer@6.0.0
+# Puppeteer v10.0.0 works with Chromium 92.
+RUN yarn add puppeteer@10.0.0
 
 # Add user so we don't need --no-sandbox.
 RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
@@ -440,7 +440,7 @@ There's also another [simple guide](https://timleland.com/headless-chrome-on-her
 AWS Lambda [limits](https://docs.aws.amazon.com/lambda/latest/dg/limits.html) deployment package sizes to ~50MB. This presents challenges for running headless Chrome (and therefore Puppeteer) on Lambda. The community has put together a few resources that work around the issues:
 
 - https://github.com/alixaxel/chrome-aws-lambda (kept updated with the latest stable release of puppeteer)
-- https://github.com/adieuadieu/serverless-chrome/blob/master/docs/chrome.md (serverless plugin - outdated)
+- https://github.com/adieuadieu/serverless-chrome/blob/HEAD/docs/chrome.md (serverless plugin - outdated)
 
 ### Running Puppeteer on AWS EC2 instance running Amazon-Linux
 
