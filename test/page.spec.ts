@@ -1648,6 +1648,17 @@ describe('Page', function () {
       }
       expect(size).toBeGreaterThan(0);
     });
+
+    it('should respect timeout', async () => {
+      const { isHeadless, page, server, puppeteer } = getTestState();
+      if (!isHeadless) return;
+
+      await page.goto(server.PREFIX + '/pdf.html');
+
+      let error = null;
+      await page.pdf({ timeout: 1 }).catch((_error) => (error = _error));
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+    });
   });
 
   describe('Page.title', function () {

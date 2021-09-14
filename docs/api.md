@@ -1713,7 +1713,6 @@ await page.evaluate(() => matchMedia('print').matches);
 
 > **NOTE** This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644). To set the page offline, you can use [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled).
 
-
 ```js
 const puppeteer = require('puppeteer');
 const slow3G = puppeteer.networkConditions['Slow 3G'];
@@ -2087,6 +2086,7 @@ Page is guaranteed to have a main frame which persists during navigations.
     - `left` <[string]|[number]> Left margin, accepts values labeled with units.
   - `preferCSSPageSize` <[boolean]> Give any CSS `@page` size declared in the page priority over what is declared in `width` and `height` or `format` options. Defaults to `false`, which will scale the content to fit the paper size.
   - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
+  - `timeout` <[number]> Maximum time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
 - returns: <[Promise]<[Buffer]>> Promise which resolves with PDF buffer.
 
 > **NOTE** Generating a pdf is currently only supported in Chrome headless.

@@ -228,7 +228,7 @@ describe('ElementHandle specs', function () {
       );
       const error = await button.click().catch((error_) => error_);
       expect(error.message).toBe(
-        'Node is either not visible or not an HTMLElement'
+        'Node is either not clickable or not an HTMLElement'
       );
     });
     it('should throw for recursively hidden nodes', async () => {
@@ -242,7 +242,7 @@ describe('ElementHandle specs', function () {
       );
       const error = await button.click().catch((error_) => error_);
       expect(error.message).toBe(
-        'Node is either not visible or not an HTMLElement'
+        'Node is either not clickable or not an HTMLElement'
       );
     });
     it('should throw for <br> elements', async () => {
@@ -252,7 +252,7 @@ describe('ElementHandle specs', function () {
       const br = await page.$('br');
       const error = await br.click().catch((error_) => error_);
       expect(error.message).toBe(
-        'Node is either not visible or not an HTMLElement'
+        'Node is either not clickable or not an HTMLElement'
       );
     });
   });
