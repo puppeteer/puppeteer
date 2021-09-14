@@ -197,6 +197,7 @@
   * [page.waitForFileChooser([options])](#pagewaitforfilechooseroptions)
   * [page.waitForFunction(pageFunction[, options[, ...args]])](#pagewaitforfunctionpagefunction-options-args)
   * [page.waitForNavigation([options])](#pagewaitfornavigationoptions)
+  * [page.waitForNetworkIdle([options])](#pagewaitfornetworkidleoptions)
   * [page.waitForRequest(urlOrPredicate[, options])](#pagewaitforrequesturlorpredicate-options)
   * [page.waitForResponse(urlOrPredicate[, options])](#pagewaitforresponseurlorpredicate-options)
   * [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
@@ -649,7 +650,7 @@ try {
   - `env` <[Object]> Specify environment variables that will be visible to the browser. Defaults to `process.env`.
   - `devtools` <[boolean]> Whether to auto-open a DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
   - `pipe` <[boolean]> Connects to the browser over a pipe instead of a WebSocket. Defaults to `false`.
-  - `extraPrefsFirefox` <[Object]> Additional [preferences](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/Preference_reference) that can be passed to Firefox (see `PUPPETEER_PRODUCT`)
+  - `extraPrefsFirefox` <[Object]> Additional [preferences](https://searchfox.org/mozilla-release/source/modules/libpref/init/all.js) that can be passed to Firefox (see `PUPPETEER_PRODUCT`)
   - `targetFilter` <?[function]\([Protocol.Target.TargetInfo]\):[boolean]> Use this function to decide if Puppeteer should connect to the given target. If a `targetFilter` is provided, Puppeteer only connects to targets for which `targetFilter` returns `true`. By default, Puppeteer connects to all available targets.
   - `waitForInitialPage` <[boolean]> Whether to wait for the initial page to be ready. Defaults to `true`.
 - returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
@@ -2845,6 +2846,17 @@ const [response] = await Promise.all([
 **NOTE** Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
 
 Shortcut for [page.mainFrame().waitForNavigation(options)](#framewaitfornavigationoptions).
+
+#### page.waitForNetworkIdle([options])
+- `options` <[Object]> Optional waiting parameters
+  - `timeout` <[number]> Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to disable the timeout. The default value can be changed by using the [page.setDefaultTimeout(timeout)](#pagesetdefaulttimeouttimeout) method.
+  - `idleTime` <[number]> How long to wait for no network requests in milliseconds, defaults to 500 milliseconds.
+- returns: <[Promise]<void>> Promise which resolves when network is idle.
+
+```js
+page.evaluate(() => fetch('some-url'));
+page.waitForNetworkIdle(); // The promise resolves after fetch above finishes
+```
 
 #### page.waitForRequest(urlOrPredicate[, options])
 

@@ -119,7 +119,7 @@ export interface LaunchOptions {
    */
   product?: Product;
   /**
-   * {@link https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/Preference_reference | Additional preferences } that can be passed when launching with Firefox.
+   * {@link https://searchfox.org/mozilla-release/source/modules/libpref/init/all.js | Additional preferences } that can be passed when launching with Firefox.
    */
   extraPrefsFirefox?: Record<string, unknown>;
   /**
