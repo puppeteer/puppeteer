@@ -421,7 +421,7 @@ export class ElementHandle<
       this._client.send('Page.getLayoutMetrics'),
     ]);
     if (!result || !result.quads.length)
-      throw new Error('Node is either not visible or not an HTMLElement');
+      throw new Error('Node is either not clickable or not an HTMLElement');
     // Filter out quads that have too small area to click into.
     // Fallback to `layoutViewport` in case of using Firefox.
     const { clientWidth, clientHeight } =
@@ -433,7 +433,7 @@ export class ElementHandle<
       )
       .filter((quad) => computeQuadArea(quad) > 1);
     if (!quads.length)
-      throw new Error('Node is either not visible or not an HTMLElement');
+      throw new Error('Node is either not clickable or not an HTMLElement');
     // Return the middle point of the first quad.
     const quad = quads[0];
     let x = 0;

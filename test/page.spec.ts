@@ -844,7 +844,7 @@ describe('Page', function () {
               ]);
               await new Promise((resolve) => setTimeout(resolve, 200));
               await fetch('/digits/3.png');
-              await new Promise((resolve) => setTimeout(resolve, 400));
+              await new Promise((resolve) => setTimeout(resolve, 200));
               await fetch('/digits/4.png');
             })()
           )
@@ -1638,6 +1638,17 @@ describe('Page', function () {
         size += chunk.length;
       }
       expect(size).toBeGreaterThan(0);
+    });
+
+    it('should respect timeout', async () => {
+      const { isHeadless, page, server, puppeteer } = getTestState();
+      if (!isHeadless) return;
+
+      await page.goto(server.PREFIX + '/pdf.html');
+
+      let error = null;
+      await page.pdf({ timeout: 1 }).catch((_error) => (error = _error));
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
   });
 
