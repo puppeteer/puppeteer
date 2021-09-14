@@ -292,11 +292,15 @@ The following steps are needed to update the Chromium version.
 
 ### Bisecting upstream changes
 
-Sometimes, performing a Chromium roll causes tests to fail. To figure out the cause, you need to bisect Chromium revisions to figure out the earliest possible revision that changed the behavior. The script in `utils/bisect.js` can be helpful here. Given a Node.js script that calls `process.exit(1)` for bad revisions, run this from the Puppeteer repository’s root directory:
+Sometimes, performing a Chromium roll causes tests to fail. To figure out the cause, you need to bisect Chromium revisions to figure out the earliest possible revision that changed the behavior. The script in `utils/bisect.js` can be helpful here. Given a pattern for one or more unit tests, it will automatically bisect the current range:
 
 ```sh
 node utils/bisect.js --good 686378 --bad 706915 script.js
+
+node utils/bisect.js --unit-test Response.fromCache
 ```
+
+By default, it will use the Chromium revision in `src/revisions.ts` from the `main` branch and from the working tree to determine the range to bisect.
 
 ## Releasing to npm
 
