@@ -329,7 +329,7 @@ export class JSHandle<HandleObjectType = unknown> {
  */
 export class ElementHandle<
   ElementType extends Element = Element
-  > extends JSHandle<ElementType> {
+> extends JSHandle<ElementType> {
   private _page: Page;
   private _frameManager: FrameManager;
 
@@ -577,10 +577,10 @@ export class ElementHandle<
       assert(
         helper.isString(value),
         'Values must be strings. Found value "' +
-        value +
-        '" of type "' +
-        typeof value +
-        '"'
+          value +
+          '" of type "' +
+          typeof value +
+          '"'
       );
 
     return this.evaluate<(element: Element, values: string[]) => string[]>(
