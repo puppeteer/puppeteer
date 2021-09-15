@@ -43,7 +43,7 @@ export interface InternalQueryHandler {
 
 /**
  * Contains two functions `queryOne` and `queryAll` that can
- * be {@link Puppeteer.__experimental_registerCustomQueryHandler | registered}
+ * be {@link Puppeteer.registerCustomQueryHandler | registered}
  * as alternative querying strategies. The functions `queryOne` and `queryAll`
  * are executed in the page context.  `queryOne` should take an `Element` and a
  * selector string as argument and return a single `Element` or `null` if no
@@ -215,9 +215,10 @@ export function clearCustomQueryHandlers(): void {
 /**
  * @internal
  */
-export function getQueryHandlerAndSelector(
-  selector: string
-): { updatedSelector: string; queryHandler: InternalQueryHandler } {
+export function getQueryHandlerAndSelector(selector: string): {
+  updatedSelector: string;
+  queryHandler: InternalQueryHandler;
+} {
   const hasCustomQueryHandler = /^[a-zA-Z]+\//.test(selector);
   if (!hasCustomQueryHandler)
     return { updatedSelector: selector, queryHandler: _defaultHandler };

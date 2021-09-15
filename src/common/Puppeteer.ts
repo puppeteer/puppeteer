@@ -25,7 +25,11 @@ import {
   CustomQueryHandler,
 } from './QueryHandler.js';
 import { Product } from './Product.js';
-import { connectToBrowser, BrowserOptions } from './BrowserConnector.js';
+import { connectToBrowser, BrowserConnectOptions } from './BrowserConnector.js';
+import {
+  PredefinedNetworkConditions,
+  networkConditions,
+} from './NetworkConditions.js';
 
 /**
  * Settings that are common to the Puppeteer class, regardless of enviroment.
@@ -34,8 +38,10 @@ import { connectToBrowser, BrowserOptions } from './BrowserConnector.js';
 export interface CommonPuppeteerSettings {
   isPuppeteerCore: boolean;
 }
-
-export interface ConnectOptions extends BrowserOptions {
+/**
+ * @public
+ */
+export interface ConnectOptions extends BrowserConnectOptions {
   browserWSEndpoint?: string;
   browserURL?: string;
   transport?: ConnectionTransport;
@@ -126,6 +132,31 @@ export class Puppeteer {
   }
 
   /**
+   * @remarks
+   * Returns a list of network conditions to be used with `page.emulateNetworkConditions(networkConditions)`. Actual list of predefined conditions can be found in {@link https://github.com/puppeteer/puppeteer/blob/main/src/common/NetworkConditions.ts | src/common/NetworkConditions.ts}.
+   *
+   * @example
+   *
+   * ```js
+   * const puppeteer = require('puppeteer');
+   * const slow3G = puppeteer.networkConditions['Slow 3G'];
+   *
+   * (async () => {
+   *   const browser = await puppeteer.launch();
+   *   const page = await browser.newPage();
+   *   await page.emulateNetworkConditions(slow3G);
+   *   await page.goto('https://www.google.com');
+   *   // other actions...
+   *   await browser.close();
+   * })();
+   * ```
+   *
+   */
+  get networkConditions(): PredefinedNetworkConditions {
+    return networkConditions;
+  }
+
+  /**
    * Registers a {@link CustomQueryHandler | custom query handler}. After
    * registration, the handler can be used everywhere where a selector is
    * expected by prepending the selection string with `<name>/`. The name is
@@ -139,7 +170,7 @@ export class Puppeteer {
    * @param queryHandler - The {@link CustomQueryHandler | custom query handler} to
    * register.
    */
-  __experimental_registerCustomQueryHandler(
+  registerCustomQueryHandler(
     name: string,
     queryHandler: CustomQueryHandler
   ): void {
@@ -149,21 +180,21 @@ export class Puppeteer {
   /**
    * @param name - The name of the query handler to unregistered.
    */
-  __experimental_unregisterCustomQueryHandler(name: string): void {
+  unregisterCustomQueryHandler(name: string): void {
     unregisterCustomQueryHandler(name);
   }
 
   /**
    * @returns a list with the names of all registered custom query handlers.
    */
-  __experimental_customQueryHandlerNames(): string[] {
+  customQueryHandlerNames(): string[] {
     return customQueryHandlerNames();
   }
 
   /**
    * Clears all registered handlers.
    */
-  __experimental_clearQueryHandlers(): void {
+  clearCustomQueryHandlers(): void {
     clearCustomQueryHandlers();
   }
 }

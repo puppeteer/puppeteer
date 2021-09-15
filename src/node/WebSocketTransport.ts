@@ -16,15 +16,23 @@
 import { ConnectionTransport } from '../common/ConnectionTransport.js';
 import NodeWebSocket from 'ws';
 
-export class WebSocketTransport implements ConnectionTransport {
-  static create(url: string): Promise<WebSocketTransport> {
+export class NodeWebSocketTransport implements ConnectionTransport {
+  static create(url: string): Promise<NodeWebSocketTransport> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const pkg = require('../../../../package.json');
     return new Promise((resolve, reject) => {
       const ws = new NodeWebSocket(url, [], {
+        followRedirects: true,
         perMessageDeflate: false,
         maxPayload: 256 * 1024 * 1024, // 256Mb
+        headers: {
+          'User-Agent': `Puppeteer ${pkg.version}`,
+        },
       });
 
-      ws.addEventListener('open', () => resolve(new WebSocketTransport(ws)));
+      ws.addEventListener('open', () =>
+        resolve(new NodeWebSocketTransport(ws))
+      );
       ws.addEventListener('error', reject);
     });
   }
