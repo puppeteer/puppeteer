@@ -282,6 +282,32 @@ describe('ElementHandle specs', function () {
         expect(await button.isIntersectingViewport()).toBe(visible);
       }
     });
+    it('should work with threshold', async () => {
+      const { page, server } = getTestState();
+
+      await page.goto(server.PREFIX + '/offscreenbuttons.html');
+      // a button almost cannot be seen
+      // sometimes we expect to return false by isIntersectingViewport1
+      const button = await page.$('#btn11');
+      expect(
+        await button.isIntersectingViewport({
+          threshold: 0.001,
+        })
+      ).toBe(false);
+    });
+    it('should work with threshold of 1', async () => {
+      const { page, server } = getTestState();
+
+      await page.goto(server.PREFIX + '/offscreenbuttons.html');
+      // a button almost cannot be seen
+      // sometimes we expect to return false by isIntersectingViewport1
+      const button = await page.$('#btn0');
+      expect(
+        await button.isIntersectingViewport({
+          threshold: 1,
+        })
+      ).toBe(true);
+    });
   });
 
   describe('Custom queries', function () {
