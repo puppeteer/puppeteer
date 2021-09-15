@@ -79,7 +79,7 @@ describeFailsFirefox('Workers', function () {
     ]);
     expect(message.text()).toBe('1');
     expect(message.location()).toEqual({
-      url: 'data:text/javascript,console.log(1)',
+      url: '',
       lineNumber: 0,
       columnNumber: 8,
     });

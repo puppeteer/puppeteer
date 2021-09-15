@@ -18,7 +18,11 @@ const base = require('./base');
 
 module.exports = {
   ...base,
-  require: ['./test/mocha-ts-require', './test/mocha-utils.ts'],
+  require: [
+    './test/mocha-ts-require',
+    './test/mocha-utils.ts',
+    'source-map-support/register',
+  ],
   spec: 'test/*.spec.ts',
   extension: ['js', 'ts'],
   retries: process.env.CI ? 2 : 0,

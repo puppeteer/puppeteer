@@ -52,6 +52,7 @@ describe('request interception', function () {
       expect(response.ok()).toBe(true);
       expect(response.remoteAddress().port).toBe(server.PORT);
     });
+    // @see https://github.com/puppeteer/puppeteer/pull/3105
     it('should work when POST is redirected with 302', async () => {
       const { page, server } = getTestState();
 
@@ -494,6 +495,48 @@ describe('request interception', function () {
       expect(urls.size).toBe(2);
       expect(urls.has('one-style.html')).toBe(true);
       expect(urls.has('one-style.css')).toBe(true);
+    });
+    it('should not cache if cache disabled', async () => {
+      const { page, server } = getTestState();
+
+      // Load and re-load to make sure it's cached.
+      await page.goto(server.PREFIX + '/cached/one-style.html');
+
+      await page.setRequestInterception(true);
+      await page.setCacheEnabled(false);
+      page.on('request', (request) => request.continue());
+
+      const cached = [];
+      page.on('requestservedfromcache', (r) => cached.push(r));
+
+      await page.reload();
+      expect(cached.length).toBe(0);
+    });
+    it('should cache if cache enabled', async () => {
+      const { page, server } = getTestState();
+
+      // Load and re-load to make sure it's cached.
+      await page.goto(server.PREFIX + '/cached/one-style.html');
+
+      await page.setRequestInterception(true);
+      await page.setCacheEnabled(true);
+      page.on('request', (request) => request.continue());
+
+      const cached = [];
+      page.on('requestservedfromcache', (r) => cached.push(r));
+
+      await page.reload();
+      expect(cached.length).toBe(1);
+    });
+    it('should load fonts if cache enabled', async () => {
+      const { page, server } = getTestState();
+
+      await page.setRequestInterception(true);
+      await page.setCacheEnabled(true);
+      page.on('request', (request) => request.continue());
+
+      await page.goto(server.PREFIX + '/cached/one-style-font.html');
+      await page.waitForResponse((r) => r.url().endsWith('/one-style.woff'));
     });
   });
 

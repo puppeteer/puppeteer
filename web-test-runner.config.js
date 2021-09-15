@@ -17,6 +17,7 @@ const { chromeLauncher } = require('@web/test-runner-chrome');
 
 module.exports = {
   files: ['test-browser/**/*.spec.js'],
+  browserStartTimeout: 60 * 1000,
   browsers: [
     chromeLauncher({
       async createPage({ browser }) {
