@@ -18,7 +18,7 @@ import { InternalQueryHandler } from './QueryHandler.js';
 import { ElementHandle, JSHandle } from './JSHandle.js';
 import { Protocol } from 'devtools-protocol';
 import { CDPSession } from './Connection.js';
-import { DOMWorld, WaitForSelectorOptions } from './DOMWorld.js';
+import { DOMWorld, PageBinding, WaitForSelectorOptions } from './DOMWorld.js';
 
 async function queryAXTree(
   client: CDPSession,
@@ -32,10 +32,16 @@ async function queryAXTree(
     role,
   });
   const filteredNodes: Protocol.Accessibility.AXNode[] = nodes.filter(
-    (node: Protocol.Accessibility.AXNode) => node.role.value !== 'text'
+    (node: Protocol.Accessibility.AXNode) => node.role.value !== 'StaticText'
   );
   return filteredNodes;
 }
+
+const normalizeValue = (value: string): string =>
+  value.replace(/ +/g, ' ').trim();
+const knownAttributes = new Set(['name', 'role']);
+const attributeRegexp =
+  /\[\s*(?<attribute>\w+)\s*=\s*"(?<value>\\.|[^"\\]*)"\s*\]/g;
 
 /*
  * The selectors consist of an accessible name to query for and optionally
@@ -49,24 +55,19 @@ async function queryAXTree(
  */
 type ariaQueryOption = { name?: string; role?: string };
 function parseAriaSelector(selector: string): ariaQueryOption {
-  const normalize = (value: string): string => value.replace(/ +/g, ' ').trim();
-  const knownAttributes = new Set(['name', 'role']);
   const queryOptions: ariaQueryOption = {};
-  const attributeRegexp = /\[\s*(?<attribute>\w+)\s*=\s*"(?<value>\\.|[^"\\]*)"\s*\]/;
   const defaultName = selector.replace(
     attributeRegexp,
     (_, attribute: string, value: string) => {
       attribute = attribute.trim();
       if (!knownAttributes.has(attribute))
-        throw new Error(
-          'Unkown aria attribute "${groups.attribute}" in selector'
-        );
-      queryOptions[attribute] = normalize(value);
+        throw new Error(`Unknown aria attribute "${attribute}" in selector`);
+      queryOptions[attribute] = normalizeValue(value);
       return '';
     }
   );
   if (defaultName && !queryOptions.name)
-    queryOptions.name = normalize(defaultName);
+    queryOptions.name = normalizeValue(defaultName);
   return queryOptions;
 }
 
@@ -87,12 +88,20 @@ const waitFor = async (
   domWorld: DOMWorld,
   selector: string,
   options: WaitForSelectorOptions
-) => {
-  await addHandlerToWorld(domWorld);
+): Promise<ElementHandle<Element>> => {
+  const binding: PageBinding = {
+    name: 'ariaQuerySelector',
+    pptrFunction: async (selector: string) => {
+      const document = await domWorld._document();
+      const element = await queryOne(document, selector);
+      return element;
+    },
+  };
   return domWorld.waitForSelectorInPage(
     (_: Element, selector: string) => globalThis.ariaQuerySelector(selector),
     selector,
-    options
+    options,
+    binding
   );
 };
 
@@ -120,14 +129,6 @@ const queryAllArray = async (
   );
   return jsHandle;
 };
-
-async function addHandlerToWorld(domWorld: DOMWorld) {
-  await domWorld.addBinding('ariaQuerySelector', async (selector: string) => {
-    const document = await domWorld._document();
-    const element = await queryOne(document, selector);
-    return element;
-  });
-}
 
 /**
  * @internal

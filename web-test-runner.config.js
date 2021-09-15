@@ -13,9 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const { chromeLauncher } = require('@web/test-runner-chrome');
 
 module.exports = {
   files: ['test-browser/**/*.spec.js'],
+  browserStartTimeout: 60 * 1000,
+  browsers: [
+    chromeLauncher({
+      async createPage({ browser }) {
+        const page = await browser.newPage();
+        page.evaluateOnNewDocument((wsEndpoint) => {
+          window.__ENV__ = { wsEndpoint };
+        }, browser.wsEndpoint());
+
+        return page;
+      },
+    }),
+  ],
   plugins: [
     {
       // turn expect UMD into an es module

@@ -119,7 +119,7 @@ export class FrameManager extends EventEmitter {
   }
 
   async initialize(): Promise<void> {
-    const result = await Promise.all<{}, Protocol.Page.GetFrameTreeResponse>([
+    const result = await Promise.all([
       this._client.send('Page.enable'),
       this._client.send('Page.getFrameTree'),
     ]);
@@ -322,18 +322,19 @@ export class FrameManager extends EventEmitter {
     await this._client.send('Page.addScriptToEvaluateOnNewDocument', {
       source: `//# sourceURL=${EVALUATION_SCRIPT_URL}`,
       worldName: name,
-    }),
-      await Promise.all(
-        this.frames().map((frame) =>
-          this._client
-            .send('Page.createIsolatedWorld', {
-              frameId: frame._id,
-              grantUniveralAccess: true,
-              worldName: name,
-            })
-            .catch(debugError)
-        )
-      ); // frames might be removed before we send this
+    });
+    // Frames might be removed before we send this.
+    await Promise.all(
+      this.frames().map((frame) =>
+        this._client
+          .send('Page.createIsolatedWorld', {
+            frameId: frame._id,
+            worldName: name,
+            grantUniveralAccess: true,
+          })
+          .catch(debugError)
+      )
+    );
   }
 
   _onFrameNavigatedWithinDocument(frameId: string, url: string): void {
@@ -369,8 +370,6 @@ export class FrameManager extends EventEmitter {
         world = frame._secondaryWorld;
       }
     }
-    if (contextPayload.auxData && contextPayload.auxData['type'] === 'isolated')
-      this._isolatedWorlds.add(contextPayload.name);
     const context = new ExecutionContext(this._client, contextPayload, world);
     if (world) world._setContext(context);
     this._contextIdToContext.set(contextPayload.id, context);
@@ -723,8 +722,10 @@ export class Frame {
    * @returns A promise which resolves to an `ElementHandle` pointing at the
    * element, or `null` if it was not found.
    */
-  async $(selector: string): Promise<ElementHandle | null> {
-    return this._mainWorld.$(selector);
+  async $<T extends Element = Element>(
+    selector: string
+  ): Promise<ElementHandle<T> | null> {
+    return this._mainWorld.$<T>(selector);
   }
 
   /**
@@ -802,8 +803,10 @@ export class Frame {
    * @param selector - a selector to search for
    * @returns An array of element handles pointing to the found frame elements.
    */
-  async $$(selector: string): Promise<ElementHandle[]> {
-    return this._mainWorld.$$(selector);
+  async $$<T extends Element = Element>(
+    selector: string
+  ): Promise<Array<ElementHandle<T>>> {
+    return this._mainWorld.$$<T>(selector);
   }
 
   /**
@@ -1062,7 +1065,7 @@ export class Frame {
    */
   waitFor(
     selectorOrFunctionOrTimeout: string | number | Function,
-    options: {} = {},
+    options: Record<string, unknown> = {},
     ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle | null> {
     const xPathPattern = '//';

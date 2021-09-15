@@ -18,17 +18,7 @@ import { Puppeteer } from './common/Puppeteer.js';
 
 export const initializePuppeteerWeb = (packageName: string): Puppeteer => {
   const isPuppeteerCore = packageName === 'puppeteer-core';
-
-  // puppeteer-core ignores environment variables
-  return new Puppeteer(
-    // Product root directory is undefined as we're not concerned about
-    // downloading and installing browsers in the web environment.
-    undefined,
-    // Preferred revision is undefined as we use the browser we are running in.
-    undefined,
+  return new Puppeteer({
     isPuppeteerCore,
-    // Preferred product is undefined as we use the browser we are
-    // running in.
-    undefined
-  );
+  });
 };

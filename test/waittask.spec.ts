@@ -94,7 +94,7 @@ describe('waittask specs', function () {
       const { page } = getTestState();
 
       let error = null;
-      // @ts-expect-error
+      // @ts-expect-error purposefully passing bad type for test
       await page.waitFor({ foo: 'bar' }).catch((error_) => (error = error_));
       expect(error.message).toContain('Unsupported target type');
     });
@@ -358,11 +358,10 @@ describe('waittask specs', function () {
       const endTime = Date.now();
       /* In a perfect world endTime - startTime would be exactly 1000 but we
        * expect some fluctuations and for it to be off by a little bit. So to
-       * avoid a flaky test we'll make sure it waited for roughly 1 second by
-       * ensuring 900 < endTime - startTime < 1100
+       * avoid a flaky test we'll make sure it waited for roughly 1 second.
        */
-      expect(endTime - startTime).toBeGreaterThan(900);
-      expect(endTime - startTime).toBeLessThan(1100);
+      expect(endTime - startTime).toBeGreaterThan(700);
+      expect(endTime - startTime).toBeLessThan(1300);
     });
   });
 
@@ -376,11 +375,10 @@ describe('waittask specs', function () {
       const endTime = Date.now();
       /* In a perfect world endTime - startTime would be exactly 1000 but we
        * expect some fluctuations and for it to be off by a little bit. So to
-       * avoid a flaky test we'll make sure it waited for roughly 1 second by
-       * ensuring 900 < endTime - startTime < 1100
+       * avoid a flaky test we'll make sure it waited for roughly 1 second
        */
-      expect(endTime - startTime).toBeGreaterThan(900);
-      expect(endTime - startTime).toBeLessThan(1100);
+      expect(endTime - startTime).toBeGreaterThan(700);
+      expect(endTime - startTime).toBeLessThan(1300);
     });
   });
 
