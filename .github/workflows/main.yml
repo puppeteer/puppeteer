@@ -14,9 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # Include all major maintenance + active LTS Node.js versions.
+        # Include all major maintenance + active LTS + current Node.js versions.
         # https://github.com/nodejs/Release#release-schedule
-        node: [10, 12, 14]
+        node: [12, 14, 16]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -42,16 +42,20 @@ jobs:
 
       - name: Run code checks
         run: |
+          npm run ensure-pinned-deps
           npm run lint
           npm run generate-docs
           npm run ensure-correct-devtools-protocol-revision
           npm run test-types-file
 
       - name: Run unit tests
+        uses: nick-invision/retry@v2
         env:
           CHROMIUM: true
-        run: |
-          xvfb-run --auto-servernum npm run unit
+        with:
+          max_attempts: 3
+          command: xvfb-run --auto-servernum npm run unit
+          timeout_minutes: 10
 
       - name: Run unit tests with coverage
         env:
@@ -61,11 +65,15 @@ jobs:
           xvfb-run --auto-servernum npm run assert-unit-coverage
 
       - name: Run unit tests on Firefox
+        uses: nick-invision/retry@v2
         env:
           FIREFOX: true
           MOZ_WEBRENDER: 0
-        run: |
-          xvfb-run --auto-servernum npm run funit
+        with:
+          max_attempts: 3
+          timeout_minutes: 10
+          command: xvfb-run --auto-servernum npm run funit
+
       - name: Run browser tests
         run: |
           npm run test-browser
@@ -93,7 +101,7 @@ jobs:
         with:
           # Test only the oldest maintenance LTS Node.js version.
           # https://github.com/nodejs/Release#release-schedule
-          node-version: 10
+          node-version: 12
 
       - name: Install dependencies
         run: |
@@ -114,11 +122,11 @@ jobs:
           npm run unit
 
       - name: Run unit tests on Firefox
-        env:
-          FIREFOX: true
-          MOZ_WEBRENDER: 0
-        run: |
-          npm run funit
+        uses: nick-invision/retry@v2
+        with:
+          max_attempts: 3
+          timeout_minutes: 10
+          command: npm run funit
 
   windows:
     # https://github.com/actions/virtual-environments#available-environments
@@ -134,7 +142,7 @@ jobs:
         with:
           # Test only the oldest maintenance LTS Node.js version.
           # https://github.com/nodejs/Release#release-schedule
-          node-version: 10
+          node-version: 12
 
       - name: Install dependencies
         run: |
@@ -157,8 +165,11 @@ jobs:
           npm run unit
 
       - name: Run unit tests on Firefox
+        uses: nick-invision/retry@v2
         env:
           FIREFOX: true
           MOZ_WEBRENDER: 0
-        run: |
-          npm run funit
+        with:
+          max_attempts: 3
+          timeout_minutes: 10
+          command: npm run funit

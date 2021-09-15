@@ -171,7 +171,8 @@ describe('ElementHandle specs', function () {
   });
 
   describe('ElementHandle.click', function () {
-    it('should work', async () => {
+    // See https://github.com/puppeteer/puppeteer/issues/7175
+    itFailsFirefox('should work', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/input/button.html');
@@ -227,7 +228,7 @@ describe('ElementHandle specs', function () {
       );
       const error = await button.click().catch((error_) => error_);
       expect(error.message).toBe(
-        'Node is either not visible or not an HTMLElement'
+        'Node is either not clickable or not an HTMLElement'
       );
     });
     it('should throw for recursively hidden nodes', async () => {
@@ -241,7 +242,7 @@ describe('ElementHandle specs', function () {
       );
       const error = await button.click().catch((error_) => error_);
       expect(error.message).toBe(
-        'Node is either not visible or not an HTMLElement'
+        'Node is either not clickable or not an HTMLElement'
       );
     });
     it('should throw for <br> elements', async () => {
@@ -251,7 +252,7 @@ describe('ElementHandle specs', function () {
       const br = await page.$('br');
       const error = await br.click().catch((error_) => error_);
       expect(error.message).toBe(
-        'Node is either not visible or not an HTMLElement'
+        'Node is either not clickable or not an HTMLElement'
       );
     });
   });
@@ -319,7 +320,8 @@ describe('ElementHandle specs', function () {
           )
         );
       }
-      const handlerNamesAfterUnregistering = puppeteer.customQueryHandlerNames();
+      const handlerNamesAfterUnregistering =
+        puppeteer.customQueryHandlerNames();
       expect(handlerNamesAfterUnregistering.includes('getById')).toBeFalsy();
     });
     it('should throw with invalid query names', () => {

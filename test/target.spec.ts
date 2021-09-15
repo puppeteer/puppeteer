@@ -48,7 +48,6 @@ describe('Target', function () {
     const allPages = await context.pages();
     expect(allPages.length).toBe(1);
     expect(allPages).toContain(page);
-    expect(allPages[0]).not.toBe(allPages[1]);
   });
   it('should contain browser target', async () => {
     const { browser } = getTestState();

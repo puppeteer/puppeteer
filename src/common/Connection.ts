@@ -23,7 +23,15 @@ import { ProtocolMapping } from 'devtools-protocol/types/protocol-mapping.js';
 import { ConnectionTransport } from './ConnectionTransport.js';
 import { EventEmitter } from './EventEmitter.js';
 
-interface ConnectionCallback {
+/**
+ * @public
+ */
+export { ConnectionTransport, ProtocolMapping };
+
+/**
+ * @public
+ */
+export interface ConnectionCallback {
   resolve: Function;
   reject: Function;
   error: Error;
@@ -40,7 +48,7 @@ export const ConnectionEmittedEvents = {
 } as const;
 
 /**
- * @internal
+ * @public
  */
 export class Connection extends EventEmitter {
   _url: string;
@@ -67,8 +75,8 @@ export class Connection extends EventEmitter {
   }
 
   /**
-   * @param {string} sessionId
-   * @returns {?CDPSession}
+   * @param sessionId - The session id
+   * @returns The current CDP session if it exists
    */
   session(sessionId: string): CDPSession | null {
     return this._sessions.get(sessionId) || null;
@@ -117,11 +125,21 @@ export class Connection extends EventEmitter {
         sessionId
       );
       this._sessions.set(sessionId, session);
+      this.emit('sessionattached', session);
+      const parentSession = this._sessions.get(object.sessionId);
+      if (parentSession) {
+        parentSession.emit('sessionattached', session);
+      }
     } else if (object.method === 'Target.detachedFromTarget') {
       const session = this._sessions.get(object.params.sessionId);
       if (session) {
         session._onClosed();
         this._sessions.delete(object.params.sessionId);
+        this.emit('sessiondetached', session);
+        const parentSession = this._sessions.get(object.sessionId);
+        if (parentSession) {
+          parentSession.emit('sessiondetached', session);
+        }
       }
     }
     if (object.sessionId) {
@@ -167,8 +185,8 @@ export class Connection extends EventEmitter {
   }
 
   /**
-   * @param {Protocol.Target.TargetInfo} targetInfo
-   * @returns {!Promise<!CDPSession>}
+   * @param targetInfo - The target info
+   * @returns The CDP session that is created
    */
   async createSession(
     targetInfo: Protocol.Target.TargetInfo
@@ -181,7 +199,10 @@ export class Connection extends EventEmitter {
   }
 }
 
-interface CDPSessionOnMessageObject {
+/**
+ * @public
+ */
+export interface CDPSessionOnMessageObject {
   id?: number;
   method: string;
   params: Record<string, unknown>;
@@ -207,7 +228,7 @@ export const CDPSessionEmittedEvents = {
  * events can be subscribed to with `CDPSession.on` method.
  *
  * Useful links: {@link https://chromedevtools.github.io/devtools-protocol/ | DevTools Protocol Viewer}
- * and {@link https://github.com/aslushnikov/getting-started-with-cdp/blob/master/README.md | Getting Started with DevTools Protocol}.
+ * and {@link https://github.com/aslushnikov/getting-started-with-cdp/blob/HEAD/README.md | Getting Started with DevTools Protocol}.
  *
  * @example
  * ```js
@@ -242,6 +263,10 @@ export class CDPSession extends EventEmitter {
     this._sessionId = sessionId;
   }
 
+  connection(): Connection {
+    return this._connection;
+  }
+
   send<T extends keyof ProtocolMapping.Commands>(
     method: T,
     ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
@@ -259,11 +284,7 @@ export class CDPSession extends EventEmitter {
     const id = this._connection._rawSend({
       sessionId: this._sessionId,
       method,
-      /* TODO(jacktfranklin@): once this Firefox bug is solved
-       * we no longer need the `|| {}` check
-       * https://bugzilla.mozilla.org/show_bug.cgi?id=1631570
-       */
-      params: params || {},
+      params,
     });
 
     return new Promise((resolve, reject) => {

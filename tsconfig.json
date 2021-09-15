@@ -1,11 +1,16 @@
 /**
- * This configuration only exists for the API Extractor tool. See the details in
- * CONTRIBUTING.md that describes our TypeScript setup.
-*/
+ * This configuration only exists for the API Extractor tool and for VSCode to use. It is NOT the tsconfig used for compilation.
+ * For CJS builds, `tsconfig.cjs.json` is used, and for ESM, it's `tsconfig.esm.json`.
+ * See the details in CONTRIBUTING.md that describes our TypeScript setup.
+ */
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "noEmit": true
+    "noEmit": true,
+    /*  This module setting is just for VSCode so it doesn't throw error when we
+        use dynamic imports.
+     */
+    "module": "esnext"
   },
   "include": ["src"]
 }

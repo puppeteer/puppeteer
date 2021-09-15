@@ -9,5 +9,7 @@ async function run() {
   const page = await browser.newPage();
   const div = (await page.$('div')) as ElementHandle<HTMLAnchorElement>;
   console.log('got a div!', div);
+
+  const contentsOfDiv = await div.evaluate((divElem) => divElem.innerText);
 }
 run();

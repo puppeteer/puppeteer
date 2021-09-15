@@ -13,6 +13,8 @@
   * [API guidelines](#api-guidelines)
   * [Commit Messages](#commit-messages)
   * [Writing Documentation](#writing-documentation)
+  * [Writing TSDoc Comments](#writing-tsdoc-comments)
+  * [Running New Documentation website locally](#running-new-documentation-website-locally)
   * [Adding New Dependencies](#adding-new-dependencies)
   * [Running & Writing Tests](#running--writing-tests)
   * [Public API Coverage](#public-api-coverage)
@@ -171,6 +173,22 @@ To format the documentation markdown and its code snippets, use:
 npm run markdownlint-fix
 ```
 
+## Writing TSDoc Comments
+
+Each change to Puppeteer should be thoroughly documented using TSDoc comments. Refer to the [API Extractor documentation](https://api-extractor.com/pages/tsdoc/doc_comment_syntax/) for information on the exact syntax.
+
+- Every new method needs to have either `@public` or `@internal` added as a tag depending on if it is part of the public API.
+- Keep each line in a comment to no more than 90 characters (ESLint will warn you if you go over this). If you're a VSCode user the [Rewrap plugin](https://marketplace.visualstudio.com/items?itemName=stkb.rewrap) is highly recommended!
+
+
+## Running New Documentation website locally
+
+- In the Puppeteer's folder, install all dependencies with `npm i`.
+- run `npm run generate-docs` which will generate all the `.md`  files on `puppeteer/website/docs`.
+- run `npm i` on `puppeteer/website`.
+- run `npm start` on `puppeteer/website`.
+
+
 ## Adding New Dependencies
 
 For all dependencies (both installation and development):
@@ -262,22 +280,27 @@ The following steps are needed to update the Chromium version.
 
 1. Find a suitable Chromium revision
    Not all revisions have builds for all platforms, so we need to find one that does.
-   To do so, run `utils/check_availability.js -rb` to find the latest suitable beta Chromium revision (see `utils/check_availability.js -help` for more options).
+   To do so, run `utils/check_availability.js -rd` to find the latest suitable `dev` Chromium revision (see `utils/check_availability.js -help` for more options).
 1. Update `src/revisions.ts` with the found revision number.
 1. Update `versions.js` with the new Chromium-to-Puppeteer version mapping.
 1. Run `npm run ensure-correct-devtools-protocol-revision`.
    If it fails, update `package.json` with the expected `devtools-protocol` version.
-1. Run `npm run tsc` and `npm install` and ensure that all tests pass. If a test fails, [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and either update the test expectations accordingly (if it was an intended change) or work around the changes in Puppeteer (if it’s not desirable to change Puppeteer’s observable behavior).
-1. Commit and push your changes and open a pull request. 
+1. Run `npm run tsc` and `npm install`.
+1. Run `npm run unit` and ensure that all tests pass. If a test fails, [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and either update the test expectations accordingly (if it was an intended change) or work around the changes in Puppeteer (if it’s not desirable to change Puppeteer’s observable behavior).
+1. Commit and push your changes and open a pull request.
    The commit message must contain the version in `Chromium <version> (<revision>)` format to ensure that [pptr.dev](https://pptr.dev/) can parse it correctly, e.g. `'feat(chromium): roll to Chromium 90.0.4427.0 (r856583)'`.
 
 ### Bisecting upstream changes
 
-Sometimes, performing a Chromium roll causes tests to fail. To figure out the cause, you need to bisect Chromium revisions to figure out the earliest possible revision that changed the behavior. The script in `utils/bisect.js` can be helpful here. Given a Node.js script that calls `process.exit(1)` for bad revisions, run this from the Puppeteer repository’s root directory:
+Sometimes, performing a Chromium roll causes tests to fail. To figure out the cause, you need to bisect Chromium revisions to figure out the earliest possible revision that changed the behavior. The script in `utils/bisect.js` can be helpful here. Given a pattern for one or more unit tests, it will automatically bisect the current range:
 
 ```sh
 node utils/bisect.js --good 686378 --bad 706915 script.js
+
+node utils/bisect.js --unit-test Response.fromCache
 ```
+
+By default, it will use the Chromium revision in `src/revisions.ts` from the `main` branch and from the working tree to determine the range to bisect.
 
 ## Releasing to npm
 
