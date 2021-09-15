@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <style>
   button {
     position: absolute;
@@ -29,8 +30,9 @@
 <button id=btn9>9</button>
 <button id=btn10>10</button>
 <script>
-window.addEventListener('DOMContentLoaded', () => {
-  for (const button of Array.from(document.querySelectorAll('button')))
-    button.addEventListener('click', () => console.log('button #' + button.textContent + ' clicked'), false);
-}, false);
+  for (const button of document.querySelectorAll('button')) {
+    button.addEventListener('click', () => {
+      console.log(`button #${button.textContent} clicked`);
+    });
+  }
 </script>

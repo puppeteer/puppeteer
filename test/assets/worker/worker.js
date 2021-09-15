@@ -4,13 +4,13 @@ function workerFunction() {
   return 'worker function result';
 }
 
-self.addEventListener('message', event => {
+self.addEventListener('message', (event) => {
   console.log('got this data: ' + event.data);
 });
 
-(async function() {
+(async function () {
   while (true) {
     self.postMessage(workerFunction.toString());
-    await new Promise(x => setTimeout(x, 100));
+    await new Promise((x) => setTimeout(x, 100));
   }
 })();

@@ -21,7 +21,7 @@ const pptr = require('..');
 const browserFetcher = pptr.createBrowserFetcher();
 const path = require('path');
 const fs = require('fs');
-const {fork} = require('child_process');
+const { fork, spawn, execSync } = require('child_process');
 
 const COLOR_RESET = '\x1b[0m';
 const COLOR_RED = '\x1b[31m';
@@ -35,12 +35,16 @@ Usage:
   node bisect.js --good <revision> --bad <revision> <script>
 
 Parameters:
-  --good    revision that is known to be GOOD
-  --bad     revision that is known to be BAD
-  <script>  path to the script that returns non-zero code for BAD revisions and 0 for good
+  --good       revision that is known to be GOOD, defaults to the chromium revision in src/revision.ts in the main branch 
+  --bad        revision that is known to be BAD, defaults to the chromium revision in src/revision.ts
+  --no-cache   do not keep downloaded Chromium revisions
+  --unit-test  pattern that identifies a unit tests that should be checked
+  --script     path to a script that returns non-zero code for BAD revisions and 0 for good
 
 Example:
-  node utils/bisect.js --good 577361 --bad 599821 simple.js
+  node utils/bisect.js --unit-test test
+  node utils/bisect.js --good 577361 --bad 599821 --script simple.js
+  node utils/bisect.js --good 577361 --bad 599821 --unit-test test
 `;
 
 if (argv.h || argv.help) {
@@ -49,39 +53,72 @@ if (argv.h || argv.help) {
 }
 
 if (typeof argv.good !== 'number') {
-  console.log(COLOR_RED + 'ERROR: expected --good argument to be a number' + COLOR_RESET);
-  console.log(help);
-  process.exit(1);
+  argv.good = getChromiumRevision('main');
+  if (typeof argv.good !== 'number') {
+    console.log(
+      COLOR_RED +
+        'ERROR: Could not parse current Chromium revision' +
+        COLOR_RESET
+    );
+    console.log(help);
+    process.exit(1);
+  }
 }
 
 if (typeof argv.bad !== 'number') {
-  console.log(COLOR_RED + 'ERROR: expected --bad argument to be a number' + COLOR_RESET);
+  argv.bad = getChromiumRevision();
+  if (typeof argv.bad !== 'number') {
+    console.log(
+      COLOR_RED +
+        'ERROR: Could not parse Chromium revision in the main branch' +
+        COLOR_RESET
+    );
+    console.log(help);
+    process.exit(1);
+  }
+}
+
+if (!argv.script && !argv['unit-test']) {
+  console.log(
+    COLOR_RED +
+      'ERROR: Expected to be given a script or a unit test to run' +
+      COLOR_RESET
+  );
   console.log(help);
   process.exit(1);
 }
 
-const scriptPath = path.resolve(argv._[0]);
-if (!fs.existsSync(scriptPath)) {
-  console.log(COLOR_RED + 'ERROR: Expected to be given a path to a script to run' + COLOR_RESET);
+const scriptPath = argv.script ? path.resolve(argv.script) : null;
+
+if (argv.script && !fs.existsSync(scriptPath)) {
+  console.log(
+    COLOR_RED +
+      'ERROR: Expected to be given a path to a script to run' +
+      COLOR_RESET
+  );
   console.log(help);
   process.exit(1);
 }
 
-(async(scriptPath, good, bad) => {
+(async (scriptPath, good, bad, pattern, noCache) => {
   const span = Math.abs(good - bad);
-  console.log(`Bisecting ${COLOR_YELLOW}${span}${COLOR_RESET} revisions in ${COLOR_YELLOW}~${span.toString(2).length}${COLOR_RESET} iterations`);
+  console.log(
+    `Bisecting ${COLOR_YELLOW}${span}${COLOR_RESET} revisions in ${COLOR_YELLOW}~${
+      span.toString(2).length
+    }${COLOR_RESET} iterations`
+  );
 
   while (true) {
     const middle = Math.round((good + bad) / 2);
     const revision = await findDownloadableRevision(middle, good, bad);
-    if (!revision || revision === good || revision === bad)
-      break;
+    if (!revision || revision === good || revision === bad) break;
     let info = browserFetcher.revisionInfo(revision);
-    const shouldRemove = !info.local;
+    const shouldRemove = noCache && !info.local;
     info = await downloadRevision(revision);
-    const exitCode = await runScript(scriptPath, info);
-    if (shouldRemove)
-      await browserFetcher.remove(revision);
+    const exitCode = await (pattern
+      ? runUnitTest(pattern, info)
+      : runScript(scriptPath, info));
+    if (shouldRemove) await browserFetcher.remove(revision);
     let outcome;
     if (exitCode) {
       bad = revision;
@@ -100,15 +137,21 @@ if (!fs.existsSync(scriptPath)) {
       fromText = COLOR_RED + bad + COLOR_RESET;
       toText = COLOR_GREEN + good + COLOR_RESET;
     }
-    console.log(`- ${COLOR_YELLOW}r${revision}${COLOR_RESET} was ${outcome}. Bisecting [${fromText}, ${toText}] - ${COLOR_YELLOW}${span}${COLOR_RESET} revisions and ${COLOR_YELLOW}~${span.toString(2).length}${COLOR_RESET} iterations`);
+    console.log(
+      `- ${COLOR_YELLOW}r${revision}${COLOR_RESET} was ${outcome}. Bisecting [${fromText}, ${toText}] - ${COLOR_YELLOW}${span}${COLOR_RESET} revisions and ${COLOR_YELLOW}~${
+        span.toString(2).length
+      }${COLOR_RESET} iterations`
+    );
   }
 
   const [fromSha, toSha] = await Promise.all([
     revisionToSha(Math.min(good, bad)),
     revisionToSha(Math.max(good, bad)),
   ]);
-  console.log(`RANGE: https://chromium.googlesource.com/chromium/src/+log/${fromSha}..${toSha}`);
-})(scriptPath, argv.good, argv.bad);
+  console.log(
+    `RANGE: https://chromium.googlesource.com/chromium/src/+log/${fromSha}..${toSha}`
+  );
+})(scriptPath, argv.good, argv.bad, argv['unit-test'], argv['no-cache']);
 
 function runScript(scriptPath, revisionInfo) {
   const log = debug('bisect:runscript');
@@ -121,8 +164,25 @@ function runScript(scriptPath, revisionInfo) {
     },
   });
   return new Promise((resolve, reject) => {
-    child.on('error', err => reject(err));
-    child.on('exit', code => resolve(code));
+    child.on('error', (err) => reject(err));
+    child.on('exit', (code) => resolve(code));
+  });
+}
+
+function runUnitTest(pattern, revisionInfo) {
+  const log = debug('bisect:rununittest');
+  log('Running unit test');
+  const child = spawn('npm run unit', ['--', '-g', pattern], {
+    stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
+    shell: true,
+    env: {
+      ...process.env,
+      PUPPETEER_EXECUTABLE_PATH: revisionInfo.executablePath,
+    },
+  });
+  return new Promise((resolve, reject) => {
+    child.on('error', (err) => reject(err));
+    child.on('exit', (code) => resolve(code));
   });
 }
 
@@ -131,20 +191,28 @@ async function downloadRevision(revision) {
   log(`Downloading ${revision}`);
   let progressBar = null;
   let lastDownloadedBytes = 0;
-  return await browserFetcher.download(revision, (downloadedBytes, totalBytes) => {
-    if (!progressBar) {
-      const ProgressBar = require('progress');
-      progressBar = new ProgressBar(`- downloading Chromium r${revision} - ${toMegabytes(totalBytes)} [:bar] :percent :etas `, {
-        complete: '=',
-        incomplete: ' ',
-        width: 20,
-        total: totalBytes,
-      });
+  return await browserFetcher.download(
+    revision,
+    (downloadedBytes, totalBytes) => {
+      if (!progressBar) {
+        const ProgressBar = require('progress');
+        progressBar = new ProgressBar(
+          `- downloading Chromium r${revision} - ${toMegabytes(
+            totalBytes
+          )} [:bar] :percent :etas `,
+          {
+            complete: '=',
+            incomplete: ' ',
+            width: 20,
+            total: totalBytes,
+          }
+        );
+      }
+      const delta = downloadedBytes - lastDownloadedBytes;
+      lastDownloadedBytes = downloadedBytes;
+      progressBar.tick(delta);
     }
-    const delta = downloadedBytes - lastDownloadedBytes;
-    lastDownloadedBytes = downloadedBytes;
-    progressBar.tick(delta);
-  });
+  );
   function toMegabytes(bytes) {
     const mb = bytes / 1024 / 1024;
     return `${Math.round(mb * 10) / 10} Mb`;
@@ -156,8 +224,7 @@ async function findDownloadableRevision(rev, from, to) {
   const min = Math.min(from, to);
   const max = Math.max(from, to);
   log(`Looking around ${rev} from [${min}, ${max}]`);
-  if (await browserFetcher.canDownload(rev))
-    return rev;
+  if (await browserFetcher.canDownload(rev)) return rev;
   let down = rev;
   let up = rev;
   while (min <= down || up <= max) {
@@ -165,10 +232,8 @@ async function findDownloadableRevision(rev, from, to) {
       down > min ? probe(--down) : Promise.resolve(false),
       up < max ? probe(++up) : Promise.resolve(false),
     ]);
-    if (downOk)
-      return down;
-    if (upOk)
-      return up;
+    if (downOk) return down;
+    if (upOk) return up;
   }
   return null;
 
@@ -180,25 +245,44 @@ async function findDownloadableRevision(rev, from, to) {
 }
 
 async function revisionToSha(revision) {
-  const json = await fetchJSON('https://cr-rev.appspot.com/_ah/api/crrev/v1/redirect/' + revision);
+  const json = await fetchJSON(
+    'https://cr-rev.appspot.com/_ah/api/crrev/v1/redirect/' + revision
+  );
   return json.git_sha;
 }
 
 function fetchJSON(url) {
   return new Promise((resolve, reject) => {
-    const agent = url.startsWith('https://') ? require('https') : require('http');
+    const agent = url.startsWith('https://')
+      ? require('https')
+      : require('http');
     const options = URL.parse(url);
     options.method = 'GET';
     options.headers = {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     };
-    const req = agent.request(options, function(res) {
+    const req = agent.request(options, function (res) {
       let result = '';
       res.setEncoding('utf8');
-      res.on('data', chunk => result += chunk);
+      res.on('data', (chunk) => (result += chunk));
       res.on('end', () => resolve(JSON.parse(result)));
     });
-    req.on('error', err => reject(err));
+    req.on('error', (err) => reject(err));
     req.end();
   });
+}
+
+function getChromiumRevision(gitRevision = null) {
+  const fileName = 'src/revisions.ts';
+  const command = gitRevision
+    ? `git show ${gitRevision}:${fileName}`
+    : `cat ${fileName}`;
+  const result = execSync(command, {
+    encoding: 'utf8',
+    shell: true,
+  });
+
+  const m = result.match(/chromium: '(\d+)'/);
+  if (!m) return null;
+  return parseInt(m[1], 10);
 }

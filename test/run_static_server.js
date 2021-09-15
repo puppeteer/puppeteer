@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 const path = require('path');
-const {TestServer} = require('../utils/testserver/');
+const { TestServer } = require('../utils/testserver/');
 
 const port = 8907;
 const httpsPort = 8908;
@@ -24,7 +24,7 @@ const cachedPath = path.join(__dirname, 'assets', 'cached');
 
 Promise.all([
   TestServer.create(assetsPath, port),
-  TestServer.createHTTPS(assetsPath, httpsPort)
+  TestServer.createHTTPS(assetsPath, httpsPort),
 ]).then(([server, httpsServer]) => {
   server.enableHTTPCache(cachedPath);
   httpsServer.enableHTTPCache(cachedPath);

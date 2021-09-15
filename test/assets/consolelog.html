@@ -5,7 +5,13 @@
   </head>
   <body>
     <script>
-      console.log('yellow')
+      function foo() {
+        console.log('yellow')
+      }
+      function bar() {
+        foo();
+      }
+      bar();
     </script>
   </body>
 </html>

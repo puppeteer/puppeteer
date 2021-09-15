@@ -18,7 +18,7 @@
 
 const puppeteer = require('puppeteer');
 
-(async() => {
+(async () => {
   const browser = await puppeteer.launch({
     // Launch chromium using a proxy server on port 9876.
     // More on proxying:
@@ -27,7 +27,7 @@ const puppeteer = require('puppeteer');
       '--proxy-server=127.0.0.1:9876',
       // Use proxy for localhost URLs
       '--proxy-bypass-list=<-loopback>',
-    ]
+    ],
   });
   const page = await browser.newPage();
   await page.goto('https://google.com');

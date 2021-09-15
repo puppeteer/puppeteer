@@ -1,3 +1,0 @@
-[MarkDown] Non-existing class found: Bar
-[MarkDown] Non-existing class found: Baz
-[MarkDown] Class not found: Other
