@@ -56,7 +56,7 @@ describeChromeOnly('Tracing', function () {
   it('should run with custom categories if provided', async () => {
     await page.tracing.start({
       path: outputFile,
-      categories: ['-*', 'disabled-by-default-v8.cpu_profiler.hires'],
+      categories: ['-*', 'disabled-by-default-devtools.timeline.frame'],
     });
     await page.tracing.stop();
 
@@ -65,7 +65,7 @@ describeChromeOnly('Tracing', function () {
     );
     const traceConfig = JSON.parse(traceJson.metadata['trace-config']);
     expect(traceConfig.included_categories).toEqual([
-      'disabled-by-default-v8.cpu_profiler.hires',
+      'disabled-by-default-devtools.timeline.frame',
     ]);
     expect(traceConfig.excluded_categories).toEqual(['*']);
     expect(traceJson.traceEvents).not.toContainEqual(
