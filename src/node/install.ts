@@ -21,7 +21,9 @@ import URL from 'url';
 import puppeteer from '../node.js';
 import { PUPPETEER_REVISIONS } from '../revisions.js';
 import { PuppeteerNode } from './Puppeteer.js';
-import ProxyAgent from 'https-proxy-agent';
+import createHttpsProxyAgent, {
+  HttpsProxyAgentOptions,
+} from 'https-proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
 
 const supportedProducts = {
@@ -164,9 +166,9 @@ export async function downloadBrowser(): Promise<void> {
       const proxyOptions = {
         ...parsedProxyURL,
         secureProxy: parsedProxyURL.protocol === 'https:',
-      } as ProxyAgent.HttpsProxyAgentOptions;
+      } as HttpsProxyAgentOptions;
 
-      requestOptions.agent = new ProxyAgent(proxyOptions);
+      requestOptions.agent = createHttpsProxyAgent(proxyOptions);
       requestOptions.rejectUnauthorized = false;
     }
 
