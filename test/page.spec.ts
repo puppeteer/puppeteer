@@ -1018,13 +1018,12 @@ describe('Page', function () {
     });
     it('should fallback to default export when passed a module object', async () => {
       const { page, server } = getTestState();
+      const moduleObject = {
+        default: function (a, b) {
+          return a * b;
+        },
+      };
       await page.goto(server.EMPTY_PAGE);
-      var moduleObject = {
-        default: function(a, b) {
-                  return a * b;
-                }
-              };
-      // @ts-expect-error
       await page.exposeFunction('compute', moduleObject);
       const result = await page.evaluate(async function () {
         return await globalThis.compute(9, 4);
@@ -1452,9 +1451,6 @@ describe('Page', function () {
         .catch((error_) => (error = error_));
       expect(error).toBeTruthy();
     });
-
-
-
   });
 
   describe('Page.addStyleTag', function () {
