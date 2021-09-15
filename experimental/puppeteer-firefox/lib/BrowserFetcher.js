@@ -27,20 +27,20 @@ const ProxyAgent = require('https-proxy-agent');
 // @ts-ignore
 const getProxyForUrl = require('proxy-from-env').getProxyForUrl;
 
-const DEFAULT_DOWNLOAD_HOST = 'https://storage.googleapis.com';
-
 const downloadURLs = {
   chromium: {
+    host: 'https://storage.googleapis.com',
     linux: '%s/chromium-browser-snapshots/Linux_x64/%s/%s.zip',
     mac: '%s/chromium-browser-snapshots/Mac/%s/%s.zip',
     win32: '%s/chromium-browser-snapshots/Win/%s/%s.zip',
     win64: '%s/chromium-browser-snapshots/Win_x64/%s/%s.zip',
   },
   firefox: {
-    linux: '%s/juggler-builds/%s/%s.zip',
-    mac: '%s/juggler-builds/%s/%s.zip',
-    win32: '%s/juggler-builds/%s/%s.zip',
-    win64: '%s/juggler-builds/%s/%s.zip',
+    host: 'https://github.com/puppeteer/juggler/releases',
+    linux: '%s/download/%s/%s.zip',
+    mac: '%s/download/%s/%s.zip',
+    win32: '%s/download/%s/%s.zip',
+    win64: '%s/download/%s/%s.zip',
   },
 };
 
@@ -79,7 +79,8 @@ function archiveName(product, platform, revision) {
  * @return {string}
  */
 function downloadURL(product, platform, host, revision) {
-  return util.format(downloadURLs[product][platform], host, revision, archiveName(product, platform, revision));
+  const url = util.format(downloadURLs[product][platform], host, revision, archiveName(product, platform, revision));
+  return url;
 }
 
 const readdirAsync = helper.promisify(fs.readdir.bind(fs));
@@ -103,7 +104,7 @@ class BrowserFetcher {
     this._product = (options.product || 'chromium').toLowerCase();
     assert(this._product === 'chromium' || this._product === 'firefox', `Unkown product: "${options.product}"`);
     this._downloadsFolder = options.path || path.join(projectRoot, '.local-browser');
-    this._downloadHost = options.host || DEFAULT_DOWNLOAD_HOST;
+    this._downloadHost = options.host || downloadURLs[this._product].host;
     this._platform = options.platform || '';
     if (!this._platform) {
       const platform = os.platform();
@@ -288,13 +289,12 @@ function downloadFile(url, destinationPath, progressCallback) {
  * @param {string} folderPath
  * @return {!Promise<?Error>}
  */
-function extractZip(zipPath, folderPath) {
-  return new Promise((fulfill, reject) => extract(zipPath, {dir: folderPath}, err => {
-    if (err)
-      reject(err);
-    else
-      fulfill();
-  }));
+async function extractZip(zipPath, folderPath) {
+  try {
+    await extract(zipPath, {dir: folderPath});
+  } catch (error) {
+    return error;
+  }
 }
 
 function httpRequest(url, method, response) {
