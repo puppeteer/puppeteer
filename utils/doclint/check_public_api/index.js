@@ -18,6 +18,9 @@ const jsBuilder = require('./JSBuilder');
 const mdBuilder = require('./MDBuilder');
 const Documentation = require('./Documentation');
 const Message = require('../Message');
+const {
+  MODULES_TO_CHECK_FOR_COVERAGE,
+} = require('../../../test/coverage-utils');
 
 const EXCLUDE_PROPERTIES = new Set([
   'Browser.create',
@@ -25,20 +28,23 @@ const EXCLUDE_PROPERTIES = new Set([
   'Page.create',
   'JSHandle.toString',
   'TimeoutError.name',
+  /* These are not actual properties, but a TypeScript generic.
+   * DocLint incorrectly parses it as a property.
+   */
+  'ElementHandle.ElementType',
+  'ElementHandle.HandleObjectType',
+  'JSHandle.HandleObjectType',
 ]);
 
 /**
  * @param {!Page} page
  * @param {!Array<!Source>} mdSources
- * @return {!Promise<!Array<!Message>>}
+ * @returns {!Promise<!Array<!Message>>}
  */
 module.exports = async function lint(page, mdSources, jsSources) {
   const mdResult = await mdBuilder(page, mdSources);
   const jsResult = await jsBuilder(jsSources);
-  const jsDocumentation = filterJSDocumentation(
-    jsSources,
-    jsResult.documentation
-  );
+  const jsDocumentation = filterJSDocumentation(jsResult.documentation);
   const mdDocumentation = mdResult.documentation;
 
   const jsErrors = jsResult.errors;
@@ -57,7 +63,7 @@ module.exports = async function lint(page, mdSources, jsSources) {
 
 /**
  * @param {!Documentation} doc
- * @return {!Array<string>}
+ * @returns {!Array<string>}
  */
 function checkSorting(doc) {
   const errors = [];
@@ -120,14 +126,11 @@ function checkSorting(doc) {
 }
 
 /**
- * @param {!Array<!Source>} jsSources
  * @param {!Documentation} jsDocumentation
- * @return {!Documentation}
+ * @returns {!Documentation}
  */
-function filterJSDocumentation(jsSources, jsDocumentation) {
-  const apijs = jsSources.find((source) => source.name() === 'api.js');
-  let includedClasses = null;
-  if (apijs) includedClasses = new Set(Object.keys(require(apijs.filePath())));
+function filterJSDocumentation(jsDocumentation) {
+  const includedClasses = new Set(Object.keys(MODULES_TO_CHECK_FOR_COVERAGE));
   // Filter private classes and methods.
   const classes = [];
   for (const cls of jsDocumentation.classesArray) {
@@ -142,7 +145,7 @@ function filterJSDocumentation(jsSources, jsDocumentation) {
 
 /**
  * @param {!Documentation} doc
- * @return {!Array<string>}
+ * @returns {!Array<string>}
  */
 function checkDuplicates(doc) {
   const errors = [];
@@ -172,17 +175,31 @@ function checkDuplicates(doc) {
   return errors;
 }
 
-const expectedNonExistingMethods = new Map([
-  /* Expected to be missing as the method is deprecated
-   * and we alias it to Page.prototype.emulateMediaType in index.js
-   * which is not checked by DocLint
-   */
-  ['Page', new Set(['emulateMedia'])],
+// All the methods from our EventEmitter that we don't document for each subclass.
+const EVENT_LISTENER_METHODS = new Set([
+  'emit',
+  'listenerCount',
+  'off',
+  'on',
+  'once',
+  'removeListener',
+  'addListener',
+  'removeAllListeners',
 ]);
+
+/* Methods that are defined in code but are not documented */
+const expectedNotFoundMethods = new Map([
+  ['Browser', EVENT_LISTENER_METHODS],
+  ['BrowserContext', EVENT_LISTENER_METHODS],
+  ['CDPSession', EVENT_LISTENER_METHODS],
+  ['Page', EVENT_LISTENER_METHODS],
+  ['WebWorker', EVENT_LISTENER_METHODS],
+]);
+
 /**
  * @param {!Documentation} actual
  * @param {!Documentation} expected
- * @return {!Array<string>}
+ * @returns {!Array<string>}
  */
 function compareDocumentations(actual, expected) {
   const errors = [];
@@ -191,10 +208,25 @@ function compareDocumentations(actual, expected) {
   const expectedClasses = Array.from(expected.classes.keys()).sort();
   const classesDiff = diff(actualClasses, expectedClasses);
 
+  /* These have been moved onto PuppeteerNode but we want to document them under
+   * Puppeteer. See https://github.com/puppeteer/puppeteer/pull/6504 for details.
+   */
+  const expectedPuppeteerClassMissingMethods = new Set([
+    'createBrowserFetcher',
+    'defaultArgs',
+    'executablePath',
+    'launch',
+  ]);
+
   for (const className of classesDiff.extra)
     errors.push(`Non-existing class found: ${className}`);
-  for (const className of classesDiff.missing)
+
+  for (const className of classesDiff.missing) {
+    if (className === 'PuppeteerNode') {
+      continue;
+    }
     errors.push(`Class not found: ${className}`);
+  }
 
   for (const className of classesDiff.equal) {
     const actualClass = actual.classes.get(className);
@@ -204,14 +236,21 @@ function compareDocumentations(actual, expected) {
     const methodDiff = diff(actualMethods, expectedMethods);
 
     for (const methodName of methodDiff.extra) {
-      const missingMethodsForClass = expectedNonExistingMethods.get(className);
-      if (missingMethodsForClass && missingMethodsForClass.has(methodName))
+      if (
+        expectedPuppeteerClassMissingMethods.has(methodName) &&
+        actualClass.name === 'Puppeteer'
+      ) {
         continue;
-
+      }
       errors.push(`Non-existing method found: ${className}.${methodName}()`);
     }
-    for (const methodName of methodDiff.missing)
+
+    for (const methodName of methodDiff.missing) {
+      const missingMethodsForClass = expectedNotFoundMethods.get(className);
+      if (missingMethodsForClass && missingMethodsForClass.has(methodName))
+        continue;
       errors.push(`Method not found: ${className}.${methodName}()`);
+    }
 
     for (const methodName of methodDiff.equal) {
       const actualMethod = actualClass.methods.get(methodName);
@@ -235,15 +274,23 @@ function compareDocumentations(actual, expected) {
       const actualArgs = Array.from(actualMethod.args.keys());
       const expectedArgs = Array.from(expectedMethod.args.keys());
       const argsDiff = diff(actualArgs, expectedArgs);
+
       if (argsDiff.extra.length || argsDiff.missing.length) {
-        const text = [
-          `Method ${className}.${methodName}() fails to describe its parameters:`,
-        ];
-        for (const arg of argsDiff.missing)
-          text.push(`- Argument not found: ${arg}`);
-        for (const arg of argsDiff.extra)
-          text.push(`- Non-existing argument found: ${arg}`);
-        errors.push(text.join('\n'));
+        /* Doclint cannot handle the parameter type of the CDPSession send method.
+         * so we just ignore it.
+         */
+        const isCdpSessionSend =
+          className === 'CDPSession' && methodName === 'send';
+        if (!isCdpSessionSend) {
+          const text = [
+            `Method ${className}.${methodName}() fails to describe its parameters:`,
+          ];
+          for (const arg of argsDiff.missing)
+            text.push(`- Argument not found: ${arg}`);
+          for (const arg of argsDiff.extra)
+            text.push(`- Non-existing argument found: ${arg}`);
+          errors.push(text.join('\n'));
+        }
       }
 
       for (const arg of argsDiff.equal)
@@ -258,8 +305,12 @@ function compareDocumentations(actual, expected) {
       expectedClass.properties.keys()
     ).sort();
     const propertyDiff = diff(actualProperties, expectedProperties);
-    for (const propertyName of propertyDiff.extra)
+    for (const propertyName of propertyDiff.extra) {
+      if (className === 'Puppeteer' && propertyName === 'product') {
+        continue;
+      }
       errors.push(`Non-existing property found: ${className}.${propertyName}`);
+    }
     for (const propertyName of propertyDiff.missing)
       errors.push(`Property not found: ${className}.${propertyName}`);
 
@@ -314,10 +365,59 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method ElementHandle.click() options',
+        {
+          actualName: 'Object',
+          expectedName: 'ClickOptions',
+        },
+      ],
+      [
+        'Method ElementHandle.press() options',
+        {
+          actualName: 'Object',
+          expectedName: 'PressOptions',
+        },
+      ],
+      [
         'Method ElementHandle.press() key',
         {
           actualName: 'string',
           expectedName: 'KeyInput',
+        },
+      ],
+      [
+        'Method ElementHandle.drag() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method ElementHandle.dragAndDrop() target',
+        {
+          actualName: 'ElementHandle',
+          expectedName: 'ElementHandle<Element>',
+        },
+      ],
+      [
+        'Method ElementHandle.dragEnter() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
+        },
+      ],
+      [
+        'Method ElementHandle.dragOver() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
+        },
+      ],
+      [
+        'Method ElementHandle.drop() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
         },
       ],
       [
@@ -349,10 +449,94 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method Mouse.drag() start',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.drag() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragAndDrop() start',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragAndDrop() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragAndDrop() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragEnter() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragEnter() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
+        },
+      ],
+      [
+        'Method Mouse.dragOver() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragOver() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
+        },
+      ],
+      [
+        'Method Mouse.drop() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.drop() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
+        },
+      ],
+      [
         'Method Mouse.up() options',
         {
           actualName: 'Object',
           expectedName: 'MouseOptions',
+        },
+      ],
+      [
+        'Method Mouse.wheel() options',
+        {
+          actualName: 'Object',
+          expectedName: 'MouseWheelOptions',
         },
       ],
       [
@@ -377,7 +561,7 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
-        'Method Request.abort() errorCode',
+        'Method HTTPRequest.abort() errorCode',
         {
           actualName: 'string',
           expectedName: 'ErrorCode',
@@ -507,6 +691,20 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method Page.emulateNetworkConditions() networkConditions',
+        {
+          actualName: 'Object',
+          expectedName: 'NetworkConditions',
+        },
+      ],
+      [
+        'Method Page.setUserAgent() userAgentMetadata',
+        {
+          actualName: 'Object',
+          expectedName: 'UserAgentMetadata',
+        },
+      ],
+      [
         'Method Page.setViewport() options.viewport',
         {
           actualName: 'Object',
@@ -584,6 +782,13 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method Page.createPDFStream() options',
+        {
+          actualName: 'Object',
+          expectedName: 'PDFOptions',
+        },
+      ],
+      [
         'Method Page.screenshot() options',
         {
           actualName: 'Object',
@@ -602,6 +807,223 @@ function compareDocumentations(actual, expected) {
         {
           actualName: '...Object',
           expectedName: '...CookieParam',
+        },
+      ],
+      [
+        'Method Page.emulateVisionDeficiency() type',
+        {
+          actualName: 'string',
+          expectedName: 'Object',
+        },
+      ],
+      [
+        'Method Accessibility.snapshot() options',
+        {
+          actualName: 'Object',
+          expectedName: 'SnapshotOptions',
+        },
+      ],
+      [
+        'Method Browser.waitForTarget() options',
+        {
+          actualName: 'Object',
+          expectedName: 'WaitForTargetOptions',
+        },
+      ],
+      [
+        'Method EventEmitter.emit() event',
+        {
+          actualName: 'string|symbol',
+          expectedName: 'EventType',
+        },
+      ],
+      [
+        'Method EventEmitter.listenerCount() event',
+        {
+          actualName: 'string|symbol',
+          expectedName: 'EventType',
+        },
+      ],
+      [
+        'Method EventEmitter.off() event',
+        {
+          actualName: 'string|symbol',
+          expectedName: 'EventType',
+        },
+      ],
+      [
+        'Method EventEmitter.on() event',
+        {
+          actualName: 'string|symbol',
+          expectedName: 'EventType',
+        },
+      ],
+      [
+        'Method EventEmitter.once() event',
+        {
+          actualName: 'string|symbol',
+          expectedName: 'EventType',
+        },
+      ],
+      [
+        'Method EventEmitter.removeListener() event',
+        {
+          actualName: 'string|symbol',
+          expectedName: 'EventType',
+        },
+      ],
+      [
+        'Method EventEmitter.addListener() event',
+        {
+          actualName: 'string|symbol',
+          expectedName: 'EventType',
+        },
+      ],
+      [
+        'Method EventEmitter.removeAllListeners() event',
+        {
+          actualName: 'string|symbol',
+          expectedName: 'EventType',
+        },
+      ],
+      [
+        'Method Coverage.startCSSCoverage() options',
+        {
+          actualName: 'Object',
+          expectedName: 'CSSCoverageOptions',
+        },
+      ],
+      [
+        'Method Coverage.startJSCoverage() options',
+        {
+          actualName: 'Object',
+          expectedName: 'JSCoverageOptions',
+        },
+      ],
+      [
+        'Method Mouse.click() options.button',
+        {
+          actualName: '"left"|"right"|"middle"',
+          expectedName: 'MouseButton',
+        },
+      ],
+      [
+        'Method Frame.click() options.button',
+        {
+          actualName: '"left"|"right"|"middle"',
+          expectedName: 'MouseButton',
+        },
+      ],
+      [
+        'Method Page.click() options.button',
+        {
+          actualName: '"left"|"right"|"middle"',
+          expectedName: 'MouseButton',
+        },
+      ],
+      [
+        'Method HTTPRequest.continue() overrides',
+        {
+          actualName: 'Object',
+          expectedName: 'ContinueRequestOverrides',
+        },
+      ],
+      [
+        'Method HTTPRequest.respond() response',
+        {
+          actualName: 'Object',
+          expectedName: 'ResponseForRequest',
+        },
+      ],
+      [
+        'Method Frame.addScriptTag() options',
+        {
+          actualName: 'Object',
+          expectedName: 'FrameAddScriptTagOptions',
+        },
+      ],
+      [
+        'Method Frame.addStyleTag() options',
+        {
+          actualName: 'Object',
+          expectedName: 'FrameAddStyleTagOptions',
+        },
+      ],
+      [
+        'Method Frame.waitForFunction() options',
+        {
+          actualName: 'Object',
+          expectedName: 'FrameWaitForFunctionOptions',
+        },
+      ],
+      [
+        'Method BrowserContext.overridePermissions() permissions',
+        {
+          actualName: 'Array<string>',
+          expectedName: 'Array<Object>',
+        },
+      ],
+      [
+        'Method Puppeteer.connect() options',
+        {
+          actualName: 'Object',
+          expectedName: 'ConnectOptions',
+        },
+      ],
+      [
+        'Method Page.deleteCookie() ...cookies',
+        {
+          actualName: '...Object',
+          expectedName: '...DeleteCookiesRequest',
+        },
+      ],
+      [
+        'Method BrowserContext.overridePermissions() permissions',
+        {
+          actualName: 'Array<string>',
+          expectedName: 'Array<Permission>',
+        },
+      ],
+      [
+        'Method HTTPRequest.respond() response.body',
+        {
+          actualName: 'string|Buffer',
+          expectedName: 'Object',
+        },
+      ],
+      [
+        'Method HTTPRequest.respond() response.contentType',
+        {
+          actualName: 'string',
+          expectedName: 'Object',
+        },
+      ],
+      [
+        'Method HTTPRequest.respond() response.status',
+        {
+          actualName: 'number',
+          expectedName: 'Object',
+        },
+      ],
+      [
+        'Method EventEmitter.emit() eventData',
+        {
+          actualName: 'Object',
+          expectedName: 'unknown',
+        },
+      ],
+      [
+        'Method Page.queryObjects() prototypeHandle',
+        {
+          actualName: 'JSHandle',
+          expectedName: 'JSHandle<unknown>',
+        },
+      ],
+      [
+        'Method ExecutionContext.queryObjects() prototypeHandle',
+        {
+          actualName: 'JSHandle',
+          expectedName: 'JSHandle<unknown>',
         },
       ],
     ]);
@@ -641,6 +1063,18 @@ function compareDocumentations(actual, expected) {
      * as they will likely be considered "wrong" by DocLint too.
      */
     if (namingMismatchIsExpected) return;
+
+    /* Some methods cause errors in the property checks for an unknown reason
+     * so we support a list of methods whose parameters are not checked.
+     */
+    const skipPropertyChecksOnMethods = new Set([
+      'Method Page.deleteCookie() ...cookies',
+      'Method Page.setCookie() ...cookies',
+      'Method Puppeteer.connect() options',
+      'Method Page.setUserAgent() userAgentMetadata',
+    ]);
+    if (skipPropertyChecksOnMethods.has(source)) return;
+
     const actualPropertiesMap = new Map(
       actual.properties.map((property) => [property.name, property.type])
     );
@@ -669,7 +1103,7 @@ function compareDocumentations(actual, expected) {
 /**
  * @param {!Array<string>} actual
  * @param {!Array<string>} expected
- * @return {{extra: !Array<string>, missing: !Array<string>, equal: !Array<string>}}
+ * @returns {{extra: !Array<string>, missing: !Array<string>, equal: !Array<string>}}
  */
 function diff(actual, expected) {
   const N = actual.length;

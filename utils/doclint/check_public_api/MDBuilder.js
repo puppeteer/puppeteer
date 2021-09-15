@@ -21,7 +21,7 @@ class MDOutline {
   /**
    * @param {!Page} page
    * @param {string} text
-   * @return {!MDOutline}
+   * @returns {!MDOutline}
    */
   static async create(page, text) {
     // Render markdown as HTML.
@@ -86,7 +86,7 @@ class MDOutline {
 
       /**
        * @param {string} str
-       * @return {string}
+       * @returns {string}
        */
       function findType(str) {
         const start = str.indexOf('<') + 1;
@@ -227,7 +227,7 @@ class MDOutline {
       /**
        * @param {!Node} fromInclusive
        * @param {!Node} toExclusive
-       * @return {!DocumentFragment}
+       * @returns {!DocumentFragment}
        */
       function extractSiblingsIntoFragment(fromInclusive, toExclusive) {
         const fragment = document.createDocumentFragment();
@@ -387,7 +387,7 @@ class MDOutline {
 /**
  * @param {!Page} page
  * @param {!Array<!Source>} sources
- * @return {!Promise<{documentation: !Documentation, errors: !Array<string>}>}
+ * @returns {!Promise<{documentation: !Documentation, errors: !Array<string>}>}
  */
 module.exports = async function (page, sources) {
   const classes = [];

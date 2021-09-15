@@ -18,9 +18,15 @@ const base = require('./base');
 
 module.exports = {
   ...base,
-  file: ['./test/mocha-utils.js'],
-  spec: 'test/*.spec.js',
-  // retry twice more, so we run each test up to 3 times if needed.
-  retries: 2,
+  require: [
+    './test/mocha-ts-require',
+    './test/mocha-utils.ts',
+    'source-map-support/register',
+  ],
+  spec: 'test/*.spec.ts',
+  extension: ['js', 'ts'],
+  retries: process.env.CI ? 2 : 0,
+  parallel: !!process.env.PARALLEL,
   timeout: 25 * 1000,
+  reporter: process.env.CI ? 'spec' : 'dot',
 };

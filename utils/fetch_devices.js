@@ -20,7 +20,7 @@ const fs = require('fs');
 const path = require('path');
 const puppeteer = require('..');
 const DEVICES_URL =
-  'https://raw.githubusercontent.com/ChromeDevTools/devtools-frontend/master/front_end/emulated_devices/module.json';
+  'https://raw.githubusercontent.com/ChromeDevTools/devtools-frontend/HEAD/front_end/emulated_devices/module.json';
 
 const template = `/**
  * Copyright 2017 Google Inc. All rights reserved.
@@ -123,7 +123,7 @@ async function main(url) {
  * @param {string} deviceName
  * @param {*} descriptor
  * @param {boolean} landscape
- * @return {!Object}
+ * @returns {!Object}
  */
 function createDevice(chromeVersion, deviceName, descriptor, landscape) {
   const devicePayload = loadFromJSONV1(descriptor);
@@ -148,7 +148,7 @@ function createDevice(chromeVersion, deviceName, descriptor, landscape) {
 
 /**
  * @param {*} json
- * @return {?Object}
+ * @returns {?Object}
  */
 function loadFromJSONV1(json) {
   /**
@@ -156,7 +156,7 @@ function loadFromJSONV1(json) {
    * @param {string} key
    * @param {string} type
    * @param {*=} defaultValue
-   * @return {*}
+   * @returns {*}
    */
   function parseValue(object, key, type, defaultValue) {
     if (
@@ -184,7 +184,7 @@ function loadFromJSONV1(json) {
   /**
    * @param {*} object
    * @param {string} key
-   * @return {number}
+   * @returns {number}
    */
   function parseIntValue(object, key) {
     const value = /** @type {number} */ (parseValue(object, key, 'number'));
@@ -195,7 +195,7 @@ function loadFromJSONV1(json) {
 
   /**
    * @param {*} json
-   * @return {!{width: number, height: number}}
+   * @returns {!{width: number, height: number}}
    */
   function parseOrientation(json) {
     const result = {};
@@ -222,11 +222,9 @@ function loadFromJSONV1(json) {
 
   const result = {};
   result.type = /** @type {string} */ (parseValue(json, 'type', 'string'));
-  result.userAgent = /** @type {string} */ (parseValue(
-    json,
-    'user-agent',
-    'string'
-  ));
+  result.userAgent = /** @type {string} */ (
+    parseValue(json, 'user-agent', 'string')
+  );
 
   const capabilities = parseValue(json, 'capabilities', 'object', []);
   if (!Array.isArray(capabilities))
@@ -238,11 +236,9 @@ function loadFromJSONV1(json) {
     result.capabilities.push(capabilities[i]);
   }
 
-  result.deviceScaleFactor = /** @type {number} */ (parseValue(
-    json['screen'],
-    'device-pixel-ratio',
-    'number'
-  ));
+  result.deviceScaleFactor = /** @type {number} */ (
+    parseValue(json['screen'], 'device-pixel-ratio', 'number')
+  );
   if (result.deviceScaleFactor < 0 || result.deviceScaleFactor > 100)
     throw new Error(
       'Emulated device has wrong deviceScaleFactor: ' + result.deviceScaleFactor
@@ -259,7 +255,7 @@ function loadFromJSONV1(json) {
 
 /**
  * @param {url}
- * @return {!Promise}
+ * @returns {!Promise}
  */
 function httpGET(url) {
   let fulfill, reject;

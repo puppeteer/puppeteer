@@ -100,7 +100,7 @@ Documentation.Member = class {
    * @param {string} name
    * @param {!Array<!Documentation.Member>} argsArray
    * @param {?Documentation.Type} returnType
-   * @return {!Documentation.Member}
+   * @returns {!Documentation.Member}
    */
   static createMethod(name, argsArray, returnType, returnComment, comment) {
     return new Documentation.Member(
@@ -118,7 +118,7 @@ Documentation.Member = class {
    * @param {!Documentation.Type} type
    * @param {string=} comment
    * @param {boolean=} required
-   * @return {!Documentation.Member}
+   * @returns {!Documentation.Member}
    */
   static createProperty(name, type, comment, required) {
     return new Documentation.Member(
@@ -136,7 +136,7 @@ Documentation.Member = class {
    * @param {string} name
    * @param {?Documentation.Type=} type
    * @param {string=} comment
-   * @return {!Documentation.Member}
+   * @returns {!Documentation.Member}
    */
   static createEvent(name, type = null, comment) {
     return new Documentation.Member('event', name, type, [], comment);

@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "checkJs": true,
+    "allowJs": true,
+    "strict": true,
+    "outDir": "dist",
+    "moduleResolution": "node"
+  },
+  "files": ["good.js", "bad.js"]
+}

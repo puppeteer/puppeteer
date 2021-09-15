@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Copyright 2017 Google Inc. All rights reserved.
  *
@@ -33,7 +34,7 @@ const GoldenComparators = {
  * @param {?Object} actualBuffer
  * @param {!Buffer} expectedBuffer
  * @param {!string} mimeType
- * @return {?{diff: (!Object:undefined), errorMessage: (string|undefined)}}
+ * @returns {?{diff: (!Object:undefined), errorMessage: (string|undefined)}}
  */
 function compareImages(actualBuffer, expectedBuffer, mimeType) {
   if (!actualBuffer || !(actualBuffer instanceof Buffer))
@@ -67,7 +68,7 @@ function compareImages(actualBuffer, expectedBuffer, mimeType) {
 /**
  * @param {?Object} actual
  * @param {!Buffer} expectedBuffer
- * @return {?{diff: (!Object:undefined), errorMessage: (string|undefined)}}
+ * @returns {?{diff: (!Object:undefined), errorMessage: (string|undefined)}}
  */
 function compareText(actual, expectedBuffer) {
   if (typeof actual !== 'string')
@@ -89,7 +90,7 @@ function compareText(actual, expectedBuffer) {
 /**
  * @param {?Object} actual
  * @param {string} goldenName
- * @return {!{pass: boolean, message: (undefined|string)}}
+ * @returns {!{pass: boolean, message: (undefined|string)}}
  */
 function compare(goldenPath, outputPath, actual, goldenName) {
   goldenPath = path.normalize(goldenPath);
@@ -149,7 +150,7 @@ function compare(goldenPath, outputPath, actual, goldenName) {
  * @param {string} filePath
  * @param {string} suffix
  * @param {string=} customExtension
- * @return {string}
+ * @returns {string}
  */
 function addSuffix(filePath, suffix, customExtension) {
   const dirname = path.dirname(filePath);

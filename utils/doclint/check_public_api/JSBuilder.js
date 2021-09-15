@@ -68,7 +68,7 @@ function checkSources(sources) {
   /**
    * @param {!Array<!Documentation.Class>} classes
    * @param {!Map<string, string>} inheritance
-   * @return {!Array<!Documentation.Class>}
+   * @returns {!Array<!Documentation.Class>}
    */
   function recreateClassesWithInheritance(classes, inheritance) {
     const classesByName = new Map(classes.map((cls) => [cls.name, cls]));
@@ -128,9 +128,19 @@ function checkSources(sources) {
     );
     const name = symbol.getName();
     if (symbol.valueDeclaration && symbol.valueDeclaration.dotDotDotToken) {
-      const innerType = serializeType(type.typeArguments[0], circular);
-      innerType.name = '...' + innerType.name;
-      return Documentation.Member.createProperty('...' + name, innerType);
+      try {
+        const innerType = serializeType(type.typeArguments[0], circular);
+        innerType.name = '...' + innerType.name;
+        return Documentation.Member.createProperty('...' + name, innerType);
+      } catch (error) {
+        /**
+         * DocLint struggles with the paramArgs type on CDPSession.send because
+         * it uses a complex type from the devtools-protocol method. Doclint
+         * isn't going to be here for much longer so we'll just silence this
+         * warning than try to add support which would warrant a huge rewrite.
+         */
+        if (name !== 'paramArgs') throw error;
+      }
     }
     return Documentation.Member.createProperty(
       name,
@@ -155,7 +165,7 @@ function checkSources(sources) {
 
   /**
    * @param {!ts.Type} type
-   * @return {!Documentation.Type}
+   * @returns {!Documentation.Type}
    */
   function serializeType(type, circular = []) {
     let typeName = checker.typeToString(type);
@@ -207,7 +217,7 @@ function checkSources(sources) {
 
   /**
    * @param {!ts.Symbol} symbol
-   * @return {boolean}
+   * @returns {boolean}
    */
   function symbolHasPrivateModifier(symbol) {
     const modifiers =
@@ -220,7 +230,7 @@ function checkSources(sources) {
   /**
    * @param {string} className
    * @param {!ts.Symbol} symbol
-   * @return {}
+   * @returns {}
    */
   function serializeClass(className, symbol, node) {
     /** @type {!Array<!Documentation.Member>} */
