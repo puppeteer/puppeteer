@@ -33,7 +33,7 @@ describe('waittask specs', function () {
      * tests. Until we remove this method we still want to ensure we don't break
      * it.
      */
-    beforeEach(() => sinon.stub(console, 'warn').callsFake(() => { }));
+    beforeEach(() => sinon.stub(console, 'warn').callsFake(() => {}));
 
     it('should wait for selector', async () => {
       const { page, server } = getTestState();
