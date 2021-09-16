@@ -477,6 +477,7 @@ There are many ways to get help on Puppeteer:
 
 - [bugtracker](https://github.com/puppeteer/puppeteer/issues)
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/puppeteer)
+- [Discord](https://discord.gg/tbY6tYTPUv)
 
 Make sure to search these channels before posting your question.
 
