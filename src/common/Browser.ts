@@ -56,7 +56,7 @@ const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map<
   ['clipboard-read', 'clipboardReadWrite'],
   ['clipboard-write', 'clipboardReadWrite'],
   ['payment-handler', 'paymentHandler'],
-  ['durable-storage', 'durableStorage'],
+  ['persistent-storage', 'durableStorage'],
   ['idle-detection', 'idleDetection'],
   // chrome-specific permissions we have.
   ['midi-sysex', 'midiSysex'],
@@ -80,7 +80,7 @@ export type Permission =
   | 'clipboard-read'
   | 'clipboard-write'
   | 'payment-handler'
-  | 'durable-storage'
+  | 'persistent-storage'
   | 'idle-detection'
   | 'midi-sysex';
 

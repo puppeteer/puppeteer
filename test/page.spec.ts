@@ -339,12 +339,13 @@ describe('Page', function () {
         await otherContext.close();
       }
     );
-    itFailsFirefox('should grant durable-storage', async () => {
+    itFailsFirefox('should grant persistent-storage', async () => {
       const { page, server, context } = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      await context.overridePermissions(server.EMPTY_PAGE, ['durable-storage']);
-      expect(await getPermission(page, 'durable-storage')).toBe('granted');
+      expect(await getPermission(page, 'persistent-storage')).not.toBe('granted');
+      await context.overridePermissions(server.EMPTY_PAGE, ['persistent-storage']);
+      expect(await getPermission(page, 'persistent-storage')).toBe('granted');
     });
   });
 
