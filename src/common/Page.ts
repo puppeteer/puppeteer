@@ -501,7 +501,7 @@ export class Page extends EventEmitter {
         // We still want to attach to workers for emitting events.
         // We still want to attach to iframes so sessions may interact with them.
         // We detach from all other types out of an abundance of caution.
-        // See https://source.chromium.org/chromium/chromium/src/+/master:content/browser/devtools/devtools_agent_host_impl.cc?q=f:devtools%20-f:out%20%22::kTypePage%5B%5D%22&ss=chromium
+        // See https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&q=f:devtools%20-f:out%20%22::kTypePage%5B%5D%22
         // for the complete list of available types.
         client
           .send('Target.detachFromTarget', {
@@ -1100,7 +1100,7 @@ export class Page extends EventEmitter {
        *
        * TODO(@jackfranklin): We could fix this by using overloads like
        * DefinitelyTyped does:
-       * https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/puppeteer/index.d.ts#L114
+       * https://github.com/DefinitelyTyped/DefinitelyTyped/blob/HEAD/types/puppeteer/index.d.ts#L114
        */
       ...args: unknown[]
     ) => ReturnType | Promise<ReturnType>,
@@ -1282,6 +1282,7 @@ export class Page extends EventEmitter {
     path?: string;
     content?: string;
     type?: string;
+    id?: string;
   }): Promise<ElementHandle> {
     return this.mainFrame().addScriptTag(options);
   }
@@ -1893,6 +1894,79 @@ export class Page extends EventEmitter {
       },
       timeout,
       this._sessionClosePromise()
+    );
+  }
+
+  /**
+   * @param options - Optional waiting parameters
+   * @returns Promise which resolves when network is idle
+   */
+  async waitForNetworkIdle(
+    options: { idleTime?: number; timeout?: number } = {}
+  ): Promise<void> {
+    const { idleTime = 500, timeout = this._timeoutSettings.timeout() } =
+      options;
+
+    const networkManager = this._frameManager.networkManager();
+
+    let idleResolveCallback;
+    const idlePromise = new Promise((resolve) => {
+      idleResolveCallback = resolve;
+    });
+
+    let abortRejectCallback;
+    const abortPromise = new Promise<Error>((_, reject) => {
+      abortRejectCallback = reject;
+    });
+
+    let idleTimer;
+    const onIdle = () => idleResolveCallback();
+
+    const cleanup = () => {
+      idleTimer && clearTimeout(idleTimer);
+      abortRejectCallback(new Error('abort'));
+    };
+
+    const evaluate = () => {
+      idleTimer && clearTimeout(idleTimer);
+      if (networkManager.numRequestsInProgress() === 0)
+        idleTimer = setTimeout(onIdle, idleTime);
+    };
+
+    evaluate();
+
+    const eventHandler = () => {
+      evaluate();
+      return false;
+    };
+
+    const listenToEvent = (event) =>
+      helper.waitForEvent(
+        networkManager,
+        event,
+        eventHandler,
+        timeout,
+        abortPromise
+      );
+
+    const eventPromises = [
+      listenToEvent(NetworkManagerEmittedEvents.Request),
+      listenToEvent(NetworkManagerEmittedEvents.Response),
+    ];
+
+    await Promise.race([
+      idlePromise,
+      ...eventPromises,
+      this._sessionClosePromise(),
+    ]).then(
+      (r) => {
+        cleanup();
+        return r;
+      },
+      (error) => {
+        cleanup();
+        throw error;
+      }
     );
   }
 
@@ -2677,6 +2751,7 @@ export class Page extends EventEmitter {
       preferCSSPageSize = false,
       margin = {},
       omitBackground = false,
+      timeout = 30000,
     } = options;
 
     let paperWidth = 8.5;
@@ -2701,7 +2776,7 @@ export class Page extends EventEmitter {
       await this._setTransparentBackgroundColor();
     }
 
-    const result = await this._client.send('Page.printToPDF', {
+    const printCommandPromise = this._client.send('Page.printToPDF', {
       transferMode: 'ReturnAsStream',
       landscape,
       displayHeaderFooter,
@@ -2718,6 +2793,12 @@ export class Page extends EventEmitter {
       pageRanges,
       preferCSSPageSize,
     });
+
+    const result = await helper.waitWithTimeout(
+      printCommandPromise,
+      'Page.printToPDF',
+      timeout
+    );
 
     if (omitBackground) {
       await this._resetDefaultBackgroundColor();
