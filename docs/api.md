@@ -1094,6 +1094,7 @@ Creates a new page in the browser context.
   - `'clipboard-read'`
   - `'clipboard-write'`
   - `'payment-handler'`
+  - `'persistent-storage'`
 - returns: <[Promise]>
 
 ```js
