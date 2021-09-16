@@ -343,8 +343,12 @@ describe('Page', function () {
       const { page, server, context } = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      expect(await getPermission(page, 'persistent-storage')).not.toBe('granted');
-      await context.overridePermissions(server.EMPTY_PAGE, ['persistent-storage']);
+      expect(await getPermission(page, 'persistent-storage')).not.toBe(
+        'granted'
+      );
+      await context.overridePermissions(server.EMPTY_PAGE, [
+        'persistent-storage',
+      ]);
       expect(await getPermission(page, 'persistent-storage')).toBe('granted');
     });
   });
