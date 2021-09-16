@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import fs from 'fs';
 import path from 'path';
 import expect from 'expect';
 import {
@@ -64,6 +65,34 @@ describe('input tests', function () {
           return promise.then(() => reader.result);
         }, input)
       ).toBe('contents of the file');
+    });
+
+    it('uploadFile should work with CSP', async () => {
+      const { page, server } = getTestState();
+
+      server.setCSP('/empty.html', 'default-src "none"');
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent(`<input type=file>`);
+      const input = await page.$('input');
+      await input.uploadFile(
+        path.join(__dirname, '/assets/file-to-upload.txt')
+      );
+
+      const numFiles = await input.evaluate(
+        (e: HTMLInputElement) => e.files.length
+      );
+      expect(numFiles).toBe(1);
+      const filename = await input.evaluate(
+        (e: HTMLInputElement) => e.files[0].name
+      );
+      expect(filename).toBe('file-to-upload.txt');
+      const content = await input.evaluate((e: HTMLInputElement) =>
+        e.files[0].text()
+      );
+      const expectedContent = await fs.promises.readFile(
+        path.join(__dirname, '/assets/file-to-upload.txt')
+      );
+      expect(content).toBe(expectedContent.toString());
     });
   });
 

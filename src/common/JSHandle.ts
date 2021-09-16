@@ -635,9 +635,10 @@ export class ElementHandle<
      avoid paying the cost unnecessarily.
     */
     const path = await import('path');
+    const mime = await import('mime');
     const fs = await helper.importFSModule();
     // Locate all files and confirm that they exist.
-    const files = await Promise.all(
+    const resolvedFilePaths = await Promise.all(
       filePaths.map(async (filePath) => {
         const resolvedPath: string = path.resolve(filePath);
         try {
@@ -650,29 +651,33 @@ export class ElementHandle<
         return resolvedPath;
       })
     );
-    const { objectId } = this._remoteObject;
-    const { node } = await this._client.send('DOM.describeNode', { objectId });
-    const { backendNodeId } = node;
 
-    /*  The zero-length array is a special case, it seems that
-        DOM.setFileInputFiles does not actually update the files in that case,
-        so the solution is to eval the element value to a new FileList directly.
-    */
-    if (files.length === 0) {
-      await (this as ElementHandle<HTMLInputElement>).evaluate((element) => {
-        element.files = new DataTransfer().files;
+    const filePayloads = await Promise.all(
+      resolvedFilePaths.map(async (filePath) => {
+        const buffer = await fs.promises.readFile(filePath);
+        const name = path.basename(filePath);
+        const mimeType = mime.getType(name) || 'application/octet-stream';
 
-        // Dispatch events for this case because it should behave akin to a user action.
+        return { name, mimeType, content: buffer.toString('base64') };
+      })
+    );
+
+    await (this as ElementHandle<HTMLInputElement>).evaluate(
+      (element, files) => {
+        const dt = new DataTransfer();
+        for (const item of files) {
+          const bytes = Uint8Array.from(atob(item.content), (c) =>
+            c.charCodeAt(0)
+          );
+          const file = new File([bytes], item.name);
+          dt.items.add(file);
+        }
+        element.files = dt.files;
         element.dispatchEvent(new Event('input', { bubbles: true }));
         element.dispatchEvent(new Event('change', { bubbles: true }));
-      });
-    } else {
-      await this._client.send('DOM.setFileInputFiles', {
-        objectId,
-        files,
-        backendNodeId,
-      });
-    }
+      },
+      filePayloads
+    );
   }
 
   /**
