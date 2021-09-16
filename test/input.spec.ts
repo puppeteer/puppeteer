@@ -74,9 +74,14 @@ describe('input tests', function () {
       await page.goto(server.EMPTY_PAGE);
       await page.setContent(`<input type=file>`);
       const input = await page.$('input');
-      await input.uploadFile(
+
+      const fileContent = await fs.promises.readFile(
         path.join(__dirname, '/assets/file-to-upload.txt')
       );
+      await input.uploadFile({
+        basename: 'file-to-upload.txt',
+        content: fileContent,
+      });
 
       const numFiles = await input.evaluate(
         (e: HTMLInputElement) => e.files.length
@@ -89,10 +94,7 @@ describe('input tests', function () {
       const content = await input.evaluate((e: HTMLInputElement) =>
         e.files[0].text()
       );
-      const expectedContent = await fs.promises.readFile(
-        path.join(__dirname, '/assets/file-to-upload.txt')
-      );
-      expect(content).toBe(expectedContent.toString());
+      expect(content).toBe(fileContent.toString());
     });
   });
 

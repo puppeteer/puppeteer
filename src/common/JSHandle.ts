@@ -610,8 +610,23 @@ export class ElementHandle<
    * @param filePaths - Sets the value of the file input to these paths.
    *    If some of the  `filePaths` are relative paths, then they are resolved
    *    relative to the {@link https://nodejs.org/api/process.html#process_process_cwd | current working directory}
+   *    Note that file path is resolved where the browser is working.
+   *    On using puppeteer.connect, consider `uploadFile(basename, content)` instead.
    */
-  async uploadFile(...filePaths: string[]): Promise<void> {
+  async uploadFile(...filePaths: string[]): Promise<void>;
+
+  /**
+   * This method expects `elementHandle` to point to an
+   * {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input | input element}.
+   * @param files - Sets the file's name and its content.
+   *    Since content is transfered from the script runner to the browser,
+   *    this method works as expected with puppeteer.connect.
+   */
+  async uploadFile(
+    ...files: Array<{ basename: string; content: Buffer }>
+  ): Promise<void>;
+
+  async uploadFile(...args: any[]): Promise<void> {
     const isMultiple = await this.evaluate<(element: Element) => boolean>(
       (element) => {
         if (!(element instanceof HTMLInputElement)) {
@@ -621,7 +636,7 @@ export class ElementHandle<
       }
     );
     assert(
-      filePaths.length <= 1 || isMultiple,
+      args.length <= 1 || isMultiple,
       'Multiple file uploads only work with <input type=file multiple>'
     );
 
@@ -630,15 +645,27 @@ export class ElementHandle<
         `JSHandle#uploadFile can only be used in Node environments.`
       );
     }
+
+    /*  The zero-length array is a special case, it seems that
+        DOM.setFileInputFiles does not actually update the files in that case,
+        so the solution is to eval the element value to a new FileList directly.
+    */
+    if (args.length === 0 || typeof args[0] === 'object') {
+      await this._uploadFileContent(...args);
+    } else {
+      await this._uploadFileUsingCDP(...args);
+    }
+  }
+
+  private async _uploadFileUsingCDP(...filePaths: string[]): Promise<void> {
     /*
      This import is only needed for `uploadFile`, so keep it scoped here to
      avoid paying the cost unnecessarily.
     */
     const path = await import('path');
-    const mime = await import('mime');
     const fs = await helper.importFSModule();
     // Locate all files and confirm that they exist.
-    const resolvedFilePaths = await Promise.all(
+    const files = await Promise.all(
       filePaths.map(async (filePath) => {
         const resolvedPath: string = path.resolve(filePath);
         try {
@@ -652,15 +679,26 @@ export class ElementHandle<
       })
     );
 
-    const filePayloads = await Promise.all(
-      resolvedFilePaths.map(async (filePath) => {
-        const buffer = await fs.promises.readFile(filePath);
-        const name = path.basename(filePath);
-        const mimeType = mime.getType(name) || 'application/octet-stream';
+    const { objectId } = this._remoteObject;
+    const { node } = await this._client.send('DOM.describeNode', { objectId });
+    const { backendNodeId } = node;
 
-        return { name, mimeType, content: buffer.toString('base64') };
-      })
-    );
+    await this._client.send('DOM.setFileInputFiles', {
+      objectId,
+      files,
+      backendNodeId,
+    });
+  }
+
+  private async _uploadFileContent(
+    ...files: Array<{ basename: string; content: Buffer }>
+  ): Promise<void> {
+    const mime = await import('mime');
+    const filePayloads = files.map((file) => ({
+      name: file.basename,
+      mimeType: mime.getType(file.basename) || 'application/octet-stream',
+      content: file.content.toString('base64'),
+    }));
 
     await (this as ElementHandle<HTMLInputElement>).evaluate(
       (element, files) => {
