@@ -23,7 +23,23 @@ import { Protocol } from 'devtools-protocol';
 import { Page } from './Page.js';
 import { ChildProcess } from 'child_process';
 import { Viewport } from './PuppeteerViewport.js';
-import { BrowserContextOptions } from './BrowserContextOptions.js';
+
+/**
+ * BrowserContext options.
+ *
+ * @public
+ */
+export interface BrowserContextOptions {
+  /**
+   * Proxy server with optional port to use for all requests.
+   * Username and password can be set in `Page.authenticate`.
+   */
+  proxyServer?: string;
+  /**
+   * Bypass the proxy for the given semi-colon-separated list of hosts.
+   */
+  proxyBypassList?: string[];
+}
 
 /**
  * @internal
@@ -297,18 +313,15 @@ export class Browser extends EventEmitter {
    * ```
    */
   async createIncognitoBrowserContext(
-   options: BrowserContextOptions = {}
-   ): Promise<BrowserContext> {
-    const {
-      proxyServer = '',
-      proxyBypassList = '',
-    } = options;
+    options: BrowserContextOptions = {}
+  ): Promise<BrowserContext> {
+    const { proxyServer = '', proxyBypassList = [] } = options;
 
     const { browserContextId } = await this._connection.send(
       'Target.createBrowserContext',
       {
         proxyServer,
-        proxyBypassList,
+        proxyBypassList: proxyBypassList && proxyBypassList.join(','),
       }
     );
     const context = new BrowserContext(
