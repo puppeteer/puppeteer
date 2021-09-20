@@ -372,6 +372,13 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method ElementHandle.clickablePoint() offset',
+        {
+          actualName: 'Object',
+          expectedName: 'Offset',
+        },
+      ],
+      [
         'Method ElementHandle.press() options',
         {
           actualName: 'Object',
