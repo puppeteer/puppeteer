@@ -25,6 +25,23 @@ import { ChildProcess } from 'child_process';
 import { Viewport } from './PuppeteerViewport.js';
 
 /**
+ * BrowserContext options.
+ *
+ * @public
+ */
+export interface BrowserContextOptions {
+  /**
+   * Proxy server with optional port to use for all requests.
+   * Username and password can be set in `Page.authenticate`.
+   */
+  proxyServer?: string;
+  /**
+   * Bypass the proxy for the given semi-colon-separated list of hosts.
+   */
+  proxyBypassList?: string[];
+}
+
+/**
  * @internal
  */
 export type BrowserCloseCallback = () => Promise<void> | void;
@@ -56,6 +73,7 @@ const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map<
   ['clipboard-read', 'clipboardReadWrite'],
   ['clipboard-write', 'clipboardReadWrite'],
   ['payment-handler', 'paymentHandler'],
+  ['persistent-storage', 'durableStorage'],
   ['idle-detection', 'idleDetection'],
   // chrome-specific permissions we have.
   ['midi-sysex', 'midiSysex'],
@@ -79,6 +97,7 @@ export type Permission =
   | 'clipboard-read'
   | 'clipboard-write'
   | 'payment-handler'
+  | 'persistent-storage'
   | 'idle-detection'
   | 'midi-sysex';
 
@@ -293,9 +312,17 @@ export class Browser extends EventEmitter {
    * })();
    * ```
    */
-  async createIncognitoBrowserContext(): Promise<BrowserContext> {
+  async createIncognitoBrowserContext(
+    options: BrowserContextOptions = {}
+  ): Promise<BrowserContext> {
+    const { proxyServer = '', proxyBypassList = [] } = options;
+
     const { browserContextId } = await this._connection.send(
-      'Target.createBrowserContext'
+      'Target.createBrowserContext',
+      {
+        proxyServer,
+        proxyBypassList: proxyBypassList && proxyBypassList.join(','),
+      }
     );
     const context = new BrowserContext(
       this._connection,

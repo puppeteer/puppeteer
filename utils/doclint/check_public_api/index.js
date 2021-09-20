@@ -656,6 +656,13 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method Browser.createIncognitoBrowserContext() options',
+        {
+          actualName: 'Object',
+          expectedName: 'BrowserContextOptions',
+        },
+      ],
+      [
         'Method BrowserContext.overridePermissions() permissions',
         {
           actualName: 'Array<string>',
