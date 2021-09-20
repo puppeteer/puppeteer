@@ -27,6 +27,7 @@ import {
   describeFailsFirefox,
 } from './mocha-utils'; // eslint-disable-line import/extensions
 import { Page, Metrics } from '../lib/cjs/puppeteer/common/Page.js';
+import { CDPSession } from '../lib/cjs/puppeteer/common/Connection.js';
 import { JSHandle } from '../lib/cjs/puppeteer/common/JSHandle.js';
 
 describe('Page', function () {
@@ -1900,6 +1901,13 @@ describe('Page', function () {
       const { page, context } = getTestState();
 
       expect(page.browserContext()).toBe(context);
+    });
+  });
+
+  describe('Page.client', function () {
+    it('should return the client instance', async () => {
+      const { page } = getTestState();
+      expect(page.client()).toBeInstanceOf(CDPSession);
     });
   });
 });

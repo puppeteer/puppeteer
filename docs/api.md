@@ -133,6 +133,7 @@
   * [page.browser()](#pagebrowser)
   * [page.browserContext()](#pagebrowsercontext)
   * [page.click(selector[, options])](#pageclickselector-options)
+  * [page.client()](#pageclient)
   * [page.close([options])](#pagecloseoptions)
   * [page.content()](#pagecontent)
   * [page.cookies([...urls])](#pagecookiesurls)
@@ -1464,6 +1465,12 @@ const [response] = await Promise.all([
 ```
 
 Shortcut for [page.mainFrame().click(selector[, options])](#frameclickselector-options).
+
+#### page.client()
+
+- returns: <[CDPSession]>
+
+Get the CDP session client the page belongs to.
 
 #### page.close([options])
 
