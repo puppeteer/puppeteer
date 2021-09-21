@@ -186,7 +186,7 @@ export class BrowserRunner {
     if (this.proc && this.proc.pid && pidExists(this.proc.pid)) {
       try {
         if (process.platform === 'win32') {
-          childProcess.execSync(`taskkill /pid ${this.proc.pid} /T /F`);
+          childProcess.exec(`taskkill /pid ${this.proc.pid} /T /F`, () => {});
         } else {
           // on linux the process group can be killed with the group id prefixed with
           // a minus sign. The process group id is the group leader's pid.
