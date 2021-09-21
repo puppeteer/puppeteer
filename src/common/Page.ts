@@ -730,6 +730,13 @@ export class Page extends EventEmitter {
   }
 
   /**
+   * Get the CDP session client the page belongs to.
+   */
+  client(): CDPSession {
+    return this._client;
+  }
+
+  /**
    * Get the browser the page belongs to.
    */
   browser(): Browser {
