@@ -31,7 +31,7 @@ import {
 } from './FrameManager.js';
 import { Keyboard, Mouse, Touchscreen, MouseButton } from './Input.js';
 import { Tracing } from './Tracing.js';
-import { assert } from './assert.js';
+import { assert, assertNever } from './assert.js';
 import { helper, debugError } from './helper.js';
 import { Coverage } from './Coverage.js';
 import { WebWorker } from './WebWorker.js';
@@ -157,7 +157,7 @@ export interface ScreenshotOptions {
   /**
    * @defaultValue 'png'
    */
-  type?: 'png' | 'jpeg';
+  type?: 'png' | 'jpeg' | 'webp';
   /**
    * The file path to save the image to. The screenshot type will be inferred
    * from file extension. If path is a relative path, then it is resolved
@@ -501,7 +501,7 @@ export class Page extends EventEmitter {
         // We still want to attach to workers for emitting events.
         // We still want to attach to iframes so sessions may interact with them.
         // We detach from all other types out of an abundance of caution.
-        // See https://source.chromium.org/chromium/chromium/src/+/master:content/browser/devtools/devtools_agent_host_impl.cc?q=f:devtools%20-f:out%20%22::kTypePage%5B%5D%22&ss=chromium
+        // See https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&q=f:devtools%20-f:out%20%22::kTypePage%5B%5D%22
         // for the complete list of available types.
         client
           .send('Target.detachFromTarget', {
@@ -727,6 +727,14 @@ export class Page extends EventEmitter {
    */
   target(): Target {
     return this._target;
+  }
+
+  /**
+   * Get the CDP session client the page belongs to.
+   * @internal
+   */
+  client(): CDPSession {
+    return this._client;
   }
 
   /**
@@ -1098,7 +1106,7 @@ export class Page extends EventEmitter {
        *
        * TODO(@jackfranklin): We could fix this by using overloads like
        * DefinitelyTyped does:
-       * https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/puppeteer/index.d.ts#L114
+       * https://github.com/DefinitelyTyped/DefinitelyTyped/blob/HEAD/types/puppeteer/index.d.ts#L114
        */
       ...args: unknown[]
     ) => ReturnType | Promise<ReturnType>,
@@ -1280,6 +1288,7 @@ export class Page extends EventEmitter {
     path?: string;
     content?: string;
     type?: string;
+    id?: string;
   }): Promise<ElementHandle> {
     return this.mainFrame().addScriptTag(options);
   }
@@ -2551,10 +2560,10 @@ export class Page extends EventEmitter {
     // because it may be a 0-length file with no extension created beforehand
     // (i.e. as a temp file).
     if (options.type) {
-      assert(
-        options.type === 'png' || options.type === 'jpeg',
-        'Unknown options.type value: ' + options.type
-      );
+      const type = options.type;
+      if (type !== 'png' && type !== 'jpeg' && type !== 'webp') {
+        assertNever(type, 'Unknown options.type value: ' + type);
+      }
       screenshotType = options.type;
     } else if (options.path) {
       const filePath = options.path;
@@ -2564,6 +2573,7 @@ export class Page extends EventEmitter {
       if (extension === 'png') screenshotType = 'png';
       else if (extension === 'jpg' || extension === 'jpeg')
         screenshotType = 'jpeg';
+      else if (extension === 'webp') screenshotType = 'webp';
       assert(
         screenshotType,
         `Unsupported screenshot type for extension \`.${extension}\``
@@ -2634,7 +2644,7 @@ export class Page extends EventEmitter {
   }
 
   private async _screenshotTask(
-    format: 'png' | 'jpeg',
+    format: Protocol.Page.CaptureScreenshotRequestFormat,
     options?: ScreenshotOptions
   ): Promise<Buffer | string> {
     await this._client.send('Target.activateTarget', {
@@ -2673,7 +2683,7 @@ export class Page extends EventEmitter {
       }
     }
     const shouldSetDefaultBackground =
-      options.omitBackground && format === 'png';
+      options.omitBackground && (format === 'png' || format === 'webp');
     if (shouldSetDefaultBackground) {
       await this._setTransparentBackgroundColor();
     }
@@ -2748,6 +2758,7 @@ export class Page extends EventEmitter {
       preferCSSPageSize = false,
       margin = {},
       omitBackground = false,
+      timeout = 30000,
     } = options;
 
     let paperWidth = 8.5;
@@ -2772,7 +2783,7 @@ export class Page extends EventEmitter {
       await this._setTransparentBackgroundColor();
     }
 
-    const result = await this._client.send('Page.printToPDF', {
+    const printCommandPromise = this._client.send('Page.printToPDF', {
       transferMode: 'ReturnAsStream',
       landscape,
       displayHeaderFooter,
@@ -2789,6 +2800,12 @@ export class Page extends EventEmitter {
       pageRanges,
       preferCSSPageSize,
     });
+
+    const result = await helper.waitWithTimeout(
+      printCommandPromise,
+      'Page.printToPDF',
+      timeout
+    );
 
     if (omitBackground) {
       await this._resetDefaultBackgroundColor();

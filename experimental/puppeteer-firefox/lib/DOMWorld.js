@@ -140,14 +140,19 @@ class DOMWorld {
   }
 
   /**
-   * @param {!{content?: string, path?: string, type?: string, url?: string}} options
+   * @param {!{content?: string, path?: string, type?: string, url?: string, id?: string}} options
    * @return {!Promise<!ElementHandle>}
    */
   async addScriptTag(options) {
+    const {
+      type = '',
+      id = ''
+    } = options;
+
     if (typeof options.url === 'string') {
       const url = options.url;
       try {
-        return (await this.evaluateHandle(addScriptUrl, url, options.type)).asElement();
+        return (await this.evaluateHandle(addScriptUrl, url, id, type)).asElement();
       } catch (error) {
         throw new Error(`Loading script from ${url} failed`);
       }
@@ -156,23 +161,26 @@ class DOMWorld {
     if (typeof options.path === 'string') {
       let contents = await readFileAsync(options.path, 'utf8');
       contents += '//# sourceURL=' + options.path.replace(/\n/g, '');
-      return (await this.evaluateHandle(addScriptContent, contents, options.type)).asElement();
+      return (await this.evaluateHandle(addScriptContent, contents, id, type)).asElement();
     }
 
     if (typeof options.content === 'string') {
-      return (await this.evaluateHandle(addScriptContent, options.content, options.type)).asElement();
+      return (await this.evaluateHandle(addScriptContent, options.content, id, type)).asElement();
     }
 
     throw new Error('Provide an object with a `url`, `path` or `content` property');
 
     /**
      * @param {string} url
+     * @param {string} id
      * @param {string} type
      * @return {!Promise<!HTMLElement>}
      */
-    async function addScriptUrl(url, type) {
+    async function addScriptUrl(url, id, type) {
       const script = document.createElement('script');
       script.src = url;
+      if (id)
+        script.id = id;
       if (type)
         script.type = type;
       const promise = new Promise((res, rej) => {
@@ -186,13 +194,16 @@ class DOMWorld {
 
     /**
      * @param {string} content
+     * @param {string} id
      * @param {string} type
      * @return {!HTMLElement}
      */
-    function addScriptContent(content, type = 'text/javascript') {
+    function addScriptContent(content, id, type = 'text/javascript') {
       const script = document.createElement('script');
       script.type = type;
       script.text = content;
+      if (id)
+        script.id = id;
       let error = null;
       script.onerror = e => error = e;
       document.head.appendChild(script);

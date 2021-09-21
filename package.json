@@ -1,6 +1,6 @@
 {
   "name": "puppeteer",
-  "version": "10.2.0-post",
+  "version": "10.4.0",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "main": "./cjs-entry.js",
   "types": "lib/types.d.ts",
@@ -116,8 +116,9 @@
   },
   "husky": {
     "hooks": {
+      "pre-commit": "npm run eslint",
       "commit-msg": "commitlint --env HUSKY_GIT_PARAMS",
-      "pre-push": "npm run ensure-pinned-deps"
+      "pre-push": "npm run tsc && npm run eslint && npm run doc && npm run ensure-pinned-deps"
     }
   }
 }
