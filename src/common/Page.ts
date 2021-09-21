@@ -2548,9 +2548,7 @@ export class Page extends EventEmitter {
    * @returns Promise which resolves to buffer or a base64 string (depending on
    * the value of `encoding`) with captured screenshot.
    */
-  async screenshot(
-    options: ScreenshotOptions = {}
-  ): Promise<Buffer | string> {
+  async screenshot(options: ScreenshotOptions = {}): Promise<Buffer | string> {
     let screenshotType = null;
     // options.type takes precedence over inferring the type from options.path
     // because it may be a 0-length file with no extension created beforehand
