@@ -339,6 +339,18 @@ describe('Page', function () {
         await otherContext.close();
       }
     );
+    itFailsFirefox('should grant persistent-storage', async () => {
+      const { page, server, context } = getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      expect(await getPermission(page, 'persistent-storage')).not.toBe(
+        'granted'
+      );
+      await context.overridePermissions(server.EMPTY_PAGE, [
+        'persistent-storage',
+      ]);
+      expect(await getPermission(page, 'persistent-storage')).toBe('granted');
+    });
   });
 
   describe('Page.setGeolocation', function () {
@@ -1406,6 +1418,15 @@ describe('Page', function () {
       expect(await page.evaluate(() => globalThis.__injected)).toBe(35);
     });
 
+    it('should add id when provided', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      await page.addScriptTag({ content: 'window.__injected = 1;', id: 'one' });
+      await page.addScriptTag({ url: '/injectedfile.js', id: 'two' });
+      expect(await page.$('#one')).not.toBeNull();
+      expect(await page.$('#two')).not.toBeNull();
+    });
+
     // @see https://github.com/puppeteer/puppeteer/issues/4840
     xit('should throw when added with content to the CSP page', async () => {
       const { page, server } = getTestState();
@@ -1638,6 +1659,17 @@ describe('Page', function () {
         size += chunk.length;
       }
       expect(size).toBeGreaterThan(0);
+    });
+
+    it('should respect timeout', async () => {
+      const { isHeadless, page, server, puppeteer } = getTestState();
+      if (!isHeadless) return;
+
+      await page.goto(server.PREFIX + '/pdf.html');
+
+      let error = null;
+      await page.pdf({ timeout: 1 }).catch((_error) => (error = _error));
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
   });
 
