@@ -116,8 +116,9 @@
   },
   "husky": {
     "hooks": {
+      "pre-commit": "npm run eslint",
       "commit-msg": "commitlint --env HUSKY_GIT_PARAMS",
-      "pre-push": "npm run ensure-pinned-deps"
+      "pre-push": "npm run tsc && npm run eslint && npm run doc && npm run ensure-pinned-deps"
     }
   }
 }
