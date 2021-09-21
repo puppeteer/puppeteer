@@ -31,7 +31,7 @@ import {
 } from './FrameManager.js';
 import { Keyboard, Mouse, Touchscreen, MouseButton } from './Input.js';
 import { Tracing } from './Tracing.js';
-import { assert } from './assert.js';
+import { assert, assertNever } from './assert.js';
 import { helper, debugError } from './helper.js';
 import { Coverage } from './Coverage.js';
 import { WebWorker } from './WebWorker.js';
@@ -2552,12 +2552,10 @@ export class Page extends EventEmitter {
     // because it may be a 0-length file with no extension created beforehand
     // (i.e. as a temp file).
     if (options.type) {
-      assert(
-        options.type === 'png' ||
-          options.type === 'jpeg' ||
-          options.type === 'webp',
-        'Unknown options.type value: ' + options.type
-      );
+      const type = options.type;
+      if (type !== 'png' && type !== 'jpeg' && type !== 'webp') {
+        assertNever(type, 'Unknown options.type value: ' + type);
+      }
       screenshotType = options.type;
     } else if (options.path) {
       const filePath = options.path;
@@ -2638,7 +2636,7 @@ export class Page extends EventEmitter {
   }
 
   private async _screenshotTask(
-    format: 'png' | 'jpeg' | 'webp',
+    format: Protocol.Page.CaptureScreenshotRequestFormat,
     options?: ScreenshotOptions
   ): Promise<Buffer | string> {
     await this._client.send('Target.activateTarget', {
@@ -2677,7 +2675,7 @@ export class Page extends EventEmitter {
       }
     }
     const shouldSetDefaultBackground =
-      options.omitBackground && format === 'png';
+      options.omitBackground && (format === 'png' || format === 'webp');
     if (shouldSetDefaultBackground) {
       await this._setTransparentBackgroundColor();
     }
