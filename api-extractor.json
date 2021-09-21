@@ -1,14 +1,15 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
   "mainEntryPointFilePath": "<projectFolder>/lib/cjs/puppeteer/api-docs-entry.d.ts",
-  "bundledPackages": ["devtools-protocol"],
+  "bundledPackages": [],
 
   "apiReport": {
     "enabled": false
   },
 
   "docModel": {
-    "enabled": true
+    "enabled": true,
+    "apiJsonFilePath": "<projectFolder>/docs-api-json/<unscopedPackageName>.api.json"
   },
 
   "dtsRollup": {

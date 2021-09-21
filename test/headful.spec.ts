@@ -42,9 +42,11 @@ describeChromeOnly('headful tests', function () {
   let headfulOptions;
   let headlessOptions;
   let extensionOptions;
+  let forcedOopifOptions;
+  const browsers = [];
 
   beforeEach(() => {
-    const { defaultBrowserOptions } = getTestState();
+    const { server, defaultBrowserOptions } = getTestState();
     headfulOptions = Object.assign({}, defaultBrowserOptions, {
       headless: false,
     });
@@ -59,12 +61,43 @@ describeChromeOnly('headful tests', function () {
         `--load-extension=${extensionPath}`,
       ],
     });
+
+    forcedOopifOptions = Object.assign({}, defaultBrowserOptions, {
+      headless: false,
+      devtools: true,
+      args: [
+        `--host-rules=MAP oopifdomain 127.0.0.1`,
+        `--isolate-origins=${server.PREFIX.replace(
+          'localhost',
+          'oopifdomain'
+        )}`,
+      ],
+    });
+  });
+
+  async function launchBrowser(puppeteer, options) {
+    const browser = await puppeteer.launch(options);
+    browsers.push(browser);
+    return browser;
+  }
+
+  afterEach(() => {
+    for (const i in browsers) {
+      const browser = browsers[i];
+      if (browser.isConnected()) {
+        browser.close();
+      }
+      delete browsers[i];
+    }
   });
 
   describe('HEADFUL', function () {
     it('background_page target type should be available', async () => {
       const { puppeteer } = getTestState();
-      const browserWithExtension = await puppeteer.launch(extensionOptions);
+      const browserWithExtension = await launchBrowser(
+        puppeteer,
+        extensionOptions
+      );
       const page = await browserWithExtension.newPage();
       const backgroundPageTarget = await browserWithExtension.waitForTarget(
         (target) => target.type() === 'background_page'
@@ -75,7 +108,10 @@ describeChromeOnly('headful tests', function () {
     });
     it('target.page() should return a background_page', async function () {
       const { puppeteer } = getTestState();
-      const browserWithExtension = await puppeteer.launch(extensionOptions);
+      const browserWithExtension = await launchBrowser(
+        puppeteer,
+        extensionOptions
+      );
       const backgroundPageTarget = await browserWithExtension.waitForTarget(
         (target) => target.type() === 'background_page'
       );
@@ -86,7 +122,7 @@ describeChromeOnly('headful tests', function () {
     });
     it('should have default url when launching browser', async function () {
       const { puppeteer } = getTestState();
-      const browser = await puppeteer.launch(extensionOptions);
+      const browser = await launchBrowser(puppeteer, extensionOptions);
       const pages = (await browser.pages()).map((page) => page.url());
       expect(pages).toEqual(['about:blank']);
       await browser.close();
@@ -99,7 +135,8 @@ describeChromeOnly('headful tests', function () {
 
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
         // Write a cookie in headful chrome
-        const headfulBrowser = await puppeteer.launch(
+        const headfulBrowser = await launchBrowser(
+          puppeteer,
           Object.assign({ userDataDir }, headfulOptions)
         );
         const headfulPage = await headfulBrowser.newPage();
@@ -111,7 +148,8 @@ describeChromeOnly('headful tests', function () {
         );
         await headfulBrowser.close();
         // Read the cookie from headless chrome
-        const headlessBrowser = await puppeteer.launch(
+        const headlessBrowser = await launchBrowser(
+          puppeteer,
           Object.assign({ userDataDir }, headlessOptions)
         );
         const headlessPage = await headlessBrowser.newPage();
@@ -128,7 +166,7 @@ describeChromeOnly('headful tests', function () {
       const { server, puppeteer } = getTestState();
 
       // https://google.com is isolated by default in Chromium embedder.
-      const browser = await puppeteer.launch(headfulOptions);
+      const browser = await launchBrowser(puppeteer, headfulOptions);
       const page = await browser.newPage();
       await page.goto(server.EMPTY_PAGE);
       await page.setRequestInterception(true);
@@ -147,10 +185,62 @@ describeChromeOnly('headful tests', function () {
       expect(urls).toEqual([server.EMPTY_PAGE, 'https://google.com/']);
       await browser.close();
     });
+    it('OOPIF: should expose events within OOPIFs', async () => {
+      const { server, puppeteer } = getTestState();
+
+      const browser = await launchBrowser(puppeteer, forcedOopifOptions);
+      const page = await browser.newPage();
+
+      // Setup our session listeners to observe OOPIF activity.
+      const session = await page.target().createCDPSession();
+      const networkEvents = [];
+      const otherSessions = [];
+      await session.send('Target.setAutoAttach', {
+        autoAttach: true,
+        flatten: true,
+        waitForDebuggerOnStart: true,
+      });
+      session.on('sessionattached', async (session) => {
+        otherSessions.push(session);
+
+        session.on('Network.requestWillBeSent', (params) =>
+          networkEvents.push(params)
+        );
+        await session.send('Network.enable');
+        await session.send('Runtime.runIfWaitingForDebugger');
+      });
+
+      // Navigate to the empty page and add an OOPIF iframe with at least one request.
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate((frameUrl) => {
+        const frame = document.createElement('iframe');
+        frame.setAttribute('src', frameUrl);
+        document.body.appendChild(frame);
+        return new Promise((x, y) => {
+          frame.onload = x;
+          frame.onerror = y;
+        });
+      }, server.PREFIX.replace('localhost', 'oopifdomain') + '/one-style.html');
+      await page.waitForSelector('iframe');
+
+      // Ensure we found the iframe session.
+      expect(otherSessions).toHaveLength(1);
+
+      // Resume the iframe and trigger another request.
+      const iframeSession = otherSessions[0];
+      await iframeSession.send('Runtime.evaluate', {
+        expression: `fetch('/fetch')`,
+        awaitPromise: true,
+      });
+      await browser.close();
+
+      const requests = networkEvents.map((event) => event.request.url);
+      expect(requests).toContain(`http://oopifdomain:${server.PORT}/fetch`);
+    });
     it('should close browser with beforeunload page', async () => {
       const { server, puppeteer } = getTestState();
 
-      const browser = await puppeteer.launch(headfulOptions);
+      const browser = await launchBrowser(puppeteer, headfulOptions);
       const page = await browser.newPage();
       await page.goto(server.PREFIX + '/beforeunload.html');
       // We have to interact with a page so that 'beforeunload' handlers
@@ -161,13 +251,14 @@ describeChromeOnly('headful tests', function () {
     it('should open devtools when "devtools: true" option is given', async () => {
       const { puppeteer } = getTestState();
 
-      const browser = await puppeteer.launch(
+      const browser = await launchBrowser(
+        puppeteer,
         Object.assign({ devtools: true }, headfulOptions)
       );
       const context = await browser.createIncognitoBrowserContext();
       await Promise.all([
         context.newPage(),
-        context.waitForTarget((target) => target.url().includes('devtools://')),
+        browser.waitForTarget((target) => target.url().includes('devtools://')),
       ]);
       await browser.close();
     });
@@ -176,7 +267,7 @@ describeChromeOnly('headful tests', function () {
   describe('Page.bringToFront', function () {
     it('should work', async () => {
       const { puppeteer } = getTestState();
-      const browser = await puppeteer.launch(headfulOptions);
+      const browser = await launchBrowser(puppeteer, headfulOptions);
       const page1 = await browser.newPage();
       const page2 = await browser.newPage();
 

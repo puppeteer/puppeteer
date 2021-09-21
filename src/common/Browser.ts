@@ -25,7 +25,34 @@ import { TaskQueue } from './TaskQueue.js';
 import { ChildProcess } from 'child_process';
 import { Viewport } from './PuppeteerViewport.js';
 
-type BrowserCloseCallback = () => Promise<void> | void;
+/**
+ * BrowserContext options.
+ *
+ * @public
+ */
+export interface BrowserContextOptions {
+  /**
+   * Proxy server with optional port to use for all requests.
+   * Username and password can be set in `Page.authenticate`.
+   */
+  proxyServer?: string;
+  /**
+   * Bypass the proxy for the given semi-colon-separated list of hosts.
+   */
+  proxyBypassList?: string[];
+}
+
+/**
+ * @internal
+ */
+export type BrowserCloseCallback = () => Promise<void> | void;
+
+/**
+ * @public
+ */
+export type TargetFilterCallback = (
+  target: Protocol.Target.TargetInfo
+) => boolean;
 
 const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map<
   Permission,
@@ -47,6 +74,7 @@ const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map<
   ['clipboard-read', 'clipboardReadWrite'],
   ['clipboard-write', 'clipboardReadWrite'],
   ['payment-handler', 'paymentHandler'],
+  ['persistent-storage', 'durableStorage'],
   ['idle-detection', 'idleDetection'],
   // chrome-specific permissions we have.
   ['midi-sysex', 'midiSysex'],
@@ -70,6 +98,7 @@ export type Permission =
   | 'clipboard-read'
   | 'clipboard-write'
   | 'payment-handler'
+  | 'persistent-storage'
   | 'idle-detection'
   | 'midi-sysex';
 
@@ -187,7 +216,8 @@ export class Browser extends EventEmitter {
     ignoreHTTPSErrors: boolean,
     defaultViewport?: Viewport | null,
     process?: ChildProcess,
-    closeCallback?: BrowserCloseCallback
+    closeCallback?: BrowserCloseCallback,
+    targetFilterCallback?: TargetFilterCallback
   ): Promise<Browser> {
     const browser = new Browser(
       connection,
@@ -195,7 +225,8 @@ export class Browser extends EventEmitter {
       ignoreHTTPSErrors,
       defaultViewport,
       process,
-      closeCallback
+      closeCallback,
+      targetFilterCallback
     );
     await connection.send('Target.setDiscoverTargets', { discover: true });
     return browser;
@@ -205,6 +236,7 @@ export class Browser extends EventEmitter {
   private _process?: ChildProcess;
   private _connection: Connection;
   private _closeCallback: BrowserCloseCallback;
+  private _targetFilterCallback: TargetFilterCallback;
   private _defaultContext: BrowserContext;
   private _contexts: Map<string, BrowserContext>;
   private _screenshotTaskQueue: TaskQueue;
@@ -223,7 +255,8 @@ export class Browser extends EventEmitter {
     ignoreHTTPSErrors: boolean,
     defaultViewport?: Viewport | null,
     process?: ChildProcess,
-    closeCallback?: BrowserCloseCallback
+    closeCallback?: BrowserCloseCallback,
+    targetFilterCallback?: TargetFilterCallback
   ) {
     super();
     this._ignoreHTTPSErrors = ignoreHTTPSErrors;
@@ -232,6 +265,7 @@ export class Browser extends EventEmitter {
     this._screenshotTaskQueue = new TaskQueue();
     this._connection = connection;
     this._closeCallback = closeCallback || function (): void {};
+    this._targetFilterCallback = targetFilterCallback || ((): boolean => true);
 
     this._defaultContext = new BrowserContext(this._connection, this, null);
     this._contexts = new Map();
@@ -281,9 +315,17 @@ export class Browser extends EventEmitter {
    * })();
    * ```
    */
-  async createIncognitoBrowserContext(): Promise<BrowserContext> {
+  async createIncognitoBrowserContext(
+    options: BrowserContextOptions = {}
+  ): Promise<BrowserContext> {
+    const { proxyServer = '', proxyBypassList = [] } = options;
+
     const { browserContextId } = await this._connection.send(
-      'Target.createBrowserContext'
+      'Target.createBrowserContext',
+      {
+        proxyServer,
+        proxyBypassList: proxyBypassList && proxyBypassList.join(','),
+      }
     );
     const context = new BrowserContext(
       this._connection,
@@ -329,6 +371,11 @@ export class Browser extends EventEmitter {
       browserContextId && this._contexts.has(browserContextId)
         ? this._contexts.get(browserContextId)
         : this._defaultContext;
+
+    const shouldAttachToTarget = this._targetFilterCallback(targetInfo);
+    if (!shouldAttachToTarget) {
+      return;
+    }
 
     const target = new Target(
       targetInfo,
@@ -401,7 +448,8 @@ export class Browser extends EventEmitter {
   }
 
   /**
-   * Creates a {@link Page} in the default browser context.
+   * Promise which resolves to a new {@link Page} object. The Page is created in
+   * a default browser context.
    */
   async newPage(): Promise<Page> {
     return this._defaultContext.newPage();
@@ -416,7 +464,7 @@ export class Browser extends EventEmitter {
       url: 'about:blank',
       browserContextId: contextId || undefined,
     });
-    const target = await this._targets.get(targetId);
+    const target = this._targets.get(targetId);
     assert(
       await target._initializedPromise,
       'Failed to create target for page'
@@ -463,7 +511,7 @@ export class Browser extends EventEmitter {
     const { timeout = 30000 } = options;
     const existingTarget = this.targets().find(predicate);
     if (existingTarget) return existingTarget;
-    let resolve;
+    let resolve: (value: Target | PromiseLike<Target>) => void;
     const targetPromise = new Promise<Target>((x) => (resolve = x));
     this.on(BrowserEmittedEvents.TargetCreated, check);
     this.on(BrowserEmittedEvents.TargetChanged, check);
@@ -554,7 +602,9 @@ export class Browser extends EventEmitter {
     return this._connection.send('Browser.getVersion');
   }
 }
-
+/**
+ * @public
+ */
 export const enum BrowserContextEmittedEvents {
   /**
    * Emitted when the url of a target inside the browser context changes.
@@ -608,6 +658,7 @@ export const enum BrowserContextEmittedEvents {
  * // Dispose context once it's no longer needed.
  * await context.close();
  * ```
+ * @public
  */
 export class BrowserContext extends EventEmitter {
   private _connection: Connection;
@@ -703,9 +754,8 @@ export class BrowserContext extends EventEmitter {
     permissions: Permission[]
   ): Promise<void> {
     const protocolPermissions = permissions.map((permission) => {
-      const protocolPermission = WEB_PERMISSION_TO_PROTOCOL_PERMISSION.get(
-        permission
-      );
+      const protocolPermission =
+        WEB_PERMISSION_TO_PROTOCOL_PERMISSION.get(permission);
       if (!protocolPermission)
         throw new Error('Unknown permission: ' + permission);
       return protocolPermission;

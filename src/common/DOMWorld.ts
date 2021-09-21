@@ -282,14 +282,21 @@ export class DOMWorld {
     url?: string;
     path?: string;
     content?: string;
+    id?: string;
     type?: string;
   }): Promise<ElementHandle> {
-    const { url = null, path = null, content = null, type = '' } = options;
+    const {
+      url = null,
+      path = null,
+      content = null,
+      id = '',
+      type = '',
+    } = options;
     if (url !== null) {
       try {
         const context = await this.executionContext();
         return (
-          await context.evaluateHandle(addScriptUrl, url, type)
+          await context.evaluateHandle(addScriptUrl, url, id, type)
         ).asElement();
       } catch (error) {
         throw new Error(`Loading script from ${url} failed`);
@@ -307,14 +314,14 @@ export class DOMWorld {
       contents += '//# sourceURL=' + path.replace(/\n/g, '');
       const context = await this.executionContext();
       return (
-        await context.evaluateHandle(addScriptContent, contents, type)
+        await context.evaluateHandle(addScriptContent, contents, id, type)
       ).asElement();
     }
 
     if (content !== null) {
       const context = await this.executionContext();
       return (
-        await context.evaluateHandle(addScriptContent, content, type)
+        await context.evaluateHandle(addScriptContent, content, id, type)
       ).asElement();
     }
 
@@ -324,10 +331,12 @@ export class DOMWorld {
 
     async function addScriptUrl(
       url: string,
+      id: string,
       type: string
     ): Promise<HTMLElement> {
       const script = document.createElement('script');
       script.src = url;
+      if (id) script.id = id;
       if (type) script.type = type;
       const promise = new Promise((res, rej) => {
         script.onload = res;
@@ -340,11 +349,13 @@ export class DOMWorld {
 
     function addScriptContent(
       content: string,
+      id: string,
       type = 'text/javascript'
     ): HTMLElement {
       const script = document.createElement('script');
       script.type = type;
       script.text = content;
+      if (id) script.id = id;
       let error = null;
       script.onerror = (e) => (error = e);
       document.head.appendChild(script);
@@ -484,9 +495,8 @@ export class DOMWorld {
     selector: string,
     options: WaitForSelectorOptions
   ): Promise<ElementHandle | null> {
-    const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
-      selector
-    );
+    const { updatedSelector, queryHandler } =
+      getQueryHandlerAndSelector(selector);
     return queryHandler.waitFor(this, updatedSelector, options);
   }
 
@@ -687,10 +697,8 @@ export class DOMWorld {
     options: { polling?: string | number; timeout?: number } = {},
     ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle> {
-    const {
-      polling = 'raf',
-      timeout = this._timeoutSettings.timeout(),
-    } = options;
+    const { polling = 'raf', timeout = this._timeoutSettings.timeout() } =
+      options;
     const waitTaskOptions: WaitTaskOptions = {
       domWorld: this,
       predicateBody: pageFunction,

@@ -58,6 +58,18 @@ describe('waittask specs', function () {
       await waitFor;
       expect(found).toBe(true);
     });
+    it('should allow you to select an element with parenthesis-starting xpath', async () => {
+      const { page, server } = getTestState();
+      let found = false;
+      const waitFor = page.waitFor('(//img)[200]').then(() => {
+        found = true;
+      });
+      await page.goto(server.EMPTY_PAGE);
+      expect(found).toBe(false);
+      await page.goto(server.PREFIX + '/grid.html');
+      await waitFor;
+      expect(found).toBe(true);
+    });
     it('should not allow you to select an element with single slash xpath', async () => {
       const { page } = getTestState();
 
@@ -358,11 +370,10 @@ describe('waittask specs', function () {
       const endTime = Date.now();
       /* In a perfect world endTime - startTime would be exactly 1000 but we
        * expect some fluctuations and for it to be off by a little bit. So to
-       * avoid a flaky test we'll make sure it waited for roughly 1 second by
-       * ensuring 900 < endTime - startTime < 1100
+       * avoid a flaky test we'll make sure it waited for roughly 1 second.
        */
-      expect(endTime - startTime).toBeGreaterThan(900);
-      expect(endTime - startTime).toBeLessThan(1100);
+      expect(endTime - startTime).toBeGreaterThan(700);
+      expect(endTime - startTime).toBeLessThan(1300);
     });
   });
 
@@ -376,11 +387,10 @@ describe('waittask specs', function () {
       const endTime = Date.now();
       /* In a perfect world endTime - startTime would be exactly 1000 but we
        * expect some fluctuations and for it to be off by a little bit. So to
-       * avoid a flaky test we'll make sure it waited for roughly 1 second by
-       * ensuring 900 < endTime - startTime < 1100
+       * avoid a flaky test we'll make sure it waited for roughly 1 second
        */
-      expect(endTime - startTime).toBeGreaterThan(900);
-      expect(endTime - startTime).toBeLessThan(1100);
+      expect(endTime - startTime).toBeGreaterThan(700);
+      expect(endTime - startTime).toBeLessThan(1300);
     });
   });
 

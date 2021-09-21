@@ -52,6 +52,7 @@ describe('request interception', function () {
       expect(response.ok()).toBe(true);
       expect(response.remoteAddress().port).toBe(server.PORT);
     });
+    // @see https://github.com/puppeteer/puppeteer/pull/3105
     it('should work when POST is redirected with 302', async () => {
       const { page, server } = getTestState();
 
@@ -495,13 +496,14 @@ describe('request interception', function () {
       expect(urls.has('one-style.html')).toBe(true);
       expect(urls.has('one-style.css')).toBe(true);
     });
-    it('should not cache if not cache-safe', async () => {
+    it('should not cache if cache disabled', async () => {
       const { page, server } = getTestState();
 
       // Load and re-load to make sure it's cached.
       await page.goto(server.PREFIX + '/cached/one-style.html');
 
-      await page.setRequestInterception(true, false);
+      await page.setRequestInterception(true);
+      await page.setCacheEnabled(false);
       page.on('request', (request) => request.continue());
 
       const cached = [];
@@ -510,13 +512,14 @@ describe('request interception', function () {
       await page.reload();
       expect(cached.length).toBe(0);
     });
-    it('should cache if cache-safe', async () => {
+    it('should cache if cache enabled', async () => {
       const { page, server } = getTestState();
 
       // Load and re-load to make sure it's cached.
       await page.goto(server.PREFIX + '/cached/one-style.html');
 
-      await page.setRequestInterception(true, true);
+      await page.setRequestInterception(true);
+      await page.setCacheEnabled(true);
       page.on('request', (request) => request.continue());
 
       const cached = [];
@@ -524,6 +527,16 @@ describe('request interception', function () {
 
       await page.reload();
       expect(cached.length).toBe(1);
+    });
+    it('should load fonts if cache enabled', async () => {
+      const { page, server } = getTestState();
+
+      await page.setRequestInterception(true);
+      await page.setCacheEnabled(true);
+      page.on('request', (request) => request.continue());
+
+      await page.goto(server.PREFIX + '/cached/one-style-font.html');
+      await page.waitForResponse((r) => r.url().endsWith('/one-style.woff'));
     });
   });
 

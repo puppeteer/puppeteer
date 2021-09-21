@@ -28,7 +28,7 @@ describe('creating a Connection', () => {
     const result = await connection.send('Browser.getVersion');
     /* We can't expect exact results as the version of Chrome/CDP might change
      * and we don't want flakey tests, so let's assert the structure, which is
-     * enough to confirm the result was recieved successfully.
+     * enough to confirm the result was received successfully.
      */
     expect(result).toEqual({
       protocolVersion: expect.any(String),
