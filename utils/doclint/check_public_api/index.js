@@ -25,6 +25,7 @@ const {
 const EXCLUDE_PROPERTIES = new Set([
   'Browser.create',
   'Headers.fromPayload',
+  'Page.client',
   'Page.create',
   'JSHandle.toString',
   'TimeoutError.name',
