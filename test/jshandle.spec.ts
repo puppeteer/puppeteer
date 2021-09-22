@@ -309,7 +309,9 @@ describe('JSHandle', function () {
           <div style="cursor: pointer; width: 120px; height: 60px; margin: 30px; padding: 15px;"></div>
         `;
       });
-
+      await page.evaluate(async () => {
+        return new Promise((resolve) => window.requestAnimationFrame(resolve));
+      });
       const divHandle = await page.$('div');
       expect(await divHandle.clickablePoint()).toEqual({
         x: 45 + 60, // margin + middle point offset
@@ -334,6 +336,9 @@ describe('JSHandle', function () {
         document.body.innerHTML = `
           <iframe style="border: none; margin: 0; padding: 0;" seamless sandbox srcdoc="<style>* { margin: 0; padding: 0;}</style><div style='cursor: pointer; width: 120px; height: 60px; margin: 30px; padding: 15px;' />"></iframe>
         `;
+      });
+      await page.evaluate(async () => {
+        return new Promise((resolve) => window.requestAnimationFrame(resolve));
       });
       const frame = page.frames()[1];
       const divHandle = await frame.$('div');
