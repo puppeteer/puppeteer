@@ -21,7 +21,7 @@ const pptr = require('..');
 const browserFetcher = pptr.createBrowserFetcher();
 const path = require('path');
 const fs = require('fs');
-const { fork } = require('child_process');
+const { fork, spawn, execSync } = require('child_process');
 
 const COLOR_RESET = '\x1b[0m';
 const COLOR_RED = '\x1b[31m';
@@ -35,12 +35,16 @@ Usage:
   node bisect.js --good <revision> --bad <revision> <script>
 
 Parameters:
-  --good    revision that is known to be GOOD
-  --bad     revision that is known to be BAD
-  <script>  path to the script that returns non-zero code for BAD revisions and 0 for good
+  --good       revision that is known to be GOOD, defaults to the chromium revision in src/revision.ts in the main branch 
+  --bad        revision that is known to be BAD, defaults to the chromium revision in src/revision.ts
+  --no-cache   do not keep downloaded Chromium revisions
+  --unit-test  pattern that identifies a unit tests that should be checked
+  --script     path to a script that returns non-zero code for BAD revisions and 0 for good
 
 Example:
-  node utils/bisect.js --good 577361 --bad 599821 simple.js
+  node utils/bisect.js --unit-test test
+  node utils/bisect.js --good 577361 --bad 599821 --script simple.js
+  node utils/bisect.js --good 577361 --bad 599821 --unit-test test
 `;
 
 if (argv.h || argv.help) {
@@ -49,23 +53,44 @@ if (argv.h || argv.help) {
 }
 
 if (typeof argv.good !== 'number') {
-  console.log(
-    COLOR_RED + 'ERROR: expected --good argument to be a number' + COLOR_RESET
-  );
-  console.log(help);
-  process.exit(1);
+  argv.good = getChromiumRevision('main');
+  if (typeof argv.good !== 'number') {
+    console.log(
+      COLOR_RED +
+        'ERROR: Could not parse current Chromium revision' +
+        COLOR_RESET
+    );
+    console.log(help);
+    process.exit(1);
+  }
 }
 
 if (typeof argv.bad !== 'number') {
+  argv.bad = getChromiumRevision();
+  if (typeof argv.bad !== 'number') {
+    console.log(
+      COLOR_RED +
+        'ERROR: Could not parse Chromium revision in the main branch' +
+        COLOR_RESET
+    );
+    console.log(help);
+    process.exit(1);
+  }
+}
+
+if (!argv.script && !argv['unit-test']) {
   console.log(
-    COLOR_RED + 'ERROR: expected --bad argument to be a number' + COLOR_RESET
+    COLOR_RED +
+      'ERROR: Expected to be given a script or a unit test to run' +
+      COLOR_RESET
   );
   console.log(help);
   process.exit(1);
 }
 
-const scriptPath = path.resolve(argv._[0]);
-if (!fs.existsSync(scriptPath)) {
+const scriptPath = argv.script ? path.resolve(argv.script) : null;
+
+if (argv.script && !fs.existsSync(scriptPath)) {
   console.log(
     COLOR_RED +
       'ERROR: Expected to be given a path to a script to run' +
@@ -75,7 +100,7 @@ if (!fs.existsSync(scriptPath)) {
   process.exit(1);
 }
 
-(async (scriptPath, good, bad) => {
+(async (scriptPath, good, bad, pattern, noCache) => {
   const span = Math.abs(good - bad);
   console.log(
     `Bisecting ${COLOR_YELLOW}${span}${COLOR_RESET} revisions in ${COLOR_YELLOW}~${
@@ -88,9 +113,11 @@ if (!fs.existsSync(scriptPath)) {
     const revision = await findDownloadableRevision(middle, good, bad);
     if (!revision || revision === good || revision === bad) break;
     let info = browserFetcher.revisionInfo(revision);
-    const shouldRemove = !info.local;
+    const shouldRemove = noCache && !info.local;
     info = await downloadRevision(revision);
-    const exitCode = await runScript(scriptPath, info);
+    const exitCode = await (pattern
+      ? runUnitTest(pattern, info)
+      : runScript(scriptPath, info));
     if (shouldRemove) await browserFetcher.remove(revision);
     let outcome;
     if (exitCode) {
@@ -124,13 +151,30 @@ if (!fs.existsSync(scriptPath)) {
   console.log(
     `RANGE: https://chromium.googlesource.com/chromium/src/+log/${fromSha}..${toSha}`
   );
-})(scriptPath, argv.good, argv.bad);
+})(scriptPath, argv.good, argv.bad, argv['unit-test'], argv['no-cache']);
 
 function runScript(scriptPath, revisionInfo) {
   const log = debug('bisect:runscript');
   log('Running script');
   const child = fork(scriptPath, [], {
     stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
+    env: {
+      ...process.env,
+      PUPPETEER_EXECUTABLE_PATH: revisionInfo.executablePath,
+    },
+  });
+  return new Promise((resolve, reject) => {
+    child.on('error', (err) => reject(err));
+    child.on('exit', (code) => resolve(code));
+  });
+}
+
+function runUnitTest(pattern, revisionInfo) {
+  const log = debug('bisect:rununittest');
+  log('Running unit test');
+  const child = spawn('npm run unit', ['--', '-g', pattern], {
+    stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
+    shell: true,
     env: {
       ...process.env,
       PUPPETEER_EXECUTABLE_PATH: revisionInfo.executablePath,
@@ -226,4 +270,19 @@ function fetchJSON(url) {
     req.on('error', (err) => reject(err));
     req.end();
   });
+}
+
+function getChromiumRevision(gitRevision = null) {
+  const fileName = 'src/revisions.ts';
+  const command = gitRevision
+    ? `git show ${gitRevision}:${fileName}`
+    : `cat ${fileName}`;
+  const result = execSync(command, {
+    encoding: 'utf8',
+    shell: true,
+  });
+
+  const m = result.match(/chromium: '(\d+)'/);
+  if (!m) return null;
+  return parseInt(m[1], 10);
 }

@@ -75,7 +75,7 @@
   * [event: 'targetdestroyed'](#event-targetdestroyed)
   * [browser.browserContexts()](#browserbrowsercontexts)
   * [browser.close()](#browserclose)
-  * [browser.createIncognitoBrowserContext()](#browsercreateincognitobrowsercontext)
+  * [browser.createIncognitoBrowserContext([options])](#browsercreateincognitobrowsercontextoptions)
   * [browser.defaultBrowserContext()](#browserdefaultbrowsercontext)
   * [browser.disconnect()](#browserdisconnect)
   * [browser.isConnected()](#browserisconnected)
@@ -197,6 +197,7 @@
   * [page.waitForFileChooser([options])](#pagewaitforfilechooseroptions)
   * [page.waitForFunction(pageFunction[, options[, ...args]])](#pagewaitforfunctionpagefunction-options-args)
   * [page.waitForNavigation([options])](#pagewaitfornavigationoptions)
+  * [page.waitForNetworkIdle([options])](#pagewaitfornetworkidleoptions)
   * [page.waitForRequest(urlOrPredicate[, options])](#pagewaitforrequesturlorpredicate-options)
   * [page.waitForResponse(urlOrPredicate[, options])](#pagewaitforresponseurlorpredicate-options)
   * [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
@@ -306,7 +307,7 @@
   * [elementHandle.boundingBox()](#elementhandleboundingbox)
   * [elementHandle.boxModel()](#elementhandleboxmodel)
   * [elementHandle.click([options])](#elementhandleclickoptions)
-  * [elementHandle.clickablePoint()](#elementhandleclickablepoint)
+  * [elementHandle.clickablePoint([offset])](#elementhandleclickablepointoffset)
   * [elementHandle.contentFrame()](#elementhandlecontentframe)
   * [elementHandle.dispose()](#elementhandledispose)
   * [elementHandle.drag(target)](#elementhandledragtarget)
@@ -321,7 +322,7 @@
   * [elementHandle.getProperties()](#elementhandlegetproperties)
   * [elementHandle.getProperty(propertyName)](#elementhandlegetpropertypropertyname)
   * [elementHandle.hover()](#elementhandlehover)
-  * [elementHandle.isIntersectingViewport()](#elementhandleisintersectingviewport)
+  * [elementHandle.isIntersectingViewport([options])](#elementhandleisintersectingviewportoptions)
   * [elementHandle.jsonValue()](#elementhandlejsonvalue)
   * [elementHandle.press(key[, options])](#elementhandlepresskey-options)
   * [elementHandle.screenshot([options])](#elementhandlescreenshotoptions)
@@ -462,8 +463,9 @@ You will then need to call [`puppeteer.connect([options])`](#puppeteerconnectopt
 Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wiki/Environment_variable) to aid its operations.
 If Puppeteer doesn't find them in the environment during the installation step, a lowercased variant of these variables will be used from the [npm config](https://docs.npmjs.com/cli/config).
 
-- `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are used to download and run Chromium.
+- `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are used to download and run the browser.
 - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step.
+- `PUPPETEER_TMP_DIR` - defines the directory to be used by Puppeteer for creating temporary files. Defaults to [`os.tmpdir()`](https://nodejs.org/api/os.html#os_os_tmpdir).
 - `PUPPETEER_DOWNLOAD_HOST` - overwrite URL prefix that is used to download Chromium. Note: this includes protocol and might even include path prefix. Defaults to `https://storage.googleapis.com`.
 - `PUPPETEER_DOWNLOAD_PATH` - overwrite the path for the downloads folder. Defaults to `<root>/.local-chromium`, where `<root>` is Puppeteer's package root.
 - `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of Chromium you'd like Puppeteer to use. See [puppeteer.launch([options])](#puppeteerlaunchoptions) on how executable path is inferred. **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/puppeteer/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
@@ -564,7 +566,7 @@ This methods attaches Puppeteer to an existing browser instance.
 - `options` <[Object]> Set of configurable options to set on the browser. Can have the following fields:
   - `headless` <[boolean]> Whether to run browser in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`.
   - `args` <[Array]<[string]>> Additional arguments to pass to the browser instance. The list of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
-  - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md).
+  - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/user_data_dir.md).
   - `devtools` <[boolean]> Whether to auto-open a DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
 - returns: <[Array]<[string]>>
 
@@ -645,7 +647,7 @@ try {
   - `handleSIGHUP` <[boolean]> Close the browser process on SIGHUP. Defaults to `true`.
   - `timeout` <[number]> Maximum time in milliseconds to wait for the browser instance to start. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
   - `dumpio` <[boolean]> Whether to pipe the browser process stdout and stderr into `process.stdout` and `process.stderr`. Defaults to `false`.
-  - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md).
+  - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/user_data_dir.md).
   - `env` <[Object]> Specify environment variables that will be visible to the browser. Defaults to `process.env`.
   - `devtools` <[boolean]> Whether to auto-open a DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
   - `pipe` <[boolean]> Connects to the browser over a pipe instead of a WebSocket. Defaults to `false`.
@@ -885,8 +887,10 @@ Closes Chromium and all of its pages (if any were opened). The [Browser] object 
 
 During the process of closing the browser, Puppeteer attempts to delete the temp folder created exclusively for this browser instance. If this fails (either because a file in the temp folder is locked by another process or because of insufficient permissions) an error is logged. This implies that: a) the folder and/or its content is not fully deleted; and b) the connection with the browser is not properly disposed (see [browser.disconnect()](#browserdisconnect)).
 
-#### browser.createIncognitoBrowserContext()
-
+#### browser.createIncognitoBrowserContext([options])
+- `options` <[Object]> Set of configurable options to set on the browserContext. Can have the following fields:
+  - `proxyServer` <[string]> Optional proxy server with optional port to use for all requests. Username and password can be set in [page.authenticate(credentials)](#pageauthenticatecredentials).
+  - `proxyBypassList` <[string]> Optional: Bypass the proxy for the given semi-colon-separated list of hosts.
 - returns: <[Promise]<[BrowserContext]>>
 
 Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.
@@ -1093,6 +1097,7 @@ Creates a new page in the browser context.
   - `'clipboard-read'`
   - `'clipboard-write'`
   - `'payment-handler'`
+  - `'persistent-storage'`
 - returns: <[Promise]>
 
 ```js
@@ -1389,7 +1394,8 @@ Shortcut for [page.mainFrame().$x(expression)](#framexexpression)
   - `url` <[string]> URL of a script to be added.
   - `path` <[string]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `content` <[string]> Raw JavaScript content to be injected into frame.
-  - `type` <[string]> Script type. Use 'module' in order to load a JavaScript ES6 module. See [script](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script) for more details.
+  - `type` <[string]> Script type. Use 'module' in order to load a Javascript ES6 module. See [script](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script) for more details.
+  - `id` <[string]> id attribute to add to the script tag.
 - returns: <[Promise]<[ElementHandle]>> which resolves to the added tag when the script's onload fires or when the script content was injected into frame.
 
 Adds a `<script>` tag into the page with the desired URL or content.
@@ -1710,7 +1716,6 @@ await page.evaluate(() => matchMedia('print').matches);
 - returns: <[Promise]>
 
 > **NOTE** This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644). To set the page offline, you can use [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled).
-
 
 ```js
 const puppeteer = require('puppeteer');
@@ -2085,6 +2090,7 @@ Page is guaranteed to have a main frame which persists during navigations.
     - `left` <[string]|[number]> Left margin, accepts values labeled with units.
   - `preferCSSPageSize` <[boolean]> Give any CSS `@page` size declared in the page priority over what is declared in `width` and `height` or `format` options. Defaults to `false`, which will scale the content to fit the paper size.
   - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
+  - `timeout` <[number]> Maximum time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
 - returns: <[Promise]<[Buffer]>> Promise which resolves with PDF buffer.
 
 > **NOTE** Generating a pdf is currently only supported in Chrome headless.
@@ -2172,7 +2178,7 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
 
 - `options` <[Object]> Options object which might have the following properties:
   - `path` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the image won't be saved to the disk.
-  - `type` <[string]> Specify screenshot type, can be either `jpeg` or `png`. Defaults to 'png'.
+  - `type` <[string]> Specify screenshot type, can be either `jpeg`, `png` or `webp`. Defaults to 'png'.
   - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `png` images.
   - `fullPage` <[boolean]> When true, takes a screenshot of the full scrollable page. Defaults to `false`.
   - `clip` <[Object]> An object which specifies clipping region of the page. Should have the following fields:
@@ -2327,7 +2333,7 @@ await page.setGeolocation({ latitude: 59.95, longitude: 30.31667 });
 
 #### page.setOfflineMode(enabled)
 
-- `enabled` <[boolean]> When `true`, enables offline mode for the page. 
+- `enabled` <[boolean]> When `true`, enables offline mode for the page.
 - returns: <[Promise]>
 
 > **NOTE** while this method sets the network connection to offline, it does not change the parameters used in [page.emulateNetworkConditions(networkConditions)](#pageemulatenetworkconditionsnetworkconditions).
@@ -2845,6 +2851,17 @@ const [response] = await Promise.all([
 **NOTE** Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
 
 Shortcut for [page.mainFrame().waitForNavigation(options)](#framewaitfornavigationoptions).
+
+#### page.waitForNetworkIdle([options])
+- `options` <[Object]> Optional waiting parameters
+  - `timeout` <[number]> Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to disable the timeout. The default value can be changed by using the [page.setDefaultTimeout(timeout)](#pagesetdefaulttimeouttimeout) method.
+  - `idleTime` <[number]> How long to wait for no network requests in milliseconds, defaults to 500 milliseconds.
+- returns: <[Promise]<void>> Promise which resolves when network is idle.
+
+```js
+page.evaluate(() => fetch('some-url'));
+page.waitForNetworkIdle(); // The promise resolves after fetch above finishes
+```
 
 #### page.waitForRequest(urlOrPredicate[, options])
 
@@ -3645,7 +3662,8 @@ The method evaluates the XPath expression relative to the frame document as its 
   - `url` <[string]> URL of a script to be added.
   - `path` <[string]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `content` <[string]> Raw JavaScript content to be injected into frame.
-  - `type` <[string]> Script type. Use 'module' in order to load a JavaScript ES6 module. See [script](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script) for more details.
+  - `type` <[string]> Script type. Use 'module' in order to load a Javascript ES6 module. See [script](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script) for more details.
+  - `id` <[string]> id attribute to add to the script tag.
 - returns: <[Promise]<[ElementHandle]>> which resolves to the added tag when the script's onload fires or when the script content was injected into frame.
 
 Adds a `<script>` tag into the page with the desired URL or content.
@@ -4428,13 +4446,19 @@ This method returns boxes of the element, or `null` if the element is not visibl
   - `button` <"left"|"right"|"middle"> Defaults to `left`.
   - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
+  - `offset` <[Object]> Offset in pixels relative to the top-left corder of the border box of the element.
+    - `x` <number> x-offset in pixels relative to the top-left corder of the border box of the element.
+    - `y` <number> y-offset in pixels relative to the top-left corder of the border box of the element.
 - returns: <[Promise]> Promise which resolves when the element is successfully clicked. Promise gets rejected if the element is detached from DOM.
 
 This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to click in the center of the element.
 If the element is detached from DOM, the method throws an error.
 
-#### elementHandle.clickablePoint()
+#### elementHandle.clickablePoint([offset])
 
+- `offset` <[Object]>
+  - `x` <number> x-offset in pixels relative to the top-left corder of the border box of the element.
+  - `y` <number> y-offset in pixels relative to the top-left corder of the border box of the element.
 - returns: <[Promise<[Point]>]> Resolves to the x, y point that describes the element's position.
 
 #### elementHandle.contentFrame()
@@ -4560,8 +4584,9 @@ Fetches a single property from the objectHandle.
 This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
 If the element is detached from DOM, the method throws an error.
 
-#### elementHandle.isIntersectingViewport()
-
+#### elementHandle.isIntersectingViewport([options])
+- `options` <[Object]>
+  - `threshold` <[number]> threshold for the intersection between 0 (no intersection) and 1 (full intersection). Defaults to 1.
 - returns: <[Promise]<[boolean]>> Resolves to true if the element is visible in the current viewport.
 
 #### elementHandle.jsonValue()
@@ -5024,7 +5049,7 @@ The `CDPSession` instances are used to talk raw Chrome Devtools Protocol:
 Useful links:
 
 - Documentation on DevTools Protocol can be found here: [DevTools Protocol Viewer](https://chromedevtools.github.io/devtools-protocol/).
-- Getting Started with DevTools Protocol: https://github.com/aslushnikov/getting-started-with-cdp/blob/master/README.md
+- Getting Started with DevTools Protocol: https://github.com/aslushnikov/getting-started-with-cdp/blob/HEAD/README.md
 
 ```js
 const client = await page.target().createCDPSession();

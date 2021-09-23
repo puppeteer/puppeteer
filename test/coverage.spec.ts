@@ -157,6 +157,41 @@ describe('Coverage specs', function () {
         expect(coverage.length).toBe(0);
       });
     });
+    describe('includeRawScriptCoverage', function () {
+      it('should not include rawScriptCoverage field when disabled', async () => {
+        const { page, server } = getTestState();
+        await page.coverage.startJSCoverage();
+        await page.goto(server.PREFIX + '/jscoverage/simple.html', {
+          waitUntil: 'networkidle0',
+        });
+        const coverage = await page.coverage.stopJSCoverage();
+        expect(coverage.length).toBe(1);
+        expect(coverage[0].rawScriptCoverage).toBeUndefined();
+      });
+      it('should include rawScriptCoverage field when enabled', async () => {
+        const { page, server } = getTestState();
+        await page.coverage.startJSCoverage({
+          includeRawScriptCoverage: true,
+        });
+        await page.goto(server.PREFIX + '/jscoverage/simple.html', {
+          waitUntil: 'networkidle0',
+        });
+        const coverage = await page.coverage.stopJSCoverage();
+        expect(coverage.length).toBe(1);
+        expect(coverage[0].rawScriptCoverage).toBeTruthy();
+      });
+    });
+    // @see https://crbug.com/990945
+    xit('should not hang when there is a debugger statement', async () => {
+      const { page, server } = getTestState();
+
+      await page.coverage.startJSCoverage();
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        debugger; // eslint-disable-line no-debugger
+      });
+      await page.coverage.stopJSCoverage();
+    });
   });
 
   describeChromeOnly('CSSCoverage', function () {
