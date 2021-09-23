@@ -133,7 +133,7 @@ describe('Launcher specs', function () {
     describe('Browser.disconnect', function () {
       it('should reject navigation when browser closes', async () => {
         const { server, puppeteer, defaultBrowserOptions } = getTestState();
-        server.setRoute('/one-style.css', () => { });
+        server.setRoute('/one-style.css', () => {});
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const remote = await puppeteer.connect({
           browserWSEndpoint: browser.wsEndpoint(),
@@ -153,7 +153,7 @@ describe('Launcher specs', function () {
       it('should reject waitForSelector when browser closes', async () => {
         const { server, puppeteer, defaultBrowserOptions } = getTestState();
 
-        server.setRoute('/empty.html', () => { });
+        server.setRoute('/empty.html', () => {});
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const remote = await puppeteer.connect({
           browserWSEndpoint: browser.wsEndpoint(),
@@ -197,7 +197,7 @@ describe('Launcher specs', function () {
         const page = await browser.newPage();
         let error = null;
         const neverResolves = page
-          .evaluate(() => new Promise(() => { }))
+          .evaluate(() => new Promise(() => {}))
           .catch((error_) => (error = error_));
         await browser.close();
         await neverResolves;
@@ -225,7 +225,7 @@ describe('Launcher specs', function () {
         await browser.close();
         expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
-        await rmAsync(userDataDir).catch(() => { });
+        await rmAsync(userDataDir).catch(() => {});
       });
       it('userDataDir argument', async () => {
         const { isChrome, puppeteer, defaultBrowserOptions } = getTestState();
@@ -249,7 +249,7 @@ describe('Launcher specs', function () {
         await browser.close();
         expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
-        await rmAsync(userDataDir).catch(() => { });
+        await rmAsync(userDataDir).catch(() => {});
       });
       it('userDataDir option should restore state', async () => {
         const { server, puppeteer, defaultBrowserOptions } = getTestState();
@@ -268,7 +268,7 @@ describe('Launcher specs', function () {
         expect(await page2.evaluate(() => localStorage.hey)).toBe('hello');
         await browser2.close();
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
-        await rmAsync(userDataDir).catch(() => { });
+        await rmAsync(userDataDir).catch(() => {});
       });
       // This mysteriously fails on Windows on AppVeyor. See
       // https://github.com/puppeteer/puppeteer/issues/4111
@@ -282,8 +282,8 @@ describe('Launcher specs', function () {
         await page.goto(server.EMPTY_PAGE);
         await page.evaluate(
           () =>
-          (document.cookie =
-            'doSomethingOnlyOnce=true; expires=Fri, 31 Dec 9999 23:59:59 GMT')
+            (document.cookie =
+              'doSomethingOnlyOnce=true; expires=Fri, 31 Dec 9999 23:59:59 GMT')
         );
         await browser.close();
 
@@ -295,7 +295,7 @@ describe('Launcher specs', function () {
         );
         await browser2.close();
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
-        await rmAsync(userDataDir).catch(() => { });
+        await rmAsync(userDataDir).catch(() => {});
       });
       it('should return the default arguments', async () => {
         const { isChrome, isFirefox, puppeteer } = getTestState();
