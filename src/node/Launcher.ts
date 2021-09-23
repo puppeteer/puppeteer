@@ -31,7 +31,10 @@ import {
   ChromeReleaseChannel,
   PuppeteerNodeLaunchOptions,
 } from './LaunchOptions.js';
+
 import { Product } from '../common/Product.js';
+
+const tmpDir = () => process.env.PUPPETEER_TMP_DIR || os.tmpdir();
 
 /**
  * Describes a launcher - a class that is able to create and launch a browser instance.
@@ -81,7 +84,7 @@ class ChromeLauncher implements ProductLauncher {
       waitForInitialPage = true,
     } = options;
 
-    const profilePath = path.join(os.tmpdir(), 'puppeteer_dev_chrome_profile-');
+    const profilePath = path.join(tmpDir(), 'puppeteer_dev_chrome_profile-');
     const chromeArguments = [];
     if (!ignoreDefaultArgs) chromeArguments.push(...this.defaultArgs(options));
     else if (Array.isArray(ignoreDefaultArgs))
@@ -385,7 +388,7 @@ class FirefoxLauncher implements ProductLauncher {
 
   async _createProfile(extraPrefs: { [x: string]: unknown }): Promise<string> {
     const profilePath = await mkdtempAsync(
-      path.join(os.tmpdir(), 'puppeteer_dev_firefox_profile-')
+      path.join(tmpDir(), 'puppeteer_dev_firefox_profile-')
     );
     const prefsJS = [];
     const userJS = [];
