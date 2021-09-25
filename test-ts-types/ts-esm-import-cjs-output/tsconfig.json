@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "strict": true,
+    "outDir": "dist",
+    "moduleResolution": "node"
+  },
+  "files": ["good.ts", "bad.ts"]
+}

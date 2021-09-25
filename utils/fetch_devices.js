@@ -19,7 +19,8 @@ const util = require('util');
 const fs = require('fs');
 const path = require('path');
 const puppeteer = require('..');
-const DEVICES_URL = 'https://raw.githubusercontent.com/ChromeDevTools/devtools-frontend/master/front_end/emulated_devices/module.json';
+const DEVICES_URL =
+  'https://raw.githubusercontent.com/ChromeDevTools/devtools-frontend/HEAD/front_end/emulated_devices/module.json';
 
 const template = `/**
  * Copyright 2017 Google Inc. All rights reserved.
@@ -80,11 +81,13 @@ async function main(url) {
   let json = null;
   try {
     json = JSON.parse(text);
-  } catch (e) {
-    console.error(`FAILED: error parsing response - ${e.message}`);
+  } catch (error) {
+    console.error(`FAILED: error parsing response - ${error.message}`);
     return;
   }
-  const devicePayloads = json.extensions.filter(extension => extension.type === 'emulated-device').map(extension => extension.device);
+  const devicePayloads = json.extensions
+    .filter((extension) => extension.type === 'emulated-device')
+    .map((extension) => extension.device);
   let devices = [];
   for (const payload of devicePayloads) {
     let names = [];
@@ -92,24 +95,25 @@ async function main(url) {
       names = ['iPhone 6', 'iPhone 7', 'iPhone 8'];
     else if (payload.title === 'iPhone 6/7/8 Plus')
       names = ['iPhone 6 Plus', 'iPhone 7 Plus', 'iPhone 8 Plus'];
-    else if (payload.title === 'iPhone 5/SE')
-      names = ['iPhone 5', 'iPhone SE'];
-    else
-      names = [payload.title];
+    else if (payload.title === 'iPhone 5/SE') names = ['iPhone 5', 'iPhone SE'];
+    else names = [payload.title];
     for (const name of names) {
       const device = createDevice(chromeVersion, name, payload, false);
       const landscape = createDevice(chromeVersion, name, payload, true);
       devices.push(device);
-      if (landscape.viewport.width !== device.viewport.width || landscape.viewport.height !== device.viewport.height)
+      if (
+        landscape.viewport.width !== device.viewport.width ||
+        landscape.viewport.height !== device.viewport.height
+      )
         devices.push(landscape);
     }
   }
-  devices = devices.filter(device => device.viewport.isMobile);
+  devices = devices.filter((device) => device.viewport.isMobile);
   devices.sort((a, b) => a.name.localeCompare(b.name));
   // Use single-quotes instead of double-quotes to conform with codestyle.
   const serialized = JSON.stringify(devices, null, 2)
-      .replace(/'/g, `\\'`)
-      .replace(/"/g, `'`);
+    .replace(/'/g, `\\'`)
+    .replace(/"/g, `'`);
   const result = util.format(template, serialized);
   fs.writeFileSync(outputPath, result, 'utf8');
 }
@@ -119,28 +123,32 @@ async function main(url) {
  * @param {string} deviceName
  * @param {*} descriptor
  * @param {boolean} landscape
- * @return {!Object}
+ * @returns {!Object}
  */
 function createDevice(chromeVersion, deviceName, descriptor, landscape) {
   const devicePayload = loadFromJSONV1(descriptor);
-  const viewportPayload = landscape ? devicePayload.horizontal : devicePayload.vertical;
+  const viewportPayload = landscape
+    ? devicePayload.horizontal
+    : devicePayload.vertical;
   return {
     name: deviceName + (landscape ? ' landscape' : ''),
-    userAgent: devicePayload.userAgent.includes('%s') ? util.format(devicePayload.userAgent, chromeVersion) : devicePayload.userAgent,
+    userAgent: devicePayload.userAgent.includes('%s')
+      ? util.format(devicePayload.userAgent, chromeVersion)
+      : devicePayload.userAgent,
     viewport: {
       width: viewportPayload.width,
       height: viewportPayload.height,
       deviceScaleFactor: devicePayload.deviceScaleFactor,
       isMobile: devicePayload.capabilities.includes('mobile'),
       hasTouch: devicePayload.capabilities.includes('touch'),
-      isLandscape: landscape || false
-    }
+      isLandscape: landscape || false,
+    },
   };
 }
 
 /**
  * @param {*} json
- * @return {?Object}
+ * @returns {?Object}
  */
 function loadFromJSONV1(json) {
   /**
@@ -148,48 +156,65 @@ function loadFromJSONV1(json) {
    * @param {string} key
    * @param {string} type
    * @param {*=} defaultValue
-   * @return {*}
+   * @returns {*}
    */
   function parseValue(object, key, type, defaultValue) {
-    if (typeof object !== 'object' || object === null || !object.hasOwnProperty(key)) {
-      if (typeof defaultValue !== 'undefined')
-        return defaultValue;
-      throw new Error('Emulated device is missing required property \'' + key + '\'');
+    if (
+      typeof object !== 'object' ||
+      object === null ||
+      !object.hasOwnProperty(key)
+    ) {
+      if (typeof defaultValue !== 'undefined') return defaultValue;
+      throw new Error(
+        "Emulated device is missing required property '" + key + "'"
+      );
     }
     const value = object[key];
     if (typeof value !== type || value === null)
-      throw new Error('Emulated device property \'' + key + '\' has wrong type \'' + typeof value + '\'');
+      throw new Error(
+        "Emulated device property '" +
+          key +
+          "' has wrong type '" +
+          typeof value +
+          "'"
+      );
     return value;
   }
 
   /**
    * @param {*} object
    * @param {string} key
-   * @return {number}
+   * @returns {number}
    */
   function parseIntValue(object, key) {
     const value = /** @type {number} */ (parseValue(object, key, 'number'));
     if (value !== Math.abs(value))
-      throw new Error('Emulated device value \'' + key + '\' must be integer');
+      throw new Error("Emulated device value '" + key + "' must be integer");
     return value;
   }
 
   /**
    * @param {*} json
-   * @return {!{width: number, height: number}}
+   * @returns {!{width: number, height: number}}
    */
   function parseOrientation(json) {
     const result = {};
     const minDeviceSize = 50;
     const maxDeviceSize = 9999;
     result.width = parseIntValue(json, 'width');
-    if (result.width < 0 || result.width > maxDeviceSize ||
-        result.width < minDeviceSize)
+    if (
+      result.width < 0 ||
+      result.width > maxDeviceSize ||
+      result.width < minDeviceSize
+    )
       throw new Error('Emulated device has wrong width: ' + result.width);
 
     result.height = parseIntValue(json, 'height');
-    if (result.height < 0 || result.height > maxDeviceSize ||
-        result.height < minDeviceSize)
+    if (
+      result.height < 0 ||
+      result.height > maxDeviceSize ||
+      result.height < minDeviceSize
+    )
       throw new Error('Emulated device has wrong height: ' + result.height);
 
     return /** @type {!{width: number, height: number}} */ (result);
@@ -197,7 +222,9 @@ function loadFromJSONV1(json) {
 
   const result = {};
   result.type = /** @type {string} */ (parseValue(json, 'type', 'string'));
-  result.userAgent = /** @type {string} */ (parseValue(json, 'user-agent', 'string'));
+  result.userAgent = /** @type {string} */ (
+    parseValue(json, 'user-agent', 'string')
+  );
 
   const capabilities = parseValue(json, 'capabilities', 'object', []);
   if (!Array.isArray(capabilities))
@@ -209,18 +236,26 @@ function loadFromJSONV1(json) {
     result.capabilities.push(capabilities[i]);
   }
 
-  result.deviceScaleFactor = /** @type {number} */ (parseValue(json['screen'], 'device-pixel-ratio', 'number'));
+  result.deviceScaleFactor = /** @type {number} */ (
+    parseValue(json['screen'], 'device-pixel-ratio', 'number')
+  );
   if (result.deviceScaleFactor < 0 || result.deviceScaleFactor > 100)
-    throw new Error('Emulated device has wrong deviceScaleFactor: ' + result.deviceScaleFactor);
+    throw new Error(
+      'Emulated device has wrong deviceScaleFactor: ' + result.deviceScaleFactor
+    );
 
-  result.vertical = parseOrientation(parseValue(json['screen'], 'vertical', 'object'));
-  result.horizontal = parseOrientation(parseValue(json['screen'], 'horizontal', 'object'));
+  result.vertical = parseOrientation(
+    parseValue(json['screen'], 'vertical', 'object')
+  );
+  result.horizontal = parseOrientation(
+    parseValue(json['screen'], 'horizontal', 'object')
+  );
   return result;
 }
 
 /**
  * @param {url}
- * @return {!Promise}
+ * @returns {!Promise}
  */
 function httpGET(url) {
   let fulfill, reject;
@@ -228,11 +263,13 @@ function httpGET(url) {
     fulfill = res;
     reject = rej;
   });
-  const driver = url.startsWith('https://') ? require('https') : require('http');
-  const request = driver.get(url, response => {
+  const driver = url.startsWith('https://')
+    ? require('https')
+    : require('http');
+  const request = driver.get(url, (response) => {
     let data = '';
     response.setEncoding('utf8');
-    response.on('data', chunk => data += chunk);
+    response.on('data', (chunk) => (data += chunk));
     response.on('end', () => fulfill(data));
     response.on('error', reject);
   });

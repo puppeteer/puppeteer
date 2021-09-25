@@ -65,6 +65,10 @@ class Helper {
     }
   }
 
+  /**
+   * @param {function} nodeFunction
+   * @return {function}
+   */
   static promisify(nodeFunction) {
     function promisified(...args) {
       return new Promise((resolve, reject) => {
