@@ -392,6 +392,15 @@ describe('Launcher specs', function () {
           await browser.close();
         }
       );
+      it('should pass the timeout parameter to browser.waitForTarget', async () => {
+        const { puppeteer, defaultBrowserOptions } = getTestState();
+        const options = Object.assign({}, defaultBrowserOptions, {
+          timeout: 1,
+        });
+        let error = null;
+        await puppeteer.launch(options).catch((error_) => (error = error_));
+        expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+      });
       it('should set the default viewport', async () => {
         const { puppeteer, defaultBrowserOptions } = getTestState();
         const options = Object.assign({}, defaultBrowserOptions, {
