@@ -164,7 +164,7 @@ class ChromeLauncher implements ProductLauncher {
         runner.close.bind(runner)
       );
       if (waitForInitialPage)
-        await browser.waitForTarget((t) => t.type() === 'page');
+        await browser.waitForTarget((t) => t.type() === 'page', { timeout });
       return browser;
     } catch (error) {
       runner.kill();
@@ -336,7 +336,7 @@ class FirefoxLauncher implements ProductLauncher {
         runner.close.bind(runner)
       );
       if (waitForInitialPage)
-        await browser.waitForTarget((t) => t.type() === 'page');
+        await browser.waitForTarget((t) => t.type() === 'page', { timeout });
       return browser;
     } catch (error) {
       runner.kill();
