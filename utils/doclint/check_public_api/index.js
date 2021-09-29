@@ -429,6 +429,13 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method ElementHandle.screenshot() options',
+        {
+          actualName: 'Object',
+          expectedName: 'ScreenshotOptions',
+        },
+      ],
+      [
         'Method Keyboard.down() key',
         {
           actualName: 'string',
