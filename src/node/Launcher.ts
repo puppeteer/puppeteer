@@ -292,8 +292,15 @@ class FirefoxLauncher implements ProductLauncher {
       !firefoxArguments.some((argument) =>
         argument.startsWith('--remote-debugging-')
       )
-    )
+    ) {
+      if (pipe) {
+        assert(
+          debuggingPort === null,
+          'Browser should be launched with either pipe or debugging port - not both.'
+        );
+      }
       firefoxArguments.push(`--remote-debugging-port=${debuggingPort || 0}`);
+    }
 
     let temporaryUserDataDir = null;
 
