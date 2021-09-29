@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-/**
- * Asserts that the given value is truthy.
- * @param value
- * @param message - the error message to throw if the value is not truthy.
- */
-export const assert = (value: unknown, message?: string): void => {
-  if (!value) throw new Error(message);
-};
+export class TaskQueue {
+  private _chain: Promise<void>;
 
-export const assertNever = (value: never, message?: string): void => {
-  if (value) throw new Error(message);
-};
+  constructor() {
+    this._chain = Promise.resolve();
+  }
+
+  postTask<T>(task: () => Promise<T>): Promise<T> {
+    const result = this._chain.then(task);
+    this._chain = result.then(
+      () => undefined,
+      () => undefined
+    );
+    return result;
+  }
+}
