@@ -440,6 +440,31 @@ describe('Launcher specs', function () {
         expect(screenshot).toBeInstanceOf(Buffer);
         await browser.close();
       });
+      it('should set the debugging port', async () => {
+        const { puppeteer, defaultBrowserOptions } = getTestState();
+
+        const options = Object.assign({}, defaultBrowserOptions, {
+          defaultViewport: null,
+          debuggingPort: 9999,
+        });
+        const browser = await puppeteer.launch(options);
+        const url = new URL(browser.wsEndpoint());
+        await browser.close();
+        expect(url.port).toBe('9999');
+      });
+      it('should not allow setting debuggingPort and pipe', async () => {
+        const { puppeteer, defaultBrowserOptions } = getTestState();
+
+        const options = Object.assign({}, defaultBrowserOptions, {
+          defaultViewport: null,
+          debuggingPort: 9999,
+          pipe: true,
+        });
+
+        let error = null;
+        await puppeteer.launch(options).catch((error_) => (error = error_));
+        expect(error.message).toContain('either pipe or debugging port');
+      });
       itChromeOnly(
         'should launch Chrome properly with --no-startup-window and waitForInitialPage=false',
         async () => {
