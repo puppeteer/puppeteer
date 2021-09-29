@@ -82,6 +82,7 @@ class ChromeLauncher implements ProductLauncher {
       slowMo = 0,
       timeout = 30000,
       waitForInitialPage = true,
+      debuggingPort = null,
     } = options;
 
     const profilePath = path.join(tmpDir(), 'puppeteer_dev_chrome_profile-');
@@ -101,10 +102,17 @@ class ChromeLauncher implements ProductLauncher {
       !chromeArguments.some((argument) =>
         argument.startsWith('--remote-debugging-')
       )
-    )
-      chromeArguments.push(
-        pipe ? '--remote-debugging-pipe' : '--remote-debugging-port=0'
-      );
+    ) {
+      if (pipe) {
+        assert(
+          debuggingPort === null,
+          'Browser should be launched with either pipe or debugging port - not both.'
+        );
+        chromeArguments.push('--remote-debugging-pipe');
+      } else {
+        chromeArguments.push(`--remote-debugging-port=${debuggingPort || 0}`);
+      }
+    }
     if (!chromeArguments.some((arg) => arg.startsWith('--user-data-dir'))) {
       temporaryUserDataDir = await mkdtempAsync(profilePath);
       chromeArguments.push(`--user-data-dir=${temporaryUserDataDir}`);
@@ -164,7 +172,7 @@ class ChromeLauncher implements ProductLauncher {
         runner.close.bind(runner)
       );
       if (waitForInitialPage)
-        await browser.waitForTarget((t) => t.type() === 'page');
+        await browser.waitForTarget((t) => t.type() === 'page', { timeout });
       return browser;
     } catch (error) {
       runner.kill();
@@ -206,16 +214,12 @@ class ChromeLauncher implements ProductLauncher {
       headless = !devtools,
       args = [],
       userDataDir = null,
-      debuggingPort = null,
     } = options;
     if (userDataDir)
       chromeArguments.push(`--user-data-dir=${path.resolve(userDataDir)}`);
     if (devtools) chromeArguments.push('--auto-open-devtools-for-tabs');
     if (headless) {
       chromeArguments.push('--headless', '--hide-scrollbars', '--mute-audio');
-    }
-    if (debuggingPort !== null) {
-      chromeArguments.push(`--remote-debugging-port=${debuggingPort}`);
     }
     if (args.every((arg) => arg.startsWith('-')))
       chromeArguments.push('about:blank');
@@ -271,6 +275,7 @@ class FirefoxLauncher implements ProductLauncher {
       timeout = 30000,
       extraPrefsFirefox = {},
       waitForInitialPage = true,
+      debuggingPort = null,
     } = options;
 
     const firefoxArguments = [];
@@ -288,7 +293,7 @@ class FirefoxLauncher implements ProductLauncher {
         argument.startsWith('--remote-debugging-')
       )
     )
-      firefoxArguments.push('--remote-debugging-port=0');
+      firefoxArguments.push(`--remote-debugging-port=${debuggingPort || 0}`);
 
     let temporaryUserDataDir = null;
 
@@ -340,7 +345,7 @@ class FirefoxLauncher implements ProductLauncher {
         runner.close.bind(runner)
       );
       if (waitForInitialPage)
-        await browser.waitForTarget((t) => t.type() === 'page');
+        await browser.waitForTarget((t) => t.type() === 'page', { timeout });
       return browser;
     } catch (error) {
       runner.kill();
