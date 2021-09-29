@@ -137,7 +137,7 @@ describe('network', function () {
     });
   });
 
-  describe('Request.initiator', () => {
+  describeFailsFirefox('Request.initiator', () => {
     it('shoud return the initiator', async () => {
       const { page, server } = getTestState();
 
