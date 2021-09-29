@@ -82,17 +82,6 @@ describe('JSHandle', function () {
         123
       );
     });
-    it('should work with primitives', async () => {
-      const { page } = getTestState();
-
-      const aHandle = await page.evaluateHandle(() => {
-        globalThis.FOO = 123;
-        return window;
-      });
-      expect(await page.evaluate((e: { FOO: number }) => e.FOO, aHandle)).toBe(
-        123
-      );
-    });
   });
 
   describe('JSHandle.getProperty', function () {
