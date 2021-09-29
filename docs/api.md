@@ -269,6 +269,7 @@
   * [frame.goto(url[, options])](#framegotourl-options)
   * [frame.hover(selector)](#framehoverselector)
   * [frame.isDetached()](#frameisdetached)
+  * [frame.isOOPFrame()](#frameisoopframe)
   * [frame.name()](#framename)
   * [frame.parentFrame()](#frameparentframe)
   * [frame.select(selector, ...values)](#frameselectselector-values)
@@ -384,6 +385,7 @@
 - [class: CDPSession](#class-cdpsession)
   * [cdpSession.connection()](#cdpsessionconnection)
   * [cdpSession.detach()](#cdpsessiondetach)
+  * [cdpSession.id()](#cdpsessionid)
   * [cdpSession.send(method[, ...paramArgs])](#cdpsessionsendmethod-paramargs)
 - [class: Coverage](#class-coverage)
   * [coverage.startCSSCoverage([options])](#coveragestartcsscoverageoptions)
@@ -3830,6 +3832,12 @@ If there's no element matching `selector`, the method throws an error.
 
 Returns `true` if the frame has been detached, or `false` otherwise.
 
+#### frame.isOOPFrame()
+
+- returns: <[boolean]>
+
+Returns `true` if the frame is an OOP frame, or `false` otherwise.
+
 #### frame.name()
 
 - returns: <[string]>
@@ -5076,6 +5084,12 @@ Returns the underlying connection associated with the session. Can be used to ob
 
 Detaches the cdpSession from the target. Once detached, the cdpSession object won't emit any events and can't be used
 to send messages.
+
+#### cdpSession.id()
+
+- returns: <[string]>
+
+Returns the session's id.
 
 #### cdpSession.send(method[, ...paramArgs])
 
