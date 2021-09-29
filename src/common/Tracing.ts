@@ -77,7 +77,6 @@ export class Tracing {
       'latencyInfo',
       'disabled-by-default-devtools.timeline.stack',
       'disabled-by-default-v8.cpu_profiler',
-      'disabled-by-default-v8.cpu_profiler.hires',
     ];
     const {
       path = null,

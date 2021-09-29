@@ -228,7 +228,7 @@ describe('ElementHandle specs', function () {
       );
       const error = await button.click().catch((error_) => error_);
       expect(error.message).toBe(
-        'Node is either not visible or not an HTMLElement'
+        'Node is either not clickable or not an HTMLElement'
       );
     });
     it('should throw for recursively hidden nodes', async () => {
@@ -242,7 +242,7 @@ describe('ElementHandle specs', function () {
       );
       const error = await button.click().catch((error_) => error_);
       expect(error.message).toBe(
-        'Node is either not visible or not an HTMLElement'
+        'Node is either not clickable or not an HTMLElement'
       );
     });
     it('should throw for <br> elements', async () => {
@@ -252,7 +252,7 @@ describe('ElementHandle specs', function () {
       const br = await page.$('br');
       const error = await br.click().catch((error_) => error_);
       expect(error.message).toBe(
-        'Node is either not visible or not an HTMLElement'
+        'Node is either not clickable or not an HTMLElement'
       );
     });
   });
@@ -281,6 +281,32 @@ describe('ElementHandle specs', function () {
         const visible = i < 10;
         expect(await button.isIntersectingViewport()).toBe(visible);
       }
+    });
+    it('should work with threshold', async () => {
+      const { page, server } = getTestState();
+
+      await page.goto(server.PREFIX + '/offscreenbuttons.html');
+      // a button almost cannot be seen
+      // sometimes we expect to return false by isIntersectingViewport1
+      const button = await page.$('#btn11');
+      expect(
+        await button.isIntersectingViewport({
+          threshold: 0.001,
+        })
+      ).toBe(false);
+    });
+    it('should work with threshold of 1', async () => {
+      const { page, server } = getTestState();
+
+      await page.goto(server.PREFIX + '/offscreenbuttons.html');
+      // a button almost cannot be seen
+      // sometimes we expect to return false by isIntersectingViewport1
+      const button = await page.$('#btn0');
+      expect(
+        await button.isIntersectingViewport({
+          threshold: 1,
+        })
+      ).toBe(true);
     });
   });
 

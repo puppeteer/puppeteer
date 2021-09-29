@@ -25,6 +25,7 @@ const {
 const EXCLUDE_PROPERTIES = new Set([
   'Browser.create',
   'Headers.fromPayload',
+  'Page.client',
   'Page.create',
   'JSHandle.toString',
   'TimeoutError.name',
@@ -372,6 +373,13 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method ElementHandle.clickablePoint() offset',
+        {
+          actualName: 'Object',
+          expectedName: 'Offset',
+        },
+      ],
+      [
         'Method ElementHandle.press() options',
         {
           actualName: 'Object',
@@ -418,6 +426,13 @@ function compareDocumentations(actual, expected) {
         {
           actualName: 'Object',
           expectedName: 'DragData',
+        },
+      ],
+      [
+        'Method ElementHandle.screenshot() options',
+        {
+          actualName: 'Object',
+          expectedName: 'ScreenshotOptions',
         },
       ],
       [
@@ -653,6 +668,13 @@ function compareDocumentations(actual, expected) {
             '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array',
           expectedName:
             '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array<PuppeteerLifeCycleEvent>',
+        },
+      ],
+      [
+        'Method Browser.createIncognitoBrowserContext() options',
+        {
+          actualName: 'Object',
+          expectedName: 'BrowserContextOptions',
         },
       ],
       [
