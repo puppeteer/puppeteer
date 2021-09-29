@@ -419,7 +419,9 @@ export class BrowserFetcher {
    * @internal
    */
   _getFolderPath(revision: string): string {
-    return path.join(this._downloadsFolder, `${this._platform}-${revision}`);
+    return path.resolve(
+      path.join(this._downloadsFolder, `${this._platform}-${revision}`)
+    );
   }
 }
 
