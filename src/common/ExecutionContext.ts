@@ -62,10 +62,6 @@ export class ExecutionContext {
    * @internal
    */
   _contextName: string;
-  /**
-   * @internal
-   */
-  _uniqueId: string;
 
   /**
    * @internal
@@ -79,7 +75,6 @@ export class ExecutionContext {
     this._world = world;
     this._contextId = contextPayload.id;
     this._contextName = contextPayload.name;
-    this._uniqueId = contextPayload.uniqueId;
   }
 
   /**

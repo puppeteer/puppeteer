@@ -488,36 +488,42 @@ export class Page extends EventEmitter {
     this._screenshotTaskQueue = screenshotTaskQueue;
     this._viewport = null;
 
-    client.on('Target.attachedToTarget', (event) => {
-      if (
-        event.targetInfo.type !== 'worker' &&
-        event.targetInfo.type !== 'iframe'
-      ) {
-        // If we don't detach from service workers, they will never die.
-        // We still want to attach to workers for emitting events.
-        // We still want to attach to iframes so sessions may interact with them.
-        // We detach from all other types out of an abundance of caution.
-        // See https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&q=f:devtools%20-f:out%20%22::kTypePage%5B%5D%22
-        // for the complete list of available types.
-        client
-          .send('Target.detachFromTarget', {
-            sessionId: event.sessionId,
-          })
-          .catch(debugError);
-        return;
-      }
-      if (event.targetInfo.type === 'worker') {
+    client.on(
+      'Target.attachedToTarget',
+      async (event: Protocol.Target.AttachedToTargetEvent) => {
         const session = Connection.fromSession(client).session(event.sessionId);
-        const worker = new WebWorker(
-          session,
-          event.targetInfo.url,
-          this._addConsoleMessage.bind(this),
-          this._handleException.bind(this)
-        );
-        this._workers.set(event.sessionId, worker);
-        this.emit(PageEmittedEvents.WorkerCreated, worker);
+        if (
+          event.targetInfo.type !== 'worker' &&
+          event.targetInfo.type !== 'iframe'
+        ) {
+          // If we don't detach from service workers, they will never die.
+          // We still want to attach to workers for emitting events.
+          // We still want to attach to iframes so sessions may interact with them.
+          // We detach from all other types out of an abundance of caution.
+          // See https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&q=f:devtools%20-f:out%20%22::kTypePage%5B%5D%22
+          // for the complete list of available types.
+
+          // Make sure that the Target continues running.
+          await session.send('Runtime.runIfWaitingForDebugger');
+          client
+            .send('Target.detachFromTarget', {
+              sessionId: event.sessionId,
+            })
+            .catch(debugError);
+          return;
+        }
+        if (event.targetInfo.type === 'worker') {
+          const worker = new WebWorker(
+            session,
+            event.targetInfo.url,
+            this._addConsoleMessage.bind(this),
+            this._handleException.bind(this)
+          );
+          this._workers.set(event.sessionId, worker);
+          this.emit(PageEmittedEvents.WorkerCreated, worker);
+        }
       }
-    });
+    );
     client.on('Target.detachedFromTarget', (event) => {
       const worker = this._workers.get(event.sessionId);
       if (!worker) return;

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /**
  * Copyright 2017 Google Inc. All rights reserved.
  *
@@ -90,7 +91,7 @@ export class FrameManager extends EventEmitter {
 
   private setupEventListeners(session: CDPSession) {
     session.on('Page.frameAttached', (event) => {
-      this._onFrameAttached(event.frameId, event.parentFrameId);
+      this._onFrameAttached(event.frameId, event.parentFrameId, session);
     });
     session.on('Page.frameNavigated', (event) => {
       this._onFrameNavigated(event.frame);
@@ -98,9 +99,12 @@ export class FrameManager extends EventEmitter {
     session.on('Page.navigatedWithinDocument', (event) => {
       this._onFrameNavigatedWithinDocument(event.frameId, event.url);
     });
-    session.on('Page.frameDetached', (event) => {
-      this._onFrameDetached(event.frameId);
-    });
+    session.on(
+      'Page.frameDetached',
+      (event: Protocol.Page.FrameDetachedEvent) => {
+        this._onFrameDetached(event.frameId, event.reason as Protocol.Page.FrameDetachedEventReason);
+      }
+    );
     session.on('Page.frameStoppedLoading', (event) => {
       this._onFrameStoppedLoading(event.frameId);
     });
@@ -124,23 +128,28 @@ export class FrameManager extends EventEmitter {
     });
   }
 
-  async initialize(): Promise<void> {
+  async initialize(client: CDPSession = this._client): Promise<void> {
     const result = await Promise.all([
-      this._client.send('Page.enable'),
-      this._client.send('Page.getFrameTree'),
+      client.send('Page.enable'),
+      client.send('Page.getFrameTree'),
     ]);
 
     const { frameTree } = result[1];
     this._handleFrameTree(frameTree);
     await Promise.all([
-      this._client.send('Page.setLifecycleEventsEnabled', { enabled: true }),
-      this._client
+      // OOP iframes will be waiting for the debugger initially.
+      client.send('Runtime.runIfWaitingForDebugger'),
+      client.send('Page.setLifecycleEventsEnabled', { enabled: true }),
+      client
         .send('Runtime.enable')
         .then(() =>
-          this._ensureIsolatedWorld(this._client, UTILITY_WORLD_NAME)
+          this._ensureIsolatedWorld(client, UTILITY_WORLD_NAME)
         ),
-      this._networkManager.initialize(),
     ]);
+    if(client === this._client) {
+      // Network manager is not aware of OOP iframes yet.
+      await this._networkManager.initialize();
+    }
   }
 
   networkManager(): NetworkManager {
@@ -238,41 +247,19 @@ export class FrameManager extends EventEmitter {
       event.sessionId
     );
     frame.updateClient(session);
-    session.on('Page.frameNavigated', (event) => {
-      this._onFrameNavigated(event.frame);
-    });
-    session.on('Runtime.executionContextCreated', (event) => {
-      this._onExecutionContextCreated(event.context);
-    });
-    session.on('Runtime.executionContextDestroyed', (event) => {
-      this._onExecutionContextDestroyed(event.executionContextId);
-    });
-    session.on('Runtime.executionContextsCleared', () => {
-      this._onExecutionContextsCleared(session);
-    });
-
-    const result = await Promise.all([
-      session.send('Page.enable'),
-      session.send('Page.getFrameTree'),
-    ]);
-
-    const { frameTree } = result[1];
-    this._handleFrameTree(frameTree);
-    await Promise.all([
-      session.send('Page.setLifecycleEventsEnabled', { enabled: true }),
-      session
-        .send('Runtime.enable')
-        .then(() => this._ensureIsolatedWorld(session, UTILITY_WORLD_NAME)),
-      session.send('Runtime.enable'),
-      session.send('Runtime.runIfWaitingForDebugger'),
-    ]);
+    this.setupEventListeners(session);
+    await this.initialize(session);
   }
 
   private async _onDetachedFromTarget(
-    event: Protocol.Target.DetachedFromTargetEvent
+    event: Protocol.Target.DetachedFromTargetEvent,
   ) {
     const frame = this._frames.get(event.targetId);
-    frame.updateClient(this._client);
+    if(frame && frame.isOOPFrame()) {
+      // When an OOP iframe is removed from the page, it 
+      // will only get a Target.detachedFromTarget event.
+      this._removeFramesRecursively(frame);
+    }
   }
 
   _onLifecycleEvent(event: Protocol.Page.LifecycleEventEvent): void {
@@ -314,8 +301,17 @@ export class FrameManager extends EventEmitter {
     return this._frames.get(frameId) || null;
   }
 
-  _onFrameAttached(frameId: string, parentFrameId?: string): void {
-    if (this._frames.has(frameId)) return;
+  _onFrameAttached(frameId: string, parentFrameId?: string, session?: CDPSession): void {
+    if (this._frames.has(frameId)) {
+      const frame = this._frames.get(frameId);
+      if (session && frame.isOOPFrame()) {
+        // If an OOP iframes becomes a normal iframe again
+        // it is first attached to the parent page before 
+        // the target is removed.
+        frame.updateClient(session);
+      }
+      return;
+    }
     assert(parentFrameId);
     const parentFrame = this._frames.get(parentFrameId);
     const frame = new Frame(this, parentFrame, frameId);
@@ -391,12 +387,17 @@ export class FrameManager extends EventEmitter {
     this.emit(FrameManagerEmittedEvents.FrameNavigated, frame);
   }
 
-  _onFrameDetached(frameId: string): void {
+  _onFrameDetached(
+    frameId: string,
+    reason: Protocol.Page.FrameDetachedEventReason
+  ): void {
     const frame = this._frames.get(frameId);
-    if (frame.isOOPFrame()) {
-      return;
+    if (reason === 'remove') {
+      // Only remove the frame if the reason for the detached event is
+      // an actual removement of the frame. 
+      // For frames that become OOP iframes, the reason would be 'swap'.
+      if (frame) this._removeFramesRecursively(frame);
     }
-    if (frame) this._removeFramesRecursively(frame);
   }
 
   _onExecutionContextCreated(
@@ -437,6 +438,8 @@ export class FrameManager extends EventEmitter {
 
   private _onExecutionContextsCleared(session: CDPSession): void {
     for (const context of this._contextIdToContext.values()) {
+      // Make sure to only clear execution contexts that belong
+      // to the current session.
       if (context._client !== session) continue;
       if (context._world) context._world._setContext(null);
     }
@@ -636,19 +639,7 @@ export class Frame {
     this._detached = false;
 
     this._loaderId = '';
-    this._client = frameManager._client;
-    this._mainWorld = new DOMWorld(
-      this._client,
-      frameManager,
-      this,
-      frameManager._timeoutSettings
-    );
-    this._secondaryWorld = new DOMWorld(
-      this._client,
-      frameManager,
-      this,
-      frameManager._timeoutSettings
-    );
+    this.updateClient(frameManager._client);
 
     this._childFrames = new Set();
     if (this._parentFrame) this._parentFrame._childFrames.add(this);
@@ -660,13 +651,13 @@ export class Frame {
   updateClient(client: CDPSession): void {
     this._client = client;
     this._mainWorld = new DOMWorld(
-      client,
+      this._client,
       this._frameManager,
       this,
       this._frameManager._timeoutSettings
     );
     this._secondaryWorld = new DOMWorld(
-      client,
+      this._client,
       this._frameManager,
       this,
       this._frameManager._timeoutSettings

@@ -103,6 +103,8 @@ export class DOMWorld {
     frame: Frame,
     timeoutSettings: TimeoutSettings
   ) {
+    // Keep own reference to client because it might differ from the FrameManager's
+    // client for OOP iframes.
     this._client = client;
     this._frameManager = frameManager;
     this._frame = frame;

@@ -97,6 +97,8 @@ export class WebWorker extends EventEmitter {
 
     // This might fail if the target is closed before we receive all execution contexts.
     this._client.send('Runtime.enable').catch(debugError);
+    // Make sure that the web worker continues running.
+    this._client.send('Runtime.runIfWaitingForDebugger').catch(debugError);
     this._client.on('Runtime.consoleAPICalled', (event) =>
       consoleAPICalled(
         event.type,
