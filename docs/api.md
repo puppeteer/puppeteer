@@ -341,6 +341,7 @@
   * [httpRequest.finalizeInterceptions()](#httprequestfinalizeinterceptions)
   * [httpRequest.frame()](#httprequestframe)
   * [httpRequest.headers()](#httprequestheaders)
+  * [httpRequest.initiator()](#httprequestinitiator)
   * [httpRequest.isNavigationRequest()](#httprequestisnavigationrequest)
   * [httpRequest.method()](#httprequestmethod)
   * [httpRequest.postData()](#httprequestpostdata)
@@ -4791,6 +4792,14 @@ When in Cooperative Mode, awaits pending interception handlers and then decides 
 #### httpRequest.headers()
 
 - returns: <[Object]> An object with HTTP headers associated with the request. All header names are lower-case.
+
+#### httpRequest.initiator()
+
+- returns: <[Object]> An object describing the initiator of the request
+  - `type` <[string]> Type of this initiator. Possible values: `parser`, `script`, `preload`, `SignedExchange` and `other`.
+  - `stack` <?[Object]> JavaScript stack trace for the initiator, set for `script` only.
+  - `url` <?[string]> Initiator URL, set for `parser`, `script` and `SignedExchange` type.
+  - `lineNumber` <?[number]> 0 based initiator line number, set for `parser` and `script`.
 
 #### httpRequest.isNavigationRequest()
 
