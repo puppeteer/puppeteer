@@ -1364,13 +1364,25 @@ export class Page extends EventEmitter {
    */
   async exposeFunction(
     name: string,
-    puppeteerFunction: Function
+    puppeteerFunction: Function | { default: Function }
   ): Promise<void> {
     if (this._pageBindings.has(name))
       throw new Error(
         `Failed to add page binding with name ${name}: window['${name}'] already exists!`
       );
-    this._pageBindings.set(name, puppeteerFunction);
+
+    let exposedFunction: Function;
+    if (typeof puppeteerFunction === 'function') {
+      exposedFunction = puppeteerFunction;
+    } else if (typeof puppeteerFunction.default === 'function') {
+      exposedFunction = puppeteerFunction.default;
+    } else {
+      throw new Error(
+        `Failed to add page binding with name ${name}: ${puppeteerFunction} is not a function or a module with a default export.`
+      );
+    }
+
+    this._pageBindings.set(name, exposedFunction);
 
     const expression = helper.pageBindingInitString('exposedFun', name);
     await this._client.send('Runtime.addBinding', { name: name });

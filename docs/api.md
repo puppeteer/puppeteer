@@ -1875,7 +1875,7 @@ await page.evaluateOnNewDocument(preloadFile);
 #### page.exposeFunction(name, puppeteerFunction)
 
 - `name` <[string]> Name of the function on the window object
-- `puppeteerFunction` <[function]> Callback function which will be called in Puppeteer's context.
+- `puppeteerFunction` <[function]> Callback function which will be called in Puppeteer's context. Can also be a module with a default export.
 - returns: <[Promise]>
 
 The method adds a function called `name` on the page's `window` object.
