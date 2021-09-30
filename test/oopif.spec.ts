@@ -188,8 +188,11 @@ describeChromeOnly('OOPIF', function () {
   it('should support frames within OOP iframes', async () => {
     const { server } = getTestState();
 
+    const oopIframePromise = page.waitForFrame(frame => {
+      return frame.url().endsWith('/oopif.html');
+    });
     await page.goto(server.PREFIX + '/dynamic-oopif.html');
-    const oopIframe = page.frames().find(f => f.url().endsWith('/oopif.html'));
+    const oopIframe = await oopIframePromise;
     await utils.attachFrame(
       oopIframe,
       'frame1',

@@ -1992,6 +1992,46 @@ export class Page extends EventEmitter {
   }
 
   /**
+   * @param urlOrPredicate - A URL or predicate to wait for.
+   * @param options - Optional waiting parameters
+   * @returns Promise which resolves to the matched frame.
+   * @example
+   * ```js
+   * const frame = await page.waitForFrame(async (frame) => {
+   *   return frame.name() === 'Test';
+   * });
+   * ```
+   * @remarks
+   * Optional Parameter have:
+   *
+   * - `timeout`: Maximum wait time in milliseconds, defaults to `30` seconds,
+   * pass `0` to disable the timeout. The default value can be changed by using
+   * the {@link Page.setDefaultTimeout} method.
+   */
+  async waitForFrame(
+    urlOrPredicate: string | ((frame: Frame) => boolean | Promise<boolean>),
+    options: { timeout?: number } = {}
+  ): Promise<Frame> {
+    const { timeout = this._timeoutSettings.timeout() } = options;
+    return helper.waitForEvent(
+      this._frameManager,
+      [
+        FrameManagerEmittedEvents.FrameAttached,
+        FrameManagerEmittedEvents.FrameNavigated,
+      ],
+      async (frame) => {
+        if (helper.isString(urlOrPredicate))
+          return urlOrPredicate === frame.url();
+        if (typeof urlOrPredicate === 'function')
+          return !!(await urlOrPredicate(frame));
+        return false;
+      },
+      timeout,
+      this._sessionClosePromise()
+    );
+  }
+
+  /**
    * This method navigate to the previous page in history.
    * @param options - Navigation parameters
    * @returns Promise which resolves to the main resource response. In case of

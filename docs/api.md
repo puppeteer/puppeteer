@@ -195,6 +195,7 @@
   * [page.viewport()](#pageviewport)
   * [page.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#pagewaitforselectororfunctionortimeout-options-args)
   * [page.waitForFileChooser([options])](#pagewaitforfilechooseroptions)
+  * [page.waitForFrame(urlOrPredicate[, options])](#pagewaitforframeurlorpredicate-options)
   * [page.waitForFunction(pageFunction[, options[, ...args]])](#pagewaitforfunctionpagefunction-options-args)
   * [page.waitForNavigation([options])](#pagewaitfornavigationoptions)
   * [page.waitForNetworkIdle([options])](#pagewaitfornetworkidleoptions)
@@ -2770,6 +2771,19 @@ await fileChooser.accept(['/tmp/myfile.pdf']);
 > **NOTE** This must be called _before_ the file chooser is launched. It will not return a currently active file chooser.
 
 > **NOTE** “File picker” refers to the operating system’s file selection UI that lets you browse to a folder and select file(s) to be shared with the web app. It’s not the “Save file” dialog.
+
+#### page.waitForFrame(urlOrPredicate[, options])
+
+- `urlOrPredicate` <[string]|[Function]> A URL or predicate to wait for.
+- `options` <[Object]> Optional waiting parameters
+  - `timeout` <[number]> Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to disable the timeout. The default value can be changed by using the [page.setDefaultTimeout(timeout)](#pagesetdefaulttimeouttimeout) method.
+- returns: <[Promise]<[Frame]>> Promise which resolves to the matched frame.
+
+```js
+const frame = await page.waitForFrame(async (frame) => {
+  return frame.name() === 'Test';
+});
+```
 
 #### page.waitForFunction(pageFunction[, options[, ...args]])
 
