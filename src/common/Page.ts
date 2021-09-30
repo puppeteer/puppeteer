@@ -490,8 +490,7 @@ export class Page extends EventEmitter {
 
     client.on(
       'Target.attachedToTarget',
-      async (event: Protocol.Target.AttachedToTargetEvent) => {
-        const session = Connection.fromSession(client).session(event.sessionId);
+      (event: Protocol.Target.AttachedToTargetEvent) => {
         if (
           event.targetInfo.type !== 'worker' &&
           event.targetInfo.type !== 'iframe'
@@ -510,6 +509,9 @@ export class Page extends EventEmitter {
           return;
         }
         if (event.targetInfo.type === 'worker') {
+          const session = Connection.fromSession(client).session(
+            event.sessionId
+          );
           const worker = new WebWorker(
             session,
             event.targetInfo.url,

@@ -101,7 +101,10 @@ export class FrameManager extends EventEmitter {
     session.on(
       'Page.frameDetached',
       (event: Protocol.Page.FrameDetachedEvent) => {
-        this._onFrameDetached(event.frameId, event.reason as Protocol.Page.FrameDetachedEventReason);
+        this._onFrameDetached(
+          event.frameId,
+          event.reason as Protocol.Page.FrameDetachedEventReason
+        );
       }
     );
     session.on('Page.frameStoppedLoading', (event) => {
@@ -139,11 +142,9 @@ export class FrameManager extends EventEmitter {
       client.send('Page.setLifecycleEventsEnabled', { enabled: true }),
       client
         .send('Runtime.enable')
-        .then(() =>
-          this._ensureIsolatedWorld(client, UTILITY_WORLD_NAME)
-        ),
+        .then(() => this._ensureIsolatedWorld(client, UTILITY_WORLD_NAME)),
     ]);
-    if(client === this._client) {
+    if (client === this._client) {
       // Network manager is not aware of OOP iframes yet.
       await this._networkManager.initialize();
     }
@@ -249,11 +250,11 @@ export class FrameManager extends EventEmitter {
   }
 
   private async _onDetachedFromTarget(
-    event: Protocol.Target.DetachedFromTargetEvent,
+    event: Protocol.Target.DetachedFromTargetEvent
   ) {
     const frame = this._frames.get(event.targetId);
-    if(frame && frame.isOOPFrame()) {
-      // When an OOP iframe is removed from the page, it 
+    if (frame && frame.isOOPFrame()) {
+      // When an OOP iframe is removed from the page, it
       // will only get a Target.detachedFromTarget event.
       this._removeFramesRecursively(frame);
     }
@@ -298,12 +299,16 @@ export class FrameManager extends EventEmitter {
     return this._frames.get(frameId) || null;
   }
 
-  _onFrameAttached(frameId: string, parentFrameId?: string, session?: CDPSession): void {
+  _onFrameAttached(
+    frameId: string,
+    parentFrameId?: string,
+    session?: CDPSession
+  ): void {
     if (this._frames.has(frameId)) {
       const frame = this._frames.get(frameId);
       if (session && frame.isOOPFrame()) {
         // If an OOP iframes becomes a normal iframe again
-        // it is first attached to the parent page before 
+        // it is first attached to the parent page before
         // the target is removed.
         frame.updateClient(session);
       }
@@ -391,7 +396,7 @@ export class FrameManager extends EventEmitter {
     const frame = this._frames.get(frameId);
     if (reason === 'remove') {
       // Only remove the frame if the reason for the detached event is
-      // an actual removement of the frame. 
+      // an actual removement of the frame.
       // For frames that become OOP iframes, the reason would be 'swap'.
       if (frame) this._removeFramesRecursively(frame);
     }
