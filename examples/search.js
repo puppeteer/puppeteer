@@ -38,7 +38,7 @@ const puppeteer = require('puppeteer');
   await page.click(allResultsSelector);
 
   // Wait for the results page to load and display the results.
-  const resultsSelector = '.gsc-results .gsc-thumbnail-inside a.gs-title';
+  const resultsSelector = '.gsc-results .gs-title';
   await page.waitForSelector(resultsSelector);
 
   // Extract the results from the page.
