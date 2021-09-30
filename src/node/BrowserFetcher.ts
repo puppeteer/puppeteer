@@ -35,7 +35,7 @@ import createHttpsProxyAgent, {
 import { getProxyForUrl } from 'proxy-from-env';
 import { assert } from '../common/assert.js';
 
-const debugFetcher = debug(`puppeteer:fetcher`);
+const debugFetcher = debug('puppeteer:fetcher');
 
 const downloadURLs = {
   chrome: {
@@ -112,10 +112,12 @@ function handleArm64(): void {
     if (stats === undefined) {
       fs.stat('/usr/bin/chromium', function (err, stats) {
         if (stats === undefined) {
-          console.error(`The chromium binary is not available for arm64.`);
-          console.error(`If you are on Ubuntu, you can install with: `);
-          console.error(`\n sudo apt install chromium\n`);
-          console.error(`\n sudo apt install chromium-browser\n`);
+          console.error(
+            'The chromium binary is not available for arm64.' +
+              '\nIf you are on Ubuntu, you can install with: ' +
+              '\n\n sudo apt install chromium\n' +
+              '\n\n sudo apt install chromium-browser\n'
+          );
           throw new Error();
         }
       });
@@ -216,7 +218,7 @@ export class BrowserFetcher {
     else if (platform === 'linux') this._platform = 'linux';
     else if (platform === 'win32')
       this._platform = os.arch() === 'x64' ? 'win64' : 'win32';
-    else assert(this._platform, 'Unsupported platform: ' + os.platform());
+    else assert(this._platform, 'Unsupported platform: ' + platform);
   }
 
   /**
@@ -387,9 +389,7 @@ export class BrowserFetcher {
       else if (this._platform === 'win32' || this._platform === 'win64')
         executablePath = path.join(folderPath, 'firefox', 'firefox.exe');
       else throw new Error('Unsupported platform: ' + this._platform);
-    } else {
-      throw new Error('Unsupported product: ' + this._product);
-    }
+    } else throw new Error('Unsupported product: ' + this._product);
     const url = downloadURL(
       this._product,
       this._platform,
@@ -419,7 +419,7 @@ export class BrowserFetcher {
    * @internal
    */
   _getFolderPath(revision: string): string {
-    return path.join(this._downloadsFolder, this._platform + '-' + revision);
+    return path.resolve(this._downloadsFolder, `${this._platform}-${revision}`);
   }
 }
 
@@ -528,9 +528,9 @@ function installDMG(dmgPath: string, folderPath: string): Promise<void> {
       mountPath = volumes[0];
       readdirAsync(mountPath)
         .then((fileNames) => {
-          const appName = fileNames.filter(
+          const appName = fileNames.find(
             (item) => typeof item === 'string' && item.endsWith('.app')
-          )[0];
+          );
           if (!appName)
             return reject(new Error(`Cannot find app in ${mountPath}`));
           const copyPath = path.join(mountPath, appName);

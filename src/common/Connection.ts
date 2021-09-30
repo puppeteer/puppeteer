@@ -228,7 +228,7 @@ export const CDPSessionEmittedEvents = {
  * events can be subscribed to with `CDPSession.on` method.
  *
  * Useful links: {@link https://chromedevtools.github.io/devtools-protocol/ | DevTools Protocol Viewer}
- * and {@link https://github.com/aslushnikov/getting-started-with-cdp/blob/master/README.md | Getting Started with DevTools Protocol}.
+ * and {@link https://github.com/aslushnikov/getting-started-with-cdp/blob/HEAD/README.md | Getting Started with DevTools Protocol}.
  *
  * @example
  * ```js

@@ -43,6 +43,7 @@ import {
 } from './EvalTypes.js';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
+const xPathPattern = /^\(\/\/[^\)]+\)|^\/\//;
 
 /**
  * We use symbols to prevent external parties listening to these events.
@@ -1068,16 +1069,13 @@ export class Frame {
     options: Record<string, unknown> = {},
     ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle | null> {
-    const xPathPattern = '//';
-
     console.warn(
       'waitFor is deprecated and will be removed in a future release. See https://github.com/puppeteer/puppeteer/issues/6214 for details and how to migrate your code.'
     );
 
     if (helper.isString(selectorOrFunctionOrTimeout)) {
       const string = selectorOrFunctionOrTimeout;
-      if (string.startsWith(xPathPattern))
-        return this.waitForXPath(string, options);
+      if (xPathPattern.test(string)) return this.waitForXPath(string, options);
       return this.waitForSelector(string, options);
     }
     if (helper.isNumber(selectorOrFunctionOrTimeout))

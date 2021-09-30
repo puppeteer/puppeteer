@@ -292,4 +292,36 @@ describeChromeOnly('headful tests', function () {
       await browser.close();
     });
   });
+
+  describe('Page.screenshot', function () {
+    it('should run in parallel in multiple pages', async () => {
+      const { server, puppeteer } = getTestState();
+      const browser = await puppeteer.launch(headfulOptions);
+      const context = await browser.createIncognitoBrowserContext();
+
+      const N = 2;
+      const pages = await Promise.all(
+        Array(N)
+          .fill(0)
+          .map(async () => {
+            const page = await context.newPage();
+            await page.goto(server.PREFIX + '/grid.html');
+            return page;
+          })
+      );
+      const promises = [];
+      for (let i = 0; i < N; ++i)
+        promises.push(
+          pages[i].screenshot({
+            clip: { x: 50 * i, y: 0, width: 50, height: 50 },
+          })
+        );
+      const screenshots = await Promise.all(promises);
+      for (let i = 0; i < N; ++i)
+        expect(screenshots[i]).toBeGolden(`grid-cell-${i}.png`);
+      await Promise.all(pages.map((page) => page.close()));
+
+      await browser.close();
+    });
+  });
 });

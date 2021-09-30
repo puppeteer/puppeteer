@@ -23,6 +23,8 @@ More complex and use case driven examples can be found at [github.com/GoogleChro
 - [puppeteer-examples](https://github.com/checkly/puppeteer-examples) - Puppeteer Headless Chrome examples for real life use cases such as getting useful info from the web pages or common login scenarios.
 - [browserless](https://github.com/joelgriffith/browserless) - Headless Chrome as a service letting you execute Puppeteer scripts remotely. Provides a docker image with configuration for concurrency, launch arguments and more.
 - [Puppeteer Sandbox](https://puppeteersandbox.com) - Puppeteer sandbox environment as a service. Runs Puppeteer scripts and allows saving and embedding them in external sites and markdown files.
+- [Puppeteer on AWS Lambda](https://github.com/jay-deshmukh/headless-chrome-with-puppeteer-on-AWS-lambda-with-serverless-framework) - Running puppeteer on AWS Lambda with Serverless framework
+- [Apify SDK](https://github.com/apifytech/apify-js) - The scalable web crawling and scraping library for JavaScript. Automatically manages a pool of Puppeteer browsers and provides easy error handling, task management, proxy rotation and more.
 
 ## Testing
 
@@ -32,6 +34,7 @@ More complex and use case driven examples can be found at [github.com/GoogleChro
 - [jest-puppeteer](https://github.com/smooth-code/jest-puppeteer) - (almost) Zero configuration tool for setting up and running Jest and Puppeteer easily. Also includes an assertion library for Puppeteer.
 - [puppeteer-har](https://github.com/Everettss/puppeteer-har) - Generate HAR file with puppeteer.
 - [puppetry](https://puppetry.app/) - A desktop app to build Puppeteer/Jest driven tests without coding.
+- [puppeteer-loadtest](https://github.com/svenkatreddy/puppeteer-loadtest) - commandline interface for performing load test on puppeteer scripts.
 - [cucumber-puppeteer-example](https://github.com/mlampedx/cucumber-puppeteer-example) - Example repository demonstrating how to use Puppeeteer and Cucumber for integration testing.
 
 ## Services
