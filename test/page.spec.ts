@@ -1029,6 +1029,20 @@ describe('Page', function () {
       );
       expect(result.x).toBe(7);
     });
+    it('should fallback to default export when passed a module object', async () => {
+      const { page, server } = getTestState();
+      const moduleObject = {
+        default: function (a, b) {
+          return a * b;
+        },
+      };
+      await page.goto(server.EMPTY_PAGE);
+      await page.exposeFunction('compute', moduleObject);
+      const result = await page.evaluate(async function () {
+        return await globalThis.compute(9, 4);
+      });
+      expect(result).toBe(36);
+    });
   });
 
   describeFailsFirefox('Page.Events.PageError', function () {

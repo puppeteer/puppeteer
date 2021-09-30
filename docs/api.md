@@ -342,6 +342,7 @@
   * [httpRequest.finalizeInterceptions()](#httprequestfinalizeinterceptions)
   * [httpRequest.frame()](#httprequestframe)
   * [httpRequest.headers()](#httprequestheaders)
+  * [httpRequest.initiator()](#httprequestinitiator)
   * [httpRequest.isNavigationRequest()](#httprequestisnavigationrequest)
   * [httpRequest.method()](#httprequestmethod)
   * [httpRequest.postData()](#httprequestpostdata)
@@ -570,6 +571,7 @@ This methods attaches Puppeteer to an existing browser instance.
   - `args` <[Array]<[string]>> Additional arguments to pass to the browser instance. The list of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
   - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/user_data_dir.md).
   - `devtools` <[boolean]> Whether to auto-open a DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
+  - `debuggingPort` <[number]> Specify custom debugging port. Pass `0` to discover a random port. Defaults to `0`.
 - returns: <[Array]<[string]>>
 
 The default flags that Chromium will be launched with.
@@ -650,6 +652,7 @@ try {
   - `timeout` <[number]> Maximum time in milliseconds to wait for the browser instance to start. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
   - `dumpio` <[boolean]> Whether to pipe the browser process stdout and stderr into `process.stdout` and `process.stderr`. Defaults to `false`.
   - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/user_data_dir.md).
+  - `debuggingPort` <[number]> Specify custom debugging port. Pass `0` to discover a random port. Defaults to `0`.
   - `env` <[Object]> Specify environment variables that will be visible to the browser. Defaults to `process.env`.
   - `devtools` <[boolean]> Whether to auto-open a DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
   - `pipe` <[boolean]> Connects to the browser over a pipe instead of a WebSocket. Defaults to `false`.
@@ -1874,7 +1877,7 @@ await page.evaluateOnNewDocument(preloadFile);
 #### page.exposeFunction(name, puppeteerFunction)
 
 - `name` <[string]> Name of the function on the window object
-- `puppeteerFunction` <[function]> Callback function which will be called in Puppeteer's context.
+- `puppeteerFunction` <[function]> Callback function which will be called in Puppeteer's context. Can also be a module with a default export.
 - returns: <[Promise]>
 
 The method adds a function called `name` on the page's `window` object.
@@ -4797,6 +4800,14 @@ When in Cooperative Mode, awaits pending interception handlers and then decides 
 #### httpRequest.headers()
 
 - returns: <[Object]> An object with HTTP headers associated with the request. All header names are lower-case.
+
+#### httpRequest.initiator()
+
+- returns: <[Object]> An object describing the initiator of the request
+  - `type` <[string]> Type of this initiator. Possible values: `parser`, `script`, `preload`, `SignedExchange` and `other`.
+  - `stack` <?[Object]> JavaScript stack trace for the initiator, set for `script` only.
+  - `url` <?[string]> Initiator URL, set for `parser`, `script` and `SignedExchange` type.
+  - `lineNumber` <?[number]> 0 based initiator line number, set for `parser` and `script`.
 
 #### httpRequest.isNavigationRequest()
 
