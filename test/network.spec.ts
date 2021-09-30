@@ -68,7 +68,7 @@ describe('network', function () {
     });
   });
 
-  describe('Request.continue', () => {
+  describeFailsFirefox('Request.continue', () => {
     it('should split a request header at new line characters and add the header multiple times instead', async () => {
       const { page, server } = getTestState();
 
