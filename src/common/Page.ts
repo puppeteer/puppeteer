@@ -502,9 +502,6 @@ export class Page extends EventEmitter {
           // We detach from all other types out of an abundance of caution.
           // See https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&q=f:devtools%20-f:out%20%22::kTypePage%5B%5D%22
           // for the complete list of available types.
-
-          // Make sure that the Target continues running.
-          await session.send('Runtime.runIfWaitingForDebugger');
           client
             .send('Target.detachFromTarget', {
               sessionId: event.sessionId,
@@ -585,7 +582,7 @@ export class Page extends EventEmitter {
       this._frameManager.initialize(),
       this._client.send('Target.setAutoAttach', {
         autoAttach: true,
-        waitForDebuggerOnStart: true,
+        waitForDebuggerOnStart: false,
         flatten: true,
       }),
       this._client.send('Performance.enable'),

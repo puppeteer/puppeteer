@@ -137,8 +137,6 @@ export class FrameManager extends EventEmitter {
     const { frameTree } = result[1];
     this._handleFrameTree(frameTree);
     await Promise.all([
-      // OOP iframes will be waiting for the debugger initially.
-      client.send('Runtime.runIfWaitingForDebugger'),
       client.send('Page.setLifecycleEventsEnabled', { enabled: true }),
       client
         .send('Runtime.enable')
