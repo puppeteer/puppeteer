@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 /**
  * Copyright 2017 Google Inc. All rights reserved.
  *
