@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 /**
  * Copyright 2017 Google Inc. All rights reserved.
  *
@@ -29,9 +28,7 @@ describeChromeOnly('OOPIF', function () {
     const { puppeteer, defaultBrowserOptions } = getTestState();
     browser = await puppeteer.launch(
       Object.assign({}, defaultBrowserOptions, {
-        args: (defaultBrowserOptions.args || []).concat([
-          '--site-per-process',
-        ]),
+        args: (defaultBrowserOptions.args || []).concat(['--site-per-process']),
       })
     );
   });
@@ -188,7 +185,7 @@ describeChromeOnly('OOPIF', function () {
   it('should support frames within OOP iframes', async () => {
     const { server } = getTestState();
 
-    const oopIframePromise = page.waitForFrame(frame => {
+    const oopIframePromise = page.waitForFrame((frame) => {
       return frame.url().endsWith('/oopif.html');
     });
     await page.goto(server.PREFIX + '/dynamic-oopif.html');
@@ -201,9 +198,16 @@ describeChromeOnly('OOPIF', function () {
 
     const frame1 = oopIframe.childFrames()[0];
     expect(frame1.url()).toMatch(/empty.html$/);
-    await utils.navigateFrame(oopIframe, 'frame1', server.CROSS_PROCESS_PREFIX + '/oopif.html');
+    await utils.navigateFrame(
+      oopIframe,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/oopif.html'
+    );
     expect(frame1.url()).toMatch(/oopif.html$/);
-    await frame1.goto(server.CROSS_PROCESS_PREFIX + '/oopif.html#navigate-within-document', { waitUntil: 'load' });
+    await frame1.goto(
+      server.CROSS_PROCESS_PREFIX + '/oopif.html#navigate-within-document',
+      { waitUntil: 'load' }
+    );
     expect(frame1.url()).toMatch(/oopif.html#navigate-within-document$/);
     await utils.detachFrame(oopIframe, 'frame1');
     expect(oopIframe.childFrames()).toHaveLength(0);
