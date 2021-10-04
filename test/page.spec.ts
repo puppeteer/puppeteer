@@ -139,6 +139,23 @@ describe('Page', function () {
       // Two now because we added the handler back.
       expect(handler.callCount).toBe(2);
     });
+
+    it('should correctly added and removed request events', async () => {
+      const { page, server } = getTestState();
+
+      const handler = sinon.spy();
+      page.on('request', handler);
+      await page.goto(server.EMPTY_PAGE);
+      expect(handler.callCount).toBe(1);
+      page.off('request', handler);
+      await page.goto(server.EMPTY_PAGE);
+      // Still one because we removed the handler.
+      expect(handler.callCount).toBe(1);
+      page.on('request', handler);
+      await page.goto(server.EMPTY_PAGE);
+      // Two now because we added the handler back.
+      expect(handler.callCount).toBe(2);
+    });
   });
 
   describeFailsFirefox('Page.Events.error', function () {
