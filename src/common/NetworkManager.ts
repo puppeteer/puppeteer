@@ -388,10 +388,7 @@ export class NetworkManager extends EventEmitter {
     );
     this._requestIdToRequest.set(event.requestId, request);
     this.emit(NetworkManagerEmittedEvents.Request, request);
-    request.finalizeInterceptions().catch((error) => {
-      // This should never happen, but catch just in case.
-      debugError(error);
-    });
+    request.finalizeInterceptions();
   }
 
   _onRequestServedFromCache(

@@ -19,6 +19,7 @@ import { HTTPResponse } from './HTTPResponse.js';
 import { assert } from './assert.js';
 import { helper, debugError } from './helper.js';
 import { Protocol } from 'devtools-protocol';
+import { ProtocolError } from './Errors.js';
 
 /**
  * @public
@@ -229,11 +230,7 @@ export class HTTPRequest {
   async finalizeInterceptions(): Promise<void> {
     await this._interceptActions.reduce(
       (promiseChain, interceptAction) =>
-        promiseChain.then(interceptAction).catch((error) => {
-          // This is here so cooperative handlers that fail do not stop other handlers
-          // from running
-          debugError(error);
-        }),
+        promiseChain.then(interceptAction).catch(handleError),
       Promise.resolve()
     );
     const [resolution] = this.interceptResolution();
@@ -443,12 +440,7 @@ export class HTTPRequest {
         postData: postDataBinaryBase64,
         headers: headers ? headersArray(headers) : undefined,
       })
-      .catch((error) => {
-        // In certain cases, protocol will return error if the request was
-        // already canceled or the page was closed. We should tolerate these
-        // errors.
-        debugError(error);
-      });
+      .catch(handleError);
   }
 
   /**
@@ -540,12 +532,7 @@ export class HTTPRequest {
         responseHeaders: headersArray(responseHeaders),
         body: responseBody ? responseBody.toString('base64') : undefined,
       })
-      .catch((error) => {
-        // In certain cases, protocol will return error if the request was
-        // already canceled or the page was closed. We should tolerate these
-        // errors.
-        debugError(error);
-      });
+      .catch(handleError);
   }
 
   /**
@@ -594,12 +581,7 @@ export class HTTPRequest {
         requestId: this._interceptionId,
         errorReason,
       })
-      .catch((error) => {
-        // In certain cases, protocol will return error if the request was
-        // already canceled or the page was closed. We should tolerate these
-        // errors.
-        debugError(error);
-      });
+      .catch(handleError);
   }
 }
 
@@ -664,6 +646,16 @@ function headersArray(
       result.push({ name, value: headers[name] + '' });
   }
   return result;
+}
+
+async function handleError(error: ProtocolError) {
+  if (['Invalid header'].includes(error.originalMessage)) {
+    throw error;
+  }
+  // In certain cases, protocol will return error if the request was
+  // already canceled or the page was closed. We should tolerate these
+  // errors.
+  debugError(error);
 }
 
 // List taken from
