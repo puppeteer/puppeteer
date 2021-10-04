@@ -18,7 +18,7 @@
  * @public
  */
 export class CustomError extends Error {
-  constructor(message: string) {
+  constructor(message?: string) {
     super(message);
     this.name = this.constructor.name;
     Error.captureStackTrace(this, this.constructor);
@@ -36,6 +36,15 @@ export class CustomError extends Error {
  * @public
  */
 export class TimeoutError extends CustomError {}
+/**
+ * ProtocolError is emitted whenever there is an error from the protocol.
+ *
+ * @public
+ */
+export class ProtocolError extends CustomError {
+  public code?: number;
+  public originalMessage: string;
+}
 /**
  * @public
  */
