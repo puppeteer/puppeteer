@@ -2179,6 +2179,10 @@ export class Page extends EventEmitter {
     });
   }
 
+  /**
+   * Enables CPU throttling to emulate slow CPUs.
+   * @param factor - slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).
+   */
   async emulateCPUThrottling(factor: number | null): Promise<void> {
     assert(
       factor === null || factor >= 1,
