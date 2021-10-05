@@ -2610,7 +2610,7 @@ export class Page extends EventEmitter {
 
     if (options.quality) {
       assert(
-        screenshotType === 'jpeg',
+        screenshotType === 'jpeg' || screenshotType === 'webp',
         'options.quality is unsupported for the ' +
           screenshotType +
           ' screenshots'
