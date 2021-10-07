@@ -64,10 +64,13 @@ export class BrowserRunner {
   start(options: LaunchOptions): void {
     const { handleSIGINT, handleSIGTERM, handleSIGHUP, dumpio, env, pipe } =
       options;
-    let stdio: Array<'ignore' | 'pipe'> = ['pipe', 'pipe', 'pipe'];
+    let stdio: Array<'ignore' | 'pipe'>;
     if (pipe) {
       if (dumpio) stdio = ['ignore', 'pipe', 'pipe', 'pipe', 'pipe'];
       else stdio = ['ignore', 'ignore', 'ignore', 'pipe', 'pipe'];
+    } else {
+      if (dumpio) stdio = ['pipe', 'pipe', 'pipe'];
+      else stdio = ['pipe', 'ignore', 'pipe'];
     }
     assert(!this.proc, 'This process has previously been started.');
     debugLauncher(
