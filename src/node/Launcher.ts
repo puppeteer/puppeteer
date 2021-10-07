@@ -82,6 +82,7 @@ class ChromeLauncher implements ProductLauncher {
       slowMo = 0,
       timeout = 30000,
       waitForInitialPage = true,
+      debuggingPort = null,
     } = options;
 
     const profilePath = path.join(tmpDir(), 'puppeteer_dev_chrome_profile-');
@@ -101,10 +102,17 @@ class ChromeLauncher implements ProductLauncher {
       !chromeArguments.some((argument) =>
         argument.startsWith('--remote-debugging-')
       )
-    )
-      chromeArguments.push(
-        pipe ? '--remote-debugging-pipe' : '--remote-debugging-port=0'
-      );
+    ) {
+      if (pipe) {
+        assert(
+          debuggingPort === null,
+          'Browser should be launched with either pipe or debugging port - not both.'
+        );
+        chromeArguments.push('--remote-debugging-pipe');
+      } else {
+        chromeArguments.push(`--remote-debugging-port=${debuggingPort || 0}`);
+      }
+    }
     if (!chromeArguments.some((arg) => arg.startsWith('--user-data-dir'))) {
       temporaryUserDataDir = await mkdtempAsync(profilePath);
       chromeArguments.push(`--user-data-dir=${temporaryUserDataDir}`);
@@ -267,6 +275,7 @@ class FirefoxLauncher implements ProductLauncher {
       timeout = 30000,
       extraPrefsFirefox = {},
       waitForInitialPage = true,
+      debuggingPort = null,
     } = options;
 
     const firefoxArguments = [];
@@ -283,8 +292,15 @@ class FirefoxLauncher implements ProductLauncher {
       !firefoxArguments.some((argument) =>
         argument.startsWith('--remote-debugging-')
       )
-    )
-      firefoxArguments.push('--remote-debugging-port=0');
+    ) {
+      if (pipe) {
+        assert(
+          debuggingPort === null,
+          'Browser should be launched with either pipe or debugging port - not both.'
+        );
+      }
+      firefoxArguments.push(`--remote-debugging-port=${debuggingPort || 0}`);
+    }
 
     let temporaryUserDataDir = null;
 

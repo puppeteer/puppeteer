@@ -17,7 +17,7 @@
 import { assert } from './assert.js';
 import { helper, debugError } from './helper.js';
 import { ExecutionContext } from './ExecutionContext.js';
-import { Page } from './Page.js';
+import { Page, ScreenshotOptions } from './Page.js';
 import { CDPSession } from './Connection.js';
 import { KeyInput } from './USKeyboardLayout.js';
 import { FrameManager, Frame } from './FrameManager.js';
@@ -813,7 +813,7 @@ export class ElementHandle<
    * {@link Page.screenshot} to take a screenshot of the element.
    * If the element is detached from DOM, the method throws an error.
    */
-  async screenshot(options = {}): Promise<string | Buffer> {
+  async screenshot(options: ScreenshotOptions = {}): Promise<string | Buffer> {
     let needsViewportReset = false;
 
     let boundingBox = await this.boundingBox();

@@ -16,7 +16,7 @@
 
 import type { Readable } from 'stream';
 
-import { EventEmitter } from './EventEmitter.js';
+import { EventEmitter, Handler } from './EventEmitter.js';
 import {
   Connection,
   CDPSession,
@@ -459,6 +459,7 @@ export class Page extends EventEmitter {
 
   private _disconnectPromise?: Promise<Error>;
   private _userDragInterceptionEnabled = false;
+  private _handlerMap = new WeakMap<Handler, Handler>();
 
   /**
    * @internal
@@ -623,11 +624,15 @@ export class Page extends EventEmitter {
     handler: (event: PageEventObject[K]) => void
   ): EventEmitter {
     if (eventName === 'request') {
-      return super.on(eventName, (event: HTTPRequest) => {
+      const wrap = (event: HTTPRequest) => {
         event.enqueueInterceptAction(() =>
           handler(event as PageEventObject[K])
         );
-      });
+      };
+
+      this._handlerMap.set(handler, wrap);
+
+      return super.on(eventName, wrap);
     }
     return super.on(eventName, handler);
   }
@@ -639,6 +644,17 @@ export class Page extends EventEmitter {
     // Note: this method only exists to define the types; we delegate the impl
     // to EventEmitter.
     return super.once(eventName, handler);
+  }
+
+  off<K extends keyof PageEventObject>(
+    eventName: K,
+    handler: (event: PageEventObject[K]) => void
+  ): EventEmitter {
+    if (eventName === 'request') {
+      handler = this._handlerMap.get(handler) || handler;
+    }
+
+    return super.off(eventName, handler);
   }
 
   /**
@@ -1364,13 +1380,25 @@ export class Page extends EventEmitter {
    */
   async exposeFunction(
     name: string,
-    puppeteerFunction: Function
+    puppeteerFunction: Function | { default: Function }
   ): Promise<void> {
     if (this._pageBindings.has(name))
       throw new Error(
         `Failed to add page binding with name ${name}: window['${name}'] already exists!`
       );
-    this._pageBindings.set(name, puppeteerFunction);
+
+    let exposedFunction: Function;
+    if (typeof puppeteerFunction === 'function') {
+      exposedFunction = puppeteerFunction;
+    } else if (typeof puppeteerFunction.default === 'function') {
+      exposedFunction = puppeteerFunction.default;
+    } else {
+      throw new Error(
+        `Failed to add page binding with name ${name}: ${puppeteerFunction} is not a function or a module with a default export.`
+      );
+    }
+
+    this._pageBindings.set(name, exposedFunction);
 
     const expression = helper.pageBindingInitString('exposedFun', name);
     await this._client.send('Runtime.addBinding', { name: name });
@@ -2151,6 +2179,10 @@ export class Page extends EventEmitter {
     });
   }
 
+  /**
+   * Enables CPU throttling to emulate slow CPUs.
+   * @param factor - slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).
+   */
   async emulateCPUThrottling(factor: number | null): Promise<void> {
     assert(
       factor === null || factor >= 1,

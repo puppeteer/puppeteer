@@ -139,6 +139,23 @@ describe('Page', function () {
       // Two now because we added the handler back.
       expect(handler.callCount).toBe(2);
     });
+
+    it('should correctly added and removed request events', async () => {
+      const { page, server } = getTestState();
+
+      const handler = sinon.spy();
+      page.on('request', handler);
+      await page.goto(server.EMPTY_PAGE);
+      expect(handler.callCount).toBe(1);
+      page.off('request', handler);
+      await page.goto(server.EMPTY_PAGE);
+      // Still one because we removed the handler.
+      expect(handler.callCount).toBe(1);
+      page.on('request', handler);
+      await page.goto(server.EMPTY_PAGE);
+      // Two now because we added the handler back.
+      expect(handler.callCount).toBe(2);
+    });
   });
 
   describeFailsFirefox('Page.Events.error', function () {
@@ -1028,6 +1045,20 @@ describe('Page', function () {
         async () => globalThis.complexObject({ x: 5 }, { x: 2 })
       );
       expect(result.x).toBe(7);
+    });
+    it('should fallback to default export when passed a module object', async () => {
+      const { page, server } = getTestState();
+      const moduleObject = {
+        default: function (a, b) {
+          return a * b;
+        },
+      };
+      await page.goto(server.EMPTY_PAGE);
+      await page.exposeFunction('compute', moduleObject);
+      const result = await page.evaluate(async function () {
+        return await globalThis.compute(9, 4);
+      });
+      expect(result).toBe(36);
     });
   });
 
