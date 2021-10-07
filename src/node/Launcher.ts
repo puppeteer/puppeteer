@@ -529,8 +529,11 @@ class FirefoxLauncher implements ProductLauncher {
       // Make sure opening about:addons will not hit the network
       'extensions.webservice.discoverURL': `http://${server}/dummy/discoveryURL`,
 
-      // Force disable Fission until the Remote Agent is compatible
-      'fission.autostart': false,
+      // Temporarily force disable BFCache in parent (https://bit.ly/bug-1732263)
+      'fission.bfcacheInParent': false,
+
+      // Force all web content to use a single content process
+      'fission.webContentIsolationStrategy': 0,
 
       // Allow the application to have focus even it runs in the background
       'focusmanager.testmode': true,
