@@ -191,7 +191,7 @@ export class JSHandle<HandleObjectType = unknown> {
 
   /** Fetches a single property from the referenced object.
    */
-  async getProperty(propertyName: string): Promise<JSHandle | undefined> {
+  async getProperty(propertyName: string): Promise<JSHandle> {
     const objectHandle = await this.evaluateHandle(
       (object: Element, propertyName: string) => {
         const result = { __proto__: null };
@@ -201,7 +201,8 @@ export class JSHandle<HandleObjectType = unknown> {
       propertyName
     );
     const properties = await objectHandle.getProperties();
-    const result = properties.get(propertyName) || null;
+    const result = properties.get(propertyName);
+    assert(result instanceof JSHandle);
     await objectHandle.dispose();
     return result;
   }
