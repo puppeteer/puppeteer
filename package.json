@@ -72,7 +72,7 @@
     "ws": "7.4.6"
   },
   "devDependencies": {
-    "@commitlint/cli": "11.0.0",
+    "@commitlint/cli": "13.2.0",
     "@commitlint/config-conventional": "11.0.0",
     "@microsoft/api-documenter": "7.13.58",
     "@microsoft/api-extractor": "7.15.1",
