@@ -78,7 +78,7 @@
     "@microsoft/api-extractor": "7.15.1",
     "@types/debug": "0.0.31",
     "@types/mime": "2.0.3",
-    "@types/mocha": "7.0.2",
+    "@types/mocha": "9.0.0",
     "@types/node": "14.14.45",
     "@types/proxy-from-env": "1.0.1",
     "@types/rimraf": "2.0.2",
