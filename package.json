@@ -98,7 +98,7 @@
     "eslint-plugin-unicorn": "22.0.0",
     "esprima": "4.0.0",
     "expect": "25.2.7",
-    "husky": "4.3.8",
+    "husky": "7.0.2",
     "jpeg-js": "0.3.7",
     "mime": "2.5.2",
     "minimist": "1.2.0",
