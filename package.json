@@ -73,7 +73,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "13.2.0",
-    "@commitlint/config-conventional": "11.0.0",
+    "@commitlint/config-conventional": "13.2.0",
     "@microsoft/api-documenter": "7.13.58",
     "@microsoft/api-extractor": "7.15.1",
     "@types/debug": "0.0.31",
@@ -94,7 +94,7 @@
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-import": "2.22.1",
     "eslint-plugin-mocha": "8.1.0",
-    "eslint-plugin-prettier": "3.4.0",
+    "eslint-plugin-prettier": "4.0.0",
     "eslint-plugin-unicorn": "22.0.0",
     "esprima": "4.0.0",
     "expect": "25.2.7",
