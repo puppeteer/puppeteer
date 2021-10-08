@@ -68,7 +68,7 @@
     "proxy-from-env": "1.1.0",
     "rimraf": "3.0.2",
     "tar-fs": "2.0.0",
-    "unbzip2-stream": "1.3.3",
+    "unbzip2-stream": "1.4.3",
     "ws": "7.4.6"
   },
   "devDependencies": {
