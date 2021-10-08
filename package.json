@@ -84,7 +84,7 @@
     "@types/rimraf": "3.0.2",
     "@types/sinon": "10.0.4",
     "@types/tar-fs": "1.16.2",
-    "@types/ws": "7.4.4",
+    "@types/ws": "8.2.0",
     "@typescript-eslint/eslint-plugin": "4.23.0",
     "@typescript-eslint/parser": "4.23.0",
     "@web/test-runner": "0.12.20",
