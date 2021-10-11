@@ -174,7 +174,6 @@ jobs:
 
       - name: Run unit tests on Firefox
         uses: nick-invision/retry@v2
-        continue-on-error: true
         env:
           FIREFOX: true
           MOZ_WEBRENDER: 0
