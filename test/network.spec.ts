@@ -25,6 +25,7 @@ import {
   itFailsFirefox,
   describeFailsFirefox,
 } from './mocha-utils'; // eslint-disable-line import/extensions
+import { HTTPResponse } from '../lib/cjs/puppeteer/api-docs-entry.js';
 
 describe('network', function () {
   setupTestBrowserHooks();
@@ -390,6 +391,43 @@ describe('network', function () {
       );
       const responseBuffer = await response.buffer();
       expect(responseBuffer.equals(imageBuffer)).toBe(true);
+    });
+    it('should throw if the response does not have a body', async () => {
+      const { page, server } = getTestState();
+
+      await page.goto(server.PREFIX + '/empty.html');
+
+      server.setRoute('/test.html', (req, res) => {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Headers', 'x-ping');
+        res.end('Hello World');
+      });
+      const url = server.CROSS_PROCESS_PREFIX + '/test.html';
+      const responsePromise = new Promise<HTTPResponse>((resolve) => {
+        page.on('response', (response) => {
+          // Get the preflight response.
+          if (
+            response.request().method() === 'OPTIONS' &&
+            response.url() === url
+          ) {
+            resolve(response);
+          }
+        });
+      });
+
+      // Trigger a request with a preflight.
+      await page.evaluate<(src: string) => void>(async (src) => {
+        const response = await fetch(src, {
+          method: 'POST',
+          headers: { 'x-ping': 'pong' },
+        });
+        return response;
+      }, url);
+
+      const response = await responsePromise;
+      await expect(response.buffer()).rejects.toThrowError(
+        'Could not load body for this request. This might happen if the request is a preflight request for example.'
+      );
     });
   });
 
