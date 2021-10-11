@@ -93,7 +93,7 @@
     "eslint": "7.32.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-import": "2.22.1",
-    "eslint-plugin-mocha": "8.1.0",
+    "eslint-plugin-mocha": "9.0.0",
     "eslint-plugin-prettier": "4.0.0",
     "eslint-plugin-unicorn": "22.0.0",
     "esprima": "4.0.0",
