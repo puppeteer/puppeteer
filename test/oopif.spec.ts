@@ -69,7 +69,7 @@ describeChromeOnly('OOPIF', function () {
       'frame1',
       server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
-    const frame = page.frames()[1];
+    const frame = await page.waitForFrame((frame, frameIdx) => frameIdx === 1);
     expect(frame.url()).toContain('/empty.html');
     await utils.navigateFrame(
       page,
