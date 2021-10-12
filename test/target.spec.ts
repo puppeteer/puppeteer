@@ -113,28 +113,26 @@ describe('Target', function () {
       const { page, server, context } = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      const createdTargetPromise = new Promise<Target>((fulfill) =>
+      const createdTarget = new Promise<Target>((fulfill) =>
         context.once('targetcreated', (target) => fulfill(target))
       );
 
       await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
 
-      const createdTarget = await createdTargetPromise;
-      expect(createdTarget.type()).toBe('service_worker');
-      expect(createdTarget.url()).toBe(
+      expect((await createdTarget).type()).toBe('service_worker');
+      expect((await createdTarget).url()).toBe(
         server.PREFIX + '/serviceworkers/empty/sw.js'
       );
 
-      const destroyedTargetPromise = new Promise((fulfill) =>
+      const destroyedTarget = new Promise((fulfill) =>
         context.once('targetdestroyed', (target) => fulfill(target))
       );
-      await page.evaluate(async () => {
-        const registration = await globalThis.registrationPromise;
-        registration.unregister();
-      });
-
-      const destroyedTarget = await destroyedTargetPromise;
-      expect(destroyedTarget).toBe(createdTarget);
+      await page.evaluate(() =>
+        globalThis.registrationPromise.then((registration) =>
+          registration.unregister()
+        )
+      );
+      expect(await destroyedTarget).toBe(await createdTarget);
     }
   );
   itFailsFirefox('should create a worker from a service worker', async () => {
