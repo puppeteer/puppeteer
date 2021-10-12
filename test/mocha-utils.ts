@@ -157,6 +157,14 @@ export const itChromeOnly = (
   else return xit(description, body);
 };
 
+export const itFirefoxOnly = (
+  description: string,
+  body: Mocha.Func
+): Mocha.Test => {
+  if (isFirefox) return it(description, body);
+  else return xit(description, body);
+};
+
 export const itOnlyRegularInstall = (
   description: string,
   body: Mocha.Func
