@@ -69,7 +69,7 @@
     "rimraf": "3.0.2",
     "tar-fs": "2.0.0",
     "unbzip2-stream": "1.4.3",
-    "ws": "7.4.6"
+    "ws": "8.2.3"
   },
   "devDependencies": {
     "@commitlint/cli": "13.2.0",
