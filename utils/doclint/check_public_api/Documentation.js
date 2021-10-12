@@ -22,8 +22,7 @@ class Documentation {
     this.classesArray = classesArray;
     /** @type {!Map<string, !Documentation.Class>} */
     this.classes = new Map();
-    for (const cls of classesArray)
-      this.classes.set(cls.name, cls);
+    for (const cls of classesArray) this.classes.set(cls.name, cls);
   }
 }
 
@@ -76,7 +75,15 @@ Documentation.Member = class {
    * @param {?Documentation.Type} type
    * @param {!Array<!Documentation.Member>} argsArray
    */
-  constructor(kind, name, type, argsArray, comment = '', returnComment = '', required = true) {
+  constructor(
+    kind,
+    name,
+    type,
+    argsArray,
+    comment = '',
+    returnComment = '',
+    required = true
+  ) {
     this.kind = kind;
     this.name = name;
     this.type = type;
@@ -86,18 +93,24 @@ Documentation.Member = class {
     this.required = required;
     /** @type {!Map<string, !Documentation.Member>} */
     this.args = new Map();
-    for (const arg of argsArray)
-      this.args.set(arg.name, arg);
+    for (const arg of argsArray) this.args.set(arg.name, arg);
   }
 
   /**
    * @param {string} name
    * @param {!Array<!Documentation.Member>} argsArray
    * @param {?Documentation.Type} returnType
-   * @return {!Documentation.Member}
+   * @returns {!Documentation.Member}
    */
   static createMethod(name, argsArray, returnType, returnComment, comment) {
-    return new Documentation.Member('method', name, returnType, argsArray, comment, returnComment);
+    return new Documentation.Member(
+      'method',
+      name,
+      returnType,
+      argsArray,
+      comment,
+      returnComment
+    );
   }
 
   /**
@@ -105,17 +118,25 @@ Documentation.Member = class {
    * @param {!Documentation.Type} type
    * @param {string=} comment
    * @param {boolean=} required
-   * @return {!Documentation.Member}
+   * @returns {!Documentation.Member}
    */
   static createProperty(name, type, comment, required) {
-    return new Documentation.Member('property', name, type, [], comment, undefined, required);
+    return new Documentation.Member(
+      'property',
+      name,
+      type,
+      [],
+      comment,
+      undefined,
+      required
+    );
   }
 
   /**
    * @param {string} name
    * @param {?Documentation.Type=} type
    * @param {string=} comment
-   * @return {!Documentation.Member}
+   * @returns {!Documentation.Member}
    */
   static createEvent(name, type = null, comment) {
     return new Documentation.Member('event', name, type, [], comment);
@@ -134,4 +155,3 @@ Documentation.Type = class {
 };
 
 module.exports = Documentation;
-

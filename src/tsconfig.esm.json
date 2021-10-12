@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "../lib/esm/puppeteer",
+    "module": "esnext"
+  },
+  "references": [{ "path": "../vendor/tsconfig.esm.json" }]
+}

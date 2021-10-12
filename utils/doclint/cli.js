@@ -26,6 +26,8 @@ const RED_COLOR = '\x1b[31m';
 const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
 
+const IS_RELEASE = Boolean(process.env.IS_RELEASE);
+
 run();
 
 async function run() {
@@ -35,36 +37,73 @@ async function run() {
   const messages = [];
   let changedFiles = false;
 
+  if (IS_RELEASE) {
+    const versions = await Source.readFile(
+      path.join(PROJECT_DIR, 'versions.js')
+    );
+    versions.setText(
+      versions.text().replace(`, 'NEXT'],`, `, 'v${VERSION}'],`)
+    );
+    await versions.save();
+  }
+
   // Documentation checks.
-  {
-    const readme = await Source.readFile(path.join(PROJECT_DIR, 'README.md'));
-    const contributing = await Source.readFile(path.join(PROJECT_DIR, 'CONTRIBUTING.md'));
-    const api = await Source.readFile(path.join(PROJECT_DIR, 'docs', 'api.md'));
-    const troubleshooting = await Source.readFile(path.join(PROJECT_DIR, 'docs', 'troubleshooting.md'));
-    const mdSources = [readme, api, troubleshooting, contributing];
+  const readme = await Source.readFile(path.join(PROJECT_DIR, 'README.md'));
+  const contributing = await Source.readFile(
+    path.join(PROJECT_DIR, 'CONTRIBUTING.md')
+  );
+  const api = await Source.readFile(path.join(PROJECT_DIR, 'docs', 'api.md'));
+  const troubleshooting = await Source.readFile(
+    path.join(PROJECT_DIR, 'docs', 'troubleshooting.md')
+  );
+  const mdSources = [readme, api, troubleshooting, contributing];
 
-    const preprocessor = require('./preprocessor');
-    messages.push(...await preprocessor.runCommands(mdSources, VERSION));
-    messages.push(...await preprocessor.ensureReleasedAPILinks([readme], VERSION));
+  const preprocessor = require('./preprocessor');
+  messages.push(...(await preprocessor.runCommands(mdSources, VERSION)));
+  messages.push(
+    ...(await preprocessor.ensureReleasedAPILinks([readme], VERSION))
+  );
 
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    const checkPublicAPI = require('./check_public_api');
-    const jsSources = await Source.readdir(path.join(PROJECT_DIR, 'lib'));
-    messages.push(...await checkPublicAPI(page, mdSources, jsSources));
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  const checkPublicAPI = require('./check_public_api');
+  const tsSources = [
+    /* Source.readdir doesn't deal with nested directories well.
+     * Rather than invest time here when we're going to remove this Doc tooling soon
+     * we'll just list the directories manually.
+     */
+    ...(await Source.readdir(path.join(PROJECT_DIR, 'src'), 'ts')),
+    ...(await Source.readdir(path.join(PROJECT_DIR, 'src', 'common'), 'ts')),
+    ...(await Source.readdir(path.join(PROJECT_DIR, 'src', 'node'), 'ts')),
+  ];
 
-    await browser.close();
+  const tsSourcesNoDefinitions = tsSources.filter(
+    (source) => !source.filePath().endsWith('.d.ts')
+  );
 
-    for (const source of mdSources) {
-      if (!source.hasUpdatedText())
-        continue;
-      await source.save();
-      changedFiles = true;
-    }
+  const jsSources = [
+    ...(await Source.readdir(path.join(PROJECT_DIR, 'lib'))),
+    ...(await Source.readdir(path.join(PROJECT_DIR, 'lib', 'cjs'))),
+    ...(await Source.readdir(
+      path.join(PROJECT_DIR, 'lib', 'cjs', 'puppeteer', 'common')
+    )),
+    ...(await Source.readdir(
+      path.join(PROJECT_DIR, 'lib', 'cjs', 'puppeteer', 'node')
+    )),
+  ];
+  const allSrcCode = [...jsSources, ...tsSourcesNoDefinitions];
+  messages.push(...(await checkPublicAPI(page, mdSources, allSrcCode)));
+
+  await browser.close();
+
+  for (const source of mdSources) {
+    if (!source.hasUpdatedText()) continue;
+    await source.save();
+    changedFiles = true;
   }
 
   // Report results.
-  const errors = messages.filter(message => message.type === 'error');
+  const errors = messages.filter((message) => message.type === 'error');
   if (errors.length) {
     console.log('DocLint Failures:');
     for (let i = 0; i < errors.length; ++i) {
@@ -73,7 +112,7 @@ async function run() {
       console.log(`  ${i + 1}) ${RED_COLOR}${error}${RESET_COLOR}`);
     }
   }
-  const warnings = messages.filter(message => message.type === 'warning');
+  const warnings = messages.filter((message) => message.type === 'warning');
   if (warnings.length) {
     console.log('DocLint Warnings:');
     for (let i = 0; i < warnings.length; ++i) {
@@ -89,7 +128,13 @@ async function run() {
     clearExit = false;
   }
   console.log(`${errors.length} failures, ${warnings.length} warnings.`);
+
+  if (!clearExit && !process.env.GITHUB_ACTIONS)
+    console.log(
+      '\nIs your lib/ directory up to date? You might need to `npm run tsc`.\n'
+    );
+
   const runningTime = Date.now() - startTime;
   console.log(`DocLint Finished in ${runningTime / 1000} seconds`);
-  process.exit(clearExit ? 0 : 1);
+  process.exit(clearExit || IS_RELEASE ? 0 : 1);
 }

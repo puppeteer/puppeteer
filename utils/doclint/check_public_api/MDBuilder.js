@@ -21,7 +21,7 @@ class MDOutline {
   /**
    * @param {!Page} page
    * @param {string} text
-   * @return {!MDOutline}
+   * @returns {!MDOutline}
    */
   static async create(page, text) {
     // Render markdown as HTML.
@@ -30,20 +30,23 @@ class MDOutline {
     const writer = new commonmark.HtmlRenderer();
     const html = writer.render(parsed);
 
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       console.log(msg.text());
     });
     // Extract headings.
     await page.setContent(html);
-    const {classes, errors} = await page.evaluate(() => {
+    const { classes, errors } = await page.evaluate(() => {
       const classes = [];
       const errors = [];
       const headers = document.body.querySelectorAll('h3');
       for (let i = 0; i < headers.length; i++) {
-        const fragment = extractSiblingsIntoFragment(headers[i], headers[i + 1]);
+        const fragment = extractSiblingsIntoFragment(
+          headers[i],
+          headers[i + 1]
+        );
         classes.push(parseClass(fragment));
       }
-      return {classes, errors};
+      return { classes, errors };
 
       /**
        * @param {HTMLLIElement} element
@@ -51,14 +54,23 @@ class MDOutline {
       function parseProperty(element) {
         const clone = element.cloneNode(true);
         const ul = clone.querySelector(':scope > ul');
-        const str = parseComment(extractSiblingsIntoFragment(clone.firstChild, ul));
-        const name = str.substring(0, str.indexOf('<')).replace(/\`/g, '').trim();
+        const str = parseComment(
+          extractSiblingsIntoFragment(clone.firstChild, ul)
+        );
+        const name = str
+          .substring(0, str.indexOf('<'))
+          .replace(/\`/g, '')
+          .trim();
         const type = findType(str);
         const properties = [];
-        const comment = str.substring(str.indexOf('<') + type.length + 2).trim();
+        const comment = str
+          .substring(str.indexOf('<') + type.length + 2)
+          .trim();
         // Strings have enum values instead of properties
         if (!type.includes('string')) {
-          for (const childElement of element.querySelectorAll(':scope > ul > li')) {
+          for (const childElement of element.querySelectorAll(
+            ':scope > ul > li'
+          )) {
             const property = parseProperty(childElement);
             property.required = property.comment.includes('***required***');
             properties.push(property);
@@ -68,13 +80,13 @@ class MDOutline {
           name,
           type,
           comment,
-          properties
+          properties,
         };
       }
 
       /**
        * @param {string} str
-       * @return {string}
+       * @returns {string}
        */
       function findType(str) {
         const start = str.indexOf('<') + 1;
@@ -82,8 +94,7 @@ class MDOutline {
         for (let i = start; i < str.length; i++) {
           if (str[i] === '<') count++;
           if (str[i] === '>') count--;
-          if (!count)
-            return str.substring(start, i);
+          if (!count) return str.substring(start, i);
         }
         return 'unknown';
       }
@@ -98,20 +109,28 @@ class MDOutline {
         let extendsName = null;
         let commentStart = content.firstChild.nextSibling;
         const extendsElement = content.querySelector('ul');
-        if (extendsElement && extendsElement.textContent.trim().startsWith('extends:')) {
+        if (
+          extendsElement &&
+          extendsElement.textContent.trim().startsWith('extends:')
+        ) {
           commentStart = extendsElement.nextSibling;
           extendsName = extendsElement.querySelector('a').textContent;
         }
-        const comment = parseComment(extractSiblingsIntoFragment(commentStart, headers[0]));
+        const comment = parseComment(
+          extractSiblingsIntoFragment(commentStart, headers[0])
+        );
         for (let i = 0; i < headers.length; i++) {
-          const fragment = extractSiblingsIntoFragment(headers[i], headers[i + 1]);
+          const fragment = extractSiblingsIntoFragment(
+            headers[i],
+            headers[i + 1]
+          );
           members.push(parseMember(fragment));
         }
         return {
           name,
           comment,
           extendsName,
-          members
+          members,
         };
       }
 
@@ -120,7 +139,13 @@ class MDOutline {
        */
       function parseComment(content) {
         for (const code of content.querySelectorAll('pre > code'))
-          code.replaceWith('```' + code.className.substring('language-'.length) + '\n' + code.textContent + '```');
+          code.replaceWith(
+            '```' +
+              code.className.substring('language-'.length) +
+              '\n' +
+              code.textContent +
+              '```'
+          );
         for (const code of content.querySelectorAll('code'))
           code.replaceWith('`' + code.textContent + '`');
         for (const strong of content.querySelectorAll('strong'))
@@ -141,17 +166,36 @@ class MDOutline {
         const matches = paramRegex.exec(name) || ['', ''];
         const parameters = matches[1];
         const optionalStartIndex = parameters.indexOf('[');
-        const optinalParamsStr = optionalStartIndex !== -1 ? parameters.substring(optionalStartIndex).replace(/[\[\]]/g, '') : '';
-        const optionalparams = new Set(optinalParamsStr.split(',').filter(x => x).map(x => x.trim()));
+        const optinalParamsStr =
+          optionalStartIndex !== -1
+            ? parameters.substring(optionalStartIndex).replace(/[\[\]]/g, '')
+            : '';
+        const optionalparams = new Set(
+          optinalParamsStr
+            .split(',')
+            .filter((x) => x)
+            .map((x) => x.trim())
+        );
         const ul = content.querySelector('ul');
         for (const element of content.querySelectorAll('h4 + ul > li')) {
-          if (element.matches('li') && element.textContent.trim().startsWith('<')) {
+          if (
+            element.matches('li') &&
+            element.textContent.trim().startsWith('<')
+          ) {
             returnType = parseProperty(element);
-          } else if (element.matches('li') && element.firstChild.matches && element.firstChild.matches('code')) {
+          } else if (
+            element.matches('li') &&
+            element.firstChild.matches &&
+            element.firstChild.matches('code')
+          ) {
             const property = parseProperty(element);
             property.required = !optionalparams.has(property.name);
             args.push(property);
-          } else if (element.matches('li') && element.firstChild.nodeType === Element.TEXT_NODE && element.firstChild.textContent.toLowerCase().startsWith('return')) {
+          } else if (
+            element.matches('li') &&
+            element.firstChild.nodeType === Element.TEXT_NODE &&
+            element.firstChild.textContent.toLowerCase().startsWith('return')
+          ) {
             returnType = parseProperty(element);
             const expectedText = 'returns: ';
             let actualText = element.firstChild.textContent;
@@ -159,24 +203,31 @@ class MDOutline {
             let spaceIndex = actualText.indexOf(' ');
             angleIndex = angleIndex === -1 ? actualText.length : angleIndex;
             spaceIndex = spaceIndex === -1 ? actualText.length : spaceIndex + 1;
-            actualText = actualText.substring(0, Math.min(angleIndex, spaceIndex));
+            actualText = actualText.substring(
+              0,
+              Math.min(angleIndex, spaceIndex)
+            );
             if (actualText !== expectedText)
-              errors.push(`${name} has mistyped 'return' type declaration: expected exactly '${expectedText}', found '${actualText}'.`);
+              errors.push(
+                `${name} has mistyped 'return' type declaration: expected exactly '${expectedText}', found '${actualText}'.`
+              );
           }
         }
-        const comment = parseComment(extractSiblingsIntoFragment(ul ? ul.nextSibling : content));
+        const comment = parseComment(
+          extractSiblingsIntoFragment(ul ? ul.nextSibling : content)
+        );
         return {
           name,
           args,
           returnType,
-          comment
+          comment,
         };
       }
 
       /**
        * @param {!Node} fromInclusive
        * @param {!Node} toExclusive
-       * @return {!DocumentFragment}
+       * @returns {!DocumentFragment}
        */
       function extractSiblingsIntoFragment(fromInclusive, toExclusive) {
         const fragment = document.createDocumentFragment();
@@ -206,8 +257,7 @@ class MDOutline {
     let currentClassExtends = null;
     for (const cls of classes) {
       const match = cls.name.match(classHeading);
-      if (!match)
-        continue;
+      if (!match) continue;
       currentClassName = match[1];
       currentClassComment = cls.comment;
       currentClassExtends = cls.extendsName;
@@ -230,13 +280,24 @@ class MDOutline {
     }
 
     function handleMethod(member, className, methodName, parameters) {
-      if (!currentClassName || !className || !methodName || className.toLowerCase() !== currentClassName.toLowerCase()) {
+      if (
+        !currentClassName ||
+        !className ||
+        !methodName ||
+        className.toLowerCase() !== currentClassName.toLowerCase()
+      ) {
         this.errors.push(`Failed to process header as method: ${member.name}`);
         return;
       }
       parameters = parameters.trim().replace(/[\[\]]/g, '');
-      if (parameters !== member.args.map(arg => arg.name).join(', '))
-        this.errors.push(`Heading arguments for "${member.name}" do not match described ones, i.e. "${parameters}" != "${member.args.map(a => a.name).join(', ')}"`);
+      if (parameters !== member.args.map((arg) => arg.name).join(', '))
+        this.errors.push(
+          `Heading arguments for "${
+            member.name
+          }" do not match described ones, i.e. "${parameters}" != "${member.args
+            .map((a) => a.name)
+            .join(', ')}"`
+        );
       const args = member.args.map(createPropertyFromJSON);
       let returnType = null;
       let returnComment = '';
@@ -245,24 +306,52 @@ class MDOutline {
         returnType = returnProperty.type;
         returnComment = returnProperty.comment;
       }
-      const method = Documentation.Member.createMethod(methodName, args, returnType, returnComment, member.comment);
+      const method = Documentation.Member.createMethod(
+        methodName,
+        args,
+        returnType,
+        returnComment,
+        member.comment
+      );
       currentClassMembers.push(method);
     }
 
     function createPropertyFromJSON(payload) {
-      const type = new Documentation.Type(payload.type, payload.properties.map(createPropertyFromJSON));
+      const type = new Documentation.Type(
+        payload.type,
+        payload.properties.map(createPropertyFromJSON)
+      );
       const required = payload.required;
-      return Documentation.Member.createProperty(payload.name, type, payload.comment, required);
+      return Documentation.Member.createProperty(
+        payload.name,
+        type,
+        payload.comment,
+        required
+      );
     }
 
     function handleProperty(member, className, propertyName) {
-      if (!currentClassName || !className || !propertyName || className.toLowerCase() !== currentClassName.toLowerCase()) {
-        this.errors.push(`Failed to process header as property: ${member.name}`);
+      if (
+        !currentClassName ||
+        !className ||
+        !propertyName ||
+        className.toLowerCase() !== currentClassName.toLowerCase()
+      ) {
+        this.errors.push(
+          `Failed to process header as property: ${member.name}`
+        );
         return;
       }
       const type = member.returnType ? member.returnType.type : null;
       const properties = member.returnType ? member.returnType.properties : [];
-      currentClassMembers.push(createPropertyFromJSON({type, name: propertyName, properties, comment: member.comment}));
+      currentClassMembers.push(
+        createPropertyFromJSON({
+          type,
+          name: propertyName,
+          properties,
+          comment: member.comment,
+        })
+      );
     }
 
     function handleEvent(member, eventName) {
@@ -270,13 +359,25 @@ class MDOutline {
         this.errors.push(`Failed to process header as event: ${member.name}`);
         return;
       }
-      currentClassMembers.push(Documentation.Member.createEvent(eventName, member.returnType && createPropertyFromJSON(member.returnType).type, member.comment));
+      currentClassMembers.push(
+        Documentation.Member.createEvent(
+          eventName,
+          member.returnType && createPropertyFromJSON(member.returnType).type,
+          member.comment
+        )
+      );
     }
 
     function flushClassIfNeeded() {
-      if (currentClassName === null)
-        return;
-      this.classes.push(new Documentation.Class(currentClassName, currentClassMembers, currentClassExtends, currentClassComment));
+      if (currentClassName === null) return;
+      this.classes.push(
+        new Documentation.Class(
+          currentClassName,
+          currentClassMembers,
+          currentClassExtends,
+          currentClassComment
+        )
+      );
       currentClassName = null;
       currentClassMembers = [];
     }
@@ -286,9 +387,9 @@ class MDOutline {
 /**
  * @param {!Page} page
  * @param {!Array<!Source>} sources
- * @return {!Promise<{documentation: !Documentation, errors: !Array<string>}>}
+ * @returns {!Promise<{documentation: !Documentation, errors: !Array<string>}>}
  */
-module.exports = async function(page, sources) {
+module.exports = async function (page, sources) {
   const classes = [];
   const errors = [];
   for (const source of sources) {
@@ -299,4 +400,3 @@ module.exports = async function(page, sources) {
   const documentation = new Documentation(classes);
   return { documentation, errors };
 };
-

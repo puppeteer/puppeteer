@@ -30,7 +30,9 @@ const WebSocketTransport = require('./WebSocketTransport');
 const mkdtempAsync = util.promisify(fs.mkdtemp);
 const removeFolderAsync = util.promisify(removeFolder);
 
-const FIREFOX_PROFILE_PATH = path.join(os.tmpdir(), 'puppeteer_firefox_profile-');
+const tmpDir = () => process.env.PUPPETEER_TMP_DIR || os.tmpdir();
+
+const FIREFOX_PROFILE_PATH = path.join(tmpDir(), 'puppeteer_firefox_profile-');
 
 const DEFAULT_ARGS = [
   '-no-remote',
@@ -231,7 +233,10 @@ class Launcher {
   }
 
   _resolveExecutablePath() {
-    const browserFetcher = new BrowserFetcher(this._projectRoot, { product: 'firefox' });
+    const downloadPath = process.env.PUPPETEER_DOWNLOAD_PATH ||
+      process.env.npm_config_puppeteer_download_path ||
+      process.env.npm_package_config_puppeteer_download_path;
+    const browserFetcher = new BrowserFetcher(this._projectRoot, { product: 'firefox', path: downloadPath });
     const revisionInfo = browserFetcher.revisionInfo(this._preferredRevision);
     const missingText = !revisionInfo.local ? `Firefox revision is not downloaded. Run "npm install" or "yarn install"` : null;
     return {executablePath: revisionInfo.executablePath, missingText};
