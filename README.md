@@ -26,8 +26,6 @@ Most things that you can do manually in the browser can be done using Puppeteer!
 - Test Chrome Extensions.
 <!-- [END usecases] -->
 
-Give it a spin: [https://try-puppeteer.appspot.com/](https://try-puppeteer.appspot.com/)
-
 <!-- [START getstarted] -->
 
 ## Getting Started
