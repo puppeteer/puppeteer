@@ -208,6 +208,7 @@ class ChromeLauncher implements ProductLauncher {
       // TODO(sadym): remove '--enable-blink-features=IdleDetection'
       // once IdleDetection is turned on by default.
       '--enable-blink-features=IdleDetection',
+      '--export-tagged-pdf',
     ];
     const {
       devtools = false,
