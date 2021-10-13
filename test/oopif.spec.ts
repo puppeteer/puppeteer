@@ -64,12 +64,13 @@ describeChromeOnly('OOPIF', function () {
     const { server } = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
+    const framePromise = page.waitForFrame((frame, frameIdx) => frameIdx === 1);
     await utils.attachFrame(
       page,
       'frame1',
       server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
-    const frame = await page.waitForFrame((frame, frameIdx) => frameIdx === 1);
+    const frame = await framePromise;
     expect(frame.url()).toContain('/empty.html');
     await utils.navigateFrame(
       page,
@@ -82,9 +83,10 @@ describeChromeOnly('OOPIF', function () {
     const { server } = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
+    const framePromise = page.waitForFrame((frame, frameIdx) => frameIdx === 1);
     await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
 
-    const frame = await page.waitForFrame((frame, frameIdx) => frameIdx === 1);
+    const frame = await framePromise;
     expect(frame.isOOPFrame()).toBe(false);
     await utils.navigateFrame(
       page,
@@ -100,9 +102,10 @@ describeChromeOnly('OOPIF', function () {
     const { server } = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
+    const framePromise = page.waitForFrame((frame, frameIdx) => frameIdx === 1);
     await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
 
-    const frame = await page.waitForFrame((frame, frameIdx) => frameIdx === 1);
+    const frame = await framePromise;
     expect(frame.isOOPFrame()).toBe(false);
     await utils.navigateFrame(
       page,
@@ -130,12 +133,13 @@ describeChromeOnly('OOPIF', function () {
     const { server } = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
+    const framePromise = page.waitForFrame((frame, frameIdx) => frameIdx === 1);
     await utils.attachFrame(
       page,
       'frame1',
       server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
-    const frame = await page.waitForFrame((frame, frameIdx) => frameIdx === 1);
+    const frame = await framePromise;
     await frame.evaluate(() => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -152,13 +156,14 @@ describeChromeOnly('OOPIF', function () {
     const { server } = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
+    const framePromise = page.waitForFrame((frame, frameIdx) => frameIdx === 1);
     await utils.attachFrame(
       page,
       'frame1',
       server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
 
-    const frame = await page.waitForFrame((frame, frameIdx) => frameIdx === 1);
+    const frame = await framePromise;
     await frame.evaluate(() => {
       const button = document.createElement('button');
       button.id = 'test-button';
