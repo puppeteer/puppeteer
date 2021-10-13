@@ -1539,7 +1539,8 @@ export class Page extends EventEmitter {
       return;
     }
     const context = this._frameManager.executionContextById(
-      event.executionContextId
+      event.executionContextId,
+      this._client
     );
     const values = event.args.map((arg) => createJSHandle(context, arg));
     this._addConsoleMessage(event.type, values, event.stackTrace);

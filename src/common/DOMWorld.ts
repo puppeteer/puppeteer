@@ -78,6 +78,7 @@ export class DOMWorld {
   private _timeoutSettings: TimeoutSettings;
   private _documentPromise?: Promise<ElementHandle> = null;
   private _contextPromise?: Promise<ExecutionContext> = null;
+  private _context?: ExecutionContext = null;
 
   private _contextResolveCallback?: (x?: ExecutionContext) => void = null;
 
@@ -121,6 +122,9 @@ export class DOMWorld {
 
   async _setContext(context?: ExecutionContext): Promise<void> {
     if (context) {
+      if (!this._contextResolveCallback) {
+        debugger;
+      }
       this._ctxBindings.clear();
       this._contextResolveCallback.call(null, context);
       this._contextResolveCallback = null;
@@ -131,6 +135,8 @@ export class DOMWorld {
         this._contextResolveCallback = fulfill;
       });
     }
+
+    this._context = context;
   }
 
   _hasContext(): boolean {
