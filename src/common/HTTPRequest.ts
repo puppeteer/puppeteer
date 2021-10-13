@@ -440,7 +440,10 @@ export class HTTPRequest {
         postData: postDataBinaryBase64,
         headers: headers ? headersArray(headers) : undefined,
       })
-      .catch(handleError);
+      .catch((error) => {
+        handleError(error);
+        this._interceptionHandled = false;
+      });
   }
 
   /**

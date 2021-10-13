@@ -85,10 +85,18 @@ describe('network', function () {
               'X-Test-Header': 'a\nb',
             },
           })
-          .catch(resolve);
+          .catch((error) => {
+            console.log(error);
+            resolve(error);
+          });
+        console.log('continue');
+        await request.continue();
       });
-      page.goto(server.PREFIX + '/empty.html');
+      console.log('A');
+      await page.goto(server.PREFIX + '/empty.html');
+      console.log('B');
       const error = await errorPromise;
+      console.log('C');
       expect(error).toBeTruthy();
     });
   });
