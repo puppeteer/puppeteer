@@ -87,7 +87,7 @@
     "@types/ws": "8.2.0",
     "@typescript-eslint/eslint-plugin": "4.23.0",
     "@typescript-eslint/parser": "4.33.0",
-    "@web/test-runner": "0.12.20",
+    "@web/test-runner": "0.13.18",
     "commonmark": "0.29.3",
     "cross-env": "7.0.3",
     "eslint": "7.32.0",
