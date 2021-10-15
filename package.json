@@ -105,7 +105,7 @@
     "mocha": "8.4.0",
     "ncp": "2.0.0",
     "pixelmatch": "4.0.2",
-    "pngjs": "5.0.0",
+    "pngjs": "6.0.0",
     "prettier": "2.3.0",
     "sinon": "9.2.4",
     "source-map-support": "0.5.19",
