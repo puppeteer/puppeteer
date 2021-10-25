@@ -611,7 +611,8 @@ describe('Launcher specs', function () {
 
         await page2.close();
         await page1.close();
-        await browser.close();
+        await browser.disconnect();
+        await originalBrowser.close();
 
         expect(pages.map((p: Page) => p.url()).sort()).toEqual([
           'about:blank',

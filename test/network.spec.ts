@@ -69,27 +69,25 @@ describe('network', function () {
   });
 
   describeFailsFirefox('Request.continue', () => {
-    it('should split a request header at new line characters and add the header multiple times instead', async () => {
+    it('should fail if the header value in invalid', async () => {
       const { page, server } = getTestState();
 
-      let resolve;
-      const errorPromise = new Promise((r) => {
-        resolve = r;
-      });
-
+      let error;
       await page.setRequestInterception(true);
       page.on('request', async (request) => {
         await request
           .continue({
             headers: {
-              'X-Test-Header': 'a\nb',
+              'X-Invalid-Header': 'a\nb',
             },
           })
-          .catch(resolve);
+          .catch((error_) => {
+            error = error_;
+          });
+        await request.continue();
       });
-      page.goto(server.PREFIX + '/empty.html');
-      const error = await errorPromise;
-      expect(error).toBeTruthy();
+      await page.goto(server.PREFIX + '/empty.html');
+      expect(error.message).toMatch(/Invalid header/);
     });
   });
   describe('Request.frame', function () {
