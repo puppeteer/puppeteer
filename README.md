@@ -440,7 +440,7 @@ We have a [troubleshooting](https://github.com/puppeteer/puppeteer/blob/main/doc
 
 #### Q: Chromium gets downloaded on every `npm ci` run. How can I cache the download?
 
-The default download path is `node_modules/puppeteer/.local-chromium`. However, you can change that path with the `PUPPETTER_DOWNLOAD_PATH` environment variable.
+The default download path is `node_modules/puppeteer/.local-chromium`. However, you can change that path with the `PUPPETEER_DOWNLOAD_PATH` environment variable.
 
 Puppeteer uses that variable to resolve the Chromium executable location during launch, so you don’t need to specify `PUPPETEER_EXECUTABLE_PATH` as well.
 
