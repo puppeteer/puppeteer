@@ -73,6 +73,10 @@ export class FrameManager extends EventEmitter {
   _timeoutSettings: TimeoutSettings;
   private _frames = new Map<string, Frame>();
   private _contextIdToContext = new Map<number, ExecutionContext>();
+  private _pendingFrameIdToFrameContextDescription = new Map<
+    string,
+    Protocol.Runtime.ExecutionContextDescription
+  >();
   private _isolatedWorlds = new Set<string>();
   private _mainFrame: Frame;
 
@@ -278,6 +282,7 @@ export class FrameManager extends EventEmitter {
     const parentFrame = this._frames.get(parentFrameId);
     const frame = new Frame(this, parentFrame, frameId);
     this._frames.set(frame._id, frame);
+    this._checkPendingContexts(frame._id);
     this.emit(FrameManagerEmittedEvents.FrameAttached, frame);
   }
 
@@ -308,6 +313,7 @@ export class FrameManager extends EventEmitter {
         frame = new Frame(this, null, framePayload.id);
       }
       this._frames.set(framePayload.id, frame);
+      this._checkPendingContexts(framePayload.id);
       this._mainFrame = frame;
     }
 
@@ -359,21 +365,54 @@ export class FrameManager extends EventEmitter {
     const frame = this._frames.get(frameId) || null;
     let world = null;
     if (frame) {
-      if (contextPayload.auxData && !!contextPayload.auxData['isDefault']) {
-        world = frame._mainWorld;
-      } else if (
-        contextPayload.name === UTILITY_WORLD_NAME &&
-        !frame._secondaryWorld._hasContext()
-      ) {
-        // In case of multiple sessions to the same target, there's a race between
-        // connections so we might end up creating multiple isolated worlds.
-        // We can use either.
-        world = frame._secondaryWorld;
-      }
+      world = this._getDOMWorldFromFrameContext(frame, contextPayload);
     }
     const context = new ExecutionContext(this._client, contextPayload, world);
-    if (world) world._setContext(context);
+    if (world) {
+      world._setContext(context);
+    } else if (frameId) {
+      this._pendingFrameIdToFrameContextDescription.set(
+        frameId,
+        contextPayload
+      );
+    }
     this._contextIdToContext.set(contextPayload.id, context);
+  }
+
+  private _getDOMWorldFromFrameContext(
+    frame: Frame,
+    contextPayload: Protocol.Runtime.ExecutionContextDescription
+  ): DOMWorld | null {
+    let world = null;
+    if (contextPayload.auxData && !!contextPayload.auxData.isDefault) {
+      world = frame._mainWorld;
+    } else if (
+      contextPayload.name === UTILITY_WORLD_NAME &&
+      !frame._secondaryWorld._hasContext()
+    ) {
+      // In case of multiple sessions to the same target, there's a race between
+      // connections so we might end up creating multiple isolated worlds.
+      // We can use either.
+      world = frame._secondaryWorld;
+    }
+    return world;
+  }
+
+  private _checkPendingContexts(frameId: string): void {
+    const contextData =
+      this._pendingFrameIdToFrameContextDescription.get(frameId);
+    if (contextData) {
+      this._pendingFrameIdToFrameContextDescription.delete(frameId);
+      const frame = this._frames.get(frameId);
+      assert(frame, 'frame is missing');
+      const context = this._contextIdToContext.get(contextData.id);
+      assert(frame, 'context is missing');
+      const world = this._getDOMWorldFromFrameContext(frame, contextData);
+      if (world) {
+        world._setContext(context);
+        context._setWorld(world);
+      }
+    }
   }
 
   private _onExecutionContextDestroyed(executionContextId: number): void {

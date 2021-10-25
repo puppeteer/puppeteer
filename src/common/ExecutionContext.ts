@@ -389,4 +389,11 @@ export class ExecutionContext {
     });
     return this._adoptBackendNodeId(nodeInfo.node.backendNodeId);
   }
+
+  /**
+   * @internal
+   */
+  _setWorld(world: DOMWorld): void {
+    this._world = world;
+  }
 }
