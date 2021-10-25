@@ -18,5 +18,7 @@ import { isNode } from '../environment.js';
 
 /* Use the global version if we're in the browser, else load the node-fetch module. */
 export const getFetch = async (): Promise<typeof fetch> => {
+  // @ts-expect-error Types from node-fetch and fetch don't match a 100%
+  // as credentials and referer for example are not supported there.
   return isNode ? await import('node-fetch') : globalThis.fetch;
 };
