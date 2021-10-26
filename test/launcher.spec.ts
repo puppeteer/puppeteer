@@ -603,8 +603,10 @@ describe('Launcher specs', function () {
 
         const browser = await puppeteer.connect({
           browserWSEndpoint,
-          targetFilter: (targetInfo: Protocol.Target.TargetInfo) =>
-            !targetInfo.url.includes('should-be-ignored'),
+          targetFilter: (targetInfo: Protocol.Target.TargetInfo) => {
+            console.log(targetInfo);
+            return !targetInfo.url.includes('should-be-ignored');
+          },
         });
 
         const pages = await browser.pages();
