@@ -229,8 +229,7 @@ export class HTTPRequest {
    */
   async finalizeInterceptions(): Promise<void> {
     await this._interceptActions.reduce(
-      (promiseChain, interceptAction) =>
-        promiseChain.then(interceptAction),
+      (promiseChain, interceptAction) => promiseChain.then(interceptAction),
       Promise.resolve()
     );
     const [resolution] = this.interceptResolution();
