@@ -230,7 +230,7 @@ export class HTTPRequest {
   async finalizeInterceptions(): Promise<void> {
     await this._interceptActions.reduce(
       (promiseChain, interceptAction) =>
-        promiseChain.then(interceptAction).catch(handleError),
+        promiseChain.then(interceptAction),
       Promise.resolve()
     );
     const [resolution] = this.interceptResolution();
@@ -440,7 +440,10 @@ export class HTTPRequest {
         postData: postDataBinaryBase64,
         headers: headers ? headersArray(headers) : undefined,
       })
-      .catch(handleError);
+      .catch((error) => {
+        this._interceptionHandled = false;
+        return handleError(error);
+      });
   }
 
   /**
@@ -532,7 +535,10 @@ export class HTTPRequest {
         responseHeaders: headersArray(responseHeaders),
         body: responseBody ? responseBody.toString('base64') : undefined,
       })
-      .catch(handleError);
+      .catch((error) => {
+        this._interceptionHandled = false;
+        return handleError(error);
+      });
   }
 
   /**

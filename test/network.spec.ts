@@ -67,29 +67,6 @@ describe('network', function () {
       expect(requests.length).toBe(2);
     });
   });
-
-  describeFailsFirefox('Request.continue', () => {
-    it('should fail if the header value in invalid', async () => {
-      const { page, server } = getTestState();
-
-      let error;
-      await page.setRequestInterception(true);
-      page.on('request', async (request) => {
-        await request
-          .continue({
-            headers: {
-              'X-Invalid-Header': 'a\nb',
-            },
-          })
-          .catch((error_) => {
-            error = error_;
-          });
-        await request.continue();
-      });
-      await page.goto(server.PREFIX + '/empty.html');
-      expect(error.message).toMatch(/Invalid header/);
-    });
-  });
   describe('Request.frame', function () {
     it('should work for main frame navigation request', async () => {
       const { page, server } = getTestState();
