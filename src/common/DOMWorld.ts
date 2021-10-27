@@ -115,6 +115,10 @@ export class DOMWorld {
 
   async _setContext(context?: ExecutionContext): Promise<void> {
     if (context) {
+      assert(
+        this._contextResolveCallback,
+        'Execution Context has already been set.'
+      );
       this._ctxBindings.clear();
       this._contextResolveCallback.call(null, context);
       this._contextResolveCallback = null;
