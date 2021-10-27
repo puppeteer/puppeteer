@@ -17,7 +17,7 @@
     "assert-unit-coverage": "cross-env COVERAGE=1 mocha --config mocha-config/coverage-tests.js",
     "funit": "cross-env PUPPETEER_PRODUCT=firefox npm run unit",
     "test": "npm run tsc && npm run lint --silent && npm run unit-with-coverage && npm run test-browser",
-    "prepare": "node typescript-if-required.js",
+    "prepare": "node typescript-if-required.js && husky install",
     "prepublishOnly": "npm run build",
     "dev-install": "npm run tsc && node install.js",
     "install": "node install.js",
@@ -113,12 +113,5 @@
     "text-diff": "1.0.1",
     "ts-node": "10.3.0",
     "typescript": "4.4.4"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run eslint",
-      "commit-msg": "commitlint --env HUSKY_GIT_PARAMS",
-      "pre-push": "npm run tsc && npm run eslint && npm run doc && npm run ensure-pinned-deps"
-    }
   }
 }
