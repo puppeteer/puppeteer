@@ -25,11 +25,7 @@ import {
 import { DOMWorld, WaitForSelectorOptions } from './DOMWorld.js';
 import { NetworkManager } from './NetworkManager.js';
 import { TimeoutSettings } from './TimeoutSettings.js';
-import {
-  Connection,
-  CDPSession,
-  CDPSessionEmittedEvents,
-} from './Connection.js';
+import { Connection, CDPSession } from './Connection.js';
 import { JSHandle, ElementHandle } from './JSHandle.js';
 import { MouseButton } from './Input.js';
 import { Page } from './Page.js';
@@ -43,7 +39,6 @@ import {
   EvaluateFnReturnType,
   UnwrapPromiseLike,
 } from './EvalTypes.js';
-import { ProtocolError } from './Errors.js';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 const xPathPattern = /^\(\/\/[^\)]+\)|^\/\//;
@@ -137,39 +132,22 @@ export class FrameManager extends EventEmitter {
   }
 
   async initialize(client: CDPSession = this._client): Promise<void> {
-    try {
-      const result = await Promise.race([
-        Promise.all([
-          client.send('Page.enable'),
-          client.send('Page.getFrameTree'),
-        ]),
-        this._sessionClosePromise(),
-      ]);
+    const result = await Promise.all([
+      client.send('Page.enable'),
+      client.send('Page.getFrameTree'),
+    ]);
 
-      const { frameTree } = result[1];
-      this._handleFrameTree(client, frameTree);
-      await Promise.race([
-        Promise.all([
-          client.send('Page.setLifecycleEventsEnabled', { enabled: true }),
-          client
-            .send('Runtime.enable')
-            .then(() => this._ensureIsolatedWorld(client, UTILITY_WORLD_NAME)),
-        ]),
-        this._sessionClosePromise(),
-      ]);
-      if (client === this._client) {
-        // Network manager is not aware of OOP iframes yet.
-        await this._networkManager.initialize();
-      }
-    } catch (error) {
-      if (
-        error instanceof ProtocolError &&
-        error.message.match(/Target closed/)
-      ) {
-        return;
-      }
-
-      throw error;
+    const { frameTree } = result[1];
+    this._handleFrameTree(client, frameTree);
+    await Promise.all([
+      client.send('Page.setLifecycleEventsEnabled', { enabled: true }),
+      client
+        .send('Runtime.enable')
+        .then(() => this._ensureIsolatedWorld(client, UTILITY_WORLD_NAME)),
+    ]);
+    if (client === this._client) {
+      // Network manager is not aware of OOP iframes yet.
+      await this._networkManager.initialize();
     }
   }
 
@@ -399,20 +377,17 @@ export class FrameManager extends EventEmitter {
       worldName: name,
     });
     // Frames might be removed before we send this.
-    await Promise.race([
-      Promise.all(
-        this.frames()
-          .filter((frame) => frame._client === session)
-          .map((frame) =>
-            session.send('Page.createIsolatedWorld', {
-              frameId: frame._id,
-              worldName: name,
-              grantUniveralAccess: true,
-            })
-          )
-      ),
-      this._sessionClosePromise(),
-    ]);
+    await Promise.all(
+      this.frames()
+        .filter((frame) => frame._client === session)
+        .map((frame) =>
+          session.send('Page.createIsolatedWorld', {
+            frameId: frame._id,
+            worldName: name,
+            grantUniveralAccess: true,
+          })
+        )
+    );
   }
 
   _onFrameNavigatedWithinDocument(frameId: string, url: string): void {
@@ -507,16 +482,6 @@ export class FrameManager extends EventEmitter {
     frame._detach();
     this._frames.delete(frame._id);
     this.emit(FrameManagerEmittedEvents.FrameDetached, frame);
-  }
-
-  private _sessionClosePromise(): Promise<Error> {
-    if (!this._disconnectPromise)
-      this._disconnectPromise = new Promise((fulfill) =>
-        this._client.once(CDPSessionEmittedEvents.Disconnected, () =>
-          fulfill(new Error('Target closed'))
-        )
-      );
-    return this._disconnectPromise;
   }
 }
 
