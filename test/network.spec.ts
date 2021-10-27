@@ -67,31 +67,6 @@ describe('network', function () {
       expect(requests.length).toBe(2);
     });
   });
-
-  describeFailsFirefox('Request.continue', () => {
-    it('should split a request header at new line characters and add the header multiple times instead', async () => {
-      const { page, server } = getTestState();
-
-      let resolve;
-      const errorPromise = new Promise((r) => {
-        resolve = r;
-      });
-
-      await page.setRequestInterception(true);
-      page.on('request', async (request) => {
-        await request
-          .continue({
-            headers: {
-              'X-Test-Header': 'a\nb',
-            },
-          })
-          .catch(resolve);
-      });
-      page.goto(server.PREFIX + '/empty.html');
-      const error = await errorPromise;
-      expect(error).toBeTruthy();
-    });
-  });
   describe('Request.frame', function () {
     it('should work for main frame navigation request', async () => {
       const { page, server } = getTestState();
