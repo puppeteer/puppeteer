@@ -2030,22 +2030,31 @@ export class Page extends EventEmitter {
     options: { timeout?: number } = {}
   ): Promise<Frame> {
     const { timeout = this._timeoutSettings.timeout() } = options;
-    return helper.waitForEvent(
-      this._frameManager,
-      [
+
+    async function predicate(frame: Frame) {
+      if (helper.isString(urlOrPredicate))
+        return urlOrPredicate === frame.url();
+      if (typeof urlOrPredicate === 'function')
+        return !!(await urlOrPredicate(frame));
+      return false;
+    }
+
+    return Promise.race([
+      helper.waitForEvent(
+        this._frameManager,
         FrameManagerEmittedEvents.FrameAttached,
+        predicate,
+        timeout,
+        this._sessionClosePromise()
+      ),
+      helper.waitForEvent(
+        this._frameManager,
         FrameManagerEmittedEvents.FrameNavigated,
-      ],
-      async (frame) => {
-        if (helper.isString(urlOrPredicate))
-          return urlOrPredicate === frame.url();
-        if (typeof urlOrPredicate === 'function')
-          return !!(await urlOrPredicate(frame));
-        return false;
-      },
-      timeout,
-      this._sessionClosePromise()
-    );
+        predicate,
+        timeout,
+        this._sessionClosePromise()
+      ),
+    ]);
   }
 
   /**
