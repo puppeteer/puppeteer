@@ -222,12 +222,14 @@ describeChromeOnly('OOPIF', function () {
     expect(oopifs(context).length).toBe(1);
     expect(page.frames().length).toBe(2);
   });
-  it('should load oopif iframes with subresources and request interception', async () => {
+  it.only('should load oopif iframes with subresources and request interception', async () => {
     const { server } = getTestState();
 
+    const frame = page.waitForFrame((frame) => frame.url().endsWith('/oopif.html'));
     await page.setRequestInterception(true);
     page.on('request', (request) => request.continue());
     await page.goto(server.PREFIX + '/dynamic-oopif.html');
+    await frame;
     expect(oopifs(context).length).toBe(1);
   });
   it('should support frames within OOP iframes', async () => {
