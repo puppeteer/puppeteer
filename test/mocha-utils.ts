@@ -221,6 +221,10 @@ console.log(
   }`
 );
 
+process.on('unhandledRejection', (reason) => {
+  throw reason;
+});
+
 export const setupTestBrowserHooks = (): void => {
   before(async () => {
     const browser = await puppeteer.launch(defaultBrowserOptions);

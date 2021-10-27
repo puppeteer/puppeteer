@@ -88,7 +88,7 @@ describe('Frame specs', function () {
       // This test checks if Frame.evaluate allows a readonly array to be an argument.
       // See https://github.com/puppeteer/puppeteer/issues/6953.
       const readonlyArray: readonly string[] = ['a', 'b', 'c'];
-      mainFrame.evaluate((arr) => arr, readonlyArray);
+      await mainFrame.evaluate((arr) => arr, readonlyArray);
     });
   });
 
