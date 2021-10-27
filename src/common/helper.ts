@@ -364,9 +364,9 @@ async function getReadableFromProtocolStream(
       const response = await client.send('IO.read', { handle, size });
       this.push(response.data, response.base64Encoded ? 'base64' : undefined);
       if (response.eof) {
-        this.push(null);
         eof = true;
         await client.send('IO.close', { handle });
+        this.push(null);
       }
     },
   });
