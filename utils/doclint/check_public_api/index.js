@@ -35,7 +35,6 @@ const EXCLUDE_PROPERTIES = new Set([
   'ElementHandle.ElementType',
   'ElementHandle.HandleObjectType',
   'JSHandle.HandleObjectType',
-  'Frame.updateClient',
 ]);
 
 /**

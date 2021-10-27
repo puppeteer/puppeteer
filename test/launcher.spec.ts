@@ -589,7 +589,8 @@ describe('Launcher specs', function () {
         await page.close();
         await browser.close();
       });
-      it('should support targetFilter option', async () => {
+      // @see https://github.com/puppeteer/puppeteer/issues/4197
+      itFailsFirefox('should support targetFilter option', async () => {
         const { server, puppeteer, defaultBrowserOptions } = getTestState();
 
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
@@ -604,13 +605,14 @@ describe('Launcher specs', function () {
         const browser = await puppeteer.connect({
           browserWSEndpoint,
           targetFilter: (targetInfo: Protocol.Target.TargetInfo) =>
-            !targetInfo.url.includes('should-be-ignored'),
+            !targetInfo.url?.includes('should-be-ignored'),
         });
 
         const pages = await browser.pages();
 
         await page2.close();
         await page1.close();
+        await browser.disconnect();
         await originalBrowser.close();
 
         expect(pages.map((p: Page) => p.url()).sort()).toEqual([

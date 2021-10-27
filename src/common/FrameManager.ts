@@ -265,7 +265,7 @@ export class FrameManager extends EventEmitter {
     const session = Connection.fromSession(this._client).session(
       event.sessionId
     );
-    frame.updateClient(session);
+    frame._updateClient(session);
     this.setupEventListeners(session);
     await this.initialize(session);
   }
@@ -331,7 +331,7 @@ export class FrameManager extends EventEmitter {
         // If an OOP iframes becomes a normal iframe again
         // it is first attached to the parent page before
         // the target is removed.
-        frame.updateClient(session);
+        frame._updateClient(session);
       }
       return;
     }
@@ -687,7 +687,7 @@ export class Frame {
     this._detached = false;
 
     this._loaderId = '';
-    this.updateClient(client);
+    this._updateClient(client);
 
     this._childFrames = new Set();
     if (this._parentFrame) this._parentFrame._childFrames.add(this);
@@ -696,7 +696,7 @@ export class Frame {
   /**
    * @internal
    */
-  updateClient(client: CDPSession): void {
+  _updateClient(client: CDPSession): void {
     this._client = client;
     this._mainWorld = new DOMWorld(
       this._client,
@@ -710,6 +710,9 @@ export class Frame {
       this,
       this._frameManager._timeoutSettings
     );
+
+    this._childFrames = new Set();
+    if (this._parentFrame) this._parentFrame._childFrames.add(this);
   }
 
   isOOPFrame(): boolean {

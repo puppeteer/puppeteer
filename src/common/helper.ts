@@ -129,7 +129,7 @@ function isNumber(obj: unknown): obj is number {
 
 async function waitForEvent<T extends any>(
   emitter: CommonEventEmitter,
-  eventNames: string | symbol | Array<string | symbol>,
+  eventName: string | symbol,
   predicate: (event: T) => Promise<boolean> | boolean,
   timeout: number,
   abortPromise: Promise<Error>
@@ -139,13 +139,10 @@ async function waitForEvent<T extends any>(
     resolveCallback = resolve;
     rejectCallback = reject;
   });
-  const eventNamesList = Array.isArray(eventNames) ? eventNames : [eventNames];
-  const listeners = eventNamesList.map((eventName) =>
-    addEventListener(emitter, eventName, async (event) => {
-      if (!(await predicate(event))) return;
-      resolveCallback(event);
-    })
-  );
+  const listener = addEventListener(emitter, eventName, async (event) => {
+    if (!(await predicate(event))) return;
+    resolveCallback(event);
+  });
   if (timeout) {
     eventTimeout = setTimeout(() => {
       rejectCallback(
@@ -154,7 +151,7 @@ async function waitForEvent<T extends any>(
     }, timeout);
   }
   function cleanup(): void {
-    removeEventListeners(listeners);
+    removeEventListeners([listener]);
     clearTimeout(eventTimeout);
   }
   const result = await Promise.race([promise, abortPromise]).then(
