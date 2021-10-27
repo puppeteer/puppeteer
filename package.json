@@ -8,6 +8,7 @@
   "engines": {
     "node": ">=10.18.1"
   },
+  "prepare": "husky install",
   "scripts": {
     "test-browser": "wtr",
     "test-browser-watch": "wtr --watch",
