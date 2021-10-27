@@ -54,6 +54,7 @@ jobs:
         uses: nick-invision/retry@v2
         env:
           CHROMIUM: true
+          DEBUG: puppeteer:* 
         with:
           max_attempts: 3
           command: xvfb-run --auto-servernum npm run unit
@@ -120,6 +121,7 @@ jobs:
       - name: Run unit tests
         env:
           CHROMIUM: true
+          DEBUG: puppeteer:* 
         run: |
           npm run unit
 
@@ -163,6 +165,7 @@ jobs:
       - name: Run unit tests
         env:
           CHROMIUM: true
+          DEBUG: puppeteer:* 
         run: |
           npm run unit
 
