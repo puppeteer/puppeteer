@@ -96,7 +96,7 @@ export class FrameManager extends EventEmitter {
 
   private setupEventListeners(session: CDPSession) {
     session.on('Page.frameAttached', (event) => {
-      this._onFrameAttached(event.frameId, event.parentFrameId, session);
+      this._onFrameAttached(session, event.frameId, event.parentFrameId);
     });
     session.on('Page.frameNavigated', (event) => {
       this._onFrameNavigated(event.frame);
@@ -147,7 +147,7 @@ export class FrameManager extends EventEmitter {
       ]);
 
       const { frameTree } = result[1];
-      this._handleFrameTree(frameTree);
+      this._handleFrameTree(client, frameTree);
       await Promise.race([
         Promise.all([
           client.send('Page.setLifecycleEventsEnabled', { enabled: true }),
@@ -164,10 +164,12 @@ export class FrameManager extends EventEmitter {
     } catch (error) {
       if (
         error instanceof ProtocolError &&
-        !error.message.match(/Target closed/)
+        error.message.match(/Target closed/)
       ) {
-        throw error;
+        return;
       }
+
+      throw error;
     }
   }
 
@@ -295,13 +297,23 @@ export class FrameManager extends EventEmitter {
     this.emit(FrameManagerEmittedEvents.LifecycleEvent, frame);
   }
 
-  _handleFrameTree(frameTree: Protocol.Page.FrameTree): void {
-    if (frameTree.frame.parentId)
-      this._onFrameAttached(frameTree.frame.id, frameTree.frame.parentId);
+  _handleFrameTree(
+    session: CDPSession,
+    frameTree: Protocol.Page.FrameTree
+  ): void {
+    if (frameTree.frame.parentId) {
+      this._onFrameAttached(
+        session,
+        frameTree.frame.id,
+        frameTree.frame.parentId
+      );
+    }
     this._onFrameNavigated(frameTree.frame);
     if (!frameTree.childFrames) return;
 
-    for (const child of frameTree.childFrames) this._handleFrameTree(child);
+    for (const child of frameTree.childFrames) {
+      this._handleFrameTree(session, child);
+    }
   }
 
   page(): Page {
@@ -321,9 +333,9 @@ export class FrameManager extends EventEmitter {
   }
 
   _onFrameAttached(
+    session: CDPSession,
     frameId: string,
-    parentFrameId?: string,
-    session?: CDPSession
+    parentFrameId?: string
   ): void {
     if (this._frames.has(frameId)) {
       const frame = this._frames.get(frameId);
@@ -687,10 +699,11 @@ export class Frame {
     this._detached = false;
 
     this._loaderId = '';
-    this._updateClient(client);
 
     this._childFrames = new Set();
     if (this._parentFrame) this._parentFrame._childFrames.add(this);
+
+    this._updateClient(client);
   }
 
   /**
@@ -710,9 +723,6 @@ export class Frame {
       this,
       this._frameManager._timeoutSettings
     );
-
-    this._childFrames = new Set();
-    if (this._parentFrame) this._parentFrame._childFrames.add(this);
   }
 
   isOOPFrame(): boolean {
