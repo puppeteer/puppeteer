@@ -218,7 +218,11 @@ describeChromeOnly('OOPIF', function () {
   it('should report oopif frames', async () => {
     const { server } = getTestState();
 
+    const frame = page.waitForFrame((frame) =>
+      frame.url().endsWith('/oopif.html')
+    );
     await page.goto(server.PREFIX + '/dynamic-oopif.html');
+    await frame;
     expect(oopifs(context).length).toBe(1);
     expect(page.frames().length).toBe(2);
   });

@@ -152,7 +152,10 @@ export class FrameManager extends EventEmitter {
       }
     } catch (error) {
       // The target might have been closed before the initialization finished.
-      if (error.message.includes('Target closed')) {
+      if (
+        error.message.includes('Target closed') ||
+        error.message.includes('Session closed')
+      ) {
         return;
       }
 
