@@ -195,6 +195,7 @@
   * [page.viewport()](#pageviewport)
   * [page.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#pagewaitforselectororfunctionortimeout-options-args)
   * [page.waitForFileChooser([options])](#pagewaitforfilechooseroptions)
+  * [page.waitForFrame(urlOrPredicate[, options])](#pagewaitforframeurlorpredicate-options)
   * [page.waitForFunction(pageFunction[, options[, ...args]])](#pagewaitforfunctionpagefunction-options-args)
   * [page.waitForNavigation([options])](#pagewaitfornavigationoptions)
   * [page.waitForNetworkIdle([options])](#pagewaitfornetworkidleoptions)
@@ -269,6 +270,7 @@
   * [frame.goto(url[, options])](#framegotourl-options)
   * [frame.hover(selector)](#framehoverselector)
   * [frame.isDetached()](#frameisdetached)
+  * [frame.isOOPFrame()](#frameisoopframe)
   * [frame.name()](#framename)
   * [frame.parentFrame()](#frameparentframe)
   * [frame.select(selector, ...values)](#frameselectselector-values)
@@ -385,6 +387,7 @@
 - [class: CDPSession](#class-cdpsession)
   * [cdpSession.connection()](#cdpsessionconnection)
   * [cdpSession.detach()](#cdpsessiondetach)
+  * [cdpSession.id()](#cdpsessionid)
   * [cdpSession.send(method[, ...paramArgs])](#cdpsessionsendmethod-paramargs)
 - [class: Coverage](#class-coverage)
   * [coverage.startCSSCoverage([options])](#coveragestartcsscoverageoptions)
@@ -2769,6 +2772,19 @@ await fileChooser.accept(['/tmp/myfile.pdf']);
 
 > **NOTE** “File picker” refers to the operating system’s file selection UI that lets you browse to a folder and select file(s) to be shared with the web app. It’s not the “Save file” dialog.
 
+#### page.waitForFrame(urlOrPredicate[, options])
+
+- `urlOrPredicate` <[string]|[Function]> A URL or predicate to wait for.
+- `options` <[Object]> Optional waiting parameters
+  - `timeout` <[number]> Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to disable the timeout. The default value can be changed by using the [page.setDefaultTimeout(timeout)](#pagesetdefaulttimeouttimeout) method.
+- returns: <[Promise]<[Frame]>> Promise which resolves to the matched frame.
+
+```js
+const frame = await page.waitForFrame(async (frame) => {
+  return frame.name() === 'Test';
+});
+```
+
 #### page.waitForFunction(pageFunction[, options[, ...args]])
 
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
@@ -3832,6 +3848,12 @@ If there's no element matching `selector`, the method throws an error.
 - returns: <[boolean]>
 
 Returns `true` if the frame has been detached, or `false` otherwise.
+
+#### frame.isOOPFrame()
+
+- returns: <[boolean]>
+
+Returns `true` if the frame is an OOP frame, or `false` otherwise.
 
 #### frame.name()
 
@@ -5087,6 +5109,12 @@ Returns the underlying connection associated with the session. Can be used to ob
 
 Detaches the cdpSession from the target. Once detached, the cdpSession object won't emit any events and can't be used
 to send messages.
+
+#### cdpSession.id()
+
+- returns: <[string]>
+
+Returns the session's id.
 
 #### cdpSession.send(method[, ...paramArgs])
 
