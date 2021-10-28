@@ -145,11 +145,11 @@ export class FrameManager extends EventEmitter {
         client
           .send('Runtime.enable')
           .then(() => this._ensureIsolatedWorld(client, UTILITY_WORLD_NAME)),
+        // TODO: Network manager is not aware of OOP iframes yet.
+        client === this._client
+          ? this._networkManager.initialize()
+          : Promise.resolve(),
       ]);
-      if (client === this._client) {
-        // Network manager is not aware of OOP iframes yet.
-        await this._networkManager.initialize();
-      }
     } catch (error) {
       // The target might have been closed before the initialization finished.
       if (
