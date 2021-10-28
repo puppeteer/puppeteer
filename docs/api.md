@@ -5110,12 +5110,6 @@ Returns the underlying connection associated with the session. Can be used to ob
 Detaches the cdpSession from the target. Once detached, the cdpSession object won't emit any events and can't be used
 to send messages.
 
-#### cdpSession.id()
-
-- returns: <[string]>
-
-Returns the session's id.
-
 #### cdpSession.send(method[, ...paramArgs])
 
 - `method` <[string]> protocol method name

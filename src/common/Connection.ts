@@ -351,6 +351,9 @@ export class CDPSession extends EventEmitter {
     this.emit(CDPSessionEmittedEvents.Disconnected);
   }
 
+  /**
+   * @internal
+   */
   id(): string {
     return this._sessionId;
   }

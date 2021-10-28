@@ -42,19 +42,18 @@ jobs:
 
       - name: Run code checks
         run: |
-          # npm run ensure-pinned-deps
-          # npm run lint
+          npm run ensure-pinned-deps
+          npm run lint
           # Skipping as it's flakey and we are not currently using the new documentation site in the wild yet.
           # See https://github.com/puppeteer/puppeteer/issues/7710 for more info
           # npm run generate-docs
-          # npm run ensure-correct-devtools-protocol-revision
-          # npm run test-types-file
+          npm run ensure-correct-devtools-protocol-revision
+          npm run test-types-file
 
       - name: Run unit tests
         uses: nick-invision/retry@v2
         env:
           CHROMIUM: true
-          DEBUG: puppeteer:* 
         with:
           max_attempts: 3
           command: xvfb-run --auto-servernum npm run unit
@@ -121,7 +120,6 @@ jobs:
       - name: Run unit tests
         env:
           CHROMIUM: true
-          DEBUG: puppeteer:* 
         run: |
           npm run unit
 
@@ -165,7 +163,6 @@ jobs:
       - name: Run unit tests
         env:
           CHROMIUM: true
-          DEBUG: puppeteer:* 
         run: |
           npm run unit
 
