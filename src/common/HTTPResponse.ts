@@ -157,15 +157,13 @@ export class HTTPResponse {
             response.base64Encoded ? 'base64' : 'utf8'
           );
         } catch (error) {
-          if (error instanceof ProtocolError) {
-            if (
-              error.originalMessage ===
-              'No resource with given identifier found'
-            ) {
-              throw new ProtocolError(
-                'Could not load body for this request. This might happen if the request is a preflight request for example.'
-              );
-            }
+          if (
+            error instanceof ProtocolError &&
+            error.originalMessage === 'No resource with given identifier found'
+          ) {
+            throw new ProtocolError(
+              'Could not load body for this request. This might happen if the request is a preflight request.'
+            );
           }
 
           throw error;

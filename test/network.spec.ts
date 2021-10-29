@@ -401,7 +401,7 @@ describe('network', function () {
 
       const response = await responsePromise;
       await expect(response.buffer()).rejects.toThrowError(
-        'Could not load body for this request. This might happen if the request is a preflight request for example.'
+        'Could not load body for this request. This might happen if the request is a preflight request.'
       );
     });
   });
