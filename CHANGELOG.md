@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [11.0.0](https://github.com/puppeteer/puppeteer/compare/v10.4.0...v11.0.0) (2021-11-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* **oop iframes:** integrate OOP iframes with the frame manager (#7556)
+
+### Features
+
+* improve error message for response.buffer() ([#7669](https://github.com/puppeteer/puppeteer/issues/7669)) ([03c9ecc](https://github.com/puppeteer/puppeteer/commit/03c9ecca400a02684cd60229550dbad1190a5b6e))
+* **oop iframes:** integrate OOP iframes with the frame manager ([#7556](https://github.com/puppeteer/puppeteer/issues/7556)) ([4d9dc8c](https://github.com/puppeteer/puppeteer/commit/4d9dc8c0e613f22d4cdf237e8bd0b0da3c588edb)), closes [#2548](https://github.com/puppeteer/puppeteer/issues/2548)
+* add custom debugging port option ([#4993](https://github.com/puppeteer/puppeteer/issues/4993)) ([26145e9](https://github.com/puppeteer/puppeteer/commit/26145e9a24af7caed6ece61031f2cafa6abd505f))
+* add initiator to HTTPRequest ([#7614](https://github.com/puppeteer/puppeteer/issues/7614)) ([a271145](https://github.com/puppeteer/puppeteer/commit/a271145b0663ef9de1903dd0eb9fd5366465bed7))
+* allow to customize tmpdir ([#7243](https://github.com/puppeteer/puppeteer/issues/7243)) ([b1f6e86](https://github.com/puppeteer/puppeteer/commit/b1f6e8692b0bc7e8551b2a78169c830cd80a7acb))
+* handle unhandled promise rejections in tests ([#7722](https://github.com/puppeteer/puppeteer/issues/7722)) ([07febca](https://github.com/puppeteer/puppeteer/commit/07febca04b391893cfc872250e4391da142d4fe2))
+
+
+### Bug Fixes
+
+* add support for relative install paths to BrowserFetcher ([#7613](https://github.com/puppeteer/puppeteer/issues/7613)) ([eebf452](https://github.com/puppeteer/puppeteer/commit/eebf452d38b79bb2ea1a1ba84c3d2ea6f2f9f899)), closes [#7592](https://github.com/puppeteer/puppeteer/issues/7592)
+* add webp to screenshot quality option allow list ([#7631](https://github.com/puppeteer/puppeteer/issues/7631)) ([b20c2bf](https://github.com/puppeteer/puppeteer/commit/b20c2bfa24cbdd4a1b9cefca2e0a9407e442baf5))
+* prevent Target closed errors on streams ([#7728](https://github.com/puppeteer/puppeteer/issues/7728)) ([5b792de](https://github.com/puppeteer/puppeteer/commit/5b792de7a97611441777d1ac99cb95516301d7dc))
+* request an animation frame to fix flaky clickablePoint test ([#7587](https://github.com/puppeteer/puppeteer/issues/7587)) ([7341d9f](https://github.com/puppeteer/puppeteer/commit/7341d9fadd1466a5b2f2bde8631f3b02cf9a7d8a))
+* setup husky properly ([#7727](https://github.com/puppeteer/puppeteer/issues/7727)) ([8b712e7](https://github.com/puppeteer/puppeteer/commit/8b712e7b642b58193437f26d4e104a9e412f388d)), closes [#7726](https://github.com/puppeteer/puppeteer/issues/7726)
+* updated troubleshooting.md to meet latest dependencies changes ([#7656](https://github.com/puppeteer/puppeteer/issues/7656)) ([edb0197](https://github.com/puppeteer/puppeteer/commit/edb01972b9606d8b05b979a588eda0d622315981))
+* **launcher:** launcher.launch() should pass 'timeout' option [#5180](https://github.com/puppeteer/puppeteer/issues/5180) ([#7596](https://github.com/puppeteer/puppeteer/issues/7596)) ([113489d](https://github.com/puppeteer/puppeteer/commit/113489d3b58e2907374a4e6e5133bf46630695d1))
+* **page:** fallback to default in exposeFunction when using imported module  ([#6365](https://github.com/puppeteer/puppeteer/issues/6365)) ([44c9ec6](https://github.com/puppeteer/puppeteer/commit/44c9ec67c57dccf3e186c86f14f3a8da9a8eb971))
+* **page:** fix page.off method for request event ([#7624](https://github.com/puppeteer/puppeteer/issues/7624)) ([d0cb943](https://github.com/puppeteer/puppeteer/commit/d0cb9436a302418086f6763e0e58ae3732a20b62)), closes [#7572](https://github.com/puppeteer/puppeteer/issues/7572)
+
 ## [10.4.0](https://github.com/puppeteer/puppeteer/compare/v10.2.0...v10.4.0) (2021-09-21)
 
 
