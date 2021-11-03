@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  LaunchOptions,
-  BrowserLaunchArgumentOptions,
-} from './node/LaunchOptions.js';
-import { BrowserConnectOptions } from './common/BrowserConnector.js';
-import { Product } from './common/Product.js';
-import { Browser } from './common/Browser.js';
-import { ConnectOptions } from './common/Puppeteer.js';
+import { PuppeteerNode } from './node/Puppeteer.js';
+
 import { DevicesMap } from './common/DeviceDescriptors.js';
 import { PuppeteerErrors } from './common/Errors.js';
 import { PredefinedNetworkConditions } from './common/NetworkConditions.js';
-import { CustomQueryHandler } from './common/QueryHandler.js';
 
 /*
  * This file re-exports any APIs that we want to have documentation generated
@@ -76,7 +69,7 @@ export * from './common/EvalTypes.js';
 export * from './common/PDFOptions.js';
 export * from './common/TimeoutSettings.js';
 export * from './common/LifecycleWatcher.js';
-export * from './common/QueryHandler.js';
+export { CustomQueryHandler } from './common/QueryHandler.js';
 export * from './common/NetworkConditions.js';
 export * from 'devtools-protocol/types/protocol';
 
@@ -94,25 +87,6 @@ export * from 'devtools-protocol/types/protocol';
 
 /**
  * @public
- * {@inheritDoc PuppeteerNode.launch}
- */
-export declare function launch(
-  options?: LaunchOptions &
-    BrowserLaunchArgumentOptions &
-    BrowserConnectOptions & {
-      product?: Product;
-      extraPrefsFirefox?: Record<string, unknown>;
-    }
-): Promise<Browser>;
-
-/**
- * @public
- * {@inheritDoc PuppeteerNode.connect}
- */
-export declare function connect(options: ConnectOptions): Promise<Browser>;
-
-/**
- * @public
  * {@inheritDoc Puppeteer.devices}
  */
 export let devices: DevicesMap;
@@ -127,25 +101,12 @@ export let networkConditions: PredefinedNetworkConditions;
 
 /**
  * @public
- * {@inheritDoc Puppeteer.registerCustomQueryHandler}
+ * {@inheritDoc PuppeteerNode}
  */
-export declare function registerCustomQueryHandler(
-  name: string,
-  queryHandler: CustomQueryHandler
-): void;
+declare const puppeteer: PuppeteerNode;
 
 /**
  * @public
- * {@inheritDoc Puppeteer.unregisterCustomQueryHandler}
+ * {@inheritDoc PuppeteerNode}
  */
-export declare function unregisterCustomQueryHandler(name: string): void;
-/**
- * @public
- * {@inheritDoc Puppeteer.customQueryHandlerNames}
- */
-export declare function customQueryHandlerNames(): string[];
-/**
- * @public
- * {@inheritDoc Puppeteer.clearCustomQueryHandlers}
- */
-export declare function clearCustomQueryHandlers(): void;
+export default puppeteer;
