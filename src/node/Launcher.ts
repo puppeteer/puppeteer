@@ -23,6 +23,7 @@ import { Browser } from '../common/Browser.js';
 import { BrowserRunner } from './BrowserRunner.js';
 import { promisify } from 'util';
 
+const copyFileAsync = promisify(fs.copyFile);
 const mkdtempAsync = promisify(fs.mkdtemp);
 const writeFileAsync = promisify(fs.writeFile);
 
@@ -85,7 +86,6 @@ class ChromeLauncher implements ProductLauncher {
       debuggingPort = null,
     } = options;
 
-    const profilePath = path.join(tmpDir(), 'puppeteer_dev_chrome_profile-');
     const chromeArguments = [];
     if (!ignoreDefaultArgs) chromeArguments.push(...this.defaultArgs(options));
     else if (Array.isArray(ignoreDefaultArgs))
@@ -95,8 +95,6 @@ class ChromeLauncher implements ProductLauncher {
         )
       );
     else chromeArguments.push(...args);
-
-    let temporaryUserDataDir = null;
 
     if (
       !chromeArguments.some((argument) =>
@@ -113,9 +111,28 @@ class ChromeLauncher implements ProductLauncher {
         chromeArguments.push(`--remote-debugging-port=${debuggingPort || 0}`);
       }
     }
-    if (!chromeArguments.some((arg) => arg.startsWith('--user-data-dir'))) {
-      temporaryUserDataDir = await mkdtempAsync(profilePath);
-      chromeArguments.push(`--user-data-dir=${temporaryUserDataDir}`);
+
+    let userDataDir;
+    let isTempUserDataDir = true;
+
+    // Check for the user data dir argument, which will always be set even
+    // with a custom directory specified via the userDataDir option.
+    const userDataDirIndex = chromeArguments.findIndex((arg) => {
+      return arg.startsWith('--user-data-dir');
+    });
+
+    if (userDataDirIndex !== -1) {
+      userDataDir = chromeArguments[userDataDirIndex].split('=')[1];
+      if (!fs.existsSync(userDataDir)) {
+        throw new Error(`Chrome user data dir not found at '${userDataDir}'`);
+      }
+
+      isTempUserDataDir = false;
+    } else {
+      userDataDir = await mkdtempAsync(
+        path.join(tmpDir(), 'puppeteer_dev_chrome_profile-')
+      );
+      chromeArguments.push(`--user-data-dir=${userDataDir}`);
     }
 
     let chromeExecutable = executablePath;
@@ -145,7 +162,8 @@ class ChromeLauncher implements ProductLauncher {
       this.product,
       chromeExecutable,
       chromeArguments,
-      temporaryUserDataDir
+      userDataDir,
+      isTempUserDataDir
     );
     runner.start({
       handleSIGHUP,
@@ -303,15 +321,30 @@ class FirefoxLauncher implements ProductLauncher {
       firefoxArguments.push(`--remote-debugging-port=${debuggingPort || 0}`);
     }
 
-    let temporaryUserDataDir = null;
+    let userDataDir = null;
+    let isTempUserDataDir = true;
 
-    if (
-      !firefoxArguments.includes('-profile') &&
-      !firefoxArguments.includes('--profile')
-    ) {
-      temporaryUserDataDir = await this._createProfile(extraPrefsFirefox);
+    // Check for the profile argument, which will always be set even
+    // with a custom directory specified via the userDataDir option.
+    const profileArgIndex = firefoxArguments.findIndex((arg) => {
+      return ['-profile', '--profile'].includes(arg);
+    });
+
+    if (profileArgIndex !== -1) {
+      userDataDir = firefoxArguments[profileArgIndex + 1];
+      if (!fs.existsSync(userDataDir)) {
+        throw new Error(`Firefox profile not found at '${userDataDir}'`);
+      }
+
+      // When using a custom Firefox profile it needs to be populated
+      // with required preferences.
+      isTempUserDataDir = false;
+      const prefs = this.defaultPreferences(extraPrefsFirefox);
+      this.writePreferences(prefs, userDataDir);
+    } else {
+      userDataDir = await this._createProfile(extraPrefsFirefox);
       firefoxArguments.push('--profile');
-      firefoxArguments.push(temporaryUserDataDir);
+      firefoxArguments.push(userDataDir);
     }
 
     await this._updateRevision();
@@ -326,7 +359,8 @@ class FirefoxLauncher implements ProductLauncher {
       this.product,
       firefoxExecutable,
       firefoxArguments,
-      temporaryUserDataDir
+      userDataDir,
+      isTempUserDataDir
     );
     runner.start({
       handleSIGHUP,
@@ -381,16 +415,19 @@ class FirefoxLauncher implements ProductLauncher {
   }
 
   defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
-    const firefoxArguments = ['--no-remote', '--foreground'];
-    if (os.platform().startsWith('win')) {
-      firefoxArguments.push('--wait-for-browser');
-    }
     const {
       devtools = false,
       headless = !devtools,
       args = [],
       userDataDir = null,
     } = options;
+
+    const firefoxArguments = ['--no-remote'];
+
+    if (os.platform() === 'darwin') firefoxArguments.push('--foreground');
+    else if (os.platform().startsWith('win')) {
+      firefoxArguments.push('--wait-for-browser');
+    }
     if (userDataDir) {
       firefoxArguments.push('--profile');
       firefoxArguments.push(userDataDir);
@@ -403,14 +440,12 @@ class FirefoxLauncher implements ProductLauncher {
     return firefoxArguments;
   }
 
-  async _createProfile(extraPrefs: { [x: string]: unknown }): Promise<string> {
-    const profilePath = await mkdtempAsync(
-      path.join(tmpDir(), 'puppeteer_dev_firefox_profile-')
-    );
-    const prefsJS = [];
-    const userJS = [];
+  defaultPreferences(extraPrefs: { [x: string]: unknown }): {
+    [x: string]: unknown;
+  } {
     const server = 'dummy.test';
-    const defaultPreferences = {
+
+    const defaultPrefs = {
       // Make sure Shield doesn't hit the network.
       'app.normandy.api_url': '',
       // Disable Firefox old build background check
@@ -612,17 +647,46 @@ class FirefoxLauncher implements ProductLauncher {
       'toolkit.startup.max_resumed_crashes': -1,
     };
 
-    Object.assign(defaultPreferences, extraPrefs);
-    for (const [key, value] of Object.entries(defaultPreferences))
-      userJS.push(
-        `user_pref(${JSON.stringify(key)}, ${JSON.stringify(value)});`
-      );
-    await writeFileAsync(path.join(profilePath, 'user.js'), userJS.join('\n'));
-    await writeFileAsync(
-      path.join(profilePath, 'prefs.js'),
-      prefsJS.join('\n')
+    return Object.assign(defaultPrefs, extraPrefs);
+  }
+
+  /**
+   * Populates the user.js file with custom preferences as needed to allow
+   * Firefox's CDP support to properly function. These preferences will be
+   * automatically copied over to prefs.js during startup of Firefox. To be
+   * able to restore the original values of preferences a backup of prefs.js
+   * will be created.
+   *
+   * @param prefs List of preferences to add.
+   * @param profilePath Firefox profile to write the preferences to.
+   */
+  async writePreferences(
+    prefs: { [x: string]: unknown },
+    profilePath: string
+  ): Promise<void> {
+    const lines = Object.entries(prefs).map(([key, value]) => {
+      return `user_pref(${JSON.stringify(key)}, ${JSON.stringify(value)});`;
+    });
+
+    await writeFileAsync(path.join(profilePath, 'user.js'), lines.join('\n'));
+
+    // Create a backup of the preferences file if it already exitsts.
+    const prefsPath = path.join(profilePath, 'prefs.js');
+    if (fs.existsSync(prefsPath)) {
+      const prefsBackupPath = path.join(profilePath, 'prefs.js.puppeteer');
+      await copyFileAsync(prefsPath, prefsBackupPath);
+    }
+  }
+
+  async _createProfile(extraPrefs: { [x: string]: unknown }): Promise<string> {
+    const temporaryProfilePath = await mkdtempAsync(
+      path.join(tmpDir(), 'puppeteer_dev_firefox_profile-')
     );
-    return profilePath;
+
+    const prefs = this.defaultPreferences(extraPrefs);
+    await this.writePreferences(prefs, temporaryProfilePath);
+
+    return temporaryProfilePath;
   }
 }
 

@@ -47,6 +47,10 @@ describeChromeOnly('AriaQueryHandler', () => {
       );
       await expectFound(button);
       button = await page.$(
+        "aria/Submit button and some spaces[role='button']"
+      );
+      await expectFound(button);
+      button = await page.$(
         'aria/  Submit button and some spaces[role="button"]'
       );
       await expectFound(button);
@@ -68,6 +72,10 @@ describeChromeOnly('AriaQueryHandler', () => {
       await expectFound(button);
       button = await page.$(
         'aria/[name="  Submit  button and some  spaces"][role="button"]'
+      );
+      await expectFound(button);
+      button = await page.$(
+        "aria/[name='  Submit  button and some  spaces'][role='button']"
       );
       await expectFound(button);
       button = await page.$(
