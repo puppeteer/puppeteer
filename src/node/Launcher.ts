@@ -174,6 +174,7 @@ class ChromeLauncher implements ProductLauncher {
       pipe: usePipe,
     });
 
+    let browser;
     try {
       const connection = await runner.setupConnection({
         usePipe,
@@ -181,7 +182,7 @@ class ChromeLauncher implements ProductLauncher {
         slowMo,
         preferredRevision: this._preferredRevision,
       });
-      const browser = await Browser.create(
+      browser = await Browser.create(
         connection,
         [],
         ignoreHTTPSErrors,
@@ -189,13 +190,21 @@ class ChromeLauncher implements ProductLauncher {
         runner.proc,
         runner.close.bind(runner)
       );
-      if (waitForInitialPage)
-        await browser.waitForTarget((t) => t.type() === 'page', { timeout });
-      return browser;
     } catch (error) {
       runner.kill();
       throw error;
     }
+
+    if (waitForInitialPage) {
+      try {
+        await browser.waitForTarget((t) => t.type() === 'page', { timeout });
+      } catch (error) {
+        await browser.close();
+        throw error;
+      }
+    }
+
+    return browser;
   }
 
   defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
@@ -371,6 +380,7 @@ class FirefoxLauncher implements ProductLauncher {
       pipe,
     });
 
+    let browser;
     try {
       const connection = await runner.setupConnection({
         usePipe: pipe,
@@ -378,7 +388,7 @@ class FirefoxLauncher implements ProductLauncher {
         slowMo,
         preferredRevision: this._preferredRevision,
       });
-      const browser = await Browser.create(
+      browser = await Browser.create(
         connection,
         [],
         ignoreHTTPSErrors,
@@ -386,13 +396,21 @@ class FirefoxLauncher implements ProductLauncher {
         runner.proc,
         runner.close.bind(runner)
       );
-      if (waitForInitialPage)
-        await browser.waitForTarget((t) => t.type() === 'page', { timeout });
-      return browser;
     } catch (error) {
       runner.kill();
       throw error;
     }
+
+    if (waitForInitialPage) {
+      try {
+        await browser.waitForTarget((t) => t.type() === 'page', { timeout });
+      } catch (error) {
+        await browser.close();
+        throw error;
+      }
+    }
+
+    return browser;
   }
 
   executablePath(): string {
