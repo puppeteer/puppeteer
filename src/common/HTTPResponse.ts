@@ -48,6 +48,7 @@ export class HTTPResponse {
   private _fromServiceWorker: boolean;
   private _headers: Record<string, string> = {};
   private _securityDetails: SecurityDetails | null;
+  private _extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null;
 
   /**
    * @internal
@@ -55,10 +56,12 @@ export class HTTPResponse {
   constructor(
     client: CDPSession,
     request: HTTPRequest,
-    responsePayload: Protocol.Network.Response
+    responsePayload: Protocol.Network.Response,
+    extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null
   ) {
     this._client = client;
     this._request = request;
+    this._extraInfo = extraInfo;
 
     this._bodyLoadedPromise = new Promise((fulfill) => {
       this._bodyLoadedPromiseFulfill = fulfill;
@@ -68,16 +71,27 @@ export class HTTPResponse {
       ip: responsePayload.remoteIPAddress,
       port: responsePayload.remotePort,
     };
-    this._status = responsePayload.status;
+    // TODO extract statusText from extraInfo.headersText instead if present
     this._statusText = responsePayload.statusText;
     this._url = request.url();
     this._fromDiskCache = !!responsePayload.fromDiskCache;
     this._fromServiceWorker = !!responsePayload.fromServiceWorker;
-    for (const key of Object.keys(responsePayload.headers))
-      this._headers[key.toLowerCase()] = responsePayload.headers[key];
+
+    this._status = extraInfo ? extraInfo.statusCode : responsePayload.status;
+    const headers = extraInfo ? extraInfo.headers : responsePayload.headers;
+    for (const key of Object.keys(headers))
+      this._headers[key.toLowerCase()] = headers[key];
+
     this._securityDetails = responsePayload.securityDetails
       ? new SecurityDetails(responsePayload.securityDetails)
       : null;
+  }
+
+  /**
+   * @internal
+   */
+  _debugExtraInfo(): Protocol.Network.ResponseReceivedExtraInfoEvent | null {
+    return this._extraInfo;
   }
 
   /**

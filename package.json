@@ -59,7 +59,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "debug": "4.3.2",
-    "devtools-protocol": "0.0.901419",
+    "devtools-protocol": "0.0.937139",
     "extract-zip": "2.0.1",
     "https-proxy-agent": "5.0.0",
     "node-fetch": "2.6.5",

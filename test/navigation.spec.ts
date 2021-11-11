@@ -301,6 +301,8 @@ describe('navigation', function () {
       server.setRedirect('/redirect/2.html', '/redirect/3.html');
       server.setRedirect('/redirect/3.html', server.EMPTY_PAGE);
       const response = await page.goto(server.PREFIX + '/redirect/1.html');
+      console.log(response.ok(), response.url(), response.status());
+      console.log(JSON.stringify(response._debugExtraInfo(), null, 2));
       expect(response.ok()).toBe(true);
       expect(response.url()).toBe(server.EMPTY_PAGE);
     });
