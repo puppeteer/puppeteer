@@ -157,6 +157,14 @@ export const itChromeOnly = (
   else return xit(description, body);
 };
 
+export const itFirefoxOnly = (
+  description: string,
+  body: Mocha.Func
+): Mocha.Test => {
+  if (isFirefox) return it(description, body);
+  else return xit(description, body);
+};
+
 export const itOnlyRegularInstall = (
   description: string,
   body: Mocha.Func
@@ -220,6 +228,10 @@ console.log(
     path.relative(process.cwd(), puppeteer.executablePath())
   }`
 );
+
+process.on('unhandledRejection', (reason) => {
+  throw reason;
+});
 
 export const setupTestBrowserHooks = (): void => {
   before(async () => {

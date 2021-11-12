@@ -14,3 +14,4 @@ vendor/
 web-test-runner.config.mjs
 test-ts-types/
 website/
+docs-dist/
