@@ -529,6 +529,12 @@ describe('network', function () {
       server.setRedirect('/foo.html', '/empty.html');
       const FOO_URL = server.PREFIX + '/foo.html';
       const response = await page.goto(FOO_URL);
+      for (let i = 0; i < 3; i++) {
+        if (events.length >= 6) {
+          break;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
       expect(events).toEqual([
         `GET ${FOO_URL}`,
         `302 ${FOO_URL}`,
@@ -687,7 +693,7 @@ describe('network', function () {
     });
   });
 
-  describe('raw network headers', async () => {
+  describeFailsFirefox('raw network headers', async () => {
     it('Same-origin set-cookie navigation', async () => {
       const { page, server } = getTestState();
 
@@ -710,7 +716,7 @@ describe('network', function () {
         res.end('hello world');
       });
 
-      const responsePromise = new Promise((resolve) =>
+      const responsePromise = new Promise<HTTPResponse>((resolve) =>
         page.on('response', (response) => resolve(response))
       );
       page.evaluate(() => {
@@ -719,7 +725,6 @@ describe('network', function () {
         xhr.send();
       });
       const subresourceResponse = await responsePromise;
-      // @ts-ignore
       expect(subresourceResponse.headers()['set-cookie']).toBe(setCookieString);
     });
 
@@ -744,7 +749,7 @@ describe('network', function () {
         });
         await page.goto(httpsServer.PREFIX + '/setcookie.html');
 
-        const response = await new Promise((resolve) => {
+        const response = await new Promise<HTTPResponse>((resolve) => {
           page.on('response', resolve);
           const url = httpsServer.CROSS_PROCESS_PREFIX + '/setcookie.html';
           page.evaluate<(src: string) => void>((src) => {
@@ -753,7 +758,6 @@ describe('network', function () {
             xhr.send();
           }, url);
         });
-        // @ts-ignore
         expect(response.headers()['set-cookie']).toBe(setCookieString);
       } finally {
         await page.close();

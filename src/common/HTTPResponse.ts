@@ -48,6 +48,7 @@ export class HTTPResponse {
   private _fromServiceWorker: boolean;
   private _headers: Record<string, string> = {};
   private _securityDetails: SecurityDetails | null;
+  private _extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null;
 
   /**
    * @internal
@@ -60,6 +61,7 @@ export class HTTPResponse {
   ) {
     this._client = client;
     this._request = request;
+    this._extraInfo = extraInfo;
 
     this._bodyLoadedPromise = new Promise((fulfill) => {
       this._bodyLoadedPromiseFulfill = fulfill;
@@ -75,9 +77,7 @@ export class HTTPResponse {
     this._fromDiskCache = !!responsePayload.fromDiskCache;
     this._fromServiceWorker = !!responsePayload.fromServiceWorker;
 
-    // @ts-ignore TODO roll protocol
     this._status = extraInfo ? extraInfo.statusCode : responsePayload.status;
-
     const headers = extraInfo ? extraInfo.headers : responsePayload.headers;
     for (const key of Object.keys(headers))
       this._headers[key.toLowerCase()] = headers[key];
@@ -85,6 +85,13 @@ export class HTTPResponse {
     this._securityDetails = responsePayload.securityDetails
       ? new SecurityDetails(responsePayload.securityDetails)
       : null;
+  }
+
+  /**
+   * @internal
+   */
+  _debugExtraInfo(): Protocol.Network.ResponseReceivedExtraInfoEvent | null {
+    return this._extraInfo;
   }
 
   /**

@@ -402,7 +402,7 @@ export class NetworkManager extends EventEmitter {
 
   _requestIdToResponseExtraInfo(
     requestId: string
-  ): Protocol.Network.ResponseReceivedExtraInfo[] {
+  ): Protocol.Network.ResponseReceivedExtraInfoEvent[] {
     if (!this._requestIdToResponseReceivedExtraInfo.has(requestId)) {
       this._requestIdToResponseReceivedExtraInfo.set(requestId, []);
     }
@@ -439,7 +439,6 @@ export class NetworkManager extends EventEmitter {
     if (!lastRequest) return;
 
     let extraInfo = null;
-    // @ts-ignore TODO roll protocol
     if (event.redirectHasExtraInfo) {
       extraInfo = this._requestIdToResponseExtraInfo(event.requestId).shift();
       if (!extraInfo) {
@@ -462,6 +461,8 @@ export class NetworkManager extends EventEmitter {
     let redirectChain = [];
     if (event.redirectResponse) {
       const lastRequest = this._requestIdToRequest.get(event.requestId);
+      // If we connect late to the target, we could have missed the
+      // requestWillBeSent event.
       if (lastRequest) {
         this._handleRequestWithRedirect(event);
         redirectChain = lastRequest._redirectChain;
@@ -512,7 +513,6 @@ export class NetworkManager extends EventEmitter {
   _onResponseReceived(event: Protocol.Network.ResponseReceivedEvent): void {
     const request = this._requestIdToRequest.get(event.requestId);
     let extraInfo = null;
-    // @ts-ignore TODO roll protocol
     if (request && !request._fromMemoryCache && event.hasExtraInfo) {
       extraInfo = this._requestIdToResponseExtraInfo(event.requestId).shift();
       if (!extraInfo) {

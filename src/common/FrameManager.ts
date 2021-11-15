@@ -449,7 +449,7 @@ export class FrameManager extends EventEmitter {
       }
     }
     const context = new ExecutionContext(
-      frame._client || this._client,
+      frame?._client || this._client,
       contextPayload,
       world
     );
