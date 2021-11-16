@@ -171,7 +171,8 @@ export class LifecycleWatcher {
     this._checkLifecycleComplete();
   }
 
-  navigationResponse(): HTTPResponse | null {
+  async navigationResponse(): Promise<HTTPResponse | null> {
+    // We may need to wait for ExtraInfo events before the request is complete.
     return this._navigationRequest ? this._navigationRequest.response() : null;
   }
 

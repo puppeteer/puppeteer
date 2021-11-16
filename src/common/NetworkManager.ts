@@ -123,16 +123,24 @@ export class NetworkManager extends EventEmitter {
     string,
     Protocol.Network.ResponseReceivedExtraInfoEvent[]
   >();
-  _requestIdToResponseReceived = new Map<
-    string,
-    Protocol.Network.ResponseReceivedEvent
-  >();
   _requestIdToRedirectInfoMap = new Map<
     string,
     Array<{
       request: HTTPRequest;
       response: Protocol.Network.Response;
     }>
+  >();
+  /*
+   * This map also holds a promise and resolver so that other code can
+   * wait for the ExtraInfo event to come in.
+   */
+  _requestIdToResponseReceived = new Map<
+    string,
+    {
+      event: Protocol.Network.ResponseReceivedEvent;
+      promise: Promise<void>;
+      resolver: () => void;
+    }
   >();
 
   _extraHTTPHeaders: Record<string, string> = {};
@@ -517,11 +525,23 @@ export class NetworkManager extends EventEmitter {
       extraInfo = this._requestIdToResponseExtraInfo(event.requestId).shift();
       if (!extraInfo) {
         // Wait until we get the corresponding ExtraInfo event.
-        this._requestIdToResponseReceived.set(event.requestId, event);
+        let resolver = null;
+        const promise = new Promise<void>((resolve) => (resolver = resolve));
+        this._requestIdToResponseReceived.set(event.requestId, {
+          event,
+          promise,
+          resolver,
+        });
         return;
       }
     }
     this._emitResponseEvent(event, extraInfo);
+  }
+
+  responseWaitingForExtraInfoPromise(requestId: string): Promise<void> {
+    const responseReceived = this._requestIdToResponseReceived.get(requestId);
+    if (!responseReceived) return Promise.resolve();
+    return responseReceived.promise;
   }
 
   _onResponseReceivedExtraInfo(
@@ -541,7 +561,8 @@ export class NetworkManager extends EventEmitter {
       event.requestId
     );
     if (responseReceived) {
-      this._emitResponseEvent(responseReceived, event);
+      responseReceived.resolver();
+      this._emitResponseEvent(responseReceived.event, event);
       return;
     }
 
