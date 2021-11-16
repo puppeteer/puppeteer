@@ -346,7 +346,7 @@ Example Dockerfile:
 ```Dockerfile
 FROM alpine
 
-# Installs latest Chromium (92) package.
+# Installs latest Chromium (93) package.
 RUN apk add --no-cache \
       chromium \
       nss \
@@ -363,8 +363,8 @@ RUN apk add --no-cache \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-# Puppeteer v10.0.0 works with Chromium 92.
-RUN yarn add puppeteer@10.0.0
+# Puppeteer v10.2.0 works with Chromium 93.
+RUN yarn add puppeteer@10.2.0
 
 # Add user so we don't need --no-sandbox.
 RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
