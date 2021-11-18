@@ -238,8 +238,7 @@ describe('Page.click', function () {
       )
     ).toBe('clicked');
   });
-  // See https://github.com/puppeteer/puppeteer/issues/7175
-  itFailsFirefox('should double click the button', async () => {
+  it('should double click the button', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/button.html');
@@ -292,7 +291,7 @@ describe('Page.click', function () {
     // This await should not hang.
     await page.click('a');
   });
-  itFailsFirefox('should click the button inside an iframe', async () => {
+  it('should click the button inside an iframe', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
@@ -328,25 +327,20 @@ describe('Page.click', function () {
     await frame.click('button');
     expect(await frame.evaluate(() => globalThis.result)).toBe('Clicked');
   });
-  itFailsFirefox(
-    'should click the button with deviceScaleFactor set',
-    async () => {
-      const { page, server } = getTestState();
+  it('should click the button with deviceScaleFactor set', async () => {
+    const { page, server } = getTestState();
 
-      await page.setViewport({ width: 400, height: 400, deviceScaleFactor: 5 });
-      expect(await page.evaluate(() => window.devicePixelRatio)).toBe(5);
-      await page.setContent(
-        '<div style="width:100px;height:100px">spacer</div>'
-      );
-      await utils.attachFrame(
-        page,
-        'button-test',
-        server.PREFIX + '/input/button.html'
-      );
-      const frame = page.frames()[1];
-      const button = await frame.$('button');
-      await button.click();
-      expect(await frame.evaluate(() => globalThis.result)).toBe('Clicked');
-    }
-  );
+    await page.setViewport({ width: 400, height: 400, deviceScaleFactor: 5 });
+    expect(await page.evaluate(() => window.devicePixelRatio)).toBe(5);
+    await page.setContent('<div style="width:100px;height:100px">spacer</div>');
+    await utils.attachFrame(
+      page,
+      'button-test',
+      server.PREFIX + '/input/button.html'
+    );
+    const frame = page.frames()[1];
+    const button = await frame.$('button');
+    await button.click();
+    expect(await frame.evaluate(() => globalThis.result)).toBe('Clicked');
+  });
 });
