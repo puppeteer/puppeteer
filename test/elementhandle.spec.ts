@@ -258,7 +258,7 @@ describe('ElementHandle specs', function () {
   });
 
   describe('ElementHandle.hover', function () {
-    itFailsFirefox('should work', async () => {
+    it('should work', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/input/scrollable.html');

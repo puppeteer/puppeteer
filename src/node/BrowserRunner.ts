@@ -180,13 +180,6 @@ export class BrowserRunner {
   }
 
   kill(): void {
-    // Attempt to remove temporary profile directory to avoid littering.
-    try {
-      if (this._isTempUserDataDir) {
-        removeFolder.sync(this._userDataDir);
-      }
-    } catch (error) {}
-
     // If the process failed to launch (for example if the browser executable path
     // is invalid), then the process does not get a pid assigned. A call to
     // `proc.kill` would error, as the `pid` to-be-killed can not be found.
@@ -199,6 +192,14 @@ export class BrowserRunner {
         );
       }
     }
+
+    // Attempt to remove temporary profile directory to avoid littering.
+    try {
+      if (this._isTempUserDataDir) {
+        removeFolder.sync(this._userDataDir);
+      }
+    } catch (error) {}
+
     // Cleanup this listener last, as that makes sure the full callback runs. If we
     // perform this earlier, then the previous function calls would not happen.
     helper.removeEventListeners(this._listeners);
