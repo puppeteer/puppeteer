@@ -654,7 +654,7 @@ try {
     - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
     - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
     - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
-  - `args` <[Array]<[string]>> Additional arguments to pass to the browser instance. The list of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/), and here is the list of [Firefox flags](https://developer.mozilla.org/en-US/docs/Mozilla/Command_Line_Options).
+  - `args` <[Array]<[string]>> Additional arguments to pass to the browser instance. The list of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/), and here is the list of [Firefox flags](https://wiki.mozilla.org/Firefox/CommandLineOptions).
   - `ignoreDefaultArgs` <[boolean]|[Array]<[string]>> If `true`, then do not use [`puppeteer.defaultArgs()`](#puppeteerdefaultargsoptions). If an array is given, then filter out the given default arguments. Dangerous option; use with care. Defaults to `false`.
   - `handleSIGINT` <[boolean]> Close the browser process on Ctrl-C. Defaults to `true`.
   - `handleSIGTERM` <[boolean]> Close the browser process on SIGTERM. Defaults to `true`.
