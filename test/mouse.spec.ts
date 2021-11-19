@@ -71,7 +71,7 @@ describe('Mouse', function () {
     expect(event.isTrusted).toBe(true);
     expect(event.button).toBe(0);
   });
-  itFailsFirefox('should resize the textarea', async () => {
+  it('should resize the textarea', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
@@ -87,7 +87,7 @@ describe('Mouse', function () {
     expect(newDimensions.width).toBe(Math.round(width + 104));
     expect(newDimensions.height).toBe(Math.round(height + 104));
   });
-  itFailsFirefox('should select the text with mouse', async () => {
+  it('should select the text with mouse', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
@@ -220,23 +220,20 @@ describe('Mouse', function () {
     ]);
   });
   // @see https://crbug.com/929806
-  itFailsFirefox(
-    'should work with mobile viewports and cross process navigations',
-    async () => {
-      const { page, server } = getTestState();
+  it('should work with mobile viewports and cross process navigations', async () => {
+    const { page, server } = getTestState();
 
-      await page.goto(server.EMPTY_PAGE);
-      await page.setViewport({ width: 360, height: 640, isMobile: true });
-      await page.goto(server.CROSS_PROCESS_PREFIX + '/mobile.html');
-      await page.evaluate(() => {
-        document.addEventListener('click', (event) => {
-          globalThis.result = { x: event.clientX, y: event.clientY };
-        });
+    await page.goto(server.EMPTY_PAGE);
+    await page.setViewport({ width: 360, height: 640, isMobile: true });
+    await page.goto(server.CROSS_PROCESS_PREFIX + '/mobile.html');
+    await page.evaluate(() => {
+      document.addEventListener('click', (event) => {
+        globalThis.result = { x: event.clientX, y: event.clientY };
       });
+    });
 
-      await page.mouse.click(30, 40);
+    await page.mouse.click(30, 40);
 
-      expect(await page.evaluate('result')).toEqual({ x: 30, y: 40 });
-    }
-  );
+    expect(await page.evaluate('result')).toEqual({ x: 30, y: 40 });
+  });
 });
