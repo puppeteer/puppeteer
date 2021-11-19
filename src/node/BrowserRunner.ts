@@ -79,8 +79,8 @@ export class BrowserRunner {
       if (dumpio) stdio = ['ignore', 'pipe', 'pipe', 'pipe', 'pipe'];
       else stdio = ['ignore', 'ignore', 'ignore', 'pipe', 'pipe'];
     } else {
-      if (dumpio) stdio = ['pipe', 'pipe', 'pipe'];
-      else stdio = ['pipe', 'ignore', 'pipe'];
+      if (dumpio) stdio = ['ignore', 'pipe', 'pipe'];
+      else stdio = ['ignore', 'ignore', 'ignore'];
     }
     assert(!this.proc, 'This process has previously been started.');
     debugLauncher(
