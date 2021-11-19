@@ -529,6 +529,12 @@ describe('network', function () {
       server.setRedirect('/foo.html', '/empty.html');
       const FOO_URL = server.PREFIX + '/foo.html';
       const response = await page.goto(FOO_URL);
+      for (let i = 0; i < 3; i++) {
+        if (events.length >= 6) {
+          break;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
       expect(events).toEqual([
         `GET ${FOO_URL}`,
         `302 ${FOO_URL}`,
@@ -684,6 +690,79 @@ describe('network', function () {
       expect(responses.get('one-style.css').fromCache()).toBe(true);
       expect(responses.get('one-style.html').status()).toBe(304);
       expect(responses.get('one-style.html').fromCache()).toBe(false);
+    });
+  });
+
+  describeFailsFirefox('raw network headers', async () => {
+    it('Same-origin set-cookie navigation', async () => {
+      const { page, server } = getTestState();
+
+      const setCookieString = 'foo=bar';
+      server.setRoute('/empty.html', (req, res) => {
+        res.setHeader('set-cookie', setCookieString);
+        res.end('hello world');
+      });
+      const response = await page.goto(server.EMPTY_PAGE);
+      expect(response.headers()['set-cookie']).toBe(setCookieString);
+    });
+
+    it('Same-origin set-cookie subresource', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+
+      const setCookieString = 'foo=bar';
+      server.setRoute('/foo', (req, res) => {
+        res.setHeader('set-cookie', setCookieString);
+        res.end('hello world');
+      });
+
+      const responsePromise = new Promise<HTTPResponse>((resolve) =>
+        page.on('response', (response) => resolve(response))
+      );
+      page.evaluate(() => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', '/foo');
+        xhr.send();
+      });
+      const subresourceResponse = await responsePromise;
+      expect(subresourceResponse.headers()['set-cookie']).toBe(setCookieString);
+    });
+
+    it('Cross-origin set-cookie', async () => {
+      const { httpsServer, puppeteer, defaultBrowserOptions } = getTestState();
+
+      const browser = await puppeteer.launch({
+        ...defaultBrowserOptions,
+        ignoreHTTPSErrors: true,
+      });
+
+      const page = await browser.newPage();
+
+      try {
+        await page.goto(httpsServer.PREFIX + '/empty.html');
+
+        const setCookieString = 'hello=world';
+        httpsServer.setRoute('/setcookie.html', (req, res) => {
+          res.setHeader('Access-Control-Allow-Origin', '*');
+          res.setHeader('set-cookie', setCookieString);
+          res.end();
+        });
+        await page.goto(httpsServer.PREFIX + '/setcookie.html');
+
+        const response = await new Promise<HTTPResponse>((resolve) => {
+          page.on('response', resolve);
+          const url = httpsServer.CROSS_PROCESS_PREFIX + '/setcookie.html';
+          page.evaluate<(src: string) => void>((src) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', src);
+            xhr.send();
+          }, url);
+        });
+        expect(response.headers()['set-cookie']).toBe(setCookieString);
+      } finally {
+        await page.close();
+        await browser.close();
+      }
     });
   });
 });
