@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { ProtocolMapping } from 'devtools-protocol/types/protocol-mapping.js';
 import { EventEmitter } from './EventEmitter.js';
+import { Frame } from './FrameManager.js';
 import { assert } from './assert.js';
 import { helper, debugError } from './helper.js';
 import { Protocol } from 'devtools-protocol';
-import { CDPSession } from './Connection.js';
-import { FrameManager } from './FrameManager.js';
 import { HTTPRequest } from './HTTPRequest.js';
 import { HTTPResponse } from './HTTPResponse.js';
 
@@ -61,6 +62,17 @@ export const NetworkManagerEmittedEvents = {
   RequestFailed: Symbol('NetworkManager.RequestFailed'),
   RequestFinished: Symbol('NetworkManager.RequestFinished'),
 } as const;
+
+interface CDPSession extends EventEmitter {
+  send<T extends keyof ProtocolMapping.Commands>(
+    method: T,
+    ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
+  ): Promise<ProtocolMapping.Commands[T]['returnType']>;
+}
+
+interface FrameManager {
+  frame(frameId: string): Frame | null;
+}
 
 /**
  * @internal
@@ -507,6 +519,15 @@ export class NetworkManager extends EventEmitter {
     const request = this._requestIdToRequest.get(responseReceived.requestId);
     // FileUpload sends a response without a matching request.
     if (!request) return;
+
+    const extraInfos = this._requestIdToResponseExtraInfo(
+      responseReceived.requestId
+    );
+    if (extraInfos.length) {
+      throw new Error(
+        'Unexpected extraInfo events for request ' + responseReceived.requestId
+      );
+    }
 
     const response = new HTTPResponse(
       this._client,
