@@ -207,7 +207,7 @@ export class HTTPRequest {
    */
   private interceptResolution(): [InterceptResolutionStrategy, number?] {
     if (!this._allowInterception) return ['disabled'];
-    if (this._interceptionHandled) return ['alreay-handled'];
+    if (this._interceptionHandled) return ['already-handled'];
     return [this._currentStrategy, this._currentPriority];
   }
 
