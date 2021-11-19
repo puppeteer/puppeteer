@@ -459,7 +459,7 @@ export class NetworkManager extends EventEmitter {
       }
     }
 
-    this._emitRedirectResponse(lastRequest, event.redirectResponse, null);
+    this._emitRedirectResponse(lastRequest, event.redirectResponse, extraInfo);
   }
 
   _onRequest(
