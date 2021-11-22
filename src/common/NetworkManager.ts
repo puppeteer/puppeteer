@@ -135,23 +135,21 @@ export class NetworkManager extends EventEmitter {
     string,
     Protocol.Network.ResponseReceivedExtraInfoEvent[]
   >();
-  _requestIdToRedirectInfoMap = new Map<
+  _requestIdToQueuedRedirectInfoMap = new Map<
     string,
-    Array<{
-      request: HTTPRequest;
-      response: Protocol.Network.Response;
-    }>
+    {
+      event: Protocol.Network.RequestWillBeSentEvent;
+      interceptionId?: string;
+    }
   >();
-  /*
-   * This map also holds a promise and resolver so that other code can
-   * wait for the ExtraInfo event to come in.
-   */
-  _requestIdToResponseReceived = new Map<
+  _requestIdToQueuedEvents = new Map<
     string,
     {
       event: Protocol.Network.ResponseReceivedEvent;
       promise: Promise<void>;
       resolver: () => void;
+      loadingFinished: Protocol.Network.LoadingFinishedEvent;
+      loadingFailed: Protocol.Network.LoadingFailedEvent;
     }
   >();
 
@@ -410,14 +408,14 @@ export class NetworkManager extends EventEmitter {
     }
   }
 
-  _requestIdToRedirectInfo(requestId: string): Array<{
-    request: HTTPRequest;
-    response: Protocol.Network.Response;
-  }> {
-    if (!this._requestIdToRedirectInfoMap.has(requestId)) {
-      this._requestIdToRedirectInfoMap.set(requestId, []);
+  _requestIdToQueuedRedirectInfo(requestId: string): Array<{
+        event: Protocol.Network.RequestWillBeSentEvent;
+        interceptionId?: string;
+      }> {
+    if (!this._requestIdToQueuedRedirectInfoMap.has(requestId)) {
+      this._requestIdToQueuedRedirectInfoMap.set(requestId, []);
     }
-    return this._requestIdToRedirectInfoMap.get(requestId);
+    return this._requestIdToQueuedRedirectInfoMap.get(requestId);
   }
 
   _requestIdToResponseExtraInfo(
@@ -429,63 +427,37 @@ export class NetworkManager extends EventEmitter {
     return this._requestIdToResponseReceivedExtraInfo.get(requestId);
   }
 
-  _emitRedirectResponse(
-    request: HTTPRequest,
-    responsePayload: Protocol.Network.Response,
-    extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent
-  ): void {
-    const response = new HTTPResponse(
-      this._client,
-      request,
-      responsePayload,
-      extraInfo
-    );
-    request._response = response;
-    request._redirectChain.push(request);
-    response._resolveBody(
-      new Error('Response body is unavailable for redirect responses')
-    );
-    this._forgetRequest(request, false);
-    this.emit(NetworkManagerEmittedEvents.Response, response);
-    this.emit(NetworkManagerEmittedEvents.RequestFinished, request);
-  }
-
-  _handleRequestWithRedirect(
-    event: Protocol.Network.RequestWillBeSentEvent
-  ): void {
-    const lastRequest = this._requestIdToRequest.get(event.requestId);
-    // If we connect late to the target, we could have missed the
-    // requestWillBeSent event.
-    if (!lastRequest) return;
-
-    let extraInfo = null;
-    if (event.redirectHasExtraInfo) {
-      extraInfo = this._requestIdToResponseExtraInfo(event.requestId).shift();
-      if (!extraInfo) {
-        // Wait for the corresponding ExtraInfo event before emitting the response.
-        this._requestIdToRedirectInfo(event.requestId).push({
-          request: lastRequest,
-          response: event.redirectResponse,
-        });
-        return;
-      }
-    }
-
-    this._emitRedirectResponse(lastRequest, event.redirectResponse, null);
-  }
-
   _onRequest(
     event: Protocol.Network.RequestWillBeSentEvent,
     interceptionId?: string
   ): void {
     let redirectChain = [];
     if (event.redirectResponse) {
-      const lastRequest = this._requestIdToRequest.get(event.requestId);
+      // We want to emit a response and requestfinished for the
+      // redirectResponse, but we can't do so unless we have a
+      // responseExtraInfo ready to pair it up with. If we don't have any
+      // responseExtraInfos saved in our queue, they we have to wait until
+      // the next one to emit response and requestfinished, *and* we should
+      // also wait to emit this Request too because it should come after the
+      // response/requestfinished.
+      let redirectResponseExtraInfo = null;
+      if (event.redirectHasExtraInfo) {
+        redirectResponseExtraInfo =
+          this._requestIdResponseExtraInfo(event.requestId).shift();
+        if (!redirectResponseExtraInfo) {
+          this._requestIdToQueuedRedirectInfo(event.requestId).push({event,
+            interceptionId});
+          return;
+        }
+      }
+
+      const request = this._requestIdToRequest.get(event.requestId);
       // If we connect late to the target, we could have missed the
       // requestWillBeSent event.
-      if (lastRequest) {
-        this._handleRequestWithRedirect(event);
-        redirectChain = lastRequest._redirectChain;
+      if (request) {
+        this._handleRequestRedirect(request, event.redirectResponse,
+          redirectResponseExtraInfo);
+        redirectChain = request._redirectChain;
       }
     }
     const frame = event.frameId
@@ -510,6 +482,23 @@ export class NetworkManager extends EventEmitter {
     const request = this._requestIdToRequest.get(event.requestId);
     if (request) request._fromMemoryCache = true;
     this.emit(NetworkManagerEmittedEvents.RequestServedFromCache, request);
+  }
+
+  _handleRequestRedirect(
+    request: HTTPRequest,
+    responsePayload: Protocol.Network.Response,
+    extraInfo: Protocol.Network.ResponseReceivedExtraInfo,
+  ): void {
+    const response = new HTTPResponse(this._client, request, responsePayload,
+      extraInfo);
+    request._response = response;
+    request._redirectChain.push(request);
+    response._resolveBody(
+      new Error('Response body is unavailable for redirect responses')
+    );
+    this._forgetRequest(request, false);
+    this.emit(NetworkManagerEmittedEvents.Response, response);
+    this.emit(NetworkManagerEmittedEvents.RequestFinished, request);
   }
 
   _emitResponseEvent(
@@ -548,7 +537,7 @@ export class NetworkManager extends EventEmitter {
         // Wait until we get the corresponding ExtraInfo event.
         let resolver = null;
         const promise = new Promise<void>((resolve) => (resolver = resolve));
-        this._requestIdToResponseReceived.set(event.requestId, {
+        this._requestIdToQueuedEvents.set(event.requestId, {
           event,
           promise,
           resolver,
@@ -560,7 +549,7 @@ export class NetworkManager extends EventEmitter {
   }
 
   responseWaitingForExtraInfoPromise(requestId: string): Promise<void> {
-    const responseReceived = this._requestIdToResponseReceived.get(requestId);
+    const responseReceived = this._requestIdToQueuedEvents.get(requestId);
     if (!responseReceived) return Promise.resolve();
     return responseReceived.promise;
   }
@@ -568,26 +557,35 @@ export class NetworkManager extends EventEmitter {
   _onResponseReceivedExtraInfo(
     event: Protocol.Network.ResponseReceivedExtraInfoEvent
   ): void {
-    const redirectInfo = this._requestIdToRedirectInfo(event.requestId).shift();
+    // We may have skipped a redirect response/request pair due to waiting for
+    // this ExtraInfo event. If so, continue that work now that we have the
+    // request.
+    const redirectInfo =
+      this._requestIdToQueuedRedirectInfo(event.requestId).shift();
     if (redirectInfo) {
-      this._emitRedirectResponse(
-        redirectInfo.request,
-        redirectInfo.response,
-        event
-      );
+      this._requestIdToResponseExtraInfo(event.requestId).push(event);
+      this._onRequest(redirectInfo.event, redirectInfo.interceptionId);
       return;
     }
 
-    const responseReceived = this._requestIdToResponseReceived.get(
+    // We may have skipped response and loading events because we didn't have
+    // this ExtraInfo event yet. If so, emit those events now.
+    const queuedEvents = this._requestIdToQueuedEvents.get(
       event.requestId
     );
-    if (responseReceived) {
-      responseReceived.resolver();
+    if (queuedEvents) {
       this._emitResponseEvent(responseReceived.event, event);
+      if (queuedEvents.loadingFinished) {
+        this._emitLoadingFinished(queuedEvents.loadingFinished);
+      }
+      if (queuedEvents.loadingFailed) {
+        this._emitLoadingFailed(queuedEvents.loadingFailed);
+      }
+      queuedEvents.resolver();
       return;
     }
 
-    // Wait until we get a corresponding response event.
+    // Wait until we get another event that can use this ExtraInfo event.
     this._requestIdToResponseExtraInfo(event.requestId).push(event);
   }
 
@@ -601,13 +599,24 @@ export class NetworkManager extends EventEmitter {
     if (events) {
       this._requestIdToRequestWillBeSentEvent.delete(requestId);
       this._requestIdToRequestPausedEvent.delete(requestId);
-      this._requestIdToResponseReceived.delete(requestId);
+      this._requestIdToQueuedEvents.delete(requestId);
+      this._requestIdToQueuedRedirectInfoMap.delete(requestId);
       this._requestIdToResponseReceivedExtraInfo.delete(requestId);
-      this._requestIdToRedirectInfoMap.delete(requestId);
     }
   }
 
   _onLoadingFinished(event: Protocol.Network.LoadingFinishedEvent): void {
+    // If the response event for this request is still waiting on a
+    // corresponding ExtraInfo event, then wait to emit this event too.
+    const queuedEvents = this._requestIdToResponseReceived.get(event.requestId);
+    if (queuedEvents) {
+      queuedEvent.loadingFinished = event;
+    } else {
+      this._emitLoadingFinished(event);
+    }
+  }
+
+  _emitLoadingFinished(event: Protocol.Network.LoadingFinishedEvent): void {
     const request = this._requestIdToRequest.get(event.requestId);
     // For certain requestIds we never receive requestWillBeSent event.
     // @see https://crbug.com/750469
@@ -621,6 +630,16 @@ export class NetworkManager extends EventEmitter {
   }
 
   _onLoadingFailed(event: Protocol.Network.LoadingFailedEvent): void {
+    // If the response event for this request is still waiting on a
+    // corresponding ExtraInfo event, then wait to emit this event too.
+    const queuedEvents = this._requestIdToResponseReceived.get(event.requestId);
+    if (queuedEvents) {
+      queuedEvent.loadingFailed = event;
+    } else {
+      this._emitLoadingFailed(event);
+    }
+
+  _emitLoadingFailed(event: Protocol.Network.LoadingFailedEvent): void {
     const request = this._requestIdToRequest.get(event.requestId);
     // For certain requestIds we never receive requestWillBeSent event.
     // @see https://crbug.com/750469
