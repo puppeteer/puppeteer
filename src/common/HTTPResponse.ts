@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CDPSession } from './Connection.js';
+import { ProtocolMapping } from 'devtools-protocol/types/protocol-mapping.js';
+
+import { EventEmitter } from './EventEmitter.js';
 import { Frame } from './FrameManager.js';
 import { HTTPRequest } from './HTTPRequest.js';
 import { SecurityDetails } from './SecurityDetails.js';
@@ -26,6 +28,13 @@ import { ProtocolError } from './Errors.js';
 export interface RemoteAddress {
   ip: string;
   port: number;
+}
+
+interface CDPSession extends EventEmitter {
+  send<T extends keyof ProtocolMapping.Commands>(
+    method: T,
+    ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
+  ): Promise<ProtocolMapping.Commands[T]['returnType']>;
 }
 
 /**
@@ -55,7 +64,8 @@ export class HTTPResponse {
   constructor(
     client: CDPSession,
     request: HTTPRequest,
-    responsePayload: Protocol.Network.Response
+    responsePayload: Protocol.Network.Response,
+    extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null
   ) {
     this._client = client;
     this._request = request;
@@ -68,13 +78,17 @@ export class HTTPResponse {
       ip: responsePayload.remoteIPAddress,
       port: responsePayload.remotePort,
     };
-    this._status = responsePayload.status;
+    // TODO extract statusText from extraInfo.headersText instead if present
     this._statusText = responsePayload.statusText;
     this._url = request.url();
     this._fromDiskCache = !!responsePayload.fromDiskCache;
     this._fromServiceWorker = !!responsePayload.fromServiceWorker;
-    for (const key of Object.keys(responsePayload.headers))
-      this._headers[key.toLowerCase()] = responsePayload.headers[key];
+
+    this._status = extraInfo ? extraInfo.statusCode : responsePayload.status;
+    const headers = extraInfo ? extraInfo.headers : responsePayload.headers;
+    for (const key of Object.keys(headers))
+      this._headers[key.toLowerCase()] = headers[key];
+
     this._securityDetails = responsePayload.securityDetails
       ? new SecurityDetails(responsePayload.securityDetails)
       : null;

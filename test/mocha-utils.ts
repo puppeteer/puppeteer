@@ -319,3 +319,17 @@ export const expectCookieEquals = (
 
   expect(cookies).toEqual(expectedCookies);
 };
+
+export const shortWaitForArrayToHaveAtLeastNElements = async (
+  data: unknown[],
+  minLength: number,
+  attempts = 3,
+  timeout = 50
+): Promise<void> => {
+  for (let i = 0; i < attempts; i++) {
+    if (data.length >= minLength) {
+      break;
+    }
+    await new Promise((resolve) => setTimeout(resolve, timeout));
+  }
+};
