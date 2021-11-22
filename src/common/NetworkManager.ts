@@ -137,19 +137,19 @@ export class NetworkManager extends EventEmitter {
   >();
   _requestIdToQueuedRedirectInfoMap = new Map<
     string,
-    {
+    Array<{
       event: Protocol.Network.RequestWillBeSentEvent;
       interceptionId?: string;
-    }
+    }>
   >();
   _requestIdToQueuedEvents = new Map<
     string,
     {
-      event: Protocol.Network.ResponseReceivedEvent;
+      responseReceived: Protocol.Network.ResponseReceivedEvent;
       promise: Promise<void>;
       resolver: () => void;
-      loadingFinished: Protocol.Network.LoadingFinishedEvent;
-      loadingFailed: Protocol.Network.LoadingFailedEvent;
+      loadingFinished?: Protocol.Network.LoadingFinishedEvent;
+      loadingFailed?: Protocol.Network.LoadingFailedEvent;
     }
   >();
 
@@ -443,7 +443,7 @@ export class NetworkManager extends EventEmitter {
       let redirectResponseExtraInfo = null;
       if (event.redirectHasExtraInfo) {
         redirectResponseExtraInfo =
-          this._requestIdResponseExtraInfo(event.requestId).shift();
+          this._requestIdToResponseExtraInfo(event.requestId).shift();
         if (!redirectResponseExtraInfo) {
           this._requestIdToQueuedRedirectInfo(event.requestId).push({event,
             interceptionId});
@@ -487,7 +487,7 @@ export class NetworkManager extends EventEmitter {
   _handleRequestRedirect(
     request: HTTPRequest,
     responsePayload: Protocol.Network.Response,
-    extraInfo: Protocol.Network.ResponseReceivedExtraInfo,
+    extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent,
   ): void {
     const response = new HTTPResponse(this._client, request, responsePayload,
       extraInfo);
@@ -538,7 +538,7 @@ export class NetworkManager extends EventEmitter {
         let resolver = null;
         const promise = new Promise<void>((resolve) => (resolver = resolve));
         this._requestIdToQueuedEvents.set(event.requestId, {
-          event,
+          responseReceived: event,
           promise,
           resolver,
         });
@@ -574,7 +574,7 @@ export class NetworkManager extends EventEmitter {
       event.requestId
     );
     if (queuedEvents) {
-      this._emitResponseEvent(responseReceived.event, event);
+      this._emitResponseEvent(queuedEvents.responseReceived, event);
       if (queuedEvents.loadingFinished) {
         this._emitLoadingFinished(queuedEvents.loadingFinished);
       }
@@ -608,9 +608,9 @@ export class NetworkManager extends EventEmitter {
   _onLoadingFinished(event: Protocol.Network.LoadingFinishedEvent): void {
     // If the response event for this request is still waiting on a
     // corresponding ExtraInfo event, then wait to emit this event too.
-    const queuedEvents = this._requestIdToResponseReceived.get(event.requestId);
+    const queuedEvents = this._requestIdToQueuedEvents.get(event.requestId);
     if (queuedEvents) {
-      queuedEvent.loadingFinished = event;
+      queuedEvents.loadingFinished = event;
     } else {
       this._emitLoadingFinished(event);
     }
@@ -632,12 +632,13 @@ export class NetworkManager extends EventEmitter {
   _onLoadingFailed(event: Protocol.Network.LoadingFailedEvent): void {
     // If the response event for this request is still waiting on a
     // corresponding ExtraInfo event, then wait to emit this event too.
-    const queuedEvents = this._requestIdToResponseReceived.get(event.requestId);
+    const queuedEvents = this._requestIdToQueuedEvents.get(event.requestId);
     if (queuedEvents) {
-      queuedEvent.loadingFailed = event;
+      queuedEvents.loadingFailed = event;
     } else {
       this._emitLoadingFailed(event);
     }
+  }
 
   _emitLoadingFailed(event: Protocol.Network.LoadingFailedEvent): void {
     const request = this._requestIdToRequest.get(event.requestId);

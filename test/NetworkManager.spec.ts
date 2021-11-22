@@ -21,7 +21,7 @@ import { EventEmitter } from '../lib/cjs/puppeteer/common/EventEmitter.js';
 import { Frame } from '../lib/cjs/puppeteer/common/FrameManager.js';
 
 describeChromeOnly('NetworkManager', () => {
-  it.only('should process extra info on multiple redirects', async () => {
+  it('should process extra info on multiple redirects', async () => {
     class MockCDPSession extends EventEmitter {
       send(): any {}
     }
