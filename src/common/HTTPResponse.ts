@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CDPSession } from './Connection.js';
+import { ProtocolMapping } from 'devtools-protocol/types/protocol-mapping.js';
+
+import { EventEmitter } from './EventEmitter.js';
 import { Frame } from './FrameManager.js';
 import { HTTPRequest } from './HTTPRequest.js';
 import { SecurityDetails } from './SecurityDetails.js';
@@ -26,6 +28,13 @@ import { ProtocolError } from './Errors.js';
 export interface RemoteAddress {
   ip: string;
   port: number;
+}
+
+interface CDPSession extends EventEmitter {
+  send<T extends keyof ProtocolMapping.Commands>(
+    method: T,
+    ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
+  ): Promise<ProtocolMapping.Commands[T]['returnType']>;
 }
 
 /**
@@ -48,7 +57,6 @@ export class HTTPResponse {
   private _fromServiceWorker: boolean;
   private _headers: Record<string, string> = {};
   private _securityDetails: SecurityDetails | null;
-  private _extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null;
 
   /**
    * @internal
@@ -61,7 +69,6 @@ export class HTTPResponse {
   ) {
     this._client = client;
     this._request = request;
-    this._extraInfo = extraInfo;
 
     this._bodyLoadedPromise = new Promise((fulfill) => {
       this._bodyLoadedPromiseFulfill = fulfill;
@@ -85,13 +92,6 @@ export class HTTPResponse {
     this._securityDetails = responsePayload.securityDetails
       ? new SecurityDetails(responsePayload.securityDetails)
       : null;
-  }
-
-  /**
-   * @internal
-   */
-  _debugExtraInfo(): Protocol.Network.ResponseReceivedExtraInfoEvent | null {
-    return this._extraInfo;
   }
 
   /**

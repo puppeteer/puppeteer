@@ -529,6 +529,12 @@ describe('network', function () {
       server.setRedirect('/foo.html', '/empty.html');
       const FOO_URL = server.PREFIX + '/foo.html';
       const response = await page.goto(FOO_URL);
+      for (let i = 0; i < 3; i++) {
+        if (events.length >= 6) {
+          break;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
       expect(events).toEqual([
         `GET ${FOO_URL}`,
         `302 ${FOO_URL}`,

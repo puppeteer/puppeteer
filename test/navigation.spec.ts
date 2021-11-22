@@ -155,7 +155,7 @@ describe('navigation', function () {
         ? 'net::ERR_CERT_INVALID'
         : 'net::ERR_CERT_AUTHORITY_INVALID';
 
-    itFailsFirefox('should fail when navigating to bad SSL', async () => {
+    it('should fail when navigating to bad SSL', async () => {
       const { page, httpsServer, isChrome } = getTestState();
 
       // Make sure that network events do not emit 'undefined'.
@@ -301,8 +301,6 @@ describe('navigation', function () {
       server.setRedirect('/redirect/2.html', '/redirect/3.html');
       server.setRedirect('/redirect/3.html', server.EMPTY_PAGE);
       const response = await page.goto(server.PREFIX + '/redirect/1.html');
-      console.log(response.ok(), response.url(), response.status());
-      console.log(JSON.stringify(response._debugExtraInfo(), null, 2));
       expect(response.ok()).toBe(true);
       expect(response.url()).toBe(server.EMPTY_PAGE);
     });
