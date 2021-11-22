@@ -409,9 +409,9 @@ export class NetworkManager extends EventEmitter {
   }
 
   _requestIdToQueuedRedirectInfo(requestId: string): Array<{
-        event: Protocol.Network.RequestWillBeSentEvent;
-        interceptionId?: string;
-      }> {
+    event: Protocol.Network.RequestWillBeSentEvent;
+    interceptionId?: string;
+  }> {
     if (!this._requestIdToQueuedRedirectInfoMap.has(requestId)) {
       this._requestIdToQueuedRedirectInfoMap.set(requestId, []);
     }
@@ -442,11 +442,14 @@ export class NetworkManager extends EventEmitter {
       // response/requestfinished.
       let redirectResponseExtraInfo = null;
       if (event.redirectHasExtraInfo) {
-        redirectResponseExtraInfo =
-          this._requestIdToResponseExtraInfo(event.requestId).shift();
+        redirectResponseExtraInfo = this._requestIdToResponseExtraInfo(
+          event.requestId
+        ).shift();
         if (!redirectResponseExtraInfo) {
-          this._requestIdToQueuedRedirectInfo(event.requestId).push({event,
-            interceptionId});
+          this._requestIdToQueuedRedirectInfo(event.requestId).push({
+            event,
+            interceptionId,
+          });
           return;
         }
       }
@@ -455,8 +458,11 @@ export class NetworkManager extends EventEmitter {
       // If we connect late to the target, we could have missed the
       // requestWillBeSent event.
       if (request) {
-        this._handleRequestRedirect(request, event.redirectResponse,
-          redirectResponseExtraInfo);
+        this._handleRequestRedirect(
+          request,
+          event.redirectResponse,
+          redirectResponseExtraInfo
+        );
         redirectChain = request._redirectChain;
       }
     }
@@ -487,10 +493,14 @@ export class NetworkManager extends EventEmitter {
   _handleRequestRedirect(
     request: HTTPRequest,
     responsePayload: Protocol.Network.Response,
-    extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent,
+    extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent
   ): void {
-    const response = new HTTPResponse(this._client, request, responsePayload,
-      extraInfo);
+    const response = new HTTPResponse(
+      this._client,
+      request,
+      responsePayload,
+      extraInfo
+    );
     request._response = response;
     request._redirectChain.push(request);
     response._resolveBody(
@@ -560,8 +570,9 @@ export class NetworkManager extends EventEmitter {
     // We may have skipped a redirect response/request pair due to waiting for
     // this ExtraInfo event. If so, continue that work now that we have the
     // request.
-    const redirectInfo =
-      this._requestIdToQueuedRedirectInfo(event.requestId).shift();
+    const redirectInfo = this._requestIdToQueuedRedirectInfo(
+      event.requestId
+    ).shift();
     if (redirectInfo) {
       this._requestIdToResponseExtraInfo(event.requestId).push(event);
       this._onRequest(redirectInfo.event, redirectInfo.interceptionId);
@@ -570,9 +581,7 @@ export class NetworkManager extends EventEmitter {
 
     // We may have skipped response and loading events because we didn't have
     // this ExtraInfo event yet. If so, emit those events now.
-    const queuedEvents = this._requestIdToQueuedEvents.get(
-      event.requestId
-    );
+    const queuedEvents = this._requestIdToQueuedEvents.get(event.requestId);
     if (queuedEvents) {
       this._emitResponseEvent(queuedEvents.responseReceived, event);
       if (queuedEvents.loadingFinished) {
