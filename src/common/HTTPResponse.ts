@@ -78,8 +78,11 @@ export class HTTPResponse {
       ip: responsePayload.remoteIPAddress,
       port: responsePayload.remotePort,
     };
-    // TODO extract statusText from extraInfo.headersText instead if present
-    this._statusText = responsePayload.statusText;
+    if (extraInfo && extraInfo.headersText) {
+      this._statusText = extraInfo.headersText.match(/[^ ]* [^ ]* (.*)\r/)[1];
+    } else {
+      this._statusText = responsePayload.statusText;
+    }
     this._url = request.url();
     this._fromDiskCache = !!responsePayload.fromDiskCache;
     this._fromServiceWorker = !!responsePayload.fromServiceWorker;
