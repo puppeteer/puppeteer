@@ -155,7 +155,7 @@ describe('navigation', function () {
         ? 'net::ERR_CERT_INVALID'
         : 'net::ERR_CERT_AUTHORITY_INVALID';
 
-    it('should fail when navigating to bad SSL', async () => {
+    itFailsFirefox('should fail when navigating to bad SSL', async () => {
       const { page, httpsServer, isChrome } = getTestState();
 
       // Make sure that network events do not emit 'undefined'.
