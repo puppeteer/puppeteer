@@ -54,7 +54,7 @@ export type Serializable =
 /**
  * @public
  */
-export type JSONArray = Serializable[];
+export type JSONArray = readonly Serializable[];
 
 /**
  * @public

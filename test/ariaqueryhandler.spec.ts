@@ -47,6 +47,10 @@ describeChromeOnly('AriaQueryHandler', () => {
       );
       await expectFound(button);
       button = await page.$(
+        "aria/Submit button and some spaces[role='button']"
+      );
+      await expectFound(button);
+      button = await page.$(
         'aria/  Submit button and some spaces[role="button"]'
       );
       await expectFound(button);
@@ -68,6 +72,10 @@ describeChromeOnly('AriaQueryHandler', () => {
       await expectFound(button);
       button = await page.$(
         'aria/[name="  Submit  button and some  spaces"][role="button"]'
+      );
+      await expectFound(button);
+      button = await page.$(
+        "aria/[name='  Submit  button and some  spaces'][role='button']"
       );
       await expectFound(button);
       button = await page.$(
@@ -582,13 +590,13 @@ describeChromeOnly('AriaQueryHandler', () => {
       const { page } = getTestState();
       const found = await page.$$('aria/[role="heading"]');
       const ids = await getIds(found);
-      expect(ids).toEqual(['shown', 'node11', 'node13']);
+      expect(ids).toEqual(['shown', 'hidden', 'node11', 'node13']);
     });
-    it('should not find ignored', async () => {
+    it('should find both ignored and unignored', async () => {
       const { page } = getTestState();
       const found = await page.$$('aria/title');
       const ids = await getIds(found);
-      expect(ids).toEqual(['shown']);
+      expect(ids).toEqual(['shown', 'hidden']);
     });
   });
 });

@@ -20,6 +20,7 @@ import { CDPSession } from './Connection.js';
 import { Browser, BrowserContext } from './Browser.js';
 import { Viewport } from './PuppeteerViewport.js';
 import { Protocol } from 'devtools-protocol';
+import { TaskQueue } from './TaskQueue.js';
 
 /**
  * @public
@@ -33,6 +34,7 @@ export class Target {
   private _defaultViewport?: Viewport;
   private _pagePromise?: Promise<Page>;
   private _workerPromise?: Promise<WebWorker>;
+  private _screenshotTaskQueue: TaskQueue;
   /**
    * @internal
    */
@@ -66,7 +68,8 @@ export class Target {
     browserContext: BrowserContext,
     sessionFactory: () => Promise<CDPSession>,
     ignoreHTTPSErrors: boolean,
-    defaultViewport: Viewport | null
+    defaultViewport: Viewport | null,
+    screenshotTaskQueue: TaskQueue
   ) {
     this._targetInfo = targetInfo;
     this._browserContext = browserContext;
@@ -74,6 +77,7 @@ export class Target {
     this._sessionFactory = sessionFactory;
     this._ignoreHTTPSErrors = ignoreHTTPSErrors;
     this._defaultViewport = defaultViewport;
+    this._screenshotTaskQueue = screenshotTaskQueue;
     /** @type {?Promise<!Puppeteer.Page>} */
     this._pagePromise = null;
     /** @type {?Promise<!WebWorker>} */
@@ -121,7 +125,8 @@ export class Target {
           client,
           this,
           this._ignoreHTTPSErrors,
-          this._defaultViewport
+          this._defaultViewport,
+          this._screenshotTaskQueue
         )
       );
     }

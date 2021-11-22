@@ -16,8 +16,13 @@
 
 import { debug } from '../common/Debug.js';
 
-import removeFolder from 'rimraf';
 import * as childProcess from 'child_process';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as readline from 'readline';
+import removeFolder from 'rimraf';
+import { promisify } from 'util';
+
 import { assert } from '../common/assert.js';
 import { helper, debugError } from '../common/helper.js';
 import { LaunchOptions } from './LaunchOptions.js';
@@ -25,12 +30,14 @@ import { Connection } from '../common/Connection.js';
 import { NodeWebSocketTransport as WebSocketTransport } from '../node/NodeWebSocketTransport.js';
 import { PipeTransport } from './PipeTransport.js';
 import { Product } from '../common/Product.js';
-import * as readline from 'readline';
 import { TimeoutError } from '../common/Errors.js';
-import { promisify } from 'util';
 
 const removeFolderAsync = promisify(removeFolder);
+const renameAsync = promisify(fs.rename);
+const unlinkAsync = promisify(fs.unlink);
+
 const debugLauncher = debug('puppeteer:launcher');
+
 const PROCESS_ERROR_EXPLANATION = `Puppeteer was unable to kill the process which ran the browser binary.
 This means that, on future Puppeteer launches, Puppeteer might not be able to launch the browser.
 Please check your open processes and ensure that the browser processes that Puppeteer launched have been killed.
@@ -40,7 +47,8 @@ export class BrowserRunner {
   private _product: Product;
   private _executablePath: string;
   private _processArguments: string[];
-  private _tempDirectory?: string;
+  private _userDataDir: string;
+  private _isTempUserDataDir?: boolean;
 
   proc = null;
   connection = null;
@@ -53,21 +61,26 @@ export class BrowserRunner {
     product: Product,
     executablePath: string,
     processArguments: string[],
-    tempDirectory?: string
+    userDataDir: string,
+    isTempUserDataDir?: boolean
   ) {
     this._product = product;
     this._executablePath = executablePath;
     this._processArguments = processArguments;
-    this._tempDirectory = tempDirectory;
+    this._userDataDir = userDataDir;
+    this._isTempUserDataDir = isTempUserDataDir;
   }
 
   start(options: LaunchOptions): void {
     const { handleSIGINT, handleSIGTERM, handleSIGHUP, dumpio, env, pipe } =
       options;
-    let stdio: Array<'ignore' | 'pipe'> = ['pipe', 'pipe', 'pipe'];
+    let stdio: Array<'ignore' | 'pipe'>;
     if (pipe) {
       if (dumpio) stdio = ['ignore', 'pipe', 'pipe', 'pipe', 'pipe'];
       else stdio = ['ignore', 'ignore', 'ignore', 'pipe', 'pipe'];
+    } else {
+      if (dumpio) stdio = ['pipe', 'pipe', 'pipe'];
+      else stdio = ['pipe', 'ignore', 'pipe'];
     }
     assert(!this.proc, 'This process has previously been started.');
     debugLauncher(
@@ -91,15 +104,40 @@ export class BrowserRunner {
       this.proc.stdout.pipe(process.stdout);
     }
     this._closed = false;
-    this._processClosing = new Promise((fulfill) => {
-      this.proc.once('exit', () => {
+    this._processClosing = new Promise((fulfill, reject) => {
+      this.proc.once('exit', async () => {
         this._closed = true;
         // Cleanup as processes exit.
-        if (this._tempDirectory) {
-          removeFolderAsync(this._tempDirectory)
-            .then(() => fulfill())
-            .catch((error) => console.error(error));
+        if (this._isTempUserDataDir) {
+          try {
+            await removeFolderAsync(this._userDataDir);
+            fulfill();
+          } catch (error) {
+            console.error(error);
+            reject(error);
+          }
         } else {
+          if (this._product === 'firefox') {
+            try {
+              // When an existing user profile has been used remove the user
+              // preferences file and restore possibly backuped preferences.
+              await unlinkAsync(path.join(this._userDataDir, 'user.js'));
+
+              const prefsBackupPath = path.join(
+                this._userDataDir,
+                'prefs.js.puppeteer'
+              );
+              if (fs.existsSync(prefsBackupPath)) {
+                const prefsPath = path.join(this._userDataDir, 'prefs.js');
+                await unlinkAsync(prefsPath);
+                await renameAsync(prefsBackupPath, prefsPath);
+              }
+            } catch (error) {
+              console.error(error);
+              reject(error);
+            }
+          }
+
           fulfill();
         }
       });
@@ -126,7 +164,7 @@ export class BrowserRunner {
 
   close(): Promise<void> {
     if (this._closed) return Promise.resolve();
-    if (this._tempDirectory && this._product !== 'firefox') {
+    if (this._isTempUserDataDir && this._product !== 'firefox') {
       this.kill();
     } else if (this.connection) {
       // Attempt to close the browser gracefully
@@ -142,11 +180,6 @@ export class BrowserRunner {
   }
 
   kill(): void {
-    // Attempt to remove temporary profile directory to avoid littering.
-    try {
-      removeFolder.sync(this._tempDirectory);
-    } catch (error) {}
-
     // If the process failed to launch (for example if the browser executable path
     // is invalid), then the process does not get a pid assigned. A call to
     // `proc.kill` would error, as the `pid` to-be-killed can not be found.
@@ -159,6 +192,14 @@ export class BrowserRunner {
         );
       }
     }
+
+    // Attempt to remove temporary profile directory to avoid littering.
+    try {
+      if (this._isTempUserDataDir) {
+        removeFolder.sync(this._userDataDir);
+      }
+    } catch (error) {}
+
     // Cleanup this listener last, as that makes sure the full callback runs. If we
     // perform this earlier, then the previous function calls would not happen.
     helper.removeEventListeners(this._listeners);

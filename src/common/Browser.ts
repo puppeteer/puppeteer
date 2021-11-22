@@ -21,8 +21,26 @@ import { EventEmitter } from './EventEmitter.js';
 import { Connection, ConnectionEmittedEvents } from './Connection.js';
 import { Protocol } from 'devtools-protocol';
 import { Page } from './Page.js';
+import { TaskQueue } from './TaskQueue.js';
 import { ChildProcess } from 'child_process';
 import { Viewport } from './PuppeteerViewport.js';
+
+/**
+ * BrowserContext options.
+ *
+ * @public
+ */
+export interface BrowserContextOptions {
+  /**
+   * Proxy server with optional port to use for all requests.
+   * Username and password can be set in `Page.authenticate`.
+   */
+  proxyServer?: string;
+  /**
+   * Bypass the proxy for the given semi-colon-separated list of hosts.
+   */
+  proxyBypassList?: string[];
+}
 
 /**
  * @internal
@@ -56,6 +74,7 @@ const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map<
   ['clipboard-read', 'clipboardReadWrite'],
   ['clipboard-write', 'clipboardReadWrite'],
   ['payment-handler', 'paymentHandler'],
+  ['persistent-storage', 'durableStorage'],
   ['idle-detection', 'idleDetection'],
   // chrome-specific permissions we have.
   ['midi-sysex', 'midiSysex'],
@@ -79,6 +98,7 @@ export type Permission =
   | 'clipboard-read'
   | 'clipboard-write'
   | 'payment-handler'
+  | 'persistent-storage'
   | 'idle-detection'
   | 'midi-sysex';
 
@@ -219,6 +239,8 @@ export class Browser extends EventEmitter {
   private _targetFilterCallback: TargetFilterCallback;
   private _defaultContext: BrowserContext;
   private _contexts: Map<string, BrowserContext>;
+  private _screenshotTaskQueue: TaskQueue;
+  private _ignoredTargets = new Set<string>();
   /**
    * @internal
    * Used in Target.ts directly so cannot be marked private.
@@ -241,6 +263,7 @@ export class Browser extends EventEmitter {
     this._ignoreHTTPSErrors = ignoreHTTPSErrors;
     this._defaultViewport = defaultViewport;
     this._process = process;
+    this._screenshotTaskQueue = new TaskQueue();
     this._connection = connection;
     this._closeCallback = closeCallback || function (): void {};
     this._targetFilterCallback = targetFilterCallback || ((): boolean => true);
@@ -293,9 +316,17 @@ export class Browser extends EventEmitter {
    * })();
    * ```
    */
-  async createIncognitoBrowserContext(): Promise<BrowserContext> {
+  async createIncognitoBrowserContext(
+    options: BrowserContextOptions = {}
+  ): Promise<BrowserContext> {
+    const { proxyServer = '', proxyBypassList = [] } = options;
+
     const { browserContextId } = await this._connection.send(
-      'Target.createBrowserContext'
+      'Target.createBrowserContext',
+      {
+        proxyServer,
+        proxyBypassList: proxyBypassList && proxyBypassList.join(','),
+      }
     );
     const context = new BrowserContext(
       this._connection,
@@ -344,6 +375,7 @@ export class Browser extends EventEmitter {
 
     const shouldAttachToTarget = this._targetFilterCallback(targetInfo);
     if (!shouldAttachToTarget) {
+      this._ignoredTargets.add(targetInfo.targetId);
       return;
     }
 
@@ -352,7 +384,8 @@ export class Browser extends EventEmitter {
       context,
       () => this._connection.createSession(targetInfo),
       this._ignoreHTTPSErrors,
-      this._defaultViewport
+      this._defaultViewport,
+      this._screenshotTaskQueue
     );
     assert(
       !this._targets.has(event.targetInfo.targetId),
@@ -367,6 +400,7 @@ export class Browser extends EventEmitter {
   }
 
   private async _targetDestroyed(event: { targetId: string }): Promise<void> {
+    if (this._ignoredTargets.has(event.targetId)) return;
     const target = this._targets.get(event.targetId);
     target._initializedCallback(false);
     this._targets.delete(event.targetId);
@@ -382,6 +416,7 @@ export class Browser extends EventEmitter {
   private _targetInfoChanged(
     event: Protocol.Target.TargetInfoChangedEvent
   ): void {
+    if (this._ignoredTargets.has(event.targetInfo.targetId)) return;
     const target = this._targets.get(event.targetInfo.targetId);
     assert(target, 'target should exist before targetInfoChanged');
     const previousURL = target.url();

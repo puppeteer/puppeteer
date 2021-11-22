@@ -18,26 +18,26 @@
       window.didDragEnter = false;
       window.didDragOver = false;
       window.didDrop = false;
-      var drag = document.getElementById('drag');
-      var drop = document.getElementById('drop');
-      drag.addEventListener('dragstart', function(e) {
-        e.dataTransfer.setData('id', e.target.id);
+      const drag = document.getElementById('drag');
+      const drop = document.getElementById('drop');
+      drag.addEventListener('dragstart', function(event) {
+        event.dataTransfer.setData('id', event.target.id);
         window.didDragStart = true;
       });
-      drop.addEventListener('dragenter', function(e) {
-        e.preventDefault();
+      drop.addEventListener('dragenter', function(event) {
+        event.preventDefault();
         window.didDragEnter = true;
       });
-      drop.addEventListener('dragover', function(e) {
-        e.preventDefault();
+      drop.addEventListener('dragover', function(event) {
+        event.preventDefault();
         window.didDragOver = true;
       });
-      drop.addEventListener('drop', function(e) {
-        e.preventDefault();
-        var id = e.dataTransfer.getData('id');
-        var el = document.getElementById(id);
+      drop.addEventListener('drop', function(event) {
+        event.preventDefault();
+        const id = event.dataTransfer.getData('id');
+        const el = document.getElementById(id);
         if (el) {
-          e.target.appendChild(el);
+          event.target.appendChild(el);
           window.didDrop = true;
         }
       });

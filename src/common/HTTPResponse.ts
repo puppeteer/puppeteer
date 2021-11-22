@@ -18,6 +18,7 @@ import { Frame } from './FrameManager.js';
 import { HTTPRequest } from './HTTPRequest.js';
 import { SecurityDetails } from './SecurityDetails.js';
 import { Protocol } from 'devtools-protocol';
+import { ProtocolError } from './Errors.js';
 
 /**
  * @public
@@ -147,13 +148,26 @@ export class HTTPResponse {
     if (!this._contentPromise) {
       this._contentPromise = this._bodyLoadedPromise.then(async (error) => {
         if (error) throw error;
-        const response = await this._client.send('Network.getResponseBody', {
-          requestId: this._request._requestId,
-        });
-        return Buffer.from(
-          response.body,
-          response.base64Encoded ? 'base64' : 'utf8'
-        );
+        try {
+          const response = await this._client.send('Network.getResponseBody', {
+            requestId: this._request._requestId,
+          });
+          return Buffer.from(
+            response.body,
+            response.base64Encoded ? 'base64' : 'utf8'
+          );
+        } catch (error) {
+          if (
+            error instanceof ProtocolError &&
+            error.originalMessage === 'No resource with given identifier found'
+          ) {
+            throw new ProtocolError(
+              'Could not load body for this request. This might happen if the request is a preflight request.'
+            );
+          }
+
+          throw error;
+        }
       });
     }
     return this._contentPromise;
