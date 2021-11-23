@@ -417,6 +417,16 @@ describe('network', function () {
       const response = await page.goto(server.PREFIX + '/cool');
       expect(response.statusText()).toBe('cool!');
     });
+    it('handles missing status text', async () => {
+      const { page, server } = getTestState();
+
+      server.setRoute('/nostatus', (req, res) => {
+        res.writeHead(200, '');
+        res.end();
+      });
+      const response = await page.goto(server.PREFIX + '/nostatus');
+      expect(response.statusText()).toBe(undefined);
+    });
   });
 
   describeFailsFirefox('Network Events', function () {

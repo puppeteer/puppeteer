@@ -79,7 +79,11 @@ export class HTTPResponse {
       port: responsePayload.remotePort,
     };
     if (extraInfo && extraInfo.headersText) {
-      this._statusText = extraInfo.headersText.match(/[^ ]* [^ ]* (.*)\r/)[1];
+      const firstLine = extraInfo.headersText.split('\r', 1)[0];
+      if (firstLine) {
+        const match = firstLine.match(/[^ ]* [^ ]* (.*)/);
+        if (match) this._statusText = match[1];
+      }
     } else {
       this._statusText = responsePayload.statusText;
     }
