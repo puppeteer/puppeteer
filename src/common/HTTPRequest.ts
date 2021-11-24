@@ -37,6 +37,14 @@ export interface ContinueRequestOverrides {
 }
 
 /**
+ * @public
+ */
+export interface InterceptResolutionState {
+  strategy: InterceptResolutionStrategy;
+  priority?: number;
+}
+
+/**
  * Required response data to fulfill a request with.
  *
  * @public
@@ -137,9 +145,8 @@ export class HTTPRequest {
   private _continueRequestOverrides: ContinueRequestOverrides;
   private _responseForRequest: Partial<ResponseForRequest>;
   private _abortErrorReason: Protocol.Network.ErrorReason;
-  private _currentStrategy: InterceptResolutionStrategy;
-  private _currentPriority: number | undefined;
-  private _interceptActions: Array<() => void | PromiseLike<any>>;
+  private _interceptResolutionState: InterceptResolutionState;
+  private _interceptHandlers: Array<() => void | PromiseLike<any>>;
   private _initiator: Protocol.Network.Initiator;
 
   /**
@@ -166,9 +173,8 @@ export class HTTPRequest {
     this._frame = frame;
     this._redirectChain = redirectChain;
     this._continueRequestOverrides = {};
-    this._currentStrategy = 'none';
-    this._currentPriority = undefined;
-    this._interceptActions = [];
+    this._interceptResolutionState = { strategy: 'none' };
+    this._interceptHandlers = [];
     this._initiator = event.initiator;
 
     for (const key of Object.keys(event.request.headers))
@@ -211,18 +217,20 @@ export class HTTPRequest {
 
   /**
    * @returns An array of the current intercept resolution strategy and priority
-   * `[strategy,priority]`. Strategy is one of: `abort`, `respond`, `continue`,
+   * `[InterceptResolutionStrategy,priority]`.
+   *
+   *  InterceptResolutionStrategy is one of: `abort`, `respond`, `continue`,
    *  `disabled`, `none`, or `already-handled`.
    */
-  interceptResolution(): [InterceptResolutionStrategy, number?] {
-    if (!this._allowInterception) return ['disabled'];
-    if (this._interceptionHandled) return ['already-handled'];
-    return [this._currentStrategy, this._currentPriority];
+  interceptResolutionState(): InterceptResolutionState {
+    if (!this._allowInterception) return { strategy: 'disabled' };
+    if (this._interceptionHandled) return { strategy: 'already-handled' };
+    return { ...this._interceptResolutionState };
   }
 
   /**
-   * @returns `true` if the intercept resolution has already been handled, `false`
-   * otherwise.
+   * @returns `true` if the intercept resolution has already been handled,
+   * `false` otherwise.
    */
   isInterceptResolutionHandled(): boolean {
     return this._interceptionHandled;
@@ -237,7 +245,7 @@ export class HTTPRequest {
   enqueueInterceptAction(
     pendingHandler: () => void | PromiseLike<unknown>
   ): void {
-    this._interceptActions.push(pendingHandler);
+    this._interceptHandlers.push(pendingHandler);
   }
 
   /**
@@ -245,12 +253,12 @@ export class HTTPRequest {
    * the request interception.
    */
   async finalizeInterceptions(): Promise<void> {
-    await this._interceptActions.reduce(
+    await this._interceptHandlers.reduce(
       (promiseChain, interceptAction) => promiseChain.then(interceptAction),
       Promise.resolve()
     );
-    const [resolution] = this.interceptResolution();
-    switch (resolution) {
+    const { strategy } = this.interceptResolutionState();
+    switch (strategy) {
       case 'abort':
         return this._abort(this._abortErrorReason);
       case 'respond':
@@ -419,21 +427,20 @@ export class HTTPRequest {
     }
     this._continueRequestOverrides = overrides;
     if (
-      priority > this._currentPriority ||
-      this._currentPriority === undefined
+      priority > this._interceptResolutionState.priority ||
+      this._interceptResolutionState.priority === undefined
     ) {
-      this._currentStrategy = 'continue';
-      this._currentPriority = priority;
+      this._interceptResolutionState = { strategy: 'continue', priority };
       return;
     }
-    if (priority === this._currentPriority) {
+    if (priority === this._interceptResolutionState.priority) {
       if (
-        this._currentStrategy === 'abort' ||
-        this._currentStrategy === 'respond'
+        this._interceptResolutionState.strategy === 'abort' ||
+        this._interceptResolutionState.strategy === 'respond'
       ) {
         return;
       }
-      this._currentStrategy = 'continue';
+      this._interceptResolutionState.strategy = 'continue';
     }
     return;
   }
@@ -506,18 +513,17 @@ export class HTTPRequest {
     }
     this._responseForRequest = response;
     if (
-      priority > this._currentPriority ||
-      this._currentPriority === undefined
+      priority > this._interceptResolutionState.priority ||
+      this._interceptResolutionState.priority === undefined
     ) {
-      this._currentStrategy = 'respond';
-      this._currentPriority = priority;
+      this._interceptResolutionState = { strategy: 'respond', priority };
       return;
     }
-    if (priority === this._currentPriority) {
-      if (this._currentStrategy === 'abort') {
+    if (priority === this._interceptResolutionState.priority) {
+      if (this._interceptResolutionState.strategy === 'abort') {
         return;
       }
-      this._currentStrategy = 'respond';
+      this._interceptResolutionState.strategy = 'respond';
     }
   }
 
@@ -585,11 +591,10 @@ export class HTTPRequest {
     }
     this._abortErrorReason = errorReason;
     if (
-      priority >= this._currentPriority ||
-      this._currentPriority === undefined
+      priority >= this._interceptResolutionState.priority ||
+      this._interceptResolutionState.priority === undefined
     ) {
-      this._currentStrategy = 'abort';
-      this._currentPriority = priority;
+      this._interceptResolutionState = { strategy: 'abort', priority };
       return;
     }
   }
