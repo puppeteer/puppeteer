@@ -221,6 +221,14 @@ export class HTTPRequest {
   }
 
   /**
+   * @returns `true` if the intercept resolution has already been handled, `false`
+   * otherwise.
+   */
+  isInterceptResolutionHandled(): boolean {
+    return this._interceptionHandled;
+  }
+
+  /**
    * Adds an async request handler to the processing queue.
    * Deferred handlers are not guaranteed to execute in any particular order,
    * but they are guarnateed to resolve before the request interception
