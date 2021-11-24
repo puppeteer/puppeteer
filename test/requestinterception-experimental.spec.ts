@@ -856,8 +856,8 @@ describe('request interception', function () {
         expect(request.isInterceptResolutionHandled()).toBeTruthy();
       });
       page.on('request', (request) => {
-        const [currentStrategy] = request.interceptResolution();
-        expect(currentStrategy).toBe('already-handled');
+        const { strategy } = request.interceptResolutionState();
+        expect(strategy).toBe('already-handled');
       });
       await page.goto(server.EMPTY_PAGE);
     });
