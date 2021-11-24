@@ -897,7 +897,6 @@ Closes Chromium and all of its pages (if any were opened). The [Browser] object 
 During the process of closing the browser, Puppeteer attempts to delete the temp folder created exclusively for this browser instance. If this fails (either because a file in the temp folder is locked by another process or because of insufficient permissions) an error is logged. This implies that: a) the folder and/or its content is not fully deleted; and b) the connection with the browser is not properly disposed (see [browser.disconnect()](#browserdisconnect)).
 
 #### browser.createIncognitoBrowserContext([options])
-
 - `options` <[Object]> Set of configurable options to set on the browserContext. Can have the following fields:
   - `proxyServer` <[string]> Optional proxy server with optional port to use for all requests. Username and password can be set in [page.authenticate(credentials)](#pageauthenticatecredentials).
   - `proxyBypassList` <[string]> Optional: Bypass the proxy for the given semi-colon-separated list of hosts.
@@ -2927,7 +2926,6 @@ const [response] = await Promise.all([
 Shortcut for [page.mainFrame().waitForNavigation(options)](#framewaitfornavigationoptions).
 
 #### page.waitForNetworkIdle([options])
-
 - `options` <[Object]> Optional waiting parameters
   - `timeout` <[number]> Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to disable the timeout. The default value can be changed by using the [page.setDefaultTimeout(timeout)](#pagesetdefaulttimeouttimeout) method.
   - `idleTime` <[number]> How long to wait for no network requests in milliseconds, defaults to 500 milliseconds.
@@ -4666,7 +4664,6 @@ This method scrolls element into view if needed, and then uses [page.mouse](#pag
 If the element is detached from DOM, the method throws an error.
 
 #### elementHandle.isIntersectingViewport([options])
-
 - `options` <[Object]>
   - `threshold` <[number]> threshold for the intersection between 0 (no intersection) and 1 (full intersection). Defaults to 1.
 - returns: <[Promise]<[boolean]>> Resolves to true if the element is visible in the current viewport.
@@ -4882,7 +4879,7 @@ When in Cooperative Mode, awaits pending interception handlers and then decides 
 
 #### httpRequest.interceptResolution()
 
-- returns: <[Array]<[InterceptResolutionStrategy, number]>>
+- returns: <[Array]<[string]>>
 
 The request's current interception strategy and priority.
 
