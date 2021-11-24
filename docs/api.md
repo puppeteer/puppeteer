@@ -181,7 +181,8 @@
   * [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
   * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled)
   * [page.setRequestInterception(value)](#pagesetrequestinterceptionvalue)
-    - [Cooperative Intercept Mode and Legacy Intercept Mode](#cooperative-intercept-mode-and-legacy-intercept-mode)
+    - [Multiple Intercept Handlers and Asynchronous Resolutions](#multiple-intercept-handlers-and-asynchronous-resolutions)
+    - [Cooperative Intercept Mode](#cooperative-intercept-mode)
     - [Upgrading to Cooperative Mode for package maintainers](#upgrading-to-cooperative-mode-for-package-maintainers)
   * [page.setUserAgent(userAgent[, userAgentMetadata])](#pagesetuseragentuseragent-useragentmetadata)
   * [page.setViewport(viewport)](#pagesetviewportviewport)
@@ -344,6 +345,8 @@
   * [httpRequest.frame()](#httprequestframe)
   * [httpRequest.headers()](#httprequestheaders)
   * [httpRequest.initiator()](#httprequestinitiator)
+  * [httpRequest.interceptResolutionState()](#httprequestinterceptresolutionstate)
+  * [httpRequest.isInterceptResolutionHandled()](#httprequestisinterceptresolutionhandled)
   * [httpRequest.isNavigationRequest()](#httprequestisnavigationrequest)
   * [httpRequest.method()](#httprequestmethod)
   * [httpRequest.postData()](#httprequestpostdata)
@@ -2363,6 +2366,7 @@ const puppeteer = require('puppeteer');
   const page = await browser.newPage();
   await page.setRequestInterception(true);
   page.on('request', (interceptedRequest) => {
+    if (interceptedRequest.isInterceptResolutionHandled()) return;
     if (
       interceptedRequest.url().endsWith('.png') ||
       interceptedRequest.url().endsWith('.jpg')
@@ -2375,17 +2379,133 @@ const puppeteer = require('puppeteer');
 })();
 ```
 
-##### Cooperative Intercept Mode and Legacy Intercept Mode
+##### Multiple Intercept Handlers and Asynchronous Resolutions
 
-`request.respond`, `request.abort`, and `request.continue` can accept an optional `priority` to activate Cooperative Intercept Mode. In Cooperative Mode, all intercept handlers are guaranteed to run and all async handlers are awaited. The interception is resolved to the highest-priority resolution. Here are the rules of Cooperative Mode:
+By default Puppeteer will raise a `Request is already handled!` exception if `request.abort`, `request.continue`, or `request.respond` are called after any of them have already been called.
 
+Always assume that an unknown handler may have already called `abort/continue/respond`. Even if your handler is the only one you registered, 
+3rd party packages may register their own handlers. It is therefore
+important to always check the resolution status using [request.isInterceptResolutionHandled](#httprequestisinterceptresolutionhandled) 
+before calling `abort/continue/respond`.
+
+Importantly, the intercept resolution may get handled while your handler is awaiting asynchronous operations. Therefore, `request.isInterceptResolutionHandled` must be run **synchronously** before calling `abort/continue/respond` since the return value may change
+while awaiting asynchronous operations to resolve. Always check it synchronously before calling `abort/continue/respond`.
+
+This example demonstrates two synchronous handlers working together:
+
+```js
+/*
+This first handler will succeed in calling request.continue because the request interception has never been resolved.
+*/
+page.on('request', (interceptedRequest) => {
+  if (interceptedRequest.isInterceptResolutionHandled()) return;
+  interceptedRequest.continue();
+});
+
+/*
+This second handler will return before calling request.abort because request.continue was already 
+called by the first handler.
+*/
+page.on('request', (interceptedRequest) => {
+  if (interceptedRequest.isInterceptResolutionHandled()) return;
+  interceptedRequest.abort();
+});
+```
+
+This example demonstrates asynchronous handlers working together:
+
+```js
+/*
+This first handler will succeed in calling request.continue because the request interception has never been resolved.
+*/
+page.on('request', (interceptedRequest) => {
+  // The interception has not been handled yet. Control will pass through this guard.
+  if (interceptedRequest.isInterceptResolutionHandled()) return;
+
+  // It is not strictly necessary to return a promise, but doing so will allow Puppeteer to await this handler.
+  return new Prmomise( resolve=>{
+    // Continue after 500ms
+    setTimeout(()=>{
+      // Inside, check synchronously to verify that the intercept wasn't handled already.
+      // It might have been handled during the 500ms while the other handler awaited an async op of its own.
+      if (interceptedRequest.isInterceptResolutionHandled()) {
+        resolve();
+        return;
+      }
+      interceptedRequest.continue();
+      resolve();
+    }, 500);
+  })
+});
+page.on('request', async (interceptedRequest) => {
+  // The interception has not been handled yet. Control will pass through this guard.
+  if (interceptedRequest.isInterceptResolutionHandled()) return;
+
+  await someLongAsyncOperation()
+  // The interception *MIGHT* have been handled by the first handler, we can't be sure.
+  // Therefore, we must check again before calling continue() or we risk Puppeteer raising an exception.
+  if (interceptedRequest.isInterceptResolutionHandled()) return;
+  interceptedRequest.continue();
+});
+```
+
+For finer-grained introspection (see Cooperative Intercept Mode below), you may also call [request.interceptResolutionState](#httprequestinterceptresolutionstate) synchronously before using `abort/continue/respond`.
+
+Here is the example above rewritten using `request.interceptResolutionState`
+
+```js
+/*
+This first handler will succeed in calling request.continue because the request interception has never been resolved.
+*/
+page.on('request', (interceptedRequest) => {
+  // The interception has not been handled yet. Control will pass through this guard.
+  const { strategy } = interceptedRequest.interceptResolutionState();
+  if (strategy === 'already-handled') return;
+
+  // It is not strictly necessary to return a promise, but doing so will allow Puppeteer to await this handler.
+  return new Promise( resolve=> {
+    // Continue after 500ms
+    setTimeout(()=>{
+      // Inside, check synchronously to verify that the intercept wasn't handled already.
+      // It might have been handled during the 500ms while the other handler awaited an async op of its own.
+      const { strategy } = interceptedRequest.interceptResolutionState();
+      if (strategy === 'already-handled') {
+        resolve();
+        return;
+      };
+      interceptedRequest.continue();
+      resolve();
+    }, 500);
+  })
+});
+page.on('request', async (interceptedRequest) => {
+  // The interception has not been handled yet. Control will pass through this guard.
+  if (interceptedRequest.interceptResolutionState().strategy === 'already-handled') return;
+
+  await someLongAsyncOperation()
+  // The interception *MIGHT* have been handled by the first handler, we can't be sure.
+  // Therefore, we must check again before calling continue() or we risk Puppeteer raising an exception.
+  if (interceptedRequest.interceptResolutionState().strategy === 'already-handled') return;
+  interceptedRequest.continue();
+});
+```
+
+##### Cooperative Intercept Mode
+
+`request.abort`, `request.continue`, and `request.respond` can accept an optional `priority` to work in Cooperative Mode. When all
+handlers are using Cooperative Mode, Puppeteer guarantees that all intercept handlers will run and be awaited in order of registration. The interception is resolved to the highest-priority resolution. Here are the rules of Cooperative Mode:
+
+- All resolutions must supply a numeric `priority` argument to `abort/continue/respond`.
+- If any resolution does not supply a numeric `priority`, Legacy Mode is active and Cooperative Mode is inactive.
 - Async handlers finish before intercept resolution is finalized.
 - The highest priority interception resolution "wins", i.e. the interception is ultimately aborted/responded/continued according to which resolution was given the highest priority.
 - In the event of a tie, `abort` > `respond` > `continue`.
 
 For standardization, when specifying a Cooperative Mode priority use `0` unless you have a clear reason to use a higher priority. This gracefully prefers `respond` over `continue` and `abort` over `respond`. If you do intentionally want to use a different priority, higher priorities win over lower priorities. Negative priorities are allowed. For example, `continue({}, 4)` would win over `continue({}, -2)`.
 
-To preserve backward compatibility, any handler resolving the intercept without specifying `priority` (Legacy Mode) causes immediate resolution. For Cooperative Mode to work, all resolutions must use a `priority`.
+To preserve backward compatibility, any handler resolving the intercept without specifying `priority` (Legacy Mode) causes immediate resolution. For Cooperative Mode to work, all resolutions must use a `priority`. In practice, this means you must still test for
+`request.isInterceptResolutionHandled` because a handler beyond your control may have called `abort/continue/respond` without a
+priority (Legacy Mode).
 
 In this example, Legacy Mode prevails and the request is aborted immediately because at least one handler omits `priority` when resolving the intercept:
 
@@ -2393,17 +2513,16 @@ In this example, Legacy Mode prevails and the request is aborted immediately bec
 // Final outcome: immediate abort()
 page.setRequestInterception(true);
 page.on('request', (request) => {
-  // Legacy Mode: interception is aborted immediately.
+  if(request.isInterceptResolutionHandled()) return
+
+// Legacy Mode: interception is aborted immediately.
   request.abort('failed');
 });
 page.on('request', (request) => {
-  // ['already-handled'], meaning a legacy resolution has taken place
-  console.log(request.interceptResolution());
+  if(request.isInterceptResolutionHandled()) return
+  // Control will never reach this point because the request was already aborted in Legacy Mode
 
   // Cooperative Mode: votes for continue at priority 0.
-  // Ultimately throws an exception after all handlers have finished
-  // running and Cooperative Mode resolutions are evaluated becasue
-  // abort() was called using Legacy Mode.
   request.continue({}, 0);
 });
 ```
@@ -2414,19 +2533,27 @@ In this example, Legacy Mode prevails and the request is continued because at le
 // Final outcome: immediate continue()
 page.setRequestInterception(true);
 page.on('request', (request) => {
+  if(request.isInterceptResolutionHandled()) return
+
   // Cooperative Mode: votes to abort at priority 0.
-  // Ultimately throws an exception after all handlers have finished
-  // running and Cooperative Mode resolutions are evaluated becasue
-  // continue() was called using Legacy Mode.
   request.abort('failed', 0);
 });
 page.on('request', (request) => {
-  // ['abort', 0], meaning an abort @ 0 is the current winning resolution
-  console.log(request.interceptResolution());
+  if(request.isInterceptResolutionHandled()) return
+
+  // Control reaches this point because the request was cooperatively aborted which postpones resolution.
+
+  // { strategy: 'abort', priority: 0 }, because abort @ 0 is the current winning resolution
+  console.log(request.interceptResolutionState());
 
   // Legacy Mode: intercept continues immediately.
   request.continue({});
 });
+page.on('request', (request) => {
+  // { strategy: 'already-handled' }, because continue in Legacy Mode was called
+  console.log(request.interceptResolutionState());
+});
+
 ```
 
 In this example, Cooperative Mode is active because all handlers specify a `priority`. `continue()` wins because it has a higher priority than `abort()`.
@@ -2435,16 +2562,20 @@ In this example, Cooperative Mode is active because all handlers specify a `prio
 // Final outcome: cooperative continue() @ 5
 page.setRequestInterception(true);
 page.on('request', (request) => {
+  if(request.isInterceptResolutionHandled()) return
+
   // Cooperative Mode: votes to abort at priority 10
   request.abort('failed', 0);
 });
 page.on('request', (request) => {
+  if(request.isInterceptResolutionHandled()) return
+
   // Cooperative Mode: votes to continue at priority 5
   request.continue(request.continueRequestOverrides(), 5);
 });
 page.on('request', (request) => {
-  // ['continue', 5], because continue @ 5 > abort @ 0
-  console.log(request.interceptResolution());
+  // { strategy: 'continue', priority: 5 }, because continue @ 5 > abort @ 0
+  console.log(request.interceptResolutionState());
 });
 ```
 
@@ -2454,24 +2585,32 @@ In this example, Cooperative Mode is active because all handlers specify `priori
 // Final outcome: cooperative respond() @ 15
 page.setRequestInterception(true);
 page.on('request', (request) => {
+  if(request.isInterceptResolutionHandled()) return
+
   // Cooperative Mode: votes to abort at priority 10
   request.abort('failed', 10);
 });
 page.on('request', (request) => {
+  if(request.isInterceptResolutionHandled()) return
+
   // Cooperative Mode: votes to continue at priority 15
   request.continue(request.continueRequestOverrides(), 15);
 });
 page.on('request', (request) => {
+  if(request.isInterceptResolutionHandled()) return
+
   // Cooperative Mode: votes to respond at priority 15
   request.respond(request.responseForRequest(), 15);
 });
 page.on('request', (request) => {
+  if(request.isInterceptResolutionHandled()) return
+
   // Cooperative Mode: votes to respond at priority 12
   request.respond(request.responseForRequest(), 12);
 });
 page.on('request', (request) => {
-  // ['respond', 15], because respond @ 15 > continue @ 15 > respond @ 12 > abort @ 10
-  console.log(request.interceptResolution());
+  // { strategy: 'respond', priority: 15 }, because respond @ 15 > continue @ 15 > respond @ 12 > abort @ 10
+  console.log(request.interceptResolutionState());
 });
 ```
 
@@ -2481,6 +2620,7 @@ If you are package maintainer and your package uses intercept handlers, you can 
 
 ```ts
 page.on('request', (interceptedRequest) => {
+  if(request.isInterceptResolutionHandled()) return
   if (
     interceptedRequest.url().endsWith('.png') ||
     interceptedRequest.url().endsWith('.jpg')
@@ -2494,6 +2634,7 @@ To use Cooperative Mode, upgrade `continue()` and `abort()`:
 
 ```ts
 page.on('request', (interceptedRequest) => {
+  if(request.isInterceptResolutionHandled()) return
   if (
     interceptedRequest.url().endsWith('.png') ||
     interceptedRequest.url().endsWith('.jpg')
@@ -2511,20 +2652,21 @@ With those simple upgrades, your handler now uses Cooperative Mode instead.
 
 However, we recommend a slightly more robust solution because the above introduces two subtle issues:
 
-1. **Backward compatibility.** Cooperative Mode resolves interceptions only if no Legacy Mode resolution has taken place. If any handler uses a Legacy Mode resolution (ie, does not specify a priority), that handler will resolve the interception immediately even if your handler runs first. This could cause disconcerting behavior for your users because suddenly your handler is not resolving the interception and a different handler is taking priority when all they did was upgrade your package.
+1. **Backward compatibility.** If any handler still uses a Legacy Mode resolution (ie, does not specify a priority), that handler will resolve the interception immediately even if your handler runs first. This could cause disconcerting behavior for your users because suddenly your handler is not resolving the interception and a different handler is taking priority when all the user did was upgrade your package.
 2. **Hard-coded priority.** Your package user has no ability to specify the default resolution priority for your handlers. This can become important when the user wishes to manipulate the priorities based on use case. For example, one user might want your package to take a high priority while another user might want it to take a low priority.
 
-To resolve both of these issues, our recommended approach is to export a `setInterceptResolutionStrategy()` from your package. The user can then call `setInterceptResolutionStrategy()` to explicitly activate Cooperative Mode in your package so they aren't surprised by changes in how the interception is resolved. They can also optionally specify a custom priority using `setInterceptResolutionStrategy(priority)` that works for their use case:
+To resolve both of these issues, our recommended approach is to export a `setInterceptResolutionConfig()` from your package. The user can then call `setInterceptResolutionConfig()` to explicitly activate Cooperative Mode in your package so they aren't surprised by changes in how the interception is resolved. They can also optionally specify a custom priority using `setInterceptResolutionConfig(priority)` that works for their use case:
 
 ```ts
 // Defaults to undefined which preserves Legacy Mode behavior
 let _priority = undefined;
 
 // Export a module configuration function
-export const setInterceptResolutionStrategy = (defaultPriority = 0) =>
-  (_priority = defaultPriority);
+export const setInterceptResolutionConfig = (priority = 0) =>
+  (_priority = priority);
 
 page.on('request', (interceptedRequest) => {
+  if(request.isInterceptResolutionHandled()) return
   if (
     interceptedRequest.url().endsWith('.png') ||
     interceptedRequest.url().endsWith('.jpg')
@@ -2541,7 +2683,7 @@ page.on('request', (interceptedRequest) => {
 If your package calls for more fine-grained control resolution priorities, use a config pattern like this:
 
 ```ts
-interface ResolutionStrategy {
+interface InterceptResolutionConfig {
   abortPriority: number;
   continuePriority: number;
 }
@@ -2549,27 +2691,28 @@ interface ResolutionStrategy {
 // This strategy supports multiple priorities based on situational
 // differences. You could, for example, create a strategy that
 // allowed separate priorities for PNG vs JPG.
-const DEFAULT_STRATEGY: ResolutionStrategy = {
+const DEFAULT_CONFIG: InterceptResolutionConfig = {
   abortPriority: 0,
   continuePriority: 0,
 };
 
 // Defaults to undefined which preserves Legacy Mode behavior
-let _strategy: Partial<ResolutionStrategy> = {};
+let _config: Partial<InterceptResolutionConfig> = {};
 
-export const setInterceptResolutionStrategy = (strategy: ResolutionStrategy) =>
-  (_strategy = { ...DEFAULT_STRATEGY, ...strategy });
+export const setInterceptResolutionConfig = (config: InterceptResolutionConfig) =>
+  (_config = { ...DEFAULT_CONFIG, ...config });
 
 page.on('request', (interceptedRequest) => {
+  if(request.isInterceptResolutionHandled()) return
   if (
     interceptedRequest.url().endsWith('.png') ||
     interceptedRequest.url().endsWith('.jpg')
   )
-    interceptedRequest.abort('failed', _strategy.abortPriority);
+    interceptedRequest.abort('failed', _config.abortPriority);
   else
     interceptedRequest.continue(
       interceptedRequest.continueRequestOverrides(),
-      _strategy.continuePriority
+      _config.continuePriority
     );
 });
 ```
@@ -4822,6 +4965,47 @@ When in Cooperative Mode, awaits pending interception handlers and then decides 
   - `stack` <?[Object]> JavaScript stack trace for the initiator, set for `script` only.
   - `url` <?[string]> Initiator URL, set for `parser`, `script` and `SignedExchange` type.
   - `lineNumber` <?[number]> 0 based initiator line number, set for `parser` and `script`.
+
+#### httpRequest.interceptResolutionState()
+
+- returns: <[InterceptResolutionState]>
+  - `strategy` <[InterceptResolutionStrategy]> Current resolution strategy. Possible values: `abort`, `respond`, `continue`,
+    `disabled`, `none`, and `already-handled`
+  - `priority` <?[number]> The current priority of the winning strategy.
+
+`InterceptResolutionStrategy` is one of:
+
+- `abort` - The request will be aborted if no higher priority arises.
+- `respond` - The request will be responded if no higher priority arises.
+- `continue` - The request will be continued if no higher priority arises.
+- `disabled` - Request interception is not currently enabled (see `page.setRequestInterception`).
+- `none` - `abort/continue/respond` have not been called yet.
+- `already-handled` - The interception has already been handled in Legacy Mode by a call to `abort/continue/respond` with
+  a `priority` of `undefined`. Subsequent calls to `abort/continue/respond` will throw an exception.
+
+This example will `continue` a request at a slightly higher priority than the current strategy if the interception has not
+already handled and is not already being continued.
+
+```js
+page.on('request', (interceptedRequest) => {
+  const { strategy, priority } = interceptedRequest.interceptResolutionState();
+  if (strategy === 'already-handled') return;
+  if (strategy === 'continue') return;
+
+  // Change the strategy to `continue` and bump the priority so `continue` becomes the new winner
+  interceptedRequest.continue(
+    interceptedRequest.continueRequestOverrides(),
+    priority + 1
+  );
+});
+```
+
+#### httpRequest.isInterceptResolutionHandled()
+
+- returns: <[boolean]>
+
+Whether this request's interception has been handled (i.e., `abort`, `continue`, or `respond` has already been called
+with a `priority` of `undefined`).
 
 #### httpRequest.isNavigationRequest()
 
