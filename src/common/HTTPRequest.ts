@@ -214,7 +214,7 @@ export class HTTPRequest {
    * `[strategy,priority]`. Strategy is one of: `abort`, `respond`, `continue`,
    *  `disabled`, `none`, or `already-handled`.
    */
-  private interceptResolution(): [InterceptResolutionStrategy, number?] {
+  interceptResolution(): [InterceptResolutionStrategy, number?] {
     if (!this._allowInterception) return ['disabled'];
     if (this._interceptionHandled) return ['already-handled'];
     return [this._currentStrategy, this._currentPriority];
