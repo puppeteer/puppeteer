@@ -216,8 +216,12 @@ export class HTTPRequest {
   }
 
   /**
-   * @returns An array of the current intercept resolution strategy and priority
-   * `[InterceptResolutionStrategy,priority]`.
+   * @returns An InterceptResolutionState object describing the current resolution
+   *  strategy and priority.
+   *
+   *  InterceptResolutionState contains:
+   *    strategy: InterceptResolutionStrategy
+   *    priority?: number
    *
    *  InterceptResolutionStrategy is one of: `abort`, `respond`, `continue`,
    *  `disabled`, `none`, or `already-handled`.
