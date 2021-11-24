@@ -21,6 +21,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   itFailsFirefox,
+  shortWaitForArrayToHaveAtLeastNElements,
 } from './mocha-utils'; // eslint-disable-line import/extensions
 
 describe('JSHandle', function () {
@@ -390,6 +391,7 @@ describe('JSHandle', function () {
           y: 15,
         },
       });
+      await shortWaitForArrayToHaveAtLeastNElements(clicks, 2);
       expect(clicks).toEqual([
         [45 + 60, 45 + 30], // margin + middle point offset
         [30 + 10, 30 + 15], // margin + offset

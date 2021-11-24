@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CDPSession } from './Connection.js';
+import { ProtocolMapping } from 'devtools-protocol/types/protocol-mapping.js';
+
+import { EventEmitter } from './EventEmitter.js';
 import { Frame } from './FrameManager.js';
 import { HTTPResponse } from './HTTPResponse.js';
 import { assert } from './assert.js';
@@ -55,6 +57,13 @@ export interface ResponseForRequest {
  * @public
  */
 export type ResourceType = Lowercase<Protocol.Network.ResourceType>;
+
+interface CDPSession extends EventEmitter {
+  send<T extends keyof ProtocolMapping.Commands>(
+    method: T,
+    ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
+  ): Promise<ProtocolMapping.Commands[T]['returnType']>;
+}
 
 /**
  *
