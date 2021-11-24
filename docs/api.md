@@ -181,6 +181,7 @@
   * [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
   * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled)
   * [page.setRequestInterception(value)](#pagesetrequestinterceptionvalue)
+    - [Using Multiple Intercept Handlers](#using-multiple-intercept-handlers)
     - [Cooperative Intercept Mode and Legacy Intercept Mode](#cooperative-intercept-mode-and-legacy-intercept-mode)
     - [Upgrading to Cooperative Mode for package maintainers](#upgrading-to-cooperative-mode-for-package-maintainers)
   * [page.setUserAgent(userAgent[, userAgentMetadata])](#pagesetuseragentuseragent-useragentmetadata)
@@ -344,6 +345,8 @@
   * [httpRequest.frame()](#httprequestframe)
   * [httpRequest.headers()](#httprequestheaders)
   * [httpRequest.initiator()](#httprequestinitiator)
+  * [httpRequest.interceptResolution()](#httprequestinterceptresolution)
+  * [httpRequest.isInterceptResolutionHandled()](#httprequestisresolutionrequesthandled)
   * [httpRequest.isNavigationRequest()](#httprequestisnavigationrequest)
   * [httpRequest.method()](#httprequestmethod)
   * [httpRequest.postData()](#httprequestpostdata)
@@ -894,6 +897,7 @@ Closes Chromium and all of its pages (if any were opened). The [Browser] object 
 During the process of closing the browser, Puppeteer attempts to delete the temp folder created exclusively for this browser instance. If this fails (either because a file in the temp folder is locked by another process or because of insufficient permissions) an error is logged. This implies that: a) the folder and/or its content is not fully deleted; and b) the connection with the browser is not properly disposed (see [browser.disconnect()](#browserdisconnect)).
 
 #### browser.createIncognitoBrowserContext([options])
+
 - `options` <[Object]> Set of configurable options to set on the browserContext. Can have the following fields:
   - `proxyServer` <[string]> Optional proxy server with optional port to use for all requests. Username and password can be set in [page.authenticate(credentials)](#pageauthenticatecredentials).
   - `proxyBypassList` <[string]> Optional: Bypass the proxy for the given semi-colon-separated list of hosts.
@@ -2363,6 +2367,7 @@ const puppeteer = require('puppeteer');
   const page = await browser.newPage();
   await page.setRequestInterception(true);
   page.on('request', (interceptedRequest) => {
+    if (interceptedRequest.isInterceptResolutionHandled()) return;
     if (
       interceptedRequest.url().endsWith('.png') ||
       interceptedRequest.url().endsWith('.jpg')
@@ -2375,17 +2380,67 @@ const puppeteer = require('puppeteer');
 })();
 ```
 
-##### Cooperative Intercept Mode and Legacy Intercept Mode
+##### Using Multiple Intercept Handlers
 
-`request.respond`, `request.abort`, and `request.continue` can accept an optional `priority` to activate Cooperative Intercept Mode. In Cooperative Mode, all intercept handlers are guaranteed to run and all async handlers are awaited. The interception is resolved to the highest-priority resolution. Here are the rules of Cooperative Mode:
+By default Puppeteer will raise a `Request is already handled!` exception if `request.abort`, `request.continue`, or `request.respond` are called after any of them have already been called. Always assume that another handler may have already called `abort/continue/respond`.
+Even if your handler is the only one you registered, 3rd party packages may register their own without you knowing. It is therefore
+important to always check the resolution status using [request.isInterceptResolutionHandled](#httprequestisinterceptresolutionhandled) before calling `abort/continue/respond`.
 
+This example demonstrates two handlers working together:
+
+```js
+/*
+This first handler will succeed in calling request.continue because the request interception has never been resolved.
+*/
+page.on('request', (interceptedRequest) => {
+  if (interceptedRequest.isInterceptResolutionHandled()) return;
+  interceptedRequest.continue();
+});
+
+/*
+This second handler will return before calling request.abort because request.continue was already 
+called by the first handler.
+*/
+page.on('request', (interceptedRequest) => {
+  if (interceptedRequest.isInterceptResolutionHandled()) return;
+  interceptedRequest.abort();
+});
+```
+
+For finer-grained introspection (see Cooperative Intercept Mode below), you may also use [request.interceptResolution](#httprequestinterceptresolution).
+
+Here is the example above rewritten using `request.interceptResolution`
+
+```js
+page.on('request', (interceptedRequest) => {
+  const [currentStrategy] = interceptedRequest.interceptResolution();
+  if (currentStrategy === 'already-handled') return;
+  interceptedRequest.continue();
+});
+
+page.on('request', (interceptedRequest) => {
+  const [currentStrategy] = interceptedRequest.interceptResolution();
+  if (currentStrategy === 'already-handled') return;
+  interceptedRequest.abort();
+});
+```
+
+##### Cooperative Intercept Mode
+
+`request.abort`, `request.continue`, and `request.respond` can accept an optional `priority` to work in Cooperative Mode. When all
+handlers are using Cooperative Mode, Puppeteer guarantees that all intercept handlers will run and be awaited in order of registration. The interception is resolved to the highest-priority resolution. Here are the rules of Cooperative Mode:
+
+- All resolutions must supply a numeric `priority` argument to `abort/continue/respond`.
+- If any resolution does not supply a numeric `priority`, Legacy Mode is active and Cooperative Mode is inactive.
 - Async handlers finish before intercept resolution is finalized.
 - The highest priority interception resolution "wins", i.e. the interception is ultimately aborted/responded/continued according to which resolution was given the highest priority.
 - In the event of a tie, `abort` > `respond` > `continue`.
 
 For standardization, when specifying a Cooperative Mode priority use `0` unless you have a clear reason to use a higher priority. This gracefully prefers `respond` over `continue` and `abort` over `respond`. If you do intentionally want to use a different priority, higher priorities win over lower priorities. Negative priorities are allowed. For example, `continue({}, 4)` would win over `continue({}, -2)`.
 
-To preserve backward compatibility, any handler resolving the intercept without specifying `priority` (Legacy Mode) causes immediate resolution. For Cooperative Mode to work, all resolutions must use a `priority`.
+To preserve backward compatibility, any handler resolving the intercept without specifying `priority` (Legacy Mode) causes immediate resolution. For Cooperative Mode to work, all resolutions must use a `priority`. In practice, this means you must still test for
+`request.isInterceptResolutionHandled` because a handler beyond your control may have called `abort/continue/respond` without a
+priority (Legacy Mode).
 
 In this example, Legacy Mode prevails and the request is aborted immediately because at least one handler omits `priority` when resolving the intercept:
 
@@ -2872,6 +2927,7 @@ const [response] = await Promise.all([
 Shortcut for [page.mainFrame().waitForNavigation(options)](#framewaitfornavigationoptions).
 
 #### page.waitForNetworkIdle([options])
+
 - `options` <[Object]> Optional waiting parameters
   - `timeout` <[number]> Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to disable the timeout. The default value can be changed by using the [page.setDefaultTimeout(timeout)](#pagesetdefaulttimeouttimeout) method.
   - `idleTime` <[number]> How long to wait for no network requests in milliseconds, defaults to 500 milliseconds.
@@ -4610,6 +4666,7 @@ This method scrolls element into view if needed, and then uses [page.mouse](#pag
 If the element is detached from DOM, the method throws an error.
 
 #### elementHandle.isIntersectingViewport([options])
+
 - `options` <[Object]>
   - `threshold` <[number]> threshold for the intersection between 0 (no intersection) and 1 (full intersection). Defaults to 1.
 - returns: <[Promise]<[boolean]>> Resolves to true if the element is visible in the current viewport.
@@ -4822,6 +4879,46 @@ When in Cooperative Mode, awaits pending interception handlers and then decides 
   - `stack` <?[Object]> JavaScript stack trace for the initiator, set for `script` only.
   - `url` <?[string]> Initiator URL, set for `parser`, `script` and `SignedExchange` type.
   - `lineNumber` <?[number]> 0 based initiator line number, set for `parser` and `script`.
+
+#### httpRequest.interceptResolution()
+
+- returns: <[Array]<[InterceptResolutionStrategy, number]>>
+
+The request's current interception strategy and priority.
+
+`InterceptResolutionStrategy` is one of:
+
+- `abort` - The request will be aborted if no higher priority arises.
+- `respond` - The request will be responded if no higher priority arises.
+- `continue` - The request will be continued if no higher priority arises.
+- `disabled` - Request interception is not currently enabled (see `page.setRequestInterception`).
+- `none` - `abort/continue/respond` have not been called yet.
+- `already-handled` - The interception has already been handled in Legacy Mode by a call to `abort/continue/respond` with
+  a `priority` of `undefined`. Subsequent calls to `abort/continue/respond` will throw an exception.
+
+This example will `continue` a request at a slightly higher priority than the current strategy if the interception has not
+already handled and is not already being continued.
+
+```js
+page.on('request', (interceptedRequest) => {
+  const [currentStrategy, priority] = interceptedRequest.interceptResolution();
+  if (currentStrategy === 'already-handled') return;
+  if (currentStrategy === 'continue') return;
+
+  // Change the strategy to `continue` and bump the priority so `continue` becomes the new winner
+  interceptedRequest.continue(
+    interceptedRequest.continueRequestOverrides(),
+    priority + 1
+  );
+});
+```
+
+#### httpRequest.isInterceptResolutionHandled()
+
+- returns: <[boolean]>
+
+Whether this request's interception has been handled (i.e., `abort`, `continue`, or `respond` has already been called
+with a `priority` of `undefined` ).
 
 #### httpRequest.isNavigationRequest()
 
