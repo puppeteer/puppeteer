@@ -66,6 +66,13 @@ export interface ResponseForRequest {
  */
 export type ResourceType = Lowercase<Protocol.Network.ResourceType>;
 
+/**
+ * The default cooperative request interception resolution priority
+ *
+ * @public
+ */
+export const DEFAULT_INTERCEPT_RESOLUTION_PRIORITY = 0;
+
 interface CDPSession extends EventEmitter {
   send<T extends keyof ProtocolMapping.Commands>(
     method: T,
