@@ -2519,7 +2519,7 @@ page.on('request', (request) => {
   request.abort('failed');
 });
 page.on('request', (request) => {
-  if(request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return
   // Control will never reach this point because the request was already aborted in Legacy Mode
 
   // Cooperative Mode: votes for continue at priority 0.
