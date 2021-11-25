@@ -2425,7 +2425,7 @@ page.on('request', (interceptedRequest) => {
   // It is not strictly necessary to return a promise, but doing so will allow Puppeteer to await this handler.
   return new Prmomise( resolve=>{
     // Continue after 500ms
-    setTimeout(()=>{
+    setTimeout(() => {
       // Inside, check synchronously to verify that the intercept wasn't handled already.
       // It might have been handled during the 500ms while the other handler awaited an async op of its own.
       if (interceptedRequest.isInterceptResolutionHandled()) {
