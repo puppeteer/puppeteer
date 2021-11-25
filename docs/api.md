@@ -2423,9 +2423,9 @@ page.on('request', (interceptedRequest) => {
   if (interceptedRequest.isInterceptResolutionHandled()) return;
 
   // It is not strictly necessary to return a promise, but doing so will allow Puppeteer to await this handler.
-  return new Prmomise( resolve=>{
+  return new Promise( resolve => {
     // Continue after 500ms
-    setTimeout(()=>{
+    setTimeout(() => {
       // Inside, check synchronously to verify that the intercept wasn't handled already.
       // It might have been handled during the 500ms while the other handler awaited an async op of its own.
       if (interceptedRequest.isInterceptResolutionHandled()) {
@@ -2465,7 +2465,7 @@ page.on('request', (interceptedRequest) => {
   // It is not strictly necessary to return a promise, but doing so will allow Puppeteer to await this handler.
   return new Promise( resolve=> {
     // Continue after 500ms
-    setTimeout(()=>{
+    setTimeout(() => {
       // Inside, check synchronously to verify that the intercept wasn't handled already.
       // It might have been handled during the 500ms while the other handler awaited an async op of its own.
       const { action } = interceptedRequest.interceptResolutionState();
@@ -2513,13 +2513,13 @@ In this example, Legacy Mode prevails and the request is aborted immediately bec
 // Final outcome: immediate abort()
 page.setRequestInterception(true);
 page.on('request', (request) => {
-  if(request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return
 
-// Legacy Mode: interception is aborted immediately.
+  // Legacy Mode: interception is aborted immediately.
   request.abort('failed');
 });
 page.on('request', (request) => {
-  if(request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return
   // Control will never reach this point because the request was already aborted in Legacy Mode
 
   // Cooperative Mode: votes for continue at priority 0.
@@ -2533,13 +2533,13 @@ In this example, Legacy Mode prevails and the request is continued because at le
 // Final outcome: immediate continue()
 page.setRequestInterception(true);
 page.on('request', (request) => {
-  if(request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return
 
   // Cooperative Mode: votes to abort at priority 0.
   request.abort('failed', 0);
 });
 page.on('request', (request) => {
-  if(request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return
 
   // Control reaches this point because the request was cooperatively aborted which postpones resolution.
 
@@ -2562,13 +2562,13 @@ In this example, Cooperative Mode is active because all handlers specify a `prio
 // Final outcome: cooperative continue() @ 5
 page.setRequestInterception(true);
 page.on('request', (request) => {
-  if(request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return
 
   // Cooperative Mode: votes to abort at priority 10
   request.abort('failed', 0);
 });
 page.on('request', (request) => {
-  if(request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return
 
   // Cooperative Mode: votes to continue at priority 5
   request.continue(request.continueRequestOverrides(), 5);
@@ -2585,25 +2585,25 @@ In this example, Cooperative Mode is active because all handlers specify `priori
 // Final outcome: cooperative respond() @ 15
 page.setRequestInterception(true);
 page.on('request', (request) => {
-  if(request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return
 
   // Cooperative Mode: votes to abort at priority 10
   request.abort('failed', 10);
 });
 page.on('request', (request) => {
-  if(request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return
 
   // Cooperative Mode: votes to continue at priority 15
   request.continue(request.continueRequestOverrides(), 15);
 });
 page.on('request', (request) => {
-  if(request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return
 
   // Cooperative Mode: votes to respond at priority 15
   request.respond(request.responseForRequest(), 15);
 });
 page.on('request', (request) => {
-  if(request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return
 
   // Cooperative Mode: votes to respond at priority 12
   request.respond(request.responseForRequest(), 12);
