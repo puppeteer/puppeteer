@@ -119,10 +119,10 @@ describe('request interception', function () {
       await page.setRequestInterception(true);
       page.on('request', (request) => request.continue({}, 0));
       await page.setContent(`
-         <form action='/rredirect' method='post'>
-           <input type="hidden" id="foo" name="foo" value="FOOBAR">
-         </form>
-       `);
+        <form action='/rredirect' method='post'>
+          <input type="hidden" id="foo" name="foo" value="FOOBAR">
+        </form>
+      `);
       await Promise.all([
         page.$eval('form', (form: HTMLFormElement) => form.submit()),
         page.waitForNavigation(),
@@ -856,8 +856,8 @@ describe('request interception', function () {
         expect(request.isInterceptResolutionHandled()).toBeTruthy();
       });
       page.on('request', (request) => {
-        const { strategy } = request.interceptResolutionState();
-        expect(strategy).toBe('already-handled');
+        const { action } = request.interceptResolutionState();
+        expect(action).toBe('already-handled');
       });
       await page.goto(server.EMPTY_PAGE);
     });

@@ -2459,8 +2459,8 @@ This first handler will succeed in calling request.continue because the request 
 */
 page.on('request', (interceptedRequest) => {
   // The interception has not been handled yet. Control will pass through this guard.
-  const { strategy } = interceptedRequest.interceptResolutionState();
-  if (strategy === 'already-handled') return;
+  const { action } = interceptedRequest.interceptResolutionState();
+  if (action === 'already-handled') return;
 
   // It is not strictly necessary to return a promise, but doing so will allow Puppeteer to await this handler.
   return new Promise( resolve=> {
@@ -2468,8 +2468,8 @@ page.on('request', (interceptedRequest) => {
     setTimeout(()=>{
       // Inside, check synchronously to verify that the intercept wasn't handled already.
       // It might have been handled during the 500ms while the other handler awaited an async op of its own.
-      const { strategy } = interceptedRequest.interceptResolutionState();
-      if (strategy === 'already-handled') {
+      const { action } = interceptedRequest.interceptResolutionState();
+      if (action === 'already-handled') {
         resolve();
         return;
       };
@@ -2480,12 +2480,12 @@ page.on('request', (interceptedRequest) => {
 });
 page.on('request', async (interceptedRequest) => {
   // The interception has not been handled yet. Control will pass through this guard.
-  if (interceptedRequest.interceptResolutionState().strategy === 'already-handled') return;
+  if (interceptedRequest.interceptResolutionState().action === 'already-handled') return;
 
   await someLongAsyncOperation()
   // The interception *MIGHT* have been handled by the first handler, we can't be sure.
   // Therefore, we must check again before calling continue() or we risk Puppeteer raising an exception.
-  if (interceptedRequest.interceptResolutionState().strategy === 'already-handled') return;
+  if (interceptedRequest.interceptResolutionState().action === 'already-handled') return;
   interceptedRequest.continue();
 });
 ```
@@ -2543,14 +2543,14 @@ page.on('request', (request) => {
 
   // Control reaches this point because the request was cooperatively aborted which postpones resolution.
 
-  // { strategy: 'abort', priority: 0 }, because abort @ 0 is the current winning resolution
+  // { action: 'abort', priority: 0 }, because abort @ 0 is the current winning resolution
   console.log(request.interceptResolutionState());
 
   // Legacy Mode: intercept continues immediately.
   request.continue({});
 });
 page.on('request', (request) => {
-  // { strategy: 'already-handled' }, because continue in Legacy Mode was called
+  // { action: 'already-handled' }, because continue in Legacy Mode was called
   console.log(request.interceptResolutionState());
 });
 
@@ -2574,7 +2574,7 @@ page.on('request', (request) => {
   request.continue(request.continueRequestOverrides(), 5);
 });
 page.on('request', (request) => {
-  // { strategy: 'continue', priority: 5 }, because continue @ 5 > abort @ 0
+  // { action: 'continue', priority: 5 }, because continue @ 5 > abort @ 0
   console.log(request.interceptResolutionState());
 });
 ```
@@ -2609,7 +2609,7 @@ page.on('request', (request) => {
   request.respond(request.responseForRequest(), 12);
 });
 page.on('request', (request) => {
-  // { strategy: 'respond', priority: 15 }, because respond @ 15 > continue @ 15 > respond @ 12 > abort @ 10
+  // { action: 'respond', priority: 15 }, because respond @ 15 > continue @ 15 > respond @ 12 > abort @ 10
   console.log(request.interceptResolutionState());
 });
 ```
@@ -2688,8 +2688,8 @@ interface InterceptResolutionConfig {
   continuePriority: number;
 }
 
-// This strategy supports multiple priorities based on situational
-// differences. You could, for example, create a strategy that
+// This approach supports multiple priorities based on situational
+// differences. You could, for example, create a config that
 // allowed separate priorities for PNG vs JPG.
 const DEFAULT_CONFIG: InterceptResolutionConfig = {
   abortPriority: 0,
@@ -4969,11 +4969,11 @@ When in Cooperative Mode, awaits pending interception handlers and then decides 
 #### httpRequest.interceptResolutionState()
 
 - returns: <[InterceptResolutionState]>
-  - `strategy` <[InterceptResolutionStrategy]> Current resolution strategy. Possible values: `abort`, `respond`, `continue`,
+  - `action` <[InterceptResolutionAction]> Current resolution action. Possible values: `abort`, `respond`, `continue`,
     `disabled`, `none`, and `already-handled`
-  - `priority` <?[number]> The current priority of the winning strategy.
+  - `priority` <?[number]> The current priority of the winning action.
 
-`InterceptResolutionStrategy` is one of:
+`InterceptResolutionAction` is one of:
 
 - `abort` - The request will be aborted if no higher priority arises.
 - `respond` - The request will be responded if no higher priority arises.
@@ -4983,16 +4983,16 @@ When in Cooperative Mode, awaits pending interception handlers and then decides 
 - `already-handled` - The interception has already been handled in Legacy Mode by a call to `abort/continue/respond` with
   a `priority` of `undefined`. Subsequent calls to `abort/continue/respond` will throw an exception.
 
-This example will `continue` a request at a slightly higher priority than the current strategy if the interception has not
+This example will `continue` a request at a slightly higher priority than the current action if the interception has not
 already handled and is not already being continued.
 
 ```js
 page.on('request', (interceptedRequest) => {
-  const { strategy, priority } = interceptedRequest.interceptResolutionState();
-  if (strategy === 'already-handled') return;
-  if (strategy === 'continue') return;
+  const { action, priority } = interceptedRequest.interceptResolutionState();
+  if (action === 'already-handled') return;
+  if (action === 'continue') return;
 
-  // Change the strategy to `continue` and bump the priority so `continue` becomes the new winner
+  // Change the action to `continue` and bump the priority so `continue` becomes the new winner
   interceptedRequest.continue(
     interceptedRequest.continueRequestOverrides(),
     priority + 1

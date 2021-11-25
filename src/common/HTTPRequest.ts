@@ -40,7 +40,7 @@ export interface ContinueRequestOverrides {
  * @public
  */
 export interface InterceptResolutionState {
-  strategy: InterceptResolutionStrategy;
+  action: InterceptResolutionAction;
   priority?: number;
 }
 
@@ -173,7 +173,7 @@ export class HTTPRequest {
     this._frame = frame;
     this._redirectChain = redirectChain;
     this._continueRequestOverrides = {};
-    this._interceptResolutionState = { strategy: 'none' };
+    this._interceptResolutionState = { action: 'none' };
     this._interceptHandlers = [];
     this._initiator = event.initiator;
 
@@ -220,15 +220,15 @@ export class HTTPRequest {
    *  strategy and priority.
    *
    *  InterceptResolutionState contains:
-   *    strategy: InterceptResolutionStrategy
+   *    strategy: InterceptResolutionAction
    *    priority?: number
    *
-   *  InterceptResolutionStrategy is one of: `abort`, `respond`, `continue`,
+   *  InterceptResolutionAction is one of: `abort`, `respond`, `continue`,
    *  `disabled`, `none`, or `already-handled`.
    */
   interceptResolutionState(): InterceptResolutionState {
-    if (!this._allowInterception) return { strategy: 'disabled' };
-    if (this._interceptionHandled) return { strategy: 'already-handled' };
+    if (!this._allowInterception) return { action: 'disabled' };
+    if (this._interceptionHandled) return { action: 'already-handled' };
     return { ...this._interceptResolutionState };
   }
 
@@ -261,7 +261,7 @@ export class HTTPRequest {
       (promiseChain, interceptAction) => promiseChain.then(interceptAction),
       Promise.resolve()
     );
-    const { strategy } = this.interceptResolutionState();
+    const { action: strategy } = this.interceptResolutionState();
     switch (strategy) {
       case 'abort':
         return this._abort(this._abortErrorReason);
@@ -434,17 +434,17 @@ export class HTTPRequest {
       priority > this._interceptResolutionState.priority ||
       this._interceptResolutionState.priority === undefined
     ) {
-      this._interceptResolutionState = { strategy: 'continue', priority };
+      this._interceptResolutionState = { action: 'continue', priority };
       return;
     }
     if (priority === this._interceptResolutionState.priority) {
       if (
-        this._interceptResolutionState.strategy === 'abort' ||
-        this._interceptResolutionState.strategy === 'respond'
+        this._interceptResolutionState.action === 'abort' ||
+        this._interceptResolutionState.action === 'respond'
       ) {
         return;
       }
-      this._interceptResolutionState.strategy = 'continue';
+      this._interceptResolutionState.action = 'continue';
     }
     return;
   }
@@ -520,14 +520,14 @@ export class HTTPRequest {
       priority > this._interceptResolutionState.priority ||
       this._interceptResolutionState.priority === undefined
     ) {
-      this._interceptResolutionState = { strategy: 'respond', priority };
+      this._interceptResolutionState = { action: 'respond', priority };
       return;
     }
     if (priority === this._interceptResolutionState.priority) {
-      if (this._interceptResolutionState.strategy === 'abort') {
+      if (this._interceptResolutionState.action === 'abort') {
         return;
       }
-      this._interceptResolutionState.strategy = 'respond';
+      this._interceptResolutionState.action = 'respond';
     }
   }
 
@@ -598,7 +598,7 @@ export class HTTPRequest {
       priority >= this._interceptResolutionState.priority ||
       this._interceptResolutionState.priority === undefined
     ) {
-      this._interceptResolutionState = { strategy: 'abort', priority };
+      this._interceptResolutionState = { action: 'abort', priority };
       return;
     }
   }
@@ -619,13 +619,20 @@ export class HTTPRequest {
 /**
  * @public
  */
-export type InterceptResolutionStrategy =
+export type InterceptResolutionAction =
   | 'abort'
   | 'respond'
   | 'continue'
   | 'disabled'
   | 'none'
   | 'already-handled';
+
+/**
+ * @public
+ *
+ * Deprecate ASAP
+ */
+export type InterceptResolutionStrategy = InterceptResolutionAction;
 
 /**
  * @public
