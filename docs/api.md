@@ -2388,8 +2388,7 @@ Always assume that an unknown handler may have already called `abort/continue/re
 important to always check the resolution status using [request.isInterceptResolutionHandled](#httprequestisinterceptresolutionhandled) 
 before calling `abort/continue/respond`.
 
-Importantly, the intercept resolution may get handled while your handler is awaiting asynchronous operations. Therefore, `request.isInterceptResolutionHandled` must be run **synchronously** before calling `abort/continue/respond` since the return value may change
-while awaiting asynchronous operations to resolve. Always check it synchronously before calling `abort/continue/respond`.
+Importantly, the intercept resolution may get handled by another listener while your handler is awaiting an asynchronous operation. Therefore, the return value of `request.isInterceptResolutionHandled` is only safe in a synchronous code block. Always execute `request.isInterceptResolutionHandled` and `abort/continue/respond` **synchronously** together.
 
 This example demonstrates two synchronous handlers working together:
 
