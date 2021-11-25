@@ -2513,7 +2513,7 @@ In this example, Legacy Mode prevails and the request is aborted immediately bec
 // Final outcome: immediate abort()
 page.setRequestInterception(true);
 page.on('request', (request) => {
-  if(request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return
 
 // Legacy Mode: interception is aborted immediately.
   request.abort('failed');
