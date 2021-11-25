@@ -217,10 +217,10 @@ export class HTTPRequest {
 
   /**
    * @returns An InterceptResolutionState object describing the current resolution
-   *  strategy and priority.
+   *  action and priority.
    *
    *  InterceptResolutionState contains:
-   *    strategy: InterceptResolutionAction
+   *    action: InterceptResolutionAction
    *    priority?: number
    *
    *  InterceptResolutionAction is one of: `abort`, `respond`, `continue`,
@@ -261,8 +261,8 @@ export class HTTPRequest {
       (promiseChain, interceptAction) => promiseChain.then(interceptAction),
       Promise.resolve()
     );
-    const { action: strategy } = this.interceptResolutionState();
-    switch (strategy) {
+    const { action } = this.interceptResolutionState();
+    switch (action) {
       case 'abort':
         return this._abort(this._abortErrorReason);
       case 'respond':
