@@ -2619,7 +2619,7 @@ If you are package maintainer and your package uses intercept handlers, you can 
 
 ```ts
 page.on('request', (interceptedRequest) => {
-  if(request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return
   if (
     interceptedRequest.url().endsWith('.png') ||
     interceptedRequest.url().endsWith('.jpg')
@@ -2633,7 +2633,7 @@ To use Cooperative Mode, upgrade `continue()` and `abort()`:
 
 ```ts
 page.on('request', (interceptedRequest) => {
-  if(request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return
   if (
     interceptedRequest.url().endsWith('.png') ||
     interceptedRequest.url().endsWith('.jpg')
@@ -2665,7 +2665,7 @@ export const setInterceptResolutionConfig = (priority = 0) =>
   (_priority = priority);
 
 page.on('request', (interceptedRequest) => {
-  if(request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return
   if (
     interceptedRequest.url().endsWith('.png') ||
     interceptedRequest.url().endsWith('.jpg')
@@ -2702,7 +2702,7 @@ export const setInterceptResolutionConfig = (config: InterceptResolutionConfig) 
   (_config = { ...DEFAULT_CONFIG, ...config });
 
 page.on('request', (interceptedRequest) => {
-  if(request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return
   if (
     interceptedRequest.url().endsWith('.png') ||
     interceptedRequest.url().endsWith('.jpg')
@@ -4902,7 +4902,9 @@ Exception is immediately thrown if the request interception is not enabled.
 ```js
 await page.setRequestInterception(true);
 page.on('request', (request) => {
-  // Override headers
+  if (request.isInterceptResolutionHandled()) return;
+
+// Override headers
   const headers = Object.assign({}, request.headers(), {
     foo: 'bar', // set "foo" header
     origin: undefined, // remove "origin" header
@@ -5076,6 +5078,8 @@ An example of fulfilling all requests with 404 responses:
 ```js
 await page.setRequestInterception(true);
 page.on('request', (request) => {
+  if (request.isInterceptResolutionHandled()) return;
+
   request.respond({
     status: 404,
     contentType: 'text/plain',
