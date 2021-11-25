@@ -183,6 +183,7 @@
   * [page.setRequestInterception(value)](#pagesetrequestinterceptionvalue)
     - [Multiple Intercept Handlers and Asynchronous Resolutions](#multiple-intercept-handlers-and-asynchronous-resolutions)
     - [Cooperative Intercept Mode](#cooperative-intercept-mode)
+    - [Discussion: Cooperative request continuation](#discussion-cooperative-request-continuation)
     - [Upgrading to Cooperative Intercept Mode for package maintainers](#upgrading-to-cooperative-intercept-mode-for-package-maintainers)
   * [page.setUserAgent(userAgent[, userAgentMetadata])](#pagesetuseragentuseragent-useragentmetadata)
   * [page.setViewport(viewport)](#pagesetviewportviewport)
@@ -2613,7 +2614,7 @@ page.on('request', (request) => {
 });
 ```
 
-##### Discussion: Cooperative reuest continuation
+##### Discussion: Cooperative Request Continuation
 
 Puppeteer requires `request.continue` to be called explicitly or the request will hang. Even if
 your handler means to take no special action, ou 'opt out', `request.continue` must still be called. 
