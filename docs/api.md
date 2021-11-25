@@ -2744,7 +2744,7 @@ page.on('request', (interceptedRequest) => {
 });
 ```
 
-The above solutions ensures backward compatibility while also allowing the user to adjust the importance of your package in the resolution chain when Cooperative Intercept Mode is being used. Your package continues to work as expected until the user has fully upgraded their code and all third party packages to use Cooperative Intercept Mode. If any handler or package still uses Legacy Mode, your package can still operate in Legacy Mode too.
+The above solutions ensure backward compatibility while also allowing the user to adjust the importance of your package in the resolution chain when Cooperative Intercept Mode is being used. Your package continues to work as expected until the user has fully upgraded their code and all third party packages to use Cooperative Intercept Mode. If any handler or package still uses Legacy Mode, your package can still operate in Legacy Mode too.
 
 #### page.setUserAgent(userAgent[, userAgentMetadata])
 
