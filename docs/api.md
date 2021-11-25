@@ -2423,7 +2423,7 @@ page.on('request', (interceptedRequest) => {
   if (interceptedRequest.isInterceptResolutionHandled()) return;
 
   // It is not strictly necessary to return a promise, but doing so will allow Puppeteer to await this handler.
-  return new Promise( resolve => {
+  return new Promise(resolve => {
     // Continue after 500ms
     setTimeout(() => {
       // Inside, check synchronously to verify that the intercept wasn't handled already.
@@ -2463,7 +2463,7 @@ page.on('request', (interceptedRequest) => {
   if (action === 'already-handled') return;
 
   // It is not strictly necessary to return a promise, but doing so will allow Puppeteer to await this handler.
-  return new Promise( resolve=> {
+  return new Promise(resolve => {
     // Continue after 500ms
     setTimeout(() => {
       // Inside, check synchronously to verify that the intercept wasn't handled already.
