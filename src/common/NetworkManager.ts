@@ -112,11 +112,11 @@ export class NetworkManager extends EventEmitter {
    *     `_onRequestPaused`, `_onRequestWillBeSent`, `_onRequestPaused`, ...
    *     (see crbug.com/1196004)
    */
-  _requestIdToRequestWillBeSentEvent = new Map<
+  _networkRequestIdToRequestWillBeSentEvent = new Map<
     string,
     Protocol.Network.RequestWillBeSentEvent
   >();
-  _requestIdToRequestPausedEvent = new Map<
+  _networkRequestIdToRequestPausedEvent = new Map<
     string,
     Protocol.Fetch.RequestPausedEvent
   >();
@@ -131,18 +131,18 @@ export class NetworkManager extends EventEmitter {
    * handle redirects, we have to make them Arrays to represent the chain of
    * events.
    */
-  _requestIdToResponseReceivedExtraInfo = new Map<
+  _networkRequestIdToResponseReceivedExtraInfo = new Map<
     string,
     Protocol.Network.ResponseReceivedExtraInfoEvent[]
   >();
-  _requestIdToQueuedRedirectInfoMap = new Map<
+  _networkRequestIdToQueuedRedirectInfoMap = new Map<
     string,
     Array<{
       event: Protocol.Network.RequestWillBeSentEvent;
       interceptionId?: string;
     }>
   >();
-  _requestIdToQueuedEvents = new Map<
+  _networkRequestIdToQueuedEvents = new Map<
     string,
     {
       responseReceived: Protocol.Network.ResponseReceivedEvent;
@@ -322,21 +322,28 @@ export class NetworkManager extends EventEmitter {
   }
 
   _onRequestWillBeSent(event: Protocol.Network.RequestWillBeSentEvent): void {
+    // console.log(`Network.requestWillBeSent`, { event });
     // Request interception doesn't happen for data URLs with Network Service.
     if (
       this._userRequestInterceptionEnabled &&
       !event.request.url.startsWith('data:')
     ) {
-      const requestId = event.requestId;
+      const { requestId: networkRequestId } = event;
+
+      this._networkRequestIdToRequestWillBeSentEvent.set(
+        networkRequestId,
+        event
+      );
+
+      /**
+       * CDP may have sent a Fetch.requestPaused event already. Check for it.
+       */
       const requestPausedEvent =
-        this._requestIdToRequestPausedEvent.get(requestId);
-
-      this._requestIdToRequestWillBeSentEvent.set(requestId, event);
-
+        this._networkRequestIdToRequestPausedEvent.get(networkRequestId);
       if (requestPausedEvent) {
-        const interceptionId = requestPausedEvent.requestId;
-        this._onRequest(event, interceptionId);
-        this._requestIdToRequestPausedEvent.delete(requestId);
+        const { requestId: fetchRequestId } = requestPausedEvent;
+        this._onRequest(event, fetchRequestId);
+        this._networkRequestIdToRequestPausedEvent.delete(networkRequestId);
       }
 
       return;
@@ -369,10 +376,10 @@ export class NetworkManager extends EventEmitter {
   }
 
   _onRequestPaused(event: Protocol.Fetch.RequestPausedEvent): void {
-    const requestId = event.networkId;
-    const interceptionId = event.requestId;
+    // console.log(`Fetch.requestPaused`, { event });
+    const { networkId: networkRequestId, requestId: fetchRequestId } = event;
 
-    if (!requestId) {
+    if (!networkRequestId) {
       return;
     }
 
@@ -387,7 +394,7 @@ export class NetworkManager extends EventEmitter {
      */
     const requestWillBeSentEvent = (() => {
       const requestWillBeSentEvent =
-        this._requestIdToRequestWillBeSentEvent.get(requestId);
+        this._networkRequestIdToRequestWillBeSentEvent.get(networkRequestId);
 
       // redirect requests have the same `requestId`,
       if (
@@ -395,36 +402,36 @@ export class NetworkManager extends EventEmitter {
         (requestWillBeSentEvent.request.url !== event.request.url ||
           requestWillBeSentEvent.request.method !== event.request.method)
       ) {
-        this._requestIdToRequestWillBeSentEvent.delete(requestId);
+        this._networkRequestIdToRequestWillBeSentEvent.delete(networkRequestId);
         return;
       }
       return requestWillBeSentEvent;
     })();
 
     if (requestWillBeSentEvent) {
-      this._onRequest(requestWillBeSentEvent, interceptionId);
+      this._onRequest(requestWillBeSentEvent, fetchRequestId);
     } else {
-      this._requestIdToRequestPausedEvent.set(requestId, event);
+      this._networkRequestIdToRequestPausedEvent.set(networkRequestId, event);
     }
   }
 
-  _requestIdToQueuedRedirectInfo(requestId: string): Array<{
+  _networkRequestIdToQueuedRedirectInfo(requestId: string): Array<{
     event: Protocol.Network.RequestWillBeSentEvent;
     interceptionId?: string;
   }> {
-    if (!this._requestIdToQueuedRedirectInfoMap.has(requestId)) {
-      this._requestIdToQueuedRedirectInfoMap.set(requestId, []);
+    if (!this._networkRequestIdToQueuedRedirectInfoMap.has(requestId)) {
+      this._networkRequestIdToQueuedRedirectInfoMap.set(requestId, []);
     }
-    return this._requestIdToQueuedRedirectInfoMap.get(requestId);
+    return this._networkRequestIdToQueuedRedirectInfoMap.get(requestId);
   }
 
-  _requestIdToResponseExtraInfo(
+  _networkRequestIdToResponseExtraInfo(
     requestId: string
   ): Protocol.Network.ResponseReceivedExtraInfoEvent[] {
-    if (!this._requestIdToResponseReceivedExtraInfo.has(requestId)) {
-      this._requestIdToResponseReceivedExtraInfo.set(requestId, []);
+    if (!this._networkRequestIdToResponseReceivedExtraInfo.has(requestId)) {
+      this._networkRequestIdToResponseReceivedExtraInfo.set(requestId, []);
     }
-    return this._requestIdToResponseReceivedExtraInfo.get(requestId);
+    return this._networkRequestIdToResponseReceivedExtraInfo.get(requestId);
   }
 
   _onRequest(
@@ -442,11 +449,11 @@ export class NetworkManager extends EventEmitter {
       // response/requestfinished.
       let redirectResponseExtraInfo = null;
       if (event.redirectHasExtraInfo) {
-        redirectResponseExtraInfo = this._requestIdToResponseExtraInfo(
+        redirectResponseExtraInfo = this._networkRequestIdToResponseExtraInfo(
           event.requestId
         ).shift();
         if (!redirectResponseExtraInfo) {
-          this._requestIdToQueuedRedirectInfo(event.requestId).push({
+          this._networkRequestIdToQueuedRedirectInfo(event.requestId).push({
             event,
             interceptionId,
           });
@@ -519,7 +526,7 @@ export class NetworkManager extends EventEmitter {
     // FileUpload sends a response without a matching request.
     if (!request) return;
 
-    const extraInfos = this._requestIdToResponseExtraInfo(
+    const extraInfos = this._networkRequestIdToResponseExtraInfo(
       responseReceived.requestId
     );
     if (extraInfos.length) {
@@ -542,12 +549,14 @@ export class NetworkManager extends EventEmitter {
     const request = this._requestIdToRequest.get(event.requestId);
     let extraInfo = null;
     if (request && !request._fromMemoryCache && event.hasExtraInfo) {
-      extraInfo = this._requestIdToResponseExtraInfo(event.requestId).shift();
+      extraInfo = this._networkRequestIdToResponseExtraInfo(
+        event.requestId
+      ).shift();
       if (!extraInfo) {
         // Wait until we get the corresponding ExtraInfo event.
         let resolver = null;
         const promise = new Promise<void>((resolve) => (resolver = resolve));
-        this._requestIdToQueuedEvents.set(event.requestId, {
+        this._networkRequestIdToQueuedEvents.set(event.requestId, {
           responseReceived: event,
           promise,
           resolver,
@@ -559,7 +568,8 @@ export class NetworkManager extends EventEmitter {
   }
 
   responseWaitingForExtraInfoPromise(requestId: string): Promise<void> {
-    const responseReceived = this._requestIdToQueuedEvents.get(requestId);
+    const responseReceived =
+      this._networkRequestIdToQueuedEvents.get(requestId);
     if (!responseReceived) return Promise.resolve();
     return responseReceived.promise;
   }
@@ -570,18 +580,20 @@ export class NetworkManager extends EventEmitter {
     // We may have skipped a redirect response/request pair due to waiting for
     // this ExtraInfo event. If so, continue that work now that we have the
     // request.
-    const redirectInfo = this._requestIdToQueuedRedirectInfo(
+    const redirectInfo = this._networkRequestIdToQueuedRedirectInfo(
       event.requestId
     ).shift();
     if (redirectInfo) {
-      this._requestIdToResponseExtraInfo(event.requestId).push(event);
+      this._networkRequestIdToResponseExtraInfo(event.requestId).push(event);
       this._onRequest(redirectInfo.event, redirectInfo.interceptionId);
       return;
     }
 
     // We may have skipped response and loading events because we didn't have
     // this ExtraInfo event yet. If so, emit those events now.
-    const queuedEvents = this._requestIdToQueuedEvents.get(event.requestId);
+    const queuedEvents = this._networkRequestIdToQueuedEvents.get(
+      event.requestId
+    );
     if (queuedEvents) {
       this._emitResponseEvent(queuedEvents.responseReceived, event);
       if (queuedEvents.loadingFinished) {
@@ -595,7 +607,7 @@ export class NetworkManager extends EventEmitter {
     }
 
     // Wait until we get another event that can use this ExtraInfo event.
-    this._requestIdToResponseExtraInfo(event.requestId).push(event);
+    this._networkRequestIdToResponseExtraInfo(event.requestId).push(event);
   }
 
   _forgetRequest(request: HTTPRequest, events: boolean): void {
@@ -606,18 +618,20 @@ export class NetworkManager extends EventEmitter {
     this._attemptedAuthentications.delete(interceptionId);
 
     if (events) {
-      this._requestIdToRequestWillBeSentEvent.delete(requestId);
-      this._requestIdToRequestPausedEvent.delete(requestId);
-      this._requestIdToQueuedEvents.delete(requestId);
-      this._requestIdToQueuedRedirectInfoMap.delete(requestId);
-      this._requestIdToResponseReceivedExtraInfo.delete(requestId);
+      this._networkRequestIdToRequestWillBeSentEvent.delete(requestId);
+      this._networkRequestIdToRequestPausedEvent.delete(requestId);
+      this._networkRequestIdToQueuedEvents.delete(requestId);
+      this._networkRequestIdToQueuedRedirectInfoMap.delete(requestId);
+      this._networkRequestIdToResponseReceivedExtraInfo.delete(requestId);
     }
   }
 
   _onLoadingFinished(event: Protocol.Network.LoadingFinishedEvent): void {
     // If the response event for this request is still waiting on a
     // corresponding ExtraInfo event, then wait to emit this event too.
-    const queuedEvents = this._requestIdToQueuedEvents.get(event.requestId);
+    const queuedEvents = this._networkRequestIdToQueuedEvents.get(
+      event.requestId
+    );
     if (queuedEvents) {
       queuedEvents.loadingFinished = event;
     } else {
@@ -641,7 +655,9 @@ export class NetworkManager extends EventEmitter {
   _onLoadingFailed(event: Protocol.Network.LoadingFailedEvent): void {
     // If the response event for this request is still waiting on a
     // corresponding ExtraInfo event, then wait to emit this event too.
-    const queuedEvents = this._requestIdToQueuedEvents.get(event.requestId);
+    const queuedEvents = this._networkRequestIdToQueuedEvents.get(
+      event.requestId
+    );
     if (queuedEvents) {
       queuedEvents.loadingFailed = event;
     } else {
