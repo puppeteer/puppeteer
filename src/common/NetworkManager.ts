@@ -377,6 +377,17 @@ export class NetworkManager extends EventEmitter {
 
   _onRequestPaused(event: Protocol.Fetch.RequestPausedEvent): void {
     // console.log(`Fetch.requestPaused`, { event });
+    if (
+      !this._userRequestInterceptionEnabled &&
+      this._protocolRequestInterceptionEnabled
+    ) {
+      this._client
+        .send('Fetch.continueRequest', {
+          requestId: event.requestId,
+        })
+        .catch(debugError);
+    }
+
     const { networkId: networkRequestId, requestId: fetchRequestId } = event;
 
     if (!networkRequestId) {
