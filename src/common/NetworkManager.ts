@@ -308,6 +308,15 @@ export class NetworkManager extends EventEmitter {
       .catch(debugError);
   }
 
+  /**
+   * CDP may send a Fetch.requestPaused without or before a
+   * Network.requestWillBeSent
+   *
+   * CDP may send multiple Fetch.requestPaused
+   * for the same Network.requestWillBeSent.
+   *
+   *
+   */
   _onRequestPaused(event: Protocol.Fetch.RequestPausedEvent): void {
     if (
       !this._userRequestInterceptionEnabled &&
@@ -326,15 +335,6 @@ export class NetworkManager extends EventEmitter {
       return;
     }
 
-    /**
-     * CDP may send a Fetch.requestPaused without or before a
-     * Network.requestWillBeSent
-     *
-     * CDP may send multiple Fetch.requestPaused
-     * for the same Network.requestWillBeSent.
-     *
-     *
-     */
     const requestWillBeSentEvent = (() => {
       const requestWillBeSentEvent =
         this._networkRequestIdEventMap.requestWillBeSent.get(networkRequestId);
