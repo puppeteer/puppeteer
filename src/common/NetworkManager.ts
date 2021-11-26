@@ -87,7 +87,8 @@ export class NetworkManager extends EventEmitter {
    *  A. `_onRequestWillBeSent`
    *  B. `_onRequestWillBeSent`, `_onRequestPaused`
    *  C. `_onRequestPaused`, `_onRequestWillBeSent`
-   *  D. `_onRequestPaused`, `_onRequestWillBeSent`, `_onRequestPaused`
+   *  D. `_onRequestPaused`, `_onRequestWillBeSent`, `_onRequestPaused`,
+   *     `_onRequestWillBeSent`, `_onRequestPaused`, `_onRequestPaused`
    *     (see crbug.com/1196004)
    *
    * For `_onRequest` we need the event from `_onRequestWillBeSent` and
@@ -109,7 +110,8 @@ export class NetworkManager extends EventEmitter {
    *  C. `_onRequestWillBeSent`, `_onRequestPaused`,
    *     `_onRequestPaused`, `_onRequestWillBeSent`, ...
    *  D. `_onRequestPaused`, `_onRequestWillBeSent`,
-   *     `_onRequestPaused`, `_onRequestWillBeSent`, `_onRequestPaused`, ...
+   *     `_onRequestPaused`, `_onRequestWillBeSent`, `_onRequestPaused`,
+   *     `_onRequestWillBeSent`, `_onRequestPaused`, `_onRequestPaused`, ...
    *     (see crbug.com/1196004)
    */
   _networkRequestIdToRequestWillBeSentEvent = new Map<
