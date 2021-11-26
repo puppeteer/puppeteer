@@ -1,6 +1,6 @@
 {
   "name": "puppeteer",
-  "version": "11.0.0-post",
+  "version": "12.0.0",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "main": "./cjs-entry.js",
   "types": "lib/types.d.ts",
