@@ -376,22 +376,33 @@ export class NetworkManager extends EventEmitter {
       return;
     }
 
-    let requestWillBeSentEvent =
-      this._requestIdToRequestWillBeSentEvent.get(requestId);
+    /**
+     * CDP may send a Fetch.requestPaused without or before a
+     * Network.requestWillBeSent
+     *
+     * CDP may send multiple Fetch.requestPaused
+     * for the same Network.requestWillBeSent.
+     *
+     *
+     */
+    const requestWillBeSentEvent = (() => {
+      const requestWillBeSentEvent =
+        this._requestIdToRequestWillBeSentEvent.get(requestId);
 
-    // redirect requests have the same `requestId`,
-    if (
-      requestWillBeSentEvent &&
-      (requestWillBeSentEvent.request.url !== event.request.url ||
-        requestWillBeSentEvent.request.method !== event.request.method)
-    ) {
-      this._requestIdToRequestWillBeSentEvent.delete(requestId);
-      requestWillBeSentEvent = null;
-    }
+      // redirect requests have the same `requestId`,
+      if (
+        requestWillBeSentEvent &&
+        (requestWillBeSentEvent.request.url !== event.request.url ||
+          requestWillBeSentEvent.request.method !== event.request.method)
+      ) {
+        this._requestIdToRequestWillBeSentEvent.delete(requestId);
+        return;
+      }
+      return requestWillBeSentEvent;
+    })();
 
     if (requestWillBeSentEvent) {
       this._onRequest(requestWillBeSentEvent, interceptionId);
-      this._requestIdToRequestWillBeSentEvent.delete(requestId);
     } else {
       this._requestIdToRequestPausedEvent.set(requestId, event);
     }
