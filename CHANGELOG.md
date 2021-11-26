@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [12.0.0](https://github.com/puppeteer/puppeteer/compare/v11.0.0...v12.0.0) (2021-11-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chromium:** roll to Chromium 97.0.4692.0 (r938248)
+
+### Features
+
+* **chromium:** roll to Chromium 97.0.4692.0 (r938248) ([ac162c5](https://github.com/puppeteer/puppeteer/commit/ac162c561ee43dd69eff38e1b354a41bb42c9eba)), closes [#7458](https://github.com/puppeteer/puppeteer/issues/7458)
+* support for custom user data (profile) directory for Firefox ([#7684](https://github.com/puppeteer/puppeteer/issues/7684)) ([790c7a0](https://github.com/puppeteer/puppeteer/commit/790c7a0eb92291efebaa37e80c72f5cb5f46bbdb))
+
+
+### Bug Fixes
+
+* **ariaqueryhandler:** allow single quotes in aria attribute selector ([#7750](https://github.com/puppeteer/puppeteer/issues/7750)) ([b0319ec](https://github.com/puppeteer/puppeteer/commit/b0319ecc89f8ea3d31ab9aee5e1cd33d2a4e62be)), closes [#7721](https://github.com/puppeteer/puppeteer/issues/7721)
+* clearer jsdoc for behavior of `headless` when `devtools` is true ([#7748](https://github.com/puppeteer/puppeteer/issues/7748)) ([9f9b4ed](https://github.com/puppeteer/puppeteer/commit/9f9b4ed72ab0bb43d002a0024122d6f5eab231aa))
+* null check for frame in FrameManager ([#7773](https://github.com/puppeteer/puppeteer/issues/7773)) ([23ee295](https://github.com/puppeteer/puppeteer/commit/23ee295f348d114617f2a86d0bb792936f413ac5)), closes [#7749](https://github.com/puppeteer/puppeteer/issues/7749)
+* only kill the process when there is no browser instance available ([#7762](https://github.com/puppeteer/puppeteer/issues/7762)) ([51e6169](https://github.com/puppeteer/puppeteer/commit/51e61696c1c20cc09bd4fc068ae1dfa259c41745)), closes [#7668](https://github.com/puppeteer/puppeteer/issues/7668)
+* parse statusText from the extraInfo event ([#7798](https://github.com/puppeteer/puppeteer/issues/7798)) ([a26b12b](https://github.com/puppeteer/puppeteer/commit/a26b12b7c775c36271cd4c98e39bbd59f4356320)), closes [#7458](https://github.com/puppeteer/puppeteer/issues/7458)
+* try to remove the temporary user data directory after the process has been killed ([#7761](https://github.com/puppeteer/puppeteer/issues/7761)) ([fc94a28](https://github.com/puppeteer/puppeteer/commit/fc94a28778cfdb3cb8bcd882af3ebcdacf85c94e))
+
 ## [11.0.0](https://github.com/puppeteer/puppeteer/compare/v10.4.0...v11.0.0) (2021-11-02)
 
 
