@@ -1,17 +1,19 @@
 import { Protocol } from 'devtools-protocol';
 import { HTTPRequest } from './HTTPRequest.js';
 
-type QueuedEvents = {
+export type QueuedEvents = {
   responseReceived: Protocol.Network.ResponseReceivedEvent;
   promise: Promise<void>;
   resolver: () => void;
   loadingFinished?: Protocol.Network.LoadingFinishedEvent;
   loadingFailed?: Protocol.Network.LoadingFailedEvent;
 };
-type RedirectInfoMap = Array<{
+
+export type RedirectInfoMap = Array<{
   event: Protocol.Network.RequestWillBeSentEvent;
-  interceptionId?: string;
+  fetchRequestId?: string;
 }>;
+
 /**
  * @internal
  *
@@ -66,18 +68,34 @@ export class NetworkEventManager {
    * handle redirects, we have to make them Arrays to represent the chain of
    * events.
    */
-  responseReceivedExtraInfo = new Map<
+  private _responseReceivedExtraInfo = new Map<
     string,
     Protocol.Network.ResponseReceivedExtraInfoEvent[]
   >();
-  queuedRedirectInfoMap = new Map<string, RedirectInfoMap>();
+  private _queuedRedirectInfoMap = new Map<string, RedirectInfoMap>();
   queuedEvents = new Map<string, QueuedEvents>();
 
   forget(requestId: string): void {
     this.requestWillBeSent.delete(requestId);
     this.requestPaused.delete(requestId);
     this.queuedEvents.delete(requestId);
-    this.queuedRedirectInfoMap.delete(requestId);
-    this.responseReceivedExtraInfo.delete(requestId);
+    this._queuedRedirectInfoMap.delete(requestId);
+    this._responseReceivedExtraInfo.delete(requestId);
+  }
+
+  responseExtraInfo(
+    requestId: string
+  ): Protocol.Network.ResponseReceivedExtraInfoEvent[] {
+    if (!this._responseReceivedExtraInfo.has(requestId)) {
+      this._responseReceivedExtraInfo.set(requestId, []);
+    }
+    return this._responseReceivedExtraInfo.get(requestId);
+  }
+
+  queuedRedirectInfo(requestId: string): RedirectInfoMap {
+    if (!this._queuedRedirectInfoMap.has(requestId)) {
+      this._queuedRedirectInfoMap.set(requestId, []);
+    }
+    return this._queuedRedirectInfoMap.get(requestId);
   }
 }

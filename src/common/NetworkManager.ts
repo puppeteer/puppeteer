@@ -360,35 +360,9 @@ export class NetworkManager extends EventEmitter {
     }
   }
 
-  _networkRequestIdToQueuedRedirectInfo(requestId: string): Array<{
-    event: Protocol.Network.RequestWillBeSentEvent;
-    interceptionId?: string;
-  }> {
-    if (!this._networkRequestIdEventMap.queuedRedirectInfoMap.has(requestId)) {
-      this._networkRequestIdEventMap.queuedRedirectInfoMap.set(requestId, []);
-    }
-    return this._networkRequestIdEventMap.queuedRedirectInfoMap.get(requestId);
-  }
-
-  _networkRequestIdToResponseExtraInfo(
-    requestId: string
-  ): Protocol.Network.ResponseReceivedExtraInfoEvent[] {
-    if (
-      !this._networkRequestIdEventMap.responseReceivedExtraInfo.has(requestId)
-    ) {
-      this._networkRequestIdEventMap.responseReceivedExtraInfo.set(
-        requestId,
-        []
-      );
-    }
-    return this._networkRequestIdEventMap.responseReceivedExtraInfo.get(
-      requestId
-    );
-  }
-
   _onRequest(
     event: Protocol.Network.RequestWillBeSentEvent,
-    interceptionId?: string
+    fetchRequestId?: string
   ): void {
     let redirectChain = [];
     if (event.redirectResponse) {
@@ -401,14 +375,16 @@ export class NetworkManager extends EventEmitter {
       // response/requestfinished.
       let redirectResponseExtraInfo = null;
       if (event.redirectHasExtraInfo) {
-        redirectResponseExtraInfo = this._networkRequestIdToResponseExtraInfo(
-          event.requestId
-        ).shift();
+        redirectResponseExtraInfo = this._networkRequestIdEventMap
+          .responseExtraInfo(event.requestId)
+          .shift();
         if (!redirectResponseExtraInfo) {
-          this._networkRequestIdToQueuedRedirectInfo(event.requestId).push({
-            event,
-            interceptionId,
-          });
+          this._networkRequestIdEventMap
+            .queuedRedirectInfo(event.requestId)
+            .push({
+              event,
+              fetchRequestId,
+            });
           return;
         }
       }
@@ -433,7 +409,7 @@ export class NetworkManager extends EventEmitter {
     const request = new HTTPRequest(
       this._client,
       frame,
-      interceptionId,
+      fetchRequestId,
       this._userRequestInterceptionEnabled,
       event,
       redirectChain
@@ -484,7 +460,7 @@ export class NetworkManager extends EventEmitter {
     // FileUpload sends a response without a matching request.
     if (!request) return;
 
-    const extraInfos = this._networkRequestIdToResponseExtraInfo(
+    const extraInfos = this._networkRequestIdEventMap.responseExtraInfo(
       responseReceived.requestId
     );
     if (extraInfos.length) {
@@ -509,9 +485,9 @@ export class NetworkManager extends EventEmitter {
     );
     let extraInfo = null;
     if (request && !request._fromMemoryCache && event.hasExtraInfo) {
-      extraInfo = this._networkRequestIdToResponseExtraInfo(
-        event.requestId
-      ).shift();
+      extraInfo = this._networkRequestIdEventMap
+        .responseExtraInfo(event.requestId)
+        .shift();
       if (!extraInfo) {
         // Wait until we get the corresponding ExtraInfo event.
         let resolver = null;
@@ -540,12 +516,14 @@ export class NetworkManager extends EventEmitter {
     // We may have skipped a redirect response/request pair due to waiting for
     // this ExtraInfo event. If so, continue that work now that we have the
     // request.
-    const redirectInfo = this._networkRequestIdToQueuedRedirectInfo(
-      event.requestId
-    ).shift();
+    const redirectInfo = this._networkRequestIdEventMap
+      .queuedRedirectInfo(event.requestId)
+      .shift();
     if (redirectInfo) {
-      this._networkRequestIdToResponseExtraInfo(event.requestId).push(event);
-      this._onRequest(redirectInfo.event, redirectInfo.interceptionId);
+      this._networkRequestIdEventMap
+        .responseExtraInfo(event.requestId)
+        .push(event);
+      this._onRequest(redirectInfo.event, redirectInfo.fetchRequestId);
       return;
     }
 
@@ -567,7 +545,9 @@ export class NetworkManager extends EventEmitter {
     }
 
     // Wait until we get another event that can use this ExtraInfo event.
-    this._networkRequestIdToResponseExtraInfo(event.requestId).push(event);
+    this._networkRequestIdEventMap
+      .responseExtraInfo(event.requestId)
+      .push(event);
   }
 
   _forgetRequest(request: HTTPRequest, events: boolean): void {
