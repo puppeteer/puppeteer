@@ -78,8 +78,9 @@ export class HTTPResponse {
       ip: responsePayload.remoteIPAddress,
       port: responsePayload.remotePort,
     };
-    // TODO extract statusText from extraInfo.headersText instead if present
-    this._statusText = responsePayload.statusText;
+    this._statusText =
+      this._parseStatusTextFromExtrInfo(extraInfo) ||
+      responsePayload.statusText;
     this._url = request.url();
     this._fromDiskCache = !!responsePayload.fromDiskCache;
     this._fromServiceWorker = !!responsePayload.fromServiceWorker;
@@ -92,6 +93,22 @@ export class HTTPResponse {
     this._securityDetails = responsePayload.securityDetails
       ? new SecurityDetails(responsePayload.securityDetails)
       : null;
+  }
+
+  /**
+   * @internal
+   */
+  _parseStatusTextFromExtrInfo(
+    extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null
+  ): string | undefined {
+    if (!extraInfo || !extraInfo.headersText) return;
+    const firstLine = extraInfo.headersText.split('\r', 1)[0];
+    if (!firstLine) return;
+    const match = firstLine.match(/[^ ]* [^ ]* (.*)/);
+    if (!match) return;
+    const statusText = match[1];
+    if (!statusText) return;
+    return statusText;
   }
 
   /**
