@@ -180,7 +180,7 @@ export class HTTPRequest {
     this._frame = frame;
     this._redirectChain = redirectChain;
     this._continueRequestOverrides = {};
-    this._interceptResolutionState = { action: 'none' };
+    this._interceptResolutionState = { action: InterceptResolutionAction.None };
     this._interceptHandlers = [];
     this._initiator = event.initiator;
 
@@ -231,11 +231,13 @@ export class HTTPRequest {
    *    priority?: number
    *
    *  InterceptResolutionAction is one of: `abort`, `respond`, `continue`,
-   *  `disabled`, `none`, or `alreay-handled`.
+   *  `disabled`, `none`, or `already-handled`.
    */
   interceptResolutionState(): InterceptResolutionState {
-    if (!this._allowInterception) return { action: 'disabled' };
-    if (this._interceptionHandled) return { action: 'alreay-handled' };
+    if (!this._allowInterception)
+      return { action: InterceptResolutionAction.Disabled };
+    if (this._interceptionHandled)
+      return { action: InterceptResolutionAction.AlreadyHnadled };
     return { ...this._interceptResolutionState };
   }
 
@@ -441,7 +443,10 @@ export class HTTPRequest {
       priority > this._interceptResolutionState.priority ||
       this._interceptResolutionState.priority === undefined
     ) {
-      this._interceptResolutionState = { action: 'continue', priority };
+      this._interceptResolutionState = {
+        action: InterceptResolutionAction.Continue,
+        priority,
+      };
       return;
     }
     if (priority === this._interceptResolutionState.priority) {
@@ -451,7 +456,8 @@ export class HTTPRequest {
       ) {
         return;
       }
-      this._interceptResolutionState.action = 'continue';
+      this._interceptResolutionState.action =
+        InterceptResolutionAction.Continue;
     }
     return;
   }
@@ -527,14 +533,17 @@ export class HTTPRequest {
       priority > this._interceptResolutionState.priority ||
       this._interceptResolutionState.priority === undefined
     ) {
-      this._interceptResolutionState = { action: 'respond', priority };
+      this._interceptResolutionState = {
+        action: InterceptResolutionAction.Respond,
+        priority,
+      };
       return;
     }
     if (priority === this._interceptResolutionState.priority) {
       if (this._interceptResolutionState.action === 'abort') {
         return;
       }
-      this._interceptResolutionState.action = 'respond';
+      this._interceptResolutionState.action = InterceptResolutionAction.Respond;
     }
   }
 
@@ -605,7 +614,10 @@ export class HTTPRequest {
       priority >= this._interceptResolutionState.priority ||
       this._interceptResolutionState.priority === undefined
     ) {
-      this._interceptResolutionState = { action: 'abort', priority };
+      this._interceptResolutionState = {
+        action: InterceptResolutionAction.Abort,
+        priority,
+      };
       return;
     }
   }
@@ -626,13 +638,14 @@ export class HTTPRequest {
 /**
  * @public
  */
-export type InterceptResolutionAction =
-  | 'abort'
-  | 'respond'
-  | 'continue'
-  | 'disabled'
-  | 'none'
-  | 'alreay-handled';
+export enum InterceptResolutionAction {
+  Abort = 'abort',
+  Respond = 'respond',
+  Continue = 'continue',
+  Disabled = 'disabled',
+  None = 'none',
+  AlreadyHnadled = 'already-handled',
+}
 
 /**
  * @public
