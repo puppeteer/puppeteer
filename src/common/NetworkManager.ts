@@ -512,7 +512,7 @@ export class NetworkManager extends EventEmitter {
 
   _emitResponseEvent(
     responseReceived: Protocol.Network.ResponseReceivedEvent,
-    extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent
+    extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null
   ): void {
     const request = this._requestIdToRequest.get(responseReceived.requestId);
     // FileUpload sends a response without a matching request.
@@ -522,8 +522,11 @@ export class NetworkManager extends EventEmitter {
       responseReceived.requestId
     );
     if (extraInfos.length) {
-      throw new Error(
-        'Unexpected extraInfo events for request ' + responseReceived.requestId
+      debugError(
+        new Error(
+          'Unexpected extraInfo events for request ' +
+            responseReceived.requestId
+        )
       );
     }
 
