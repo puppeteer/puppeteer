@@ -845,7 +845,7 @@ describe('request interception', function () {
         'Yo, page!'
       );
     });
-    it('should indicate already-handled if an intercept has been handled', async () => {
+    it('should indicate alreay-handled if an intercept has been handled', async () => {
       const { page, server } = getTestState();
 
       await page.setRequestInterception(true);
@@ -857,7 +857,7 @@ describe('request interception', function () {
       });
       page.on('request', (request) => {
         const { action } = request.interceptResolutionState();
-        expect(action).toBe('already-handled');
+        expect(action).toBe('alreay-handled');
       });
       await page.goto(server.EMPTY_PAGE);
     });

@@ -2384,9 +2384,9 @@ const puppeteer = require('puppeteer');
 
 By default Puppeteer will raise a `Request is already handled!` exception if `request.abort`, `request.continue`, or `request.respond` are called after any of them have already been called.
 
-Always assume that an unknown handler may have already called `abort/continue/respond`. Even if your handler is the only one you registered, 
+Always assume that an unknown handler may have already called `abort/continue/respond`. Even if your handler is the only one you registered,
 3rd party packages may register their own handlers. It is therefore
-important to always check the resolution status using [request.isInterceptResolutionHandled](#httprequestisinterceptresolutionhandled) 
+important to always check the resolution status using [request.isInterceptResolutionHandled](#httprequestisinterceptresolutionhandled)
 before calling `abort/continue/respond`.
 
 Importantly, the intercept resolution may get handled by another listener while your handler is awaiting an asynchronous operation. Therefore, the return value of `request.isInterceptResolutionHandled` is only safe in a synchronous code block. Always execute `request.isInterceptResolutionHandled` and `abort/continue/respond` **synchronously** together.
@@ -2403,7 +2403,7 @@ page.on('request', (interceptedRequest) => {
 });
 
 /*
-This second handler will return before calling request.abort because request.continue was already 
+This second handler will return before calling request.abort because request.continue was already
 called by the first handler.
 */
 page.on('request', (interceptedRequest) => {
@@ -2456,11 +2456,13 @@ Here is the example above rewritten using `request.interceptResolutionState`
 ```js
 /*
 This first handler will succeed in calling request.continue because the request interception has never been resolved.
+
+Note: `alreay-handled` is misspelled but likely won't be fixed until v13. https://github.com/puppeteer/puppeteer/pull/7780
 */
 page.on('request', (interceptedRequest) => {
   // The interception has not been handled yet. Control will pass through this guard.
   const { action } = interceptedRequest.interceptResolutionState();
-  if (action === 'already-handled') return;
+  if (action === 'alreay-handled') return;
 
   // It is not strictly necessary to return a promise, but doing so will allow Puppeteer to await this handler.
   return new Promise(resolve => {
@@ -2469,7 +2471,7 @@ page.on('request', (interceptedRequest) => {
       // Inside, check synchronously to verify that the intercept wasn't handled already.
       // It might have been handled during the 500ms while the other handler awaited an async op of its own.
       const { action } = interceptedRequest.interceptResolutionState();
-      if (action === 'already-handled') {
+      if (action === 'alreay-handled') {
         resolve();
         return;
       };
@@ -2480,12 +2482,12 @@ page.on('request', (interceptedRequest) => {
 });
 page.on('request', async (interceptedRequest) => {
   // The interception has not been handled yet. Control will pass through this guard.
-  if (interceptedRequest.interceptResolutionState().action === 'already-handled') return;
+  if (interceptedRequest.interceptResolutionState().action === 'alreay-handled') return;
 
   await someLongAsyncOperation()
   // The interception *MIGHT* have been handled by the first handler, we can't be sure.
   // Therefore, we must check again before calling continue() or we risk Puppeteer raising an exception.
-  if (interceptedRequest.interceptResolutionState().action === 'already-handled') return;
+  if (interceptedRequest.interceptResolutionState().action === 'alreay-handled') return;
   interceptedRequest.continue();
 });
 ```
@@ -2550,7 +2552,7 @@ page.on('request', (request) => {
   request.continue({});
 });
 page.on('request', (request) => {
-  // { action: 'already-handled' }, because continue in Legacy Mode was called
+  // { action: 'alreay-handled' }, because continue in Legacy Mode was called
   console.log(request.interceptResolutionState());
 });
 
@@ -2617,12 +2619,12 @@ page.on('request', (request) => {
 ##### Discussion: Cooperative Request Continuation
 
 Puppeteer requires `request.continue` to be called explicitly or the request will hang. Even if
-your handler means to take no special action, or 'opt out', `request.continue` must still be called. 
+your handler means to take no special action, or 'opt out', `request.continue` must still be called.
 
-With the introduction of Cooperative Intercept Mode, two use cases arise for cooperative request continuations: 
+With the introduction of Cooperative Intercept Mode, two use cases arise for cooperative request continuations:
 Unopinionated and Opinionated.
 
-The first case (common) is that your handler means to opt out of doing anything special the request. It has no opinion on further action and simply intends to continue by default and/or defer to other handlers that might have an opinion. But in case there are no other handlers, we must call `request.continue` to ensure that the request doesn't hang. 
+The first case (common) is that your handler means to opt out of doing anything special the request. It has no opinion on further action and simply intends to continue by default and/or defer to other handlers that might have an opinion. But in case there are no other handlers, we must call `request.continue` to ensure that the request doesn't hang.
 
 We call this an **Unopinionated continuation** because the intent is to continue the request if nobody else has a better idea. Use `request.continue({...}, DEFAULT_INTERCEPT_RESOLUTION_PRIORITY)` (or `0`) for this type of continuation.
 
@@ -2730,10 +2732,10 @@ page.on('request', (interceptedRequest) => {
   ) {
       interceptedRequest.abort('failed', _config.abortPriority);
     }
-  else 
+  else
     {
       // Here we use a custom-configured priority to allow for Opinionated
-      // continuation. 
+      // continuation.
       // We would only want to allow this if we had a very clear reason why
       // some use cases required Opinionated continuation.
       interceptedRequest.continue(
@@ -5002,7 +5004,7 @@ When in Cooperative Intercept Mode, awaits pending interception handlers and the
 
 - returns: <[InterceptResolutionState]>
   - `action` <[InterceptResolutionAction]> Current resolution action. Possible values: `abort`, `respond`, `continue`,
-    `disabled`, `none`, and `already-handled`
+    `disabled`, `none`, and `alreay-handled`
   - `priority` <?[number]> The current priority of the winning action.
 
 `InterceptResolutionAction` is one of:
@@ -5012,7 +5014,7 @@ When in Cooperative Intercept Mode, awaits pending interception handlers and the
 - `continue` - The request will be continued if no higher priority arises.
 - `disabled` - Request interception is not currently enabled (see `page.setRequestInterception`).
 - `none` - `abort/continue/respond` have not been called yet.
-- `already-handled` - The interception has already been handled in Legacy Mode by a call to `abort/continue/respond` with
+- `alreay-handled` - The interception has already been handled in Legacy Mode by a call to `abort/continue/respond` with
   a `priority` of `undefined`. Subsequent calls to `abort/continue/respond` will throw an exception.
 
 This example will `continue` a request at a slightly higher priority than the current action if the interception has not
@@ -5021,7 +5023,7 @@ already handled and is not already being continued.
 ```js
 page.on('request', (interceptedRequest) => {
   const { action, priority } = interceptedRequest.interceptResolutionState();
-  if (action === 'already-handled') return;
+  if (action === 'alreay-handled') return;
   if (action === 'continue') return;
 
   // Change the action to `continue` and bump the priority so `continue` becomes the new winner

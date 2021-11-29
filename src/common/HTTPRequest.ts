@@ -231,11 +231,11 @@ export class HTTPRequest {
    *    priority?: number
    *
    *  InterceptResolutionAction is one of: `abort`, `respond`, `continue`,
-   *  `disabled`, `none`, or `already-handled`.
+   *  `disabled`, `none`, or `alreay-handled`.
    */
   interceptResolutionState(): InterceptResolutionState {
     if (!this._allowInterception) return { action: 'disabled' };
-    if (this._interceptionHandled) return { action: 'already-handled' };
+    if (this._interceptionHandled) return { action: 'alreay-handled' };
     return { ...this._interceptResolutionState };
   }
 
@@ -632,7 +632,7 @@ export type InterceptResolutionAction =
   | 'continue'
   | 'disabled'
   | 'none'
-  | 'already-handled';
+  | 'alreay-handled';
 
 /**
  * @public
