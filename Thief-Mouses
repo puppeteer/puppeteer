@@ -1,0 +1,193 @@
+安装
+要在您的项目中使用 Puppeteer，请运行：
+
+npm i puppeteer
+ #或 "yarn add puppeteer"
+注意：当您安装 Puppeteer 时，它会下载保证与 API 一起使用的最新版本的 Chromium（~170MB Mac，~282MB Linux，~280MB Win）。要跳过下载、下载到另一个路径或下载不同的浏览器，请参阅环境变量。
+
+傀儡核心
+从 1.7.0 版本开始，我们发布了这个puppeteer-core包，一个默认不下载任何浏览器的 Puppeteer 版本。
+
+npm i puppeteer-core
+ #或“纱线添加 puppeteer-core”
+puppeteer-core旨在成为 Puppeteer 的轻量级版本，用于启动现有浏览器安装或连接到远程浏览器。确保您安装的 puppeteer-core 版本与您打算连接的浏览器兼容。
+
+请参阅puppeteer 与 puppeteer-core。
+
+用法
+Puppeteer 遵循 Node.js 的最新维护 LTS版本。
+
+注意：在 v1.18.1 之前，Puppeteer 至少需要 Node v6.4.0。从 v1.18.1 到 v2.1.0 的版本依赖于 Node 8.9.0+。从 v3.0.0 开始，Puppeteer 开始依赖 Node 10.18.1+。下面的所有示例都使用 async/await，它仅在 Node v7.6.0 或更高版本中受支持。
+
+使用其他浏览器测试框架的人会熟悉 Puppeteer。您创建一个 实例Browser，打开页面，然后使用Puppeteer 的 API操作它们。
+
+示例- 导航到https://example.com并将屏幕截图保存为example.png：
+
+将文件另存为example.js
+
+const  puppeteer  =  require ( 'puppeteer' ) ;
+
+（异步 （） =>  { 
+  const的 浏览器 =  AWAIT 木偶。发射（）; 
+  const的 页 =  AWAIT 浏览器。NEWPAGE （）; 
+  AWAIT 页。转到（'https://example.com' ）; 
+  AWAIT 页。截图（{ 路径: 'example.png'  } ) ;
+
+  等待 浏览器。关闭( ) ; 
+} ) ( ) ;
+在命令行执行脚本
+
+节点示例.js
+Puppeteer 将初始页面大小设置为 800×600px，它定义了屏幕截图的大小。可以使用 自定义页面大小Page.setViewport()。
+
+示例- 创建 PDF。
+
+将文件另存为hn.js
+
+const  puppeteer  =  require ( 'puppeteer' ) ;
+
+（异步 （） =>  { 
+  const的 浏览器 =  AWAIT 木偶。发射（）; 
+  const的 页 =  AWAIT 浏览器。NEWPAGE （）; 
+  AWAIT 页。转到（'https://news.ycombinator.com' ， {
+    最好推迟到：'networkidle2' ，
+  } ）; 
+  AWAIT 页。PDF （{ 路径：'hn.pdf' ， 格式：'a4'  } ) ;
+
+  等待 浏览器。关闭( ) ; 
+} ) ( ) ;
+在命令行执行脚本
+
+节点 hn.js
+Page.pdf()有关创建 pdf 的更多信息，请参见。
+
+示例- 在页面上下文中评估脚本
+
+将文件另存为get-dimensions.js
+
+const  puppeteer  =  require ( 'puppeteer' ) ;
+
+（异步 （） =>  { 
+  const的 浏览器 =  AWAIT 木偶。发射（）; 
+  const的 页 =  AWAIT 浏览器。NEWPAGE （）; 
+  AWAIT 页。转到（'https://example.com' ）;
+
+  // 获取页面的“视口”，如页面所报告的那样。
+  const 维度 = 等待 页面。评价（（） =>  {
+    返回 {
+      宽度：文件。documentElement 。clientWidth ，
+      高度：文件。documentElement 。clientHeight ，
+      deviceScaleFactor：窗口。devicePixelRatio ，
+    } ; 
+  } ）;
+
+  控制台。日志（'维度：' ， 维度）;
+
+  等待 浏览器。关闭( ) ; 
+} ) ( ) ;
+在命令行执行脚本
+
+节点获取维度.js
+有关和相关方法的Page.evaluate()更多信息，请参阅和。evaluateevaluateOnNewDocumentexposeFunction
+
+默认运行时设置
+
+1.使用无头模式
+
+Puppeteer 以无头模式启动 Chromium 。要启动完整版的 Chromium，请在启动浏览器时设置headless选项：
+
+const  browser  =  await  puppeteer 。发射（{ 无头：假 } ）； // 默认为真
+2. 运行捆绑版本的 Chromium
+
+默认情况下，Puppeteer 下载并使用特定版本的 Chromium，因此它的 API 可以保证开箱即用。要将 Puppeteer 与不同版本的 Chrome 或 Chromium 一起使用，请在创建Browser实例时传入可执行文件的路径：
+
+const  browser  =  await  puppeteer 。启动( {  executablePath : '/path/to/Chrome'  } ) ;
+您还可以将 Puppeteer 与 Firefox Nightly 一起使用（实验性支持）。请参阅Puppeteer.launch()以获取更多信息。
+
+有关this articleChromium 和 Chrome 之间差异的说明，请参阅。This article描述了 Linux 用户的一些差异。
+
+3. 创建一个新的用户配置文件
+
+Puppeteer 创建自己的浏览器用户配置文件，每次运行时都会对其进行清理。
+
+资源
+
+API 文档
+例子
+Puppeteer 资源社区列表
+调试提示
+
+关闭无头模式 - 有时查看浏览器显示的内容很有用。不要以无头模式启动，而是使用headless: false以下命令启动完整版本的浏览器：
+
+const  browser  =  await  puppeteer 。发射（{ 无头：假 } ）；
+减慢它 - 该slowMo选项将 Puppeteer 操作减慢指定的毫秒数。这是帮助了解正在发生的事情的另一种方式。
+
+const  browser  =  await  puppeteer 。启动（{ 
+  headless : false , 
+  slowMo : 250 ,  // 慢 250ms 
+} ）；
+捕获控制台输出 - 您可以监听console事件。这在调试代码时也很方便page.evaluate()：
+
+页。上（'控制台' ， （MSG ） => 控制台。登录（'PAGE LOG：' ， MSG 。文本（）））;
+
+等待 页面。评估( ( )  => 控制台.日志( `url 是${ location . href } ` ) ) ;
+在应用程序代码浏览器中使用调试器
+
+有两个执行上下文：运行测试代码的 node.js 和运行被测试应用程序代码的浏览器。这使您可以在应用程序代码浏览器中调试代码；即里面的代码evaluate()。
+
+{devtools: true}在启动 Puppeteer 时使用：
+
+const  browser  =  await  puppeteer 。启动（{  devtools：true  } ）；
+更改默认测试超时：
+
+笑话： jest.setTimeout(100000);
+
+茉莉花： jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;
+
+mocha: this.timeout(100000);(不要忘记将 test 更改为使用函数而不是 '=>' )
+
+添加带有debuggerinside / adddebugger的评估语句到现有的评估语句：
+
+等待 页面。评估( ( )  =>  {
+  调试器; 
+} ) ;
+测试现在将停止在上面的评估语句中执行，并且铬将在调试模式下停止。
+
+在 node.js 中使用调试器
+
+这将让您调试测试代码。例如，您可以跨过await page.click()node.js 脚本并查看在应用程序代码浏览器中发生的点击。
+
+请注意，await page.click()由于此Chromium 错误，您将无法在 DevTools 控制台中运行。所以如果你想尝试一些东西，你必须把它添加到你的测试文件中。
+
+添加debugger;到您的测试中，例如：
+
+调试器；
+等待 页面。点击( 'a[target=_blank]' ) ;
+设置headless为false
+
+运行node --inspect-brk，例如node --inspect-brk node_modules/.bin/jest tests
+
+在 Chrome 中打开chrome://inspect/#devices并单击inspect
+
+在新打开的测试浏览器中，输入F8to resume test execution
+
+现在您debugger将被击中，您可以在测试浏览器中进行调试
+
+启用详细日志记录 - 内部 DevTools 协议流量将通过命名空间debug下的模块记录puppeteer。
+
+ # Basic verbose logging
+ env DEBUG="puppeteer:*" node script.js
+
+ # Protocol traffic can be rather noisy. This example filters out all Network domain messages
+ env DEBUG="puppeteer:*" env DEBUG_COLORS=true node script.js 2>&1 | grep -v '"Network'
+使用ndb轻松调试 Puppeteer（节点）代码
+
+npm install -g ndb（甚至更好，使用npx！）
+
+将 a 添加debugger到您的 Puppeteer（节点）代码中
+
+在您的测试命令之前添加ndb(或npx ndb)。例如：
+
+ndb jest或ndb mocha（或npx ndb jest/ npx ndb mocha）
+
+像老板一样在 Chrome 中调试您的测试
