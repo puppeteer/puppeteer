@@ -402,7 +402,6 @@ export class NetworkManager extends EventEmitter {
 
     if (requestWillBeSentEvent) {
       this._onRequest(requestWillBeSentEvent, interceptionId);
-      this._requestIdToRequestWillBeSentEvent.delete(requestId);
     } else {
       this._requestIdToRequestPausedEvent.set(requestId, event);
     }

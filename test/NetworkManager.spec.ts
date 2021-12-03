@@ -16,16 +16,21 @@
 
 import { describeChromeOnly } from './mocha-utils'; // eslint-disable-line import/extensions
 
-import { NetworkManager } from '../lib/cjs/puppeteer/common/NetworkManager.js';
+import expect from 'expect';
+import {
+  NetworkManager,
+  NetworkManagerEmittedEvents,
+} from '../lib/cjs/puppeteer/common/NetworkManager.js';
+import { HTTPRequest } from '../lib/cjs/puppeteer/common/HTTPRequest.js';
 import { EventEmitter } from '../lib/cjs/puppeteer/common/EventEmitter.js';
 import { Frame } from '../lib/cjs/puppeteer/common/FrameManager.js';
 
+class MockCDPSession extends EventEmitter {
+  async send(): Promise<any> {}
+}
+
 describeChromeOnly('NetworkManager', () => {
   it('should process extra info on multiple redirects', async () => {
-    class MockCDPSession extends EventEmitter {
-      send(): any {}
-    }
-
     const mockCDPSession = new MockCDPSession();
     new NetworkManager(mockCDPSession, true, {
       frame(): Frame | null {
@@ -455,5 +460,87 @@ describeChromeOnly('NetworkManager', () => {
       hasExtraInfo: true,
       frameId: '099A5216AF03AAFEC988F214B024DF08',
     });
+  });
+  it(`should handle "double pause" (crbug.com/1196004) Fetch.requestPaused events for the same Network.requestWillBeSent event`, async () => {
+    const mockCDPSession = new MockCDPSession();
+    const manager = new NetworkManager(mockCDPSession, true, {
+      frame(): Frame | null {
+        return null;
+      },
+    });
+    manager.setRequestInterception(true);
+
+    const requests: HTTPRequest[] = [];
+    manager.on(NetworkManagerEmittedEvents.Request, (request: HTTPRequest) => {
+      request.continue();
+      requests.push(request);
+    });
+
+    /**
+     * This sequence was taken from an actual CDP session produced by the following
+     * test script:
+     *
+     * const browser = await puppeteer.launch({ headless: false });
+     * const page = await browser.newPage();
+     * await page.setCacheEnabled(false);
+     *
+     * await page.setRequestInterception(true)
+     * page.on('request', (interceptedRequest) => {
+     *   interceptedRequest.continue();
+     * });
+     *
+     * await page.goto('https://www.google.com');
+     * await browser.close();
+     *
+     */
+    mockCDPSession.emit('Network.requestWillBeSent', {
+      requestId: '11ACE9783588040D644B905E8B55285B',
+      loaderId: '11ACE9783588040D644B905E8B55285B',
+      documentURL: 'https://www.google.com/',
+      request: {
+        url: 'https://www.google.com/',
+        method: 'GET',
+        headers: [Object],
+        mixedContentType: 'none',
+        initialPriority: 'VeryHigh',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+        isSameSite: true,
+      },
+      timestamp: 224604.980827,
+      wallTime: 1637955746.786191,
+      initiator: { type: 'other' },
+      redirectHasExtraInfo: false,
+      type: 'Document',
+      frameId: '84AC261A351B86932B775B76D1DD79F8',
+      hasUserGesture: false,
+    });
+    mockCDPSession.emit('Fetch.requestPaused', {
+      requestId: 'interception-job-1.0',
+      request: {
+        url: 'https://www.google.com/',
+        method: 'GET',
+        headers: [Object],
+        initialPriority: 'VeryHigh',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+      },
+      frameId: '84AC261A351B86932B775B76D1DD79F8',
+      resourceType: 'Document',
+      networkId: '11ACE9783588040D644B905E8B55285B',
+    });
+    mockCDPSession.emit('Fetch.requestPaused', {
+      requestId: 'interception-job-2.0',
+      request: {
+        url: 'https://www.google.com/',
+        method: 'GET',
+        headers: [Object],
+        initialPriority: 'VeryHigh',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+      },
+      frameId: '84AC261A351B86932B775B76D1DD79F8',
+      resourceType: 'Document',
+      networkId: '11ACE9783588040D644B905E8B55285B',
+    });
+
+    expect(requests.length).toBe(2);
   });
 });
