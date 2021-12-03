@@ -461,7 +461,7 @@ describeChromeOnly('NetworkManager', () => {
       frameId: '099A5216AF03AAFEC988F214B024DF08',
     });
   });
-  it(`should handle multiple Fetch.requestPaused events for the same Network.requestWillBeSent event`, async () => {
+  it(`should handle "double pause" (crbug.com/1196004) Fetch.requestPaused events for the same Network.requestWillBeSent event`, async () => {
     const mockCDPSession = new MockCDPSession();
     const manager = new NetworkManager(mockCDPSession, true, {
       frame(): Frame | null {
