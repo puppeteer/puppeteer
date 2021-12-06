@@ -153,6 +153,69 @@ node get-dimensions.js
 
 See [`Page.evaluate()`](https://github.com/puppeteer/puppeteer/blob/v12.0.1/docs/api.md#pageevaluatepagefunction-args) for more information on `evaluate` and related methods like `evaluateOnNewDocument` and `exposeFunction`.
 
+**Example** - add error handling
+
+Save file as **error_handling.js**
+
+```js
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  try {
+    const page = await browser.newPage();
+    await page.goto('https://example.com');
+    await page.screenshot({ path: 'example.png' });
+
+  } catch (error) {
+    console.log(error);
+  } finally {
+    await browser.close();
+  }
+  
+})();
+```
+
+Execute script on the command line
+
+```bash
+node error_handling.js
+```
+
+Using a try..catch..finally block will ensure the broswer is closed even if an error is thrown. 
+
+**Example** - signing in to an account
+
+Save file as **sign_in.js**
+
+```js
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.goto('https://example.com', {
+      waitUntil: 'networkidle2'
+    });
+    await page.type('#username', CREDS.username);
+    await page.type('#password', CREDS.password);
+    await Promise.all([
+      page.click('#login'),
+      page.waitForNavigation({ waitUntil: 'networkidle0' }),
+    ]);
+
+  await browser.close();
+})();
+```
+
+Execute script on the command line
+
+```bash
+node sign_in.js
+```
+
+See [`Page.type()`](https://github.com/puppeteer/puppeteer/blob/v10.4.0/docs/api.md#pagetypeselector-text-options) for more information on `type`. 
+
 <!-- [END getstarted] -->
 
 <!-- [START runtimesettings] -->
