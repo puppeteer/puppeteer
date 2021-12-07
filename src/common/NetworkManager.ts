@@ -22,7 +22,11 @@ import { helper, debugError } from './helper.js';
 import { Protocol } from 'devtools-protocol';
 import { HTTPRequest } from './HTTPRequest.js';
 import { HTTPResponse } from './HTTPResponse.js';
-import { NetworkEventManager } from './NetworkEventManager.js';
+import {
+  FetchRequestId,
+  NetworkEventManager,
+  NetworkRequestId,
+} from './NetworkEventManager.js';
 
 /**
  * @public
@@ -362,7 +366,7 @@ export class NetworkManager extends EventEmitter {
 
   _onRequest(
     event: Protocol.Network.RequestWillBeSentEvent,
-    fetchRequestId?: string
+    fetchRequestId?: FetchRequestId
   ): void {
     let redirectChain = [];
     if (event.redirectResponse) {
@@ -506,9 +510,11 @@ export class NetworkManager extends EventEmitter {
     this._emitResponseEvent(event, extraInfo);
   }
 
-  responseWaitingForExtraInfoPromise(requestId: string): Promise<void> {
+  responseWaitingForExtraInfoPromise(
+    networkRequestId: NetworkRequestId
+  ): Promise<void> {
     const responseReceived =
-      this._networkRequestIdEventMap.queuedEvents.get(requestId);
+      this._networkRequestIdEventMap.queuedEvents.get(networkRequestId);
     if (!responseReceived) return Promise.resolve();
     return responseReceived.promise;
   }

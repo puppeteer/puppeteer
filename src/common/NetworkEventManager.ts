@@ -9,9 +9,12 @@ export type QueuedEvents = {
   loadingFailed?: Protocol.Network.LoadingFailedEvent;
 };
 
+export type FetchRequestId = string;
+export type NetworkRequestId = string;
+
 export type RedirectInfoMap = Array<{
   event: Protocol.Network.RequestWillBeSentEvent;
-  fetchRequestId?: string;
+  fetchRequestId?: FetchRequestId;
 }>;
 
 /**
@@ -53,11 +56,14 @@ export class NetworkEventManager {
    *     (see crbug.com/1196004)
    */
   requestWillBeSent = new Map<
-    string,
+    NetworkRequestId,
     Protocol.Network.RequestWillBeSentEvent
   >();
-  requestPaused = new Map<string, Protocol.Fetch.RequestPausedEvent>();
-  httpRequest = new Map<string, HTTPRequest>();
+  requestPaused = new Map<
+    NetworkRequestId,
+    Protocol.Fetch.RequestPausedEvent
+  >();
+  httpRequest = new Map<NetworkRequestId, HTTPRequest>();
 
   /*
    * The below maps are used to reconcile Network.responseReceivedExtraInfo
@@ -69,33 +75,33 @@ export class NetworkEventManager {
    * events.
    */
   private _responseReceivedExtraInfo = new Map<
-    string,
+    NetworkRequestId,
     Protocol.Network.ResponseReceivedExtraInfoEvent[]
   >();
-  private _queuedRedirectInfoMap = new Map<string, RedirectInfoMap>();
-  queuedEvents = new Map<string, QueuedEvents>();
+  private _queuedRedirectInfoMap = new Map<NetworkRequestId, RedirectInfoMap>();
+  queuedEvents = new Map<NetworkRequestId, QueuedEvents>();
 
-  forget(requestId: string): void {
-    this.requestWillBeSent.delete(requestId);
-    this.requestPaused.delete(requestId);
-    this.queuedEvents.delete(requestId);
-    this._queuedRedirectInfoMap.delete(requestId);
-    this._responseReceivedExtraInfo.delete(requestId);
+  forget(networkRequestId: NetworkRequestId): void {
+    this.requestWillBeSent.delete(networkRequestId);
+    this.requestPaused.delete(networkRequestId);
+    this.queuedEvents.delete(networkRequestId);
+    this._queuedRedirectInfoMap.delete(networkRequestId);
+    this._responseReceivedExtraInfo.delete(networkRequestId);
   }
 
   responseExtraInfo(
-    requestId: string
+    networkRequestId: NetworkRequestId
   ): Protocol.Network.ResponseReceivedExtraInfoEvent[] {
-    if (!this._responseReceivedExtraInfo.has(requestId)) {
-      this._responseReceivedExtraInfo.set(requestId, []);
+    if (!this._responseReceivedExtraInfo.has(networkRequestId)) {
+      this._responseReceivedExtraInfo.set(networkRequestId, []);
     }
-    return this._responseReceivedExtraInfo.get(requestId);
+    return this._responseReceivedExtraInfo.get(networkRequestId);
   }
 
-  queuedRedirectInfo(requestId: string): RedirectInfoMap {
-    if (!this._queuedRedirectInfoMap.has(requestId)) {
-      this._queuedRedirectInfoMap.set(requestId, []);
+  queuedRedirectInfo(fetchRequestId: FetchRequestId): RedirectInfoMap {
+    if (!this._queuedRedirectInfoMap.has(fetchRequestId)) {
+      this._queuedRedirectInfoMap.set(fetchRequestId, []);
     }
-    return this._queuedRedirectInfoMap.get(requestId);
+    return this._queuedRedirectInfoMap.get(fetchRequestId);
   }
 }
