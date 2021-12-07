@@ -24,10 +24,8 @@ import {
   setupTestPageAndContextHooks,
   describeFailsFirefox,
 } from './mocha-utils'; // eslint-disable-line import/extensions
-import {
-  ActionResult,
-  InterceptResolutionAction,
-} from '../lib/cjs/puppeteer/api-docs-entry.js';
+import { ActionResult } from '../lib/cjs/puppeteer/api-docs-entry.js';
+import { InterceptResolutionAction } from '../lib/cjs/puppeteer/common/HTTPRequest.js';
 
 describe('request interception', function () {
   setupTestBrowserHooks();
