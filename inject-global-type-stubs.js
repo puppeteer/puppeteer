@@ -23,7 +23,7 @@ async function injctGlobalTypeStubs() {
   const globalsPath = join(__dirname, 'lib', 'cjs', 'puppeteer', 'global.d.ts');
   const types = await fs.readFile(typesPath, 'utf-8');
   const globals = await fs.readFile(globalsPath, 'utf-8');
-  await fs.writeFile(typesPath, `${globals}\n${types}`);
+  await fs.writeFile(typesPath, `${types}\n${globals}`);
 }
 
 injctGlobalTypeStubs();
