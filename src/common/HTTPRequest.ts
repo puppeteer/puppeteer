@@ -650,7 +650,7 @@ export enum InterceptResolutionAction {
 /**
  * @public
  *
- * Deprecate ASAP
+ * @deprecated please use {@link InterceptResolutionAction} instead.
  */
 export type InterceptResolutionStrategy = InterceptResolutionAction;
 
