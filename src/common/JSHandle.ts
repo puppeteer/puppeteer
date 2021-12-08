@@ -17,7 +17,7 @@
 import { assert } from './assert.js';
 import { helper, debugError } from './helper.js';
 import { ExecutionContext } from './ExecutionContext.js';
-import { Page } from './Page.js';
+import { Page, ScreenshotOptions } from './Page.js';
 import { CDPSession } from './Connection.js';
 import { KeyInput } from './USKeyboardLayout.js';
 import { FrameManager, Frame } from './FrameManager.js';
@@ -191,7 +191,7 @@ export class JSHandle<HandleObjectType = unknown> {
 
   /** Fetches a single property from the referenced object.
    */
-  async getProperty(propertyName: string): Promise<JSHandle | undefined> {
+  async getProperty(propertyName: string): Promise<JSHandle> {
     const objectHandle = await this.evaluateHandle(
       (object: Element, propertyName: string) => {
         const result = { __proto__: null };
@@ -201,7 +201,8 @@ export class JSHandle<HandleObjectType = unknown> {
       propertyName
     );
     const properties = await objectHandle.getProperties();
-    const result = properties.get(propertyName) || null;
+    const result = properties.get(propertyName);
+    assert(result instanceof JSHandle);
     await objectHandle.dispose();
     return result;
   }
@@ -411,7 +412,10 @@ export class ElementHandle<
     if (error) throw new Error(error);
   }
 
-  async clickablePoint(): Promise<Point> {
+  /**
+   * Returns the middle point within an element unless a specific offset is provided.
+   */
+  async clickablePoint(offset?: Offset): Promise<Point> {
     const [result, layoutMetrics] = await Promise.all([
       this._client
         .send('DOM.getContentQuads', {
@@ -421,7 +425,7 @@ export class ElementHandle<
       this._client.send('Page.getLayoutMetrics'),
     ]);
     if (!result || !result.quads.length)
-      throw new Error('Node is either not visible or not an HTMLElement');
+      throw new Error('Node is either not clickable or not an HTMLElement');
     // Filter out quads that have too small area to click into.
     // Fallback to `layoutViewport` in case of using Firefox.
     const { clientWidth, clientHeight } =
@@ -433,9 +437,31 @@ export class ElementHandle<
       )
       .filter((quad) => computeQuadArea(quad) > 1);
     if (!quads.length)
-      throw new Error('Node is either not visible or not an HTMLElement');
-    // Return the middle point of the first quad.
+      throw new Error('Node is either not clickable or not an HTMLElement');
     const quad = quads[0];
+    if (offset) {
+      // Return the point of the first quad identified by offset.
+      let minX = Number.MAX_SAFE_INTEGER;
+      let minY = Number.MAX_SAFE_INTEGER;
+      for (const point of quad) {
+        if (point.x < minX) {
+          minX = point.x;
+        }
+        if (point.y < minY) {
+          minY = point.y;
+        }
+      }
+      if (
+        minX !== Number.MAX_SAFE_INTEGER &&
+        minY !== Number.MAX_SAFE_INTEGER
+      ) {
+        return {
+          x: minX + offset.x,
+          y: minY + offset.y,
+        };
+      }
+    }
+    // Return the middle point of the first quad.
     let x = 0;
     let y = 0;
     for (const point of quad) {
@@ -495,7 +521,7 @@ export class ElementHandle<
    */
   async click(options: ClickOptions = {}): Promise<void> {
     await this._scrollIntoViewIfNeeded();
-    const { x, y } = await this.clickablePoint();
+    const { x, y } = await this.clickablePoint(options.offset);
     await this._page.mouse.click(x, y, options);
   }
 
@@ -788,7 +814,7 @@ export class ElementHandle<
    * {@link Page.screenshot} to take a screenshot of the element.
    * If the element is detached from DOM, the method throws an error.
    */
-  async screenshot(options = {}): Promise<string | Buffer | void> {
+  async screenshot(options: ScreenshotOptions = {}): Promise<string | Buffer> {
     let needsViewportReset = false;
 
     let boundingBox = await this.boundingBox();
@@ -994,20 +1020,35 @@ export class ElementHandle<
   /**
    * Resolves to true if the element is visible in the current viewport.
    */
-  async isIntersectingViewport(): Promise<boolean> {
-    return await this.evaluate<(element: Element) => Promise<boolean>>(
-      async (element) => {
-        const visibleRatio = await new Promise((resolve) => {
-          const observer = new IntersectionObserver((entries) => {
-            resolve(entries[0].intersectionRatio);
-            observer.disconnect();
-          });
-          observer.observe(element);
+  async isIntersectingViewport(options?: {
+    threshold?: number;
+  }): Promise<boolean> {
+    const { threshold = 0 } = options || {};
+    return await this.evaluate(async (element: Element, threshold: number) => {
+      const visibleRatio = await new Promise<number>((resolve) => {
+        const observer = new IntersectionObserver((entries) => {
+          resolve(entries[0].intersectionRatio);
+          observer.disconnect();
         });
-        return visibleRatio > 0;
-      }
-    );
+        observer.observe(element);
+      });
+      return threshold === 1 ? visibleRatio === 1 : visibleRatio > threshold;
+    }, threshold);
   }
+}
+
+/**
+ * @public
+ */
+export interface Offset {
+  /**
+   * x-offset for the clickable point relative to the top-left corder of the border box.
+   */
+  x: number;
+  /**
+   * y-offset for the clickable point relative to the top-left corder of the border box.
+   */
+  y: number;
 }
 
 /**
@@ -1028,6 +1069,10 @@ export interface ClickOptions {
    * @defaultValue 1
    */
   clickCount?: number;
+  /**
+   * Offset for the clickable point relative to the top-left corder of the border box.
+   */
+  offset?: Offset;
 }
 
 /**

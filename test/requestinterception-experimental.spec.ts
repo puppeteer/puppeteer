@@ -845,6 +845,22 @@ describe('request interception', function () {
         'Yo, page!'
       );
     });
+    it('should indicate alreay-handled if an intercept has been handled', async () => {
+      const { page, server } = getTestState();
+
+      await page.setRequestInterception(true);
+      page.on('request', (request) => {
+        request.continue();
+      });
+      page.on('request', (request) => {
+        expect(request.isInterceptResolutionHandled()).toBeTruthy();
+      });
+      page.on('request', (request) => {
+        const { action } = request.interceptResolutionState();
+        expect(action).toBe('alreay-handled');
+      });
+      await page.goto(server.EMPTY_PAGE);
+    });
   });
 });
 

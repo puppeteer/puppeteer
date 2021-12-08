@@ -52,6 +52,7 @@ describe('request interception', function () {
       expect(response.ok()).toBe(true);
       expect(response.remoteAddress().port).toBe(server.PORT);
     });
+    // @see https://github.com/puppeteer/puppeteer/pull/3105
     it('should work when POST is redirected with 302', async () => {
       const { page, server } = getTestState();
 
@@ -625,6 +626,26 @@ describe('request interception', function () {
       expect(serverRequest.method).toBe('POST');
       expect(await serverRequest.postBody).toBe('doggo');
     });
+    it('should fail if the header value is invalid', async () => {
+      const { page, server } = getTestState();
+
+      let error;
+      await page.setRequestInterception(true);
+      page.on('request', async (request) => {
+        await request
+          .continue({
+            headers: {
+              'X-Invalid-Header': 'a\nb',
+            },
+          })
+          .catch((error_) => {
+            error = error_;
+          });
+        await request.continue();
+      });
+      await page.goto(server.PREFIX + '/empty.html');
+      expect(error.message).toMatch(/Invalid header/);
+    });
   });
 
   describeFailsFirefox('Request.respond', function () {
@@ -730,6 +751,29 @@ describe('request interception', function () {
       expect(await page.evaluate(() => document.body.textContent)).toBe(
         'Yo, page!'
       );
+    });
+    it('should fail if the header value is invalid', async () => {
+      const { page, server } = getTestState();
+
+      let error;
+      await page.setRequestInterception(true);
+      page.on('request', async (request) => {
+        await request
+          .respond({
+            headers: {
+              'X-Invalid-Header': 'a\nb',
+            },
+          })
+          .catch((error_) => {
+            error = error_;
+          });
+        await request.respond({
+          status: 200,
+          body: 'Hello World',
+        });
+      });
+      await page.goto(server.PREFIX + '/empty.html');
+      expect(error.message).toMatch(/Invalid header/);
     });
   });
 });

@@ -20,7 +20,7 @@ const fs = require('fs');
 const path = require('path');
 const puppeteer = require('..');
 const DEVICES_URL =
-  'https://raw.githubusercontent.com/ChromeDevTools/devtools-frontend/master/front_end/emulated_devices/module.json';
+  'https://raw.githubusercontent.com/ChromeDevTools/devtools-frontend/HEAD/front_end/emulated_devices/module.json';
 
 const template = `/**
  * Copyright 2017 Google Inc. All rights reserved.

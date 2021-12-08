@@ -142,6 +142,17 @@ describe('Screenshots', function () {
       });
       expect(screenshot).toBeGolden('white.jpg');
     });
+    itFailsFirefox('should work with webp', async () => {
+      const { page, server } = getTestState();
+
+      await page.setViewport({ width: 100, height: 100 });
+      await page.goto(server.PREFIX + '/grid.html');
+      const screenshot = await page.screenshot({
+        type: 'webp',
+      });
+
+      expect(screenshot).toBeInstanceOf(Buffer);
+    });
     it('should work with odd clip size on Retina displays', async () => {
       const { page } = getTestState();
 

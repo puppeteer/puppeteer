@@ -15,11 +15,13 @@
  */
 
 import expect from 'expect';
+import { JSHandle } from '../lib/cjs/puppeteer/common/JSHandle.js';
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   itFailsFirefox,
+  shortWaitForArrayToHaveAtLeastNElements,
 } from './mocha-utils'; // eslint-disable-line import/extensions
 
 describe('JSHandle', function () {
@@ -82,17 +84,6 @@ describe('JSHandle', function () {
         123
       );
     });
-    it('should work with primitives', async () => {
-      const { page } = getTestState();
-
-      const aHandle = await page.evaluateHandle(() => {
-        globalThis.FOO = 123;
-        return window;
-      });
-      expect(await page.evaluate((e: { FOO: number }) => e.FOO, aHandle)).toBe(
-        123
-      );
-    });
   });
 
   describe('JSHandle.getProperty', function () {
@@ -106,6 +97,19 @@ describe('JSHandle', function () {
       }));
       const twoHandle = await aHandle.getProperty('two');
       expect(await twoHandle.jsonValue()).toEqual(2);
+    });
+
+    it('should return a JSHandle even if the property does not exist', async () => {
+      const { page } = getTestState();
+
+      const aHandle = await page.evaluateHandle(() => ({
+        one: 1,
+        two: 2,
+        three: 3,
+      }));
+      const undefinedHandle = await aHandle.getProperty('doesnotexist');
+      expect(undefinedHandle).toBeInstanceOf(JSHandle);
+      expect(await undefinedHandle.jsonValue()).toBe(undefined);
     });
   });
 
@@ -295,6 +299,103 @@ describe('JSHandle', function () {
       expect((await page.evaluateHandle('new Proxy({}, {})')).toString()).toBe(
         'JSHandle@proxy'
       );
+    });
+  });
+
+  describe('JSHandle.clickablePoint', function () {
+    it('should work', async () => {
+      const { page } = getTestState();
+
+      await page.evaluate(() => {
+        document.body.style.padding = '0';
+        document.body.style.margin = '0';
+        document.body.innerHTML = `
+          <div style="cursor: pointer; width: 120px; height: 60px; margin: 30px; padding: 15px;"></div>
+        `;
+      });
+      await page.evaluate(async () => {
+        return new Promise((resolve) => window.requestAnimationFrame(resolve));
+      });
+      const divHandle = await page.$('div');
+      expect(await divHandle.clickablePoint()).toEqual({
+        x: 45 + 60, // margin + middle point offset
+        y: 45 + 30, // margin + middle point offset
+      });
+      expect(
+        await divHandle.clickablePoint({
+          x: 10,
+          y: 15,
+        })
+      ).toEqual({
+        x: 30 + 10, // margin + offset
+        y: 30 + 15, // margin + offset
+      });
+    });
+
+    it('should work for iframes', async () => {
+      const { page } = getTestState();
+      await page.evaluate(() => {
+        document.body.style.padding = '10px';
+        document.body.style.margin = '10px';
+        document.body.innerHTML = `
+          <iframe style="border: none; margin: 0; padding: 0;" seamless sandbox srcdoc="<style>* { margin: 0; padding: 0;}</style><div style='cursor: pointer; width: 120px; height: 60px; margin: 30px; padding: 15px;' />"></iframe>
+        `;
+      });
+      await page.evaluate(async () => {
+        return new Promise((resolve) => window.requestAnimationFrame(resolve));
+      });
+      const frame = page.frames()[1];
+      const divHandle = await frame.$('div');
+      expect(await divHandle.clickablePoint()).toEqual({
+        x: 20 + 45 + 60, // iframe pos + margin + middle point offset
+        y: 20 + 45 + 30, // iframe pos + margin + middle point offset
+      });
+      expect(
+        await divHandle.clickablePoint({
+          x: 10,
+          y: 15,
+        })
+      ).toEqual({
+        x: 20 + 30 + 10, // iframe pos + margin + offset
+        y: 20 + 30 + 15, // iframe pos + margin + offset
+      });
+    });
+  });
+
+  describe('JSHandle.click', function () {
+    itFailsFirefox('should work', async () => {
+      const { page } = getTestState();
+
+      const clicks = [];
+
+      await page.exposeFunction('reportClick', (x: number, y: number): void => {
+        clicks.push([x, y]);
+      });
+
+      await page.evaluate(() => {
+        document.body.style.padding = '0';
+        document.body.style.margin = '0';
+        document.body.innerHTML = `
+          <div style="cursor: pointer; width: 120px; height: 60px; margin: 30px; padding: 15px;"></div>
+        `;
+        document.body.addEventListener('click', (e) => {
+          (window as any).reportClick(e.clientX, e.clientY);
+        });
+      });
+
+      const divHandle = await page.$('div');
+      await divHandle.click();
+      await divHandle.click({
+        offset: {
+          x: 10,
+          y: 15,
+        },
+      });
+      await shortWaitForArrayToHaveAtLeastNElements(clicks, 2);
+      expect(clicks).toEqual([
+        [45 + 60, 45 + 30], // margin + middle point offset
+        [30 + 10, 30 + 15], // margin + offset
+      ]);
     });
   });
 });

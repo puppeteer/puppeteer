@@ -30,16 +30,20 @@ export interface BrowserLaunchArgumentOptions {
   headless?: boolean;
   /**
    * Path to a user data directory.
-   * {@link https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md | see the Chromium docs}
+   * {@link https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/user_data_dir.md | see the Chromium docs}
    * for more info.
    */
   userDataDir?: string;
   /**
    * Whether to auto-open a DevTools panel for each tab. If this is set to
-   * `true`, then `headless` will be set to `false` automatically.
+   * `true`, then `headless` will be forced to `false`.
    * @defaultValue `false`
    */
   devtools?: boolean;
+  /**
+   *
+   */
+  debuggingPort?: number;
   /**
    * Additional command line arguments to pass to the browser instance.
    */
@@ -119,7 +123,7 @@ export interface LaunchOptions {
    */
   product?: Product;
   /**
-   * {@link https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/Preference_reference | Additional preferences } that can be passed when launching with Firefox.
+   * {@link https://searchfox.org/mozilla-release/source/modules/libpref/init/all.js | Additional preferences } that can be passed when launching with Firefox.
    */
   extraPrefsFirefox?: Record<string, unknown>;
   /**

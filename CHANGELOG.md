@@ -2,6 +2,99 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [12.0.1](https://github.com/puppeteer/puppeteer/compare/v12.0.0...v12.0.1) (2021-11-29)
+
+
+### Bug Fixes
+
+* handle extraInfo events even if event.hasExtraInfo === false ([#7808](https://github.com/puppeteer/puppeteer/issues/7808)) ([6ee2feb](https://github.com/puppeteer/puppeteer/commit/6ee2feb1eafdd399f0af50cdc4517f21bcb55121)), closes [#7805](https://github.com/puppeteer/puppeteer/issues/7805)
+
+## [12.0.0](https://github.com/puppeteer/puppeteer/compare/v11.0.0...v12.0.0) (2021-11-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chromium:** roll to Chromium 97.0.4692.0 (r938248)
+
+### Features
+
+* **chromium:** roll to Chromium 97.0.4692.0 (r938248) ([ac162c5](https://github.com/puppeteer/puppeteer/commit/ac162c561ee43dd69eff38e1b354a41bb42c9eba)), closes [#7458](https://github.com/puppeteer/puppeteer/issues/7458)
+* support for custom user data (profile) directory for Firefox ([#7684](https://github.com/puppeteer/puppeteer/issues/7684)) ([790c7a0](https://github.com/puppeteer/puppeteer/commit/790c7a0eb92291efebaa37e80c72f5cb5f46bbdb))
+
+
+### Bug Fixes
+
+* **ariaqueryhandler:** allow single quotes in aria attribute selector ([#7750](https://github.com/puppeteer/puppeteer/issues/7750)) ([b0319ec](https://github.com/puppeteer/puppeteer/commit/b0319ecc89f8ea3d31ab9aee5e1cd33d2a4e62be)), closes [#7721](https://github.com/puppeteer/puppeteer/issues/7721)
+* clearer jsdoc for behavior of `headless` when `devtools` is true ([#7748](https://github.com/puppeteer/puppeteer/issues/7748)) ([9f9b4ed](https://github.com/puppeteer/puppeteer/commit/9f9b4ed72ab0bb43d002a0024122d6f5eab231aa))
+* null check for frame in FrameManager ([#7773](https://github.com/puppeteer/puppeteer/issues/7773)) ([23ee295](https://github.com/puppeteer/puppeteer/commit/23ee295f348d114617f2a86d0bb792936f413ac5)), closes [#7749](https://github.com/puppeteer/puppeteer/issues/7749)
+* only kill the process when there is no browser instance available ([#7762](https://github.com/puppeteer/puppeteer/issues/7762)) ([51e6169](https://github.com/puppeteer/puppeteer/commit/51e61696c1c20cc09bd4fc068ae1dfa259c41745)), closes [#7668](https://github.com/puppeteer/puppeteer/issues/7668)
+* parse statusText from the extraInfo event ([#7798](https://github.com/puppeteer/puppeteer/issues/7798)) ([a26b12b](https://github.com/puppeteer/puppeteer/commit/a26b12b7c775c36271cd4c98e39bbd59f4356320)), closes [#7458](https://github.com/puppeteer/puppeteer/issues/7458)
+* try to remove the temporary user data directory after the process has been killed ([#7761](https://github.com/puppeteer/puppeteer/issues/7761)) ([fc94a28](https://github.com/puppeteer/puppeteer/commit/fc94a28778cfdb3cb8bcd882af3ebcdacf85c94e))
+
+## [11.0.0](https://github.com/puppeteer/puppeteer/compare/v10.4.0...v11.0.0) (2021-11-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* **oop iframes:** integrate OOP iframes with the frame manager (#7556)
+
+### Features
+
+* improve error message for response.buffer() ([#7669](https://github.com/puppeteer/puppeteer/issues/7669)) ([03c9ecc](https://github.com/puppeteer/puppeteer/commit/03c9ecca400a02684cd60229550dbad1190a5b6e))
+* **oop iframes:** integrate OOP iframes with the frame manager ([#7556](https://github.com/puppeteer/puppeteer/issues/7556)) ([4d9dc8c](https://github.com/puppeteer/puppeteer/commit/4d9dc8c0e613f22d4cdf237e8bd0b0da3c588edb)), closes [#2548](https://github.com/puppeteer/puppeteer/issues/2548)
+* add custom debugging port option ([#4993](https://github.com/puppeteer/puppeteer/issues/4993)) ([26145e9](https://github.com/puppeteer/puppeteer/commit/26145e9a24af7caed6ece61031f2cafa6abd505f))
+* add initiator to HTTPRequest ([#7614](https://github.com/puppeteer/puppeteer/issues/7614)) ([a271145](https://github.com/puppeteer/puppeteer/commit/a271145b0663ef9de1903dd0eb9fd5366465bed7))
+* allow to customize tmpdir ([#7243](https://github.com/puppeteer/puppeteer/issues/7243)) ([b1f6e86](https://github.com/puppeteer/puppeteer/commit/b1f6e8692b0bc7e8551b2a78169c830cd80a7acb))
+* handle unhandled promise rejections in tests ([#7722](https://github.com/puppeteer/puppeteer/issues/7722)) ([07febca](https://github.com/puppeteer/puppeteer/commit/07febca04b391893cfc872250e4391da142d4fe2))
+
+
+### Bug Fixes
+
+* add support for relative install paths to BrowserFetcher ([#7613](https://github.com/puppeteer/puppeteer/issues/7613)) ([eebf452](https://github.com/puppeteer/puppeteer/commit/eebf452d38b79bb2ea1a1ba84c3d2ea6f2f9f899)), closes [#7592](https://github.com/puppeteer/puppeteer/issues/7592)
+* add webp to screenshot quality option allow list ([#7631](https://github.com/puppeteer/puppeteer/issues/7631)) ([b20c2bf](https://github.com/puppeteer/puppeteer/commit/b20c2bfa24cbdd4a1b9cefca2e0a9407e442baf5))
+* prevent Target closed errors on streams ([#7728](https://github.com/puppeteer/puppeteer/issues/7728)) ([5b792de](https://github.com/puppeteer/puppeteer/commit/5b792de7a97611441777d1ac99cb95516301d7dc))
+* request an animation frame to fix flaky clickablePoint test ([#7587](https://github.com/puppeteer/puppeteer/issues/7587)) ([7341d9f](https://github.com/puppeteer/puppeteer/commit/7341d9fadd1466a5b2f2bde8631f3b02cf9a7d8a))
+* setup husky properly ([#7727](https://github.com/puppeteer/puppeteer/issues/7727)) ([8b712e7](https://github.com/puppeteer/puppeteer/commit/8b712e7b642b58193437f26d4e104a9e412f388d)), closes [#7726](https://github.com/puppeteer/puppeteer/issues/7726)
+* updated troubleshooting.md to meet latest dependencies changes ([#7656](https://github.com/puppeteer/puppeteer/issues/7656)) ([edb0197](https://github.com/puppeteer/puppeteer/commit/edb01972b9606d8b05b979a588eda0d622315981))
+* **launcher:** launcher.launch() should pass 'timeout' option [#5180](https://github.com/puppeteer/puppeteer/issues/5180) ([#7596](https://github.com/puppeteer/puppeteer/issues/7596)) ([113489d](https://github.com/puppeteer/puppeteer/commit/113489d3b58e2907374a4e6e5133bf46630695d1))
+* **page:** fallback to default in exposeFunction when using imported module  ([#6365](https://github.com/puppeteer/puppeteer/issues/6365)) ([44c9ec6](https://github.com/puppeteer/puppeteer/commit/44c9ec67c57dccf3e186c86f14f3a8da9a8eb971))
+* **page:** fix page.off method for request event ([#7624](https://github.com/puppeteer/puppeteer/issues/7624)) ([d0cb943](https://github.com/puppeteer/puppeteer/commit/d0cb9436a302418086f6763e0e58ae3732a20b62)), closes [#7572](https://github.com/puppeteer/puppeteer/issues/7572)
+
+## [10.4.0](https://github.com/puppeteer/puppeteer/compare/v10.2.0...v10.4.0) (2021-09-21)
+
+
+### Features
+
+* add webp to screenshot options ([#7565](https://github.com/puppeteer/puppeteer/issues/7565)) ([43a9268](https://github.com/puppeteer/puppeteer/commit/43a926832505a57922016907a264165676424557))
+* **page:** expose page.client() ([#7582](https://github.com/puppeteer/puppeteer/issues/7582)) ([99ca842](https://github.com/puppeteer/puppeteer/commit/99ca842124a1edef5e66426621885141a9feaca5))
+* **page:** mark page.client() as internal ([#7585](https://github.com/puppeteer/puppeteer/issues/7585)) ([8451951](https://github.com/puppeteer/puppeteer/commit/84519514831f304f9076ca235fe474f797616b2c))
+* add ability to specify offsets for JSHandle.click ([#7573](https://github.com/puppeteer/puppeteer/issues/7573)) ([2b5c001](https://github.com/puppeteer/puppeteer/commit/2b5c0019dc3744196c5858edeaa901dff9973ef5))
+* add durableStorage to allowed permissions ([#5295](https://github.com/puppeteer/puppeteer/issues/5295)) ([eda5171](https://github.com/puppeteer/puppeteer/commit/eda51712790b9260626dc53cfb58a72805c45582))
+* add id option to addScriptTag ([#5477](https://github.com/puppeteer/puppeteer/issues/5477)) ([300be5d](https://github.com/puppeteer/puppeteer/commit/300be5d167b6e7e532e725fdb86966081a5d0093))
+* add more Android models to DeviceDescriptors ([#7210](https://github.com/puppeteer/puppeteer/issues/7210)) ([b5020dc](https://github.com/puppeteer/puppeteer/commit/b5020dc04121b265c77662237dfb177d6de06053)), closes [/github.com/aerokube/moon-deploy/blob/master/moon-local.yaml#L199](https://github.com/puppeteer//github.com/aerokube/moon-deploy/blob/master/moon-local.yaml/issues/L199)
+* add proxy and bypass list parameters to createIncognitoBrowserContext ([#7516](https://github.com/puppeteer/puppeteer/issues/7516)) ([8e45a1c](https://github.com/puppeteer/puppeteer/commit/8e45a1c882207cc36e87be2a917b661eb841c4bf)), closes [#678](https://github.com/puppeteer/puppeteer/issues/678)
+* add threshold to Page.isIntersectingViewport ([#6497](https://github.com/puppeteer/puppeteer/issues/6497)) ([54c4318](https://github.com/puppeteer/puppeteer/commit/54c43180161c3c512e4698e7f2e85ce3c6f0ab50))
+* add unit test support for bisect ([#7553](https://github.com/puppeteer/puppeteer/issues/7553)) ([a0b1f6b](https://github.com/puppeteer/puppeteer/commit/a0b1f6b401abae2fbc5a8987061644adfaa7b482))
+* add User-Agent with Puppeteer version to WebSocket request ([#5614](https://github.com/puppeteer/puppeteer/issues/5614)) ([6a2bf0a](https://github.com/puppeteer/puppeteer/commit/6a2bf0aabaa4df72c7838f5a6cd742e8f9c72be6))
+* extend husky checks ([#7574](https://github.com/puppeteer/puppeteer/issues/7574)) ([7316086](https://github.com/puppeteer/puppeteer/commit/73160869417275200be19bd37372b6218dbc5f63))
+* **api:** implement `Page.waitForNetworkIdle()` ([#5140](https://github.com/puppeteer/puppeteer/issues/5140)) ([3c6029c](https://github.com/puppeteer/puppeteer/commit/3c6029c702291ca7ef637b66e78d72e03156fe58))
+* **coverage:** option for raw V8 script coverage ([#6454](https://github.com/puppeteer/puppeteer/issues/6454)) ([cb4470a](https://github.com/puppeteer/puppeteer/commit/cb4470a6d9b0a7f73836458bb3d5779eb85ac5f2))
+* support timeout for page.pdf() call ([#7508](https://github.com/puppeteer/puppeteer/issues/7508)) ([f90af66](https://github.com/puppeteer/puppeteer/commit/f90af6639d801e764bdb479b9543b7f8f2b926df))
+* **typescript:** allow using puppeteer without dom lib ([#6998](https://github.com/puppeteer/puppeteer/issues/6998)) ([723052d](https://github.com/puppeteer/puppeteer/commit/723052d5bb3c3d1d3908508467512bea4d8fdc80)), closes [#6989](https://github.com/puppeteer/puppeteer/issues/6989)
+
+
+### Bug Fixes
+
+* **docs:** deploy includes website documentation ([#7469](https://github.com/puppeteer/puppeteer/issues/7469)) ([6fde41c](https://github.com/puppeteer/puppeteer/commit/6fde41c6b6657986df1bbce3f2e0f7aa499f2be4))
+* **docs:** names in version 9.1.1 ([#7517](https://github.com/puppeteer/puppeteer/issues/7517)) ([44b22bb](https://github.com/puppeteer/puppeteer/commit/44b22bbc2629e3c75c1494b299a66790b371fb0a))
+* **frame:** fix Frame.waitFor's XPath pattern detection ([#5184](https://github.com/puppeteer/puppeteer/issues/5184)) ([caa2b73](https://github.com/puppeteer/puppeteer/commit/caa2b732fe58f32ec03f2a9fa8568f20188203c5))
+* **install:** respect environment proxy config when downloading Firef… ([#6577](https://github.com/puppeteer/puppeteer/issues/6577)) ([9399c97](https://github.com/puppeteer/puppeteer/commit/9399c9786fba4e45e1c5485ddbb197d2d4f1735f)), closes [#6573](https://github.com/puppeteer/puppeteer/issues/6573)
+* added names in V9.1.1 ([#7547](https://github.com/puppeteer/puppeteer/issues/7547)) ([d132b8b](https://github.com/puppeteer/puppeteer/commit/d132b8b041696e6d5b9a99d0be1acf1cf943efef))
+* **test:** tweak waitForNetworkIdle delay in test between downloads ([#7564](https://github.com/puppeteer/puppeteer/issues/7564)) ([a21b737](https://github.com/puppeteer/puppeteer/commit/a21b7376e7feaf23066d67948d52480516f42496))
+* **types:** allow evaluate functions to take a readonly array as an argument ([#7072](https://github.com/puppeteer/puppeteer/issues/7072)) ([491614c](https://github.com/puppeteer/puppeteer/commit/491614c7f8cfa50b902d0275064e611c2a48c3b2))
+* update firefox prefs documentation link ([#7539](https://github.com/puppeteer/puppeteer/issues/7539)) ([2aec355](https://github.com/puppeteer/puppeteer/commit/2aec35553bc6e0305f40837bb3665ddbd02aa889))
+* use non-deprecated tracing categories api ([#7413](https://github.com/puppeteer/puppeteer/issues/7413)) ([040a0e5](https://github.com/puppeteer/puppeteer/commit/040a0e561b4f623f7929130b90be129f94ebb642))
+
 ## [10.2.0](https://github.com/puppeteer/puppeteer/compare/v10.1.0...v10.2.0) (2021-08-04)
 
 

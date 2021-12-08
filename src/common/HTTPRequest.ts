@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CDPSession } from './Connection.js';
+import { ProtocolMapping } from 'devtools-protocol/types/protocol-mapping.js';
+
+import { EventEmitter } from './EventEmitter.js';
 import { Frame } from './FrameManager.js';
 import { HTTPResponse } from './HTTPResponse.js';
 import { assert } from './assert.js';
 import { helper, debugError } from './helper.js';
 import { Protocol } from 'devtools-protocol';
+import { ProtocolError } from './Errors.js';
 
 /**
  * @public
@@ -31,6 +34,14 @@ export interface ContinueRequestOverrides {
   method?: string;
   postData?: string;
   headers?: Record<string, string>;
+}
+
+/**
+ * @public
+ */
+export interface InterceptResolutionState {
+  action: InterceptResolutionAction;
+  priority?: number;
 }
 
 /**
@@ -54,6 +65,20 @@ export interface ResponseForRequest {
  * @public
  */
 export type ResourceType = Lowercase<Protocol.Network.ResourceType>;
+
+/**
+ * The default cooperative request interception resolution priority
+ *
+ * @public
+ */
+export const DEFAULT_INTERCEPT_RESOLUTION_PRIORITY = 0;
+
+interface CDPSession extends EventEmitter {
+  send<T extends keyof ProtocolMapping.Commands>(
+    method: T,
+    ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
+  ): Promise<ProtocolMapping.Commands[T]['returnType']>;
+}
 
 /**
  *
@@ -127,9 +152,9 @@ export class HTTPRequest {
   private _continueRequestOverrides: ContinueRequestOverrides;
   private _responseForRequest: Partial<ResponseForRequest>;
   private _abortErrorReason: Protocol.Network.ErrorReason;
-  private _currentStrategy: InterceptResolutionStrategy;
-  private _currentPriority: number | undefined;
-  private _interceptActions: Array<() => void | PromiseLike<any>>;
+  private _interceptResolutionState: InterceptResolutionState;
+  private _interceptHandlers: Array<() => void | PromiseLike<any>>;
+  private _initiator: Protocol.Network.Initiator;
 
   /**
    * @internal
@@ -155,9 +180,9 @@ export class HTTPRequest {
     this._frame = frame;
     this._redirectChain = redirectChain;
     this._continueRequestOverrides = {};
-    this._currentStrategy = 'none';
-    this._currentPriority = undefined;
-    this._interceptActions = [];
+    this._interceptResolutionState = { action: 'none' };
+    this._interceptHandlers = [];
+    this._initiator = event.initiator;
 
     for (const key of Object.keys(event.request.headers))
       this._headers[key.toLowerCase()] = event.request.headers[key];
@@ -198,14 +223,28 @@ export class HTTPRequest {
   }
 
   /**
-   * @returns An array of the current intercept resolution strategy and priority
-   * `[strategy,priority]`. Strategy is one of: `abort`, `respond`, `continue`,
-   *  `disabled`, `none`, or `already-handled`.
+   * @returns An InterceptResolutionState object describing the current resolution
+   *  action and priority.
+   *
+   *  InterceptResolutionState contains:
+   *    action: InterceptResolutionAction
+   *    priority?: number
+   *
+   *  InterceptResolutionAction is one of: `abort`, `respond`, `continue`,
+   *  `disabled`, `none`, or `alreay-handled`.
    */
-  private interceptResolution(): [InterceptResolutionStrategy, number?] {
-    if (!this._allowInterception) return ['disabled'];
-    if (this._interceptionHandled) return ['alreay-handled'];
-    return [this._currentStrategy, this._currentPriority];
+  interceptResolutionState(): InterceptResolutionState {
+    if (!this._allowInterception) return { action: 'disabled' };
+    if (this._interceptionHandled) return { action: 'alreay-handled' };
+    return { ...this._interceptResolutionState };
+  }
+
+  /**
+   * @returns `true` if the intercept resolution has already been handled,
+   * `false` otherwise.
+   */
+  isInterceptResolutionHandled(): boolean {
+    return this._interceptionHandled;
   }
 
   /**
@@ -217,7 +256,7 @@ export class HTTPRequest {
   enqueueInterceptAction(
     pendingHandler: () => void | PromiseLike<unknown>
   ): void {
-    this._interceptActions.push(pendingHandler);
+    this._interceptHandlers.push(pendingHandler);
   }
 
   /**
@@ -225,17 +264,12 @@ export class HTTPRequest {
    * the request interception.
    */
   async finalizeInterceptions(): Promise<void> {
-    await this._interceptActions.reduce(
-      (promiseChain, interceptAction) =>
-        promiseChain.then(interceptAction).catch((error) => {
-          // This is here so cooperative handlers that fail do not stop other handlers
-          // from running
-          debugError(error);
-        }),
+    await this._interceptHandlers.reduce(
+      (promiseChain, interceptAction) => promiseChain.then(interceptAction),
       Promise.resolve()
     );
-    const [resolution] = this.interceptResolution();
-    switch (resolution) {
+    const { action } = this.interceptResolutionState();
+    switch (action) {
       case 'abort':
         return this._abort(this._abortErrorReason);
       case 'respond':
@@ -296,6 +330,13 @@ export class HTTPRequest {
    */
   isNavigationRequest(): boolean {
     return this._isNavigationRequest;
+  }
+
+  /**
+   * @returns the initiator of the request.
+   */
+  initiator(): Protocol.Network.Initiator {
+    return this._initiator;
   }
 
   /**
@@ -397,21 +438,20 @@ export class HTTPRequest {
     }
     this._continueRequestOverrides = overrides;
     if (
-      priority > this._currentPriority ||
-      this._currentPriority === undefined
+      priority > this._interceptResolutionState.priority ||
+      this._interceptResolutionState.priority === undefined
     ) {
-      this._currentStrategy = 'continue';
-      this._currentPriority = priority;
+      this._interceptResolutionState = { action: 'continue', priority };
       return;
     }
-    if (priority === this._currentPriority) {
+    if (priority === this._interceptResolutionState.priority) {
       if (
-        this._currentStrategy === 'abort' ||
-        this._currentStrategy === 'respond'
+        this._interceptResolutionState.action === 'abort' ||
+        this._interceptResolutionState.action === 'respond'
       ) {
         return;
       }
-      this._currentStrategy = 'continue';
+      this._interceptResolutionState.action = 'continue';
     }
     return;
   }
@@ -435,10 +475,8 @@ export class HTTPRequest {
         headers: headers ? headersArray(headers) : undefined,
       })
       .catch((error) => {
-        // In certain cases, protocol will return error if the request was
-        // already canceled or the page was closed. We should tolerate these
-        // errors.
-        debugError(error);
+        this._interceptionHandled = false;
+        return handleError(error);
       });
   }
 
@@ -486,18 +524,17 @@ export class HTTPRequest {
     }
     this._responseForRequest = response;
     if (
-      priority > this._currentPriority ||
-      this._currentPriority === undefined
+      priority > this._interceptResolutionState.priority ||
+      this._interceptResolutionState.priority === undefined
     ) {
-      this._currentStrategy = 'respond';
-      this._currentPriority = priority;
+      this._interceptResolutionState = { action: 'respond', priority };
       return;
     }
-    if (priority === this._currentPriority) {
-      if (this._currentStrategy === 'abort') {
+    if (priority === this._interceptResolutionState.priority) {
+      if (this._interceptResolutionState.action === 'abort') {
         return;
       }
-      this._currentStrategy = 'respond';
+      this._interceptResolutionState.action = 'respond';
     }
   }
 
@@ -532,10 +569,8 @@ export class HTTPRequest {
         body: responseBody ? responseBody.toString('base64') : undefined,
       })
       .catch((error) => {
-        // In certain cases, protocol will return error if the request was
-        // already canceled or the page was closed. We should tolerate these
-        // errors.
-        debugError(error);
+        this._interceptionHandled = false;
+        return handleError(error);
       });
   }
 
@@ -567,11 +602,10 @@ export class HTTPRequest {
     }
     this._abortErrorReason = errorReason;
     if (
-      priority >= this._currentPriority ||
-      this._currentPriority === undefined
+      priority >= this._interceptResolutionState.priority ||
+      this._interceptResolutionState.priority === undefined
     ) {
-      this._currentStrategy = 'abort';
-      this._currentPriority = priority;
+      this._interceptResolutionState = { action: 'abort', priority };
       return;
     }
   }
@@ -585,25 +619,27 @@ export class HTTPRequest {
         requestId: this._interceptionId,
         errorReason,
       })
-      .catch((error) => {
-        // In certain cases, protocol will return error if the request was
-        // already canceled or the page was closed. We should tolerate these
-        // errors.
-        debugError(error);
-      });
+      .catch(handleError);
   }
 }
 
 /**
  * @public
  */
-export type InterceptResolutionStrategy =
+export type InterceptResolutionAction =
   | 'abort'
   | 'respond'
   | 'continue'
   | 'disabled'
   | 'none'
   | 'alreay-handled';
+
+/**
+ * @public
+ *
+ * Deprecate ASAP
+ */
+export type InterceptResolutionStrategy = InterceptResolutionAction;
 
 /**
  * @public
@@ -655,6 +691,16 @@ function headersArray(
       result.push({ name, value: headers[name] + '' });
   }
   return result;
+}
+
+async function handleError(error: ProtocolError) {
+  if (['Invalid header'].includes(error.originalMessage)) {
+    throw error;
+  }
+  // In certain cases, protocol will return error if the request was
+  // already canceled or the page was closed. We should tolerate these
+  // errors.
+  debugError(error);
 }
 
 // List taken from

@@ -5,6 +5,7 @@
 <!-- GEN:toc -->
 - [Chrome headless doesn't launch on Windows](#chrome-headless-doesnt-launch-on-windows)
 - [Chrome headless doesn't launch on UNIX](#chrome-headless-doesnt-launch-on-unix)
+- [Chrome headless disables GPU compositing](#chrome-headless-disables-gpu-compositing)
 - [Chrome is downloaded but fails to launch on Node.js 14](#chrome-is-downloaded-but-fails-to-launch-on-nodejs-14)
 - [Setting Up Chrome Linux Sandbox](#setting-up-chrome-linux-sandbox)
   * [[recommended] Enable user namespace cloning](#recommended-enable-user-namespace-cloning)
@@ -134,6 +135,17 @@ yum update nss -y
 - [#391](https://github.com/puppeteer/puppeteer/issues/391) - CentOS troubleshooting <br/>
 - [#379](https://github.com/puppeteer/puppeteer/issues/379) - Alpine troubleshooting <br/>
 </details>
+
+## Chrome headless disables GPU compositing
+
+Chrome/Chromium requires `--use-gl=egl` to [enable GPU acceleration in headless mode](https://github.com/chromium/chromium/commit/19671359ae25aa1e30bde90f8ff92453eeaac2ba).
+
+```js
+const browser = await puppeteer.launch({
+  headless: true,
+  args: ['--use-gl=egl'],
+});
+```
 
 ## Chrome is downloaded but fails to launch on Node.js 14
 
@@ -291,13 +303,16 @@ RUN apt-get update \
 # ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
 # Install puppeteer so it's available in the container.
-RUN npm i puppeteer \
+RUN npm init -y &&  \
+    npm i puppeteer \
     # Add user so we don't need --no-sandbox.
     # same layer as npm install to keep re-chowned files from using up several hundred MBs more space
     && groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
     && mkdir -p /home/pptruser/Downloads \
     && chown -R pptruser:pptruser /home/pptruser \
-    && chown -R pptruser:pptruser /node_modules
+    && chown -R pptruser:pptruser /node_modules \
+    && chown -R pptruser:pptruser /package.json \
+    && chown -R pptruser:pptruser /package-lock.json
 
 # Run everything after as non-privileged user.
 USER pptruser
@@ -324,14 +339,14 @@ how to run this Dockerfile from a webserver running on App Engine Flex (Node).
 
 ### Running on Alpine
 
-The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 89, which corresponds to [Puppeteer v6.0.0](https://github.com/puppeteer/puppeteer/releases/tag/v6.0.0).
+The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 93, which corresponds to [Puppeteer v10.2.0](https://github.com/puppeteer/puppeteer/releases/tag/v10.2.0).
 
 Example Dockerfile:
 
 ```Dockerfile
-FROM alpine:edge
+FROM alpine
 
-# Installs latest Chromium (89) package.
+# Installs latest Chromium (92) package.
 RUN apk add --no-cache \
       chromium \
       nss \
@@ -348,8 +363,8 @@ RUN apk add --no-cache \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-# Puppeteer v6.0.0 works with Chromium 89.
-RUN yarn add puppeteer@6.0.0
+# Puppeteer v10.0.0 works with Chromium 92.
+RUN yarn add puppeteer@10.0.0
 
 # Add user so we don't need --no-sandbox.
 RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
@@ -425,7 +440,7 @@ There's also another [simple guide](https://timleland.com/headless-chrome-on-her
 AWS Lambda [limits](https://docs.aws.amazon.com/lambda/latest/dg/limits.html) deployment package sizes to ~50MB. This presents challenges for running headless Chrome (and therefore Puppeteer) on Lambda. The community has put together a few resources that work around the issues:
 
 - https://github.com/alixaxel/chrome-aws-lambda (kept updated with the latest stable release of puppeteer)
-- https://github.com/adieuadieu/serverless-chrome/blob/master/docs/chrome.md (serverless plugin - outdated)
+- https://github.com/adieuadieu/serverless-chrome/blob/HEAD/docs/chrome.md (serverless plugin - outdated)
 
 ### Running Puppeteer on AWS EC2 instance running Amazon-Linux
 

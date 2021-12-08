@@ -16,7 +16,7 @@
 
 import type { Readable } from 'stream';
 
-import { EventEmitter } from './EventEmitter.js';
+import { EventEmitter, Handler } from './EventEmitter.js';
 import {
   Connection,
   CDPSession,
@@ -31,7 +31,7 @@ import {
 } from './FrameManager.js';
 import { Keyboard, Mouse, Touchscreen, MouseButton } from './Input.js';
 import { Tracing } from './Tracing.js';
-import { assert } from './assert.js';
+import { assert, assertNever } from './assert.js';
 import { helper, debugError } from './helper.js';
 import { Coverage } from './Coverage.js';
 import { WebWorker } from './WebWorker.js';
@@ -62,6 +62,7 @@ import {
 } from './EvalTypes.js';
 import { PDFOptions, paperFormats } from './PDFOptions.js';
 import { isNode } from '../environment.js';
+import { TaskQueue } from './TaskQueue.js';
 
 /**
  * @public
@@ -157,7 +158,7 @@ export interface ScreenshotOptions {
   /**
    * @defaultValue 'png'
    */
-  type?: 'png' | 'jpeg';
+  type?: 'png' | 'jpeg' | 'webp';
   /**
    * The file path to save the image to. The screenshot type will be inferred
    * from file extension. If path is a relative path, then it is resolved
@@ -370,22 +371,6 @@ export interface PageEventObject {
   workerdestroyed: WebWorker;
 }
 
-class ScreenshotTaskQueue {
-  _chain: Promise<Buffer | string | void>;
-
-  constructor() {
-    this._chain = Promise.resolve<Buffer | string | void>(undefined);
-  }
-
-  public postTask(
-    task: () => Promise<Buffer | string>
-  ): Promise<Buffer | string | void> {
-    const result = this._chain.then(task);
-    this._chain = result.catch(() => {});
-    return result;
-  }
-}
-
 /**
  * Page provides methods to interact with a single tab or
  * {@link https://developer.chrome.com/extensions/background_pages | extension background page} in Chromium.
@@ -437,9 +422,15 @@ export class Page extends EventEmitter {
     client: CDPSession,
     target: Target,
     ignoreHTTPSErrors: boolean,
-    defaultViewport: Viewport | null
+    defaultViewport: Viewport | null,
+    screenshotTaskQueue: TaskQueue
   ): Promise<Page> {
-    const page = new Page(client, target, ignoreHTTPSErrors);
+    const page = new Page(
+      client,
+      target,
+      ignoreHTTPSErrors,
+      screenshotTaskQueue
+    );
     await page._initialize();
     if (defaultViewport) await page.setViewport(defaultViewport);
     return page;
@@ -460,7 +451,7 @@ export class Page extends EventEmitter {
   private _coverage: Coverage;
   private _javascriptEnabled = true;
   private _viewport: Viewport | null;
-  private _screenshotTaskQueue: ScreenshotTaskQueue;
+  private _screenshotTaskQueue: TaskQueue;
   private _workers = new Map<string, WebWorker>();
   // TODO: improve this typedef - it's a function that takes a file chooser or
   // something?
@@ -468,11 +459,17 @@ export class Page extends EventEmitter {
 
   private _disconnectPromise?: Promise<Error>;
   private _userDragInterceptionEnabled = false;
+  private _handlerMap = new WeakMap<Handler, Handler>();
 
   /**
    * @internal
    */
-  constructor(client: CDPSession, target: Target, ignoreHTTPSErrors: boolean) {
+  constructor(
+    client: CDPSession,
+    target: Target,
+    ignoreHTTPSErrors: boolean,
+    screenshotTaskQueue: TaskQueue
+  ) {
     super();
     this._client = client;
     this._target = target;
@@ -489,37 +486,44 @@ export class Page extends EventEmitter {
     this._emulationManager = new EmulationManager(client);
     this._tracing = new Tracing(client);
     this._coverage = new Coverage(client);
-    this._screenshotTaskQueue = new ScreenshotTaskQueue();
+    this._screenshotTaskQueue = screenshotTaskQueue;
     this._viewport = null;
 
-    client.on('Target.attachedToTarget', (event) => {
-      if (
-        event.targetInfo.type !== 'worker' &&
-        event.targetInfo.type !== 'iframe'
-      ) {
-        // If we don't detach from service workers, they will never die.
-        // We still want to attach to workers for emitting events.
-        // We still want to attach to iframes so sessions may interact with them.
-        // We detach from all other types out of an abundance of caution.
-        // See https://source.chromium.org/chromium/chromium/src/+/master:content/browser/devtools/devtools_agent_host_impl.cc?q=f:devtools%20-f:out%20%22::kTypePage%5B%5D%22&ss=chromium
-        // for the complete list of available types.
-        client
-          .send('Target.detachFromTarget', {
-            sessionId: event.sessionId,
-          })
-          .catch(debugError);
-        return;
+    client.on(
+      'Target.attachedToTarget',
+      (event: Protocol.Target.AttachedToTargetEvent) => {
+        if (
+          event.targetInfo.type !== 'worker' &&
+          event.targetInfo.type !== 'iframe'
+        ) {
+          // If we don't detach from service workers, they will never die.
+          // We still want to attach to workers for emitting events.
+          // We still want to attach to iframes so sessions may interact with them.
+          // We detach from all other types out of an abundance of caution.
+          // See https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&q=f:devtools%20-f:out%20%22::kTypePage%5B%5D%22
+          // for the complete list of available types.
+          client
+            .send('Target.detachFromTarget', {
+              sessionId: event.sessionId,
+            })
+            .catch(debugError);
+          return;
+        }
+        if (event.targetInfo.type === 'worker') {
+          const session = Connection.fromSession(client).session(
+            event.sessionId
+          );
+          const worker = new WebWorker(
+            session,
+            event.targetInfo.url,
+            this._addConsoleMessage.bind(this),
+            this._handleException.bind(this)
+          );
+          this._workers.set(event.sessionId, worker);
+          this.emit(PageEmittedEvents.WorkerCreated, worker);
+        }
       }
-      const session = Connection.fromSession(client).session(event.sessionId);
-      const worker = new WebWorker(
-        session,
-        event.targetInfo.url,
-        this._addConsoleMessage.bind(this),
-        this._handleException.bind(this)
-      );
-      this._workers.set(event.sessionId, worker);
-      this.emit(PageEmittedEvents.WorkerCreated, worker);
-    });
+    );
     client.on('Target.detachedFromTarget', (event) => {
       const worker = this._workers.get(event.sessionId);
       if (!worker) return;
@@ -627,11 +631,15 @@ export class Page extends EventEmitter {
     handler: (event: PageEventObject[K]) => void
   ): EventEmitter {
     if (eventName === 'request') {
-      return super.on(eventName, (event: HTTPRequest) => {
+      const wrap = (event: HTTPRequest) => {
         event.enqueueInterceptAction(() =>
           handler(event as PageEventObject[K])
         );
-      });
+      };
+
+      this._handlerMap.set(handler, wrap);
+
+      return super.on(eventName, wrap);
     }
     return super.on(eventName, handler);
   }
@@ -643,6 +651,17 @@ export class Page extends EventEmitter {
     // Note: this method only exists to define the types; we delegate the impl
     // to EventEmitter.
     return super.once(eventName, handler);
+  }
+
+  off<K extends keyof PageEventObject>(
+    eventName: K,
+    handler: (event: PageEventObject[K]) => void
+  ): EventEmitter {
+    if (eventName === 'request') {
+      handler = this._handlerMap.get(handler) || handler;
+    }
+
+    return super.off(eventName, handler);
   }
 
   /**
@@ -727,6 +746,14 @@ export class Page extends EventEmitter {
    */
   target(): Target {
     return this._target;
+  }
+
+  /**
+   * Get the CDP session client the page belongs to.
+   * @internal
+   */
+  client(): CDPSession {
+    return this._client;
   }
 
   /**
@@ -1098,7 +1125,7 @@ export class Page extends EventEmitter {
        *
        * TODO(@jackfranklin): We could fix this by using overloads like
        * DefinitelyTyped does:
-       * https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/puppeteer/index.d.ts#L114
+       * https://github.com/DefinitelyTyped/DefinitelyTyped/blob/HEAD/types/puppeteer/index.d.ts#L114
        */
       ...args: unknown[]
     ) => ReturnType | Promise<ReturnType>,
@@ -1280,6 +1307,7 @@ export class Page extends EventEmitter {
     path?: string;
     content?: string;
     type?: string;
+    id?: string;
   }): Promise<ElementHandle> {
     return this.mainFrame().addScriptTag(options);
   }
@@ -1359,13 +1387,25 @@ export class Page extends EventEmitter {
    */
   async exposeFunction(
     name: string,
-    puppeteerFunction: Function
+    puppeteerFunction: Function | { default: Function }
   ): Promise<void> {
     if (this._pageBindings.has(name))
       throw new Error(
         `Failed to add page binding with name ${name}: window['${name}'] already exists!`
       );
-    this._pageBindings.set(name, puppeteerFunction);
+
+    let exposedFunction: Function;
+    if (typeof puppeteerFunction === 'function') {
+      exposedFunction = puppeteerFunction;
+    } else if (typeof puppeteerFunction.default === 'function') {
+      exposedFunction = puppeteerFunction.default;
+    } else {
+      throw new Error(
+        `Failed to add page binding with name ${name}: ${puppeteerFunction} is not a function or a module with a default export.`
+      );
+    }
+
+    this._pageBindings.set(name, exposedFunction);
 
     const expression = helper.pageBindingInitString('exposedFun', name);
     await this._client.send('Runtime.addBinding', { name: name });
@@ -1499,7 +1539,8 @@ export class Page extends EventEmitter {
       return;
     }
     const context = this._frameManager.executionContextById(
-      event.executionContextId
+      event.executionContextId,
+      this._client
     );
     const values = event.args.map((arg) => createJSHandle(context, arg));
     this._addConsoleMessage(event.type, values, event.stackTrace);
@@ -1895,6 +1936,128 @@ export class Page extends EventEmitter {
   }
 
   /**
+   * @param options - Optional waiting parameters
+   * @returns Promise which resolves when network is idle
+   */
+  async waitForNetworkIdle(
+    options: { idleTime?: number; timeout?: number } = {}
+  ): Promise<void> {
+    const { idleTime = 500, timeout = this._timeoutSettings.timeout() } =
+      options;
+
+    const networkManager = this._frameManager.networkManager();
+
+    let idleResolveCallback;
+    const idlePromise = new Promise((resolve) => {
+      idleResolveCallback = resolve;
+    });
+
+    let abortRejectCallback;
+    const abortPromise = new Promise<Error>((_, reject) => {
+      abortRejectCallback = reject;
+    });
+
+    let idleTimer;
+    const onIdle = () => idleResolveCallback();
+
+    const cleanup = () => {
+      idleTimer && clearTimeout(idleTimer);
+      abortRejectCallback(new Error('abort'));
+    };
+
+    const evaluate = () => {
+      idleTimer && clearTimeout(idleTimer);
+      if (networkManager.numRequestsInProgress() === 0)
+        idleTimer = setTimeout(onIdle, idleTime);
+    };
+
+    evaluate();
+
+    const eventHandler = () => {
+      evaluate();
+      return false;
+    };
+
+    const listenToEvent = (event) =>
+      helper.waitForEvent(
+        networkManager,
+        event,
+        eventHandler,
+        timeout,
+        abortPromise
+      );
+
+    const eventPromises = [
+      listenToEvent(NetworkManagerEmittedEvents.Request),
+      listenToEvent(NetworkManagerEmittedEvents.Response),
+    ];
+
+    await Promise.race([
+      idlePromise,
+      ...eventPromises,
+      this._sessionClosePromise(),
+    ]).then(
+      (r) => {
+        cleanup();
+        return r;
+      },
+      (error) => {
+        cleanup();
+        throw error;
+      }
+    );
+  }
+
+  /**
+   * @param urlOrPredicate - A URL or predicate to wait for.
+   * @param options - Optional waiting parameters
+   * @returns Promise which resolves to the matched frame.
+   * @example
+   * ```js
+   * const frame = await page.waitForFrame(async (frame) => {
+   *   return frame.name() === 'Test';
+   * });
+   * ```
+   * @remarks
+   * Optional Parameter have:
+   *
+   * - `timeout`: Maximum wait time in milliseconds, defaults to `30` seconds,
+   * pass `0` to disable the timeout. The default value can be changed by using
+   * the {@link Page.setDefaultTimeout} method.
+   */
+  async waitForFrame(
+    urlOrPredicate: string | ((frame: Frame) => boolean | Promise<boolean>),
+    options: { timeout?: number } = {}
+  ): Promise<Frame> {
+    const { timeout = this._timeoutSettings.timeout() } = options;
+
+    async function predicate(frame: Frame) {
+      if (helper.isString(urlOrPredicate))
+        return urlOrPredicate === frame.url();
+      if (typeof urlOrPredicate === 'function')
+        return !!(await urlOrPredicate(frame));
+      return false;
+    }
+
+    return Promise.race([
+      helper.waitForEvent(
+        this._frameManager,
+        FrameManagerEmittedEvents.FrameAttached,
+        predicate,
+        timeout,
+        this._sessionClosePromise()
+      ),
+      helper.waitForEvent(
+        this._frameManager,
+        FrameManagerEmittedEvents.FrameNavigated,
+        predicate,
+        timeout,
+        this._sessionClosePromise()
+      ),
+    ]);
+  }
+
+  /**
    * This method navigate to the previous page in history.
    * @param options - Navigation parameters
    * @returns Promise which resolves to the main resource response. In case of
@@ -2073,6 +2236,10 @@ export class Page extends EventEmitter {
     });
   }
 
+  /**
+   * Enables CPU throttling to emulate slow CPUs.
+   * @param factor - slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).
+   */
   async emulateCPUThrottling(factor: number | null): Promise<void> {
     assert(
       factor === null || factor >= 1,
@@ -2470,18 +2637,16 @@ export class Page extends EventEmitter {
    * @returns Promise which resolves to buffer or a base64 string (depending on
    * the value of `encoding`) with captured screenshot.
    */
-  async screenshot(
-    options: ScreenshotOptions = {}
-  ): Promise<Buffer | string | void> {
+  async screenshot(options: ScreenshotOptions = {}): Promise<Buffer | string> {
     let screenshotType = null;
     // options.type takes precedence over inferring the type from options.path
     // because it may be a 0-length file with no extension created beforehand
     // (i.e. as a temp file).
     if (options.type) {
-      assert(
-        options.type === 'png' || options.type === 'jpeg',
-        'Unknown options.type value: ' + options.type
-      );
+      const type = options.type;
+      if (type !== 'png' && type !== 'jpeg' && type !== 'webp') {
+        assertNever(type, 'Unknown options.type value: ' + type);
+      }
       screenshotType = options.type;
     } else if (options.path) {
       const filePath = options.path;
@@ -2491,6 +2656,7 @@ export class Page extends EventEmitter {
       if (extension === 'png') screenshotType = 'png';
       else if (extension === 'jpg' || extension === 'jpeg')
         screenshotType = 'jpeg';
+      else if (extension === 'webp') screenshotType = 'webp';
       assert(
         screenshotType,
         `Unsupported screenshot type for extension \`.${extension}\``
@@ -2501,7 +2667,7 @@ export class Page extends EventEmitter {
 
     if (options.quality) {
       assert(
-        screenshotType === 'jpeg',
+        screenshotType === 'jpeg' || screenshotType === 'webp',
         'options.quality is unsupported for the ' +
           screenshotType +
           ' screenshots'
@@ -2561,7 +2727,7 @@ export class Page extends EventEmitter {
   }
 
   private async _screenshotTask(
-    format: 'png' | 'jpeg',
+    format: Protocol.Page.CaptureScreenshotRequestFormat,
     options?: ScreenshotOptions
   ): Promise<Buffer | string> {
     await this._client.send('Target.activateTarget', {
@@ -2600,7 +2766,7 @@ export class Page extends EventEmitter {
       }
     }
     const shouldSetDefaultBackground =
-      options.omitBackground && format === 'png';
+      options.omitBackground && (format === 'png' || format === 'webp');
     if (shouldSetDefaultBackground) {
       await this._setTransparentBackgroundColor();
     }
@@ -2675,6 +2841,7 @@ export class Page extends EventEmitter {
       preferCSSPageSize = false,
       margin = {},
       omitBackground = false,
+      timeout = 30000,
     } = options;
 
     let paperWidth = 8.5;
@@ -2699,7 +2866,7 @@ export class Page extends EventEmitter {
       await this._setTransparentBackgroundColor();
     }
 
-    const result = await this._client.send('Page.printToPDF', {
+    const printCommandPromise = this._client.send('Page.printToPDF', {
       transferMode: 'ReturnAsStream',
       landscape,
       displayHeaderFooter,
@@ -2716,6 +2883,12 @@ export class Page extends EventEmitter {
       pageRanges,
       preferCSSPageSize,
     });
+
+    const result = await helper.waitWithTimeout(
+      printCommandPromise,
+      'Page.printToPDF',
+      timeout
+    );
 
     if (omitBackground) {
       await this._resetDefaultBackgroundColor();
