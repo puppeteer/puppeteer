@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import https, { RequestOptions } from 'https';
 import os from 'os';
+import https, { RequestOptions } from 'https';
 import ProgressBar from 'progress';
 import URL from 'url';
 import puppeteer from '../node.js';
