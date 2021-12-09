@@ -22,11 +22,7 @@ import { helper, debugError } from './helper.js';
 import { Protocol } from 'devtools-protocol';
 import { HTTPRequest } from './HTTPRequest.js';
 import { HTTPResponse } from './HTTPResponse.js';
-import {
-  FetchRequestId,
-  NetworkEventManager,
-  NetworkRequestId,
-} from './NetworkEventManager.js';
+import { FetchRequestId, NetworkEventManager } from './NetworkEventManager.js';
 
 /**
  * @public
@@ -480,26 +476,13 @@ export class NetworkManager extends EventEmitter {
         .shift();
       if (!extraInfo) {
         // Wait until we get the corresponding ExtraInfo event.
-        let resolver = null;
-        const promise = new Promise<void>((resolve) => (resolver = resolve));
         this._networkEventManager.queueEventGroup(event.requestId, {
           responseReceivedEvent: event,
-          promise,
-          resolver,
         });
         return;
       }
     }
     this._emitResponseEvent(event, extraInfo);
-  }
-
-  responseWaitingForExtraInfoPromise(
-    networkRequestId: NetworkRequestId
-  ): Promise<void> {
-    const responseReceived =
-      this._networkEventManager.getQueuedEventGroup(networkRequestId);
-    if (!responseReceived) return Promise.resolve();
-    return responseReceived.promise;
   }
 
   _onResponseReceivedExtraInfo(
@@ -530,7 +513,6 @@ export class NetworkManager extends EventEmitter {
       if (queuedEvents.loadingFailedEvent) {
         this._emitLoadingFailed(queuedEvents.loadingFailedEvent);
       }
-      queuedEvents.resolver();
       return;
     }
 

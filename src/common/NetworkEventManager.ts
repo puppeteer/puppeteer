@@ -3,8 +3,6 @@ import { HTTPRequest } from './HTTPRequest.js';
 
 export type QueuedEventGroup = {
   responseReceivedEvent: Protocol.Network.ResponseReceivedEvent;
-  promise: Promise<void>;
-  resolver: () => void;
   loadingFinishedEvent?: Protocol.Network.LoadingFinishedEvent;
   loadingFailedEvent?: Protocol.Network.LoadingFailedEvent;
 };
