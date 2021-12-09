@@ -1,21 +1,20 @@
 import { Protocol } from 'devtools-protocol';
 import { HTTPRequest } from './HTTPRequest.js';
 
-export type QueuedEvents = {
-  responseReceived: Protocol.Network.ResponseReceivedEvent;
-  promise: Promise<void>;
-  resolver: () => void;
-  loadingFinished?: Protocol.Network.LoadingFinishedEvent;
-  loadingFailed?: Protocol.Network.LoadingFailedEvent;
+export type QueuedEventGroup = {
+  responseReceivedEvent: Protocol.Network.ResponseReceivedEvent;
+  loadingFinishedEvent?: Protocol.Network.LoadingFinishedEvent;
+  loadingFailedEvent?: Protocol.Network.LoadingFailedEvent;
 };
 
 export type FetchRequestId = string;
 export type NetworkRequestId = string;
 
-export type RedirectInfoMap = Array<{
+type RedirectInfo = {
   event: Protocol.Network.RequestWillBeSentEvent;
   fetchRequestId?: FetchRequestId;
-}>;
+};
+export type RedirectInfoList = RedirectInfo[];
 
 /**
  * @internal
@@ -55,15 +54,15 @@ export class NetworkEventManager {
    *     `_onRequestWillBeSent`, `_onRequestPaused`, `_onRequestPaused`, ...
    *     (see crbug.com/1196004)
    */
-  requestWillBeSent = new Map<
+  private _requestWillBeSentMap = new Map<
     NetworkRequestId,
     Protocol.Network.RequestWillBeSentEvent
   >();
-  requestPaused = new Map<
+  private _requestPausedMap = new Map<
     NetworkRequestId,
     Protocol.Fetch.RequestPausedEvent
   >();
-  httpRequest = new Map<NetworkRequestId, HTTPRequest>();
+  private _httpRequestsMap = new Map<NetworkRequestId, HTTPRequest>();
 
   /*
    * The below maps are used to reconcile Network.responseReceivedExtraInfo
@@ -74,34 +73,115 @@ export class NetworkEventManager {
    * handle redirects, we have to make them Arrays to represent the chain of
    * events.
    */
-  private _responseReceivedExtraInfo = new Map<
+  private _responseReceivedExtraInfoMap = new Map<
     NetworkRequestId,
     Protocol.Network.ResponseReceivedExtraInfoEvent[]
   >();
-  private _queuedRedirectInfoMap = new Map<NetworkRequestId, RedirectInfoMap>();
-  queuedEvents = new Map<NetworkRequestId, QueuedEvents>();
+  private _queuedRedirectInfoMap = new Map<
+    NetworkRequestId,
+    RedirectInfoList
+  >();
+  private _queuedEventGroupMap = new Map<NetworkRequestId, QueuedEventGroup>();
 
   forget(networkRequestId: NetworkRequestId): void {
-    this.requestWillBeSent.delete(networkRequestId);
-    this.requestPaused.delete(networkRequestId);
-    this.queuedEvents.delete(networkRequestId);
+    this._requestWillBeSentMap.delete(networkRequestId);
+    this._requestPausedMap.delete(networkRequestId);
+    this._queuedEventGroupMap.delete(networkRequestId);
     this._queuedRedirectInfoMap.delete(networkRequestId);
-    this._responseReceivedExtraInfo.delete(networkRequestId);
+    this._responseReceivedExtraInfoMap.delete(networkRequestId);
   }
 
   responseExtraInfo(
     networkRequestId: NetworkRequestId
   ): Protocol.Network.ResponseReceivedExtraInfoEvent[] {
-    if (!this._responseReceivedExtraInfo.has(networkRequestId)) {
-      this._responseReceivedExtraInfo.set(networkRequestId, []);
+    if (!this._responseReceivedExtraInfoMap.has(networkRequestId)) {
+      this._responseReceivedExtraInfoMap.set(networkRequestId, []);
     }
-    return this._responseReceivedExtraInfo.get(networkRequestId);
+    return this._responseReceivedExtraInfoMap.get(networkRequestId);
   }
 
-  queuedRedirectInfo(fetchRequestId: FetchRequestId): RedirectInfoMap {
+  private queuedRedirectInfo(fetchRequestId: FetchRequestId): RedirectInfoList {
     if (!this._queuedRedirectInfoMap.has(fetchRequestId)) {
       this._queuedRedirectInfoMap.set(fetchRequestId, []);
     }
     return this._queuedRedirectInfoMap.get(fetchRequestId);
+  }
+
+  queueRedirectInfo(
+    fetchRequestId: FetchRequestId,
+    redirectInfo: RedirectInfo
+  ): void {
+    this.queuedRedirectInfo(fetchRequestId).push(redirectInfo);
+  }
+
+  takeQueuedRedirectInfo(
+    fetchRequestId: FetchRequestId
+  ): RedirectInfo | undefined {
+    return this.queuedRedirectInfo(fetchRequestId).shift();
+  }
+
+  numRequestsInProgress(): number {
+    return [...this._httpRequestsMap].filter(([, request]) => {
+      return !request.response();
+    }).length;
+  }
+
+  storeRequestWillBeSent(
+    networkRequestId: NetworkRequestId,
+    event: Protocol.Network.RequestWillBeSentEvent
+  ): void {
+    this._requestWillBeSentMap.set(networkRequestId, event);
+  }
+
+  getRequestWillBeSent(
+    networkRequestId: NetworkRequestId
+  ): Protocol.Network.RequestWillBeSentEvent | undefined {
+    return this._requestWillBeSentMap.get(networkRequestId);
+  }
+
+  forgetRequestWillBeSent(networkRequestId: NetworkRequestId): void {
+    this._requestPausedMap.delete(networkRequestId);
+  }
+
+  getRequestPaused(
+    networkRequestId: NetworkRequestId
+  ): Protocol.Fetch.RequestPausedEvent | undefined {
+    return this._requestPausedMap.get(networkRequestId);
+  }
+
+  forgetRequestPaused(networkRequestId: NetworkRequestId): void {
+    this._requestPausedMap.delete(networkRequestId);
+  }
+
+  storeRequestPaused(
+    networkRequestId: NetworkRequestId,
+    event: Protocol.Fetch.RequestPausedEvent
+  ): void {
+    this._requestPausedMap.set(networkRequestId, event);
+  }
+
+  getRequest(networkRequestId: NetworkRequestId): HTTPRequest | undefined {
+    return this._httpRequestsMap.get(networkRequestId);
+  }
+
+  storeRequest(networkRequestId: NetworkRequestId, request: HTTPRequest): void {
+    this._httpRequestsMap.set(networkRequestId, request);
+  }
+
+  forgetRequest(networkRequestId: NetworkRequestId): void {
+    this._httpRequestsMap.delete(networkRequestId);
+  }
+
+  getQueuedEventGroup(
+    networkRequestId: NetworkRequestId
+  ): QueuedEventGroup | undefined {
+    return this._queuedEventGroupMap.get(networkRequestId);
+  }
+
+  queueEventGroup(
+    networkRequestId: NetworkRequestId,
+    event: QueuedEventGroup
+  ): void {
+    this._queuedEventGroupMap.set(networkRequestId, event);
   }
 }

@@ -351,6 +351,50 @@ export class ElementHandle<
     this._frameManager = frameManager;
   }
 
+  /**
+   * Wait for the `selector` to appear within the element. If at the moment of calling the
+   * method the `selector` already exists, the method will return immediately. If
+   * the `selector` doesn't appear after the `timeout` milliseconds of waiting, the
+   * function will throw.
+   *
+   * This method does not work across navigations or if the element is detached from DOM.
+   *
+   * @param selector - A
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
+   * of an element to wait for
+   * @param options - Optional waiting parameters
+   * @returns Promise which resolves when element specified by selector string
+   * is added to DOM. Resolves to `null` if waiting for hidden: `true` and
+   * selector is not found in DOM.
+   * @remarks
+   * The optional parameters in `options` are:
+   *
+   * - `visible`: wait for the selected element to be present in DOM and to be
+   * visible, i.e. to not have `display: none` or `visibility: hidden` CSS
+   * properties. Defaults to `false`.
+   *
+   * - `hidden`: wait for the selected element to not be found in the DOM or to be hidden,
+   * i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to
+   * `false`.
+   *
+   * - `timeout`: maximum time to wait in milliseconds. Defaults to `30000`
+   * (30 seconds). Pass `0` to disable timeout. The default value can be changed
+   * by using the {@link Page.setDefaultTimeout} method.
+   */
+  waitForSelector(
+    selector: string,
+    options: {
+      visible?: boolean;
+      hidden?: boolean;
+      timeout?: number;
+    } = {}
+  ): Promise<ElementHandle | null> {
+    return this._context._world.waitForSelector(selector, {
+      ...options,
+      root: this,
+    });
+  }
+
   asElement(): ElementHandle<ElementType> | null {
     return this;
   }
