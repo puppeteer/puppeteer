@@ -4882,9 +4882,7 @@ This method expects `elementHandle` to point to an [input element](https://devel
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The default value can be changed by using the [page.setDefaultTimeout(timeout)](#pagesetdefaulttimeouttimeout) method.
 - returns: <[Promise]<?[ElementHandle]>> Promise which resolves when element specified by selector string is added to DOM. Resolves to `null` if waiting for `hidden: true` and selector is not found in DOM.
 
-Wait for the `selector` to appear within the element. If at the moment of calling
-the method the `selector` already exists, the method will return
-immediately. If the selector doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
+Wait for an element matching `selector` to appear within the `elementHandle`’s subtree. If the `selector` already matches an element at the moment of calling the method, the promise returned by the method resolves immediately. If the selector doesn’t appear after `timeout` milliseconds of waiting, the promise rejects.
 
 This method does not work across navigations or if the element is detached from DOM.
 
