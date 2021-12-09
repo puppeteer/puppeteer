@@ -237,7 +237,7 @@ export class HTTPRequest {
     if (!this._allowInterception)
       return { action: InterceptResolutionAction.Disabled };
     if (this._interceptionHandled)
-      return { action: InterceptResolutionAction.AlreadyHnadled };
+      return { action: InterceptResolutionAction.AlreadyHandled };
     return { ...this._interceptResolutionState };
   }
 
@@ -644,7 +644,7 @@ export enum InterceptResolutionAction {
   Continue = 'continue',
   Disabled = 'disabled',
   None = 'none',
-  AlreadyHnadled = 'already-handled',
+  AlreadyHandled = 'already-handled',
 }
 
 /**

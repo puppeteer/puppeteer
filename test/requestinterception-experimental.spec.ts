@@ -858,7 +858,7 @@ describe('request interception', function () {
       });
       page.on('request', (request) => {
         const { action } = request.interceptResolutionState();
-        expect(action).toBe(InterceptResolutionAction.AlreadyHnadled);
+        expect(action).toBe(InterceptResolutionAction.AlreadyHandled);
       });
       await page.goto(server.EMPTY_PAGE);
     });
