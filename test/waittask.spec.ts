@@ -293,7 +293,11 @@ describe('waittask specs', function () {
       const div = await page.$('div');
       let resolved = false;
       const waitForFunction = page
-        .waitForFunction((element) => !element.parentElement, {}, div)
+        .waitForFunction(
+          (element) => element.localName === 'div' && !element.parentElement,
+          {},
+          div
+        )
         .then(() => (resolved = true));
       expect(resolved).toBe(false);
       await page.evaluate((element: HTMLElement) => element.remove(), div);
