@@ -398,7 +398,7 @@ export class FrameManager extends EventEmitter {
             frameId: frame._id,
             worldName: name,
             grantUniveralAccess: true,
-          })
+          }).catch(console.error)
         )
     );
   }
