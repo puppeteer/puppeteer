@@ -32,10 +32,16 @@ async function queryAXTree(
     role,
   });
   const filteredNodes: Protocol.Accessibility.AXNode[] = nodes.filter(
-    (node: Protocol.Accessibility.AXNode) => node.role.value !== 'text'
+    (node: Protocol.Accessibility.AXNode) => node.role.value !== 'StaticText'
   );
   return filteredNodes;
 }
+
+const normalizeValue = (value: string): string =>
+  value.replace(/ +/g, ' ').trim();
+const knownAttributes = new Set(['name', 'role']);
+const attributeRegexp =
+  /\[\s*(?<attribute>\w+)\s*=\s*(?<quote>"|')(?<value>\\.|.*?(?=\k<quote>))\k<quote>\s*\]/g;
 
 /*
  * The selectors consist of an accessible name to query for and optionally
@@ -49,24 +55,19 @@ async function queryAXTree(
  */
 type ariaQueryOption = { name?: string; role?: string };
 function parseAriaSelector(selector: string): ariaQueryOption {
-  const normalize = (value: string): string => value.replace(/ +/g, ' ').trim();
-  const knownAttributes = new Set(['name', 'role']);
   const queryOptions: ariaQueryOption = {};
-  const attributeRegexp = /\[\s*(?<attribute>\w+)\s*=\s*"(?<value>\\.|[^"\\]*)"\s*\]/;
   const defaultName = selector.replace(
     attributeRegexp,
-    (_, attribute: string, value: string) => {
+    (_, attribute: string, quote: string, value: string) => {
       attribute = attribute.trim();
       if (!knownAttributes.has(attribute))
-        throw new Error(
-          'Unknown aria attribute "${groups.attribute}" in selector'
-        );
-      queryOptions[attribute] = normalize(value);
+        throw new Error(`Unknown aria attribute "${attribute}" in selector`);
+      queryOptions[attribute] = normalizeValue(value);
       return '';
     }
   );
   if (defaultName && !queryOptions.name)
-    queryOptions.name = normalize(defaultName);
+    queryOptions.name = normalizeValue(defaultName);
   return queryOptions;
 }
 

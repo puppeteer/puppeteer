@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CDPSession } from './Connection.js';
+import { ProtocolMapping } from 'devtools-protocol/types/protocol-mapping.js';
+
+import { EventEmitter } from './EventEmitter.js';
 import { Frame } from './FrameManager.js';
 import { HTTPResponse } from './HTTPResponse.js';
 import { assert } from './assert.js';
 import { helper, debugError } from './helper.js';
 import { Protocol } from 'devtools-protocol';
+import { ProtocolError } from './Errors.js';
 
 /**
  * @public
@@ -31,6 +34,14 @@ export interface ContinueRequestOverrides {
   method?: string;
   postData?: string;
   headers?: Record<string, string>;
+}
+
+/**
+ * @public
+ */
+export interface InterceptResolutionState {
+  action: InterceptResolutionAction;
+  priority?: number;
 }
 
 /**
@@ -54,6 +65,20 @@ export interface ResponseForRequest {
  * @public
  */
 export type ResourceType = Lowercase<Protocol.Network.ResourceType>;
+
+/**
+ * The default cooperative request interception resolution priority
+ *
+ * @public
+ */
+export const DEFAULT_INTERCEPT_RESOLUTION_PRIORITY = 0;
+
+interface CDPSession extends EventEmitter {
+  send<T extends keyof ProtocolMapping.Commands>(
+    method: T,
+    ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
+  ): Promise<ProtocolMapping.Commands[T]['returnType']>;
+}
 
 /**
  *
@@ -124,6 +149,12 @@ export class HTTPRequest {
   private _postData?: string;
   private _headers: Record<string, string> = {};
   private _frame: Frame;
+  private _continueRequestOverrides: ContinueRequestOverrides;
+  private _responseForRequest: Partial<ResponseForRequest>;
+  private _abortErrorReason: Protocol.Network.ErrorReason;
+  private _interceptResolutionState: InterceptResolutionState;
+  private _interceptHandlers: Array<() => void | PromiseLike<any>>;
+  private _initiator: Protocol.Network.Initiator;
 
   /**
    * @internal
@@ -148,6 +179,10 @@ export class HTTPRequest {
     this._postData = event.request.postData;
     this._frame = frame;
     this._redirectChain = redirectChain;
+    this._continueRequestOverrides = {};
+    this._interceptResolutionState = { action: InterceptResolutionAction.None };
+    this._interceptHandlers = [];
+    this._initiator = event.initiator;
 
     for (const key of Object.keys(event.request.headers))
       this._headers[key.toLowerCase()] = event.request.headers[key];
@@ -158,6 +193,92 @@ export class HTTPRequest {
    */
   url(): string {
     return this._url;
+  }
+
+  /**
+   * @returns the `ContinueRequestOverrides` that will be used
+   * if the interception is allowed to continue (ie, `abort()` and
+   * `respond()` aren't called).
+   */
+  continueRequestOverrides(): ContinueRequestOverrides {
+    assert(this._allowInterception, 'Request Interception is not enabled!');
+    return this._continueRequestOverrides;
+  }
+
+  /**
+   * @returns The `ResponseForRequest` that gets used if the
+   * interception is allowed to respond (ie, `abort()` is not called).
+   */
+  responseForRequest(): Partial<ResponseForRequest> {
+    assert(this._allowInterception, 'Request Interception is not enabled!');
+    return this._responseForRequest;
+  }
+
+  /**
+   * @returns the most recent reason for aborting the request
+   */
+  abortErrorReason(): Protocol.Network.ErrorReason {
+    assert(this._allowInterception, 'Request Interception is not enabled!');
+    return this._abortErrorReason;
+  }
+
+  /**
+   * @returns An InterceptResolutionState object describing the current resolution
+   *  action and priority.
+   *
+   *  InterceptResolutionState contains:
+   *    action: InterceptResolutionAction
+   *    priority?: number
+   *
+   *  InterceptResolutionAction is one of: `abort`, `respond`, `continue`,
+   *  `disabled`, `none`, or `already-handled`.
+   */
+  interceptResolutionState(): InterceptResolutionState {
+    if (!this._allowInterception)
+      return { action: InterceptResolutionAction.Disabled };
+    if (this._interceptionHandled)
+      return { action: InterceptResolutionAction.AlreadyHandled };
+    return { ...this._interceptResolutionState };
+  }
+
+  /**
+   * @returns `true` if the intercept resolution has already been handled,
+   * `false` otherwise.
+   */
+  isInterceptResolutionHandled(): boolean {
+    return this._interceptionHandled;
+  }
+
+  /**
+   * Adds an async request handler to the processing queue.
+   * Deferred handlers are not guaranteed to execute in any particular order,
+   * but they are guarnateed to resolve before the request interception
+   * is finalized.
+   */
+  enqueueInterceptAction(
+    pendingHandler: () => void | PromiseLike<unknown>
+  ): void {
+    this._interceptHandlers.push(pendingHandler);
+  }
+
+  /**
+   * Awaits pending interception handlers and then decides how to fulfill
+   * the request interception.
+   */
+  async finalizeInterceptions(): Promise<void> {
+    await this._interceptHandlers.reduce(
+      (promiseChain, interceptAction) => promiseChain.then(interceptAction),
+      Promise.resolve()
+    );
+    const { action } = this.interceptResolutionState();
+    switch (action) {
+      case 'abort':
+        return this._abort(this._abortErrorReason);
+      case 'respond':
+        return this._respond(this._responseForRequest);
+      case 'continue':
+        return this._continue(this._continueRequestOverrides);
+    }
   }
 
   /**
@@ -191,14 +312,16 @@ export class HTTPRequest {
   }
 
   /**
-   * @returns the response for this request, if a response has been received.
+   * @returns A matching `HTTPResponse` object, or null if the response has not
+   * been received yet.
    */
   response(): HTTPResponse | null {
     return this._response;
   }
 
   /**
-   * @returns the frame that initiated the request.
+   * @returns the frame that initiated the request, or null if navigating to
+   * error pages.
    */
   frame(): Frame | null {
     return this._frame;
@@ -212,6 +335,14 @@ export class HTTPRequest {
   }
 
   /**
+   * @returns the initiator of the request.
+   */
+  initiator(): Protocol.Network.Initiator {
+    return this._initiator;
+  }
+
+  /**
+   * A `redirectChain` is a chain of requests initiated to fetch a resource.
    * @remarks
    *
    * `redirectChain` is shared between all the requests of the same chain.
@@ -292,12 +423,48 @@ export class HTTPRequest {
    * ```
    *
    * @param overrides - optional overrides to apply to the request.
+   * @param priority - If provided, intercept is resolved using
+   * cooperative handling rules. Otherwise, intercept is resolved
+   * immediately.
    */
-  async continue(overrides: ContinueRequestOverrides = {}): Promise<void> {
+  async continue(
+    overrides: ContinueRequestOverrides = {},
+    priority?: number
+  ): Promise<void> {
     // Request interception is not supported for data: urls.
     if (this._url.startsWith('data:')) return;
     assert(this._allowInterception, 'Request Interception is not enabled!');
     assert(!this._interceptionHandled, 'Request is already handled!');
+    if (priority === undefined) {
+      return this._continue(overrides);
+    }
+    this._continueRequestOverrides = overrides;
+    if (
+      priority > this._interceptResolutionState.priority ||
+      this._interceptResolutionState.priority === undefined
+    ) {
+      this._interceptResolutionState = {
+        action: InterceptResolutionAction.Continue,
+        priority,
+      };
+      return;
+    }
+    if (priority === this._interceptResolutionState.priority) {
+      if (
+        this._interceptResolutionState.action === 'abort' ||
+        this._interceptResolutionState.action === 'respond'
+      ) {
+        return;
+      }
+      this._interceptResolutionState.action =
+        InterceptResolutionAction.Continue;
+    }
+    return;
+  }
+
+  private async _continue(
+    overrides: ContinueRequestOverrides = {}
+  ): Promise<void> {
     const { url, method, postData, headers } = overrides;
     this._interceptionHandled = true;
 
@@ -314,10 +481,8 @@ export class HTTPRequest {
         headers: headers ? headersArray(headers) : undefined,
       })
       .catch((error) => {
-        // In certain cases, protocol will return error if the request was
-        // already canceled or the page was closed. We should tolerate these
-        // errors.
-        debugError(error);
+        this._interceptionHandled = false;
+        return handleError(error);
       });
   }
 
@@ -348,12 +513,41 @@ export class HTTPRequest {
    * Calling `request.respond` for a dataURL request is a noop.
    *
    * @param response - the response to fulfill the request with.
+   * @param priority - If provided, intercept is resolved using
+   * cooperative handling rules. Otherwise, intercept is resolved
+   * immediately.
    */
-  async respond(response: Partial<ResponseForRequest>): Promise<void> {
+  async respond(
+    response: Partial<ResponseForRequest>,
+    priority?: number
+  ): Promise<void> {
     // Mocking responses for dataURL requests is not currently supported.
     if (this._url.startsWith('data:')) return;
     assert(this._allowInterception, 'Request Interception is not enabled!');
     assert(!this._interceptionHandled, 'Request is already handled!');
+    if (priority === undefined) {
+      return this._respond(response);
+    }
+    this._responseForRequest = response;
+    if (
+      priority > this._interceptResolutionState.priority ||
+      this._interceptResolutionState.priority === undefined
+    ) {
+      this._interceptResolutionState = {
+        action: InterceptResolutionAction.Respond,
+        priority,
+      };
+      return;
+    }
+    if (priority === this._interceptResolutionState.priority) {
+      if (this._interceptResolutionState.action === 'abort') {
+        return;
+      }
+      this._interceptResolutionState.action = InterceptResolutionAction.Respond;
+    }
+  }
+
+  private async _respond(response: Partial<ResponseForRequest>): Promise<void> {
     this._interceptionHandled = true;
 
     const responseBody: Buffer | null =
@@ -384,10 +578,8 @@ export class HTTPRequest {
         body: responseBody ? responseBody.toString('base64') : undefined,
       })
       .catch((error) => {
-        // In certain cases, protocol will return error if the request was
-        // already canceled or the page was closed. We should tolerate these
-        // errors.
-        debugError(error);
+        this._interceptionHandled = false;
+        return handleError(error);
       });
   }
 
@@ -400,28 +592,67 @@ export class HTTPRequest {
    * throw an exception immediately.
    *
    * @param errorCode - optional error code to provide.
+   * @param priority - If provided, intercept is resolved using
+   * cooperative handling rules. Otherwise, intercept is resolved
+   * immediately.
    */
-  async abort(errorCode: ErrorCode = 'failed'): Promise<void> {
+  async abort(
+    errorCode: ErrorCode = 'failed',
+    priority?: number
+  ): Promise<void> {
     // Request interception is not supported for data: urls.
     if (this._url.startsWith('data:')) return;
     const errorReason = errorReasons[errorCode];
     assert(errorReason, 'Unknown error code: ' + errorCode);
     assert(this._allowInterception, 'Request Interception is not enabled!');
     assert(!this._interceptionHandled, 'Request is already handled!');
+    if (priority === undefined) {
+      return this._abort(errorReason);
+    }
+    this._abortErrorReason = errorReason;
+    if (
+      priority >= this._interceptResolutionState.priority ||
+      this._interceptResolutionState.priority === undefined
+    ) {
+      this._interceptResolutionState = {
+        action: InterceptResolutionAction.Abort,
+        priority,
+      };
+      return;
+    }
+  }
+
+  private async _abort(
+    errorReason: Protocol.Network.ErrorReason
+  ): Promise<void> {
     this._interceptionHandled = true;
     await this._client
       .send('Fetch.failRequest', {
         requestId: this._interceptionId,
         errorReason,
       })
-      .catch((error) => {
-        // In certain cases, protocol will return error if the request was
-        // already canceled or the page was closed. We should tolerate these
-        // errors.
-        debugError(error);
-      });
+      .catch(handleError);
   }
 }
+
+/**
+ * @public
+ */
+export enum InterceptResolutionAction {
+  Abort = 'abort',
+  Respond = 'respond',
+  Continue = 'continue',
+  Disabled = 'disabled',
+  None = 'none',
+  AlreadyHandled = 'already-handled',
+}
+
+/**
+ * @public
+ *
+ * @deprecated please use {@link InterceptResolutionAction} instead.
+ */
+export type InterceptResolutionStrategy = InterceptResolutionAction;
 
 /**
  * @public
@@ -459,6 +690,11 @@ const errorReasons: Record<ErrorCode, Protocol.Network.ErrorReason> = {
   failed: 'Failed',
 } as const;
 
+/**
+ * @public
+ */
+export type ActionResult = 'continue' | 'abort' | 'respond';
+
 function headersArray(
   headers: Record<string, string>
 ): Array<{ name: string; value: string }> {
@@ -468,6 +704,16 @@ function headersArray(
       result.push({ name, value: headers[name] + '' });
   }
   return result;
+}
+
+async function handleError(error: ProtocolError) {
+  if (['Invalid header'].includes(error.originalMessage)) {
+    throw error;
+  }
+  // In certain cases, protocol will return error if the request was
+  // already canceled or the page was closed. We should tolerate these
+  // errors.
+  debugError(error);
 }
 
 // List taken from

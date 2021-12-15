@@ -25,6 +25,7 @@ import {
   itFailsFirefox,
   describeFailsFirefox,
 } from './mocha-utils'; // eslint-disable-line import/extensions
+import { HTTPResponse } from '../lib/cjs/puppeteer/api-docs-entry.js';
 
 describe('network', function () {
   setupTestBrowserHooks();
@@ -67,7 +68,6 @@ describe('network', function () {
       expect(requests.length).toBe(2);
     });
   });
-
   describe('Request.frame', function () {
     it('should work for main frame navigation request', async () => {
       const { page, server } = getTestState();
@@ -134,6 +134,48 @@ describe('network', function () {
       });
       const response = await page.goto(server.EMPTY_PAGE);
       expect(response.headers()['foo']).toBe('bar');
+    });
+  });
+
+  describeFailsFirefox('Request.initiator', () => {
+    it('shoud return the initiator', async () => {
+      const { page, server } = getTestState();
+
+      const initiators = new Map();
+      page.on('request', (request) =>
+        initiators.set(request.url().split('/').pop(), request.initiator())
+      );
+      await page.goto(server.PREFIX + '/initiator.html');
+
+      expect(initiators.get('initiator.html').type).toBe('other');
+      expect(initiators.get('initiator.js').type).toBe('parser');
+      expect(initiators.get('initiator.js').url).toBe(
+        server.PREFIX + '/initiator.html'
+      );
+      expect(initiators.get('frame.html').type).toBe('parser');
+      expect(initiators.get('frame.html').url).toBe(
+        server.PREFIX + '/initiator.html'
+      );
+      expect(initiators.get('script.js').type).toBe('parser');
+      expect(initiators.get('script.js').url).toBe(
+        server.PREFIX + '/frames/frame.html'
+      );
+      expect(initiators.get('style.css').type).toBe('parser');
+      expect(initiators.get('style.css').url).toBe(
+        server.PREFIX + '/frames/frame.html'
+      );
+      expect(initiators.get('initiator.js').type).toBe('parser');
+      expect(initiators.get('injectedfile.js').type).toBe('script');
+      expect(initiators.get('injectedfile.js').stack.callFrames[0].url).toBe(
+        server.PREFIX + '/initiator.js'
+      );
+      expect(initiators.get('injectedstyle.css').type).toBe('script');
+      expect(initiators.get('injectedstyle.css').stack.callFrames[0].url).toBe(
+        server.PREFIX + '/initiator.js'
+      );
+      expect(initiators.get('initiator.js').url).toBe(
+        server.PREFIX + '/initiator.html'
+      );
     });
   });
 
@@ -325,6 +367,43 @@ describe('network', function () {
       const responseBuffer = await response.buffer();
       expect(responseBuffer.equals(imageBuffer)).toBe(true);
     });
+    it('should throw if the response does not have a body', async () => {
+      const { page, server } = getTestState();
+
+      await page.goto(server.PREFIX + '/empty.html');
+
+      server.setRoute('/test.html', (req, res) => {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Headers', 'x-ping');
+        res.end('Hello World');
+      });
+      const url = server.CROSS_PROCESS_PREFIX + '/test.html';
+      const responsePromise = new Promise<HTTPResponse>((resolve) => {
+        page.on('response', (response) => {
+          // Get the preflight response.
+          if (
+            response.request().method() === 'OPTIONS' &&
+            response.url() === url
+          ) {
+            resolve(response);
+          }
+        });
+      });
+
+      // Trigger a request with a preflight.
+      await page.evaluate<(src: string) => void>(async (src) => {
+        const response = await fetch(src, {
+          method: 'POST',
+          headers: { 'x-ping': 'pong' },
+        });
+        return response;
+      }, url);
+
+      const response = await responsePromise;
+      await expect(response.buffer()).rejects.toThrowError(
+        'Could not load body for this request. This might happen if the request is a preflight request.'
+      );
+    });
   });
 
   describe('Response.statusText', function () {
@@ -337,6 +416,17 @@ describe('network', function () {
       });
       const response = await page.goto(server.PREFIX + '/cool');
       expect(response.statusText()).toBe('cool!');
+    });
+
+    it('handles missing status text', async () => {
+      const { page, server } = getTestState();
+
+      server.setRoute('/nostatus', (req, res) => {
+        res.writeHead(200, '');
+        res.end();
+      });
+      const response = await page.goto(server.PREFIX + '/nostatus');
+      expect(response.statusText()).toBe('');
     });
   });
 
@@ -502,7 +592,7 @@ describe('network', function () {
       expect(requests.get('script.js').isNavigationRequest()).toBe(false);
       expect(requests.get('style.css').isNavigationRequest()).toBe(false);
     });
-    it('should work when navigating to image', async () => {
+    itFailsFirefox('should work when navigating to image', async () => {
       const { page, server } = getTestState();
 
       const requests = [];
@@ -605,6 +695,79 @@ describe('network', function () {
       expect(responses.get('one-style.css').fromCache()).toBe(true);
       expect(responses.get('one-style.html').status()).toBe(304);
       expect(responses.get('one-style.html').fromCache()).toBe(false);
+    });
+  });
+
+  describeFailsFirefox('raw network headers', async () => {
+    it('Same-origin set-cookie navigation', async () => {
+      const { page, server } = getTestState();
+
+      const setCookieString = 'foo=bar';
+      server.setRoute('/empty.html', (req, res) => {
+        res.setHeader('set-cookie', setCookieString);
+        res.end('hello world');
+      });
+      const response = await page.goto(server.EMPTY_PAGE);
+      expect(response.headers()['set-cookie']).toBe(setCookieString);
+    });
+
+    it('Same-origin set-cookie subresource', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+
+      const setCookieString = 'foo=bar';
+      server.setRoute('/foo', (req, res) => {
+        res.setHeader('set-cookie', setCookieString);
+        res.end('hello world');
+      });
+
+      const responsePromise = new Promise<HTTPResponse>((resolve) =>
+        page.on('response', (response) => resolve(response))
+      );
+      page.evaluate(() => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', '/foo');
+        xhr.send();
+      });
+      const subresourceResponse = await responsePromise;
+      expect(subresourceResponse.headers()['set-cookie']).toBe(setCookieString);
+    });
+
+    it('Cross-origin set-cookie', async () => {
+      const { httpsServer, puppeteer, defaultBrowserOptions } = getTestState();
+
+      const browser = await puppeteer.launch({
+        ...defaultBrowserOptions,
+        ignoreHTTPSErrors: true,
+      });
+
+      const page = await browser.newPage();
+
+      try {
+        await page.goto(httpsServer.PREFIX + '/empty.html');
+
+        const setCookieString = 'hello=world';
+        httpsServer.setRoute('/setcookie.html', (req, res) => {
+          res.setHeader('Access-Control-Allow-Origin', '*');
+          res.setHeader('set-cookie', setCookieString);
+          res.end();
+        });
+        await page.goto(httpsServer.PREFIX + '/setcookie.html');
+
+        const response = await new Promise<HTTPResponse>((resolve) => {
+          page.on('response', resolve);
+          const url = httpsServer.CROSS_PROCESS_PREFIX + '/setcookie.html';
+          page.evaluate<(src: string) => void>((src) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', src);
+            xhr.send();
+          }, url);
+        });
+        expect(response.headers()['set-cookie']).toBe(setCookieString);
+      } finally {
+        await page.close();
+        await browser.close();
+      }
     });
   });
 });

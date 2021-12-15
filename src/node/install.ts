@@ -15,18 +15,23 @@
  */
 
 import os from 'os';
-import https from 'https';
+import https, { RequestOptions } from 'https';
 import ProgressBar from 'progress';
+import URL from 'url';
 import puppeteer from '../node.js';
 import { PUPPETEER_REVISIONS } from '../revisions.js';
 import { PuppeteerNode } from './Puppeteer.js';
+import createHttpsProxyAgent, {
+  HttpsProxyAgentOptions,
+} from 'https-proxy-agent';
+import { getProxyForUrl } from 'proxy-from-env';
 
 const supportedProducts = {
   chrome: 'Chromium',
   firefox: 'Firefox Nightly',
 } as const;
 
-export async function downloadBrowser() {
+export async function downloadBrowser(): Promise<void> {
   const downloadHost =
     process.env.PUPPETEER_DOWNLOAD_HOST ||
     process.env.npm_config_puppeteer_download_host ||
@@ -90,7 +95,9 @@ export async function downloadBrowser() {
     if (NPM_NO_PROXY) process.env.NO_PROXY = NPM_NO_PROXY;
 
     function onSuccess(localRevisions: string[]): void {
-      if (os.arch() !== 'arm64') {
+      // Use Intel x86 builds on Apple M1 until native macOS arm64
+      // Chromium builds are available.
+      if (os.platform() !== 'darwin' && os.arch() !== 'arm64') {
         logPolitely(
           `${supportedProducts[product]} (${revisionInfo.revision}) downloaded to ${revisionInfo.folderPath}`
         );
@@ -146,16 +153,32 @@ export async function downloadBrowser() {
   }
 
   function getFirefoxNightlyVersion() {
-    const firefoxVersions =
+    const firefoxVersionsUrl =
       'https://product-details.mozilla.org/1.0/firefox_versions.json';
+
+    const proxyURL = getProxyForUrl(firefoxVersionsUrl);
+
+    const requestOptions: RequestOptions = {};
+
+    if (proxyURL) {
+      const parsedProxyURL = URL.parse(proxyURL);
+
+      const proxyOptions = {
+        ...parsedProxyURL,
+        secureProxy: parsedProxyURL.protocol === 'https:',
+      } as HttpsProxyAgentOptions;
+
+      requestOptions.agent = createHttpsProxyAgent(proxyOptions);
+      requestOptions.rejectUnauthorized = false;
+    }
 
     const promise = new Promise((resolve, reject) => {
       let data = '';
       logPolitely(
-        `Requesting latest Firefox Nightly version from ${firefoxVersions}`
+        `Requesting latest Firefox Nightly version from ${firefoxVersionsUrl}`
       );
       https
-        .get(firefoxVersions, (r) => {
+        .get(firefoxVersionsUrl, requestOptions, (r) => {
           if (r.statusCode >= 400)
             return reject(new Error(`Got status code ${r.statusCode}`));
           r.on('data', (chunk) => {
@@ -176,7 +199,7 @@ export async function downloadBrowser() {
   }
 }
 
-export function logPolitely(toBeLogged) {
+export function logPolitely(toBeLogged: unknown): void {
   const logLevel = process.env.npm_config_loglevel;
   const logLevelDisplay = ['silent', 'error', 'warn'].indexOf(logLevel) > -1;
 

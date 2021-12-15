@@ -22,11 +22,20 @@ import { Protocol } from 'devtools-protocol';
 import { ProtocolMapping } from 'devtools-protocol/types/protocol-mapping.js';
 import { ConnectionTransport } from './ConnectionTransport.js';
 import { EventEmitter } from './EventEmitter.js';
+import { ProtocolError } from './Errors.js';
 
-interface ConnectionCallback {
+/**
+ * @public
+ */
+export { ConnectionTransport, ProtocolMapping };
+
+/**
+ * @public
+ */
+export interface ConnectionCallback {
   resolve: Function;
   reject: Function;
-  error: Error;
+  error: ProtocolError;
   method: string;
 }
 
@@ -40,7 +49,7 @@ export const ConnectionEmittedEvents = {
 } as const;
 
 /**
- * @internal
+ * @public
  */
 export class Connection extends EventEmitter {
   _url: string;
@@ -67,8 +76,8 @@ export class Connection extends EventEmitter {
   }
 
   /**
-   * @param sessionId - Gets Session Id
-   * @returns the current CDP session if it exists
+   * @param sessionId - The session id
+   * @returns The current CDP session if it exists
    */
   session(sessionId: string): CDPSession | null {
     return this._sessions.get(sessionId) || null;
@@ -91,7 +100,12 @@ export class Connection extends EventEmitter {
     const params = paramArgs.length ? paramArgs[0] : undefined;
     const id = this._rawSend({ method, params });
     return new Promise((resolve, reject) => {
-      this._callbacks.set(id, { resolve, reject, error: new Error(), method });
+      this._callbacks.set(id, {
+        resolve,
+        reject,
+        error: new ProtocolError(),
+        method,
+      });
     });
   }
 
@@ -117,11 +131,21 @@ export class Connection extends EventEmitter {
         sessionId
       );
       this._sessions.set(sessionId, session);
+      this.emit('sessionattached', session);
+      const parentSession = this._sessions.get(object.sessionId);
+      if (parentSession) {
+        parentSession.emit('sessionattached', session);
+      }
     } else if (object.method === 'Target.detachedFromTarget') {
       const session = this._sessions.get(object.params.sessionId);
       if (session) {
         session._onClosed();
         this._sessions.delete(object.params.sessionId);
+        this.emit('sessiondetached', session);
+        const parentSession = this._sessions.get(object.sessionId);
+        if (parentSession) {
+          parentSession.emit('sessiondetached', session);
+        }
       }
     }
     if (object.sessionId) {
@@ -167,8 +191,8 @@ export class Connection extends EventEmitter {
   }
 
   /**
-   * @param targetInfo
-   * @returns sessionID
+   * @param targetInfo - The target info
+   * @returns The CDP session that is created
    */
   async createSession(
     targetInfo: Protocol.Target.TargetInfo
@@ -181,11 +205,14 @@ export class Connection extends EventEmitter {
   }
 }
 
-interface CDPSessionOnMessageObject {
+/**
+ * @public
+ */
+export interface CDPSessionOnMessageObject {
   id?: number;
   method: string;
   params: Record<string, unknown>;
-  error: { message: string; data: any };
+  error: { message: string; data: any; code: number };
   result?: any;
 }
 
@@ -207,7 +234,7 @@ export const CDPSessionEmittedEvents = {
  * events can be subscribed to with `CDPSession.on` method.
  *
  * Useful links: {@link https://chromedevtools.github.io/devtools-protocol/ | DevTools Protocol Viewer}
- * and {@link https://github.com/aslushnikov/getting-started-with-cdp/blob/master/README.md | Getting Started with DevTools Protocol}.
+ * and {@link https://github.com/aslushnikov/getting-started-with-cdp/blob/HEAD/README.md | Getting Started with DevTools Protocol}.
  *
  * @example
  * ```js
@@ -242,6 +269,10 @@ export class CDPSession extends EventEmitter {
     this._sessionId = sessionId;
   }
 
+  connection(): Connection {
+    return this._connection;
+  }
+
   send<T extends keyof ProtocolMapping.Commands>(
     method: T,
     ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
@@ -259,15 +290,16 @@ export class CDPSession extends EventEmitter {
     const id = this._connection._rawSend({
       sessionId: this._sessionId,
       method,
-      /* TODO(jacktfranklin@): once this Firefox bug is solved
-       * we no longer need the `|| {}` check
-       * https://bugzilla.mozilla.org/show_bug.cgi?id=1631570
-       */
-      params: params || {},
+      params,
     });
 
     return new Promise((resolve, reject) => {
-      this._callbacks.set(id, { resolve, reject, error: new Error(), method });
+      this._callbacks.set(id, {
+        resolve,
+        reject,
+        error: new ProtocolError(),
+        method,
+      });
     });
   }
 
@@ -318,6 +350,13 @@ export class CDPSession extends EventEmitter {
     this._connection = null;
     this.emit(CDPSessionEmittedEvents.Disconnected);
   }
+
+  /**
+   * @internal
+   */
+  id(): string {
+    return this._sessionId;
+  }
 }
 
 /**
@@ -327,13 +366,13 @@ export class CDPSession extends EventEmitter {
  * @returns {!Error}
  */
 function createProtocolError(
-  error: Error,
+  error: ProtocolError,
   method: string,
-  object: { error: { message: string; data: any } }
+  object: { error: { message: string; data: any; code: number } }
 ): Error {
   let message = `Protocol error (${method}): ${object.error.message}`;
   if ('data' in object.error) message += ` ${object.error.data}`;
-  return rewriteError(error, message);
+  return rewriteError(error, message, object.error.message);
 }
 
 /**
@@ -341,7 +380,12 @@ function createProtocolError(
  * @param {string} message
  * @returns {!Error}
  */
-function rewriteError(error: Error, message: string): Error {
+function rewriteError(
+  error: ProtocolError,
+  message: string,
+  originalMessage?: string
+): Error {
   error.message = message;
+  error.originalMessage = originalMessage;
   return error;
 }

@@ -25,13 +25,16 @@ const {
 const EXCLUDE_PROPERTIES = new Set([
   'Browser.create',
   'Headers.fromPayload',
+  'Page.client',
   'Page.create',
   'JSHandle.toString',
   'TimeoutError.name',
-  /* This isn't an actual property, but a TypeScript generic.
+  /* These are not actual properties, but a TypeScript generic.
    * DocLint incorrectly parses it as a property.
    */
   'ElementHandle.ElementType',
+  'ElementHandle.HandleObjectType',
+  'JSHandle.HandleObjectType',
 ]);
 
 /**
@@ -370,6 +373,13 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method ElementHandle.clickablePoint() offset',
+        {
+          actualName: 'Object',
+          expectedName: 'Offset',
+        },
+      ],
+      [
         'Method ElementHandle.press() options',
         {
           actualName: 'Object',
@@ -381,6 +391,48 @@ function compareDocumentations(actual, expected) {
         {
           actualName: 'string',
           expectedName: 'KeyInput',
+        },
+      ],
+      [
+        'Method ElementHandle.drag() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method ElementHandle.dragAndDrop() target',
+        {
+          actualName: 'ElementHandle',
+          expectedName: 'ElementHandle<Element>',
+        },
+      ],
+      [
+        'Method ElementHandle.dragEnter() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
+        },
+      ],
+      [
+        'Method ElementHandle.dragOver() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
+        },
+      ],
+      [
+        'Method ElementHandle.drop() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
+        },
+      ],
+      [
+        'Method ElementHandle.screenshot() options',
+        {
+          actualName: 'Object',
+          expectedName: 'ScreenshotOptions',
         },
       ],
       [
@@ -409,6 +461,83 @@ function compareDocumentations(actual, expected) {
         {
           actualName: 'Object',
           expectedName: 'MouseOptions',
+        },
+      ],
+      [
+        'Method Mouse.drag() start',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.drag() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragAndDrop() start',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragAndDrop() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragAndDrop() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragEnter() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragEnter() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
+        },
+      ],
+      [
+        'Method Mouse.dragOver() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragOver() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
+        },
+      ],
+      [
+        'Method Mouse.drop() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.drop() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
         },
       ],
       [
@@ -542,6 +671,13 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method Browser.createIncognitoBrowserContext() options',
+        {
+          actualName: 'Object',
+          expectedName: 'BrowserContextOptions',
+        },
+      ],
+      [
         'Method BrowserContext.overridePermissions() permissions',
         {
           actualName: 'Array<string>',
@@ -581,6 +717,13 @@ function compareDocumentations(actual, expected) {
         {
           actualName: 'Object',
           expectedName: 'NetworkConditions',
+        },
+      ],
+      [
+        'Method Page.setUserAgent() userAgentMetadata',
+        {
+          actualName: 'Object',
+          expectedName: 'UserAgentMetadata',
         },
       ],
       [
@@ -655,6 +798,13 @@ function compareDocumentations(actual, expected) {
       ],
       [
         'Method Page.pdf() options',
+        {
+          actualName: 'Object',
+          expectedName: 'PDFOptions',
+        },
+      ],
+      [
+        'Method Page.createPDFStream() options',
         {
           actualName: 'Object',
           expectedName: 'PDFOptions',
@@ -850,14 +1000,6 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
-        'Method Page.emulateVisionDeficiency() type',
-        {
-          actualName: 'string',
-          expectedName:
-            '"none"|"achromatopsia"|"blurredVision"|"deuteranopia"|"protanopia"|"tritanopia"',
-        },
-      ],
-      [
         'Method BrowserContext.overridePermissions() permissions',
         {
           actualName: 'Array<string>',
@@ -883,6 +1025,27 @@ function compareDocumentations(actual, expected) {
         {
           actualName: 'number',
           expectedName: 'Object',
+        },
+      ],
+      [
+        'Method EventEmitter.emit() eventData',
+        {
+          actualName: 'Object',
+          expectedName: 'unknown',
+        },
+      ],
+      [
+        'Method Page.queryObjects() prototypeHandle',
+        {
+          actualName: 'JSHandle',
+          expectedName: 'JSHandle<unknown>',
+        },
+      ],
+      [
+        'Method ExecutionContext.queryObjects() prototypeHandle',
+        {
+          actualName: 'JSHandle',
+          expectedName: 'JSHandle<unknown>',
         },
       ],
     ]);
@@ -930,6 +1093,7 @@ function compareDocumentations(actual, expected) {
       'Method Page.deleteCookie() ...cookies',
       'Method Page.setCookie() ...cookies',
       'Method Puppeteer.connect() options',
+      'Method Page.setUserAgent() userAgentMetadata',
     ]);
     if (skipPropertyChecksOnMethods.has(source)) return;
 

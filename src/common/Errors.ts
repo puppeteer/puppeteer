@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-class CustomError extends Error {
-  constructor(message: string) {
+/**
+ * @public
+ */
+export class CustomError extends Error {
+  constructor(message?: string) {
     super(message);
     this.name = this.constructor.name;
     Error.captureStackTrace(this, this.constructor);
@@ -33,9 +36,22 @@ class CustomError extends Error {
  * @public
  */
 export class TimeoutError extends CustomError {}
-
+/**
+ * ProtocolError is emitted whenever there is an error from the protocol.
+ *
+ * @public
+ */
+export class ProtocolError extends CustomError {
+  public code?: number;
+  public originalMessage: string;
+}
+/**
+ * @public
+ */
 export type PuppeteerErrors = Record<string, typeof CustomError>;
-
+/**
+ * @public
+ */
 export const puppeteerErrors: PuppeteerErrors = {
   TimeoutError,
 };
