@@ -592,7 +592,7 @@ describe('network', function () {
       expect(requests.get('script.js').isNavigationRequest()).toBe(false);
       expect(requests.get('style.css').isNavigationRequest()).toBe(false);
     });
-    it('should work when navigating to image', async () => {
+    itFailsFirefox('should work when navigating to image', async () => {
       const { page, server } = getTestState();
 
       const requests = [];
