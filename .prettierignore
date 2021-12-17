@@ -6,5 +6,11 @@ vendor/
 package-lock.json
 yarn.lock
 package.json
+docs-api-json/
 docs-dist/
 website/
+experimental/
+CHANGELOG.md
+test/assets/
+/.local-chromium/
+/.local-firefox/
