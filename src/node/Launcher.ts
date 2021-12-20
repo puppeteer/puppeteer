@@ -220,7 +220,7 @@ class ChromeLauncher implements ProductLauncher {
       '--disable-features=Translate',
       '--disable-hang-monitor',
       '--disable-ipc-flooding-protection',
-      '--disable-popup-blocking',
+      '--block-new-web-contents',
       '--disable-prompt-on-repost',
       '--disable-renderer-backgrounding',
       '--disable-sync',
