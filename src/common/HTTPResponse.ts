@@ -36,7 +36,7 @@ export interface RemoteAddress {
 export class HTTPResponse {
   private _client: CDPSession;
   private _request: HTTPRequest;
-  private _contentPromise: Promise<Buffer> | null = null;
+  private _contentPromise: Promise<Buffer> | Promise<Stream> | null = null;
   private _bodyLoadedPromise: Promise<Error | void>;
   private _bodyLoadedPromiseFulfill: (err: Error | void) => void;
   private _remoteAddress: RemoteAddress;
@@ -153,6 +153,24 @@ export class HTTPResponse {
         return Buffer.from(
           response.body,
           response.base64Encoded ? 'base64' : 'utf8'
+        );
+      });
+    }
+    return this._contentPromise;
+  }
+
+  /**
+   * @returns Promise which resolves to a stream with response body.
+   */
+  stream(): Promise<Stream> {
+    if (!this._contentPromise) {
+      this._contentPromise = this._bodyLoadedPromise.then(async (error) => {
+        if (error) throw error;
+        return this._client.send(
+          'Network.takeResponseBodyForInterceptionAsStream',
+          {
+            interceptionId: this._request._requestId,
+          }
         );
       });
     }
