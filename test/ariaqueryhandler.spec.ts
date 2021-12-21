@@ -196,6 +196,16 @@ describeChromeOnly('AriaQueryHandler', () => {
       await page.waitForSelector('aria/[role="button"]');
     });
 
+    it('should work for ElementHandler.waitForSelector', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(
+        () => (document.body.innerHTML = `<div><button>test</button></div>`)
+      );
+      const element = await page.$('div');
+      await element.waitForSelector('aria/test');
+    });
+
     it('should persist query handler bindings across reloads', async () => {
       const { page, server } = getTestState();
       await page.goto(server.EMPTY_PAGE);
