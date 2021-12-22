@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [13.0.1](https://github.com/puppeteer/puppeteer/compare/v13.0.0...v13.0.1) (2021-12-22)
+
+
+### Bug Fixes
+
+* disable a test failing on Firefox ([#7846](https://github.com/puppeteer/puppeteer/issues/7846)) ([36207c5](https://github.com/puppeteer/puppeteer/commit/36207c5efe8ca21f4b3fc5b00212700326a701d2))
+* make sure ElementHandle.waitForSelector is evaluated in the right context ([#7843](https://github.com/puppeteer/puppeteer/issues/7843)) ([8d8e874](https://github.com/puppeteer/puppeteer/commit/8d8e874b072b17fc763f33d08e51c046b7435244))
+* predicate arguments for waitForFunction ([#7845](https://github.com/puppeteer/puppeteer/issues/7845)) ([1c44551](https://github.com/puppeteer/puppeteer/commit/1c44551f1b5bb19455b4a1eb7061715717ec880e)), closes [#7836](https://github.com/puppeteer/puppeteer/issues/7836)
+
 ## [13.0.0](https://github.com/puppeteer/puppeteer/compare/v12.0.1...v13.0.0) (2021-12-10)
 
 
