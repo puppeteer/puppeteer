@@ -2561,6 +2561,8 @@ export class Page extends EventEmitter {
    * e.g. to seed `Math.random`.
    * @param pageFunction - Function to be evaluated in browser context
    * @param args - Arguments to pass to `pageFunction`
+   * @returns Promise which returns a callback function that is used to deregister
+   *   the `pageFunction`
    * @example
    * An example of overriding the navigator.languages property before the page loads:
    * ```js
@@ -2582,11 +2584,19 @@ export class Page extends EventEmitter {
   async evaluateOnNewDocument(
     pageFunction: Function | string,
     ...args: unknown[]
-  ): Promise<void> {
+  ): Promise<() => Promise<void>> {
     const source = helper.evaluationString(pageFunction, ...args);
-    await this._client.send('Page.addScriptToEvaluateOnNewDocument', {
-      source,
-    });
+    const { identifier } = await this._client.send(
+      'Page.addScriptToEvaluateOnNewDocument',
+      {
+        source,
+      }
+    );
+
+    return async () =>
+      this._client.send('Page.removeScriptToEvaluateOnNewDocument', {
+        identifier,
+      });
   }
 
   /**
