@@ -16,7 +16,7 @@
 
 import { EventEmitter } from './EventEmitter.js';
 import { assert } from './assert.js';
-import { helper } from './helper.js';
+import { helper, debugError } from './helper.js';
 import { ExecutionContext, EVALUATION_SCRIPT_URL } from './ExecutionContext.js';
 import {
   LifecycleWatcher,
@@ -397,7 +397,7 @@ export class FrameManager extends EventEmitter {
             frameId: frame._id,
             worldName: name,
             grantUniveralAccess: true,
-          }).catch(console.error)
+          }).catch(debugError)
         )
     );
   }
