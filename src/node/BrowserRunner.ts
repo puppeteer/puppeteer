@@ -113,7 +113,6 @@ export class BrowserRunner {
             await removeFolderAsync(this._userDataDir);
             fulfill();
           } catch (error) {
-            console.error(error);
             reject(error);
           }
         } else {
@@ -133,7 +132,6 @@ export class BrowserRunner {
                 await renameAsync(prefsBackupPath, prefsPath);
               }
             } catch (error) {
-              console.error(error);
               reject(error);
             }
           }
