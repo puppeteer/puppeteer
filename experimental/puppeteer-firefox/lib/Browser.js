@@ -114,7 +114,7 @@ class Browser extends EventEmitter {
   }
 
   /**
-   * @param {function(!Target):boolean} predicate
+   * @param {function(!Target):boolean|Promise<boolean>} predicate
    * @param {{timeout?: number}=} options
    * @return {!Promise<!Target>}
    */
@@ -122,7 +122,13 @@ class Browser extends EventEmitter {
     const {
       timeout = 30000
     } = options;
-    const existingTarget = this.targets().find(predicate);
+    let existingTarget;
+    for (const target of this.targets()) {
+      if (await predicate(target)) {
+        existingTarget = target;
+        break;
+      }
+    }
     if (existingTarget)
       return existingTarget;
     let resolve;
@@ -141,8 +147,8 @@ class Browser extends EventEmitter {
     /**
      * @param {!Target} target
      */
-    function check(target) {
-      if (predicate(target))
+    async function check(target) {
+      if (await predicate(target))
         resolve(target);
     }
   }
@@ -334,7 +340,7 @@ class BrowserContext extends EventEmitter {
   }
 
   /**
-   * @param {function(Target):boolean} predicate
+   * @param {function(Target):boolean|Promise<boolean>} predicate
    * @param {{timeout?: number}=} options
    * @return {!Promise<Target>}
    */

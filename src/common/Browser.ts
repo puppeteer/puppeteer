@@ -539,11 +539,17 @@ export class Browser extends EventEmitter {
    * ```
    */
   async waitForTarget(
-    predicate: (x: Target) => boolean,
+    predicate: (x: Target) => boolean | Promise<boolean>,
     options: WaitForTargetOptions = {}
   ): Promise<Target> {
     const { timeout = 30000 } = options;
-    const existingTarget = this.targets().find(predicate);
+    let existingTarget: Target | undefined;
+    for (const target of this.targets()) {
+      if (await predicate(target)) {
+        existingTarget = target;
+        break;
+      }
+    }
     if (existingTarget) return existingTarget;
     let resolve: (value: Target | PromiseLike<Target>) => void;
     const targetPromise = new Promise<Target>((x) => (resolve = x));
@@ -561,8 +567,8 @@ export class Browser extends EventEmitter {
       this.removeListener(BrowserEmittedEvents.TargetChanged, check);
     }
 
-    function check(target: Target): void {
-      if (predicate(target)) resolve(target);
+    async function check(target: Target): Promise<void> {
+      if (await predicate(target)) resolve(target);
     }
   }
 
@@ -736,7 +742,7 @@ export class BrowserContext extends EventEmitter {
    * that matches the `predicate` function.
    */
   waitForTarget(
-    predicate: (x: Target) => boolean,
+    predicate: (x: Target) => boolean | Promise<boolean>,
     options: { timeout?: number } = {}
   ): Promise<Target> {
     return this._browser.waitForTarget(
