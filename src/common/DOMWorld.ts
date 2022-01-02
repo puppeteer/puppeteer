@@ -58,6 +58,7 @@ export interface WaitForSelectorOptions {
   visible?: boolean;
   hidden?: boolean;
   timeout?: number;
+  root?: ElementHandle;
 }
 
 /**
@@ -631,23 +632,26 @@ export class DOMWorld {
       waitForHidden ? ' to be hidden' : ''
     }`;
     async function predicate(
+      root: Element | Document,
       selector: string,
       waitForVisible: boolean,
       waitForHidden: boolean
     ): Promise<Node | null | boolean> {
       const node = predicateQueryHandler
-        ? ((await predicateQueryHandler(document, selector)) as Element)
-        : document.querySelector(selector);
+        ? ((await predicateQueryHandler(root, selector)) as Element)
+        : root.querySelector(selector);
       return checkWaitForOptions(node, waitForVisible, waitForHidden);
     }
     const waitTaskOptions: WaitTaskOptions = {
       domWorld: this,
       predicateBody: helper.makePredicateString(predicate, queryOne),
+      predicateAcceptsContextElement: true,
       title,
       polling,
       timeout,
       args: [selector, waitForVisible, waitForHidden],
       binding,
+      root: options.root,
     };
     const waitTask = new WaitTask(waitTaskOptions);
     const jsHandle = await waitTask.promise;
@@ -671,13 +675,14 @@ export class DOMWorld {
     const polling = waitForVisible || waitForHidden ? 'raf' : 'mutation';
     const title = `XPath \`${xpath}\`${waitForHidden ? ' to be hidden' : ''}`;
     function predicate(
+      root: Element | Document,
       xpath: string,
       waitForVisible: boolean,
       waitForHidden: boolean
     ): Node | null | boolean {
       const node = document.evaluate(
         xpath,
-        document,
+        root,
         null,
         XPathResult.FIRST_ORDERED_NODE_TYPE,
         null
@@ -687,10 +692,12 @@ export class DOMWorld {
     const waitTaskOptions: WaitTaskOptions = {
       domWorld: this,
       predicateBody: helper.makePredicateString(predicate),
+      predicateAcceptsContextElement: true,
       title,
       polling,
       timeout,
       args: [xpath, waitForVisible, waitForHidden],
+      root: options.root,
     };
     const waitTask = new WaitTask(waitTaskOptions);
     const jsHandle = await waitTask.promise;
@@ -712,6 +719,7 @@ export class DOMWorld {
     const waitTaskOptions: WaitTaskOptions = {
       domWorld: this,
       predicateBody: pageFunction,
+      predicateAcceptsContextElement: false,
       title: 'function',
       polling,
       timeout,
@@ -732,11 +740,13 @@ export class DOMWorld {
 export interface WaitTaskOptions {
   domWorld: DOMWorld;
   predicateBody: Function | string;
+  predicateAcceptsContextElement: boolean;
   title: string;
   polling: string | number;
   timeout: number;
   binding?: PageBinding;
   args: SerializableOrJSHandle[];
+  root?: ElementHandle;
 }
 
 /**
@@ -747,6 +757,7 @@ export class WaitTask {
   _polling: string | number;
   _timeout: number;
   _predicateBody: string;
+  _predicateAcceptsContextElement: boolean;
   _args: SerializableOrJSHandle[];
   _binding: PageBinding;
   _runCount = 0;
@@ -755,6 +766,7 @@ export class WaitTask {
   _reject: (x: Error) => void;
   _timeoutTimer?: NodeJS.Timeout;
   _terminated = false;
+  _root: ElementHandle = null;
 
   constructor(options: WaitTaskOptions) {
     if (helper.isString(options.polling))
@@ -777,7 +789,10 @@ export class WaitTask {
     this._domWorld = options.domWorld;
     this._polling = options.polling;
     this._timeout = options.timeout;
+    this._root = options.root;
     this._predicateBody = getPredicateBody(options.predicateBody);
+    this._predicateAcceptsContextElement =
+      options.predicateAcceptsContextElement;
     this._args = options.args;
     this._binding = options.binding;
     this._runCount = 0;
@@ -825,7 +840,9 @@ export class WaitTask {
     try {
       success = await context.evaluateHandle(
         waitForPredicatePageFunction,
+        this._root || null,
         this._predicateBody,
+        this._predicateAcceptsContextElement,
         this._polling,
         this._timeout,
         ...this._args
@@ -890,11 +907,14 @@ export class WaitTask {
 }
 
 async function waitForPredicatePageFunction(
+  root: Element | Document | null,
   predicateBody: string,
+  predicateAcceptsContextElement: boolean,
   polling: string,
   timeout: number,
   ...args: unknown[]
 ): Promise<unknown> {
+  root = root || document;
   const predicate = new Function('...args', predicateBody);
   let timedOut = false;
   if (timeout) setTimeout(() => (timedOut = true), timeout);
@@ -906,7 +926,9 @@ async function waitForPredicatePageFunction(
    * @returns {!Promise<*>}
    */
   async function pollMutation(): Promise<unknown> {
-    const success = await predicate(...args);
+    const success = predicateAcceptsContextElement
+      ? await predicate(root, ...args)
+      : await predicate(...args);
     if (success) return Promise.resolve(success);
 
     let fulfill;
@@ -916,13 +938,15 @@ async function waitForPredicatePageFunction(
         observer.disconnect();
         fulfill();
       }
-      const success = await predicate(...args);
+      const success = predicateAcceptsContextElement
+        ? await predicate(root, ...args)
+        : await predicate(...args);
       if (success) {
         observer.disconnect();
         fulfill(success);
       }
     });
-    observer.observe(document, {
+    observer.observe(root, {
       childList: true,
       subtree: true,
       attributes: true,
@@ -941,7 +965,9 @@ async function waitForPredicatePageFunction(
         fulfill();
         return;
       }
-      const success = await predicate(...args);
+      const success = predicateAcceptsContextElement
+        ? await predicate(root, ...args)
+        : await predicate(...args);
       if (success) fulfill(success);
       else requestAnimationFrame(onRaf);
     }
@@ -958,7 +984,9 @@ async function waitForPredicatePageFunction(
         fulfill();
         return;
       }
-      const success = await predicate(...args);
+      const success = predicateAcceptsContextElement
+        ? await predicate(root, ...args)
+        : await predicate(...args);
       if (success) fulfill(success);
       else setTimeout(onTimeout, pollInterval);
     }

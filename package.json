@@ -1,6 +1,6 @@
 {
   "name": "puppeteer",
-  "version": "12.0.1-post",
+  "version": "13.0.1-post",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "main": "./cjs-entry.js",
   "types": "lib/types.d.ts",
@@ -36,7 +36,7 @@
     "apply-next-version": "node utils/apply_next_version.js",
     "test-install": "scripts/test-install.sh",
     "clean-docs": "rimraf website/docs && rimraf docs-api-json",
-    "generate-d-ts": "npm run clean-docs && api-extractor run --local --verbose && node inject-global-type-stubs.js",
+    "generate-d-ts": "npm run clean-docs && api-extractor run --local --verbose",
     "generate-docs": "npm run generate-d-ts && api-documenter markdown -i docs-api-json -o website/docs && node utils/remove-tag.js",
     "ensure-correct-devtools-protocol-revision": "ts-node -s scripts/ensure-correct-devtools-protocol-package",
     "ensure-pinned-deps": "ts-node -s scripts/ensure-pinned-deps",

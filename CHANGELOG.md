@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [13.0.1](https://github.com/puppeteer/puppeteer/compare/v13.0.0...v13.0.1) (2021-12-22)
+
+
+### Bug Fixes
+
+* disable a test failing on Firefox ([#7846](https://github.com/puppeteer/puppeteer/issues/7846)) ([36207c5](https://github.com/puppeteer/puppeteer/commit/36207c5efe8ca21f4b3fc5b00212700326a701d2))
+* make sure ElementHandle.waitForSelector is evaluated in the right context ([#7843](https://github.com/puppeteer/puppeteer/issues/7843)) ([8d8e874](https://github.com/puppeteer/puppeteer/commit/8d8e874b072b17fc763f33d08e51c046b7435244))
+* predicate arguments for waitForFunction ([#7845](https://github.com/puppeteer/puppeteer/issues/7845)) ([1c44551](https://github.com/puppeteer/puppeteer/commit/1c44551f1b5bb19455b4a1eb7061715717ec880e)), closes [#7836](https://github.com/puppeteer/puppeteer/issues/7836)
+
+## [13.0.0](https://github.com/puppeteer/puppeteer/compare/v12.0.1...v13.0.0) (2021-12-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* typo in 'already-handled' constant of the request interception API (#7813)
+
+### Features
+
+* expose HTTPRequest intercept resolution state and clarify docs ([#7796](https://github.com/puppeteer/puppeteer/issues/7796)) ([dc23b75](https://github.com/puppeteer/puppeteer/commit/dc23b7535cb958c00d1eecfe85b4ee26e52e2e39))
+* implement Element.waitForSelector ([#7825](https://github.com/puppeteer/puppeteer/issues/7825)) ([c034294](https://github.com/puppeteer/puppeteer/commit/c03429444d05b39549489ad3da67d93b2be59f51))
+
+
+### Bug Fixes
+
+* handle multiple/duplicate Fetch.requestPaused events ([#7802](https://github.com/puppeteer/puppeteer/issues/7802)) ([636b086](https://github.com/puppeteer/puppeteer/commit/636b0863a169da132e333eb53b17eb2601daabe6)), closes [#7475](https://github.com/puppeteer/puppeteer/issues/7475) [#6696](https://github.com/puppeteer/puppeteer/issues/6696) [#7225](https://github.com/puppeteer/puppeteer/issues/7225)
+* revert "feat(typescript): allow using puppeteer without dom lib" ([02c9af6](https://github.com/puppeteer/puppeteer/commit/02c9af62d64060a83f53368640f343ae2e30e38a)), closes [#6998](https://github.com/puppeteer/puppeteer/issues/6998)
+* typo in 'already-handled' constant of the request interception API ([#7813](https://github.com/puppeteer/puppeteer/issues/7813)) ([8242422](https://github.com/puppeteer/puppeteer/commit/824242246de9e158aacb85f71350a79cb386ed92)), closes [#7745](https://github.com/puppeteer/puppeteer/issues/7745) [#7747](https://github.com/puppeteer/puppeteer/issues/7747) [#7780](https://github.com/puppeteer/puppeteer/issues/7780)
+
 ### [12.0.1](https://github.com/puppeteer/puppeteer/compare/v12.0.0...v12.0.1) (2021-11-29)
 
 
