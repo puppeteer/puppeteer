@@ -41,7 +41,9 @@ async function run() {
     const versions = await Source.readFile(
       path.join(PROJECT_DIR, 'versions.js')
     );
-    versions.setText(versions.text().replace(`, 'NEXT'],`, `, '${VERSION}'],`));
+    versions.setText(
+      versions.text().replace(`, 'NEXT'],`, `, 'v${VERSION}'],`)
+    );
     await versions.save();
   }
 
@@ -127,7 +129,7 @@ async function run() {
   }
   console.log(`${errors.length} failures, ${warnings.length} warnings.`);
 
-  if (!clearExit && !process.env.TRAVIS)
+  if (!clearExit && !process.env.GITHUB_ACTIONS)
     console.log(
       '\nIs your lib/ directory up to date? You might need to `npm run tsc`.\n'
     );

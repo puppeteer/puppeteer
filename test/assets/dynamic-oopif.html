@@ -3,7 +3,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const iframe = document.createElement('iframe');
   const url = new URL(location.href);
   url.hostname = url.hostname === 'localhost' ? '127.0.0.1' : 'localhost';
-  url.pathname = '/grid.html';
+  url.pathname = '/oopif.html';
   iframe.src = url.toString();
   document.body.appendChild(iframe);
 }, false);

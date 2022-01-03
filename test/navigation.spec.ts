@@ -613,7 +613,7 @@ describe('navigation', function () {
           server.PREFIX + '/frames/one-frame.html'
         );
         const frame = await utils.waitEvent(page, 'frameattached');
-        await new Promise((fulfill) => {
+        await new Promise<void>((fulfill) => {
           page.on('framenavigated', (f) => {
             if (f === frame) fulfill();
           });

@@ -3,12 +3,11 @@
     "esModuleInterop": true,
     "allowJs": true,
     "checkJs": true,
-    "target": "ESNext",
+    "target": "ES2019",
     "moduleResolution": "node",
-    "module": "ESNext",
     "declaration": true,
     "declarationMap": true,
     "resolveJsonModule": true,
-    "sourceMap": true,
+    "sourceMap": true
   }
 }

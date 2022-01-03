@@ -31,7 +31,6 @@ yarn.lock
 .editorconfig
 .eslintignore
 .eslintrc.js
-.travis.yml
 README.md
 tsconfig.json
 

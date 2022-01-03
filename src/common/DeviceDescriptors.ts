@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-interface Device {
+/**
+ * @public
+ */
+export interface Device {
   name: string;
   userAgent: string;
   viewport: {
@@ -179,6 +182,84 @@ const devices: Device[] = [
       width: 640,
       height: 360,
       deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'Galaxy S8',
+    userAgent:
+      'Mozilla/5.0 (Linux; Android 7.0; SM-G950U Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36',
+    viewport: {
+      width: 360,
+      height: 740,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'Galaxy S8 landscape',
+    userAgent:
+      'Mozilla/5.0 (Linux; Android 7.0; SM-G950U Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36',
+    viewport: {
+      width: 740,
+      height: 360,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'Galaxy S9+',
+    userAgent:
+      'Mozilla/5.0 (Linux; Android 8.0.0; SM-G965U Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.111 Mobile Safari/537.36',
+    viewport: {
+      width: 320,
+      height: 658,
+      deviceScaleFactor: 4.5,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'Galaxy S9+ landscape',
+    userAgent:
+      'Mozilla/5.0 (Linux; Android 8.0.0; SM-G965U Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.111 Mobile Safari/537.36',
+    viewport: {
+      width: 658,
+      height: 320,
+      deviceScaleFactor: 4.5,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'Galaxy Tab S4',
+    userAgent:
+      'Mozilla/5.0 (Linux; Android 8.1.0; SM-T837A) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.80 Safari/537.36',
+    viewport: {
+      width: 712,
+      height: 1138,
+      deviceScaleFactor: 2.25,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'Galaxy Tab S4 landscape',
+    userAgent:
+      'Mozilla/5.0 (Linux; Android 8.1.0; SM-T837A) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.80 Safari/537.36',
+    viewport: {
+      width: 1138,
+      height: 712,
+      deviceScaleFactor: 2.25,
       isMobile: true,
       hasTouch: true,
       isLandscape: true,
@@ -539,6 +620,84 @@ const devices: Device[] = [
     name: 'iPhone XR landscape',
     userAgent:
       'Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 896,
+      height: 414,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 11',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 414,
+      height: 828,
+      deviceScaleFactor: 2,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 11 landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 828,
+      height: 414,
+      deviceScaleFactor: 2,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 11 Pro',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 375,
+      height: 812,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 11 Pro landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 812,
+      height: 375,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 11 Pro Max',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 414,
+      height: 896,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 11 Pro Max landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1',
     viewport: {
       width: 896,
       height: 414,
@@ -951,14 +1110,69 @@ const devices: Device[] = [
       isLandscape: true,
     },
   },
+  {
+    name: 'Pixel 3',
+    userAgent:
+      'Mozilla/5.0 (Linux; Android 9; Pixel 3 Build/PQ1A.181105.017.A1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.158 Mobile Safari/537.36',
+    viewport: {
+      width: 393,
+      height: 786,
+      deviceScaleFactor: 2.75,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'Pixel 3 landscape',
+    userAgent:
+      'Mozilla/5.0 (Linux; Android 9; Pixel 3 Build/PQ1A.181105.017.A1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.158 Mobile Safari/537.36',
+    viewport: {
+      width: 786,
+      height: 393,
+      deviceScaleFactor: 2.75,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'Pixel 4',
+    userAgent:
+      'Mozilla/5.0 (Linux; Android 10; Pixel 4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Mobile Safari/537.36',
+    viewport: {
+      width: 353,
+      height: 745,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'Pixel 4 landscape',
+    userAgent:
+      'Mozilla/5.0 (Linux; Android 10; Pixel 4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Mobile Safari/537.36',
+    viewport: {
+      width: 745,
+      height: 353,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
 ];
-
+/**
+ * @public
+ */
 export type DevicesMap = {
   [name: string]: Device;
 };
 
-const devicesMap: DevicesMap = {};
+/**
+ * @internal
+ */
+export const devicesMap: DevicesMap = {};
 
 for (const device of devices) devicesMap[device.name] = device;
-
-export { devicesMap };

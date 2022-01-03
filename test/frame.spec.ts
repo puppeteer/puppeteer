@@ -79,6 +79,17 @@ describe('Frame specs', function () {
         'Execution context is not available in detached frame'
       );
     });
+
+    it('allows readonly array to be an argument', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      const mainFrame = page.mainFrame();
+
+      // This test checks if Frame.evaluate allows a readonly array to be an argument.
+      // See https://github.com/puppeteer/puppeteer/issues/6953.
+      const readonlyArray: readonly string[] = ['a', 'b', 'c'];
+      await mainFrame.evaluate((arr) => arr, readonlyArray);
+    });
   });
 
   describe('Frame Management', function () {

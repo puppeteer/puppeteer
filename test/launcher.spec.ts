@@ -18,21 +18,25 @@ import os from 'os';
 import path from 'path';
 import sinon from 'sinon';
 import { promisify } from 'util';
+import Protocol from 'devtools-protocol';
 import {
   getTestState,
+  itChromeOnly,
   itFailsFirefox,
+  itFirefoxOnly,
   itOnlyRegularInstall,
-  itFailsWindows,
 } from './mocha-utils'; // eslint-disable-line import/extensions
 import utils from './utils.js';
 import expect from 'expect';
 import rimraf from 'rimraf';
 import { Page } from '../lib/cjs/puppeteer/common/Page.js';
 
-const rmAsync = promisify(rimraf);
 const mkdtempAsync = promisify(fs.mkdtemp);
 const readFileAsync = promisify(fs.readFile);
+const rmAsync = promisify(rimraf);
 const statAsync = promisify(fs.stat);
+const writeFileAsync = promisify(fs.writeFile);
+
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 const FIREFOX_TIMEOUT = 30 * 1000;
 
@@ -226,6 +230,28 @@ describe('Launcher specs', function () {
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(() => {});
       });
+      itFirefoxOnly('userDataDir option restores preferences', async () => {
+        const { defaultBrowserOptions, puppeteer } = getTestState();
+
+        const userDataDir = await mkdtempAsync(TMP_FOLDER);
+
+        const prefsJSPath = path.join(userDataDir, 'prefs.js');
+        const prefsJSContent = 'user_pref("browser.warnOnQuit", true)';
+        await writeFileAsync(prefsJSPath, prefsJSContent);
+
+        const options = Object.assign({ userDataDir }, defaultBrowserOptions);
+        const browser = await puppeteer.launch(options);
+        // Open a page to make sure its functional.
+        await browser.newPage();
+        expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+        await browser.close();
+        expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+
+        expect(await readFileAsync(prefsJSPath, 'utf8')).toBe(prefsJSContent);
+
+        // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
+        await rmAsync(userDataDir).catch(() => {});
+      });
       it('userDataDir argument', async () => {
         const { isChrome, puppeteer, defaultBrowserOptions } = getTestState();
 
@@ -239,7 +265,7 @@ describe('Launcher specs', function () {
         } else {
           options.args = [
             ...(defaultBrowserOptions.args || []),
-            `-profile`,
+            '-profile',
             userDataDir,
           ];
         }
@@ -311,7 +337,11 @@ describe('Launcher specs', function () {
         } else if (isFirefox) {
           expect(puppeteer.defaultArgs()).toContain('--headless');
           expect(puppeteer.defaultArgs()).toContain('--no-remote');
-          expect(puppeteer.defaultArgs()).toContain('--foreground');
+          if (os.platform() === 'darwin') {
+            expect(puppeteer.defaultArgs()).toContain('--foreground');
+          } else {
+            expect(puppeteer.defaultArgs()).not.toContain('--foreground');
+          }
           expect(puppeteer.defaultArgs({ headless: false })).not.toContain(
             '--headless'
           );
@@ -375,22 +405,28 @@ describe('Launcher specs', function () {
         expect(pages).toEqual(['about:blank']);
         await browser.close();
       });
-      itFailsFirefox(
-        'should have custom URL when launching browser',
-        async () => {
-          const { server, puppeteer, defaultBrowserOptions } = getTestState();
+      it('should have custom URL when launching browser', async () => {
+        const { server, puppeteer, defaultBrowserOptions } = getTestState();
 
-          const options = Object.assign({}, defaultBrowserOptions);
-          options.args = [server.EMPTY_PAGE].concat(options.args || []);
-          const browser = await puppeteer.launch(options);
-          const pages = await browser.pages();
-          expect(pages.length).toBe(1);
-          const page = pages[0];
-          if (page.url() !== server.EMPTY_PAGE) await page.waitForNavigation();
-          expect(page.url()).toBe(server.EMPTY_PAGE);
-          await browser.close();
-        }
-      );
+        const options = Object.assign({}, defaultBrowserOptions);
+        options.args = [server.EMPTY_PAGE].concat(options.args || []);
+        const browser = await puppeteer.launch(options);
+        const pages = await browser.pages();
+        expect(pages.length).toBe(1);
+        const page = pages[0];
+        if (page.url() !== server.EMPTY_PAGE) await page.waitForNavigation();
+        expect(page.url()).toBe(server.EMPTY_PAGE);
+        await browser.close();
+      });
+      it('should pass the timeout parameter to browser.waitForTarget', async () => {
+        const { puppeteer, defaultBrowserOptions } = getTestState();
+        const options = Object.assign({}, defaultBrowserOptions, {
+          timeout: 1,
+        });
+        let error = null;
+        await puppeteer.launch(options).catch((error_) => (error = error_));
+        expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+      });
       it('should set the default viewport', async () => {
         const { puppeteer, defaultBrowserOptions } = getTestState();
         const options = Object.assign({}, defaultBrowserOptions, {
@@ -430,6 +466,49 @@ describe('Launcher specs', function () {
         expect(screenshot).toBeInstanceOf(Buffer);
         await browser.close();
       });
+      it('should set the debugging port', async () => {
+        const { puppeteer, defaultBrowserOptions } = getTestState();
+
+        const options = Object.assign({}, defaultBrowserOptions, {
+          defaultViewport: null,
+          debuggingPort: 9999,
+        });
+        const browser = await puppeteer.launch(options);
+        const url = new URL(browser.wsEndpoint());
+        await browser.close();
+        expect(url.port).toBe('9999');
+      });
+      it('should not allow setting debuggingPort and pipe', async () => {
+        const { puppeteer, defaultBrowserOptions } = getTestState();
+
+        const options = Object.assign({}, defaultBrowserOptions, {
+          defaultViewport: null,
+          debuggingPort: 9999,
+          pipe: true,
+        });
+
+        let error = null;
+        await puppeteer.launch(options).catch((error_) => (error = error_));
+        expect(error.message).toContain('either pipe or debugging port');
+      });
+      itChromeOnly(
+        'should launch Chrome properly with --no-startup-window and waitForInitialPage=false',
+        async () => {
+          const { defaultBrowserOptions, puppeteer } = getTestState();
+          const options = {
+            args: ['--no-startup-window'],
+            waitForInitialPage: false,
+            // This is needed to prevent Puppeteer from adding an initial blank page.
+            // See also https://github.com/puppeteer/puppeteer/blob/ad6b736039436fcc5c0a262e5b575aa041427be3/src/node/Launcher.ts#L200
+            ignoreDefaultArgs: true,
+            ...defaultBrowserOptions,
+          };
+          const browser = await puppeteer.launch(options);
+          const pages = await browser.pages();
+          expect(pages.length).toBe(0);
+          await browser.close();
+        }
+      );
     });
 
     describe('Puppeteer.launch', function () {
@@ -456,32 +535,36 @@ describe('Launcher specs', function () {
         expect(userAgent).toContain('Chrome');
       });
 
-      it('falls back to launching chrome if there is an unknown product but logs a warning', async () => {
-        const { puppeteer } = getTestState();
-        const consoleStub = sinon.stub(console, 'warn');
-        // @ts-expect-error purposeful bad input
-        const browser = await puppeteer.launch({ product: 'SO_NOT_A_PRODUCT' });
-        const userAgent = await browser.userAgent();
-        await browser.close();
-        expect(userAgent).toContain('Chrome');
-        expect(consoleStub.callCount).toEqual(1);
-        expect(consoleStub.firstCall.args).toEqual([
-          'Warning: unknown product name SO_NOT_A_PRODUCT. Falling back to chrome.',
-        ]);
-      });
+      itOnlyRegularInstall(
+        'falls back to launching chrome if there is an unknown product but logs a warning',
+        async () => {
+          const { puppeteer } = getTestState();
+          const consoleStub = sinon.stub(console, 'warn');
+          const browser = await puppeteer.launch({
+            // @ts-expect-error purposeful bad input
+            product: 'SO_NOT_A_PRODUCT',
+          });
+          const userAgent = await browser.userAgent();
+          await browser.close();
+          expect(userAgent).toContain('Chrome');
+          expect(consoleStub.callCount).toEqual(1);
+          expect(consoleStub.firstCall.args).toEqual([
+            'Warning: unknown product name SO_NOT_A_PRODUCT. Falling back to chrome.',
+          ]);
+        }
+      );
 
-      /* We think there's a bug in the FF Windows launcher, or some
-       * combo of that plus it running on CI, but it's hard to track down.
-       * See comment here: https://github.com/puppeteer/puppeteer/issues/5673#issuecomment-670141377.
-       */
-      itFailsWindows('should be able to launch Firefox', async function () {
-        this.timeout(FIREFOX_TIMEOUT);
-        const { puppeteer } = getTestState();
-        const browser = await puppeteer.launch({ product: 'firefox' });
-        const userAgent = await browser.userAgent();
-        await browser.close();
-        expect(userAgent).toContain('Firefox');
-      });
+      itOnlyRegularInstall(
+        'should be able to launch Firefox',
+        async function () {
+          this.timeout(FIREFOX_TIMEOUT);
+          const { puppeteer } = getTestState();
+          const browser = await puppeteer.launch({ product: 'firefox' });
+          const userAgent = await browser.userAgent();
+          await browser.close();
+          expect(userAgent).toContain('Firefox');
+        }
+      );
     });
 
     describe('Puppeteer.connect', function () {
@@ -513,11 +596,8 @@ describe('Launcher specs', function () {
         ]);
       });
       it('should support ignoreHTTPSErrors option', async () => {
-        const {
-          httpsServer,
-          puppeteer,
-          defaultBrowserOptions,
-        } = getTestState();
+        const { httpsServer, puppeteer, defaultBrowserOptions } =
+          getTestState();
 
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
         const browserWSEndpoint = originalBrowser.wsEndpoint();
@@ -539,6 +619,37 @@ describe('Launcher specs', function () {
         expect(response.securityDetails().protocol()).toBe(protocol);
         await page.close();
         await browser.close();
+      });
+      // @see https://github.com/puppeteer/puppeteer/issues/4197
+      itFailsFirefox('should support targetFilter option', async () => {
+        const { server, puppeteer, defaultBrowserOptions } = getTestState();
+
+        const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+        const browserWSEndpoint = originalBrowser.wsEndpoint();
+
+        const page1 = await originalBrowser.newPage();
+        await page1.goto(server.EMPTY_PAGE);
+
+        const page2 = await originalBrowser.newPage();
+        await page2.goto(server.EMPTY_PAGE + '?should-be-ignored');
+
+        const browser = await puppeteer.connect({
+          browserWSEndpoint,
+          targetFilter: (targetInfo: Protocol.Target.TargetInfo) =>
+            !targetInfo.url?.includes('should-be-ignored'),
+        });
+
+        const pages = await browser.pages();
+
+        await page2.close();
+        await page1.close();
+        await browser.disconnect();
+        await originalBrowser.close();
+
+        expect(pages.map((p: Page) => p.url()).sort()).toEqual([
+          'about:blank',
+          server.EMPTY_PAGE,
+        ]);
       });
       itFailsFirefox(
         'should be able to reconnect to a disconnected browser',
@@ -589,7 +700,6 @@ describe('Launcher specs', function () {
           await browserOne.close();
         }
       );
-      // @see https://github.com/puppeteer/puppeteer/issues/6527
       it('should be able to reconnect', async () => {
         const { puppeteer, server } = getTestState();
         const browserOne = await puppeteer.launch();
@@ -616,6 +726,12 @@ describe('Launcher specs', function () {
         const executablePath = puppeteer.executablePath();
         expect(fs.existsSync(executablePath)).toBe(true);
         expect(fs.realpathSync(executablePath)).toBe(executablePath);
+      });
+      it('returns executablePath for channel', () => {
+        const { puppeteer } = getTestState();
+
+        const executablePath = puppeteer.executablePath('chrome');
+        expect(executablePath).toBeTruthy();
       });
     });
   });

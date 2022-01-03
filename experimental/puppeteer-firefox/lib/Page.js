@@ -560,7 +560,7 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @param {!{content?: string, path?: string, type?: string, url?: string}} options
+   * @param {!{content?: string, path?: string, type?: string, url?: string, id?: string}} options
    * @return {!Promise<!ElementHandle>}
    */
   async addScriptTag(options) {

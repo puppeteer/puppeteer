@@ -87,10 +87,10 @@ describeFailsFirefox('Accessibility', function () {
           ],
         }
       : {
-          role: 'WebArea',
+          role: 'RootWebArea',
           name: 'Accessibility Test',
           children: [
-            { role: 'text', name: 'Hello World' },
+            { role: 'StaticText', name: 'Hello World' },
             { role: 'heading', name: 'Inputs', level: 1 },
             { role: 'textbox', name: 'Empty input', focused: true },
             { role: 'textbox', name: 'readonly input', readonly: true },
@@ -148,7 +148,7 @@ describeFailsFirefox('Accessibility', function () {
               name: '',
               children: [
                 {
-                  role: 'text',
+                  role: 'StaticText',
                   name: 'hi',
                 },
               ],
@@ -168,7 +168,8 @@ describeFailsFirefox('Accessibility', function () {
       '<div tabIndex=-1 aria-roledescription="foo">Hi</div>'
     );
     const snapshot = await page.accessibility.snapshot();
-    expect(snapshot.children[0].roledescription).toEqual('foo');
+    // See https://chromium-review.googlesource.com/c/chromium/src/+/3088862
+    expect(snapshot.children[0].roledescription).toEqual(undefined);
   });
   it('orientation', async () => {
     const { page } = getTestState();
@@ -230,7 +231,7 @@ describeFailsFirefox('Accessibility', function () {
             ],
           }
         : {
-            role: 'WebArea',
+            role: 'RootWebArea',
             name: '',
             children: [
               {
@@ -263,7 +264,7 @@ describeFailsFirefox('Accessibility', function () {
                 name: 'Edit this image: ',
               },
               {
-                role: 'text',
+                role: 'StaticText',
                 name: 'my fake image',
               },
             ],
@@ -274,7 +275,7 @@ describeFailsFirefox('Accessibility', function () {
             value: 'Edit this image: ',
             children: [
               {
-                role: 'text',
+                role: 'StaticText',
                 name: 'Edit this image:',
               },
               {
@@ -300,7 +301,7 @@ describeFailsFirefox('Accessibility', function () {
             value: 'Edit this image: my fake image',
             children: [
               {
-                role: 'text',
+                role: 'StaticText',
                 name: 'my fake image',
               },
             ],
@@ -309,9 +310,10 @@ describeFailsFirefox('Accessibility', function () {
             role: 'textbox',
             name: '',
             value: 'Edit this image: ',
+            multiline: true,
             children: [
               {
-                role: 'text',
+                role: 'StaticText',
                 name: 'Edit this image:',
               },
               {
@@ -336,28 +338,7 @@ describeFailsFirefox('Accessibility', function () {
           role: 'textbox',
           name: '',
           value: 'Edit this image:',
-        });
-      });
-      it('plain text field without role should not have content', async () => {
-        const { page } = getTestState();
-
-        await page.setContent(`
-          <div contenteditable="plaintext-only">Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
-        const snapshot = await page.accessibility.snapshot();
-        expect(snapshot.children[0]).toEqual({
-          role: 'generic',
-          name: '',
-        });
-      });
-      it('plain text field with tabindex and without role should not have content', async () => {
-        const { page } = getTestState();
-
-        await page.setContent(`
-          <div contenteditable="plaintext-only" tabIndex=0>Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
-        const snapshot = await page.accessibility.snapshot();
-        expect(snapshot.children[0]).toEqual({
-          role: 'generic',
-          name: '',
+          multiline: true,
         });
       });
     });
@@ -434,7 +415,7 @@ describeFailsFirefox('Accessibility', function () {
 
         await page.setContent(`<button>My Button</button>`);
 
-        const button = await page.$('button');
+        const button = await page.$<HTMLButtonElement>('button');
         expect(await page.accessibility.snapshot({ root: button })).toEqual({
           role: 'button',
           name: 'My Button',
@@ -502,7 +483,7 @@ describeFailsFirefox('Accessibility', function () {
             {
               role: 'button',
               name: 'My Button',
-              children: [{ role: 'text', name: 'My Button' }],
+              children: [{ role: 'StaticText', name: 'My Button' }],
             },
           ],
         });
