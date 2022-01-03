@@ -219,7 +219,10 @@ export class HTTPResponse {
         }
       );
 
-      this._contentStream = helper.getReadableFromProtocolStream(this._client as any, result.stream);
+      this._contentStream = helper.getReadableFromProtocolStream(
+        this._client as any,
+        result.stream
+      );
     }
     return this._contentStream;
   }
