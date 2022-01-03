@@ -21,7 +21,8 @@ import { HTTPRequest } from './HTTPRequest.js';
 import { SecurityDetails } from './SecurityDetails.js';
 import { Protocol } from 'devtools-protocol';
 import { ProtocolError } from './Errors.js';
-import { Stream } from 'stream';
+import { helper } from './helper.js';
+import { Readable } from 'stream';
 
 /**
  * @public
@@ -47,7 +48,8 @@ interface CDPSession extends EventEmitter {
 export class HTTPResponse {
   private _client: CDPSession;
   private _request: HTTPRequest;
-  private _contentPromise: Promise<Buffer> | Promise<Stream> | null = null;
+  private _contentPromise: Promise<Buffer> | null = null;
+  private _contentStream: Promise<Readable> | null = null;
   private _bodyLoadedPromise: Promise<Error | void>;
   private _bodyLoadedPromiseFulfill: (err: Error | void) => void;
   private _remoteAddress: RemoteAddress;
@@ -208,19 +210,18 @@ export class HTTPResponse {
   /**
    * @returns Promise which resolves to a stream with response body.
    */
-  stream(): Promise<Stream> {
-    if (!this._contentPromise) {
-      this._contentPromise = this._bodyLoadedPromise.then(async (error) => {
-        if (error) throw error;
-        return this._client.send(
-          'Network.takeResponseBodyForInterceptionAsStream',
-          {
-            interceptionId: this._request._requestId,
-          }
-        );
-      });
+  async stream(): Promise<Readable> {
+    if (!this._contentStream) {
+      const result = await this._client.send(
+        'Network.takeResponseBodyForInterceptionAsStream',
+        {
+          interceptionId: this._request._requestId,
+        }
+      );
+
+      this._contentStream = helper.getReadableFromProtocolStream(this._client as any, result.stream);
     }
-    return this._contentPromise;
+    return this._contentStream;
   }
 
   /**
