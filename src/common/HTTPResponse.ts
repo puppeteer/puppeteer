@@ -21,6 +21,7 @@ import { HTTPRequest } from './HTTPRequest.js';
 import { SecurityDetails } from './SecurityDetails.js';
 import { Protocol } from 'devtools-protocol';
 import { ProtocolError } from './Errors.js';
+import { Stream } from 'stream';
 
 /**
  * @public
