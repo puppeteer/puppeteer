@@ -80,6 +80,7 @@ export function createJSHandle(
       context,
       context._client,
       remoteObject,
+      frame,
       frameManager.page(),
       frameManager
     );
@@ -331,6 +332,7 @@ export class JSHandle<HandleObjectType = unknown> {
 export class ElementHandle<
   ElementType extends Element = Element
 > extends JSHandle<ElementType> {
+  private _frame: Frame;
   private _page: Page;
   private _frameManager: FrameManager;
 
@@ -341,12 +343,14 @@ export class ElementHandle<
     context: ExecutionContext,
     client: CDPSession,
     remoteObject: Protocol.Runtime.RemoteObject,
+    frame: Frame,
     page: Page,
     frameManager: FrameManager
   ) {
     super(context, client, remoteObject);
     this._client = client;
     this._remoteObject = remoteObject;
+    this._frame = frame;
     this._page = page;
     this._frameManager = frameManager;
   }
@@ -475,7 +479,7 @@ export class ElementHandle<
           objectId: this._remoteObject.objectId,
         })
         .catch(debugError),
-      this._client.send('Page.getLayoutMetrics'),
+      this._page.client().send('Page.getLayoutMetrics'),
     ]);
     if (!result || !result.quads.length)
       throw new Error('Node is either not clickable or not an HTMLElement');
@@ -483,8 +487,35 @@ export class ElementHandle<
     // Fallback to `layoutViewport` in case of using Firefox.
     const { clientWidth, clientHeight } =
       layoutMetrics.cssLayoutViewport || layoutMetrics.layoutViewport;
+    let offsetX = 0;
+    let offsetY = 0;
+    let frame = this._frame;
+    while (frame.parentFrame()) {
+      const parent = frame.parentFrame();
+      if (!frame.isOOPFrame()) {
+        frame = parent;
+        continue;
+      }
+      const { backendNodeId } = await parent._client.send('DOM.getFrameOwner', {
+        frameId: frame._id,
+      });
+      const { quads } = await parent._client.send('DOM.getContentQuads', {
+        backendNodeId: backendNodeId,
+      });
+      if (!quads || !quads.length) {
+        break;
+      }
+      const protocolQuads = quads.map((quad) => this._fromProtocolQuad(quad));
+      const topLeftCorner = protocolQuads[0][0];
+      offsetX += topLeftCorner.x;
+      offsetY += topLeftCorner.y;
+      frame = parent;
+    }
     const quads = result.quads
       .map((quad) => this._fromProtocolQuad(quad))
+      .map((quad) =>
+        quad.map((part) => ({ x: part.x + offsetX, y: part.y + offsetY }))
+      )
       .map((quad) =>
         this._intersectQuadWithViewport(quad, clientWidth, clientHeight)
       )

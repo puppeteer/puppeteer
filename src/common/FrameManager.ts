@@ -73,7 +73,6 @@ export class FrameManager extends EventEmitter {
   private _contextIdToContext = new Map<string, ExecutionContext>();
   private _isolatedWorlds = new Set<string>();
   private _mainFrame: Frame;
-  private _disconnectPromise?: Promise<Error>;
 
   constructor(
     client: CDPSession,
