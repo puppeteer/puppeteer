@@ -292,6 +292,58 @@ const devices: Device[] = [
     },
   },
   {
+    name: 'iPad (gen 6)',
+    userAgent:
+      'Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 768,
+      height: 1024,
+      deviceScaleFactor: 2,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPad (gen 6) landscape',
+    userAgent:
+      'Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 1024,
+      height: 768,
+      deviceScaleFactor: 2,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPad (gen 7)',
+    userAgent:
+      'Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 810,
+      height: 1080,
+      deviceScaleFactor: 2,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPad (gen 7) landscape',
+    userAgent:
+      'Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 1080,
+      height: 810,
+      deviceScaleFactor: 2,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
     name: 'iPad Mini',
     userAgent:
       'Mozilla/5.0 (iPad; CPU OS 11_0 like Mac OS X) AppleWebKit/604.1.34 (KHTML, like Gecko) Version/11.0 Mobile/15A5341f Safari/604.1',
@@ -337,6 +389,32 @@ const devices: Device[] = [
     viewport: {
       width: 1366,
       height: 1024,
+      deviceScaleFactor: 2,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPad Pro 11',
+    userAgent:
+      'Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 834,
+      height: 1194,
+      deviceScaleFactor: 2,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPad Pro 11 landscape',
+    userAgent:
+      'Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 1194,
+      height: 834,
       deviceScaleFactor: 2,
       isMobile: true,
       hasTouch: true,
@@ -701,6 +779,214 @@ const devices: Device[] = [
     viewport: {
       width: 896,
       height: 414,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 12',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 14_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 390,
+      height: 844,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 12 landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 14_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 844,
+      height: 390,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 12 Pro',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 14_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 390,
+      height: 844,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 12 Pro landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 14_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 844,
+      height: 390,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 12 Pro Max',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 14_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 428,
+      height: 926,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 12 Pro Max landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 14_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 926,
+      height: 428,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 12 Mini',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 14_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 375,
+      height: 812,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 12 Mini landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 14_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 812,
+      height: 375,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 13',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 390,
+      height: 844,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 13 landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 844,
+      height: 390,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 13 Pro',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 390,
+      height: 844,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 13 Pro landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 844,
+      height: 390,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 13 Pro Max',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 428,
+      height: 926,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 13 Pro Max landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 926,
+      height: 428,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 13 Mini',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 375,
+      height: 812,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 13 Mini landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 812,
+      height: 375,
       deviceScaleFactor: 3,
       isMobile: true,
       hasTouch: true,
@@ -1156,6 +1442,84 @@ const devices: Device[] = [
     viewport: {
       width: 745,
       height: 353,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'Pixel 4a (5G)',
+    userAgent:
+      'Mozilla/5.0 (Linux; Android 11; Pixel 4a (5G)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4812.0 Mobile Safari/537.36',
+    viewport: {
+      width: 353,
+      height: 745,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'Pixel 4a (5G) landscape',
+    userAgent:
+      'Mozilla/5.0 (Linux; Android 11; Pixel 4a (5G)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4812.0 Mobile Safari/537.36',
+    viewport: {
+      width: 745,
+      height: 353,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'Pixel 5',
+    userAgent:
+      'Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4812.0 Mobile Safari/537.36',
+    viewport: {
+      width: 393,
+      height: 851,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'Pixel 5 landscape',
+    userAgent:
+      'Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4812.0 Mobile Safari/537.36',
+    viewport: {
+      width: 851,
+      height: 393,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'Moto G4',
+    userAgent:
+      'Mozilla/5.0 (Linux; Android 7.0; Moto G (4)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4812.0 Mobile Safari/537.36',
+    viewport: {
+      width: 360,
+      height: 640,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'Moto G4 landscape',
+    userAgent:
+      'Mozilla/5.0 (Linux; Android 7.0; Moto G (4)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4812.0 Mobile Safari/537.36',
+    viewport: {
+      width: 640,
+      height: 360,
       deviceScaleFactor: 3,
       isMobile: true,
       hasTouch: true,
