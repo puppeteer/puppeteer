@@ -454,6 +454,7 @@ describeFailsFirefox('Accessibility', function () {
             { role: 'menuitem', name: 'Second Item' },
             { role: 'menuitem', name: 'Third Item' },
           ],
+          orientation: 'vertical',
         });
       });
       it('should return null when the element is no longer in DOM', async () => {
