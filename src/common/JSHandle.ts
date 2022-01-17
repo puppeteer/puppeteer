@@ -88,6 +88,12 @@ export function createJSHandle(
   return new JSHandle(context, context._client, remoteObject);
 }
 
+const applyOffsetsToQuad = (
+  quad: Array<{ x: number; y: number }>,
+  offsetX: number,
+  offsetY: number
+) => quad.map((part) => ({ x: part.x + offsetX, y: part.y + offsetY }));
+
 /**
  * Represents an in-page JavaScript object. JSHandles can be created with the
  * {@link Page.evaluateHandle | page.evaluateHandle} method.
@@ -469,27 +475,11 @@ export class ElementHandle<
     if (error) throw new Error(error);
   }
 
-  /**
-   * Returns the middle point within an element unless a specific offset is provided.
-   */
-  async clickablePoint(offset?: Offset): Promise<Point> {
-    const [result, layoutMetrics] = await Promise.all([
-      this._client
-        .send('DOM.getContentQuads', {
-          objectId: this._remoteObject.objectId,
-        })
-        .catch(debugError),
-      this._page.client().send('Page.getLayoutMetrics'),
-    ]);
-    if (!result || !result.quads.length)
-      throw new Error('Node is either not clickable or not an HTMLElement');
-    // Filter out quads that have too small area to click into.
-    // Fallback to `layoutViewport` in case of using Firefox.
-    const { clientWidth, clientHeight } =
-      layoutMetrics.cssLayoutViewport || layoutMetrics.layoutViewport;
+  private async _getOOPIFOffsets(
+    frame: Frame
+  ): Promise<{ offsetX: number; offsetY: number }> {
     let offsetX = 0;
     let offsetY = 0;
-    let frame = this._frame;
     while (frame.parentFrame()) {
       const parent = frame.parentFrame();
       if (!frame.isOOPFrame()) {
@@ -511,11 +501,31 @@ export class ElementHandle<
       offsetY += topLeftCorner.y;
       frame = parent;
     }
+    return { offsetX, offsetY };
+  }
+
+  /**
+   * Returns the middle point within an element unless a specific offset is provided.
+   */
+  async clickablePoint(offset?: Offset): Promise<Point> {
+    const [result, layoutMetrics] = await Promise.all([
+      this._client
+        .send('DOM.getContentQuads', {
+          objectId: this._remoteObject.objectId,
+        })
+        .catch(debugError),
+      this._page.client().send('Page.getLayoutMetrics'),
+    ]);
+    if (!result || !result.quads.length)
+      throw new Error('Node is either not clickable or not an HTMLElement');
+    // Filter out quads that have too small area to click into.
+    // Fallback to `layoutViewport` in case of using Firefox.
+    const { clientWidth, clientHeight } =
+      layoutMetrics.cssLayoutViewport || layoutMetrics.layoutViewport;
+    const { offsetX, offsetY } = await this._getOOPIFOffsets(this._frame);
     const quads = result.quads
       .map((quad) => this._fromProtocolQuad(quad))
-      .map((quad) =>
-        quad.map((part) => ({ x: part.x + offsetX, y: part.y + offsetY }))
-      )
+      .map((quad) => applyOffsetsToQuad(quad, offsetX, offsetY))
       .map((quad) =>
         this._intersectQuadWithViewport(quad, clientWidth, clientHeight)
       )
@@ -860,13 +870,14 @@ export class ElementHandle<
 
     if (!result) return null;
 
+    const { offsetX, offsetY } = await this._getOOPIFOffsets(this._frame);
     const quad = result.model.border;
     const x = Math.min(quad[0], quad[2], quad[4], quad[6]);
     const y = Math.min(quad[1], quad[3], quad[5], quad[7]);
     const width = Math.max(quad[0], quad[2], quad[4], quad[6]) - x;
     const height = Math.max(quad[1], quad[3], quad[5], quad[7]) - y;
 
-    return { x, y, width, height };
+    return { x: x + offsetX, y: y + offsetY, width, height };
   }
 
   /**
@@ -882,12 +893,30 @@ export class ElementHandle<
 
     if (!result) return null;
 
+    const { offsetX, offsetY } = await this._getOOPIFOffsets(this._frame);
+
     const { content, padding, border, margin, width, height } = result.model;
     return {
-      content: this._fromProtocolQuad(content),
-      padding: this._fromProtocolQuad(padding),
-      border: this._fromProtocolQuad(border),
-      margin: this._fromProtocolQuad(margin),
+      content: applyOffsetsToQuad(
+        this._fromProtocolQuad(content),
+        offsetX,
+        offsetY
+      ),
+      padding: applyOffsetsToQuad(
+        this._fromProtocolQuad(padding),
+        offsetX,
+        offsetY
+      ),
+      border: applyOffsetsToQuad(
+        this._fromProtocolQuad(border),
+        offsetX,
+        offsetY
+      ),
+      margin: applyOffsetsToQuad(
+        this._fromProtocolQuad(margin),
+        offsetX,
+        offsetY
+      ),
       width,
       height,
     };
