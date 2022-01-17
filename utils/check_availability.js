@@ -114,6 +114,7 @@ function main() {
     }
     args.splice(0, 1); // remove options arg since we are done with options
   }
+
   if (args.length === 1) {
     const revision = parseInt(args[0], 10);
     checkRangeAvailability({
