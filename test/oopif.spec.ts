@@ -28,7 +28,10 @@ describeChromeOnly('OOPIF', function () {
     const { puppeteer, defaultBrowserOptions } = getTestState();
     browser = await puppeteer.launch(
       Object.assign({}, defaultBrowserOptions, {
-        args: (defaultBrowserOptions.args || []).concat(['--site-per-process']),
+        args: (defaultBrowserOptions.args || []).concat([
+          '--site-per-process',
+          '--remote-debugging-port=21222',
+        ]),
       })
     );
   });
@@ -308,6 +311,26 @@ describeChromeOnly('OOPIF', function () {
     const result = await button.clickablePoint();
     expect(result.x).toBeGreaterThan(150); // padding + margin + border left
     expect(result.y).toBeGreaterThan(150); // padding + margin + border top
+  });
+
+  it('should detect existing OOPIFs when Puppeteer connects to an existing page', async () => {
+    const { server, puppeteer } = getTestState();
+
+    const frame = page.waitForFrame((frame) =>
+      frame.url().endsWith('/oopif.html')
+    );
+    await page.goto(server.PREFIX + '/dynamic-oopif.html');
+    await frame;
+    expect(oopifs(context).length).toBe(1);
+    expect(page.frames().length).toBe(2);
+
+    const browserURL = 'http://127.0.0.1:21222';
+    const browser1 = await puppeteer.connect({ browserURL });
+    const target = await browser1.waitForTarget((target) =>
+      target.url().endsWith('dynamic-oopif.html')
+    );
+    await target.page();
+    browser1.disconnect();
   });
 });
 
