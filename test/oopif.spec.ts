@@ -282,7 +282,7 @@ describeChromeOnly('OOPIF', function () {
     expect(oopIframe.childFrames()).toHaveLength(0);
   });
 
-  it('clickablePoint should work for elements inside OOPIFs', async () => {
+  it('clickablePoint, boundingBox, boxModel should work for elements inside OOPIFs', async () => {
     const { server } = getTestState();
     await page.goto(server.EMPTY_PAGE);
     const framePromise = page.waitForFrame((frame) => {
@@ -311,6 +311,21 @@ describeChromeOnly('OOPIF', function () {
     const result = await button.clickablePoint();
     expect(result.x).toBeGreaterThan(150); // padding + margin + border left
     expect(result.y).toBeGreaterThan(150); // padding + margin + border top
+    const resultBoxModel = await button.boxModel();
+    for (const quad of [
+      resultBoxModel.content,
+      resultBoxModel.border,
+      resultBoxModel.margin,
+      resultBoxModel.padding,
+    ]) {
+      for (const part of quad) {
+        expect(part.x).toBeGreaterThan(150); // padding + margin + border left
+        expect(part.y).toBeGreaterThan(150); // padding + margin + border top
+      }
+    }
+    const resultBoundingBox = await button.boundingBox();
+    expect(resultBoundingBox.x).toBeGreaterThan(150); // padding + margin + border left
+    expect(resultBoundingBox.y).toBeGreaterThan(150); // padding + margin + border top
   });
 
   it('should detect existing OOPIFs when Puppeteer connects to an existing page', async () => {
