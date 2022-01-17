@@ -108,6 +108,7 @@ describeFailsFirefox('Accessibility', function () {
               role: 'combobox',
               name: '',
               value: 'First Option',
+              haspopup: 'menu',
               children: [
                 { role: 'menuitem', name: 'First Option', selected: true },
                 { role: 'menuitem', name: 'Second Option' },
@@ -453,6 +454,7 @@ describeFailsFirefox('Accessibility', function () {
             { role: 'menuitem', name: 'Second Item' },
             { role: 'menuitem', name: 'Third Item' },
           ],
+          orientation: 'vertical',
         });
       });
       it('should return null when the element is no longer in DOM', async () => {
