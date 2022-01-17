@@ -210,10 +210,20 @@ describeChromeOnly('OOPIF', function () {
     await frame.evaluate(() => {
       const button = document.createElement('button');
       button.id = 'test-button';
+      button.innerText = 'click';
+      button.onclick = () => {
+        button.id = 'clicked';
+      };
       document.body.appendChild(button);
     });
-
+    await page.evaluate(() => {
+      document.body.style.border = '150px solid black';
+      document.body.style.margin = '250px';
+      document.body.style.padding = '50px';
+    });
+    await frame.waitForSelector('#test-button', { visible: true });
     await frame.click('#test-button');
+    await frame.waitForSelector('#clicked');
   });
   it('should report oopif frames', async () => {
     const { server } = getTestState();
@@ -267,6 +277,37 @@ describeChromeOnly('OOPIF', function () {
     expect(frame1.url()).toMatch(/oopif.html#navigate-within-document$/);
     await utils.detachFrame(oopIframe, 'frame1');
     expect(oopIframe.childFrames()).toHaveLength(0);
+  });
+
+  it('clickablePoint should work for elements inside OOPIFs', async () => {
+    const { server } = getTestState();
+    await page.goto(server.EMPTY_PAGE);
+    const framePromise = page.waitForFrame((frame) => {
+      return page.frames().indexOf(frame) === 1;
+    });
+    await utils.attachFrame(
+      page,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
+    );
+    const frame = await framePromise;
+    await page.evaluate(() => {
+      document.body.style.border = '50px solid black';
+      document.body.style.margin = '50px';
+      document.body.style.padding = '50px';
+    });
+    await frame.evaluate(() => {
+      const button = document.createElement('button');
+      button.id = 'test-button';
+      button.innerText = 'click';
+      document.body.appendChild(button);
+    });
+    const button = await frame.waitForSelector('#test-button', {
+      visible: true,
+    });
+    const result = await button.clickablePoint();
+    expect(result.x).toBeGreaterThan(150); // padding + margin + border left
+    expect(result.y).toBeGreaterThan(150); // padding + margin + border top
   });
 });
 
