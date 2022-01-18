@@ -1103,7 +1103,7 @@ export class ElementHandle<
    * If there are no such elements, the method will resolve to an empty array.
    * @param expression - Expression to {@link https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate | evaluate}
    */
-  async $x(expression: string): Promise<ElementHandle[]> {
+  async $x(expression: string): Promise<(ElementHandle | undefined)[]> {
     const arrayHandle = await this.evaluateHandle(
       (element: Document, expression: string) => {
         const document = element.ownerDocument || element;
