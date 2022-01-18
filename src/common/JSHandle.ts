@@ -489,14 +489,14 @@ export class ElementHandle<
       const { backendNodeId } = await parent._client.send('DOM.getFrameOwner', {
         frameId: frame._id,
       });
-      const { quads } = await parent._client.send('DOM.getContentQuads', {
+      const result = await parent._client.send('DOM.getBoxModel', {
         backendNodeId: backendNodeId,
       });
-      if (!quads || !quads.length) {
+      if (!result) {
         break;
       }
-      const protocolQuads = quads.map((quad) => this._fromProtocolQuad(quad));
-      const topLeftCorner = protocolQuads[0][0];
+      const contentBoxQuad = result.model.content;
+      const topLeftCorner = this._fromProtocolQuad(contentBoxQuad)[0];
       offsetX += topLeftCorner.x;
       offsetY += topLeftCorner.y;
       frame = parent;
