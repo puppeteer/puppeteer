@@ -80,12 +80,19 @@ export function createJSHandle(
       context,
       context._client,
       remoteObject,
+      frame,
       frameManager.page(),
       frameManager
     );
   }
   return new JSHandle(context, context._client, remoteObject);
 }
+
+const applyOffsetsToQuad = (
+  quad: Array<{ x: number; y: number }>,
+  offsetX: number,
+  offsetY: number
+) => quad.map((part) => ({ x: part.x + offsetX, y: part.y + offsetY }));
 
 /**
  * Represents an in-page JavaScript object. JSHandles can be created with the
@@ -331,6 +338,7 @@ export class JSHandle<HandleObjectType = unknown> {
 export class ElementHandle<
   ElementType extends Element = Element
 > extends JSHandle<ElementType> {
+  private _frame: Frame;
   private _page: Page;
   private _frameManager: FrameManager;
 
@@ -341,12 +349,14 @@ export class ElementHandle<
     context: ExecutionContext,
     client: CDPSession,
     remoteObject: Protocol.Runtime.RemoteObject,
+    frame: Frame,
     page: Page,
     frameManager: FrameManager
   ) {
     super(context, client, remoteObject);
     this._client = client;
     this._remoteObject = remoteObject;
+    this._frame = frame;
     this._page = page;
     this._frameManager = frameManager;
   }
@@ -465,6 +475,35 @@ export class ElementHandle<
     if (error) throw new Error(error);
   }
 
+  private async _getOOPIFOffsets(
+    frame: Frame
+  ): Promise<{ offsetX: number; offsetY: number }> {
+    let offsetX = 0;
+    let offsetY = 0;
+    while (frame.parentFrame()) {
+      const parent = frame.parentFrame();
+      if (!frame.isOOPFrame()) {
+        frame = parent;
+        continue;
+      }
+      const { backendNodeId } = await parent._client.send('DOM.getFrameOwner', {
+        frameId: frame._id,
+      });
+      const result = await parent._client.send('DOM.getBoxModel', {
+        backendNodeId: backendNodeId,
+      });
+      if (!result) {
+        break;
+      }
+      const contentBoxQuad = result.model.content;
+      const topLeftCorner = this._fromProtocolQuad(contentBoxQuad)[0];
+      offsetX += topLeftCorner.x;
+      offsetY += topLeftCorner.y;
+      frame = parent;
+    }
+    return { offsetX, offsetY };
+  }
+
   /**
    * Returns the middle point within an element unless a specific offset is provided.
    */
@@ -475,7 +514,7 @@ export class ElementHandle<
           objectId: this._remoteObject.objectId,
         })
         .catch(debugError),
-      this._client.send('Page.getLayoutMetrics'),
+      this._page.client().send('Page.getLayoutMetrics'),
     ]);
     if (!result || !result.quads.length)
       throw new Error('Node is either not clickable or not an HTMLElement');
@@ -483,8 +522,10 @@ export class ElementHandle<
     // Fallback to `layoutViewport` in case of using Firefox.
     const { clientWidth, clientHeight } =
       layoutMetrics.cssLayoutViewport || layoutMetrics.layoutViewport;
+    const { offsetX, offsetY } = await this._getOOPIFOffsets(this._frame);
     const quads = result.quads
       .map((quad) => this._fromProtocolQuad(quad))
+      .map((quad) => applyOffsetsToQuad(quad, offsetX, offsetY))
       .map((quad) =>
         this._intersectQuadWithViewport(quad, clientWidth, clientHeight)
       )
@@ -829,13 +870,14 @@ export class ElementHandle<
 
     if (!result) return null;
 
+    const { offsetX, offsetY } = await this._getOOPIFOffsets(this._frame);
     const quad = result.model.border;
     const x = Math.min(quad[0], quad[2], quad[4], quad[6]);
     const y = Math.min(quad[1], quad[3], quad[5], quad[7]);
     const width = Math.max(quad[0], quad[2], quad[4], quad[6]) - x;
     const height = Math.max(quad[1], quad[3], quad[5], quad[7]) - y;
 
-    return { x, y, width, height };
+    return { x: x + offsetX, y: y + offsetY, width, height };
   }
 
   /**
@@ -851,12 +893,30 @@ export class ElementHandle<
 
     if (!result) return null;
 
+    const { offsetX, offsetY } = await this._getOOPIFOffsets(this._frame);
+
     const { content, padding, border, margin, width, height } = result.model;
     return {
-      content: this._fromProtocolQuad(content),
-      padding: this._fromProtocolQuad(padding),
-      border: this._fromProtocolQuad(border),
-      margin: this._fromProtocolQuad(margin),
+      content: applyOffsetsToQuad(
+        this._fromProtocolQuad(content),
+        offsetX,
+        offsetY
+      ),
+      padding: applyOffsetsToQuad(
+        this._fromProtocolQuad(padding),
+        offsetX,
+        offsetY
+      ),
+      border: applyOffsetsToQuad(
+        this._fromProtocolQuad(border),
+        offsetX,
+        offsetY
+      ),
+      margin: applyOffsetsToQuad(
+        this._fromProtocolQuad(margin),
+        offsetX,
+        offsetY
+      ),
       width,
       height,
     };
