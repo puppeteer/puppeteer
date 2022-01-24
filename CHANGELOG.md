@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [13.1.1](https://github.com/puppeteer/puppeteer/compare/v13.1.0...v13.1.1) (2022-01-18)
+
+
+### Bug Fixes
+
+* use content box for OOPIF offset calculations ([#7911](https://github.com/puppeteer/puppeteer/issues/7911)) ([344feb5](https://github.com/puppeteer/puppeteer/commit/344feb53c28ce018a4c600d408468f6d9d741eee))
+
+## [13.1.0](https://github.com/puppeteer/puppeteer/compare/v13.0.1...v13.1.0) (2022-01-17)
+
+
+### Features
+
+* **chromium:** roll to Chromium 98.0.4758.0 (r950341) ([#7907](https://github.com/puppeteer/puppeteer/issues/7907)) ([a55c86f](https://github.com/puppeteer/puppeteer/commit/a55c86fac504b5e89ba23735fb3a1b1d54a4e1e5))
+
+
+### Bug Fixes
+
+* apply OOPIF offsets to bounding box and box model calls ([#7906](https://github.com/puppeteer/puppeteer/issues/7906)) ([a566263](https://github.com/puppeteer/puppeteer/commit/a566263ba28e58ff648bffbdb628606f75d5876f))
+* correctly compute clickable points for elements inside OOPIFs ([#7900](https://github.com/puppeteer/puppeteer/issues/7900)) ([486bbe0](https://github.com/puppeteer/puppeteer/commit/486bbe010d5ee5c446d9e8daf61a080232379c3f)), closes [#7849](https://github.com/puppeteer/puppeteer/issues/7849)
+* error for pre-existing OOPIFs ([#7899](https://github.com/puppeteer/puppeteer/issues/7899)) ([d7937b8](https://github.com/puppeteer/puppeteer/commit/d7937b806d331bf16c2016aaf16e932b1334eac8)), closes [#7844](https://github.com/puppeteer/puppeteer/issues/7844) [#7896](https://github.com/puppeteer/puppeteer/issues/7896)
+
 ### [13.0.1](https://github.com/puppeteer/puppeteer/compare/v13.0.0...v13.0.1) (2021-12-22)
 
 
