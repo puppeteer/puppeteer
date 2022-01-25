@@ -38,7 +38,7 @@ async function run() {
   let changedFiles = false;
 
   if (IS_RELEASE) {
-    const versions = await Source.readFile(
+    const { versionsPerRelease: versions } = await Source.readFile(
       path.join(PROJECT_DIR, 'versions.js')
     );
     versions.setText(
