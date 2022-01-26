@@ -42,4 +42,16 @@ const versionsPerRelease = new Map([
   ['73.0.3679.0', 'v1.12.2'],
 ]);
 
-module.exports = versionsPerRelease;
+// The same major version as the current Chrome Stable per https://chromestatus.com/roadmap.
+const lastMaintainedChromiumVersion = '97.0.4692.0';
+
+if (!versionsPerRelease.has(lastMaintainedChromiumVersion)) {
+  throw new Error(
+    'lastMaintainedChromiumVersion is missing from versionsPerRelease'
+  );
+}
+
+module.exports = {
+  versionsPerRelease,
+  lastMaintainedChromiumVersion,
+};
