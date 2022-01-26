@@ -20,7 +20,8 @@ import pkgDir from 'pkg-dir';
 import { Product } from './common/Product.js';
 
 export const initializePuppeteerNode = (packageName: string): PuppeteerNode => {
-  const puppeteerRootDirectory = pkgDir.sync(__dirname);
+  const puppeteerRootDirectory =
+    pkgDir.sync(__dirname) || pkgDir.sync(process.cwd());
 
   let preferredRevision = PUPPETEER_REVISIONS.chromium;
   const isPuppeteerCore = packageName === 'puppeteer-core';
