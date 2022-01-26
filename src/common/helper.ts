@@ -356,12 +356,12 @@ async function getReadableFromProtocolStream(
 
   let eof = false;
   return new Readable({
-    async read(size: number) {
+    async read() {
       if (eof) {
         return null;
       }
 
-      const response = await client.send('IO.read', { handle, size });
+      const response = await client.send('IO.read', { handle });
       this.push(response.data, response.base64Encoded ? 'base64' : undefined);
       if (response.eof) {
         eof = true;
