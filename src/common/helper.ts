@@ -357,6 +357,9 @@ async function getReadableFromProtocolStream(
   let eof = false;
   return new Readable({
     async read() {
+      // TODO: use the advised size parameter to read function once
+      // crbug.com/1290727 is resolved.
+      // Also, see https://github.com/puppeteer/puppeteer/pull/7868.
       if (eof) {
         return null;
       }
