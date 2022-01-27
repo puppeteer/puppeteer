@@ -22,6 +22,7 @@ jobs:
           npm config set registry 'https://wombat-dressing-room.appspot.com/'
           npm config set '//wombat-dressing-room.appspot.com/:_authToken' '${NPM_TOKEN}'
           npm publish
+          npm deprecate puppeteer@"$(node utils/get_deprecated_version_range.js)" "Version no longer supported. Upgrade to @latest"
       - name: Publish puppeteer-core
         env:
           NPM_TOKEN: ${{secrets.NPM_TOKEN_PUPPETEER_CORE}}
