@@ -99,7 +99,7 @@
     "esprima": "4.0.1",
     "expect": "25.2.7",
     "husky": "7.0.2",
-    "jpeg-js": "0.3.7",
+    "jpeg-js": "0.4.3",
     "mime": "2.5.2",
     "minimist": "1.2.0",
     "mocha": "9.1.3",
