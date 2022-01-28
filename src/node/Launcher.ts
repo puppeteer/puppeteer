@@ -42,9 +42,9 @@ const tmpDir = () => process.env.PUPPETEER_TMP_DIR || os.tmpdir();
  * @public
  */
 export interface ProductLauncher {
-  launch(object: PuppeteerNodeLaunchOptions);
-  executablePath: (string?) => string;
-  defaultArgs(object: BrowserLaunchArgumentOptions);
+  launch(object: PuppeteerNodeLaunchOptions): Promise<Browser>;
+  executablePath: (path?: any) => string;
+  defaultArgs(object: BrowserLaunchArgumentOptions): string[];
   product: Product;
 }
 
@@ -157,6 +157,10 @@ class ChromeLauncher implements ProductLauncher {
       }
     }
 
+    if (!chromeExecutable) {
+      throw new Error('chromeExecutable is not found.');
+    }
+
     const usePipe = chromeArguments.includes('--remote-debugging-pipe');
     const runner = new BrowserRunner(
       this.product,
@@ -187,7 +191,7 @@ class ChromeLauncher implements ProductLauncher {
         [],
         ignoreHTTPSErrors,
         defaultViewport,
-        runner.proc,
+        runner.proc ?? undefined,
         runner.close.bind(runner)
       );
     } catch (error) {
@@ -362,6 +366,10 @@ class FirefoxLauncher implements ProductLauncher {
       const { missingText, executablePath } = resolveExecutablePath(this);
       if (missingText) throw new Error(missingText);
       firefoxExecutable = executablePath;
+    }
+
+    if (!firefoxExecutable) {
+      throw new Error('firefoxExecutable is not found.');
     }
 
     const runner = new BrowserRunner(
@@ -786,7 +794,7 @@ function resolveExecutablePath(launcher: ChromeLauncher | FirefoxLauncher): {
   executablePath: string;
   missingText?: string;
 } {
-  let downloadPath: string;
+  let downloadPath: string | undefined;
   // puppeteer-core doesn't take into account PUPPETEER_* env variables.
   if (!launcher._isPuppeteerCore) {
     const executablePath =
@@ -797,7 +805,7 @@ function resolveExecutablePath(launcher: ChromeLauncher | FirefoxLauncher): {
       const missingText = !fs.existsSync(executablePath)
         ? 'Tried to use PUPPETEER_EXECUTABLE_PATH env variable to launch browser but did not find any executable at: ' +
           executablePath
-        : null;
+        : undefined;
       return { executablePath, missingText };
     }
     downloadPath =
@@ -817,7 +825,7 @@ function resolveExecutablePath(launcher: ChromeLauncher | FirefoxLauncher): {
       const missingText = !revisionInfo.local
         ? 'Tried to use PUPPETEER_CHROMIUM_REVISION env variable to launch browser but did not find executable at: ' +
           revisionInfo.executablePath
-        : null;
+        : undefined;
       return { executablePath: revisionInfo.executablePath, missingText };
     }
   }
@@ -829,7 +837,7 @@ function resolveExecutablePath(launcher: ChromeLauncher | FirefoxLauncher): {
     ? `Could not find expected browser (${launcher.product}) locally. ${
         launcher.product === 'chrome' ? chromeHelp : firefoxHelp
       }`
-    : null;
+    : undefined;
   return { executablePath: revisionInfo.executablePath, missingText };
 }
 

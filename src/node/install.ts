@@ -31,16 +31,24 @@ const supportedProducts = {
   firefox: 'Firefox Nightly',
 } as const;
 
+function getProduct(input: string): 'chrome' | 'firefox' {
+  if (input !== 'chrome' && input !== 'firefox') {
+    throw new Error(`Unsupported product ${input}`);
+  }
+  return input;
+}
+
 export async function downloadBrowser(): Promise<void> {
   const downloadHost =
     process.env.PUPPETEER_DOWNLOAD_HOST ||
     process.env.npm_config_puppeteer_download_host ||
     process.env.npm_package_config_puppeteer_download_host;
-  const product =
+  const product = getProduct(
     process.env.PUPPETEER_PRODUCT ||
-    process.env.npm_config_puppeteer_product ||
-    process.env.npm_package_config_puppeteer_product ||
-    'chrome';
+      process.env.npm_config_puppeteer_product ||
+      process.env.npm_package_config_puppeteer_product ||
+      'chrome'
+  );
   const downloadPath =
     process.env.PUPPETEER_DOWNLOAD_PATH ||
     process.env.npm_config_puppeteer_download_path ||
@@ -53,7 +61,7 @@ export async function downloadBrowser(): Promise<void> {
   const revision = await getRevision();
   await fetchBinary(revision);
 
-  function getRevision() {
+  async function getRevision(): Promise<string> {
     if (product === 'chrome') {
       return (
         process.env.PUPPETEER_CHROMIUM_REVISION ||
@@ -72,7 +80,7 @@ export async function downloadBrowser(): Promise<void> {
     }
   }
 
-  function fetchBinary(revision) {
+  function fetchBinary(revision: string) {
     const revisionInfo = browserFetcher.revisionInfo(revision);
 
     // Do nothing if the revision is already downloaded.
@@ -119,9 +127,9 @@ export async function downloadBrowser(): Promise<void> {
       process.exit(1);
     }
 
-    let progressBar = null;
+    let progressBar: ProgressBar | null = null;
     let lastDownloadedBytes = 0;
-    function onProgress(downloadedBytes, totalBytes) {
+    function onProgress(downloadedBytes: number, totalBytes: number) {
       if (!progressBar) {
         progressBar = new ProgressBar(
           `Downloading ${
@@ -147,12 +155,12 @@ export async function downloadBrowser(): Promise<void> {
       .catch(onError);
   }
 
-  function toMegabytes(bytes) {
+  function toMegabytes(bytes: number) {
     const mb = bytes / 1024 / 1024;
     return `${Math.round(mb * 10) / 10} Mb`;
   }
 
-  function getFirefoxNightlyVersion() {
+  async function getFirefoxNightlyVersion(): Promise<string> {
     const firefoxVersionsUrl =
       'https://product-details.mozilla.org/1.0/firefox_versions.json';
 
@@ -172,14 +180,14 @@ export async function downloadBrowser(): Promise<void> {
       requestOptions.rejectUnauthorized = false;
     }
 
-    const promise = new Promise((resolve, reject) => {
+    const promise = new Promise<string>((resolve, reject) => {
       let data = '';
       logPolitely(
         `Requesting latest Firefox Nightly version from ${firefoxVersionsUrl}`
       );
       https
         .get(firefoxVersionsUrl, requestOptions, (r) => {
-          if (r.statusCode >= 400)
+          if (r.statusCode && r.statusCode >= 400)
             return reject(new Error(`Got status code ${r.statusCode}`));
           r.on('data', (chunk) => {
             data += chunk;
@@ -200,7 +208,7 @@ export async function downloadBrowser(): Promise<void> {
 }
 
 export function logPolitely(toBeLogged: unknown): void {
-  const logLevel = process.env.npm_config_loglevel;
+  const logLevel = process.env.npm_config_loglevel || '';
   const logLevelDisplay = ['silent', 'error', 'warn'].indexOf(logLevel) > -1;
 
   // eslint-disable-next-line no-console
