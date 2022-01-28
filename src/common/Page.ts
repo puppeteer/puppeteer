@@ -3199,15 +3199,16 @@ export class Page extends EventEmitter {
    * (30 seconds). Pass `0` to disable timeout. The default value can be changed
    * by using the {@link Page.setDefaultTimeout} method.
    */
-  waitForSelector(
+  waitForSelector<T extends boolean = false>(
     selector: string,
     options: {
       visible?: boolean;
-      hidden?: boolean;
+      hidden?: T;
       timeout?: number;
     } = {}
-  ): Promise<ElementHandle | null> {
-    return this.mainFrame().waitForSelector(selector, options);
+  ): Promise<T extends true ? null : ElementHandle> {
+    const result = this.mainFrame().waitForSelector(selector, options);
+    return result as Promise<T extends true ? null : ElementHandle>;
   }
 
   /**
