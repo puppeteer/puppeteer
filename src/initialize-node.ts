@@ -34,6 +34,10 @@ export const initializePuppeteerNode = (packageName: string): PuppeteerNode => {
   if (!isPuppeteerCore && productName === 'firefox')
     preferredRevision = PUPPETEER_REVISIONS.firefox;
 
+  if (!puppeteerRootDirectory) {
+    throw new Error('puppeteerRootDirectory is not found.');
+  }
+
   return new PuppeteerNode({
     projectRoot: puppeteerRootDirectory,
     preferredRevision,
