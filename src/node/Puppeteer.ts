@@ -66,7 +66,7 @@ import { Product } from '../common/Product.js';
  * @public
  */
 export class PuppeteerNode extends Puppeteer {
-  private _lazyLauncher: ProductLauncher;
+  private _lazyLauncher?: ProductLauncher;
   private _projectRoot: string;
   private __productName?: Product;
   /**
@@ -108,12 +108,12 @@ export class PuppeteerNode extends Puppeteer {
   /**
    * @internal
    */
-  get _productName(): Product {
+  get _productName(): Product | undefined {
     return this.__productName;
   }
 
   // don't need any TSDoc here - because the getter is internal the setter is too.
-  set _productName(name: Product) {
+  set _productName(name: Product | undefined) {
     if (this.__productName !== name) this._changedProduct = true;
     this.__productName = name;
   }
