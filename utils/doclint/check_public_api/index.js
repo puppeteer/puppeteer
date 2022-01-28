@@ -1055,6 +1055,13 @@ function compareDocumentations(actual, expected) {
           expectedName: 'T',
         },
       ],
+      [
+        'Method ElementHandle.waitForSelector() options.hidden',
+        {
+          actualName: 'boolean',
+          expectedName: 'T',
+        },
+      ],
     ]);
 
     const expectedForSource = expectedNamingMismatches.get(source);

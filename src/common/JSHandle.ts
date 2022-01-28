@@ -391,14 +391,14 @@ export class ElementHandle<
    * (30 seconds). Pass `0` to disable timeout. The default value can be changed
    * by using the {@link Page.setDefaultTimeout} method.
    */
-  async waitForSelector(
+  async waitForSelector<T extends boolean = false>(
     selector: string,
     options: {
       visible?: boolean;
-      hidden?: boolean;
+      hidden?: T;
       timeout?: number;
     } = {}
-  ): Promise<ElementHandle | null> {
+  ): Promise<T extends true ? null : ElementHandle> {
     const frame = this._context.frame();
     const secondaryContext = await frame._secondaryWorld.executionContext();
     const adoptedRoot = await secondaryContext._adoptElementHandle(this);
@@ -407,11 +407,11 @@ export class ElementHandle<
       root: adoptedRoot,
     });
     await adoptedRoot.dispose();
-    if (!handle) return null;
+    if (!handle) return null as T extends true ? null : ElementHandle;
     const mainExecutionContext = await frame._mainWorld.executionContext();
     const result = await mainExecutionContext._adoptElementHandle(handle);
     await handle.dispose();
-    return result;
+    return result as T extends true ? null : ElementHandle;
   }
 
   asElement(): ElementHandle<ElementType> | null {
