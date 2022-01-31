@@ -43,7 +43,7 @@ export class TimeoutError extends CustomError {}
  */
 export class ProtocolError extends CustomError {
   public code?: number;
-  public originalMessage: string;
+  public originalMessage = '';
 }
 /**
  * @public
