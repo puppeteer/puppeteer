@@ -58,7 +58,7 @@
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "dependencies": {
-    "debug": "4.3.2",
+    "debug": "4.3.3",
     "devtools-protocol": "0.0.948846",
     "extract-zip": "2.0.1",
     "https-proxy-agent": "5.0.0",
