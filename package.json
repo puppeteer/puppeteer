@@ -98,7 +98,7 @@
     "eslint-plugin-prettier": "4.0.0",
     "eslint-plugin-unicorn": "37.0.1",
     "esprima": "4.0.1",
-    "expect": "25.2.7",
+    "expect": "27.4.6",
     "husky": "7.0.2",
     "jpeg-js": "0.4.3",
     "mime": "2.5.2",
