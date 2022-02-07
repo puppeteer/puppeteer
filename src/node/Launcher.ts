@@ -52,12 +52,12 @@ export interface ProductLauncher {
  * @internal
  */
 class ChromeLauncher implements ProductLauncher {
-  _projectRoot: string;
+  _projectRoot: string | undefined;
   _preferredRevision: string;
   _isPuppeteerCore: boolean;
 
   constructor(
-    projectRoot: string,
+    projectRoot: string | undefined,
     preferredRevision: string,
     isPuppeteerCore: boolean
   ) {
@@ -276,12 +276,12 @@ class ChromeLauncher implements ProductLauncher {
  * @internal
  */
 class FirefoxLauncher implements ProductLauncher {
-  _projectRoot: string;
+  _projectRoot: string | undefined;
   _preferredRevision: string;
   _isPuppeteerCore: boolean;
 
   constructor(
-    projectRoot: string,
+    projectRoot: string | undefined,
     preferredRevision: string,
     isPuppeteerCore: boolean
   ) {
@@ -428,6 +428,11 @@ class FirefoxLauncher implements ProductLauncher {
   async _updateRevision(): Promise<void> {
     // replace 'latest' placeholder with actual downloaded revision
     if (this._preferredRevision === 'latest') {
+      if (!this._projectRoot) {
+        throw new Error(
+          '_projectRoot is undefined. Unable to create a BrowserFetcher.'
+        );
+      }
       const browserFetcher = new BrowserFetcher(this._projectRoot, {
         product: this.product,
       });
@@ -813,6 +818,11 @@ function resolveExecutablePath(launcher: ChromeLauncher | FirefoxLauncher): {
       process.env.npm_config_puppeteer_download_path ||
       process.env.npm_package_config_puppeteer_download_path;
   }
+  if (!launcher._projectRoot) {
+    throw new Error(
+      '_projectRoot is undefined. Unable to create a BrowserFetcher.'
+    );
+  }
   const browserFetcher = new BrowserFetcher(launcher._projectRoot, {
     product: launcher.product,
     path: downloadPath,
@@ -845,7 +855,7 @@ function resolveExecutablePath(launcher: ChromeLauncher | FirefoxLauncher): {
  * @internal
  */
 export default function Launcher(
-  projectRoot: string,
+  projectRoot: string | undefined,
   preferredRevision: string,
   isPuppeteerCore: boolean,
   product?: string

@@ -67,7 +67,7 @@ import { Product } from '../common/Product.js';
  */
 export class PuppeteerNode extends Puppeteer {
   private _lazyLauncher?: ProductLauncher;
-  private _projectRoot: string;
+  private _projectRoot?: string;
   private __productName?: Product;
   /**
    * @internal
@@ -79,7 +79,7 @@ export class PuppeteerNode extends Puppeteer {
    */
   constructor(
     settings: {
-      projectRoot: string;
+      projectRoot?: string;
       preferredRevision: string;
       productName?: Product;
     } & CommonPuppeteerSettings
@@ -224,6 +224,11 @@ export class PuppeteerNode extends Puppeteer {
    * @returns A new BrowserFetcher instance.
    */
   createBrowserFetcher(options: BrowserFetcherOptions): BrowserFetcher {
+    if (!this._projectRoot) {
+      throw new Error(
+        '_projectRoot is undefined. Unable to create a BrowserFetcher.'
+      );
+    }
     return new BrowserFetcher(this._projectRoot, options);
   }
 }
