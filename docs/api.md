@@ -4644,9 +4644,9 @@ This method returns boxes of the element, or `null` if the element is not visibl
   - `button` <"left"|"right"|"middle"> Defaults to `left`.
   - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
-  - `offset` <[Object]> Offset in pixels relative to the top-left corder of the border box of the element.
-    - `x` <number> x-offset in pixels relative to the top-left corder of the border box of the element.
-    - `y` <number> y-offset in pixels relative to the top-left corder of the border box of the element.
+  - `offset` <[Object]> Offset in pixels relative to the top-left corner of the border box of the element.
+    - `x` <number> x-offset in pixels relative to the top-left corner of the border box of the element.
+    - `y` <number> y-offset in pixels relative to the top-left corner of the border box of the element.
 - returns: <[Promise]> Promise which resolves when the element is successfully clicked. Promise gets rejected if the element is detached from DOM.
 
 This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to click in the center of the element.
@@ -4655,8 +4655,8 @@ If the element is detached from DOM, the method throws an error.
 #### elementHandle.clickablePoint([offset])
 
 - `offset` <[Object]>
-  - `x` <number> x-offset in pixels relative to the top-left corder of the border box of the element.
-  - `y` <number> y-offset in pixels relative to the top-left corder of the border box of the element.
+  - `x` <number> x-offset in pixels relative to the top-left corner of the border box of the element.
+  - `y` <number> y-offset in pixels relative to the top-left corner of the border box of the element.
 - returns: <[Promise<[Point]>]> Resolves to the x, y point that describes the element's position.
 
 #### elementHandle.contentFrame()
