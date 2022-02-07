@@ -109,7 +109,7 @@
     "pngjs": "6.0.0",
     "prettier": "2.3.0",
     "sinon": "9.2.4",
-    "source-map-support": "0.5.19",
+    "source-map-support": "0.5.21",
     "standard-version": "9.3.2",
     "text-diff": "1.0.1",
     "ts-node": "10.4.0",
