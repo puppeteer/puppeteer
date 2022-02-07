@@ -1,4 +1,4 @@
-# Puppeteer API <!-- GEN:version -->v13.2.0<!-- GEN:stop-->
+# Puppeteer API <!-- GEN:version -->Tip-Of-Tree<!-- GEN:stop-->
 
 <!-- GEN:empty-if-release --><!-- GEN:stop -->
 
