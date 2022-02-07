@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [13.2.0](https://github.com/puppeteer/puppeteer/compare/v13.1.3...v13.2.0) (2022-02-07)
+
+
+### Features
+
+* add more models to DeviceDescriptors ([#7904](https://github.com/puppeteer/puppeteer/issues/7904)) ([6a655cb](https://github.com/puppeteer/puppeteer/commit/6a655cb647e12eaf1055be0b298908d83bebac25))
+* **chromium:** roll to Chromium 99.0.4844.16 (r961656) ([#7960](https://github.com/puppeteer/puppeteer/issues/7960)) ([96c3f94](https://github.com/puppeteer/puppeteer/commit/96c3f943b2f6e26bd871ecfcce71b6a33e214ebf))
+
+
+### Bug Fixes
+
+* make projectRoot optional in Puppeteer and launchers ([#7967](https://github.com/puppeteer/puppeteer/issues/7967)) ([9afdc63](https://github.com/puppeteer/puppeteer/commit/9afdc6300b80f01091dc4cb42d4ebe952c7d60f0))
+* migrate more files to strict-mode TypeScript ([#7950](https://github.com/puppeteer/puppeteer/issues/7950)) ([aaac8d9](https://github.com/puppeteer/puppeteer/commit/aaac8d9c44327a2c503ffd6c97b7f21e8010c3e4))
+* typos in documentation ([#7968](https://github.com/puppeteer/puppeteer/issues/7968)) ([41ab4e9](https://github.com/puppeteer/puppeteer/commit/41ab4e9127df64baa6c43ecde2f7ddd702ba7b0c))
+
 ### [13.1.3](https://github.com/puppeteer/puppeteer/compare/v13.1.2...v13.1.3) (2022-01-31)
 
 
