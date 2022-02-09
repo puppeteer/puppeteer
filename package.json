@@ -102,7 +102,7 @@
     "cross-env": "7.0.3",
     "eslint": "7.32.0",
     "eslint-config-prettier": "8.3.0",
-    "eslint-plugin-import": "2.22.1",
+    "eslint-plugin-import": "2.25.4",
     "eslint-plugin-mocha": "9.0.0",
     "eslint-plugin-prettier": "4.0.0",
     "eslint-plugin-unicorn": "37.0.1",
