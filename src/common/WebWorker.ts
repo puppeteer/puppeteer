@@ -138,7 +138,7 @@ export class WebWorker extends EventEmitter {
    * @param args - Arguments to pass to `pageFunction`.
    * @returns Promise which resolves to the return value of `pageFunction`.
    */
-  async evaluate<ReturnType extends any>(
+  async evaluate<ReturnType>(
     pageFunction: Function | string,
     ...args: any[]
   ): Promise<ReturnType> {
