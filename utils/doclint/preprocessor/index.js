@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const Message = require('../Message');
+const Message = require('../Message.js');
 
 const IS_RELEASE = Boolean(process.env.IS_RELEASE);
 

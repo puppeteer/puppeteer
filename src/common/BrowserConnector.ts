@@ -19,9 +19,9 @@ import { Browser, TargetFilterCallback } from './Browser.js';
 import { assert } from './assert.js';
 import { debugError } from '../common/helper.js';
 import { Connection } from './Connection.js';
-import { getFetch } from './fetch.js';
 import { Viewport } from './PuppeteerViewport.js';
 import { isNode } from '../environment.js';
+import { getFetch } from './fetch.js';
 
 /**
  * Generic browser options that can be passed when launching any browser or when

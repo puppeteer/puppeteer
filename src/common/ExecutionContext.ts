@@ -133,7 +133,7 @@ export class ExecutionContext {
    *
    * @returns A promise that resolves to the return value of the given function.
    */
-  async evaluate<ReturnType extends any>(
+  async evaluate<ReturnType>(
     pageFunction: Function | string,
     ...args: unknown[]
   ): Promise<ReturnType> {

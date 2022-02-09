@@ -15,7 +15,7 @@
  */
 
 const { runCommands, ensureReleasedAPILinks } = require('.');
-const Source = require('../Source');
+const Source = require('../Source.js');
 const expect = require('expect');
 
 describe('doclint preprocessor specs', function () {

@@ -172,7 +172,7 @@ async function checkRollCandidate(channel) {
     10
   );
   const currentRevision = parseInt(
-    require('../lib/cjs/puppeteer/revisions').PUPPETEER_REVISIONS.chromium,
+    require('../lib/cjs/puppeteer/revisions.js').PUPPETEER_REVISIONS.chromium,
     10
   );
 
