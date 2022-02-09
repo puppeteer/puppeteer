@@ -316,5 +316,5 @@ Releasing to npm consists of the following phases:
         - **NOTE**: tag names are prefixed with `'v'`, e.g. for version `1.4.0` the tag is `v1.4.0`.
     1. As soon as the Git tag is created by completing the previous step, our CI automatically `npm publish`es the new releases for both the `puppeteer` and `puppeteer-core` packages.
 1. Source Code: mark post-release.
-    1. Bump `package.json` version to the `-post` version, run `npm run doc` to update the “released APIs” section at the top of `docs/api.md` accordingly, and send a PR titled `'chore: bump version to vXXX.YYY.ZZZ-post'` ([example](https://github.com/puppeteer/puppeteer/pull/6808))
+    1. Bump `package.json` version to the `-post` version, run `npm run generate-docs` to update the “released APIs” section at the top of `docs/api.md` accordingly, and send a PR titled `'chore: bump version to vXXX.YYY.ZZZ-post'` ([example](https://github.com/puppeteer/puppeteer/pull/6808))
         - **NOTE**: no other commits should be landed in-between release commit and bump commit.
