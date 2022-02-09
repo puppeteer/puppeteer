@@ -15,18 +15,26 @@
  */
 import { ConnectionTransport } from '../common/ConnectionTransport.js';
 import NodeWebSocket from 'ws';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { puppeteerDirname } from '../compat.js';
+
+// We parse rather than import for ES module compatibility.
+const version = JSON.parse(
+  readFileSync(join(puppeteerDirname, 'package.json'), {
+    encoding: 'utf8',
+  })
+).version;
 
 export class NodeWebSocketTransport implements ConnectionTransport {
   static create(url: string): Promise<NodeWebSocketTransport> {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const pkg = require('../../../../package.json');
     return new Promise((resolve, reject) => {
       const ws = new NodeWebSocket(url, [], {
         followRedirects: true,
         perMessageDeflate: false,
         maxPayload: 256 * 1024 * 1024, // 256Mb
         headers: {
-          'User-Agent': `Puppeteer ${pkg.version}`,
+          'User-Agent': `Puppeteer ${version}`,
         },
       });
 
