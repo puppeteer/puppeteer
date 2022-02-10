@@ -25,6 +25,4 @@ delete json.scripts.install;
 
 json.name = 'puppeteer-core';
 json.main = './cjs-entry-core.js';
-json.exports['.'].imports = './lib/esm/puppeteer/node-puppeteer-core.js';
-json.exports['.'].require = './cjs-entry-core.js';
 fs.writeFileSync(packagePath, JSON.stringify(json, null, '  '));

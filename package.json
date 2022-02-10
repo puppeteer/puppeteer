@@ -2,18 +2,7 @@
   "name": "puppeteer",
   "version": "13.3.0-post",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
-  "type": "commonjs",
   "main": "./cjs-entry.js",
-  "exports": {
-    ".": {
-      "import": "./lib/esm/puppeteer/node.js",
-      "require": "./cjs-entry.js"
-    },
-    "./*": {
-      "import": "./*",
-      "require": "./*"
-    }
-  },
   "types": "lib/types.d.ts",
   "repository": "github:puppeteer/puppeteer",
   "engines": {
@@ -40,12 +29,10 @@
     "lint": "npm run eslint && npm run build && npm run doc && npm run markdownlint",
     "doc": "node utils/doclint/cli.js",
     "clean-lib": "rimraf lib",
-    "build": "npm run tsc && npm run generate-d-ts && npm run generate-pkg-json",
-    "tsc": "npm run clean-lib && tsc --version && (npm run tsc-cjs & npm run tsc-esm) && (npm run tsc-compat-cjs & npm run tsc-compat-esm)",
+    "build": "npm run tsc && npm run generate-d-ts",
+    "tsc": "npm run clean-lib && tsc --version && (npm run tsc-cjs & npm run tsc-esm)",
     "tsc-cjs": "tsc -b src/tsconfig.cjs.json",
     "tsc-esm": "tsc -b src/tsconfig.esm.json",
-    "tsc-compat-cjs": "tsc -b compat/cjs/tsconfig.json",
-    "tsc-compat-esm": "tsc -b compat/esm/tsconfig.json",
     "apply-next-version": "node utils/apply_next_version.js",
     "test-install": "scripts/test-install.sh",
     "clean-docs": "rimraf website/docs && rimraf docs-api-json",
