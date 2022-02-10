@@ -34,8 +34,6 @@ import createHttpsProxyAgent, {
 } from 'https-proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
 import { assert } from '../common/assert.js';
-import tar from 'tar-fs';
-import bzip from 'unbzip2-stream';
 
 const debugFetcher = debug('puppeteer:fetcher');
 
@@ -501,6 +499,10 @@ function install(archivePath: string, folderPath: string): Promise<unknown> {
  * @internal
  */
 function extractTar(tarPath: string, folderPath: string): Promise<unknown> {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const tar = require('tar-fs');
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const bzip = require('unbzip2-stream');
   return new Promise((fulfill, reject) => {
     const tarStream = tar.extract(folderPath);
     tarStream.on('error', reject);

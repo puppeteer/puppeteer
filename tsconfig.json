@@ -12,5 +12,5 @@
      */
     "module": "esnext"
   },
-  "include": ["src"],
+  "include": ["src"]
 }

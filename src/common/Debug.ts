@@ -55,9 +55,7 @@ import { isNode } from '../environment.js';
 export const debug = (prefix: string): ((...args: unknown[]) => void) => {
   if (isNode) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    return async (...logArgs: unknown[]) => {
-      (await import('debug')).default(prefix)(logArgs);
-    };
+    return require('debug')(prefix);
   }
 
   return (...logArgs: unknown[]): void => {
