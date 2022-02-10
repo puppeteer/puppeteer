@@ -8,7 +8,18 @@
     "headless",
     "automation"
   ],
+  "type": "commonjs",
   "main": "./cjs-entry.js",
+  "exports": {
+    ".": {
+      "import": "./lib/esm/puppeteer/node.js",
+      "require": "./cjs-entry.js"
+    },
+    "./*": {
+      "import": "./*",
+      "require": "./*"
+    }
+  },
   "types": "lib/types.d.ts",
   "repository": "github:puppeteer/puppeteer",
   "engines": {
@@ -23,10 +34,10 @@
     "unit-with-coverage": "cross-env COVERAGE=1 npm run unit",
     "assert-unit-coverage": "cross-env COVERAGE=1 mocha --config mocha-config/coverage-tests.js",
     "funit": "cross-env PUPPETEER_PRODUCT=firefox npm run unit",
-    "test": "npm run tsc && npm run lint --silent && npm run unit-with-coverage && npm run test-browser",
+    "test": "npm run build && npm run lint --silent && npm run unit-with-coverage && npm run test-browser",
     "prepare": "node typescript-if-required.js && husky install",
     "prepublishOnly": "npm run build",
-    "dev-install": "npm run tsc && node install.js",
+    "dev-install": "npm run build && node install.js",
     "install": "node install.js",
     "eslint": "([ \"$CI\" = true ] && eslint --ext js --ext ts --quiet -f codeframe . || eslint --ext js --ext ts .)",
     "eslint-fix": "eslint --ext js --ext ts --fix .",
@@ -37,15 +48,18 @@
     "doc": "node utils/doclint/cli.js",
     "generate-api-docs-for-testing": "commonmark docs/api.md > docs/api.html",
     "clean-lib": "rimraf lib",
-    "build": "npm run tsc && npm run generate-d-ts",
-    "tsc": "npm run clean-lib && tsc --version && npm run tsc-cjs && npm run tsc-esm",
+    "build": "npm run tsc && npm run generate-d-ts && npm run generate-esm-package-json",
+    "tsc": "npm run clean-lib && tsc --version && (npm run tsc-cjs & npm run tsc-esm) && (npm run tsc-compat-cjs & npm run tsc-compat-esm)",
     "tsc-cjs": "tsc -b src/tsconfig.cjs.json",
     "tsc-esm": "tsc -b src/tsconfig.esm.json",
+    "tsc-compat-cjs": "tsc -b compat/cjs/tsconfig.json",
+    "tsc-compat-esm": "tsc -b compat/esm/tsconfig.json",
     "apply-next-version": "node utils/apply_next_version.js",
     "test-install": "scripts/test-install.sh",
     "clean-docs": "rimraf website/docs && rimraf docs-api-json",
     "generate-d-ts": "npm run clean-docs && api-extractor run --local --verbose",
     "generate-docs": "npm run generate-d-ts && api-documenter markdown -i docs-api-json -o website/docs && node utils/remove-tag.js",
+    "generate-esm-package-json": "echo '{\"type\": \"module\"}' > lib/esm/package.json",
     "ensure-correct-devtools-protocol-revision": "ts-node -s scripts/ensure-correct-devtools-protocol-package",
     "ensure-pinned-deps": "ts-node -s scripts/ensure-pinned-deps",
     "test-types-file": "ts-node -s scripts/test-ts-definition-files.ts",
@@ -58,6 +72,7 @@
     "lib/**/*.d.ts.map",
     "lib/**/*.js",
     "lib/**/*.js.map",
+    "lib/**/package.json",
     "install.js",
     "typescript-if-required.js",
     "cjs-entry.js",
