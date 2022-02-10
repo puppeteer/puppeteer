@@ -14,6 +14,7 @@ cd $TMPDIR
 # 3. Requiring Puppeteer from Node works.
 npm install --loglevel silent "${tarball}"
 node --eval="require('puppeteer')"
+node --eval="require('puppeteer/lib/cjs/puppeteer/revisions')"
 ls $TMPDIR/node_modules/puppeteer/.local-chromium/
 
 # Testing ES module features
@@ -58,6 +59,7 @@ cd $TMPDIR
 # 3. Requiring Puppeteer Core from Node works.
 npm install --loglevel silent "${tarball}"
 node --eval="require('puppeteer-core')"
+node --eval="require('puppeteer-core/lib/cjs/puppeteer/revisions')"
 
 # Testing ES module features
 TMPDIR="$(mktemp -d)"
