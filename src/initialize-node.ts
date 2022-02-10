@@ -18,10 +18,9 @@ import { PuppeteerNode } from './node/Puppeteer.js';
 import { PUPPETEER_REVISIONS } from './revisions.js';
 import { sync } from 'pkg-dir';
 import { Product } from './common/Product.js';
-import { puppeteerDirname } from './compat.js';
 
 export const initializePuppeteerNode = (packageName: string): PuppeteerNode => {
-  const puppeteerRootDirectory = sync(puppeteerDirname);
+  const puppeteerRootDirectory = sync(__dirname);
 
   let preferredRevision = PUPPETEER_REVISIONS.chromium;
   const isPuppeteerCore = packageName === 'puppeteer-core';

@@ -14,31 +14,6 @@ cd $TMPDIR
 # 3. Requiring Puppeteer from Node works.
 npm install --loglevel silent "${tarball}"
 node --eval="require('puppeteer')"
-node --eval="
-require('puppeteer/lib/cjs/puppeteer/revisions.js');
-"
-ls $TMPDIR/node_modules/puppeteer/.local-chromium/
-
-# Testing ES module features
-TMPDIR="$(mktemp -d)"
-cd $TMPDIR
-echo '{"type":"module"}' >>$TMPDIR/package.json
-npm install --loglevel silent "${tarball}"
-node --input-type="module" --eval="import puppeteer from 'puppeteer'"
-node --input-type="module" --eval="
-import 'puppeteer/lib/esm/puppeteer/revisions.js';
-"
-node --input-type="module" --eval="
-import puppeteer from 'puppeteer';
-
-(async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.goto('http://example.com');
-  await page.screenshot({ path: 'example.png' });
-  await browser.close();
-})();
-"
 ls $TMPDIR/node_modules/puppeteer/.local-chromium/
 
 # Again for Firefox
@@ -64,9 +39,3 @@ cd $TMPDIR
 npm install --loglevel silent "${tarball}"
 node --eval="require('puppeteer-core')"
 
-# Testing ES module features
-TMPDIR="$(mktemp -d)"
-cd $TMPDIR
-echo '{"type":"module"}' >>$TMPDIR/package.json
-npm install --loglevel silent "${tarball}"
-node --input-type="module" --eval="import puppeteer from 'puppeteer-core'"
