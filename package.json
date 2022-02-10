@@ -9,9 +9,13 @@
       "import": "./lib/esm/puppeteer/node.js",
       "require": "./cjs-entry.js"
     },
+    "./*.js": {
+      "import": "./*.js",
+      "require": "./*.js"
+    },
     "./*": {
-      "import": "./*",
-      "require": "./*"
+      "import": "./*.js",
+      "require": "./*.js"
     }
   },
   "types": "lib/types.d.ts",

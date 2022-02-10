@@ -14,9 +14,8 @@ cd $TMPDIR
 # 3. Requiring Puppeteer from Node works.
 npm install --loglevel silent "${tarball}"
 node --eval="require('puppeteer')"
-node --eval="
-require('puppeteer/lib/cjs/puppeteer/revisions.js');
-"
+node --eval="require('puppeteer/lib/cjs/puppeteer/revisions')"
+node --eval="require('puppeteer/lib/cjs/puppeteer/revisions.js')"
 ls $TMPDIR/node_modules/puppeteer/.local-chromium/
 
 # Testing ES module features
@@ -25,9 +24,8 @@ cd $TMPDIR
 echo '{"type":"module"}' >>$TMPDIR/package.json
 npm install --loglevel silent "${tarball}"
 node --input-type="module" --eval="import puppeteer from 'puppeteer'"
-node --input-type="module" --eval="
-import 'puppeteer/lib/esm/puppeteer/revisions.js';
-"
+node --input-type="module" --eval="import 'puppeteer/lib/esm/puppeteer/revisions'"
+node --input-type="module" --eval="import 'puppeteer/lib/esm/puppeteer/revisions.js'"
 node --input-type="module" --eval="
 import puppeteer from 'puppeteer';
 
@@ -63,6 +61,8 @@ cd $TMPDIR
 # 3. Requiring Puppeteer Core from Node works.
 npm install --loglevel silent "${tarball}"
 node --eval="require('puppeteer-core')"
+node --eval="require('puppeteer-core/lib/cjs/puppeteer/revisions')"
+node --eval="require('puppeteer-core/lib/cjs/puppeteer/revisions.js')"
 
 # Testing ES module features
 TMPDIR="$(mktemp -d)"
@@ -70,3 +70,5 @@ cd $TMPDIR
 echo '{"type":"module"}' >>$TMPDIR/package.json
 npm install --loglevel silent "${tarball}"
 node --input-type="module" --eval="import puppeteer from 'puppeteer-core'"
+node --input-type="module" --eval="import 'puppeteer-core/lib/esm/puppeteer/revisions'"
+node --input-type="module" --eval="import 'puppeteer-core/lib/esm/puppeteer/revisions.js'"
