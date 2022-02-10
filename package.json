@@ -5,14 +5,8 @@
   "type": "commonjs",
   "main": "./cjs-entry.js",
   "exports": {
-    ".": {
-      "import": "./lib/esm/puppeteer/node.js",
-      "require": "./cjs-entry.js"
-    },
-    "./*": {
-      "import": "./*",
-      "require": "./*"
-    }
+    "import": "./lib/esm/puppeteer/node.js",
+    "require": "./cjs-entry.js"
   },
   "types": "lib/types.d.ts",
   "repository": "github:puppeteer/puppeteer",
