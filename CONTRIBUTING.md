@@ -172,7 +172,7 @@ npm run doc
 To format the documentation markdown and its code snippets, use:
 
 ```bash
-npm run markdownlint-fix
+npm run prettier-fix
 ```
 
 ## Writing TSDoc Comments

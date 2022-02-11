@@ -26,7 +26,7 @@
     "commitlint": "commitlint --from=HEAD~1",
     "prettier": "prettier --check .",
     "prettier-fix": "prettier --write .",
-    "lint": "npm run eslint && npm run build && npm run doc && npm run markdownlint && npm run prettier",
+    "lint": "npm run eslint && npm run build && npm run doc && npm run prettier",
     "doc": "node utils/doclint/cli.js",
     "clean-lib": "rimraf lib",
     "build": "npm run tsc && npm run generate-d-ts",
