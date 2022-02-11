@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-const jsBuilder = require('./JSBuilder');
-const mdBuilder = require('./MDBuilder');
-const Documentation = require('./Documentation');
-const Message = require('../Message');
+const jsBuilder = require('./JSBuilder.js');
+const mdBuilder = require('./MDBuilder.js');
+const Documentation = require('./Documentation.js');
+const Message = require('../Message.js');
 const {
   MODULES_TO_CHECK_FOR_COVERAGE,
-} = require('../../../test/coverage-utils');
+} = require('../../../test/coverage-utils.js');
 
 const EXCLUDE_PROPERTIES = new Set([
   'Browser.create',

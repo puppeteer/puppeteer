@@ -20,7 +20,7 @@
 const fs = require('fs');
 const path = require('path');
 const expect = require('expect');
-const GoldenUtils = require('./golden-utils');
+const GoldenUtils = require('./golden-utils.js');
 const PROJECT_ROOT = fs.existsSync(path.join(__dirname, '..', 'package.json'))
   ? path.join(__dirname, '..')
   : path.join(__dirname, '..', '..');

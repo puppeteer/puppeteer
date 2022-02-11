@@ -127,14 +127,16 @@ function isNumber(obj: unknown): obj is number {
   return typeof obj === 'number' || obj instanceof Number;
 }
 
-async function waitForEvent<T extends any>(
+async function waitForEvent<T>(
   emitter: CommonEventEmitter,
   eventName: string | symbol,
   predicate: (event: T) => Promise<boolean> | boolean,
   timeout: number,
   abortPromise: Promise<Error>
 ): Promise<T> {
-  let eventTimeout, resolveCallback, rejectCallback;
+  let eventTimeout: NodeJS.Timeout;
+  let resolveCallback: (value: T | PromiseLike<T>) => void;
+  let rejectCallback: (value: Error) => void;
   const promise = new Promise<T>((resolve, reject) => {
     resolveCallback = resolve;
     rejectCallback = reject;
@@ -192,7 +194,7 @@ function pageBindingInitString(type: string, name: string): string {
     const binding = win[bindingName];
 
     win[bindingName] = (...args: unknown[]): Promise<unknown> => {
-      const me = window[bindingName];
+      const me = (window as any)[bindingName];
       let callbacks = me.callbacks;
       if (!callbacks) {
         callbacks = new Map();
@@ -216,8 +218,8 @@ function pageBindingDeliverResultString(
   result: unknown
 ): string {
   function deliverResult(name: string, seq: number, result: unknown): void {
-    window[name].callbacks.get(seq).resolve(result);
-    window[name].callbacks.delete(seq);
+    (window as any)[name].callbacks.get(seq).resolve(result);
+    (window as any)[name].callbacks.delete(seq);
   }
   return evaluationString(deliverResult, name, seq, result);
 }
@@ -236,8 +238,8 @@ function pageBindingDeliverErrorString(
   ): void {
     const error = new Error(message);
     error.stack = stack;
-    window[name].callbacks.get(seq).reject(error);
-    window[name].callbacks.delete(seq);
+    (window as any)[name].callbacks.get(seq).reject(error);
+    (window as any)[name].callbacks.delete(seq);
   }
   return evaluationString(deliverError, name, seq, message, stack);
 }
@@ -248,8 +250,8 @@ function pageBindingDeliverErrorValueString(
   value: unknown
 ): string {
   function deliverErrorValue(name: string, seq: number, value: unknown): void {
-    window[name].callbacks.get(seq).reject(value);
-    window[name].callbacks.delete(seq);
+    (window as any)[name].callbacks.get(seq).reject(value);
+    (window as any)[name].callbacks.delete(seq);
   }
   return evaluationString(deliverErrorValue, name, seq, value);
 }
@@ -266,7 +268,9 @@ function makePredicateString(
     if (!node) return waitForHidden;
     if (!waitForVisible && !waitForHidden) return node;
     const element =
-      node.nodeType === Node.TEXT_NODE ? node.parentElement : (node as Element);
+      node.nodeType === Node.TEXT_NODE
+        ? (node.parentElement as Element)
+        : (node as Element);
 
     const style = window.getComputedStyle(element);
     const isVisible =
@@ -291,12 +295,12 @@ function makePredicateString(
     })() `;
 }
 
-async function waitWithTimeout<T extends any>(
+async function waitWithTimeout<T>(
   promise: Promise<T>,
   taskName: string,
   timeout: number
 ): Promise<T> {
-  let reject;
+  let reject: (reason?: Error) => void;
   const timeoutError = new TimeoutError(
     `waiting for ${taskName} failed: timeout ${timeout}ms exceeded`
   );
@@ -313,14 +317,14 @@ async function waitWithTimeout<T extends any>(
 async function getReadableAsBuffer(
   readable: Readable,
   path?: string
-): Promise<Buffer> {
+): Promise<Buffer | null> {
   if (!isNode && path) {
     throw new Error('Cannot write to a path outside of Node.js environment.');
   }
 
   const fs = isNode ? await importFSModule() : null;
 
-  let fileHandle: import('fs').promises.FileHandle;
+  let fileHandle: import('fs').promises.FileHandle | undefined;
 
   if (path && fs) {
     fileHandle = await fs.promises.open(path, 'w');
@@ -328,12 +332,12 @@ async function getReadableAsBuffer(
   const buffers = [];
   for await (const chunk of readable) {
     buffers.push(chunk);
-    if (fileHandle) {
+    if (fileHandle && fs) {
       await fs.promises.writeFile(fileHandle, chunk);
     }
   }
 
-  if (path) await fileHandle.close();
+  if (path && fileHandle) await fileHandle.close();
   let resultBuffer = null;
   try {
     resultBuffer = Buffer.concat(buffers);
@@ -356,17 +360,20 @@ async function getReadableFromProtocolStream(
 
   let eof = false;
   return new Readable({
-    async read(size: number) {
+    async read() {
+      // TODO: use the advised size parameter to read function once
+      // crbug.com/1290727 is resolved.
+      // Also, see https://github.com/puppeteer/puppeteer/pull/7868.
       if (eof) {
         return null;
       }
 
-      const response = await client.send('IO.read', { handle, size });
+      const response = await client.send('IO.read', { handle });
       this.push(response.data, response.base64Encoded ? 'base64' : undefined);
       if (response.eof) {
-        this.push(null);
         eof = true;
         await client.send('IO.close', { handle });
+        this.push(null);
       }
     },
   });

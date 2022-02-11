@@ -157,6 +157,14 @@ export const itChromeOnly = (
   else return xit(description, body);
 };
 
+export const itFirefoxOnly = (
+  description: string,
+  body: Mocha.Func
+): Mocha.Test => {
+  if (isFirefox) return it(description, body);
+  else return xit(description, body);
+};
+
 export const itOnlyRegularInstall = (
   description: string,
   body: Mocha.Func
@@ -220,6 +228,10 @@ console.log(
     path.relative(process.cwd(), puppeteer.executablePath())
   }`
 );
+
+process.on('unhandledRejection', (reason) => {
+  throw reason;
+});
 
 export const setupTestBrowserHooks = (): void => {
   before(async () => {
@@ -306,4 +318,18 @@ export const expectCookieEquals = (
   }
 
   expect(cookies).toEqual(expectedCookies);
+};
+
+export const shortWaitForArrayToHaveAtLeastNElements = async (
+  data: unknown[],
+  minLength: number,
+  attempts = 3,
+  timeout = 50
+): Promise<void> => {
+  for (let i = 0; i < attempts; i++) {
+    if (data.length >= minLength) {
+      break;
+    }
+    await new Promise((resolve) => setTimeout(resolve, timeout));
+  }
 };

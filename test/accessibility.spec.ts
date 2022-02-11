@@ -108,6 +108,7 @@ describeFailsFirefox('Accessibility', function () {
               role: 'combobox',
               name: '',
               value: 'First Option',
+              haspopup: 'menu',
               children: [
                 { role: 'menuitem', name: 'First Option', selected: true },
                 { role: 'menuitem', name: 'Second Option' },
@@ -168,7 +169,8 @@ describeFailsFirefox('Accessibility', function () {
       '<div tabIndex=-1 aria-roledescription="foo">Hi</div>'
     );
     const snapshot = await page.accessibility.snapshot();
-    expect(snapshot.children[0].roledescription).toEqual('foo');
+    // See https://chromium-review.googlesource.com/c/chromium/src/+/3088862
+    expect(snapshot.children[0].roledescription).toEqual(undefined);
   });
   it('orientation', async () => {
     const { page } = getTestState();
@@ -452,6 +454,7 @@ describeFailsFirefox('Accessibility', function () {
             { role: 'menuitem', name: 'Second Item' },
             { role: 'menuitem', name: 'Third Item' },
           ],
+          orientation: 'vertical',
         });
       });
       it('should return null when the element is no longer in DOM', async () => {

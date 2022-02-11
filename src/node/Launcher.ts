@@ -23,6 +23,7 @@ import { Browser } from '../common/Browser.js';
 import { BrowserRunner } from './BrowserRunner.js';
 import { promisify } from 'util';
 
+const copyFileAsync = promisify(fs.copyFile);
 const mkdtempAsync = promisify(fs.mkdtemp);
 const writeFileAsync = promisify(fs.writeFile);
 
@@ -41,9 +42,9 @@ const tmpDir = () => process.env.PUPPETEER_TMP_DIR || os.tmpdir();
  * @public
  */
 export interface ProductLauncher {
-  launch(object: PuppeteerNodeLaunchOptions);
-  executablePath: (string?) => string;
-  defaultArgs(object: BrowserLaunchArgumentOptions);
+  launch(object: PuppeteerNodeLaunchOptions): Promise<Browser>;
+  executablePath: (path?: any) => string;
+  defaultArgs(object: BrowserLaunchArgumentOptions): string[];
   product: Product;
 }
 
@@ -51,12 +52,12 @@ export interface ProductLauncher {
  * @internal
  */
 class ChromeLauncher implements ProductLauncher {
-  _projectRoot: string;
+  _projectRoot: string | undefined;
   _preferredRevision: string;
   _isPuppeteerCore: boolean;
 
   constructor(
-    projectRoot: string,
+    projectRoot: string | undefined,
     preferredRevision: string,
     isPuppeteerCore: boolean
   ) {
@@ -85,7 +86,6 @@ class ChromeLauncher implements ProductLauncher {
       debuggingPort = null,
     } = options;
 
-    const profilePath = path.join(tmpDir(), 'puppeteer_dev_chrome_profile-');
     const chromeArguments = [];
     if (!ignoreDefaultArgs) chromeArguments.push(...this.defaultArgs(options));
     else if (Array.isArray(ignoreDefaultArgs))
@@ -95,8 +95,6 @@ class ChromeLauncher implements ProductLauncher {
         )
       );
     else chromeArguments.push(...args);
-
-    let temporaryUserDataDir = null;
 
     if (
       !chromeArguments.some((argument) =>
@@ -113,9 +111,28 @@ class ChromeLauncher implements ProductLauncher {
         chromeArguments.push(`--remote-debugging-port=${debuggingPort || 0}`);
       }
     }
-    if (!chromeArguments.some((arg) => arg.startsWith('--user-data-dir'))) {
-      temporaryUserDataDir = await mkdtempAsync(profilePath);
-      chromeArguments.push(`--user-data-dir=${temporaryUserDataDir}`);
+
+    let userDataDir;
+    let isTempUserDataDir = true;
+
+    // Check for the user data dir argument, which will always be set even
+    // with a custom directory specified via the userDataDir option.
+    const userDataDirIndex = chromeArguments.findIndex((arg) => {
+      return arg.startsWith('--user-data-dir');
+    });
+
+    if (userDataDirIndex !== -1) {
+      userDataDir = chromeArguments[userDataDirIndex].split('=')[1];
+      if (!fs.existsSync(userDataDir)) {
+        throw new Error(`Chrome user data dir not found at '${userDataDir}'`);
+      }
+
+      isTempUserDataDir = false;
+    } else {
+      userDataDir = await mkdtempAsync(
+        path.join(tmpDir(), 'puppeteer_dev_chrome_profile-')
+      );
+      chromeArguments.push(`--user-data-dir=${userDataDir}`);
     }
 
     let chromeExecutable = executablePath;
@@ -129,15 +146,13 @@ class ChromeLauncher implements ProductLauncher {
 
       chromeExecutable = executablePathForChannel(channel);
     } else if (!executablePath) {
-      // Use Intel x86 builds on Apple M1 until native macOS arm64
-      // Chromium builds are available.
-      if (os.platform() !== 'darwin' && os.arch() === 'arm64') {
-        chromeExecutable = '/usr/bin/chromium-browser';
-      } else {
-        const { missingText, executablePath } = resolveExecutablePath(this);
-        if (missingText) throw new Error(missingText);
-        chromeExecutable = executablePath;
-      }
+      const { missingText, executablePath } = resolveExecutablePath(this);
+      if (missingText) throw new Error(missingText);
+      chromeExecutable = executablePath;
+    }
+
+    if (!chromeExecutable) {
+      throw new Error('chromeExecutable is not found.');
     }
 
     const usePipe = chromeArguments.includes('--remote-debugging-pipe');
@@ -145,7 +160,8 @@ class ChromeLauncher implements ProductLauncher {
       this.product,
       chromeExecutable,
       chromeArguments,
-      temporaryUserDataDir
+      userDataDir,
+      isTempUserDataDir
     );
     runner.start({
       handleSIGHUP,
@@ -156,6 +172,7 @@ class ChromeLauncher implements ProductLauncher {
       pipe: usePipe,
     });
 
+    let browser;
     try {
       const connection = await runner.setupConnection({
         usePipe,
@@ -163,21 +180,29 @@ class ChromeLauncher implements ProductLauncher {
         slowMo,
         preferredRevision: this._preferredRevision,
       });
-      const browser = await Browser.create(
+      browser = await Browser.create(
         connection,
         [],
         ignoreHTTPSErrors,
         defaultViewport,
-        runner.proc,
+        runner.proc ?? undefined,
         runner.close.bind(runner)
       );
-      if (waitForInitialPage)
-        await browser.waitForTarget((t) => t.type() === 'page', { timeout });
-      return browser;
     } catch (error) {
       runner.kill();
       throw error;
     }
+
+    if (waitForInitialPage) {
+      try {
+        await browser.waitForTarget((t) => t.type() === 'page', { timeout });
+      } catch (error) {
+        await browser.close();
+        throw error;
+      }
+    }
+
+    return browser;
   }
 
   defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
@@ -208,6 +233,7 @@ class ChromeLauncher implements ProductLauncher {
       // TODO(sadym): remove '--enable-blink-features=IdleDetection'
       // once IdleDetection is turned on by default.
       '--enable-blink-features=IdleDetection',
+      '--export-tagged-pdf',
     ];
     const {
       devtools = false,
@@ -244,12 +270,12 @@ class ChromeLauncher implements ProductLauncher {
  * @internal
  */
 class FirefoxLauncher implements ProductLauncher {
-  _projectRoot: string;
+  _projectRoot: string | undefined;
   _preferredRevision: string;
   _isPuppeteerCore: boolean;
 
   constructor(
-    projectRoot: string,
+    projectRoot: string | undefined,
     preferredRevision: string,
     isPuppeteerCore: boolean
   ) {
@@ -302,15 +328,30 @@ class FirefoxLauncher implements ProductLauncher {
       firefoxArguments.push(`--remote-debugging-port=${debuggingPort || 0}`);
     }
 
-    let temporaryUserDataDir = null;
+    let userDataDir = null;
+    let isTempUserDataDir = true;
 
-    if (
-      !firefoxArguments.includes('-profile') &&
-      !firefoxArguments.includes('--profile')
-    ) {
-      temporaryUserDataDir = await this._createProfile(extraPrefsFirefox);
+    // Check for the profile argument, which will always be set even
+    // with a custom directory specified via the userDataDir option.
+    const profileArgIndex = firefoxArguments.findIndex((arg) => {
+      return ['-profile', '--profile'].includes(arg);
+    });
+
+    if (profileArgIndex !== -1) {
+      userDataDir = firefoxArguments[profileArgIndex + 1];
+      if (!fs.existsSync(userDataDir)) {
+        throw new Error(`Firefox profile not found at '${userDataDir}'`);
+      }
+
+      // When using a custom Firefox profile it needs to be populated
+      // with required preferences.
+      isTempUserDataDir = false;
+      const prefs = this.defaultPreferences(extraPrefsFirefox);
+      this.writePreferences(prefs, userDataDir);
+    } else {
+      userDataDir = await this._createProfile(extraPrefsFirefox);
       firefoxArguments.push('--profile');
-      firefoxArguments.push(temporaryUserDataDir);
+      firefoxArguments.push(userDataDir);
     }
 
     await this._updateRevision();
@@ -321,11 +362,16 @@ class FirefoxLauncher implements ProductLauncher {
       firefoxExecutable = executablePath;
     }
 
+    if (!firefoxExecutable) {
+      throw new Error('firefoxExecutable is not found.');
+    }
+
     const runner = new BrowserRunner(
       this.product,
       firefoxExecutable,
       firefoxArguments,
-      temporaryUserDataDir
+      userDataDir,
+      isTempUserDataDir
     );
     runner.start({
       handleSIGHUP,
@@ -336,6 +382,7 @@ class FirefoxLauncher implements ProductLauncher {
       pipe,
     });
 
+    let browser;
     try {
       const connection = await runner.setupConnection({
         usePipe: pipe,
@@ -343,7 +390,7 @@ class FirefoxLauncher implements ProductLauncher {
         slowMo,
         preferredRevision: this._preferredRevision,
       });
-      const browser = await Browser.create(
+      browser = await Browser.create(
         connection,
         [],
         ignoreHTTPSErrors,
@@ -351,13 +398,21 @@ class FirefoxLauncher implements ProductLauncher {
         runner.proc,
         runner.close.bind(runner)
       );
-      if (waitForInitialPage)
-        await browser.waitForTarget((t) => t.type() === 'page', { timeout });
-      return browser;
     } catch (error) {
       runner.kill();
       throw error;
     }
+
+    if (waitForInitialPage) {
+      try {
+        await browser.waitForTarget((t) => t.type() === 'page', { timeout });
+      } catch (error) {
+        await browser.close();
+        throw error;
+      }
+    }
+
+    return browser;
   }
 
   executablePath(): string {
@@ -367,6 +422,11 @@ class FirefoxLauncher implements ProductLauncher {
   async _updateRevision(): Promise<void> {
     // replace 'latest' placeholder with actual downloaded revision
     if (this._preferredRevision === 'latest') {
+      if (!this._projectRoot) {
+        throw new Error(
+          '_projectRoot is undefined. Unable to create a BrowserFetcher.'
+        );
+      }
       const browserFetcher = new BrowserFetcher(this._projectRoot, {
         product: this.product,
       });
@@ -380,16 +440,19 @@ class FirefoxLauncher implements ProductLauncher {
   }
 
   defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
-    const firefoxArguments = ['--no-remote', '--foreground'];
-    if (os.platform().startsWith('win')) {
-      firefoxArguments.push('--wait-for-browser');
-    }
     const {
       devtools = false,
       headless = !devtools,
       args = [],
       userDataDir = null,
     } = options;
+
+    const firefoxArguments = ['--no-remote'];
+
+    if (os.platform() === 'darwin') firefoxArguments.push('--foreground');
+    else if (os.platform().startsWith('win')) {
+      firefoxArguments.push('--wait-for-browser');
+    }
     if (userDataDir) {
       firefoxArguments.push('--profile');
       firefoxArguments.push(userDataDir);
@@ -402,14 +465,12 @@ class FirefoxLauncher implements ProductLauncher {
     return firefoxArguments;
   }
 
-  async _createProfile(extraPrefs: { [x: string]: unknown }): Promise<string> {
-    const profilePath = await mkdtempAsync(
-      path.join(tmpDir(), 'puppeteer_dev_firefox_profile-')
-    );
-    const prefsJS = [];
-    const userJS = [];
+  defaultPreferences(extraPrefs: { [x: string]: unknown }): {
+    [x: string]: unknown;
+  } {
     const server = 'dummy.test';
-    const defaultPreferences = {
+
+    const defaultPrefs = {
       // Make sure Shield doesn't hit the network.
       'app.normandy.api_url': '',
       // Disable Firefox old build background check
@@ -529,8 +590,11 @@ class FirefoxLauncher implements ProductLauncher {
       // Make sure opening about:addons will not hit the network
       'extensions.webservice.discoverURL': `http://${server}/dummy/discoveryURL`,
 
-      // Force disable Fission until the Remote Agent is compatible
-      'fission.autostart': false,
+      // Temporarily force disable BFCache in parent (https://bit.ly/bug-1732263)
+      'fission.bfcacheInParent': false,
+
+      // Force all web content to use a single content process
+      'fission.webContentIsolationStrategy': 0,
 
       // Allow the application to have focus even it runs in the background
       'focusmanager.testmode': true,
@@ -608,17 +672,46 @@ class FirefoxLauncher implements ProductLauncher {
       'toolkit.startup.max_resumed_crashes': -1,
     };
 
-    Object.assign(defaultPreferences, extraPrefs);
-    for (const [key, value] of Object.entries(defaultPreferences))
-      userJS.push(
-        `user_pref(${JSON.stringify(key)}, ${JSON.stringify(value)});`
-      );
-    await writeFileAsync(path.join(profilePath, 'user.js'), userJS.join('\n'));
-    await writeFileAsync(
-      path.join(profilePath, 'prefs.js'),
-      prefsJS.join('\n')
+    return Object.assign(defaultPrefs, extraPrefs);
+  }
+
+  /**
+   * Populates the user.js file with custom preferences as needed to allow
+   * Firefox's CDP support to properly function. These preferences will be
+   * automatically copied over to prefs.js during startup of Firefox. To be
+   * able to restore the original values of preferences a backup of prefs.js
+   * will be created.
+   *
+   * @param prefs List of preferences to add.
+   * @param profilePath Firefox profile to write the preferences to.
+   */
+  async writePreferences(
+    prefs: { [x: string]: unknown },
+    profilePath: string
+  ): Promise<void> {
+    const lines = Object.entries(prefs).map(([key, value]) => {
+      return `user_pref(${JSON.stringify(key)}, ${JSON.stringify(value)});`;
+    });
+
+    await writeFileAsync(path.join(profilePath, 'user.js'), lines.join('\n'));
+
+    // Create a backup of the preferences file if it already exitsts.
+    const prefsPath = path.join(profilePath, 'prefs.js');
+    if (fs.existsSync(prefsPath)) {
+      const prefsBackupPath = path.join(profilePath, 'prefs.js.puppeteer');
+      await copyFileAsync(prefsPath, prefsBackupPath);
+    }
+  }
+
+  async _createProfile(extraPrefs: { [x: string]: unknown }): Promise<string> {
+    const temporaryProfilePath = await mkdtempAsync(
+      path.join(tmpDir(), 'puppeteer_dev_firefox_profile-')
     );
-    return profilePath;
+
+    const prefs = this.defaultPreferences(extraPrefs);
+    await this.writePreferences(prefs, temporaryProfilePath);
+
+    return temporaryProfilePath;
   }
 }
 
@@ -700,9 +793,11 @@ function resolveExecutablePath(launcher: ChromeLauncher | FirefoxLauncher): {
   executablePath: string;
   missingText?: string;
 } {
-  let downloadPath: string;
+  const { product, _isPuppeteerCore, _projectRoot, _preferredRevision } =
+    launcher;
+  let downloadPath: string | undefined;
   // puppeteer-core doesn't take into account PUPPETEER_* env variables.
-  if (!launcher._isPuppeteerCore) {
+  if (!_isPuppeteerCore) {
     const executablePath =
       process.env.PUPPETEER_EXECUTABLE_PATH ||
       process.env.npm_config_puppeteer_executable_path ||
@@ -711,39 +806,53 @@ function resolveExecutablePath(launcher: ChromeLauncher | FirefoxLauncher): {
       const missingText = !fs.existsSync(executablePath)
         ? 'Tried to use PUPPETEER_EXECUTABLE_PATH env variable to launch browser but did not find any executable at: ' +
           executablePath
-        : null;
+        : undefined;
       return { executablePath, missingText };
+    }
+    const ubuntuChromiumPath = '/usr/bin/chromium-browser';
+    if (
+      product === 'chrome' &&
+      os.platform() !== 'darwin' &&
+      os.arch() === 'arm64' &&
+      fs.existsSync(ubuntuChromiumPath)
+    ) {
+      return { executablePath: ubuntuChromiumPath, missingText: undefined };
     }
     downloadPath =
       process.env.PUPPETEER_DOWNLOAD_PATH ||
       process.env.npm_config_puppeteer_download_path ||
       process.env.npm_package_config_puppeteer_download_path;
   }
-  const browserFetcher = new BrowserFetcher(launcher._projectRoot, {
-    product: launcher.product,
+  if (!_projectRoot) {
+    throw new Error(
+      '_projectRoot is undefined. Unable to create a BrowserFetcher.'
+    );
+  }
+  const browserFetcher = new BrowserFetcher(_projectRoot, {
+    product: product,
     path: downloadPath,
   });
 
-  if (!launcher._isPuppeteerCore && launcher.product === 'chrome') {
+  if (!_isPuppeteerCore && product === 'chrome') {
     const revision = process.env['PUPPETEER_CHROMIUM_REVISION'];
     if (revision) {
       const revisionInfo = browserFetcher.revisionInfo(revision);
       const missingText = !revisionInfo.local
         ? 'Tried to use PUPPETEER_CHROMIUM_REVISION env variable to launch browser but did not find executable at: ' +
           revisionInfo.executablePath
-        : null;
+        : undefined;
       return { executablePath: revisionInfo.executablePath, missingText };
     }
   }
-  const revisionInfo = browserFetcher.revisionInfo(launcher._preferredRevision);
+  const revisionInfo = browserFetcher.revisionInfo(_preferredRevision);
 
   const firefoxHelp = `Run \`PUPPETEER_PRODUCT=firefox npm install\` to download a supported Firefox browser binary.`;
   const chromeHelp = `Run \`npm install\` to download the correct Chromium revision (${launcher._preferredRevision}).`;
   const missingText = !revisionInfo.local
-    ? `Could not find expected browser (${launcher.product}) locally. ${
-        launcher.product === 'chrome' ? chromeHelp : firefoxHelp
+    ? `Could not find expected browser (${product}) locally. ${
+        product === 'chrome' ? chromeHelp : firefoxHelp
       }`
-    : null;
+    : undefined;
   return { executablePath: revisionInfo.executablePath, missingText };
 }
 
@@ -751,7 +860,7 @@ function resolveExecutablePath(launcher: ChromeLauncher | FirefoxLauncher): {
  * @internal
  */
 export default function Launcher(
-  projectRoot: string,
+  projectRoot: string | undefined,
   preferredRevision: string,
   isPuppeteerCore: boolean,
   product?: string

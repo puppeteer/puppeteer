@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import utils from './utils.js';
 import expect from 'expect';
 import { getTestState, describeChromeOnly } from './mocha-utils'; // eslint-disable-line import/extensions
 
@@ -27,7 +28,10 @@ describeChromeOnly('OOPIF', function () {
     const { puppeteer, defaultBrowserOptions } = getTestState();
     browser = await puppeteer.launch(
       Object.assign({}, defaultBrowserOptions, {
-        args: (defaultBrowserOptions.args || []).concat(['--site-per-process']),
+        args: (defaultBrowserOptions.args || []).concat([
+          '--site-per-process',
+          '--remote-debugging-port=21222',
+        ]),
       })
     );
   });
@@ -47,20 +51,301 @@ describeChromeOnly('OOPIF', function () {
     await browser.close();
     browser = null;
   });
-  xit('should report oopif frames', async () => {
+  it('should treat OOP iframes and normal iframes the same', async () => {
     const { server } = getTestState();
 
+    await page.goto(server.EMPTY_PAGE);
+    const framePromise = page.waitForFrame((frame) =>
+      frame.url().endsWith('/empty.html')
+    );
+    await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+    await utils.attachFrame(
+      page,
+      'frame2',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
+    );
+    await framePromise;
+    expect(page.mainFrame().childFrames()).toHaveLength(2);
+  });
+  it('should track navigations within OOP iframes', async () => {
+    const { server } = getTestState();
+
+    await page.goto(server.EMPTY_PAGE);
+    const framePromise = page.waitForFrame((frame) => {
+      return page.frames().indexOf(frame) === 1;
+    });
+    await utils.attachFrame(
+      page,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
+    );
+    const frame = await framePromise;
+    expect(frame.url()).toContain('/empty.html');
+    await utils.navigateFrame(
+      page,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/assets/frame.html'
+    );
+    expect(frame.url()).toContain('/assets/frame.html');
+  });
+  it('should support OOP iframes becoming normal iframes again', async () => {
+    const { server } = getTestState();
+
+    await page.goto(server.EMPTY_PAGE);
+    const framePromise = page.waitForFrame((frame) => {
+      return page.frames().indexOf(frame) === 1;
+    });
+    await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+
+    const frame = await framePromise;
+    expect(frame.isOOPFrame()).toBe(false);
+    await utils.navigateFrame(
+      page,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
+    );
+    expect(frame.isOOPFrame()).toBe(true);
+    await utils.navigateFrame(page, 'frame1', server.EMPTY_PAGE);
+    expect(frame.isOOPFrame()).toBe(false);
+    expect(page.frames()).toHaveLength(2);
+  });
+  it('should support frames within OOP frames', async () => {
+    const { server } = getTestState();
+
+    await page.goto(server.EMPTY_PAGE);
+    const frame1Promise = page.waitForFrame((frame) => {
+      return page.frames().indexOf(frame) === 1;
+    });
+    const frame2Promise = page.waitForFrame((frame) => {
+      return page.frames().indexOf(frame) === 2;
+    });
+    await utils.attachFrame(
+      page,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/frames/one-frame.html'
+    );
+
+    const [frame1, frame2] = await Promise.all([frame1Promise, frame2Promise]);
+
+    expect(await frame1.evaluate(() => document.location.href)).toMatch(
+      /one-frame\.html$/
+    );
+    expect(await frame2.evaluate(() => document.location.href)).toMatch(
+      /frames\/frame\.html$/
+    );
+  });
+  it('should support OOP iframes getting detached', async () => {
+    const { server } = getTestState();
+
+    await page.goto(server.EMPTY_PAGE);
+    const framePromise = page.waitForFrame((frame) => {
+      return page.frames().indexOf(frame) === 1;
+    });
+    await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+
+    const frame = await framePromise;
+    expect(frame.isOOPFrame()).toBe(false);
+    await utils.navigateFrame(
+      page,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
+    );
+    expect(frame.isOOPFrame()).toBe(true);
+    await utils.detachFrame(page, 'frame1');
+    expect(page.frames()).toHaveLength(1);
+  });
+  it('should keep track of a frames OOP state', async () => {
+    const { server } = getTestState();
+
+    await page.goto(server.EMPTY_PAGE);
+    const framePromise = page.waitForFrame((frame) => {
+      return page.frames().indexOf(frame) === 1;
+    });
+    await utils.attachFrame(
+      page,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
+    );
+    const frame = await framePromise;
+    expect(frame.url()).toContain('/empty.html');
+    await utils.navigateFrame(page, 'frame1', server.EMPTY_PAGE);
+    expect(frame.url()).toBe(server.EMPTY_PAGE);
+  });
+  it('should support evaluating in oop iframes', async () => {
+    const { server } = getTestState();
+
+    await page.goto(server.EMPTY_PAGE);
+    const framePromise = page.waitForFrame((frame) => {
+      return page.frames().indexOf(frame) === 1;
+    });
+    await utils.attachFrame(
+      page,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
+    );
+    const frame = await framePromise;
+    await frame.evaluate(() => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      _test = 'Test 123!';
+    });
+    const result = await frame.evaluate(() => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      return window._test;
+    });
+    expect(result).toBe('Test 123!');
+  });
+  it('should provide access to elements', async () => {
+    const { server } = getTestState();
+
+    await page.goto(server.EMPTY_PAGE);
+    const framePromise = page.waitForFrame((frame) => {
+      return page.frames().indexOf(frame) === 1;
+    });
+    await utils.attachFrame(
+      page,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
+    );
+
+    const frame = await framePromise;
+    await frame.evaluate(() => {
+      const button = document.createElement('button');
+      button.id = 'test-button';
+      button.innerText = 'click';
+      button.onclick = () => {
+        button.id = 'clicked';
+      };
+      document.body.appendChild(button);
+    });
+    await page.evaluate(() => {
+      document.body.style.border = '150px solid black';
+      document.body.style.margin = '250px';
+      document.body.style.padding = '50px';
+    });
+    await frame.waitForSelector('#test-button', { visible: true });
+    await frame.click('#test-button');
+    await frame.waitForSelector('#clicked');
+  });
+  it('should report oopif frames', async () => {
+    const { server } = getTestState();
+
+    const frame = page.waitForFrame((frame) =>
+      frame.url().endsWith('/oopif.html')
+    );
     await page.goto(server.PREFIX + '/dynamic-oopif.html');
+    await frame;
     expect(oopifs(context).length).toBe(1);
     expect(page.frames().length).toBe(2);
   });
   it('should load oopif iframes with subresources and request interception', async () => {
     const { server } = getTestState();
 
+    const frame = page.waitForFrame((frame) =>
+      frame.url().endsWith('/oopif.html')
+    );
     await page.setRequestInterception(true);
     page.on('request', (request) => request.continue());
     await page.goto(server.PREFIX + '/dynamic-oopif.html');
+    await frame;
     expect(oopifs(context).length).toBe(1);
+  });
+  it('should support frames within OOP iframes', async () => {
+    const { server } = getTestState();
+
+    const oopIframePromise = page.waitForFrame((frame) => {
+      return frame.url().endsWith('/oopif.html');
+    });
+    await page.goto(server.PREFIX + '/dynamic-oopif.html');
+    const oopIframe = await oopIframePromise;
+    await utils.attachFrame(
+      oopIframe,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
+    );
+
+    const frame1 = oopIframe.childFrames()[0];
+    expect(frame1.url()).toMatch(/empty.html$/);
+    await utils.navigateFrame(
+      oopIframe,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/oopif.html'
+    );
+    expect(frame1.url()).toMatch(/oopif.html$/);
+    await frame1.goto(
+      server.CROSS_PROCESS_PREFIX + '/oopif.html#navigate-within-document',
+      { waitUntil: 'load' }
+    );
+    expect(frame1.url()).toMatch(/oopif.html#navigate-within-document$/);
+    await utils.detachFrame(oopIframe, 'frame1');
+    expect(oopIframe.childFrames()).toHaveLength(0);
+  });
+
+  it('clickablePoint, boundingBox, boxModel should work for elements inside OOPIFs', async () => {
+    const { server } = getTestState();
+    await page.goto(server.EMPTY_PAGE);
+    const framePromise = page.waitForFrame((frame) => {
+      return page.frames().indexOf(frame) === 1;
+    });
+    await utils.attachFrame(
+      page,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
+    );
+    const frame = await framePromise;
+    await page.evaluate(() => {
+      document.body.style.border = '50px solid black';
+      document.body.style.margin = '50px';
+      document.body.style.padding = '50px';
+    });
+    await frame.evaluate(() => {
+      const button = document.createElement('button');
+      button.id = 'test-button';
+      button.innerText = 'click';
+      document.body.appendChild(button);
+    });
+    const button = await frame.waitForSelector('#test-button', {
+      visible: true,
+    });
+    const result = await button.clickablePoint();
+    expect(result.x).toBeGreaterThan(150); // padding + margin + border left
+    expect(result.y).toBeGreaterThan(150); // padding + margin + border top
+    const resultBoxModel = await button.boxModel();
+    for (const quad of [
+      resultBoxModel.content,
+      resultBoxModel.border,
+      resultBoxModel.margin,
+      resultBoxModel.padding,
+    ]) {
+      for (const part of quad) {
+        expect(part.x).toBeGreaterThan(150); // padding + margin + border left
+        expect(part.y).toBeGreaterThan(150); // padding + margin + border top
+      }
+    }
+    const resultBoundingBox = await button.boundingBox();
+    expect(resultBoundingBox.x).toBeGreaterThan(150); // padding + margin + border left
+    expect(resultBoundingBox.y).toBeGreaterThan(150); // padding + margin + border top
+  });
+
+  it('should detect existing OOPIFs when Puppeteer connects to an existing page', async () => {
+    const { server, puppeteer } = getTestState();
+
+    const frame = page.waitForFrame((frame) =>
+      frame.url().endsWith('/oopif.html')
+    );
+    await page.goto(server.PREFIX + '/dynamic-oopif.html');
+    await frame;
+    expect(oopifs(context).length).toBe(1);
+    expect(page.frames().length).toBe(2);
+
+    const browserURL = 'http://127.0.0.1:21222';
+    const browser1 = await puppeteer.connect({ browserURL });
+    const target = await browser1.waitForTarget((target) =>
+      target.url().endsWith('dynamic-oopif.html')
+    );
+    await target.page();
+    browser1.disconnect();
   });
 });
 

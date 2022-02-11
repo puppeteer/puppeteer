@@ -18,5 +18,5 @@ import { isNode } from '../environment.js';
 
 /* Use the global version if we're in the browser, else load the node-fetch module. */
 export const getFetch = async (): Promise<typeof fetch> => {
-  return isNode ? await import('node-fetch') : globalThis.fetch;
+  return isNode ? (await import('cross-fetch')).fetch : globalThis.fetch;
 };

@@ -1,5 +1,5 @@
 const { describe, it } = require('mocha');
-const { getCoverageResults } = require('./coverage-utils');
+const { getCoverageResults } = require('./coverage-utils.js');
 const expect = require('expect');
 
 describe('API coverage test', () => {

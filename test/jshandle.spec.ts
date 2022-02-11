@@ -15,11 +15,13 @@
  */
 
 import expect from 'expect';
+import { JSHandle } from '../lib/cjs/puppeteer/common/JSHandle.js';
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   itFailsFirefox,
+  shortWaitForArrayToHaveAtLeastNElements,
 } from './mocha-utils'; // eslint-disable-line import/extensions
 
 describe('JSHandle', function () {
@@ -95,6 +97,19 @@ describe('JSHandle', function () {
       }));
       const twoHandle = await aHandle.getProperty('two');
       expect(await twoHandle.jsonValue()).toEqual(2);
+    });
+
+    it('should return a JSHandle even if the property does not exist', async () => {
+      const { page } = getTestState();
+
+      const aHandle = await page.evaluateHandle(() => ({
+        one: 1,
+        two: 2,
+        three: 3,
+      }));
+      const undefinedHandle = await aHandle.getProperty('doesnotexist');
+      expect(undefinedHandle).toBeInstanceOf(JSHandle);
+      expect(await undefinedHandle.jsonValue()).toBe(undefined);
     });
   });
 
@@ -376,6 +391,7 @@ describe('JSHandle', function () {
           y: 15,
         },
       });
+      await shortWaitForArrayToHaveAtLeastNElements(clicks, 2);
       expect(clicks).toEqual([
         [45 + 60, 45 + 30], // margin + middle point offset
         [30 + 10, 30 + 15], // margin + offset

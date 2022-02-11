@@ -172,7 +172,7 @@ async function checkRollCandidate(channel) {
     10
   );
   const currentRevision = parseInt(
-    require('../lib/cjs/puppeteer/revisions').PUPPETEER_REVISIONS.chromium,
+    require('../lib/cjs/puppeteer/revisions.js').PUPPETEER_REVISIONS.chromium,
     10
   );
 
@@ -256,7 +256,12 @@ function fetch(url) {
       });
     })
     .on('error', function (e) {
-      console.error('Error fetching json: ' + e);
+      // This is okay; the server may just be faster at closing than us after
+      // the body is fully sent.
+      if (e.message.includes('ECONNRESET')) {
+        return;
+      }
+      console.error(`Error fetching json from ${url}: ${e}`);
       resolve(null);
     });
   return promise;

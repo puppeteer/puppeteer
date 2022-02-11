@@ -144,6 +144,6 @@ export class EventEmitter implements CommonEventEmitter {
   }
 
   private eventListenersCount(event: EventType): number {
-    return this.eventsMap.has(event) ? this.eventsMap.get(event).length : 0;
+    return this.eventsMap.get(event)?.length || 0;
   }
 }
