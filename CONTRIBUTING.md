@@ -1,4 +1,5 @@
 <!-- prettier-ignore-start -->
+
 <!-- gen:toc -->
 - [How to Contribute](#how-to-contribute)
   * [Contributor License Agreement](#contributor-license-agreement)
@@ -24,7 +25,9 @@
     - [Bisecting upstream changes](#bisecting-upstream-changes)
   * [Releasing to npm](#releasing-to-npm)
 <!-- gen:stop -->
+
 <!-- prettier-ignore-end -->
+
 # How to Contribute
 
 First of all, thank you for your interest in Puppeteer!
@@ -128,7 +131,6 @@ We also maintain `test/tsconfig.test.json`. This is **only used to compile the u
 
 The root `tsconfig.json` exists for the API Extractor; it has to find a `tsconfig.json` in the project's root directory. It is _not_ used for anything else.
 
-
 ## API guidelines
 
 When authoring new API methods, consider the following:
@@ -170,7 +172,7 @@ npm run doc
 To format the documentation markdown and its code snippets, use:
 
 ```bash
-npm run markdownlint-fix
+npm run prettier-fix
 ```
 
 ## Writing TSDoc Comments
@@ -180,26 +182,25 @@ Each change to Puppeteer should be thoroughly documented using TSDoc comments. R
 - Every new method needs to have either `@public` or `@internal` added as a tag depending on if it is part of the public API.
 - Keep each line in a comment to no more than 90 characters (ESLint will warn you if you go over this). If you're a VSCode user the [Rewrap plugin](https://marketplace.visualstudio.com/items?itemName=stkb.rewrap) is highly recommended!
 
-
 ## Running New Documentation website locally
 
 - In the Puppeteer's folder, install all dependencies with `npm i`.
-- run `npm run generate-docs` which will generate all the `.md`  files on `puppeteer/website/docs`.
+- run `npm run generate-docs` which will generate all the `.md` files on `puppeteer/website/docs`.
 - run `npm i` on `puppeteer/website`.
 - run `npm start` on `puppeteer/website`.
-
 
 ## Adding New Dependencies
 
 For all dependencies (both installation and development):
+
 - **Do not add** a dependency if the desired functionality is easily implementable.
 - If adding a dependency, it should be well-maintained and trustworthy.
 
 A barrier for introducing new installation dependencies is especially high:
+
 - **Do not add** installation dependency unless it's critical to project success.
 
 There are additional considerations for dependencies that are environment agonistic. See the [`vendor/README.md`](https://github.com/puppeteer/puppeteer/blob/main/vendor/README.md) for details.
-
 
 ## Running & Writing Tests
 
@@ -228,7 +229,7 @@ npm run unit
   });
 ```
 
-- To disable a specific test, substitute the `it` with `xit` (mnemonic rule: '*cross it*'):
+- To disable a specific test, substitute the `it` with `xit` (mnemonic rule: '_cross it_'):
 
 ```js
   ...
@@ -307,14 +308,14 @@ By default, it will use the Chromium revision in `src/revisions.ts` from the `ma
 Releasing to npm consists of the following phases:
 
 1. Source Code: mark a release.
-    1. Run `npm run release`. (This automatically bumps the version number in `package.json`, populates the changelog, updates the docs, and creates a Git commit for the next step.)
-    1. Send a PR for the commit created in the previous step.
-    1. Make sure the PR passes **all checks**.
-        - **WHY**: there are linters in place that help to avoid unnecessary errors, e.g. [like this](https://github.com/puppeteer/puppeteer/pull/2446)
-    1. Merge the PR.
-    1. Once merged, publish the release notes from `CHANGELOG.md` using [GitHub’s “draft new release tag” option](https://github.com/puppeteer/puppeteer/releases/new).
-        - **NOTE**: tag names are prefixed with `'v'`, e.g. for version `1.4.0` the tag is `v1.4.0`.
-    1. As soon as the Git tag is created by completing the previous step, our CI automatically `npm publish`es the new releases for both the `puppeteer` and `puppeteer-core` packages.
+   1. Run `npm run release`. (This automatically bumps the version number in `package.json`, populates the changelog, updates the docs, and creates a Git commit for the next step.)
+   1. Send a PR for the commit created in the previous step.
+   1. Make sure the PR passes **all checks**.
+      - **WHY**: there are linters in place that help to avoid unnecessary errors, e.g. [like this](https://github.com/puppeteer/puppeteer/pull/2446)
+   1. Merge the PR.
+   1. Once merged, publish the release notes from `CHANGELOG.md` using [GitHub’s “draft new release tag” option](https://github.com/puppeteer/puppeteer/releases/new).
+      - **NOTE**: tag names are prefixed with `'v'`, e.g. for version `1.4.0` the tag is `v1.4.0`.
+   1. As soon as the Git tag is created by completing the previous step, our CI automatically `npm publish`es the new releases for both the `puppeteer` and `puppeteer-core` packages.
 1. Source Code: mark post-release.
-    1. Bump `package.json` version to the `-post` version, run `npm run doc` to update the “released APIs” section at the top of `docs/api.md` accordingly, and send a PR titled `'chore: bump version to vXXX.YYY.ZZZ-post'` ([example](https://github.com/puppeteer/puppeteer/pull/6808))
-        - **NOTE**: no other commits should be landed in-between release commit and bump commit.
+   1. Bump `package.json` version to the `-post` version, run `npm run doc` to update the “released APIs” section at the top of `docs/api.md` accordingly, and send a PR titled `'chore: bump version to vXXX.YYY.ZZZ-post'` ([example](https://github.com/puppeteer/puppeteer/pull/6808))
+      - **NOTE**: no other commits should be landed in-between release commit and bump commit.
