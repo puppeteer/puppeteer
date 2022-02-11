@@ -432,7 +432,7 @@ The Puppeteer API is hierarchical and mirrors the browser structure.
 - [`BrowserContext`](#class-browsercontext) instance defines a browsing session and can own multiple pages.
 - [`Page`](#class-page) has at least one frame: main frame. There might be other frames created by [iframe](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe) or [frame](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/frame) tags.
 - [`Frame`](#class-frame) has at least one execution context - the default execution context - where the frame's JavaScript is executed. A Frame might have additional execution contexts that are associated with [extensions](https://developer.chrome.com/extensions).
-- [`Worker`](#class-worker) has a single execution context and facilitates interacting with [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
+- [`WebWorker`](#class-webworker) has a single execution context and facilitates interacting with [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
 
 (Diagram source: [link](https://docs.google.com/drawings/d/1Q_AM6KYs9kbyLZF-Lpp5mtpAWth73Cq8IKCsWYgi8MM/edit?usp=sharing))
 
@@ -971,7 +971,7 @@ the method will return an array with all the targets in all browser contexts.
 
 - returns: <[Promise]<[string]>> Promise which resolves to the browser's original user agent.
 
-> **NOTE** Pages can override browser user agent with [page.setUserAgent](#pagesetuseragentuseragent-useragentdata)
+> **NOTE** Pages can override browser user agent with [page.setUserAgent](#pagesetuseragentuseragent-useragentmetadata)
 
 #### browser.version()
 
@@ -1592,7 +1592,7 @@ const puppeteer = require('puppeteer');
 
 Emulates given device metrics and user agent. This method is a shortcut for calling two methods:
 
-- [page.setUserAgent(userAgent)](#pagesetuseragentuseragent-useragentdata)
+- [page.setUserAgent(userAgent)](#pagesetuseragentuseragent-useragentmetadata)
 - [page.setViewport(viewport)](#pagesetviewportviewport)
 
 To aid emulation, Puppeteer provides a list of device descriptors that can be obtained via the [`puppeteer.devices`](#puppeteerdevices).
@@ -2925,7 +2925,7 @@ Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options[, .
 
 #### page.waitForFileChooser([options])
 
-- `options` <[WaitTimeoutOptions](####WaitTimeoutOptions)> Optional waiting parameters
+- `options` <[WaitTimeoutOptions](#waittimeoutoptions)> Optional waiting parameters
 - returns: <[Promise]<[FileChooser]>> A promise that resolves after a page requests a file picker.
 
 > **NOTE** In non-headless Chromium, this method results in the native file picker dialog **not showing up** for the user.
@@ -4919,7 +4919,7 @@ If request gets a 'redirect' response, the request is successfully finished with
   - `namenotresolved` - The host name could not be resolved.
   - `timedout` - An operation timed out.
   - `failed` - A generic failure occurred.
-- `priority` <[number]> - Optional intercept abort priority. If provided, intercept will be resolved using [cooperative](#cooperative-intercept-mode-and-legacy-intercept-mode) handling rules. Otherwise, intercept will be resolved immediately.
+- `priority` <[number]> - Optional intercept abort priority. If provided, intercept will be resolved using [cooperative](#cooperative-intercept-mode) handling rules. Otherwise, intercept will be resolved immediately.
 - returns: <[Promise]>
 
 Aborts request. To use this, request interception should be enabled with `page.setRequestInterception`.
