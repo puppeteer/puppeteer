@@ -73,7 +73,7 @@ information on using pull requests.
 ## Code Style
 
 - Coding style is fully defined in [`.eslintrc`](https://github.com/puppeteer/puppeteer/blob/main/.eslintrc.js) and we automatically format our code with [Prettier](https://prettier.io).
-- It's recommended to set-up Prettier into your editor, or you can run `npm run eslint-fix` to automatically format any files.
+- It's recommended to set-up Prettier into your editor, or you can run `npm run eslint:fix` to automatically format any files.
 - If you're working in a JS file, code should be annotated with [closure annotations](https://github.com/google/closure-compiler/wiki/Annotating-JavaScript-for-the-Closure-Compiler).
 - If you're working in a TS file, you should explicitly type all variables and return types. You'll get ESLint warnings if you don't so if you're not sure use them as guidelines, and feel free to ask us for help!
 
@@ -170,7 +170,7 @@ npm run doc
 To format the documentation markdown and its code snippets, use:
 
 ```bash
-npm run markdownlint-fix
+npm run markdownlint:fix
 ```
 
 ## Writing TSDoc Comments
@@ -184,7 +184,7 @@ Each change to Puppeteer should be thoroughly documented using TSDoc comments. R
 ## Running New Documentation website locally
 
 - In the Puppeteer's folder, install all dependencies with `npm i`.
-- run `npm run generate-docs` which will generate all the `.md`  files on `puppeteer/website/docs`.
+- run `npm run generate:docs` which will generate all the `.md`  files on `puppeteer/website/docs`.
 - run `npm i` on `puppeteer/website`.
 - run `npm start` on `puppeteer/website`.
 
@@ -283,7 +283,7 @@ The following steps are needed to update the Chromium version.
    To do so, run `utils/check_availability.js -rd` to find the latest suitable `dev` Chromium revision (see `utils/check_availability.js -help` for more options).
 1. Update `src/revisions.ts` with the found revision number.
 1. Update `versions.js` with the new Chromium-to-Puppeteer version mapping and update `lastMaintainedChromiumVersion` with the latest stable Chrome version.
-1. Run `npm run ensure-correct-devtools-protocol-revision`.
+1. Run `npm run ensure:correct-devtools-protocol-revision`.
    If it fails, update `package.json` with the expected `devtools-protocol` version.
 1. Run `npm run tsc` and `npm install`.
 1. Run `npm run unit` and ensure that all tests pass. If a test fails, [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and either update the test expectations accordingly (if it was an intended change) or work around the changes in Puppeteer (if it’s not desirable to change Puppeteer’s observable behavior).

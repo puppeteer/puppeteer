@@ -42,13 +42,13 @@ jobs:
 
       - name: Run code checks
         run: |
-          npm run ensure-pinned-deps
+          npm run ensure:pinned-deps
           npm run lint
           # Skipping as it's flakey and we are not currently using the new documentation site in the wild yet.
           # See https://github.com/puppeteer/puppeteer/issues/7710 for more info
-          # npm run generate-docs
-          npm run ensure-correct-devtools-protocol-revision
-          npm run test-types-file
+          # npm run generate:docs
+          npm run ensure:correct-devtools-protocol-revision
+          npm run test:types
 
       - name: Run commit lint
         run: |
@@ -68,7 +68,7 @@ jobs:
         env:
           CHROMIUM: true
         run: |
-          xvfb-run --auto-servernum npm run unit-with-coverage
+          xvfb-run --auto-servernum npm run unit:coverage
           xvfb-run --auto-servernum npm run assert-unit-coverage
 
       - name: Run unit tests on Firefox
@@ -83,14 +83,14 @@ jobs:
 
       - name: Run browser tests
         run: |
-          npm run test-browser
+          npm run test:browser
 
       - name: Test bundling and installation
         env:
           CHROMIUM: true
         run: |
           # Note: this modifies package.json to test puppeteer-core.
-          npm run test-install
+          npm run test:install
           # Undo those changes.
           git checkout --force
 
