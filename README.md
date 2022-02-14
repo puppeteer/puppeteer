@@ -387,7 +387,10 @@ npm install puppeteer-core@chrome-71
 
 #### Q: Which Chromium version does Puppeteer use?
 
-Look for the `chromium` entry in [revisions.ts](https://github.com/puppeteer/puppeteer/blob/main/src/revisions.ts). To find the corresponding Chromium commit and version number, search for the revision prefixed by an `r` in [OmahaProxy](https://omahaproxy.appspot.com/)'s "Find Releases" section.
+Find the version using one of the following ways:
+
+- Look for the `chromium` entry in [revisions.ts](https://github.com/puppeteer/puppeteer/blob/main/src/revisions.ts). To find the corresponding Chromium commit and version number, search for the revision prefixed by an `r` in [OmahaProxy](https://omahaproxy.appspot.com/)'s "Find Releases" section.
+- Look for the `versionsPerRelease` map in [versions.js](https://github.com/puppeteer/puppeteer/blob/main/versions.js) which contains mapping between Chromium and Puppeteer versions. Note: The file contains only Puppeteer versions where Chromium is updated. Not all Puppeteer versions are listed.
 
 #### Q: Which Firefox version does Puppeteer use?
 
