@@ -17,11 +17,13 @@
 import { PuppeteerNode } from './node/Puppeteer.js';
 import { PUPPETEER_REVISIONS } from './revisions.js';
 import { sync } from 'pkg-dir';
+import { dirname } from 'path';
 import { Product } from './common/Product.js';
 
 export const initializePuppeteerNode = (packageName: string): PuppeteerNode => {
-  const puppeteerRootDirectory = sync(__dirname);
-
+  const puppeteerRootDirectory = sync(
+    dirname(require.resolve('./initialize-node'))
+  );
   let preferredRevision = PUPPETEER_REVISIONS.chromium;
   const isPuppeteerCore = packageName === 'puppeteer-core';
   // puppeteer-core ignores environment variables
