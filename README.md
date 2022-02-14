@@ -462,16 +462,6 @@ npm test
 npm ci
 ```
 
-#### Q: How do I try/test a prerelease version of Puppeteer?
-
-You can check out this repo or install the latest prerelease from npm:
-
-```bash
-npm i --save puppeteer@next
-```
-
-Please note that prerelease may be unstable and contain bugs.
-
 #### Q: I have more questions! Where do I ask?
 
 There are many ways to get help on Puppeteer:
