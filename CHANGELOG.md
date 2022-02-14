@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [13.3.2](https://github.com/puppeteer/puppeteer/compare/v13.3.1...v13.3.2) (2022-02-14)
+
+
+### Bug Fixes
+
+* always use ENV executable path when present ([#7985](https://github.com/puppeteer/puppeteer/issues/7985)) ([6d6ea9b](https://github.com/puppeteer/puppeteer/commit/6d6ea9bf59daa3fb851b3da8baa27887e0aa2c28))
+* use require.resolve instead of __dirname ([#8003](https://github.com/puppeteer/puppeteer/issues/8003)) ([bbb186d](https://github.com/puppeteer/puppeteer/commit/bbb186d88cb99e4914299c983c822fa41a80f356))
+
 ### [13.3.1](https://github.com/puppeteer/puppeteer/compare/v13.3.0...v13.3.1) (2022-02-10)
 
 
