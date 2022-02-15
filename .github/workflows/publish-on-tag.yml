@@ -1,5 +1,8 @@
 name: publish-on-tag
 
+# Declare default permissions as read only.
+permissions: read-all
+
 on:
   push:
     tags:
