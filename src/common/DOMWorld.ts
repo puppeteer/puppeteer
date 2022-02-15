@@ -139,7 +139,7 @@ export class DOMWorld {
   }
 
   _hasContext(): boolean {
-    return !this._contextResolveCallback;
+    return !this._contextResolveCallback && !this._detached;
   }
 
   _detach(): void {
