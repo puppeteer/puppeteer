@@ -959,7 +959,7 @@ export class ElementHandle<
     const layoutMetrics = await this._client.send('Page.getLayoutMetrics');
     // Fallback to `layoutViewport` in case of using Firefox.
     const { pageX, pageY } =
-      layoutMetrics.cssLayoutViewport || layoutMetrics.layoutViewport;
+      layoutMetrics.cssVisualViewport || layoutMetrics.layoutViewport;
 
     const clip = Object.assign({}, boundingBox);
     clip.x += pageX;
