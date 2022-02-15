@@ -375,6 +375,7 @@
   * [httpResponse.status()](#httpresponsestatus)
   * [httpResponse.statusText()](#httpresponsestatustext)
   * [httpResponse.text()](#httpresponsetext)
+  * [httpResponse.timing()](#httpresponsetiming)
   * [httpResponse.url()](#httpresponseurl)
 - [class: SecurityDetails](#class-securitydetails)
   * [securityDetails.issuer()](#securitydetailsissuer)
@@ -5230,6 +5231,30 @@ Contains the status text of the response (e.g. usually an "OK" for a success).
 #### httpResponse.text()
 
 - returns: <[Promise]<[string]>> Promise which resolves to a text representation of response body.
+
+#### httpResponse.timing()
+
+- returns: <?[Object]>
+  - `requestTime` <[number]> baseline in seconds
+  - `proxyStart` <[number]> started resolving proxy (milliseconds since requestTime)
+  - `proxyEnd` <[number]> finished resolving proxy (milliseconds since requestTime)
+  - `dnsStart` <[number]> started DNS address resolve (milliseconds since requestTime)
+  - `dnsEnd` <[number]> finished DNS address resolve (milliseconds since requestTime)
+  - `connectStart` <[number]> started connecting to the remote host (milliseconds since requestTime)
+  - `connectEnd` <[number]> connected to the remote host (milliseconds since requestTime)
+  - `sslStart` <[number]> started SSL handshake (milliseconds since requestTime)
+  - `sslEnd` <[number]> finished SSL handshake (milliseconds since requestTime)
+  - `workerStart` <[number]> started running ServiceWorker (milliseconds since requestTime)
+  - `workerReady` <[number]> finished Starting ServiceWorker (milliseconds since requestTime)
+  - `workerFetchStart` <[number]> started fetch event (milliseconds since requestTime)
+  - `workerRespondWithSettled` <[number]> settled fetch event respondWith promise (milliseconds since requestTime)
+  - `sendStart` <[number]> started sending request (milliseconds since requestTime)
+  - `sendEnd` <[number]> finished sending request (milliseconds since requestTime)
+  - `pushStart` <[number]> time the server started pushing request (milliseconds since requestTime)
+  - `pushEnd` <[number]> time the server finished pushing request (milliseconds since requestTime)
+  - `receiveHeadersEnd` <[number]> finished receiving response headers (milliseconds since requestTime)
+
+Timing information related to the response.
 
 #### httpResponse.url()
 
