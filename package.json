@@ -96,7 +96,7 @@
     "eslint-plugin-import": "2.25.4",
     "eslint-plugin-mocha": "10.0.3",
     "eslint-plugin-prettier": "4.0.0",
-    "eslint-plugin-unicorn": "40.1.0",
+    "eslint-plugin-unicorn": "41.0.0",
     "esprima": "4.0.1",
     "expect": "25.2.7",
     "husky": "7.0.4",
