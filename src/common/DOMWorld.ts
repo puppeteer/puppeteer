@@ -139,11 +139,12 @@ export class DOMWorld {
   }
 
   _hasContext(): boolean {
-    return !this._contextResolveCallback && !this._detached;
+    return !this._contextResolveCallback;
   }
 
   _detach(): void {
     this._detached = true;
+    this._client.removeAllListeners('Runtime.bindingCalled');
     for (const waitTask of this._waitTasks)
       waitTask.terminate(
         new Error('waitForFunction failed: frame got detached.')

@@ -1035,6 +1035,26 @@ describe('Page', function () {
       });
       expect(result).toBe(15);
     });
+    it('should not throw when frames detach', async () => {
+      const { page, server } = getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await page.exposeFunction('compute', function (a, b) {
+        return Promise.resolve(a * b);
+      });
+      await utils.detachFrame(page, 'frame1');
+
+      let result = undefined;
+      expect(
+        (async () => {
+          result = await page.evaluate(async function () {
+            return await globalThis.compute(3, 5);
+          });
+        })()
+      ).not.toThrow();
+      expect(result).toBe(15);
+    });
     it('should work with complex objects', async () => {
       const { page } = getTestState();
 
