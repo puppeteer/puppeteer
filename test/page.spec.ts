@@ -1045,15 +1045,11 @@ describe('Page', function () {
       });
       await utils.detachFrame(page, 'frame1');
 
-      let result = undefined;
-      expect(
-        (async () => {
-          result = await page.evaluate(async function () {
-            return await globalThis.compute(3, 5);
-          });
-        })()
-      ).not.toThrow();
-      expect(result).toBe(15);
+      await expect(
+        page.evaluate(async function () {
+          return await globalThis.compute(3, 5);
+        })
+      ).resolves.toEqual(15);
     });
     it('should work with complex objects', async () => {
       const { page } = getTestState();
