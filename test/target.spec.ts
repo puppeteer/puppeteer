@@ -86,7 +86,10 @@ describe('Target', function () {
         server.CROSS_PROCESS_PREFIX + '/empty.html'
       ),
     ]);
-    expect(otherPage.url()).toContain(server.CROSS_PROCESS_PREFIX);
+    expect(otherPage.url()).toEqual(
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
+    );
+    expect(page).not.toEqual(otherPage);
   });
   itFailsFirefox(
     'should report when a new page is created and closed',

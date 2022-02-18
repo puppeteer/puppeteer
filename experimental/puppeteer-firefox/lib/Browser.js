@@ -122,34 +122,28 @@ class Browser extends EventEmitter {
     const {
       timeout = 30000
     } = options;
-    let remainingTimeout = timeout;
-    const existingTarget = await helper.waitWithTimeout(
-      (async () => {
-        const startTime = Date.now();
-        let existingTarget;
-        for (const target of this.targets()) {
-          if (await predicate(target)) {
-            existingTarget = target;
-            break;
-          }
-        }
-        if (timeout) {
-          remainingTimeout = Math.max(timeout - (Date.now() - startTime), 1);
-        }
-        if (existingTarget) return existingTarget;
-      })(),
-      'predicate',
-      timeout
-    );
-    if (existingTarget) return existingTarget;
     let resolve;
     const targetPromise = new Promise(x => resolve = x);
     this.on(Events.Browser.TargetCreated, check);
     this.on('targetchanged', check);
     try {
-      if (!remainingTimeout)
+      if (!timeout)
         return await targetPromise;
-      return await helper.waitWithTimeout(targetPromise, 'target', remainingTimeout);
+      return await helper.waitWithTimeout(
+        Promise.race([
+          targetPromise,
+          (async () => {
+            for (const target of this.targets()) {
+              if (await predicate(target)) {
+                return target;
+              }
+            }
+            await targetPromise;
+          })(),
+        ]),
+        'target',
+        timeout
+      );
     } finally {
       this.removeListener(Events.Browser.TargetCreated, check);
       this.removeListener('targetchanged', check);
