@@ -543,24 +543,36 @@ export class Browser extends EventEmitter {
     options: WaitForTargetOptions = {}
   ): Promise<Target> {
     const { timeout = 30000 } = options;
-    let existingTarget: Target | undefined;
-    for (const target of this.targets()) {
-      if (await predicate(target)) {
-        existingTarget = target;
-        break;
-      }
-    }
+    let remainingTimeout = timeout;
+    const existingTarget = await helper.waitWithTimeout<Target | undefined>(
+      (async () => {
+        const startTime = Date.now();
+        let existingTarget: Target | undefined;
+        for (const target of this.targets()) {
+          if (await predicate(target)) {
+            existingTarget = target;
+            break;
+          }
+        }
+        if (timeout) {
+          remainingTimeout = Math.max(timeout - (Date.now() - startTime), 1);
+        }
+        if (existingTarget) return existingTarget;
+      })(),
+      'predicate',
+      timeout
+    );
     if (existingTarget) return existingTarget;
     let resolve: (value: Target | PromiseLike<Target>) => void;
     const targetPromise = new Promise<Target>((x) => (resolve = x));
     this.on(BrowserEmittedEvents.TargetCreated, check);
     this.on(BrowserEmittedEvents.TargetChanged, check);
     try {
-      if (!timeout) return await targetPromise;
+      if (!remainingTimeout) return await targetPromise;
       return await helper.waitWithTimeout<Target>(
         targetPromise,
         'target',
-        timeout
+        remainingTimeout
       );
     } finally {
       this.removeListener(BrowserEmittedEvents.TargetCreated, check);
