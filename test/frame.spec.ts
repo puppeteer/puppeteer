@@ -22,6 +22,7 @@ import {
   setupTestPageAndContextHooks,
   itFailsFirefox,
 } from './mocha-utils'; // eslint-disable-line import/extensions
+import { CDPSession } from '../lib/cjs/puppeteer/common/Connection.js';
 
 describe('Frame specs', function () {
   setupTestBrowserHooks();
@@ -276,6 +277,13 @@ describe('Frame specs', function () {
       expect(page.frames()[1].url()).toBe(
         server.PREFIX + '/frames/frame.html?param=value#fragment'
       );
+    });
+  });
+
+  describe('Frame.client', function () {
+    it('should return the client instance', async () => {
+      const { page } = getTestState();
+      expect(page.mainFrame().client()).toBeInstanceOf(CDPSession);
     });
   });
 });

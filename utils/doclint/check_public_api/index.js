@@ -24,6 +24,7 @@ const {
 
 const EXCLUDE_PROPERTIES = new Set([
   'Browser.create',
+  'Frame.client',
   'Headers.fromPayload',
   'Page.client',
   'Page.create',
