@@ -411,21 +411,21 @@ function compareDocumentations(actual, expected) {
         'Method ElementHandle.dragEnter() data',
         {
           actualName: 'Object',
-          expectedName: 'DragData',
+          expectedName: 'Protocol.Input.DragData',
         },
       ],
       [
         'Method ElementHandle.dragOver() data',
         {
           actualName: 'Object',
-          expectedName: 'DragData',
+          expectedName: 'Protocol.Input.DragData',
         },
       ],
       [
         'Method ElementHandle.drop() data',
         {
           actualName: 'Object',
-          expectedName: 'DragData',
+          expectedName: 'Protocol.Input.DragData',
         },
       ],
       [
@@ -509,7 +509,7 @@ function compareDocumentations(actual, expected) {
         'Method Mouse.dragEnter() data',
         {
           actualName: 'Object',
-          expectedName: 'DragData',
+          expectedName: 'Protocol.Input.DragData',
         },
       ],
       [
@@ -523,7 +523,7 @@ function compareDocumentations(actual, expected) {
         'Method Mouse.dragOver() data',
         {
           actualName: 'Object',
-          expectedName: 'DragData',
+          expectedName: 'Protocol.Input.DragData',
         },
       ],
       [
@@ -537,7 +537,7 @@ function compareDocumentations(actual, expected) {
         'Method Mouse.drop() data',
         {
           actualName: 'Object',
-          expectedName: 'DragData',
+          expectedName: 'Protocol.Input.DragData',
         },
       ],
       [
@@ -723,7 +723,7 @@ function compareDocumentations(actual, expected) {
         'Method Page.setUserAgent() userAgentMetadata',
         {
           actualName: 'Object',
-          expectedName: 'UserAgentMetadata',
+          expectedName: 'Protocol.Emulation.UserAgentMetadata',
         },
       ],
       [
@@ -828,14 +828,14 @@ function compareDocumentations(actual, expected) {
         'Method Page.setCookie() ...cookies',
         {
           actualName: '...Object',
-          expectedName: '...CookieParam',
+          expectedName: '...Protocol.Network.CookieParam',
         },
       ],
       [
         'Method Page.emulateVisionDeficiency() type',
         {
           actualName: 'string',
-          expectedName: 'Object',
+          expectedName: 'Protocol.Emulation.SetEmulatedVisionDeficiencyRequest',
         },
       ],
       [
@@ -996,7 +996,7 @@ function compareDocumentations(actual, expected) {
         'Method Page.deleteCookie() ...cookies',
         {
           actualName: '...Object',
-          expectedName: '...DeleteCookiesRequest',
+          expectedName: '...Protocol.Network.DeleteCookiesRequest',
         },
       ],
       [
