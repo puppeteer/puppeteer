@@ -92,7 +92,7 @@
     "commonmark": "0.30.0",
     "cross-env": "7.0.3",
     "eslint": "8.9.0",
-    "eslint-config-prettier": "8.3.0",
+    "eslint-config-prettier": "8.4.0",
     "eslint-plugin-import": "2.25.4",
     "eslint-plugin-mocha": "10.0.3",
     "eslint-plugin-prettier": "4.0.0",
