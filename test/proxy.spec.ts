@@ -17,7 +17,11 @@
 import expect from 'expect';
 import http from 'http';
 import os from 'os';
-import { getTestState, describeFailsFirefox } from './mocha-utils'; // eslint-disable-line import/extensions
+import {
+  getTestState,
+  describeFailsFirefox,
+  itFailsWindows,
+} from './mocha-utils'; // eslint-disable-line import/extensions
 import type { Server, IncomingMessage, ServerResponse } from 'http';
 import type { Browser } from '../lib/cjs/puppeteer/common/Browser.js';
 import type { AddressInfo } from 'net';
@@ -167,22 +171,28 @@ describeFailsFirefox('request proxy', () => {
       expect(proxiedRequestUrls).toEqual([]);
     });
 
-    it('should proxy requests when configured at context level', async () => {
-      const { puppeteer, defaultBrowserOptions, server } = getTestState();
-      const emptyPageUrl = getEmptyPageUrl(server);
+    /**
+     * See issues #7873, #7719, and #7698.
+     */
+    itFailsWindows(
+      'should proxy requests when configured at context level',
+      async () => {
+        const { puppeteer, defaultBrowserOptions, server } = getTestState();
+        const emptyPageUrl = getEmptyPageUrl(server);
 
-      browser = await puppeteer.launch(defaultBrowserOptions);
+        browser = await puppeteer.launch(defaultBrowserOptions);
 
-      const context = await browser.createIncognitoBrowserContext({
-        proxyServer: proxyServerUrl,
-      });
-      const page = await context.newPage();
-      const response = await page.goto(emptyPageUrl);
+        const context = await browser.createIncognitoBrowserContext({
+          proxyServer: proxyServerUrl,
+        });
+        const page = await context.newPage();
+        const response = await page.goto(emptyPageUrl);
 
-      expect(response.ok()).toBe(true);
+        expect(response.ok()).toBe(true);
 
-      expect(proxiedRequestUrls).toEqual([emptyPageUrl]);
-    });
+        expect(proxiedRequestUrls).toEqual([emptyPageUrl]);
+      }
+    );
 
     it('should respect proxy bypass list when configured at context level', async () => {
       const { puppeteer, defaultBrowserOptions, server } = getTestState();
