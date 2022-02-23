@@ -123,10 +123,6 @@ class ChromeLauncher implements ProductLauncher {
 
     if (userDataDirIndex !== -1) {
       userDataDir = chromeArguments[userDataDirIndex].split('=')[1];
-      if (!fs.existsSync(userDataDir)) {
-        throw new Error(`Chrome user data dir not found at '${userDataDir}'`);
-      }
-
       isTempUserDataDir = false;
     } else {
       userDataDir = await mkdtempAsync(

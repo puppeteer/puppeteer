@@ -276,6 +276,31 @@ describe('Launcher specs', function () {
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(() => {});
       });
+      itChromeOnly('userDataDir argument with non-existent dir', async () => {
+        const { isChrome, puppeteer, defaultBrowserOptions } = getTestState();
+
+        const userDataDir = await mkdtempAsync(TMP_FOLDER);
+        await rmAsync(userDataDir);
+        const options = Object.assign({}, defaultBrowserOptions);
+        if (isChrome) {
+          options.args = [
+            ...(defaultBrowserOptions.args || []),
+            `--user-data-dir=${userDataDir}`,
+          ];
+        } else {
+          options.args = [
+            ...(defaultBrowserOptions.args || []),
+            '-profile',
+            userDataDir,
+          ];
+        }
+        const browser = await puppeteer.launch(options);
+        expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+        await browser.close();
+        expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+        // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
+        await rmAsync(userDataDir).catch(() => {});
+      });
       it('userDataDir option should restore state', async () => {
         const { server, puppeteer, defaultBrowserOptions } = getTestState();
 
