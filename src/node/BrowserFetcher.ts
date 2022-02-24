@@ -35,6 +35,8 @@ import createHttpsProxyAgent, {
 import { getProxyForUrl } from 'proxy-from-env';
 import { assert } from '../common/assert.js';
 
+const { PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM } = process.env
+
 const debugFetcher = debug('puppeteer:fetcher');
 
 const downloadURLs = {
@@ -219,7 +221,7 @@ export class BrowserFetcher {
 
     const platform = os.platform();
     if (platform === 'darwin' && productFromOptions === 'chrome')
-      this._platform = os.arch() === 'arm64' ? 'mac_arm' : 'mac';
+      this._platform = (os.arch() === 'arm64' && PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM) ? 'mac_arm' : 'mac';
     else if (productFromOptions === 'firefox') this._platform = 'mac';
     else if (platform === 'linux') this._platform = 'linux';
     else if (platform === 'win32')
