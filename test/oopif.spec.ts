@@ -28,7 +28,10 @@ describeChromeOnly('OOPIF', function () {
     const { puppeteer, defaultBrowserOptions } = getTestState();
     browser = await puppeteer.launch(
       Object.assign({}, defaultBrowserOptions, {
-        args: (defaultBrowserOptions.args || []).concat(['--site-per-process']),
+        args: (defaultBrowserOptions.args || []).concat([
+          '--site-per-process',
+          '--remote-debugging-port=21222',
+        ]),
       })
     );
   });
@@ -210,10 +213,20 @@ describeChromeOnly('OOPIF', function () {
     await frame.evaluate(() => {
       const button = document.createElement('button');
       button.id = 'test-button';
+      button.innerText = 'click';
+      button.onclick = () => {
+        button.id = 'clicked';
+      };
       document.body.appendChild(button);
     });
-
+    await page.evaluate(() => {
+      document.body.style.border = '150px solid black';
+      document.body.style.margin = '250px';
+      document.body.style.padding = '50px';
+    });
+    await frame.waitForSelector('#test-button', { visible: true });
     await frame.click('#test-button');
+    await frame.waitForSelector('#clicked');
   });
   it('should report oopif frames', async () => {
     const { server } = getTestState();
@@ -267,6 +280,72 @@ describeChromeOnly('OOPIF', function () {
     expect(frame1.url()).toMatch(/oopif.html#navigate-within-document$/);
     await utils.detachFrame(oopIframe, 'frame1');
     expect(oopIframe.childFrames()).toHaveLength(0);
+  });
+
+  it('clickablePoint, boundingBox, boxModel should work for elements inside OOPIFs', async () => {
+    const { server } = getTestState();
+    await page.goto(server.EMPTY_PAGE);
+    const framePromise = page.waitForFrame((frame) => {
+      return page.frames().indexOf(frame) === 1;
+    });
+    await utils.attachFrame(
+      page,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
+    );
+    const frame = await framePromise;
+    await page.evaluate(() => {
+      document.body.style.border = '50px solid black';
+      document.body.style.margin = '50px';
+      document.body.style.padding = '50px';
+    });
+    await frame.evaluate(() => {
+      const button = document.createElement('button');
+      button.id = 'test-button';
+      button.innerText = 'click';
+      document.body.appendChild(button);
+    });
+    const button = await frame.waitForSelector('#test-button', {
+      visible: true,
+    });
+    const result = await button.clickablePoint();
+    expect(result.x).toBeGreaterThan(150); // padding + margin + border left
+    expect(result.y).toBeGreaterThan(150); // padding + margin + border top
+    const resultBoxModel = await button.boxModel();
+    for (const quad of [
+      resultBoxModel.content,
+      resultBoxModel.border,
+      resultBoxModel.margin,
+      resultBoxModel.padding,
+    ]) {
+      for (const part of quad) {
+        expect(part.x).toBeGreaterThan(150); // padding + margin + border left
+        expect(part.y).toBeGreaterThan(150); // padding + margin + border top
+      }
+    }
+    const resultBoundingBox = await button.boundingBox();
+    expect(resultBoundingBox.x).toBeGreaterThan(150); // padding + margin + border left
+    expect(resultBoundingBox.y).toBeGreaterThan(150); // padding + margin + border top
+  });
+
+  it('should detect existing OOPIFs when Puppeteer connects to an existing page', async () => {
+    const { server, puppeteer } = getTestState();
+
+    const frame = page.waitForFrame((frame) =>
+      frame.url().endsWith('/oopif.html')
+    );
+    await page.goto(server.PREFIX + '/dynamic-oopif.html');
+    await frame;
+    expect(oopifs(context).length).toBe(1);
+    expect(page.frames().length).toBe(2);
+
+    const browserURL = 'http://127.0.0.1:21222';
+    const browser1 = await puppeteer.connect({ browserURL });
+    const target = await browser1.waitForTarget((target) =>
+      target.url().endsWith('dynamic-oopif.html')
+    );
+    await target.page();
+    browser1.disconnect();
   });
 });
 

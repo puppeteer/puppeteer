@@ -1,6 +1,6 @@
 const ts = require('typescript');
 const path = require('path');
-const Documentation = require('./Documentation');
+const Documentation = require('./Documentation.js');
 module.exports = checkSources;
 
 /**

@@ -1,11 +1,11 @@
 /**
- * Copyright 2020 Google Inc. All rights reserved.
+ * Copyright 2022 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-const base = require('./base.js');
-
-module.exports = {
-  ...base,
-  require: [
-    './test/mocha-ts-require',
-    './test/mocha-utils.ts',
-    'source-map-support/register',
-  ],
-  spec: 'test/*.spec.ts',
-  extension: ['js', 'ts'],
-  retries: process.env.CI ? 2 : 0,
-  parallel: !!process.env.PARALLEL,
-  timeout: 25 * 1000,
-  reporter: process.env.CI ? 'spec' : 'dot',
-};
+const {
+  versionsPerRelease,
+  lastMaintainedChromiumVersion,
+} = require('../versions.js');
+let version = versionsPerRelease.get(lastMaintainedChromiumVersion);
+if (version.toLowerCase() === 'next') {
+  console.error('Unexpected NEXT Puppeteer version in versions.js');
+  process.exit(1);
+}
+if (version.startsWith('v')) {
+  version = version.substring(1);
+}
+console.log('<' + version);
+process.exit(0);

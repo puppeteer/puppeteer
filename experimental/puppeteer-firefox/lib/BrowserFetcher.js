@@ -102,7 +102,7 @@ class BrowserFetcher {
    */
   constructor(projectRoot, options = {}) {
     this._product = (options.product || 'chromium').toLowerCase();
-    assert(this._product === 'chromium' || this._product === 'firefox', `Unkown product: "${options.product}"`);
+    assert(this._product === 'chromium' || this._product === 'firefox', `Unknown product: "${options.product}"`);
     this._downloadsFolder = options.path || path.join(projectRoot, '.local-browser');
     this._downloadHost = options.host || downloadURLs[this._product].host;
     this._platform = options.platform || '';

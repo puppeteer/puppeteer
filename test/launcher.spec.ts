@@ -276,6 +276,31 @@ describe('Launcher specs', function () {
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(() => {});
       });
+      itChromeOnly('userDataDir argument with non-existent dir', async () => {
+        const { isChrome, puppeteer, defaultBrowserOptions } = getTestState();
+
+        const userDataDir = await mkdtempAsync(TMP_FOLDER);
+        await rmAsync(userDataDir);
+        const options = Object.assign({}, defaultBrowserOptions);
+        if (isChrome) {
+          options.args = [
+            ...(defaultBrowserOptions.args || []),
+            `--user-data-dir=${userDataDir}`,
+          ];
+        } else {
+          options.args = [
+            ...(defaultBrowserOptions.args || []),
+            '-profile',
+            userDataDir,
+          ];
+        }
+        const browser = await puppeteer.launch(options);
+        expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+        await browser.close();
+        expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+        // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
+        await rmAsync(userDataDir).catch(() => {});
+      });
       it('userDataDir option should restore state', async () => {
         const { server, puppeteer, defaultBrowserOptions } = getTestState();
 
@@ -732,6 +757,88 @@ describe('Launcher specs', function () {
 
         const executablePath = puppeteer.executablePath('chrome');
         expect(executablePath).toBeTruthy();
+      });
+      describe('when PUPPETEER_EXECUTABLE_PATH is set', () => {
+        const sandbox = sinon.createSandbox();
+
+        beforeEach(() => {
+          process.env.PUPPETEER_EXECUTABLE_PATH = '';
+          sandbox
+            .stub(process.env, 'PUPPETEER_EXECUTABLE_PATH')
+            .value('SOME_CUSTOM_EXECUTABLE');
+        });
+
+        afterEach(() => sandbox.restore());
+
+        it('its value is returned', async () => {
+          const { puppeteer } = getTestState();
+
+          const executablePath = puppeteer.executablePath();
+
+          expect(executablePath).toEqual('SOME_CUSTOM_EXECUTABLE');
+        });
+      });
+
+      describe('when the product is chrome, platform is not darwin, and arch is arm64', () => {
+        describe('and the executable exists', () => {
+          itChromeOnly('returns /usr/bin/chromium-browser', async () => {
+            const { puppeteer } = getTestState();
+            const osPlatformStub = sinon.stub(os, 'platform').returns('linux');
+            const osArchStub = sinon.stub(os, 'arch').returns('arm64');
+            const fsExistsStub = sinon.stub(fs, 'existsSync');
+            fsExistsStub.withArgs('/usr/bin/chromium-browser').returns(true);
+
+            const executablePath = puppeteer.executablePath();
+
+            expect(executablePath).toEqual('/usr/bin/chromium-browser');
+
+            osPlatformStub.restore();
+            osArchStub.restore();
+            fsExistsStub.restore();
+          });
+          describe('and PUPPETEER_EXECUTABLE_PATH is set', () => {
+            const sandbox = sinon.createSandbox();
+
+            beforeEach(() => {
+              process.env.PUPPETEER_EXECUTABLE_PATH = '';
+              sandbox
+                .stub(process.env, 'PUPPETEER_EXECUTABLE_PATH')
+                .value('SOME_CUSTOM_EXECUTABLE');
+            });
+
+            afterEach(() => sandbox.restore());
+
+            it('its value is returned', async () => {
+              const { puppeteer } = getTestState();
+
+              const executablePath = puppeteer.executablePath();
+
+              expect(executablePath).toEqual('SOME_CUSTOM_EXECUTABLE');
+            });
+          });
+        });
+        describe('and the executable does not exist', () => {
+          itChromeOnly(
+            'does not return /usr/bin/chromium-browser',
+            async () => {
+              const { puppeteer } = getTestState();
+              const osPlatformStub = sinon
+                .stub(os, 'platform')
+                .returns('linux');
+              const osArchStub = sinon.stub(os, 'arch').returns('arm64');
+              const fsExistsStub = sinon.stub(fs, 'existsSync');
+              fsExistsStub.withArgs('/usr/bin/chromium-browser').returns(false);
+
+              const executablePath = puppeteer.executablePath();
+
+              expect(executablePath).not.toEqual('/usr/bin/chromium-browser');
+
+              osPlatformStub.restore();
+              osArchStub.restore();
+              fsExistsStub.restore();
+            }
+          );
+        });
       });
     });
   });

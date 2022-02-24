@@ -594,7 +594,14 @@ describeChromeOnly('AriaQueryHandler', () => {
       const { page } = getTestState();
       const found = await page.$$<HTMLButtonElement>('aria/[role="button"]');
       const ids = await getIds(found);
-      expect(ids).toEqual(['node5', 'node6', 'node8', 'node10', 'node21']);
+      expect(ids).toEqual([
+        'node5',
+        'node6',
+        'node7',
+        'node8',
+        'node10',
+        'node21',
+      ]);
     });
     it('should find by role "heading"', async () => {
       const { page } = getTestState();

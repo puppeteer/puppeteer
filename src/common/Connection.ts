@@ -71,7 +71,7 @@ export class Connection extends EventEmitter {
     this._transport.onclose = this._onClose.bind(this);
   }
 
-  static fromSession(session: CDPSession): Connection {
+  static fromSession(session: CDPSession): Connection | undefined {
     return session._connection;
   }
 
@@ -170,8 +170,8 @@ export class Connection extends EventEmitter {
   _onClose(): void {
     if (this._closed) return;
     this._closed = true;
-    this._transport.onmessage = null;
-    this._transport.onclose = null;
+    this._transport.onmessage = undefined;
+    this._transport.onclose = undefined;
     for (const callback of this._callbacks.values())
       callback.reject(
         rewriteError(
@@ -201,7 +201,11 @@ export class Connection extends EventEmitter {
       targetId: targetInfo.targetId,
       flatten: true,
     });
-    return this._sessions.get(sessionId);
+    const session = this._sessions.get(sessionId);
+    if (!session) {
+      throw new Error('CDPSession creation failed.');
+    }
+    return session;
   }
 }
 
@@ -254,7 +258,7 @@ export class CDPSession extends EventEmitter {
   /**
    * @internal
    */
-  _connection: Connection;
+  _connection?: Connection;
   private _sessionId: string;
   private _targetType: string;
   private _callbacks: Map<number, ConnectionCallback> = new Map();
@@ -269,7 +273,7 @@ export class CDPSession extends EventEmitter {
     this._sessionId = sessionId;
   }
 
-  connection(): Connection {
+  connection(): Connection | undefined {
     return this._connection;
   }
 
@@ -307,8 +311,8 @@ export class CDPSession extends EventEmitter {
    * @internal
    */
   _onMessage(object: CDPSessionOnMessageObject): void {
-    if (object.id && this._callbacks.has(object.id)) {
-      const callback = this._callbacks.get(object.id);
+    const callback = object.id ? this._callbacks.get(object.id) : undefined;
+    if (object.id && callback) {
       this._callbacks.delete(object.id);
       if (object.error)
         callback.reject(
@@ -347,7 +351,7 @@ export class CDPSession extends EventEmitter {
         )
       );
     this._callbacks.clear();
-    this._connection = null;
+    this._connection = undefined;
     this.emit(CDPSessionEmittedEvents.Disconnected);
   }
 
@@ -386,6 +390,6 @@ function rewriteError(
   originalMessage?: string
 ): Error {
   error.message = message;
-  error.originalMessage = originalMessage;
+  error.originalMessage = originalMessage ?? error.originalMessage;
   return error;
 }

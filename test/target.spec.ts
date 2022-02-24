@@ -67,6 +67,30 @@ describe('Target', function () {
     ).toBe('Hello world');
     expect(await originalPage.$('body')).toBeTruthy();
   });
+  itFailsFirefox('should be able to use async waitForTarget', async () => {
+    const { page, server, context } = getTestState();
+
+    const [otherPage] = await Promise.all([
+      context
+        .waitForTarget((target) =>
+          target
+            .page()
+            .then(
+              (page) =>
+                page.url() === server.CROSS_PROCESS_PREFIX + '/empty.html'
+            )
+        )
+        .then((target) => target.page()),
+      page.evaluate(
+        (url: string) => window.open(url),
+        server.CROSS_PROCESS_PREFIX + '/empty.html'
+      ),
+    ]);
+    expect(otherPage.url()).toEqual(
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
+    );
+    expect(page).not.toEqual(otherPage);
+  });
   itFailsFirefox(
     'should report when a new page is created and closed',
     async () => {

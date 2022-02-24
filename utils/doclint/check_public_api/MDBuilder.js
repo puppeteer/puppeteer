@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-const Documentation = require('./Documentation');
-const commonmark = require('commonmark');
+const Documentation = require('./Documentation.js');
+const { Parser, HtmlRenderer } = require('commonmark');
 
 class MDOutline {
   /**
@@ -25,9 +25,9 @@ class MDOutline {
    */
   static async create(page, text) {
     // Render markdown as HTML.
-    const reader = new commonmark.Parser();
+    const reader = new Parser();
     const parsed = reader.parse(text);
-    const writer = new commonmark.HtmlRenderer();
+    const writer = new HtmlRenderer();
     const html = writer.render(parsed);
 
     page.on('console', (msg) => {

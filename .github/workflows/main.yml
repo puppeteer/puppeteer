@@ -1,5 +1,8 @@
 name: run-checks
 
+# Declare default permissions as read only.
+permissions: read-all
+
 on:
   push:
     branches:
@@ -24,7 +27,7 @@ jobs:
           fetch-depth: 2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
 
@@ -49,6 +52,11 @@ jobs:
           # npm run generate-docs
           npm run ensure-correct-devtools-protocol-revision
           npm run test-types-file
+
+      - name: Run commit lint
+        run: |
+          npm run commitlint
+        if: github.event_name != 'pull_request'
 
       - name: Run unit tests
         uses: nick-invision/retry@v2
@@ -99,7 +107,7 @@ jobs:
           fetch-depth: 2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           # Test only the oldest maintenance LTS Node.js version.
           # https://github.com/nodejs/Release#release-schedule
@@ -140,7 +148,7 @@ jobs:
           fetch-depth: 2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           # Test only the oldest maintenance LTS Node.js version.
           # https://github.com/nodejs/Release#release-schedule

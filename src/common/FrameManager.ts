@@ -73,7 +73,6 @@ export class FrameManager extends EventEmitter {
   private _contextIdToContext = new Map<string, ExecutionContext>();
   private _isolatedWorlds = new Set<string>();
   private _mainFrame: Frame;
-  private _disconnectPromise?: Promise<Error>;
 
   constructor(
     client: CDPSession,
@@ -257,7 +256,7 @@ export class FrameManager extends EventEmitter {
     const session = Connection.fromSession(this._client).session(
       event.sessionId
     );
-    frame._updateClient(session);
+    if (frame) frame._updateClient(session);
     this.setupEventListeners(session);
     await this.initialize(session);
   }
@@ -703,6 +702,11 @@ export class Frame {
     );
   }
 
+  /**
+   * @remarks
+   *
+   * @returns `true` if the frame is an OOP frame, or `false` otherwise.
+   */
   isOOPFrame(): boolean {
     return this._client !== this._frameManager._client;
   }
@@ -784,6 +788,13 @@ export class Frame {
     } = {}
   ): Promise<HTTPResponse | null> {
     return await this._frameManager.waitForFrameNavigation(this, options);
+  }
+
+  /**
+   * @internal
+   */
+  client(): CDPSession {
+    return this._client;
   }
 
   /**

@@ -25,5 +25,5 @@
  * This means that we can publish to CJS and ESM whilst maintaining the expected
  * import behaviour for CJS and ESM users.
  */
-const puppeteerExport = require('./lib/cjs/puppeteer/node');
+const puppeteerExport = require('./lib/cjs/puppeteer/node.js');
 module.exports = puppeteerExport.default;

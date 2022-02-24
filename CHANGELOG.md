@@ -2,6 +2,99 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [13.4.0](https://github.com/puppeteer/puppeteer/compare/v13.3.2...v13.4.0) (2022-02-22)
+
+
+### Features
+
+* add support for async waitForTarget ([#7885](https://github.com/puppeteer/puppeteer/issues/7885)) ([dbf0639](https://github.com/puppeteer/puppeteer/commit/dbf0639822d0b2736993de52c0bfe1dbf4e58f25))
+* export `Frame._client` through getter ([#8041](https://github.com/puppeteer/puppeteer/issues/8041)) ([e9278fc](https://github.com/puppeteer/puppeteer/commit/e9278fcfcffe2558de63ce7542483445bcb6e74f))
+* **HTTPResponse:** expose timing information ([#8025](https://github.com/puppeteer/puppeteer/issues/8025)) ([30b3d49](https://github.com/puppeteer/puppeteer/commit/30b3d49b0de46d812b7485e708174a07c73dbdd0))
+
+
+### Bug Fixes
+
+* change kill to signal the whole process group to terminate  ([#6859](https://github.com/puppeteer/puppeteer/issues/6859)) ([0eb9c78](https://github.com/puppeteer/puppeteer/commit/0eb9c7861717ebba7012c03e76b7a46063e4e5dd))
+* element screenshot issue in headful mode ([#8018](https://github.com/puppeteer/puppeteer/issues/8018)) ([5346e70](https://github.com/puppeteer/puppeteer/commit/5346e70ffc15b33c1949657cf1b465f1acc5d84d)), closes [#7999](https://github.com/puppeteer/puppeteer/issues/7999)
+* ensure dom binding is not called after detach ([#8024](https://github.com/puppeteer/puppeteer/issues/8024)) ([5c308b0](https://github.com/puppeteer/puppeteer/commit/5c308b0704123736ddb085f97596c201ea18cf4a)), closes [#7814](https://github.com/puppeteer/puppeteer/issues/7814)
+* use both __dirname and require.resolve to support different bundlers ([#8046](https://github.com/puppeteer/puppeteer/issues/8046)) ([e6a6295](https://github.com/puppeteer/puppeteer/commit/e6a6295d9a7480bb59ee58a2cc7785171fa0fa2c)), closes [#8044](https://github.com/puppeteer/puppeteer/issues/8044)
+
+### [13.3.2](https://github.com/puppeteer/puppeteer/compare/v13.3.1...v13.3.2) (2022-02-14)
+
+
+### Bug Fixes
+
+* always use ENV executable path when present ([#7985](https://github.com/puppeteer/puppeteer/issues/7985)) ([6d6ea9b](https://github.com/puppeteer/puppeteer/commit/6d6ea9bf59daa3fb851b3da8baa27887e0aa2c28))
+* use require.resolve instead of __dirname ([#8003](https://github.com/puppeteer/puppeteer/issues/8003)) ([bbb186d](https://github.com/puppeteer/puppeteer/commit/bbb186d88cb99e4914299c983c822fa41a80f356))
+
+### [13.3.1](https://github.com/puppeteer/puppeteer/compare/v13.3.0...v13.3.1) (2022-02-10)
+
+
+### Bug Fixes
+
+* **puppeteer:** revert: esm modules ([#7986](https://github.com/puppeteer/puppeteer/issues/7986)) ([179eded](https://github.com/puppeteer/puppeteer/commit/179ededa1400c35c1f2edc015548e0f2a1bcee14))
+
+## [13.3.0](https://github.com/puppeteer/puppeteer/compare/v13.2.0...v13.3.0) (2022-02-09)
+
+
+### Features
+
+* **puppeteer:** export esm modules in package.json ([#7964](https://github.com/puppeteer/puppeteer/issues/7964)) ([523b487](https://github.com/puppeteer/puppeteer/commit/523b487e8802824cecff86d256b4f7dbc4c47c8a))
+
+## [13.2.0](https://github.com/puppeteer/puppeteer/compare/v13.1.3...v13.2.0) (2022-02-07)
+
+
+### Features
+
+* add more models to DeviceDescriptors ([#7904](https://github.com/puppeteer/puppeteer/issues/7904)) ([6a655cb](https://github.com/puppeteer/puppeteer/commit/6a655cb647e12eaf1055be0b298908d83bebac25))
+* **chromium:** roll to Chromium 99.0.4844.16 (r961656) ([#7960](https://github.com/puppeteer/puppeteer/issues/7960)) ([96c3f94](https://github.com/puppeteer/puppeteer/commit/96c3f943b2f6e26bd871ecfcce71b6a33e214ebf))
+
+
+### Bug Fixes
+
+* make projectRoot optional in Puppeteer and launchers ([#7967](https://github.com/puppeteer/puppeteer/issues/7967)) ([9afdc63](https://github.com/puppeteer/puppeteer/commit/9afdc6300b80f01091dc4cb42d4ebe952c7d60f0))
+* migrate more files to strict-mode TypeScript ([#7950](https://github.com/puppeteer/puppeteer/issues/7950)) ([aaac8d9](https://github.com/puppeteer/puppeteer/commit/aaac8d9c44327a2c503ffd6c97b7f21e8010c3e4))
+* typos in documentation ([#7968](https://github.com/puppeteer/puppeteer/issues/7968)) ([41ab4e9](https://github.com/puppeteer/puppeteer/commit/41ab4e9127df64baa6c43ecde2f7ddd702ba7b0c))
+
+### [13.1.3](https://github.com/puppeteer/puppeteer/compare/v13.1.2...v13.1.3) (2022-01-31)
+
+
+### Bug Fixes
+
+* issue with reading versions.js in doclint ([#7940](https://github.com/puppeteer/puppeteer/issues/7940)) ([06ba963](https://github.com/puppeteer/puppeteer/commit/06ba9632a4c63859244068d32c312817d90daf63))
+* make more files work in strict-mode TypeScript ([#7936](https://github.com/puppeteer/puppeteer/issues/7936)) ([0636513](https://github.com/puppeteer/puppeteer/commit/0636513e34046f4d40b5e88beb2b18b16dab80aa))
+* page.pdf producing an invalid pdf ([#7868](https://github.com/puppeteer/puppeteer/issues/7868)) ([afea509](https://github.com/puppeteer/puppeteer/commit/afea509544fb99bfffe5b0bebe6f3575c53802f0)), closes [#7757](https://github.com/puppeteer/puppeteer/issues/7757)
+
+### [13.1.2](https://github.com/puppeteer/puppeteer/compare/v13.1.1...v13.1.2) (2022-01-25)
+
+
+### Bug Fixes
+
+* **package.json:** update node-fetch package ([#7924](https://github.com/puppeteer/puppeteer/issues/7924)) ([e4c48d3](https://github.com/puppeteer/puppeteer/commit/e4c48d3b8c2a812752094ed8163e4f2f32c4b6cb))
+* types in Browser.ts to be compatible with strict mode Typescript ([#7918](https://github.com/puppeteer/puppeteer/issues/7918)) ([a8ec0aa](https://github.com/puppeteer/puppeteer/commit/a8ec0aadc9c90d224d568d9e418d14261e6e85b1)), closes [#6769](https://github.com/puppeteer/puppeteer/issues/6769)
+* types in Connection.ts to be compatible with strict mode Typescript ([#7919](https://github.com/puppeteer/puppeteer/issues/7919)) ([d80d602](https://github.com/puppeteer/puppeteer/commit/d80d6027ea8e1b7fcdaf045398629cf8e6512658)), closes [#6769](https://github.com/puppeteer/puppeteer/issues/6769)
+
+### [13.1.1](https://github.com/puppeteer/puppeteer/compare/v13.1.0...v13.1.1) (2022-01-18)
+
+
+### Bug Fixes
+
+* use content box for OOPIF offset calculations ([#7911](https://github.com/puppeteer/puppeteer/issues/7911)) ([344feb5](https://github.com/puppeteer/puppeteer/commit/344feb53c28ce018a4c600d408468f6d9d741eee))
+
+## [13.1.0](https://github.com/puppeteer/puppeteer/compare/v13.0.1...v13.1.0) (2022-01-17)
+
+
+### Features
+
+* **chromium:** roll to Chromium 98.0.4758.0 (r950341) ([#7907](https://github.com/puppeteer/puppeteer/issues/7907)) ([a55c86f](https://github.com/puppeteer/puppeteer/commit/a55c86fac504b5e89ba23735fb3a1b1d54a4e1e5))
+
+
+### Bug Fixes
+
+* apply OOPIF offsets to bounding box and box model calls ([#7906](https://github.com/puppeteer/puppeteer/issues/7906)) ([a566263](https://github.com/puppeteer/puppeteer/commit/a566263ba28e58ff648bffbdb628606f75d5876f))
+* correctly compute clickable points for elements inside OOPIFs ([#7900](https://github.com/puppeteer/puppeteer/issues/7900)) ([486bbe0](https://github.com/puppeteer/puppeteer/commit/486bbe010d5ee5c446d9e8daf61a080232379c3f)), closes [#7849](https://github.com/puppeteer/puppeteer/issues/7849)
+* error for pre-existing OOPIFs ([#7899](https://github.com/puppeteer/puppeteer/issues/7899)) ([d7937b8](https://github.com/puppeteer/puppeteer/commit/d7937b806d331bf16c2016aaf16e932b1334eac8)), closes [#7844](https://github.com/puppeteer/puppeteer/issues/7844) [#7896](https://github.com/puppeteer/puppeteer/issues/7896)
+
 ### [13.0.1](https://github.com/puppeteer/puppeteer/compare/v13.0.0...v13.0.1) (2021-12-22)
 
 

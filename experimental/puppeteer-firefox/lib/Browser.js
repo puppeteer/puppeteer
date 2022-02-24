@@ -114,7 +114,7 @@ class Browser extends EventEmitter {
   }
 
   /**
-   * @param {function(!Target):boolean} predicate
+   * @param {function(!Target):boolean|Promise<boolean>} predicate
    * @param {{timeout?: number}=} options
    * @return {!Promise<!Target>}
    */
@@ -122,9 +122,6 @@ class Browser extends EventEmitter {
     const {
       timeout = 30000
     } = options;
-    const existingTarget = this.targets().find(predicate);
-    if (existingTarget)
-      return existingTarget;
     let resolve;
     const targetPromise = new Promise(x => resolve = x);
     this.on(Events.Browser.TargetCreated, check);
@@ -132,7 +129,21 @@ class Browser extends EventEmitter {
     try {
       if (!timeout)
         return await targetPromise;
-      return await helper.waitWithTimeout(targetPromise, 'target', timeout);
+      return await helper.waitWithTimeout(
+        Promise.race([
+          targetPromise,
+          (async () => {
+            for (const target of this.targets()) {
+              if (await predicate(target)) {
+                return target;
+              }
+            }
+            await targetPromise;
+          })(),
+        ]),
+        'target',
+        timeout
+      );
     } finally {
       this.removeListener(Events.Browser.TargetCreated, check);
       this.removeListener('targetchanged', check);
@@ -141,8 +152,8 @@ class Browser extends EventEmitter {
     /**
      * @param {!Target} target
      */
-    function check(target) {
-      if (predicate(target))
+    async function check(target) {
+      if (await predicate(target))
         resolve(target);
     }
   }
@@ -334,7 +345,7 @@ class BrowserContext extends EventEmitter {
   }
 
   /**
-   * @param {function(Target):boolean} predicate
+   * @param {function(Target):boolean|Promise<boolean>} predicate
    * @param {{timeout?: number}=} options
    * @return {!Promise<Target>}
    */

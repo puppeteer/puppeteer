@@ -5,7 +5,5 @@
     "outDir": "../lib/cjs/puppeteer",
     "module": "CommonJS"
   },
-  "references": [
-    { "path": "../vendor/tsconfig.cjs.json"}
-  ]
+  "references": [{ "path": "../vendor/tsconfig.cjs.json" }]
 }

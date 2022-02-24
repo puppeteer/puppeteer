@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
+// eslint-disable-next-line import/extensions
 const puppeteer = require('../..');
 const path = require('path');
-const Source = require('./Source');
+const Source = require('./Source.js');
 
 const PROJECT_DIR = path.join(__dirname, '..', '..');
 const VERSION = require(path.join(PROJECT_DIR, 'package.json')).version;
@@ -58,7 +59,7 @@ async function run() {
   );
   const mdSources = [readme, api, troubleshooting, contributing];
 
-  const preprocessor = require('./preprocessor');
+  const preprocessor = require('./preprocessor/index.js');
   messages.push(...(await preprocessor.runCommands(mdSources, VERSION)));
   messages.push(
     ...(await preprocessor.ensureReleasedAPILinks([readme], VERSION))
@@ -66,7 +67,7 @@ async function run() {
 
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  const checkPublicAPI = require('./check_public_api');
+  const checkPublicAPI = require('./check_public_api/index.js');
   const tsSources = [
     /* Source.readdir doesn't deal with nested directories well.
      * Rather than invest time here when we're going to remove this Doc tooling soon
