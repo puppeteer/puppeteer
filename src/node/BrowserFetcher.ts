@@ -221,7 +221,10 @@ export class BrowserFetcher {
 
     const platform = os.platform();
     if (platform === 'darwin' && productFromOptions === 'chrome')
-      this._platform = (os.arch() === 'arm64' && PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM) ? 'mac_arm' : 'mac';
+      this._platform =
+        os.arch() === 'arm64' && PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM
+          ? 'mac_arm'
+          : 'mac';
     else if (productFromOptions === 'firefox') this._platform = 'mac';
     else if (platform === 'linux') this._platform = 'linux';
     else if (platform === 'win32')
