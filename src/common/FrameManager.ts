@@ -393,11 +393,13 @@ export class FrameManager extends EventEmitter {
       this.frames()
         .filter((frame) => frame._client === session)
         .map((frame) =>
-          session.send('Page.createIsolatedWorld', {
-            frameId: frame._id,
-            worldName: name,
-            grantUniveralAccess: true,
-          }).catch(debugError)
+          session
+            .send('Page.createIsolatedWorld', {
+              frameId: frame._id,
+              worldName: name,
+              grantUniveralAccess: true,
+            })
+            .catch(debugError)
         )
     );
   }
