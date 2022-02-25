@@ -282,7 +282,7 @@ The following steps are needed to update the Chromium version.
    Not all revisions have builds for all platforms, so we need to find one that does.
    To do so, run `utils/check_availability.js -rd` to find the latest suitable `dev` Chromium revision (see `utils/check_availability.js -help` for more options).
 1. Update `src/revisions.ts` with the found revision number.
-1. Update `versions.js` with the new Chromium-to-Puppeteer version mapping.
+1. Update `versions.js` with the new Chromium-to-Puppeteer version mapping and update `lastMaintainedChromiumVersion` with the latest stable Chrome version.
 1. Run `npm run ensure-correct-devtools-protocol-revision`.
    If it fails, update `package.json` with the expected `devtools-protocol` version.
 1. Run `npm run tsc` and `npm install`.

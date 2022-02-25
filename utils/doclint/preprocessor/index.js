@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const Message = require('../Message');
+const Message = require('../Message.js');
 
 const IS_RELEASE = Boolean(process.env.IS_RELEASE);
 
@@ -151,7 +151,7 @@ function generateTableOfContents(mdText) {
 }
 
 const generateVersionsPerRelease = () => {
-  const versionsPerRelease = require('../../../versions.js');
+  const { versionsPerRelease } = require('../../../versions.js');
   const buffer = ['- Releases per Chromium version:'];
   for (const [chromiumVersion, puppeteerVersion] of versionsPerRelease) {
     if (puppeteerVersion === 'NEXT') continue;

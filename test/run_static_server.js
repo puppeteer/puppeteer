@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 const path = require('path');
-const { TestServer } = require('../utils/testserver/');
+const { TestServer } = require('../utils/testserver/index.js');
 
 const port = 8907;
 const httpsPort = 8908;
