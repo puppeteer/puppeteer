@@ -1,13 +1,13 @@
 body {
-    font-family: monospace;
-    white-space: pre;
+  font-family: monospace;
+  white-space: pre;
 }
 
 ins {
-    background-color: #9cffa0;
-    text-decoration: none;
+  background-color: #9cffa0;
+  text-decoration: none;
 }
 
 del {
-    background-color: #ff9e9e;
+  background-color: #ff9e9e;
 }

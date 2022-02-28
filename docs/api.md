@@ -375,6 +375,7 @@
   * [httpResponse.status()](#httpresponsestatus)
   * [httpResponse.statusText()](#httpresponsestatustext)
   * [httpResponse.text()](#httpresponsetext)
+  * [httpResponse.timing()](#httpresponsetiming)
   * [httpResponse.url()](#httpresponseurl)
 - [class: SecurityDetails](#class-securitydetails)
   * [securityDetails.issuer()](#securitydetailsissuer)
@@ -653,7 +654,7 @@ try {
     - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
     - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
     - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
-  - `args` <[Array]<[string]>> Additional arguments to pass to the browser instance. The list of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/), and here is the list of [Firefox flags](https://developer.mozilla.org/en-US/docs/Mozilla/Command_Line_Options).
+  - `args` <[Array]<[string]>> Additional arguments to pass to the browser instance. The list of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/), and here is the list of [Firefox flags](https://wiki.mozilla.org/Firefox/CommandLineOptions).
   - `ignoreDefaultArgs` <[boolean]|[Array]<[string]>> If `true`, then do not use [`puppeteer.defaultArgs()`](#puppeteerdefaultargsoptions). If an array is given, then filter out the given default arguments. Dangerous option; use with care. Defaults to `false`.
   - `handleSIGINT` <[boolean]> Close the browser process on Ctrl-C. Defaults to `true`.
   - `handleSIGTERM` <[boolean]> Close the browser process on SIGTERM. Defaults to `true`.
@@ -902,6 +903,7 @@ Closes Chromium and all of its pages (if any were opened). The [Browser] object 
 During the process of closing the browser, Puppeteer attempts to delete the temp folder created exclusively for this browser instance. If this fails (either because a file in the temp folder is locked by another process or because of insufficient permissions) an error is logged. This implies that: a) the folder and/or its content is not fully deleted; and b) the connection with the browser is not properly disposed (see [browser.disconnect()](#browserdisconnect)).
 
 #### browser.createIncognitoBrowserContext([options])
+
 - `options` <[Object]> Set of configurable options to set on the browserContext. Can have the following fields:
   - `proxyServer` <[string]> Optional proxy server with optional port to use for all requests. Username and password can be set in [page.authenticate(credentials)](#pageauthenticatecredentials).
   - `proxyBypassList` <[string]> Optional: Bypass the proxy for the given semi-colon-separated list of hosts.
@@ -981,7 +983,7 @@ the method will return an array with all the targets in all browser contexts.
 
 #### browser.waitForTarget(predicate[, options])
 
-- `predicate` <[function]\([Target]\):[boolean]> A function to be run for every target
+- `predicate` <[function]\([Target]\):[boolean]|[Promise<boolean>]> A function to be run for every target
 - `options` <[Object]>
   - `timeout` <[number]> Maximum wait time in milliseconds. Pass `0` to disable the timeout. Defaults to 30 seconds.
 - returns: <[Promise]<[Target]>> Promise which resolves to the first target found that matches the `predicate` function.
@@ -1133,7 +1135,7 @@ An array of all active targets inside the browser context.
 
 #### browserContext.waitForTarget(predicate[, options])
 
-- `predicate` <[function]\([Target]\):[boolean]> A function to be run for every target
+- `predicate` <[function]\([Target]\):[boolean]|[Promise<boolean>]> A function to be run for every target
 - `options` <[Object]>
   - `timeout` <[number]> Maximum wait time in milliseconds. Pass `0` to disable the timeout. Defaults to 30 seconds.
 - returns: <[Promise]<[Target]>> Promise which resolves to the first target found that matches the `predicate` function.
@@ -2427,7 +2429,7 @@ page.on('request', (interceptedRequest) => {
   if (interceptedRequest.isInterceptResolutionHandled()) return;
 
   // It is not strictly necessary to return a promise, but doing so will allow Puppeteer to await this handler.
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     // Continue after 500ms
     setTimeout(() => {
       // Inside, check synchronously to verify that the intercept wasn't handled already.
@@ -2439,13 +2441,13 @@ page.on('request', (interceptedRequest) => {
       interceptedRequest.continue();
       resolve();
     }, 500);
-  })
+  });
 });
 page.on('request', async (interceptedRequest) => {
   // The interception has not been handled yet. Control will pass through this guard.
   if (interceptedRequest.isInterceptResolutionHandled()) return;
 
-  await someLongAsyncOperation()
+  await someLongAsyncOperation();
   // The interception *MIGHT* have been handled by the first handler, we can't be sure.
   // Therefore, we must check again before calling continue() or we risk Puppeteer raising an exception.
   if (interceptedRequest.isInterceptResolutionHandled()) return;
@@ -2467,7 +2469,7 @@ page.on('request', (interceptedRequest) => {
   if (action === InterceptResolutionAction.AlreadyHandled) return;
 
   // It is not strictly necessary to return a promise, but doing so will allow Puppeteer to await this handler.
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     // Continue after 500ms
     setTimeout(() => {
       // Inside, check synchronously to verify that the intercept wasn't handled already.
@@ -2476,20 +2478,28 @@ page.on('request', (interceptedRequest) => {
       if (action === InterceptResolutionAction.AlreadyHandled) {
         resolve();
         return;
-      };
+      }
       interceptedRequest.continue();
       resolve();
     }, 500);
-  })
+  });
 });
 page.on('request', async (interceptedRequest) => {
   // The interception has not been handled yet. Control will pass through this guard.
-  if (interceptedRequest.interceptResolutionState().action === InterceptResolutionAction.AlreadyHandled) return;
+  if (
+    interceptedRequest.interceptResolutionState().action ===
+    InterceptResolutionAction.AlreadyHandled
+  )
+    return;
 
-  await someLongAsyncOperation()
+  await someLongAsyncOperation();
   // The interception *MIGHT* have been handled by the first handler, we can't be sure.
   // Therefore, we must check again before calling continue() or we risk Puppeteer raising an exception.
-  if (interceptedRequest.interceptResolutionState().action === InterceptResolutionAction.AlreadyHandled) return;
+  if (
+    interceptedRequest.interceptResolutionState().action ===
+    InterceptResolutionAction.AlreadyHandled
+  )
+    return;
   interceptedRequest.continue();
 });
 ```
@@ -2517,13 +2527,13 @@ In this example, Legacy Mode prevails and the request is aborted immediately bec
 // Final outcome: immediate abort()
 page.setRequestInterception(true);
 page.on('request', (request) => {
-  if (request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return;
 
   // Legacy Mode: interception is aborted immediately.
   request.abort('failed');
 });
 page.on('request', (request) => {
-  if (request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return;
   // Control will never reach this point because the request was already aborted in Legacy Mode
 
   // Cooperative Intercept Mode: votes for continue at priority 0.
@@ -2537,13 +2547,13 @@ In this example, Legacy Mode prevails and the request is continued because at le
 // Final outcome: immediate continue()
 page.setRequestInterception(true);
 page.on('request', (request) => {
-  if (request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return;
 
   // Cooperative Intercept Mode: votes to abort at priority 0.
   request.abort('failed', 0);
 });
 page.on('request', (request) => {
-  if (request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return;
 
   // Control reaches this point because the request was cooperatively aborted which postpones resolution.
 
@@ -2557,7 +2567,6 @@ page.on('request', (request) => {
   // { action: InterceptResolutionAction.AlreadyHandled }, because continue in Legacy Mode was called
   console.log(request.interceptResolutionState());
 });
-
 ```
 
 In this example, Cooperative Intercept Mode is active because all handlers specify a `priority`. `continue()` wins because it has a higher priority than `abort()`.
@@ -2566,13 +2575,13 @@ In this example, Cooperative Intercept Mode is active because all handlers speci
 // Final outcome: cooperative continue() @ 5
 page.setRequestInterception(true);
 page.on('request', (request) => {
-  if (request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return;
 
   // Cooperative Intercept Mode: votes to abort at priority 10
   request.abort('failed', 0);
 });
 page.on('request', (request) => {
-  if (request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return;
 
   // Cooperative Intercept Mode: votes to continue at priority 5
   request.continue(request.continueRequestOverrides(), 5);
@@ -2589,25 +2598,25 @@ In this example, Cooperative Intercept Mode is active because all handlers speci
 // Final outcome: cooperative respond() @ 15
 page.setRequestInterception(true);
 page.on('request', (request) => {
-  if (request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return;
 
   // Cooperative Intercept Mode: votes to abort at priority 10
   request.abort('failed', 10);
 });
 page.on('request', (request) => {
-  if (request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return;
 
   // Cooperative Intercept Mode: votes to continue at priority 15
   request.continue(request.continueRequestOverrides(), 15);
 });
 page.on('request', (request) => {
-  if (request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return;
 
   // Cooperative Intercept Mode: votes to respond at priority 15
   request.respond(request.responseForRequest(), 15);
 });
 page.on('request', (request) => {
-  if (request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return;
 
   // Cooperative Intercept Mode: votes to respond at priority 12
   request.respond(request.responseForRequest(), 12);
@@ -2640,7 +2649,7 @@ If you are package maintainer and your package uses intercept handlers, you can 
 
 ```ts
 page.on('request', (interceptedRequest) => {
-  if (request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return;
   if (
     interceptedRequest.url().endsWith('.png') ||
     interceptedRequest.url().endsWith('.jpg')
@@ -2654,7 +2663,7 @@ To use Cooperative Intercept Mode, upgrade `continue()` and `abort()`:
 
 ```ts
 page.on('request', (interceptedRequest) => {
-  if (request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return;
   if (
     interceptedRequest.url().endsWith('.png') ||
     interceptedRequest.url().endsWith('.jpg')
@@ -2690,7 +2699,7 @@ export const setInterceptResolutionConfig = (priority = 0) =>
  * the default priority when your handler has no opinion on the request and the intent is to continue() by default.
  */
 page.on('request', (interceptedRequest) => {
-  if (request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return;
   if (
     interceptedRequest.url().endsWith('.png') ||
     interceptedRequest.url().endsWith('.jpg')
@@ -2699,7 +2708,7 @@ page.on('request', (interceptedRequest) => {
   else
     interceptedRequest.continue(
       interceptedRequest.continueRequestOverrides(),
-      DEFAULT_INTERCEPT_RESOLUTION_PRIORITY           // Unopinionated continuation
+      DEFAULT_INTERCEPT_RESOLUTION_PRIORITY // Unopinionated continuation
     );
 });
 ```
@@ -2716,35 +2725,34 @@ interface InterceptResolutionConfig {
 // differences. You could, for example, create a config that
 // allowed separate priorities for PNG vs JPG.
 const DEFAULT_CONFIG: InterceptResolutionConfig = {
-  abortPriority: undefined,     // Default to Legacy Mode
-  continuePriority: undefined,  // Default to Legacy Mode
+  abortPriority: undefined, // Default to Legacy Mode
+  continuePriority: undefined, // Default to Legacy Mode
 };
 
 // Defaults to undefined which preserves Legacy Mode behavior
 let _config: Partial<InterceptResolutionConfig> = {};
 
-export const setInterceptResolutionConfig = (config: InterceptResolutionConfig) =>
-  (_config = { ...DEFAULT_CONFIG, ...config });
+export const setInterceptResolutionConfig = (
+  config: InterceptResolutionConfig
+) => (_config = { ...DEFAULT_CONFIG, ...config });
 
 page.on('request', (interceptedRequest) => {
-  if (request.isInterceptResolutionHandled()) return
+  if (request.isInterceptResolutionHandled()) return;
   if (
     interceptedRequest.url().endsWith('.png') ||
     interceptedRequest.url().endsWith('.jpg')
   ) {
-      interceptedRequest.abort('failed', _config.abortPriority);
-    }
-  else
-    {
-      // Here we use a custom-configured priority to allow for Opinionated
-      // continuation.
-      // We would only want to allow this if we had a very clear reason why
-      // some use cases required Opinionated continuation.
-      interceptedRequest.continue(
-        interceptedRequest.continueRequestOverrides(),
-        _config.continuePriority                        // Why would we ever want priority!==0 here?
-      );
-    }
+    interceptedRequest.abort('failed', _config.abortPriority);
+  } else {
+    // Here we use a custom-configured priority to allow for Opinionated
+    // continuation.
+    // We would only want to allow this if we had a very clear reason why
+    // some use cases required Opinionated continuation.
+    interceptedRequest.continue(
+      interceptedRequest.continueRequestOverrides(),
+      _config.continuePriority // Why would we ever want priority!==0 here?
+    );
+  }
 });
 ```
 
@@ -3046,6 +3054,7 @@ const [response] = await Promise.all([
 Shortcut for [page.mainFrame().waitForNavigation(options)](#framewaitfornavigationoptions).
 
 #### page.waitForNetworkIdle([options])
+
 - `options` <[Object]> Optional waiting parameters
   - `timeout` <[number]> Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to disable the timeout. The default value can be changed by using the [page.setDefaultTimeout(timeout)](#pagesetdefaulttimeouttimeout) method.
   - `idleTime` <[number]> How long to wait for no network requests in milliseconds, defaults to 500 milliseconds.
@@ -4784,6 +4793,7 @@ This method scrolls element into view if needed, and then uses [page.mouse](#pag
 If the element is detached from DOM, the method throws an error.
 
 #### elementHandle.isIntersectingViewport([options])
+
 - `options` <[Object]>
   - `threshold` <[number]> threshold for the intersection between 0 (no intersection) and 1 (full intersection). Defaults to 1.
 - returns: <[Promise]<[boolean]>> Resolves to true if the element is visible in the current viewport.
@@ -4952,7 +4962,7 @@ await page.setRequestInterception(true);
 page.on('request', (request) => {
   if (request.isInterceptResolutionHandled()) return;
 
-// Override headers
+  // Override headers
   const headers = Object.assign({}, request.headers(), {
     foo: 'bar', // set "foo" header
     origin: undefined, // remove "origin" header
@@ -5221,6 +5231,30 @@ Contains the status text of the response (e.g. usually an "OK" for a success).
 #### httpResponse.text()
 
 - returns: <[Promise]<[string]>> Promise which resolves to a text representation of response body.
+
+#### httpResponse.timing()
+
+- returns: <?[Object]>
+  - `requestTime` <[number]> baseline in seconds
+  - `proxyStart` <[number]> started resolving proxy (milliseconds since requestTime)
+  - `proxyEnd` <[number]> finished resolving proxy (milliseconds since requestTime)
+  - `dnsStart` <[number]> started DNS address resolve (milliseconds since requestTime)
+  - `dnsEnd` <[number]> finished DNS address resolve (milliseconds since requestTime)
+  - `connectStart` <[number]> started connecting to the remote host (milliseconds since requestTime)
+  - `connectEnd` <[number]> connected to the remote host (milliseconds since requestTime)
+  - `sslStart` <[number]> started SSL handshake (milliseconds since requestTime)
+  - `sslEnd` <[number]> finished SSL handshake (milliseconds since requestTime)
+  - `workerStart` <[number]> started running ServiceWorker (milliseconds since requestTime)
+  - `workerReady` <[number]> finished Starting ServiceWorker (milliseconds since requestTime)
+  - `workerFetchStart` <[number]> started fetch event (milliseconds since requestTime)
+  - `workerRespondWithSettled` <[number]> settled fetch event respondWith promise (milliseconds since requestTime)
+  - `sendStart` <[number]> started sending request (milliseconds since requestTime)
+  - `sendEnd` <[number]> finished sending request (milliseconds since requestTime)
+  - `pushStart` <[number]> time the server started pushing request (milliseconds since requestTime)
+  - `pushEnd` <[number]> time the server finished pushing request (milliseconds since requestTime)
+  - `receiveHeadersEnd` <[number]> finished receiving response headers (milliseconds since requestTime)
+
+Timing information related to the response.
 
 #### httpResponse.url()
 

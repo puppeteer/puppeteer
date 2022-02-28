@@ -704,6 +704,11 @@ export class Frame {
     );
   }
 
+  /**
+   * @remarks
+   *
+   * @returns `true` if the frame is an OOP frame, or `false` otherwise.
+   */
   isOOPFrame(): boolean {
     return this._client !== this._frameManager._client;
   }
@@ -785,6 +790,13 @@ export class Frame {
     } = {}
   ): Promise<HTTPResponse | null> {
     return await this._frameManager.waitForFrameNavigation(this, options);
+  }
+
+  /**
+   * @internal
+   */
+  client(): CDPSession {
+    return this._client;
   }
 
   /**

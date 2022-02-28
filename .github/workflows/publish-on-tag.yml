@@ -1,5 +1,8 @@
 name: publish-on-tag
 
+# Declare default permissions as read only.
+permissions: read-all
+
 on:
   push:
     tags:
@@ -23,9 +26,9 @@ jobs:
           npm config set '//wombat-dressing-room.appspot.com/:_authToken' '${NPM_TOKEN}'
           echo "Publishing puppeteer"
           npm publish
-          DEPRECATED_RANGE=$(node utils/get_deprecated_version_range.js)
-          echo "Deprecating old puppeteer versions: $DEPRECATED_RANGE"
-          npm deprecate puppeteer@$DEPRECATED_RANGE "Version no longer supported. Upgrade to @latest"
+          # DEPRECATED_RANGE=$(node utils/get_deprecated_version_range.js)
+          # echo "Deprecating old puppeteer versions: $DEPRECATED_RANGE"
+          # npm deprecate puppeteer@$DEPRECATED_RANGE "Version no longer supported. Upgrade to @latest"
       - name: Publish puppeteer-core
         env:
           NPM_TOKEN: ${{secrets.NPM_TOKEN_PUPPETEER_CORE}}

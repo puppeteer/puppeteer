@@ -430,6 +430,17 @@ describe('network', function () {
     });
   });
 
+  describeFailsFirefox('Response.timing', function () {
+    it('returns timing information', async () => {
+      const { page, server } = getTestState();
+      const responses = [];
+      page.on('response', (response) => responses.push(response));
+      await page.goto(server.EMPTY_PAGE);
+      expect(responses.length).toBe(1);
+      expect(responses[0].timing().receiveHeadersEnd).toBeGreaterThan(0);
+    });
+  });
+
   describeFailsFirefox('Network Events', function () {
     it('Page.Events.Request', async () => {
       const { page, server } = getTestState();

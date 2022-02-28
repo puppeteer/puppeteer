@@ -113,7 +113,7 @@ export class BrowserRunner {
             await removeFolderAsync(this._userDataDir);
             fulfill();
           } catch (error) {
-            console.error(error);
+            debugError(error);
             reject(error);
           }
         } else {
@@ -133,7 +133,7 @@ export class BrowserRunner {
                 await renameAsync(prefsBackupPath, prefsPath);
               }
             } catch (error) {
-              console.error(error);
+              debugError(error);
               reject(error);
             }
           }
@@ -183,9 +183,16 @@ export class BrowserRunner {
     // If the process failed to launch (for example if the browser executable path
     // is invalid), then the process does not get a pid assigned. A call to
     // `proc.kill` would error, as the `pid` to-be-killed can not be found.
-    if (this.proc && this.proc.pid && !this.proc.killed) {
+    if (this.proc && this.proc.pid && pidExists(this.proc.pid)) {
       try {
-        this.proc.kill('SIGKILL');
+        if (process.platform === 'win32') {
+          childProcess.exec(`taskkill /pid ${this.proc.pid} /T /F`, () => {});
+        } else {
+          // on linux the process group can be killed with the group id prefixed with
+          // a minus sign. The process group id is the group leader's pid.
+          const processGroupId = -this.proc.pid;
+          process.kill(processGroupId, 'SIGKILL');
+        }
       } catch (error) {
         throw new Error(
           `${PROCESS_ERROR_EXPLANATION}\nError cause: ${error.stack}`
@@ -293,4 +300,16 @@ function waitForWSEndpoint(
       helper.removeEventListeners(listeners);
     }
   });
+}
+
+function pidExists(pid: number): boolean {
+  try {
+    return process.kill(pid, 0);
+  } catch (error) {
+    if (error && error.code && error.code === 'ESRCH') {
+      return false;
+    } else {
+      throw error;
+    }
+  }
 }
