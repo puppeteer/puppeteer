@@ -5590,7 +5590,7 @@ Puppeteer ships with two such custom handlers pre-registered:
 [iterator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols 'Iterator'
 [number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type 'Number'
 [origin]: https://developer.mozilla.org/en-US/docs/Glossary/Origin 'Origin'
-[selector]: #interface-selector'Selector'
+[selector]: #interface-selector 'Selector'
 [css selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors
 [stream.readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable 'stream.Readable'
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type 'String'
