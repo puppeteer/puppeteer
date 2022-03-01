@@ -88,7 +88,7 @@
     "@types/tar-fs": "2.0.1",
     "@types/ws": "8.2.3",
     "@typescript-eslint/eslint-plugin": "5.12.1",
-    "@typescript-eslint/parser": "5.12.1",
+    "@typescript-eslint/parser": "5.13.0",
     "@web/test-runner": "0.13.27",
     "commonmark": "0.30.0",
     "cross-env": "7.0.3",
