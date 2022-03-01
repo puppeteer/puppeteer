@@ -414,6 +414,7 @@
   * [eventEmitter.removeAllListeners([event])](#eventemitterremovealllistenersevent)
   * [eventEmitter.removeListener(event, handler)](#eventemitterremovelistenerevent-handler)
 - [interface: CustomQueryHandler](#interface-customqueryhandler)
+- [interface: Selector](#interface-selector)
 <!-- GEN:stop -->
 
 <!-- prettier-ignore-end -->
@@ -5525,6 +5526,26 @@ This method is identical to `off` and maintained for compatibility with Node's E
 
 Contains two functions `queryOne` and `queryAll` that can be [registered](#puppeteerregistercustomqueryhandlername-queryhandler) as alternative querying strategies. The functions `queryOne` and `queryAll` are executed in the page context. `queryOne` should take an `Element` and a selector string as argument and return a single `Element` or `null` if no element is found. `queryAll` takes the same arguments but should instead return a `NodeList<Element>` or `Array<Element>` with all the elements that match the given query selector.
 
+### interface: Selector
+
+A selector is a [string] for querying elements in the page.
+The default behavior is to regard the string as a [CSS selector] and query using `querySelector` or `querySelectorAll`.
+If a selector string contains a forward slash `/` the selector is instead regarded as custom selector where everything before the slash is the [custom handler](#puppeteerregistercustomqueryhandlername-queryhandler) name and everything after is the selector: `<handler>/<selector>`.
+Puppeteer ships with two such custom handlers pre-registered:
+
+- `aria/`: Queries the accessibilty tree for computed accessibility properties.
+  The selectors consist of an accessible name to query for and optionally
+  further aria attributes on the form `[<attribute>=<value>]`.
+  Currently, we only support the `name` and `role` attribute.
+  The following examples showcase how the syntax works wrt. querying:
+
+  - `title[role="heading"]` queries for elements with name 'title' and role 'heading'.
+  - `[role="img"]` queries for elements with role 'img' and any name.
+  - `label` queries for elements with name 'label' and any role.
+  - `[name=""][role="button"]` queries for elements with no name and role 'button'.
+
+- `pierce`: Takes a [CSS selector] and queries the page using `querySelector` or `querySeletorAll` but pierces through shadow roots.
+
 [axnode]: #accessibilitysnapshotoptions 'AXNode'
 [accessibility]: #class-accessibility 'Accessibility'
 [array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array 'Array'
@@ -5569,7 +5590,8 @@ Contains two functions `queryOne` and `queryAll` that can be [registered](#puppe
 [iterator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols 'Iterator'
 [number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type 'Number'
 [origin]: https://developer.mozilla.org/en-US/docs/Glossary/Origin 'Origin'
-[selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors 'selector'
+[selector]: #interface-selector 'Selector'
+[css selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors
 [stream.readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable 'stream.Readable'
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type 'String'
 [symbol]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Symbol_type 'Symbol'

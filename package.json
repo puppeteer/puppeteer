@@ -1,6 +1,6 @@
 {
   "name": "puppeteer",
-  "version": "13.4.0-post",
+  "version": "13.4.1-post",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "main": "./cjs-entry.js",
   "types": "lib/types.d.ts",
@@ -28,6 +28,7 @@
     "prettier-fix": "prettier --write .",
     "lint": "npm run eslint && npm run build && npm run doc && npm run prettier",
     "doc": "node utils/doclint/cli.js",
+    "generate-api-docs-for-testing": "commonmark docs/api.md > docs/api.html",
     "clean-lib": "rimraf lib",
     "build": "npm run tsc && npm run generate-d-ts",
     "tsc": "npm run clean-lib && tsc --version && npm run tsc-cjs && npm run tsc-esm",
