@@ -708,9 +708,9 @@ describe('Launcher specs', function () {
       itFailsFirefox(
         'should be able to connect to the same page simultaneously',
         async () => {
-          const { puppeteer } = getTestState();
+          const { puppeteer, defaultBrowserOptions } = getTestState();
 
-          const browserOne = await puppeteer.launch();
+          const browserOne = await puppeteer.launch(defaultBrowserOptions);
           const browserTwo = await puppeteer.connect({
             browserWSEndpoint: browserOne.wsEndpoint(),
           });
@@ -726,8 +726,8 @@ describe('Launcher specs', function () {
         }
       );
       it('should be able to reconnect', async () => {
-        const { puppeteer, server } = getTestState();
-        const browserOne = await puppeteer.launch();
+        const { puppeteer, server, defaultBrowserOptions } = getTestState();
+        const browserOne = await puppeteer.launch(defaultBrowserOptions);
         const browserWSEndpoint = browserOne.wsEndpoint();
         const pageOne = await browserOne.newPage();
         await pageOne.goto(server.EMPTY_PAGE);
