@@ -16,7 +16,7 @@
 
 import { EventEmitter } from './EventEmitter.js';
 import { assert } from './assert.js';
-import { helper } from './helper.js';
+import { helper, debugError } from './helper.js';
 import { ExecutionContext, EVALUATION_SCRIPT_URL } from './ExecutionContext.js';
 import {
   LifecycleWatcher,
@@ -393,11 +393,13 @@ export class FrameManager extends EventEmitter {
       this.frames()
         .filter((frame) => frame._client === session)
         .map((frame) =>
-          session.send('Page.createIsolatedWorld', {
-            frameId: frame._id,
-            worldName: name,
-            grantUniveralAccess: true,
-          })
+          session
+            .send('Page.createIsolatedWorld', {
+              frameId: frame._id,
+              worldName: name,
+              grantUniveralAccess: true,
+            })
+            .catch(debugError)
         )
     );
   }
