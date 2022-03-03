@@ -24,6 +24,8 @@ import {
   setupTestPageAndContextHooks,
   itFailsFirefox,
   describeFailsFirefox,
+  itChromeOnly,
+  itFirefoxOnly,
 } from './mocha-utils'; // eslint-disable-line import/extensions
 import { HTTPResponse } from '../lib/cjs/puppeteer/api-docs-entry.js';
 
@@ -113,14 +115,17 @@ describe('network', function () {
   });
 
   describe('Request.headers', function () {
-    it('should work', async () => {
-      const { page, server, isChrome } = getTestState();
+    itChromeOnly('should define Chrome as user agent header', async () => {
+      const { page, server } = getTestState();
+      const response = await page.goto(server.EMPTY_PAGE);
+      expect(response.request().headers()['user-agent']).toContain('Chrome');
+    });
+
+    itFirefoxOnly('should define Firefox as user agent header', async () => {
+      const { page, server } = getTestState();
 
       const response = await page.goto(server.EMPTY_PAGE);
-      if (isChrome)
-        expect(response.request().headers()['user-agent']).toContain('Chrome');
-      else
-        expect(response.request().headers()['user-agent']).toContain('Firefox');
+      expect(response.request().headers()['user-agent']).toContain('Firefox');
     });
   });
 
