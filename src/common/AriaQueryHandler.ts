@@ -40,8 +40,10 @@ async function queryAXTree(
 const normalizeValue = (value: string): string =>
   value.replace(/ +/g, ' ').trim();
 const knownAttributes = new Set(['name', 'role']);
-const attributeRegexp =
-  /\[\s*(?<attribute>\w+)\s*=\s*(?<quote>"|')(?<value>\\.|.*?(?=\k<quote>))\k<quote>\s*\]/g;
+const attributeRegexp = new RegExp(
+  '\\[\\s*(?<attribute>\\w+)\\s*=\\s*(?<quote>"|\')(?<value>\\\\.|.*?(?=\\k<quote>))\\k<quote>\\s*\\]',
+  'g'
+);
 
 /*
  * The selectors consist of an accessible name to query for and optionally
