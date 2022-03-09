@@ -53,6 +53,7 @@ export const FrameManagerEmittedEvents = {
   FrameAttached: Symbol('FrameManager.FrameAttached'),
   FrameNavigated: Symbol('FrameManager.FrameNavigated'),
   FrameDetached: Symbol('FrameManager.FrameDetached'),
+  FrameSwapped: Symbol('FrameManager.FrameSwapped'),
   LifecycleEvent: Symbol('FrameManager.LifecycleEvent'),
   FrameNavigatedWithinDocument: Symbol(
     'FrameManager.FrameNavigatedWithinDocument'
@@ -422,6 +423,8 @@ export class FrameManager extends EventEmitter {
       // an actual removement of the frame.
       // For frames that become OOP iframes, the reason would be 'swap'.
       if (frame) this._removeFramesRecursively(frame);
+    } else if (reason === 'swap') {
+      this.emit(FrameManagerEmittedEvents.FrameSwapped, frame);
     }
   }
 
