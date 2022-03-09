@@ -4,9 +4,9 @@ updates:
     directory: /
     schedule:
       interval: daily
-    open-pull-requests-limit: 99
+    open-pull-requests-limit: 3
   - package-ecosystem: github-actions
     directory: '/'
     schedule:
       interval: daily
-    open-pull-requests-limit: 99
+    open-pull-requests-limit: 2

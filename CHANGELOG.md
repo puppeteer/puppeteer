@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [13.5.0](https://github.com/puppeteer/puppeteer/compare/v13.4.1...v13.5.0) (2022-03-07)
+
+
+### Features
+
+* **chromium:** roll to Chromium 100.0.4889.0 (r970485) ([#8108](https://github.com/puppeteer/puppeteer/issues/8108)) ([d12f427](https://github.com/puppeteer/puppeteer/commit/d12f42754f7013b5ec0a2198cf2d9cf945d3cb38))
+
+
+### Bug Fixes
+
+* Inherit browser-level proxy settings from incognito context ([#7770](https://github.com/puppeteer/puppeteer/issues/7770)) ([3feca32](https://github.com/puppeteer/puppeteer/commit/3feca325a9472ee36f7e866ebe375c7f083e0e36))
+* **page:** page.createIsolatedWorld error catching has been added ([#7848](https://github.com/puppeteer/puppeteer/issues/7848)) ([309e8b8](https://github.com/puppeteer/puppeteer/commit/309e8b80da0519327bc37b44a3ebb6f2e2d357a7))
+* **tests:** ensure all tests honour BINARY envvar ([#8092](https://github.com/puppeteer/puppeteer/issues/8092)) ([3b8b9ad](https://github.com/puppeteer/puppeteer/commit/3b8b9adde5d18892af96329b6f9303979f9c04f5))
+
+### [13.4.1](https://github.com/puppeteer/puppeteer/compare/v13.4.0...v13.4.1) (2022-03-01)
+
+
+### Bug Fixes
+
+* regression in --user-data-dir handling ([#8060](https://github.com/puppeteer/puppeteer/issues/8060)) ([85decdc](https://github.com/puppeteer/puppeteer/commit/85decdc28d7d2128e6d2946a72f4d99dd5dbb48a))
+
+## [13.4.0](https://github.com/puppeteer/puppeteer/compare/v13.3.2...v13.4.0) (2022-02-22)
+
+
+### Features
+
+* add support for async waitForTarget ([#7885](https://github.com/puppeteer/puppeteer/issues/7885)) ([dbf0639](https://github.com/puppeteer/puppeteer/commit/dbf0639822d0b2736993de52c0bfe1dbf4e58f25))
+* export `Frame._client` through getter ([#8041](https://github.com/puppeteer/puppeteer/issues/8041)) ([e9278fc](https://github.com/puppeteer/puppeteer/commit/e9278fcfcffe2558de63ce7542483445bcb6e74f))
+* **HTTPResponse:** expose timing information ([#8025](https://github.com/puppeteer/puppeteer/issues/8025)) ([30b3d49](https://github.com/puppeteer/puppeteer/commit/30b3d49b0de46d812b7485e708174a07c73dbdd0))
+
+
+### Bug Fixes
+
+* change kill to signal the whole process group to terminate  ([#6859](https://github.com/puppeteer/puppeteer/issues/6859)) ([0eb9c78](https://github.com/puppeteer/puppeteer/commit/0eb9c7861717ebba7012c03e76b7a46063e4e5dd))
+* element screenshot issue in headful mode ([#8018](https://github.com/puppeteer/puppeteer/issues/8018)) ([5346e70](https://github.com/puppeteer/puppeteer/commit/5346e70ffc15b33c1949657cf1b465f1acc5d84d)), closes [#7999](https://github.com/puppeteer/puppeteer/issues/7999)
+* ensure dom binding is not called after detach ([#8024](https://github.com/puppeteer/puppeteer/issues/8024)) ([5c308b0](https://github.com/puppeteer/puppeteer/commit/5c308b0704123736ddb085f97596c201ea18cf4a)), closes [#7814](https://github.com/puppeteer/puppeteer/issues/7814)
+* use both __dirname and require.resolve to support different bundlers ([#8046](https://github.com/puppeteer/puppeteer/issues/8046)) ([e6a6295](https://github.com/puppeteer/puppeteer/commit/e6a6295d9a7480bb59ee58a2cc7785171fa0fa2c)), closes [#8044](https://github.com/puppeteer/puppeteer/issues/8044)
+
 ### [13.3.2](https://github.com/puppeteer/puppeteer/compare/v13.3.1...v13.3.2) (2022-02-14)
 
 
