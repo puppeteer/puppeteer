@@ -40,6 +40,7 @@ describe('request interception', function () {
         }
         expect(request.url()).toContain('empty.html');
         expect(request.headers()['user-agent']).toBeTruthy();
+        expect(request.headers()['accept']).toBeTruthy();
         expect(request.method()).toBe('GET');
         expect(request.postData()).toBe(undefined);
         expect(request.isNavigationRequest()).toBe(true);

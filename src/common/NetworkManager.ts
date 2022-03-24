@@ -268,6 +268,7 @@ export class NetworkManager extends EventEmitter {
         this._networkEventManager.getRequestPaused(networkRequestId);
       if (requestPausedEvent) {
         const { requestId: fetchRequestId } = requestPausedEvent;
+        this._patchRequestEventHeaders(event, requestPausedEvent);
         this._onRequest(event, fetchRequestId);
         this._networkEventManager.forgetRequestPaused(networkRequestId);
       }
@@ -345,10 +346,22 @@ export class NetworkManager extends EventEmitter {
     })();
 
     if (requestWillBeSentEvent) {
+      this._patchRequestEventHeaders(requestWillBeSentEvent, event);
       this._onRequest(requestWillBeSentEvent, fetchRequestId);
     } else {
       this._networkEventManager.storeRequestPaused(networkRequestId, event);
     }
+  }
+
+  _patchRequestEventHeaders(
+    requestWillBeSentEvent: Protocol.Network.RequestWillBeSentEvent,
+    requestPausedEvent: Protocol.Fetch.RequestPausedEvent
+  ): void {
+    requestWillBeSentEvent.request.headers = {
+      ...requestWillBeSentEvent.request.headers,
+      // includes extra headers, like: Accept, Origin
+      ...requestPausedEvent.request.headers,
+    };
   }
 
   _onRequest(
