@@ -571,11 +571,15 @@ function httpRequest(
     method?: string;
     agent?: HttpsProxyAgent;
     rejectUnauthorized?: boolean;
+    headers?: http.OutgoingHttpHeaders | undefined;
   };
 
   let options: Options = {
     ...urlParsed,
     method,
+    headers: {
+      Connection: 'keep-alive',
+    },
   };
 
   const proxyURL = getProxyForUrl(url);
