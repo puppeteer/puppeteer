@@ -555,12 +555,15 @@ export class HTTPRequest {
         ? Buffer.from(response.body)
         : (response.body as Buffer) || null;
 
-    const responseHeaders: Record<string, string> = {};
+    const responseHeaders: Record<string, string | string[]> = {};
     if (response.headers) {
-      for (const header of Object.keys(response.headers))
-        responseHeaders[header.toLowerCase()] = String(
-          response.headers[header]
-        );
+      for (const header of Object.keys(response.headers)) {
+        const value = response.headers[header];
+
+        responseHeaders[header.toLowerCase()] = Array.isArray(value)
+          ? value.map((item) => String(item))
+          : String(value);
+      }
     }
     if (response.contentType)
       responseHeaders['content-type'] = response.contentType;
@@ -696,12 +699,17 @@ const errorReasons: Record<ErrorCode, Protocol.Network.ErrorReason> = {
 export type ActionResult = 'continue' | 'abort' | 'respond';
 
 function headersArray(
-  headers: Record<string, string>
+  headers: Record<string, string | string[]>
 ): Array<{ name: string; value: string }> {
   const result = [];
   for (const name in headers) {
-    if (!Object.is(headers[name], undefined))
-      result.push({ name, value: headers[name] + '' });
+    const value = headers[name];
+
+    if (!Object.is(value, undefined)) {
+      const values = Array.isArray(value) ? value : [value];
+
+      result.push(...values.map((value) => ({ name, value: value + '' })));
+    }
   }
   return result;
 }

@@ -5122,7 +5122,7 @@ ResourceType will be one of the following: `document`, `stylesheet`, `image`, `m
 
 - `response` <[Object]> Response that will fulfill this request
   - `status` <[number]> Response status code, defaults to `200`.
-  - `headers` <[Object]> Optional response headers. Header values will be converted to a string.
+  - `headers` <[Object]> Optional response headers. Header values should be a string or a string array.
   - `contentType` <[string]> If set, equals to setting `Content-Type` response header
   - `body` <[string]|[Buffer]> Optional response body
 - `priority` <[number]> - Optional intercept abort priority. If provided, intercept will be resolved using coopeative handling rules. Otherwise, intercept will be resolved immediately.
