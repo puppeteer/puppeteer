@@ -371,6 +371,21 @@ describeChromeOnly('OOPIF', function () {
     await target.page();
     browser1.disconnect();
   });
+
+  describe('waitForFrame', () => {
+    it('should resolve immediately if the frame already exists', async () => {
+      const { server } = getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await utils.attachFrame(
+        page,
+        'frame2',
+        server.CROSS_PROCESS_PREFIX + '/empty.html'
+      );
+
+      await page.waitForFrame((frame) => frame.url().endsWith('/empty.html'));
+    });
+  });
 });
 
 /**
