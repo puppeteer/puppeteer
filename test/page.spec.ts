@@ -127,14 +127,20 @@ describe('Page', function () {
       const { page, server } = getTestState();
 
       const handler = sinon.spy();
-      page.on('response', handler);
+      const onResponse = (response) => {
+        // Ignore default favicon requests.
+        if (!response.url().endsWith('favicon.ico')) {
+          handler();
+        }
+      };
+      page.on('response', onResponse);
       await page.goto(server.EMPTY_PAGE);
       expect(handler.callCount).toBe(1);
-      page.off('response', handler);
+      page.off('response', onResponse);
       await page.goto(server.EMPTY_PAGE);
       // Still one because we removed the handler.
       expect(handler.callCount).toBe(1);
-      page.on('response', handler);
+      page.on('response', onResponse);
       await page.goto(server.EMPTY_PAGE);
       // Two now because we added the handler back.
       expect(handler.callCount).toBe(2);
@@ -144,14 +150,21 @@ describe('Page', function () {
       const { page, server } = getTestState();
 
       const handler = sinon.spy();
-      page.on('request', handler);
+      const onResponse = (response) => {
+        // Ignore default favicon requests.
+        if (!response.url().endsWith('favicon.ico')) {
+          handler();
+        }
+      };
+
+      page.on('request', onResponse);
       await page.goto(server.EMPTY_PAGE);
       expect(handler.callCount).toBe(1);
-      page.off('request', handler);
+      page.off('request', onResponse);
       await page.goto(server.EMPTY_PAGE);
       // Still one because we removed the handler.
       expect(handler.callCount).toBe(1);
-      page.on('request', handler);
+      page.on('request', onResponse);
       await page.goto(server.EMPTY_PAGE);
       // Two now because we added the handler back.
       expect(handler.callCount).toBe(2);
