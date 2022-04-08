@@ -67,7 +67,7 @@
   "dependencies": {
     "cross-fetch": "3.1.5",
     "debug": "4.3.4",
-    "devtools-protocol": "0.0.969999",
+    "devtools-protocol": "0.0.982423",
     "extract-zip": "2.0.1",
     "https-proxy-agent": "5.0.0",
     "pkg-dir": "4.2.0",
