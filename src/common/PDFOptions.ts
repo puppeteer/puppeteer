@@ -55,6 +55,17 @@ export interface PDFMargin {
  * @public
  */
 export type PaperFormat =
+  'Letter'
+  | 'Legal'
+  | 'Tabloid'
+  | 'Ledger'
+  | 'A0'
+  | 'A1'
+  | 'A2'
+  | 'A3'
+  | 'A4'
+  | 'A5'
+  | 'A6'
   | 'letter'
   | 'legal'
   | 'tabloid'
@@ -65,7 +76,11 @@ export type PaperFormat =
   | 'a3'
   | 'a4'
   | 'a5'
-  | 'a6';
+  | 'a6'
+  | 'LETTER'
+  | 'LEGAL'
+  | 'TABLOID'
+  | 'LEDGER';
 
 /**
  * Valid options to configure PDF generation via {@link Page.pdf}.
