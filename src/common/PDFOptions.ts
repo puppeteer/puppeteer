@@ -24,6 +24,19 @@ export interface PDFMargin {
   right?: string | number;
 }
 
+type LowerCasePaperFormat =
+  | 'letter'
+  | 'legal'
+  | 'tabloid'
+  | 'ledger'
+  | 'a0'
+  | 'a1'
+  | 'a2'
+  | 'a3'
+  | 'a4'
+  | 'a5'
+  | 'a6';
+
 /**
  * All the valid paper format types when printing a PDF.
  *
@@ -55,17 +68,9 @@ export interface PDFMargin {
  * @public
  */
 export type PaperFormat =
-  | 'letter'
-  | 'legal'
-  | 'tabloid'
-  | 'ledger'
-  | 'a0'
-  | 'a1'
-  | 'a2'
-  | 'a3'
-  | 'a4'
-  | 'a5'
-  | 'a6';
+  | Uppercase<LowerCasePaperFormat>
+  | Capitalize<LowerCasePaperFormat>
+  | LowerCasePaperFormat;
 
 /**
  * Valid options to configure PDF generation via {@link Page.pdf}.
@@ -174,16 +179,17 @@ export interface PaperFormatDimensions {
 /**
  * @internal
  */
-export const paperFormats: Record<PaperFormat, PaperFormatDimensions> = {
-  letter: { width: 8.5, height: 11 },
-  legal: { width: 8.5, height: 14 },
-  tabloid: { width: 11, height: 17 },
-  ledger: { width: 17, height: 11 },
-  a0: { width: 33.1, height: 46.8 },
-  a1: { width: 23.4, height: 33.1 },
-  a2: { width: 16.54, height: 23.4 },
-  a3: { width: 11.7, height: 16.54 },
-  a4: { width: 8.27, height: 11.7 },
-  a5: { width: 5.83, height: 8.27 },
-  a6: { width: 4.13, height: 5.83 },
-} as const;
+export const paperFormats: Record<LowerCasePaperFormat, PaperFormatDimensions> =
+  {
+    letter: { width: 8.5, height: 11 },
+    legal: { width: 8.5, height: 14 },
+    tabloid: { width: 11, height: 17 },
+    ledger: { width: 17, height: 11 },
+    a0: { width: 33.1, height: 46.8 },
+    a1: { width: 23.4, height: 33.1 },
+    a2: { width: 16.54, height: 23.4 },
+    a3: { width: 11.7, height: 16.54 },
+    a4: { width: 8.27, height: 11.7 },
+    a5: { width: 5.83, height: 8.27 },
+    a6: { width: 4.13, height: 5.83 },
+  } as const;
