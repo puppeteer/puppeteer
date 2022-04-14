@@ -404,7 +404,7 @@ describe('Launcher specs', function () {
         await page.close();
         await browser.close();
       });
-      it('should filter out ignored default arguments', async () => {
+      itChromeOnly('should filter out ignored default arguments', async () => {
         const { defaultBrowserOptions, puppeteer } = getTestState();
         // Make sure we launch with `--enable-automation` by default.
         const defaultArgs = puppeteer.defaultArgs();
@@ -423,6 +423,25 @@ describe('Launcher specs', function () {
         expect(spawnargs.indexOf(defaultArgs[2])).toBe(-1);
         await browser.close();
       });
+      itFirefoxOnly('should filter out ignored default arguments', async () => {
+        const { defaultBrowserOptions, puppeteer } = getTestState();
+
+        const defaultArgs = puppeteer.defaultArgs();
+        const browser = await puppeteer.launch(
+          Object.assign({}, defaultBrowserOptions, {
+            // Only the first argument is fixed, others are optional.
+            ignoreDefaultArgs: [defaultArgs[0]],
+          })
+        );
+        const spawnargs = browser.process().spawnargs;
+        if (!spawnargs) {
+          throw new Error('spawnargs not present');
+        }
+        expect(spawnargs.indexOf(defaultArgs[0])).toBe(-1);
+        expect(spawnargs.indexOf(defaultArgs[1])).not.toBe(-1);
+        await browser.close();
+      });
+
       it('should have default URL when launching browser', async function () {
         const { defaultBrowserOptions, puppeteer } = getTestState();
         const browser = await puppeteer.launch(defaultBrowserOptions);
