@@ -184,4 +184,8 @@ export class NetworkEventManager {
   ): void {
     this._queuedEventGroupMap.set(networkRequestId, event);
   }
+
+  forgetQueuedEventGroup(networkRequestId: NetworkRequestId): void {
+    this._queuedEventGroupMap.delete(networkRequestId);
+  }
 }

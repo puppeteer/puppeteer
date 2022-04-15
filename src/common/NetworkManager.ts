@@ -519,6 +519,7 @@ export class NetworkManager extends EventEmitter {
       event.requestId
     );
     if (queuedEvents) {
+      this._networkEventManager.forgetQueuedEventGroup(event.requestId);
       this._emitResponseEvent(queuedEvents.responseReceivedEvent, event);
       if (queuedEvents.loadingFinishedEvent) {
         this._emitLoadingFinished(queuedEvents.loadingFinishedEvent);
