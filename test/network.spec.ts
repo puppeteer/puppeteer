@@ -143,7 +143,7 @@ describe('network', function () {
   });
 
   describeFailsFirefox('Request.initiator', () => {
-    it('shoud return the initiator', async () => {
+    it('should return the initiator', async () => {
       const { page, server } = getTestState();
 
       const initiators = new Map();
