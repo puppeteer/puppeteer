@@ -721,7 +721,7 @@ The product is set by the `PUPPETEER_PRODUCT` environment variable or the `produ
 - `name` <[string]> The name that the custom query handler will be registered under.
 - `queryHandler` <[CustomQueryHandler]> The [custom query handler](#interface-customqueryhandler) to register.
 
-Registers a [custom query handler](#interface-customqueryhandler). After registration, the handler can be used everywhere where a selector is expected by prepending the selection string with `<name>/`. The name is only allowed to consist of lower and upper case Latin letters.
+Registers a [custom query handler](#interface-customqueryhandler).
 
 Example:
 
@@ -5525,7 +5525,11 @@ This method is identical to `off` and maintained for compatibility with Node's E
 
 ### interface: CustomQueryHandler
 
-Contains two functions `queryOne` and `queryAll` that can be [registered](#puppeteerregistercustomqueryhandlername-queryhandler) as alternative querying strategies. The functions `queryOne` and `queryAll` are executed in the page context. `queryOne` should take an `Element` and a selector string as argument and return a single `Element` or `null` if no element is found. `queryAll` takes the same arguments but should instead return a `NodeList<Element>` or `Array<Element>` with all the elements that match the given query selector.
+After [registration](#puppeteerregistercustomqueryhandlername-queryhandler), the handler can be used everywhere where a selector is expected by prepending the selection string with `<name>/`. The name is only allowed to consist of lower and upper case Latin letters.
+
+Contains two functions `queryOne` and `queryAll` that are executed in the page context. `queryOne` should take an `Element` and a selector string as argument and return a single `Element` or `null` if no element is found. `queryAll` takes the same arguments but should instead return a `NodeList<Element>` or `Array<Element>` with all the elements that match the given query selector.
+
+**NOTE:** Because the function code needs to be serialized, it is **not possible** to access anything outside its scope or use imports. See e.g. [the pierce handler](https://github.com/puppeteer/puppeteer/blob/v13.5.2/src/common/QueryHandler.ts#L115) which has redundancies because of this limitation.
 
 ### interface: Selector
 
@@ -5534,7 +5538,7 @@ The default behavior is to regard the string as a [CSS selector] and query using
 If a selector string contains a forward slash `/` the selector is instead regarded as custom selector where everything before the slash is the [custom handler](#puppeteerregistercustomqueryhandlername-queryhandler) name and everything after is the selector: `<handler>/<selector>`.
 Puppeteer ships with two such custom handlers pre-registered:
 
-- `aria/`: Queries the accessibilty tree for computed accessibility properties.
+- `aria`: Queries the accessibilty tree for computed accessibility properties.
   The selectors consist of an accessible name to query for and optionally
   further aria attributes on the form `[<attribute>=<value>]`.
   Currently, we only support the `name` and `role` attribute.
