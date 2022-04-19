@@ -1,4 +1,4 @@
-# Puppeteer API <!-- GEN:version -->Tip-Of-Tree<!-- GEN:stop-->
+# Puppeteer API <!-- GEN:version -->v13.6.0<!-- GEN:stop-->
 
 <!-- GEN:empty-if-release --><!-- GEN:stop -->
 
@@ -10,6 +10,7 @@
 
 <!-- GEN:versions-per-release -->
 - Releases per Chromium version:
+  * Chromium 101.0.4950.0 - [Puppeteer v13.6.0](https://github.com/puppeteer/puppeteer/blob/v13.6.0/docs/api.md)
   * Chromium 100.0.4889.0 - [Puppeteer v13.5.0](https://github.com/puppeteer/puppeteer/blob/v13.5.0/docs/api.md)
   * Chromium 99.0.4844.16 - [Puppeteer v13.2.0](https://github.com/puppeteer/puppeteer/blob/v13.2.0/docs/api.md)
   * Chromium 98.0.4758.0 - [Puppeteer v13.1.0](https://github.com/puppeteer/puppeteer/blob/v13.1.0/docs/api.md)
