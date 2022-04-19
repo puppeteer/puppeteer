@@ -140,7 +140,7 @@ export class NetworkEventManager {
   }
 
   forgetRequestWillBeSent(networkRequestId: NetworkRequestId): void {
-    this._requestPausedMap.delete(networkRequestId);
+    this._requestWillBeSentMap.delete(networkRequestId);
   }
 
   getRequestPaused(
