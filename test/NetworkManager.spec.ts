@@ -543,4 +543,121 @@ describeChromeOnly('NetworkManager', () => {
 
     expect(requests.length).toBe(2);
   });
+  it(`should handle Network.responseReceivedExtraInfo event after Network.responseReceived event (github.com/puppeteer/puppeteer/issues/8234)`, async () => {
+    const mockCDPSession = new MockCDPSession();
+    const manager = new NetworkManager(mockCDPSession, true, {
+      frame(): Frame | null {
+        return null;
+      },
+    });
+
+    const requests: HTTPRequest[] = [];
+    manager.on(
+      NetworkManagerEmittedEvents.RequestFinished,
+      (request: HTTPRequest) => {
+        requests.push(request);
+      }
+    );
+
+    mockCDPSession.emit('Network.requestWillBeSent', {
+      requestId: '1360.2',
+      loaderId: '9E86B0282CC98B77FB0ABD49156DDFDD',
+      documentURL: 'http://this.is.the.start.page.com/',
+      request: {
+        url: 'http://this.is.a.test.com:1080/test.js',
+        method: 'GET',
+        headers: {
+          'Accept-Language': 'en-US,en;q=0.9',
+          Referer: 'http://this.is.the.start.page.com/',
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.0 Safari/537.36',
+        },
+        mixedContentType: 'none',
+        initialPriority: 'High',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+        isSameSite: false,
+      },
+      timestamp: 10959.020087,
+      wallTime: 1649712607.861365,
+      initiator: {
+        type: 'parser',
+        url: 'http://this.is.the.start.page.com/',
+        lineNumber: 9,
+        columnNumber: 80,
+      },
+      redirectHasExtraInfo: false,
+      type: 'Script',
+      frameId: '60E6C35E7E519F28E646056820095498',
+      hasUserGesture: false,
+    });
+    mockCDPSession.emit('Network.responseReceived', {
+      requestId: '1360.2',
+      loaderId: '9E86B0282CC98B77FB0ABD49156DDFDD',
+      timestamp: 10959.042529,
+      type: 'Script',
+      response: {
+        url: 'http://this.is.a.test.com:1080',
+        status: 200,
+        statusText: 'OK',
+        headers: {
+          connection: 'keep-alive',
+          'content-length': '85862',
+        },
+        mimeType: 'text/plain',
+        connectionReused: false,
+        connectionId: 119,
+        remoteIPAddress: '127.0.0.1',
+        remotePort: 1080,
+        fromDiskCache: false,
+        fromServiceWorker: false,
+        fromPrefetchCache: false,
+        encodedDataLength: 66,
+        timing: {
+          requestTime: 10959.023904,
+          proxyStart: -1,
+          proxyEnd: -1,
+          dnsStart: 0.328,
+          dnsEnd: 2.183,
+          connectStart: 2.183,
+          connectEnd: 2.798,
+          sslStart: -1,
+          sslEnd: -1,
+          workerStart: -1,
+          workerReady: -1,
+          workerFetchStart: -1,
+          workerRespondWithSettled: -1,
+          sendStart: 2.982,
+          sendEnd: 3.757,
+          pushStart: 0,
+          pushEnd: 0,
+          receiveHeadersEnd: 16.373,
+        },
+        responseTime: 1649712607880.971,
+        protocol: 'http/1.1',
+        securityState: 'insecure',
+      },
+      hasExtraInfo: true,
+      frameId: '60E6C35E7E519F28E646056820095498',
+    });
+    mockCDPSession.emit('Network.responseReceivedExtraInfo', {
+      requestId: '1360.2',
+      blockedCookies: [],
+      headers: {
+        connection: 'keep-alive',
+        'content-length': '85862',
+      },
+      resourceIPAddressSpace: 'Private',
+      statusCode: 200,
+      headersText:
+        'HTTP/1.1 200 OK\r\nconnection: keep-alive\r\ncontent-length: 85862\r\n\r\n',
+    });
+    mockCDPSession.emit('Network.loadingFinished', {
+      requestId: '1360.2',
+      timestamp: 10959.060708,
+      encodedDataLength: 85928,
+      shouldReportCorbBlocking: false,
+    });
+
+    expect(requests.length).toBe(1);
+  });
 });
