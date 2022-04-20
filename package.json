@@ -69,7 +69,7 @@
     "debug": "4.3.4",
     "devtools-protocol": "0.0.981744",
     "extract-zip": "2.0.1",
-    "https-proxy-agent": "5.0.0",
+    "https-proxy-agent": "5.0.1",
     "pkg-dir": "4.2.0",
     "progress": "2.0.3",
     "proxy-from-env": "1.1.0",
