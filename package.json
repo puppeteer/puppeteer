@@ -93,7 +93,7 @@
     "@types/sinon": "10.0.11",
     "@types/tar-fs": "2.0.1",
     "@types/ws": "8.5.3",
-    "@typescript-eslint/eslint-plugin": "5.18.0",
+    "@typescript-eslint/eslint-plugin": "5.20.0",
     "@typescript-eslint/parser": "5.18.0",
     "@web/test-runner": "0.13.27",
     "commonmark": "0.30.0",
