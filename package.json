@@ -115,7 +115,7 @@
     "pixelmatch": "5.2.1",
     "pngjs": "6.0.0",
     "prettier": "2.6.2",
-    "sinon": "13.0.1",
+    "sinon": "13.0.2",
     "source-map-support": "0.5.21",
     "standard-version": "9.3.2",
     "text-diff": "1.0.1",
