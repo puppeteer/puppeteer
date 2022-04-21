@@ -48,6 +48,10 @@ export interface BrowserConnectOptions {
    */
   slowMo?: number;
   /**
+   * Connect to a browser using WebDriver BiDi instead.
+   */
+  bidi?: boolean;
+  /**
    * Callback to decide if Puppeteer should connect to a given target or not.
    */
   targetFilter?: TargetFilterCallback;
@@ -82,6 +86,7 @@ export const connectToBrowser = async (
     ignoreHTTPSErrors = false,
     defaultViewport = { width: 800, height: 600 },
     transport,
+    bidi = false,
     slowMo = 0,
     targetFilter,
     isPageTarget,
@@ -113,6 +118,7 @@ export const connectToBrowser = async (
     'Target.getBrowserContexts'
   );
   return Browser.create(
+    bidi,
     connection,
     browserContextIds,
     ignoreHTTPSErrors,

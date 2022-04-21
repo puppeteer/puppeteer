@@ -63,11 +63,16 @@ export class Target {
    * @internal
    */
   _isPageTargetCallback: IsPageTargetCallback;
+  /**
+   * @internal
+   */
+  _bidi: boolean;
 
   /**
    * @internal
    */
   constructor(
+    bidi: boolean,
     targetInfo: Protocol.Target.TargetInfo,
     browserContext: BrowserContext,
     sessionFactory: () => Promise<CDPSession>,
@@ -76,6 +81,7 @@ export class Target {
     screenshotTaskQueue: TaskQueue,
     isPageTargetCallback: IsPageTargetCallback
   ) {
+    this._bidi = bidi;
     this._targetInfo = targetInfo;
     this._browserContext = browserContext;
     this._targetId = targetInfo.targetId;

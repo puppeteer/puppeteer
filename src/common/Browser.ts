@@ -218,6 +218,7 @@ export class Browser extends EventEmitter {
    * @internal
    */
   static async create(
+    bidi: boolean,
     connection: Connection,
     contextIds: string[],
     ignoreHTTPSErrors: boolean,
@@ -228,6 +229,7 @@ export class Browser extends EventEmitter {
     isPageTargetCallback?: IsPageTargetCallback
   ): Promise<Browser> {
     const browser = new Browser(
+      bidi,
       connection,
       contextIds,
       ignoreHTTPSErrors,
@@ -251,6 +253,8 @@ export class Browser extends EventEmitter {
   private _contexts: Map<string, BrowserContext>;
   private _screenshotTaskQueue: TaskQueue;
   private _ignoredTargets = new Set<string>();
+  private _bidi = false;
+
   /**
    * @internal
    * Used in Target.ts directly so cannot be marked private.
@@ -261,6 +265,7 @@ export class Browser extends EventEmitter {
    * @internal
    */
   constructor(
+    bidi: boolean,
     connection: Connection,
     contextIds: string[],
     ignoreHTTPSErrors: boolean,
@@ -271,6 +276,7 @@ export class Browser extends EventEmitter {
     isPageTargetCallback?: IsPageTargetCallback
   ) {
     super();
+    this._bidi = bidi;
     this._ignoreHTTPSErrors = ignoreHTTPSErrors;
     this._defaultViewport = defaultViewport;
     this._process = process;
@@ -414,6 +420,7 @@ export class Browser extends EventEmitter {
     }
 
     const target = new Target(
+      this._bidi,
       targetInfo,
       context,
       () => this._connection.createSession(targetInfo),

@@ -84,6 +84,7 @@ class ChromeLauncher implements ProductLauncher {
       timeout = 30000,
       waitForInitialPage = true,
       debuggingPort = null,
+      bidi = false,
     } = options;
 
     const chromeArguments = [];
@@ -177,6 +178,7 @@ class ChromeLauncher implements ProductLauncher {
         preferredRevision: this._preferredRevision,
       });
       browser = await Browser.create(
+        bidi,
         connection,
         [],
         ignoreHTTPSErrors,
@@ -305,6 +307,7 @@ class FirefoxLauncher implements ProductLauncher {
       extraPrefsFirefox = {},
       waitForInitialPage = true,
       debuggingPort = null,
+      bidi = false,
     } = options;
 
     const firefoxArguments = [];
@@ -394,6 +397,7 @@ class FirefoxLauncher implements ProductLauncher {
         preferredRevision: this._preferredRevision,
       });
       browser = await Browser.create(
+        bidi,
         connection,
         [],
         ignoreHTTPSErrors,

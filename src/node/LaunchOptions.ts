@@ -118,6 +118,10 @@ export interface LaunchOptions {
    */
   pipe?: boolean;
   /**
+   * Connect to a browser using WebDriver BiDi instead.
+   */
+  bidi?: boolean;
+  /**
    * Which browser to launch.
    * @defaultValue `chrome`
    */
