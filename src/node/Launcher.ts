@@ -203,6 +203,7 @@ class ChromeLauncher implements ProductLauncher {
 
   defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
     const chromeArguments = [
+      '--allow-pre-commit-input', // Allows input events to be dispatched while the compositor commits are in progress. Reduces flakiness in headful.
       '--disable-background-networking',
       '--enable-features=NetworkService,NetworkServiceInProcess',
       '--disable-background-timer-throttling',
