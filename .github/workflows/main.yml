@@ -177,6 +177,7 @@ jobs:
         env:
           FIREFOX: true
           MOZ_WEBRENDER: 0
+          DEBUG: puppeteer.*
         with:
           max_attempts: 3
           timeout_minutes: 10
