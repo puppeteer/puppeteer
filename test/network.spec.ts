@@ -254,7 +254,9 @@ describe('network', function () {
       await page.goto(server.EMPTY_PAGE);
       server.setRoute('/post', (req, res) => res.end());
       let request = null;
-      page.on('request', (r) => (request = r));
+      page.on('request', (r) => {
+        if (!utils.isFavicon(r)) request = r;
+      });
       await page.evaluate(() =>
         fetch('./post', {
           method: 'POST',
