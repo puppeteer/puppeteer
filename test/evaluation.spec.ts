@@ -383,7 +383,8 @@ describe('Evaluation specs', function () {
         expect(result).toEqual([42]);
       }
     );
-    it('should transfer 100Mb of data from page to node.js', async function () {
+    // eslint-disable-next-line mocha/no-exclusive-tests
+    it.only('should transfer 100Mb of data from page to node.js', async function () {
       const { page } = getTestState();
 
       const a = await page.evaluate<() => string>(() =>
