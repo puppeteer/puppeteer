@@ -280,7 +280,7 @@ export class Keyboard {
 /**
  * @public
  */
-export type MouseButton = 'left' | 'right' | 'middle';
+export type MouseButton = 'left' | 'right' | 'middle' | 'back' | 'forward';
 
 /**
  * @public

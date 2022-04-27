@@ -32,6 +32,7 @@ import {
   UnwrapPromiseLike,
 } from './EvalTypes.js';
 import { isNode } from '../environment.js';
+import { MouseButton } from './Input.js';
 /**
  * @public
  */
@@ -1177,7 +1178,7 @@ export interface ClickOptions {
   /**
    * @defaultValue 'left'
    */
-  button?: 'left' | 'right' | 'middle';
+  button?: MouseButton;
   /**
    * @defaultValue 1
    */
