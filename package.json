@@ -113,7 +113,7 @@
     "minimist": "1.2.6",
     "mocha": "9.2.2",
     "ncp": "2.0.0",
-    "pixelmatch": "5.2.1",
+    "pixelmatch": "5.3.0",
     "pngjs": "6.0.0",
     "prettier": "2.6.2",
     "sinon": "13.0.2",
