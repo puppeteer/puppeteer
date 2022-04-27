@@ -454,19 +454,22 @@ describe('Launcher specs', function () {
         expect(pages).toEqual(['about:blank']);
         await browser.close();
       });
-      it('should have custom URL when launching browser', async () => {
-        const { server, puppeteer, defaultBrowserOptions } = getTestState();
+      itFailsFirefox(
+        'should have custom URL when launching browser',
+        async () => {
+          const { server, puppeteer, defaultBrowserOptions } = getTestState();
 
-        const options = Object.assign({}, defaultBrowserOptions);
-        options.args = [server.EMPTY_PAGE].concat(options.args || []);
-        const browser = await puppeteer.launch(options);
-        const pages = await browser.pages();
-        expect(pages.length).toBe(1);
-        const page = pages[0];
-        if (page.url() !== server.EMPTY_PAGE) await page.waitForNavigation();
-        expect(page.url()).toBe(server.EMPTY_PAGE);
-        await browser.close();
-      });
+          const options = Object.assign({}, defaultBrowserOptions);
+          options.args = [server.EMPTY_PAGE].concat(options.args || []);
+          const browser = await puppeteer.launch(options);
+          const pages = await browser.pages();
+          expect(pages.length).toBe(1);
+          const page = pages[0];
+          if (page.url() !== server.EMPTY_PAGE) await page.waitForNavigation();
+          expect(page.url()).toBe(server.EMPTY_PAGE);
+          await browser.close();
+        }
+      );
       it('should pass the timeout parameter to browser.waitForTarget', async () => {
         const { puppeteer, defaultBrowserOptions } = getTestState();
         const options = Object.assign({}, defaultBrowserOptions, {
