@@ -12,10 +12,16 @@
             button.id = 'button-' + i;
             button.onclick = () => button.textContent = 'clicked';
             button.oncontextmenu = event => {
+              if (![2].includes(event.button)) {
+                return;
+              }
               event.preventDefault();
               button.textContent = 'context menu';
             }
             button.onauxclick = event => {
+              if (![1].includes(event.button)) {
+                return;
+              }
               event.preventDefault();
               button.textContent = 'aux click';
             }
