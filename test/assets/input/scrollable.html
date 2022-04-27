@@ -12,8 +12,22 @@
             button.id = 'button-' + i;
             button.onclick = () => button.textContent = 'clicked';
             button.oncontextmenu = event => {
+              if (![2].includes(event.button)) {
+                return;
+              }
               event.preventDefault();
               button.textContent = 'context menu';
+            }
+            button.onmouseup = event => {
+              if (![1,3,4].includes(event.button)) {
+                return;
+              }
+              event.preventDefault();
+              button.textContent = {
+                3: 'back click',
+                4: 'forward click',
+                1: 'aux click',
+              }[event.button];
             }
             document.body.appendChild(button);
             document.body.appendChild(document.createElement('br'));

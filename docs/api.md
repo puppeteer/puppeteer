@@ -1466,7 +1466,7 @@ Get the browser context that the page belongs to.
 
 - `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
 - `options` <[Object]>
-  - `button` <"left"|"right"|"middle"> Defaults to `left`.
+  - `button` <"left"|"right"|"middle"|"back"|"forward"> Defaults to `left`.
   - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. The Promise will be rejected if there is no element matching `selector`.
@@ -3508,7 +3508,7 @@ await browser
 - `x` <[number]>
 - `y` <[number]>
 - `options` <[Object]>
-  - `button` <"left"|"right"|"middle"> Defaults to `left`.
+  - `button` <"left"|"right"|"middle"|"back"|"forward"> Defaults to `left`.
   - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]>
@@ -3518,7 +3518,7 @@ Shortcut for [`mouse.move`](#mousemovex-y-options), [`mouse.down`](#mousedownopt
 #### mouse.down([options])
 
 - `options` <[Object]>
-  - `button` <"left"|"right"|"middle"> Defaults to `left`.
+  - `button` <"left"|"right"|"middle"|"back"|"forward"> Defaults to `left`.
   - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
 - returns: <[Promise]>
 
@@ -3593,7 +3593,7 @@ Dispatches a `mousemove` event.
 #### mouse.up([options])
 
 - `options` <[Object]>
-  - `button` <"left"|"right"|"middle"> Defaults to `left`.
+  - `button` <"left"|"right"|"middle"|"back"|"forward"> Defaults to `left`.
   - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
 - returns: <[Promise]>
 
@@ -3891,7 +3891,7 @@ Adds a `<link rel="stylesheet">` tag into the page with the desired URL or a `<s
 
 - `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
 - `options` <[Object]>
-  - `button` <"left"|"right"|"middle"> Defaults to `left`.
+  - `button` <"left"|"right"|"middle"|"back"|"forward"> Defaults to `left`.
   - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. The Promise will be rejected if there is no element matching `selector`.
@@ -4654,7 +4654,7 @@ This method returns boxes of the element, or `null` if the element is not visibl
 #### elementHandle.click([options])
 
 - `options` <[Object]>
-  - `button` <"left"|"right"|"middle"> Defaults to `left`.
+  - `button` <"left"|"right"|"middle"|"back"|"forward"> Defaults to `left`.
   - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
   - `offset` <[Object]> Offset in pixels relative to the top-left corner of the border box of the element.

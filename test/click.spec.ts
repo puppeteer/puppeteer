@@ -283,6 +283,33 @@ describe('Page.click', function () {
       await page.evaluate(() => document.querySelector('#button-8').textContent)
     ).toBe('context menu');
   });
+  it('should fire aux event on middle click', async () => {
+    const { page, server } = getTestState();
+
+    await page.goto(server.PREFIX + '/input/scrollable.html');
+    await page.click('#button-8', { button: 'middle' });
+    expect(
+      await page.evaluate(() => document.querySelector('#button-8').textContent)
+    ).toBe('aux click');
+  });
+  it('should fire back click', async () => {
+    const { page, server } = getTestState();
+
+    await page.goto(server.PREFIX + '/input/scrollable.html');
+    await page.click('#button-8', { button: 'back' });
+    expect(
+      await page.evaluate(() => document.querySelector('#button-8').textContent)
+    ).toBe('back click');
+  });
+  it('should fire forward click', async () => {
+    const { page, server } = getTestState();
+
+    await page.goto(server.PREFIX + '/input/scrollable.html');
+    await page.click('#button-8', { button: 'forward' });
+    expect(
+      await page.evaluate(() => document.querySelector('#button-8').textContent)
+    ).toBe('forward click');
+  });
   // @see https://github.com/puppeteer/puppeteer/issues/206
   it('should click links which cause navigation', async () => {
     const { page, server } = getTestState();
