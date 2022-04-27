@@ -82,7 +82,7 @@
   "devDependencies": {
     "@commitlint/cli": "16.2.3",
     "@commitlint/config-conventional": "16.2.1",
-    "@microsoft/api-documenter": "7.17.10",
+    "@microsoft/api-documenter": "7.17.11",
     "@microsoft/api-extractor": "7.22.2",
     "@types/debug": "4.1.7",
     "@types/mime": "2.0.3",
@@ -95,7 +95,7 @@
     "@types/tar-fs": "2.0.1",
     "@types/ws": "8.5.3",
     "@typescript-eslint/eslint-plugin": "5.21.0",
-    "@typescript-eslint/parser": "5.20.0",
+    "@typescript-eslint/parser": "5.21.0",
     "@web/test-runner": "0.13.27",
     "commonmark": "0.30.0",
     "cross-env": "7.0.3",
