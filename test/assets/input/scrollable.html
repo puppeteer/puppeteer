@@ -15,6 +15,17 @@
               event.preventDefault();
               button.textContent = 'context menu';
             }
+            button.onauxclick = event => {
+              event.preventDefault();
+              button.textContent = 'aux click';
+            }
+            button.onmouseup = event => {
+              if (![3,4].includes(event.button)) {
+                return;
+              }
+              event.preventDefault();
+              button.textContent = event.button === 3 ? 'back click' : 'forward click';
+            }
             document.body.appendChild(button);
             document.body.appendChild(document.createElement('br'));
         }
