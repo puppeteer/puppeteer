@@ -43,6 +43,9 @@ describeFailsFirefox('request proxy', () => {
   let proxiedRequestUrls: string[];
   let proxyServer: Server;
   let proxyServerUrl: string;
+  const defaultArgs = [
+    '--disable-features=NetworkTimeServiceQuerying', // We disable this in tests so that proxy-related tests don't intercept queries from this service in headful.
+  ];
 
   beforeEach(() => {
     proxiedRequestUrls = [];
@@ -100,7 +103,7 @@ describeFailsFirefox('request proxy', () => {
 
     browser = await puppeteer.launch({
       ...defaultBrowserOptions,
-      args: [`--proxy-server=${proxyServerUrl}`],
+      args: [...defaultArgs, `--proxy-server=${proxyServerUrl}`],
     });
 
     const page = await browser.newPage();
@@ -118,6 +121,7 @@ describeFailsFirefox('request proxy', () => {
     browser = await puppeteer.launch({
       ...defaultBrowserOptions,
       args: [
+        ...defaultArgs,
         `--proxy-server=${proxyServerUrl}`,
         `--proxy-bypass-list=${new URL(emptyPageUrl).host}`,
       ],
@@ -138,7 +142,7 @@ describeFailsFirefox('request proxy', () => {
 
       browser = await puppeteer.launch({
         ...defaultBrowserOptions,
-        args: [`--proxy-server=${proxyServerUrl}`],
+        args: [...defaultArgs, `--proxy-server=${proxyServerUrl}`],
       });
 
       const context = await browser.createIncognitoBrowserContext();
@@ -157,6 +161,7 @@ describeFailsFirefox('request proxy', () => {
       browser = await puppeteer.launch({
         ...defaultBrowserOptions,
         args: [
+          ...defaultArgs,
           `--proxy-server=${proxyServerUrl}`,
           `--proxy-bypass-list=${new URL(emptyPageUrl).host}`,
         ],
@@ -180,7 +185,10 @@ describeFailsFirefox('request proxy', () => {
         const { puppeteer, defaultBrowserOptions, server } = getTestState();
         const emptyPageUrl = getEmptyPageUrl(server);
 
-        browser = await puppeteer.launch(defaultBrowserOptions);
+        browser = await puppeteer.launch({
+          ...defaultBrowserOptions,
+          args: defaultArgs,
+        });
 
         const context = await browser.createIncognitoBrowserContext({
           proxyServer: proxyServerUrl,
@@ -198,7 +206,10 @@ describeFailsFirefox('request proxy', () => {
       const { puppeteer, defaultBrowserOptions, server } = getTestState();
       const emptyPageUrl = getEmptyPageUrl(server);
 
-      browser = await puppeteer.launch(defaultBrowserOptions);
+      browser = await puppeteer.launch({
+        ...defaultBrowserOptions,
+        args: defaultArgs,
+      });
 
       const context = await browser.createIncognitoBrowserContext({
         proxyServer: proxyServerUrl,

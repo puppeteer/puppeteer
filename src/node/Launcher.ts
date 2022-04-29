@@ -203,7 +203,7 @@ class ChromeLauncher implements ProductLauncher {
 
   defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
     const chromeArguments = [
-      '--allow-pre-commit-input', // Allows input events to be dispatched while the compositor commits are in progress. Reduces flakiness in headful.
+      '--allow-pre-commit-input', // TODO(crbug.com/1320996): neither headful nor headless should rely on this flag.
       '--disable-background-networking',
       '--enable-features=NetworkService,NetworkServiceInProcess',
       '--disable-background-timer-throttling',
@@ -214,7 +214,7 @@ class ChromeLauncher implements ProductLauncher {
       '--disable-default-apps',
       '--disable-dev-shm-usage',
       '--disable-extensions',
-      '--disable-features=Translate,BackForwardCache,NetworkTimeServiceQuerying',
+      '--disable-features=Translate,BackForwardCache',
       '--disable-hang-monitor',
       '--disable-ipc-flooding-protection',
       '--disable-popup-blocking',
