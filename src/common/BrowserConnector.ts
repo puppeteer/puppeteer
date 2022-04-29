@@ -20,6 +20,7 @@ import {
   TargetFilterCallback,
   IsPageTargetCallback,
 } from './Browser.js';
+import { CDPBrowser } from './Browser.js';
 import { assert } from './assert.js';
 import { debugError } from '../common/helper.js';
 import { Connection } from './Connection.js';
@@ -117,7 +118,7 @@ export const connectToBrowser = async (
   const { browserContextIds } = await connection.send(
     'Target.getBrowserContexts'
   );
-  return Browser.create(
+  return CDPBrowser.create(
     bidi,
     connection,
     browserContextIds,

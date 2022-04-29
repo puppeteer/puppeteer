@@ -18,4 +18,4 @@
  * Supported products.
  * @public
  */
-export type Product = 'chrome' | 'firefox';
+export type Product = 'chrome' | 'firefox' | 'webdriver-bidi';

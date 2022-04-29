@@ -31,7 +31,7 @@ describe('Evaluation specs', function () {
   setupTestPageAndContextHooks();
 
   describe('Page.evaluate', function () {
-    it('should work', async () => {
+    it.only('should work', async () => {
       const { page } = getTestState();
 
       const result = await page.evaluate(() => 7 * 3);

@@ -118,12 +118,12 @@ describe('Emulation', () => {
   });
 
   describe('Page.emulate', function () {
-    it('should work', async () => {
+    it.only('should work', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/mobile.html');
-      await page.emulate(iPhone);
-      expect(await page.evaluate(() => window.innerWidth)).toBe(375);
+      await page.setUserAgent(iPhone.userAgent);
+      // expect(await page.evaluate(() => window.innerWidth)).toBe(375);
       expect(await page.evaluate(() => navigator.userAgent)).toContain(
         'iPhone'
       );

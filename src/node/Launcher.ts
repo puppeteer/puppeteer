@@ -19,7 +19,7 @@ import * as fs from 'fs';
 
 import { assert } from '../common/assert.js';
 import { BrowserFetcher } from './BrowserFetcher.js';
-import { Browser } from '../common/Browser.js';
+import { Browser, CDPBrowser } from '../common/Browser.js';
 import { BrowserRunner } from './BrowserRunner.js';
 import { promisify } from 'util';
 
@@ -34,6 +34,8 @@ import {
 } from './LaunchOptions.js';
 
 import { Product } from '../common/Product.js';
+import { BiDiSession } from './BiDiSession.js';
+import { BiDiBrowser } from './BiDiBrowser.js';
 
 const tmpDir = () => process.env.PUPPETEER_TMP_DIR || os.tmpdir();
 
@@ -177,7 +179,7 @@ class ChromeLauncher implements ProductLauncher {
         slowMo,
         preferredRevision: this._preferredRevision,
       });
-      browser = await Browser.create(
+      browser = await CDPBrowser.create(
         bidi,
         connection,
         [],
@@ -268,6 +270,85 @@ class ChromeLauncher implements ProductLauncher {
 
   get product(): Product {
     return 'chrome';
+  }
+}
+
+/**
+ * @internal
+ */
+class WebDriverBidiLauncher extends ChromeLauncher {
+  async launch(options: PuppeteerNodeLaunchOptions = {}): Promise<Browser> {
+    // TODO: handle launch options
+    const session = new BiDiSession();
+    await session.ready();
+    // TODO: handle https errors
+    // TODO: handle default viewport
+    // TODO: handle runner.proc
+    // TODO: handle runner.close
+    return new BiDiBrowser(session);
+    // TODO handle start up error.
+    // TODO: handle errors
+    // TODO: handle waitForInitialPage
+  }
+
+  defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
+    const chromeArguments = [
+      '--disable-background-networking',
+      '--enable-features=NetworkService,NetworkServiceInProcess',
+      '--disable-background-timer-throttling',
+      '--disable-backgrounding-occluded-windows',
+      '--disable-breakpad',
+      '--disable-client-side-phishing-detection',
+      '--disable-component-extensions-with-background-pages',
+      '--disable-default-apps',
+      '--disable-dev-shm-usage',
+      '--disable-extensions',
+      '--disable-features=Translate,BackForwardCache',
+      '--disable-hang-monitor',
+      '--disable-ipc-flooding-protection',
+      '--disable-popup-blocking',
+      '--disable-prompt-on-repost',
+      '--disable-renderer-backgrounding',
+      '--disable-sync',
+      '--force-color-profile=srgb',
+      '--metrics-recording-only',
+      '--no-first-run',
+      '--enable-automation',
+      '--password-store=basic',
+      '--use-mock-keychain',
+      // TODO(sadym): remove '--enable-blink-features=IdleDetection'
+      // once IdleDetection is turned on by default.
+      '--enable-blink-features=IdleDetection',
+      '--export-tagged-pdf',
+    ];
+    const {
+      devtools = false,
+      headless = !devtools,
+      args = [],
+      userDataDir = null,
+    } = options;
+    if (userDataDir)
+      chromeArguments.push(`--user-data-dir=${path.resolve(userDataDir)}`);
+    if (devtools) chromeArguments.push('--auto-open-devtools-for-tabs');
+    if (headless) {
+      chromeArguments.push(
+        headless === 'chrome' ? '--headless=chrome' : '--headless',
+        '--hide-scrollbars',
+        '--mute-audio'
+      );
+    }
+    if (args.every((arg) => arg.startsWith('-')))
+      chromeArguments.push('about:blank');
+    chromeArguments.push(...args);
+    return chromeArguments;
+  }
+
+  executablePath(channel?: ChromeReleaseChannel): string {
+    return '';
+  }
+
+  get product(): Product {
+    return 'webdriver-bidi';
   }
 }
 
@@ -396,7 +477,7 @@ class FirefoxLauncher implements ProductLauncher {
         slowMo,
         preferredRevision: this._preferredRevision,
       });
-      browser = await Browser.create(
+      browser = await CDPBrowser.create(
         bidi,
         connection,
         [],
@@ -881,6 +962,12 @@ export default function Launcher(
   switch (product) {
     case 'firefox':
       return new FirefoxLauncher(
+        projectRoot,
+        preferredRevision,
+        isPuppeteerCore
+      );
+    case 'webdriver-bidi':
+      return new WebDriverBidiLauncher(
         projectRoot,
         preferredRevision,
         isPuppeteerCore

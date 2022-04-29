@@ -168,6 +168,48 @@ export const enum BrowserEmittedEvents {
   TargetDestroyed = 'targetdestroyed',
 }
 
+export interface Browser extends EventEmitter {
+  /**
+   * @internal
+   * Used in Target.ts directly so cannot be marked private.
+   */
+  _targets: Map<string, Target>;
+
+  target(): Target; // QUESTION: how do we send the commands to the browser target?
+
+  targets(): Target[];
+
+  waitForTarget(
+    predicate: (x: Target) => boolean | Promise<boolean>,
+    options?: WaitForTargetOptions
+  ): Promise<Target>;
+
+  _createPageInContext(contextId?: string): Promise<Page>;
+
+  newPage(): Promise<Page>;
+
+  _disposeContext(contextId?: string): Promise<void>;
+
+  close(): Promise<void>;
+
+  createIncognitoBrowserContext(
+    options?: BrowserContextOptions
+  ): Promise<BrowserContext>;
+
+  isConnected(): boolean;
+  disconnect(): void;
+  close(): Promise<void>;
+  userAgent(): Promise<string>;
+  version(): Promise<string>;
+
+  wsEndpoint(): string;
+  process(): ChildProcess | null;
+
+  browserContexts(): BrowserContext[];
+  defaultBrowserContext(): BrowserContext;
+  pages(): Promise<Page[]>;
+}
+
 /**
  * A Browser is created when Puppeteer connects to a Chromium instance, either through
  * {@link PuppeteerNode.launch} or {@link Puppeteer.connect}.
@@ -213,7 +255,7 @@ export const enum BrowserEmittedEvents {
  *
  * @public
  */
-export class Browser extends EventEmitter {
+export class CDPBrowser extends EventEmitter implements Browser {
   /**
    * @internal
    */
@@ -228,7 +270,7 @@ export class Browser extends EventEmitter {
     targetFilterCallback?: TargetFilterCallback,
     isPageTargetCallback?: IsPageTargetCallback
   ): Promise<Browser> {
-    const browser = new Browser(
+    const browser = new CDPBrowser(
       bidi,
       connection,
       contextIds,

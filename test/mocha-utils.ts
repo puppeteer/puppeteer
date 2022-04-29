@@ -94,6 +94,7 @@ const defaultBrowserOptions = Object.assign(
       `WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}`
     );
   } else {
+    if (product === 'webdriver-bidi') return;
     // TODO(jackfranklin): declare updateRevision in some form for the Firefox
     // launcher.
     // @ts-expect-error _updateRevision is defined on the FF launcher
