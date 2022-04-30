@@ -2039,7 +2039,7 @@ export class Page extends EventEmitter {
       return false;
     }
 
-    return Promise.race([
+    const eventRace = Promise.race([
       helper.waitForEvent(
         this._frameManager,
         FrameManagerEmittedEvents.FrameAttached,
@@ -2054,6 +2054,18 @@ export class Page extends EventEmitter {
         timeout,
         this._sessionClosePromise()
       ),
+    ]);
+
+    return Promise.race([
+      eventRace,
+      (async () => {
+        for (const frame of this.frames()) {
+          if (await predicate(frame)) {
+            return frame;
+          }
+        }
+        await eventRace;
+      })(),
     ]);
   }
 

@@ -40,6 +40,7 @@ describe('request interception', function () {
         }
         expect(request.url()).toContain('empty.html');
         expect(request.headers()['user-agent']).toBeTruthy();
+        expect(request.headers()['accept']).toBeTruthy();
         expect(request.method()).toBe('GET');
         expect(request.postData()).toBe(undefined);
         expect(request.isNavigationRequest()).toBe(true);
@@ -708,6 +709,33 @@ describe('request interception', function () {
         server.PREFIX + '/rrredirect'
       );
       expect(response.url()).toBe(server.EMPTY_PAGE);
+    });
+    it('should allow mocking multiple headers with same key', async () => {
+      const { page, server } = getTestState();
+
+      await page.setRequestInterception(true);
+      page.on('request', (request) => {
+        request.respond({
+          status: 200,
+          headers: {
+            foo: 'bar',
+            arr: ['1', '2'],
+            'set-cookie': ['first=1', 'second=2'],
+          },
+          body: 'Hello world',
+        });
+      });
+      const response = await page.goto(server.EMPTY_PAGE);
+      const cookies = await page.cookies();
+      const firstCookie = cookies.find((cookie) => cookie.name === 'first');
+      const secondCookie = cookies.find((cookie) => cookie.name === 'second');
+      expect(response.status()).toBe(200);
+      expect(response.headers().foo).toBe('bar');
+      expect(response.headers().arr).toBe('1\n2');
+      // request.respond() will not trigger Network.responseReceivedExtraInfo
+      // fail to get 'set-cookie' header from response
+      expect(firstCookie?.value).toBe('1');
+      expect(secondCookie?.value).toBe('2');
     });
     it('should allow mocking binary responses', async () => {
       const { page, server } = getTestState();

@@ -154,6 +154,30 @@ describeChromeOnly('OOPIF', function () {
     await utils.detachFrame(page, 'frame1');
     expect(page.frames()).toHaveLength(1);
   });
+
+  it('should support wait for navigation for transitions from local to OOPIF', async () => {
+    const { server } = getTestState();
+
+    await page.goto(server.EMPTY_PAGE);
+    const framePromise = page.waitForFrame((frame) => {
+      return page.frames().indexOf(frame) === 1;
+    });
+    await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+
+    const frame = await framePromise;
+    expect(frame.isOOPFrame()).toBe(false);
+    const nav = frame.waitForNavigation();
+    await utils.navigateFrame(
+      page,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
+    );
+    await nav;
+    expect(frame.isOOPFrame()).toBe(true);
+    await utils.detachFrame(page, 'frame1');
+    expect(page.frames()).toHaveLength(1);
+  });
+
   it('should keep track of a frames OOP state', async () => {
     const { server } = getTestState();
 
@@ -346,6 +370,21 @@ describeChromeOnly('OOPIF', function () {
     );
     await target.page();
     browser1.disconnect();
+  });
+
+  describe('waitForFrame', () => {
+    it('should resolve immediately if the frame already exists', async () => {
+      const { server } = getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await utils.attachFrame(
+        page,
+        'frame2',
+        server.CROSS_PROCESS_PREFIX + '/empty.html'
+      );
+
+      await page.waitForFrame((frame) => frame.url().endsWith('/empty.html'));
+    });
   });
 });
 

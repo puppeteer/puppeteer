@@ -404,25 +404,49 @@ describe('Launcher specs', function () {
         await page.close();
         await browser.close();
       });
-      it('should filter out ignored default arguments', async () => {
-        const { defaultBrowserOptions, puppeteer } = getTestState();
-        // Make sure we launch with `--enable-automation` by default.
-        const defaultArgs = puppeteer.defaultArgs();
-        const browser = await puppeteer.launch(
-          Object.assign({}, defaultBrowserOptions, {
-            // Ignore first and third default argument.
-            ignoreDefaultArgs: [defaultArgs[0], defaultArgs[2]],
-          })
-        );
-        const spawnargs = browser.process().spawnargs;
-        if (!spawnargs) {
-          throw new Error('spawnargs not present');
+      itChromeOnly(
+        'should filter out ignored default arguments in Chrome',
+        async () => {
+          const { defaultBrowserOptions, puppeteer } = getTestState();
+          // Make sure we launch with `--enable-automation` by default.
+          const defaultArgs = puppeteer.defaultArgs();
+          const browser = await puppeteer.launch(
+            Object.assign({}, defaultBrowserOptions, {
+              // Ignore first and third default argument.
+              ignoreDefaultArgs: [defaultArgs[0], defaultArgs[2]],
+            })
+          );
+          const spawnargs = browser.process().spawnargs;
+          if (!spawnargs) {
+            throw new Error('spawnargs not present');
+          }
+          expect(spawnargs.indexOf(defaultArgs[0])).toBe(-1);
+          expect(spawnargs.indexOf(defaultArgs[1])).not.toBe(-1);
+          expect(spawnargs.indexOf(defaultArgs[2])).toBe(-1);
+          await browser.close();
         }
-        expect(spawnargs.indexOf(defaultArgs[0])).toBe(-1);
-        expect(spawnargs.indexOf(defaultArgs[1])).not.toBe(-1);
-        expect(spawnargs.indexOf(defaultArgs[2])).toBe(-1);
-        await browser.close();
-      });
+      );
+      itFirefoxOnly(
+        'should filter out ignored default argument in Firefox',
+        async () => {
+          const { defaultBrowserOptions, puppeteer } = getTestState();
+
+          const defaultArgs = puppeteer.defaultArgs();
+          const browser = await puppeteer.launch(
+            Object.assign({}, defaultBrowserOptions, {
+              // Only the first argument is fixed, others are optional.
+              ignoreDefaultArgs: [defaultArgs[0]],
+            })
+          );
+          const spawnargs = browser.process().spawnargs;
+          if (!spawnargs) {
+            throw new Error('spawnargs not present');
+          }
+          expect(spawnargs.indexOf(defaultArgs[0])).toBe(-1);
+          expect(spawnargs.indexOf(defaultArgs[1])).not.toBe(-1);
+          await browser.close();
+        }
+      );
       it('should have default URL when launching browser', async function () {
         const { defaultBrowserOptions, puppeteer } = getTestState();
         const browser = await puppeteer.launch(defaultBrowserOptions);
@@ -430,19 +454,22 @@ describe('Launcher specs', function () {
         expect(pages).toEqual(['about:blank']);
         await browser.close();
       });
-      it('should have custom URL when launching browser', async () => {
-        const { server, puppeteer, defaultBrowserOptions } = getTestState();
+      itFailsFirefox(
+        'should have custom URL when launching browser',
+        async () => {
+          const { server, puppeteer, defaultBrowserOptions } = getTestState();
 
-        const options = Object.assign({}, defaultBrowserOptions);
-        options.args = [server.EMPTY_PAGE].concat(options.args || []);
-        const browser = await puppeteer.launch(options);
-        const pages = await browser.pages();
-        expect(pages.length).toBe(1);
-        const page = pages[0];
-        if (page.url() !== server.EMPTY_PAGE) await page.waitForNavigation();
-        expect(page.url()).toBe(server.EMPTY_PAGE);
-        await browser.close();
-      });
+          const options = Object.assign({}, defaultBrowserOptions);
+          options.args = [server.EMPTY_PAGE].concat(options.args || []);
+          const browser = await puppeteer.launch(options);
+          const pages = await browser.pages();
+          expect(pages.length).toBe(1);
+          const page = pages[0];
+          if (page.url() !== server.EMPTY_PAGE) await page.waitForNavigation();
+          expect(page.url()).toBe(server.EMPTY_PAGE);
+          await browser.close();
+        }
+      );
       it('should pass the timeout parameter to browser.waitForTarget', async () => {
         const { puppeteer, defaultBrowserOptions } = getTestState();
         const options = Object.assign({}, defaultBrowserOptions, {
@@ -708,9 +735,9 @@ describe('Launcher specs', function () {
       itFailsFirefox(
         'should be able to connect to the same page simultaneously',
         async () => {
-          const { puppeteer } = getTestState();
+          const { puppeteer, defaultBrowserOptions } = getTestState();
 
-          const browserOne = await puppeteer.launch();
+          const browserOne = await puppeteer.launch(defaultBrowserOptions);
           const browserTwo = await puppeteer.connect({
             browserWSEndpoint: browserOne.wsEndpoint(),
           });
@@ -726,8 +753,8 @@ describe('Launcher specs', function () {
         }
       );
       it('should be able to reconnect', async () => {
-        const { puppeteer, server } = getTestState();
-        const browserOne = await puppeteer.launch();
+        const { puppeteer, server, defaultBrowserOptions } = getTestState();
+        const browserOne = await puppeteer.launch(defaultBrowserOptions);
         const browserWSEndpoint = browserOne.wsEndpoint();
         const pageOne = await browserOne.newPage();
         await pageOne.goto(server.EMPTY_PAGE);

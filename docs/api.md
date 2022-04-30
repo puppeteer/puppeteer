@@ -10,6 +10,8 @@
 
 <!-- GEN:versions-per-release -->
 - Releases per Chromium version:
+  * Chromium 101.0.4950.0 - [Puppeteer v13.6.0](https://github.com/puppeteer/puppeteer/blob/v13.6.0/docs/api.md)
+  * Chromium 100.0.4889.0 - [Puppeteer v13.5.0](https://github.com/puppeteer/puppeteer/blob/v13.5.0/docs/api.md)
   * Chromium 99.0.4844.16 - [Puppeteer v13.2.0](https://github.com/puppeteer/puppeteer/blob/v13.2.0/docs/api.md)
   * Chromium 98.0.4758.0 - [Puppeteer v13.1.0](https://github.com/puppeteer/puppeteer/blob/v13.1.0/docs/api.md)
   * Chromium 97.0.4692.0 - [Puppeteer v12.0.0](https://github.com/puppeteer/puppeteer/blob/v12.0.0/docs/api.md)
@@ -578,7 +580,7 @@ This methods attaches Puppeteer to an existing browser instance.
 #### puppeteer.defaultArgs([options])
 
 - `options` <[Object]> Set of configurable options to set on the browser. Can have the following fields:
-  - `headless` <[boolean]> Whether to run browser in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`.
+  - `headless` <[boolean]|"chrome"> Whether to run browser in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`. "chrome" is a new experimental headless mode (use at your own risk).
   - `args` <[Array]<[string]>> Additional arguments to pass to the browser instance. The list of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
   - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/user_data_dir.md).
   - `devtools` <[boolean]> Whether to auto-open a DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
@@ -644,7 +646,7 @@ try {
 - `options` <[Object]> Set of configurable options to set on the browser. Can have the following fields:
   - `product` <[string]> Which browser to launch. At this time, this is either `chrome` or `firefox`. See also `PUPPETEER_PRODUCT`.
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
-  - `headless` <[boolean]> Whether to run browser in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`.
+  - `headless` <[boolean]|"chrome"> Whether to run browser in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`. "chrome" is a new experimental headless mode (use at your own risk).
   - `channel` <[string]> When specified, Puppeteer will search for the locally installed release channel of Google Chrome and use it to launch. Available values are `chrome`, `chrome-beta`, `chrome-canary`, `chrome-dev`. When channel is specified, `executablePath` cannot be specified.
   - `executablePath` <[string]> Path to a browser executable to run instead of the bundled Chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/puppeteer/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
   - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
@@ -720,7 +722,7 @@ The product is set by the `PUPPETEER_PRODUCT` environment variable or the `produ
 - `name` <[string]> The name that the custom query handler will be registered under.
 - `queryHandler` <[CustomQueryHandler]> The [custom query handler](#interface-customqueryhandler) to register.
 
-Registers a [custom query handler](#interface-customqueryhandler). After registration, the handler can be used everywhere where a selector is expected by prepending the selection string with `<name>/`. The name is only allowed to consist of lower and upper case Latin letters.
+Registers a [custom query handler](#interface-customqueryhandler).
 
 Example:
 
@@ -1464,7 +1466,7 @@ Get the browser context that the page belongs to.
 
 - `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
 - `options` <[Object]>
-  - `button` <"left"|"right"|"middle"> Defaults to `left`.
+  - `button` <"left"|"right"|"middle"|"back"|"forward"> Defaults to `left`.
   - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. The Promise will be rejected if there is no element matching `selector`.
@@ -2205,7 +2207,7 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
     - `height` <[number]> height of clipping area
   - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
   - `encoding` <[string]> The encoding of the image, can be either `base64` or `binary`. Defaults to `binary`.
-  - `captureBeyondViewport` <[boolean]> When true, captures screenshot [beyond the viewport](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot). Whe false, falls back to old behaviour, and cuts the screenshot by the viewport size. Defaults to `true`.
+  - `captureBeyondViewport` <[boolean]> When true, captures screenshot [beyond the viewport](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot). When false, falls back to old behaviour, and cuts the screenshot by the viewport size. Defaults to `true`.
 - returns: <[Promise]<[string]|[Buffer]>> Promise which resolves to buffer or a base64 string (depending on the value of `encoding`) with captured screenshot.
 
 > **NOTE** Screenshots take at least 1/6 second on OS X. See https://crbug.com/741689 for discussion.
@@ -2315,7 +2317,7 @@ This setting will change the default maximum time for the following methods and 
 - `enabled` <[boolean]>
 - returns: <[Promise]>
 
-Enables the Input.drag methods. This provides the capability to cpature drag events emitted on the page, which can then be used to simulate drag-and-drop.
+Enables the Input.drag methods. This provides the capability to capture drag events emitted on the page, which can then be used to simulate drag-and-drop.
 
 #### page.setExtraHTTPHeaders(headers)
 
@@ -3506,7 +3508,7 @@ await browser
 - `x` <[number]>
 - `y` <[number]>
 - `options` <[Object]>
-  - `button` <"left"|"right"|"middle"> Defaults to `left`.
+  - `button` <"left"|"right"|"middle"|"back"|"forward"> Defaults to `left`.
   - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]>
@@ -3516,7 +3518,7 @@ Shortcut for [`mouse.move`](#mousemovex-y-options), [`mouse.down`](#mousedownopt
 #### mouse.down([options])
 
 - `options` <[Object]>
-  - `button` <"left"|"right"|"middle"> Defaults to `left`.
+  - `button` <"left"|"right"|"middle"|"back"|"forward"> Defaults to `left`.
   - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
 - returns: <[Promise]>
 
@@ -3591,7 +3593,7 @@ Dispatches a `mousemove` event.
 #### mouse.up([options])
 
 - `options` <[Object]>
-  - `button` <"left"|"right"|"middle"> Defaults to `left`.
+  - `button` <"left"|"right"|"middle"|"back"|"forward"> Defaults to `left`.
   - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
 - returns: <[Promise]>
 
@@ -3889,7 +3891,7 @@ Adds a `<link rel="stylesheet">` tag into the page with the desired URL or a `<s
 
 - `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
 - `options` <[Object]>
-  - `button` <"left"|"right"|"middle"> Defaults to `left`.
+  - `button` <"left"|"right"|"middle"|"back"|"forward"> Defaults to `left`.
   - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. The Promise will be rejected if there is no element matching `selector`.
@@ -4652,7 +4654,7 @@ This method returns boxes of the element, or `null` if the element is not visibl
 #### elementHandle.click([options])
 
 - `options` <[Object]>
-  - `button` <"left"|"right"|"middle"> Defaults to `left`.
+  - `button` <"left"|"right"|"middle"|"back"|"forward"> Defaults to `left`.
   - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
   - `offset` <[Object]> Offset in pixels relative to the top-left corner of the border box of the element.
@@ -5121,7 +5123,7 @@ ResourceType will be one of the following: `document`, `stylesheet`, `image`, `m
 
 - `response` <[Object]> Response that will fulfill this request
   - `status` <[number]> Response status code, defaults to `200`.
-  - `headers` <[Object]> Optional response headers. Header values will be converted to a string.
+  - `headers` <[Object]> Optional response headers. Header values should be a string or a string array.
   - `contentType` <[string]> If set, equals to setting `Content-Type` response header
   - `body` <[string]|[Buffer]> Optional response body
 - `priority` <[number]> - Optional intercept abort priority. If provided, intercept will be resolved using coopeative handling rules. Otherwise, intercept will be resolved immediately.
@@ -5524,7 +5526,11 @@ This method is identical to `off` and maintained for compatibility with Node's E
 
 ### interface: CustomQueryHandler
 
-Contains two functions `queryOne` and `queryAll` that can be [registered](#puppeteerregistercustomqueryhandlername-queryhandler) as alternative querying strategies. The functions `queryOne` and `queryAll` are executed in the page context. `queryOne` should take an `Element` and a selector string as argument and return a single `Element` or `null` if no element is found. `queryAll` takes the same arguments but should instead return a `NodeList<Element>` or `Array<Element>` with all the elements that match the given query selector.
+After [registration](#puppeteerregistercustomqueryhandlername-queryhandler), the handler can be used everywhere where a selector is expected by prepending the selection string with `<name>/`. The name is only allowed to consist of lower and upper case Latin letters.
+
+Contains two functions `queryOne` and `queryAll` that are executed in the page context. `queryOne` should take an `Element` and a selector string as argument and return a single `Element` or `null` if no element is found. `queryAll` takes the same arguments but should instead return a `NodeList<Element>` or `Array<Element>` with all the elements that match the given query selector.
+
+**NOTE:** Because the function code needs to be serialized, it is **not possible** to access anything outside its scope or use imports. See e.g. [the pierce handler](https://github.com/puppeteer/puppeteer/blob/v13.5.2/src/common/QueryHandler.ts#L115) which has redundancies because of this limitation.
 
 ### interface: Selector
 
@@ -5533,7 +5539,7 @@ The default behavior is to regard the string as a [CSS selector] and query using
 If a selector string contains a forward slash `/` the selector is instead regarded as custom selector where everything before the slash is the [custom handler](#puppeteerregistercustomqueryhandlername-queryhandler) name and everything after is the selector: `<handler>/<selector>`.
 Puppeteer ships with two such custom handlers pre-registered:
 
-- `aria/`: Queries the accessibilty tree for computed accessibility properties.
+- `aria`: Queries the accessibilty tree for computed accessibility properties.
   The selectors consist of an accessible name to query for and optionally
   further aria attributes on the form `[<attribute>=<value>]`.
   Currently, we only support the `name` and `role` attribute.

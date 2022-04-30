@@ -213,7 +213,7 @@ class ChromeLauncher implements ProductLauncher {
       '--disable-default-apps',
       '--disable-dev-shm-usage',
       '--disable-extensions',
-      '--disable-features=Translate',
+      '--disable-features=Translate,BackForwardCache',
       '--disable-hang-monitor',
       '--disable-ipc-flooding-protection',
       '--disable-popup-blocking',
@@ -241,7 +241,11 @@ class ChromeLauncher implements ProductLauncher {
       chromeArguments.push(`--user-data-dir=${path.resolve(userDataDir)}`);
     if (devtools) chromeArguments.push('--auto-open-devtools-for-tabs');
     if (headless) {
-      chromeArguments.push('--headless', '--hide-scrollbars', '--mute-audio');
+      chromeArguments.push(
+        headless === 'chrome' ? '--headless=chrome' : '--headless',
+        '--hide-scrollbars',
+        '--mute-audio'
+      );
     }
     if (args.every((arg) => arg.startsWith('-')))
       chromeArguments.push('about:blank');

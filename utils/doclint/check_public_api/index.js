@@ -926,21 +926,21 @@ function compareDocumentations(actual, expected) {
       [
         'Method Mouse.click() options.button',
         {
-          actualName: '"left"|"right"|"middle"',
+          actualName: '"left"|"right"|"middle"|"back"|"forward"',
           expectedName: 'MouseButton',
         },
       ],
       [
         'Method Frame.click() options.button',
         {
-          actualName: '"left"|"right"|"middle"',
+          actualName: '"left"|"right"|"middle"|"back"|"forward"',
           expectedName: 'MouseButton',
         },
       ],
       [
         'Method Page.click() options.button',
         {
-          actualName: '"left"|"right"|"middle"',
+          actualName: '"left"|"right"|"middle"|"back"|"forward"',
           expectedName: 'MouseButton',
         },
       ],

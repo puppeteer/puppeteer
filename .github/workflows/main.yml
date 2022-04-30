@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3.1.1
         with:
           node-version: ${{ matrix.node }}
 
@@ -107,7 +107,7 @@ jobs:
           fetch-depth: 2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3.1.1
         with:
           # Test only the oldest maintenance LTS Node.js version.
           # https://github.com/nodejs/Release#release-schedule
@@ -148,7 +148,7 @@ jobs:
           fetch-depth: 2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3.1.1
         with:
           # Test only the oldest maintenance LTS Node.js version.
           # https://github.com/nodejs/Release#release-schedule
@@ -184,3 +184,71 @@ jobs:
           max_attempts: 3
           timeout_minutes: 10
           command: npm run funit
+
+  linux-headful-checks:
+    # https://github.com/actions/virtual-environments#available-environments
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [16]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3.1.1
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install dependencies
+        run: |
+          sudo apt-get install xvfb
+          npm install
+          ls .local-chromium
+      - name: Build
+        run: |
+          npm run build
+      - name: Run unit tests in headful mode
+        uses: nick-invision/retry@v2
+        continue-on-error: true
+        env:
+          CHROMIUM: true
+          HEADLESS: false
+        with:
+          max_attempts: 1
+          command: xvfb-run --auto-servernum npm run unit
+          timeout_minutes: 10
+
+  chrome-headless-checks:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # https://github.com/actions/virtual-environments#available-environments
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: [16]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: Set up Node.js
+        uses: actions/setup-node@v3.1.1
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install dependencies
+        run: |
+          npm install
+          ls .local-chromium
+      - name: Build
+        run: |
+          npm run build
+      - name: Run unit tests
+        uses: nick-invision/retry@v2
+        continue-on-error: true
+        env:
+          CHROMIUM: true
+        with:
+          max_attempts: 1
+          command: npm run chrome-headless-unit
+          timeout_minutes: 30

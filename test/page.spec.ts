@@ -118,23 +118,25 @@ describe('Page', function () {
     });
   });
 
-  // This test fails on Firefox on CI consistently but cannot be replicated
-  // locally. Skipping for now to unblock the Mitt release and given FF support
-  // isn't fully done yet but raising an issue to ask the FF folks to have a
-  // look at this.
-  describeFailsFirefox('removing and adding event handlers', () => {
+  describe('removing and adding event handlers', () => {
     it('should correctly fire event handlers as they are added and then removed', async () => {
       const { page, server } = getTestState();
 
       const handler = sinon.spy();
-      page.on('response', handler);
+      const onResponse = (response) => {
+        // Ignore default favicon requests.
+        if (!response.url().endsWith('favicon.ico')) {
+          handler();
+        }
+      };
+      page.on('response', onResponse);
       await page.goto(server.EMPTY_PAGE);
       expect(handler.callCount).toBe(1);
-      page.off('response', handler);
+      page.off('response', onResponse);
       await page.goto(server.EMPTY_PAGE);
       // Still one because we removed the handler.
       expect(handler.callCount).toBe(1);
-      page.on('response', handler);
+      page.on('response', onResponse);
       await page.goto(server.EMPTY_PAGE);
       // Two now because we added the handler back.
       expect(handler.callCount).toBe(2);
@@ -144,14 +146,21 @@ describe('Page', function () {
       const { page, server } = getTestState();
 
       const handler = sinon.spy();
-      page.on('request', handler);
+      const onResponse = (response) => {
+        // Ignore default favicon requests.
+        if (!response.url().endsWith('favicon.ico')) {
+          handler();
+        }
+      };
+
+      page.on('request', onResponse);
       await page.goto(server.EMPTY_PAGE);
       expect(handler.callCount).toBe(1);
-      page.off('request', handler);
+      page.off('request', onResponse);
       await page.goto(server.EMPTY_PAGE);
       // Still one because we removed the handler.
       expect(handler.callCount).toBe(1);
-      page.on('request', handler);
+      page.on('request', onResponse);
       await page.goto(server.EMPTY_PAGE);
       // Two now because we added the handler back.
       expect(handler.callCount).toBe(2);
@@ -754,21 +763,6 @@ describe('Page', function () {
         .catch((error_) => (error = error_));
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
-    it('should work with async predicate', async () => {
-      const { page, server } = getTestState();
-      await page.goto(server.EMPTY_PAGE);
-      const [response] = await Promise.all([
-        page.waitForResponse(async (response) => {
-          return response.url() === server.PREFIX + '/digits/2.png';
-        }),
-        page.evaluate(() => {
-          fetch('/digits/1.png');
-          fetch('/digits/2.png');
-          fetch('/digits/3.png');
-        }),
-      ]);
-      expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
-    });
     it('should work with no timeout', async () => {
       const { page, server } = getTestState();
 
@@ -829,6 +823,21 @@ describe('Page', function () {
         page.waitForResponse(
           (response) => response.url() === server.PREFIX + '/digits/2.png'
         ),
+        page.evaluate(() => {
+          fetch('/digits/1.png');
+          fetch('/digits/2.png');
+          fetch('/digits/3.png');
+        }),
+      ]);
+      expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
+    });
+    it('should work with async predicate', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      const [response] = await Promise.all([
+        page.waitForResponse(async (response) => {
+          return response.url() === server.PREFIX + '/digits/2.png';
+        }),
         page.evaluate(() => {
           fetch('/digits/1.png');
           fetch('/digits/2.png');
