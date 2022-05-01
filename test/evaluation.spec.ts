@@ -436,7 +436,7 @@ describe('Evaluation specs', function () {
   });
 
   describe('Frame.evaluate', function () {
-    itFailsFirefox('should have different execution contexts', async () => {
+    it('should have different execution contexts', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
@@ -447,7 +447,7 @@ describe('Evaluation specs', function () {
       expect(await page.frames()[0].evaluate(() => globalThis.FOO)).toBe('foo');
       expect(await page.frames()[1].evaluate(() => globalThis.FOO)).toBe('bar');
     });
-    itFailsFirefox('should have correct execution contexts', async () => {
+    it('should have correct execution contexts', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/frames/one-frame.html');
