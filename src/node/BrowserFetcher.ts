@@ -220,13 +220,16 @@ export class BrowserFetcher {
     }
 
     const platform = os.platform();
-    if (platform === 'darwin' && productFromOptions === 'chrome')
-      this._platform =
-        os.arch() === 'arm64' && PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM
-          ? 'mac_arm'
-          : 'mac';
-    else if (productFromOptions === 'firefox') this._platform = 'mac';
-    else if (platform === 'linux') this._platform = 'linux';
+    if (platform === 'darwin') {
+      if (productFromOptions === 'chrome') {
+        this._platform =
+          os.arch() === 'arm64' && PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM
+            ? 'mac_arm'
+            : 'mac';
+      } else if (productFromOptions === 'firefox') {
+        this._platform = 'mac';
+      }
+    } else if (platform === 'linux') this._platform = 'linux';
     else if (platform === 'win32')
       this._platform = os.arch() === 'x64' ? 'win64' : 'win32';
     else assert(this._platform, 'Unsupported platform: ' + platform);
