@@ -35,7 +35,7 @@ import createHttpsProxyAgent, {
 import { getProxyForUrl } from 'proxy-from-env';
 import { assert } from '../common/assert.js';
 
-const { PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM } = process.env
+const { PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM } = process.env;
 
 const debugFetcher = debug('puppeteer:fetcher');
 
