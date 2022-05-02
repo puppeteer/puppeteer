@@ -12,7 +12,7 @@
   "types": "lib/types.d.ts",
   "repository": "github:puppeteer/puppeteer",
   "engines": {
-    "node": ">=10.18.1"
+    "node": ">=14.1.0"
   },
   "scripts": {
     "test-browser": "wtr",
