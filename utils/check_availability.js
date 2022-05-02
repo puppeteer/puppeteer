@@ -21,8 +21,8 @@ const https = require('https');
 const BrowserFetcher =
   require('../lib/cjs/puppeteer/node/BrowserFetcher.js').BrowserFetcher;
 
-const SUPPORTER_PLATFORMS = ['linux', 'mac', 'win32', 'win64'];
-const fetchers = SUPPORTER_PLATFORMS.map(
+const SUPPORTED_PLATFORMS = ['linux', 'mac', 'win32', 'win64'];
+const fetchers = SUPPORTED_PLATFORMS.map(
   (platform) => new BrowserFetcher('', { platform })
 );
 
@@ -192,7 +192,7 @@ async function checkRangeAvailability({
   stopWhenAllAvailable,
 }) {
   const table = new Table([10, 7, 7, 7, 7]);
-  table.drawRow([''].concat(SUPPORTER_PLATFORMS));
+  table.drawRow([''].concat(SUPPORTED_PLATFORMS));
 
   const inc = fromRevision < toRevision ? 1 : -1;
   const revisionToStop = toRevision + inc; // +inc so the range is fully inclusive
