@@ -204,8 +204,11 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get install xvfb
+          # Ensure both a Chromium and a Firefox binary are available.
+          PUPPETEER_PRODUCT=firefox npm install
           npm install
-          ls .local-chromium
+          ls .local-chromium .local-firefox
+
       - name: Build
         run: |
           npm run build

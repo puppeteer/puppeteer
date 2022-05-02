@@ -83,7 +83,7 @@
     "@commitlint/cli": "16.2.3",
     "@commitlint/config-conventional": "16.2.1",
     "@microsoft/api-documenter": "7.17.11",
-    "@microsoft/api-extractor": "7.22.2",
+    "@microsoft/api-extractor": "7.23.0",
     "@types/debug": "4.1.7",
     "@types/mime": "2.0.3",
     "@types/mocha": "9.1.1",
