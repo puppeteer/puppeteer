@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import os from 'os';
 import https, { RequestOptions } from 'https';
 import ProgressBar from 'progress';
 import URL from 'url';
