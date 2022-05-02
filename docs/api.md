@@ -5208,8 +5208,8 @@ Contains a boolean stating whether the response was successful (status in the ra
 #### httpResponse.remoteAddress()
 
 - returns: <[Object]>
-  - `ip` <[string]> the IP address of the remote server
-  - `port` <[number]> the port used to connect to the remote server
+  - `ip` <[string]> the IP address of the remote server if known and `undefined` otherwise.
+  - `port` <[number]> the port used to connect to the remote server if known and `undefined` otherwise.
 
 #### httpResponse.request()
 

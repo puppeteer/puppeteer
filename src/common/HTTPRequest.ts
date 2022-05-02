@@ -150,9 +150,11 @@ export class HTTPRequest {
   private _headers: Record<string, string> = {};
   private _frame: Frame;
   private _continueRequestOverrides: ContinueRequestOverrides;
-  private _responseForRequest: Partial<ResponseForRequest>;
-  private _abortErrorReason: Protocol.Network.ErrorReason;
-  private _interceptResolutionState: InterceptResolutionState;
+  private _responseForRequest: Partial<ResponseForRequest> | null = null;
+  private _abortErrorReason: Protocol.Network.ErrorReason | null = null;
+  private _interceptResolutionState: InterceptResolutionState = {
+    action: InterceptResolutionAction.None,
+  };
   private _interceptHandlers: Array<() => void | PromiseLike<any>>;
   private _initiator: Protocol.Network.Initiator;
 
@@ -174,13 +176,12 @@ export class HTTPRequest {
     this._interceptionId = interceptionId;
     this._allowInterception = allowInterception;
     this._url = event.request.url;
-    this._resourceType = event.type.toLowerCase() as ResourceType;
+    this._resourceType = (event.type || 'other').toLowerCase() as ResourceType;
     this._method = event.request.method;
     this._postData = event.request.postData;
     this._frame = frame;
     this._redirectChain = redirectChain;
     this._continueRequestOverrides = {};
-    this._interceptResolutionState = { action: InterceptResolutionAction.None };
     this._interceptHandlers = [];
     this._initiator = event.initiator;
 
@@ -209,7 +210,7 @@ export class HTTPRequest {
    * @returns The `ResponseForRequest` that gets used if the
    * interception is allowed to respond (ie, `abort()` is not called).
    */
-  responseForRequest(): Partial<ResponseForRequest> {
+  responseForRequest(): Partial<ResponseForRequest> | null {
     assert(this._allowInterception, 'Request Interception is not enabled!');
     return this._responseForRequest;
   }
@@ -217,7 +218,7 @@ export class HTTPRequest {
   /**
    * @returns the most recent reason for aborting the request
    */
-  abortErrorReason(): Protocol.Network.ErrorReason {
+  abortErrorReason(): Protocol.Network.ErrorReason | null {
     assert(this._allowInterception, 'Request Interception is not enabled!');
     return this._abortErrorReason;
   }
@@ -275,6 +276,9 @@ export class HTTPRequest {
       case 'abort':
         return this._abort(this._abortErrorReason);
       case 'respond':
+        if (this._responseForRequest === null) {
+          throw new Error('Response is missing for the interception');
+        }
         return this._respond(this._responseForRequest);
       case 'continue':
         return this._continue(this._continueRequestOverrides);
@@ -440,8 +444,8 @@ export class HTTPRequest {
     }
     this._continueRequestOverrides = overrides;
     if (
-      priority > this._interceptResolutionState.priority ||
-      this._interceptResolutionState.priority === undefined
+      this._interceptResolutionState.priority === undefined ||
+      priority > this._interceptResolutionState.priority
     ) {
       this._interceptResolutionState = {
         action: InterceptResolutionAction.Continue,
@@ -530,8 +534,8 @@ export class HTTPRequest {
     }
     this._responseForRequest = response;
     if (
-      priority > this._interceptResolutionState.priority ||
-      this._interceptResolutionState.priority === undefined
+      this._interceptResolutionState.priority === undefined ||
+      priority > this._interceptResolutionState.priority
     ) {
       this._interceptResolutionState = {
         action: InterceptResolutionAction.Respond,
@@ -572,11 +576,12 @@ export class HTTPRequest {
         Buffer.byteLength(responseBody)
       );
 
+    const status = response.status || 200;
     await this._client
       .send('Fetch.fulfillRequest', {
         requestId: this._interceptionId,
-        responseCode: response.status || 200,
-        responsePhrase: STATUS_TEXTS[response.status || 200],
+        responseCode: status,
+        responsePhrase: STATUS_TEXTS[status],
         responseHeaders: headersArray(responseHeaders),
         body: responseBody ? responseBody.toString('base64') : undefined,
       })
@@ -614,8 +619,8 @@ export class HTTPRequest {
     }
     this._abortErrorReason = errorReason;
     if (
-      priority >= this._interceptResolutionState.priority ||
-      this._interceptResolutionState.priority === undefined
+      this._interceptResolutionState.priority === undefined ||
+      priority >= this._interceptResolutionState.priority
     ) {
       this._interceptResolutionState = {
         action: InterceptResolutionAction.Abort,
@@ -626,13 +631,13 @@ export class HTTPRequest {
   }
 
   private async _abort(
-    errorReason: Protocol.Network.ErrorReason
+    errorReason: Protocol.Network.ErrorReason | null
   ): Promise<void> {
     this._interceptionHandled = true;
     await this._client
       .send('Fetch.failRequest', {
         requestId: this._interceptionId,
-        errorReason,
+        errorReason: errorReason || 'Failed',
       })
       .catch(handleError);
   }
@@ -727,7 +732,7 @@ async function handleError(error: ProtocolError) {
 // List taken from
 // https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
 // with extra 306 and 418 codes.
-const STATUS_TEXTS = {
+const STATUS_TEXTS: { [key: string]: string | undefined } = {
   '100': 'Continue',
   '101': 'Switching Protocols',
   '102': 'Processing',
