@@ -19,7 +19,7 @@ jobs:
       matrix:
         # Include all major maintenance + active LTS + current Node.js versions.
         # https://github.com/nodejs/Release#release-schedule
-        node: [14, 16]
+        node: [14, 16, 18]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -190,7 +190,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [16]
+        node: [18]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -229,7 +229,7 @@ jobs:
       matrix:
         # https://github.com/actions/virtual-environments#available-environments
         os: [ubuntu-latest, macos-latest, windows-latest]
-        node: [16]
+        node: [18]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
