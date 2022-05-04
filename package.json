@@ -80,7 +80,7 @@
     "ws": "8.5.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "16.2.3",
+    "@commitlint/cli": "16.2.4",
     "@commitlint/config-conventional": "16.2.4",
     "@microsoft/api-documenter": "7.17.11",
     "@microsoft/api-extractor": "7.23.0",
