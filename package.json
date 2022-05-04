@@ -87,7 +87,7 @@
     "@types/debug": "4.1.7",
     "@types/mime": "2.0.3",
     "@types/mocha": "9.1.1",
-    "@types/node": "17.0.26",
+    "@types/node": "17.0.31",
     "@types/progress": "2.0.5",
     "@types/proxy-from-env": "1.0.1",
     "@types/rimraf": "3.0.2",
