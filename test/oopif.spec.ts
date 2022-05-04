@@ -31,6 +31,7 @@ describeChromeOnly('OOPIF', function () {
         args: (defaultBrowserOptions.args || []).concat([
           '--site-per-process',
           '--remote-debugging-port=21222',
+          '--host-rules=MAP * 127.0.0.1',
         ]),
       })
     );
@@ -263,6 +264,20 @@ describeChromeOnly('OOPIF', function () {
     expect(oopifs(context).length).toBe(1);
     expect(page.frames().length).toBe(2);
   });
+
+  it('should wait for inner OOPIFs', async () => {
+    const { server } = getTestState();
+    await page.goto(`http://mainframe:${server.PORT}/main-frame.html`);
+    const frame2 = await page.waitForFrame((frame) =>
+      frame.url().endsWith('inner-frame2.html')
+    );
+    expect(oopifs(context).length).toBe(2);
+    expect(page.frames().filter((frame) => frame.isOOPFrame()).length).toBe(2);
+    expect(
+      await frame2.evaluate(() => document.querySelectorAll('button').length)
+    ).toStrictEqual(1);
+  });
+
   it('should load oopif iframes with subresources and request interception', async () => {
     const { server } = getTestState();
 
