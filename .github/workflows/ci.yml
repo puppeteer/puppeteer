@@ -181,3 +181,35 @@ jobs:
         run: |
           # Note: this modifies package.json to test puppeteer-core, so we test this last.
           npm run test:install
+
+  docker-tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [16]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: Set up Node.js
+        uses: actions/setup-node@v3.1.1
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install dependencies
+        run: |
+          npm install
+          ls .local-chromium
+      - name: Build
+        run: |
+          npm run build
+          docker/pack.sh
+      - name: Build docker image
+        working-directory: ./docker
+        run: |
+          docker build -t puppeteer-test-image .
+      - name: Run smoke test
+        working-directory: ./docker
+        run: |
+          docker run -i --init --cap-add=SYS_ADMIN --rm puppeteer-test-image node -e "`cat test/smoke-test.js`"
