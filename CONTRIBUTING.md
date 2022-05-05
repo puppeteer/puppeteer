@@ -253,6 +253,13 @@ PUPPETEER_PRODUCT=firefox node install.js
 PUPPETEER_PRODUCT=firefox npm run unit
 ```
 
+- To run experimental Chromium MacOS ARM tests, firstly ensure you have correct Chromium version installed locally (you only need to do this once, not on every test run) and then you can run the tests:
+
+```bash
+PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM=1 node install.js
+PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM=1 npm run unit
+```
+
 - To run tests with custom browser executable:
 
 ```bash
