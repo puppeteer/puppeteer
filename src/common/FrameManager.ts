@@ -136,6 +136,13 @@ export class FrameManager extends EventEmitter {
       const result = await Promise.all([
         client.send('Page.enable'),
         client.send('Page.getFrameTree'),
+        client !== this._client
+          ? client.send('Target.setAutoAttach', {
+              autoAttach: true,
+              waitForDebuggerOnStart: false,
+              flatten: true,
+            })
+          : Promise.resolve(),
       ]);
 
       const { frameTree } = result[1];
