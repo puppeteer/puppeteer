@@ -496,7 +496,7 @@ If Puppeteer doesn't find them in the environment during the installation step, 
 
 Puppeteer can be used for testing Chrome Extensions.
 
-> **NOTE** Extensions in Chrome / Chromium currently only work in non-headless mode.
+> **NOTE** Extensions in Chrome / Chromium currently only work in non-headless mode and experimental Chrome headless mode.
 
 The following is code for getting a handle to the [background page](https://developer.chrome.com/extensions/background_pages) of an extension whose source is located in `./my-extension`:
 
@@ -506,14 +506,13 @@ const puppeteer = require('puppeteer');
 (async () => {
   const pathToExtension = require('path').join(__dirname, 'my-extension');
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: 'chrome',
     args: [
       `--disable-extensions-except=${pathToExtension}`,
       `--load-extension=${pathToExtension}`,
     ],
   });
-  const targets = await browser.targets();
-  const backgroundPageTarget = targets.find(
+  const backgroundPageTarget = await browser.waitForTarget(
     (target) => target.type() === 'background_page'
   );
   const backgroundPage = await backgroundPageTarget.page();
@@ -521,6 +520,8 @@ const puppeteer = require('puppeteer');
   await browser.close();
 })();
 ```
+
+> **NOTE** Chrome Manifest V3 extensions have a background ServiceWorker of type 'service_worker', instead of a page of type 'background_page'.
 
 > **NOTE** It is not yet possible to test extension popups or content scripts.
 
