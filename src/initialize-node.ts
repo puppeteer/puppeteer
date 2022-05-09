@@ -17,24 +17,11 @@
 import { PuppeteerNode } from './node/Puppeteer.js';
 import { PUPPETEER_REVISIONS } from './revisions.js';
 import { sync } from 'pkg-dir';
-import { dirname } from 'path';
 import { Product } from './common/Product.js';
-
-function resolvePuppeteerRootDirectory(): string | undefined {
-  try {
-    // In some environments, like esbuild, this will throw an error.
-    // We suppress the error since the bundled binary is not expected
-    // to be used or installed in this case and, therefore, the
-    // root directory does not have to be known.
-    return sync(dirname(require.resolve('./initialize-node')));
-  } catch (error) {
-    // Fallback to __dirname.
-    return sync(__dirname);
-  }
-}
+import { rootDirname } from './constants.js';
 
 export const initializePuppeteerNode = (packageName: string): PuppeteerNode => {
-  const puppeteerRootDirectory = resolvePuppeteerRootDirectory();
+  const puppeteerRootDirectory = sync(rootDirname);
   let preferredRevision = PUPPETEER_REVISIONS.chromium;
   const isPuppeteerCore = packageName === 'puppeteer-core';
   // puppeteer-core ignores environment variables

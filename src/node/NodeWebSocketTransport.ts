@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ConnectionTransport } from '../common/ConnectionTransport.js';
 import NodeWebSocket from 'ws';
+import { ConnectionTransport } from '../common/ConnectionTransport.js';
+import { packageVersion } from '../generated/version.js';
 
 export class NodeWebSocketTransport implements ConnectionTransport {
   static create(url: string): Promise<NodeWebSocketTransport> {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const pkg = require('../../../../package.json');
     return new Promise((resolve, reject) => {
       const ws = new NodeWebSocket(url, [], {
         followRedirects: true,
         perMessageDeflate: false,
         maxPayload: 256 * 1024 * 1024, // 256Mb
         headers: {
-          'User-Agent': `Puppeteer ${pkg.version}`,
+          'User-Agent': `Puppeteer ${packageVersion}`,
         },
       });
 
