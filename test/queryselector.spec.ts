@@ -105,6 +105,26 @@ describe('querySelector', function () {
       );
       expect(text.join(' ')).toBe('Hello World');
     });
+    it('should find first child element', async () => {
+      const { page } = getTestState();
+      const parentElement = await page.$('html > div');
+      const childElement = await parentElement.$('pierce/div');
+      const text = await childElement.evaluate(
+        (element: Element) => element.textContent
+      );
+      expect(text).toBe('Hello');
+    });
+    it('should find all child elements', async () => {
+      const { page } = getTestState();
+      const parentElement = await page.$('html > div');
+      const childElements = await parentElement.$$('pierce/div');
+      const text = await Promise.all(
+        childElements.map((div) =>
+          div.evaluate((element: Element) => element.textContent)
+        )
+      );
+      expect(text.join(' ')).toBe('Hello World');
+    });
   });
 
   // The tests for $$eval are repeated later in this file in the test group 'QueryAll'.
