@@ -280,6 +280,34 @@ describe('ElementHandle specs', function () {
     });
   });
 
+  describe('Element.waitForXPath', () => {
+    it('should wait correctly with waitForXPath on an element', async () => {
+      const { page } = getTestState();
+      // Set the page content after the waitFor has been started.
+      await page.setContent(
+        `<div id=el1>
+          el1
+          <div id=el2>
+            el2
+          </div>
+        </div>
+        <div id=el3>
+          el3
+        </div>`
+      );
+
+      const el2 = await page.waitForSelector('#el1');
+
+      expect(
+        await (await el2.waitForXPath('//div')).evaluate((el) => el.id)
+      ).toStrictEqual('el2');
+
+      expect(
+        await (await el2.waitForXPath('.//div')).evaluate((el) => el.id)
+      ).toStrictEqual('el2');
+    });
+  });
+
   describe('ElementHandle.hover', function () {
     it('should work', async () => {
       const { page, server } = getTestState();
