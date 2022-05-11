@@ -125,7 +125,7 @@ const pierceHandler = makeQueryHandler({
         if (currentNode instanceof ShadowRoot) {
           continue;
         }
-        if (!found && currentNode.matches(selector)) {
+        if (currentNode !== root && !found && currentNode.matches(selector)) {
           found = currentNode;
         }
       } while (!found && iter.nextNode());
@@ -149,7 +149,7 @@ const pierceHandler = makeQueryHandler({
         if (currentNode instanceof ShadowRoot) {
           continue;
         }
-        if (currentNode.matches(selector)) {
+        if (currentNode !== root && currentNode.matches(selector)) {
           result.push(currentNode);
         }
       } while (iter.nextNode());

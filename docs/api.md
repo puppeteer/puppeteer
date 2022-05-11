@@ -342,6 +342,7 @@
   * [elementHandle.type(text[, options])](#elementhandletypetext-options)
   * [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
   * [elementHandle.waitForSelector(selector[, options])](#elementhandlewaitforselectorselector-options)
+  * [elementHandle.waitForXPath(xpath[, options])](#elementhandlewaitforxpathxpath-options)
 - [class: HTTPRequest](#class-httprequest)
   * [httpRequest.abort([errorCode], [priority])](#httprequestaborterrorcode-priority)
   * [httpRequest.abortErrorReason()](#httprequestaborterrorreason)
@@ -496,7 +497,7 @@ If Puppeteer doesn't find them in the environment during the installation step, 
 
 Puppeteer can be used for testing Chrome Extensions.
 
-> **NOTE** Extensions in Chrome / Chromium currently only work in non-headless mode.
+> **NOTE** Extensions in Chrome / Chromium currently only work in non-headless mode and experimental Chrome headless mode.
 
 The following is code for getting a handle to the [background page](https://developer.chrome.com/extensions/background_pages) of an extension whose source is located in `./my-extension`:
 
@@ -506,14 +507,13 @@ const puppeteer = require('puppeteer');
 (async () => {
   const pathToExtension = require('path').join(__dirname, 'my-extension');
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: 'chrome',
     args: [
       `--disable-extensions-except=${pathToExtension}`,
       `--load-extension=${pathToExtension}`,
     ],
   });
-  const targets = await browser.targets();
-  const backgroundPageTarget = targets.find(
+  const backgroundPageTarget = await browser.waitForTarget(
     (target) => target.type() === 'background_page'
   );
   const backgroundPage = await backgroundPageTarget.page();
@@ -521,6 +521,8 @@ const puppeteer = require('puppeteer');
   await browser.close();
 })();
 ```
+
+> **NOTE** Chrome Manifest V3 extensions have a background ServiceWorker of type 'service_worker', instead of a page of type 'background_page'.
 
 > **NOTE** It is not yet possible to test extension popups or content scripts.
 
@@ -4900,6 +4902,44 @@ This method expects `elementHandle` to point to an [input element](https://devel
 Wait for an element matching `selector` to appear within the `elementHandle`’s subtree. If the `selector` already matches an element at the moment of calling the method, the promise returned by the method resolves immediately. If the selector doesn’t appear after `timeout` milliseconds of waiting, the promise rejects.
 
 This method does not work across navigations or if the element is detached from DOM.
+
+#### elementHandle.waitForXPath(xpath[, options])
+
+- `xpath` <[string]> A [xpath] of an element to wait for
+- `options` <[Object]> Optional waiting parameters
+  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The default value can be changed by using the [page.setDefaultTimeout(timeout)](#pagesetdefaulttimeouttimeout) method.
+- returns: <[Promise]<?[ElementHandle]>> Promise which resolves when element specified by xpath string is added to DOM. Resolves to `null` if waiting for `hidden: true` and xpath is not found in DOM.
+
+Wait for the `xpath` to appear within the element. If at the moment of calling
+the method the `xpath` already exists, the method will return
+immediately. If the xpath doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
+
+If `xpath` starts with `//` instead of `.//`, the dot will be appended automatically.
+
+This method works across navigations:
+
+```js
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  let currentURL;
+  page
+    .waitForXPath('//img')
+    .then(() => console.log('First URL with image: ' + currentURL));
+  for (currentURL of [
+    'https://example.com',
+    'https://google.com',
+    'https://bbc.com',
+  ]) {
+    await page.goto(currentURL);
+  }
+  await browser.close();
+})();
+```
 
 ### class: HTTPRequest
 
