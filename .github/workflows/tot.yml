@@ -48,7 +48,7 @@ jobs:
           CHROMIUM: true
           HEADLESS: true
         with:
-          max_attempts: 1
+          max_attempts: 3
           command: xvfb-run --auto-servernum npm run unit
           timeout_minutes: 10
 
@@ -59,7 +59,7 @@ jobs:
           CHROMIUM: true
           HEADLESS: false
         with:
-          max_attempts: 1
+          max_attempts: 3
           command: xvfb-run --auto-servernum npm run unit
           timeout_minutes: 10
 
@@ -69,6 +69,6 @@ jobs:
         env:
           CHROMIUM: true
         with:
-          max_attempts: 1
+          max_attempts: 3
           command: xvfb-run --auto-servernum npm run chrome-headless-unit
           timeout_minutes: 10
