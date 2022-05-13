@@ -54,8 +54,7 @@ jobs:
 
       - name: Run unit tests in headful
         uses: nick-invision/retry@v2
-        if: always()
-        needs: [job1, job2, job3]
+        continue-on-error: true
         env:
           CHROMIUM: true
           HEADLESS: false
@@ -66,8 +65,7 @@ jobs:
 
       - name: Run unit tests in chrome headless
         uses: nick-invision/retry@v2
-        if: always()
-        needs: [job1, job2, job3]
+        continue-on-error: true
         env:
           CHROMIUM: true
         with:
