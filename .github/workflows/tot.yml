@@ -4,6 +4,7 @@ name: run-tot-checks
 permissions: read-all
 
 on:
+  workflow_dispatch:
   schedule:
     # * is a special character in YAML so you have to quote this string
     # Supposed to be every day at 8 am (UTC).
