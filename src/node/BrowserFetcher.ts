@@ -277,9 +277,14 @@ export class BrowserFetcher {
       revision
     );
     return new Promise((resolve) => {
-      const request = httpRequest(url, 'HEAD', (response) => {
-        resolve(response.statusCode === 200);
-      });
+      const request = httpRequest(
+        url,
+        'HEAD',
+        (response) => {
+          resolve(response.statusCode === 200);
+        },
+        false
+      );
       request.on('error', (error) => {
         console.error(error);
         resolve(false);
@@ -575,7 +580,8 @@ function installDMG(dmgPath: string, folderPath: string): Promise<void> {
 function httpRequest(
   url: string,
   method: string,
-  response: (x: http.IncomingMessage) => void
+  response: (x: http.IncomingMessage) => void,
+  keepAlive = true
 ): http.ClientRequest {
   const urlParsed = URL.parse(url);
 
@@ -589,9 +595,11 @@ function httpRequest(
   let options: Options = {
     ...urlParsed,
     method,
-    headers: {
-      Connection: 'keep-alive',
-    },
+    headers: keepAlive
+      ? {
+          Connection: 'keep-alive',
+        }
+      : undefined,
   };
 
   const proxyURL = getProxyForUrl(url);

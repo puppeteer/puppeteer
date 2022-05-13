@@ -20,8 +20,8 @@ module.exports = {
     tag: true,
   },
   scripts: {
-    prerelease:
-      'node utils/remove_version_suffix.js && node utils/generate_version_file.js',
-    postbump: 'IS_RELEASE=true npm run doc && git add --update',
+    prerelease: 'node utils/remove_version_suffix.js',
+    postbump:
+      'node utils/generate_version_file.js && IS_RELEASE=true npm run doc && git add --update',
   },
 };
