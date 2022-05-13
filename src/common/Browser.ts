@@ -54,6 +54,13 @@ export type TargetFilterCallback = (
   target: Protocol.Target.TargetInfo
 ) => boolean;
 
+/**
+ * @internal
+ */
+export type IsPageTargetCallback = (
+  target: Protocol.Target.TargetInfo
+) => boolean;
+
 const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map<
   Permission,
   Protocol.Browser.PermissionType
@@ -217,7 +224,8 @@ export class Browser extends EventEmitter {
     defaultViewport?: Viewport | null,
     process?: ChildProcess,
     closeCallback?: BrowserCloseCallback,
-    targetFilterCallback?: TargetFilterCallback
+    targetFilterCallback?: TargetFilterCallback,
+    isPageTargetCallback?: IsPageTargetCallback
   ): Promise<Browser> {
     const browser = new Browser(
       connection,
@@ -226,7 +234,8 @@ export class Browser extends EventEmitter {
       defaultViewport,
       process,
       closeCallback,
-      targetFilterCallback
+      targetFilterCallback,
+      isPageTargetCallback
     );
     await connection.send('Target.setDiscoverTargets', { discover: true });
     return browser;
@@ -237,6 +246,7 @@ export class Browser extends EventEmitter {
   private _connection: Connection;
   private _closeCallback: BrowserCloseCallback;
   private _targetFilterCallback: TargetFilterCallback;
+  private _isPageTargetCallback: IsPageTargetCallback;
   private _defaultContext: BrowserContext;
   private _contexts: Map<string, BrowserContext>;
   private _screenshotTaskQueue: TaskQueue;
@@ -257,7 +267,8 @@ export class Browser extends EventEmitter {
     defaultViewport?: Viewport | null,
     process?: ChildProcess,
     closeCallback?: BrowserCloseCallback,
-    targetFilterCallback?: TargetFilterCallback
+    targetFilterCallback?: TargetFilterCallback,
+    isPageTargetCallback?: IsPageTargetCallback
   ) {
     super();
     this._ignoreHTTPSErrors = ignoreHTTPSErrors;
@@ -267,6 +278,7 @@ export class Browser extends EventEmitter {
     this._connection = connection;
     this._closeCallback = closeCallback || function (): void {};
     this._targetFilterCallback = targetFilterCallback || ((): boolean => true);
+    this._setIsPageTargetCallback(isPageTargetCallback);
 
     this._defaultContext = new BrowserContext(this._connection, this);
     this._contexts = new Map();
@@ -297,6 +309,21 @@ export class Browser extends EventEmitter {
    */
   process(): ChildProcess | null {
     return this._process ?? null;
+  }
+
+  /**
+   * @internal
+   */
+  _setIsPageTargetCallback(isPageTargetCallback?: IsPageTargetCallback): void {
+    this._isPageTargetCallback =
+      isPageTargetCallback ||
+      ((target: Protocol.Target.TargetInfo): boolean => {
+        return (
+          target.type === 'page' ||
+          target.type === 'background_page' ||
+          target.type === 'webview'
+        );
+      });
   }
 
   /**
@@ -392,7 +419,8 @@ export class Browser extends EventEmitter {
       () => this._connection.createSession(targetInfo),
       this._ignoreHTTPSErrors,
       this._defaultViewport ?? null,
-      this._screenshotTaskQueue
+      this._screenshotTaskQueue,
+      this._isPageTargetCallback
     );
     assert(
       !this._targets.has(event.targetInfo.targetId),
