@@ -207,7 +207,7 @@ class ChromeLauncher implements ProductLauncher {
     const chromeArguments = [
       '--allow-pre-commit-input', // TODO(crbug.com/1320996): neither headful nor headless should rely on this flag.
       '--disable-background-networking',
-      '--enable-features=NetworkService,NetworkServiceInProcess',
+      '--enable-features=NetworkServiceInProcess2',
       '--disable-background-timer-throttling',
       '--disable-backgrounding-occluded-windows',
       '--disable-breakpad',
