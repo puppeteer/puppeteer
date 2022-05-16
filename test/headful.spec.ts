@@ -143,7 +143,6 @@ describeChromeOnly('headful tests', function () {
       const devtoolsPageTarget = await browser.waitForTarget(
         (target) => target.type() === 'other'
       );
-      console.log(devtoolsPageTarget);
       const page = await devtoolsPageTarget.page();
       expect(await page.evaluate(() => 2 * 3)).toBe(6);
       await browser.close();
