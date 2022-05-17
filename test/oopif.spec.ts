@@ -16,7 +16,11 @@
 
 import utils from './utils.js';
 import expect from 'expect';
-import { getTestState, describeChromeOnly } from './mocha-utils'; // eslint-disable-line import/extensions
+import {
+  getTestState,
+  describeChromeOnly,
+  itFailsFirefox,
+} from './mocha-utils'; // eslint-disable-line import/extensions
 
 describeChromeOnly('OOPIF', function () {
   /* We use a special browser for this test as we need the --site-per-process flag */
@@ -385,6 +389,18 @@ describeChromeOnly('OOPIF', function () {
     );
     await target.page();
     browser1.disconnect();
+  });
+  itFailsFirefox('should support lazy OOP frames', async () => {
+    const { server } = getTestState();
+
+    await page.goto(server.PREFIX + '/lazy-oopif-frame.html');
+    await page.setViewport({ width: 1000, height: 1000 });
+
+    expect(page.frames().map((frame) => frame._hasStartedLoading)).toEqual([
+      true,
+      true,
+      false,
+    ]);
   });
 
   describe('waitForFrame', () => {
