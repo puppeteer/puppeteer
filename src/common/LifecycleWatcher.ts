@@ -255,7 +255,12 @@ export class LifecycleWatcher {
         if (!frame._lifecycleEvents.has(event)) return false;
       }
       for (const child of frame.childFrames()) {
-        if (!checkLifecycle(child, expectedLifecycle)) return false;
+        if (
+          child._hasStartedLoading &&
+          !checkLifecycle(child, expectedLifecycle)
+        ) {
+          return false;
+        }
       }
       return true;
     }
