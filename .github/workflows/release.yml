@@ -5,7 +5,7 @@ on: workflow_dispatch
 jobs:
   release:
     runs-on: ubuntu-latest
-    permission:
+    permissions:
       contents: read|write
       pull-requests: write
     steps:
