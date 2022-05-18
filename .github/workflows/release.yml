@@ -1,0 +1,28 @@
+name: release
+
+on: workflow_dispatch
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permission:
+      contents: read|write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Release
+        id: release
+        run: |
+          npm run release
+          echo ::set-output name=VERSION::$(jq -r .version ./package.json)
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          branch: releases/v${{ steps.release.outputs.VERSION }}
+          delete-branch: true
+          commit-message: 'chore(release): mark v${{ steps.release.outputs.VERSION }}'
+          title: 'chore(release): mark v${{ steps.release.outputs.VERSION }}'
+          body: ''
+          labels: release
+          reviewers: jrandolf, OrKoN, ergunsh
