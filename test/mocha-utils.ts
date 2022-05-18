@@ -137,6 +137,7 @@ interface PuppeteerTestState {
   isFirefox: boolean;
   isChrome: boolean;
   isHeadless: boolean;
+  headless: string;
   puppeteerPath: string;
 }
 const state: Partial<PuppeteerTestState> = {};
@@ -270,6 +271,7 @@ export const mochaHooks = {
       state.isFirefox = isFirefox;
       state.isChrome = isChrome;
       state.isHeadless = isHeadless;
+      state.headless = headless;
       state.puppeteerPath = path.resolve(path.join(__dirname, '..'));
     },
     coverageHooks.beforeAll,
