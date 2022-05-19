@@ -14,6 +14,7 @@ jobs:
       - name: Release
         id: release
         run: |
+          npm install
           npm run release
           echo ::set-output name=VERSION::$(jq -r .version ./package.json)
       - name: Create pull request
