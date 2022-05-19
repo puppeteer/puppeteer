@@ -31,7 +31,7 @@ module.exports.ensureReleasedAPILinks = function (sources, version) {
     const text = source.text();
     const newText = text.replace(apiLinkRegex, lastReleasedAPI);
     if (source.setText(newText))
-      messages.push(Message.warning(`GEN: updated ${source.projectPath()}`));
+      messages.push(Message.info(`GEN: updated ${source.projectPath()}`));
   }
   return messages;
 };
@@ -87,7 +87,7 @@ module.exports.runCommands = function (sources, version) {
     else if (applyCommand(command, newText)) changedSources.add(command.source);
   }
   for (const source of changedSources)
-    messages.push(Message.warning(`GEN: updated ${source.projectPath()}`));
+    messages.push(Message.info(`GEN: updated ${source.projectPath()}`));
   return messages;
 };
 
