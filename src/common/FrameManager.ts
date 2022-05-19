@@ -194,6 +194,7 @@ export class FrameManager extends EventEmitter {
     } = options;
 
     const watcher = new LifecycleWatcher(this, frame, waitUntil, timeout);
+    let ensureNewDocumentNavigation = false;
     let error = await Promise.race([
       navigate(this._client, url, referer, frame._id),
       watcher.timeoutOrTerminationPromise(),
@@ -201,8 +202,9 @@ export class FrameManager extends EventEmitter {
     if (!error) {
       error = await Promise.race([
         watcher.timeoutOrTerminationPromise(),
-        watcher.newDocumentNavigationPromise(),
-        watcher.sameDocumentNavigationPromise(),
+        ensureNewDocumentNavigation
+          ? watcher.newDocumentNavigationPromise()
+          : watcher.sameDocumentNavigationPromise(),
       ]);
     }
     watcher.dispose();
@@ -221,6 +223,7 @@ export class FrameManager extends EventEmitter {
           referrer,
           frameId,
         });
+        ensureNewDocumentNavigation = !!response.loaderId;
         return response.errorText
           ? new Error(`${response.errorText} at ${url}`)
           : null;
