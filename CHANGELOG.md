@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [14.1.1](https://github.com/puppeteer/puppeteer/compare/v14.1.0...v14.1.1) (2022-05-19)
+
+
+### Bug Fixes
+
+* kill browser process when 'taskkill' fails on Windows ([#8352](https://github.com/puppeteer/puppeteer/issues/8352)) ([dccfadb](https://github.com/puppeteer/puppeteer/commit/dccfadb90e8947cae3f33d7a209b6f5752f97b46))
+* only check loading iframe in lifecycling ([#8348](https://github.com/puppeteer/puppeteer/issues/8348)) ([7438030](https://github.com/puppeteer/puppeteer/commit/74380303ac6cc6e2d84948a10920d56e665ccebe))
+* recompile before funit and unit commands ([#8363](https://github.com/puppeteer/puppeteer/issues/8363)) ([8735b78](https://github.com/puppeteer/puppeteer/commit/8735b784ba7838c1002b521a7f9f23bb27263d03)), closes [#8362](https://github.com/puppeteer/puppeteer/issues/8362)
+
 ## [14.1.0](https://github.com/puppeteer/puppeteer/compare/v14.0.0...v14.1.0) (2022-05-13)
 
 
