@@ -45,6 +45,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Configure git
+        run: |
+          git config --global user.name 'Puppeteer Bot'
+          git config --global user.email '<puppeteer@chromium.org>'
       - name: Append `-post` to version
         id: post-version
         run: |
@@ -57,8 +61,6 @@ jobs:
           npm run doc
       - name: Commit and push
         run: |
-          git config user.name 'Github'
-          git config user.email '<noreply@github.com>'
           git add -A
           git commit -m "chore: bump version to ${{ steps.post-version.outputs.VERSION }}"
           git push
