@@ -5,8 +5,8 @@ on: workflow_dispatch
 jobs:
   release:
     runs-on: ubuntu-latest
-    permission:
-      contents: read|write
+    permissions:
+      contents: write
       pull-requests: write
     steps:
       - name: Checkout
