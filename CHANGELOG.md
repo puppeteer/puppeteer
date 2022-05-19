@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 14.1.1 (2022-05-19)
+
+
+### Bug Fixes
+
+* configure git for release workflow ([#8372](https://github.com/puppeteer/puppeteer/issues/8372)) ([2ef3a38](https://github.com/puppeteer/puppeteer/commit/2ef3a386de61c1b77a19cfb7c710521dc265d2de))
+
 ## [14.1.0](https://github.com/puppeteer/puppeteer/compare/v14.0.0...v14.1.0) (2022-05-13)
 
 
