@@ -6,7 +6,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
-      contents: read|write
+      contents: write
       pull-requests: write
     steps:
       - name: Checkout

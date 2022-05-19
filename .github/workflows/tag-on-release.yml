@@ -1,0 +1,30 @@
+name: tag-on-release
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - 'releases/**'
+
+jobs:
+  tag:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Get version
+        id: get-version
+        run: |
+          echo ::set-output name=VERSION::$(jq -r .version ./package.json)
+      - name: Generate latest changelog
+        run: node utils/get_latest_changelog.js > ${{ steps.get-version.outputs.VERSION }}-CHANGELOG.txt
+      - name: Tag and release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ steps.get-version.outputs.VERSION }}
+          tag_name: v${{ steps.get-version.outputs.VERSION }}
+          body_path: ${{ steps.get-version.outputs.VERSION }}-CHANGELOG.txt
