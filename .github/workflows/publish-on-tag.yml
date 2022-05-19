@@ -1,8 +1,5 @@
 name: publish-on-tag
 
-# Declare default permissions as read only.
-permissions: read-all
-
 on:
   push:
     tags:
@@ -11,6 +8,8 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -37,3 +36,29 @@ jobs:
           npm config set registry 'https://wombat-dressing-room.appspot.com/'
           npm config set '//wombat-dressing-room.appspot.com/:_authToken' '${NPM_TOKEN}'
           npm publish
+
+  post-publish:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Append `-post` to version
+        id: post-version
+        run: |
+          npm version --no-git-tag-version --no-commit-hooks "$(jq -r .version ./package.json)-post"
+          echo ::set-output name=VERSION::$(jq -r .version ./package.json)
+      - name: Build
+        run: |
+          npm install
+          npm run build
+          npm run doc
+      - name: Commit and push
+        run: |
+          git config user.name 'Github'
+          git config user.email '<noreply@github.com>'
+          git add -A
+          git commit -m "chore: bump version to ${{ steps.post-version.outputs.VERSION }}"
+          git push

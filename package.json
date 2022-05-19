@@ -28,9 +28,9 @@
   "scripts": {
     "test-browser": "wtr",
     "test-browser-watch": "wtr --watch",
-    "unit": "npm run tsc-cjs && mocha --config mocha-config/puppeteer-unit-tests.js",
+    "unit": "npm run tsc-cjs && npm run tsc-compat-cjs && mocha --config mocha-config/puppeteer-unit-tests.js",
     "chrome-headless-unit": "cross-env HEADLESS=chrome npm run unit",
-    "unit-debug": "npm run tsc-cjs && mocha --inspect-brk --config mocha-config/puppeteer-unit-tests.js",
+    "unit-debug": "npm run tsc-cjs && npm run tsc-compat-cjs && mocha --inspect-brk --config mocha-config/puppeteer-unit-tests.js",
     "unit-with-coverage": "cross-env COVERAGE=1 npm run unit",
     "assert-unit-coverage": "cross-env COVERAGE=1 mocha --config mocha-config/coverage-tests.js",
     "funit": "cross-env PUPPETEER_PRODUCT=firefox npm run unit",
