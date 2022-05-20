@@ -39,6 +39,14 @@ class Message {
   static warning(text) {
     return new Message('warning', text);
   }
+
+  /**
+   * @param {string} text
+   * @returns {!Message}
+   */
+  static info(text) {
+    return new Message('info', text);
+  }
 }
 
 module.exports = Message;
