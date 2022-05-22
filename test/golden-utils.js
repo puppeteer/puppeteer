@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Copyright 2017 Google Inc. All rights reserved.
  *
@@ -18,55 +19,62 @@ const fs = require('fs');
 const Diff = require('text-diff');
 const mime = require('mime');
 const PNG = require('pngjs').PNG;
+const jpeg = require('jpeg-js');
 const pixelmatch = require('pixelmatch');
 
-module.exports = {
-  addMatchers: function(jasmine, goldenPath, outputPath) {
-    jasmine.addMatchers({
-      toBeGolden: function(util, customEqualityTesters) {
-        return { compare: compare.bind(null, goldenPath, outputPath) };
-      }
-    });
-  },
-};
+module.exports = { compare };
 
 const GoldenComparators = {
   'image/png': compareImages,
-  'text/plain': compareText
+  'image/jpeg': compareImages,
+  'text/plain': compareText,
 };
 
 /**
  * @param {?Object} actualBuffer
  * @param {!Buffer} expectedBuffer
- * @return {?{diff: (!Object:undefined), errorMessage: (string|undefined)}}
+ * @param {!string} mimeType
+ * @returns {?{diff: (!Object:undefined), errorMessage: (string|undefined)}}
  */
-function compareImages(actualBuffer, expectedBuffer) {
+function compareImages(actualBuffer, expectedBuffer, mimeType) {
   if (!actualBuffer || !(actualBuffer instanceof Buffer))
     return { errorMessage: 'Actual result should be Buffer.' };
 
-  const actual = PNG.sync.read(actualBuffer);
-  const expected = PNG.sync.read(expectedBuffer);
+  const actual =
+    mimeType === 'image/png'
+      ? PNG.sync.read(actualBuffer)
+      : jpeg.decode(actualBuffer);
+  const expected =
+    mimeType === 'image/png'
+      ? PNG.sync.read(expectedBuffer)
+      : jpeg.decode(expectedBuffer);
   if (expected.width !== actual.width || expected.height !== actual.height) {
     return {
-      errorMessage: `Sizes differ: expected image ${expected.width}px X ${expected.height}px, but got ${actual.width}px X ${actual.height}px. `
+      errorMessage: `Sizes differ: expected image ${expected.width}px X ${expected.height}px, but got ${actual.width}px X ${actual.height}px. `,
     };
   }
-  const diff = new PNG({width: expected.width, height: expected.height});
-  const count = pixelmatch(expected.data, actual.data, diff.data, expected.width, expected.height, {threshold: 0.1});
+  const diff = new PNG({ width: expected.width, height: expected.height });
+  const count = pixelmatch(
+    expected.data,
+    actual.data,
+    diff.data,
+    expected.width,
+    expected.height,
+    { threshold: 0.1 }
+  );
   return count > 0 ? { diff: PNG.sync.write(diff) } : null;
 }
 
 /**
  * @param {?Object} actual
  * @param {!Buffer} expectedBuffer
- * @return {?{diff: (!Object:undefined), errorMessage: (string|undefined)}}
+ * @returns {?{diff: (!Object:undefined), errorMessage: (string|undefined)}}
  */
 function compareText(actual, expectedBuffer) {
   if (typeof actual !== 'string')
     return { errorMessage: 'Actual result should be string' };
   const expected = expectedBuffer.toString('utf-8');
-  if (expected === actual)
-    return null;
+  if (expected === actual) return null;
   const diff = new Diff();
   const result = diff.main(expected, actual);
   diff.cleanupSemantic(result);
@@ -75,14 +83,14 @@ function compareText(actual, expectedBuffer) {
   html = `<link rel="stylesheet" href="file://${diffStylePath}">` + html;
   return {
     diff: html,
-    diffExtension: '.html'
+    diffExtension: '.html',
   };
 }
 
 /**
  * @param {?Object} actual
  * @param {string} goldenName
- * @return {!{pass: boolean, message: (undefined|string)}}
+ * @returns {!{pass: boolean, message: (undefined|string)}}
  */
 function compare(goldenPath, outputPath, actual, goldenName) {
   goldenPath = path.normalize(goldenPath);
@@ -90,27 +98,29 @@ function compare(goldenPath, outputPath, actual, goldenName) {
   const expectedPath = path.join(goldenPath, goldenName);
   const actualPath = path.join(outputPath, goldenName);
 
-  const messageSuffix = 'Output is saved in "' + path.basename(outputPath + '" directory');
+  const messageSuffix =
+    'Output is saved in "' + path.basename(outputPath + '" directory');
 
   if (!fs.existsSync(expectedPath)) {
     ensureOutputDir();
     fs.writeFileSync(actualPath, actual);
     return {
       pass: false,
-      message: goldenName + ' is missing in golden results. ' + messageSuffix
+      message: goldenName + ' is missing in golden results. ' + messageSuffix,
     };
   }
   const expected = fs.readFileSync(expectedPath);
-  const comparator = GoldenComparators[mime.lookup(goldenName)];
+  const mimeType = mime.getType(goldenName);
+  const comparator = GoldenComparators[mimeType];
   if (!comparator) {
     return {
       pass: false,
-      message: 'Failed to find comparator with type ' + mime.lookup(goldenName) + ': '  + goldenName
+      message:
+        'Failed to find comparator with type ' + mimeType + ': ' + goldenName,
     };
   }
-  const result = comparator(actual, expected);
-  if (!result)
-    return { pass: true };
+  const result = comparator(actual, expected, mimeType);
+  if (!result) return { pass: true };
   ensureOutputDir();
   if (goldenPath === outputPath) {
     fs.writeFileSync(addSuffix(actualPath, '-actual'), actual);
@@ -125,16 +135,14 @@ function compare(goldenPath, outputPath, actual, goldenName) {
   }
 
   let message = goldenName + ' mismatch!';
-  if (result.errorMessage)
-    message += ' ' + result.errorMessage;
+  if (result.errorMessage) message += ' ' + result.errorMessage;
   return {
     pass: false,
-    message: message + ' ' + messageSuffix
+    message: message + ' ' + messageSuffix,
   };
 
   function ensureOutputDir() {
-    if (!fs.existsSync(outputPath))
-      fs.mkdirSync(outputPath);
+    if (!fs.existsSync(outputPath)) fs.mkdirSync(outputPath);
   }
 }
 
@@ -142,7 +150,7 @@ function compare(goldenPath, outputPath, actual, goldenName) {
  * @param {string} filePath
  * @param {string} suffix
  * @param {string=} customExtension
- * @return {string}
+ * @returns {string}
  */
 function addSuffix(filePath, suffix, customExtension) {
   const dirname = path.dirname(filePath);

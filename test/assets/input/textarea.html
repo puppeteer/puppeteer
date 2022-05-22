@@ -7,8 +7,8 @@
     <textarea></textarea>
     <script src='mouse-helper.js'></script>
     <script>
-      window.result = '';
-      let textarea = document.querySelector('textarea');
+      globalThis.result = '';
+      globalThis.textarea = document.querySelector('textarea');
       textarea.addEventListener('input', () => result = textarea.value, false);
     </script>
   </body>

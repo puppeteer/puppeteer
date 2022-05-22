@@ -13,7 +13,7 @@
         log('Keydown:', event.key, event.code, event.which, modifiers(event));
       });
       textarea.addEventListener('keypress', event => {
-        log('Keypress:', event.key, event.code, event.which, event.keyCode, event.charCode, modifiers(event));
+        log('Keypress:', event.key, event.code, event.which, event.charCode, modifiers(event));
       });
       textarea.addEventListener('keyup', event => {
         log('Keyup:', event.key, event.code, event.which, modifiers(event));
@@ -24,8 +24,6 @@
           m.push('Alt')
         if (event.ctrlKey)
           m.push('Control');
-        if (event.metaKey)
-          m.push('Meta')
         if (event.shiftKey)
           m.push('Shift')
         return '[' + m.join(' ') + ']';

@@ -20,9 +20,10 @@ For issues, feature requests, or setup troubles with Puppeteer, file an issue ri
 
 **Tell us about your environment:**
 
-* Puppeteer version:
-* Platform / OS version:
-* URLs (if applicable):
+- Puppeteer version:
+- Platform / OS version:
+- URLs (if applicable):
+- Node.js version:
 
 **What steps will reproduce the problem?**
 
@@ -34,6 +35,4 @@ _Please include code that reproduces the issue._
 
 **What is the expected result?**
 
-
 **What happens instead?**
-

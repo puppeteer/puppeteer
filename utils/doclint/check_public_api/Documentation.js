@@ -16,13 +16,13 @@
 
 class Documentation {
   /**
-   * @param {!Array<!Documentation.Class>} clasesArray
+   * @param {!Array<!Documentation.Class>} classesArray
    */
   constructor(classesArray) {
     this.classesArray = classesArray;
+    /** @type {!Map<string, !Documentation.Class>} */
     this.classes = new Map();
-    for (const cls of classesArray)
-      this.classes.set(cls.name, cls);
+    for (const cls of classesArray) this.classes.set(cls.name, cls);
   }
 }
 
@@ -30,80 +30,128 @@ Documentation.Class = class {
   /**
    * @param {string} name
    * @param {!Array<!Documentation.Member>} membersArray
+   * @param {?string=} extendsName
+   * @param {string=} comment
    */
-  constructor(name, membersArray) {
+  constructor(name, membersArray, extendsName = null, comment = '') {
     this.name = name;
     this.membersArray = membersArray;
+    /** @type {!Map<string, !Documentation.Member>} */
     this.members = new Map();
+    /** @type {!Map<string, !Documentation.Member>} */
     this.properties = new Map();
+    /** @type {!Array<!Documentation.Member>} */
+    this.propertiesArray = [];
+    /** @type {!Map<string, !Documentation.Member>} */
     this.methods = new Map();
+    /** @type {!Array<!Documentation.Member>} */
+    this.methodsArray = [];
+    /** @type {!Map<string, !Documentation.Member>} */
     this.events = new Map();
+    /** @type {!Array<!Documentation.Member>} */
+    this.eventsArray = [];
+    this.comment = comment;
+    this.extends = extendsName;
     for (const member of membersArray) {
       this.members.set(member.name, member);
-      if (member.type === 'method')
+      if (member.kind === 'method') {
         this.methods.set(member.name, member);
-      else if (member.type === 'property')
+        this.methodsArray.push(member);
+      } else if (member.kind === 'property') {
         this.properties.set(member.name, member);
-      else if (member.type === 'event')
+        this.propertiesArray.push(member);
+      } else if (member.kind === 'event') {
         this.events.set(member.name, member);
+        this.eventsArray.push(member);
+      }
     }
   }
 };
 
 Documentation.Member = class {
   /**
-   * @param {string} type
+   * @param {string} kind
    * @param {string} name
-   * @param {!Array<!Documentation.Argument>} argsArray
-   * @param {boolean} hasReturn
-   * @param {boolean} async
+   * @param {?Documentation.Type} type
+   * @param {!Array<!Documentation.Member>} argsArray
    */
-  constructor(type, name, argsArray, hasReturn, async) {
-    this.type = type;
+  constructor(
+    kind,
+    name,
+    type,
+    argsArray,
+    comment = '',
+    returnComment = '',
+    required = true
+  ) {
+    this.kind = kind;
     this.name = name;
+    this.type = type;
+    this.comment = comment;
+    this.returnComment = returnComment;
     this.argsArray = argsArray;
+    this.required = required;
+    /** @type {!Map<string, !Documentation.Member>} */
     this.args = new Map();
-    this.hasReturn = hasReturn;
-    this.async = async;
-    for (const arg of argsArray)
-      this.args.set(arg.name, arg);
+    for (const arg of argsArray) this.args.set(arg.name, arg);
   }
 
   /**
    * @param {string} name
-   * @param {!Array<!Documentation.Argument>} argsArray
-   * @param {boolean} hasReturn
-   * @return {!Documentation.Member}
+   * @param {!Array<!Documentation.Member>} argsArray
+   * @param {?Documentation.Type} returnType
+   * @returns {!Documentation.Member}
    */
-  static createMethod(name, argsArray, hasReturn, async) {
-    return new Documentation.Member('method', name, argsArray, hasReturn, async);
+  static createMethod(name, argsArray, returnType, returnComment, comment) {
+    return new Documentation.Member(
+      'method',
+      name,
+      returnType,
+      argsArray,
+      comment,
+      returnComment
+    );
   }
 
   /**
    * @param {string} name
-   * @return {!Documentation.Member}
+   * @param {!Documentation.Type} type
+   * @param {string=} comment
+   * @param {boolean=} required
+   * @returns {!Documentation.Member}
    */
-  static createProperty(name) {
-    return new Documentation.Member('property', name, [], false, false);
+  static createProperty(name, type, comment, required) {
+    return new Documentation.Member(
+      'property',
+      name,
+      type,
+      [],
+      comment,
+      undefined,
+      required
+    );
   }
 
   /**
    * @param {string} name
-   * @return {!Documentation.Member}
+   * @param {?Documentation.Type=} type
+   * @param {string=} comment
+   * @returns {!Documentation.Member}
    */
-  static createEvent(name) {
-    return new Documentation.Member('event', name, [], false, false);
+  static createEvent(name, type = null, comment) {
+    return new Documentation.Member('event', name, type, [], comment);
   }
 };
 
-Documentation.Argument = class {
+Documentation.Type = class {
   /**
    * @param {string} name
+   * @param {!Array<!Documentation.Member>=} properties
    */
-  constructor(name) {
+  constructor(name, properties = []) {
     this.name = name;
+    this.properties = properties;
   }
 };
 
 module.exports = Documentation;
-
