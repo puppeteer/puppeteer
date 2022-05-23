@@ -97,14 +97,16 @@ export class NetworkEventManager {
     if (!this._responseReceivedExtraInfoMap.has(networkRequestId)) {
       this._responseReceivedExtraInfoMap.set(networkRequestId, []);
     }
-    return this._responseReceivedExtraInfoMap.get(networkRequestId);
+    return this._responseReceivedExtraInfoMap.get(
+      networkRequestId
+    ) as Protocol.Network.ResponseReceivedExtraInfoEvent[];
   }
 
   private queuedRedirectInfo(fetchRequestId: FetchRequestId): RedirectInfoList {
     if (!this._queuedRedirectInfoMap.has(fetchRequestId)) {
       this._queuedRedirectInfoMap.set(fetchRequestId, []);
     }
-    return this._queuedRedirectInfoMap.get(fetchRequestId);
+    return this._queuedRedirectInfoMap.get(fetchRequestId) as RedirectInfoList;
   }
 
   queueRedirectInfo(
