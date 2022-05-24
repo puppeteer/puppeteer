@@ -17,12 +17,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 import expect from 'expect';
-import { getTestState, itChromeOnly } from './mocha-utils'; // eslint-disable-line import/extensions
+import { getTestState, itHeadlessOnly } from './mocha-utils'; // eslint-disable-line import/extensions
 
 import path from 'path';
 
 describe('Fixtures', function () {
-  itChromeOnly('dumpio option should work with pipe option ', async () => {
+  itHeadlessOnly('dumpio option should work with pipe option ', async () => {
     const { defaultBrowserOptions, puppeteerPath } = getTestState();
 
     let dumpioData = '';
