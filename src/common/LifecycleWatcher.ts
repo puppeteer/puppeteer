@@ -54,6 +54,8 @@ const puppeteerToProtocolLifecycle = new Map<
   ['networkidle2', 'networkAlmostIdle'],
 ]);
 
+const noop = (): void => {};
+
 /**
  * @internal
  */
@@ -62,23 +64,33 @@ export class LifecycleWatcher {
   _frameManager: FrameManager;
   _frame: Frame;
   _timeout: number;
-  _navigationRequest?: HTTPRequest;
+  _navigationRequest: HTTPRequest | null = null;
   _eventListeners: PuppeteerEventListener[];
   _initialLoaderId: string;
 
-  _sameDocumentNavigationPromise: Promise<Error | null>;
-  _sameDocumentNavigationCompleteCallback: (x?: Error) => void;
+  _sameDocumentNavigationCompleteCallback: (x?: Error) => void = noop;
+  _sameDocumentNavigationPromise = new Promise<Error | undefined>((fulfill) => {
+    this._sameDocumentNavigationCompleteCallback = fulfill;
+  });
 
-  _lifecyclePromise: Promise<void>;
-  _lifecycleCallback: () => void;
+  _lifecycleCallback: () => void = noop;
+  _lifecyclePromise: Promise<void> = new Promise((fulfill) => {
+    this._lifecycleCallback = fulfill;
+  });
 
-  _newDocumentNavigationPromise: Promise<Error | null>;
-  _newDocumentNavigationCompleteCallback: (x?: Error) => void;
+  _newDocumentNavigationCompleteCallback: (x?: Error) => void = noop;
+  _newDocumentNavigationPromise: Promise<Error | undefined> = new Promise(
+    (fulfill) => {
+      this._newDocumentNavigationCompleteCallback = fulfill;
+    }
+  );
 
-  _terminationPromise: Promise<Error | null>;
-  _terminationCallback: (x?: Error) => void;
+  _terminationCallback: (x?: Error) => void = noop;
+  _terminationPromise: Promise<Error | undefined> = new Promise((fulfill) => {
+    this._terminationCallback = fulfill;
+  });
 
-  _timeoutPromise: Promise<TimeoutError | null>;
+  _timeoutPromise: Promise<TimeoutError | undefined>;
 
   _maximumTimer?: NodeJS.Timeout;
   _hasSameDocumentNavigation?: boolean;
@@ -95,14 +107,13 @@ export class LifecycleWatcher {
     this._expectedLifecycle = waitUntil.map((value) => {
       const protocolEvent = puppeteerToProtocolLifecycle.get(value);
       assert(protocolEvent, 'Unknown value for options.waitUntil: ' + value);
-      return protocolEvent;
+      return protocolEvent as ProtocolLifeCycleEvent;
     });
 
     this._frameManager = frameManager;
     this._frame = frame;
     this._initialLoaderId = frame._loaderId;
     this._timeout = timeout;
-    this._navigationRequest = null;
     this._eventListeners = [
       helper.addEventListener(
         frameManager._client,
@@ -139,24 +150,7 @@ export class LifecycleWatcher {
       ),
     ];
 
-    this._sameDocumentNavigationPromise = new Promise<Error | null>(
-      (fulfill) => {
-        this._sameDocumentNavigationCompleteCallback = fulfill;
-      }
-    );
-
-    this._lifecyclePromise = new Promise((fulfill) => {
-      this._lifecycleCallback = fulfill;
-    });
-
-    this._newDocumentNavigationPromise = new Promise((fulfill) => {
-      this._newDocumentNavigationCompleteCallback = fulfill;
-    });
-
     this._timeoutPromise = this._createTimeoutPromise();
-    this._terminationPromise = new Promise((fulfill) => {
-      this._terminationCallback = fulfill;
-    });
     this._checkLifecycleComplete();
   }
 
@@ -186,11 +180,11 @@ export class LifecycleWatcher {
     this._terminationCallback.call(null, error);
   }
 
-  sameDocumentNavigationPromise(): Promise<Error | null> {
+  sameDocumentNavigationPromise(): Promise<Error | undefined> {
     return this._sameDocumentNavigationPromise;
   }
 
-  newDocumentNavigationPromise(): Promise<Error | null> {
+  newDocumentNavigationPromise(): Promise<Error | undefined> {
     return this._newDocumentNavigationPromise;
   }
 
@@ -198,11 +192,11 @@ export class LifecycleWatcher {
     return this._lifecyclePromise;
   }
 
-  timeoutOrTerminationPromise(): Promise<Error | TimeoutError | null> {
+  timeoutOrTerminationPromise(): Promise<Error | TimeoutError | undefined> {
     return Promise.race([this._timeoutPromise, this._terminationPromise]);
   }
 
-  _createTimeoutPromise(): Promise<TimeoutError | null> {
+  _createTimeoutPromise(): Promise<TimeoutError | undefined> {
     if (!this._timeout) return new Promise(() => {});
     const errorMessage =
       'Navigation timeout of ' + this._timeout + ' ms exceeded';
@@ -268,6 +262,6 @@ export class LifecycleWatcher {
 
   dispose(): void {
     helper.removeEventListeners(this._eventListeners);
-    clearTimeout(this._maximumTimer);
+    this._maximumTimer !== undefined && clearTimeout(this._maximumTimer);
   }
 }
