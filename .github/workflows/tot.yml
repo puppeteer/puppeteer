@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3.1.1
+        uses: actions/setup-node@v3.2.0
         with:
           node-version: ${{ matrix.node }}
 
