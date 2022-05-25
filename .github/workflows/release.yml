@@ -20,8 +20,6 @@ jobs:
         id: release
         with:
           release-type: node
-          package-name: puppeteer
-          command: github-release
 
   publish:
     needs: release-pr
