@@ -134,19 +134,16 @@ describe('Frame specs', function () {
         expect(detachedFrames[0].isDetached()).toBe(true);
       }
     );
-    itFailsFirefox(
-      'should send "framenavigated" when navigating on anchor URLs',
-      async () => {
-        const { page, server } = getTestState();
+    it('should send "framenavigated" when navigating on anchor URLs', async () => {
+      const { page, server } = getTestState();
 
-        await page.goto(server.EMPTY_PAGE);
-        await Promise.all([
-          page.goto(server.EMPTY_PAGE + '#foo'),
-          utils.waitEvent(page, 'framenavigated'),
-        ]);
-        expect(page.url()).toBe(server.EMPTY_PAGE + '#foo');
-      }
-    );
+      await page.goto(server.EMPTY_PAGE);
+      await Promise.all([
+        page.goto(server.EMPTY_PAGE + '#foo'),
+        utils.waitEvent(page, 'framenavigated'),
+      ]);
+      expect(page.url()).toBe(server.EMPTY_PAGE + '#foo');
+    });
     it('should persist mainFrame on cross-process navigation', async () => {
       const { page, server } = getTestState();
 
@@ -164,7 +161,7 @@ describe('Frame specs', function () {
       await page.goto(server.EMPTY_PAGE);
       expect(hasEvents).toBe(false);
     });
-    itFailsFirefox('should detach child frames on navigation', async () => {
+    it('should detach child frames on navigation', async () => {
       const { page, server } = getTestState();
 
       let attachedFrames = [];
@@ -186,7 +183,7 @@ describe('Frame specs', function () {
       expect(detachedFrames.length).toBe(4);
       expect(navigatedFrames.length).toBe(1);
     });
-    itFailsFirefox('should support framesets', async () => {
+    it('should support framesets', async () => {
       const { page, server } = getTestState();
 
       let attachedFrames = [];
