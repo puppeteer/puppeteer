@@ -46,7 +46,7 @@ declare const predicateQueryHandler: (
   selector: string
 ) => Promise<Element | Element[] | NodeListOf<Element>>;
 declare const checkWaitForOptions: (
-  node: Node,
+  node: Node | null,
   waitForVisible: boolean,
   waitForHidden: boolean
 ) => Element | null | boolean;
@@ -77,10 +77,11 @@ export class DOMWorld {
   private _client: CDPSession;
   private _frame: Frame;
   private _timeoutSettings: TimeoutSettings;
-  private _documentPromise?: Promise<ElementHandle> = null;
-  private _contextPromise?: Promise<ExecutionContext> = null;
+  private _documentPromise: Promise<ElementHandle> | null = null;
+  private _contextPromise: Promise<ExecutionContext> | null = null;
 
-  private _contextResolveCallback?: (x?: ExecutionContext) => void = null;
+  private _contextResolveCallback: ((x: ExecutionContext) => void) | null =
+    null;
 
   private _detached = false;
   /**
@@ -119,14 +120,14 @@ export class DOMWorld {
     return this._frame;
   }
 
-  async _setContext(context?: ExecutionContext): Promise<void> {
+  async _setContext(context: ExecutionContext | null): Promise<void> {
     if (context) {
       assert(
         this._contextResolveCallback,
         'Execution Context has already been set.'
       );
       this._ctxBindings.clear();
-      this._contextResolveCallback.call(null, context);
+      this._contextResolveCallback?.call(null, context);
       this._contextResolveCallback = null;
       for (const waitTask of this._waitTasks) waitTask.rerun();
     } else {
@@ -155,6 +156,8 @@ export class DOMWorld {
       throw new Error(
         `Execution context is not available in detached frame "${this._frame.url()}" (are you trying to evaluate?)`
       );
+    if (this._contextPromise === null)
+      throw new Error(`Execution content promise is missing`);
     return this._contextPromise;
   }
 
@@ -189,7 +192,11 @@ export class DOMWorld {
     if (this._documentPromise) return this._documentPromise;
     this._documentPromise = this.executionContext().then(async (context) => {
       const document = await context.evaluateHandle('document');
-      return document.asElement();
+      const element = document.asElement();
+      if (element === null) {
+        throw new Error('Document is null');
+      }
+      return element;
     });
     return this._documentPromise;
   }
@@ -306,9 +313,17 @@ export class DOMWorld {
     if (url !== null) {
       try {
         const context = await this.executionContext();
-        return (
-          await context.evaluateHandle(addScriptUrl, url, id, type)
-        ).asElement();
+        const handle = await context.evaluateHandle(
+          addScriptUrl,
+          url,
+          id,
+          type
+        );
+        const elementHandle = handle.asElement();
+        if (elementHandle === null) {
+          throw new Error('Script element is not found');
+        }
+        return elementHandle;
       } catch (error) {
         throw new Error(`Loading script from ${url} failed`);
       }
@@ -324,16 +339,32 @@ export class DOMWorld {
       let contents = await fs.promises.readFile(path, 'utf8');
       contents += '//# sourceURL=' + path.replace(/\n/g, '');
       const context = await this.executionContext();
-      return (
-        await context.evaluateHandle(addScriptContent, contents, id, type)
-      ).asElement();
+      const handle = await context.evaluateHandle(
+        addScriptContent,
+        contents,
+        id,
+        type
+      );
+      const elementHandle = handle.asElement();
+      if (elementHandle === null) {
+        throw new Error('Script element is not found');
+      }
+      return elementHandle;
     }
 
     if (content !== null) {
       const context = await this.executionContext();
-      return (
-        await context.evaluateHandle(addScriptContent, content, id, type)
-      ).asElement();
+      const handle = await context.evaluateHandle(
+        addScriptContent,
+        content,
+        id,
+        type
+      );
+      const elementHandle = handle.asElement();
+      if (elementHandle === null) {
+        throw new Error('Script element is not found');
+      }
+      return elementHandle;
     }
 
     throw new Error(
@@ -394,7 +425,12 @@ export class DOMWorld {
     if (url !== null) {
       try {
         const context = await this.executionContext();
-        return (await context.evaluateHandle(addStyleUrl, url)).asElement();
+        const handle = await context.evaluateHandle(addStyleUrl, url);
+        const elementHandle = handle.asElement();
+        if (elementHandle === null) {
+          throw new Error('Style element is not found');
+        }
+        return elementHandle;
       } catch (error) {
         throw new Error(`Loading style from ${url} failed`);
       }
@@ -410,16 +446,22 @@ export class DOMWorld {
       let contents = await fs.promises.readFile(path, 'utf8');
       contents += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
       const context = await this.executionContext();
-      return (
-        await context.evaluateHandle(addStyleContent, contents)
-      ).asElement();
+      const handle = await context.evaluateHandle(addStyleContent, contents);
+      const elementHandle = handle.asElement();
+      if (elementHandle === null) {
+        throw new Error('Style element is not found');
+      }
+      return elementHandle;
     }
 
     if (content !== null) {
       const context = await this.executionContext();
-      return (
-        await context.evaluateHandle(addStyleContent, content)
-      ).asElement();
+      const handle = await context.evaluateHandle(addStyleContent, content);
+      const elementHandle = handle.asElement();
+      if (elementHandle === null) {
+        throw new Error('Style element is not found');
+      }
+      return elementHandle;
     }
 
     throw new Error(
@@ -459,36 +501,37 @@ export class DOMWorld {
   ): Promise<void> {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);
-    await handle.click(options);
-    await handle.dispose();
+    await handle!.click(options);
+    await handle!.dispose();
   }
 
   async focus(selector: string): Promise<void> {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);
-    await handle.focus();
-    await handle.dispose();
+    await handle!.focus();
+    await handle!.dispose();
   }
 
   async hover(selector: string): Promise<void> {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);
-    await handle.hover();
-    await handle.dispose();
+    await handle!.hover();
+    await handle!.dispose();
   }
 
   async select(selector: string, ...values: string[]): Promise<string[]> {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);
-    const result = await handle.select(...values);
-    await handle.dispose();
+    const result = await handle!.select(...values);
+    await handle!.dispose();
     return result;
   }
 
   async tap(selector: string): Promise<void> {
     const handle = await this.$(selector);
-    await handle.tap();
-    await handle.dispose();
+    assert(handle, 'No node found for selector: ' + selector);
+    await handle!.tap();
+    await handle!.dispose();
   }
 
   async type(
@@ -498,8 +541,8 @@ export class DOMWorld {
   ): Promise<void> {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);
-    await handle.type(text, options);
-    await handle.dispose();
+    await handle!.type(text, options);
+    await handle!.dispose();
   }
 
   async waitForSelector(
@@ -508,6 +551,9 @@ export class DOMWorld {
   ): Promise<ElementHandle | null> {
     const { updatedSelector, queryHandler } =
       getQueryHandlerAndSelector(selector);
+    if (!queryHandler.waitFor) {
+      throw new Error('Query handler does not support waitFor');
+    }
     return queryHandler.waitFor(this, updatedSelector, options);
   }
 
@@ -550,10 +596,10 @@ export class DOMWorld {
         // We could have tried to evaluate in a context which was already
         // destroyed. This happens, for example, if the page is navigated while
         // we are trying to add the binding
-        const ctxDestroyed = error.message.includes(
+        const ctxDestroyed = (error as Error).message.includes(
           'Execution context was destroyed'
         );
-        const ctxNotFound = error.message.includes(
+        const ctxNotFound = (error as Error).message.includes(
           'Cannot find context with specified id'
         );
         if (ctxDestroyed || ctxNotFound) {
@@ -596,7 +642,11 @@ export class DOMWorld {
       return;
     if (context._contextId !== event.executionContextId) return;
     try {
-      const result = await this._boundFunctions.get(name)(...args);
+      const fn = this._boundFunctions.get(name);
+      if (!fn) {
+        throw new Error(`Bound function $name is not found`);
+      }
+      const result = await fn(...args);
       await context.evaluate(deliverResult, name, seq, result);
     } catch (error) {
       // The WaitTask may already have been resolved by timing out, or the
@@ -604,11 +654,15 @@ export class DOMWorld {
       // In both caes, the promises above are rejected with a protocol error.
       // We can safely ignores these, as the WaitTask is re-installed in
       // the next execution context if needed.
-      if (error.message.includes('Protocol error')) return;
+      if ((error as Error).message.includes('Protocol error')) return;
       debugError(error);
     }
     function deliverResult(name: string, seq: number, result: unknown): void {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore Code is evaluated in a different context.
       globalThis[name].callbacks.get(seq).resolve(result);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore Code is evaluated in a different context.
       globalThis[name].callbacks.delete(seq);
     }
   }
@@ -749,6 +803,8 @@ export interface WaitTaskOptions {
   root?: ElementHandle;
 }
 
+const noop = (): void => {};
+
 /**
  * @internal
  */
@@ -759,14 +815,14 @@ export class WaitTask {
   _predicateBody: string;
   _predicateAcceptsContextElement: boolean;
   _args: SerializableOrJSHandle[];
-  _binding: PageBinding;
+  _binding?: PageBinding;
   _runCount = 0;
   promise: Promise<JSHandle>;
-  _resolve: (x: JSHandle) => void;
-  _reject: (x: Error) => void;
+  _resolve: (x: JSHandle) => void = noop;
+  _reject: (x: Error) => void = noop;
   _timeoutTimer?: NodeJS.Timeout;
   _terminated = false;
-  _root: ElementHandle = null;
+  _root: ElementHandle | null = null;
 
   constructor(options: WaitTaskOptions) {
     if (helper.isString(options.polling))
@@ -789,7 +845,7 @@ export class WaitTask {
     this._domWorld = options.domWorld;
     this._polling = options.polling;
     this._timeout = options.timeout;
-    this._root = options.root;
+    this._root = options.root || null;
     this._predicateBody = getPredicateBody(options.predicateBody);
     this._predicateAcceptsContextElement =
       options.predicateAcceptsContextElement;
@@ -829,8 +885,8 @@ export class WaitTask {
 
   async rerun(): Promise<void> {
     const runCount = ++this._runCount;
-    let success: JSHandle = null;
-    let error: Error = null;
+    let success: JSHandle | null = null;
+    let error: Error | null = null;
     const context = await this._domWorld.executionContext();
     if (this._terminated || runCount !== this._runCount) return;
     if (this._binding) {
@@ -848,7 +904,7 @@ export class WaitTask {
         ...this._args
       );
     } catch (error_) {
-      error = error_;
+      error = error_ as Error;
     }
 
     if (this._terminated || runCount !== this._runCount) {
@@ -863,6 +919,8 @@ export class WaitTask {
       !error &&
       (await this._domWorld.evaluate((s) => !s, success).catch(() => true))
     ) {
+      if (!success)
+        throw new Error('Assertion: result handle is not available');
       await success.dispose();
       return;
     }
@@ -895,13 +953,15 @@ export class WaitTask {
 
       this._reject(error);
     } else {
+      if (!success)
+        throw new Error('Assertion: result handle is not available');
       this._resolve(success);
     }
     this._cleanup();
   }
 
   _cleanup(): void {
-    clearTimeout(this._timeoutTimer);
+    this._timeoutTimer !== undefined && clearTimeout(this._timeoutTimer);
     this._domWorld._waitTasks.delete(this);
   }
 }
@@ -931,7 +991,7 @@ async function waitForPredicatePageFunction(
       : await predicate(...args);
     if (success) return Promise.resolve(success);
 
-    let fulfill;
+    let fulfill = (_?: unknown) => {};
     const result = new Promise((x) => (fulfill = x));
     const observer = new MutationObserver(async () => {
       if (timedOut) {
@@ -946,6 +1006,9 @@ async function waitForPredicatePageFunction(
         fulfill(success);
       }
     });
+    if (!root) {
+      throw new Error('Root element is not found.');
+    }
     observer.observe(root, {
       childList: true,
       subtree: true,
@@ -955,7 +1018,7 @@ async function waitForPredicatePageFunction(
   }
 
   async function pollRaf(): Promise<unknown> {
-    let fulfill;
+    let fulfill = (_?: unknown): void => {};
     const result = new Promise((x) => (fulfill = x));
     await onRaf();
     return result;
@@ -974,7 +1037,7 @@ async function waitForPredicatePageFunction(
   }
 
   async function pollInterval(pollInterval: number): Promise<unknown> {
-    let fulfill;
+    let fulfill = (_?: unknown): void => {};
     const result = new Promise((x) => (fulfill = x));
     await onTimeout();
     return result;

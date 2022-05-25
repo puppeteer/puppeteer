@@ -261,7 +261,7 @@ function makePredicateString(
   predicateQueryHandler?: Function
 ): string {
   function checkWaitForOptions(
-    node: Node,
+    node: Node | null,
     waitForVisible: boolean,
     waitForHidden: boolean
   ): Node | null | boolean {
