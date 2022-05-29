@@ -631,11 +631,13 @@ export class Page extends EventEmitter {
     handler: (event: PageEventObject[K]) => void
   ): EventEmitter {
     if (eventName === 'request') {
-      const wrap = (event: HTTPRequest) => {
-        event.enqueueInterceptAction(() =>
-          handler(event as PageEventObject[K])
-        );
-      };
+      const wrap =
+        this._handlerMap.get(handler) ||
+        ((event: HTTPRequest) => {
+          event.enqueueInterceptAction(() =>
+            handler(event as PageEventObject[K])
+          );
+        });
 
       this._handlerMap.set(handler, wrap);
 
