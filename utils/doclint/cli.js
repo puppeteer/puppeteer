@@ -29,6 +29,7 @@ const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
 
 const IS_RELEASE = Boolean(process.env.IS_RELEASE);
+const IS_PRE_RELEASE = Boolean(process.env.IS_PRE_RELEASE);
 
 run();
 
@@ -39,7 +40,7 @@ async function run() {
   const messages = [];
   let changedFiles = false;
 
-  if (IS_RELEASE) {
+  if (IS_RELEASE || IS_PRE_RELEASE) {
     const versions = await Source.readFile(
       path.join(PROJECT_DIR, 'versions.js')
     );
@@ -61,9 +62,15 @@ async function run() {
   const mdSources = [readme, api, troubleshooting, contributing];
 
   const preprocessor = require('./preprocessor/index.js');
-  messages.push(...(await preprocessor.runCommands(mdSources, VERSION)));
   messages.push(
-    ...(await preprocessor.ensureReleasedAPILinks([readme], VERSION))
+    ...(await preprocessor.runCommands(mdSources, VERSION, IS_RELEASE))
+  );
+  messages.push(
+    ...(await preprocessor.ensureReleasedAPILinks(
+      [readme],
+      VERSION,
+      IS_RELEASE
+    ))
   );
 
   const browser = await puppeteer.launch();

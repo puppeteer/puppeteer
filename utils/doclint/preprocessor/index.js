@@ -16,14 +16,16 @@
 
 const Message = require('../Message.js');
 
-const IS_RELEASE = Boolean(process.env.IS_RELEASE);
-
-module.exports.ensureReleasedAPILinks = function (sources, version) {
+module.exports.ensureReleasedAPILinks = function (
+  sources,
+  version,
+  isReleaseVersion
+) {
   // Release version is everything that doesn't include "-".
   const apiLinkRegex =
-    /https:\/\/github.com\/puppeteer\/puppeteer\/blob\/v[^/]*\/docs\/api.md/gi;
-  const lastReleasedAPI = `https://github.com/puppeteer/puppeteer/blob/v${
-    version.split('-')[0]
+    /https:\/\/github.com\/puppeteer\/puppeteer\/blob\/[^/]*\/docs\/api.md/gi;
+  const lastReleasedAPI = `https://github.com/puppeteer/puppeteer/blob/${
+    isReleaseVersion ? `v${version}` : 'main'
   }/docs/api.md`;
 
   const messages = [];
@@ -36,10 +38,7 @@ module.exports.ensureReleasedAPILinks = function (sources, version) {
   return messages;
 };
 
-module.exports.runCommands = function (sources, version) {
-  // Release version is everything that doesn't include "-".
-  const isReleaseVersion = IS_RELEASE || !version.includes('-');
-
+module.exports.runCommands = function (sources, version, isReleaseVersion) {
   const messages = [];
   const commands = [];
   for (const source of sources) {
@@ -72,22 +71,31 @@ module.exports.runCommands = function (sources, version) {
   commands.sort((a, b) => b.from - a.from);
   for (const command of commands) {
     let newText = null;
-    if (command.name === 'version')
-      newText = isReleaseVersion ? `v${version}` : 'Tip-Of-Tree';
-    else if (command.name === 'empty-if-release')
-      newText = isReleaseVersion ? '' : command.originalText;
-    else if (command.name === 'toc')
-      newText = generateTableOfContents(
-        command.source.text().substring(command.to)
-      );
-    else if (command.name === 'versions-per-release')
-      newText = generateVersionsPerRelease();
-    if (newText === null)
+    switch (command.name) {
+      case 'version':
+        newText = isReleaseVersion ? `v${version}` : 'Tip-Of-Tree';
+        break;
+      case 'empty-if-release':
+        newText = isReleaseVersion ? '' : command.originalText;
+        break;
+      case 'toc':
+        newText = generateTableOfContents(
+          command.source.text().substring(command.to)
+        );
+        break;
+      case 'versions-per-release':
+        newText = generateVersionsPerRelease();
+        break;
+    }
+    if (newText === null) {
       messages.push(Message.error(`Unknown command 'gen:${command.name}'`));
-    else if (applyCommand(command, newText)) changedSources.add(command.source);
+    } else if (applyCommand(command, newText)) {
+      changedSources.add(command.source);
+    }
   }
-  for (const source of changedSources)
+  for (const source of changedSources) {
     messages.push(Message.info(`GEN: updated ${source.projectPath()}`));
+  }
   return messages;
 };
 
