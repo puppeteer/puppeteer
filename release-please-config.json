@@ -3,7 +3,7 @@
   "packages": {
     ".": {
       "releaseType": "node",
-      "component": ""
+      "include-component-in-tag": false
     }
   }
 }
