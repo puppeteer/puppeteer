@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.2.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v14.2.0...puppeteer-v14.2.0) (2022-05-30)
+
+
+### Bug Fixes
+
+* do not use loaderId for lifecycle events ([#8395](https://github.com/puppeteer/puppeteer/issues/8395)) ([c96c915](https://github.com/puppeteer/puppeteer/commit/c96c915b535dcf414038677bd3d3ed6b980a4901))
+* fix release-please bot ([#8400](https://github.com/puppeteer/puppeteer/issues/8400)) ([5c235c7](https://github.com/puppeteer/puppeteer/commit/5c235c701fc55380f09d09ac2cf63f2c94b60e3d))
+* use strict TS in Input.ts ([#8392](https://github.com/puppeteer/puppeteer/issues/8392)) ([af92a24](https://github.com/puppeteer/puppeteer/commit/af92a24ba9fc8efea1ba41f96d87515cf760da65))
+
 ### [14.1.1](https://github.com/puppeteer/puppeteer/compare/v14.1.0...v14.1.1) (2022-05-19)
 
 
