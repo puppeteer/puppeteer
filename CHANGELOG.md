@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [14.2.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v14.1.1...puppeteer-v14.2.0) (2022-05-30)
+## [14.2.0](https://github.com/puppeteer/puppeteer/compare/v14.1.1...puppeteer-v14.2.0) (2022-05-30)
 
 
 ### Bug Fixes
