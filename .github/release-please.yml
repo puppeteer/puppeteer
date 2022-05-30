@@ -1,4 +1,3 @@
 releaseType: node
-handleGHRelease: true
 primaryBranch: main
 manifest: true
