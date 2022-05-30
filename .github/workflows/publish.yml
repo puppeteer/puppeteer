@@ -1,29 +1,12 @@
-name: Release
+name: Publish
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - '*'
 
 jobs:
-  release-pr:
-    runs-on: ubuntu-latest
-    outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Remove `-post` suffix
-        run: node utils/remove_version_suffix.js
-      - name: Release
-        uses: google-github-actions/release-please-action@v3
-        id: release
-        with:
-          release-type: node
-
   publish:
-    needs: release-pr
-    if: ${{ needs.release-pr.outputs.release_created }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
