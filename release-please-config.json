@@ -1,16 +1,4 @@
 {
   "last-release-sha": "d4321e53c909c7ecf90f5f27d3a136cba176f40b",
-  "release-as": "14.2.0",
-  "packages": {
-    ".": {
-      "releaseType": "node",
-      "packageName": "puppeteer",
-      "draft": false,
-      "prerelease": false,
-      "bumpMinorPreMajor": false,
-      "bumpPatchForMinorPreMajor": false,
-      "changelogPath": "CHANGELOG.md",
-      "versioning": "default"
-    }
-  }
+  "release-as": "14.2.0"
 }
