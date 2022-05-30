@@ -12,6 +12,7 @@
   "main": "./cjs-entry.js",
   "exports": {
     ".": {
+      "types": "./lib/types.d.ts",
       "import": "./lib/esm/puppeteer/node.js",
       "require": "./cjs-entry.js"
     },
