@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.2.0](https://github.com/puppeteer/puppeteer/compare/v14.1.2...v14.2.0) (2022-05-30)
+
+
+### Features
+
+* **chromium:** roll to Chromium 103.0.5059.0 (r1002410) ([#8410](https://github.com/puppeteer/puppeteer/issues/8410)) ([54efc2c](https://github.com/puppeteer/puppeteer/commit/54efc2c949be1d6ef22f4d2630620e33d14d2597))
+
 ## [14.1.2](https://github.com/puppeteer/puppeteer/compare/v14.1.1...v14.1.2) (2022-05-30)
 
 
