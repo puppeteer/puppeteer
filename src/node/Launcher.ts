@@ -35,7 +35,7 @@ import {
 
 import { Product } from '../common/Product.js';
 
-const tmpDir = () => process.env.PUPPETEER_TMP_DIR || os.tmpdir();
+const tmpDir = () => process.env['PUPPETEER_TMP_DIR'] || os.tmpdir();
 
 /**
  * Describes a launcher - a class that is able to create and launch a browser instance.
@@ -112,31 +112,33 @@ class ChromeLauncher implements ProductLauncher {
       }
     }
 
-    let userDataDir;
     let isTempUserDataDir = true;
 
     // Check for the user data dir argument, which will always be set even
     // with a custom directory specified via the userDataDir option.
-    const userDataDirIndex = chromeArguments.findIndex((arg) => {
+    let userDataDirIndex = chromeArguments.findIndex((arg) => {
       return arg.startsWith('--user-data-dir');
     });
-
-    if (userDataDirIndex !== -1) {
-      userDataDir = chromeArguments[userDataDirIndex].split('=')[1];
-      isTempUserDataDir = false;
-    } else {
-      userDataDir = await mkdtempAsync(
-        path.join(tmpDir(), 'puppeteer_dev_chrome_profile-')
+    if (userDataDirIndex < 0) {
+      chromeArguments.push(
+        `--user-data-dir=${await mkdtempAsync(
+          path.join(tmpDir(), 'puppeteer_dev_chrome_profile-')
+        )}`
       );
-      chromeArguments.push(`--user-data-dir=${userDataDir}`);
+      userDataDirIndex = chromeArguments.length - 1;
     }
+
+    const userDataDir = chromeArguments[userDataDirIndex]!.split('=', 2)[1];
+    assert(typeof userDataDir === 'string', '`--user-data-dir` is malformed');
+
+    isTempUserDataDir = false;
 
     let chromeExecutable = executablePath;
 
     if (channel) {
       // executablePath is detected by channel, so it should not be specified by user.
       assert(
-        !executablePath,
+        typeof executablePath === 'string',
         '`executablePath` must not be specified when `channel` is given.'
       );
 
@@ -238,7 +240,7 @@ class ChromeLauncher implements ProductLauncher {
       devtools = false,
       headless = !devtools,
       args = [],
-      userDataDir = null,
+      userDataDir,
     } = options;
     if (userDataDir)
       chromeArguments.push(`--user-data-dir=${path.resolve(userDataDir)}`);
@@ -331,7 +333,7 @@ class FirefoxLauncher implements ProductLauncher {
       firefoxArguments.push(`--remote-debugging-port=${debuggingPort || 0}`);
     }
 
-    let userDataDir = null;
+    let userDataDir: string | undefined;
     let isTempUserDataDir = true;
 
     // Check for the profile argument, which will always be set even
@@ -342,7 +344,7 @@ class FirefoxLauncher implements ProductLauncher {
 
     if (profileArgIndex !== -1) {
       userDataDir = firefoxArguments[profileArgIndex + 1];
-      if (!fs.existsSync(userDataDir)) {
+      if (!userDataDir || !fs.existsSync(userDataDir)) {
         throw new Error(`Firefox profile not found at '${userDataDir}'`);
       }
 
@@ -726,16 +728,16 @@ function executablePathForChannel(channel: ChromeReleaseChannel): string {
     case 'win32':
       switch (channel) {
         case 'chrome':
-          chromePath = `${process.env.PROGRAMFILES}\\Google\\Chrome\\Application\\chrome.exe`;
+          chromePath = `${process.env['PROGRAMFILES']}\\Google\\Chrome\\Application\\chrome.exe`;
           break;
         case 'chrome-beta':
-          chromePath = `${process.env.PROGRAMFILES}\\Google\\Chrome Beta\\Application\\chrome.exe`;
+          chromePath = `${process.env['PROGRAMFILES']}\\Google\\Chrome Beta\\Application\\chrome.exe`;
           break;
         case 'chrome-canary':
-          chromePath = `${process.env.PROGRAMFILES}\\Google\\Chrome SxS\\Application\\chrome.exe`;
+          chromePath = `${process.env['PROGRAMFILES']}\\Google\\Chrome SxS\\Application\\chrome.exe`;
           break;
         case 'chrome-dev':
-          chromePath = `${process.env.PROGRAMFILES}\\Google\\Chrome Dev\\Application\\chrome.exe`;
+          chromePath = `${process.env['PROGRAMFILES']}\\Google\\Chrome Dev\\Application\\chrome.exe`;
           break;
       }
       break;
@@ -802,9 +804,9 @@ function resolveExecutablePath(launcher: ChromeLauncher | FirefoxLauncher): {
   // puppeteer-core doesn't take into account PUPPETEER_* env variables.
   if (!_isPuppeteerCore) {
     const executablePath =
-      process.env.PUPPETEER_EXECUTABLE_PATH ||
-      process.env.npm_config_puppeteer_executable_path ||
-      process.env.npm_package_config_puppeteer_executable_path;
+      process.env['PUPPETEER_EXECUTABLE_PATH'] ||
+      process.env['npm_config_puppeteer_executable_path'] ||
+      process.env['npm_package_config_puppeteer_executable_path'];
     if (executablePath) {
       const missingText = !fs.existsSync(executablePath)
         ? 'Tried to use PUPPETEER_EXECUTABLE_PATH env variable to launch browser but did not find any executable at: ' +
@@ -822,9 +824,9 @@ function resolveExecutablePath(launcher: ChromeLauncher | FirefoxLauncher): {
       return { executablePath: ubuntuChromiumPath, missingText: undefined };
     }
     downloadPath =
-      process.env.PUPPETEER_DOWNLOAD_PATH ||
-      process.env.npm_config_puppeteer_download_path ||
-      process.env.npm_package_config_puppeteer_download_path;
+      process.env['PUPPETEER_DOWNLOAD_PATH'] ||
+      process.env['npm_config_puppeteer_download_path'] ||
+      process.env['npm_package_config_puppeteer_download_path'];
   }
   if (!_projectRoot) {
     throw new Error(
@@ -871,9 +873,9 @@ export default function Launcher(
   // puppeteer-core doesn't take into account PUPPETEER_* env variables.
   if (!product && !isPuppeteerCore)
     product =
-      process.env.PUPPETEER_PRODUCT ||
-      process.env.npm_config_puppeteer_product ||
-      process.env.npm_package_config_puppeteer_product;
+      process.env['PUPPETEER_PRODUCT'] ||
+      process.env['npm_config_puppeteer_product'] ||
+      process.env['npm_package_config_puppeteer_product'];
   switch (product) {
     case 'firefox':
       return new FirefoxLauncher(

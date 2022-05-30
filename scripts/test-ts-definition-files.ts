@@ -73,7 +73,7 @@ const EXPECTED_ERRORS = new Map<string, string[]>([
 ]);
 const PROJECT_FOLDERS = [...EXPECTED_ERRORS.keys()];
 
-if (!process.env.CI) {
+if (!process.env['CI']) {
   console.log(`IMPORTANT: this script assumes you have compiled Puppeteer
 and its types file before running. Make sure you have run:
 => npm run tsc && npm run generate-d-ts
@@ -107,7 +107,7 @@ function packPuppeteer() {
 const tar = packPuppeteer();
 const tarPath = path.join(process.cwd(), tar);
 
-function compileAndCatchErrors(projectLocation) {
+function compileAndCatchErrors(projectLocation: string) {
   const { status, stdout, stderr } = spawnSync('npm', ['run', 'compile'], {
     cwd: projectLocation,
     encoding: 'utf-8',
@@ -159,7 +159,7 @@ function testProject(folder: string) {
     }
   );
 
-  if (status > 0) {
+  if (status) {
     console.error(
       'Installing the tar file unexpectedly failed',
       stdout,

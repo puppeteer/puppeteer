@@ -39,19 +39,19 @@ function getProduct(input: string): 'chrome' | 'firefox' {
 
 export async function downloadBrowser(): Promise<void> {
   const downloadHost =
-    process.env.PUPPETEER_DOWNLOAD_HOST ||
-    process.env.npm_config_puppeteer_download_host ||
-    process.env.npm_package_config_puppeteer_download_host;
+    process.env['PUPPETEER_DOWNLOAD_HOST'] ||
+    process.env['npm_config_puppeteer_download_host'] ||
+    process.env['npm_package_config_puppeteer_download_host'];
   const product = getProduct(
-    process.env.PUPPETEER_PRODUCT ||
-      process.env.npm_config_puppeteer_product ||
-      process.env.npm_package_config_puppeteer_product ||
+    process.env['PUPPETEER_PRODUCT'] ||
+      process.env['npm_config_puppeteer_product'] ||
+      process.env['npm_package_config_puppeteer_product'] ||
       'chrome'
   );
   const downloadPath =
-    process.env.PUPPETEER_DOWNLOAD_PATH ||
-    process.env.npm_config_puppeteer_download_path ||
-    process.env.npm_package_config_puppeteer_download_path;
+    process.env['PUPPETEER_DOWNLOAD_PATH'] ||
+    process.env['npm_config_puppeteer_download_path'] ||
+    process.env['npm_package_config_puppeteer_download_path'];
   const browserFetcher = (puppeteer as PuppeteerNode).createBrowserFetcher({
     product,
     host: downloadHost,
@@ -63,8 +63,8 @@ export async function downloadBrowser(): Promise<void> {
   async function getRevision(): Promise<string> {
     if (product === 'chrome') {
       return (
-        process.env.PUPPETEER_CHROMIUM_REVISION ||
-        process.env.npm_config_puppeteer_chromium_revision ||
+        process.env['PUPPETEER_CHROMIUM_REVISION'] ||
+        process.env['npm_config_puppeteer_chromium_revision'] ||
         PUPPETEER_REVISIONS.chromium
       );
     } else if (product === 'firefox') {
@@ -92,14 +92,14 @@ export async function downloadBrowser(): Promise<void> {
 
     // Override current environment proxy settings with npm configuration, if any.
     const NPM_HTTPS_PROXY =
-      process.env.npm_config_https_proxy || process.env.npm_config_proxy;
+      process.env['npm_config_https_proxy'] || process.env['npm_config_proxy'];
     const NPM_HTTP_PROXY =
-      process.env.npm_config_http_proxy || process.env.npm_config_proxy;
-    const NPM_NO_PROXY = process.env.npm_config_no_proxy;
+      process.env['npm_config_http_proxy'] || process.env['npm_config_proxy'];
+    const NPM_NO_PROXY = process.env['npm_config_no_proxy'];
 
-    if (NPM_HTTPS_PROXY) process.env.HTTPS_PROXY = NPM_HTTPS_PROXY;
-    if (NPM_HTTP_PROXY) process.env.HTTP_PROXY = NPM_HTTP_PROXY;
-    if (NPM_NO_PROXY) process.env.NO_PROXY = NPM_NO_PROXY;
+    if (NPM_HTTPS_PROXY) process.env['HTTPS_PROXY'] = NPM_HTTPS_PROXY;
+    if (NPM_HTTP_PROXY) process.env['HTTP_PROXY'] = NPM_HTTP_PROXY;
+    if (NPM_NO_PROXY) process.env['NO_PROXY'] = NPM_NO_PROXY;
 
     function onSuccess(localRevisions: string[]): void {
       logPolitely(
@@ -203,7 +203,7 @@ export async function downloadBrowser(): Promise<void> {
 }
 
 export function logPolitely(toBeLogged: unknown): void {
-  const logLevel = process.env.npm_config_loglevel || '';
+  const logLevel = process.env['npm_config_loglevel'] || '';
   const logLevelDisplay = ['silent', 'error', 'warn'].indexOf(logLevel) > -1;
 
   // eslint-disable-next-line no-console

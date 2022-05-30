@@ -24,7 +24,11 @@ import removeFolder from 'rimraf';
 import { promisify } from 'util';
 
 import { assert } from '../common/assert.js';
-import { helper, debugError } from '../common/helper.js';
+import {
+  helper,
+  debugError,
+  PuppeteerEventListener,
+} from '../common/helper.js';
 import { LaunchOptions } from './LaunchOptions.js';
 import { Connection } from '../common/Connection.js';
 import { NodeWebSocketTransport as WebSocketTransport } from '../node/NodeWebSocketTransport.js';
@@ -50,12 +54,12 @@ export class BrowserRunner {
   private _userDataDir: string;
   private _isTempUserDataDir?: boolean;
 
-  proc = null;
-  connection = null;
+  proc?: childProcess.ChildProcess;
+  connection?: Connection;
 
   private _closed = true;
-  private _listeners = [];
-  private _processClosing: Promise<void>;
+  private _listeners: PuppeteerEventListener[] = [];
+  private _processClosing!: Promise<void>;
 
   constructor(
     product: Product,
@@ -100,12 +104,12 @@ export class BrowserRunner {
       }
     );
     if (dumpio) {
-      this.proc.stderr.pipe(process.stderr);
-      this.proc.stdout.pipe(process.stdout);
+      this.proc.stderr?.pipe(process.stderr);
+      this.proc.stdout?.pipe(process.stdout);
     }
     this._closed = false;
     this._processClosing = new Promise((fulfill, reject) => {
-      this.proc.once('exit', async () => {
+      this.proc!.once('exit', async () => {
         this._closed = true;
         // Cleanup as processes exit.
         if (this._isTempUserDataDir) {
@@ -184,6 +188,7 @@ export class BrowserRunner {
     // is invalid), then the process does not get a pid assigned. A call to
     // `proc.kill` would error, as the `pid` to-be-killed can not be found.
     if (this.proc && this.proc.pid && pidExists(this.proc.pid)) {
+      const proc = this.proc;
       try {
         if (process.platform === 'win32') {
           childProcess.exec(`taskkill /pid ${this.proc.pid} /T /F`, (error) => {
@@ -191,7 +196,7 @@ export class BrowserRunner {
               // taskkill can fail to kill the process e.g. due to missing permissions.
               // Let's kill the process via Node API. This delays killing of all child
               // proccesses of `this.proc` until the main Node.js process dies.
-              this.proc.kill();
+              proc.kill();
             }
           });
         } else {
@@ -202,7 +207,9 @@ export class BrowserRunner {
         }
       } catch (error) {
         throw new Error(
-          `${PROCESS_ERROR_EXPLANATION}\nError cause: ${error.stack}`
+          `${PROCESS_ERROR_EXPLANATION}\nError cause: ${
+            error instanceof Error ? error.stack : error
+          }`
         );
       }
     }
@@ -225,6 +232,8 @@ export class BrowserRunner {
     slowMo: number;
     preferredRevision: string;
   }): Promise<Connection> {
+    assert(this.proc, 'BrowserRunner not started.');
+
     const { usePipe, timeout, slowMo, preferredRevision } = options;
     if (!usePipe) {
       const browserWSEndpoint = await waitForWSEndpoint(
@@ -253,9 +262,11 @@ function waitForWSEndpoint(
   timeout: number,
   preferredRevision: string
 ): Promise<string> {
+  assert(browserProcess.stderr, '`browserProcess` does not have stderr.');
+  const rl = readline.createInterface(browserProcess.stderr);
+  let stderr = '';
+
   return new Promise((resolve, reject) => {
-    const rl = readline.createInterface({ input: browserProcess.stderr });
-    let stderr = '';
     const listeners = [
       helper.addEventListener(rl, 'line', onLine),
       helper.addEventListener(rl, 'close', () => onClose()),
@@ -299,7 +310,8 @@ function waitForWSEndpoint(
       const match = line.match(/^DevTools listening on (ws:\/\/.*)$/);
       if (!match) return;
       cleanup();
-      resolve(match[1]);
+      // The RegExp matches, so this will obviously exist.
+      resolve(match[1]!);
     }
 
     function cleanup(): void {
@@ -313,10 +325,12 @@ function pidExists(pid: number): boolean {
   try {
     return process.kill(pid, 0);
   } catch (error) {
-    if (error && error.code && error.code === 'ESRCH') {
-      return false;
-    } else {
-      throw error;
+    if (error instanceof Error) {
+      const err = error as NodeJS.ErrnoException;
+      if (err.code && err.code === 'ESRCH') {
+        return false;
+      }
     }
+    throw error;
   }
 }

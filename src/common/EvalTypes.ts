@@ -19,7 +19,9 @@ import { JSHandle, ElementHandle } from './JSHandle.js';
 /**
  * @public
  */
-export type EvaluateFn<T = any> = string | ((arg1: T, ...args: any[]) => any);
+export type EvaluateFn<T = any, U = any, V = any> =
+  | string
+  | ((arg1: T, ...args: U[]) => V);
 /**
  * @public
  */
@@ -47,7 +49,7 @@ export type Serializable =
   | string
   | boolean
   | null
-  | BigInt
+  | bigint
   | JSONArray
   | JSONObject;
 

@@ -228,13 +228,13 @@ function pageBindingDeliverErrorString(
   name: string,
   seq: number,
   message: string,
-  stack: string
+  stack?: string
 ): string {
   function deliverError(
     name: string,
     seq: number,
     message: string,
-    stack: string
+    stack?: string
   ): void {
     const error = new Error(message);
     error.stack = stack;
@@ -304,7 +304,7 @@ async function waitWithTimeout<T>(
   const timeoutError = new TimeoutError(
     `waiting for ${taskName} failed: timeout ${timeout}ms exceeded`
   );
-  const timeoutPromise = new Promise<T>((resolve, x) => (reject = x));
+  const timeoutPromise = new Promise<T>((_res, rej) => (reject = rej));
   let timeoutTimer = null;
   if (timeout) timeoutTimer = setTimeout(() => reject(timeoutError), timeout);
   try {
@@ -362,7 +362,7 @@ async function getReadableFromProtocolStream(
   return new Readable({
     async read(size: number) {
       if (eof) {
-        return null;
+        return;
       }
 
       const response = await client.send('IO.read', { handle, size });

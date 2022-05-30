@@ -40,7 +40,7 @@ describe('Evaluation specs', function () {
     (bigint ? it : xit)('should transfer BigInt', async () => {
       const { page } = getTestState();
 
-      const result = await page.evaluate((a: BigInt) => a, BigInt(42));
+      const result = await page.evaluate((a: bigint) => a, BigInt(42));
       expect(result).toBe(BigInt(42));
     });
     it('should transfer NaN', async () => {

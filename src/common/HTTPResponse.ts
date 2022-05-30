@@ -88,8 +88,9 @@ export class HTTPResponse {
 
     this._status = extraInfo ? extraInfo.statusCode : responsePayload.status;
     const headers = extraInfo ? extraInfo.headers : responsePayload.headers;
-    for (const key of Object.keys(headers))
-      this._headers[key.toLowerCase()] = headers[key];
+    for (const [key, value] of Object.entries(headers)) {
+      this._headers[key.toLowerCase()] = value;
+    }
 
     this._securityDetails = responsePayload.securityDetails
       ? new SecurityDetails(responsePayload.securityDetails)

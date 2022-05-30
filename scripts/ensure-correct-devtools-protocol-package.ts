@@ -36,6 +36,7 @@
 // eslint-disable-next-line import/extensions
 import { PUPPETEER_REVISIONS } from '../src/revisions';
 import { execSync } from 'child_process';
+import { strict as assert } from 'assert/strict';
 
 import packageJson from '../package.json';
 
@@ -66,7 +67,12 @@ const output = execSync(command, {
   encoding: 'utf8',
 });
 
-const bestRevisionFromNpm = output.split(' ')[1].replace(/'|\n/g, '');
+let bestRevisionFromNpm: string;
+{
+  let tmp;
+  assert((tmp = output.split(' ')[1]));
+  bestRevisionFromNpm = tmp.replace(/'|\n/g, '');
+}
 
 if (currentProtocolPackageInstalledVersion !== bestRevisionFromNpm) {
   console.log(`ERROR: bad devtools-protocol revision detected:

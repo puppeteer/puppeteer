@@ -93,7 +93,7 @@ export const connectToBrowser = async (
     'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect'
   );
 
-  let connection = null;
+  let connection!: Connection;
   if (transport) {
     connection = new Connection('', transport, slowMo);
   } else if (browserWSEndpoint) {
@@ -117,7 +117,7 @@ export const connectToBrowser = async (
     browserContextIds,
     ignoreHTTPSErrors,
     defaultViewport,
-    null,
+    undefined,
     () => connection.send('Browser.close').catch(debugError),
     targetFilter,
     isPageTarget
@@ -138,9 +138,11 @@ async function getWSEndpoint(browserURL: string): Promise<string> {
     const data = await result.json();
     return data.webSocketDebuggerUrl;
   } catch (error) {
-    error.message =
-      `Failed to fetch browser webSocket URL from ${endpointURL}: ` +
-      error.message;
+    if (error instanceof Error) {
+      error.message =
+        `Failed to fetch browser webSocket URL from ${endpointURL}: ` +
+        error.message;
+    }
     throw error;
   }
 }

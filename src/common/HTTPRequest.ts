@@ -185,8 +185,8 @@ export class HTTPRequest {
     this._interceptHandlers = [];
     this._initiator = event.initiator;
 
-    for (const key of Object.keys(event.request.headers))
-      this._headers[key.toLowerCase()] = event.request.headers[key];
+    for (const [key, value] of Object.entries(event.request.headers))
+      this._headers[key.toLowerCase()] = value;
   }
 
   /**
