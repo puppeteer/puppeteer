@@ -66,7 +66,6 @@ export class LifecycleWatcher {
   _timeout: number;
   _navigationRequest: HTTPRequest | null = null;
   _eventListeners: PuppeteerEventListener[];
-  _initialLoaderId: string;
 
   _sameDocumentNavigationCompleteCallback: (x?: Error) => void = noop;
   _sameDocumentNavigationPromise = new Promise<Error | undefined>((fulfill) => {
@@ -94,6 +93,7 @@ export class LifecycleWatcher {
 
   _maximumTimer?: NodeJS.Timeout;
   _hasSameDocumentNavigation?: boolean;
+  _newDocumentNavigation?: boolean;
   _swapped?: boolean;
 
   constructor(
@@ -112,7 +112,6 @@ export class LifecycleWatcher {
 
     this._frameManager = frameManager;
     this._frame = frame;
-    this._initialLoaderId = frame._loaderId;
     this._timeout = timeout;
     this._eventListeners = [
       helper.addEventListener(
@@ -132,6 +131,11 @@ export class LifecycleWatcher {
         this._frameManager,
         FrameManagerEmittedEvents.FrameNavigatedWithinDocument,
         this._navigatedWithinDocument.bind(this)
+      ),
+      helper.addEventListener(
+        this._frameManager,
+        FrameManagerEmittedEvents.FrameNavigated,
+        this._navigated.bind(this)
       ),
       helper.addEventListener(
         this._frameManager,
@@ -211,6 +215,12 @@ export class LifecycleWatcher {
     this._checkLifecycleComplete();
   }
 
+  _navigated(frame: Frame): void {
+    if (frame !== this._frame) return;
+    this._newDocumentNavigation = true;
+    this._checkLifecycleComplete();
+  }
+
   _frameSwapped(frame: Frame): void {
     if (frame !== this._frame) return;
     this._swapped = true;
@@ -221,19 +231,9 @@ export class LifecycleWatcher {
     // We expect navigation to commit.
     if (!checkLifecycle(this._frame, this._expectedLifecycle)) return;
     this._lifecycleCallback();
-    if (
-      this._frame._loaderId === this._initialLoaderId &&
-      !this._hasSameDocumentNavigation
-    ) {
-      if (this._swapped) {
-        this._swapped = false;
-        this._newDocumentNavigationCompleteCallback();
-      }
-      return;
-    }
     if (this._hasSameDocumentNavigation)
       this._sameDocumentNavigationCompleteCallback();
-    if (this._frame._loaderId !== this._initialLoaderId)
+    if (this._swapped || this._newDocumentNavigation)
       this._newDocumentNavigationCompleteCallback();
 
     /**
