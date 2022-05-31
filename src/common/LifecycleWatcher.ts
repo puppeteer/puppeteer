@@ -236,11 +236,6 @@ export class LifecycleWatcher {
     if (this._swapped || this._newDocumentNavigation)
       this._newDocumentNavigationCompleteCallback();
 
-    /**
-     * @param {!Frame} frame
-     * @param {!Array<string>} expectedLifecycle
-     * @returns {boolean}
-     */
     function checkLifecycle(
       frame: Frame,
       expectedLifecycle: ProtocolLifeCycleEvent[]
