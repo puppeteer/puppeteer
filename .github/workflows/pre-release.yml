@@ -12,9 +12,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.ref }}
+        uses: actions/checkout@v2
       - name: Install dependencies
         run: npm install
       - name: Build
