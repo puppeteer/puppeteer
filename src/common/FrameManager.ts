@@ -266,9 +266,9 @@ export class FrameManager extends EventEmitter {
 
     const frame = this._frames.get(event.targetInfo.targetId);
     const connection = Connection.fromSession(this._client);
-    if (!connection) return;
+    assert(connection);
     const session = connection.session(event.sessionId);
-    if (!session) return;
+    assert(session);
     if (frame) frame._updateClient(session);
     this.setupEventListeners(session);
     await this.initialize(session);
