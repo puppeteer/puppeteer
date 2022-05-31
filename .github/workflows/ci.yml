@@ -1,4 +1,4 @@
-name: run-checks
+name: CI
 
 # Declare default permissions as read only.
 permissions: read-all
@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  linux-main-checks:
+  linux:
     # https://github.com/actions/virtual-environments#available-environments
     runs-on: ubuntu-latest
     strategy:
@@ -189,7 +189,7 @@ jobs:
           timeout_minutes: 10
           command: npm run funit
 
-  linux-headful-checks:
+  linux-headful:
     # https://github.com/actions/virtual-environments#available-environments
     runs-on: ubuntu-latest
     strategy:
@@ -227,7 +227,7 @@ jobs:
           command: xvfb-run --auto-servernum npm run unit
           timeout_minutes: 10
 
-  chrome-headless-checks:
+  chrome-headless:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

@@ -1,0 +1,28 @@
+name: Pre-release
+
+on:
+  push:
+    branches:
+      - release-please-*
+
+jobs:
+  pre-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: npm install
+      - name: Build
+        run: |
+          node utils/generate_version_file.js
+          IS_PRE_RELEASE=1 npm run doc
+      - name: Commit and push
+        run: |
+          git config --global user.email "55107282+release-please[bot]@users.noreply.github.com"
+          git config --global user.name "release-please[bot]"
+          git add -A
+          git commit --amend --no-edit
+          git push -f
