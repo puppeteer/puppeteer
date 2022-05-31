@@ -44,7 +44,7 @@
     "commitlint": "commitlint --from=HEAD~1",
     "prettier": "prettier --check .",
     "prettier-fix": "prettier --write .",
-    "lint": "npm run eslint && npm run build && npm run doc && npm run prettier",
+    "lint": "npm run build && npm run eslint && npm run doc && npm run prettier",
     "doc": "node utils/doclint/cli.js",
     "generate-api-docs-for-testing": "commonmark docs/api.md > docs/api.html",
     "clean-lib": "rimraf lib",

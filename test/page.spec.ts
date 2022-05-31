@@ -154,16 +154,20 @@ describe('Page', function () {
       };
 
       page.on('request', onResponse);
+      page.on('request', onResponse);
       await page.goto(server.EMPTY_PAGE);
-      expect(handler.callCount).toBe(1);
+      expect(handler.callCount).toBe(2);
       page.off('request', onResponse);
       await page.goto(server.EMPTY_PAGE);
       // Still one because we removed the handler.
-      expect(handler.callCount).toBe(1);
+      expect(handler.callCount).toBe(3);
+      page.off('request', onResponse);
+      await page.goto(server.EMPTY_PAGE);
+      expect(handler.callCount).toBe(3);
       page.on('request', onResponse);
       await page.goto(server.EMPTY_PAGE);
       // Two now because we added the handler back.
-      expect(handler.callCount).toBe(2);
+      expect(handler.callCount).toBe(4);
     });
   });
 
