@@ -1057,7 +1057,7 @@ export class ElementHandle<
   /**
    * Runs `element.querySelector` within the page.
    *
-   * @param selector The selector to query with.
+   * @param selector - The selector to query with.
    * @returns `null` if no element matches the selector.
    * @throws `Error` if the selector has no associated query handler.
    */
@@ -1080,7 +1080,7 @@ export class ElementHandle<
   /**
    * Runs `element.querySelectorAll` within the page.
    *
-   * @param selector The selector to query with.
+   * @param selector - The selector to query with.
    * @returns `[]` if no element matches the selector.
    * @throws `Error` if the selector has no associated query handler.
    */
