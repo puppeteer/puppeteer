@@ -21,6 +21,8 @@ jobs:
           IS_PRE_RELEASE=1 npm run doc
       - name: Commit and push
         run: |
+          git config --global user.email "55107282+release-please[bot]@users.noreply.github.com"
+          git config --global user.name "release-please[bot]"
           git add -A
           git commit --amend --no-edit
           git push -f
