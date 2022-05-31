@@ -6,33 +6,7 @@ on:
       - v*
 
 jobs:
-  pre-publish:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          ref: main
-      - name: Install dependencies
-        run: npm install
-      - name: Build
-        run: |
-          node utils/generate_version_file.js
-          IS_PRE_RELEASE=1 npm run doc
-      - name: Configure git
-        run: |
-          git config --global user.name 'actions-bot'
-          git config --global user.email '<github-actions-bot@google.com>'
-      - name: Commit and push
-        run: |
-          git add -A
-          git commit -m "chore: freeze current version in code"
-          git push
-
   publish:
-    needs: pre-publish
     runs-on: ubuntu-latest
     permissions:
       contents: read
