@@ -1,5 +1,4 @@
 {
-  "extends": "../tsconfig.base.json",
   "exclude": [
     "mitt/dist"
   ],
@@ -7,6 +6,7 @@
     "composite": true,
     "outDir": "../lib/cjs/vendor",
     "module": "CommonJS",
+    "moduleResolution": "node",
     "strict": false
   }
 }

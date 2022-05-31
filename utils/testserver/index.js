@@ -28,9 +28,13 @@ const fulfillSymbol = Symbol('fullfil callback');
 const rejectSymbol = Symbol('reject callback');
 
 class TestServer {
+  /** @type number */
   PORT = undefined;
+  /** @type string */
   PREFIX = undefined;
+  /** @type string */
   CROSS_PROCESS_PREFIX = undefined;
+  /** @type string */
   EMPTY_PAGE = undefined;
 
   /**

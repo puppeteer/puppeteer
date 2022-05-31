@@ -271,7 +271,7 @@ describe('Target', function () {
       server.PREFIX + '/popup/popup.html'
     );
     expect(createdTarget.opener()).toBe(page.target());
-    expect(page.target().opener()).toBe(null);
+    expect(page.target().opener()).toBeUndefined();
   });
 
   describe('Browser.waitForTarget', () => {

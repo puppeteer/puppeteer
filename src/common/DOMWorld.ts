@@ -500,38 +500,38 @@ export class DOMWorld {
     options: { delay?: number; button?: MouseButton; clickCount?: number }
   ): Promise<void> {
     const handle = await this.$(selector);
-    assert(handle, 'No node found for selector: ' + selector);
-    await handle!.click(options);
-    await handle!.dispose();
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.click(options);
+    await handle.dispose();
   }
 
   async focus(selector: string): Promise<void> {
     const handle = await this.$(selector);
-    assert(handle, 'No node found for selector: ' + selector);
-    await handle!.focus();
-    await handle!.dispose();
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.focus();
+    await handle.dispose();
   }
 
   async hover(selector: string): Promise<void> {
     const handle = await this.$(selector);
-    assert(handle, 'No node found for selector: ' + selector);
-    await handle!.hover();
-    await handle!.dispose();
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.hover();
+    await handle.dispose();
   }
 
   async select(selector: string, ...values: string[]): Promise<string[]> {
     const handle = await this.$(selector);
-    assert(handle, 'No node found for selector: ' + selector);
-    const result = await handle!.select(...values);
-    await handle!.dispose();
+    assert(handle, `No element found for selector: ${selector}`);
+    const result = await handle.select(...values);
+    await handle.dispose();
     return result;
   }
 
   async tap(selector: string): Promise<void> {
     const handle = await this.$(selector);
-    assert(handle, 'No node found for selector: ' + selector);
-    await handle!.tap();
-    await handle!.dispose();
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.tap();
+    await handle.dispose();
   }
 
   async type(
@@ -540,9 +540,9 @@ export class DOMWorld {
     options?: { delay: number }
   ): Promise<void> {
     const handle = await this.$(selector);
-    assert(handle, 'No node found for selector: ' + selector);
-    await handle!.type(text, options);
-    await handle!.dispose();
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.type(text, options);
+    await handle.dispose();
   }
 
   async waitForSelector(
@@ -551,9 +551,7 @@ export class DOMWorld {
   ): Promise<ElementHandle | null> {
     const { updatedSelector, queryHandler } =
       getQueryHandlerAndSelector(selector);
-    if (!queryHandler.waitFor) {
-      throw new Error('Query handler does not support waitFor');
-    }
+    assert(queryHandler.waitFor, 'Query handler does not support waiting');
     return queryHandler.waitFor(this, updatedSelector, options);
   }
 
@@ -970,7 +968,7 @@ async function waitForPredicatePageFunction(
   root: Element | Document | null,
   predicateBody: string,
   predicateAcceptsContextElement: boolean,
-  polling: string,
+  polling: 'raf' | 'mutation' | number,
   timeout: number,
   ...args: unknown[]
 ): Promise<unknown> {
@@ -978,9 +976,14 @@ async function waitForPredicatePageFunction(
   const predicate = new Function('...args', predicateBody);
   let timedOut = false;
   if (timeout) setTimeout(() => (timedOut = true), timeout);
-  if (polling === 'raf') return await pollRaf();
-  if (polling === 'mutation') return await pollMutation();
-  if (typeof polling === 'number') return await pollInterval(polling);
+  switch (polling) {
+    case 'raf':
+      return await pollRaf();
+    case 'mutation':
+      return await pollMutation();
+    default:
+      return await pollInterval(polling);
+  }
 
   /**
    * @returns {!Promise<*>}
@@ -1023,7 +1026,7 @@ async function waitForPredicatePageFunction(
     await onRaf();
     return result;
 
-    async function onRaf(): Promise<unknown> {
+    async function onRaf(): Promise<void> {
       if (timedOut) {
         fulfill();
         return;
@@ -1042,7 +1045,7 @@ async function waitForPredicatePageFunction(
     await onTimeout();
     return result;
 
-    async function onTimeout(): Promise<unknown> {
+    async function onTimeout(): Promise<void> {
       if (timedOut) {
         fulfill();
         return;

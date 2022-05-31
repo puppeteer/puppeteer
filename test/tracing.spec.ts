@@ -119,7 +119,7 @@ describeChromeOnly('Tracing', function () {
     expect(trace).toBeTruthy();
   });
 
-  it('should return null in case of Buffer error', async () => {
+  it('should return undefined in case of Buffer error', async () => {
     const { server } = getTestState();
 
     await page.tracing.start({ screenshots: true });
@@ -129,7 +129,7 @@ describeChromeOnly('Tracing', function () {
       throw 'error';
     };
     const trace = await page.tracing.stop();
-    expect(trace).toEqual(null);
+    expect(trace).toEqual(undefined);
     Buffer.concat = oldBufferConcat;
   });
 

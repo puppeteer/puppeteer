@@ -19,6 +19,7 @@ import { ElementHandle, JSHandle } from './JSHandle.js';
 import { Protocol } from 'devtools-protocol';
 import { CDPSession } from './Connection.js';
 import { DOMWorld, PageBinding, WaitForSelectorOptions } from './DOMWorld.js';
+import { assert } from './assert.js';
 
 async function queryAXTree(
   client: CDPSession,
@@ -32,7 +33,8 @@ async function queryAXTree(
     role,
   });
   const filteredNodes: Protocol.Accessibility.AXNode[] = nodes.filter(
-    (node: Protocol.Accessibility.AXNode) => node.role.value !== 'StaticText'
+    (node: Protocol.Accessibility.AXNode) =>
+      !node.role || node.role.value !== 'StaticText'
   );
   return filteredNodes;
 }
@@ -42,6 +44,13 @@ const normalizeValue = (value: string): string =>
 const knownAttributes = new Set(['name', 'role']);
 const attributeRegexp =
   /\[\s*(?<attribute>\w+)\s*=\s*(?<quote>"|')(?<value>\\.|.*?(?=\k<quote>))\k<quote>\s*\]/g;
+
+type ARIAQueryOption = { name?: string; role?: string };
+function isKnownAttribute(
+  attribute: string
+): attribute is keyof ARIAQueryOption {
+  return knownAttributes.has(attribute);
+}
 
 /*
  * The selectors consist of an accessible name to query for and optionally
@@ -53,15 +62,16 @@ const attributeRegexp =
  * - 'label' queries for elements with name 'label' and any role.
  * - '[name=""][role="button"]' queries for elements with no name and role 'button'.
  */
-type ariaQueryOption = { name?: string; role?: string };
-function parseAriaSelector(selector: string): ariaQueryOption {
-  const queryOptions: ariaQueryOption = {};
+function parseAriaSelector(selector: string): ARIAQueryOption {
+  const queryOptions: ARIAQueryOption = {};
   const defaultName = selector.replace(
     attributeRegexp,
-    (_, attribute: string, quote: string, value: string) => {
+    (_, attribute: string, _quote: string, value: string) => {
       attribute = attribute.trim();
-      if (!knownAttributes.has(attribute))
-        throw new Error(`Unknown aria attribute "${attribute}" in selector`);
+      assert(
+        isKnownAttribute(attribute),
+        `Unknown aria attribute "${attribute}" in selector`
+      );
       queryOptions[attribute] = normalizeValue(value);
       return '';
     }
@@ -78,7 +88,7 @@ const queryOne = async (
   const exeCtx = element.executionContext();
   const { name, role } = parseAriaSelector(selector);
   const res = await queryAXTree(exeCtx._client, element, name, role);
-  if (res.length < 1) {
+  if (!res[0] || !res[0].backendDOMNodeId) {
     return null;
   }
   return exeCtx._adoptBackendNodeId(res[0].backendDOMNodeId);
@@ -88,7 +98,7 @@ const waitFor = async (
   domWorld: DOMWorld,
   selector: string,
   options: WaitForSelectorOptions
-): Promise<ElementHandle<Element>> => {
+): Promise<ElementHandle<Element> | null> => {
   const binding: PageBinding = {
     name: 'ariaQuerySelector',
     pptrFunction: async (selector: string) => {
@@ -98,7 +108,10 @@ const waitFor = async (
     },
   };
   return domWorld.waitForSelectorInPage(
-    (_: Element, selector: string) => globalThis.ariaQuerySelector(selector),
+    (_: Element, selector: string) =>
+      (
+        globalThis as unknown as { ariaQuerySelector(selector: string): void }
+      ).ariaQuerySelector(selector),
     selector,
     options,
     binding
