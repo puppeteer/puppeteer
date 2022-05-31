@@ -44,6 +44,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          ref: main
       - name: Install dependencies
         run: npm install
       - name: Build main docs
