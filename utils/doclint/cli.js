@@ -29,7 +29,6 @@ const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
 
 const IS_RELEASE = Boolean(process.env.IS_RELEASE);
-const IS_PRE_RELEASE = Boolean(process.env.IS_PRE_RELEASE);
 
 run();
 
@@ -40,7 +39,7 @@ async function run() {
   const messages = [];
   let changedFiles = false;
 
-  if (IS_RELEASE || IS_PRE_RELEASE) {
+  if (IS_RELEASE) {
     const versions = await Source.readFile(
       path.join(PROJECT_DIR, 'versions.js')
     );

@@ -18,11 +18,11 @@ jobs:
       - name: Build
         run: |
           node utils/generate_version_file.js
-          IS_PRE_RELEASE=1 npm run doc
+          IS_RELEASE=1 npm run doc
       - name: Commit and push
         run: |
           git config --global user.email "55107282+release-please[bot]@users.noreply.github.com"
           git config --global user.name "release-please[bot]"
           git add -A
-          git commit --amend --no-edit
-          git push -f
+          git commit -m "chore: freeze version for release"
+          git push
