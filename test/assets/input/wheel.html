@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      body {
+        min-height: 100vh;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      div {
+        width: 105px;
+        height: 105px;
+        background: #cdf;
+        padding: 5px;
+      }
+    </style>
+    <title>Element: wheel event - Scaling_an_element_via_the_wheel - code sample</title>
+  </head>
+  <body>
+    <div>Scale me with your mouse wheel.</div>
+    <script>
+      function zoom(event) {
+        event.preventDefault();
+
+        scale += event.deltaY * -0.01;
+
+        // Restrict scale
+        scale = Math.min(Math.max(.125, scale), 4);
+
+        // Apply scale transform
+        el.style.transform = `scale(${scale})`;
+      }
+
+      let scale = 1;
+      const el = document.querySelector('div');
+      el.onwheel = zoom;
+    </script>
+  </body>
+</html>
