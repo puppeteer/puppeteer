@@ -19,10 +19,15 @@ jobs:
         run: |
           node utils/generate_version_file.js
           IS_RELEASE=1 npm run doc
-      - name: Commit and push
+      - name: Get last commit message
+        id: last-commit-message
         run: |
-          git config --global user.email "55107282+release-please[bot]@users.noreply.github.com"
-          git config --global user.name "release-please[bot]"
-          git add -A
-          git commit -m "chore: freeze version for release"
-          git push
+          echo "::set-output name=msg::$(git log -1 --pretty=%s)"
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_user_name: 55107282+release-please[bot]@users.noreply.github.com
+          commit_user_email: release-please[bot]
+          commit_message: ${{ steps.last-commit-message.outputs.msg }}
+          commit_options: '--amend --no-edit'
+          push_options: '--force'
+          skip_fetch: true
