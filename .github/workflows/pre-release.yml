@@ -7,7 +7,7 @@ on:
 
 jobs:
   pre-release:
-    if: "!startsWith(github.event.head_commit.message, 'chore: freeze version on docs')"
+    if: '!startsWith(github.event.head_commit.message, "chore: freeze version on docs")'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -15,7 +15,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ssh-key: "${{ secrets.SSH_PRIVATE_KEY }}"
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Install dependencies
         run: npm install
       - name: Build
