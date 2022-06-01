@@ -23,7 +23,7 @@ jobs:
       matrix:
         # Include all major maintenance + active LTS + current Node.js versions.
         # https://github.com/nodejs/Release#release-schedule
-        node: [14, 16]
+        node: [14, 16, 18]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
