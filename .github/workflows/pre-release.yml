@@ -1,0 +1,33 @@
+name: Pre-release
+
+on:
+  push:
+    branches:
+      - release-please-*
+
+jobs:
+  pre-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: npm install
+      - name: Build
+        run: |
+          node utils/generate_version_file.js
+          IS_RELEASE=1 npm run doc
+      - name: Get last commit message
+        id: last-commit-message
+        run: |
+          echo "::set-output name=msg::$(git log -1 --pretty=%s)"
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_user_name: 55107282+release-please[bot]@users.noreply.github.com
+          commit_user_email: release-please[bot]
+          commit_message: ${{ steps.last-commit-message.outputs.msg }}
+          commit_options: '--amend --no-edit'
+          push_options: '--force'
+          skip_fetch: true

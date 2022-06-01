@@ -1,0 +1,12 @@
+{
+  "exclude": [
+    "mitt/dist"
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "../lib/esm/vendor",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": false
+  }
+}
