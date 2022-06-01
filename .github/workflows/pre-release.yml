@@ -27,4 +27,4 @@ jobs:
           git config --global user.name 'release-please[bot]'
           git config --global user.email '55107282+release-please[bot]@users.noreply.github.com'
           git commit -am 'chore: freeze version on docs'
-          git push
+          git push --no-verify
