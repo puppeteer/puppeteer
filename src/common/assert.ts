@@ -16,7 +16,7 @@
 
 /**
  * Asserts that the given value is truthy.
- * @param value
+ * @param value - some conditional statement
  * @param message - the error message to throw if the value is not truthy.
  */
 export const assert: (value: unknown, message?: string) => asserts value = (

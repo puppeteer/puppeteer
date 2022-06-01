@@ -277,9 +277,6 @@ function waitForWSEndpoint(
     ];
     const timeoutId = timeout ? setTimeout(onTimeout, timeout) : 0;
 
-    /**
-     * @param {!Error=} error
-     */
     function onClose(error?: Error): void {
       cleanup();
       reject(

@@ -829,7 +829,7 @@ export class ElementHandle<
      avoid paying the cost unnecessarily.
     */
     const path = await import('path');
-    const fs = await helper.importFSModule();
+    const fs = await import('fs');
     // Locate all files and confirm that they exist.
     const files = await Promise.all(
       filePaths.map(async (filePath) => {

@@ -806,11 +806,7 @@ describe('request interception', function () {
   });
 });
 
-/**
- * @param {string} path
- * @returns {string}
- */
-function pathToFileURL(path) {
+function pathToFileURL(path: string): string {
   let pathName = path.replace(/\\/g, '/');
   // Windows drive letter must be prefixed with a slash.
   if (!pathName.startsWith('/')) pathName = '/' + pathName;

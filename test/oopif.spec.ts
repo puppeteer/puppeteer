@@ -419,9 +419,6 @@ describeChromeOnly('OOPIF', function () {
   });
 });
 
-/**
- * @param {!BrowserContext} context
- */
 function oopifs(context) {
   return context
     .targets()

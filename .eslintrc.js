@@ -124,7 +124,10 @@ module.exports = {
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
       ],
+      plugins: ['eslint-plugin-tsdoc'],
       rules: {
+        // Error if comments do not adhere to `tsdoc`.
+        'tsdoc/syntax': 2,
         'no-unused-vars': 0,
         '@typescript-eslint/no-unused-vars': [
           'error',

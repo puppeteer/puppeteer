@@ -335,7 +335,7 @@ export class DOMWorld {
           'Cannot pass a filepath to addScriptTag in the browser environment.'
         );
       }
-      const fs = await helper.importFSModule();
+      const fs = await import('fs');
       let contents = await fs.promises.readFile(path, 'utf8');
       contents += '//# sourceURL=' + path.replace(/\n/g, '');
       const context = await this.executionContext();
@@ -442,7 +442,7 @@ export class DOMWorld {
           'Cannot pass a filepath to addStyleTag in the browser environment.'
         );
       }
-      const fs = await helper.importFSModule();
+      const fs = await import('fs');
       let contents = await fs.promises.readFile(path, 'utf8');
       contents += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
       const context = await this.executionContext();
@@ -985,9 +985,6 @@ async function waitForPredicatePageFunction(
       return await pollInterval(polling);
   }
 
-  /**
-   * @returns {!Promise<*>}
-   */
   async function pollMutation(): Promise<unknown> {
     const success = predicateAcceptsContextElement
       ? await predicate(root, ...args)

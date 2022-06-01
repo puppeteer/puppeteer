@@ -2830,8 +2830,8 @@ export class Page extends EventEmitter {
           'Screenshots can only be written to a file path in a Node environment.'
         );
       }
-      const fs = await helper.importFSModule();
-      await fs.promises.writeFile(options.path, buffer);
+      const fs = (await import('fs')).promises;
+      await fs.writeFile(options.path, buffer);
     }
     return buffer;
 
@@ -3416,9 +3416,9 @@ function convertPrintParameterToInches(
   let pixels;
   if (helper.isNumber(parameter)) {
     // Treat numbers as pixel values to be aligned with phantom's paperSize.
-    pixels = /** @type {number} */ parameter;
+    pixels = parameter;
   } else if (helper.isString(parameter)) {
-    const text = /** @type {string} */ parameter;
+    const text = parameter;
     let unit = text.substring(text.length - 2).toLowerCase();
     let valueText = '';
     if (unit in unitToPixels) {

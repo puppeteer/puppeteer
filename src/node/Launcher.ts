@@ -687,8 +687,8 @@ class FirefoxLauncher implements ProductLauncher {
    * able to restore the original values of preferences a backup of prefs.js
    * will be created.
    *
-   * @param prefs List of preferences to add.
-   * @param profilePath Firefox profile to write the preferences to.
+   * @param prefs - List of preferences to add.
+   * @param profilePath - Firefox profile to write the preferences to.
    */
   async writePreferences(
     prefs: { [x: string]: unknown },
