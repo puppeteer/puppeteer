@@ -7,7 +7,7 @@ on:
 
 jobs:
   pre-release:
-    if: '!startsWith(github.event.head_commit.message, "chore: freeze version on docs")'
+    if: "startsWith(github.event.head_commit.message, 'chore(main): release')"
     runs-on: ubuntu-latest
     permissions:
       contents: write
