@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.2.0](https://github.com/puppeteer/puppeteer/compare/v14.1.2...v14.2.0) (2022-06-01)
+
+
+### Features
+
+* **chromium:** roll to Chromium 103.0.5059.0 (r1002410) ([#8410](https://github.com/puppeteer/puppeteer/issues/8410)) ([54efc2c](https://github.com/puppeteer/puppeteer/commit/54efc2c949be1d6ef22f4d2630620e33d14d2597))
+* support node 18 ([#8447](https://github.com/puppeteer/puppeteer/issues/8447)) ([f2d8276](https://github.com/puppeteer/puppeteer/commit/f2d8276d6e745a7547b8ce54c3f50934bb70de0b))
+* use strict typescript ([#8401](https://github.com/puppeteer/puppeteer/issues/8401)) ([b4e751f](https://github.com/puppeteer/puppeteer/commit/b4e751f29cb6fd4c3cc41fe702de83721f0eb6dc))
+
+
+### Bug Fixes
+
+* multiple same request event listener ([#8404](https://github.com/puppeteer/puppeteer/issues/8404)) ([9211015](https://github.com/puppeteer/puppeteer/commit/92110151d9a33f26abc07bc805f4f2f3943697a0))
+* NodeNext incompatibility in package.json ([#8445](https://github.com/puppeteer/puppeteer/issues/8445)) ([c4898a7](https://github.com/puppeteer/puppeteer/commit/c4898a7a2e69681baac55366848da6688f0d8790))
+* process documentation during publishing ([#8433](https://github.com/puppeteer/puppeteer/issues/8433)) ([d111d19](https://github.com/puppeteer/puppeteer/commit/d111d19f788d88d984dcf4ad7542f59acd2f4c1e))
+
 ## [14.1.2](https://github.com/puppeteer/puppeteer/compare/v14.1.1...v14.1.2) (2022-05-30)
 
 
