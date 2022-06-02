@@ -96,7 +96,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "17.0.1",
-    "@commitlint/config-conventional": "17.0.0",
+    "@commitlint/config-conventional": "17.0.2",
     "@microsoft/api-documenter": "7.17.16",
     "@microsoft/api-extractor": "7.24.2",
     "@types/debug": "4.1.7",
