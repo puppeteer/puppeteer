@@ -5,6 +5,8 @@ updates:
     schedule:
       interval: daily
     open-pull-requests-limit: 3
+    allow:
+      - dependency-type: 'production'
   - package-ecosystem: github-actions
     directory: '/'
     schedule:
