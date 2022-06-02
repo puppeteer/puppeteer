@@ -327,6 +327,13 @@ export class Browser extends EventEmitter {
   }
 
   /**
+   * @internal
+   */
+  _getIsPageTargetCallback(): IsPageTargetCallback | undefined {
+    return this._isPageTargetCallback;
+  }
+
+  /**
    * Creates a new incognito browser context. This won't share cookies/cache with other
    * browser contexts.
    *
@@ -782,7 +789,14 @@ export class BrowserContext extends EventEmitter {
   async pages(): Promise<Page[]> {
     const pages = await Promise.all(
       this.targets()
-        .filter((target) => target.type() === 'page')
+        .filter(
+          (target) =>
+            target.type() === 'page' ||
+            (target.type() === 'other' &&
+              this._browser._getIsPageTargetCallback()?.(
+                target._getTargetInfo()
+              ))
+        )
         .map((target) => target.page())
     );
     return pages.filter((page): page is Page => !!page);

@@ -114,6 +114,13 @@ export class Target {
   }
 
   /**
+   * @internal
+   */
+  _getTargetInfo(): Protocol.Target.TargetInfo {
+    return this._targetInfo;
+  }
+
+  /**
    * If the target is not of type `"page"` or `"background_page"`, returns `null`.
    */
   async page(): Promise<Page | undefined> {
