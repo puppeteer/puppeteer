@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
+* use `null` instead of `undefined` ([#8463](https://github.com/puppeteer/puppeteer/issues/8463)) ([2615c1c](https://github.com/puppeteer/puppeteer/commit/2615c1c3d6cc7d39c69895f918be79569ceb2a2e))
 * use isPageTargetCallback in Browser::pages() ([#8460](https://github.com/puppeteer/puppeteer/issues/8460)) ([5c9050a](https://github.com/puppeteer/puppeteer/commit/5c9050aea0fe8d57114130fe38bd33ed2b4955d6))
 
 ## [14.2.0](https://github.com/puppeteer/puppeteer/compare/v14.1.2...v14.2.0) (2022-06-01)
