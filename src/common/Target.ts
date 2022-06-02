@@ -123,7 +123,7 @@ export class Target {
   /**
    * If the target is not of type `"page"` or `"background_page"`, returns `null`.
    */
-  async page(): Promise<Page | undefined> {
+  async page(): Promise<Page | null> {
     if (this._isPageTargetCallback(this._targetInfo) && !this._pagePromise) {
       this._pagePromise = this._sessionFactory().then((client) =>
         Page.create(
@@ -135,7 +135,7 @@ export class Target {
         )
       );
     }
-    return this._pagePromise;
+    return (await this._pagePromise) ?? null;
   }
 
   /**
