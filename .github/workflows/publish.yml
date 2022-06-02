@@ -50,10 +50,18 @@ jobs:
         run: npm install
       - name: Build main docs
         run: npm run doc
-      - name: Commit and push
+      - name: Commit
         run: |
           git config --global user.email "55107282+release-please[bot]@users.noreply.github.com"
           git config --global user.name "release-please[bot]"
-          git add -A
-          git commit -m "chore: build main docs"
-          git push
+          git commit -am "chore: unfreeze version on docs"
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: Build dist
+          author: 'release-please[bot] <55107282+release-please[bot]@users.noreply.github.com>'
+          title: 'chore: unfreeze version on docs'
+          body: ''
+          labels: automated pr
+          branch: create-pull-request/unfreeze
+          delete-branch: true
