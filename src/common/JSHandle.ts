@@ -801,9 +801,12 @@ export class ElementHandle<
   /**
    * This method expects `elementHandle` to point to an
    * {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input | input element}.
+   *
    * @param filePaths - Sets the value of the file input to these paths.
-   *    If some of the  `filePaths` are relative paths, then they are resolved
-   *    relative to the {@link https://nodejs.org/api/process.html#process_process_cwd | current working directory}
+   *    If a path is relative, then it is resolved against the
+   *    {@link https://nodejs.org/api/process.html#process_process_cwd | current working directory}.
+   *    Note for locals script connecting to remote chrome environments,
+   *    paths must be absolute.
    */
   async uploadFile(...filePaths: string[]): Promise<void> {
     const isMultiple = await this.evaluate<(element: Element) => boolean>(
@@ -829,21 +832,14 @@ export class ElementHandle<
      avoid paying the cost unnecessarily.
     */
     const path = await import('path');
-    const fs = await import('fs');
     // Locate all files and confirm that they exist.
-    const files = await Promise.all(
-      filePaths.map(async (filePath) => {
-        const resolvedPath: string = path.resolve(filePath);
-        try {
-          await fs.promises.access(resolvedPath, fs.constants.R_OK);
-        } catch (error) {
-          if (error && (error as NodeJS.ErrnoException).code === 'ENOENT')
-            throw new Error(`${filePath} does not exist or is not readable`);
-        }
-
-        return resolvedPath;
-      })
-    );
+    const files = filePaths.map((filePath) => {
+      if (path.isAbsolute(filePath)) {
+        return filePath;
+      } else {
+        return path.resolve(filePath);
+      }
+    });
     const { objectId } = this._remoteObject;
     const { node } = await this._client.send('DOM.describeNode', { objectId });
     const { backendNodeId } = node;
