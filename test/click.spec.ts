@@ -211,7 +211,7 @@ describe('Page.click', function () {
       .click('button.does-not-exist')
       .catch((error_) => (error = error_));
     expect(error.message).toBe(
-      'No node found for selector: button.does-not-exist'
+      'No element found for selector: button.does-not-exist'
     );
   });
   // @see https://github.com/puppeteer/puppeteer/issues/161

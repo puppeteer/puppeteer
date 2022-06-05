@@ -27,9 +27,9 @@ export const initializePuppeteerNode = (packageName: string): PuppeteerNode => {
   // puppeteer-core ignores environment variables
   const productName = isPuppeteerCore
     ? undefined
-    : process.env.PUPPETEER_PRODUCT ||
-      process.env.npm_config_puppeteer_product ||
-      process.env.npm_package_config_puppeteer_product;
+    : process.env['PUPPETEER_PRODUCT'] ||
+      process.env['npm_config_puppeteer_product'] ||
+      process.env['npm_package_config_puppeteer_product'];
 
   if (!isPuppeteerCore && productName === 'firefox')
     preferredRevision = PUPPETEER_REVISIONS.firefox;

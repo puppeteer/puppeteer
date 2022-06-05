@@ -14,55 +14,58 @@
  * limitations under the License.
  */
 
+import { Protocol } from 'devtools-protocol';
 import type { Readable } from 'stream';
-
-import { EventEmitter, Handler } from './EventEmitter.js';
+import { isNode } from '../environment.js';
+import { Accessibility } from './Accessibility.js';
+import { assert, assertNever } from './assert.js';
+import { Browser, BrowserContext } from './Browser.js';
 import {
-  Connection,
   CDPSession,
   CDPSessionEmittedEvents,
+  Connection,
 } from './Connection.js';
+import { ConsoleMessage, ConsoleMessageType } from './ConsoleMessage.js';
+import { Coverage } from './Coverage.js';
 import { Dialog } from './Dialog.js';
 import { EmulationManager } from './EmulationManager.js';
+import {
+  EvaluateFn,
+  EvaluateFnReturnType,
+  EvaluateHandleFn,
+  SerializableOrJSHandle,
+  UnwrapPromiseLike,
+  WrapElementHandle,
+} from './EvalTypes.js';
+import { EventEmitter, Handler } from './EventEmitter.js';
+import { FileChooser } from './FileChooser.js';
 import {
   Frame,
   FrameManager,
   FrameManagerEmittedEvents,
 } from './FrameManager.js';
-import { Keyboard, Mouse, Touchscreen, MouseButton } from './Input.js';
-import { Tracing } from './Tracing.js';
-import { assert, assertNever } from './assert.js';
-import { helper, debugError } from './helper.js';
-import { Coverage } from './Coverage.js';
-import { WebWorker } from './WebWorker.js';
-import { Browser, BrowserContext } from './Browser.js';
-import { Target } from './Target.js';
-import { createJSHandle, JSHandle, ElementHandle } from './JSHandle.js';
-import { Viewport } from './PuppeteerViewport.js';
+import { debugError, helper } from './helper.js';
+import { HTTPRequest } from './HTTPRequest.js';
+import { HTTPResponse } from './HTTPResponse.js';
+import { Keyboard, Mouse, MouseButton, Touchscreen } from './Input.js';
+import { createJSHandle, ElementHandle, JSHandle } from './JSHandle.js';
+import { PuppeteerLifeCycleEvent } from './LifecycleWatcher.js';
 import {
   Credentials,
   NetworkConditions,
   NetworkManagerEmittedEvents,
 } from './NetworkManager.js';
-import { HTTPRequest } from './HTTPRequest.js';
-import { HTTPResponse } from './HTTPResponse.js';
-import { Accessibility } from './Accessibility.js';
-import { TimeoutSettings } from './TimeoutSettings.js';
-import { FileChooser } from './FileChooser.js';
-import { ConsoleMessage, ConsoleMessageType } from './ConsoleMessage.js';
-import { PuppeteerLifeCycleEvent } from './LifecycleWatcher.js';
-import { Protocol } from 'devtools-protocol';
 import {
-  SerializableOrJSHandle,
-  EvaluateHandleFn,
-  WrapElementHandle,
-  EvaluateFn,
-  EvaluateFnReturnType,
-  UnwrapPromiseLike,
-} from './EvalTypes.js';
-import { PDFOptions, paperFormats } from './PDFOptions.js';
-import { isNode } from '../environment.js';
+  LowerCasePaperFormat,
+  paperFormats,
+  PDFOptions,
+} from './PDFOptions.js';
+import { Viewport } from './PuppeteerViewport.js';
+import { Target } from './Target.js';
 import { TaskQueue } from './TaskQueue.js';
+import { TimeoutSettings } from './TimeoutSettings.js';
+import { Tracing } from './Tracing.js';
+import { WebWorker } from './WebWorker.js';
 
 /**
  * @public
@@ -492,35 +495,35 @@ export class Page extends EventEmitter {
     client.on(
       'Target.attachedToTarget',
       (event: Protocol.Target.AttachedToTargetEvent) => {
-        if (
-          event.targetInfo.type !== 'worker' &&
-          event.targetInfo.type !== 'iframe'
-        ) {
-          // If we don't detach from service workers, they will never die.
-          // We still want to attach to workers for emitting events.
-          // We still want to attach to iframes so sessions may interact with them.
-          // We detach from all other types out of an abundance of caution.
-          // See https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&q=f:devtools%20-f:out%20%22::kTypePage%5B%5D%22
-          // for the complete list of available types.
-          client
-            .send('Target.detachFromTarget', {
-              sessionId: event.sessionId,
-            })
-            .catch(debugError);
-          return;
-        }
-        if (event.targetInfo.type === 'worker') {
-          const session = Connection.fromSession(client).session(
-            event.sessionId
-          );
-          const worker = new WebWorker(
-            session,
-            event.targetInfo.url,
-            this._addConsoleMessage.bind(this),
-            this._handleException.bind(this)
-          );
-          this._workers.set(event.sessionId, worker);
-          this.emit(PageEmittedEvents.WorkerCreated, worker);
+        switch (event.targetInfo.type) {
+          case 'worker':
+            const connection = Connection.fromSession(client);
+            assert(connection);
+            const session = connection.session(event.sessionId);
+            assert(session);
+            const worker = new WebWorker(
+              session,
+              event.targetInfo.url,
+              this._addConsoleMessage.bind(this),
+              this._handleException.bind(this)
+            );
+            this._workers.set(event.sessionId, worker);
+            this.emit(PageEmittedEvents.WorkerCreated, worker);
+            break;
+          case 'iframe':
+            break;
+          default:
+            // If we don't detach from service workers, they will never die.
+            // We still want to attach to workers for emitting events.
+            // We still want to attach to iframes so sessions may interact with them.
+            // We detach from all other types out of an abundance of caution.
+            // See https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&q=f:devtools%20-f:out%20%22::kTypePage%5B%5D%22
+            // for the complete list of available types.
+            client
+              .send('Target.detachFromTarget', {
+                sessionId: event.sessionId,
+              })
+              .catch(debugError);
         }
       }
     );
@@ -598,6 +601,7 @@ export class Page extends EventEmitter {
   ): Promise<void> {
     if (!this._fileChooserInterceptors.size) return;
     const frame = this._frameManager.frame(event.frameId);
+    assert(frame);
     const context = await frame.executionContext();
     const element = await context._adoptBackendNodeId(event.backendNodeId);
     const interceptors = Array.from(this._fileChooserInterceptors);
@@ -626,16 +630,18 @@ export class Page extends EventEmitter {
   // Note: this method exists to define event typings and handle
   // proper wireup of cooperative request interception. Actual event listening and
   // dispatching is delegated to EventEmitter.
-  public on<K extends keyof PageEventObject>(
+  public override on<K extends keyof PageEventObject>(
     eventName: K,
     handler: (event: PageEventObject[K]) => void
   ): EventEmitter {
     if (eventName === 'request') {
-      const wrap = (event: HTTPRequest) => {
-        event.enqueueInterceptAction(() =>
-          handler(event as PageEventObject[K])
-        );
-      };
+      const wrap =
+        this._handlerMap.get(handler) ||
+        ((event: HTTPRequest) => {
+          event.enqueueInterceptAction(() =>
+            handler(event as PageEventObject[K])
+          );
+        });
 
       this._handlerMap.set(handler, wrap);
 
@@ -644,7 +650,7 @@ export class Page extends EventEmitter {
     return super.on(eventName, handler);
   }
 
-  public once<K extends keyof PageEventObject>(
+  public override once<K extends keyof PageEventObject>(
     eventName: K,
     handler: (event: PageEventObject[K]) => void
   ): EventEmitter {
@@ -653,7 +659,7 @@ export class Page extends EventEmitter {
     return super.once(eventName, handler);
   }
 
-  off<K extends keyof PageEventObject>(
+  override off<K extends keyof PageEventObject>(
     eventName: K,
     handler: (event: PageEventObject[K]) => void
   ): EventEmitter {
@@ -695,7 +701,7 @@ export class Page extends EventEmitter {
       });
 
     const { timeout = this._timeoutSettings.timeout() } = options;
-    let callback: (value: FileChooser | PromiseLike<FileChooser>) => void;
+    let callback!: (value: FileChooser | PromiseLike<FileChooser>) => void;
     const promise = new Promise<FileChooser>((x) => (callback = x));
     this._fileChooserInterceptors.add(callback);
     return helper
@@ -1251,7 +1257,9 @@ export class Page extends EventEmitter {
     const filterUnsupportedAttributes = (
       cookie: Protocol.Network.Cookie
     ): Protocol.Network.Cookie => {
-      for (const attr of unsupportedCookieAttributes) delete cookie[attr];
+      for (const attr of unsupportedCookieAttributes) {
+        delete (cookie as unknown as Record<string, unknown>)[attr];
+      }
       return cookie;
     };
     return originalCookies.map(filterUnsupportedAttributes);
@@ -1503,9 +1511,14 @@ export class Page extends EventEmitter {
   private _buildMetricsObject(
     metrics?: Protocol.Performance.Metric[]
   ): Metrics {
-    const result = {};
+    const result: Record<
+      Protocol.Performance.Metric['name'],
+      Protocol.Performance.Metric['value']
+    > = {};
     for (const metric of metrics || []) {
-      if (supportedMetrics.has(metric.name)) result[metric.name] = metric.value;
+      if (supportedMetrics.has(metric.name)) {
+        result[metric.name] = metric.value;
+      }
     }
     return result;
   }
@@ -1561,7 +1574,9 @@ export class Page extends EventEmitter {
     if (type !== 'exposedFun' || !this._pageBindings.has(name)) return;
     let expression = null;
     try {
-      const result = await this._pageBindings.get(name)(...args);
+      const pageBinding = this._pageBindings.get(name);
+      assert(pageBinding);
+      const result = await pageBinding(...args);
       expression = helper.pageBindingDeliverResultString(name, seq, result);
     } catch (error) {
       if (error instanceof Error)
@@ -1587,7 +1602,7 @@ export class Page extends EventEmitter {
   }
 
   private _addConsoleMessage(
-    type: ConsoleMessageType,
+    eventType: ConsoleMessageType,
     args: JSHandle[],
     stackTrace?: Protocol.Runtime.StackTrace
   ): void {
@@ -1612,7 +1627,7 @@ export class Page extends EventEmitter {
       }
     }
     const message = new ConsoleMessage(
-      type,
+      eventType,
       textTokens.join(' '),
       args,
       stackTraceLocations
@@ -1762,7 +1777,7 @@ export class Page extends EventEmitter {
   async goto(
     url: string,
     options: WaitForOptions & { referer?: string } = {}
-  ): Promise<HTTPResponse> {
+  ): Promise<HTTPResponse | null> {
     return await this._frameManager.mainFrame().goto(url, options);
   }
 
@@ -1947,17 +1962,17 @@ export class Page extends EventEmitter {
 
     const networkManager = this._frameManager.networkManager();
 
-    let idleResolveCallback;
-    const idlePromise = new Promise((resolve) => {
+    let idleResolveCallback: () => void;
+    const idlePromise = new Promise<void>((resolve) => {
       idleResolveCallback = resolve;
     });
 
-    let abortRejectCallback;
+    let abortRejectCallback: (error: Error) => void;
     const abortPromise = new Promise<Error>((_, reject) => {
       abortRejectCallback = reject;
     });
 
-    let idleTimer;
+    let idleTimer: NodeJS.Timeout;
     const onIdle = () => idleResolveCallback();
 
     const cleanup = () => {
@@ -1978,7 +1993,7 @@ export class Page extends EventEmitter {
       return false;
     };
 
-    const listenToEvent = (event) =>
+    const listenToEvent = (event: symbol) =>
       helper.waitForEvent(
         networkManager,
         event,
@@ -2031,15 +2046,21 @@ export class Page extends EventEmitter {
   ): Promise<Frame> {
     const { timeout = this._timeoutSettings.timeout() } = options;
 
-    async function predicate(frame: Frame) {
-      if (helper.isString(urlOrPredicate))
-        return urlOrPredicate === frame.url();
-      if (typeof urlOrPredicate === 'function')
-        return !!(await urlOrPredicate(frame));
-      return false;
+    let predicate: (frame: Frame) => Promise<boolean>;
+    if (helper.isString(urlOrPredicate)) {
+      predicate = (frame: Frame) =>
+        Promise.resolve(urlOrPredicate === frame.url());
+    } else {
+      predicate = (frame: Frame) => {
+        const value = urlOrPredicate(frame);
+        if (typeof value === 'boolean') {
+          return Promise.resolve(value);
+        }
+        return value;
+      };
     }
 
-    const eventRace = Promise.race([
+    const eventRace: Promise<Frame> = Promise.race([
       helper.waitForEvent(
         this._frameManager,
         FrameManagerEmittedEvents.FrameAttached,
@@ -2054,19 +2075,15 @@ export class Page extends EventEmitter {
         timeout,
         this._sessionClosePromise()
       ),
+      ...this.frames().map(async (frame) => {
+        if (await predicate(frame)) {
+          return frame;
+        }
+        return await eventRace;
+      }),
     ]);
 
-    return Promise.race([
-      eventRace,
-      (async () => {
-        for (const frame of this.frames()) {
-          if (await predicate(frame)) {
-            return frame;
-          }
-        }
-        await eventRace;
-      })(),
-    ]);
+    return eventRace;
   }
 
   /**
@@ -2315,10 +2332,9 @@ export class Page extends EventEmitter {
    * ```
    */
   async emulateMediaFeatures(features?: MediaFeature[]): Promise<void> {
-    if (features === null)
-      await this._client.send('Emulation.setEmulatedMedia', { features: null });
+    if (!features) await this._client.send('Emulation.setEmulatedMedia', {});
     if (Array.isArray(features)) {
-      features.every((mediaFeature) => {
+      for (const mediaFeature of features) {
         const name = mediaFeature.name;
         assert(
           /^(?:prefers-(?:color-scheme|reduced-motion)|color-gamut)$/.test(
@@ -2326,8 +2342,7 @@ export class Page extends EventEmitter {
           ),
           'Unsupported media feature: ' + name
         );
-        return true;
-      });
+      }
       await this._client.send('Emulation.setEmulatedMedia', {
         features: features,
       });
@@ -2346,7 +2361,7 @@ export class Page extends EventEmitter {
         timezoneId: timezoneId || '',
       });
     } catch (error) {
-      if (error.message.includes('Invalid timezone'))
+      if (error instanceof Error && error.message.includes('Invalid timezone'))
         throw new Error(`Invalid timezone ID: ${timezoneId}`);
       throw error;
     }
@@ -2650,7 +2665,7 @@ export class Page extends EventEmitter {
    * the value of `encoding`) with captured screenshot.
    */
   async screenshot(options: ScreenshotOptions = {}): Promise<Buffer | string> {
-    let screenshotType = null;
+    let screenshotType = Protocol.Page.CaptureScreenshotRequestFormat.Png;
     // options.type takes precedence over inferring the type from options.path
     // because it may be a 0-length file with no extension created beforehand
     // (i.e. as a temp file).
@@ -2659,27 +2674,35 @@ export class Page extends EventEmitter {
       if (type !== 'png' && type !== 'jpeg' && type !== 'webp') {
         assertNever(type, 'Unknown options.type value: ' + type);
       }
-      screenshotType = options.type;
+      screenshotType =
+        options.type as Protocol.Page.CaptureScreenshotRequestFormat;
     } else if (options.path) {
       const filePath = options.path;
       const extension = filePath
         .slice(filePath.lastIndexOf('.') + 1)
         .toLowerCase();
-      if (extension === 'png') screenshotType = 'png';
-      else if (extension === 'jpg' || extension === 'jpeg')
-        screenshotType = 'jpeg';
-      else if (extension === 'webp') screenshotType = 'webp';
-      assert(
-        screenshotType,
-        `Unsupported screenshot type for extension \`.${extension}\``
-      );
+      switch (extension) {
+        case 'png':
+          screenshotType = Protocol.Page.CaptureScreenshotRequestFormat.Png;
+          break;
+        case 'jpeg':
+        case 'jpg':
+          screenshotType = Protocol.Page.CaptureScreenshotRequestFormat.Jpeg;
+          break;
+        case 'webp':
+          screenshotType = Protocol.Page.CaptureScreenshotRequestFormat.Webp;
+          break;
+        default:
+          throw new Error(
+            `Unsupported screenshot type for extension \`.${extension}\``
+          );
+      }
     }
-
-    if (!screenshotType) screenshotType = 'png';
 
     if (options.quality) {
       assert(
-        screenshotType === 'jpeg' || screenshotType === 'webp',
+        screenshotType === Protocol.Page.CaptureScreenshotRequestFormat.Jpeg ||
+          screenshotType === Protocol.Page.CaptureScreenshotRequestFormat.Webp,
         'options.quality is unsupported for the ' +
           screenshotType +
           ' screenshots'
@@ -2740,7 +2763,7 @@ export class Page extends EventEmitter {
 
   private async _screenshotTask(
     format: Protocol.Page.CaptureScreenshotRequestFormat,
-    options?: ScreenshotOptions
+    options: ScreenshotOptions = {}
   ): Promise<Buffer | string> {
     await this._client.send('Target.activateTarget', {
       targetId: this._target._targetId,
@@ -2807,8 +2830,8 @@ export class Page extends EventEmitter {
           'Screenshots can only be written to a file path in a Node environment.'
         );
       }
-      const fs = await helper.importFSModule();
-      await fs.promises.writeFile(options.path, buffer);
+      const fs = (await import('fs')).promises;
+      await fs.writeFile(options.path, buffer);
     }
     return buffer;
 
@@ -2859,7 +2882,8 @@ export class Page extends EventEmitter {
     let paperWidth = 8.5;
     let paperHeight = 11;
     if (options.format) {
-      const format = paperFormats[options.format.toLowerCase()];
+      const format =
+        paperFormats[options.format.toLowerCase() as LowerCasePaperFormat];
       assert(format, 'Unknown paper format: ' + options.format);
       paperWidth = format.width;
       paperHeight = format.height;
@@ -2906,6 +2930,7 @@ export class Page extends EventEmitter {
       await this._resetDefaultBackgroundColor();
     }
 
+    assert(result.stream, '`stream` is missing from `Page.printToPDF');
     return helper.getReadableFromProtocolStream(this._client, result.stream);
   }
 
@@ -2916,7 +2941,9 @@ export class Page extends EventEmitter {
   async pdf(options: PDFOptions = {}): Promise<Buffer> {
     const { path = undefined } = options;
     const readable = await this.createPDFStream(options);
-    return await helper.getReadableAsBuffer(readable, path);
+    const buffer = await helper.getReadableAsBuffer(readable, path);
+    assert(buffer, 'Could not create buffer');
+    return buffer;
   }
 
   /**
@@ -3132,7 +3159,7 @@ export class Page extends EventEmitter {
       polling?: string | number;
     } = {},
     ...args: SerializableOrJSHandle[]
-  ): Promise<JSHandle> {
+  ): Promise<JSHandle | null> {
     return this.mainFrame().waitFor(
       selectorOrFunctionOrTimeout,
       options,
@@ -3389,12 +3416,12 @@ function convertPrintParameterToInches(
   let pixels;
   if (helper.isNumber(parameter)) {
     // Treat numbers as pixel values to be aligned with phantom's paperSize.
-    pixels = /** @type {number} */ parameter;
+    pixels = parameter;
   } else if (helper.isString(parameter)) {
-    const text = /** @type {string} */ parameter;
+    const text = parameter;
     let unit = text.substring(text.length - 2).toLowerCase();
     let valueText = '';
-    if (unitToPixels.hasOwnProperty(unit)) {
+    if (unit in unitToPixels) {
       valueText = text.substring(0, text.length - 2);
     } else {
       // In case of unknown unit try to parse the whole parameter as number of pixels.
@@ -3404,7 +3431,7 @@ function convertPrintParameterToInches(
     }
     const value = Number(valueText);
     assert(!isNaN(value), 'Failed to parse parameter value: ' + text);
-    pixels = value * unitToPixels[unit];
+    pixels = value * unitToPixels[unit as keyof typeof unitToPixels];
   } else {
     throw new Error(
       'page.pdf() Cannot handle parameter type: ' + typeof parameter

@@ -1,4 +1,5 @@
-name: run-tot-checks
+name: ToT CI
+
 # Checks Puppeteer against the latest ToT build of Chromium.
 # Declare default permissions as read only.
 permissions: read-all
@@ -11,7 +12,7 @@ on:
     - cron: '0 8 * * *'
 
 jobs:
-  linux-tot-checks:
+  linux:
     # https://github.com/actions/virtual-environments#available-environments
     runs-on: ubuntu-latest
     strategy:
@@ -24,7 +25,7 @@ jobs:
           fetch-depth: 2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3.1.1
+        uses: actions/setup-node@v3.2.0
         with:
           node-version: ${{ matrix.node }}
 

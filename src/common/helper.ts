@@ -228,13 +228,13 @@ function pageBindingDeliverErrorString(
   name: string,
   seq: number,
   message: string,
-  stack: string
+  stack?: string
 ): string {
   function deliverError(
     name: string,
     seq: number,
     message: string,
-    stack: string
+    stack?: string
   ): void {
     const error = new Error(message);
     error.stack = stack;
@@ -261,7 +261,7 @@ function makePredicateString(
   predicateQueryHandler?: Function
 ): string {
   function checkWaitForOptions(
-    node: Node,
+    node: Node | null,
     waitForVisible: boolean,
     waitForHidden: boolean
   ): Node | null | boolean {
@@ -304,7 +304,7 @@ async function waitWithTimeout<T>(
   const timeoutError = new TimeoutError(
     `waiting for ${taskName} failed: timeout ${timeout}ms exceeded`
   );
-  const timeoutPromise = new Promise<T>((resolve, x) => (reject = x));
+  const timeoutPromise = new Promise<T>((_res, rej) => (reject = rej));
   let timeoutTimer = null;
   if (timeout) timeoutTimer = setTimeout(() => reject(timeoutError), timeout);
   try {
@@ -322,18 +322,18 @@ async function getReadableAsBuffer(
     throw new Error('Cannot write to a path outside of Node.js environment.');
   }
 
-  const fs = isNode ? await importFSModule() : null;
+  const fs = isNode ? (await import('fs')).promises : null;
 
   let fileHandle: import('fs').promises.FileHandle | undefined;
 
   if (path && fs) {
-    fileHandle = await fs.promises.open(path, 'w');
+    fileHandle = await fs.open(path, 'w');
   }
   const buffers = [];
   for await (const chunk of readable) {
     buffers.push(chunk);
     if (fileHandle && fs) {
-      await fs.promises.writeFile(fileHandle, chunk);
+      await fs.writeFile(fileHandle, chunk);
     }
   }
 
@@ -362,7 +362,7 @@ async function getReadableFromProtocolStream(
   return new Readable({
     async read(size: number) {
       if (eof) {
-        return null;
+        return;
       }
 
       const response = await client.send('IO.read', { handle, size });
@@ -374,30 +374,6 @@ async function getReadableFromProtocolStream(
       }
     },
   });
-}
-
-/**
- * Loads the Node fs promises API. Needed because on Node 10.17 and below,
- * fs.promises is experimental, and therefore not marked as enumerable. That
- * means when TypeScript compiles an `import('fs')`, its helper doesn't spot the
- * promises declaration and therefore on Node <10.17 you get an error as
- * fs.promises is undefined in compiled TypeScript land.
- *
- * See https://github.com/puppeteer/puppeteer/issues/6548 for more details.
- *
- * Once Node 10 is no longer supported (April 2021) we can remove this and use
- * `(await import('fs')).promises`.
- */
-async function importFSModule(): Promise<typeof import('fs')> {
-  if (!isNode) {
-    throw new Error('Cannot load the fs module API outside of Node.');
-  }
-
-  const fs = await import('fs');
-  if (fs.promises) {
-    return fs;
-  }
-  return fs.default;
 }
 
 export const helper = {
@@ -413,7 +389,6 @@ export const helper = {
   waitForEvent,
   isString,
   isNumber,
-  importFSModule,
   addEventListener,
   removeEventListeners,
   valueFromRemoteObject,

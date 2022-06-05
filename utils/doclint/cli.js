@@ -61,9 +61,15 @@ async function run() {
   const mdSources = [readme, api, troubleshooting, contributing];
 
   const preprocessor = require('./preprocessor/index.js');
-  messages.push(...(await preprocessor.runCommands(mdSources, VERSION)));
   messages.push(
-    ...(await preprocessor.ensureReleasedAPILinks([readme], VERSION))
+    ...(await preprocessor.runCommands(mdSources, VERSION, IS_RELEASE))
+  );
+  messages.push(
+    ...(await preprocessor.ensureReleasedAPILinks(
+      [readme],
+      VERSION,
+      IS_RELEASE
+    ))
   );
 
   const browser = await puppeteer.launch();

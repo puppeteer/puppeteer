@@ -35,7 +35,7 @@ describe('navigation', function () {
       await page.goto(server.EMPTY_PAGE);
       expect(page.url()).toBe(server.EMPTY_PAGE);
     });
-    itFailsFirefox('should work with anchor navigation', async () => {
+    it('should work with anchor navigation', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
@@ -488,7 +488,7 @@ describe('navigation', function () {
   });
 
   describe('Page.waitForNavigation', function () {
-    itFailsFirefox('should work', async () => {
+    it('should work', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
@@ -526,7 +526,7 @@ describe('navigation', function () {
       await bothFiredPromise;
       await navigationPromise;
     });
-    itFailsFirefox('should work with clicking on anchor links', async () => {
+    it('should work with clicking on anchor links', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.EMPTY_PAGE);

@@ -363,12 +363,6 @@ export class CDPSession extends EventEmitter {
   }
 }
 
-/**
- * @param {!Error} error
- * @param {string} method
- * @param {{error: {message: string, data: any}}} object
- * @returns {!Error}
- */
 function createProtocolError(
   error: ProtocolError,
   method: string,
@@ -379,11 +373,6 @@ function createProtocolError(
   return rewriteError(error, message, object.error.message);
 }
 
-/**
- * @param {!Error} error
- * @param {string} message
- * @returns {!Error}
- */
 function rewriteError(
   error: ProtocolError,
   message: string,

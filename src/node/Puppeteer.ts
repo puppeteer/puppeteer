@@ -31,6 +31,17 @@ import { PUPPETEER_REVISIONS } from '../revisions.js';
 import { Product } from '../common/Product.js';
 
 /**
+ * @public
+ */
+export interface PuppeteerLaunchOptions
+  extends LaunchOptions,
+    BrowserLaunchArgumentOptions,
+    BrowserConnectOptions {
+  product?: Product;
+  extraPrefsFirefox?: Record<string, unknown>;
+}
+
+/**
  * Extends the main {@link Puppeteer} class with Node specific behaviour for fetching and
  * downloading browsers.
  *
@@ -100,7 +111,7 @@ export class PuppeteerNode extends Puppeteer {
    * @param options - Set of configurable options to set on the browser.
    * @returns Promise which resolves to browser instance.
    */
-  connect(options: ConnectOptions): Promise<Browser> {
+  override connect(options: ConnectOptions): Promise<Browser> {
     if (options.product) this._productName = options.product;
     return super.connect(options);
   }
@@ -143,14 +154,7 @@ export class PuppeteerNode extends Puppeteer {
    * @param options - Set of configurable options to set on the browser.
    * @returns Promise which resolves to browser instance.
    */
-  launch(
-    options: LaunchOptions &
-      BrowserLaunchArgumentOptions &
-      BrowserConnectOptions & {
-        product?: Product;
-        extraPrefsFirefox?: Record<string, unknown>;
-      } = {}
-  ): Promise<Browser> {
+  launch(options: PuppeteerLaunchOptions = {}): Promise<Browser> {
     if (options.product) this._productName = options.product;
     return this._launcher.launch(options);
   }

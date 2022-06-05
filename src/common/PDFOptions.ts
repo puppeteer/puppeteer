@@ -24,7 +24,10 @@ export interface PDFMargin {
   right?: string | number;
 }
 
-type LowerCasePaperFormat =
+/**
+ * @public
+ */
+export type LowerCasePaperFormat =
   | 'letter'
   | 'legal'
   | 'tabloid'

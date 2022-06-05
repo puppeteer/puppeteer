@@ -124,9 +124,15 @@ module.exports = {
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
       ],
+      plugins: ['eslint-plugin-tsdoc'],
       rules: {
+        // Error if comments do not adhere to `tsdoc`.
+        'tsdoc/syntax': 2,
         'no-unused-vars': 0,
-        '@typescript-eslint/no-unused-vars': 2,
+        '@typescript-eslint/no-unused-vars': [
+          'error',
+          { argsIgnorePattern: '^_' },
+        ],
         'func-call-spacing': 0,
         '@typescript-eslint/func-call-spacing': 2,
         semi: 0,
@@ -140,6 +146,8 @@ module.exports = {
         '@typescript-eslint/explicit-function-return-type': 0,
         // We know it's bad and use it very sparingly but it's needed :(
         '@typescript-eslint/ban-ts-ignore': 0,
+        // We allow non-null assertions if the value was asserted using `assert` API.
+        '@typescript-eslint/no-non-null-assertion': 0,
         /**
          * This is the default options (as per
          * https://github.com/typescript-eslint/typescript-eslint/blob/HEAD/packages/eslint-plugin/docs/rules/ban-types.md),

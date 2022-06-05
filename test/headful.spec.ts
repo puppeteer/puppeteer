@@ -145,6 +145,7 @@ describeChromeOnly('headful tests', function () {
       );
       const page = await devtoolsPageTarget.page();
       expect(await page.evaluate(() => 2 * 3)).toBe(6);
+      expect(await browser.pages()).toContainEqual(page);
       await browser.close();
     });
     it('should have default url when launching browser', async function () {

@@ -1,31 +1,12 @@
-name: Release
+name: Publish
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - v*
 
 jobs:
-  release-pr:
-    runs-on: ubuntu-latest
-    outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Remove `-post` suffix
-        run: node utils/remove_version_suffix.js
-      - name: Release
-        uses: google-github-actions/release-please-action@v3
-        id: release
-        with:
-          release-type: node
-          package-name: puppeteer
-          command: github-release
-
   publish:
-    needs: release-pr
-    if: ${{ needs.release-pr.outputs.release_created }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -57,29 +38,30 @@ jobs:
           npm publish
 
   post-publish:
-    needs: publish
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Append `-post` to version
-        id: post-version
+        with:
+          ref: main
+      - name: Install dependencies
+        run: npm install
+      - name: Build main docs
+        run: npm run doc
+      - name: Commit
         run: |
-          npm version --no-git-tag-version --no-commit-hooks "$(jq -r .version ./package.json)-post"
-          echo ::set-output name=VERSION::$(jq -r .version ./package.json)
-      - name: Build
-        run: |
-          npm install
-          npm run build
-          npm run doc
-      - name: Configure git
-        run: |
-          git config --global user.name 'actions-bot'
-          git config --global user.email '<github-actions-bot@google.com>'
-      - name: Commit and push
-        run: |
-          git add -A
-          git commit -m "chore: bump version to ${{ steps.post-version.outputs.VERSION }}"
-          git push
+          git config --global user.email "55107282+release-please[bot]@users.noreply.github.com"
+          git config --global user.name "release-please[bot]"
+          git commit -am "chore: unfreeze version on docs"
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v4
+        with:
+          commit-message: Build dist
+          author: 'release-please[bot] <55107282+release-please[bot]@users.noreply.github.com>'
+          title: 'chore: unfreeze version on docs'
+          body: ''
+          labels: automated pr
+          branch: create-pull-request/unfreeze
+          delete-branch: true

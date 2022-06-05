@@ -120,11 +120,11 @@ export class HTTPRequest {
   /**
    * @internal
    */
-  _interceptionId: string;
+  _interceptionId: string | undefined;
   /**
    * @internal
    */
-  _failureText = null;
+  _failureText: string | null = null;
   /**
    * @internal
    */
@@ -148,7 +148,7 @@ export class HTTPRequest {
   private _method: string;
   private _postData?: string;
   private _headers: Record<string, string> = {};
-  private _frame: Frame;
+  private _frame: Frame | null;
   private _continueRequestOverrides: ContinueRequestOverrides;
   private _responseForRequest: Partial<ResponseForRequest> | null = null;
   private _abortErrorReason: Protocol.Network.ErrorReason | null = null;
@@ -163,8 +163,8 @@ export class HTTPRequest {
    */
   constructor(
     client: CDPSession,
-    frame: Frame,
-    interceptionId: string,
+    frame: Frame | null,
+    interceptionId: string | undefined,
     allowInterception: boolean,
     event: Protocol.Network.RequestWillBeSentEvent,
     redirectChain: HTTPRequest[]
@@ -185,8 +185,8 @@ export class HTTPRequest {
     this._interceptHandlers = [];
     this._initiator = event.initiator;
 
-    for (const key of Object.keys(event.request.headers))
-      this._headers[key.toLowerCase()] = event.request.headers[key];
+    for (const [key, value] of Object.entries(event.request.headers))
+      this._headers[key.toLowerCase()] = value;
   }
 
   /**
@@ -476,6 +476,10 @@ export class HTTPRequest {
       ? Buffer.from(postData).toString('base64')
       : undefined;
 
+    if (this._interceptionId === undefined)
+      throw new Error(
+        'HTTPRequest is missing _interceptionId needed for Fetch.continueRequest'
+      );
     await this._client
       .send('Fetch.continueRequest', {
         requestId: this._interceptionId,
@@ -577,6 +581,10 @@ export class HTTPRequest {
       );
 
     const status = response.status || 200;
+    if (this._interceptionId === undefined)
+      throw new Error(
+        'HTTPRequest is missing _interceptionId needed for Fetch.fulfillRequest'
+      );
     await this._client
       .send('Fetch.fulfillRequest', {
         requestId: this._interceptionId,
@@ -634,6 +642,10 @@ export class HTTPRequest {
     errorReason: Protocol.Network.ErrorReason | null
   ): Promise<void> {
     this._interceptionHandled = true;
+    if (this._interceptionId === undefined)
+      throw new Error(
+        'HTTPRequest is missing _interceptionId needed for Fetch.failRequest'
+      );
     await this._client
       .send('Fetch.failRequest', {
         requestId: this._interceptionId,

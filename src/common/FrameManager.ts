@@ -73,7 +73,7 @@ export class FrameManager extends EventEmitter {
   private _frames = new Map<string, Frame>();
   private _contextIdToContext = new Map<string, ExecutionContext>();
   private _isolatedWorlds = new Set<string>();
-  private _mainFrame: Frame;
+  private _mainFrame?: Frame;
 
   constructor(
     client: CDPSession,
@@ -163,8 +163,9 @@ export class FrameManager extends EventEmitter {
     } catch (error) {
       // The target might have been closed before the initialization finished.
       if (
-        error.message.includes('Target closed') ||
-        error.message.includes('Session closed')
+        error instanceof Error &&
+        (error.message.includes('Target closed') ||
+          error.message.includes('Session closed'))
       ) {
         return;
       }
@@ -194,7 +195,6 @@ export class FrameManager extends EventEmitter {
     } = options;
 
     const watcher = new LifecycleWatcher(this, frame, waitUntil, timeout);
-    let ensureNewDocumentNavigation = false;
     let error = await Promise.race([
       navigate(this._client, url, referer, frame._id),
       watcher.timeoutOrTerminationPromise(),
@@ -202,9 +202,8 @@ export class FrameManager extends EventEmitter {
     if (!error) {
       error = await Promise.race([
         watcher.timeoutOrTerminationPromise(),
-        ensureNewDocumentNavigation
-          ? watcher.newDocumentNavigationPromise()
-          : watcher.sameDocumentNavigationPromise(),
+        watcher.newDocumentNavigationPromise(),
+        watcher.sameDocumentNavigationPromise(),
       ]);
     }
     watcher.dispose();
@@ -214,7 +213,7 @@ export class FrameManager extends EventEmitter {
     async function navigate(
       client: CDPSession,
       url: string,
-      referrer: string,
+      referrer: string | undefined,
       frameId: string
     ): Promise<Error | null> {
       try {
@@ -223,12 +222,14 @@ export class FrameManager extends EventEmitter {
           referrer,
           frameId,
         });
-        ensureNewDocumentNavigation = !!response.loaderId;
         return response.errorText
           ? new Error(`${response.errorText} at ${url}`)
           : null;
       } catch (error) {
-        return error;
+        if (error instanceof Error) {
+          return error;
+        }
+        throw error;
       }
     }
   }
@@ -264,9 +265,10 @@ export class FrameManager extends EventEmitter {
     }
 
     const frame = this._frames.get(event.targetInfo.targetId);
-    const session = Connection.fromSession(this._client).session(
-      event.sessionId
-    );
+    const connection = Connection.fromSession(this._client);
+    assert(connection);
+    const session = connection.session(event.sessionId);
+    assert(session);
     if (frame) frame._updateClient(session);
     this.setupEventListeners(session);
     await this.initialize(session);
@@ -275,6 +277,7 @@ export class FrameManager extends EventEmitter {
   private async _onDetachedFromTarget(
     event: Protocol.Target.DetachedFromTargetEvent
   ) {
+    if (!event.targetId) return;
     const frame = this._frames.get(event.targetId);
     if (frame && frame.isOOPFrame()) {
       // When an OOP iframe is removed from the page, it
@@ -327,6 +330,7 @@ export class FrameManager extends EventEmitter {
   }
 
   mainFrame(): Frame {
+    assert(this._mainFrame, 'Requesting main frame too early!');
     return this._mainFrame;
   }
 
@@ -344,7 +348,7 @@ export class FrameManager extends EventEmitter {
     parentFrameId?: string
   ): void {
     if (this._frames.has(frameId)) {
-      const frame = this._frames.get(frameId);
+      const frame = this._frames.get(frameId)!;
       if (session && frame.isOOPFrame()) {
         // If an OOP iframes becomes a normal iframe again
         // it is first attached to the parent page before
@@ -355,6 +359,7 @@ export class FrameManager extends EventEmitter {
     }
     assert(parentFrameId);
     const parentFrame = this._frames.get(parentFrameId);
+    assert(parentFrame);
     const frame = new Frame(this, parentFrame, frameId, session);
     this._frames.set(frame._id, frame);
     this.emit(FrameManagerEmittedEvents.FrameAttached, frame);
@@ -391,6 +396,7 @@ export class FrameManager extends EventEmitter {
     }
 
     // Update frame payload.
+    assert(frame);
     frame._navigated(framePayload);
 
     this.emit(FrameManagerEmittedEvents.FrameNavigated, frame);
@@ -448,10 +454,11 @@ export class FrameManager extends EventEmitter {
     contextPayload: Protocol.Runtime.ExecutionContextDescription,
     session: CDPSession
   ): void {
-    const auxData = contextPayload.auxData as { frameId?: string };
-    const frameId = auxData ? auxData.frameId : null;
-    const frame = this._frames.get(frameId) || null;
-    let world = null;
+    const auxData = contextPayload.auxData as { frameId?: string } | undefined;
+    const frameId = auxData && auxData.frameId;
+    const frame =
+      typeof frameId === 'string' ? this._frames.get(frameId) : undefined;
+    let world: DOMWorld | undefined;
     if (frame) {
       // Only care about execution contexts created for the current session.
       if (frame._client !== session) return;
@@ -643,7 +650,7 @@ export class Frame {
    * @internal
    */
   _frameManager: FrameManager;
-  private _parentFrame?: Frame;
+  private _parentFrame: Frame | null;
   /**
    * @internal
    */
@@ -671,11 +678,11 @@ export class Frame {
   /**
    * @internal
    */
-  _mainWorld: DOMWorld;
+  _mainWorld!: DOMWorld;
   /**
    * @internal
    */
-  _secondaryWorld: DOMWorld;
+  _secondaryWorld!: DOMWorld;
   /**
    * @internal
    */
@@ -683,7 +690,7 @@ export class Frame {
   /**
    * @internal
    */
-  _client: CDPSession;
+  _client!: CDPSession;
 
   /**
    * @internal
@@ -695,7 +702,7 @@ export class Frame {
     client: CDPSession
   ) {
     this._frameManager = frameManager;
-    this._parentFrame = parentFrame;
+    this._parentFrame = parentFrame ?? null;
     this._url = '';
     this._id = frameId;
     this._detached = false;
@@ -1460,7 +1467,7 @@ function assertNoLegacyNavigationOptions(options: {
     'ERROR: networkIdleInflight option is no longer supported.'
   );
   assert(
-    options.waitUntil !== 'networkidle',
+    options['waitUntil'] !== 'networkidle',
     'ERROR: "networkidle" option is no longer supported. Use "networkidle2" instead'
   );
 }

@@ -42,7 +42,7 @@ const { PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM } = process.env;
 
 const debugFetcher = debug('puppeteer:fetcher');
 
-const downloadURLs = {
+const downloadURLs: Record<Product, Partial<Record<Platform, string>>> = {
   chrome: {
     linux: '%s/chromium-browser-snapshots/Linux_x64/%d/%s.zip',
     mac: '%s/chromium-browser-snapshots/Mac/%d/%s.zip',
@@ -56,7 +56,7 @@ const downloadURLs = {
     win32: '%s/firefox-%s.en-US.%s.zip',
     win64: '%s/firefox-%s.en-US.%s.zip',
   },
-} as const;
+};
 
 const browserConfig = {
   chrome: {
@@ -80,15 +80,23 @@ function archiveName(
   platform: Platform,
   revision: string
 ): string {
-  if (product === 'chrome') {
-    if (platform === 'linux') return 'chrome-linux';
-    if (platform === 'mac' || platform === 'mac_arm') return 'chrome-mac';
-    if (platform === 'win32' || platform === 'win64') {
-      // Windows archive name changed at r591479.
-      return parseInt(revision, 10) > 591479 ? 'chrome-win' : 'chrome-win32';
-    }
-  } else if (product === 'firefox') {
-    return platform;
+  switch (product) {
+    case 'chrome':
+      switch (platform) {
+        case 'linux':
+          return 'chrome-linux';
+        case 'mac_arm':
+        case 'mac':
+          return 'chrome-mac';
+        case 'win32':
+        case 'win64':
+          // Windows archive name changed at r591479.
+          return parseInt(revision, 10) > 591479
+            ? 'chrome-win'
+            : 'chrome-win32';
+      }
+    case 'firefox':
+      return platform;
   }
 }
 
@@ -114,9 +122,9 @@ function downloadURL(
  * @internal
  */
 function handleArm64(): void {
-  fs.stat('/usr/bin/chromium-browser', function (err, stats) {
+  fs.stat('/usr/bin/chromium-browser', function (_err, stats) {
     if (stats === undefined) {
-      fs.stat('/usr/bin/chromium', function (err, stats) {
+      fs.stat('/usr/bin/chromium', function (_err, stats) {
         if (stats === undefined) {
           console.error(
             'The chromium binary is not available for arm64.' +
@@ -206,36 +214,40 @@ export class BrowserFetcher {
       options.path ||
       path.join(projectRoot, browserConfig[this._product].destination);
     this._downloadHost = options.host || browserConfig[this._product].host;
-    this.setPlatform(options.platform, this._product);
+
+    if (options.platform) {
+      this._platform = options.platform;
+    } else {
+      const platform = os.platform();
+      switch (platform) {
+        case 'darwin':
+          switch (this._product) {
+            case 'chrome':
+              this._platform =
+                os.arch() === 'arm64' && PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM
+                  ? 'mac_arm'
+                  : 'mac';
+              break;
+            case 'firefox':
+              this._platform = 'mac';
+              break;
+          }
+          break;
+        case 'linux':
+          this._platform = 'linux';
+          break;
+        case 'win32':
+          this._platform = os.arch() === 'x64' ? 'win64' : 'win32';
+          return;
+        default:
+          assert(false, 'Unsupported platform: ' + platform);
+      }
+    }
+
     assert(
       downloadURLs[this._product][this._platform],
       'Unsupported platform: ' + this._platform
     );
-  }
-
-  private setPlatform(
-    platformFromOptions?: Platform,
-    productFromOptions?: Product
-  ): void {
-    if (platformFromOptions) {
-      this._platform = platformFromOptions;
-      return;
-    }
-
-    const platform = os.platform();
-    if (platform === 'darwin') {
-      if (productFromOptions === 'chrome') {
-        this._platform =
-          os.arch() === 'arm64' && PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM
-            ? 'mac_arm'
-            : 'mac';
-      } else if (productFromOptions === 'firefox') {
-        this._platform = 'mac';
-      }
-    } else if (platform === 'linux') this._platform = 'linux';
-    else if (platform === 'win32')
-      this._platform = os.arch() === 'x64' ? 'win64' : 'win32';
-    else assert(this._platform, 'Unsupported platform: ' + platform);
   }
 
   /**
@@ -305,7 +317,7 @@ export class BrowserFetcher {
   async download(
     revision: string,
     progressCallback: (x: number, y: number) => void = (): void => {}
-  ): Promise<BrowserFetcherRevisionInfo> {
+  ): Promise<BrowserFetcherRevisionInfo | undefined> {
     const url = downloadURL(
       this._product,
       this._platform,
@@ -313,6 +325,7 @@ export class BrowserFetcher {
       revision
     );
     const fileName = url.split('/').pop();
+    assert(fileName, `A malformed download URL was found: ${url}.`);
     const archivePath = path.join(this._downloadsFolder, fileName);
     const outputPath = this._getFolderPath(revision);
     if (await existsAsync(outputPath)) return this.revisionInfo(revision);
@@ -346,7 +359,12 @@ export class BrowserFetcher {
     const fileNames = await readdirAsync(this._downloadsFolder);
     return fileNames
       .map((fileName) => parseFolderPath(this._product, fileName))
-      .filter((entry) => entry && entry.platform === this._platform)
+      .filter(
+        (
+          entry
+        ): entry is { product: string; platform: string; revision: string } =>
+          (entry && entry.platform === this._platform) ?? false
+      )
       .map((entry) => entry.revision);
   }
 
@@ -447,12 +465,12 @@ export class BrowserFetcher {
 function parseFolderPath(
   product: Product,
   folderPath: string
-): { product: string; platform: string; revision: string } | null {
+): { product: string; platform: string; revision: string } | undefined {
   const name = path.basename(folderPath);
   const splits = name.split('-');
-  if (splits.length !== 2) return null;
+  if (splits.length !== 2) return;
   const [platform, revision] = splits;
-  if (!downloadURLs[product][platform]) return null;
+  if (!revision || !platform || !(platform in downloadURLs[product])) return;
   return { product, platform, revision };
 }
 
@@ -462,17 +480,18 @@ function parseFolderPath(
 function downloadFile(
   url: string,
   destinationPath: string,
-  progressCallback: (x: number, y: number) => void
+  progressCallback?: (x: number, y: number) => void
 ): Promise<void> {
   debugFetcher(`Downloading binary from ${url}`);
-  let fulfill, reject;
-  let downloadedBytes = 0;
-  let totalBytes = 0;
-
+  let fulfill: (value: void | PromiseLike<void>) => void;
+  let reject: (err: Error) => void;
   const promise = new Promise<void>((x, y) => {
     fulfill = x;
     reject = y;
   });
+
+  let downloadedBytes = 0;
+  let totalBytes = 0;
 
   const request = httpRequest(url, 'GET', (response) => {
     if (response.statusCode !== 200) {
@@ -488,10 +507,7 @@ function downloadFile(
     file.on('finish', () => fulfill());
     file.on('error', (error) => reject(error));
     response.pipe(file);
-    totalBytes = parseInt(
-      /** @type {string} */ response.headers['content-length'],
-      10
-    );
+    totalBytes = parseInt(response.headers['content-length']!, 10);
     if (progressCallback) response.on('data', onData);
   });
   request.on('error', (error) => reject(error));
@@ -499,7 +515,7 @@ function downloadFile(
 
   function onData(chunk: string): void {
     downloadedBytes += chunk.length;
-    progressCallback(downloadedBytes, totalBytes);
+    progressCallback!(downloadedBytes, totalBytes);
   }
 }
 
@@ -533,16 +549,16 @@ function extractTar(tarPath: string, folderPath: string): Promise<unknown> {
  * @internal
  */
 function installDMG(dmgPath: string, folderPath: string): Promise<void> {
-  let mountPath;
+  let mountPath: string | undefined;
 
-  function mountAndCopy(fulfill: () => void, reject: (Error) => void): void {
+  return new Promise<void>((fulfill, reject): void => {
     const mountCommand = `hdiutil attach -nobrowse -noautoopen "${dmgPath}"`;
     childProcess.exec(mountCommand, (err, stdout) => {
       if (err) return reject(err);
       const volumes = stdout.match(/\/Volumes\/(.*)/m);
       if (!volumes)
         return reject(new Error(`Could not find volume path in ${stdout}`));
-      mountPath = volumes[0];
+      mountPath = volumes[0]!;
       readdirAsync(mountPath)
         .then((fileNames) => {
           const appName = fileNames.find(
@@ -550,7 +566,7 @@ function installDMG(dmgPath: string, folderPath: string): Promise<void> {
           );
           if (!appName)
             return reject(new Error(`Cannot find app in ${mountPath}`));
-          const copyPath = path.join(mountPath, appName);
+          const copyPath = path.join(mountPath!, appName);
           debugFetcher(`Copying ${copyPath} to ${folderPath}`);
           childProcess.exec(`cp -R "${copyPath}" "${folderPath}"`, (err) => {
             if (err) reject(err);
@@ -559,22 +575,18 @@ function installDMG(dmgPath: string, folderPath: string): Promise<void> {
         })
         .catch(reject);
     });
-  }
-
-  function unmount(): void {
-    if (!mountPath) return;
-    const unmountCommand = `hdiutil detach "${mountPath}" -quiet`;
-    debugFetcher(`Unmounting ${mountPath}`);
-    childProcess.exec(unmountCommand, (err) => {
-      if (err) console.error(`Error unmounting dmg: ${err}`);
-    });
-  }
-
-  return new Promise<void>(mountAndCopy)
+  })
     .catch((error) => {
       console.error(error);
     })
-    .finally(unmount);
+    .finally((): void => {
+      if (!mountPath) return;
+      const unmountCommand = `hdiutil detach "${mountPath}" -quiet`;
+      debugFetcher(`Unmounting ${mountPath}`);
+      childProcess.exec(unmountCommand, (err) => {
+        if (err) console.error(`Error unmounting dmg: ${err}`);
+      });
+    });
 }
 
 function httpRequest(
@@ -625,7 +637,12 @@ function httpRequest(
   }
 
   const requestCallback = (res: http.IncomingMessage): void => {
-    if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location)
+    if (
+      res.statusCode &&
+      res.statusCode >= 300 &&
+      res.statusCode < 400 &&
+      res.headers.location
+    )
       httpRequest(res.headers.location, method, response);
     else response(res);
   };

@@ -246,7 +246,7 @@ export class Browser extends EventEmitter {
   private _connection: Connection;
   private _closeCallback: BrowserCloseCallback;
   private _targetFilterCallback: TargetFilterCallback;
-  private _isPageTargetCallback: IsPageTargetCallback;
+  private _isPageTargetCallback!: IsPageTargetCallback;
   private _defaultContext: BrowserContext;
   private _contexts: Map<string, BrowserContext>;
   private _screenshotTaskQueue: TaskQueue;
@@ -324,6 +324,13 @@ export class Browser extends EventEmitter {
           target.type === 'webview'
         );
       });
+  }
+
+  /**
+   * @internal
+   */
+  _getIsPageTargetCallback(): IsPageTargetCallback | undefined {
+    return this._isPageTargetCallback;
   }
 
   /**
@@ -572,33 +579,24 @@ export class Browser extends EventEmitter {
   ): Promise<Target> {
     const { timeout = 30000 } = options;
     let resolve: (value: Target | PromiseLike<Target>) => void;
+    let isResolved = false;
     const targetPromise = new Promise<Target>((x) => (resolve = x));
     this.on(BrowserEmittedEvents.TargetCreated, check);
     this.on(BrowserEmittedEvents.TargetChanged, check);
     try {
       if (!timeout) return await targetPromise;
-      return await helper.waitWithTimeout<Target>(
-        Promise.race([
-          targetPromise,
-          (async () => {
-            for (const target of this.targets()) {
-              if (await predicate(target)) {
-                return target;
-              }
-            }
-            await targetPromise;
-          })(),
-        ]),
-        'target',
-        timeout
-      );
+      this.targets().forEach(check);
+      return await helper.waitWithTimeout(targetPromise, 'target', timeout);
     } finally {
-      this.removeListener(BrowserEmittedEvents.TargetCreated, check);
-      this.removeListener(BrowserEmittedEvents.TargetChanged, check);
+      this.off(BrowserEmittedEvents.TargetCreated, check);
+      this.off(BrowserEmittedEvents.TargetChanged, check);
     }
 
     async function check(target: Target): Promise<void> {
-      if (await predicate(target)) resolve(target);
+      if ((await predicate(target)) && !isResolved) {
+        isResolved = true;
+        resolve(target);
+      }
     }
   }
 
@@ -791,7 +789,14 @@ export class BrowserContext extends EventEmitter {
   async pages(): Promise<Page[]> {
     const pages = await Promise.all(
       this.targets()
-        .filter((target) => target.type() === 'page')
+        .filter(
+          (target) =>
+            target.type() === 'page' ||
+            (target.type() === 'other' &&
+              this._browser._getIsPageTargetCallback()?.(
+                target._getTargetInfo()
+              ))
+        )
         .map((target) => target.page())
     );
     return pages.filter((page): page is Page => !!page);
