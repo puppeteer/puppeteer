@@ -25,7 +25,7 @@ import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes.js';
 /**
  * @public
  */
-export const EVALUATION_SCRIPT_URL = '__puppeteer_evaluation_script__';
+export const EVALUATION_SCRIPT_URL = 'pptr://__puppeteer_evaluation_script__';
 const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
 
 /**
