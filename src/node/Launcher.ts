@@ -71,8 +71,8 @@ class ChromeLauncher implements ProductLauncher {
       ignoreDefaultArgs = false,
       args = [],
       dumpio = false,
-      channel = null,
-      executablePath = null,
+      channel,
+      executablePath,
       pipe = false,
       env = process.env,
       handleSIGINT = true,
@@ -83,7 +83,7 @@ class ChromeLauncher implements ProductLauncher {
       slowMo = 0,
       timeout = 30000,
       waitForInitialPage = true,
-      debuggingPort = null,
+      debuggingPort,
     } = options;
 
     const chromeArguments = [];
@@ -103,7 +103,7 @@ class ChromeLauncher implements ProductLauncher {
     ) {
       if (pipe) {
         assert(
-          debuggingPort === null,
+          !debuggingPort,
           'Browser should be launched with either pipe or debugging port - not both.'
         );
         chromeArguments.push('--remote-debugging-pipe');
@@ -134,23 +134,20 @@ class ChromeLauncher implements ProductLauncher {
     isTempUserDataDir = false;
 
     let chromeExecutable = executablePath;
-
     if (channel) {
       // executablePath is detected by channel, so it should not be specified by user.
       assert(
-        typeof executablePath === 'string',
+        !chromeExecutable,
         '`executablePath` must not be specified when `channel` is given.'
       );
 
       chromeExecutable = executablePathForChannel(channel);
-    } else if (!executablePath) {
+    } else if (!chromeExecutable) {
       const { missingText, executablePath } = resolveExecutablePath(this);
-      if (missingText) throw new Error(missingText);
+      if (missingText) {
+        throw new Error(missingText);
+      }
       chromeExecutable = executablePath;
-    }
-
-    if (!chromeExecutable) {
-      throw new Error('chromeExecutable is not found.');
     }
 
     const usePipe = chromeArguments.includes('--remote-debugging-pipe');
@@ -183,7 +180,7 @@ class ChromeLauncher implements ProductLauncher {
         [],
         ignoreHTTPSErrors,
         defaultViewport,
-        runner.proc ?? undefined,
+        runner.proc,
         runner.close.bind(runner)
       );
     } catch (error) {
@@ -262,7 +259,8 @@ class ChromeLauncher implements ProductLauncher {
     if (channel) {
       return executablePathForChannel(channel);
     } else {
-      return resolveExecutablePath(this).executablePath;
+      const results = resolveExecutablePath(this);
+      return results.executablePath;
     }
   }
 
