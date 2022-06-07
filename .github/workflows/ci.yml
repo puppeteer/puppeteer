@@ -31,7 +31,7 @@ jobs:
           fetch-depth: 2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3.2.0
+        uses: actions/setup-node@v3.3.0
         with:
           node-version: ${{ matrix.node }}
 
@@ -111,7 +111,7 @@ jobs:
           fetch-depth: 2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3.2.0
+        uses: actions/setup-node@v3.3.0
         with:
           # Test only the oldest maintenance LTS Node.js version.
           # https://github.com/nodejs/Release#release-schedule
@@ -152,7 +152,7 @@ jobs:
           fetch-depth: 2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3.2.0
+        uses: actions/setup-node@v3.3.0
         with:
           # Test only the oldest maintenance LTS Node.js version.
           # https://github.com/nodejs/Release#release-schedule
@@ -204,7 +204,7 @@ jobs:
           fetch-depth: 2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3.2.0
+        uses: actions/setup-node@v3.3.0
         with:
           node-version: ${{ matrix.node }}
       - name: Install dependencies
@@ -244,7 +244,7 @@ jobs:
         with:
           fetch-depth: 2
       - name: Set up Node.js
-        uses: actions/setup-node@v3.2.0
+        uses: actions/setup-node@v3.3.0
         with:
           node-version: ${{ matrix.node }}
       - name: Install dependencies
