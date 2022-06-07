@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.3.0](https://github.com/puppeteer/puppeteer/compare/v14.2.1...v14.3.0) (2022-06-07)
+
+
+### Features
+
+* use absolute URL for EVALUATION_SCRIPT_URL ([#8481](https://github.com/puppeteer/puppeteer/issues/8481)) ([e142560](https://github.com/puppeteer/puppeteer/commit/e14256010d2d84d613cd3c6e7999b0705115d4bf)), closes [#8424](https://github.com/puppeteer/puppeteer/issues/8424)
+
+
+### Bug Fixes
+
+* don't throw on bad access ([#8472](https://github.com/puppeteer/puppeteer/issues/8472)) ([e837866](https://github.com/puppeteer/puppeteer/commit/e8378666c671e5703aec4f52912de2aac94e1828))
+* Kill browser process when killing process group fails ([#8477](https://github.com/puppeteer/puppeteer/issues/8477)) ([7dc8e37](https://github.com/puppeteer/puppeteer/commit/7dc8e37a23d025bb2c31efb9c060c7f6e00179b4))
+* only lookup `localhost` for DNS lookups ([1b025b4](https://github.com/puppeteer/puppeteer/commit/1b025b4c8466fe64da0fa2050eaa02b7764770b1))
+* robustly check for launch executable ([#8468](https://github.com/puppeteer/puppeteer/issues/8468)) ([b54dc55](https://github.com/puppeteer/puppeteer/commit/b54dc55f7622ee2b75afd3bd9fe118dd2f144f40))
+
 ## [14.2.1](https://github.com/puppeteer/puppeteer/compare/v14.2.0...v14.2.1) (2022-06-02)
 
 
