@@ -38,6 +38,7 @@ jobs:
           npm publish
 
   post-publish:
+    needs: publish
     runs-on: ubuntu-latest
     permissions:
       contents: write
