@@ -155,6 +155,9 @@ export class FrameManager extends EventEmitter {
         client
           .send('Runtime.enable')
           .then(() => this._ensureIsolatedWorld(client, UTILITY_WORLD_NAME)),
+        // Change the default Runtime.setMaxCallStackSizeToCapture to 0
+        // to avoid degraded performance. See crbug.com/1326921.
+        client.send('Runtime.setMaxCallStackSizeToCapture', { size: 0 }),
         // TODO: Network manager is not aware of OOP iframes yet.
         client === this._client
           ? this._networkManager.initialize()
