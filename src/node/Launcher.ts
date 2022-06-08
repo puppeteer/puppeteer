@@ -48,10 +48,7 @@ export interface ProductLauncher {
   product: Product;
 }
 
-/**
- * @internal
- */
-class ChromeLauncher implements ProductLauncher {
+export class ChromeLauncher implements ProductLauncher {
   _projectRoot: string | undefined;
   _preferredRevision: string;
   _isPuppeteerCore: boolean;
@@ -87,7 +84,7 @@ class ChromeLauncher implements ProductLauncher {
     } = options;
 
     const chromeArguments = [];
-    if (!ignoreDefaultArgs) chromeArguments.push(...this.defaultArgs(options));
+    if (!ignoreDefaultArgs) chromeArguments.push(...ChromeLauncher.defaultArgs(options));
     else if (Array.isArray(ignoreDefaultArgs))
       chromeArguments.push(
         ...this.defaultArgs(options).filter(
@@ -200,7 +197,7 @@ class ChromeLauncher implements ProductLauncher {
     return browser;
   }
 
-  defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
+  static defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
     const chromeArguments = [
       '--allow-pre-commit-input', // TODO(crbug.com/1320996): neither headful nor headless should rely on this flag.
       '--disable-background-networking',
@@ -269,10 +266,7 @@ class ChromeLauncher implements ProductLauncher {
   }
 }
 
-/**
- * @internal
- */
-class FirefoxLauncher implements ProductLauncher {
+export class FirefoxLauncher implements ProductLauncher {
   _projectRoot: string | undefined;
   _preferredRevision: string;
   _isPuppeteerCore: boolean;
@@ -308,7 +302,7 @@ class FirefoxLauncher implements ProductLauncher {
     } = options;
 
     const firefoxArguments = [];
-    if (!ignoreDefaultArgs) firefoxArguments.push(...this.defaultArgs(options));
+    if (!ignoreDefaultArgs) firefoxArguments.push(...FirefoxLauncher.defaultArgs(options));
     else if (Array.isArray(ignoreDefaultArgs))
       firefoxArguments.push(
         ...this.defaultArgs(options).filter(
@@ -442,7 +436,7 @@ class FirefoxLauncher implements ProductLauncher {
     return 'firefox';
   }
 
-  defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
+  static defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
     const {
       devtools = false,
       headless = !devtools,
