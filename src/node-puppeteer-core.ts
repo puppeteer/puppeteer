@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { initializePuppeteerNode } from './initialize-node.js';
 import { isNode } from './environment.js';
+import { initializePuppeteerNode } from './initialize-node.js';
 
 if (!isNode) {
   throw new Error('Cannot run puppeteer-core outside of Node.js');
