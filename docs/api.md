@@ -10,6 +10,10 @@
 
 <!-- GEN:versions-per-release -->
 - Releases per Chromium version:
+  * Chromium 103.0.5059.0 - [Puppeteer v14.2.0](https://github.com/puppeteer/puppeteer/blob/v14.2.0/docs/api.md)
+  * Chromium 102.0.5002.0 - [Puppeteer v14.0.0](https://github.com/puppeteer/puppeteer/blob/v14.0.0/docs/api.md)
+  * Chromium 101.0.4950.0 - [Puppeteer v13.6.0](https://github.com/puppeteer/puppeteer/blob/v13.6.0/docs/api.md)
+  * Chromium 100.0.4889.0 - [Puppeteer v13.5.0](https://github.com/puppeteer/puppeteer/blob/v13.5.0/docs/api.md)
   * Chromium 99.0.4844.16 - [Puppeteer v13.2.0](https://github.com/puppeteer/puppeteer/blob/v13.2.0/docs/api.md)
   * Chromium 98.0.4758.0 - [Puppeteer v13.1.0](https://github.com/puppeteer/puppeteer/blob/v13.1.0/docs/api.md)
   * Chromium 97.0.4692.0 - [Puppeteer v12.0.0](https://github.com/puppeteer/puppeteer/blob/v12.0.0/docs/api.md)
@@ -339,6 +343,7 @@
   * [elementHandle.type(text[, options])](#elementhandletypetext-options)
   * [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
   * [elementHandle.waitForSelector(selector[, options])](#elementhandlewaitforselectorselector-options)
+  * [elementHandle.waitForXPath(xpath[, options])](#elementhandlewaitforxpathxpath-options)
 - [class: HTTPRequest](#class-httprequest)
   * [httpRequest.abort([errorCode], [priority])](#httprequestaborterrorcode-priority)
   * [httpRequest.abortErrorReason()](#httprequestaborterrorreason)
@@ -414,6 +419,7 @@
   * [eventEmitter.removeAllListeners([event])](#eventemitterremovealllistenersevent)
   * [eventEmitter.removeListener(event, handler)](#eventemitterremovelistenerevent-handler)
 - [interface: CustomQueryHandler](#interface-customqueryhandler)
+- [interface: Selector](#interface-selector)
 <!-- GEN:stop -->
 
 <!-- prettier-ignore-end -->
@@ -484,6 +490,7 @@ If Puppeteer doesn't find them in the environment during the installation step, 
 - `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of Chromium you'd like Puppeteer to use. See [puppeteer.launch([options])](#puppeteerlaunchoptions) on how executable path is inferred. **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/puppeteer/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
 - `PUPPETEER_EXECUTABLE_PATH` - specify an executable path to be used in `puppeteer.launch`. See [puppeteer.launch([options])](#puppeteerlaunchoptions) on how the executable path is inferred. **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/puppeteer/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
 - `PUPPETEER_PRODUCT` - specify which browser you'd like Puppeteer to use. Must be one of `chrome` or `firefox`. This can also be used during installation to fetch the recommended browser binary. Setting `product` programmatically in [puppeteer.launch([options])](#puppeteerlaunchoptions) supersedes this environment variable. The product is exposed in [`puppeteer.product`](#puppeteerproduct)
+- `PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM` — specify Puppeteer download Chromium for Apple M1. On Apple M1 devices Puppeteer by default downloads the version for Intel's processor which runs via Rosetta. It works without any problems, however, with this option, you should get more efficient resource usage (CPU and RAM) that could lead to a faster execution time. **BEWARE**: it's an experimental option that makes sense only if you have an Apple M1 device, use at your own risk.
 
 > **NOTE** `PUPPETEER_*` env variables are not accounted for in the [`puppeteer-core`](https://www.npmjs.com/package/puppeteer-core) package.
 
@@ -491,7 +498,7 @@ If Puppeteer doesn't find them in the environment during the installation step, 
 
 Puppeteer can be used for testing Chrome Extensions.
 
-> **NOTE** Extensions in Chrome / Chromium currently only work in non-headless mode.
+> **NOTE** Extensions in Chrome / Chromium currently only work in non-headless mode and experimental Chrome headless mode.
 
 The following is code for getting a handle to the [background page](https://developer.chrome.com/extensions/background_pages) of an extension whose source is located in `./my-extension`:
 
@@ -501,14 +508,13 @@ const puppeteer = require('puppeteer');
 (async () => {
   const pathToExtension = require('path').join(__dirname, 'my-extension');
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: 'chrome',
     args: [
       `--disable-extensions-except=${pathToExtension}`,
       `--load-extension=${pathToExtension}`,
     ],
   });
-  const targets = await browser.targets();
-  const backgroundPageTarget = targets.find(
+  const backgroundPageTarget = await browser.waitForTarget(
     (target) => target.type() === 'background_page'
   );
   const backgroundPage = await backgroundPageTarget.page();
@@ -516,6 +522,8 @@ const puppeteer = require('puppeteer');
   await browser.close();
 })();
 ```
+
+> **NOTE** Chrome Manifest V3 extensions have a background ServiceWorker of type 'service_worker', instead of a page of type 'background_page'.
 
 > **NOTE** It is not yet possible to test extension popups or content scripts.
 
@@ -577,7 +585,7 @@ This methods attaches Puppeteer to an existing browser instance.
 #### puppeteer.defaultArgs([options])
 
 - `options` <[Object]> Set of configurable options to set on the browser. Can have the following fields:
-  - `headless` <[boolean]> Whether to run browser in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`.
+  - `headless` <[boolean]|"chrome"> Whether to run browser in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`. "chrome" is a new experimental headless mode (use at your own risk).
   - `args` <[Array]<[string]>> Additional arguments to pass to the browser instance. The list of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
   - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/user_data_dir.md).
   - `devtools` <[boolean]> Whether to auto-open a DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
@@ -643,7 +651,7 @@ try {
 - `options` <[Object]> Set of configurable options to set on the browser. Can have the following fields:
   - `product` <[string]> Which browser to launch. At this time, this is either `chrome` or `firefox`. See also `PUPPETEER_PRODUCT`.
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
-  - `headless` <[boolean]> Whether to run browser in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`.
+  - `headless` <[boolean]|"chrome"> Whether to run browser in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`. "chrome" is a new experimental headless mode (use at your own risk).
   - `channel` <[string]> When specified, Puppeteer will search for the locally installed release channel of Google Chrome and use it to launch. Available values are `chrome`, `chrome-beta`, `chrome-canary`, `chrome-dev`. When channel is specified, `executablePath` cannot be specified.
   - `executablePath` <[string]> Path to a browser executable to run instead of the bundled Chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/puppeteer/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
   - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
@@ -719,7 +727,7 @@ The product is set by the `PUPPETEER_PRODUCT` environment variable or the `produ
 - `name` <[string]> The name that the custom query handler will be registered under.
 - `queryHandler` <[CustomQueryHandler]> The [custom query handler](#interface-customqueryhandler) to register.
 
-Registers a [custom query handler](#interface-customqueryhandler). After registration, the handler can be used everywhere where a selector is expected by prepending the selection string with `<name>/`. The name is only allowed to consist of lower and upper case Latin letters.
+Registers a [custom query handler](#interface-customqueryhandler).
 
 Example:
 
@@ -983,7 +991,7 @@ the method will return an array with all the targets in all browser contexts.
 
 #### browser.waitForTarget(predicate[, options])
 
-- `predicate` <[function]\([Target]\):[boolean]> A function to be run for every target
+- `predicate` <[function]\([Target]\):[boolean]|[Promise<boolean>]> A function to be run for every target
 - `options` <[Object]>
   - `timeout` <[number]> Maximum wait time in milliseconds. Pass `0` to disable the timeout. Defaults to 30 seconds.
 - returns: <[Promise]<[Target]>> Promise which resolves to the first target found that matches the `predicate` function.
@@ -1135,7 +1143,7 @@ An array of all active targets inside the browser context.
 
 #### browserContext.waitForTarget(predicate[, options])
 
-- `predicate` <[function]\([Target]\):[boolean]> A function to be run for every target
+- `predicate` <[function]\([Target]\):[boolean]|[Promise<boolean>]> A function to be run for every target
 - `options` <[Object]>
   - `timeout` <[number]> Maximum wait time in milliseconds. Pass `0` to disable the timeout. Defaults to 30 seconds.
 - returns: <[Promise]<[Target]>> Promise which resolves to the first target found that matches the `predicate` function.
@@ -1463,7 +1471,7 @@ Get the browser context that the page belongs to.
 
 - `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
 - `options` <[Object]>
-  - `button` <"left"|"right"|"middle"> Defaults to `left`.
+  - `button` <"left"|"right"|"middle"|"back"|"forward"> Defaults to `left`.
   - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. The Promise will be rejected if there is no element matching `selector`.
@@ -2204,7 +2212,7 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
     - `height` <[number]> height of clipping area
   - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
   - `encoding` <[string]> The encoding of the image, can be either `base64` or `binary`. Defaults to `binary`.
-  - `captureBeyondViewport` <[boolean]> When true, captures screenshot [beyond the viewport](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot). Whe false, falls back to old behaviour, and cuts the screenshot by the viewport size. Defaults to `true`.
+  - `captureBeyondViewport` <[boolean]> When true, captures screenshot [beyond the viewport](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot). When false, falls back to old behaviour, and cuts the screenshot by the viewport size. Defaults to `true`.
 - returns: <[Promise]<[string]|[Buffer]>> Promise which resolves to buffer or a base64 string (depending on the value of `encoding`) with captured screenshot.
 
 > **NOTE** Screenshots take at least 1/6 second on OS X. See https://crbug.com/741689 for discussion.
@@ -2314,7 +2322,7 @@ This setting will change the default maximum time for the following methods and 
 - `enabled` <[boolean]>
 - returns: <[Promise]>
 
-Enables the Input.drag methods. This provides the capability to cpature drag events emitted on the page, which can then be used to simulate drag-and-drop.
+Enables the Input.drag methods. This provides the capability to capture drag events emitted on the page, which can then be used to simulate drag-and-drop.
 
 #### page.setExtraHTTPHeaders(headers)
 
@@ -3505,7 +3513,7 @@ await browser
 - `x` <[number]>
 - `y` <[number]>
 - `options` <[Object]>
-  - `button` <"left"|"right"|"middle"> Defaults to `left`.
+  - `button` <"left"|"right"|"middle"|"back"|"forward"> Defaults to `left`.
   - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]>
@@ -3515,7 +3523,7 @@ Shortcut for [`mouse.move`](#mousemovex-y-options), [`mouse.down`](#mousedownopt
 #### mouse.down([options])
 
 - `options` <[Object]>
-  - `button` <"left"|"right"|"middle"> Defaults to `left`.
+  - `button` <"left"|"right"|"middle"|"back"|"forward"> Defaults to `left`.
   - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
 - returns: <[Promise]>
 
@@ -3590,7 +3598,7 @@ Dispatches a `mousemove` event.
 #### mouse.up([options])
 
 - `options` <[Object]>
-  - `button` <"left"|"right"|"middle"> Defaults to `left`.
+  - `button` <"left"|"right"|"middle"|"back"|"forward"> Defaults to `left`.
   - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
 - returns: <[Promise]>
 
@@ -3888,7 +3896,7 @@ Adds a `<link rel="stylesheet">` tag into the page with the desired URL or a `<s
 
 - `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
 - `options` <[Object]>
-  - `button` <"left"|"right"|"middle"> Defaults to `left`.
+  - `button` <"left"|"right"|"middle"|"back"|"forward"> Defaults to `left`.
   - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. The Promise will be rejected if there is no element matching `selector`.
@@ -4651,7 +4659,7 @@ This method returns boxes of the element, or `null` if the element is not visibl
 #### elementHandle.click([options])
 
 - `options` <[Object]>
-  - `button` <"left"|"right"|"middle"> Defaults to `left`.
+  - `button` <"left"|"right"|"middle"|"back"|"forward"> Defaults to `left`.
   - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
   - `offset` <[Object]> Offset in pixels relative to the top-left corner of the border box of the element.
@@ -4896,6 +4904,44 @@ Wait for an element matching `selector` to appear within the `elementHandle`’s
 
 This method does not work across navigations or if the element is detached from DOM.
 
+#### elementHandle.waitForXPath(xpath[, options])
+
+- `xpath` <[string]> A [xpath] of an element to wait for
+- `options` <[Object]> Optional waiting parameters
+  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The default value can be changed by using the [page.setDefaultTimeout(timeout)](#pagesetdefaulttimeouttimeout) method.
+- returns: <[Promise]<?[ElementHandle]>> Promise which resolves when element specified by xpath string is added to DOM. Resolves to `null` if waiting for `hidden: true` and xpath is not found in DOM.
+
+Wait for the `xpath` to appear within the element. If at the moment of calling
+the method the `xpath` already exists, the method will return
+immediately. If the xpath doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
+
+If `xpath` starts with `//` instead of `.//`, the dot will be appended automatically.
+
+This method works across navigations:
+
+```js
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  let currentURL;
+  page
+    .waitForXPath('//img')
+    .then(() => console.log('First URL with image: ' + currentURL));
+  for (currentURL of [
+    'https://example.com',
+    'https://google.com',
+    'https://bbc.com',
+  ]) {
+    await page.goto(currentURL);
+  }
+  await browser.close();
+})();
+```
+
 ### class: HTTPRequest
 
 Whenever the page sends a request, such as for a network resource, the following events are emitted by Puppeteer's page:
@@ -5120,7 +5166,7 @@ ResourceType will be one of the following: `document`, `stylesheet`, `image`, `m
 
 - `response` <[Object]> Response that will fulfill this request
   - `status` <[number]> Response status code, defaults to `200`.
-  - `headers` <[Object]> Optional response headers. Header values will be converted to a string.
+  - `headers` <[Object]> Optional response headers. Header values should be a string or a string array.
   - `contentType` <[string]> If set, equals to setting `Content-Type` response header
   - `body` <[string]|[Buffer]> Optional response body
 - `priority` <[number]> - Optional intercept abort priority. If provided, intercept will be resolved using coopeative handling rules. Otherwise, intercept will be resolved immediately.
@@ -5205,8 +5251,8 @@ Contains a boolean stating whether the response was successful (status in the ra
 #### httpResponse.remoteAddress()
 
 - returns: <[Object]>
-  - `ip` <[string]> the IP address of the remote server
-  - `port` <[number]> the port used to connect to the remote server
+  - `ip` <[string]> the IP address of the remote server if known and `undefined` otherwise.
+  - `port` <[number]> the port used to connect to the remote server if known and `undefined` otherwise.
 
 #### httpResponse.request()
 
@@ -5436,7 +5482,7 @@ see [puppeteer-to-istanbul](https://github.com/istanbuljs/puppeteer-to-istanbul)
   - `reportAnonymousScripts` <[boolean]> Whether anonymous scripts generated by the page should be reported. Defaults to `false`.
 - returns: <[Promise]> Promise that resolves when coverage is started
 
-> **NOTE** Anonymous scripts are ones that don't have an associated URL. These are scripts that are dynamically created on the page using `eval` or `new Function`. If `reportAnonymousScripts` is set to `true`, anonymous scripts will have `__puppeteer_evaluation_script__` as their URL.
+> **NOTE** Anonymous scripts are ones that don't have an associated URL. These are scripts that are dynamically created on the page using `eval` or `new Function`. If `reportAnonymousScripts` is set to `true`, anonymous scripts will have `pptr://__puppeteer_evaluation_script__` as their URL.
 
 #### coverage.stopCSSCoverage()
 
@@ -5523,7 +5569,31 @@ This method is identical to `off` and maintained for compatibility with Node's E
 
 ### interface: CustomQueryHandler
 
-Contains two functions `queryOne` and `queryAll` that can be [registered](#puppeteerregistercustomqueryhandlername-queryhandler) as alternative querying strategies. The functions `queryOne` and `queryAll` are executed in the page context. `queryOne` should take an `Element` and a selector string as argument and return a single `Element` or `null` if no element is found. `queryAll` takes the same arguments but should instead return a `NodeList<Element>` or `Array<Element>` with all the elements that match the given query selector.
+After [registration](#puppeteerregistercustomqueryhandlername-queryhandler), the handler can be used everywhere where a selector is expected by prepending the selection string with `<name>/`. The name is only allowed to consist of lower and upper case Latin letters.
+
+Contains two functions `queryOne` and `queryAll` that are executed in the page context. `queryOne` should take an `Element` and a selector string as argument and return a single `Element` or `null` if no element is found. `queryAll` takes the same arguments but should instead return a `NodeList<Element>` or `Array<Element>` with all the elements that match the given query selector.
+
+**NOTE:** Because the function code needs to be serialized, it is **not possible** to access anything outside its scope or use imports. See e.g. [the pierce handler](https://github.com/puppeteer/puppeteer/blob/v13.5.2/src/common/QueryHandler.ts#L115) which has redundancies because of this limitation.
+
+### interface: Selector
+
+A selector is a [string] for querying elements in the page.
+The default behavior is to regard the string as a [CSS selector] and query using `querySelector` or `querySelectorAll`.
+If a selector string contains a forward slash `/` the selector is instead regarded as custom selector where everything before the slash is the [custom handler](#puppeteerregistercustomqueryhandlername-queryhandler) name and everything after is the selector: `<handler>/<selector>`.
+Puppeteer ships with two such custom handlers pre-registered:
+
+- `aria`: Queries the accessibilty tree for computed accessibility properties.
+  The selectors consist of an accessible name to query for and optionally
+  further aria attributes on the form `[<attribute>=<value>]`.
+  Currently, we only support the `name` and `role` attribute.
+  The following examples showcase how the syntax works wrt. querying:
+
+  - `title[role="heading"]` queries for elements with name 'title' and role 'heading'.
+  - `[role="img"]` queries for elements with role 'img' and any name.
+  - `label` queries for elements with name 'label' and any role.
+  - `[name=""][role="button"]` queries for elements with no name and role 'button'.
+
+- `pierce`: Takes a [CSS selector] and queries the page using `querySelector` or `querySeletorAll` but pierces through shadow roots.
 
 [axnode]: #accessibilitysnapshotoptions 'AXNode'
 [accessibility]: #class-accessibility 'Accessibility'
@@ -5569,7 +5639,8 @@ Contains two functions `queryOne` and `queryAll` that can be [registered](#puppe
 [iterator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols 'Iterator'
 [number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type 'Number'
 [origin]: https://developer.mozilla.org/en-US/docs/Glossary/Origin 'Origin'
-[selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors 'selector'
+[selector]: #interface-selector 'Selector'
+[css selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors
 [stream.readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable 'stream.Readable'
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type 'String'
 [symbol]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Symbol_type 'Symbol'

@@ -38,7 +38,7 @@ export interface InternalQueryHandler {
   queryAllArray?: (
     element: ElementHandle,
     selector: string
-  ) => Promise<JSHandle>;
+  ) => Promise<JSHandle<Element[]>>;
 }
 
 /**
@@ -64,8 +64,9 @@ function makeQueryHandler(handler: CustomQueryHandler): InternalQueryHandler {
   const internalHandler: InternalQueryHandler = {};
 
   if (handler.queryOne) {
+    const queryOne = handler.queryOne;
     internalHandler.queryOne = async (element, selector) => {
-      const jsHandle = await element.evaluateHandle(handler.queryOne, selector);
+      const jsHandle = await element.evaluateHandle(queryOne, selector);
       const elementHandle = jsHandle.asElement();
       if (elementHandle) return elementHandle;
       await jsHandle.dispose();
@@ -75,12 +76,13 @@ function makeQueryHandler(handler: CustomQueryHandler): InternalQueryHandler {
       domWorld: DOMWorld,
       selector: string,
       options: WaitForSelectorOptions
-    ) => domWorld.waitForSelectorInPage(handler.queryOne, selector, options);
+    ) => domWorld.waitForSelectorInPage(queryOne, selector, options);
   }
 
   if (handler.queryAll) {
+    const queryAll = handler.queryAll;
     internalHandler.queryAll = async (element, selector) => {
-      const jsHandle = await element.evaluateHandle(handler.queryAll, selector);
+      const jsHandle = await element.evaluateHandle(queryAll, selector);
       const properties = await jsHandle.getProperties();
       await jsHandle.dispose();
       const result = [];
@@ -91,10 +93,7 @@ function makeQueryHandler(handler: CustomQueryHandler): InternalQueryHandler {
       return result;
     };
     internalHandler.queryAllArray = async (element, selector) => {
-      const resultHandle = await element.evaluateHandle(
-        handler.queryAll,
-        selector
-      );
+      const resultHandle = await element.evaluateHandle(queryAll, selector);
       const arrayHandle = await resultHandle.evaluateHandle(
         (res: Element[] | NodeListOf<Element>) => Array.from(res)
       );
@@ -106,9 +105,9 @@ function makeQueryHandler(handler: CustomQueryHandler): InternalQueryHandler {
 }
 
 const _defaultHandler = makeQueryHandler({
-  queryOne: (element: Element, selector: string) =>
+  queryOne: (element: Element | Document, selector: string) =>
     element.querySelector(selector),
-  queryAll: (element: Element, selector: string) =>
+  queryAll: (element: Element | Document, selector: string) =>
     element.querySelectorAll(selector),
 });
 
@@ -125,7 +124,7 @@ const pierceHandler = makeQueryHandler({
         if (currentNode instanceof ShadowRoot) {
           continue;
         }
-        if (!found && currentNode.matches(selector)) {
+        if (currentNode !== root && !found && currentNode.matches(selector)) {
           found = currentNode;
         }
       } while (!found && iter.nextNode());
@@ -149,7 +148,7 @@ const pierceHandler = makeQueryHandler({
         if (currentNode instanceof ShadowRoot) {
           continue;
         }
-        if (currentNode.matches(selector)) {
+        if (currentNode !== root && currentNode.matches(selector)) {
           result.push(currentNode);
         }
       } while (iter.nextNode());

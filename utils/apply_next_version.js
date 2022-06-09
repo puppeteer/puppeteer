@@ -12,7 +12,6 @@ const current_sha = execSync(`git rev-parse HEAD`).toString('utf8');
 if (upstream_sha.trim() !== current_sha.trim()) {
   console.log('REFUSING TO PUBLISH: this is not tip-of-tree!');
   process.exit(1);
-  return;
 }
 
 const package = require('../package.json');

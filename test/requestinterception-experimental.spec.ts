@@ -458,7 +458,7 @@ describe('request interception', function () {
       await page.setRequestInterception(true);
       const requests = [];
       page.on('request', (request) => {
-        requests.push(request);
+        !utils.isFavicon(request) && requests.push(request);
         request.continue({}, 0);
       });
       const dataURL = 'data:text/html,<div>yo</div>';

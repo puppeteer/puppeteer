@@ -54,6 +54,13 @@ export type TargetFilterCallback = (
   target: Protocol.Target.TargetInfo
 ) => boolean;
 
+/**
+ * @internal
+ */
+export type IsPageTargetCallback = (
+  target: Protocol.Target.TargetInfo
+) => boolean;
+
 const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map<
   Permission,
   Protocol.Browser.PermissionType
@@ -217,7 +224,8 @@ export class Browser extends EventEmitter {
     defaultViewport?: Viewport | null,
     process?: ChildProcess,
     closeCallback?: BrowserCloseCallback,
-    targetFilterCallback?: TargetFilterCallback
+    targetFilterCallback?: TargetFilterCallback,
+    isPageTargetCallback?: IsPageTargetCallback
   ): Promise<Browser> {
     const browser = new Browser(
       connection,
@@ -226,7 +234,8 @@ export class Browser extends EventEmitter {
       defaultViewport,
       process,
       closeCallback,
-      targetFilterCallback
+      targetFilterCallback,
+      isPageTargetCallback
     );
     await connection.send('Target.setDiscoverTargets', { discover: true });
     return browser;
@@ -237,6 +246,7 @@ export class Browser extends EventEmitter {
   private _connection: Connection;
   private _closeCallback: BrowserCloseCallback;
   private _targetFilterCallback: TargetFilterCallback;
+  private _isPageTargetCallback!: IsPageTargetCallback;
   private _defaultContext: BrowserContext;
   private _contexts: Map<string, BrowserContext>;
   private _screenshotTaskQueue: TaskQueue;
@@ -257,7 +267,8 @@ export class Browser extends EventEmitter {
     defaultViewport?: Viewport | null,
     process?: ChildProcess,
     closeCallback?: BrowserCloseCallback,
-    targetFilterCallback?: TargetFilterCallback
+    targetFilterCallback?: TargetFilterCallback,
+    isPageTargetCallback?: IsPageTargetCallback
   ) {
     super();
     this._ignoreHTTPSErrors = ignoreHTTPSErrors;
@@ -267,6 +278,7 @@ export class Browser extends EventEmitter {
     this._connection = connection;
     this._closeCallback = closeCallback || function (): void {};
     this._targetFilterCallback = targetFilterCallback || ((): boolean => true);
+    this._setIsPageTargetCallback(isPageTargetCallback);
 
     this._defaultContext = new BrowserContext(this._connection, this);
     this._contexts = new Map();
@@ -300,6 +312,28 @@ export class Browser extends EventEmitter {
   }
 
   /**
+   * @internal
+   */
+  _setIsPageTargetCallback(isPageTargetCallback?: IsPageTargetCallback): void {
+    this._isPageTargetCallback =
+      isPageTargetCallback ||
+      ((target: Protocol.Target.TargetInfo): boolean => {
+        return (
+          target.type === 'page' ||
+          target.type === 'background_page' ||
+          target.type === 'webview'
+        );
+      });
+  }
+
+  /**
+   * @internal
+   */
+  _getIsPageTargetCallback(): IsPageTargetCallback | undefined {
+    return this._isPageTargetCallback;
+  }
+
+  /**
    * Creates a new incognito browser context. This won't share cookies/cache with other
    * browser contexts.
    *
@@ -319,7 +353,7 @@ export class Browser extends EventEmitter {
   async createIncognitoBrowserContext(
     options: BrowserContextOptions = {}
   ): Promise<BrowserContext> {
-    const { proxyServer = '', proxyBypassList = [] } = options;
+    const { proxyServer, proxyBypassList } = options;
 
     const { browserContextId } = await this._connection.send(
       'Target.createBrowserContext',
@@ -392,7 +426,8 @@ export class Browser extends EventEmitter {
       () => this._connection.createSession(targetInfo),
       this._ignoreHTTPSErrors,
       this._defaultViewport ?? null,
-      this._screenshotTaskQueue
+      this._screenshotTaskQueue,
+      this._isPageTargetCallback
     );
     assert(
       !this._targets.has(event.targetInfo.targetId),
@@ -539,30 +574,29 @@ export class Browser extends EventEmitter {
    * ```
    */
   async waitForTarget(
-    predicate: (x: Target) => boolean,
+    predicate: (x: Target) => boolean | Promise<boolean>,
     options: WaitForTargetOptions = {}
   ): Promise<Target> {
     const { timeout = 30000 } = options;
-    const existingTarget = this.targets().find(predicate);
-    if (existingTarget) return existingTarget;
     let resolve: (value: Target | PromiseLike<Target>) => void;
+    let isResolved = false;
     const targetPromise = new Promise<Target>((x) => (resolve = x));
     this.on(BrowserEmittedEvents.TargetCreated, check);
     this.on(BrowserEmittedEvents.TargetChanged, check);
     try {
       if (!timeout) return await targetPromise;
-      return await helper.waitWithTimeout<Target>(
-        targetPromise,
-        'target',
-        timeout
-      );
+      this.targets().forEach(check);
+      return await helper.waitWithTimeout(targetPromise, 'target', timeout);
     } finally {
-      this.removeListener(BrowserEmittedEvents.TargetCreated, check);
-      this.removeListener(BrowserEmittedEvents.TargetChanged, check);
+      this.off(BrowserEmittedEvents.TargetCreated, check);
+      this.off(BrowserEmittedEvents.TargetChanged, check);
     }
 
-    function check(target: Target): void {
-      if (predicate(target)) resolve(target);
+    async function check(target: Target): Promise<void> {
+      if ((await predicate(target)) && !isResolved) {
+        isResolved = true;
+        resolve(target);
+      }
     }
   }
 
@@ -736,7 +770,7 @@ export class BrowserContext extends EventEmitter {
    * that matches the `predicate` function.
    */
   waitForTarget(
-    predicate: (x: Target) => boolean,
+    predicate: (x: Target) => boolean | Promise<boolean>,
     options: { timeout?: number } = {}
   ): Promise<Target> {
     return this._browser.waitForTarget(
@@ -755,7 +789,14 @@ export class BrowserContext extends EventEmitter {
   async pages(): Promise<Page[]> {
     const pages = await Promise.all(
       this.targets()
-        .filter((target) => target.type() === 'page')
+        .filter(
+          (target) =>
+            target.type() === 'page' ||
+            (target.type() === 'other' &&
+              this._browser._getIsPageTargetCallback()?.(
+                target._getTargetInfo()
+              ))
+        )
         .map((target) => target.page())
     );
     return pages.filter((page): page is Page => !!page);

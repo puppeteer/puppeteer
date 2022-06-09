@@ -16,6 +16,11 @@
 
 import { isNode } from '../environment.js';
 
+declare global {
+  // eslint-disable-next-line no-var
+  var __PUPPETEER_DEBUG: string;
+}
+
 /**
  * A debug function that can be used in any environment.
  *
@@ -54,12 +59,13 @@ import { isNode } from '../environment.js';
  */
 export const debug = (prefix: string): ((...args: unknown[]) => void) => {
   if (isNode) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    return require('debug')(prefix);
+    return async (...logArgs: unknown[]) => {
+      (await import('debug')).default(prefix)(logArgs);
+    };
   }
 
   return (...logArgs: unknown[]): void => {
-    const debugLevel = globalThis.__PUPPETEER_DEBUG as string;
+    const debugLevel = globalThis.__PUPPETEER_DEBUG;
     if (!debugLevel) return;
 
     const everythingShouldBeLogged = debugLevel === '*';

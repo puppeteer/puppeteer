@@ -235,7 +235,7 @@ describe('input tests', function () {
         .catch((error_) => (error = error_));
       expect(error).not.toBe(null);
     });
-    it('should fail for non-existent files', async () => {
+    it('should succeed even for non-existent files', async () => {
       const { page } = getTestState();
 
       await page.setContent(`<input type=file>`);
@@ -243,11 +243,29 @@ describe('input tests', function () {
         page.waitForFileChooser(),
         page.click('input'),
       ]);
-      let error = null;
+      let error: Error | undefined;
       await chooser
         .accept(['file-does-not-exist.txt'])
         .catch((error_) => (error = error_));
-      expect(error).not.toBe(null);
+      expect(error).toBeUndefined();
+    });
+    it('should error on read of non-existent files', async () => {
+      const { page } = getTestState();
+
+      await page.setContent(`<input type=file>`);
+      page
+        .waitForFileChooser()
+        .then((chooser) => chooser.accept(['file-does-not-exist.txt']));
+      expect(
+        await page.$eval('input', async (picker: HTMLInputElement) => {
+          picker.click();
+          await new Promise((x) => (picker.oninput = x));
+          const reader = new FileReader();
+          const promise = new Promise((fulfill) => (reader.onerror = fulfill));
+          reader.readAsText(picker.files[0]);
+          return promise.then(() => false);
+        })
+      ).toBeFalsy();
     });
     it('should fail when accepting file chooser twice', async () => {
       const { page } = getTestState();

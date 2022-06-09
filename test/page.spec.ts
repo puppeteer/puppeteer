@@ -118,23 +118,25 @@ describe('Page', function () {
     });
   });
 
-  // This test fails on Firefox on CI consistently but cannot be replicated
-  // locally. Skipping for now to unblock the Mitt release and given FF support
-  // isn't fully done yet but raising an issue to ask the FF folks to have a
-  // look at this.
-  describeFailsFirefox('removing and adding event handlers', () => {
+  describe('removing and adding event handlers', () => {
     it('should correctly fire event handlers as they are added and then removed', async () => {
       const { page, server } = getTestState();
 
       const handler = sinon.spy();
-      page.on('response', handler);
+      const onResponse = (response) => {
+        // Ignore default favicon requests.
+        if (!response.url().endsWith('favicon.ico')) {
+          handler();
+        }
+      };
+      page.on('response', onResponse);
       await page.goto(server.EMPTY_PAGE);
       expect(handler.callCount).toBe(1);
-      page.off('response', handler);
+      page.off('response', onResponse);
       await page.goto(server.EMPTY_PAGE);
       // Still one because we removed the handler.
       expect(handler.callCount).toBe(1);
-      page.on('response', handler);
+      page.on('response', onResponse);
       await page.goto(server.EMPTY_PAGE);
       // Two now because we added the handler back.
       expect(handler.callCount).toBe(2);
@@ -144,17 +146,28 @@ describe('Page', function () {
       const { page, server } = getTestState();
 
       const handler = sinon.spy();
-      page.on('request', handler);
+      const onResponse = (response) => {
+        // Ignore default favicon requests.
+        if (!response.url().endsWith('favicon.ico')) {
+          handler();
+        }
+      };
+
+      page.on('request', onResponse);
+      page.on('request', onResponse);
       await page.goto(server.EMPTY_PAGE);
-      expect(handler.callCount).toBe(1);
-      page.off('request', handler);
+      expect(handler.callCount).toBe(2);
+      page.off('request', onResponse);
       await page.goto(server.EMPTY_PAGE);
       // Still one because we removed the handler.
-      expect(handler.callCount).toBe(1);
-      page.on('request', handler);
+      expect(handler.callCount).toBe(3);
+      page.off('request', onResponse);
+      await page.goto(server.EMPTY_PAGE);
+      expect(handler.callCount).toBe(3);
+      page.on('request', onResponse);
       await page.goto(server.EMPTY_PAGE);
       // Two now because we added the handler back.
-      expect(handler.callCount).toBe(2);
+      expect(handler.callCount).toBe(4);
     });
   });
 
@@ -297,7 +310,10 @@ describe('Page', function () {
       expect(await getPermission(page, 'geolocation')).toBe('prompt');
     });
     itFailsFirefox('should trigger permission onchange', async () => {
-      const { page, server, context } = getTestState();
+      const { page, server, context, isHeadless } = getTestState();
+
+      // TODO: re-enable this test in headful once crbug.com/1324480 rolls out.
+      if (!isHeadless) return;
 
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
@@ -754,21 +770,6 @@ describe('Page', function () {
         .catch((error_) => (error = error_));
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
-    it('should work with async predicate', async () => {
-      const { page, server } = getTestState();
-      await page.goto(server.EMPTY_PAGE);
-      const [response] = await Promise.all([
-        page.waitForResponse(async (response) => {
-          return response.url() === server.PREFIX + '/digits/2.png';
-        }),
-        page.evaluate(() => {
-          fetch('/digits/1.png');
-          fetch('/digits/2.png');
-          fetch('/digits/3.png');
-        }),
-      ]);
-      expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
-    });
     it('should work with no timeout', async () => {
       const { page, server } = getTestState();
 
@@ -829,6 +830,21 @@ describe('Page', function () {
         page.waitForResponse(
           (response) => response.url() === server.PREFIX + '/digits/2.png'
         ),
+        page.evaluate(() => {
+          fetch('/digits/1.png');
+          fetch('/digits/2.png');
+          fetch('/digits/3.png');
+        }),
+      ]);
+      expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
+    });
+    it('should work with async predicate', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      const [response] = await Promise.all([
+        page.waitForResponse(async (response) => {
+          return response.url() === server.PREFIX + '/digits/2.png';
+        }),
         page.evaluate(() => {
           fetch('/digits/1.png');
           fetch('/digits/2.png');
@@ -1034,6 +1050,22 @@ describe('Page', function () {
         return await globalThis.compute(3, 5);
       });
       expect(result).toBe(15);
+    });
+    it('should not throw when frames detach', async () => {
+      const { page, server } = getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await page.exposeFunction('compute', function (a, b) {
+        return Promise.resolve(a * b);
+      });
+      await utils.detachFrame(page, 'frame1');
+
+      await expect(
+        page.evaluate(async function () {
+          return await globalThis.compute(3, 5);
+        })
+      ).resolves.toEqual(15);
     });
     it('should work with complex objects', async () => {
       const { page } = getTestState();
@@ -1855,12 +1887,13 @@ describe('Page', function () {
       await page.select('select', 'blue', 'black', 'magenta');
       await page.select('select');
       expect(
-        await page.$eval('select', (select: HTMLSelectElement) =>
-          Array.from(select.options).every(
-            (option: HTMLOptionElement) => !option.selected
-          )
+        await page.$eval(
+          'select',
+          (select: HTMLSelectElement) =>
+            Array.from(select.options).filter((option) => option.selected)[0]
+              .value
         )
-      ).toEqual(true);
+      ).toEqual('');
     });
     it('should throw if passed in non-strings', async () => {
       const { page } = getTestState();

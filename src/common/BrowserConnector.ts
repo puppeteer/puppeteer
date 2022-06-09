@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import { ConnectionTransport } from './ConnectionTransport.js';
-import { Browser, TargetFilterCallback } from './Browser.js';
-import { assert } from './assert.js';
 import { debugError } from '../common/helper.js';
-import { Connection } from './Connection.js';
-import { Viewport } from './PuppeteerViewport.js';
 import { isNode } from '../environment.js';
+import { assert } from './assert.js';
+import {
+  Browser,
+  IsPageTargetCallback,
+  TargetFilterCallback,
+} from './Browser.js';
+import { Connection } from './Connection.js';
+import { ConnectionTransport } from './ConnectionTransport.js';
 import { getFetch } from './fetch.js';
+import { Viewport } from './PuppeteerViewport.js';
 
 /**
  * Generic browser options that can be passed when launching any browser or when
@@ -47,6 +51,10 @@ export interface BrowserConnectOptions {
    * Callback to decide if Puppeteer should connect to a given target or not.
    */
   targetFilter?: TargetFilterCallback;
+  /**
+   * @internal
+   */
+  isPageTarget?: IsPageTargetCallback;
 }
 
 const getWebSocketTransportClass = async () => {
@@ -76,6 +84,7 @@ export const connectToBrowser = async (
     transport,
     slowMo = 0,
     targetFilter,
+    isPageTarget,
   } = options;
 
   assert(
@@ -84,7 +93,7 @@ export const connectToBrowser = async (
     'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect'
   );
 
-  let connection = null;
+  let connection!: Connection;
   if (transport) {
     connection = new Connection('', transport, slowMo);
   } else if (browserWSEndpoint) {
@@ -108,9 +117,10 @@ export const connectToBrowser = async (
     browserContextIds,
     ignoreHTTPSErrors,
     defaultViewport,
-    null,
+    undefined,
     () => connection.send('Browser.close').catch(debugError),
-    targetFilter
+    targetFilter,
+    isPageTarget
   );
 };
 
@@ -128,9 +138,11 @@ async function getWSEndpoint(browserURL: string): Promise<string> {
     const data = await result.json();
     return data.webSocketDebuggerUrl;
   } catch (error) {
-    error.message =
-      `Failed to fetch browser webSocket URL from ${endpointURL}: ` +
-      error.message;
+    if (error instanceof Error) {
+      error.message =
+        `Failed to fetch browser webSocket URL from ${endpointURL}: ` +
+        error.message;
+    }
     throw error;
   }
 }

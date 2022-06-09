@@ -146,7 +146,7 @@ export class Coverage {
    * Anonymous scripts are ones that don't have an associated url. These are
    * scripts that are dynamically created on the page using `eval` or
    * `new Function`. If `reportAnonymousScripts` is set to `true`, anonymous
-   * scripts will have `__puppeteer_evaluation_script__` as their URL.
+   * scripts will have `pptr://__puppeteer_evaluation_script__` as their URL.
    */
   async startJSCoverage(options: JSCoverageOptions = {}): Promise<void> {
     return await this._jsCoverage.start(options);
@@ -395,10 +395,12 @@ export class CSSCoverage {
       });
     }
 
-    const coverage = [];
+    const coverage: CoverageEntry[] = [];
     for (const styleSheetId of this._stylesheetURLs.keys()) {
       const url = this._stylesheetURLs.get(styleSheetId);
+      assert(url);
       const text = this._stylesheetSources.get(styleSheetId);
+      assert(text);
       const ranges = convertToDisjointRanges(
         styleSheetIdToCoverage.get(styleSheetId) || []
       );
@@ -432,16 +434,19 @@ function convertToDisjointRanges(
   });
 
   const hitCountStack = [];
-  const results = [];
+  const results: Array<{
+    start: number;
+    end: number;
+  }> = [];
   let lastOffset = 0;
   // Run scanning line to intersect all ranges.
   for (const point of points) {
     if (
       hitCountStack.length &&
       lastOffset < point.offset &&
-      hitCountStack[hitCountStack.length - 1] > 0
+      hitCountStack[hitCountStack.length - 1]! > 0
     ) {
-      const lastResult = results.length ? results[results.length - 1] : null;
+      const lastResult = results[results.length - 1];
       if (lastResult && lastResult.end === lastOffset)
         lastResult.end = point.offset;
       else results.push({ start: lastOffset, end: point.offset });

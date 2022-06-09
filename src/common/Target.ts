@@ -17,7 +17,7 @@
 import { Page, PageEmittedEvents } from './Page.js';
 import { WebWorker } from './WebWorker.js';
 import { CDPSession } from './Connection.js';
-import { Browser, BrowserContext } from './Browser.js';
+import { Browser, BrowserContext, IsPageTargetCallback } from './Browser.js';
 import { Viewport } from './PuppeteerViewport.js';
 import { Protocol } from 'devtools-protocol';
 import { TaskQueue } from './TaskQueue.js';
@@ -42,7 +42,7 @@ export class Target {
   /**
    * @internal
    */
-  _initializedCallback: (x: boolean) => void;
+  _initializedCallback!: (x: boolean) => void;
   /**
    * @internal
    */
@@ -50,7 +50,7 @@ export class Target {
   /**
    * @internal
    */
-  _closedCallback: () => void;
+  _closedCallback!: () => void;
   /**
    * @internal
    */
@@ -59,6 +59,10 @@ export class Target {
    * @internal
    */
   _targetId: string;
+  /**
+   * @internal
+   */
+  _isPageTargetCallback: IsPageTargetCallback;
 
   /**
    * @internal
@@ -69,19 +73,17 @@ export class Target {
     sessionFactory: () => Promise<CDPSession>,
     ignoreHTTPSErrors: boolean,
     defaultViewport: Viewport | null,
-    screenshotTaskQueue: TaskQueue
+    screenshotTaskQueue: TaskQueue,
+    isPageTargetCallback: IsPageTargetCallback
   ) {
     this._targetInfo = targetInfo;
     this._browserContext = browserContext;
     this._targetId = targetInfo.targetId;
     this._sessionFactory = sessionFactory;
     this._ignoreHTTPSErrors = ignoreHTTPSErrors;
-    this._defaultViewport = defaultViewport;
+    this._defaultViewport = defaultViewport ?? undefined;
     this._screenshotTaskQueue = screenshotTaskQueue;
-    /** @type {?Promise<!Puppeteer.Page>} */
-    this._pagePromise = null;
-    /** @type {?Promise<!WebWorker>} */
-    this._workerPromise = null;
+    this._isPageTargetCallback = isPageTargetCallback;
     this._initializedPromise = new Promise<boolean>(
       (fulfill) => (this._initializedCallback = fulfill)
     ).then(async (success) => {
@@ -99,7 +101,8 @@ export class Target {
       (fulfill) => (this._closedCallback = fulfill)
     );
     this._isInitialized =
-      this._targetInfo.type !== 'page' || this._targetInfo.url !== '';
+      !this._isPageTargetCallback(this._targetInfo) ||
+      this._targetInfo.url !== '';
     if (this._isInitialized) this._initializedCallback(true);
   }
 
@@ -111,26 +114,28 @@ export class Target {
   }
 
   /**
+   * @internal
+   */
+  _getTargetInfo(): Protocol.Target.TargetInfo {
+    return this._targetInfo;
+  }
+
+  /**
    * If the target is not of type `"page"` or `"background_page"`, returns `null`.
    */
   async page(): Promise<Page | null> {
-    if (
-      (this._targetInfo.type === 'page' ||
-        this._targetInfo.type === 'background_page' ||
-        this._targetInfo.type === 'webview') &&
-      !this._pagePromise
-    ) {
+    if (this._isPageTargetCallback(this._targetInfo) && !this._pagePromise) {
       this._pagePromise = this._sessionFactory().then((client) =>
         Page.create(
           client,
           this,
           this._ignoreHTTPSErrors,
-          this._defaultViewport,
+          this._defaultViewport ?? null,
           this._screenshotTaskQueue
         )
       );
     }
-    return this._pagePromise;
+    return (await this._pagePromise) ?? null;
   }
 
   /**
@@ -206,9 +211,9 @@ export class Target {
   /**
    * Get the target that opened this target. Top-level targets return `null`.
    */
-  opener(): Target | null {
+  opener(): Target | undefined {
     const { openerId } = this._targetInfo;
-    if (!openerId) return null;
+    if (!openerId) return;
     return this.browser()._targets.get(openerId);
   }
 
@@ -220,7 +225,8 @@ export class Target {
 
     if (
       !this._isInitialized &&
-      (this._targetInfo.type !== 'page' || this._targetInfo.url !== '')
+      (!this._isPageTargetCallback(this._targetInfo) ||
+        this._targetInfo.url !== '')
     ) {
       this._isInitialized = true;
       this._initializedCallback(true);

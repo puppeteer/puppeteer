@@ -20,12 +20,13 @@ import { JSHandle } from './JSHandle.js';
 import { CDPSession } from './Connection.js';
 import { Protocol } from 'devtools-protocol';
 import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes.js';
+import { ConsoleMessageType } from './ConsoleMessage.js';
 
 /**
  * @internal
  */
 export type ConsoleAPICalledCallback = (
-  eventType: string,
+  eventType: ConsoleMessageType,
   handles: JSHandle[],
   trace: Protocol.Runtime.StackTrace
 ) => void;
@@ -63,7 +64,7 @@ export class WebWorker extends EventEmitter {
   _client: CDPSession;
   _url: string;
   _executionContextPromise: Promise<ExecutionContext>;
-  _executionContextCallback: (value: ExecutionContext) => void;
+  _executionContextCallback!: (value: ExecutionContext) => void;
 
   /**
    *
@@ -87,11 +88,7 @@ export class WebWorker extends EventEmitter {
       // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
       jsHandleFactory = (remoteObject) =>
         new JSHandle(executionContext, client, remoteObject);
-      const executionContext = new ExecutionContext(
-        client,
-        event.context,
-        null
-      );
+      const executionContext = new ExecutionContext(client, event.context);
       this._executionContextCallback(executionContext);
     });
 

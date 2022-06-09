@@ -14,12 +14,12 @@ test-ts-types/**/dist/
 package-lock.json
 yarn.lock
 /node6
-/utils/browser/puppeteer-web.js
 /lib
 test/coverage.json
 temp/
 new-docs/
-puppeteer.tgz
+puppeteer*.tgz
 docs-api-json/
 docs-dist/
 website/docs
+docs/api.html

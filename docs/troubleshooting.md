@@ -156,7 +156,7 @@ If you get an error that looks like this when trying to launch Chromium:
 spawn /Users/.../node_modules/puppeteer/.local-chromium/mac-756035/chrome-mac/Chromium.app/Contents/MacOS/Chromium ENOENT
 ```
 
-This means that the browser was downloaded but failed to be extracted correctly. The most common cause is a bug in Node.js v14.0.0 which broke `extract-zip`, the module Puppeteer uses to extract browser downloads into the right place. The bug was fixed in Node.js v14.1.0, so please make sure you're running that version or higher. Alternatively, if you cannot upgrade, you could downgrade to Node.js v12, but we recommend upgrading when possible.
+This means that the browser was downloaded but failed to be extracted correctly. The most common cause is a bug in Node.js v14.0.0 which broke `extract-zip`, the module Puppeteer uses to extract browser downloads into the right place. The bug was fixed in Node.js v14.1.0, so please make sure you're running that version or higher.
 
 ## Setting Up Chrome Linux Sandbox
 
@@ -242,7 +242,7 @@ Running Puppeteer smoothly on CircleCI requires the following steps:
    like so:
    ```yaml
    docker:
-     - image: circleci/node:12 # Use your desired version
+     - image: circleci/node:14 # Use your desired version
        environment:
          NODE_ENV: development # Only needed if puppeteer is in `devDependencies`
    ```
@@ -277,7 +277,7 @@ To fix, you'll need to install the missing dependencies and the
 latest Chromium package in your Dockerfile:
 
 ```Dockerfile
-FROM node:12-slim
+FROM node:14-slim
 
 # Install latest chrome dev package and fonts to support major charsets (Chinese, Japanese, Arabic, Hebrew, Thai and a few others)
 # Note: this installs the necessary libs to make the bundled version of Chromium that Puppeteer
@@ -339,14 +339,14 @@ how to run this Dockerfile from a webserver running on App Engine Flex (Node).
 
 ### Running on Alpine
 
-The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 93, which corresponds to [Puppeteer v10.2.0](https://github.com/puppeteer/puppeteer/releases/tag/v10.2.0).
+The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 100, which corresponds to [Puppeteer v13.5.0](https://github.com/puppeteer/puppeteer/releases/tag/v13.5.0).
 
 Example Dockerfile:
 
 ```Dockerfile
 FROM alpine
 
-# Installs latest Chromium (92) package.
+# Installs latest Chromium (100) package.
 RUN apk add --no-cache \
       chromium \
       nss \
@@ -363,11 +363,11 @@ RUN apk add --no-cache \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-# Puppeteer v10.0.0 works with Chromium 92.
-RUN yarn add puppeteer@10.0.0
+# Puppeteer v13.5.0 works with Chromium 100.
+RUN yarn add puppeteer@13.5.0
 
 # Add user so we don't need --no-sandbox.
-RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
+RUN addgroup -S pptruser && adduser -S -G pptruser pptruser \
     && mkdir -p /home/pptruser/Downloads /app \
     && chown -R pptruser:pptruser /home/pptruser \
     && chown -R pptruser:pptruser /app

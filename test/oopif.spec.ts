@@ -16,7 +16,11 @@
 
 import utils from './utils.js';
 import expect from 'expect';
-import { getTestState, describeChromeOnly } from './mocha-utils'; // eslint-disable-line import/extensions
+import {
+  getTestState,
+  describeChromeOnly,
+  itFailsFirefox,
+} from './mocha-utils'; // eslint-disable-line import/extensions
 
 describeChromeOnly('OOPIF', function () {
   /* We use a special browser for this test as we need the --site-per-process flag */
@@ -31,6 +35,7 @@ describeChromeOnly('OOPIF', function () {
         args: (defaultBrowserOptions.args || []).concat([
           '--site-per-process',
           '--remote-debugging-port=21222',
+          '--host-rules=MAP * 127.0.0.1',
         ]),
       })
     );
@@ -154,6 +159,30 @@ describeChromeOnly('OOPIF', function () {
     await utils.detachFrame(page, 'frame1');
     expect(page.frames()).toHaveLength(1);
   });
+
+  it('should support wait for navigation for transitions from local to OOPIF', async () => {
+    const { server } = getTestState();
+
+    await page.goto(server.EMPTY_PAGE);
+    const framePromise = page.waitForFrame((frame) => {
+      return page.frames().indexOf(frame) === 1;
+    });
+    await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+
+    const frame = await framePromise;
+    expect(frame.isOOPFrame()).toBe(false);
+    const nav = frame.waitForNavigation();
+    await utils.navigateFrame(
+      page,
+      'frame1',
+      server.CROSS_PROCESS_PREFIX + '/empty.html'
+    );
+    await nav;
+    expect(frame.isOOPFrame()).toBe(true);
+    await utils.detachFrame(page, 'frame1');
+    expect(page.frames()).toHaveLength(1);
+  });
+
   it('should keep track of a frames OOP state', async () => {
     const { server } = getTestState();
 
@@ -239,6 +268,20 @@ describeChromeOnly('OOPIF', function () {
     expect(oopifs(context).length).toBe(1);
     expect(page.frames().length).toBe(2);
   });
+
+  it('should wait for inner OOPIFs', async () => {
+    const { server } = getTestState();
+    await page.goto(`http://mainframe:${server.PORT}/main-frame.html`);
+    const frame2 = await page.waitForFrame((frame) =>
+      frame.url().endsWith('inner-frame2.html')
+    );
+    expect(oopifs(context).length).toBe(2);
+    expect(page.frames().filter((frame) => frame.isOOPFrame()).length).toBe(2);
+    expect(
+      await frame2.evaluate(() => document.querySelectorAll('button').length)
+    ).toStrictEqual(1);
+  });
+
   it('should load oopif iframes with subresources and request interception', async () => {
     const { server } = getTestState();
 
@@ -347,11 +390,35 @@ describeChromeOnly('OOPIF', function () {
     await target.page();
     browser1.disconnect();
   });
+  itFailsFirefox('should support lazy OOP frames', async () => {
+    const { server } = getTestState();
+
+    await page.goto(server.PREFIX + '/lazy-oopif-frame.html');
+    await page.setViewport({ width: 1000, height: 1000 });
+
+    expect(page.frames().map((frame) => frame._hasStartedLoading)).toEqual([
+      true,
+      true,
+      false,
+    ]);
+  });
+
+  describe('waitForFrame', () => {
+    it('should resolve immediately if the frame already exists', async () => {
+      const { server } = getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await utils.attachFrame(
+        page,
+        'frame2',
+        server.CROSS_PROCESS_PREFIX + '/empty.html'
+      );
+
+      await page.waitForFrame((frame) => frame.url().endsWith('/empty.html'));
+    });
+  });
 });
 
-/**
- * @param {!BrowserContext} context
- */
 function oopifs(context) {
   return context
     .targets()

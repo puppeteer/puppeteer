@@ -19,7 +19,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
 import sinon from 'sinon';
-import puppeteer from '../lib/cjs/puppeteer/node.js';
+import puppeteer from '../lib/cjs/puppeteer/puppeteer.js';
 import {
   Browser,
   BrowserContext,
@@ -60,30 +60,34 @@ export const getTestState = (): PuppeteerTestState =>
   state as PuppeteerTestState;
 
 const product =
-  process.env.PRODUCT || process.env.PUPPETEER_PRODUCT || 'Chromium';
+  process.env['PRODUCT'] || process.env['PUPPETEER_PRODUCT'] || 'Chromium';
 
-const alternativeInstall = process.env.PUPPETEER_ALT_INSTALL || false;
+const alternativeInstall = process.env['PUPPETEER_ALT_INSTALL'] || false;
 
-const isHeadless =
-  (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
+const headless = (process.env['HEADLESS'] || 'true').trim().toLowerCase();
+const isHeadless = headless === 'true' || headless === 'chrome';
 const isFirefox = product === 'firefox';
 const isChrome = product === 'Chromium';
 
 let extraLaunchOptions = {};
 try {
-  extraLaunchOptions = JSON.parse(process.env.EXTRA_LAUNCH_OPTIONS || '{}');
+  extraLaunchOptions = JSON.parse(process.env['EXTRA_LAUNCH_OPTIONS'] || '{}');
 } catch (error) {
-  console.warn(
-    `Error parsing EXTRA_LAUNCH_OPTIONS: ${error.message}. Skipping.`
-  );
+  if (error instanceof Error) {
+    console.warn(
+      `Error parsing EXTRA_LAUNCH_OPTIONS: ${error.message}. Skipping.`
+    );
+  } else {
+    throw error;
+  }
 }
 
 const defaultBrowserOptions = Object.assign(
   {
     handleSIGINT: true,
-    executablePath: process.env.BINARY,
-    headless: isHeadless,
-    dumpio: !!process.env.DUMPIO,
+    executablePath: process.env['BINARY'],
+    headless: headless === 'chrome' ? ('chrome' as const) : isHeadless,
+    dumpio: !!process.env['DUMPIO'],
   },
   extraLaunchOptions
 );
@@ -137,6 +141,7 @@ interface PuppeteerTestState {
   isFirefox: boolean;
   isChrome: boolean;
   isHeadless: boolean;
+  headless: string;
   puppeteerPath: string;
 }
 const state: Partial<PuppeteerTestState> = {};
@@ -157,6 +162,14 @@ export const itChromeOnly = (
   else return xit(description, body);
 };
 
+export const itHeadlessOnly = (
+  description: string,
+  body: Mocha.Func
+): Mocha.Test => {
+  if (isChrome && isHeadless === true) return it(description, body);
+  else return xit(description, body);
+};
+
 export const itFirefoxOnly = (
   description: string,
   body: Mocha.Func
@@ -169,7 +182,8 @@ export const itOnlyRegularInstall = (
   description: string,
   body: Mocha.Func
 ): Mocha.Test => {
-  if (alternativeInstall || process.env.BINARY) return xit(description, body);
+  if (alternativeInstall || process.env['BINARY'])
+    return xit(description, body);
   else return it(description, body);
 };
 
@@ -207,7 +221,7 @@ export const describeFailsFirefox = (
 export const describeChromeOnly = (
   description: string,
   body: (this: Mocha.Suite) => void
-): Mocha.Suite => {
+): Mocha.Suite | void => {
   if (isChrome) return describe(description, body);
 };
 
@@ -216,7 +230,7 @@ let coverageHooks = {
   afterAll: (): void => {},
 };
 
-if (process.env.COVERAGE) {
+if (process.env['COVERAGE']) {
   coverageHooks = trackCoverage();
 }
 
@@ -240,21 +254,21 @@ export const setupTestBrowserHooks = (): void => {
   });
 
   after(async () => {
-    await state.browser.close();
-    state.browser = null;
+    await state.browser!.close();
+    state.browser = undefined;
   });
 };
 
 export const setupTestPageAndContextHooks = (): void => {
   beforeEach(async () => {
-    state.context = await state.browser.createIncognitoBrowserContext();
+    state.context = await state.browser!.createIncognitoBrowserContext();
     state.page = await state.context.newPage();
   });
 
   afterEach(async () => {
-    await state.context.close();
-    state.context = null;
-    state.page = null;
+    await state.context!.close();
+    state.context = undefined;
+    state.page = undefined;
   });
 };
 
@@ -270,6 +284,7 @@ export const mochaHooks = {
       state.isFirefox = isFirefox;
       state.isChrome = isChrome;
       state.isHeadless = isHeadless;
+      state.headless = headless;
       state.puppeteerPath = path.resolve(path.join(__dirname, '..'));
     },
     coverageHooks.beforeAll,

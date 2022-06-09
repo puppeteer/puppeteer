@@ -1,7 +1,6 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "./tsconfig.test.json",
   "compilerOptions": {
     "noEmit": true
-  },
-  "include": ["*.ts", "*.js"]
+  }
 }

@@ -26,8 +26,8 @@ import { ProtocolError } from './Errors.js';
  * @public
  */
 export interface RemoteAddress {
-  ip: string;
-  port: number;
+  ip?: string;
+  port?: number;
 }
 
 interface CDPSession extends EventEmitter {
@@ -48,7 +48,7 @@ export class HTTPResponse {
   private _request: HTTPRequest;
   private _contentPromise: Promise<Buffer> | null = null;
   private _bodyLoadedPromise: Promise<Error | void>;
-  private _bodyLoadedPromiseFulfill: (err: Error | void) => void;
+  private _bodyLoadedPromiseFulfill: (err: Error | void) => void = () => {};
   private _remoteAddress: RemoteAddress;
   private _status: number;
   private _statusText: string;
@@ -88,13 +88,14 @@ export class HTTPResponse {
 
     this._status = extraInfo ? extraInfo.statusCode : responsePayload.status;
     const headers = extraInfo ? extraInfo.headers : responsePayload.headers;
-    for (const key of Object.keys(headers))
-      this._headers[key.toLowerCase()] = headers[key];
+    for (const [key, value] of Object.entries(headers)) {
+      this._headers[key.toLowerCase()] = value;
+    }
 
     this._securityDetails = responsePayload.securityDetails
       ? new SecurityDetails(responsePayload.securityDetails)
       : null;
-    this._timing = responsePayload.timing;
+    this._timing = responsePayload.timing || null;
   }
 
   /**
@@ -117,7 +118,10 @@ export class HTTPResponse {
    * @internal
    */
   _resolveBody(err: Error | null): void {
-    return this._bodyLoadedPromiseFulfill(err);
+    if (err) {
+      return this._bodyLoadedPromiseFulfill(err);
+    }
+    return this._bodyLoadedPromiseFulfill();
   }
 
   /**

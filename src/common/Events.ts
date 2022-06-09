@@ -24,7 +24,7 @@
  * add a new Page event, you should update the PageEmittedEvents enum in
  * src/common/Page.ts.
  *
- * Chat to @jackfranklin if you're unsure.
+ * Chat to \@jackfranklin if you're unsure.
  */
 
 export const Events = {

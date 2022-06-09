@@ -14,3 +14,4 @@ CHANGELOG.md
 test/assets/
 /.local-chromium/
 /.local-firefox/
+test-ts-types
