@@ -54,6 +54,13 @@ export type TargetFilterCallback = (
   target: Protocol.Target.TargetInfo
 ) => boolean;
 
+/**
+ * @internal
+ */
+export type IsPageTargetCallback = (
+  target: Protocol.Target.TargetInfo
+) => boolean;
+
 const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map<
   Permission,
   Protocol.Browser.PermissionType
@@ -217,7 +224,8 @@ export class Browser extends EventEmitter {
     defaultViewport?: Viewport | null,
     process?: ChildProcess,
     closeCallback?: BrowserCloseCallback,
-    targetFilterCallback?: TargetFilterCallback
+    targetFilterCallback?: TargetFilterCallback,
+    isPageTargetCallback?: IsPageTargetCallback
   ): Promise<Browser> {
     const browser = new Browser(
       connection,
@@ -226,7 +234,8 @@ export class Browser extends EventEmitter {
       defaultViewport,
       process,
       closeCallback,
-      targetFilterCallback
+      targetFilterCallback,
+      isPageTargetCallback
     );
     await connection.send('Target.setDiscoverTargets', { discover: true });
     return browser;
@@ -237,6 +246,7 @@ export class Browser extends EventEmitter {
   private _connection: Connection;
   private _closeCallback: BrowserCloseCallback;
   private _targetFilterCallback: TargetFilterCallback;
+  private _isPageTargetCallback!: IsPageTargetCallback;
   private _defaultContext: BrowserContext;
   private _contexts: Map<string, BrowserContext>;
   private _screenshotTaskQueue: TaskQueue;
@@ -257,7 +267,8 @@ export class Browser extends EventEmitter {
     defaultViewport?: Viewport | null,
     process?: ChildProcess,
     closeCallback?: BrowserCloseCallback,
-    targetFilterCallback?: TargetFilterCallback
+    targetFilterCallback?: TargetFilterCallback,
+    isPageTargetCallback?: IsPageTargetCallback
   ) {
     super();
     this._ignoreHTTPSErrors = ignoreHTTPSErrors;
@@ -267,8 +278,9 @@ export class Browser extends EventEmitter {
     this._connection = connection;
     this._closeCallback = closeCallback || function (): void {};
     this._targetFilterCallback = targetFilterCallback || ((): boolean => true);
+    this._setIsPageTargetCallback(isPageTargetCallback);
 
-    this._defaultContext = new BrowserContext(this._connection, this, null);
+    this._defaultContext = new BrowserContext(this._connection, this);
     this._contexts = new Map();
     for (const contextId of contextIds)
       this._contexts.set(
@@ -296,7 +308,29 @@ export class Browser extends EventEmitter {
    * {@link Puppeteer.connect}.
    */
   process(): ChildProcess | null {
-    return this._process;
+    return this._process ?? null;
+  }
+
+  /**
+   * @internal
+   */
+  _setIsPageTargetCallback(isPageTargetCallback?: IsPageTargetCallback): void {
+    this._isPageTargetCallback =
+      isPageTargetCallback ||
+      ((target: Protocol.Target.TargetInfo): boolean => {
+        return (
+          target.type === 'page' ||
+          target.type === 'background_page' ||
+          target.type === 'webview'
+        );
+      });
+  }
+
+  /**
+   * @internal
+   */
+  _getIsPageTargetCallback(): IsPageTargetCallback | undefined {
+    return this._isPageTargetCallback;
   }
 
   /**
@@ -319,7 +353,7 @@ export class Browser extends EventEmitter {
   async createIncognitoBrowserContext(
     options: BrowserContextOptions = {}
   ): Promise<BrowserContext> {
-    const { proxyServer = '', proxyBypassList = [] } = options;
+    const { proxyServer, proxyBypassList } = options;
 
     const { browserContextId } = await this._connection.send(
       'Target.createBrowserContext',
@@ -357,8 +391,11 @@ export class Browser extends EventEmitter {
    * Used by BrowserContext directly so cannot be marked private.
    */
   async _disposeContext(contextId?: string): Promise<void> {
+    if (!contextId) {
+      return;
+    }
     await this._connection.send('Target.disposeBrowserContext', {
-      browserContextId: contextId || undefined,
+      browserContextId: contextId,
     });
     this._contexts.delete(contextId);
   }
@@ -373,6 +410,10 @@ export class Browser extends EventEmitter {
         ? this._contexts.get(browserContextId)
         : this._defaultContext;
 
+    if (!context) {
+      throw new Error('Missing browser context');
+    }
+
     const shouldAttachToTarget = this._targetFilterCallback(targetInfo);
     if (!shouldAttachToTarget) {
       this._ignoredTargets.add(targetInfo.targetId);
@@ -384,8 +425,9 @@ export class Browser extends EventEmitter {
       context,
       () => this._connection.createSession(targetInfo),
       this._ignoreHTTPSErrors,
-      this._defaultViewport,
-      this._screenshotTaskQueue
+      this._defaultViewport ?? null,
+      this._screenshotTaskQueue,
+      this._isPageTargetCallback
     );
     assert(
       !this._targets.has(event.targetInfo.targetId),
@@ -402,6 +444,11 @@ export class Browser extends EventEmitter {
   private async _targetDestroyed(event: { targetId: string }): Promise<void> {
     if (this._ignoredTargets.has(event.targetId)) return;
     const target = this._targets.get(event.targetId);
+    if (!target) {
+      throw new Error(
+        `Missing target in _targetDestroyed (id = ${event.targetId})`
+      );
+    }
     target._initializedCallback(false);
     this._targets.delete(event.targetId);
     target._closedCallback();
@@ -418,7 +465,11 @@ export class Browser extends EventEmitter {
   ): void {
     if (this._ignoredTargets.has(event.targetInfo.targetId)) return;
     const target = this._targets.get(event.targetInfo.targetId);
-    assert(target, 'target should exist before targetInfoChanged');
+    if (!target) {
+      throw new Error(
+        `Missing target in targetInfoChanged (id = ${event.targetInfo.targetId})`
+      );
+    }
     const previousURL = target.url();
     const wasInitialized = target._isInitialized;
     target._targetInfoChanged(event.targetInfo);
@@ -469,11 +520,19 @@ export class Browser extends EventEmitter {
       browserContextId: contextId || undefined,
     });
     const target = this._targets.get(targetId);
-    assert(
-      await target._initializedPromise,
-      'Failed to create target for page'
-    );
+    if (!target) {
+      throw new Error(`Missing target for page (id = ${targetId})`);
+    }
+    const initialized = await target._initializedPromise;
+    if (!initialized) {
+      throw new Error(`Failed to create target for page (id = ${targetId})`);
+    }
     const page = await target.page();
+    if (!page) {
+      throw new Error(
+        `Failed to create a page for context (id = ${contextId})`
+      );
+    }
     return page;
   }
 
@@ -491,7 +550,13 @@ export class Browser extends EventEmitter {
    * The target associated with the browser.
    */
   target(): Target {
-    return this.targets().find((target) => target.type() === 'browser');
+    const browserTarget = this.targets().find(
+      (target) => target.type() === 'browser'
+    );
+    if (!browserTarget) {
+      throw new Error('Browser target is not found');
+    }
+    return browserTarget;
   }
 
   /**
@@ -509,30 +574,29 @@ export class Browser extends EventEmitter {
    * ```
    */
   async waitForTarget(
-    predicate: (x: Target) => boolean,
+    predicate: (x: Target) => boolean | Promise<boolean>,
     options: WaitForTargetOptions = {}
   ): Promise<Target> {
     const { timeout = 30000 } = options;
-    const existingTarget = this.targets().find(predicate);
-    if (existingTarget) return existingTarget;
     let resolve: (value: Target | PromiseLike<Target>) => void;
+    let isResolved = false;
     const targetPromise = new Promise<Target>((x) => (resolve = x));
     this.on(BrowserEmittedEvents.TargetCreated, check);
     this.on(BrowserEmittedEvents.TargetChanged, check);
     try {
       if (!timeout) return await targetPromise;
-      return await helper.waitWithTimeout<Target>(
-        targetPromise,
-        'target',
-        timeout
-      );
+      this.targets().forEach(check);
+      return await helper.waitWithTimeout(targetPromise, 'target', timeout);
     } finally {
-      this.removeListener(BrowserEmittedEvents.TargetCreated, check);
-      this.removeListener(BrowserEmittedEvents.TargetChanged, check);
+      this.off(BrowserEmittedEvents.TargetCreated, check);
+      this.off(BrowserEmittedEvents.TargetChanged, check);
     }
 
-    function check(target: Target): void {
-      if (predicate(target)) resolve(target);
+    async function check(target: Target): Promise<void> {
+      if ((await predicate(target)) && !isResolved) {
+        isResolved = true;
+        resolve(target);
+      }
     }
   }
 
@@ -706,7 +770,7 @@ export class BrowserContext extends EventEmitter {
    * that matches the `predicate` function.
    */
   waitForTarget(
-    predicate: (x: Target) => boolean,
+    predicate: (x: Target) => boolean | Promise<boolean>,
     options: { timeout?: number } = {}
   ): Promise<Target> {
     return this._browser.waitForTarget(
@@ -725,10 +789,17 @@ export class BrowserContext extends EventEmitter {
   async pages(): Promise<Page[]> {
     const pages = await Promise.all(
       this.targets()
-        .filter((target) => target.type() === 'page')
+        .filter(
+          (target) =>
+            target.type() === 'page' ||
+            (target.type() === 'other' &&
+              this._browser._getIsPageTargetCallback()?.(
+                target._getTargetInfo()
+              ))
+        )
         .map((target) => target.page())
     );
-    return pages.filter((page) => !!page);
+    return pages.filter((page): page is Page => !!page);
   }
 
   /**

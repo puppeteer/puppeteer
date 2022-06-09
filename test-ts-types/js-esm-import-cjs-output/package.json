@@ -6,9 +6,6 @@
   "scripts": {
     "compile": "../../node_modules/.bin/tsc"
   },
-  "devDependencies": {
-    "typescript": "4.2.4"
-  },
   "dependencies": {
     "puppeteer": "file:../../puppeteer.tgz"
   }

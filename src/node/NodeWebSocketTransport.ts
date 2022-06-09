@@ -13,20 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ConnectionTransport } from '../common/ConnectionTransport.js';
 import NodeWebSocket from 'ws';
+import { ConnectionTransport } from '../common/ConnectionTransport.js';
+import { packageVersion } from '../generated/version.js';
+import { promises as dns } from 'dns';
 
 export class NodeWebSocketTransport implements ConnectionTransport {
-  static create(url: string): Promise<NodeWebSocketTransport> {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const pkg = require('../../../../package.json');
+  static async create(urlString: string): Promise<NodeWebSocketTransport> {
+    // TODO(jrandolf): Starting in Node 17, IPv6 is favoured over IPv4 due to a change
+    // in a default option:
+    // - https://github.com/nodejs/node/issues/40537,
+    // Due to this, for Firefox, we must parse and resolve the `localhost` hostname
+    // manually with the previous behavior according to:
+    // - https://nodejs.org/api/dns.html#dnslookuphostname-options-callback
+    // because of https://bugzilla.mozilla.org/show_bug.cgi?id=1769994.
+    const url = new URL(urlString);
+    if (url.hostname === 'localhost') {
+      const { address } = await dns.lookup(url.hostname, { verbatim: false });
+      url.hostname = address;
+    }
+
     return new Promise((resolve, reject) => {
       const ws = new NodeWebSocket(url, [], {
         followRedirects: true,
         perMessageDeflate: false,
         maxPayload: 256 * 1024 * 1024, // 256Mb
         headers: {
-          'User-Agent': `Puppeteer ${pkg.version}`,
+          'User-Agent': `Puppeteer ${packageVersion}`,
         },
       });
 
@@ -38,7 +51,7 @@ export class NodeWebSocketTransport implements ConnectionTransport {
   }
 
   private _ws: NodeWebSocket;
-  onmessage?: (message: string) => void;
+  onmessage?: (message: NodeWebSocket.Data) => void;
   onclose?: () => void;
 
   constructor(ws: NodeWebSocket) {
@@ -51,8 +64,6 @@ export class NodeWebSocketTransport implements ConnectionTransport {
     });
     // Silently ignore all errors - we don't know what to do with them.
     this._ws.addEventListener('error', () => {});
-    this.onmessage = null;
-    this.onclose = null;
   }
 
   send(message: string): void {

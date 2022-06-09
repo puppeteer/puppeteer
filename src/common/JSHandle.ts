@@ -14,32 +14,33 @@
  * limitations under the License.
  */
 
-import { assert } from './assert.js';
-import { helper, debugError } from './helper.js';
-import { ExecutionContext } from './ExecutionContext.js';
-import { Page, ScreenshotOptions } from './Page.js';
-import { CDPSession } from './Connection.js';
-import { KeyInput } from './USKeyboardLayout.js';
-import { FrameManager, Frame } from './FrameManager.js';
-import { getQueryHandlerAndSelector } from './QueryHandler.js';
 import { Protocol } from 'devtools-protocol';
+import { assert } from './assert.js';
+import { CDPSession } from './Connection.js';
 import {
   EvaluateFn,
-  SerializableOrJSHandle,
   EvaluateFnReturnType,
   EvaluateHandleFn,
-  WrapElementHandle,
+  SerializableOrJSHandle,
   UnwrapPromiseLike,
+  WrapElementHandle,
 } from './EvalTypes.js';
-import { isNode } from '../environment.js';
+import { ExecutionContext } from './ExecutionContext.js';
+import { Frame, FrameManager } from './FrameManager.js';
+import { debugError, helper } from './helper.js';
+import { MouseButton } from './Input.js';
+import { Page, ScreenshotOptions } from './Page.js';
+import { getQueryHandlerAndSelector } from './QueryHandler.js';
+import { KeyInput } from './USKeyboardLayout.js';
+
 /**
  * @public
  */
 export interface BoxModel {
-  content: Array<{ x: number; y: number }>;
-  padding: Array<{ x: number; y: number }>;
-  border: Array<{ x: number; y: number }>;
-  margin: Array<{ x: number; y: number }>;
+  content: Point[];
+  padding: Point[];
+  border: Point[];
+  margin: Point[];
   width: number;
   height: number;
 }
@@ -47,15 +48,7 @@ export interface BoxModel {
 /**
  * @public
  */
-export interface BoundingBox {
-  /**
-   * the x coordinate of the element in pixels.
-   */
-  x: number;
-  /**
-   * the y coordinate of the element in pixels.
-   */
-  y: number;
+export interface BoundingBox extends Point {
   /**
    * the width of the element in pixels.
    */
@@ -80,12 +73,16 @@ export function createJSHandle(
       context,
       context._client,
       remoteObject,
+      frame,
       frameManager.page(),
       frameManager
     );
   }
   return new JSHandle(context, context._client, remoteObject);
 }
+
+const applyOffsetsToQuad = (quad: Point[], offsetX: number, offsetY: number) =>
+  quad.map((part) => ({ x: part.x + offsetX, y: part.y + offsetY }));
 
 /**
  * Represents an in-page JavaScript object. JSHandles can be created with the
@@ -193,8 +190,8 @@ export class JSHandle<HandleObjectType = unknown> {
    */
   async getProperty(propertyName: string): Promise<JSHandle> {
     const objectHandle = await this.evaluateHandle(
-      (object: Element, propertyName: string) => {
-        const result = { __proto__: null };
+      (object: Element, propertyName: keyof Element) => {
+        const result: Record<string, unknown> = { __proto__: null };
         result[propertyName] = object[propertyName];
         return result;
       },
@@ -225,13 +222,14 @@ export class JSHandle<HandleObjectType = unknown> {
    * ```
    */
   async getProperties(): Promise<Map<string, JSHandle>> {
+    assert(this._remoteObject.objectId);
     const response = await this._client.send('Runtime.getProperties', {
       objectId: this._remoteObject.objectId,
       ownProperties: true,
     });
     const result = new Map<string, JSHandle>();
     for (const property of response.result) {
-      if (!property.enumerable) continue;
+      if (!property.enumerable || !property.value) continue;
       result.set(property.name, createJSHandle(this._context, property.value));
     }
     return result;
@@ -265,8 +263,8 @@ export class JSHandle<HandleObjectType = unknown> {
    */
   asElement(): ElementHandle | null {
     /*  This always returns null, but subclasses can override this and return an
-        ElementHandle.
-    */
+         ElementHandle.
+     */
     return null;
   }
 
@@ -331,6 +329,7 @@ export class JSHandle<HandleObjectType = unknown> {
 export class ElementHandle<
   ElementType extends Element = Element
 > extends JSHandle<ElementType> {
+  private _frame: Frame;
   private _page: Page;
   private _frameManager: FrameManager;
 
@@ -341,12 +340,14 @@ export class ElementHandle<
     context: ExecutionContext,
     client: CDPSession,
     remoteObject: Protocol.Runtime.RemoteObject,
+    frame: Frame,
     page: Page,
     frameManager: FrameManager
   ) {
     super(context, client, remoteObject);
     this._client = client;
     this._remoteObject = remoteObject;
+    this._frame = frame;
     this._page = page;
     this._frameManager = frameManager;
   }
@@ -390,6 +391,7 @@ export class ElementHandle<
     } = {}
   ): Promise<ElementHandle | null> {
     const frame = this._context.frame();
+    assert(frame);
     const secondaryContext = await frame._secondaryWorld.executionContext();
     const adoptedRoot = await secondaryContext._adoptElementHandle(this);
     const handle = await frame._secondaryWorld.waitForSelector(selector, {
@@ -404,7 +406,86 @@ export class ElementHandle<
     return result;
   }
 
-  asElement(): ElementHandle<ElementType> | null {
+  /**
+   * Wait for the `xpath` within the element. If at the moment of calling the
+   * method the `xpath` already exists, the method will return immediately. If
+   * the `xpath` doesn't appear after the `timeout` milliseconds of waiting, the
+   * function will throw.
+   *
+   * If `xpath` starts with `//` instead of `.//`, the dot will be appended automatically.
+   *
+   * This method works across navigation
+   * ```js
+   * const puppeteer = require('puppeteer');
+   * (async () => {
+   * const browser = await puppeteer.launch();
+   * const page = await browser.newPage();
+   * let currentURL;
+   * page
+   * .waitForXPath('//img')
+   * .then(() => console.log('First URL with image: ' + currentURL));
+   * for (currentURL of [
+   * 'https://example.com',
+   * 'https://google.com',
+   * 'https://bbc.com',
+   * ]) {
+   * await page.goto(currentURL);
+   * }
+   * await browser.close();
+   * })();
+   * ```
+   * @param xpath - A
+   * {@link https://developer.mozilla.org/en-US/docs/Web/XPath | xpath} of an
+   * element to wait for
+   * @param options - Optional waiting parameters
+   * @returns Promise which resolves when element specified by xpath string is
+   * added to DOM. Resolves to `null` if waiting for `hidden: true` and xpath is
+   * not found in DOM.
+   * @remarks
+   * The optional Argument `options` have properties:
+   *
+   * - `visible`: A boolean to wait for element to be present in DOM and to be
+   * visible, i.e. to not have `display: none` or `visibility: hidden` CSS
+   * properties. Defaults to `false`.
+   *
+   * - `hidden`: A boolean wait for element to not be found in the DOM or to be
+   * hidden, i.e. have `display: none` or `visibility: hidden` CSS properties.
+   * Defaults to `false`.
+   *
+   * - `timeout`: A number which is maximum time to wait for in milliseconds.
+   * Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The default
+   * value can be changed by using the {@link Page.setDefaultTimeout} method.
+   */
+  async waitForXPath(
+    xpath: string,
+    options: {
+      visible?: boolean;
+      hidden?: boolean;
+      timeout?: number;
+    } = {}
+  ): Promise<ElementHandle | null> {
+    const frame = this._context.frame();
+    assert(frame);
+    const secondaryContext = await frame._secondaryWorld.executionContext();
+    const adoptedRoot = await secondaryContext._adoptElementHandle(this);
+    xpath = xpath.startsWith('//') ? '.' + xpath : xpath;
+    if (!xpath.startsWith('.//')) {
+      await adoptedRoot.dispose();
+      throw new Error('Unsupported xpath expression: ' + xpath);
+    }
+    const handle = await frame._secondaryWorld.waitForXPath(xpath, {
+      ...options,
+      root: adoptedRoot,
+    });
+    await adoptedRoot.dispose();
+    if (!handle) return null;
+    const mainExecutionContext = await frame._mainWorld.executionContext();
+    const result = await mainExecutionContext._adoptElementHandle(handle);
+    await handle.dispose();
+    return result;
+  }
+
+  override asElement(): ElementHandle<ElementType> | null {
     return this;
   }
 
@@ -421,48 +502,79 @@ export class ElementHandle<
   }
 
   private async _scrollIntoViewIfNeeded(): Promise<void> {
-    const error = await this.evaluate<
-      (
+    const error = await this.evaluate(
+      async (
         element: Element,
         pageJavascriptEnabled: boolean
-      ) => Promise<string | false>
-    >(async (element, pageJavascriptEnabled) => {
-      if (!element.isConnected) return 'Node is detached from document';
-      if (element.nodeType !== Node.ELEMENT_NODE)
-        return 'Node is not of type HTMLElement';
-      // force-scroll if page's javascript is disabled.
-      if (!pageJavascriptEnabled) {
-        element.scrollIntoView({
-          block: 'center',
-          inline: 'center',
-          // @ts-expect-error Chrome still supports behavior: instant but
-          // it's not in the spec so TS shouts We don't want to make this
-          // breaking change in Puppeteer yet so we'll ignore the line.
-          behavior: 'instant',
+      ): Promise<string | false> => {
+        if (!element.isConnected) return 'Node is detached from document';
+        if (element.nodeType !== Node.ELEMENT_NODE)
+          return 'Node is not of type HTMLElement';
+        // force-scroll if page's javascript is disabled.
+        if (!pageJavascriptEnabled) {
+          element.scrollIntoView({
+            block: 'center',
+            inline: 'center',
+            // @ts-expect-error Chrome still supports behavior: instant but
+            // it's not in the spec so TS shouts We don't want to make this
+            // breaking change in Puppeteer yet so we'll ignore the line.
+            behavior: 'instant',
+          });
+          return false;
+        }
+        const visibleRatio = await new Promise((resolve) => {
+          const observer = new IntersectionObserver((entries) => {
+            resolve(entries[0]!.intersectionRatio);
+            observer.disconnect();
+          });
+          observer.observe(element);
         });
+        if (visibleRatio !== 1.0) {
+          element.scrollIntoView({
+            block: 'center',
+            inline: 'center',
+            // @ts-expect-error Chrome still supports behavior: instant but
+            // it's not in the spec so TS shouts We don't want to make this
+            // breaking change in Puppeteer yet so we'll ignore the line.
+            behavior: 'instant',
+          });
+        }
         return false;
-      }
-      const visibleRatio = await new Promise((resolve) => {
-        const observer = new IntersectionObserver((entries) => {
-          resolve(entries[0].intersectionRatio);
-          observer.disconnect();
-        });
-        observer.observe(element);
-      });
-      if (visibleRatio !== 1.0) {
-        element.scrollIntoView({
-          block: 'center',
-          inline: 'center',
-          // @ts-expect-error Chrome still supports behavior: instant but
-          // it's not in the spec so TS shouts We don't want to make this
-          // breaking change in Puppeteer yet so we'll ignore the line.
-          behavior: 'instant',
-        });
-      }
-      return false;
-    }, this._page.isJavaScriptEnabled());
+      },
+      this._page.isJavaScriptEnabled()
+    );
 
     if (error) throw new Error(error);
+  }
+
+  private async _getOOPIFOffsets(
+    frame: Frame
+  ): Promise<{ offsetX: number; offsetY: number }> {
+    let offsetX = 0;
+    let offsetY = 0;
+    let currentFrame: Frame | null = frame;
+    while (currentFrame && currentFrame.parentFrame()) {
+      const parent = currentFrame.parentFrame();
+      if (!currentFrame.isOOPFrame() || !parent) {
+        currentFrame = parent;
+        continue;
+      }
+      const { backendNodeId } = await parent._client.send('DOM.getFrameOwner', {
+        frameId: currentFrame._id,
+      });
+      const result = await parent._client.send('DOM.getBoxModel', {
+        backendNodeId: backendNodeId,
+      });
+      if (!result) {
+        break;
+      }
+      const contentBoxQuad = result.model.content;
+      const topLeftCorner = this._fromProtocolQuad(contentBoxQuad)[0];
+      offsetX += topLeftCorner!.x;
+      offsetY += topLeftCorner!.y;
+      currentFrame = parent;
+    }
+    return { offsetX, offsetY };
   }
 
   /**
@@ -475,7 +587,7 @@ export class ElementHandle<
           objectId: this._remoteObject.objectId,
         })
         .catch(debugError),
-      this._client.send('Page.getLayoutMetrics'),
+      this._page.client().send('Page.getLayoutMetrics'),
     ]);
     if (!result || !result.quads.length)
       throw new Error('Node is either not clickable or not an HTMLElement');
@@ -483,15 +595,17 @@ export class ElementHandle<
     // Fallback to `layoutViewport` in case of using Firefox.
     const { clientWidth, clientHeight } =
       layoutMetrics.cssLayoutViewport || layoutMetrics.layoutViewport;
+    const { offsetX, offsetY } = await this._getOOPIFOffsets(this._frame);
     const quads = result.quads
       .map((quad) => this._fromProtocolQuad(quad))
+      .map((quad) => applyOffsetsToQuad(quad, offsetX, offsetY))
       .map((quad) =>
         this._intersectQuadWithViewport(quad, clientWidth, clientHeight)
       )
       .filter((quad) => computeQuadArea(quad) > 1);
     if (!quads.length)
       throw new Error('Node is either not clickable or not an HTMLElement');
-    const quad = quads[0];
+    const quad = quads[0]!;
     if (offset) {
       // Return the point of the first quad identified by offset.
       let minX = Number.MAX_SAFE_INTEGER;
@@ -536,20 +650,20 @@ export class ElementHandle<
       .catch((error) => debugError(error));
   }
 
-  private _fromProtocolQuad(quad: number[]): Array<{ x: number; y: number }> {
+  private _fromProtocolQuad(quad: number[]): Point[] {
     return [
-      { x: quad[0], y: quad[1] },
-      { x: quad[2], y: quad[3] },
-      { x: quad[4], y: quad[5] },
-      { x: quad[6], y: quad[7] },
+      { x: quad[0]!, y: quad[1]! },
+      { x: quad[2]!, y: quad[3]! },
+      { x: quad[4]!, y: quad[5]! },
+      { x: quad[6]!, y: quad[7]! },
     ];
   }
 
   private _intersectQuadWithViewport(
-    quad: Array<{ x: number; y: number }>,
+    quad: Point[],
     width: number,
     height: number
-  ): Array<{ x: number; y: number }> {
+  ): Point[] {
     return quad.map((point) => ({
       x: Math.min(Math.max(point.x, 0), width),
       y: Math.min(Math.max(point.y, 0), height),
@@ -652,7 +766,7 @@ export class ElementHandle<
    *    one is taken into account.
    */
   async select(...values: string[]): Promise<string[]> {
-    for (const value of values)
+    for (const value of values) {
       assert(
         helper.isString(value),
         'Values must be strings. Found value "' +
@@ -661,34 +775,49 @@ export class ElementHandle<
           typeof value +
           '"'
       );
+    }
 
-    return this.evaluate<(element: Element, values: string[]) => string[]>(
-      (element, values) => {
-        if (!(element instanceof HTMLSelectElement))
-          throw new Error('Element is not a <select> element.');
+    return this.evaluate((element: Element, vals: string[]): string[] => {
+      const values = new Set(vals);
+      if (!(element instanceof HTMLSelectElement)) {
+        throw new Error('Element is not a <select> element.');
+      }
 
-        const options = Array.from(element.options);
-        element.value = undefined;
-        for (const option of options) {
-          option.selected = values.includes(option.value);
-          if (option.selected && !element.multiple) break;
+      const selectedValues = new Set<string>();
+      if (!element.multiple) {
+        for (const option of element.options) {
+          option.selected = false;
         }
-        element.dispatchEvent(new Event('input', { bubbles: true }));
-        element.dispatchEvent(new Event('change', { bubbles: true }));
-        return options
-          .filter((option) => option.selected)
-          .map((option) => option.value);
-      },
-      values
-    );
+        for (const option of element.options) {
+          if (values.has(option.value)) {
+            option.selected = true;
+            selectedValues.add(option.value);
+            break;
+          }
+        }
+      } else {
+        for (const option of element.options) {
+          option.selected = values.has(option.value);
+          if (option.selected) {
+            selectedValues.add(option.value);
+          }
+        }
+      }
+      element.dispatchEvent(new Event('input', { bubbles: true }));
+      element.dispatchEvent(new Event('change', { bubbles: true }));
+      return [...selectedValues.values()];
+    }, values);
   }
 
   /**
    * This method expects `elementHandle` to point to an
    * {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input | input element}.
+   *
    * @param filePaths - Sets the value of the file input to these paths.
-   *    If some of the  `filePaths` are relative paths, then they are resolved
-   *    relative to the {@link https://nodejs.org/api/process.html#process_process_cwd | current working directory}
+   *    If a path is relative, then it is resolved against the
+   *    {@link https://nodejs.org/api/process.html#process_process_cwd | current working directory}.
+   *    Note for locals script connecting to remote chrome environments,
+   *    paths must be absolute.
    */
   async uploadFile(...filePaths: string[]): Promise<void> {
     const isMultiple = await this.evaluate<(element: Element) => boolean>(
@@ -704,39 +833,33 @@ export class ElementHandle<
       'Multiple file uploads only work with <input type=file multiple>'
     );
 
-    if (!isNode) {
-      throw new Error(
-        `JSHandle#uploadFile can only be used in Node environments.`
-      );
-    }
-    /*
-     This import is only needed for `uploadFile`, so keep it scoped here to
-     avoid paying the cost unnecessarily.
-    */
-    const path = await import('path');
-    const fs = await helper.importFSModule();
     // Locate all files and confirm that they exist.
-    const files = await Promise.all(
-      filePaths.map(async (filePath) => {
-        const resolvedPath: string = path.resolve(filePath);
-        try {
-          await fs.promises.access(resolvedPath, fs.constants.R_OK);
-        } catch (error) {
-          if (error.code === 'ENOENT')
-            throw new Error(`${filePath} does not exist or is not readable`);
-        }
-
-        return resolvedPath;
-      })
-    );
+    let path: typeof import('path');
+    try {
+      path = await import('path');
+    } catch (error) {
+      if (error instanceof TypeError) {
+        throw new Error(
+          `JSHandle#uploadFile can only be used in Node-like environments.`
+        );
+      }
+      throw error;
+    }
+    const files = filePaths.map((filePath) => {
+      if (path.isAbsolute(filePath)) {
+        return filePath;
+      } else {
+        return path.resolve(filePath);
+      }
+    });
     const { objectId } = this._remoteObject;
     const { node } = await this._client.send('DOM.describeNode', { objectId });
     const { backendNodeId } = node;
 
     /*  The zero-length array is a special case, it seems that
-        DOM.setFileInputFiles does not actually update the files in that case,
-        so the solution is to eval the element value to a new FileList directly.
-    */
+         DOM.setFileInputFiles does not actually update the files in that case,
+         so the solution is to eval the element value to a new FileList directly.
+     */
     if (files.length === 0) {
       await (this as ElementHandle<HTMLInputElement>).evaluate((element) => {
         element.files = new DataTransfer().files;
@@ -829,13 +952,14 @@ export class ElementHandle<
 
     if (!result) return null;
 
+    const { offsetX, offsetY } = await this._getOOPIFOffsets(this._frame);
     const quad = result.model.border;
-    const x = Math.min(quad[0], quad[2], quad[4], quad[6]);
-    const y = Math.min(quad[1], quad[3], quad[5], quad[7]);
-    const width = Math.max(quad[0], quad[2], quad[4], quad[6]) - x;
-    const height = Math.max(quad[1], quad[3], quad[5], quad[7]) - y;
+    const x = Math.min(quad[0]!, quad[2]!, quad[4]!, quad[6]!);
+    const y = Math.min(quad[1]!, quad[3]!, quad[5]!, quad[7]!);
+    const width = Math.max(quad[0]!, quad[2]!, quad[4]!, quad[6]!) - x;
+    const height = Math.max(quad[1]!, quad[3]!, quad[5]!, quad[7]!) - y;
 
-    return { x, y, width, height };
+    return { x: x + offsetX, y: y + offsetY, width, height };
   }
 
   /**
@@ -851,12 +975,30 @@ export class ElementHandle<
 
     if (!result) return null;
 
+    const { offsetX, offsetY } = await this._getOOPIFOffsets(this._frame);
+
     const { content, padding, border, margin, width, height } = result.model;
     return {
-      content: this._fromProtocolQuad(content),
-      padding: this._fromProtocolQuad(padding),
-      border: this._fromProtocolQuad(border),
-      margin: this._fromProtocolQuad(margin),
+      content: applyOffsetsToQuad(
+        this._fromProtocolQuad(content),
+        offsetX,
+        offsetY
+      ),
+      padding: applyOffsetsToQuad(
+        this._fromProtocolQuad(padding),
+        offsetX,
+        offsetY
+      ),
+      border: applyOffsetsToQuad(
+        this._fromProtocolQuad(border),
+        offsetX,
+        offsetY
+      ),
+      margin: applyOffsetsToQuad(
+        this._fromProtocolQuad(margin),
+        offsetX,
+        offsetY
+      ),
       width,
       height,
     };
@@ -874,11 +1016,11 @@ export class ElementHandle<
     assert(boundingBox, 'Node is either not visible or not an HTMLElement');
 
     const viewport = this._page.viewport();
+    assert(viewport);
 
     if (
-      viewport &&
-      (boundingBox.width > viewport.width ||
-        boundingBox.height > viewport.height)
+      boundingBox.width > viewport.width ||
+      boundingBox.height > viewport.height
     ) {
       const newViewport = {
         width: Math.max(viewport.width, Math.ceil(boundingBox.width)),
@@ -899,7 +1041,7 @@ export class ElementHandle<
     const layoutMetrics = await this._client.send('Page.getLayoutMetrics');
     // Fallback to `layoutViewport` in case of using Firefox.
     const { pageX, pageY } =
-      layoutMetrics.cssLayoutViewport || layoutMetrics.layoutViewport;
+      layoutMetrics.cssVisualViewport || layoutMetrics.layoutViewport;
 
     const clip = Object.assign({}, boundingBox);
     clip.x += pageX;
@@ -921,14 +1063,21 @@ export class ElementHandle<
   }
 
   /**
-   * Runs `element.querySelector` within the page. If no element matches the selector,
-   * the return value resolves to `null`.
+   * Runs `element.querySelector` within the page.
+   *
+   * @param selector - The selector to query with.
+   * @returns `null` if no element matches the selector.
+   * @throws `Error` if the selector has no associated query handler.
    */
   async $<T extends Element = Element>(
     selector: string
   ): Promise<ElementHandle<T> | null> {
     const { updatedSelector, queryHandler } =
       getQueryHandlerAndSelector(selector);
+    assert(
+      queryHandler.queryOne,
+      'Cannot handle queries for a single element with the given selector'
+    );
     return queryHandler.queryOne(this, updatedSelector);
   }
 
@@ -936,11 +1085,22 @@ export class ElementHandle<
    * Runs `element.querySelectorAll` within the page. If no elements match the selector,
    * the return value resolves to `[]`.
    */
+  /**
+   * Runs `element.querySelectorAll` within the page.
+   *
+   * @param selector - The selector to query with.
+   * @returns `[]` if no element matches the selector.
+   * @throws `Error` if the selector has no associated query handler.
+   */
   async $$<T extends Element = Element>(
     selector: string
   ): Promise<Array<ElementHandle<T>>> {
     const { updatedSelector, queryHandler } =
       getQueryHandlerAndSelector(selector);
+    assert(
+      queryHandler.queryAll,
+      'Cannot handle queries for a multiple element with the given selector'
+    );
     return queryHandler.queryAll(this, updatedSelector);
   }
 
@@ -1016,21 +1176,21 @@ export class ElementHandle<
    */
   async $$eval<ReturnType>(
     selector: string,
-    pageFunction: (
-      elements: Element[],
-      ...args: unknown[]
-    ) => ReturnType | Promise<ReturnType>,
+    pageFunction: EvaluateFn<
+      Element[],
+      unknown,
+      ReturnType | Promise<ReturnType>
+    >,
     ...args: SerializableOrJSHandle[]
   ): Promise<WrapElementHandle<ReturnType>> {
     const { updatedSelector, queryHandler } =
       getQueryHandlerAndSelector(selector);
+    assert(queryHandler.queryAllArray);
     const arrayHandle = await queryHandler.queryAllArray(this, updatedSelector);
-    const result = await arrayHandle.evaluate<
-      (
-        elements: Element[],
-        ...args: unknown[]
-      ) => ReturnType | Promise<ReturnType>
-    >(pageFunction, ...args);
+    const result = await arrayHandle.evaluate<EvaluateFn<Element[]>>(
+      pageFunction,
+      ...args
+    );
     await arrayHandle.dispose();
     /* This `as` exists for the same reason as the `as` in $eval above.
      * See the comment there for a full explanation.
@@ -1080,7 +1240,7 @@ export class ElementHandle<
     return await this.evaluate(async (element: Element, threshold: number) => {
       const visibleRatio = await new Promise<number>((resolve) => {
         const observer = new IntersectionObserver((entries) => {
-          resolve(entries[0].intersectionRatio);
+          resolve(entries[0]!.intersectionRatio);
           observer.disconnect();
         });
         observer.observe(element);
@@ -1117,7 +1277,7 @@ export interface ClickOptions {
   /**
    * @defaultValue 'left'
    */
-  button?: 'left' | 'right' | 'middle';
+  button?: MouseButton;
   /**
    * @defaultValue 1
    */
@@ -1150,14 +1310,14 @@ export interface Point {
   y: number;
 }
 
-function computeQuadArea(quad: Array<{ x: number; y: number }>): number {
+function computeQuadArea(quad: Point[]): number {
   /* Compute sum of all directed areas of adjacent triangles
-    https://en.wikipedia.org/wiki/Polygon#Simple_polygons
-  */
+     https://en.wikipedia.org/wiki/Polygon#Simple_polygons
+   */
   let area = 0;
   for (let i = 0; i < quad.length; ++i) {
-    const p1 = quad[i];
-    const p2 = quad[(i + 1) % quad.length];
+    const p1 = quad[i]!;
+    const p2 = quad[(i + 1) % quad.length]!;
     area += (p1.x * p2.y - p2.x * p1.y) / 2;
   }
   return Math.abs(area);

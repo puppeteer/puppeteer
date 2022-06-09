@@ -180,10 +180,10 @@ export class Accessibility {
    */
   public async snapshot(
     options: SnapshotOptions = {}
-  ): Promise<SerializedAXNode> {
+  ): Promise<SerializedAXNode | null> {
     const { interestingOnly = true, root = null } = options;
     const { nodes } = await this._client.send('Accessibility.getFullAXTree');
-    let backendNodeId = null;
+    let backendNodeId: number | undefined;
     if (root) {
       const { node } = await this._client.send('DOM.describeNode', {
         objectId: root._remoteObject.objectId,
@@ -191,19 +191,19 @@ export class Accessibility {
       backendNodeId = node.backendNodeId;
     }
     const defaultRoot = AXNode.createTree(nodes);
-    let needle = defaultRoot;
+    let needle: AXNode | null = defaultRoot;
     if (backendNodeId) {
       needle = defaultRoot.find(
         (node) => node.payload.backendDOMNodeId === backendNodeId
       );
       if (!needle) return null;
     }
-    if (!interestingOnly) return this.serializeTree(needle)[0];
+    if (!interestingOnly) return this.serializeTree(needle)[0] ?? null;
 
     const interestingNodes = new Set<AXNode>();
     this.collectInterestingNodes(interestingNodes, defaultRoot, false);
     if (!interestingNodes.has(needle)) return null;
-    return this.serializeTree(needle, interestingNodes)[0];
+    return this.serializeTree(needle, interestingNodes)[0] ?? null;
   }
 
   private serializeTree(
@@ -496,7 +496,7 @@ class AXNode {
       nodeById.set(payload.nodeId, new AXNode(payload));
     for (const node of nodeById.values()) {
       for (const childId of node.payload.childIds || [])
-        node.children.push(nodeById.get(childId));
+        node.children.push(nodeById.get(childId)!);
     }
     return nodeById.values().next().value;
   }

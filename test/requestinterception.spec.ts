@@ -40,6 +40,7 @@ describe('request interception', function () {
         }
         expect(request.url()).toContain('empty.html');
         expect(request.headers()['user-agent']).toBeTruthy();
+        expect(request.headers()['accept']).toBeTruthy();
         expect(request.method()).toBe('GET');
         expect(request.postData()).toBe(undefined);
         expect(request.isNavigationRequest()).toBe(true);
@@ -380,7 +381,7 @@ describe('request interception', function () {
       await page.setRequestInterception(true);
       const requests = [];
       page.on('request', (request) => {
-        requests.push(request);
+        !utils.isFavicon(request) && requests.push(request);
         request.continue();
       });
       const dataURL = 'data:text/html,<div>yo</div>';
@@ -709,6 +710,33 @@ describe('request interception', function () {
       );
       expect(response.url()).toBe(server.EMPTY_PAGE);
     });
+    it('should allow mocking multiple headers with same key', async () => {
+      const { page, server } = getTestState();
+
+      await page.setRequestInterception(true);
+      page.on('request', (request) => {
+        request.respond({
+          status: 200,
+          headers: {
+            foo: 'bar',
+            arr: ['1', '2'],
+            'set-cookie': ['first=1', 'second=2'],
+          },
+          body: 'Hello world',
+        });
+      });
+      const response = await page.goto(server.EMPTY_PAGE);
+      const cookies = await page.cookies();
+      const firstCookie = cookies.find((cookie) => cookie.name === 'first');
+      const secondCookie = cookies.find((cookie) => cookie.name === 'second');
+      expect(response.status()).toBe(200);
+      expect(response.headers().foo).toBe('bar');
+      expect(response.headers().arr).toBe('1\n2');
+      // request.respond() will not trigger Network.responseReceivedExtraInfo
+      // fail to get 'set-cookie' header from response
+      expect(firstCookie?.value).toBe('1');
+      expect(secondCookie?.value).toBe('2');
+    });
     it('should allow mocking binary responses', async () => {
       const { page, server } = getTestState();
 
@@ -778,11 +806,7 @@ describe('request interception', function () {
   });
 });
 
-/**
- * @param {string} path
- * @returns {string}
- */
-function pathToFileURL(path) {
+function pathToFileURL(path: string): string {
   let pathName = path.replace(/\\/g, '/');
   // Windows drive letter must be prefixed with a slash.
   if (!pathName.startsWith('/')) pathName = '/' + pathName;

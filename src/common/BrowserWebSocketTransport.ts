@@ -41,8 +41,6 @@ export class BrowserWebSocketTransport implements ConnectionTransport {
     });
     // Silently ignore all errors - we don't know what to do with them.
     this._ws.addEventListener('error', () => {});
-    this.onmessage = null;
-    this.onclose = null;
   }
 
   send(message: string): void {

@@ -1,6 +1,14 @@
 {
-  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "module": "CommonJS"
+    "esModuleInterop": true,
+    "allowJs": true,
+    "checkJs": true,
+    "target": "esnext",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "declaration": true,
+    "declarationMap": true,
+    "resolveJsonModule": true,
+    "sourceMap": true
   }
 }

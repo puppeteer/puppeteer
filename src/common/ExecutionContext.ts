@@ -25,7 +25,7 @@ import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes.js';
 /**
  * @public
  */
-export const EVALUATION_SCRIPT_URL = '__puppeteer_evaluation_script__';
+export const EVALUATION_SCRIPT_URL = 'pptr://__puppeteer_evaluation_script__';
 const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
 
 /**
@@ -53,7 +53,7 @@ export class ExecutionContext {
   /**
    * @internal
    */
-  _world: DOMWorld;
+  _world?: DOMWorld;
   /**
    * @internal
    */
@@ -69,7 +69,7 @@ export class ExecutionContext {
   constructor(
     client: CDPSession,
     contextPayload: Protocol.Runtime.ExecutionContextDescription,
-    world: DOMWorld
+    world?: DOMWorld
   ) {
     this._client = client;
     this._world = world;
@@ -133,7 +133,7 @@ export class ExecutionContext {
    *
    * @returns A promise that resolves to the return value of the given function.
    */
-  async evaluate<ReturnType extends any>(
+  async evaluate<ReturnType>(
     pageFunction: Function | string,
     ...args: unknown[]
   ): Promise<ReturnType> {
@@ -277,12 +277,10 @@ export class ExecutionContext {
       ? helper.valueFromRemoteObject(remoteObject)
       : createJSHandle(this, remoteObject);
 
-    /**
-     * @param {*} arg
-     * @returns {*}
-     * @this {ExecutionContext}
-     */
-    function convertArgument(this: ExecutionContext, arg: unknown): unknown {
+    function convertArgument(
+      this: ExecutionContext,
+      arg: unknown
+    ): Protocol.Runtime.CallArgument {
       if (typeof arg === 'bigint')
         // eslint-disable-line valid-typeof
         return { unserializableValue: `${arg.toString()}n` };
@@ -364,7 +362,7 @@ export class ExecutionContext {
    * @internal
    */
   async _adoptBackendNodeId(
-    backendNodeId: Protocol.DOM.BackendNodeId
+    backendNodeId?: Protocol.DOM.BackendNodeId
   ): Promise<ElementHandle> {
     const { object } = await this._client.send('DOM.resolveNode', {
       backendNodeId: backendNodeId,

@@ -15,26 +15,11 @@
  */
 
 const { runCommands, ensureReleasedAPILinks } = require('.');
-const Source = require('../Source');
+const Source = require('../Source.js');
 const expect = require('expect');
 
 describe('doclint preprocessor specs', function () {
   describe('ensureReleasedAPILinks', function () {
-    it('should work with non-release version', function () {
-      const source = new Source(
-        'doc.md',
-        `
-      [API](https://github.com/puppeteer/puppeteer/blob/v1.1.0/docs/api.md#class-page)
-    `
-      );
-      const messages = ensureReleasedAPILinks([source], '1.3.0-post');
-      expect(messages.length).toBe(1);
-      expect(messages[0].type).toBe('warning');
-      expect(messages[0].text).toContain('doc.md');
-      expect(source.text()).toBe(`
-      [API](https://github.com/puppeteer/puppeteer/blob/v1.3.0/docs/api.md#class-page)
-    `);
-    });
     it('should work with release version', function () {
       const source = new Source(
         'doc.md',
@@ -42,22 +27,22 @@ describe('doclint preprocessor specs', function () {
       [API](https://github.com/puppeteer/puppeteer/blob/v1.1.0/docs/api.md#class-page)
     `
       );
-      const messages = ensureReleasedAPILinks([source], '1.3.0');
+      const messages = ensureReleasedAPILinks([source], '1.3.0', true);
       expect(messages.length).toBe(1);
-      expect(messages[0].type).toBe('warning');
+      expect(messages[0].type).toBe('info');
       expect(messages[0].text).toContain('doc.md');
       expect(source.text()).toBe(`
       [API](https://github.com/puppeteer/puppeteer/blob/v1.3.0/docs/api.md#class-page)
     `);
     });
-    it('should keep main branch links intact', function () {
+    it('should keep main branch links intact on non-release', function () {
       const source = new Source(
         'doc.md',
         `
       [API](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#class-page)
     `
       );
-      const messages = ensureReleasedAPILinks([source], '1.3.0');
+      const messages = ensureReleasedAPILinks([source], '1.3.0', false);
       expect(messages.length).toBe(0);
       expect(source.text()).toBe(`
       [API](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#class-page)
@@ -73,7 +58,7 @@ describe('doclint preprocessor specs', function () {
       <!-- gen:unknown-command -->something<!-- gen:stop -->
     `
       );
-      const messages = runCommands([source], '1.1.1');
+      const messages = runCommands([source], '1.1.1', true);
       expect(source.hasUpdatedText()).toBe(false);
       expect(messages.length).toBe(1);
       expect(messages[0].type).toBe('error');
@@ -87,9 +72,9 @@ describe('doclint preprocessor specs', function () {
         Puppeteer <!-- gen:version -->XXX<!-- gen:stop -->
       `
         );
-        const messages = runCommands([source], '1.2.0');
+        const messages = runCommands([source], '1.2.0', true);
         expect(messages.length).toBe(1);
-        expect(messages[0].type).toBe('warning');
+        expect(messages[0].type).toBe('info');
         expect(messages[0].text).toContain('doc.md');
         expect(source.text()).toBe(`
         Puppeteer <!-- gen:version -->v1.2.0<!-- gen:stop -->
@@ -102,9 +87,9 @@ describe('doclint preprocessor specs', function () {
         Puppeteer <!-- gen:version -->XXX<!-- gen:stop -->
       `
         );
-        const messages = runCommands([source], '1.2.0-post');
+        const messages = runCommands([source], '1.2.0', false);
         expect(messages.length).toBe(1);
-        expect(messages[0].type).toBe('warning');
+        expect(messages[0].type).toBe('info');
         expect(messages[0].text).toContain('doc.md');
         expect(source.text()).toBe(`
         Puppeteer <!-- gen:version -->Tip-Of-Tree<!-- gen:stop -->
@@ -116,14 +101,14 @@ describe('doclint preprocessor specs', function () {
           `Puppeteer v<!--   gEn:version -->WHAT
 <!--     GEN:stop   -->`
         );
-        runCommands([source], '1.1.1');
+        runCommands([source], '1.1.1', true);
         expect(source.text()).toBe(
           `Puppeteer v<!--   gEn:version -->v1.1.1<!--     GEN:stop   -->`
         );
       });
       it('should not tolerate missing gen:stop', function () {
         const source = new Source('doc.md', `<!--GEN:version-->`);
-        const messages = runCommands([source], '1.2.0');
+        const messages = runCommands([source], '1.2.0', true);
         expect(source.hasUpdatedText()).toBe(false);
         expect(messages.length).toBe(1);
         expect(messages[0].type).toBe('error');
@@ -138,9 +123,9 @@ describe('doclint preprocessor specs', function () {
         <!-- gen:empty-if-release -->XXX<!-- gen:stop -->
       `
         );
-        const messages = runCommands([source], '1.1.1');
+        const messages = runCommands([source], '1.1.1', true);
         expect(messages.length).toBe(1);
-        expect(messages[0].type).toBe('warning');
+        expect(messages[0].type).toBe('info');
         expect(messages[0].text).toContain('doc.md');
         expect(source.text()).toBe(`
         <!-- gen:empty-if-release --><!-- gen:stop -->
@@ -153,7 +138,7 @@ describe('doclint preprocessor specs', function () {
         <!-- gen:empty-if-release -->XXX<!-- gen:stop -->
       `
         );
-        const messages = runCommands([source], '1.1.1-post');
+        const messages = runCommands([source], '1.1.1', false);
         expect(messages.length).toBe(0);
         expect(source.text()).toBe(`
         <!-- gen:empty-if-release -->XXX<!-- gen:stop -->
@@ -169,9 +154,9 @@ describe('doclint preprocessor specs', function () {
         #### page.$
         #### page.$$`
         );
-        const messages = runCommands([source], '1.3.0');
+        const messages = runCommands([source], '1.3.0', true);
         expect(messages.length).toBe(1);
-        expect(messages[0].type).toBe('warning');
+        expect(messages[0].type).toBe('info');
         expect(messages[0].text).toContain('doc.md');
         expect(source.text()).toBe(`<!-- gen:toc -->
 - [class: page](#class-page)
@@ -193,9 +178,9 @@ describe('doclint preprocessor specs', function () {
         \`\`\`
       `
         );
-        const messages = runCommands([source], '1.3.0');
+        const messages = runCommands([source], '1.3.0', true);
         expect(messages.length).toBe(1);
-        expect(messages[0].type).toBe('warning');
+        expect(messages[0].type).toBe('info');
         expect(messages[0].text).toContain('doc.md');
         expect(source.text()).toBe(`<!-- gen:toc -->
 - [class: page](#class-page)
@@ -214,9 +199,9 @@ describe('doclint preprocessor specs', function () {
         ### some [link](#foobar) here
       `
         );
-        const messages = runCommands([source], '1.3.0');
+        const messages = runCommands([source], '1.3.0', true);
         expect(messages.length).toBe(1);
-        expect(messages[0].type).toBe('warning');
+        expect(messages[0].type).toBe('info');
         expect(messages[0].text).toContain('doc.md');
         expect(source.text()).toBe(`<!-- gen:toc -->
 - [some link here](#some-link-here)
@@ -234,9 +219,9 @@ describe('doclint preprocessor specs', function () {
       <!-- gen:version -->ZZZ<!-- gen:stop -->
     `
       );
-      const messages = runCommands([source], '1.1.1');
+      const messages = runCommands([source], '1.1.1', true);
       expect(messages.length).toBe(1);
-      expect(messages[0].type).toBe('warning');
+      expect(messages[0].type).toBe('info');
       expect(messages[0].text).toContain('doc.md');
       expect(source.text()).toBe(`
       <!-- gen:version -->v1.1.1<!-- gen:stop -->
