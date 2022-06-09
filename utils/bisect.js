@@ -172,7 +172,7 @@ function runScript(scriptPath, revisionInfo) {
 function runUnitTest(pattern, revisionInfo) {
   const log = debug('bisect:rununittest');
   log('Running unit test');
-  const child = spawn('npm run unit', ['--', '-g', pattern], {
+  const child = spawn('npm run test:unit', ['--', '-g', pattern], {
     stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
     shell: true,
     env: {

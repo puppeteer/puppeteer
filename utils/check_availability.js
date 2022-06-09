@@ -17,7 +17,6 @@
 
 const assert = require('assert');
 const https = require('https');
-// run `npm run dev-install` if lib dir is missing
 const BrowserFetcher =
   require('../lib/cjs/puppeteer/node/BrowserFetcher.js').BrowserFetcher;
 

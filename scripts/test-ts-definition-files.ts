@@ -76,7 +76,7 @@ const PROJECT_FOLDERS = [...EXPECTED_ERRORS.keys()];
 if (!process.env['CI']) {
   console.log(`IMPORTANT: this script assumes you have compiled Puppeteer
 and its types file before running. Make sure you have run:
-=> npm run tsc && npm run generate-d-ts
+=> npm run build:tsc && npm run generate:types
 before executing this script locally.`);
 }
 

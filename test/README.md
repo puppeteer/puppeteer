@@ -42,13 +42,13 @@ Despite being named 'unit', these are integration tests, making sure public API 
 - To run all tests:
 
 ```bash
-npm run unit
+npm run test:unit
 ```
 
 - **Important**: don't forget to first run TypeScript if you're testing local changes:
 
 ```bash
-npm run tsc && npm run unit
+npm run build:tsc && npm run test:unit
 ```
 
 - To run a specific test, substitute the `it` with `it.only`:
@@ -77,11 +77,11 @@ npm run tsc && npm run unit
 - To run tests in non-headless mode:
 
 ```bash
-HEADLESS=false npm run unit
+HEADLESS=false npm run test:unit
 ```
 
 - To run tests with custom browser executable:
 
 ```bash
-BINARY=<path-to-executable> npm run unit
+BINARY=<path-to-executable> npm run test:unit
 ```
