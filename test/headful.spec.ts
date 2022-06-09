@@ -43,6 +43,7 @@ describeChromeOnly('headful tests', function () {
   let headlessOptions;
   let extensionOptions;
   let forcedOopifOptions;
+  let devtoolsOptions;
   const browsers = [];
 
   beforeEach(() => {
@@ -72,6 +73,11 @@ describeChromeOnly('headful tests', function () {
           'oopifdomain'
         )}`,
       ],
+    });
+
+    devtoolsOptions = Object.assign({}, defaultBrowserOptions, {
+      headless: false,
+      devtools: true,
     });
   });
 
@@ -119,6 +125,28 @@ describeChromeOnly('headful tests', function () {
       expect(await page.evaluate(() => 2 * 3)).toBe(6);
       expect(await page.evaluate(() => globalThis.MAGIC)).toBe(42);
       await browserWithExtension.close();
+    });
+    it('target.page() should return a DevTools page if custom isPageTarget is provided', async function () {
+      const { puppeteer } = getTestState();
+      const originalBrowser = await launchBrowser(puppeteer, devtoolsOptions);
+
+      const browserWSEndpoint = originalBrowser.wsEndpoint();
+
+      const browser = await puppeteer.connect({
+        browserWSEndpoint,
+        isPageTarget: (target) => {
+          return (
+            target.type === 'other' && target.url.startsWith('devtools://')
+          );
+        },
+      });
+      const devtoolsPageTarget = await browser.waitForTarget(
+        (target) => target.type() === 'other'
+      );
+      const page = await devtoolsPageTarget.page();
+      expect(await page.evaluate(() => 2 * 3)).toBe(6);
+      expect(await browser.pages()).toContainEqual(page);
+      await browser.close();
     });
     it('should have default url when launching browser', async function () {
       const { puppeteer } = getTestState();

@@ -24,6 +24,8 @@ import {
   setupTestPageAndContextHooks,
   itFailsFirefox,
   describeFailsFirefox,
+  itChromeOnly,
+  itFirefoxOnly,
 } from './mocha-utils'; // eslint-disable-line import/extensions
 import { HTTPResponse } from '../lib/cjs/puppeteer/api-docs-entry.js';
 
@@ -113,14 +115,17 @@ describe('network', function () {
   });
 
   describe('Request.headers', function () {
-    it('should work', async () => {
-      const { page, server, isChrome } = getTestState();
+    itChromeOnly('should define Chrome as user agent header', async () => {
+      const { page, server } = getTestState();
+      const response = await page.goto(server.EMPTY_PAGE);
+      expect(response.request().headers()['user-agent']).toContain('Chrome');
+    });
+
+    itFirefoxOnly('should define Firefox as user agent header', async () => {
+      const { page, server } = getTestState();
 
       const response = await page.goto(server.EMPTY_PAGE);
-      if (isChrome)
-        expect(response.request().headers()['user-agent']).toContain('Chrome');
-      else
-        expect(response.request().headers()['user-agent']).toContain('Firefox');
+      expect(response.request().headers()['user-agent']).toContain('Firefox');
     });
   });
 
@@ -138,7 +143,7 @@ describe('network', function () {
   });
 
   describeFailsFirefox('Request.initiator', () => {
-    it('shoud return the initiator', async () => {
+    it('should return the initiator', async () => {
       const { page, server } = getTestState();
 
       const initiators = new Map();
@@ -222,7 +227,10 @@ describe('network', function () {
       const { page, server } = getTestState();
 
       const responses = new Map();
-      page.on('response', (r) => responses.set(r.url().split('/').pop(), r));
+      page.on(
+        'response',
+        (r) => !utils.isFavicon(r) && responses.set(r.url().split('/').pop(), r)
+      );
 
       // Load and re-load to make sure serviceworker is installed and running.
       await page.goto(server.PREFIX + '/serviceworkers/fetch/sw.html', {
@@ -246,7 +254,9 @@ describe('network', function () {
       await page.goto(server.EMPTY_PAGE);
       server.setRoute('/post', (req, res) => res.end());
       let request = null;
-      page.on('request', (r) => (request = r));
+      page.on('request', (r) => {
+        if (!utils.isFavicon(r)) request = r;
+      });
       await page.evaluate(() =>
         fetch('./post', {
           method: 'POST',
@@ -427,6 +437,17 @@ describe('network', function () {
       });
       const response = await page.goto(server.PREFIX + '/nostatus');
       expect(response.statusText()).toBe('');
+    });
+  });
+
+  describeFailsFirefox('Response.timing', function () {
+    it('returns timing information', async () => {
+      const { page, server } = getTestState();
+      const responses = [];
+      page.on('response', (response) => responses.push(response));
+      await page.goto(server.EMPTY_PAGE);
+      expect(responses.length).toBe(1);
+      expect(responses[0].timing().receiveHeadersEnd).toBeGreaterThan(0);
     });
   });
 
@@ -636,8 +657,16 @@ describe('network', function () {
       const { page, server } = getTestState();
 
       server.setAuth('/empty.html', 'user', 'pass');
-      let response = await page.goto(server.EMPTY_PAGE);
-      expect(response.status()).toBe(401);
+      let response;
+      try {
+        response = await page.goto(server.EMPTY_PAGE);
+        expect(response.status()).toBe(401);
+      } catch (error) {
+        // In headful, an error is thrown instead of 401.
+        if (!error.message.startsWith('net::ERR_INVALID_AUTH_CREDENTIALS')) {
+          throw error;
+        }
+      }
       await page.authenticate({
         username: 'user',
         password: 'pass',
@@ -670,8 +699,15 @@ describe('network', function () {
       expect(response.status()).toBe(200);
       await page.authenticate(null);
       // Navigate to a different origin to bust Chrome's credential caching.
-      response = await page.goto(server.CROSS_PROCESS_PREFIX + '/empty.html');
-      expect(response.status()).toBe(401);
+      try {
+        response = await page.goto(server.CROSS_PROCESS_PREFIX + '/empty.html');
+        expect(response.status()).toBe(401);
+      } catch (error) {
+        // In headful, an error is thrown instead of 401.
+        if (!error.message.startsWith('net::ERR_INVALID_AUTH_CREDENTIALS')) {
+          throw error;
+        }
+      }
     });
     it('should not disable caching', async () => {
       const { page, server } = getTestState();

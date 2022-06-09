@@ -24,7 +24,7 @@
  * necessary.
  */
 
-const compileTypeScriptIfRequired = require('./typescript-if-required');
+const compileTypeScriptIfRequired = require('./typescript-if-required.js');
 
 async function download() {
   await compileTypeScriptIfRequired();
@@ -32,7 +32,7 @@ async function download() {
   const {
     downloadBrowser,
     logPolitely,
-  } = require('./lib/cjs/puppeteer/node/install');
+  } = require('./lib/cjs/puppeteer/node/install.js');
 
   if (process.env.PUPPETEER_SKIP_DOWNLOAD) {
     logPolitely(

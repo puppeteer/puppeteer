@@ -31,6 +31,17 @@ import { PUPPETEER_REVISIONS } from '../revisions.js';
 import { Product } from '../common/Product.js';
 
 /**
+ * @public
+ */
+export interface PuppeteerLaunchOptions
+  extends LaunchOptions,
+    BrowserLaunchArgumentOptions,
+    BrowserConnectOptions {
+  product?: Product;
+  extraPrefsFirefox?: Record<string, unknown>;
+}
+
+/**
  * Extends the main {@link Puppeteer} class with Node specific behaviour for fetching and
  * downloading browsers.
  *
@@ -66,8 +77,8 @@ import { Product } from '../common/Product.js';
  * @public
  */
 export class PuppeteerNode extends Puppeteer {
-  private _lazyLauncher: ProductLauncher;
-  private _projectRoot: string;
+  private _lazyLauncher?: ProductLauncher;
+  private _projectRoot?: string;
   private __productName?: Product;
   /**
    * @internal
@@ -79,7 +90,7 @@ export class PuppeteerNode extends Puppeteer {
    */
   constructor(
     settings: {
-      projectRoot: string;
+      projectRoot?: string;
       preferredRevision: string;
       productName?: Product;
     } & CommonPuppeteerSettings
@@ -90,6 +101,12 @@ export class PuppeteerNode extends Puppeteer {
     this._projectRoot = projectRoot;
     this.__productName = productName;
     this._preferredRevision = preferredRevision;
+
+    this.connect = this.connect.bind(this);
+    this.launch = this.launch.bind(this);
+    this.executablePath = this.executablePath.bind(this);
+    this.defaultArgs = this.defaultArgs.bind(this);
+    this.createBrowserFetcher = this.createBrowserFetcher.bind(this);
   }
 
   /**
@@ -100,7 +117,7 @@ export class PuppeteerNode extends Puppeteer {
    * @param options - Set of configurable options to set on the browser.
    * @returns Promise which resolves to browser instance.
    */
-  connect(options: ConnectOptions): Promise<Browser> {
+  override connect(options: ConnectOptions): Promise<Browser> {
     if (options.product) this._productName = options.product;
     return super.connect(options);
   }
@@ -108,12 +125,12 @@ export class PuppeteerNode extends Puppeteer {
   /**
    * @internal
    */
-  get _productName(): Product {
+  get _productName(): Product | undefined {
     return this.__productName;
   }
 
   // don't need any TSDoc here - because the getter is internal the setter is too.
-  set _productName(name: Product) {
+  set _productName(name: Product | undefined) {
     if (this.__productName !== name) this._changedProduct = true;
     this.__productName = name;
   }
@@ -143,14 +160,7 @@ export class PuppeteerNode extends Puppeteer {
    * @param options - Set of configurable options to set on the browser.
    * @returns Promise which resolves to browser instance.
    */
-  launch(
-    options: LaunchOptions &
-      BrowserLaunchArgumentOptions &
-      BrowserConnectOptions & {
-        product?: Product;
-        extraPrefsFirefox?: Record<string, unknown>;
-      } = {}
-  ): Promise<Browser> {
+  launch(options: PuppeteerLaunchOptions = {}): Promise<Browser> {
     if (options.product) this._productName = options.product;
     return this._launcher.launch(options);
   }
@@ -224,6 +234,11 @@ export class PuppeteerNode extends Puppeteer {
    * @returns A new BrowserFetcher instance.
    */
   createBrowserFetcher(options: BrowserFetcherOptions): BrowserFetcher {
+    if (!this._projectRoot) {
+      throw new Error(
+        '_projectRoot is undefined. Unable to create a BrowserFetcher.'
+      );
+    }
     return new BrowserFetcher(this._projectRoot, options);
   }
 }

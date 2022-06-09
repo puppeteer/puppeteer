@@ -86,7 +86,7 @@ export class NetworkManager extends EventEmitter {
   _networkEventManager = new NetworkEventManager();
 
   _extraHTTPHeaders: Record<string, string> = {};
-  _credentials?: Credentials = null;
+  _credentials?: Credentials;
   _attemptedAuthentications = new Set<string>();
   _userRequestInterceptionEnabled = false;
   _protocolRequestInterceptionEnabled = false;
@@ -268,13 +268,14 @@ export class NetworkManager extends EventEmitter {
         this._networkEventManager.getRequestPaused(networkRequestId);
       if (requestPausedEvent) {
         const { requestId: fetchRequestId } = requestPausedEvent;
+        this._patchRequestEventHeaders(event, requestPausedEvent);
         this._onRequest(event, fetchRequestId);
         this._networkEventManager.forgetRequestPaused(networkRequestId);
       }
 
       return;
     }
-    this._onRequest(event, null);
+    this._onRequest(event, undefined);
   }
 
   _onAuthRequired(event: Protocol.Fetch.AuthRequiredEvent): void {
@@ -345,17 +346,29 @@ export class NetworkManager extends EventEmitter {
     })();
 
     if (requestWillBeSentEvent) {
+      this._patchRequestEventHeaders(requestWillBeSentEvent, event);
       this._onRequest(requestWillBeSentEvent, fetchRequestId);
     } else {
       this._networkEventManager.storeRequestPaused(networkRequestId, event);
     }
   }
 
+  _patchRequestEventHeaders(
+    requestWillBeSentEvent: Protocol.Network.RequestWillBeSentEvent,
+    requestPausedEvent: Protocol.Fetch.RequestPausedEvent
+  ): void {
+    requestWillBeSentEvent.request.headers = {
+      ...requestWillBeSentEvent.request.headers,
+      // includes extra headers, like: Accept, Origin
+      ...requestPausedEvent.request.headers,
+    };
+  }
+
   _onRequest(
     event: Protocol.Network.RequestWillBeSentEvent,
     fetchRequestId?: FetchRequestId
   ): void {
-    let redirectChain = [];
+    let redirectChain: HTTPRequest[] = [];
     if (event.redirectResponse) {
       // We want to emit a response and requestfinished for the
       // redirectResponse, but we can't do so unless we have a
@@ -393,6 +406,7 @@ export class NetworkManager extends EventEmitter {
     const frame = event.frameId
       ? this._frameManager.frame(event.frameId)
       : null;
+
     const request = new HTTPRequest(
       this._client,
       frame,
@@ -417,7 +431,7 @@ export class NetworkManager extends EventEmitter {
   _handleRequestRedirect(
     request: HTTPRequest,
     responsePayload: Protocol.Network.Response,
-    extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent
+    extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null
   ): void {
     const response = new HTTPResponse(
       this._client,
@@ -506,6 +520,7 @@ export class NetworkManager extends EventEmitter {
       event.requestId
     );
     if (queuedEvents) {
+      this._networkEventManager.forgetQueuedEventGroup(event.requestId);
       this._emitResponseEvent(queuedEvents.responseReceivedEvent, event);
       if (queuedEvents.loadingFinishedEvent) {
         this._emitLoadingFinished(queuedEvents.loadingFinishedEvent);
@@ -525,7 +540,8 @@ export class NetworkManager extends EventEmitter {
     const interceptionId = request._interceptionId;
 
     this._networkEventManager.forgetRequest(requestId);
-    this._attemptedAuthentications.delete(interceptionId);
+    interceptionId !== undefined &&
+      this._attemptedAuthentications.delete(interceptionId);
 
     if (events) {
       this._networkEventManager.forget(requestId);
@@ -553,7 +569,7 @@ export class NetworkManager extends EventEmitter {
 
     // Under certain conditions we never get the Network.responseReceived
     // event from protocol. @see https://crbug.com/883475
-    if (request.response()) request.response()._resolveBody(null);
+    if (request.response()) request.response()?._resolveBody(null);
     this._forgetRequest(request, true);
     this.emit(NetworkManagerEmittedEvents.RequestFinished, request);
   }

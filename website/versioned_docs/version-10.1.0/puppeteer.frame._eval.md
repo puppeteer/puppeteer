@@ -16,7 +16,7 @@ $eval<ReturnType>(selector: string, pageFunction: (element: Element, ...args: un
 |  --- | --- | --- |
 |  selector | string | the selector to query for |
 |  pageFunction | (element: Element, ...args: unknown\[\]) =&gt; ReturnType \| Promise&lt;ReturnType&gt; | the function to be evaluated in the frame's context |
-|  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)\[\] | additional arguments to pass to <code>pageFuncton</code> |
+|  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)\[\] | additional arguments to pass to <code>pageFunction</code> |
 
 <b>Returns:</b>
 

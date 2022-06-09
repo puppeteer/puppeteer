@@ -21,7 +21,7 @@ const allDeps = { ...packageJson.dependencies, ...packageJson.devDependencies };
 const invalidDeps = new Map<string, string>();
 
 for (const [depKey, depValue] of Object.entries(allDeps)) {
-  if (/[0-9]/.test(depValue[0])) {
+  if (/[0-9]/.test(depValue[0]!)) {
     continue;
   }
 

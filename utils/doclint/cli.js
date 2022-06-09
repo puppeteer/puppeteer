@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
+// eslint-disable-next-line import/extensions
 const puppeteer = require('../..');
 const path = require('path');
-const Source = require('./Source');
+const Source = require('./Source.js');
 
 const PROJECT_DIR = path.join(__dirname, '..', '..');
 const VERSION = require(path.join(PROJECT_DIR, 'package.json')).version;
 
 const RED_COLOR = '\x1b[31m';
+const BLUE_COLOR = '\x1b[34m';
 const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
 
@@ -58,15 +60,21 @@ async function run() {
   );
   const mdSources = [readme, api, troubleshooting, contributing];
 
-  const preprocessor = require('./preprocessor');
-  messages.push(...(await preprocessor.runCommands(mdSources, VERSION)));
+  const preprocessor = require('./preprocessor/index.js');
   messages.push(
-    ...(await preprocessor.ensureReleasedAPILinks([readme], VERSION))
+    ...(await preprocessor.runCommands(mdSources, VERSION, IS_RELEASE))
+  );
+  messages.push(
+    ...(await preprocessor.ensureReleasedAPILinks(
+      [readme],
+      VERSION,
+      IS_RELEASE
+    ))
   );
 
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  const checkPublicAPI = require('./check_public_api');
+  const checkPublicAPI = require('./check_public_api/index.js');
   const tsSources = [
     /* Source.readdir doesn't deal with nested directories well.
      * Rather than invest time here when we're going to remove this Doc tooling soon
@@ -107,32 +115,40 @@ async function run() {
   if (errors.length) {
     console.log('DocLint Failures:');
     for (let i = 0; i < errors.length; ++i) {
-      let error = errors[i].text;
-      error = error.split('\n').join('\n      ');
-      console.log(`  ${i + 1}) ${RED_COLOR}${error}${RESET_COLOR}`);
+      const text = errors[i].text.split('\n').join('\n      ');
+      console.log(`  ${i + 1}) ${RED_COLOR}${text}${RESET_COLOR}`);
     }
   }
   const warnings = messages.filter((message) => message.type === 'warning');
   if (warnings.length) {
     console.log('DocLint Warnings:');
     for (let i = 0; i < warnings.length; ++i) {
-      let warning = warnings[i].text;
-      warning = warning.split('\n').join('\n      ');
-      console.log(`  ${i + 1}) ${YELLOW_COLOR}${warning}${RESET_COLOR}`);
+      const text = warnings[i].text.split('\n').join('\n      ');
+      console.log(`  ${i + 1}) ${YELLOW_COLOR}${text}${RESET_COLOR}`);
     }
   }
-  let clearExit = messages.length === 0;
-  if (changedFiles) {
-    if (clearExit)
-      console.log(`${YELLOW_COLOR}Some files were updated.${RESET_COLOR}`);
-    clearExit = false;
+  const info = messages.filter((message) => message.type === 'info');
+  if (info.length) {
+    console.log('DocLint Info:');
+    for (let i = 0; i < info.length; i++) {
+      const text = info[i].text.split('\n').join('\n      ');
+      console.log(`  ${i + 1}) ${BLUE_COLOR}${text}${RESET_COLOR}`);
+    }
   }
-  console.log(`${errors.length} failures, ${warnings.length} warnings.`);
+  if (changedFiles) {
+    console.log(`${BLUE_COLOR}Some files were updated.${RESET_COLOR}`);
+  }
 
-  if (!clearExit && !process.env.GITHUB_ACTIONS)
+  console.log(
+    `${info.length} info, ${errors.length} failures, ${warnings.length} warnings.`
+  );
+
+  const clearExit = errors.length + warnings.length === 0;
+  if (!clearExit && !process.env.GITHUB_ACTIONS) {
     console.log(
       '\nIs your lib/ directory up to date? You might need to `npm run tsc`.\n'
     );
+  }
 
   const runningTime = Date.now() - startTime;
   console.log(`DocLint Finished in ${runningTime / 1000} seconds`);

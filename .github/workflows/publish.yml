@@ -1,0 +1,69 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: npm install
+      - name: Build puppeteer
+        run: npm run build
+      - name: Publish puppeteer
+        env:
+          NPM_TOKEN: ${{secrets.NPM_TOKEN_PUPPETEER}}
+        run: |
+          npm config set registry 'https://wombat-dressing-room.appspot.com/'
+          npm config set '//wombat-dressing-room.appspot.com/:_authToken' '${NPM_TOKEN}'
+          echo "Publishing puppeteer"
+          npm publish
+          # DEPRECATED_RANGE=$(node utils/get_deprecated_version_range.js)
+          # echo "Deprecating old puppeteer versions: $DEPRECATED_RANGE"
+          # npm deprecate puppeteer@$DEPRECATED_RANGE "Version no longer supported. Upgrade to @latest"
+      - name: Publish puppeteer-core
+        env:
+          NPM_TOKEN: ${{secrets.NPM_TOKEN_PUPPETEER_CORE}}
+        run: |
+          utils/prepare_puppeteer_core.js
+          npm config set registry 'https://wombat-dressing-room.appspot.com/'
+          npm config set '//wombat-dressing-room.appspot.com/:_authToken' '${NPM_TOKEN}'
+          npm publish
+
+  post-publish:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: main
+      - name: Install dependencies
+        run: npm install
+      - name: Build main docs
+        run: npm run doc
+      - name: Commit
+        run: |
+          git config --global user.email "55107282+release-please[bot]@users.noreply.github.com"
+          git config --global user.name "release-please[bot]"
+          git commit -am "chore: unfreeze version on docs"
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v4
+        with:
+          committer: 'release-please[bot] <55107282+release-please[bot]@users.noreply.github.com>'
+          author: 'release-please[bot] <55107282+release-please[bot]@users.noreply.github.com>'
+          title: 'chore: unfreeze version on docs'
+          body: ''
+          labels: automated pr
+          branch: create-pull-request/unfreeze
+          delete-branch: true

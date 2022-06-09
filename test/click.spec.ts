@@ -211,7 +211,7 @@ describe('Page.click', function () {
       .click('button.does-not-exist')
       .catch((error_) => (error = error_));
     expect(error.message).toBe(
-      'No node found for selector: button.does-not-exist'
+      'No element found for selector: button.does-not-exist'
     );
   });
   // @see https://github.com/puppeteer/puppeteer/issues/161
@@ -282,6 +282,33 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => document.querySelector('#button-8').textContent)
     ).toBe('context menu');
+  });
+  it('should fire aux event on middle click', async () => {
+    const { page, server } = getTestState();
+
+    await page.goto(server.PREFIX + '/input/scrollable.html');
+    await page.click('#button-8', { button: 'middle' });
+    expect(
+      await page.evaluate(() => document.querySelector('#button-8').textContent)
+    ).toBe('aux click');
+  });
+  it('should fire back click', async () => {
+    const { page, server } = getTestState();
+
+    await page.goto(server.PREFIX + '/input/scrollable.html');
+    await page.click('#button-8', { button: 'back' });
+    expect(
+      await page.evaluate(() => document.querySelector('#button-8').textContent)
+    ).toBe('back click');
+  });
+  it('should fire forward click', async () => {
+    const { page, server } = getTestState();
+
+    await page.goto(server.PREFIX + '/input/scrollable.html');
+    await page.click('#button-8', { button: 'forward' });
+    expect(
+      await page.evaluate(() => document.querySelector('#button-8').textContent)
+    ).toBe('forward click');
   });
   // @see https://github.com/puppeteer/puppeteer/issues/206
   it('should click links which cause navigation', async () => {

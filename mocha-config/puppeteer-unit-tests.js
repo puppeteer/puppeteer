@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const base = require('./base');
+const base = require('./base.js');
 
 module.exports = {
   ...base,

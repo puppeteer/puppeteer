@@ -22,11 +22,13 @@ describe('Browser specs', function () {
 
   describe('Browser.version', function () {
     it('should return whether we are in headless', async () => {
-      const { browser, isHeadless } = getTestState();
+      const { browser, isHeadless, headless } = getTestState();
 
       const version = await browser.version();
       expect(version.length).toBeGreaterThan(0);
-      expect(version.startsWith('Headless')).toBe(isHeadless);
+      expect(version.startsWith('Headless')).toBe(
+        isHeadless && headless !== 'chrome'
+      );
     });
   });
 

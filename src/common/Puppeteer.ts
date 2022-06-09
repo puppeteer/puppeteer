@@ -32,7 +32,7 @@ import {
 } from './NetworkConditions.js';
 
 /**
- * Settings that are common to the Puppeteer class, regardless of enviroment.
+ * Settings that are common to the Puppeteer class, regardless of environment.
  * @internal
  */
 export interface CommonPuppeteerSettings {
@@ -66,6 +66,14 @@ export class Puppeteer {
    */
   constructor(settings: CommonPuppeteerSettings) {
     this._isPuppeteerCore = settings.isPuppeteerCore;
+
+    this.connect = this.connect.bind(this);
+    this.registerCustomQueryHandler =
+      this.registerCustomQueryHandler.bind(this);
+    this.unregisterCustomQueryHandler =
+      this.unregisterCustomQueryHandler.bind(this);
+    this.customQueryHandlerNames = this.customQueryHandlerNames.bind(this);
+    this.clearCustomQueryHandlers = this.clearCustomQueryHandlers.bind(this);
   }
 
   /**

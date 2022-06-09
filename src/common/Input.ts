@@ -209,7 +209,7 @@ export class Keyboard {
   }
 
   private charIsKey(char: string): char is KeyInput {
-    return !!keyDefinitions[char];
+    return !!keyDefinitions[char as KeyInput];
   }
 
   /**
@@ -235,7 +235,7 @@ export class Keyboard {
    * Defaults to 0.
    */
   async type(text: string, options: { delay?: number } = {}): Promise<void> {
-    const delay = options.delay || null;
+    const delay = options.delay || undefined;
     for (const char of text) {
       if (this.charIsKey(char)) {
         await this.press(char, { delay });
@@ -280,7 +280,7 @@ export class Keyboard {
 /**
  * @public
  */
-export type MouseButton = 'left' | 'right' | 'middle';
+export type MouseButton = 'left' | 'right' | 'middle' | 'back' | 'forward';
 
 /**
  * @public

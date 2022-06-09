@@ -10,9 +10,9 @@ async function run() {
   const browser2 = await puppeteer.launch();
   // 'foo' is invalid argument
   const page = await browser2.newPage('foo');
-  const div = (await page.$('div')) as puppeteer.ElementHandle<
-    HTMLAnchorElement
-  >;
+  const div = (await page.$(
+    'div'
+  )) as puppeteer.ElementHandle<HTMLAnchorElement>;
   console.log('got a div!', div);
 }
 run();

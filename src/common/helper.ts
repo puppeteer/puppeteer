@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import type { Readable } from 'stream';
-
-import { TimeoutError } from './Errors.js';
-import { debug } from './Debug.js';
-import { CDPSession } from './Connection.js';
 import { Protocol } from 'devtools-protocol';
-import { CommonEventEmitter } from './EventEmitter.js';
-import { assert } from './assert.js';
+import type { Readable } from 'stream';
 import { isNode } from '../environment.js';
+import { assert } from './assert.js';
+import { CDPSession } from './Connection.js';
+import { debug } from './Debug.js';
+import { TimeoutError } from './Errors.js';
+import { CommonEventEmitter } from './EventEmitter.js';
 
 export const debugError = debug('puppeteer:error');
 
@@ -127,14 +126,16 @@ function isNumber(obj: unknown): obj is number {
   return typeof obj === 'number' || obj instanceof Number;
 }
 
-async function waitForEvent<T extends any>(
+async function waitForEvent<T>(
   emitter: CommonEventEmitter,
   eventName: string | symbol,
   predicate: (event: T) => Promise<boolean> | boolean,
   timeout: number,
   abortPromise: Promise<Error>
 ): Promise<T> {
-  let eventTimeout, resolveCallback, rejectCallback;
+  let eventTimeout: NodeJS.Timeout;
+  let resolveCallback: (value: T | PromiseLike<T>) => void;
+  let rejectCallback: (value: Error) => void;
   const promise = new Promise<T>((resolve, reject) => {
     resolveCallback = resolve;
     rejectCallback = reject;
@@ -192,7 +193,7 @@ function pageBindingInitString(type: string, name: string): string {
     const binding = win[bindingName];
 
     win[bindingName] = (...args: unknown[]): Promise<unknown> => {
-      const me = window[bindingName];
+      const me = (window as any)[bindingName];
       let callbacks = me.callbacks;
       if (!callbacks) {
         callbacks = new Map();
@@ -216,8 +217,8 @@ function pageBindingDeliverResultString(
   result: unknown
 ): string {
   function deliverResult(name: string, seq: number, result: unknown): void {
-    window[name].callbacks.get(seq).resolve(result);
-    window[name].callbacks.delete(seq);
+    (window as any)[name].callbacks.get(seq).resolve(result);
+    (window as any)[name].callbacks.delete(seq);
   }
   return evaluationString(deliverResult, name, seq, result);
 }
@@ -226,18 +227,18 @@ function pageBindingDeliverErrorString(
   name: string,
   seq: number,
   message: string,
-  stack: string
+  stack?: string
 ): string {
   function deliverError(
     name: string,
     seq: number,
     message: string,
-    stack: string
+    stack?: string
   ): void {
     const error = new Error(message);
     error.stack = stack;
-    window[name].callbacks.get(seq).reject(error);
-    window[name].callbacks.delete(seq);
+    (window as any)[name].callbacks.get(seq).reject(error);
+    (window as any)[name].callbacks.delete(seq);
   }
   return evaluationString(deliverError, name, seq, message, stack);
 }
@@ -248,8 +249,8 @@ function pageBindingDeliverErrorValueString(
   value: unknown
 ): string {
   function deliverErrorValue(name: string, seq: number, value: unknown): void {
-    window[name].callbacks.get(seq).reject(value);
-    window[name].callbacks.delete(seq);
+    (window as any)[name].callbacks.get(seq).reject(value);
+    (window as any)[name].callbacks.delete(seq);
   }
   return evaluationString(deliverErrorValue, name, seq, value);
 }
@@ -259,14 +260,16 @@ function makePredicateString(
   predicateQueryHandler?: Function
 ): string {
   function checkWaitForOptions(
-    node: Node,
+    node: Node | null,
     waitForVisible: boolean,
     waitForHidden: boolean
   ): Node | null | boolean {
     if (!node) return waitForHidden;
     if (!waitForVisible && !waitForHidden) return node;
     const element =
-      node.nodeType === Node.TEXT_NODE ? node.parentElement : (node as Element);
+      node.nodeType === Node.TEXT_NODE
+        ? (node.parentElement as Element)
+        : (node as Element);
 
     const style = window.getComputedStyle(element);
     const isVisible =
@@ -291,16 +294,16 @@ function makePredicateString(
     })() `;
 }
 
-async function waitWithTimeout<T extends any>(
+async function waitWithTimeout<T>(
   promise: Promise<T>,
   taskName: string,
   timeout: number
 ): Promise<T> {
-  let reject;
+  let reject: (reason?: Error) => void;
   const timeoutError = new TimeoutError(
     `waiting for ${taskName} failed: timeout ${timeout}ms exceeded`
   );
-  const timeoutPromise = new Promise<T>((resolve, x) => (reject = x));
+  const timeoutPromise = new Promise<T>((_res, rej) => (reject = rej));
   let timeoutTimer = null;
   if (timeout) timeoutTimer = setTimeout(() => reject(timeoutError), timeout);
   try {
@@ -313,32 +316,35 @@ async function waitWithTimeout<T extends any>(
 async function getReadableAsBuffer(
   readable: Readable,
   path?: string
-): Promise<Buffer> {
-  if (!isNode && path) {
-    throw new Error('Cannot write to a path outside of Node.js environment.');
-  }
-
-  const fs = isNode ? await importFSModule() : null;
-
-  let fileHandle: import('fs').promises.FileHandle;
-
-  if (path && fs) {
-    fileHandle = await fs.promises.open(path, 'w');
-  }
+): Promise<Buffer | null> {
   const buffers = [];
-  for await (const chunk of readable) {
-    buffers.push(chunk);
-    if (fileHandle) {
-      await fs.promises.writeFile(fileHandle, chunk);
+  if (path) {
+    let fs: typeof import('fs').promises;
+    try {
+      fs = (await import('fs')).promises;
+    } catch (error) {
+      if (error instanceof TypeError) {
+        throw new Error(
+          'Cannot write to a path outside of a Node-like environment.'
+        );
+      }
+      throw error;
+    }
+    const fileHandle = await fs.open(path, 'w+');
+    for await (const chunk of readable) {
+      buffers.push(chunk);
+      await fileHandle.writeFile(chunk);
+    }
+    await fileHandle.close();
+  } else {
+    for await (const chunk of readable) {
+      buffers.push(chunk);
     }
   }
-
-  if (path) await fileHandle.close();
-  let resultBuffer = null;
   try {
-    resultBuffer = Buffer.concat(buffers);
-  } finally {
-    return resultBuffer;
+    return Buffer.concat(buffers);
+  } catch (error) {
+    return null;
   }
 }
 
@@ -346,8 +352,8 @@ async function getReadableFromProtocolStream(
   client: CDPSession,
   handle: string
 ): Promise<Readable> {
-  // TODO:
-  // This restriction can be lifted once https://github.com/nodejs/node/pull/39062 has landed
+  // TODO: Once Node 18 becomes the lowest supported version, we can migrate to
+  // ReadableStream.
   if (!isNode) {
     throw new Error('Cannot create a stream outside of Node.js environment.');
   }
@@ -358,7 +364,7 @@ async function getReadableFromProtocolStream(
   return new Readable({
     async read(size: number) {
       if (eof) {
-        return null;
+        return;
       }
 
       const response = await client.send('IO.read', { handle, size });
@@ -370,30 +376,6 @@ async function getReadableFromProtocolStream(
       }
     },
   });
-}
-
-/**
- * Loads the Node fs promises API. Needed because on Node 10.17 and below,
- * fs.promises is experimental, and therefore not marked as enumerable. That
- * means when TypeScript compiles an `import('fs')`, its helper doesn't spot the
- * promises declaration and therefore on Node <10.17 you get an error as
- * fs.promises is undefined in compiled TypeScript land.
- *
- * See https://github.com/puppeteer/puppeteer/issues/6548 for more details.
- *
- * Once Node 10 is no longer supported (April 2021) we can remove this and use
- * `(await import('fs')).promises`.
- */
-async function importFSModule(): Promise<typeof import('fs')> {
-  if (!isNode) {
-    throw new Error('Cannot load the fs module API outside of Node.');
-  }
-
-  const fs = await import('fs');
-  if (fs.promises) {
-    return fs;
-  }
-  return fs.default;
 }
 
 export const helper = {
@@ -409,7 +391,6 @@ export const helper = {
   waitForEvent,
   isString,
   isNumber,
-  importFSModule,
   addEventListener,
   removeEventListeners,
   valueFromRemoteObject,

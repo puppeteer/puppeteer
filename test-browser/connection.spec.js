@@ -15,7 +15,7 @@
  */
 import { Connection } from '../lib/esm/puppeteer/common/Connection.js';
 import { BrowserWebSocketTransport } from '../lib/esm/puppeteer/common/BrowserWebSocketTransport.js';
-import puppeteer from '../lib/esm/puppeteer/web.js';
+import puppeteer from '../lib/esm/puppeteer/puppeteer.js';
 import expect from '../node_modules/expect/build-es5/index.js';
 import { getWebSocketEndpoint } from './helper.js';
 

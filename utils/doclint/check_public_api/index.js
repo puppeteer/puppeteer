@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-const jsBuilder = require('./JSBuilder');
-const mdBuilder = require('./MDBuilder');
-const Documentation = require('./Documentation');
-const Message = require('../Message');
+const jsBuilder = require('./JSBuilder.js');
+const mdBuilder = require('./MDBuilder.js');
+const Documentation = require('./Documentation.js');
+const Message = require('../Message.js');
 const {
   MODULES_TO_CHECK_FOR_COVERAGE,
-} = require('../../../test/coverage-utils');
+} = require('../../../test/coverage-utils.js');
 
 const EXCLUDE_PROPERTIES = new Set([
   'Browser.create',
+  'Frame.client',
   'Headers.fromPayload',
   'Page.client',
   'Page.create',
@@ -411,21 +412,21 @@ function compareDocumentations(actual, expected) {
         'Method ElementHandle.dragEnter() data',
         {
           actualName: 'Object',
-          expectedName: 'DragData',
+          expectedName: 'Protocol.Input.DragData',
         },
       ],
       [
         'Method ElementHandle.dragOver() data',
         {
           actualName: 'Object',
-          expectedName: 'DragData',
+          expectedName: 'Protocol.Input.DragData',
         },
       ],
       [
         'Method ElementHandle.drop() data',
         {
           actualName: 'Object',
-          expectedName: 'DragData',
+          expectedName: 'Protocol.Input.DragData',
         },
       ],
       [
@@ -509,7 +510,7 @@ function compareDocumentations(actual, expected) {
         'Method Mouse.dragEnter() data',
         {
           actualName: 'Object',
-          expectedName: 'DragData',
+          expectedName: 'Protocol.Input.DragData',
         },
       ],
       [
@@ -523,7 +524,7 @@ function compareDocumentations(actual, expected) {
         'Method Mouse.dragOver() data',
         {
           actualName: 'Object',
-          expectedName: 'DragData',
+          expectedName: 'Protocol.Input.DragData',
         },
       ],
       [
@@ -537,7 +538,7 @@ function compareDocumentations(actual, expected) {
         'Method Mouse.drop() data',
         {
           actualName: 'Object',
-          expectedName: 'DragData',
+          expectedName: 'Protocol.Input.DragData',
         },
       ],
       [
@@ -723,7 +724,7 @@ function compareDocumentations(actual, expected) {
         'Method Page.setUserAgent() userAgentMetadata',
         {
           actualName: 'Object',
-          expectedName: 'UserAgentMetadata',
+          expectedName: 'Protocol.Emulation.UserAgentMetadata',
         },
       ],
       [
@@ -828,14 +829,14 @@ function compareDocumentations(actual, expected) {
         'Method Page.setCookie() ...cookies',
         {
           actualName: '...Object',
-          expectedName: '...CookieParam',
+          expectedName: '...Protocol.Network.CookieParam',
         },
       ],
       [
         'Method Page.emulateVisionDeficiency() type',
         {
           actualName: 'string',
-          expectedName: 'Object',
+          expectedName: 'Protocol.Emulation.SetEmulatedVisionDeficiencyRequest',
         },
       ],
       [
@@ -925,21 +926,21 @@ function compareDocumentations(actual, expected) {
       [
         'Method Mouse.click() options.button',
         {
-          actualName: '"left"|"right"|"middle"',
+          actualName: '"left"|"right"|"middle"|"back"|"forward"',
           expectedName: 'MouseButton',
         },
       ],
       [
         'Method Frame.click() options.button',
         {
-          actualName: '"left"|"right"|"middle"',
+          actualName: '"left"|"right"|"middle"|"back"|"forward"',
           expectedName: 'MouseButton',
         },
       ],
       [
         'Method Page.click() options.button',
         {
-          actualName: '"left"|"right"|"middle"',
+          actualName: '"left"|"right"|"middle"|"back"|"forward"',
           expectedName: 'MouseButton',
         },
       ],
@@ -996,7 +997,7 @@ function compareDocumentations(actual, expected) {
         'Method Page.deleteCookie() ...cookies',
         {
           actualName: '...Object',
-          expectedName: '...DeleteCookiesRequest',
+          expectedName: '...Protocol.Network.DeleteCookiesRequest',
         },
       ],
       [

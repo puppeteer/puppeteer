@@ -8,9 +8,9 @@ async function run() {
   page.on('request', (request) => {
     const resourceType = request.resourceType();
   });
-  const div = (await page.$('div')) as puppeteer.ElementHandle<
-    HTMLAnchorElement
-  >;
+  const div = (await page.$(
+    'div'
+  )) as puppeteer.ElementHandle<HTMLAnchorElement>;
   console.log('got a div!', div);
 }
 run();
