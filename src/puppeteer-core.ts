@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google Inc. All rights reserved.
+ * Copyright 2017 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-import { Puppeteer } from './common/Puppeteer.js';
+import { initializePuppeteer } from './initializePuppeteer.js';
 
-export const initializePuppeteerWeb = (packageName: string): Puppeteer => {
-  const isPuppeteerCore = packageName === 'puppeteer-core';
-  return new Puppeteer({
-    isPuppeteerCore,
-  });
-};
+const puppeteer = initializePuppeteer('puppeteer-core');
+
+export const {
+  clearCustomQueryHandlers,
+  connect,
+  createBrowserFetcher,
+  customQueryHandlerNames,
+  defaultArgs,
+  executablePath,
+  launch,
+  registerCustomQueryHandler,
+  unregisterCustomQueryHandler,
+} = puppeteer;
+
+export default puppeteer;

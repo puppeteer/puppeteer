@@ -101,6 +101,12 @@ export class PuppeteerNode extends Puppeteer {
     this._projectRoot = projectRoot;
     this.__productName = productName;
     this._preferredRevision = preferredRevision;
+
+    this.connect = this.connect.bind(this);
+    this.launch = this.launch.bind(this);
+    this.executablePath = this.executablePath.bind(this);
+    this.defaultArgs = this.defaultArgs.bind(this);
+    this.createBrowserFetcher = this.createBrowserFetcher.bind(this);
   }
 
   /**

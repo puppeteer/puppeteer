@@ -9,12 +9,12 @@
     "automation"
   ],
   "type": "commonjs",
-  "main": "./cjs-entry.js",
+  "main": "./lib/cjs/puppeteer/puppeteer.js",
   "exports": {
     ".": {
       "types": "./lib/types.d.ts",
-      "import": "./lib/esm/puppeteer/node.js",
-      "require": "./cjs-entry.js"
+      "import": "./lib/esm/puppeteer/puppeteer.js",
+      "require": "./lib/cjs/puppeteer/puppeteer.js"
     },
     "./*": {
       "import": "./*",
@@ -67,16 +67,9 @@
     "build-docs-production": "cd website && npm install && npm run build"
   },
   "files": [
-    "lib/types.d.ts",
-    "lib/**/*.d.ts",
-    "lib/**/*.d.ts.map",
-    "lib/**/*.js",
-    "lib/**/*.js.map",
-    "lib/**/package.json",
+    "lib",
     "install.js",
-    "typescript-if-required.js",
-    "cjs-entry.js",
-    "cjs-entry-core.js"
+    "typescript-if-required.js"
   ],
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
