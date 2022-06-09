@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import type { Readable } from 'stream';
-
-import { TimeoutError } from './Errors.js';
-import { debug } from './Debug.js';
-import { CDPSession } from './Connection.js';
 import { Protocol } from 'devtools-protocol';
-import { CommonEventEmitter } from './EventEmitter.js';
-import { assert } from './assert.js';
+import type { Readable } from 'stream';
 import { isNode } from '../environment.js';
+import { assert } from './assert.js';
+import { CDPSession } from './Connection.js';
+import { debug } from './Debug.js';
+import { TimeoutError } from './Errors.js';
+import { CommonEventEmitter } from './EventEmitter.js';
 
 export const debugError = debug('puppeteer:error');
 
@@ -318,31 +317,34 @@ async function getReadableAsBuffer(
   readable: Readable,
   path?: string
 ): Promise<Buffer | null> {
-  if (!isNode && path) {
-    throw new Error('Cannot write to a path outside of Node.js environment.');
-  }
-
-  const fs = isNode ? (await import('fs')).promises : null;
-
-  let fileHandle: import('fs').promises.FileHandle | undefined;
-
-  if (path && fs) {
-    fileHandle = await fs.open(path, 'w');
-  }
   const buffers = [];
-  for await (const chunk of readable) {
-    buffers.push(chunk);
-    if (fileHandle && fs) {
-      await fs.writeFile(fileHandle, chunk);
+  if (path) {
+    let fs: typeof import('fs').promises;
+    try {
+      fs = (await import('fs')).promises;
+    } catch (error) {
+      if (error instanceof TypeError) {
+        throw new Error(
+          'Cannot write to a path outside of a Node-like environment.'
+        );
+      }
+      throw error;
+    }
+    const fileHandle = await fs.open(path, 'w+');
+    for await (const chunk of readable) {
+      buffers.push(chunk);
+      await fileHandle.writeFile(chunk);
+    }
+    await fileHandle.close();
+  } else {
+    for await (const chunk of readable) {
+      buffers.push(chunk);
     }
   }
-
-  if (path && fileHandle) await fileHandle.close();
-  let resultBuffer = null;
   try {
-    resultBuffer = Buffer.concat(buffers);
-  } finally {
-    return resultBuffer;
+    return Buffer.concat(buffers);
+  } catch (error) {
+    return null;
   }
 }
 
@@ -350,8 +352,8 @@ async function getReadableFromProtocolStream(
   client: CDPSession,
   handle: string
 ): Promise<Readable> {
-  // TODO:
-  // This restriction can be lifted once https://github.com/nodejs/node/pull/39062 has landed
+  // TODO: Once Node 18 becomes the lowest supported version, we can migrate to
+  // ReadableStream.
   if (!isNode) {
     throw new Error('Cannot create a stream outside of Node.js environment.');
   }

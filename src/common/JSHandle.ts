@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-import { assert } from './assert.js';
-import { helper, debugError } from './helper.js';
-import { ExecutionContext } from './ExecutionContext.js';
-import { Page, ScreenshotOptions } from './Page.js';
-import { CDPSession } from './Connection.js';
-import { KeyInput } from './USKeyboardLayout.js';
-import { FrameManager, Frame } from './FrameManager.js';
-import { getQueryHandlerAndSelector } from './QueryHandler.js';
 import { Protocol } from 'devtools-protocol';
+import { assert } from './assert.js';
+import { CDPSession } from './Connection.js';
 import {
   EvaluateFn,
-  SerializableOrJSHandle,
   EvaluateFnReturnType,
   EvaluateHandleFn,
-  WrapElementHandle,
+  SerializableOrJSHandle,
   UnwrapPromiseLike,
+  WrapElementHandle,
 } from './EvalTypes.js';
-import { isNode } from '../environment.js';
+import { ExecutionContext } from './ExecutionContext.js';
+import { Frame, FrameManager } from './FrameManager.js';
+import { debugError, helper } from './helper.js';
 import { MouseButton } from './Input.js';
+import { Page, ScreenshotOptions } from './Page.js';
+import { getQueryHandlerAndSelector } from './QueryHandler.js';
+import { KeyInput } from './USKeyboardLayout.js';
 
 /**
  * @public
@@ -834,17 +833,18 @@ export class ElementHandle<
       'Multiple file uploads only work with <input type=file multiple>'
     );
 
-    if (!isNode) {
-      throw new Error(
-        `JSHandle#uploadFile can only be used in Node environments.`
-      );
-    }
-    /*
-      This import is only needed for `uploadFile`, so keep it scoped here to
-      avoid paying the cost unnecessarily.
-     */
-    const path = await import('path');
     // Locate all files and confirm that they exist.
+    let path: typeof import('path');
+    try {
+      path = await import('path');
+    } catch (error) {
+      if (error instanceof TypeError) {
+        throw new Error(
+          `JSHandle#uploadFile can only be used in Node-like environments.`
+        );
+      }
+      throw error;
+    }
     const files = filePaths.map((filePath) => {
       if (path.isAbsolute(filePath)) {
         return filePath;
