@@ -263,8 +263,8 @@ export class JSHandle<HandleObjectType = unknown> {
    */
   asElement(): ElementHandle | null {
     /*  This always returns null, but subclasses can override this and return an
-        ElementHandle.
-    */
+         ElementHandle.
+     */
     return null;
   }
 
@@ -766,7 +766,7 @@ export class ElementHandle<
    *    one is taken into account.
    */
   async select(...values: string[]): Promise<string[]> {
-    for (const value of values)
+    for (const value of values) {
       assert(
         helper.isString(value),
         'Values must be strings. Found value "' +
@@ -775,26 +775,38 @@ export class ElementHandle<
           typeof value +
           '"'
       );
+    }
 
-    return this.evaluate<(element: Element, values: string[]) => string[]>(
-      (element, values) => {
-        if (!(element instanceof HTMLSelectElement))
-          throw new Error('Element is not a <select> element.');
+    return this.evaluate((element: Element, vals: string[]): string[] => {
+      const values = new Set(vals);
+      if (!(element instanceof HTMLSelectElement)) {
+        throw new Error('Element is not a <select> element.');
+      }
 
-        const options = Array.from(element.options);
-        element.value = '';
-        for (const option of options) {
-          option.selected = values.includes(option.value);
-          if (option.selected && !element.multiple) break;
+      const selectedValues = new Set<string>();
+      if (!element.multiple) {
+        for (const option of element.options) {
+          option.selected = false;
         }
-        element.dispatchEvent(new Event('input', { bubbles: true }));
-        element.dispatchEvent(new Event('change', { bubbles: true }));
-        return options
-          .filter((option) => option.selected)
-          .map((option) => option.value);
-      },
-      values
-    );
+        for (const option of element.options) {
+          if (values.has(option.value)) {
+            option.selected = true;
+            selectedValues.add(option.value);
+            break;
+          }
+        }
+      } else {
+        for (const option of element.options) {
+          option.selected = values.has(option.value);
+          if (option.selected) {
+            selectedValues.add(option.value);
+          }
+        }
+      }
+      element.dispatchEvent(new Event('input', { bubbles: true }));
+      element.dispatchEvent(new Event('change', { bubbles: true }));
+      return [...selectedValues.values()];
+    }, values);
   }
 
   /**
@@ -845,9 +857,9 @@ export class ElementHandle<
     const { backendNodeId } = node;
 
     /*  The zero-length array is a special case, it seems that
-        DOM.setFileInputFiles does not actually update the files in that case,
-        so the solution is to eval the element value to a new FileList directly.
-    */
+         DOM.setFileInputFiles does not actually update the files in that case,
+         so the solution is to eval the element value to a new FileList directly.
+     */
     if (files.length === 0) {
       await (this as ElementHandle<HTMLInputElement>).evaluate((element) => {
         element.files = new DataTransfer().files;
@@ -1300,8 +1312,8 @@ export interface Point {
 
 function computeQuadArea(quad: Point[]): number {
   /* Compute sum of all directed areas of adjacent triangles
-    https://en.wikipedia.org/wiki/Polygon#Simple_polygons
-  */
+     https://en.wikipedia.org/wiki/Polygon#Simple_polygons
+   */
   let area = 0;
   for (let i = 0; i < quad.length; ++i) {
     const p1 = quad[i]!;
