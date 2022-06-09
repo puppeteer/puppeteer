@@ -14,30 +14,29 @@
  * limitations under the License.
  */
 
+import { Protocol } from 'devtools-protocol';
 import { assert } from './assert.js';
-import { helper, debugError } from './helper.js';
+import { CDPSession } from './Connection.js';
+import { TimeoutError } from './Errors.js';
+import {
+  EvaluateFn,
+  EvaluateFnReturnType,
+  EvaluateHandleFn,
+  SerializableOrJSHandle,
+  UnwrapPromiseLike,
+  WrapElementHandle,
+} from './EvalTypes.js';
+import { ExecutionContext } from './ExecutionContext.js';
+import { Frame, FrameManager } from './FrameManager.js';
+import { debugError, helper } from './helper.js';
+import { MouseButton } from './Input.js';
+import { ElementHandle, JSHandle } from './JSHandle.js';
 import {
   LifecycleWatcher,
   PuppeteerLifeCycleEvent,
 } from './LifecycleWatcher.js';
-import { TimeoutError } from './Errors.js';
-import { JSHandle, ElementHandle } from './JSHandle.js';
-import { ExecutionContext } from './ExecutionContext.js';
-import { TimeoutSettings } from './TimeoutSettings.js';
-import { MouseButton } from './Input.js';
-import { FrameManager, Frame } from './FrameManager.js';
 import { getQueryHandlerAndSelector } from './QueryHandler.js';
-import {
-  SerializableOrJSHandle,
-  EvaluateHandleFn,
-  WrapElementHandle,
-  EvaluateFn,
-  EvaluateFnReturnType,
-  UnwrapPromiseLike,
-} from './EvalTypes.js';
-import { isNode } from '../environment.js';
-import { Protocol } from 'devtools-protocol';
-import { CDPSession } from './Connection.js';
+import { TimeoutSettings } from './TimeoutSettings.js';
 
 // predicateQueryHandler and checkWaitForOptions are declared here so that
 // TypeScript knows about them when used in the predicate function below.
@@ -330,13 +329,18 @@ export class DOMWorld {
     }
 
     if (path !== null) {
-      if (!isNode) {
-        throw new Error(
-          'Cannot pass a filepath to addScriptTag in the browser environment.'
-        );
+      let fs;
+      try {
+        fs = (await import('fs')).promises;
+      } catch (error) {
+        if (error instanceof TypeError) {
+          throw new Error(
+            'Can only pass a filepath to addScriptTag in a Node-like environment.'
+          );
+        }
+        throw error;
       }
-      const fs = await import('fs');
-      let contents = await fs.promises.readFile(path, 'utf8');
+      let contents = await fs.readFile(path, 'utf8');
       contents += '//# sourceURL=' + path.replace(/\n/g, '');
       const context = await this.executionContext();
       const handle = await context.evaluateHandle(
@@ -437,13 +441,19 @@ export class DOMWorld {
     }
 
     if (path !== null) {
-      if (!isNode) {
-        throw new Error(
-          'Cannot pass a filepath to addStyleTag in the browser environment.'
-        );
+      let fs: typeof import('fs').promises;
+      try {
+        fs = (await import('fs')).promises;
+      } catch (error) {
+        if (error instanceof TypeError) {
+          throw new Error(
+            'Cannot pass a filepath to addStyleTag in the browser environment.'
+          );
+        }
+        throw error;
       }
-      const fs = await import('fs');
-      let contents = await fs.promises.readFile(path, 'utf8');
+
+      let contents = await fs.readFile(path, 'utf8');
       contents += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
       const context = await this.executionContext();
       const handle = await context.evaluateHandle(addStyleContent, contents);

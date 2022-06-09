@@ -16,7 +16,6 @@
 
 import { Protocol } from 'devtools-protocol';
 import type { Readable } from 'stream';
-import { isNode } from '../environment.js';
 import { Accessibility } from './Accessibility.js';
 import { assert, assertNever } from './assert.js';
 import { Browser, BrowserContext } from './Browser.js';
@@ -2825,13 +2824,17 @@ export class Page extends EventEmitter {
         : Buffer.from(result.data, 'base64');
 
     if (options.path) {
-      if (!isNode) {
-        throw new Error(
-          'Screenshots can only be written to a file path in a Node environment.'
-        );
+      try {
+        const fs = (await import('fs')).promises;
+        await fs.writeFile(options.path, buffer);
+      } catch (error) {
+        if (error instanceof TypeError) {
+          throw new Error(
+            'Screenshots can only be written to a file path in a Node-like environment.'
+          );
+        }
+        throw error;
       }
-      const fs = (await import('fs')).promises;
-      await fs.writeFile(options.path, buffer);
     }
     return buffer;
 
