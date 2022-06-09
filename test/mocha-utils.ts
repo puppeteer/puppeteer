@@ -19,7 +19,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
 import sinon from 'sinon';
-import puppeteer from '../lib/cjs/puppeteer/node.js';
+import puppeteer from '../lib/cjs/puppeteer/puppeteer.js';
 import {
   Browser,
   BrowserContext,

@@ -1,6 +1,5 @@
 test/assets/modernizr.js
 third_party/*
-utils/browser/puppeteer-web.js
 utils/doclint/check_public_api/test/
 node6/*
 node6-test/*

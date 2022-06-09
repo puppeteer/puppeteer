@@ -148,9 +148,12 @@ describe('Launcher specs', function () {
         await server.waitForRequest('/one-style.css');
         remote.disconnect();
         const error = await navigationPromise;
-        expect(error.message).toBe(
-          'Navigation failed because browser has disconnected!'
-        );
+        expect(
+          [
+            'Navigation failed because browser has disconnected!',
+            'Protocol error (Page.navigate): Target closed.',
+          ].includes(error.message)
+        ).toBeTruthy();
         await browser.close();
       });
       it('should reject waitForSelector when browser closes', async () => {

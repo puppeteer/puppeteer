@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import { PuppeteerNode } from './node/Puppeteer.js';
-import { PUPPETEER_REVISIONS } from './revisions.js';
 import { sync } from 'pkg-dir';
 import { Product } from './common/Product.js';
 import { rootDirname } from './constants.js';
+import { PuppeteerNode } from './node/Puppeteer.js';
+import { PUPPETEER_REVISIONS } from './revisions.js';
 
-export const initializePuppeteerNode = (packageName: string): PuppeteerNode => {
+export const initializePuppeteer = (packageName: string): PuppeteerNode => {
+  const isPuppeteerCore = packageName === 'puppeteer-core';
   const puppeteerRootDirectory = sync(rootDirname);
   let preferredRevision = PUPPETEER_REVISIONS.chromium;
-  const isPuppeteerCore = packageName === 'puppeteer-core';
   // puppeteer-core ignores environment variables
-  const productName = isPuppeteerCore
-    ? undefined
-    : process.env['PUPPETEER_PRODUCT'] ||
-      process.env['npm_config_puppeteer_product'] ||
-      process.env['npm_package_config_puppeteer_product'];
+  const productName = !isPuppeteerCore
+    ? ((process.env['PUPPETEER_PRODUCT'] ||
+        process.env['npm_config_puppeteer_product'] ||
+        process.env['npm_package_config_puppeteer_product']) as Product)
+    : undefined;
 
   if (!isPuppeteerCore && productName === 'firefox')
     preferredRevision = PUPPETEER_REVISIONS.firefox;
@@ -38,6 +38,6 @@ export const initializePuppeteerNode = (packageName: string): PuppeteerNode => {
     projectRoot: puppeteerRootDirectory,
     preferredRevision,
     isPuppeteerCore,
-    productName: productName as Product,
+    productName,
   });
 };

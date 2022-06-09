@@ -117,10 +117,10 @@ export class LifecycleWatcher {
       helper.addEventListener(
         frameManager._client,
         CDPSessionEmittedEvents.Disconnected,
-        () =>
-          this._terminate(
-            new Error('Navigation failed because browser has disconnected!')
-          )
+        this._terminate.bind(
+          this,
+          new Error('Navigation failed because browser has disconnected!')
+        )
       ),
       helper.addEventListener(
         this._frameManager,

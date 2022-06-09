@@ -24,8 +24,8 @@ const json = require(packagePath);
 delete json.scripts.install;
 
 json.name = 'puppeteer-core';
-json.main = './cjs-entry-core.js';
-json.exports['.'].import = './lib/esm/puppeteer/node-puppeteer-core.js';
-json.exports['.'].require = './cjs-entry-core.js';
+json.main = './lib/cjs/puppeteer/puppeteer-core.js';
+json.exports['.'].import = './lib/esm/puppeteer/puppeteer-core.js';
+json.exports['.'].require = './lib/cjs/puppeteer/puppeteer-core.js';
 
 fs.writeFileSync(packagePath, JSON.stringify(json, null, '  '));

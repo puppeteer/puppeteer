@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-import { isNode } from './environment.js';
-import { initializePuppeteerNode } from './initialize-node.js';
+import { initializePuppeteer } from './initializePuppeteer.js';
 
-if (!isNode) {
-  throw new Error('Cannot run puppeteer-core outside of Node.js');
-}
+const puppeteer = initializePuppeteer('puppeteer');
 
-const puppeteer = initializePuppeteerNode('puppeteer-core');
+export const {
+  clearCustomQueryHandlers,
+  connect,
+  createBrowserFetcher,
+  customQueryHandlerNames,
+  defaultArgs,
+  executablePath,
+  launch,
+  registerCustomQueryHandler,
+  unregisterCustomQueryHandler,
+} = puppeteer;
+
 export default puppeteer;

@@ -121,8 +121,6 @@ lib
   - vendor <== the output of compiling `vendor/tsconfig.esm.json`
 ```
 
-The main entry point for the Node module Puppeteer is `cjs-entry.js`. This imports `lib/cjs/puppeteer/index.js` and exposes it to Node users.
-
 ### tsconfig for the tests
 
 We also maintain `test/tsconfig.test.json`. This is **only used to compile the unit test `*.spec.ts` files**. When the tests are run, we first compile Puppeteer as normal before running the unit tests **against the compiled output**. Doing this lets the test run against the compiled code we ship to users so it gives us more confidence in our compiled output being correct.
