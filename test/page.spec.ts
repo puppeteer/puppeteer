@@ -1887,12 +1887,13 @@ describe('Page', function () {
       await page.select('select', 'blue', 'black', 'magenta');
       await page.select('select');
       expect(
-        await page.$eval('select', (select: HTMLSelectElement) =>
-          Array.from(select.options).every(
-            (option: HTMLOptionElement) => !option.selected
-          )
+        await page.$eval(
+          'select',
+          (select: HTMLSelectElement) =>
+            Array.from(select.options).filter((option) => option.selected)[0]
+              .value
         )
-      ).toEqual(true);
+      ).toEqual('');
     });
     it('should throw if passed in non-strings', async () => {
       const { page } = getTestState();
