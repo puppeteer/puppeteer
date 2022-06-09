@@ -330,12 +330,10 @@ function pidExists(pid: number): boolean {
   try {
     return process.kill(pid, 0);
   } catch (error) {
-    if (error instanceof Error) {
-      const err = error as NodeJS.ErrnoException;
-      if (err.code && err.code === 'ESRCH') {
-        return false;
-      }
+    if ((error as NodeJS.ErrnoException).code === 'ESRCH') {
+      return false;
     }
+
     throw error;
   }
 }
