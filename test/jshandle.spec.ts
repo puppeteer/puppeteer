@@ -15,7 +15,7 @@
  */
 
 import expect from 'expect';
-import { JSHandle } from '../lib/cjs/puppeteer/common/JSHandle.js';
+import { JSHandleImpl } from '../lib/cjs/puppeteer/common/JSHandleImpl.js';
 import {
   getTestState,
   setupTestBrowserHooks,
@@ -108,7 +108,7 @@ describe('JSHandle', function () {
         three: 3,
       }));
       const undefinedHandle = await aHandle.getProperty('doesnotexist');
-      expect(undefinedHandle).toBeInstanceOf(JSHandle);
+      expect(undefinedHandle).toBeInstanceOf(JSHandleImpl);
       expect(await undefinedHandle.jsonValue()).toBe(undefined);
     });
   });

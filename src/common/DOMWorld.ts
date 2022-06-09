@@ -21,7 +21,7 @@ import {
   PuppeteerLifeCycleEvent,
 } from './LifecycleWatcher.js';
 import { TimeoutError } from './Errors.js';
-import { JSHandle, ElementHandle } from './JSHandle.js';
+import { JSHandle, ElementHandle } from './api/JSHandle.js';
 import { ExecutionContext } from './ExecutionContext.js';
 import { TimeoutSettings } from './TimeoutSettings.js';
 import { MouseButton } from './Input.js';

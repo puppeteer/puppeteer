@@ -28,7 +28,7 @@ import {
 } from './mocha-utils'; // eslint-disable-line import/extensions
 import { Page, Metrics } from '../lib/cjs/puppeteer/common/Page.js';
 import { CDPSession } from '../lib/cjs/puppeteer/common/Connection.js';
-import { JSHandle } from '../lib/cjs/puppeteer/common/JSHandle.js';
+import { JSHandle } from '../lib/cjs/puppeteer/common/api/JSHandle.js';
 
 describe('Page', function () {
   setupTestBrowserHooks();

@@ -48,7 +48,8 @@ import { debugError, helper } from './helper.js';
 import { HTTPRequest } from './HTTPRequest.js';
 import { HTTPResponse } from './HTTPResponse.js';
 import { Keyboard, Mouse, MouseButton, Touchscreen } from './Input.js';
-import { createJSHandle, ElementHandle, JSHandle } from './JSHandle.js';
+import { ElementHandle, JSHandle } from './api/JSHandle.js';
+import { createJSHandle } from './JSHandleImpl.js';
 import { PuppeteerLifeCycleEvent } from './LifecycleWatcher.js';
 import {
   Credentials,
@@ -1612,7 +1613,7 @@ export class Page extends EventEmitter {
     }
     const textTokens = [];
     for (const arg of args) {
-      const remoteObject = arg._remoteObject;
+      const remoteObject = arg.remoteObject();
       if (remoteObject.objectId) textTokens.push(arg.toString());
       else textTokens.push(helper.valueFromRemoteObject(remoteObject));
     }

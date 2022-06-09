@@ -22,7 +22,7 @@ import {
   describeChromeOnly,
 } from './mocha-utils'; // eslint-disable-line import/extensions
 
-import { ElementHandle } from '../lib/cjs/puppeteer/common/JSHandle.js';
+import { ElementHandle } from '../lib/cjs/puppeteer/common/api/JSHandle.js';
 import utils from './utils.js';
 
 describeChromeOnly('AriaQueryHandler', () => {

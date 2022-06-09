@@ -16,12 +16,14 @@
 
 import { assert } from './assert.js';
 import { helper } from './helper.js';
-import { createJSHandle, JSHandle, ElementHandle } from './JSHandle.js';
+import { createJSHandle, JSHandleImpl } from './JSHandleImpl.js';
 import { CDPSession } from './Connection.js';
 import { DOMWorld } from './DOMWorld.js';
 import { Frame } from './FrameManager.js';
 import { Protocol } from 'devtools-protocol';
 import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes.js';
+import { JSHandle, ElementHandle } from './api/JSHandle.js';
+
 /**
  * @public
  */
@@ -289,7 +291,7 @@ export class ExecutionContext {
       if (Object.is(arg, -Infinity))
         return { unserializableValue: '-Infinity' };
       if (Object.is(arg, NaN)) return { unserializableValue: 'NaN' };
-      const objectHandle = arg && arg instanceof JSHandle ? arg : null;
+      const objectHandle = arg && arg instanceof JSHandleImpl ? arg : null;
       if (objectHandle) {
         if (objectHandle._context !== this)
           throw new Error(
@@ -347,13 +349,13 @@ export class ExecutionContext {
    * @returns A handle to an array of objects with the given prototype.
    */
   async queryObjects(prototypeHandle: JSHandle): Promise<JSHandle> {
-    assert(!prototypeHandle._disposed, 'Prototype JSHandle is disposed!');
+    assert(!prototypeHandle.isDisposed(), 'Prototype JSHandle is disposed!');
     assert(
-      prototypeHandle._remoteObject.objectId,
+      prototypeHandle.remoteObject().objectId,
       'Prototype JSHandle must not be referencing primitive value'
     );
     const response = await this._client.send('Runtime.queryObjects', {
-      prototypeObjectId: prototypeHandle._remoteObject.objectId,
+      prototypeObjectId: prototypeHandle.remoteObject().objectId!,
     });
     return createJSHandle(this, response.objects);
   }
@@ -383,7 +385,7 @@ export class ExecutionContext {
     );
     assert(this._world, 'Cannot adopt handle without DOMWorld');
     const nodeInfo = await this._client.send('DOM.describeNode', {
-      objectId: elementHandle._remoteObject.objectId,
+      objectId: elementHandle.remoteObject().objectId,
     });
     return this._adoptBackendNodeId(nodeInfo.node.backendNodeId);
   }

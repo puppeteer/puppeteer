@@ -18,7 +18,7 @@ import { assert } from './assert.js';
 import { CDPSession } from './Connection.js';
 import { keyDefinitions, KeyDefinition, KeyInput } from './USKeyboardLayout.js';
 import { Protocol } from 'devtools-protocol';
-import { Point } from './JSHandle.js';
+import { Point } from './api/Types.js';
 
 type KeyDescription = Required<
   Pick<KeyDefinition, 'keyCode' | 'key' | 'text' | 'code' | 'location'>

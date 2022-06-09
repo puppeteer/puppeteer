@@ -26,7 +26,7 @@ import { DOMWorld, WaitForSelectorOptions } from './DOMWorld.js';
 import { NetworkManager } from './NetworkManager.js';
 import { TimeoutSettings } from './TimeoutSettings.js';
 import { Connection, CDPSession } from './Connection.js';
-import { JSHandle, ElementHandle } from './JSHandle.js';
+import { JSHandle, ElementHandle } from './api/JSHandle.js';
 import { MouseButton } from './Input.js';
 import { Page } from './Page.js';
 import { HTTPResponse } from './HTTPResponse.js';

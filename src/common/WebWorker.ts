@@ -16,11 +16,12 @@
 import { EventEmitter } from './EventEmitter.js';
 import { debugError } from './helper.js';
 import { ExecutionContext } from './ExecutionContext.js';
-import { JSHandle } from './JSHandle.js';
+import { JSHandle } from './api/JSHandle.js';
 import { CDPSession } from './Connection.js';
 import { Protocol } from 'devtools-protocol';
 import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes.js';
 import { ConsoleMessageType } from './ConsoleMessage.js';
+import { JSHandleImpl } from './JSHandleImpl.js';
 
 /**
  * @internal
@@ -87,7 +88,7 @@ export class WebWorker extends EventEmitter {
     this._client.once('Runtime.executionContextCreated', async (event) => {
       // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
       jsHandleFactory = (remoteObject) =>
-        new JSHandle(executionContext, client, remoteObject);
+        new JSHandleImpl(executionContext, client, remoteObject);
       const executionContext = new ExecutionContext(client, event.context);
       this._executionContextCallback(executionContext);
     });

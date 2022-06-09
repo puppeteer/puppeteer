@@ -15,7 +15,7 @@
  */
 
 import { WaitForSelectorOptions, DOMWorld } from './DOMWorld.js';
-import { ElementHandle, JSHandle } from './JSHandle.js';
+import { ElementHandle, JSHandle } from './api/JSHandle.js';
 import { ariaHandler } from './AriaQueryHandler.js';
 
 /**

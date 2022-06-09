@@ -15,7 +15,7 @@
  */
 
 import { InternalQueryHandler } from './QueryHandler.js';
-import { ElementHandle, JSHandle } from './JSHandle.js';
+import { ElementHandle, JSHandle } from './api/JSHandle.js';
 import { Protocol } from 'devtools-protocol';
 import { CDPSession } from './Connection.js';
 import { DOMWorld, PageBinding, WaitForSelectorOptions } from './DOMWorld.js';
@@ -28,7 +28,7 @@ async function queryAXTree(
   role?: string
 ): Promise<Protocol.Accessibility.AXNode[]> {
   const { nodes } = await client.send('Accessibility.queryAXTree', {
-    objectId: element._remoteObject.objectId,
+    objectId: element.remoteObject().objectId,
     accessibleName,
     role,
   });

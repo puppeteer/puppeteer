@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ElementHandle } from './JSHandle.js';
+import { ElementHandle } from './api/JSHandle.js';
 import { Protocol } from 'devtools-protocol';
 import { assert } from './assert.js';
 

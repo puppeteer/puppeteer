@@ -15,7 +15,7 @@
  */
 
 import { CDPSession } from './Connection.js';
-import { ElementHandle } from './JSHandle.js';
+import { ElementHandle } from './api/JSHandle.js';
 import { Protocol } from 'devtools-protocol';
 
 /**
@@ -186,7 +186,7 @@ export class Accessibility {
     let backendNodeId: number | undefined;
     if (root) {
       const { node } = await this._client.send('DOM.describeNode', {
-        objectId: root._remoteObject.objectId,
+        objectId: root.remoteObject().objectId,
       });
       backendNodeId = node.backendNodeId;
     }
