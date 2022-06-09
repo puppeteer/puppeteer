@@ -2213,6 +2213,7 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
   - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
   - `encoding` <[string]> The encoding of the image, can be either `base64` or `binary`. Defaults to `binary`.
   - `captureBeyondViewport` <[boolean]> When true, captures screenshot [beyond the viewport](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot). When false, falls back to old behaviour, and cuts the screenshot by the viewport size. Defaults to `true`.
+  - `fromSurface` <[boolean]> When true, captures screenshot [from the surface rather than the view](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot). When false, works only in headful mode and ignores page viewport (but not browser window's bounds). Defaults to `true`.
 - returns: <[Promise]<[string]|[Buffer]>> Promise which resolves to buffer or a base64 string (depending on the value of `encoding`) with captured screenshot.
 
 > **NOTE** Screenshots take at least 1/6 second on OS X. See https://crbug.com/741689 for discussion.
