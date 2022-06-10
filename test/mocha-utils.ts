@@ -30,7 +30,6 @@ import { Page } from '../lib/cjs/puppeteer/common/Page.js';
 import { PuppeteerNode } from '../lib/cjs/puppeteer/node/Puppeteer.js';
 import puppeteer from '../lib/cjs/puppeteer/puppeteer.js';
 import { TestServer } from '../utils/testserver/index.js';
-import { trackCoverage } from './coverage-utils.js';
 import utils from './utils.js';
 
 const setupServer = async () => {
@@ -225,15 +224,6 @@ export const describeChromeOnly = (
   if (isChrome) return describe(description, body);
 };
 
-let coverageHooks = {
-  beforeAll: (): void => {},
-  afterAll: (): void => {},
-};
-
-if (process.env['COVERAGE']) {
-  coverageHooks = trackCoverage();
-}
-
 console.log(
   `Running unit tests with:
   -> product: ${product}
@@ -287,7 +277,6 @@ export const mochaHooks = {
       state.headless = headless;
       state.puppeteerPath = path.resolve(path.join(__dirname, '..'));
     },
-    coverageHooks.beforeAll,
   ],
 
   beforeEach: async (): Promise<void> => {
@@ -302,7 +291,6 @@ export const mochaHooks = {
       await state.httpsServer.stop();
       state.httpsServer = null;
     },
-    coverageHooks.afterAll,
   ],
 
   afterEach: (): void => {
