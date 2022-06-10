@@ -76,7 +76,6 @@ jobs:
           CHROMIUM: true
         run: |
           xvfb-run --auto-servernum npm run test:unit:coverage
-          xvfb-run --auto-servernum npm run test:coverage
 
       - name: Run unit tests on Firefox
         uses: nick-invision/retry@v2
