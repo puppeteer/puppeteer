@@ -86,10 +86,10 @@ To run ESLint, use:
 npm run lint:eslint
 ```
 
-You can check your code (both JS & TS) type-checks by running:
+You can check your code by running:
 
 ```bash
-npm run build:tsc
+npm run build
 ```
 
 ## TypeScript guidelines
@@ -107,7 +107,7 @@ We structure these using TypeScript's project references, which lets us treat ea
 
 ### Shipping CJS and ESM bundles
 
-Currently Puppeteer ships two bundles; a CommonJS version for Node and an ESM bundle for the browser. Therefore we maintain two `tsconfig` files for each project; `tsconfig.esm.json` and `tsconfig.cjs.json`. At build time we compile twice, once outputting to CJS and another time to output to ESM.
+Currently Puppeteer ships both CommonJS and ESM, therefore we maintain two `tsconfig` files for each project: `tsconfig.esm.json` and `tsconfig.cjs.json`. At build time we compile twice, once outputting to CJS and another time to output to ESM.
 
 We compile into the `lib` directory which is what we publish on the npm repository and it's structured like so:
 
