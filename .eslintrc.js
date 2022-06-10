@@ -178,16 +178,5 @@ module.exports = {
         '@typescript-eslint/explicit-module-boundary-types': 2,
       },
     },
-    {
-      files: ['test-browser/**/*.js'],
-      parserOptions: {
-        sourceType: 'module',
-      },
-      env: {
-        es6: true,
-        browser: true,
-        es2020: true,
-      },
-    },
   ],
 };

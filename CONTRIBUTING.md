@@ -63,7 +63,7 @@ npm install
 3. Run Puppeteer tests locally. For more information about tests, read [Running & Writing Tests](#running--writing-tests).
 
 ```bash
-npm run unit
+npm run test:unit
 ```
 
 ## Code reviews
@@ -76,20 +76,20 @@ information on using pull requests.
 ## Code Style
 
 - Coding style is fully defined in [`.eslintrc`](https://github.com/puppeteer/puppeteer/blob/main/.eslintrc.js) and we automatically format our code with [Prettier](https://prettier.io).
-- It's recommended to set-up Prettier into your editor, or you can run `npm run eslint-fix` to automatically format any files.
+- It's recommended to set-up Prettier into your editor, or you can run `npm run lint:eslint:fix` to automatically format any files.
 - If you're working in a JS file, code should be annotated with [closure annotations](https://github.com/google/closure-compiler/wiki/Annotating-JavaScript-for-the-Closure-Compiler).
 - If you're working in a TS file, you should explicitly type all variables and return types. You'll get ESLint warnings if you don't so if you're not sure use them as guidelines, and feel free to ask us for help!
 
 To run ESLint, use:
 
 ```bash
-npm run eslint
+npm run lint:eslint
 ```
 
 You can check your code (both JS & TS) type-checks by running:
 
 ```bash
-npm run tsc
+npm run build:tsc
 ```
 
 ## TypeScript guidelines
@@ -170,7 +170,7 @@ npm run doc
 To format the documentation markdown and its code snippets, use:
 
 ```bash
-npm run prettier-fix
+npm run format
 ```
 
 ## Writing TSDoc Comments
@@ -183,7 +183,7 @@ Each change to Puppeteer should be thoroughly documented using TSDoc comments. R
 ## Running New Documentation website locally
 
 - In the Puppeteer's folder, install all dependencies with `npm i`.
-- run `npm run generate-docs` which will generate all the `.md` files on `puppeteer/website/docs`.
+- run `npm run generate:docs` which will generate all the `.md` files on `puppeteer/website/docs`.
 - run `npm i` on `puppeteer/website`.
 - run `npm start` on `puppeteer/website`.
 
@@ -214,7 +214,7 @@ Despite being named 'unit', these are integration tests, making sure public API 
 - To run all tests:
 
 ```bash
-npm run unit
+npm run test:unit
 ```
 
 - To run a specific test, substitute the `it` with `it.only`:
@@ -241,27 +241,27 @@ npm run unit
 - To run tests in non-headless mode:
 
 ```bash
-HEADLESS=false npm run unit
+HEADLESS=false npm run test:unit
 ```
 
 - To run Firefox tests, firstly ensure you have Firefox installed locally (you only need to do this once, not on every test run) and then you can run the tests:
 
 ```bash
 PUPPETEER_PRODUCT=firefox node install.js
-PUPPETEER_PRODUCT=firefox npm run unit
+PUPPETEER_PRODUCT=firefox npm run test:unit
 ```
 
 - To run experimental Chromium MacOS ARM tests, firstly ensure you have correct Chromium version installed locally (you only need to do this once, not on every test run) and then you can run the tests:
 
 ```bash
 PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM=1 node install.js
-PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM=1 npm run unit
+PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM=1 npm run test:unit
 ```
 
 - To run tests with custom browser executable:
 
 ```bash
-BINARY=<path-to-executable> npm run unit
+BINARY=<path-to-executable> npm run test:unit
 ```
 
 ## Public API Coverage
@@ -289,10 +289,10 @@ The following steps are needed to update the Chromium version.
    To do so, run `utils/check_availability.js -rd` to find the latest suitable `dev` Chromium revision (see `utils/check_availability.js -help` for more options).
 1. Update `src/revisions.ts` with the found revision number.
 1. Update `versions.js` with the new Chromium-to-Puppeteer version mapping and update `lastMaintainedChromiumVersion` with the latest stable Chrome version.
-1. Run `npm run ensure-correct-devtools-protocol-revision`.
+1. Run `npm run test:protocol-revision`.
    If it fails, update `package.json` with the expected `devtools-protocol` version.
-1. Run `npm run tsc` and `npm install`.
-1. Run `npm run unit` and ensure that all tests pass. If a test fails, [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and either update the test expectations accordingly (if it was an intended change) or work around the changes in Puppeteer (if it’s not desirable to change Puppeteer’s observable behavior).
+1. Run `npm run build:tsc` and `npm install`.
+1. Run `npm run test:unit` and ensure that all tests pass. If a test fails, [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and either update the test expectations accordingly (if it was an intended change) or work around the changes in Puppeteer (if it’s not desirable to change Puppeteer’s observable behavior).
 1. Commit and push your changes and open a pull request.
    The commit message must contain the version in `Chromium <version> (<revision>)` format to ensure that [pptr.dev](https://pptr.dev/) can parse it correctly, e.g. `'feat(chromium): roll to Chromium 90.0.4427.0 (r856583)'`.
 

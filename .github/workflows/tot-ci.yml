@@ -50,7 +50,7 @@ jobs:
           HEADLESS: true
         with:
           max_attempts: 3
-          command: xvfb-run --auto-servernum npm run unit
+          command: xvfb-run --auto-servernum npm run test:unit
           timeout_minutes: 10
 
       - name: Run unit tests in headful
@@ -61,7 +61,7 @@ jobs:
           HEADLESS: false
         with:
           max_attempts: 3
-          command: xvfb-run --auto-servernum npm run unit
+          command: xvfb-run --auto-servernum npm run test:unit
           timeout_minutes: 10
 
       - name: Run unit tests in chrome headless
@@ -71,5 +71,5 @@ jobs:
           CHROMIUM: true
         with:
           max_attempts: 3
-          command: xvfb-run --auto-servernum npm run chrome-headless-unit
+          command: xvfb-run --auto-servernum npm run test:unit:chrome-headless
           timeout_minutes: 10

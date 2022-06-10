@@ -146,7 +146,7 @@ async function run() {
   const clearExit = errors.length + warnings.length === 0;
   if (!clearExit && !process.env.GITHUB_ACTIONS) {
     console.log(
-      '\nIs your lib/ directory up to date? You might need to `npm run tsc`.\n'
+      '\nIs your lib/ directory up to date? You might need to `npm run build:tsc`.\n'
     );
   }
 
