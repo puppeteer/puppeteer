@@ -66,10 +66,10 @@ export type ConsoleMessageType =
  * @public
  */
 export class ConsoleMessage {
-  private _type: ConsoleMessageType;
-  private _text: string;
-  private _args: JSHandle[];
-  private _stackTraceLocations: ConsoleMessageLocation[];
+  #type: ConsoleMessageType;
+  #text: string;
+  #args: JSHandle[];
+  #stackTraceLocations: ConsoleMessageLocation[];
 
   /**
    * @public
@@ -80,44 +80,44 @@ export class ConsoleMessage {
     args: JSHandle[],
     stackTraceLocations: ConsoleMessageLocation[]
   ) {
-    this._type = type;
-    this._text = text;
-    this._args = args;
-    this._stackTraceLocations = stackTraceLocations;
+    this.#type = type;
+    this.#text = text;
+    this.#args = args;
+    this.#stackTraceLocations = stackTraceLocations;
   }
 
   /**
    * @returns The type of the console message.
    */
   type(): ConsoleMessageType {
-    return this._type;
+    return this.#type;
   }
 
   /**
    * @returns The text of the console message.
    */
   text(): string {
-    return this._text;
+    return this.#text;
   }
 
   /**
    * @returns An array of arguments passed to the console.
    */
   args(): JSHandle[] {
-    return this._args;
+    return this.#args;
   }
 
   /**
    * @returns The location of the console message.
    */
   location(): ConsoleMessageLocation {
-    return this._stackTraceLocations[0] ?? {};
+    return this.#stackTraceLocations[0] ?? {};
   }
 
   /**
    * @returns The array of locations on the stack of the console message.
    */
   stackTrace(): ConsoleMessageLocation[] {
-    return this._stackTraceLocations;
+    return this.#stackTraceLocations;
   }
 }

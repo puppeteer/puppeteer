@@ -61,10 +61,10 @@ type JSHandleFactory = (obj: Protocol.Runtime.RemoteObject) => JSHandle;
  * @public
  */
 export class WebWorker extends EventEmitter {
-  _client: CDPSession;
-  _url: string;
-  _executionContextPromise: Promise<ExecutionContext>;
-  _executionContextCallback!: (value: ExecutionContext) => void;
+  #client: CDPSession;
+  #url: string;
+  #executionContextPromise: Promise<ExecutionContext>;
+  #executionContextCallback!: (value: ExecutionContext) => void;
 
   /**
    *
@@ -77,31 +77,31 @@ export class WebWorker extends EventEmitter {
     exceptionThrown: ExceptionThrownCallback
   ) {
     super();
-    this._client = client;
-    this._url = url;
-    this._executionContextPromise = new Promise<ExecutionContext>(
-      (x) => (this._executionContextCallback = x)
+    this.#client = client;
+    this.#url = url;
+    this.#executionContextPromise = new Promise<ExecutionContext>(
+      (x) => (this.#executionContextCallback = x)
     );
 
     let jsHandleFactory: JSHandleFactory;
-    this._client.once('Runtime.executionContextCreated', async (event) => {
+    this.#client.once('Runtime.executionContextCreated', async (event) => {
       // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
       jsHandleFactory = (remoteObject) =>
         new JSHandle(executionContext, client, remoteObject);
       const executionContext = new ExecutionContext(client, event.context);
-      this._executionContextCallback(executionContext);
+      this.#executionContextCallback(executionContext);
     });
 
     // This might fail if the target is closed before we receive all execution contexts.
-    this._client.send('Runtime.enable').catch(debugError);
-    this._client.on('Runtime.consoleAPICalled', (event) =>
+    this.#client.send('Runtime.enable').catch(debugError);
+    this.#client.on('Runtime.consoleAPICalled', (event) =>
       consoleAPICalled(
         event.type,
         event.args.map(jsHandleFactory),
         event.stackTrace
       )
     );
-    this._client.on('Runtime.exceptionThrown', (exception) =>
+    this.#client.on('Runtime.exceptionThrown', (exception) =>
       exceptionThrown(exception.exceptionDetails)
     );
   }
@@ -110,7 +110,7 @@ export class WebWorker extends EventEmitter {
    * @returns The URL of this web worker.
    */
   url(): string {
-    return this._url;
+    return this.#url;
   }
 
   /**
@@ -118,7 +118,7 @@ export class WebWorker extends EventEmitter {
    * @returns The ExecutionContext the web worker runs in.
    */
   async executionContext(): Promise<ExecutionContext> {
-    return this._executionContextPromise;
+    return this.#executionContextPromise;
   }
 
   /**
@@ -139,7 +139,7 @@ export class WebWorker extends EventEmitter {
     pageFunction: Function | string,
     ...args: any[]
   ): Promise<ReturnType> {
-    return (await this._executionContextPromise).evaluate<ReturnType>(
+    return (await this.#executionContextPromise).evaluate<ReturnType>(
       pageFunction,
       ...args
     );
@@ -161,7 +161,7 @@ export class WebWorker extends EventEmitter {
     pageFunction: EvaluateHandleFn,
     ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle> {
-    return (await this._executionContextPromise).evaluateHandle<HandlerType>(
+    return (await this.#executionContextPromise).evaluateHandle<HandlerType>(
       pageFunction,
       ...args
     );

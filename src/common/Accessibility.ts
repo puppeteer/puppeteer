@@ -130,13 +130,13 @@ export interface SnapshotOptions {
  * @public
  */
 export class Accessibility {
-  private _client: CDPSession;
+  #client: CDPSession;
 
   /**
    * @internal
    */
   constructor(client: CDPSession) {
-    this._client = client;
+    this.#client = client;
   }
 
   /**
@@ -182,10 +182,10 @@ export class Accessibility {
     options: SnapshotOptions = {}
   ): Promise<SerializedAXNode | null> {
     const { interestingOnly = true, root = null } = options;
-    const { nodes } = await this._client.send('Accessibility.getFullAXTree');
+    const { nodes } = await this.#client.send('Accessibility.getFullAXTree');
     let backendNodeId: number | undefined;
     if (root) {
-      const { node } = await this._client.send('DOM.describeNode', {
+      const { node } = await this.#client.send('DOM.describeNode', {
         objectId: root._remoteObject.objectId,
       });
       backendNodeId = node.backendNodeId;
@@ -238,53 +238,53 @@ class AXNode {
   public payload: Protocol.Accessibility.AXNode;
   public children: AXNode[] = [];
 
-  private _richlyEditable = false;
-  private _editable = false;
-  private _focusable = false;
-  private _hidden = false;
-  private _name: string;
-  private _role: string;
-  private _ignored: boolean;
-  private _cachedHasFocusableChild?: boolean;
+  #richlyEditable = false;
+  #editable = false;
+  #focusable = false;
+  #hidden = false;
+  #name: string;
+  #role: string;
+  #ignored: boolean;
+  #cachedHasFocusableChild?: boolean;
 
   constructor(payload: Protocol.Accessibility.AXNode) {
     this.payload = payload;
-    this._name = this.payload.name ? this.payload.name.value : '';
-    this._role = this.payload.role ? this.payload.role.value : 'Unknown';
-    this._ignored = this.payload.ignored;
+    this.#name = this.payload.name ? this.payload.name.value : '';
+    this.#role = this.payload.role ? this.payload.role.value : 'Unknown';
+    this.#ignored = this.payload.ignored;
 
     for (const property of this.payload.properties || []) {
       if (property.name === 'editable') {
-        this._richlyEditable = property.value.value === 'richtext';
-        this._editable = true;
+        this.#richlyEditable = property.value.value === 'richtext';
+        this.#editable = true;
       }
-      if (property.name === 'focusable') this._focusable = property.value.value;
-      if (property.name === 'hidden') this._hidden = property.value.value;
+      if (property.name === 'focusable') this.#focusable = property.value.value;
+      if (property.name === 'hidden') this.#hidden = property.value.value;
     }
   }
 
-  private _isPlainTextField(): boolean {
-    if (this._richlyEditable) return false;
-    if (this._editable) return true;
-    return this._role === 'textbox' || this._role === 'searchbox';
+  #isPlainTextField(): boolean {
+    if (this.#richlyEditable) return false;
+    if (this.#editable) return true;
+    return this.#role === 'textbox' || this.#role === 'searchbox';
   }
 
-  private _isTextOnlyObject(): boolean {
-    const role = this._role;
+  #isTextOnlyObject(): boolean {
+    const role = this.#role;
     return role === 'LineBreak' || role === 'text' || role === 'InlineTextBox';
   }
 
-  private _hasFocusableChild(): boolean {
-    if (this._cachedHasFocusableChild === undefined) {
-      this._cachedHasFocusableChild = false;
+  #hasFocusableChild(): boolean {
+    if (this.#cachedHasFocusableChild === undefined) {
+      this.#cachedHasFocusableChild = false;
       for (const child of this.children) {
-        if (child._focusable || child._hasFocusableChild()) {
-          this._cachedHasFocusableChild = true;
+        if (child.#focusable || child.#hasFocusableChild()) {
+          this.#cachedHasFocusableChild = true;
           break;
         }
       }
     }
-    return this._cachedHasFocusableChild;
+    return this.#cachedHasFocusableChild;
   }
 
   public find(predicate: (x: AXNode) => boolean): AXNode | null {
@@ -303,13 +303,13 @@ class AXNode {
     // implementation details, but we want to expose them as leaves to platform
     // accessibility APIs because screen readers might be confused if they find
     // any children.
-    if (this._isPlainTextField() || this._isTextOnlyObject()) return true;
+    if (this.#isPlainTextField() || this.#isTextOnlyObject()) return true;
 
     // Roles whose children are only presentational according to the ARIA and
     // HTML5 Specs should be hidden from screen readers.
     // (Note that whilst ARIA buttons can have only presentational children, HTML5
     // buttons are allowed to have content.)
-    switch (this._role) {
+    switch (this.#role) {
       case 'doc-cover':
       case 'graphics-symbol':
       case 'img':
@@ -324,14 +324,14 @@ class AXNode {
     }
 
     // Here and below: Android heuristics
-    if (this._hasFocusableChild()) return false;
-    if (this._focusable && this._name) return true;
-    if (this._role === 'heading' && this._name) return true;
+    if (this.#hasFocusableChild()) return false;
+    if (this.#focusable && this.#name) return true;
+    if (this.#role === 'heading' && this.#name) return true;
     return false;
   }
 
   public isControl(): boolean {
-    switch (this._role) {
+    switch (this.#role) {
       case 'button':
       case 'checkbox':
       case 'ColorWell':
@@ -360,10 +360,10 @@ class AXNode {
   }
 
   public isInteresting(insideControl: boolean): boolean {
-    const role = this._role;
-    if (role === 'Ignored' || this._hidden || this._ignored) return false;
+    const role = this.#role;
+    if (role === 'Ignored' || this.#hidden || this.#ignored) return false;
 
-    if (this._focusable || this._richlyEditable) return true;
+    if (this.#focusable || this.#richlyEditable) return true;
 
     // If it's not focusable but has a control role, then it's interesting.
     if (this.isControl()) return true;
@@ -371,7 +371,7 @@ class AXNode {
     // A non focusable child of a control is not interesting
     if (insideControl) return false;
 
-    return this.isLeafNode() && !!this._name;
+    return this.isLeafNode() && !!this.#name;
   }
 
   public serialize(): SerializedAXNode {
@@ -384,7 +384,7 @@ class AXNode {
       properties.set('description', this.payload.description.value);
 
     const node: SerializedAXNode = {
-      role: this._role,
+      role: this.#role,
     };
 
     type UserStringProperty =
@@ -440,7 +440,7 @@ class AXNode {
       // RootWebArea's treat focus differently than other nodes. They report whether
       // their frame  has focus, not whether focus is specifically on the root
       // node.
-      if (booleanProperty === 'focused' && this._role === 'RootWebArea')
+      if (booleanProperty === 'focused' && this.#role === 'RootWebArea')
         continue;
       const value = getBooleanPropertyValue(booleanProperty);
       if (!value) continue;

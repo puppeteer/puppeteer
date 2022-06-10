@@ -77,12 +77,10 @@ export interface PuppeteerLaunchOptions
  * @public
  */
 export class PuppeteerNode extends Puppeteer {
-  private _lazyLauncher?: ProductLauncher;
-  private _projectRoot?: string;
-  private __productName?: Product;
-  /**
-   * @internal
-   */
+  #lazyLauncher?: ProductLauncher;
+  #projectRoot?: string;
+  #productName?: Product;
+
   _preferredRevision: string;
 
   /**
@@ -98,8 +96,8 @@ export class PuppeteerNode extends Puppeteer {
     const { projectRoot, preferredRevision, productName, ...commonSettings } =
       settings;
     super(commonSettings);
-    this._projectRoot = projectRoot;
-    this.__productName = productName;
+    this.#projectRoot = projectRoot;
+    this.#productName = productName;
     this._preferredRevision = preferredRevision;
 
     this.connect = this.connect.bind(this);
@@ -126,13 +124,15 @@ export class PuppeteerNode extends Puppeteer {
    * @internal
    */
   get _productName(): Product | undefined {
-    return this.__productName;
+    return this.#productName;
   }
 
-  // don't need any TSDoc here - because the getter is internal the setter is too.
+  /**
+   * @internal
+   */
   set _productName(name: Product | undefined) {
-    if (this.__productName !== name) this._changedProduct = true;
-    this.__productName = name;
+    if (this.#productName !== name) this._changedProduct = true;
+    this.#productName = name;
   }
 
   /**
@@ -184,8 +184,8 @@ export class PuppeteerNode extends Puppeteer {
    */
   get _launcher(): ProductLauncher {
     if (
-      !this._lazyLauncher ||
-      this._lazyLauncher.product !== this._productName ||
+      !this.#lazyLauncher ||
+      this.#lazyLauncher.product !== this._productName ||
       this._changedProduct
     ) {
       switch (this._productName) {
@@ -197,14 +197,14 @@ export class PuppeteerNode extends Puppeteer {
           this._preferredRevision = PUPPETEER_REVISIONS.chromium;
       }
       this._changedProduct = false;
-      this._lazyLauncher = Launcher(
-        this._projectRoot,
+      this.#lazyLauncher = Launcher(
+        this.#projectRoot,
         this._preferredRevision,
         this._isPuppeteerCore,
         this._productName
       );
     }
-    return this._lazyLauncher;
+    return this.#lazyLauncher;
   }
 
   /**
@@ -234,11 +234,11 @@ export class PuppeteerNode extends Puppeteer {
    * @returns A new BrowserFetcher instance.
    */
   createBrowserFetcher(options: BrowserFetcherOptions): BrowserFetcher {
-    if (!this._projectRoot) {
+    if (!this.#projectRoot) {
       throw new Error(
         '_projectRoot is undefined. Unable to create a BrowserFetcher.'
       );
     }
-    return new BrowserFetcher(this._projectRoot, options);
+    return new BrowserFetcher(this.#projectRoot, options);
   }
 }

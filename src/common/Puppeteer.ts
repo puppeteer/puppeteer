@@ -15,17 +15,20 @@
  */
 import { puppeteerErrors, PuppeteerErrors } from './Errors.js';
 import { ConnectionTransport } from './ConnectionTransport.js';
-import { devicesMap, DevicesMap } from './DeviceDescriptors.js';
+import { _devicesMap, DevicesMap } from './DeviceDescriptors.js';
 import { Browser } from './Browser.js';
 import {
-  registerCustomQueryHandler,
-  unregisterCustomQueryHandler,
-  customQueryHandlerNames,
-  clearCustomQueryHandlers,
+  _registerCustomQueryHandler,
+  _unregisterCustomQueryHandler,
+  _customQueryHandlerNames,
+  _clearCustomQueryHandlers,
   CustomQueryHandler,
 } from './QueryHandler.js';
 import { Product } from './Product.js';
-import { connectToBrowser, BrowserConnectOptions } from './BrowserConnector.js';
+import {
+  _connectToBrowser,
+  BrowserConnectOptions,
+} from './BrowserConnector.js';
 import {
   PredefinedNetworkConditions,
   networkConditions,
@@ -33,6 +36,7 @@ import {
 
 /**
  * Settings that are common to the Puppeteer class, regardless of environment.
+ *
  * @internal
  */
 export interface CommonPuppeteerSettings {
@@ -85,7 +89,7 @@ export class Puppeteer {
    * @returns Promise which resolves to browser instance.
    */
   connect(options: ConnectOptions): Promise<Browser> {
-    return connectToBrowser(options);
+    return _connectToBrowser(options);
   }
 
   /**
@@ -110,7 +114,7 @@ export class Puppeteer {
    *
    */
   get devices(): DevicesMap {
-    return devicesMap;
+    return _devicesMap;
   }
 
   /**
@@ -182,27 +186,27 @@ export class Puppeteer {
     name: string,
     queryHandler: CustomQueryHandler
   ): void {
-    registerCustomQueryHandler(name, queryHandler);
+    _registerCustomQueryHandler(name, queryHandler);
   }
 
   /**
    * @param name - The name of the query handler to unregistered.
    */
   unregisterCustomQueryHandler(name: string): void {
-    unregisterCustomQueryHandler(name);
+    _unregisterCustomQueryHandler(name);
   }
 
   /**
    * @returns a list with the names of all registered custom query handlers.
    */
   customQueryHandlerNames(): string[] {
-    return customQueryHandlerNames();
+    return _customQueryHandlerNames();
   }
 
   /**
    * Clears all registered handlers.
    */
   clearCustomQueryHandlers(): void {
-    clearCustomQueryHandlers();
+    _clearCustomQueryHandlers();
   }
 }

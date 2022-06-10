@@ -26,7 +26,7 @@ describe('Fixtures', function () {
     const { defaultBrowserOptions, puppeteerPath } = getTestState();
 
     let dumpioData = '';
-    const { spawn } = require('child_process');
+    const { spawn } = await import('child_process');
     const options = Object.assign({}, defaultBrowserOptions, {
       pipe: true,
       dumpio: true,
@@ -44,7 +44,7 @@ describe('Fixtures', function () {
     const { defaultBrowserOptions, puppeteerPath } = getTestState();
 
     let dumpioData = '';
-    const { spawn } = require('child_process');
+    const { spawn } = await import('child_process');
     const options = Object.assign({}, defaultBrowserOptions, { dumpio: true });
     const res = spawn('node', [
       path.join(__dirname, 'fixtures', 'dumpio.js'),
@@ -58,7 +58,7 @@ describe('Fixtures', function () {
   it('should close the browser when the node process closes', async () => {
     const { defaultBrowserOptions, puppeteerPath, puppeteer } = getTestState();
 
-    const { spawn, execSync } = require('child_process');
+    const { spawn, execSync } = await import('child_process');
     const options = Object.assign({}, defaultBrowserOptions, {
       // Disable DUMPIO to cleanly read stdout.
       dumpio: false,

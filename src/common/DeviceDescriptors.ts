@@ -1537,6 +1537,8 @@ export type DevicesMap = {
 /**
  * @internal
  */
-export const devicesMap: DevicesMap = {};
+export const _devicesMap: DevicesMap = {};
 
-for (const device of devices) devicesMap[device.name] = device;
+for (const device of devices) {
+  _devicesMap[device.name] = device;
+}

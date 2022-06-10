@@ -134,7 +134,7 @@ describeChromeOnly('headful tests', function () {
 
       const browser = await puppeteer.connect({
         browserWSEndpoint,
-        isPageTarget: (target) => {
+        _isPageTarget(target) {
           return (
             target.type === 'other' && target.url.startsWith('devtools://')
           );

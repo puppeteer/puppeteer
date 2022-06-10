@@ -21,12 +21,17 @@ import {
   describeChromeOnly,
   itFailsFirefox,
 } from './mocha-utils'; // eslint-disable-line import/extensions
+import {
+  Browser,
+  BrowserContext,
+  Page,
+} from '../lib/cjs/puppeteer/api-docs-entry.js';
 
 describeChromeOnly('OOPIF', function () {
   /* We use a special browser for this test as we need the --site-per-process flag */
-  let browser;
-  let context;
-  let page;
+  let browser: Browser;
+  let context: BrowserContext;
+  let page: Page;
 
   before(async () => {
     const { puppeteer, defaultBrowserOptions } = getTestState();
@@ -433,8 +438,8 @@ describeChromeOnly('OOPIF', function () {
   });
 });
 
-function oopifs(context) {
+function oopifs(context: BrowserContext) {
   return context
     .targets()
-    .filter((target) => target._targetInfo.type === 'iframe');
+    .filter((target) => target._getTargetInfo().type === 'iframe');
 }

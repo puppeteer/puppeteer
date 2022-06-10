@@ -1971,7 +1971,7 @@ describe('Page', function () {
   describe('Page.client', function () {
     it('should return the client instance', async () => {
       const { page } = getTestState();
-      expect(page.client()).toBeInstanceOf(CDPSession);
+      expect(page._client()).toBeInstanceOf(CDPSession);
     });
   });
 });

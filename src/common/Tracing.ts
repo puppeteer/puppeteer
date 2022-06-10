@@ -42,26 +42,27 @@ export interface TracingOptions {
  * @public
  */
 export class Tracing {
-  _client: CDPSession;
-  _recording = false;
-  _path?: string;
+  #client: CDPSession;
+  #recording = false;
+  #path?: string;
 
   /**
    * @internal
    */
   constructor(client: CDPSession) {
-    this._client = client;
+    this.#client = client;
   }
 
   /**
    * Starts a trace for the current page.
    * @remarks
    * Only one trace can be active at a time per browser.
+   *
    * @param options - Optional `TracingOptions`.
    */
   async start(options: TracingOptions = {}): Promise<void> {
     assert(
-      !this._recording,
+      !this.#recording,
       'Cannot start recording trace while already recording trace.'
     );
 
@@ -91,9 +92,9 @@ export class Tracing {
       .map((cat) => cat.slice(1));
     const includedCategories = categories.filter((cat) => !cat.startsWith('-'));
 
-    this._path = path;
-    this._recording = true;
-    await this._client.send('Tracing.start', {
+    this.#path = path;
+    this.#recording = true;
+    await this.#client.send('Tracing.start', {
       transferMode: 'ReturnAsStream',
       traceConfig: {
         excludedCategories,
@@ -113,13 +114,13 @@ export class Tracing {
       resolve = x;
       reject = y;
     });
-    this._client.once('Tracing.tracingComplete', async (event) => {
+    this.#client.once('Tracing.tracingComplete', async (event) => {
       try {
         const readable = await helper.getReadableFromProtocolStream(
-          this._client,
+          this.#client,
           event.stream
         );
-        const buffer = await helper.getReadableAsBuffer(readable, this._path);
+        const buffer = await helper.getReadableAsBuffer(readable, this.#path);
         resolve(buffer ?? undefined);
       } catch (error) {
         if (isErrorLike(error)) {
@@ -129,8 +130,8 @@ export class Tracing {
         }
       }
     });
-    await this._client.send('Tracing.end');
-    this._recording = false;
+    await this.#client.send('Tracing.end');
+    this.#recording = false;
     return contentPromise;
   }
 }
