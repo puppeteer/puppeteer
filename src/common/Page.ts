@@ -43,7 +43,7 @@ import {
   FrameManager,
   FrameManagerEmittedEvents,
 } from './FrameManager.js';
-import { debugError, helper } from './helper.js';
+import { debugError, helper, isErrorLike } from './helper.js';
 import { HTTPRequest } from './HTTPRequest.js';
 import { HTTPResponse } from './HTTPResponse.js';
 import { Keyboard, Mouse, MouseButton, Touchscreen } from './Input.js';
@@ -1578,7 +1578,7 @@ export class Page extends EventEmitter {
       const result = await pageBinding(...args);
       expression = helper.pageBindingDeliverResultString(name, seq, result);
     } catch (error) {
-      if (error instanceof Error)
+      if (isErrorLike(error))
         expression = helper.pageBindingDeliverErrorString(
           name,
           seq,
@@ -2360,8 +2360,9 @@ export class Page extends EventEmitter {
         timezoneId: timezoneId || '',
       });
     } catch (error) {
-      if (error instanceof Error && error.message.includes('Invalid timezone'))
+      if (isErrorLike(error) && error.message.includes('Invalid timezone')) {
         throw new Error(`Invalid timezone ID: ${timezoneId}`);
+      }
       throw error;
     }
   }

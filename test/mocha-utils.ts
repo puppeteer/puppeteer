@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-import { TestServer } from '../utils/testserver/index.js';
-import * as path from 'path';
+import Protocol from 'devtools-protocol';
+import expect from 'expect';
 import * as fs from 'fs';
 import * as os from 'os';
+import * as path from 'path';
+import rimraf from 'rimraf';
 import sinon from 'sinon';
-import puppeteer from '../lib/cjs/puppeteer/puppeteer.js';
 import {
   Browser,
   BrowserContext,
 } from '../lib/cjs/puppeteer/common/Browser.js';
+import { isErrorLike } from '../lib/cjs/puppeteer/common/helper.js';
 import { Page } from '../lib/cjs/puppeteer/common/Page.js';
 import { PuppeteerNode } from '../lib/cjs/puppeteer/node/Puppeteer.js';
-import utils from './utils.js';
-import rimraf from 'rimraf';
-import expect from 'expect';
-
+import puppeteer from '../lib/cjs/puppeteer/puppeteer.js';
+import { TestServer } from '../utils/testserver/index.js';
 import { trackCoverage } from './coverage-utils.js';
-import Protocol from 'devtools-protocol';
+import utils from './utils.js';
 
 const setupServer = async () => {
   const assetsPath = path.join(__dirname, 'assets');
@@ -73,7 +73,7 @@ let extraLaunchOptions = {};
 try {
   extraLaunchOptions = JSON.parse(process.env['EXTRA_LAUNCH_OPTIONS'] || '{}');
 } catch (error) {
-  if (error instanceof Error) {
+  if (isErrorLike(error)) {
     console.warn(
       `Error parsing EXTRA_LAUNCH_OPTIONS: ${error.message}. Skipping.`
     );

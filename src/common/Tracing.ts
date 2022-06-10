@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { assert } from './assert.js';
-import { helper } from './helper.js';
+import { helper, isErrorLike } from './helper.js';
 import { CDPSession } from './Connection.js';
 
 /**
@@ -122,7 +122,7 @@ export class Tracing {
         const buffer = await helper.getReadableAsBuffer(readable, this._path);
         resolve(buffer ?? undefined);
       } catch (error) {
-        if (error instanceof Error) {
+        if (isErrorLike(error)) {
           reject(error);
         } else {
           reject(new Error(`Unknown error: ${error}`));

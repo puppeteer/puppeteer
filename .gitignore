@@ -14,7 +14,7 @@ test-ts-types/**/dist/
 package-lock.json
 yarn.lock
 /node6
-/lib
+lib
 test/coverage.json
 temp/
 new-docs/
