@@ -28,6 +28,8 @@ import {
   helper,
   debugError,
   PuppeteerEventListener,
+  isErrorLike,
+  isErrnoException,
 } from '../common/helper.js';
 import { LaunchOptions } from './LaunchOptions.js';
 import { Connection } from '../common/Connection.js';
@@ -216,7 +218,7 @@ export class BrowserRunner {
       } catch (error) {
         throw new Error(
           `${PROCESS_ERROR_EXPLANATION}\nError cause: ${
-            error instanceof Error ? error.stack : error
+            isErrorLike(error) ? error.stack : error
           }`
         );
       }
@@ -330,9 +332,8 @@ function pidExists(pid: number): boolean {
   try {
     return process.kill(pid, 0);
   } catch (error) {
-    if (error instanceof Error) {
-      const err = error as NodeJS.ErrnoException;
-      if (err.code && err.code === 'ESRCH') {
+    if (isErrnoException(error)) {
+      if (error.code && error.code === 'ESRCH') {
         return false;
       }
     }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { debugError } from '../common/helper.js';
+import { debugError, isErrorLike } from '../common/helper.js';
 import { isNode } from '../environment.js';
 import { assert } from './assert.js';
 import {
@@ -138,7 +138,7 @@ async function getWSEndpoint(browserURL: string): Promise<string> {
     const data = await result.json();
     return data.webSocketDebuggerUrl;
   } catch (error) {
-    if (error instanceof Error) {
+    if (isErrorLike(error)) {
       error.message =
         `Failed to fetch browser webSocket URL from ${endpointURL}: ` +
         error.message;

@@ -165,7 +165,9 @@ async function waitForEvent<T>(
       throw error;
     }
   );
-  if (result instanceof Error) throw result;
+  if (isErrorLike(result)) {
+    throw result;
+  }
 
   return result;
 }
@@ -376,6 +378,22 @@ async function getReadableFromProtocolStream(
       }
     },
   });
+}
+
+interface ErrorLike extends Error {
+  name: string;
+  message: string;
+}
+
+export function isErrorLike(obj: unknown): obj is ErrorLike {
+  return obj instanceof Object && 'name' in obj && 'message' in obj;
+}
+
+export function isErrnoException(obj: unknown): obj is NodeJS.ErrnoException {
+  return (
+    isErrorLike(obj) &&
+    ('errno' in obj || 'code' in obj || 'path' in obj || 'syscall' in obj)
+  );
 }
 
 export const helper = {

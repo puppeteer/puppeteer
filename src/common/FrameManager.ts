@@ -16,7 +16,7 @@
 
 import { EventEmitter } from './EventEmitter.js';
 import { assert } from './assert.js';
-import { helper, debugError } from './helper.js';
+import { helper, debugError, isErrorLike } from './helper.js';
 import { ExecutionContext, EVALUATION_SCRIPT_URL } from './ExecutionContext.js';
 import {
   LifecycleWatcher,
@@ -163,7 +163,7 @@ export class FrameManager extends EventEmitter {
     } catch (error) {
       // The target might have been closed before the initialization finished.
       if (
-        error instanceof Error &&
+        isErrorLike(error) &&
         (error.message.includes('Target closed') ||
           error.message.includes('Session closed'))
       ) {
@@ -226,7 +226,7 @@ export class FrameManager extends EventEmitter {
           ? new Error(`${response.errorText} at ${url}`)
           : null;
       } catch (error) {
-        if (error instanceof Error) {
+        if (isErrorLike(error)) {
           return error;
         }
         throw error;
