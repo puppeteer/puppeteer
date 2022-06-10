@@ -846,7 +846,7 @@ export class ElementHandle<
       throw error;
     }
     const files = filePaths.map((filePath) => {
-      if (path.isAbsolute(filePath)) {
+      if (path.win32.isAbsolute(filePath) || path.posix.isAbsolute(filePath)) {
         return filePath;
       } else {
         return path.resolve(filePath);
