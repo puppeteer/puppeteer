@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 import { assert } from './assert.js';
-import { helper, isErrorLike } from './helper.js';
+import {
+  getReadableAsBuffer,
+  getReadableFromProtocolStream,
+  isErrorLike,
+} from './util.js';
 import { CDPSession } from './Connection.js';
 
 /**
@@ -116,11 +120,11 @@ export class Tracing {
     });
     this.#client.once('Tracing.tracingComplete', async (event) => {
       try {
-        const readable = await helper.getReadableFromProtocolStream(
+        const readable = await getReadableFromProtocolStream(
           this.#client,
           event.stream
         );
-        const buffer = await helper.getReadableAsBuffer(readable, this.#path);
+        const buffer = await getReadableAsBuffer(readable, this.#path);
         resolve(buffer ?? undefined);
       } catch (error) {
         if (isErrorLike(error)) {

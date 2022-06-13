@@ -14,31 +14,31 @@
  * limitations under the License.
  */
 
-import { EventEmitter } from './EventEmitter.js';
+import { Protocol } from 'devtools-protocol';
 import { assert } from './assert.js';
-import { helper, debugError, isErrorLike } from './helper.js';
-import { ExecutionContext, EVALUATION_SCRIPT_URL } from './ExecutionContext.js';
+import { CDPSession, Connection } from './Connection.js';
+import { DOMWorld, WaitForSelectorOptions } from './DOMWorld.js';
+import {
+  EvaluateFn,
+  EvaluateFnReturnType,
+  EvaluateHandleFn,
+  SerializableOrJSHandle,
+  UnwrapPromiseLike,
+  WrapElementHandle,
+} from './EvalTypes.js';
+import { EventEmitter } from './EventEmitter.js';
+import { EVALUATION_SCRIPT_URL, ExecutionContext } from './ExecutionContext.js';
+import { HTTPResponse } from './HTTPResponse.js';
+import { MouseButton } from './Input.js';
+import { ElementHandle, JSHandle } from './JSHandle.js';
 import {
   LifecycleWatcher,
   PuppeteerLifeCycleEvent,
 } from './LifecycleWatcher.js';
-import { DOMWorld, WaitForSelectorOptions } from './DOMWorld.js';
 import { NetworkManager } from './NetworkManager.js';
-import { TimeoutSettings } from './TimeoutSettings.js';
-import { Connection, CDPSession } from './Connection.js';
-import { JSHandle, ElementHandle } from './JSHandle.js';
-import { MouseButton } from './Input.js';
 import { Page } from './Page.js';
-import { HTTPResponse } from './HTTPResponse.js';
-import { Protocol } from 'devtools-protocol';
-import {
-  SerializableOrJSHandle,
-  EvaluateHandleFn,
-  WrapElementHandle,
-  EvaluateFn,
-  EvaluateFnReturnType,
-  UnwrapPromiseLike,
-} from './EvalTypes.js';
+import { TimeoutSettings } from './TimeoutSettings.js';
+import { debugError, isErrorLike, isNumber, isString } from './util.js';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 const xPathPattern = /^\(\/\/[^\)]+\)|^\/\//;
@@ -1235,12 +1235,12 @@ export class Frame {
       'waitFor is deprecated and will be removed in a future release. See https://github.com/puppeteer/puppeteer/issues/6214 for details and how to migrate your code.'
     );
 
-    if (helper.isString(selectorOrFunctionOrTimeout)) {
+    if (isString(selectorOrFunctionOrTimeout)) {
       const string = selectorOrFunctionOrTimeout;
       if (xPathPattern.test(string)) return this.waitForXPath(string, options);
       return this.waitForSelector(string, options);
     }
-    if (helper.isNumber(selectorOrFunctionOrTimeout))
+    if (isNumber(selectorOrFunctionOrTimeout))
       return new Promise((fulfill) =>
         setTimeout(fulfill, selectorOrFunctionOrTimeout)
       );

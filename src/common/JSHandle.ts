@@ -27,11 +27,16 @@ import {
 } from './EvalTypes.js';
 import { ExecutionContext } from './ExecutionContext.js';
 import { Frame, FrameManager } from './FrameManager.js';
-import { debugError, helper } from './helper.js';
 import { MouseButton } from './Input.js';
 import { Page, ScreenshotOptions } from './Page.js';
 import { _getQueryHandlerAndSelector } from './QueryHandler.js';
 import { KeyInput } from './USKeyboardLayout.js';
+import {
+  debugError,
+  isString,
+  releaseObject,
+  valueFromRemoteObject,
+} from './util.js';
 
 /**
  * @public
@@ -268,9 +273,9 @@ export class JSHandle<HandleObjectType = unknown> {
         returnByValue: true,
         awaitPromise: true,
       });
-      return helper.valueFromRemoteObject(response.result) as T;
+      return valueFromRemoteObject(response.result) as T;
     }
-    return helper.valueFromRemoteObject(this.#remoteObject) as T;
+    return valueFromRemoteObject(this.#remoteObject) as T;
   }
 
   /**
@@ -291,7 +296,7 @@ export class JSHandle<HandleObjectType = unknown> {
   async dispose(): Promise<void> {
     if (this.#disposed) return;
     this.#disposed = true;
-    await helper.releaseObject(this.#client, this.#remoteObject);
+    await releaseObject(this.#client, this.#remoteObject);
   }
 
   /**
@@ -304,7 +309,7 @@ export class JSHandle<HandleObjectType = unknown> {
       const type = this.#remoteObject.subtype || this.#remoteObject.type;
       return 'JSHandle@' + type;
     }
-    return 'JSHandle:' + helper.valueFromRemoteObject(this.#remoteObject);
+    return 'JSHandle:' + valueFromRemoteObject(this.#remoteObject);
   }
 }
 
@@ -784,7 +789,7 @@ export class ElementHandle<
   async select(...values: string[]): Promise<string[]> {
     for (const value of values) {
       assert(
-        helper.isString(value),
+        isString(value),
         'Values must be strings. Found value "' +
           value +
           '" of type "' +

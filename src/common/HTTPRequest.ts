@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Protocol } from 'devtools-protocol';
 import { ProtocolMapping } from 'devtools-protocol/types/protocol-mapping.js';
-
+import { assert } from './assert.js';
+import { ProtocolError } from './Errors.js';
 import { EventEmitter } from './EventEmitter.js';
 import { Frame } from './FrameManager.js';
+import { debugError, isString } from './util.js';
 import { HTTPResponse } from './HTTPResponse.js';
-import { assert } from './assert.js';
-import { helper, debugError } from './helper.js';
-import { Protocol } from 'devtools-protocol';
-import { ProtocolError } from './Errors.js';
 
 /**
  * @public
@@ -557,7 +556,7 @@ export class HTTPRequest {
     this.#interceptionHandled = true;
 
     const responseBody: Buffer | null =
-      response.body && helper.isString(response.body)
+      response.body && isString(response.body)
         ? Buffer.from(response.body)
         : (response.body as Buffer) || null;
 

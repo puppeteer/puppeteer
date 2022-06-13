@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
+import { Protocol } from 'devtools-protocol';
 import { assert } from './assert.js';
-import { helper } from './helper.js';
-import { _createJSHandle, JSHandle, ElementHandle } from './JSHandle.js';
 import { CDPSession } from './Connection.js';
 import { DOMWorld } from './DOMWorld.js';
-import { Frame } from './FrameManager.js';
-import { Protocol } from 'devtools-protocol';
 import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes.js';
+import { Frame } from './FrameManager.js';
+import {
+  getExceptionMessage,
+  isString,
+  valueFromRemoteObject,
+} from './util.js';
+import { ElementHandle, JSHandle, _createJSHandle } from './JSHandle.js';
+
 /**
  * @public
  */
@@ -196,7 +201,7 @@ export class ExecutionContext {
   ): Promise<ReturnType> {
     const suffix = `//# sourceURL=${EVALUATION_SCRIPT_URL}`;
 
-    if (helper.isString(pageFunction)) {
+    if (isString(pageFunction)) {
       const contextId = this._contextId;
       const expression = pageFunction;
       const expressionWithSourceUrl = SOURCE_URL_REGEX.test(expression)
@@ -215,11 +220,11 @@ export class ExecutionContext {
 
       if (exceptionDetails)
         throw new Error(
-          'Evaluation failed: ' + helper.getExceptionMessage(exceptionDetails)
+          'Evaluation failed: ' + getExceptionMessage(exceptionDetails)
         );
 
       return returnByValue
-        ? helper.valueFromRemoteObject(remoteObject)
+        ? valueFromRemoteObject(remoteObject)
         : _createJSHandle(this, remoteObject);
     }
 
@@ -268,10 +273,10 @@ export class ExecutionContext {
       await callFunctionOnPromise.catch(rewriteError);
     if (exceptionDetails)
       throw new Error(
-        'Evaluation failed: ' + helper.getExceptionMessage(exceptionDetails)
+        'Evaluation failed: ' + getExceptionMessage(exceptionDetails)
       );
     return returnByValue
-      ? helper.valueFromRemoteObject(remoteObject)
+      ? valueFromRemoteObject(remoteObject)
       : _createJSHandle(this, remoteObject);
 
     function convertArgument(

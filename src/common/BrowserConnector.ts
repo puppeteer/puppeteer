@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { debugError, isErrorLike } from '../common/helper.js';
+import { debugError, isErrorLike } from './util.js';
 import { isNode } from '../environment.js';
 import { assert } from './assert.js';
 import {

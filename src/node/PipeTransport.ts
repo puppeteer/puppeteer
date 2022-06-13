@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { assert } from '../common/assert.js';
+import { ConnectionTransport } from '../common/ConnectionTransport.js';
 import {
-  helper,
+  addEventListener,
   debugError,
   PuppeteerEventListener,
-} from '../common/helper.js';
-import { ConnectionTransport } from '../common/ConnectionTransport.js';
-import { assert } from '../common/assert.js';
+  removeEventListeners,
+} from '../common/util.js';
 
 export class PipeTransport implements ConnectionTransport {
   #pipeWrite: NodeJS.WritableStream;
@@ -37,16 +38,14 @@ export class PipeTransport implements ConnectionTransport {
   ) {
     this.#pipeWrite = pipeWrite;
     this.#eventListeners = [
-      helper.addEventListener(pipeRead, 'data', (buffer) =>
-        this.#dispatch(buffer)
-      ),
-      helper.addEventListener(pipeRead, 'close', () => {
+      addEventListener(pipeRead, 'data', (buffer) => this.#dispatch(buffer)),
+      addEventListener(pipeRead, 'close', () => {
         if (this.onclose) {
           this.onclose.call(null);
         }
       }),
-      helper.addEventListener(pipeRead, 'error', debugError),
-      helper.addEventListener(pipeWrite, 'error', debugError),
+      addEventListener(pipeRead, 'error', debugError),
+      addEventListener(pipeWrite, 'error', debugError),
     ];
   }
 
@@ -84,6 +83,6 @@ export class PipeTransport implements ConnectionTransport {
 
   close(): void {
     this.#isClosed = true;
-    helper.removeEventListeners(this.#eventListeners);
+    removeEventListeners(this.#eventListeners);
   }
 }
