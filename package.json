@@ -108,7 +108,6 @@
     "eslint-plugin-mocha": "10.0.5",
     "eslint-plugin-prettier": "4.0.0",
     "eslint-plugin-tsdoc": "0.2.16",
-    "eslint-plugin-unicorn": "42.0.0",
     "esprima": "4.0.1",
     "expect": "25.2.7",
     "husky": "8.0.1",
