@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* parse empty options in <select> ([#8489](https://github.com/puppeteer/puppeteer/issues/8489)) ([b30f3f4](https://github.com/puppeteer/puppeteer/commit/b30f3f44cdabd9545c4661cd755b9d49e5c144cd))
+* parse empty options in select element ([#8489](https://github.com/puppeteer/puppeteer/issues/8489)) ([b30f3f4](https://github.com/puppeteer/puppeteer/commit/b30f3f44cdabd9545c4661cd755b9d49e5c144cd))
 * use error-like ([#8504](https://github.com/puppeteer/puppeteer/issues/8504)) ([4d35990](https://github.com/puppeteer/puppeteer/commit/4d359906a44e4ddd5ec54a523cfd9076048d3433))
 * use OS-independent abs. path check ([#8505](https://github.com/puppeteer/puppeteer/issues/8505)) ([bfd4e68](https://github.com/puppeteer/puppeteer/commit/bfd4e68f25bec6e00fd5cbf261813f8297d362ee))
 
