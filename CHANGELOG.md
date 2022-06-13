@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.4.0](https://github.com/puppeteer/puppeteer/compare/v14.3.0...v14.4.0) (2022-06-13)
+
+
+### Features
+
+* export puppeteer methods ([#8493](https://github.com/puppeteer/puppeteer/issues/8493)) ([465a7c4](https://github.com/puppeteer/puppeteer/commit/465a7c405f01fcef99380ffa69d86042a1f5618f))
+* support node-like environments ([#8490](https://github.com/puppeteer/puppeteer/issues/8490)) ([f64ec20](https://github.com/puppeteer/puppeteer/commit/f64ec2051b9b2d12225abba6ffe9551da9751bf7))
+
+
+### Bug Fixes
+
+* parse empty options in <select> ([#8489](https://github.com/puppeteer/puppeteer/issues/8489)) ([b30f3f4](https://github.com/puppeteer/puppeteer/commit/b30f3f44cdabd9545c4661cd755b9d49e5c144cd))
+* use error-like ([#8504](https://github.com/puppeteer/puppeteer/issues/8504)) ([4d35990](https://github.com/puppeteer/puppeteer/commit/4d359906a44e4ddd5ec54a523cfd9076048d3433))
+* use OS-independent abs. path check ([#8505](https://github.com/puppeteer/puppeteer/issues/8505)) ([bfd4e68](https://github.com/puppeteer/puppeteer/commit/bfd4e68f25bec6e00fd5cbf261813f8297d362ee))
+
 ## [14.3.0](https://github.com/puppeteer/puppeteer/compare/v14.2.1...v14.3.0) (2022-06-07)
 
 
