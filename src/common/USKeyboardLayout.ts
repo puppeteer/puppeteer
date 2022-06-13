@@ -294,7 +294,7 @@ export type KeyInput =
 /**
  * @internal
  */
-export const keyDefinitions: Readonly<Record<KeyInput, KeyDefinition>> = {
+export const _keyDefinitions: Readonly<Record<KeyInput, KeyDefinition>> = {
   '0': { keyCode: 48, key: '0', code: 'Digit0' },
   '1': { keyCode: 49, key: '1', code: 'Digit1' },
   '2': { keyCode: 50, key: '2', code: 'Digit2' },

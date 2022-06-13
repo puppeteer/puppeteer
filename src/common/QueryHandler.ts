@@ -16,7 +16,7 @@
 
 import { WaitForSelectorOptions, DOMWorld } from './DOMWorld.js';
 import { ElementHandle, JSHandle } from './JSHandle.js';
-import { ariaHandler } from './AriaQueryHandler.js';
+import { _ariaHandler } from './AriaQueryHandler.js';
 
 /**
  * @internal
@@ -76,7 +76,7 @@ function makeQueryHandler(handler: CustomQueryHandler): InternalQueryHandler {
       domWorld: DOMWorld,
       selector: string,
       options: WaitForSelectorOptions
-    ) => domWorld.waitForSelectorInPage(queryOne, selector, options);
+    ) => domWorld._waitForSelectorInPage(queryOne, selector, options);
   }
 
   if (handler.queryAll) {
@@ -161,20 +161,20 @@ const pierceHandler = makeQueryHandler({
   },
 });
 
-const _builtInHandlers = new Map([
-  ['aria', ariaHandler],
+const builtInHandlers = new Map([
+  ['aria', _ariaHandler],
   ['pierce', pierceHandler],
 ]);
-const _queryHandlers = new Map(_builtInHandlers);
+const queryHandlers = new Map(builtInHandlers);
 
 /**
  * @internal
  */
-export function registerCustomQueryHandler(
+export function _registerCustomQueryHandler(
   name: string,
   handler: CustomQueryHandler
 ): void {
-  if (_queryHandlers.get(name))
+  if (queryHandlers.get(name))
     throw new Error(`A custom query handler named "${name}" already exists`);
 
   const isValidName = /^[a-zA-Z]+$/.test(name);
@@ -183,38 +183,36 @@ export function registerCustomQueryHandler(
 
   const internalHandler = makeQueryHandler(handler);
 
-  _queryHandlers.set(name, internalHandler);
+  queryHandlers.set(name, internalHandler);
 }
 
 /**
  * @internal
  */
-export function unregisterCustomQueryHandler(name: string): void {
-  if (_queryHandlers.has(name) && !_builtInHandlers.has(name)) {
-    _queryHandlers.delete(name);
+export function _unregisterCustomQueryHandler(name: string): void {
+  if (queryHandlers.has(name) && !builtInHandlers.has(name)) {
+    queryHandlers.delete(name);
   }
 }
 
 /**
  * @internal
  */
-export function customQueryHandlerNames(): string[] {
-  return [..._queryHandlers.keys()].filter(
-    (name) => !_builtInHandlers.has(name)
-  );
+export function _customQueryHandlerNames(): string[] {
+  return [...queryHandlers.keys()].filter((name) => !builtInHandlers.has(name));
 }
 
 /**
  * @internal
  */
-export function clearCustomQueryHandlers(): void {
-  customQueryHandlerNames().forEach(unregisterCustomQueryHandler);
+export function _clearCustomQueryHandlers(): void {
+  _customQueryHandlerNames().forEach(_unregisterCustomQueryHandler);
 }
 
 /**
  * @internal
  */
-export function getQueryHandlerAndSelector(selector: string): {
+export function _getQueryHandlerAndSelector(selector: string): {
   updatedSelector: string;
   queryHandler: InternalQueryHandler;
 } {
@@ -225,7 +223,7 @@ export function getQueryHandlerAndSelector(selector: string): {
   const index = selector.indexOf('/');
   const name = selector.slice(0, index);
   const updatedSelector = selector.slice(index + 1);
-  const queryHandler = _queryHandlers.get(name);
+  const queryHandler = queryHandlers.get(name);
   if (!queryHandler)
     throw new Error(
       `Query set to use "${name}", but no query handler of that name was found`

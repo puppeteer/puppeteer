@@ -37,9 +37,9 @@ import { assert } from './assert.js';
  * @public
  */
 export class FileChooser {
-  private _element: ElementHandle;
-  private _multiple: boolean;
-  private _handled = false;
+  #element: ElementHandle;
+  #multiple: boolean;
+  #handled = false;
 
   /**
    * @internal
@@ -48,15 +48,15 @@ export class FileChooser {
     element: ElementHandle,
     event: Protocol.Page.FileChooserOpenedEvent
   ) {
-    this._element = element;
-    this._multiple = event.mode !== 'selectSingle';
+    this.#element = element;
+    this.#multiple = event.mode !== 'selectSingle';
   }
 
   /**
    * Whether file chooser allow for {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#attr-multiple | multiple} file selection.
    */
   isMultiple(): boolean {
-    return this._multiple;
+    return this.#multiple;
   }
 
   /**
@@ -66,11 +66,11 @@ export class FileChooser {
    */
   async accept(filePaths: string[]): Promise<void> {
     assert(
-      !this._handled,
+      !this.#handled,
       'Cannot accept FileChooser which is already handled!'
     );
-    this._handled = true;
-    await this._element.uploadFile(...filePaths);
+    this.#handled = true;
+    await this.#element.uploadFile(...filePaths);
   }
 
   /**
@@ -78,9 +78,9 @@ export class FileChooser {
    */
   cancel(): void {
     assert(
-      !this._handled,
+      !this.#handled,
       'Cannot cancel FileChooser which is already handled!'
     );
-    this._handled = true;
+    this.#handled = true;
   }
 }

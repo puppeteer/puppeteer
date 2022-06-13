@@ -16,7 +16,7 @@
 
 import { assert } from './assert.js';
 import { helper } from './helper.js';
-import { createJSHandle, JSHandle, ElementHandle } from './JSHandle.js';
+import { _createJSHandle, JSHandle, ElementHandle } from './JSHandle.js';
 import { CDPSession } from './Connection.js';
 import { DOMWorld } from './DOMWorld.js';
 import { Frame } from './FrameManager.js';
@@ -137,11 +137,7 @@ export class ExecutionContext {
     pageFunction: Function | string,
     ...args: unknown[]
   ): Promise<ReturnType> {
-    return await this._evaluateInternal<ReturnType>(
-      true,
-      pageFunction,
-      ...args
-    );
+    return await this.#evaluate<ReturnType>(true, pageFunction, ...args);
   }
 
   /**
@@ -190,10 +186,10 @@ export class ExecutionContext {
     pageFunction: EvaluateHandleFn,
     ...args: SerializableOrJSHandle[]
   ): Promise<HandleType> {
-    return this._evaluateInternal<HandleType>(false, pageFunction, ...args);
+    return this.#evaluate<HandleType>(false, pageFunction, ...args);
   }
 
-  private async _evaluateInternal<ReturnType>(
+  async #evaluate<ReturnType>(
     returnByValue: boolean,
     pageFunction: Function | string,
     ...args: unknown[]
@@ -224,7 +220,7 @@ export class ExecutionContext {
 
       return returnByValue
         ? helper.valueFromRemoteObject(remoteObject)
-        : createJSHandle(this, remoteObject);
+        : _createJSHandle(this, remoteObject);
     }
 
     if (typeof pageFunction !== 'function')
@@ -263,8 +259,9 @@ export class ExecutionContext {
       if (
         error instanceof TypeError &&
         error.message.startsWith('Converting circular structure to JSON')
-      )
-        error.message += ' Are you passing a nested JSHandle?';
+      ) {
+        error.message += ' Recursive objects are not allowed.';
+      }
       throw error;
     }
     const { exceptionDetails, result: remoteObject } =
@@ -275,7 +272,7 @@ export class ExecutionContext {
       );
     return returnByValue
       ? helper.valueFromRemoteObject(remoteObject)
-      : createJSHandle(this, remoteObject);
+      : _createJSHandle(this, remoteObject);
 
     function convertArgument(
       this: ExecutionContext,
@@ -355,7 +352,7 @@ export class ExecutionContext {
     const response = await this._client.send('Runtime.queryObjects', {
       prototypeObjectId: prototypeHandle._remoteObject.objectId,
     });
-    return createJSHandle(this, response.objects);
+    return _createJSHandle(this, response.objects);
   }
 
   /**
@@ -368,7 +365,7 @@ export class ExecutionContext {
       backendNodeId: backendNodeId,
       executionContextId: this._contextId,
     });
-    return createJSHandle(this, object) as ElementHandle;
+    return _createJSHandle(this, object) as ElementHandle;
   }
 
   /**

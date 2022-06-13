@@ -15,15 +15,15 @@
  */
 
 export class TaskQueue {
-  private _chain: Promise<void>;
+  #chain: Promise<void>;
 
   constructor() {
-    this._chain = Promise.resolve();
+    this.#chain = Promise.resolve();
   }
 
   postTask<T>(task: () => Promise<T>): Promise<T> {
-    const result = this._chain.then(task);
-    this._chain = result.then(
+    const result = this.#chain.then(task);
+    this.#chain = result.then(
       () => undefined,
       () => undefined
     );

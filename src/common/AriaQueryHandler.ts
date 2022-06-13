@@ -107,7 +107,7 @@ const waitFor = async (
       return element;
     },
   };
-  return domWorld.waitForSelectorInPage(
+  return domWorld._waitForSelectorInPage(
     (_: Element, selector: string) =>
       (
         globalThis as unknown as { ariaQuerySelector(selector: string): void }
@@ -146,7 +146,7 @@ const queryAllArray = async (
 /**
  * @internal
  */
-export const ariaHandler: InternalQueryHandler = {
+export const _ariaHandler: InternalQueryHandler = {
   queryOne,
   waitFor,
   queryAll,

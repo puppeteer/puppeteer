@@ -26,15 +26,15 @@ import { TaskQueue } from './TaskQueue.js';
  * @public
  */
 export class Target {
-  private _targetInfo: Protocol.Target.TargetInfo;
-  private _browserContext: BrowserContext;
+  #browserContext: BrowserContext;
+  #targetInfo: Protocol.Target.TargetInfo;
+  #sessionFactory: () => Promise<CDPSession>;
+  #ignoreHTTPSErrors: boolean;
+  #defaultViewport?: Viewport;
+  #pagePromise?: Promise<Page>;
+  #workerPromise?: Promise<WebWorker>;
+  #screenshotTaskQueue: TaskQueue;
 
-  private _sessionFactory: () => Promise<CDPSession>;
-  private _ignoreHTTPSErrors: boolean;
-  private _defaultViewport?: Viewport;
-  private _pagePromise?: Promise<Page>;
-  private _workerPromise?: Promise<WebWorker>;
-  private _screenshotTaskQueue: TaskQueue;
   /**
    * @internal
    */
@@ -76,22 +76,22 @@ export class Target {
     screenshotTaskQueue: TaskQueue,
     isPageTargetCallback: IsPageTargetCallback
   ) {
-    this._targetInfo = targetInfo;
-    this._browserContext = browserContext;
+    this.#targetInfo = targetInfo;
+    this.#browserContext = browserContext;
     this._targetId = targetInfo.targetId;
-    this._sessionFactory = sessionFactory;
-    this._ignoreHTTPSErrors = ignoreHTTPSErrors;
-    this._defaultViewport = defaultViewport ?? undefined;
-    this._screenshotTaskQueue = screenshotTaskQueue;
+    this.#sessionFactory = sessionFactory;
+    this.#ignoreHTTPSErrors = ignoreHTTPSErrors;
+    this.#defaultViewport = defaultViewport ?? undefined;
+    this.#screenshotTaskQueue = screenshotTaskQueue;
     this._isPageTargetCallback = isPageTargetCallback;
     this._initializedPromise = new Promise<boolean>(
       (fulfill) => (this._initializedCallback = fulfill)
     ).then(async (success) => {
       if (!success) return false;
       const opener = this.opener();
-      if (!opener || !opener._pagePromise || this.type() !== 'page')
+      if (!opener || !opener.#pagePromise || this.type() !== 'page')
         return true;
-      const openerPage = await opener._pagePromise;
+      const openerPage = await opener.#pagePromise;
       if (!openerPage.listenerCount(PageEmittedEvents.Popup)) return true;
       const popupPage = await this.page();
       openerPage.emit(PageEmittedEvents.Popup, popupPage);
@@ -101,8 +101,8 @@ export class Target {
       (fulfill) => (this._closedCallback = fulfill)
     );
     this._isInitialized =
-      !this._isPageTargetCallback(this._targetInfo) ||
-      this._targetInfo.url !== '';
+      !this._isPageTargetCallback(this.#targetInfo) ||
+      this.#targetInfo.url !== '';
     if (this._isInitialized) this._initializedCallback(true);
   }
 
@@ -110,32 +110,32 @@ export class Target {
    * Creates a Chrome Devtools Protocol session attached to the target.
    */
   createCDPSession(): Promise<CDPSession> {
-    return this._sessionFactory();
+    return this.#sessionFactory();
   }
 
   /**
    * @internal
    */
   _getTargetInfo(): Protocol.Target.TargetInfo {
-    return this._targetInfo;
+    return this.#targetInfo;
   }
 
   /**
    * If the target is not of type `"page"` or `"background_page"`, returns `null`.
    */
   async page(): Promise<Page | null> {
-    if (this._isPageTargetCallback(this._targetInfo) && !this._pagePromise) {
-      this._pagePromise = this._sessionFactory().then((client) =>
-        Page.create(
+    if (this._isPageTargetCallback(this.#targetInfo) && !this.#pagePromise) {
+      this.#pagePromise = this.#sessionFactory().then((client) =>
+        Page._create(
           client,
           this,
-          this._ignoreHTTPSErrors,
-          this._defaultViewport ?? null,
-          this._screenshotTaskQueue
+          this.#ignoreHTTPSErrors,
+          this.#defaultViewport ?? null,
+          this.#screenshotTaskQueue
         )
       );
     }
-    return (await this._pagePromise) ?? null;
+    return (await this.#pagePromise) ?? null;
   }
 
   /**
@@ -143,27 +143,27 @@ export class Target {
    */
   async worker(): Promise<WebWorker | null> {
     if (
-      this._targetInfo.type !== 'service_worker' &&
-      this._targetInfo.type !== 'shared_worker'
+      this.#targetInfo.type !== 'service_worker' &&
+      this.#targetInfo.type !== 'shared_worker'
     )
       return null;
-    if (!this._workerPromise) {
+    if (!this.#workerPromise) {
       // TODO(einbinder): Make workers send their console logs.
-      this._workerPromise = this._sessionFactory().then(
+      this.#workerPromise = this.#sessionFactory().then(
         (client) =>
           new WebWorker(
             client,
-            this._targetInfo.url,
+            this.#targetInfo.url,
             () => {} /* consoleAPICalled */,
             () => {} /* exceptionThrown */
           )
       );
     }
-    return this._workerPromise;
+    return this.#workerPromise;
   }
 
   url(): string {
-    return this._targetInfo.url;
+    return this.#targetInfo.url;
   }
 
   /**
@@ -181,7 +181,7 @@ export class Target {
     | 'other'
     | 'browser'
     | 'webview' {
-    const type = this._targetInfo.type;
+    const type = this.#targetInfo.type;
     if (
       type === 'page' ||
       type === 'background_page' ||
@@ -198,21 +198,21 @@ export class Target {
    * Get the browser the target belongs to.
    */
   browser(): Browser {
-    return this._browserContext.browser();
+    return this.#browserContext.browser();
   }
 
   /**
    * Get the browser context the target belongs to.
    */
   browserContext(): BrowserContext {
-    return this._browserContext;
+    return this.#browserContext;
   }
 
   /**
    * Get the target that opened this target. Top-level targets return `null`.
    */
   opener(): Target | undefined {
-    const { openerId } = this._targetInfo;
+    const { openerId } = this.#targetInfo;
     if (!openerId) return;
     return this.browser()._targets.get(openerId);
   }
@@ -221,12 +221,12 @@ export class Target {
    * @internal
    */
   _targetInfoChanged(targetInfo: Protocol.Target.TargetInfo): void {
-    this._targetInfo = targetInfo;
+    this.#targetInfo = targetInfo;
 
     if (
       !this._isInitialized &&
-      (!this._isPageTargetCallback(this._targetInfo) ||
-        this._targetInfo.url !== '')
+      (!this._isPageTargetCallback(this.#targetInfo) ||
+        this.#targetInfo.url !== '')
     ) {
       this._isInitialized = true;
       this._initializedCallback(true);

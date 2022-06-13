@@ -292,7 +292,7 @@ describe('Frame specs', function () {
   describe('Frame.client', function () {
     it('should return the client instance', async () => {
       const { page } = getTestState();
-      expect(page.mainFrame().client()).toBeInstanceOf(CDPSession);
+      expect(page.mainFrame()._client()).toBeInstanceOf(CDPSession);
     });
   });
 });

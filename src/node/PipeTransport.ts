@@ -22,11 +22,11 @@ import { ConnectionTransport } from '../common/ConnectionTransport.js';
 import { assert } from '../common/assert.js';
 
 export class PipeTransport implements ConnectionTransport {
-  _pipeWrite: NodeJS.WritableStream;
-  _eventListeners: PuppeteerEventListener[];
+  #pipeWrite: NodeJS.WritableStream;
+  #eventListeners: PuppeteerEventListener[];
 
-  _isClosed = false;
-  _pendingMessage = '';
+  #isClosed = false;
+  #pendingMessage = '';
 
   onclose?: () => void;
   onmessage?: (value: string) => void;
@@ -35,10 +35,10 @@ export class PipeTransport implements ConnectionTransport {
     pipeWrite: NodeJS.WritableStream,
     pipeRead: NodeJS.ReadableStream
   ) {
-    this._pipeWrite = pipeWrite;
-    this._eventListeners = [
+    this.#pipeWrite = pipeWrite;
+    this.#eventListeners = [
       helper.addEventListener(pipeRead, 'data', (buffer) =>
-        this._dispatch(buffer)
+        this.#dispatch(buffer)
       ),
       helper.addEventListener(pipeRead, 'close', () => {
         if (this.onclose) {
@@ -51,21 +51,21 @@ export class PipeTransport implements ConnectionTransport {
   }
 
   send(message: string): void {
-    assert(!this._isClosed, '`PipeTransport` is closed.');
+    assert(!this.#isClosed, '`PipeTransport` is closed.');
 
-    this._pipeWrite.write(message);
-    this._pipeWrite.write('\0');
+    this.#pipeWrite.write(message);
+    this.#pipeWrite.write('\0');
   }
 
-  _dispatch(buffer: Buffer): void {
-    assert(!this._isClosed, '`PipeTransport` is closed.');
+  #dispatch(buffer: Buffer): void {
+    assert(!this.#isClosed, '`PipeTransport` is closed.');
 
     let end = buffer.indexOf('\0');
     if (end === -1) {
-      this._pendingMessage += buffer.toString();
+      this.#pendingMessage += buffer.toString();
       return;
     }
-    const message = this._pendingMessage + buffer.toString(undefined, 0, end);
+    const message = this.#pendingMessage + buffer.toString(undefined, 0, end);
     if (this.onmessage) {
       this.onmessage.call(null, message);
     }
@@ -79,11 +79,11 @@ export class PipeTransport implements ConnectionTransport {
       start = end + 1;
       end = buffer.indexOf('\0', start);
     }
-    this._pendingMessage = buffer.toString(undefined, start);
+    this.#pendingMessage = buffer.toString(undefined, start);
   }
 
   close(): void {
-    this._isClosed = true;
-    helper.removeEventListeners(this._eventListeners);
+    this.#isClosed = true;
+    helper.removeEventListeners(this.#eventListeners);
   }
 }

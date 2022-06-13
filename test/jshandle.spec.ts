@@ -52,18 +52,17 @@ describe('JSHandle', function () {
       const isFive = await page.evaluate((e) => Object.is(e, 5), aHandle);
       expect(isFive).toBeTruthy();
     });
-    it('should warn on nested object handles', async () => {
+    it('should warn about recursive objects', async () => {
       const { page } = getTestState();
 
-      const aHandle = await page.evaluateHandle(() => document.body);
+      const test: { obj?: unknown } = {};
+      test.obj = test;
       let error = null;
       await page
         // @ts-expect-error we are deliberately passing a bad type here (nested object)
-        .evaluateHandle((opts) => opts.elem.querySelector('p'), {
-          elem: aHandle,
-        })
+        .evaluateHandle((opts) => opts.elem, { test })
         .catch((error_) => (error = error_));
-      expect(error.message).toContain('Are you passing a nested JSHandle?');
+      expect(error.message).toContain('Recursive objects are not allowed.');
     });
     it('should accept object handle to unserializable value', async () => {
       const { page } = getTestState();

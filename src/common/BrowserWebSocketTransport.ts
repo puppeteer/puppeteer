@@ -27,27 +27,27 @@ export class BrowserWebSocketTransport implements ConnectionTransport {
     });
   }
 
-  private _ws: WebSocket;
+  #ws: WebSocket;
   onmessage?: (message: string) => void;
   onclose?: () => void;
 
   constructor(ws: WebSocket) {
-    this._ws = ws;
-    this._ws.addEventListener('message', (event) => {
+    this.#ws = ws;
+    this.#ws.addEventListener('message', (event) => {
       if (this.onmessage) this.onmessage.call(null, event.data);
     });
-    this._ws.addEventListener('close', () => {
+    this.#ws.addEventListener('close', () => {
       if (this.onclose) this.onclose.call(null);
     });
     // Silently ignore all errors - we don't know what to do with them.
-    this._ws.addEventListener('error', () => {});
+    this.#ws.addEventListener('error', () => {});
   }
 
   send(message: string): void {
-    this._ws.send(message);
+    this.#ws.send(message);
   }
 
   close(): void {
-    this._ws.close();
+    this.#ws.close();
   }
 }

@@ -52,8 +52,17 @@ export interface ProductLauncher {
  * @internal
  */
 class ChromeLauncher implements ProductLauncher {
+  /**
+   * @internal
+   */
   _projectRoot: string | undefined;
+  /**
+   * @internal
+   */
   _preferredRevision: string;
+  /**
+   * @internal
+   */
   _isPuppeteerCore: boolean;
 
   constructor(
@@ -175,7 +184,7 @@ class ChromeLauncher implements ProductLauncher {
         slowMo,
         preferredRevision: this._preferredRevision,
       });
-      browser = await Browser.create(
+      browser = await Browser._create(
         connection,
         [],
         ignoreHTTPSErrors,
@@ -273,8 +282,17 @@ class ChromeLauncher implements ProductLauncher {
  * @internal
  */
 class FirefoxLauncher implements ProductLauncher {
+  /**
+   * @internal
+   */
   _projectRoot: string | undefined;
+  /**
+   * @internal
+   */
   _preferredRevision: string;
+  /**
+   * @internal
+   */
   _isPuppeteerCore: boolean;
 
   constructor(
@@ -393,7 +411,7 @@ class FirefoxLauncher implements ProductLauncher {
         slowMo,
         preferredRevision: this._preferredRevision,
       });
-      browser = await Browser.create(
+      browser = await Browser._create(
         connection,
         [],
         ignoreHTTPSErrors,

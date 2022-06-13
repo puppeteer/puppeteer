@@ -50,18 +50,17 @@ Please check your open processes and ensure that the browser processes that Pupp
 If you think this is a bug, please report it on the Puppeteer issue tracker.`;
 
 export class BrowserRunner {
-  private _product: Product;
-  private _executablePath: string;
-  private _processArguments: string[];
-  private _userDataDir: string;
-  private _isTempUserDataDir?: boolean;
+  #product: Product;
+  #executablePath: string;
+  #processArguments: string[];
+  #userDataDir: string;
+  #isTempUserDataDir?: boolean;
+  #closed = true;
+  #listeners: PuppeteerEventListener[] = [];
+  #processClosing!: Promise<void>;
 
   proc?: childProcess.ChildProcess;
   connection?: Connection;
-
-  private _closed = true;
-  private _listeners: PuppeteerEventListener[] = [];
-  private _processClosing!: Promise<void>;
 
   constructor(
     product: Product,
@@ -70,11 +69,11 @@ export class BrowserRunner {
     userDataDir: string,
     isTempUserDataDir?: boolean
   ) {
-    this._product = product;
-    this._executablePath = executablePath;
-    this._processArguments = processArguments;
-    this._userDataDir = userDataDir;
-    this._isTempUserDataDir = isTempUserDataDir;
+    this.#product = product;
+    this.#executablePath = executablePath;
+    this.#processArguments = processArguments;
+    this.#userDataDir = userDataDir;
+    this.#isTempUserDataDir = isTempUserDataDir;
   }
 
   start(options: LaunchOptions): void {
@@ -90,11 +89,11 @@ export class BrowserRunner {
     }
     assert(!this.proc, 'This process has previously been started.');
     debugLauncher(
-      `Calling ${this._executablePath} ${this._processArguments.join(' ')}`
+      `Calling ${this.#executablePath} ${this.#processArguments.join(' ')}`
     );
     this.proc = childProcess.spawn(
-      this._executablePath,
-      this._processArguments,
+      this.#executablePath,
+      this.#processArguments,
       {
         // On non-windows platforms, `detached: true` makes child process a
         // leader of a new process group, making it possible to kill child
@@ -109,32 +108,32 @@ export class BrowserRunner {
       this.proc.stderr?.pipe(process.stderr);
       this.proc.stdout?.pipe(process.stdout);
     }
-    this._closed = false;
-    this._processClosing = new Promise((fulfill, reject) => {
+    this.#closed = false;
+    this.#processClosing = new Promise((fulfill, reject) => {
       this.proc!.once('exit', async () => {
-        this._closed = true;
+        this.#closed = true;
         // Cleanup as processes exit.
-        if (this._isTempUserDataDir) {
+        if (this.#isTempUserDataDir) {
           try {
-            await removeFolderAsync(this._userDataDir);
+            await removeFolderAsync(this.#userDataDir);
             fulfill();
           } catch (error) {
             debugError(error);
             reject(error);
           }
         } else {
-          if (this._product === 'firefox') {
+          if (this.#product === 'firefox') {
             try {
               // When an existing user profile has been used remove the user
               // preferences file and restore possibly backuped preferences.
-              await unlinkAsync(path.join(this._userDataDir, 'user.js'));
+              await unlinkAsync(path.join(this.#userDataDir, 'user.js'));
 
               const prefsBackupPath = path.join(
-                this._userDataDir,
+                this.#userDataDir,
                 'prefs.js.puppeteer'
               );
               if (fs.existsSync(prefsBackupPath)) {
-                const prefsPath = path.join(this._userDataDir, 'prefs.js');
+                const prefsPath = path.join(this.#userDataDir, 'prefs.js');
                 await unlinkAsync(prefsPath);
                 await renameAsync(prefsBackupPath, prefsPath);
               }
@@ -148,29 +147,29 @@ export class BrowserRunner {
         }
       });
     });
-    this._listeners = [
+    this.#listeners = [
       helper.addEventListener(process, 'exit', this.kill.bind(this)),
     ];
     if (handleSIGINT)
-      this._listeners.push(
+      this.#listeners.push(
         helper.addEventListener(process, 'SIGINT', () => {
           this.kill();
           process.exit(130);
         })
       );
     if (handleSIGTERM)
-      this._listeners.push(
+      this.#listeners.push(
         helper.addEventListener(process, 'SIGTERM', this.close.bind(this))
       );
     if (handleSIGHUP)
-      this._listeners.push(
+      this.#listeners.push(
         helper.addEventListener(process, 'SIGHUP', this.close.bind(this))
       );
   }
 
   close(): Promise<void> {
-    if (this._closed) return Promise.resolve();
-    if (this._isTempUserDataDir) {
+    if (this.#closed) return Promise.resolve();
+    if (this.#isTempUserDataDir) {
       this.kill();
     } else if (this.connection) {
       // Attempt to close the browser gracefully
@@ -181,8 +180,8 @@ export class BrowserRunner {
     }
     // Cleanup this listener last, as that makes sure the full callback runs. If we
     // perform this earlier, then the previous function calls would not happen.
-    helper.removeEventListeners(this._listeners);
-    return this._processClosing;
+    helper.removeEventListeners(this.#listeners);
+    return this.#processClosing;
   }
 
   kill(): void {
@@ -226,14 +225,14 @@ export class BrowserRunner {
 
     // Attempt to remove temporary profile directory to avoid littering.
     try {
-      if (this._isTempUserDataDir) {
-        removeFolder.sync(this._userDataDir);
+      if (this.#isTempUserDataDir) {
+        removeFolder.sync(this.#userDataDir);
       }
     } catch (error) {}
 
     // Cleanup this listener last, as that makes sure the full callback runs. If we
     // perform this earlier, then the previous function calls would not happen.
-    helper.removeEventListeners(this._listeners);
+    helper.removeEventListeners(this.#listeners);
   }
 
   async setupConnection(options: {

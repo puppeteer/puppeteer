@@ -23,30 +23,30 @@ import { Protocol } from 'devtools-protocol';
  * @public
  */
 export class SecurityDetails {
-  private _subjectName: string;
-  private _issuer: string;
-  private _validFrom: number;
-  private _validTo: number;
-  private _protocol: string;
-  private _sanList: string[];
+  #subjectName: string;
+  #issuer: string;
+  #validFrom: number;
+  #validTo: number;
+  #protocol: string;
+  #sanList: string[];
 
   /**
    * @internal
    */
   constructor(securityPayload: Protocol.Network.SecurityDetails) {
-    this._subjectName = securityPayload.subjectName;
-    this._issuer = securityPayload.issuer;
-    this._validFrom = securityPayload.validFrom;
-    this._validTo = securityPayload.validTo;
-    this._protocol = securityPayload.protocol;
-    this._sanList = securityPayload.sanList;
+    this.#subjectName = securityPayload.subjectName;
+    this.#issuer = securityPayload.issuer;
+    this.#validFrom = securityPayload.validFrom;
+    this.#validTo = securityPayload.validTo;
+    this.#protocol = securityPayload.protocol;
+    this.#sanList = securityPayload.sanList;
   }
 
   /**
    * @returns The name of the issuer of the certificate.
    */
   issuer(): string {
-    return this._issuer;
+    return this.#issuer;
   }
 
   /**
@@ -54,7 +54,7 @@ export class SecurityDetails {
    * marking the start of the certificate's validity.
    */
   validFrom(): number {
-    return this._validFrom;
+    return this.#validFrom;
   }
 
   /**
@@ -62,27 +62,27 @@ export class SecurityDetails {
    * marking the end of the certificate's validity.
    */
   validTo(): number {
-    return this._validTo;
+    return this.#validTo;
   }
 
   /**
    * @returns The security protocol being used, e.g. "TLS 1.2".
    */
   protocol(): string {
-    return this._protocol;
+    return this.#protocol;
   }
 
   /**
    * @returns The name of the subject to which the certificate was issued.
    */
   subjectName(): string {
-    return this._subjectName;
+    return this.#subjectName;
   }
 
   /**
    * @returns The list of {@link https://en.wikipedia.org/wiki/Subject_Alternative_Name | subject alternative names (SANs)} of the certificate.
    */
   subjectAlternativeNames(): string[] {
-    return this._sanList;
+    return this.#sanList;
   }
 }

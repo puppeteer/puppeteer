@@ -41,11 +41,11 @@ import { Protocol } from 'devtools-protocol';
  * @public
  */
 export class Dialog {
-  private _client: CDPSession;
-  private _type: Protocol.Page.DialogType;
-  private _message: string;
-  private _defaultValue: string;
-  private _handled = false;
+  #client: CDPSession;
+  #type: Protocol.Page.DialogType;
+  #message: string;
+  #defaultValue: string;
+  #handled = false;
 
   /**
    * @internal
@@ -56,24 +56,24 @@ export class Dialog {
     message: string,
     defaultValue = ''
   ) {
-    this._client = client;
-    this._type = type;
-    this._message = message;
-    this._defaultValue = defaultValue;
+    this.#client = client;
+    this.#type = type;
+    this.#message = message;
+    this.#defaultValue = defaultValue;
   }
 
   /**
    * @returns The type of the dialog.
    */
   type(): Protocol.Page.DialogType {
-    return this._type;
+    return this.#type;
   }
 
   /**
    * @returns The message displayed in the dialog.
    */
   message(): string {
-    return this._message;
+    return this.#message;
   }
 
   /**
@@ -81,7 +81,7 @@ export class Dialog {
    * is not a `prompt`.
    */
   defaultValue(): string {
-    return this._defaultValue;
+    return this.#defaultValue;
   }
 
   /**
@@ -91,9 +91,9 @@ export class Dialog {
    * @returns A promise that resolves when the dialog has been accepted.
    */
   async accept(promptText?: string): Promise<void> {
-    assert(!this._handled, 'Cannot accept dialog which is already handled!');
-    this._handled = true;
-    await this._client.send('Page.handleJavaScriptDialog', {
+    assert(!this.#handled, 'Cannot accept dialog which is already handled!');
+    this.#handled = true;
+    await this.#client.send('Page.handleJavaScriptDialog', {
       accept: true,
       promptText: promptText,
     });
@@ -103,9 +103,9 @@ export class Dialog {
    * @returns A promise which will resolve once the dialog has been dismissed
    */
   async dismiss(): Promise<void> {
-    assert(!this._handled, 'Cannot dismiss dialog which is already handled!');
-    this._handled = true;
-    await this._client.send('Page.handleJavaScriptDialog', {
+    assert(!this.#handled, 'Cannot dismiss dialog which is already handled!');
+    this.#handled = true;
+    await this.#client.send('Page.handleJavaScriptDialog', {
       accept: false,
     });
   }

@@ -20,31 +20,31 @@ const DEFAULT_TIMEOUT = 30000;
  * @internal
  */
 export class TimeoutSettings {
-  _defaultTimeout: number | null;
-  _defaultNavigationTimeout: number | null;
+  #defaultTimeout: number | null;
+  #defaultNavigationTimeout: number | null;
 
   constructor() {
-    this._defaultTimeout = null;
-    this._defaultNavigationTimeout = null;
+    this.#defaultTimeout = null;
+    this.#defaultNavigationTimeout = null;
   }
 
   setDefaultTimeout(timeout: number): void {
-    this._defaultTimeout = timeout;
+    this.#defaultTimeout = timeout;
   }
 
   setDefaultNavigationTimeout(timeout: number): void {
-    this._defaultNavigationTimeout = timeout;
+    this.#defaultNavigationTimeout = timeout;
   }
 
   navigationTimeout(): number {
-    if (this._defaultNavigationTimeout !== null)
-      return this._defaultNavigationTimeout;
-    if (this._defaultTimeout !== null) return this._defaultTimeout;
+    if (this.#defaultNavigationTimeout !== null)
+      return this.#defaultNavigationTimeout;
+    if (this.#defaultTimeout !== null) return this.#defaultTimeout;
     return DEFAULT_TIMEOUT;
   }
 
   timeout(): number {
-    if (this._defaultTimeout !== null) return this._defaultTimeout;
+    if (this.#defaultTimeout !== null) return this.#defaultTimeout;
     return DEFAULT_TIMEOUT;
   }
 }
