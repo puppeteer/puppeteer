@@ -31,8 +31,9 @@ export const initializePuppeteer = (packageName: string): PuppeteerNode => {
         process.env['npm_package_config_puppeteer_product']) as Product)
     : undefined;
 
-  if (!isPuppeteerCore && productName === 'firefox')
+  if (!isPuppeteerCore && productName === 'firefox') {
     preferredRevision = PUPPETEER_REVISIONS.firefox;
+  }
 
   return new PuppeteerNode({
     projectRoot: puppeteerRootDirectory,

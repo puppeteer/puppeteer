@@ -22,7 +22,9 @@ class Documentation {
     this.classesArray = classesArray;
     /** @type {!Map<string, !Documentation.Class>} */
     this.classes = new Map();
-    for (const cls of classesArray) this.classes.set(cls.name, cls);
+    for (const cls of classesArray) {
+      this.classes.set(cls.name, cls);
+    }
   }
 }
 
@@ -93,7 +95,9 @@ Documentation.Member = class {
     this.required = required;
     /** @type {!Map<string, !Documentation.Member>} */
     this.args = new Map();
-    for (const arg of argsArray) this.args.set(arg.name, arg);
+    for (const arg of argsArray) {
+      this.args.set(arg.name, arg);
+    }
   }
 
   /**

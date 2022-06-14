@@ -97,9 +97,15 @@ export async function downloadBrowser(): Promise<void> {
       process.env['npm_config_http_proxy'] || process.env['npm_config_proxy'];
     const NPM_NO_PROXY = process.env['npm_config_no_proxy'];
 
-    if (NPM_HTTPS_PROXY) process.env['HTTPS_PROXY'] = NPM_HTTPS_PROXY;
-    if (NPM_HTTP_PROXY) process.env['HTTP_PROXY'] = NPM_HTTP_PROXY;
-    if (NPM_NO_PROXY) process.env['NO_PROXY'] = NPM_NO_PROXY;
+    if (NPM_HTTPS_PROXY) {
+      process.env['HTTPS_PROXY'] = NPM_HTTPS_PROXY;
+    }
+    if (NPM_HTTP_PROXY) {
+      process.env['HTTP_PROXY'] = NPM_HTTP_PROXY;
+    }
+    if (NPM_NO_PROXY) {
+      process.env['NO_PROXY'] = NPM_NO_PROXY;
+    }
 
     function onSuccess(localRevisions: string[]): void {
       logPolitely(
@@ -182,8 +188,9 @@ export async function downloadBrowser(): Promise<void> {
       );
       https
         .get(firefoxVersionsUrl, requestOptions, (r) => {
-          if (r.statusCode && r.statusCode >= 400)
+          if (r.statusCode && r.statusCode >= 400) {
             return reject(new Error(`Got status code ${r.statusCode}`));
+          }
           r.on('data', (chunk) => {
             data += chunk;
           });
@@ -207,5 +214,7 @@ export function logPolitely(toBeLogged: unknown): void {
   const logLevelDisplay = ['silent', 'error', 'warn'].indexOf(logLevel) > -1;
 
   // eslint-disable-next-line no-console
-  if (!logLevelDisplay) console.log(toBeLogged);
+  if (!logLevelDisplay) {
+    console.log(toBeLogged);
+  }
 }

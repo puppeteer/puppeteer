@@ -80,11 +80,17 @@ export class BrowserRunner {
       options;
     let stdio: Array<'ignore' | 'pipe'>;
     if (pipe) {
-      if (dumpio) stdio = ['ignore', 'pipe', 'pipe', 'pipe', 'pipe'];
-      else stdio = ['ignore', 'ignore', 'ignore', 'pipe', 'pipe'];
+      if (dumpio) {
+        stdio = ['ignore', 'pipe', 'pipe', 'pipe', 'pipe'];
+      } else {
+        stdio = ['ignore', 'ignore', 'ignore', 'pipe', 'pipe'];
+      }
     } else {
-      if (dumpio) stdio = ['pipe', 'pipe', 'pipe'];
-      else stdio = ['pipe', 'ignore', 'pipe'];
+      if (dumpio) {
+        stdio = ['pipe', 'pipe', 'pipe'];
+      } else {
+        stdio = ['pipe', 'ignore', 'pipe'];
+      }
     }
     assert(!this.proc, 'This process has previously been started.');
     debugLauncher(
@@ -147,25 +153,30 @@ export class BrowserRunner {
       });
     });
     this.#listeners = [addEventListener(process, 'exit', this.kill.bind(this))];
-    if (handleSIGINT)
+    if (handleSIGINT) {
       this.#listeners.push(
         addEventListener(process, 'SIGINT', () => {
           this.kill();
           process.exit(130);
         })
       );
-    if (handleSIGTERM)
+    }
+    if (handleSIGTERM) {
       this.#listeners.push(
         addEventListener(process, 'SIGTERM', this.close.bind(this))
       );
-    if (handleSIGHUP)
+    }
+    if (handleSIGHUP) {
       this.#listeners.push(
         addEventListener(process, 'SIGHUP', this.close.bind(this))
       );
+    }
   }
 
   close(): Promise<void> {
-    if (this.#closed) return Promise.resolve();
+    if (this.#closed) {
+      return Promise.resolve();
+    }
     if (this.#isTempUserDataDir) {
       this.kill();
     } else if (this.connection) {
@@ -309,14 +320,18 @@ function waitForWSEndpoint(
     function onLine(line: string): void {
       stderr += line + '\n';
       const match = line.match(/^DevTools listening on (ws:\/\/.*)$/);
-      if (!match) return;
+      if (!match) {
+        return;
+      }
       cleanup();
       // The RegExp matches, so this will obviously exist.
       resolve(match[1]!);
     }
 
     function cleanup(): void {
-      if (timeoutId) clearTimeout(timeoutId);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
       removeEventListeners(listeners);
     }
   });

@@ -101,13 +101,21 @@ export class HTTPResponse {
   #parseStatusTextFromExtrInfo(
     extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null
   ): string | undefined {
-    if (!extraInfo || !extraInfo.headersText) return;
+    if (!extraInfo || !extraInfo.headersText) {
+      return;
+    }
     const firstLine = extraInfo.headersText.split('\r', 1)[0];
-    if (!firstLine) return;
+    if (!firstLine) {
+      return;
+    }
     const match = firstLine.match(/[^ ]* [^ ]* (.*)/);
-    if (!match) return;
+    if (!match) {
+      return;
+    }
     const statusText = match[1];
-    if (!statusText) return;
+    if (!statusText) {
+      return;
+    }
     return statusText;
   }
 
@@ -188,7 +196,9 @@ export class HTTPResponse {
   buffer(): Promise<Buffer> {
     if (!this.#contentPromise) {
       this.#contentPromise = this.#bodyLoadedPromise.then(async (error) => {
-        if (error) throw error;
+        if (error) {
+          throw error;
+        }
         try {
           const response = await this.#client.send('Network.getResponseBody', {
             requestId: this.#request._requestId,

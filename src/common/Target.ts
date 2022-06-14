@@ -87,12 +87,17 @@ export class Target {
     this._initializedPromise = new Promise<boolean>(
       (fulfill) => (this._initializedCallback = fulfill)
     ).then(async (success) => {
-      if (!success) return false;
+      if (!success) {
+        return false;
+      }
       const opener = this.opener();
-      if (!opener || !opener.#pagePromise || this.type() !== 'page')
+      if (!opener || !opener.#pagePromise || this.type() !== 'page') {
         return true;
+      }
       const openerPage = await opener.#pagePromise;
-      if (!openerPage.listenerCount(PageEmittedEvents.Popup)) return true;
+      if (!openerPage.listenerCount(PageEmittedEvents.Popup)) {
+        return true;
+      }
       const popupPage = await this.page();
       openerPage.emit(PageEmittedEvents.Popup, popupPage);
       return true;
@@ -103,7 +108,9 @@ export class Target {
     this._isInitialized =
       !this._isPageTargetCallback(this.#targetInfo) ||
       this.#targetInfo.url !== '';
-    if (this._isInitialized) this._initializedCallback(true);
+    if (this._isInitialized) {
+      this._initializedCallback(true);
+    }
   }
 
   /**
@@ -145,8 +152,9 @@ export class Target {
     if (
       this.#targetInfo.type !== 'service_worker' &&
       this.#targetInfo.type !== 'shared_worker'
-    )
+    ) {
       return null;
+    }
     if (!this.#workerPromise) {
       // TODO(einbinder): Make workers send their console logs.
       this.#workerPromise = this.#sessionFactory().then(
@@ -189,8 +197,9 @@ export class Target {
       type === 'shared_worker' ||
       type === 'browser' ||
       type === 'webview'
-    )
+    ) {
       return type;
+    }
     return 'other';
   }
 
@@ -213,7 +222,9 @@ export class Target {
    */
   opener(): Target | undefined {
     const { openerId } = this.#targetInfo;
-    if (!openerId) return;
+    if (!openerId) {
+      return;
+    }
     return this.browser()._targets.get(openerId);
   }
 

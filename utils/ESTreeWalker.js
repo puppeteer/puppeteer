@@ -27,7 +27,9 @@ class ESTreeWalker {
    * @param {?ESTree.Node} parent
    */
   _innerWalk(node, parent) {
-    if (!node) return;
+    if (!node) {
+      return;
+    }
     node.parent = parent;
 
     if (this._beforeVisit.call(null, node) === ESTreeWalker.SkipSubtree) {
@@ -36,7 +38,9 @@ class ESTreeWalker {
     }
 
     const walkOrder = ESTreeWalker._walkOrder[node.type];
-    if (!walkOrder) return;
+    if (!walkOrder) {
+      return;
+    }
 
     if (node.type === 'TemplateLiteral') {
       const templateLiteral = /** @type {!ESTree.TemplateLiteralNode} */ (node);
@@ -52,8 +56,11 @@ class ESTreeWalker {
     } else {
       for (let i = 0; i < walkOrder.length; ++i) {
         const entity = node[walkOrder[i]];
-        if (Array.isArray(entity)) this._walkArray(entity, node);
-        else this._innerWalk(entity, node);
+        if (Array.isArray(entity)) {
+          this._walkArray(entity, node);
+        } else {
+          this._innerWalk(entity, node);
+        }
       }
     }
 
@@ -65,8 +72,9 @@ class ESTreeWalker {
    * @param {?ESTree.Node} parentNode
    */
   _walkArray(nodeArray, parentNode) {
-    for (let i = 0; i < nodeArray.length; ++i)
+    for (let i = 0; i < nodeArray.length; ++i) {
       this._innerWalk(nodeArray[i], parentNode);
+    }
   }
 }
 

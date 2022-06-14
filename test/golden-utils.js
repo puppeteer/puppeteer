@@ -37,8 +37,9 @@ const GoldenComparators = {
  * @returns {?{diff: (!Object:undefined), errorMessage: (string|undefined)}}
  */
 function compareImages(actualBuffer, expectedBuffer, mimeType) {
-  if (!actualBuffer || !(actualBuffer instanceof Buffer))
+  if (!actualBuffer || !(actualBuffer instanceof Buffer)) {
     return { errorMessage: 'Actual result should be Buffer.' };
+  }
 
   const actual =
     mimeType === 'image/png'
@@ -71,10 +72,13 @@ function compareImages(actualBuffer, expectedBuffer, mimeType) {
  * @returns {?{diff: (!Object:undefined), errorMessage: (string|undefined)}}
  */
 function compareText(actual, expectedBuffer) {
-  if (typeof actual !== 'string')
+  if (typeof actual !== 'string') {
     return { errorMessage: 'Actual result should be string' };
+  }
   const expected = expectedBuffer.toString('utf-8');
-  if (expected === actual) return null;
+  if (expected === actual) {
+    return null;
+  }
   const diff = new Diff();
   const result = diff.main(expected, actual);
   diff.cleanupSemantic(result);
@@ -120,7 +124,9 @@ function compare(goldenPath, outputPath, actual, goldenName) {
     };
   }
   const result = comparator(actual, expected, mimeType);
-  if (!result) return { pass: true };
+  if (!result) {
+    return { pass: true };
+  }
   ensureOutputDir();
   if (goldenPath === outputPath) {
     fs.writeFileSync(addSuffix(actualPath, '-actual'), actual);
@@ -135,14 +141,18 @@ function compare(goldenPath, outputPath, actual, goldenName) {
   }
 
   let message = goldenName + ' mismatch!';
-  if (result.errorMessage) message += ' ' + result.errorMessage;
+  if (result.errorMessage) {
+    message += ' ' + result.errorMessage;
+  }
   return {
     pass: false,
     message: message + ' ' + messageSuffix,
   };
 
   function ensureOutputDir() {
-    if (!fs.existsSync(outputPath)) fs.mkdirSync(outputPath);
+    if (!fs.existsSync(outputPath)) {
+      fs.mkdirSync(outputPath);
+    }
   }
 }
 

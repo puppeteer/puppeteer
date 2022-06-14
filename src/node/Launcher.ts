@@ -96,14 +96,17 @@ class ChromeLauncher implements ProductLauncher {
     } = options;
 
     const chromeArguments = [];
-    if (!ignoreDefaultArgs) chromeArguments.push(...this.defaultArgs(options));
-    else if (Array.isArray(ignoreDefaultArgs))
+    if (!ignoreDefaultArgs) {
+      chromeArguments.push(...this.defaultArgs(options));
+    } else if (Array.isArray(ignoreDefaultArgs)) {
       chromeArguments.push(
         ...this.defaultArgs(options).filter(
           (arg) => !ignoreDefaultArgs.includes(arg)
         )
       );
-    else chromeArguments.push(...args);
+    } else {
+      chromeArguments.push(...args);
+    }
 
     if (
       !chromeArguments.some((argument) =>
@@ -248,9 +251,12 @@ class ChromeLauncher implements ProductLauncher {
       args = [],
       userDataDir,
     } = options;
-    if (userDataDir)
+    if (userDataDir) {
       chromeArguments.push(`--user-data-dir=${path.resolve(userDataDir)}`);
-    if (devtools) chromeArguments.push('--auto-open-devtools-for-tabs');
+    }
+    if (devtools) {
+      chromeArguments.push('--auto-open-devtools-for-tabs');
+    }
     if (headless) {
       chromeArguments.push(
         headless === 'chrome' ? '--headless=chrome' : '--headless',
@@ -258,8 +264,9 @@ class ChromeLauncher implements ProductLauncher {
         '--mute-audio'
       );
     }
-    if (args.every((arg) => arg.startsWith('-')))
+    if (args.every((arg) => arg.startsWith('-'))) {
       chromeArguments.push('about:blank');
+    }
     chromeArguments.push(...args);
     return chromeArguments;
   }
@@ -326,14 +333,17 @@ class FirefoxLauncher implements ProductLauncher {
     } = options;
 
     const firefoxArguments = [];
-    if (!ignoreDefaultArgs) firefoxArguments.push(...this.defaultArgs(options));
-    else if (Array.isArray(ignoreDefaultArgs))
+    if (!ignoreDefaultArgs) {
+      firefoxArguments.push(...this.defaultArgs(options));
+    } else if (Array.isArray(ignoreDefaultArgs)) {
       firefoxArguments.push(
         ...this.defaultArgs(options).filter(
           (arg) => !ignoreDefaultArgs.includes(arg)
         )
       );
-    else firefoxArguments.push(...args);
+    } else {
+      firefoxArguments.push(...args);
+    }
 
     if (
       !firefoxArguments.some((argument) =>
@@ -379,7 +389,9 @@ class FirefoxLauncher implements ProductLauncher {
     let firefoxExecutable = executablePath;
     if (!executablePath) {
       const { missingText, executablePath } = resolveExecutablePath(this);
-      if (missingText) throw new Error(missingText);
+      if (missingText) {
+        throw new Error(missingText);
+      }
       firefoxExecutable = executablePath;
     }
 
@@ -452,7 +464,9 @@ class FirefoxLauncher implements ProductLauncher {
         product: this.product,
       });
       const localRevisions = await browserFetcher.localRevisions();
-      if (localRevisions[0]) this._preferredRevision = localRevisions[0];
+      if (localRevisions[0]) {
+        this._preferredRevision = localRevisions[0];
+      }
     }
   }
 
@@ -470,18 +484,24 @@ class FirefoxLauncher implements ProductLauncher {
 
     const firefoxArguments = ['--no-remote'];
 
-    if (os.platform() === 'darwin') firefoxArguments.push('--foreground');
-    else if (os.platform().startsWith('win')) {
+    if (os.platform() === 'darwin') {
+      firefoxArguments.push('--foreground');
+    } else if (os.platform().startsWith('win')) {
       firefoxArguments.push('--wait-for-browser');
     }
     if (userDataDir) {
       firefoxArguments.push('--profile');
       firefoxArguments.push(userDataDir);
     }
-    if (headless) firefoxArguments.push('--headless');
-    if (devtools) firefoxArguments.push('--devtools');
-    if (args.every((arg) => arg.startsWith('-')))
+    if (headless) {
+      firefoxArguments.push('--headless');
+    }
+    if (devtools) {
+      firefoxArguments.push('--devtools');
+    }
+    if (args.every((arg) => arg.startsWith('-'))) {
       firefoxArguments.push('about:blank');
+    }
     firefoxArguments.push(...args);
     return firefoxArguments;
   }
@@ -887,11 +907,12 @@ export default function Launcher(
   product?: string
 ): ProductLauncher {
   // puppeteer-core doesn't take into account PUPPETEER_* env variables.
-  if (!product && !isPuppeteerCore)
+  if (!product && !isPuppeteerCore) {
     product =
       process.env['PUPPETEER_PRODUCT'] ||
       process.env['npm_config_puppeteer_product'] ||
       process.env['npm_package_config_puppeteer_product'];
+  }
   switch (product) {
     case 'firefox':
       return new FirefoxLauncher(

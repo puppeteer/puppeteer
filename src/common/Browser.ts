@@ -285,11 +285,12 @@ export class Browser extends EventEmitter {
 
     this.#defaultContext = new BrowserContext(this.#connection, this);
     this.#contexts = new Map();
-    for (const contextId of contextIds)
+    for (const contextId of contextIds) {
       this.#contexts.set(
         contextId,
         new BrowserContext(this.#connection, this, contextId)
       );
+    }
 
     this.#targets = new Map();
     this.#connection.on(ConnectionEmittedEvents.Disconnected, () =>
@@ -441,7 +442,9 @@ export class Browser extends EventEmitter {
   }
 
   async #targetDestroyed(event: { targetId: string }): Promise<void> {
-    if (this.#ignoredTargets.has(event.targetId)) return;
+    if (this.#ignoredTargets.has(event.targetId)) {
+      return;
+    }
     const target = this.#targets.get(event.targetId);
     if (!target) {
       throw new Error(
@@ -460,7 +463,9 @@ export class Browser extends EventEmitter {
   }
 
   #targetInfoChanged(event: Protocol.Target.TargetInfoChangedEvent): void {
-    if (this.#ignoredTargets.has(event.targetInfo.targetId)) return;
+    if (this.#ignoredTargets.has(event.targetInfo.targetId)) {
+      return;
+    }
     const target = this.#targets.get(event.targetInfo.targetId);
     if (!target) {
       throw new Error(
@@ -580,7 +585,9 @@ export class Browser extends EventEmitter {
     this.on(BrowserEmittedEvents.TargetCreated, check);
     this.on(BrowserEmittedEvents.TargetChanged, check);
     try {
-      if (!timeout) return await targetPromise;
+      if (!timeout) {
+        return await targetPromise;
+      }
       this.targets().forEach(check);
       return await waitWithTimeout(targetPromise, 'target', timeout);
     } finally {
@@ -827,8 +834,9 @@ export class BrowserContext extends EventEmitter {
     const protocolPermissions = permissions.map((permission) => {
       const protocolPermission =
         WEB_PERMISSION_TO_PROTOCOL_PERMISSION.get(permission);
-      if (!protocolPermission)
+      if (!protocolPermission) {
         throw new Error('Unknown permission: ' + permission);
+      }
       return protocolPermission;
     });
     await this.#connection.send('Browser.grantPermissions', {

@@ -288,7 +288,9 @@ describe('Target', function () {
           resolved = true;
           if (error instanceof puppeteer.errors.TimeoutError) {
             console.error(error);
-          } else throw error;
+          } else {
+            throw error;
+          }
         });
       const page = await browser.newPage();
       expect(resolved).toBe(false);
@@ -299,7 +301,9 @@ describe('Target', function () {
       } catch (error) {
         if (error instanceof puppeteer.errors.TimeoutError) {
           console.error(error);
-        } else throw error;
+        } else {
+          throw error;
+        }
       }
       await page.close();
     });

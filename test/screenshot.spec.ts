@@ -112,15 +112,17 @@ describe('Screenshots', function () {
           })
       );
       const promises = [];
-      for (let i = 0; i < N; ++i)
+      for (let i = 0; i < N; ++i) {
         promises.push(
           pages[i].screenshot({
             clip: { x: 50 * i, y: 0, width: 50, height: 50 },
           })
         );
+      }
       const screenshots = await Promise.all(promises);
-      for (let i = 0; i < N; ++i)
+      for (let i = 0; i < N; ++i) {
         expect(screenshots[i]).toBeGolden(`grid-cell-${i}.png`);
+      }
       await Promise.all(pages.map((page) => page.close()));
     });
     itFailsFirefox('should allow transparency', async () => {

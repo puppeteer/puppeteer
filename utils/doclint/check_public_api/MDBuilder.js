@@ -92,9 +92,15 @@ class MDOutline {
         const start = str.indexOf('<') + 1;
         let count = 1;
         for (let i = start; i < str.length; i++) {
-          if (str[i] === '<') count++;
-          if (str[i] === '>') count--;
-          if (!count) return str.substring(start, i);
+          if (str[i] === '<') {
+            count++;
+          }
+          if (str[i] === '>') {
+            count--;
+          }
+          if (!count) {
+            return str.substring(start, i);
+          }
         }
         return 'unknown';
       }
@@ -138,7 +144,7 @@ class MDOutline {
        * @param {Node} content
        */
       function parseComment(content) {
-        for (const code of content.querySelectorAll('pre > code'))
+        for (const code of content.querySelectorAll('pre > code')) {
           code.replaceWith(
             '```' +
               code.className.substring('language-'.length) +
@@ -146,10 +152,13 @@ class MDOutline {
               code.textContent +
               '```'
           );
-        for (const code of content.querySelectorAll('code'))
+        }
+        for (const code of content.querySelectorAll('code')) {
           code.replaceWith('`' + code.textContent + '`');
-        for (const strong of content.querySelectorAll('strong'))
+        }
+        for (const strong of content.querySelectorAll('strong')) {
           strong.replaceWith('**' + parseComment(strong) + '**');
+        }
         return content.textContent.trim();
       }
 
@@ -207,10 +216,11 @@ class MDOutline {
               0,
               Math.min(angleIndex, spaceIndex)
             );
-            if (actualText !== expectedText)
+            if (actualText !== expectedText) {
               errors.push(
                 `${name} has mistyped 'return' type declaration: expected exactly '${expectedText}', found '${actualText}'.`
               );
+            }
           }
         }
         const comment = parseComment(
@@ -257,7 +267,9 @@ class MDOutline {
     let currentClassExtends = null;
     for (const cls of classes) {
       const match = cls.name.match(classHeading);
-      if (!match) continue;
+      if (!match) {
+        continue;
+      }
       currentClassName = match[1];
       currentClassComment = cls.comment;
       currentClassExtends = cls.extendsName;
@@ -290,7 +302,7 @@ class MDOutline {
         return;
       }
       parameters = parameters.trim().replace(/[\[\]]/g, '');
-      if (parameters !== member.args.map((arg) => arg.name).join(', '))
+      if (parameters !== member.args.map((arg) => arg.name).join(', ')) {
         this.errors.push(
           `Heading arguments for "${
             member.name
@@ -298,6 +310,7 @@ class MDOutline {
             .map((a) => a.name)
             .join(', ')}"`
         );
+      }
       const args = member.args.map(createPropertyFromJSON);
       let returnType = null;
       let returnComment = '';
@@ -369,7 +382,9 @@ class MDOutline {
     }
 
     function flushClassIfNeeded() {
-      if (currentClassName === null) return;
+      if (currentClassName === null) {
+        return;
+      }
       this.classes.push(
         new Documentation.Class(
           currentClassName,

@@ -12,13 +12,14 @@ function checkSources(sources) {
   const eventsSource = sources.find((source) => source.name() === 'Events.js');
   if (eventsSource) {
     const { Events } = require(eventsSource.filePath());
-    for (const [className, events] of Object.entries(Events))
+    for (const [className, events] of Object.entries(Events)) {
       classEvents.set(
         className,
         Array.from(Object.values(events))
           .filter((e) => typeof e === 'string')
           .map((e) => Documentation.Member.createEvent(e))
       );
+    }
   }
 
   const excludeClasses = new Set([]);
@@ -78,7 +79,9 @@ function checkSources(sources) {
         for (const member of wp.membersArray) {
           // Member was overridden.
           const memberId = member.kind + ':' + member.name;
-          if (membersMap.has(memberId)) continue;
+          if (membersMap.has(memberId)) {
+            continue;
+          }
           membersMap.set(memberId, member);
         }
       }
@@ -98,13 +101,17 @@ function checkSources(sources) {
 
       if (className === '__class') {
         let parent = node;
-        while (parent.parent) parent = parent.parent;
+        while (parent.parent) {
+          parent = parent.parent;
+        }
         className = path.basename(parent.fileName, '.js');
       }
       if (className && !excludeClasses.has(className)) {
         classes.push(serializeClass(className, symbol, node));
         const parentClassName = parentClass(node);
-        if (parentClassName) inheritance.set(className, parentClassName);
+        if (parentClassName) {
+          inheritance.set(className, parentClassName);
+        }
         excludeClasses.add(className);
       }
     }
@@ -139,7 +146,9 @@ function checkSources(sources) {
          * isn't going to be here for much longer so we'll just silence this
          * warning than try to add support which would warrant a huge rewrite.
          */
-        if (name !== 'paramArgs') throw error;
+        if (name !== 'paramArgs') {
+          throw error;
+        }
       }
     }
     return Documentation.Member.createProperty(
@@ -152,13 +161,27 @@ function checkSources(sources) {
    * @param {!ts.ObjectType} type
    */
   function isRegularObject(type) {
-    if (type.isIntersection()) return true;
-    if (!type.objectFlags) return false;
-    if (!('aliasSymbol' in type)) return false;
-    if (type.getConstructSignatures().length) return false;
-    if (type.getCallSignatures().length) return false;
-    if (type.isLiteral()) return false;
-    if (type.isUnion()) return false;
+    if (type.isIntersection()) {
+      return true;
+    }
+    if (!type.objectFlags) {
+      return false;
+    }
+    if (!('aliasSymbol' in type)) {
+      return false;
+    }
+    if (type.getConstructSignatures().length) {
+      return false;
+    }
+    if (type.getCallSignatures().length) {
+      return false;
+    }
+    if (type.isLiteral()) {
+      return false;
+    }
+    if (type.isUnion()) {
+      return false;
+    }
 
     return true;
   }
@@ -173,16 +196,18 @@ function checkSources(sources) {
       typeName === 'any' ||
       typeName === '{ [x: string]: string; }' ||
       typeName === '{}'
-    )
+    ) {
       typeName = 'Object';
+    }
     const nextCircular = [typeName].concat(circular);
 
     if (isRegularObject(type)) {
       let properties = undefined;
-      if (!circular.includes(typeName))
+      if (!circular.includes(typeName)) {
         properties = type
           .getProperties()
           .map((property) => serializeSymbol(property, nextCircular));
+      }
       return new Documentation.Type('Object', properties);
     }
     if (type.isUnion() && typeName.includes('|')) {
@@ -199,14 +224,17 @@ function checkSources(sources) {
       const innerTypeNames = [];
       for (const typeArgument of type.typeArguments) {
         const innerType = serializeType(typeArgument, nextCircular);
-        if (innerType.properties) properties.push(...innerType.properties);
+        if (innerType.properties) {
+          properties.push(...innerType.properties);
+        }
         innerTypeNames.push(innerType.name);
       }
       if (
         innerTypeNames.length === 0 ||
         (innerTypeNames.length === 1 && innerTypeNames[0] === 'void')
-      )
+      ) {
         return new Documentation.Type(type.symbol.name);
+      }
       return new Documentation.Type(
         `${type.symbol.name}<${innerTypeNames.join(', ')}>`,
         properties
@@ -241,15 +269,20 @@ function checkSources(sources) {
        * but in TypeScript we use the private keyword
        * hence we check for either here.
        */
-      if (name.startsWith('_') || symbolHasPrivateModifier(member)) continue;
+      if (name.startsWith('_') || symbolHasPrivateModifier(member)) {
+        continue;
+      }
 
       const memberType = checker.getTypeOfSymbolAtLocation(
         member,
         member.valueDeclaration
       );
       const signature = memberType.getCallSignatures()[0];
-      if (signature) members.push(serializeSignature(name, signature));
-      else members.push(serializeProperty(name, memberType));
+      if (signature) {
+        members.push(serializeSignature(name, signature));
+      } else {
+        members.push(serializeProperty(name, memberType));
+      }
     }
 
     return new Documentation.Class(className, members);

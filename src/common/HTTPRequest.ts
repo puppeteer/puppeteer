@@ -184,8 +184,9 @@ export class HTTPRequest {
     this.#interceptHandlers = [];
     this.#initiator = event.initiator;
 
-    for (const [key, value] of Object.entries(event.request.headers))
+    for (const [key, value] of Object.entries(event.request.headers)) {
       this.#headers[key.toLowerCase()] = value;
+    }
   }
 
   /**
@@ -234,10 +235,12 @@ export class HTTPRequest {
    *  `disabled`, `none`, or `already-handled`.
    */
   interceptResolutionState(): InterceptResolutionState {
-    if (!this.#allowInterception)
+    if (!this.#allowInterception) {
       return { action: InterceptResolutionAction.Disabled };
-    if (this.#interceptionHandled)
+    }
+    if (this.#interceptionHandled) {
       return { action: InterceptResolutionAction.AlreadyHandled };
+    }
     return { ...this.#interceptResolutionState };
   }
 
@@ -396,7 +399,9 @@ export class HTTPRequest {
    * failure text if the request fails.
    */
   failure(): { errorText: string } | null {
-    if (!this._failureText) return null;
+    if (!this._failureText) {
+      return null;
+    }
     return {
       errorText: this._failureText,
     };
@@ -435,7 +440,9 @@ export class HTTPRequest {
     priority?: number
   ): Promise<void> {
     // Request interception is not supported for data: urls.
-    if (this.#url.startsWith('data:')) return;
+    if (this.#url.startsWith('data:')) {
+      return;
+    }
     assert(this.#allowInterception, 'Request Interception is not enabled!');
     assert(!this.#interceptionHandled, 'Request is already handled!');
     if (priority === undefined) {
@@ -473,10 +480,11 @@ export class HTTPRequest {
       ? Buffer.from(postData).toString('base64')
       : undefined;
 
-    if (this._interceptionId === undefined)
+    if (this._interceptionId === undefined) {
       throw new Error(
         'HTTPRequest is missing _interceptionId needed for Fetch.continueRequest'
       );
+    }
     await this.#client
       .send('Fetch.continueRequest', {
         requestId: this._interceptionId,
@@ -527,7 +535,9 @@ export class HTTPRequest {
     priority?: number
   ): Promise<void> {
     // Mocking responses for dataURL requests is not currently supported.
-    if (this.#url.startsWith('data:')) return;
+    if (this.#url.startsWith('data:')) {
+      return;
+    }
     assert(this.#allowInterception, 'Request Interception is not enabled!');
     assert(!this.#interceptionHandled, 'Request is already handled!');
     if (priority === undefined) {
@@ -570,18 +580,21 @@ export class HTTPRequest {
           : String(value);
       }
     }
-    if (response.contentType)
+    if (response.contentType) {
       responseHeaders['content-type'] = response.contentType;
-    if (responseBody && !('content-length' in responseHeaders))
+    }
+    if (responseBody && !('content-length' in responseHeaders)) {
       responseHeaders['content-length'] = String(
         Buffer.byteLength(responseBody)
       );
+    }
 
     const status = response.status || 200;
-    if (this._interceptionId === undefined)
+    if (this._interceptionId === undefined) {
       throw new Error(
         'HTTPRequest is missing _interceptionId needed for Fetch.fulfillRequest'
       );
+    }
     await this.#client
       .send('Fetch.fulfillRequest', {
         requestId: this._interceptionId,
@@ -614,7 +627,9 @@ export class HTTPRequest {
     priority?: number
   ): Promise<void> {
     // Request interception is not supported for data: urls.
-    if (this.#url.startsWith('data:')) return;
+    if (this.#url.startsWith('data:')) {
+      return;
+    }
     const errorReason = errorReasons[errorCode];
     assert(errorReason, 'Unknown error code: ' + errorCode);
     assert(this.#allowInterception, 'Request Interception is not enabled!');
@@ -639,10 +654,11 @@ export class HTTPRequest {
     errorReason: Protocol.Network.ErrorReason | null
   ): Promise<void> {
     this.#interceptionHandled = true;
-    if (this._interceptionId === undefined)
+    if (this._interceptionId === undefined) {
       throw new Error(
         'HTTPRequest is missing _interceptionId needed for Fetch.failRequest'
       );
+    }
     await this.#client
       .send('Fetch.failRequest', {
         requestId: this._interceptionId,

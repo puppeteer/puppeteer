@@ -106,8 +106,11 @@ export class LifecycleWatcher {
     waitUntil: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[],
     timeout: number
   ) {
-    if (Array.isArray(waitUntil)) waitUntil = waitUntil.slice();
-    else if (typeof waitUntil === 'string') waitUntil = [waitUntil];
+    if (Array.isArray(waitUntil)) {
+      waitUntil = waitUntil.slice();
+    } else if (typeof waitUntil === 'string') {
+      waitUntil = [waitUntil];
+    }
     this.#expectedLifecycle = waitUntil.map((value) => {
       const protocolEvent = puppeteerToProtocolLifecycle.get(value);
       assert(protocolEvent, 'Unknown value for options.waitUntil: ' + value);
@@ -163,8 +166,9 @@ export class LifecycleWatcher {
   }
 
   #onRequest(request: HTTPRequest): void {
-    if (request.frame() !== this.#frame || !request.isNavigationRequest())
+    if (request.frame() !== this.#frame || !request.isNavigationRequest()) {
       return;
+    }
     this.#navigationRequest = request;
   }
 
@@ -205,7 +209,9 @@ export class LifecycleWatcher {
   }
 
   async #createTimeoutPromise(): Promise<TimeoutError | undefined> {
-    if (!this.#timeout) return new Promise(noop);
+    if (!this.#timeout) {
+      return new Promise(noop);
+    }
     const errorMessage =
       'Navigation timeout of ' + this.#timeout + ' ms exceeded';
     await new Promise(
@@ -215,38 +221,50 @@ export class LifecycleWatcher {
   }
 
   #navigatedWithinDocument(frame: Frame): void {
-    if (frame !== this.#frame) return;
+    if (frame !== this.#frame) {
+      return;
+    }
     this.#hasSameDocumentNavigation = true;
     this.#checkLifecycleComplete();
   }
 
   #navigated(frame: Frame): void {
-    if (frame !== this.#frame) return;
+    if (frame !== this.#frame) {
+      return;
+    }
     this.#newDocumentNavigation = true;
     this.#checkLifecycleComplete();
   }
 
   #frameSwapped(frame: Frame): void {
-    if (frame !== this.#frame) return;
+    if (frame !== this.#frame) {
+      return;
+    }
     this.#swapped = true;
     this.#checkLifecycleComplete();
   }
 
   #checkLifecycleComplete(): void {
     // We expect navigation to commit.
-    if (!checkLifecycle(this.#frame, this.#expectedLifecycle)) return;
+    if (!checkLifecycle(this.#frame, this.#expectedLifecycle)) {
+      return;
+    }
     this.#lifecycleCallback();
-    if (this.#hasSameDocumentNavigation)
+    if (this.#hasSameDocumentNavigation) {
       this.#sameDocumentNavigationCompleteCallback();
-    if (this.#swapped || this.#newDocumentNavigation)
+    }
+    if (this.#swapped || this.#newDocumentNavigation) {
       this.#newDocumentNavigationCompleteCallback();
+    }
 
     function checkLifecycle(
       frame: Frame,
       expectedLifecycle: ProtocolLifeCycleEvent[]
     ): boolean {
       for (const event of expectedLifecycle) {
-        if (!frame._lifecycleEvents.has(event)) return false;
+        if (!frame._lifecycleEvents.has(event)) {
+          return false;
+        }
       }
       for (const child of frame.childFrames()) {
         if (

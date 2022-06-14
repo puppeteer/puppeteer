@@ -133,10 +133,11 @@ export class NetworkManager extends EventEmitter {
 
   async initialize(): Promise<void> {
     await this.#client.send('Network.enable');
-    if (this.#ignoreHTTPSErrors)
+    if (this.#ignoreHTTPSErrors) {
       await this.#client.send('Security.setIgnoreCertificateErrors', {
         ignore: true,
       });
+    }
   }
 
   async authenticate(credentials?: Credentials): Promise<void> {
@@ -221,7 +222,9 @@ export class NetworkManager extends EventEmitter {
 
   async #updateProtocolRequestInterception(): Promise<void> {
     const enabled = this.#userRequestInterceptionEnabled || !!this.#credentials;
-    if (enabled === this.#protocolRequestInterceptionEnabled) return;
+    if (enabled === this.#protocolRequestInterceptionEnabled) {
+      return;
+    }
     this.#protocolRequestInterceptionEnabled = enabled;
     if (enabled) {
       await Promise.all([
@@ -420,7 +423,9 @@ export class NetworkManager extends EventEmitter {
     event: Protocol.Network.RequestServedFromCacheEvent
   ): void {
     const request = this.#networkEventManager.getRequest(event.requestId);
-    if (request) request._fromMemoryCache = true;
+    if (request) {
+      request._fromMemoryCache = true;
+    }
     this.emit(NetworkManagerEmittedEvents.RequestServedFromCache, request);
   }
 
@@ -453,7 +458,9 @@ export class NetworkManager extends EventEmitter {
       responseReceived.requestId
     );
     // FileUpload sends a response without a matching request.
-    if (!request) return;
+    if (!request) {
+      return;
+    }
 
     const extraInfos = this.#networkEventManager.responseExtraInfo(
       responseReceived.requestId
@@ -561,11 +568,15 @@ export class NetworkManager extends EventEmitter {
     const request = this.#networkEventManager.getRequest(event.requestId);
     // For certain requestIds we never receive requestWillBeSent event.
     // @see https://crbug.com/750469
-    if (!request) return;
+    if (!request) {
+      return;
+    }
 
     // Under certain conditions we never get the Network.responseReceived
     // event from protocol. @see https://crbug.com/883475
-    if (request.response()) request.response()?._resolveBody(null);
+    if (request.response()) {
+      request.response()?._resolveBody(null);
+    }
     this.#forgetRequest(request, true);
     this.emit(NetworkManagerEmittedEvents.RequestFinished, request);
   }
@@ -587,10 +598,14 @@ export class NetworkManager extends EventEmitter {
     const request = this.#networkEventManager.getRequest(event.requestId);
     // For certain requestIds we never receive requestWillBeSent event.
     // @see https://crbug.com/750469
-    if (!request) return;
+    if (!request) {
+      return;
+    }
     request._failureText = event.errorText;
     const response = request.response();
-    if (response) response._resolveBody(null);
+    if (response) {
+      response._resolveBody(null);
+    }
     this.#forgetRequest(request, true);
     this.emit(NetworkManagerEmittedEvents.RequestFailed, request);
   }

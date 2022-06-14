@@ -63,7 +63,9 @@ class Source {
    * @returns {boolean}
    */
   setText(text) {
-    if (text === this._text) return false;
+    if (text === this._text) {
+      return false;
+    }
     this._hasUpdatedText = true;
     this._text = text;
     return true;

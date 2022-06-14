@@ -88,8 +88,11 @@ describe('navigation', function () {
       let error = null;
       await page.goto(server.EMPTY_PAGE).catch((error_) => (error = error_));
       expect(error).not.toBe(null);
-      if (isChrome) expect(error.message).toContain('net::ERR_ABORTED');
-      else expect(error.message).toContain('NS_BINDING_ABORTED');
+      if (isChrome) {
+        expect(error.message).toContain('net::ERR_ABORTED');
+      } else {
+        expect(error.message).toContain('NS_BINDING_ABORTED');
+      }
     });
     it('should navigate to empty page with domcontentloaded', async () => {
       const { page, server } = getTestState();
@@ -140,9 +143,11 @@ describe('navigation', function () {
 
       let error = null;
       await page.goto('asdfasdf').catch((error_) => (error = error_));
-      if (isChrome)
+      if (isChrome) {
         expect(error.message).toContain('Cannot navigate to invalid URL');
-      else expect(error.message).toContain('Invalid url');
+      } else {
+        expect(error.message).toContain('Invalid url');
+      }
     });
 
     /* If you are running this on pre-Catalina versions of macOS this will fail locally.
@@ -169,8 +174,11 @@ describe('navigation', function () {
       await page
         .goto(httpsServer.EMPTY_PAGE)
         .catch((error_) => (error = error_));
-      if (isChrome) expect(error.message).toContain(EXPECTED_SSL_CERT_MESSAGE);
-      else expect(error.message).toContain('SSL_ERROR_UNKNOWN');
+      if (isChrome) {
+        expect(error.message).toContain(EXPECTED_SSL_CERT_MESSAGE);
+      } else {
+        expect(error.message).toContain('SSL_ERROR_UNKNOWN');
+      }
 
       expect(requests.length).toBe(2);
       expect(requests[0]).toBe('request');
@@ -185,8 +193,11 @@ describe('navigation', function () {
       await page
         .goto(httpsServer.PREFIX + '/redirect/1.html')
         .catch((error_) => (error = error_));
-      if (isChrome) expect(error.message).toContain(EXPECTED_SSL_CERT_MESSAGE);
-      else expect(error.message).toContain('SSL_ERROR_UNKNOWN');
+      if (isChrome) {
+        expect(error.message).toContain(EXPECTED_SSL_CERT_MESSAGE);
+      } else {
+        expect(error.message).toContain('SSL_ERROR_UNKNOWN');
+      }
     });
     it('should throw if networkidle is passed as an option', async () => {
       const { page, server } = getTestState();
@@ -207,9 +218,11 @@ describe('navigation', function () {
       await page
         .goto('http://localhost:44123/non-existing-url')
         .catch((error_) => (error = error_));
-      if (isChrome)
+      if (isChrome) {
         expect(error.message).toContain('net::ERR_CONNECTION_REFUSED');
-      else expect(error.message).toContain('NS_ERROR_CONNECTION_REFUSED');
+      } else {
+        expect(error.message).toContain('NS_ERROR_CONNECTION_REFUSED');
+      }
     });
     it('should fail when exceeding maximum navigation timeout', async () => {
       const { page, server, puppeteer } = getTestState();
@@ -385,7 +398,9 @@ describe('navigation', function () {
       let warning = null;
       const warningHandler = (w) => (warning = w);
       process.on('warning', warningHandler);
-      for (let i = 0; i < 20; ++i) await page.goto(server.EMPTY_PAGE);
+      for (let i = 0; i < 20; ++i) {
+        await page.goto(server.EMPTY_PAGE);
+      }
       process.removeListener('warning', warningHandler);
       expect(warning).toBe(null);
     });
@@ -395,10 +410,11 @@ describe('navigation', function () {
       let warning = null;
       const warningHandler = (w) => (warning = w);
       process.on('warning', warningHandler);
-      for (let i = 0; i < 20; ++i)
+      for (let i = 0; i < 20; ++i) {
         await page.goto('asdf').catch(() => {
           /* swallow navigation error */
         });
+      }
       process.removeListener('warning', warningHandler);
       expect(warning).toBe(null);
     });
@@ -615,7 +631,9 @@ describe('navigation', function () {
         const frame = await utils.waitEvent(page, 'frameattached');
         await new Promise<void>((fulfill) => {
           page.on('framenavigated', (f) => {
-            if (f === frame) fulfill();
+            if (f === frame) {
+              fulfill();
+            }
           });
         });
         await Promise.all([

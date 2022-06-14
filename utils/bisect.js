@@ -111,14 +111,18 @@ if (argv.script && !fs.existsSync(scriptPath)) {
   while (true) {
     const middle = Math.round((good + bad) / 2);
     const revision = await findDownloadableRevision(middle, good, bad);
-    if (!revision || revision === good || revision === bad) break;
+    if (!revision || revision === good || revision === bad) {
+      break;
+    }
     let info = browserFetcher.revisionInfo(revision);
     const shouldRemove = noCache && !info.local;
     info = await downloadRevision(revision);
     const exitCode = await (pattern
       ? runUnitTest(pattern, info)
       : runScript(scriptPath, info));
-    if (shouldRemove) await browserFetcher.remove(revision);
+    if (shouldRemove) {
+      await browserFetcher.remove(revision);
+    }
     let outcome;
     if (exitCode) {
       bad = revision;
@@ -224,7 +228,9 @@ async function findDownloadableRevision(rev, from, to) {
   const min = Math.min(from, to);
   const max = Math.max(from, to);
   log(`Looking around ${rev} from [${min}, ${max}]`);
-  if (await browserFetcher.canDownload(rev)) return rev;
+  if (await browserFetcher.canDownload(rev)) {
+    return rev;
+  }
   let down = rev;
   let up = rev;
   while (min <= down || up <= max) {
@@ -232,8 +238,12 @@ async function findDownloadableRevision(rev, from, to) {
       down > min ? probe(--down) : Promise.resolve(false),
       up < max ? probe(++up) : Promise.resolve(false),
     ]);
-    if (downOk) return down;
-    if (upOk) return up;
+    if (downOk) {
+      return down;
+    }
+    if (upOk) {
+      return up;
+    }
   }
   return null;
 
@@ -283,6 +293,8 @@ function getChromiumRevision(gitRevision = null) {
   });
 
   const m = result.match(/chromium: '(\d+)'/);
-  if (!m) return null;
+  if (!m) {
+    return null;
+  }
   return parseInt(m[1], 10);
 }

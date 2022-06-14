@@ -143,7 +143,9 @@ export class DOMWorld {
       this.#ctxBindings.clear();
       this.#contextResolveCallback?.call(null, context);
       this.#contextResolveCallback = null;
-      for (const waitTask of this._waitTasks) waitTask.rerun();
+      for (const waitTask of this._waitTasks) {
+        waitTask.rerun();
+      }
     } else {
       this.#documentPromise = null;
       this.#contextPromise = new Promise((fulfill) => {
@@ -165,19 +167,22 @@ export class DOMWorld {
   _detach(): void {
     this.#detached = true;
     this.#client.off('Runtime.bindingCalled', this.#onBindingCalled);
-    for (const waitTask of this._waitTasks)
+    for (const waitTask of this._waitTasks) {
       waitTask.terminate(
         new Error('waitForFunction failed: frame got detached.')
       );
+    }
   }
 
   executionContext(): Promise<ExecutionContext> {
-    if (this.#detached)
+    if (this.#detached) {
       throw new Error(
         `Execution context is not available in detached frame "${this.#frame.url()}" (are you trying to evaluate?)`
       );
-    if (this.#contextPromise === null)
+    }
+    if (this.#contextPromise === null) {
       throw new Error(`Execution content promise is missing`);
+    }
     return this.#contextPromise;
   }
 
@@ -212,7 +217,9 @@ export class DOMWorld {
    * @internal
    */
   async _document(): Promise<ElementHandle> {
-    if (this.#documentPromise) return this.#documentPromise;
+    if (this.#documentPromise) {
+      return this.#documentPromise;
+    }
     this.#documentPromise = this.executionContext().then(async (context) => {
       const document = await context.evaluateHandle('document');
       const element = document.asElement();
@@ -270,10 +277,12 @@ export class DOMWorld {
   async content(): Promise<string> {
     return await this.evaluate(() => {
       let retVal = '';
-      if (document.doctype)
+      if (document.doctype) {
         retVal = new XMLSerializer().serializeToString(document.doctype);
-      if (document.documentElement)
+      }
+      if (document.documentElement) {
         retVal += document.documentElement.outerHTML;
+      }
       return retVal;
     });
   }
@@ -307,7 +316,9 @@ export class DOMWorld {
       watcher.lifecyclePromise(),
     ]);
     watcher.dispose();
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
   }
 
   /**
@@ -406,8 +417,12 @@ export class DOMWorld {
     ): Promise<HTMLElement> {
       const script = document.createElement('script');
       script.src = url;
-      if (id) script.id = id;
-      if (type) script.type = type;
+      if (id) {
+        script.id = id;
+      }
+      if (type) {
+        script.type = type;
+      }
       const promise = new Promise((res, rej) => {
         script.onload = res;
         script.onerror = rej;
@@ -425,11 +440,15 @@ export class DOMWorld {
       const script = document.createElement('script');
       script.type = type;
       script.text = content;
-      if (id) script.id = id;
+      if (id) {
+        script.id = id;
+      }
       let error = null;
       script.onerror = (e) => (error = e);
       document.head.appendChild(script);
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
       return script;
     }
   }
@@ -656,7 +675,9 @@ export class DOMWorld {
     event: Protocol.Runtime.BindingCalledEvent
   ): Promise<void> => {
     let payload: { type: string; name: string; seq: number; args: unknown[] };
-    if (!this._hasContext()) return;
+    if (!this._hasContext()) {
+      return;
+    }
     const context = await this.executionContext();
     try {
       payload = JSON.parse(event.payload);
@@ -671,9 +692,12 @@ export class DOMWorld {
       !this.#ctxBindings.has(
         DOMWorld.#bindingIdentifier(name, context._contextId)
       )
-    )
+    ) {
       return;
-    if (context._contextId !== event.executionContextId) return;
+    }
+    if (context._contextId !== event.executionContextId) {
+      return;
+    }
     try {
       const fn = this._boundFunctions.get(name);
       if (!fn) {
@@ -687,7 +711,9 @@ export class DOMWorld {
       // In both caes, the promises above are rejected with a protocol error.
       // We can safely ignores these, as the WaitTask is re-installed in
       // the next execution context if needed.
-      if ((error as Error).message.includes('Protocol error')) return;
+      if ((error as Error).message.includes('Protocol error')) {
+        return;
+      }
       debugError(error);
     }
     function deliverResult(name: string, seq: number, result: unknown): void {
@@ -859,20 +885,24 @@ export class WaitTask {
   promise: Promise<JSHandle>;
 
   constructor(options: WaitTaskOptions) {
-    if (isString(options.polling))
+    if (isString(options.polling)) {
       assert(
         options.polling === 'raf' || options.polling === 'mutation',
         'Unknown polling option: ' + options.polling
       );
-    else if (isNumber(options.polling))
+    } else if (isNumber(options.polling)) {
       assert(
         options.polling > 0,
         'Cannot poll with non-positive interval: ' + options.polling
       );
-    else throw new Error('Unknown polling options: ' + options.polling);
+    } else {
+      throw new Error('Unknown polling options: ' + options.polling);
+    }
 
     function getPredicateBody(predicateBody: Function | string) {
-      if (isString(predicateBody)) return `return (${predicateBody});`;
+      if (isString(predicateBody)) {
+        return `return (${predicateBody});`;
+      }
       return `return (${predicateBody})(...args);`;
     }
 
@@ -922,11 +952,15 @@ export class WaitTask {
     let success: JSHandle | null = null;
     let error: Error | null = null;
     const context = await this.#domWorld.executionContext();
-    if (this.#terminated || runCount !== this.#runCount) return;
+    if (this.#terminated || runCount !== this.#runCount) {
+      return;
+    }
     if (this.#binding) {
       await this.#domWorld._addBindingToContext(context, this.#binding.name);
     }
-    if (this.#terminated || runCount !== this.#runCount) return;
+    if (this.#terminated || runCount !== this.#runCount) {
+      return;
+    }
     try {
       success = await context.evaluateHandle(
         waitForPredicatePageFunction,
@@ -942,7 +976,9 @@ export class WaitTask {
     }
 
     if (this.#terminated || runCount !== this.#runCount) {
-      if (success) await success.dispose();
+      if (success) {
+        await success.dispose();
+      }
       return;
     }
 
@@ -953,8 +989,9 @@ export class WaitTask {
       !error &&
       (await this.#domWorld.evaluate((s) => !s, success).catch(() => true))
     ) {
-      if (!success)
+      if (!success) {
         throw new Error('Assertion: result handle is not available');
+      }
       await success.dispose();
       return;
     }
@@ -978,17 +1015,21 @@ export class WaitTask {
 
       // When the page is navigated, the promise is rejected.
       // We will try again in the new execution context.
-      if (error.message.includes('Execution context was destroyed')) return;
+      if (error.message.includes('Execution context was destroyed')) {
+        return;
+      }
 
       // We could have tried to evaluate in a context which was already
       // destroyed.
-      if (error.message.includes('Cannot find context with specified id'))
+      if (error.message.includes('Cannot find context with specified id')) {
         return;
+      }
 
       this.#reject(error);
     } else {
-      if (!success)
+      if (!success) {
         throw new Error('Assertion: result handle is not available');
+      }
       this.#resolve(success);
     }
     this.#cleanup();
@@ -1011,7 +1052,9 @@ async function waitForPredicatePageFunction(
   root = root || document;
   const predicate = new Function('...args', predicateBody);
   let timedOut = false;
-  if (timeout) setTimeout(() => (timedOut = true), timeout);
+  if (timeout) {
+    setTimeout(() => (timedOut = true), timeout);
+  }
   switch (polling) {
     case 'raf':
       return await pollRaf();
@@ -1025,7 +1068,9 @@ async function waitForPredicatePageFunction(
     const success = predicateAcceptsContextElement
       ? await predicate(root, ...args)
       : await predicate(...args);
-    if (success) return Promise.resolve(success);
+    if (success) {
+      return Promise.resolve(success);
+    }
 
     let fulfill = (_?: unknown) => {};
     const result = new Promise((x) => (fulfill = x));
@@ -1067,8 +1112,11 @@ async function waitForPredicatePageFunction(
       const success = predicateAcceptsContextElement
         ? await predicate(root, ...args)
         : await predicate(...args);
-      if (success) fulfill(success);
-      else requestAnimationFrame(onRaf);
+      if (success) {
+        fulfill(success);
+      } else {
+        requestAnimationFrame(onRaf);
+      }
     }
   }
 
@@ -1086,8 +1134,11 @@ async function waitForPredicatePageFunction(
       const success = predicateAcceptsContextElement
         ? await predicate(root, ...args)
         : await predicate(...args);
-      if (success) fulfill(success);
-      else setTimeout(onTimeout, pollInterval);
+      if (success) {
+        fulfill(success);
+      } else {
+        setTimeout(onTimeout, pollInterval);
+      }
     }
   }
 }

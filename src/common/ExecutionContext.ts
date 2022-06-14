@@ -218,20 +218,22 @@ export class ExecutionContext {
         })
         .catch(rewriteError);
 
-      if (exceptionDetails)
+      if (exceptionDetails) {
         throw new Error(
           'Evaluation failed: ' + getExceptionMessage(exceptionDetails)
         );
+      }
 
       return returnByValue
         ? valueFromRemoteObject(remoteObject)
         : _createJSHandle(this, remoteObject);
     }
 
-    if (typeof pageFunction !== 'function')
+    if (typeof pageFunction !== 'function') {
       throw new Error(
         `Expected to get |string| or |function| as the first argument, but got "${pageFunction}" instead.`
       );
+    }
 
     let functionText = pageFunction.toString();
     try {
@@ -239,10 +241,12 @@ export class ExecutionContext {
     } catch (error) {
       // This means we might have a function shorthand. Try another
       // time prefixing 'function '.
-      if (functionText.startsWith('async '))
+      if (functionText.startsWith('async ')) {
         functionText =
           'async function ' + functionText.substring('async '.length);
-      else functionText = 'function ' + functionText;
+      } else {
+        functionText = 'function ' + functionText;
+      }
       try {
         new Function('(' + functionText + ')');
       } catch (error) {
@@ -271,10 +275,11 @@ export class ExecutionContext {
     }
     const { exceptionDetails, result: remoteObject } =
       await callFunctionOnPromise.catch(rewriteError);
-    if (exceptionDetails)
+    if (exceptionDetails) {
       throw new Error(
         'Evaluation failed: ' + getExceptionMessage(exceptionDetails)
       );
+    }
     return returnByValue
       ? valueFromRemoteObject(remoteObject)
       : _createJSHandle(this, remoteObject);
@@ -283,45 +288,61 @@ export class ExecutionContext {
       this: ExecutionContext,
       arg: unknown
     ): Protocol.Runtime.CallArgument {
-      if (typeof arg === 'bigint')
+      if (typeof arg === 'bigint') {
         // eslint-disable-line valid-typeof
         return { unserializableValue: `${arg.toString()}n` };
-      if (Object.is(arg, -0)) return { unserializableValue: '-0' };
-      if (Object.is(arg, Infinity)) return { unserializableValue: 'Infinity' };
-      if (Object.is(arg, -Infinity))
+      }
+      if (Object.is(arg, -0)) {
+        return { unserializableValue: '-0' };
+      }
+      if (Object.is(arg, Infinity)) {
+        return { unserializableValue: 'Infinity' };
+      }
+      if (Object.is(arg, -Infinity)) {
         return { unserializableValue: '-Infinity' };
-      if (Object.is(arg, NaN)) return { unserializableValue: 'NaN' };
+      }
+      if (Object.is(arg, NaN)) {
+        return { unserializableValue: 'NaN' };
+      }
       const objectHandle = arg && arg instanceof JSHandle ? arg : null;
       if (objectHandle) {
-        if (objectHandle._context !== this)
+        if (objectHandle._context !== this) {
           throw new Error(
             'JSHandles can be evaluated only in the context they were created!'
           );
-        if (objectHandle._disposed) throw new Error('JSHandle is disposed!');
-        if (objectHandle._remoteObject.unserializableValue)
+        }
+        if (objectHandle._disposed) {
+          throw new Error('JSHandle is disposed!');
+        }
+        if (objectHandle._remoteObject.unserializableValue) {
           return {
             unserializableValue: objectHandle._remoteObject.unserializableValue,
           };
-        if (!objectHandle._remoteObject.objectId)
+        }
+        if (!objectHandle._remoteObject.objectId) {
           return { value: objectHandle._remoteObject.value };
+        }
         return { objectId: objectHandle._remoteObject.objectId };
       }
       return { value: arg };
     }
 
     function rewriteError(error: Error): Protocol.Runtime.EvaluateResponse {
-      if (error.message.includes('Object reference chain is too long'))
+      if (error.message.includes('Object reference chain is too long')) {
         return { result: { type: 'undefined' } };
-      if (error.message.includes("Object couldn't be returned by value"))
+      }
+      if (error.message.includes("Object couldn't be returned by value")) {
         return { result: { type: 'undefined' } };
+      }
 
       if (
         error.message.endsWith('Cannot find context with specified id') ||
         error.message.endsWith('Inspected target navigated or closed')
-      )
+      ) {
         throw new Error(
           'Execution context was destroyed, most likely because of a navigation.'
         );
+      }
       throw error;
     }
   }

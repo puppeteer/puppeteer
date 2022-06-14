@@ -85,8 +85,9 @@ function traceAPICoverage(apiCoverage, className, modulePath) {
       typeof methodName !== 'string' ||
       methodName.startsWith('_') ||
       typeof method !== 'function'
-    )
+    ) {
       continue;
+    }
     apiCoverage.set(`${className}.${methodName}`, false);
     Reflect.set(classType.prototype, methodName, function (...args) {
       apiCoverage.set(`${className}.${methodName}`, true);
@@ -102,13 +103,15 @@ function traceAPICoverage(apiCoverage, className, modulePath) {
   const eventsName = `${className}EmittedEvents`;
   if (loadedModule[eventsName]) {
     for (const event of Object.values(loadedModule[eventsName])) {
-      if (typeof event !== 'symbol')
+      if (typeof event !== 'symbol') {
         apiCoverage.set(`${className}.emit(${JSON.stringify(event)})`, false);
+      }
     }
     const method = Reflect.get(classType.prototype, 'emit');
     Reflect.set(classType.prototype, 'emit', function (event, ...args) {
-      if (typeof event !== 'symbol' && this.listenerCount(event))
+      if (typeof event !== 'symbol' && this.listenerCount(event)) {
         apiCoverage.set(`${className}.emit(${JSON.stringify(event)})`, true);
+      }
       return method.call(this, event, ...args);
     });
   }

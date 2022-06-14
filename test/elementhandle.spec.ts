@@ -49,9 +49,11 @@ describe('ElementHandle specs', function () {
       const nestedFrame = page.frames()[1].childFrames()[1];
       const elementHandle = await nestedFrame.$('div');
       const box = await elementHandle.boundingBox();
-      if (isChrome)
+      if (isChrome) {
         expect(box).toEqual({ x: 28, y: 182, width: 264, height: 18 });
-      else expect(box).toEqual({ x: 28, y: 182, width: 254, height: 18 });
+      } else {
+        expect(box).toEqual({ x: 28, y: 182, width: 254, height: 18 });
+      }
     });
     it('should return null for invisible elements', async () => {
       const { page } = getTestState();

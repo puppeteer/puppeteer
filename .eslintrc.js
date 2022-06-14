@@ -21,6 +21,8 @@ module.exports = {
   extends: ['plugin:prettier/recommended'],
 
   rules: {
+    // Brackets keep code readable.
+    curly: [2, 'all'],
     // Error if files are not formatted with Prettier correctly.
     'prettier/prettier': 2,
     // syntax preferences
@@ -130,6 +132,8 @@ module.exports = {
       ],
       plugins: ['eslint-plugin-tsdoc'],
       rules: {
+        // Brackets keep code readable.
+        curly: [2, 'all'],
         // Error if comments do not adhere to `tsdoc`.
         'tsdoc/syntax': 2,
         'no-unused-vars': 0,

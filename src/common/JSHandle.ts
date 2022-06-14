@@ -250,7 +250,9 @@ export class JSHandle<HandleObjectType = unknown> {
     });
     const result = new Map<string, JSHandle>();
     for (const property of response.result) {
-      if (!property.enumerable || !property.value) continue;
+      if (!property.enumerable || !property.value) {
+        continue;
+      }
       result.set(property.name, _createJSHandle(this.#context, property.value));
     }
     return result;
@@ -294,7 +296,9 @@ export class JSHandle<HandleObjectType = unknown> {
    * successfully disposed of.
    */
   async dispose(): Promise<void> {
-    if (this.#disposed) return;
+    if (this.#disposed) {
+      return;
+    }
     this.#disposed = true;
     await releaseObject(this.#client, this.#remoteObject);
   }
@@ -418,7 +422,9 @@ export class ElementHandle<
       root: adoptedRoot,
     });
     await adoptedRoot.dispose();
-    if (!handle) return null;
+    if (!handle) {
+      return null;
+    }
     const mainExecutionContext = await frame._mainWorld.executionContext();
     const result = await mainExecutionContext._adoptElementHandle(handle);
     await handle.dispose();
@@ -497,7 +503,9 @@ export class ElementHandle<
       root: adoptedRoot,
     });
     await adoptedRoot.dispose();
-    if (!handle) return null;
+    if (!handle) {
+      return null;
+    }
     const mainExecutionContext = await frame._mainWorld.executionContext();
     const result = await mainExecutionContext._adoptElementHandle(handle);
     await handle.dispose();
@@ -516,7 +524,9 @@ export class ElementHandle<
     const nodeInfo = await this._client.send('DOM.describeNode', {
       objectId: this._remoteObject.objectId,
     });
-    if (typeof nodeInfo.node.frameId !== 'string') return null;
+    if (typeof nodeInfo.node.frameId !== 'string') {
+      return null;
+    }
     return this.#frameManager.frame(nodeInfo.node.frameId);
   }
 
@@ -526,9 +536,12 @@ export class ElementHandle<
         element: Element,
         pageJavascriptEnabled: boolean
       ): Promise<string | false> => {
-        if (!element.isConnected) return 'Node is detached from document';
-        if (element.nodeType !== Node.ELEMENT_NODE)
+        if (!element.isConnected) {
+          return 'Node is detached from document';
+        }
+        if (element.nodeType !== Node.ELEMENT_NODE) {
           return 'Node is not of type HTMLElement';
+        }
         // force-scroll if page's javascript is disabled.
         if (!pageJavascriptEnabled) {
           element.scrollIntoView({
@@ -563,7 +576,9 @@ export class ElementHandle<
       this.#page.isJavaScriptEnabled()
     );
 
-    if (error) throw new Error(error);
+    if (error) {
+      throw new Error(error);
+    }
   }
 
   async #getOOPIFOffsets(
@@ -610,8 +625,9 @@ export class ElementHandle<
         .catch(debugError),
       this.#page._client().send('Page.getLayoutMetrics'),
     ]);
-    if (!result || !result.quads.length)
+    if (!result || !result.quads.length) {
       throw new Error('Node is either not clickable or not an HTMLElement');
+    }
     // Filter out quads that have too small area to click into.
     // Fallback to `layoutViewport` in case of using Firefox.
     const { clientWidth, clientHeight } =
@@ -624,8 +640,9 @@ export class ElementHandle<
         this.#intersectQuadWithViewport(quad, clientWidth, clientHeight)
       )
       .filter((quad) => computeQuadArea(quad) > 1);
-    if (!quads.length)
+    if (!quads.length) {
       throw new Error('Node is either not clickable or not an HTMLElement');
+    }
     const quad = quads[0]!;
     if (offset) {
       // Return the point of the first quad identified by offset.
@@ -971,7 +988,9 @@ export class ElementHandle<
   async boundingBox(): Promise<BoundingBox | null> {
     const result = await this.#getBoxModel();
 
-    if (!result) return null;
+    if (!result) {
+      return null;
+    }
 
     const { offsetX, offsetY } = await this.#getOOPIFOffsets(this.#frame);
     const quad = result.model.border;
@@ -994,7 +1013,9 @@ export class ElementHandle<
   async boxModel(): Promise<BoxModel | null> {
     const result = await this.#getBoxModel();
 
-    if (!result) return null;
+    if (!result) {
+      return null;
+    }
 
     const { offsetX, offsetY } = await this.#getOOPIFOffsets(this.#frame);
 
@@ -1078,7 +1099,9 @@ export class ElementHandle<
       )
     );
 
-    if (needsViewportReset) await this.#page.setViewport(viewport);
+    if (needsViewportReset) {
+      await this.#page.setViewport(viewport);
+    }
 
     return imageData;
   }
@@ -1149,10 +1172,11 @@ export class ElementHandle<
     ...args: SerializableOrJSHandle[]
   ): Promise<WrapElementHandle<ReturnType>> {
     const elementHandle = await this.$(selector);
-    if (!elementHandle)
+    if (!elementHandle) {
       throw new Error(
         `Error: failed to find element matching selector "${selector}"`
       );
+    }
     const result = await elementHandle.evaluate<
       (
         element: Element,
@@ -1236,7 +1260,9 @@ export class ElementHandle<
         );
         const array = [];
         let item;
-        while ((item = iterator.iterateNext())) array.push(item);
+        while ((item = iterator.iterateNext())) {
+          array.push(item);
+        }
         return array;
       },
       expression
@@ -1246,7 +1272,9 @@ export class ElementHandle<
     const result = [];
     for (const property of properties.values()) {
       const elementHandle = property.asElement();
-      if (elementHandle) result.push(elementHandle);
+      if (elementHandle) {
+        result.push(elementHandle);
+      }
     }
     return result;
   }

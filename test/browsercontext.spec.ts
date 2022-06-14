@@ -113,7 +113,9 @@ describe('BrowserContext', function () {
         resolved = true;
         if (error instanceof puppeteer.errors.TimeoutError) {
           console.error(error);
-        } else throw error;
+        } else {
+          throw error;
+        }
       });
     const page = await context.newPage();
     expect(resolved).toBe(false);
@@ -124,7 +126,9 @@ describe('BrowserContext', function () {
     } catch (error) {
       if (error instanceof puppeteer.errors.TimeoutError) {
         console.error(error);
-      } else throw error;
+      } else {
+        throw error;
+      }
     }
     await context.close();
   });

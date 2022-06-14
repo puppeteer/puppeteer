@@ -40,33 +40,42 @@ describe('request interception', function () {
         const actionResults: ActionResult[] = [];
         await page.setRequestInterception(true);
         page.on('request', (request) => {
-          if (request.url().endsWith('.css'))
+          if (request.url().endsWith('.css')) {
             request.continue(
               { headers: { ...request.headers(), xaction: 'continue' } },
               expectedAction === 'continue' ? 1 : 0
             );
-          else request.continue({}, 0);
+          } else {
+            request.continue({}, 0);
+          }
         });
         page.on('request', (request) => {
-          if (request.url().endsWith('.css'))
+          if (request.url().endsWith('.css')) {
             request.respond(
               { headers: { xaction: 'respond' } },
               expectedAction === 'respond' ? 1 : 0
             );
-          else request.continue({}, 0);
+          } else {
+            request.continue({}, 0);
+          }
         });
         page.on('request', (request) => {
-          if (request.url().endsWith('.css'))
+          if (request.url().endsWith('.css')) {
             request.abort('aborted', expectedAction === 'abort' ? 1 : 0);
-          else request.continue({}, 0);
+          } else {
+            request.continue({}, 0);
+          }
         });
         page.on('response', (response) => {
           const { xaction } = response.headers();
-          if (response.url().endsWith('.css') && !!xaction)
+          if (response.url().endsWith('.css') && !!xaction) {
             actionResults.push(xaction as ActionResult);
+          }
         });
         page.on('requestfailed', (request) => {
-          if (request.url().endsWith('.css')) actionResults.push('abort');
+          if (request.url().endsWith('.css')) {
+            actionResults.push('abort');
+          }
         });
 
         const response = await (async () => {
@@ -172,7 +181,9 @@ describe('request interception', function () {
       await page.setRequestInterception(true);
       const requests = [];
       page.on('request', (request) => {
-        if (!utils.isFavicon(request)) requests.push(request);
+        if (!utils.isFavicon(request)) {
+          requests.push(request);
+        }
         request.continue({}, 0);
       });
       await page.goto(server.PREFIX + '/one-style.html');
@@ -248,8 +259,11 @@ describe('request interception', function () {
 
       await page.setRequestInterception(true);
       page.on('request', (request) => {
-        if (request.url().endsWith('.css')) request.abort('failed', 0);
-        else request.continue({}, 0);
+        if (request.url().endsWith('.css')) {
+          request.abort('failed', 0);
+        } else {
+          request.continue({}, 0);
+        }
       });
       let failedRequests = 0;
       page.on('requestfailed', () => ++failedRequests);
@@ -310,8 +324,11 @@ describe('request interception', function () {
       let error = null;
       await page.goto(server.EMPTY_PAGE).catch((error_) => (error = error_));
       expect(error).toBeTruthy();
-      if (isChrome) expect(error.message).toContain('net::ERR_FAILED');
-      else expect(error.message).toContain('NS_ERROR_FAILURE');
+      if (isChrome) {
+        expect(error.message).toContain('net::ERR_FAILED');
+      } else {
+        expect(error.message).toContain('NS_ERROR_FAILURE');
+      }
     });
     it('should work with redirects', async () => {
       const { page, server } = getTestState();
@@ -360,7 +377,9 @@ describe('request interception', function () {
       const requests = [];
       page.on('request', (request) => {
         request.continue({}, 0);
-        if (!utils.isFavicon(request)) requests.push(request);
+        if (!utils.isFavicon(request)) {
+          requests.push(request);
+        }
       });
       server.setRedirect('/one-style.css', '/two-style.css');
       server.setRedirect('/two-style.css', '/three-style.css');
@@ -388,9 +407,11 @@ describe('request interception', function () {
       server.setRedirect('/non-existing.json', '/non-existing-2.json');
       server.setRedirect('/non-existing-2.json', '/simple.html');
       page.on('request', (request) => {
-        if (request.url().includes('non-existing-2'))
+        if (request.url().includes('non-existing-2')) {
           request.abort('failed', 0);
-        else request.continue({}, 0);
+        } else {
+          request.continue({}, 0);
+        }
       });
       await page.goto(server.EMPTY_PAGE);
       const result = await page.evaluate(async () => {
@@ -400,8 +421,11 @@ describe('request interception', function () {
           return error.message;
         }
       });
-      if (isChrome) expect(result).toContain('Failed to fetch');
-      else expect(result).toContain('NetworkError');
+      if (isChrome) {
+        expect(result).toContain('Failed to fetch');
+      } else {
+        expect(result).toContain('NetworkError');
+      }
     });
     it('should work with equal requests', async () => {
       const { page, server } = getTestState();
@@ -868,6 +892,8 @@ describe('request interception', function () {
 function pathToFileURL(path: string): string {
   let pathName = path.replace(/\\/g, '/');
   // Windows drive letter must be prefixed with a slash.
-  if (!pathName.startsWith('/')) pathName = '/' + pathName;
+  if (!pathName.startsWith('/')) {
+    pathName = '/' + pathName;
+  }
   return 'file://' + pathName;
 }

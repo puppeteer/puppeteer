@@ -255,7 +255,9 @@ describe('network', function () {
       server.setRoute('/post', (req, res) => res.end());
       let request = null;
       page.on('request', (r) => {
-        if (!utils.isFavicon(r)) request = r;
+        if (!utils.isFavicon(r)) {
+          request = r;
+        }
       });
       await page.evaluate(() =>
         fetch('./post', {
@@ -504,8 +506,11 @@ describe('network', function () {
 
       await page.setRequestInterception(true);
       page.on('request', (request) => {
-        if (request.url().endsWith('css')) request.abort();
-        else request.continue();
+        if (request.url().endsWith('css')) {
+          request.abort();
+        } else {
+          request.continue();
+        }
       });
       const failedRequests = [];
       page.on('requestfailed', (request) => failedRequests.push(request));
@@ -514,10 +519,11 @@ describe('network', function () {
       expect(failedRequests[0].url()).toContain('one-style.css');
       expect(failedRequests[0].response()).toBe(null);
       expect(failedRequests[0].resourceType()).toBe('stylesheet');
-      if (isChrome)
+      if (isChrome) {
         expect(failedRequests[0].failure().errorText).toBe('net::ERR_FAILED');
-      else
+      } else {
         expect(failedRequests[0].failure().errorText).toBe('NS_ERROR_FAILURE');
+      }
       expect(failedRequests[0].frame()).toBeTruthy();
     });
     it('Page.Events.RequestFinished', async () => {
