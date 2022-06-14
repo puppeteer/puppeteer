@@ -78,46 +78,62 @@ function checkSorting(doc) {
       ;
       eventIndex < members.length && members[eventIndex].kind === 'event';
       ++eventIndex
-    );
+    ) {}
     for (
       ;
       eventIndex < members.length && members[eventIndex].kind !== 'event';
       ++eventIndex
-    );
-    if (eventIndex < members.length)
+    ) {}
+    if (eventIndex < members.length) {
       errors.push(
         `Events should go first. Event '${members[eventIndex].name}' in class ${cls.name} breaks order`
       );
+    }
 
     // Constructor should be right after events and before all other members.
     const constructorIndex = members.findIndex(
       (member) => member.kind === 'method' && member.name === 'constructor'
     );
-    if (constructorIndex > 0 && members[constructorIndex - 1].kind !== 'event')
+    if (
+      constructorIndex > 0 &&
+      members[constructorIndex - 1].kind !== 'event'
+    ) {
       errors.push(`Constructor of ${cls.name} should go before other methods`);
+    }
 
     // Events should be sorted alphabetically.
     for (let i = 0; i < members.length - 1; ++i) {
       const member1 = cls.membersArray[i];
       const member2 = cls.membersArray[i + 1];
-      if (member1.kind !== 'event' || member2.kind !== 'event') continue;
-      if (member1.name > member2.name)
+      if (member1.kind !== 'event' || member2.kind !== 'event') {
+        continue;
+      }
+      if (member1.name > member2.name) {
         errors.push(
           `Event '${member1.name}' in class ${cls.name} breaks alphabetic ordering of events`
         );
+      }
     }
 
     // All other members should be sorted alphabetically.
     for (let i = 0; i < members.length - 1; ++i) {
       const member1 = cls.membersArray[i];
       const member2 = cls.membersArray[i + 1];
-      if (member1.kind === 'event' || member2.kind === 'event') continue;
-      if (member1.kind === 'method' && member1.name === 'constructor') continue;
+      if (member1.kind === 'event' || member2.kind === 'event') {
+        continue;
+      }
+      if (member1.kind === 'method' && member1.name === 'constructor') {
+        continue;
+      }
       if (member1.name > member2.name) {
         let memberName1 = `${cls.name}.${member1.name}`;
-        if (member1.kind === 'method') memberName1 += '()';
+        if (member1.kind === 'method') {
+          memberName1 += '()';
+        }
         let memberName2 = `${cls.name}.${member2.name}`;
-        if (member2.kind === 'method') memberName2 += '()';
+        if (member2.kind === 'method') {
+          memberName2 += '()';
+        }
         errors.push(
           `Bad alphabetic ordering of ${cls.name} members: ${memberName1} should go after ${memberName2}`
         );
@@ -136,7 +152,9 @@ function filterJSDocumentation(jsDocumentation) {
   // Filter private classes and methods.
   const classes = [];
   for (const cls of jsDocumentation.classesArray) {
-    if (includedClasses && !includedClasses.has(cls.name)) continue;
+    if (includedClasses && !includedClasses.has(cls.name)) {
+      continue;
+    }
     const members = cls.membersArray.filter(
       (member) => !EXCLUDE_PROPERTIES.has(`${cls.name}.${member.name}`)
     );
@@ -154,22 +172,25 @@ function checkDuplicates(doc) {
   const classes = new Set();
   // Report duplicates.
   for (const cls of doc.classesArray) {
-    if (classes.has(cls.name))
+    if (classes.has(cls.name)) {
       errors.push(`Duplicate declaration of class ${cls.name}`);
+    }
     classes.add(cls.name);
     const members = new Set();
     for (const member of cls.membersArray) {
-      if (members.has(member.kind + ' ' + member.name))
+      if (members.has(member.kind + ' ' + member.name)) {
         errors.push(
           `Duplicate declaration of ${member.kind} ${cls.name}.${member.name}()`
         );
+      }
       members.add(member.kind + ' ' + member.name);
       const args = new Set();
       for (const arg of member.argsArray) {
-        if (args.has(arg.name))
+        if (args.has(arg.name)) {
           errors.push(
             `Duplicate declaration of argument ${cls.name}.${member.name} "${arg.name}"`
           );
+        }
         args.add(arg.name);
       }
     }
@@ -220,8 +241,9 @@ function compareDocumentations(actual, expected) {
     'launch',
   ]);
 
-  for (const className of classesDiff.extra)
+  for (const className of classesDiff.extra) {
     errors.push(`Non-existing class found: ${className}`);
+  }
 
   for (const className of classesDiff.missing) {
     if (className === 'PuppeteerNode') {
@@ -249,8 +271,9 @@ function compareDocumentations(actual, expected) {
 
     for (const methodName of methodDiff.missing) {
       const missingMethodsForClass = expectedNotFoundMethods.get(className);
-      if (missingMethodsForClass && missingMethodsForClass.has(methodName))
+      if (missingMethodsForClass && missingMethodsForClass.has(methodName)) {
         continue;
+      }
       errors.push(`Method not found: ${className}.${methodName}()`);
     }
 
@@ -258,14 +281,15 @@ function compareDocumentations(actual, expected) {
       const actualMethod = actualClass.methods.get(methodName);
       const expectedMethod = expectedClass.methods.get(methodName);
       if (!actualMethod.type !== !expectedMethod.type) {
-        if (actualMethod.type)
+        if (actualMethod.type) {
           errors.push(
             `Method ${className}.${methodName} has unneeded description of return type`
           );
-        else
+        } else {
           errors.push(
             `Method ${className}.${methodName} is missing return type description`
           );
+        }
       } else if (actualMethod.hasReturn) {
         checkType(
           `Method ${className}.${methodName} has the wrong return type: `,
@@ -287,20 +311,23 @@ function compareDocumentations(actual, expected) {
           const text = [
             `Method ${className}.${methodName}() fails to describe its parameters:`,
           ];
-          for (const arg of argsDiff.missing)
+          for (const arg of argsDiff.missing) {
             text.push(`- Argument not found: ${arg}`);
-          for (const arg of argsDiff.extra)
+          }
+          for (const arg of argsDiff.extra) {
             text.push(`- Non-existing argument found: ${arg}`);
+          }
           errors.push(text.join('\n'));
         }
       }
 
-      for (const arg of argsDiff.equal)
+      for (const arg of argsDiff.equal) {
         checkProperty(
           `Method ${className}.${methodName}()`,
           actualMethod.args.get(arg),
           expectedMethod.args.get(arg)
         );
+      }
     }
     const actualProperties = Array.from(actualClass.properties.keys()).sort();
     const expectedProperties = Array.from(
@@ -313,18 +340,21 @@ function compareDocumentations(actual, expected) {
       }
       errors.push(`Non-existing property found: ${className}.${propertyName}`);
     }
-    for (const propertyName of propertyDiff.missing)
+    for (const propertyName of propertyDiff.missing) {
       errors.push(`Property not found: ${className}.${propertyName}`);
+    }
 
     const actualEvents = Array.from(actualClass.events.keys()).sort();
     const expectedEvents = Array.from(expectedClass.events.keys()).sort();
     const eventsDiff = diff(actualEvents, expectedEvents);
-    for (const eventName of eventsDiff.extra)
+    for (const eventName of eventsDiff.extra) {
       errors.push(
         `Non-existing event found in class ${className}: '${eventName}'`
       );
-    for (const eventName of eventsDiff.missing)
+    }
+    for (const eventName of eventsDiff.missing) {
       errors.push(`Event not found in class ${className}: '${eventName}'`);
+    }
   }
 
   /**
@@ -1052,7 +1082,9 @@ function compareDocumentations(actual, expected) {
     ]);
 
     const expectedForSource = expectedNamingMismatches.get(source);
-    if (!expectedForSource) return false;
+    if (!expectedForSource) {
+      return false;
+    }
 
     const namingMismatchIsExpected =
       expectedForSource.actualName === actualName &&
@@ -1068,8 +1100,12 @@ function compareDocumentations(actual, expected) {
    */
   function checkType(source, actual, expected) {
     // TODO(@JoelEinbinder): check functions and Serializable
-    if (actual.name.includes('unction') || actual.name.includes('Serializable'))
+    if (
+      actual.name.includes('unction') ||
+      actual.name.includes('Serializable')
+    ) {
       return;
+    }
     // We don't have nullchecks on for TypeScript
     const actualName = actual.name.replace(/[\? ]/g, '');
     // TypeScript likes to add some spaces
@@ -1079,13 +1115,16 @@ function compareDocumentations(actual, expected) {
       actualName,
       expectedName
     );
-    if (expectedName !== actualName && !namingMismatchIsExpected)
+    if (expectedName !== actualName && !namingMismatchIsExpected) {
       errors.push(`${source} ${actualName} != ${expectedName}`);
+    }
 
     /* If we got a naming mismatch and it was expected, don't check the properties
      * as they will likely be considered "wrong" by DocLint too.
      */
-    if (namingMismatchIsExpected) return;
+    if (namingMismatchIsExpected) {
+      return;
+    }
 
     /* Some methods cause errors in the property checks for an unknown reason
      * so we support a list of methods whose parameters are not checked.
@@ -1096,7 +1135,9 @@ function compareDocumentations(actual, expected) {
       'Method Puppeteer.connect() options',
       'Method Page.setUserAgent() userAgentMetadata',
     ]);
-    if (skipPropertyChecksOnMethods.has(source)) return;
+    if (skipPropertyChecksOnMethods.has(source)) {
+      return;
+    }
 
     const actualPropertiesMap = new Map(
       actual.properties.map((property) => [property.name, property.type])
@@ -1108,16 +1149,19 @@ function compareDocumentations(actual, expected) {
       Array.from(actualPropertiesMap.keys()).sort(),
       Array.from(expectedPropertiesMap.keys()).sort()
     );
-    for (const propertyName of propertiesDiff.extra)
+    for (const propertyName of propertiesDiff.extra) {
       errors.push(`${source} has unexpected property ${propertyName}`);
-    for (const propertyName of propertiesDiff.missing)
+    }
+    for (const propertyName of propertiesDiff.missing) {
       errors.push(`${source} is missing property ${propertyName}`);
-    for (const propertyName of propertiesDiff.equal)
+    }
+    for (const propertyName of propertiesDiff.equal) {
       checkType(
         source + '.' + propertyName,
         actualPropertiesMap.get(propertyName),
         expectedPropertiesMap.get(propertyName)
       );
+    }
   }
 
   return errors;
@@ -1131,9 +1175,15 @@ function compareDocumentations(actual, expected) {
 function diff(actual, expected) {
   const N = actual.length;
   const M = expected.length;
-  if (N === 0 && M === 0) return { extra: [], missing: [], equal: [] };
-  if (N === 0) return { extra: [], missing: expected.slice(), equal: [] };
-  if (M === 0) return { extra: actual.slice(), missing: [], equal: [] };
+  if (N === 0 && M === 0) {
+    return { extra: [], missing: [], equal: [] };
+  }
+  if (N === 0) {
+    return { extra: [], missing: expected.slice(), equal: [] };
+  }
+  if (M === 0) {
+    return { extra: actual.slice(), missing: [], equal: [] };
+  }
   const d = new Array(N);
   const bt = new Array(N);
   for (let i = 0; i < N; ++i) {
@@ -1179,8 +1229,12 @@ function diff(actual, expected) {
         break;
     }
   }
-  while (i >= 0) extra.push(actual[i--]);
-  while (j >= 0) missing.push(expected[j--]);
+  while (i >= 0) {
+    extra.push(actual[i--]);
+  }
+  while (j >= 0) {
+    missing.push(expected[j--]);
+  }
   extra.reverse();
   missing.reverse();
   equal.reverse();

@@ -69,6 +69,6 @@
   );
   function updateButtons(buttons) {
     for (let i = 0; i < 5; i++)
-      box.classList.toggle('button-' + i, buttons & (1 << i));
+      {box.classList.toggle('button-' + i, buttons & (1 << i));}
   }
 })();

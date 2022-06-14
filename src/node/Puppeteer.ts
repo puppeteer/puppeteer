@@ -116,7 +116,9 @@ export class PuppeteerNode extends Puppeteer {
    * @returns Promise which resolves to browser instance.
    */
   override connect(options: ConnectOptions): Promise<Browser> {
-    if (options.product) this._productName = options.product;
+    if (options.product) {
+      this._productName = options.product;
+    }
     return super.connect(options);
   }
 
@@ -131,7 +133,9 @@ export class PuppeteerNode extends Puppeteer {
    * @internal
    */
   set _productName(name: Product | undefined) {
-    if (this.#productName !== name) this._changedProduct = true;
+    if (this.#productName !== name) {
+      this._changedProduct = true;
+    }
     this.#productName = name;
   }
 
@@ -161,7 +165,9 @@ export class PuppeteerNode extends Puppeteer {
    * @returns Promise which resolves to browser instance.
    */
   launch(options: PuppeteerLaunchOptions = {}): Promise<Browser> {
-    if (options.product) this._productName = options.product;
+    if (options.product) {
+      this._productName = options.product;
+    }
     return this._launcher.launch(options);
   }
 

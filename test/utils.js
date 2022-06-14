@@ -111,10 +111,13 @@ const utils = (module.exports = {
   dumpFrames: function (frame, indentation) {
     indentation = indentation || '';
     let description = frame.url().replace(/:\d{4}\//, ':<PORT>/');
-    if (frame.name()) description += ' (' + frame.name() + ')';
+    if (frame.name()) {
+      description += ' (' + frame.name() + ')';
+    }
     const result = [indentation + description];
-    for (const child of frame.childFrames())
+    for (const child of frame.childFrames()) {
       result.push(...utils.dumpFrames(child, '    ' + indentation));
+    }
     return result;
   },
 
@@ -126,7 +129,9 @@ const utils = (module.exports = {
   waitEvent: function (emitter, eventName, predicate = () => true) {
     return new Promise((fulfill) => {
       emitter.on(eventName, function listener(event) {
-        if (!predicate(event)) return;
+        if (!predicate(event)) {
+          return;
+        }
         emitter.removeListener(eventName, listener);
         fulfill(event);
       });

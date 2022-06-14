@@ -152,9 +152,11 @@ describe('JSHandle', function () {
       const windowHandle = await page.evaluateHandle('window');
       let error = null;
       await windowHandle.jsonValue().catch((error_) => (error = error_));
-      if (isChrome)
+      if (isChrome) {
         expect(error.message).toContain('Object reference chain is too long');
-      else expect(error.message).toContain('Object is not serializable');
+      } else {
+        expect(error.message).toContain('Object is not serializable');
+      }
     });
   });
 

@@ -28,10 +28,11 @@ export const debugError = debug('puppeteer:error');
 export function getExceptionMessage(
   exceptionDetails: Protocol.Runtime.ExceptionDetails
 ): string {
-  if (exceptionDetails.exception)
+  if (exceptionDetails.exception) {
     return (
       exceptionDetails.exception.description || exceptionDetails.exception.value
     );
+  }
   let message = exceptionDetails.text;
   if (exceptionDetails.stackTrace) {
     for (const callframe of exceptionDetails.stackTrace.callFrames) {
@@ -53,8 +54,9 @@ export function valueFromRemoteObject(
 ): any {
   assert(!remoteObject.objectId, 'Cannot extract value when objectId is given');
   if (remoteObject.unserializableValue) {
-    if (remoteObject.type === 'bigint' && typeof BigInt !== 'undefined')
+    if (remoteObject.type === 'bigint' && typeof BigInt !== 'undefined') {
       return BigInt(remoteObject.unserializableValue.replace('n', ''));
+    }
     switch (remoteObject.unserializableValue) {
       case '-0':
         return -0;
@@ -78,7 +80,9 @@ export async function releaseObject(
   client: CDPSession,
   remoteObject: Protocol.Runtime.RemoteObject
 ): Promise<void> {
-  if (!remoteObject.objectId) return;
+  if (!remoteObject.objectId) {
+    return;
+  }
   await client
     .send('Runtime.releaseObject', { objectId: remoteObject.objectId })
     .catch((error) => {
@@ -110,8 +114,9 @@ export function removeEventListeners(
     handler: (...args: any[]) => void;
   }>
 ): void {
-  for (const listener of listeners)
+  for (const listener of listeners) {
     listener.emitter.removeListener(listener.eventName, listener.handler);
+  }
   listeners.length = 0;
 }
 
@@ -138,7 +143,9 @@ export async function waitForEvent<T>(
     rejectCallback = reject;
   });
   const listener = addEventListener(emitter, eventName, async (event) => {
-    if (!(await predicate(event))) return;
+    if (!(await predicate(event))) {
+      return;
+    }
     resolveCallback(event);
   });
   if (timeout) {
@@ -179,7 +186,9 @@ export function evaluationString(
   }
 
   function serializeArgument(arg: unknown): string {
-    if (Object.is(arg, undefined)) return 'undefined';
+    if (Object.is(arg, undefined)) {
+      return 'undefined';
+    }
     return JSON.stringify(arg);
   }
 
@@ -266,8 +275,12 @@ export function makePredicateString(
     waitForVisible: boolean,
     waitForHidden: boolean
   ): Node | null | boolean {
-    if (!node) return waitForHidden;
-    if (!waitForVisible && !waitForHidden) return node;
+    if (!node) {
+      return waitForHidden;
+    }
+    if (!waitForVisible && !waitForHidden) {
+      return node;
+    }
     const element =
       node.nodeType === Node.TEXT_NODE
         ? (node.parentElement as Element)
@@ -307,11 +320,15 @@ export async function waitWithTimeout<T>(
   );
   const timeoutPromise = new Promise<T>((_res, rej) => (reject = rej));
   let timeoutTimer = null;
-  if (timeout) timeoutTimer = setTimeout(() => reject(timeoutError), timeout);
+  if (timeout) {
+    timeoutTimer = setTimeout(() => reject(timeoutError), timeout);
+  }
   try {
     return await Promise.race([promise, timeoutPromise]);
   } finally {
-    if (timeoutTimer) clearTimeout(timeoutTimer);
+    if (timeoutTimer) {
+      clearTimeout(timeoutTimer);
+    }
   }
 }
 

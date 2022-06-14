@@ -161,20 +161,26 @@ describe('Mouse', function () {
       ['Meta', 'metaKey'],
     ]);
     // In Firefox, the Meta modifier only exists on Mac
-    if (isFirefox && os.platform() !== 'darwin') delete modifiers['Meta'];
+    if (isFirefox && os.platform() !== 'darwin') {
+      delete modifiers['Meta'];
+    }
     for (const [modifier, key] of modifiers) {
       await page.keyboard.down(modifier);
       await page.click('#button-3');
       if (
         !(await page.evaluate((mod: string) => globalThis.lastEvent[mod], key))
-      )
+      ) {
         throw new Error(key + ' should be true');
+      }
       await page.keyboard.up(modifier);
     }
     await page.click('#button-3');
     for (const [modifier, key] of modifiers) {
-      if (await page.evaluate((mod: string) => globalThis.lastEvent[mod], key))
+      if (
+        await page.evaluate((mod: string) => globalThis.lastEvent[mod], key)
+      ) {
         throw new Error(modifiers[modifier] + ' should be false');
+      }
     }
   });
   itFailsFirefox('should send mouse wheel events', async () => {

@@ -134,10 +134,18 @@ export class Keyboard {
   }
 
   #modifierBit(key: string): number {
-    if (key === 'Alt') return 1;
-    if (key === 'Control') return 2;
-    if (key === 'Meta') return 4;
-    if (key === 'Shift') return 8;
+    if (key === 'Alt') {
+      return 1;
+    }
+    if (key === 'Control') {
+      return 2;
+    }
+    if (key === 'Meta') {
+      return 4;
+    }
+    if (key === 'Shift') {
+      return 8;
+    }
     return 0;
   }
 
@@ -154,24 +162,43 @@ export class Keyboard {
     const definition = _keyDefinitions[keyString];
     assert(definition, `Unknown key: "${keyString}"`);
 
-    if (definition.key) description.key = definition.key;
-    if (shift && definition.shiftKey) description.key = definition.shiftKey;
+    if (definition.key) {
+      description.key = definition.key;
+    }
+    if (shift && definition.shiftKey) {
+      description.key = definition.shiftKey;
+    }
 
-    if (definition.keyCode) description.keyCode = definition.keyCode;
-    if (shift && definition.shiftKeyCode)
+    if (definition.keyCode) {
+      description.keyCode = definition.keyCode;
+    }
+    if (shift && definition.shiftKeyCode) {
       description.keyCode = definition.shiftKeyCode;
+    }
 
-    if (definition.code) description.code = definition.code;
+    if (definition.code) {
+      description.code = definition.code;
+    }
 
-    if (definition.location) description.location = definition.location;
+    if (definition.location) {
+      description.location = definition.location;
+    }
 
-    if (description.key.length === 1) description.text = description.key;
+    if (description.key.length === 1) {
+      description.text = description.key;
+    }
 
-    if (definition.text) description.text = definition.text;
-    if (shift && definition.shiftText) description.text = definition.shiftText;
+    if (definition.text) {
+      description.text = definition.text;
+    }
+    if (shift && definition.shiftText) {
+      description.text = definition.shiftText;
+    }
 
     // if any modifiers besides shift are pressed, no text should be sent
-    if (this._modifiers & ~8) description.text = '';
+    if (this._modifiers & ~8) {
+      description.text = '';
+    }
 
     return description;
   }
@@ -249,7 +276,9 @@ export class Keyboard {
       if (this.charIsKey(char)) {
         await this.press(char, { delay });
       } else {
-        if (delay) await new Promise((f) => setTimeout(f, delay));
+        if (delay) {
+          await new Promise((f) => setTimeout(f, delay));
+        }
         await this.sendCharacter(char);
       }
     }
@@ -281,7 +310,9 @@ export class Keyboard {
   ): Promise<void> {
     const { delay = null } = options;
     await this.down(key, options);
-    if (delay) await new Promise((f) => setTimeout(f, options.delay));
+    if (delay) {
+      await new Promise((f) => setTimeout(f, options.delay));
+    }
     await this.up(key);
   }
 }

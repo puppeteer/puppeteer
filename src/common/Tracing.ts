@@ -89,7 +89,9 @@ export class Tracing {
       categories = defaultCategories,
     } = options;
 
-    if (screenshots) categories.push('disabled-by-default-devtools.screenshot');
+    if (screenshots) {
+      categories.push('disabled-by-default-devtools.screenshot');
+    }
 
     const excludedCategories = categories
       .filter((cat) => cat.startsWith('-'))

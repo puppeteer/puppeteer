@@ -38,8 +38,11 @@ describe('Browser specs', function () {
 
       const userAgent = await browser.userAgent();
       expect(userAgent.length).toBeGreaterThan(0);
-      if (isChrome) expect(userAgent).toContain('WebKit');
-      else expect(userAgent).toContain('Gecko');
+      if (isChrome) {
+        expect(userAgent).toContain('WebKit');
+      } else {
+        expect(userAgent).toContain('Gecko');
+      }
     });
   });
 

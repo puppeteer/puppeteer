@@ -326,9 +326,12 @@ export class BrowserFetcher {
     assert(fileName, `A malformed download URL was found: ${url}.`);
     const archivePath = path.join(this.#downloadsFolder, fileName);
     const outputPath = this.#getFolderPath(revision);
-    if (await existsAsync(outputPath)) return this.revisionInfo(revision);
-    if (!(await existsAsync(this.#downloadsFolder)))
+    if (await existsAsync(outputPath)) {
+      return this.revisionInfo(revision);
+    }
+    if (!(await existsAsync(this.#downloadsFolder))) {
       await mkdirAsync(this.#downloadsFolder);
+    }
 
     // Use system Chromium builds on Linux ARM devices
     if (os.platform() !== 'darwin' && os.arch() === 'arm64') {
@@ -339,10 +342,14 @@ export class BrowserFetcher {
       await _downloadFile(url, archivePath, progressCallback);
       await install(archivePath, outputPath);
     } finally {
-      if (await existsAsync(archivePath)) await unlinkAsync(archivePath);
+      if (await existsAsync(archivePath)) {
+        await unlinkAsync(archivePath);
+      }
     }
     const revisionInfo = this.revisionInfo(revision);
-    if (revisionInfo) await chmodAsync(revisionInfo.executablePath, 0o755);
+    if (revisionInfo) {
+      await chmodAsync(revisionInfo.executablePath, 0o755);
+    }
     return revisionInfo;
   }
 
@@ -353,7 +360,9 @@ export class BrowserFetcher {
    * available locally on disk.
    */
   async localRevisions(): Promise<string[]> {
-    if (!(await existsAsync(this.#downloadsFolder))) return [];
+    if (!(await existsAsync(this.#downloadsFolder))) {
+      return [];
+    }
     const fileNames = await readdirAsync(this.#downloadsFolder);
     return fileNames
       .map((fileName) => parseFolderPath(this.#product, fileName))
@@ -390,7 +399,7 @@ export class BrowserFetcher {
     const folderPath = this.#getFolderPath(revision);
     let executablePath = '';
     if (this.#product === 'chrome') {
-      if (this.#platform === 'mac' || this.#platform === 'mac_arm')
+      if (this.#platform === 'mac' || this.#platform === 'mac_arm') {
         executablePath = path.join(
           folderPath,
           archiveName(this.#product, this.#platform, revision),
@@ -399,21 +408,23 @@ export class BrowserFetcher {
           'MacOS',
           'Chromium'
         );
-      else if (this.#platform === 'linux')
+      } else if (this.#platform === 'linux') {
         executablePath = path.join(
           folderPath,
           archiveName(this.#product, this.#platform, revision),
           'chrome'
         );
-      else if (this.#platform === 'win32' || this.#platform === 'win64')
+      } else if (this.#platform === 'win32' || this.#platform === 'win64') {
         executablePath = path.join(
           folderPath,
           archiveName(this.#product, this.#platform, revision),
           'chrome.exe'
         );
-      else throw new Error('Unsupported platform: ' + this.#platform);
+      } else {
+        throw new Error('Unsupported platform: ' + this.#platform);
+      }
     } else if (this.#product === 'firefox') {
-      if (this.#platform === 'mac' || this.#platform === 'mac_arm')
+      if (this.#platform === 'mac' || this.#platform === 'mac_arm') {
         executablePath = path.join(
           folderPath,
           'Firefox Nightly.app',
@@ -421,12 +432,16 @@ export class BrowserFetcher {
           'MacOS',
           'firefox'
         );
-      else if (this.#platform === 'linux')
+      } else if (this.#platform === 'linux') {
         executablePath = path.join(folderPath, 'firefox', 'firefox');
-      else if (this.#platform === 'win32' || this.#platform === 'win64')
+      } else if (this.#platform === 'win32' || this.#platform === 'win64') {
         executablePath = path.join(folderPath, 'firefox', 'firefox.exe');
-      else throw new Error('Unsupported platform: ' + this.#platform);
-    } else throw new Error('Unsupported product: ' + this.#product);
+      } else {
+        throw new Error('Unsupported platform: ' + this.#platform);
+      }
+    } else {
+      throw new Error('Unsupported product: ' + this.#product);
+    }
     const url = _downloadURL(
       this.#product,
       this.#platform,
@@ -463,9 +478,13 @@ function parseFolderPath(
 ): { product: string; platform: string; revision: string } | undefined {
   const name = path.basename(folderPath);
   const splits = name.split('-');
-  if (splits.length !== 2) return;
+  if (splits.length !== 2) {
+    return;
+  }
   const [platform, revision] = splits;
-  if (!revision || !platform || !(platform in downloadURLs[product])) return;
+  if (!revision || !platform || !(platform in downloadURLs[product])) {
+    return;
+  }
   return { product, platform, revision };
 }
 
@@ -503,7 +522,9 @@ function _downloadFile(
     file.on('error', (error) => reject(error));
     response.pipe(file);
     totalBytes = parseInt(response.headers['content-length']!, 10);
-    if (progressCallback) response.on('data', onData);
+    if (progressCallback) {
+      response.on('data', onData);
+    }
   });
   request.on('error', (error) => reject(error));
   return promise;
@@ -516,15 +537,17 @@ function _downloadFile(
 
 function install(archivePath: string, folderPath: string): Promise<unknown> {
   debugFetcher(`Installing ${archivePath} to ${folderPath}`);
-  if (archivePath.endsWith('.zip'))
+  if (archivePath.endsWith('.zip')) {
     return extractZip(archivePath, { dir: folderPath });
-  else if (archivePath.endsWith('.tar.bz2'))
+  } else if (archivePath.endsWith('.tar.bz2')) {
     return _extractTar(archivePath, folderPath);
-  else if (archivePath.endsWith('.dmg'))
+  } else if (archivePath.endsWith('.dmg')) {
     return mkdirAsync(folderPath).then(() =>
       _installDMG(archivePath, folderPath)
     );
-  else throw new Error(`Unsupported archive format: ${archivePath}`);
+  } else {
+    throw new Error(`Unsupported archive format: ${archivePath}`);
+  }
 }
 
 /**
@@ -549,23 +572,30 @@ function _installDMG(dmgPath: string, folderPath: string): Promise<void> {
   return new Promise<void>((fulfill, reject): void => {
     const mountCommand = `hdiutil attach -nobrowse -noautoopen "${dmgPath}"`;
     childProcess.exec(mountCommand, (err, stdout) => {
-      if (err) return reject(err);
+      if (err) {
+        return reject(err);
+      }
       const volumes = stdout.match(/\/Volumes\/(.*)/m);
-      if (!volumes)
+      if (!volumes) {
         return reject(new Error(`Could not find volume path in ${stdout}`));
+      }
       mountPath = volumes[0]!;
       readdirAsync(mountPath)
         .then((fileNames) => {
           const appName = fileNames.find(
             (item) => typeof item === 'string' && item.endsWith('.app')
           );
-          if (!appName)
+          if (!appName) {
             return reject(new Error(`Cannot find app in ${mountPath}`));
+          }
           const copyPath = path.join(mountPath!, appName);
           debugFetcher(`Copying ${copyPath} to ${folderPath}`);
           childProcess.exec(`cp -R "${copyPath}" "${folderPath}"`, (err) => {
-            if (err) reject(err);
-            else fulfill();
+            if (err) {
+              reject(err);
+            } else {
+              fulfill();
+            }
           });
         })
         .catch(reject);
@@ -575,11 +605,15 @@ function _installDMG(dmgPath: string, folderPath: string): Promise<void> {
       console.error(error);
     })
     .finally((): void => {
-      if (!mountPath) return;
+      if (!mountPath) {
+        return;
+      }
       const unmountCommand = `hdiutil detach "${mountPath}" -quiet`;
       debugFetcher(`Unmounting ${mountPath}`);
       childProcess.exec(unmountCommand, (err) => {
-        if (err) console.error(`Error unmounting dmg: ${err}`);
+        if (err) {
+          console.error(`Error unmounting dmg: ${err}`);
+        }
       });
     });
 }
@@ -637,9 +671,11 @@ function httpRequest(
       res.statusCode >= 300 &&
       res.statusCode < 400 &&
       res.headers.location
-    )
+    ) {
       httpRequest(res.headers.location, method, response);
-    else response(res);
+    } else {
+      response(res);
+    }
   };
   const request =
     options.protocol === 'https:'

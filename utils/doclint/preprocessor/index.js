@@ -32,8 +32,9 @@ module.exports.ensureReleasedAPILinks = function (
   for (const source of sources) {
     const text = source.text();
     const newText = text.replace(apiLinkRegex, lastReleasedAPI);
-    if (source.setText(newText))
+    if (source.setText(newText)) {
       messages.push(Message.info(`GEN: updated ${source.projectPath()}`));
+    }
   }
   return messages;
 };
@@ -121,7 +122,9 @@ function generateTableOfContents(mdText) {
       insideCodeBlock = !insideCodeBlock;
       continue;
     }
-    if (!insideCodeBlock && line.startsWith('#')) titles.push(line);
+    if (!insideCodeBlock && line.startsWith('#')) {
+      titles.push(line);
+    }
   }
   const tocEntries = [];
   for (const title of titles) {
@@ -134,7 +137,9 @@ function generateTableOfContents(mdText) {
       .replace(/[^-0-9a-zа-яё]/gi, '');
     let dedupId = id;
     let counter = 0;
-    while (ids.has(dedupId)) dedupId = id + '-' + ++counter;
+    while (ids.has(dedupId)) {
+      dedupId = id + '-' + ++counter;
+    }
     ids.add(dedupId);
     tocEntries.push({
       level: nesting.length,
@@ -162,7 +167,9 @@ const generateVersionsPerRelease = () => {
   const { versionsPerRelease } = require('../../../versions.js');
   const buffer = ['- Releases per Chromium version:'];
   for (const [chromiumVersion, puppeteerVersion] of versionsPerRelease) {
-    if (puppeteerVersion === 'NEXT') continue;
+    if (puppeteerVersion === 'NEXT') {
+      continue;
+    }
     buffer.push(
       `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://github.com/puppeteer/puppeteer/blob/${puppeteerVersion}/docs/api.md)`
     );

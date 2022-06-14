@@ -91,12 +91,15 @@ async function main(url) {
   let devices = [];
   for (const payload of devicePayloads) {
     let names = [];
-    if (payload.title === 'iPhone 6/7/8')
+    if (payload.title === 'iPhone 6/7/8') {
       names = ['iPhone 6', 'iPhone 7', 'iPhone 8'];
-    else if (payload.title === 'iPhone 6/7/8 Plus')
+    } else if (payload.title === 'iPhone 6/7/8 Plus') {
       names = ['iPhone 6 Plus', 'iPhone 7 Plus', 'iPhone 8 Plus'];
-    else if (payload.title === 'iPhone 5/SE') names = ['iPhone 5', 'iPhone SE'];
-    else names = [payload.title];
+    } else if (payload.title === 'iPhone 5/SE') {
+      names = ['iPhone 5', 'iPhone SE'];
+    } else {
+      names = [payload.title];
+    }
     for (const name of names) {
       const device = createDevice(chromeVersion, name, payload, false);
       const landscape = createDevice(chromeVersion, name, payload, true);
@@ -104,8 +107,9 @@ async function main(url) {
       if (
         landscape.viewport.width !== device.viewport.width ||
         landscape.viewport.height !== device.viewport.height
-      )
+      ) {
         devices.push(landscape);
+      }
     }
   }
   devices = devices.filter((device) => device.viewport.isMobile);
@@ -164,13 +168,15 @@ function loadFromJSONV1(json) {
       object === null ||
       !object.hasOwnProperty(key)
     ) {
-      if (typeof defaultValue !== 'undefined') return defaultValue;
+      if (typeof defaultValue !== 'undefined') {
+        return defaultValue;
+      }
       throw new Error(
         "Emulated device is missing required property '" + key + "'"
       );
     }
     const value = object[key];
-    if (typeof value !== type || value === null)
+    if (typeof value !== type || value === null) {
       throw new Error(
         "Emulated device property '" +
           key +
@@ -178,6 +184,7 @@ function loadFromJSONV1(json) {
           typeof value +
           "'"
       );
+    }
     return value;
   }
 
@@ -188,8 +195,9 @@ function loadFromJSONV1(json) {
    */
   function parseIntValue(object, key) {
     const value = /** @type {number} */ (parseValue(object, key, 'number'));
-    if (value !== Math.abs(value))
+    if (value !== Math.abs(value)) {
       throw new Error("Emulated device value '" + key + "' must be integer");
+    }
     return value;
   }
 
@@ -206,16 +214,18 @@ function loadFromJSONV1(json) {
       result.width < 0 ||
       result.width > maxDeviceSize ||
       result.width < minDeviceSize
-    )
+    ) {
       throw new Error('Emulated device has wrong width: ' + result.width);
+    }
 
     result.height = parseIntValue(json, 'height');
     if (
       result.height < 0 ||
       result.height > maxDeviceSize ||
       result.height < minDeviceSize
-    )
+    ) {
       throw new Error('Emulated device has wrong height: ' + result.height);
+    }
 
     return /** @type {!{width: number, height: number}} */ (result);
   }
@@ -227,22 +237,25 @@ function loadFromJSONV1(json) {
   );
 
   const capabilities = parseValue(json, 'capabilities', 'object', []);
-  if (!Array.isArray(capabilities))
+  if (!Array.isArray(capabilities)) {
     throw new Error('Emulated device capabilities must be an array');
+  }
   result.capabilities = [];
   for (let i = 0; i < capabilities.length; ++i) {
-    if (typeof capabilities[i] !== 'string')
+    if (typeof capabilities[i] !== 'string') {
       throw new Error('Emulated device capability must be a string');
+    }
     result.capabilities.push(capabilities[i]);
   }
 
   result.deviceScaleFactor = /** @type {number} */ (
     parseValue(json['screen'], 'device-pixel-ratio', 'number')
   );
-  if (result.deviceScaleFactor < 0 || result.deviceScaleFactor > 100)
+  if (result.deviceScaleFactor < 0 || result.deviceScaleFactor > 100) {
     throw new Error(
       'Emulated device has wrong deviceScaleFactor: ' + result.deviceScaleFactor
     );
+  }
 
   result.vertical = parseOrientation(
     parseValue(json['screen'], 'vertical', 'object')

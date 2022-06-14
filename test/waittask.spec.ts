@@ -146,7 +146,9 @@ describe('waittask specs', function () {
 
       await page.evaluateOnNewDocument(() => (globalThis.__RELOADED = true));
       await page.waitForFunction(() => {
-        if (!globalThis.__RELOADED) window.location.reload();
+        if (!globalThis.__RELOADED) {
+          window.location.reload();
+        }
         return true;
       });
     });

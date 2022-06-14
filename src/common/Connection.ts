@@ -129,7 +129,9 @@ export class Connection extends EventEmitter {
   }
 
   async #onMessage(message: string): Promise<void> {
-    if (this.#delay) await new Promise((f) => setTimeout(f, this.#delay));
+    if (this.#delay) {
+      await new Promise((f) => setTimeout(f, this.#delay));
+    }
     debugProtocolReceive(message);
     const object = JSON.parse(message);
     if (object.method === 'Target.attachedToTarget') {
@@ -159,17 +161,21 @@ export class Connection extends EventEmitter {
     }
     if (object.sessionId) {
       const session = this.#sessions.get(object.sessionId);
-      if (session) session._onMessage(object);
+      if (session) {
+        session._onMessage(object);
+      }
     } else if (object.id) {
       const callback = this.#callbacks.get(object.id);
       // Callbacks could be all rejected if someone has called `.dispose()`.
       if (callback) {
         this.#callbacks.delete(object.id);
-        if (object.error)
+        if (object.error) {
           callback.reject(
             createProtocolError(callback.error, callback.method, object)
           );
-        else callback.resolve(object.result);
+        } else {
+          callback.resolve(object.result);
+        }
       }
     } else {
       this.emit(object.method, object.params);
@@ -177,19 +183,24 @@ export class Connection extends EventEmitter {
   }
 
   #onClose(): void {
-    if (this.#closed) return;
+    if (this.#closed) {
+      return;
+    }
     this.#closed = true;
     this.#transport.onmessage = undefined;
     this.#transport.onclose = undefined;
-    for (const callback of this.#callbacks.values())
+    for (const callback of this.#callbacks.values()) {
       callback.reject(
         rewriteError(
           callback.error,
           `Protocol error (${callback.method}): Target closed.`
         )
       );
+    }
     this.#callbacks.clear();
-    for (const session of this.#sessions.values()) session._onClosed();
+    for (const session of this.#sessions.values()) {
+      session._onClosed();
+    }
     this.#sessions.clear();
     this.emit(ConnectionEmittedEvents.Disconnected);
   }
@@ -287,7 +298,7 @@ export class CDPSession extends EventEmitter {
     method: T,
     ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
-    if (!this.#connection)
+    if (!this.#connection) {
       return Promise.reject(
         new Error(
           `Protocol error (${method}): Session closed. Most likely the ${
@@ -295,6 +306,7 @@ export class CDPSession extends EventEmitter {
           } has been closed.`
         )
       );
+    }
 
     // See the comment in Connection#send explaining why we do this.
     const params = paramArgs.length ? paramArgs[0] : undefined;
@@ -322,11 +334,13 @@ export class CDPSession extends EventEmitter {
     const callback = object.id ? this.#callbacks.get(object.id) : undefined;
     if (object.id && callback) {
       this.#callbacks.delete(object.id);
-      if (object.error)
+      if (object.error) {
         callback.reject(
           createProtocolError(callback.error, callback.method, object)
         );
-      else callback.resolve(object.result);
+      } else {
+        callback.resolve(object.result);
+      }
     } else {
       assert(!object.id);
       this.emit(object.method, object.params);
@@ -338,12 +352,13 @@ export class CDPSession extends EventEmitter {
    * won't emit any events and can't be used to send messages.
    */
   async detach(): Promise<void> {
-    if (!this.#connection)
+    if (!this.#connection) {
       throw new Error(
         `Session already detached. Most likely the ${
           this.#targetType
         } has been closed.`
       );
+    }
     await this.#connection.send('Target.detachFromTarget', {
       sessionId: this.#sessionId,
     });
@@ -353,13 +368,14 @@ export class CDPSession extends EventEmitter {
    * @internal
    */
   _onClosed(): void {
-    for (const callback of this.#callbacks.values())
+    for (const callback of this.#callbacks.values()) {
       callback.reject(
         rewriteError(
           callback.error,
           `Protocol error (${callback.method}): Target closed.`
         )
       );
+    }
     this.#callbacks.clear();
     this.#connection = undefined;
     this.emit(CDPSessionEmittedEvents.Disconnected);
@@ -379,7 +395,9 @@ function createProtocolError(
   object: { error: { message: string; data: any; code: number } }
 ): Error {
   let message = `Protocol error (${method}): ${object.error.message}`;
-  if ('data' in object.error) message += ` ${object.error.data}`;
+  if ('data' in object.error) {
+    message += ` ${object.error.data}`;
+  }
   return rewriteError(error, message, object.error.message);
 }
 

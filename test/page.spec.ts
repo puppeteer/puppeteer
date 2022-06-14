@@ -67,8 +67,11 @@ describe('Page', function () {
       const dialog = await waitEvent(newPage, 'dialog');
       expect(dialog.type()).toBe('beforeunload');
       expect(dialog.defaultValue()).toBe('');
-      if (isChrome) expect(dialog.message()).toBe('');
-      else expect(dialog.message()).toBeTruthy();
+      if (isChrome) {
+        expect(dialog.message()).toBe('');
+      } else {
+        expect(dialog.message()).toBeTruthy();
+      }
       await dialog.accept();
       await pageClosingPromise;
     });
@@ -313,7 +316,9 @@ describe('Page', function () {
       const { page, server, context, isHeadless } = getTestState();
 
       // TODO: re-enable this test in headful once crbug.com/1324480 rolls out.
-      if (!isHeadless) return;
+      if (!isHeadless) {
+        return;
+      }
 
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
@@ -585,8 +590,11 @@ describe('Page', function () {
         ),
       ]);
       expect(message.text()).toContain('Access-Control-Allow-Origin');
-      if (isChrome) expect(message.type()).toEqual('error');
-      else expect(message.type()).toEqual('warn');
+      if (isChrome) {
+        expect(message.type()).toEqual('error');
+      } else {
+        expect(message.type()).toEqual('warn');
+      }
     });
     it('should have location when fetch fails', async () => {
       const { page, server } = getTestState();
@@ -1260,7 +1268,9 @@ describe('Page', function () {
     it('should work fast enough', async () => {
       const { page } = getTestState();
 
-      for (let i = 0; i < 20; ++i) await page.setContent('<div>yo</div>');
+      for (let i = 0; i < 20; ++i) {
+        await page.setContent('<div>yo</div>');
+      }
     });
     it('should work with tricky content', async () => {
       const { page } = getTestState();
@@ -1703,7 +1713,9 @@ describe('Page', function () {
       // Printing to pdf is currently only supported in headless
       const { isHeadless, page } = getTestState();
 
-      if (!isHeadless) return;
+      if (!isHeadless) {
+        return;
+      }
 
       const outputFile = __dirname + '/assets/output.pdf';
       await page.pdf({ path: outputFile });
@@ -1715,7 +1727,9 @@ describe('Page', function () {
       // Printing to pdf is currently only supported in headless
       const { isHeadless, page } = getTestState();
 
-      if (!isHeadless) return;
+      if (!isHeadless) {
+        return;
+      }
 
       const stream = await page.createPDFStream();
       let size = 0;
@@ -1727,7 +1741,9 @@ describe('Page', function () {
 
     it('should respect timeout', async () => {
       const { isHeadless, page, server, puppeteer } = getTestState();
-      if (!isHeadless) return;
+      if (!isHeadless) {
+        return;
+      }
 
       await page.goto(server.PREFIX + '/pdf.html');
 

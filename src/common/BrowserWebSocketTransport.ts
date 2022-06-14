@@ -34,10 +34,14 @@ export class BrowserWebSocketTransport implements ConnectionTransport {
   constructor(ws: WebSocket) {
     this.#ws = ws;
     this.#ws.addEventListener('message', (event) => {
-      if (this.onmessage) this.onmessage.call(null, event.data);
+      if (this.onmessage) {
+        this.onmessage.call(null, event.data);
+      }
     });
     this.#ws.addEventListener('close', () => {
-      if (this.onclose) this.onclose.call(null);
+      if (this.onclose) {
+        this.onclose.call(null);
+      }
     });
     // Silently ignore all errors - we don't know what to do with them.
     this.#ws.addEventListener('error', () => {});

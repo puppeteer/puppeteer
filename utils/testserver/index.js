@@ -69,9 +69,11 @@ class TestServer {
    * @param {!Object=} sslOptions
    */
   constructor(dirPath, port, sslOptions) {
-    if (sslOptions)
+    if (sslOptions) {
       this._server = https.createServer(sslOptions, this._onRequest.bind(this));
-    else this._server = http.createServer(this._onRequest.bind(this));
+    } else {
+      this._server = http.createServer(this._onRequest.bind(this));
+    }
     this._server.on('connection', (socket) => this._onSocket(socket));
     this._wsServer = new WebSocketServer({ server: this._server });
     this._wsServer.on('connection', this._onWebSocketConnection.bind(this));
@@ -101,7 +103,9 @@ class TestServer {
     // ECONNRESET is a legit error given
     // that tab closing simply kills process.
     socket.on('error', (error) => {
-      if (error.code !== 'ECONNRESET') throw error;
+      if (error.code !== 'ECONNRESET') {
+        throw error;
+      }
     });
     socket.once('close', () => this._sockets.delete(socket));
   }
@@ -136,7 +140,9 @@ class TestServer {
 
   async stop() {
     this.reset();
-    for (const socket of this._sockets) socket.destroy();
+    for (const socket of this._sockets) {
+      socket.destroy();
+    }
     this._sockets.clear();
     await new Promise((x) => this._server.close(x));
   }
@@ -166,7 +172,9 @@ class TestServer {
    */
   waitForRequest(path) {
     let promise = this._requestSubscribers.get(path);
-    if (promise) return promise;
+    if (promise) {
+      return promise;
+    }
     let fulfill, reject;
     promise = new Promise((f, r) => {
       fulfill = f;
@@ -184,15 +192,19 @@ class TestServer {
     this._csp.clear();
     this._gzipRoutes.clear();
     const error = new Error('Static Server has been reset');
-    for (const subscriber of this._requestSubscribers.values())
+    for (const subscriber of this._requestSubscribers.values()) {
       subscriber[rejectSymbol].call(null, error);
+    }
     this._requestSubscribers.clear();
   }
 
   _onRequest(request, response) {
     request.on('error', (error) => {
-      if (error.code === 'ECONNRESET') response.end();
-      else throw error;
+      if (error.code === 'ECONNRESET') {
+        response.end();
+      } else {
+        throw error;
+      }
     });
     request.postBody = new Promise((resolve) => {
       let body = '';
@@ -234,7 +246,9 @@ class TestServer {
    * @param {string} pathName
    */
   serveFile(request, response, pathName) {
-    if (pathName === '/') pathName = '/index.html';
+    if (pathName === '/') {
+      pathName = '/index.html';
+    }
     const filePath = path.join(this._dirPath, pathName.substring(1));
 
     if (
@@ -251,8 +265,9 @@ class TestServer {
     } else {
       response.setHeader('Cache-Control', 'no-cache, no-store');
     }
-    if (this._csp.has(pathName))
+    if (this._csp.has(pathName)) {
       response.setHeader('Content-Security-Policy', this._csp.get(pathName));
+    }
 
     fs.readFile(filePath, (err, data) => {
       if (err) {

@@ -76,8 +76,9 @@ function parseAriaSelector(selector: string): ARIAQueryOption {
       return '';
     }
   );
-  if (defaultName && !queryOptions.name)
+  if (defaultName && !queryOptions.name) {
     queryOptions.name = normalizeValue(defaultName);
+  }
   return queryOptions;
 }
 

@@ -105,7 +105,9 @@ async function run() {
   await browser.close();
 
   for (const source of mdSources) {
-    if (!source.hasUpdatedText()) continue;
+    if (!source.hasUpdatedText()) {
+      continue;
+    }
     await source.save();
     changedFiles = true;
   }

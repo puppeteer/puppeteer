@@ -244,7 +244,9 @@ export class JSCoverage {
   }
 
   #onExecutionContextsCleared(): void {
-    if (!this.#resetOnNavigation) return;
+    if (!this.#resetOnNavigation) {
+      return;
+    }
     this.#scriptURLs.clear();
     this.#scriptSources.clear();
   }
@@ -253,9 +255,13 @@ export class JSCoverage {
     event: Protocol.Debugger.ScriptParsedEvent
   ): Promise<void> {
     // Ignore puppeteer-injected scripts
-    if (event.url === EVALUATION_SCRIPT_URL) return;
+    if (event.url === EVALUATION_SCRIPT_URL) {
+      return;
+    }
     // Ignore other anonymous scripts unless the reportAnonymousScripts option is true.
-    if (!event.url && !this.#reportAnonymousScripts) return;
+    if (!event.url && !this.#reportAnonymousScripts) {
+      return;
+    }
     try {
       const response = await this.#client.send('Debugger.getScriptSource', {
         scriptId: event.scriptId,
@@ -286,12 +292,17 @@ export class JSCoverage {
 
     for (const entry of profileResponse.result) {
       let url = this.#scriptURLs.get(entry.scriptId);
-      if (!url && this.#reportAnonymousScripts)
+      if (!url && this.#reportAnonymousScripts) {
         url = 'debugger://VM' + entry.scriptId;
+      }
       const text = this.#scriptSources.get(entry.scriptId);
-      if (text === undefined || url === undefined) continue;
+      if (text === undefined || url === undefined) {
+        continue;
+      }
       const flattenRanges = [];
-      for (const func of entry.functions) flattenRanges.push(...func.ranges);
+      for (const func of entry.functions) {
+        flattenRanges.push(...func.ranges);
+      }
       const ranges = convertToDisjointRanges(flattenRanges);
       if (!this.#includeRawScriptCoverage) {
         coverage.push({ url, ranges, text });
@@ -345,7 +356,9 @@ export class CSSCoverage {
   }
 
   #onExecutionContextsCleared(): void {
-    if (!this.#resetOnNavigation) return;
+    if (!this.#resetOnNavigation) {
+      return;
+    }
     this.#stylesheetURLs.clear();
     this.#stylesheetSources.clear();
   }
@@ -353,7 +366,9 @@ export class CSSCoverage {
   async #onStyleSheet(event: Protocol.CSS.StyleSheetAddedEvent): Promise<void> {
     const header = event.header;
     // Ignore anonymous scripts
-    if (!header.sourceURL) return;
+    if (!header.sourceURL) {
+      return;
+    }
     try {
       const response = await this.#client.send('CSS.getStyleSheetText', {
         styleSheetId: header.styleSheetId,
@@ -420,13 +435,19 @@ function convertToDisjointRanges(
   // Sort points to form a valid parenthesis sequence.
   points.sort((a, b) => {
     // Sort with increasing offsets.
-    if (a.offset !== b.offset) return a.offset - b.offset;
+    if (a.offset !== b.offset) {
+      return a.offset - b.offset;
+    }
     // All "end" points should go before "start" points.
-    if (a.type !== b.type) return b.type - a.type;
+    if (a.type !== b.type) {
+      return b.type - a.type;
+    }
     const aLength = a.range.endOffset - a.range.startOffset;
     const bLength = b.range.endOffset - b.range.startOffset;
     // For two "start" points, the one with longer range goes first.
-    if (a.type === 0) return bLength - aLength;
+    if (a.type === 0) {
+      return bLength - aLength;
+    }
     // For two "end" points, the one with shorter range goes first.
     return aLength - bLength;
   });
@@ -445,13 +466,18 @@ function convertToDisjointRanges(
       hitCountStack[hitCountStack.length - 1]! > 0
     ) {
       const lastResult = results[results.length - 1];
-      if (lastResult && lastResult.end === lastOffset)
+      if (lastResult && lastResult.end === lastOffset) {
         lastResult.end = point.offset;
-      else results.push({ start: lastOffset, end: point.offset });
+      } else {
+        results.push({ start: lastOffset, end: point.offset });
+      }
     }
     lastOffset = point.offset;
-    if (point.type === 0) hitCountStack.push(point.range.count);
-    else hitCountStack.pop();
+    if (point.type === 0) {
+      hitCountStack.push(point.range.count);
+    } else {
+      hitCountStack.pop();
+    }
   }
   // Filter out empty ranges.
   return results.filter((range) => range.end - range.start > 1);

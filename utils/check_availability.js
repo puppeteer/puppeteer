@@ -43,8 +43,9 @@ class Table {
   drawRow(values) {
     assert(values.length === this.widths.length);
     let row = '';
-    for (let i = 0; i < values.length; ++i)
+    for (let i = 0; i < values.length; ++i) {
       row += padCenter(values[i], this.widths[i]);
+    }
     console.log(row);
   }
 }
@@ -262,9 +263,13 @@ async function checkRangeAvailability({
       }
       table.drawRow(values);
     } else {
-      if (allAvailable) console.log(revision);
+      if (allAvailable) {
+        console.log(revision);
+      }
     }
-    if (allAvailable && stopWhenAllAvailable) break;
+    if (allAvailable && stopWhenAllAvailable) {
+      break;
+    }
   }
 }
 
@@ -328,7 +333,9 @@ function filterOutColors(text) {
  */
 function padCenter(text, length) {
   const printableCharacters = filterOutColors(text);
-  if (printableCharacters.length >= length) return text;
+  if (printableCharacters.length >= length) {
+    return text;
+  }
   const left = Math.floor((length - printableCharacters.length) / 2);
   const right = Math.ceil((length - printableCharacters.length) / 2);
   return spaceString(left) + text + spaceString(right);

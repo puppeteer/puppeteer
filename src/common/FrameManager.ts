@@ -221,7 +221,9 @@ export class FrameManager extends EventEmitter {
       ]);
     }
     watcher.dispose();
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
     return await watcher.navigationResponse();
 
     async function navigate(
@@ -267,7 +269,9 @@ export class FrameManager extends EventEmitter {
       watcher.newDocumentNavigationPromise(),
     ]);
     watcher.dispose();
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
     return await watcher.navigationResponse();
   }
 
@@ -281,13 +285,17 @@ export class FrameManager extends EventEmitter {
     assert(connection);
     const session = connection.session(event.sessionId);
     assert(session);
-    if (frame) frame._updateClient(session);
+    if (frame) {
+      frame._updateClient(session);
+    }
     this.setupEventListeners(session);
     await this.initialize(session);
   }
 
   async #onDetachedFromTarget(event: Protocol.Target.DetachedFromTargetEvent) {
-    if (!event.targetId) return;
+    if (!event.targetId) {
+      return;
+    }
     const frame = this.#frames.get(event.targetId);
     if (frame && frame.isOOPFrame()) {
       // When an OOP iframe is removed from the page, it
@@ -298,20 +306,26 @@ export class FrameManager extends EventEmitter {
 
   #onLifecycleEvent(event: Protocol.Page.LifecycleEventEvent): void {
     const frame = this.#frames.get(event.frameId);
-    if (!frame) return;
+    if (!frame) {
+      return;
+    }
     frame._onLifecycleEvent(event.loaderId, event.name);
     this.emit(FrameManagerEmittedEvents.LifecycleEvent, frame);
   }
 
   #onFrameStartedLoading(frameId: string): void {
     const frame = this.#frames.get(frameId);
-    if (!frame) return;
+    if (!frame) {
+      return;
+    }
     frame._onLoadingStarted();
   }
 
   #onFrameStoppedLoading(frameId: string): void {
     const frame = this.#frames.get(frameId);
-    if (!frame) return;
+    if (!frame) {
+      return;
+    }
     frame._onLoadingStopped();
     this.emit(FrameManagerEmittedEvents.LifecycleEvent, frame);
   }
@@ -328,7 +342,9 @@ export class FrameManager extends EventEmitter {
       );
     }
     this.#onFrameNavigated(frameTree.frame);
-    if (!frameTree.childFrames) return;
+    if (!frameTree.childFrames) {
+      return;
+    }
 
     for (const child of frameTree.childFrames) {
       this.#handleFrameTree(session, child);
@@ -387,8 +403,9 @@ export class FrameManager extends EventEmitter {
 
     // Detach all child frames first.
     if (frame) {
-      for (const child of frame.childFrames())
+      for (const child of frame.childFrames()) {
         this.#removeFramesRecursively(child);
+      }
     }
 
     // Update or create main frame.
@@ -414,7 +431,9 @@ export class FrameManager extends EventEmitter {
 
   async _ensureIsolatedWorld(session: CDPSession, name: string): Promise<void> {
     const key = `${session.id()}:${name}`;
-    if (this.#isolatedWorlds.has(key)) return;
+    if (this.#isolatedWorlds.has(key)) {
+      return;
+    }
     this.#isolatedWorlds.add(key);
 
     await session.send('Page.addScriptToEvaluateOnNewDocument', {
@@ -439,7 +458,9 @@ export class FrameManager extends EventEmitter {
 
   #onFrameNavigatedWithinDocument(frameId: string, url: string): void {
     const frame = this.#frames.get(frameId);
-    if (!frame) return;
+    if (!frame) {
+      return;
+    }
     frame._navigatedWithinDocument(url);
     this.emit(FrameManagerEmittedEvents.FrameNavigatedWithinDocument, frame);
     this.emit(FrameManagerEmittedEvents.FrameNavigated, frame);
@@ -454,7 +475,9 @@ export class FrameManager extends EventEmitter {
       // Only remove the frame if the reason for the detached event is
       // an actual removement of the frame.
       // For frames that become OOP iframes, the reason would be 'swap'.
-      if (frame) this.#removeFramesRecursively(frame);
+      if (frame) {
+        this.#removeFramesRecursively(frame);
+      }
     } else if (reason === 'swap') {
       this.emit(FrameManagerEmittedEvents.FrameSwapped, frame);
     }
@@ -471,7 +494,9 @@ export class FrameManager extends EventEmitter {
     let world: DOMWorld | undefined;
     if (frame) {
       // Only care about execution contexts created for the current session.
-      if (frame._client() !== session) return;
+      if (frame._client() !== session) {
+        return;
+      }
 
       if (contextPayload.auxData && !!contextPayload.auxData['isDefault']) {
         world = frame._mainWorld;
@@ -490,7 +515,9 @@ export class FrameManager extends EventEmitter {
       contextPayload,
       world
     );
-    if (world) world._setContext(context);
+    if (world) {
+      world._setContext(context);
+    }
     const key = `${session.id()}:${contextPayload.id}`;
     this.#contextIdToContext.set(key, context);
   }
@@ -501,17 +528,25 @@ export class FrameManager extends EventEmitter {
   ): void {
     const key = `${session.id()}:${executionContextId}`;
     const context = this.#contextIdToContext.get(key);
-    if (!context) return;
+    if (!context) {
+      return;
+    }
     this.#contextIdToContext.delete(key);
-    if (context._world) context._world._setContext(null);
+    if (context._world) {
+      context._world._setContext(null);
+    }
   }
 
   #onExecutionContextsCleared(session: CDPSession): void {
     for (const [key, context] of this.#contextIdToContext.entries()) {
       // Make sure to only clear execution contexts that belong
       // to the current session.
-      if (context._client !== session) continue;
-      if (context._world) context._world._setContext(null);
+      if (context._client !== session) {
+        continue;
+      }
+      if (context._world) {
+        context._world._setContext(null);
+      }
       this.#contextIdToContext.delete(key);
     }
   }
@@ -527,8 +562,9 @@ export class FrameManager extends EventEmitter {
   }
 
   #removeFramesRecursively(frame: Frame): void {
-    for (const child of frame.childFrames())
+    for (const child of frame.childFrames()) {
       this.#removeFramesRecursively(child);
+    }
     frame._detach();
     this.#frames.delete(frame._id);
     this.emit(FrameManagerEmittedEvents.FrameDetached, frame);
@@ -716,7 +752,9 @@ export class Frame {
     this._loaderId = '';
 
     this._childFrames = new Set();
-    if (this.#parentFrame) this.#parentFrame._childFrames.add(this);
+    if (this.#parentFrame) {
+      this.#parentFrame._childFrames.add(this);
+    }
 
     this._updateClient(client);
   }
@@ -1237,19 +1275,23 @@ export class Frame {
 
     if (isString(selectorOrFunctionOrTimeout)) {
       const string = selectorOrFunctionOrTimeout;
-      if (xPathPattern.test(string)) return this.waitForXPath(string, options);
+      if (xPathPattern.test(string)) {
+        return this.waitForXPath(string, options);
+      }
       return this.waitForSelector(string, options);
     }
-    if (isNumber(selectorOrFunctionOrTimeout))
+    if (isNumber(selectorOrFunctionOrTimeout)) {
       return new Promise((fulfill) =>
         setTimeout(fulfill, selectorOrFunctionOrTimeout)
       );
-    if (typeof selectorOrFunctionOrTimeout === 'function')
+    }
+    if (typeof selectorOrFunctionOrTimeout === 'function') {
       return this.waitForFunction(
         selectorOrFunctionOrTimeout,
         options,
         ...args
       );
+    }
     return Promise.reject(
       new Error(
         'Unsupported target type: ' + typeof selectorOrFunctionOrTimeout
@@ -1324,7 +1366,9 @@ export class Frame {
       selector,
       options
     );
-    if (!handle) return null;
+    if (!handle) {
+      return null;
+    }
     const mainExecutionContext = await this._mainWorld.executionContext();
     const result = await mainExecutionContext._adoptElementHandle(handle);
     await handle.dispose();
@@ -1351,7 +1395,9 @@ export class Frame {
     options: WaitForSelectorOptions = {}
   ): Promise<ElementHandle | null> {
     const handle = await this._secondaryWorld.waitForXPath(xpath, options);
-    if (!handle) return null;
+    if (!handle) {
+      return null;
+    }
     const mainExecutionContext = await this._mainWorld.executionContext();
     const result = await mainExecutionContext._adoptElementHandle(handle);
     await handle.dispose();
@@ -1456,7 +1502,9 @@ export class Frame {
     this.#detached = true;
     this._mainWorld._detach();
     this._secondaryWorld._detach();
-    if (this.#parentFrame) this.#parentFrame._childFrames.delete(this);
+    if (this.#parentFrame) {
+      this.#parentFrame._childFrames.delete(this);
+    }
     this.#parentFrame = null;
   }
 }

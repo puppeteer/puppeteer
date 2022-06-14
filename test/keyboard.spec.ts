@@ -64,14 +64,17 @@ describe('Keyboard', function () {
     expect(
       await page.evaluate(() => document.querySelector('textarea').value)
     ).toBe('Hello World!');
-    for (let i = 0; i < 'World!'.length; i++) page.keyboard.press('ArrowLeft');
+    for (let i = 0; i < 'World!'.length; i++) {
+      page.keyboard.press('ArrowLeft');
+    }
     await page.keyboard.type('inserted ');
     expect(
       await page.evaluate(() => document.querySelector('textarea').value)
     ).toBe('Hello inserted World!');
     page.keyboard.down('Shift');
-    for (let i = 0; i < 'inserted '.length; i++)
+    for (let i = 0; i < 'inserted '.length; i++) {
       page.keyboard.press('ArrowLeft');
+    }
     page.keyboard.up('Shift');
     await page.keyboard.press('Backspace');
     expect(
@@ -152,7 +155,7 @@ describe('Keyboard', function () {
       );
       await keyboard.down('!');
       // Shift+! will generate a keypress
-      if (modifierKey === 'Shift')
+      if (modifierKey === 'Shift') {
         expect(await page.evaluate(() => globalThis.getResult())).toBe(
           'Keydown: ! Digit1 49 [' +
             modifierKey +
@@ -160,10 +163,11 @@ describe('Keyboard', function () {
             modifierKey +
             ']'
         );
-      else
+      } else {
         expect(await page.evaluate(() => globalThis.getResult())).toBe(
           'Keydown: ! Digit1 49 [' + modifierKey + ']'
         );
+      }
 
       await keyboard.up('!');
       expect(await page.evaluate(() => globalThis.getResult())).toBe(
@@ -260,8 +264,12 @@ describe('Keyboard', function () {
         (event) => {
           event.stopPropagation();
           event.stopImmediatePropagation();
-          if (event.key === 'l') event.preventDefault();
-          if (event.key === 'o') event.preventDefault();
+          if (event.key === 'l') {
+            event.preventDefault();
+          }
+          if (event.key === 'o') {
+            event.preventDefault();
+          }
         },
         false
       );
@@ -396,13 +404,22 @@ describe('Keyboard', function () {
       string,
       boolean
     ];
-    if (isFirefox && os.platform() !== 'darwin') expect(key).toBe('OS');
-    else expect(key).toBe('Meta');
+    if (isFirefox && os.platform() !== 'darwin') {
+      expect(key).toBe('OS');
+    } else {
+      expect(key).toBe('Meta');
+    }
 
-    if (isFirefox) expect(code).toBe('OSLeft');
-    else expect(code).toBe('MetaLeft');
+    if (isFirefox) {
+      expect(code).toBe('OSLeft');
+    } else {
+      expect(code).toBe('MetaLeft');
+    }
 
-    if (isFirefox && os.platform() !== 'darwin') expect(metaKey).toBe(false);
-    else expect(metaKey).toBe(true);
+    if (isFirefox && os.platform() !== 'darwin') {
+      expect(metaKey).toBe(false);
+    } else {
+      expect(metaKey).toBe(true);
+    }
   });
 });

@@ -493,10 +493,14 @@ describeFailsFirefox('Accessibility', function () {
     });
   });
   function findFocusedNode(node) {
-    if (node.focused) return node;
+    if (node.focused) {
+      return node;
+    }
     for (const child of node.children || []) {
       const focusedChild = findFocusedNode(child);
-      if (focusedChild) return focusedChild;
+      if (focusedChild) {
+        return focusedChild;
+      }
     }
     return null;
   }

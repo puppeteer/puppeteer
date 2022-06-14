@@ -68,7 +68,9 @@ function makeQueryHandler(handler: CustomQueryHandler): InternalQueryHandler {
     internalHandler.queryOne = async (element, selector) => {
       const jsHandle = await element.evaluateHandle(queryOne, selector);
       const elementHandle = jsHandle.asElement();
-      if (elementHandle) return elementHandle;
+      if (elementHandle) {
+        return elementHandle;
+      }
       await jsHandle.dispose();
       return null;
     };
@@ -88,7 +90,9 @@ function makeQueryHandler(handler: CustomQueryHandler): InternalQueryHandler {
       const result = [];
       for (const property of properties.values()) {
         const elementHandle = property.asElement();
-        if (elementHandle) result.push(elementHandle);
+        if (elementHandle) {
+          result.push(elementHandle);
+        }
       }
       return result;
     };
@@ -174,12 +178,14 @@ export function _registerCustomQueryHandler(
   name: string,
   handler: CustomQueryHandler
 ): void {
-  if (queryHandlers.get(name))
+  if (queryHandlers.get(name)) {
     throw new Error(`A custom query handler named "${name}" already exists`);
+  }
 
   const isValidName = /^[a-zA-Z]+$/.test(name);
-  if (!isValidName)
+  if (!isValidName) {
     throw new Error(`Custom query handler names may only contain [a-zA-Z]`);
+  }
 
   const internalHandler = makeQueryHandler(handler);
 
@@ -217,17 +223,19 @@ export function _getQueryHandlerAndSelector(selector: string): {
   queryHandler: InternalQueryHandler;
 } {
   const hasCustomQueryHandler = /^[a-zA-Z]+\//.test(selector);
-  if (!hasCustomQueryHandler)
+  if (!hasCustomQueryHandler) {
     return { updatedSelector: selector, queryHandler: _defaultHandler };
+  }
 
   const index = selector.indexOf('/');
   const name = selector.slice(0, index);
   const updatedSelector = selector.slice(index + 1);
   const queryHandler = queryHandlers.get(name);
-  if (!queryHandler)
+  if (!queryHandler) {
     throw new Error(
       `Query set to use "${name}", but no query handler of that name was found`
     );
+  }
 
   return {
     updatedSelector,

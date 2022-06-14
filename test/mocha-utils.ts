@@ -99,15 +99,18 @@ const defaultBrowserOptions = Object.assign(
   } else {
     // TODO(jackfranklin): declare updateRevision in some form for the Firefox
     // launcher.
-    // @ts-expect-error _updateRevision is defined on the FF launcher
-    // but not the Chrome one. The types need tidying so that TS can infer that
-    // properly and not error here.
-    if (product === 'firefox') await puppeteer._launcher._updateRevision();
+    if (product === 'firefox') {
+      // @ts-expect-error _updateRevision is defined on the FF launcher
+      // but not the Chrome one. The types need tidying so that TS can infer that
+      // properly and not error here.
+      await puppeteer._launcher._updateRevision();
+    }
     const executablePath = puppeteer.executablePath();
-    if (!fs.existsSync(executablePath))
+    if (!fs.existsSync(executablePath)) {
       throw new Error(
         `Browser is not downloaded at ${executablePath}. Run 'npm install' and try to re-run tests`
       );
+    }
   }
 })();
 
@@ -121,7 +124,9 @@ const setupGoldenAssertions = (): void => {
   const suffix = product.toLowerCase();
   const GOLDEN_DIR = path.join(__dirname, 'golden-' + suffix);
   const OUTPUT_DIR = path.join(__dirname, 'output-' + suffix);
-  if (fs.existsSync(OUTPUT_DIR)) rimraf.sync(OUTPUT_DIR);
+  if (fs.existsSync(OUTPUT_DIR)) {
+    rimraf.sync(OUTPUT_DIR);
+  }
   utils.extendExpectWithToBeGolden(GOLDEN_DIR, OUTPUT_DIR);
 };
 
@@ -149,41 +154,55 @@ export const itFailsFirefox = (
   description: string,
   body: Mocha.Func
 ): Mocha.Test => {
-  if (isFirefox) return xit(description, body);
-  else return it(description, body);
+  if (isFirefox) {
+    return xit(description, body);
+  } else {
+    return it(description, body);
+  }
 };
 
 export const itChromeOnly = (
   description: string,
   body: Mocha.Func
 ): Mocha.Test => {
-  if (isChrome) return it(description, body);
-  else return xit(description, body);
+  if (isChrome) {
+    return it(description, body);
+  } else {
+    return xit(description, body);
+  }
 };
 
 export const itHeadlessOnly = (
   description: string,
   body: Mocha.Func
 ): Mocha.Test => {
-  if (isChrome && isHeadless === true) return it(description, body);
-  else return xit(description, body);
+  if (isChrome && isHeadless === true) {
+    return it(description, body);
+  } else {
+    return xit(description, body);
+  }
 };
 
 export const itFirefoxOnly = (
   description: string,
   body: Mocha.Func
 ): Mocha.Test => {
-  if (isFirefox) return it(description, body);
-  else return xit(description, body);
+  if (isFirefox) {
+    return it(description, body);
+  } else {
+    return xit(description, body);
+  }
 };
 
 export const itOnlyRegularInstall = (
   description: string,
   body: Mocha.Func
 ): Mocha.Test => {
-  if (alternativeInstall || process.env['BINARY'])
+  if (alternativeInstall || process.env['BINARY']) {
     return xit(description, body);
-  else return it(description, body);
+  } else {
+    return it(description, body);
+  }
 };
 
 export const itFailsWindowsUntilDate = (
@@ -213,15 +232,20 @@ export const describeFailsFirefox = (
   description: string,
   body: (this: Mocha.Suite) => void
 ): void | Mocha.Suite => {
-  if (isFirefox) return xdescribe(description, body);
-  else return describe(description, body);
+  if (isFirefox) {
+    return xdescribe(description, body);
+  } else {
+    return describe(description, body);
+  }
 };
 
 export const describeChromeOnly = (
   description: string,
   body: (this: Mocha.Suite) => void
 ): Mocha.Suite | void => {
-  if (isChrome) return describe(description, body);
+  if (isChrome) {
+    return describe(description, body);
+  }
 };
 
 console.log(

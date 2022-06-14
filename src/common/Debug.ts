@@ -66,7 +66,9 @@ export const debug = (prefix: string): ((...args: unknown[]) => void) => {
 
   return (...logArgs: unknown[]): void => {
     const debugLevel = globalThis.__PUPPETEER_DEBUG;
-    if (!debugLevel) return;
+    if (!debugLevel) {
+      return;
+    }
 
     const everythingShouldBeLogged = debugLevel === '*';
 
@@ -81,7 +83,9 @@ export const debug = (prefix: string): ((...args: unknown[]) => void) => {
         ? prefix.startsWith(debugLevel)
         : prefix === debugLevel);
 
-    if (!prefixMatchesDebugLevel) return;
+    if (!prefixMatchesDebugLevel) {
+      return;
+    }
 
     // eslint-disable-next-line no-console
     console.log(`${prefix}:`, ...logArgs);

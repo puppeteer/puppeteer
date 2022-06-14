@@ -49,13 +49,17 @@ async function compileTypeScript() {
 async function compileTypeScriptIfRequired() {
   const libPath = path.join(__dirname, 'lib');
   const libExists = await fileExists(libPath);
-  if (libExists) return;
+  if (libExists) {
+    return;
+  }
 
   console.log('Puppeteer:', 'Compiling TypeScript...');
   await compileTypeScript();
 }
 
 // It's being run as node typescript-if-required.js, not require('..')
-if (require.main === module) compileTypeScriptIfRequired();
+if (require.main === module) {
+  compileTypeScriptIfRequired();
+}
 
 module.exports = compileTypeScriptIfRequired;

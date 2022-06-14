@@ -41,7 +41,9 @@ const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 const FIREFOX_TIMEOUT = 30 * 1000;
 
 describe('Launcher specs', function () {
-  if (getTestState().isFirefox) this.timeout(FIREFOX_TIMEOUT);
+  if (getTestState().isFirefox) {
+    this.timeout(FIREFOX_TIMEOUT);
+  }
 
   describe('Puppeteer', function () {
     describe('BrowserFetcher', function () {
@@ -394,8 +396,11 @@ describe('Launcher specs', function () {
       });
       it('should report the correct product', async () => {
         const { isChrome, isFirefox, puppeteer } = getTestState();
-        if (isChrome) expect(puppeteer.product).toBe('chrome');
-        else if (isFirefox) expect(puppeteer.product).toBe('firefox');
+        if (isChrome) {
+          expect(puppeteer.product).toBe('chrome');
+        } else if (isFirefox) {
+          expect(puppeteer.product).toBe('firefox');
+        }
       });
       it('should work with no default arguments', async () => {
         const { defaultBrowserOptions, puppeteer } = getTestState();
@@ -468,7 +473,9 @@ describe('Launcher specs', function () {
           const pages = await browser.pages();
           expect(pages.length).toBe(1);
           const page = pages[0];
-          if (page.url() !== server.EMPTY_PAGE) await page.waitForNavigation();
+          if (page.url() !== server.EMPTY_PAGE) {
+            await page.waitForNavigation();
+          }
           expect(page.url()).toBe(server.EMPTY_PAGE);
           await browser.close();
         }
