@@ -18,9 +18,36 @@ const jsBuilder = require('./JSBuilder.js');
 const mdBuilder = require('./MDBuilder.js');
 const Documentation = require('./Documentation.js');
 const Message = require('../Message.js');
-const {
-  MODULES_TO_CHECK_FOR_COVERAGE,
-} = require('../../../test/coverage-utils.js');
+
+const MODULES_TO_CHECK_FOR_COVERAGE = {
+  Accessibility: '../../lib/cjs/puppeteer/common/Accessibility',
+  Browser: '../../lib/cjs/puppeteer/common/Browser',
+  BrowserContext: '../../lib/cjs/puppeteer/common/Browser',
+  BrowserFetcher: '../../lib/cjs/puppeteer/node/BrowserFetcher',
+  CDPSession: '../../lib/cjs/puppeteer/common/Connection',
+  ConsoleMessage: '../../lib/cjs/puppeteer/common/ConsoleMessage',
+  Coverage: '../../lib/cjs/puppeteer/common/Coverage',
+  Dialog: '../../lib/cjs/puppeteer/common/Dialog',
+  ElementHandle: '../../lib/cjs/puppeteer/common/JSHandle',
+  ExecutionContext: '../../lib/cjs/puppeteer/common/ExecutionContext',
+  EventEmitter: '../../lib/cjs/puppeteer/common/EventEmitter',
+  FileChooser: '../../lib/cjs/puppeteer/common/FileChooser',
+  Frame: '../../lib/cjs/puppeteer/common/FrameManager',
+  JSHandle: '../../lib/cjs/puppeteer/common/JSHandle',
+  Keyboard: '../../lib/cjs/puppeteer/common/Input',
+  Mouse: '../../lib/cjs/puppeteer/common/Input',
+  Page: '../../lib/cjs/puppeteer/common/Page',
+  Puppeteer: '../../lib/cjs/puppeteer/common/Puppeteer',
+  PuppeteerNode: '../../lib/cjs/puppeteer/node/Puppeteer',
+  HTTPRequest: '../../lib/cjs/puppeteer/common/HTTPRequest',
+  HTTPResponse: '../../lib/cjs/puppeteer/common/HTTPResponse',
+  SecurityDetails: '../../lib/cjs/puppeteer/common/SecurityDetails',
+  Target: '../../lib/cjs/puppeteer/common/Target',
+  TimeoutError: '../../lib/cjs/puppeteer/common/Errors',
+  Touchscreen: '../../lib/cjs/puppeteer/common/Input',
+  Tracing: '../../lib/cjs/puppeteer/common/Tracing',
+  WebWorker: '../../lib/cjs/puppeteer/common/WebWorker',
+};
 
 const EXCLUDE_PROPERTIES = new Set([
   'Browser.create',

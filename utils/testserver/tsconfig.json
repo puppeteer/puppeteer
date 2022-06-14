@@ -1,8 +1,11 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "lib",
     "composite": true,
-    "outDir": "../../lib/cjs/puppeteer",
+    "allowJs": true,
     "module": "CommonJS"
-  }
+  },
+  "include": ["src"]
 }

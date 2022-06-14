@@ -2,7 +2,7 @@
   "name": "@pptr/testserver",
   "version": "0.5.0",
   "description": "testing server",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -5,5 +5,8 @@
     "outDir": "../lib/esm/puppeteer",
     "module": "esnext"
   },
-  "references": [{ "path": "../vendor/tsconfig.esm.json" }]
+  "references": [
+    { "path": "../vendor/tsconfig.esm.json" },
+    { "path": "../compat/esm/tsconfig.json" }
+  ]
 }
