@@ -23,9 +23,13 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   describeFailsFirefox,
-} from './mocha-utils'; // eslint-disable-line import/extensions
-import { ActionResult } from '../../lib/cjs/puppeteer/api-docs-entry.js';
-import { InterceptResolutionAction } from '../../lib/cjs/puppeteer/common/HTTPRequest.js';
+} from './mocha-utils.js';
+import { ConsoleMessage } from '../../lib/cjs/puppeteer/common/ConsoleMessage.js';
+import {
+  ActionResult,
+  HTTPRequest,
+  InterceptResolutionAction,
+} from '../../lib/cjs/puppeteer/common/HTTPRequest.js';
 
 describe('request interception', function () {
   setupTestBrowserHooks();
@@ -67,8 +71,8 @@ describe('request interception', function () {
           }
         });
         page.on('response', (response) => {
-          const { xaction } = response.headers();
-          if (response.url().endsWith('.css') && !!xaction) {
+          const { xaction } = response!.headers();
+          if (response!.url().endsWith('.css') && !!xaction) {
             actionResults.push(xaction as ActionResult);
           }
         });
@@ -78,22 +82,24 @@ describe('request interception', function () {
           }
         });
 
-        const response = await (async () => {
+        const response = (await (async () => {
           if (expectedAction === 'continue') {
             const [serverRequest, response] = await Promise.all([
               server.waitForRequest('/one-style.css'),
               page.goto(server.PREFIX + '/one-style.html'),
             ]);
-            actionResults.push(serverRequest.headers.xaction as ActionResult);
+            actionResults.push(
+              serverRequest.headers['xaction'] as ActionResult
+            );
             return response;
           } else {
             return await page.goto(server.PREFIX + '/one-style.html');
           }
-        })();
+        })())!;
 
         expect(actionResults.length).toBe(1);
-        expect(actionResults[0]).toBe(expectedAction);
-        expect(response.ok()).toBe(true);
+        expect(actionResults[0]!).toBe(expectedAction);
+        expect(response!.ok()).toBe(true);
       });
     }
 
@@ -113,12 +119,12 @@ describe('request interception', function () {
         expect(request.isNavigationRequest()).toBe(true);
         expect(request.resourceType()).toBe('document');
         expect(request.frame() === page.mainFrame()).toBe(true);
-        expect(request.frame().url()).toBe('about:blank');
+        expect(request.frame()!.url()).toBe('about:blank');
         request.continue({}, 0);
       });
-      const response = await page.goto(server.EMPTY_PAGE);
-      expect(response.ok()).toBe(true);
-      expect(response.remoteAddress().port).toBe(server.PORT);
+      const response = (await page.goto(server.EMPTY_PAGE))!;
+      expect(response!.ok()).toBe(true);
+      expect(response!.remoteAddress().port).toBe(server.PORT);
     });
     // @see https://github.com/puppeteer/puppeteer/pull/3105
     it('should work when POST is redirected with 302', async () => {
@@ -127,14 +133,18 @@ describe('request interception', function () {
       server.setRedirect('/rredirect', '/empty.html');
       await page.goto(server.EMPTY_PAGE);
       await page.setRequestInterception(true);
-      page.on('request', (request) => request.continue({}, 0));
+      page.on('request', (request) => {
+        return request.continue({}, 0);
+      });
       await page.setContent(`
         <form action='/rredirect' method='post'>
           <input type="hidden" id="foo" name="foo" value="FOOBAR">
         </form>
       `);
       await Promise.all([
-        page.$eval('form', (form: HTMLFormElement) => form.submit()),
+        page.$eval('form', (form) => {
+          return (form as HTMLFormElement).submit();
+        }),
         page.waitForNavigation(),
       ]);
     });
@@ -179,7 +189,7 @@ describe('request interception', function () {
       const { page, server } = getTestState();
 
       await page.setRequestInterception(true);
-      const requests = [];
+      const requests: HTTPRequest[] = [];
       page.on('request', (request) => {
         if (!utils.isFavicon(request)) {
           requests.push(request);
@@ -187,8 +197,8 @@ describe('request interception', function () {
         request.continue({}, 0);
       });
       await page.goto(server.PREFIX + '/one-style.html');
-      expect(requests[1].url()).toContain('/one-style.css');
-      expect(requests[1].headers().referer).toContain('/one-style.html');
+      expect(requests[1]!.url()).toContain('/one-style.css');
+      expect(requests[1]!.headers()['referer']).toContain('/one-style.html');
     });
     it('should properly return navigation response when URL has cookies', async () => {
       const { page, server } = getTestState();
@@ -199,15 +209,19 @@ describe('request interception', function () {
 
       // Setup request interception.
       await page.setRequestInterception(true);
-      page.on('request', (request) => request.continue({}, 0));
+      page.on('request', (request) => {
+        return request.continue({}, 0);
+      });
       const response = await page.reload();
-      expect(response.status()).toBe(200);
+      expect(response!.status()).toBe(200);
     });
     it('should stop intercepting', async () => {
       const { page, server } = getTestState();
 
       await page.setRequestInterception(true);
-      page.once('request', (request) => request.continue({}, 0));
+      page.once('request', (request) => {
+        return request.continue({}, 0);
+      });
       await page.goto(server.EMPTY_PAGE);
       await page.setRequestInterception(false);
       await page.goto(server.EMPTY_PAGE);
@@ -224,7 +238,7 @@ describe('request interception', function () {
         request.continue({}, 0);
       });
       const response = await page.goto(server.EMPTY_PAGE);
-      expect(response.ok()).toBe(true);
+      expect(response!.ok()).toBe(true);
     });
     // @see https://github.com/puppeteer/puppeteer/issues/4337
     it('should work with redirect inside sync XHR', async () => {
@@ -233,7 +247,9 @@ describe('request interception', function () {
       await page.goto(server.EMPTY_PAGE);
       server.setRedirect('/logo.png', '/pptr.png');
       await page.setRequestInterception(true);
-      page.on('request', (request) => request.continue({}, 0));
+      page.on('request', (request) => {
+        return request.continue({}, 0);
+      });
       const status = await page.evaluate(async () => {
         const request = new XMLHttpRequest();
         request.open('GET', '/logo.png', false); // `false` makes the request synchronous
@@ -252,7 +268,7 @@ describe('request interception', function () {
         request.continue({}, 0);
       });
       const response = await page.goto(server.EMPTY_PAGE);
-      expect(response.ok()).toBe(true);
+      expect(response!.ok()).toBe(true);
     });
     it('should be abortable', async () => {
       const { page, server } = getTestState();
@@ -266,10 +282,12 @@ describe('request interception', function () {
         }
       });
       let failedRequests = 0;
-      page.on('requestfailed', () => ++failedRequests);
+      page.on('requestfailed', () => {
+        return ++failedRequests;
+      });
       const response = await page.goto(server.PREFIX + '/one-style.html');
-      expect(response.ok()).toBe(true);
-      expect(response.request().failure()).toBe(null);
+      expect(response!.ok()).toBe(true);
+      expect(response!.request().failure()).toBe(null);
       expect(failedRequests).toBe(1);
     });
     it('should be able to access the error reason', async () => {
@@ -294,11 +312,13 @@ describe('request interception', function () {
       page.on('request', (request) => {
         request.abort('internetdisconnected', 0);
       });
-      let failedRequest = null;
-      page.on('requestfailed', (request) => (failedRequest = request));
+      let failedRequest!: HTTPRequest;
+      page.on('requestfailed', (request) => {
+        return (failedRequest = request);
+      });
       await page.goto(server.EMPTY_PAGE).catch(() => {});
       expect(failedRequest).toBeTruthy();
-      expect(failedRequest.failure().errorText).toBe(
+      expect(failedRequest.failure()!.errorText).toBe(
         'net::ERR_INTERNET_DISCONNECTED'
       );
     });
@@ -309,7 +329,9 @@ describe('request interception', function () {
         referer: 'http://google.com/',
       });
       await page.setRequestInterception(true);
-      page.on('request', (request) => request.continue({}, 0));
+      page.on('request', (request) => {
+        return request.continue({}, 0);
+      });
       const [request] = await Promise.all([
         server.waitForRequest('/grid.html'),
         page.goto(server.PREFIX + '/grid.html'),
@@ -320,9 +342,13 @@ describe('request interception', function () {
       const { page, server, isChrome } = getTestState();
 
       await page.setRequestInterception(true);
-      page.on('request', (request) => request.abort('failed', 0));
-      let error = null;
-      await page.goto(server.EMPTY_PAGE).catch((error_) => (error = error_));
+      page.on('request', (request) => {
+        return request.abort('failed', 0);
+      });
+      let error!: Error;
+      await page.goto(server.EMPTY_PAGE).catch((error_) => {
+        return (error = error_);
+      });
       expect(error).toBeTruthy();
       if (isChrome) {
         expect(error.message).toContain('net::ERR_FAILED');
@@ -334,7 +360,7 @@ describe('request interception', function () {
       const { page, server } = getTestState();
 
       await page.setRequestInterception(true);
-      const requests = [];
+      const requests: HTTPRequest[] = [];
       page.on('request', (request) => {
         request.continue({}, 0);
         requests.push(request);
@@ -355,17 +381,17 @@ describe('request interception', function () {
       const response = await page.goto(
         server.PREFIX + '/non-existing-page.html'
       );
-      expect(response.status()).toBe(200);
-      expect(response.url()).toContain('empty.html');
+      expect(response!.status()).toBe(200);
+      expect(response!.url()).toContain('empty.html');
       expect(requests.length).toBe(5);
-      expect(requests[2].resourceType()).toBe('document');
+      expect(requests[2]!.resourceType()).toBe('document');
       // Check redirect chain
-      const redirectChain = response.request().redirectChain();
+      const redirectChain = response!.request().redirectChain();
       expect(redirectChain.length).toBe(4);
-      expect(redirectChain[0].url()).toContain('/non-existing-page.html');
-      expect(redirectChain[2].url()).toContain('/non-existing-page-3.html');
+      expect(redirectChain[0]!.url()).toContain('/non-existing-page.html');
+      expect(redirectChain[2]!.url()).toContain('/non-existing-page-3.html');
       for (let i = 0; i < redirectChain.length; ++i) {
-        const request = redirectChain[i];
+        const request = redirectChain[i]!;
         expect(request.isNavigationRequest()).toBe(true);
         expect(request.redirectChain().indexOf(request)).toBe(i);
       }
@@ -374,7 +400,7 @@ describe('request interception', function () {
       const { page, server } = getTestState();
 
       await page.setRequestInterception(true);
-      const requests = [];
+      const requests: HTTPRequest[] = [];
       page.on('request', (request) => {
         request.continue({}, 0);
         if (!utils.isFavicon(request)) {
@@ -384,21 +410,21 @@ describe('request interception', function () {
       server.setRedirect('/one-style.css', '/two-style.css');
       server.setRedirect('/two-style.css', '/three-style.css');
       server.setRedirect('/three-style.css', '/four-style.css');
-      server.setRoute('/four-style.css', (req, res) =>
-        res.end('body {box-sizing: border-box; }')
-      );
+      server.setRoute('/four-style.css', (_req, res) => {
+        return res.end('body {box-sizing: border-box; }');
+      });
 
       const response = await page.goto(server.PREFIX + '/one-style.html');
-      expect(response.status()).toBe(200);
-      expect(response.url()).toContain('one-style.html');
+      expect(response!.status()).toBe(200);
+      expect(response!.url()).toContain('one-style.html');
       expect(requests.length).toBe(5);
-      expect(requests[0].resourceType()).toBe('document');
-      expect(requests[1].resourceType()).toBe('stylesheet');
+      expect(requests[0]!.resourceType()).toBe('document');
+      expect(requests[1]!.resourceType()).toBe('stylesheet');
       // Check redirect chain
-      const redirectChain = requests[1].redirectChain();
+      const redirectChain = requests[1]!.redirectChain();
       expect(redirectChain.length).toBe(3);
-      expect(redirectChain[0].url()).toContain('/one-style.css');
-      expect(redirectChain[2].url()).toContain('/three-style.css');
+      expect(redirectChain[0]!.url()).toContain('/one-style.css');
+      expect(redirectChain[2]!.url()).toContain('/three-style.css');
     });
     it('should be able to abort redirects', async () => {
       const { page, server, isChrome } = getTestState();
@@ -416,9 +442,9 @@ describe('request interception', function () {
       await page.goto(server.EMPTY_PAGE);
       const result = await page.evaluate(async () => {
         try {
-          await fetch('/non-existing.json');
+          return await fetch('/non-existing.json');
         } catch (error) {
-          return error.message;
+          return (error as Error).message;
         }
       });
       if (isChrome) {
@@ -432,7 +458,9 @@ describe('request interception', function () {
 
       await page.goto(server.EMPTY_PAGE);
       let responseCount = 1;
-      server.setRoute('/zzz', (req, res) => res.end(responseCount++ * 11 + ''));
+      server.setRoute('/zzz', (_req, res) => {
+        return res.end(responseCount++ * 11 + '');
+      });
       await page.setRequestInterception(true);
 
       let spinner = false;
@@ -445,69 +473,82 @@ describe('request interception', function () {
         spinner ? request.abort('failed', 0) : request.continue({}, 0);
         spinner = !spinner;
       });
-      const results = await page.evaluate(() =>
-        Promise.all([
+      const results = await page.evaluate(() => {
+        return Promise.all([
           fetch('/zzz')
-            .then((response) => response.text())
-            .catch(() => 'FAILED'),
+            .then((response) => {
+              return response!.text();
+            })
+            .catch(() => {
+              return 'FAILED';
+            }),
           fetch('/zzz')
-            .then((response) => response.text())
-            .catch(() => 'FAILED'),
+            .then((response) => {
+              return response!.text();
+            })
+            .catch(() => {
+              return 'FAILED';
+            }),
           fetch('/zzz')
-            .then((response) => response.text())
-            .catch(() => 'FAILED'),
-        ])
-      );
+            .then((response) => {
+              return response!.text();
+            })
+            .catch(() => {
+              return 'FAILED';
+            }),
+        ]);
+      });
       expect(results).toEqual(['11', 'FAILED', '22']);
     });
     it('should navigate to dataURL and fire dataURL requests', async () => {
       const { page } = getTestState();
 
       await page.setRequestInterception(true);
-      const requests = [];
+      const requests: HTTPRequest[] = [];
       page.on('request', (request) => {
         requests.push(request);
         request.continue({}, 0);
       });
       const dataURL = 'data:text/html,<div>yo</div>';
       const response = await page.goto(dataURL);
-      expect(response.status()).toBe(200);
+      expect(response!.status()).toBe(200);
       expect(requests.length).toBe(1);
-      expect(requests[0].url()).toBe(dataURL);
+      expect(requests[0]!.url()).toBe(dataURL);
     });
     it('should be able to fetch dataURL and fire dataURL requests', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       await page.setRequestInterception(true);
-      const requests = [];
+      const requests: HTTPRequest[] = [];
       page.on('request', (request) => {
         !utils.isFavicon(request) && requests.push(request);
         request.continue({}, 0);
       });
       const dataURL = 'data:text/html,<div>yo</div>';
-      const text = await page.evaluate(
-        (url: string) => fetch(url).then((r) => r.text()),
-        dataURL
-      );
+      const text = await page.evaluate((url: string) => {
+        return fetch(url).then((r) => {
+          return r.text();
+        });
+      }, dataURL);
       expect(text).toBe('<div>yo</div>');
       expect(requests.length).toBe(1);
-      expect(requests[0].url()).toBe(dataURL);
+      expect(requests[0]!.url()).toBe(dataURL);
     });
     it('should navigate to URL with hash and fire requests without hash', async () => {
       const { page, server } = getTestState();
 
       await page.setRequestInterception(true);
-      const requests = [];
+      const requests: HTTPRequest[] = [];
       page.on('request', (request) => {
         requests.push(request);
         request.continue({}, 0);
       });
       const response = await page.goto(server.EMPTY_PAGE + '#hash');
-      expect(response.status()).toBe(200);
-      expect(response.url()).toBe(server.EMPTY_PAGE);
+      expect(response!.status()).toBe(200);
+      expect(response!.url()).toBe(server.EMPTY_PAGE);
       expect(requests.length).toBe(1);
-      expect(requests[0].url()).toBe(server.EMPTY_PAGE);
+      expect(requests[0]!.url()).toBe(server.EMPTY_PAGE);
     });
     it('should work with encoded server', async () => {
       const { page, server } = getTestState();
@@ -515,20 +556,26 @@ describe('request interception', function () {
       // The requestWillBeSent will report encoded URL, whereas interception will
       // report URL as-is. @see crbug.com/759388
       await page.setRequestInterception(true);
-      page.on('request', (request) => request.continue({}, 0));
+      page.on('request', (request) => {
+        return request.continue({}, 0);
+      });
       const response = await page.goto(
         server.PREFIX + '/some nonexisting page'
       );
-      expect(response.status()).toBe(404);
+      expect(response!.status()).toBe(404);
     });
     it('should work with badly encoded server', async () => {
       const { page, server } = getTestState();
 
       await page.setRequestInterception(true);
-      server.setRoute('/malformed?rnd=%911', (req, res) => res.end());
-      page.on('request', (request) => request.continue({}, 0));
+      server.setRoute('/malformed?rnd=%911', (_req, res) => {
+        return res.end();
+      });
+      page.on('request', (request) => {
+        return request.continue({}, 0);
+      });
       const response = await page.goto(server.PREFIX + '/malformed?rnd=%911');
-      expect(response.status()).toBe(200);
+      expect(response!.status()).toBe(200);
     });
     it('should work with encoded server - 2', async () => {
       const { page, server } = getTestState();
@@ -536,7 +583,7 @@ describe('request interception', function () {
       // The requestWillBeSent will report URL as-is, whereas interception will
       // report encoded URL for stylesheet. @see crbug.com/759388
       await page.setRequestInterception(true);
-      const requests = [];
+      const requests: HTTPRequest[] = [];
       page.on('request', (request) => {
         request.continue({}, 0);
         requests.push(request);
@@ -544,39 +591,47 @@ describe('request interception', function () {
       const response = await page.goto(
         `data:text/html,<link rel="stylesheet" href="${server.PREFIX}/fonts?helvetica|arial"/>`
       );
-      expect(response.status()).toBe(200);
+      expect(response!.status()).toBe(200);
       expect(requests.length).toBe(2);
-      expect(requests[1].response().status()).toBe(404);
+      expect(requests[1]!.response()!.status()).toBe(404);
     });
     it('should not throw "Invalid Interception Id" if the request was cancelled', async () => {
       const { page, server } = getTestState();
 
       await page.setContent('<iframe></iframe>');
       await page.setRequestInterception(true);
-      let request = null;
-      page.on('request', async (r) => (request = r));
+      let request!: HTTPRequest;
+      page.on('request', async (r) => {
+        return (request = r);
+      });
       page.$eval(
         'iframe',
-        (frame: HTMLIFrameElement, url: string) => (frame.src = url),
+        (frame, url) => {
+          return ((frame as HTMLIFrameElement).src = url as string);
+        },
         server.EMPTY_PAGE
       ),
         // Wait for request interception.
         await utils.waitEvent(page, 'request');
       // Delete frame to cause request to be canceled.
-      await page.$eval('iframe', (frame) => frame.remove());
-      let error = null;
-      await request.continue({}, 0).catch((error_) => (error = error_));
-      expect(error).toBe(null);
+      await page.$eval('iframe', (frame) => {
+        return frame.remove();
+      });
+      let error!: Error;
+      await request.continue({}, 0).catch((error_) => {
+        return (error = error_);
+      });
+      expect(error).toBeUndefined();
     });
     it('should throw if interception is not enabled', async () => {
       const { page, server } = getTestState();
 
-      let error = null;
+      let error!: Error;
       page.on('request', async (request) => {
         try {
           await request.continue({}, 0);
         } catch (error_) {
-          error = error_;
+          error = error_ as Error;
         }
       });
       await page.goto(server.EMPTY_PAGE);
@@ -606,10 +661,14 @@ describe('request interception', function () {
 
       await page.setRequestInterception(true);
       await page.setCacheEnabled(false);
-      page.on('request', (request) => request.continue({}, 0));
+      page.on('request', (request) => {
+        return request.continue({}, 0);
+      });
 
       const cached = [];
-      page.on('requestservedfromcache', (r) => cached.push(r));
+      page.on('requestservedfromcache', (r) => {
+        return cached.push(r);
+      });
 
       await page.reload();
       expect(cached.length).toBe(0);
@@ -622,10 +681,14 @@ describe('request interception', function () {
 
       await page.setRequestInterception(true);
       await page.setCacheEnabled(true);
-      page.on('request', (request) => request.continue({}, 0));
+      page.on('request', (request) => {
+        return request.continue({}, 0);
+      });
 
       const cached = [];
-      page.on('requestservedfromcache', (r) => cached.push(r));
+      page.on('requestservedfromcache', (r) => {
+        return cached.push(r);
+      });
 
       await page.reload();
       expect(cached.length).toBe(1);
@@ -635,10 +698,14 @@ describe('request interception', function () {
 
       await page.setRequestInterception(true);
       await page.setCacheEnabled(true);
-      page.on('request', (request) => request.continue({}, 0));
+      page.on('request', (request) => {
+        return request.continue({}, 0);
+      });
 
       await page.goto(server.PREFIX + '/cached/one-style-font.html');
-      await page.waitForResponse((r) => r.url().endsWith('/one-style.woff'));
+      await page.waitForResponse((r) => {
+        return r.url().endsWith('/one-style.woff');
+      });
     });
   });
 
@@ -647,7 +714,9 @@ describe('request interception', function () {
       const { page, server } = getTestState();
 
       await page.setRequestInterception(true);
-      page.on('request', (request) => request.continue({}, 0));
+      page.on('request', (request) => {
+        return request.continue({}, 0);
+      });
       await page.goto(server.EMPTY_PAGE);
     });
     it('should amend HTTP headers', async () => {
@@ -662,7 +731,9 @@ describe('request interception', function () {
       await page.goto(server.EMPTY_PAGE);
       const [request] = await Promise.all([
         server.waitForRequest('/sleep.zzz'),
-        page.evaluate(() => fetch('/sleep.zzz')),
+        page.evaluate(() => {
+          return fetch('/sleep.zzz');
+        }),
       ]);
       expect(request.headers['foo']).toBe('bar');
     });
@@ -676,8 +747,10 @@ describe('request interception', function () {
           : undefined;
         request.continue({ url: redirectURL }, 0);
       });
-      let consoleMessage = null;
-      page.on('console', (msg) => (consoleMessage = msg));
+      let consoleMessage!: ConsoleMessage;
+      page.on('console', (msg) => {
+        return (consoleMessage = msg);
+      });
       await page.goto(server.EMPTY_PAGE);
       expect(page.url()).toBe(server.EMPTY_PAGE);
       expect(consoleMessage.text()).toBe('yellow');
@@ -693,7 +766,9 @@ describe('request interception', function () {
       });
       const [request] = await Promise.all([
         server.waitForRequest('/sleep.zzz'),
-        page.evaluate(() => fetch('/sleep.zzz')),
+        page.evaluate(() => {
+          return fetch('/sleep.zzz');
+        }),
       ]);
       expect(request.method).toBe('POST');
     });
@@ -708,9 +783,9 @@ describe('request interception', function () {
       });
       const [serverRequest] = await Promise.all([
         server.waitForRequest('/sleep.zzz'),
-        page.evaluate(() =>
-          fetch('/sleep.zzz', { method: 'POST', body: 'birdy' })
-        ),
+        page.evaluate(() => {
+          return fetch('/sleep.zzz', { method: 'POST', body: 'birdy' });
+        }),
       ]);
       expect(await serverRequest.postBody).toBe('doggo');
     });
@@ -748,11 +823,13 @@ describe('request interception', function () {
         );
       });
       const response = await page.goto(server.EMPTY_PAGE);
-      expect(response.status()).toBe(201);
-      expect(response.headers().foo).toBe('bar');
-      expect(await page.evaluate(() => document.body.textContent)).toBe(
-        'Yo, page!'
-      );
+      expect(response!.status()).toBe(201);
+      expect(response!.headers()['foo']).toBe('bar');
+      expect(
+        await page.evaluate(() => {
+          return document.body.textContent;
+        })
+      ).toBe('Yo, page!');
     });
     it('should be able to access the response', async () => {
       const { page, server } = getTestState();
@@ -789,11 +866,13 @@ describe('request interception', function () {
         );
       });
       const response = await page.goto(server.EMPTY_PAGE);
-      expect(response.status()).toBe(422);
-      expect(response.statusText()).toBe('Unprocessable Entity');
-      expect(await page.evaluate(() => document.body.textContent)).toBe(
-        'Yo, page!'
-      );
+      expect(response!.status()).toBe(422);
+      expect(response!.statusText()).toBe('Unprocessable Entity');
+      expect(
+        await page.evaluate(() => {
+          return document.body.textContent;
+        })
+      ).toBe('Yo, page!');
     });
     it('should redirect', async () => {
       const { page, server } = getTestState();
@@ -815,11 +894,11 @@ describe('request interception', function () {
         );
       });
       const response = await page.goto(server.PREFIX + '/rrredirect');
-      expect(response.request().redirectChain().length).toBe(1);
-      expect(response.request().redirectChain()[0].url()).toBe(
+      expect(response!.request().redirectChain().length).toBe(1);
+      expect(response!.request().redirectChain()[0]!.url()).toBe(
         server.PREFIX + '/rrredirect'
       );
-      expect(response.url()).toBe(server.EMPTY_PAGE);
+      expect(response!.url()).toBe(server.EMPTY_PAGE);
     });
     it('should allow mocking binary responses', async () => {
       const { page, server } = getTestState();
@@ -841,9 +920,11 @@ describe('request interception', function () {
         const img = document.createElement('img');
         img.src = PREFIX + '/does-not-exist.png';
         document.body.appendChild(img);
-        return new Promise((fulfill) => (img.onload = fulfill));
+        return new Promise((fulfill) => {
+          return (img.onload = fulfill);
+        });
       }, server.PREFIX);
-      const img = await page.$('img');
+      const img = (await page.$('img'))!;
       expect(await img.screenshot()).toBeGolden('mock-binary-response.png');
     });
     it('should stringify intercepted request response headers', async () => {
@@ -863,12 +944,14 @@ describe('request interception', function () {
         );
       });
       const response = await page.goto(server.EMPTY_PAGE);
-      expect(response.status()).toBe(200);
-      const headers = response.headers();
-      expect(headers.foo).toBe('true');
-      expect(await page.evaluate(() => document.body.textContent)).toBe(
-        'Yo, page!'
-      );
+      expect(response!.status()).toBe(200);
+      const headers = response!.headers();
+      expect(headers['foo']).toBe('true');
+      expect(
+        await page.evaluate(() => {
+          return document.body.textContent;
+        })
+      ).toBe('Yo, page!');
     });
     it('should indicate already-handled if an intercept has been handled', async () => {
       const { page, server } = getTestState();

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 import expect from 'expect';
+import { IncomingMessage } from 'http';
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   describeChromeOnly,
-} from './mocha-utils'; // eslint-disable-line import/extensions
+} from './mocha-utils.js';
 
 describeChromeOnly('Chromium-Specific Launcher tests', function () {
   describe('Puppeteer.launch |browserURL| option', function () {
@@ -35,14 +36,22 @@ describeChromeOnly('Chromium-Specific Launcher tests', function () {
 
       const browser1 = await puppeteer.connect({ browserURL });
       const page1 = await browser1.newPage();
-      expect(await page1.evaluate(() => 7 * 8)).toBe(56);
+      expect(
+        await page1.evaluate(() => {
+          return 7 * 8;
+        })
+      ).toBe(56);
       browser1.disconnect();
 
       const browser2 = await puppeteer.connect({
         browserURL: browserURL + '/',
       });
       const page2 = await browser2.newPage();
-      expect(await page2.evaluate(() => 8 * 7)).toBe(56);
+      expect(
+        await page2.evaluate(() => {
+          return 8 * 7;
+        })
+      ).toBe(56);
       browser2.disconnect();
       originalBrowser.close();
     });
@@ -56,13 +65,15 @@ describeChromeOnly('Chromium-Specific Launcher tests', function () {
       );
       const browserURL = 'http://127.0.0.1:21222';
 
-      let error = null;
+      let error!: Error;
       await puppeteer
         .connect({
           browserURL,
           browserWSEndpoint: originalBrowser.wsEndpoint(),
         })
-        .catch((error_) => (error = error_));
+        .catch((error_) => {
+          return (error = error_);
+        });
       expect(error.message).toContain(
         'Exactly one of browserWSEndpoint, browserURL or transport'
       );
@@ -79,10 +90,10 @@ describeChromeOnly('Chromium-Specific Launcher tests', function () {
       );
       const browserURL = 'http://127.0.0.1:32333';
 
-      let error = null;
-      await puppeteer
-        .connect({ browserURL })
-        .catch((error_) => (error = error_));
+      let error!: Error;
+      await puppeteer.connect({ browserURL }).catch((error_) => {
+        return (error = error_);
+      });
       expect(error.message).toContain(
         'Failed to fetch browser webSocket URL from'
       );
@@ -117,11 +128,11 @@ describeChromeOnly('Chromium-Specific Launcher tests', function () {
       const { defaultBrowserOptions, puppeteer } = getTestState();
       const options = Object.assign({ pipe: true }, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
-      const disconnectedEventPromise = new Promise((resolve) =>
-        browser.once('disconnected', resolve)
-      );
+      const disconnectedEventPromise = new Promise((resolve) => {
+        return browser.once('disconnected', resolve);
+      });
       // Emulate user exiting browser.
-      browser.process().kill();
+      browser.process()!.kill();
       await disconnectedEventPromise;
     });
   });
@@ -133,26 +144,28 @@ describeChromeOnly('Chromium-Specific Page Tests', function () {
   it('Page.setRequestInterception should work with intervention headers', async () => {
     const { server, page } = getTestState();
 
-    server.setRoute('/intervention', (req, res) =>
-      res.end(`
+    server.setRoute('/intervention', (_req, res) => {
+      return res.end(`
         <script>
           document.write('<script src="${server.CROSS_PROCESS_PREFIX}/intervention.js">' + '</scr' + 'ipt>');
         </script>
-      `)
-    );
+      `);
+    });
     server.setRedirect('/intervention.js', '/redirect.js');
-    let serverRequest = null;
+    let serverRequest: IncomingMessage | undefined;
     server.setRoute('/redirect.js', (req, res) => {
       serverRequest = req;
       res.end('console.log(1);');
     });
 
     await page.setRequestInterception(true);
-    page.on('request', (request) => request.continue());
+    page.on('request', (request) => {
+      return request.continue();
+    });
     await page.goto(server.PREFIX + '/intervention');
     // Check for feature URL substring rather than https://www.chromestatus.com to
     // make it work with Edgium.
-    expect(serverRequest.headers.intervention).toContain(
+    expect(serverRequest!.headers['intervention']).toContain(
       'feature/5718547946799104'
     );
   });

@@ -21,7 +21,7 @@ import {
   setupTestPageAndContextHooks,
   setupTestBrowserHooks,
   itFailsFirefox,
-} from './mocha-utils'; // eslint-disable-line import/extensions
+} from './mocha-utils.js';
 
 describe('Page.Events.Dialog', function () {
   setupTestBrowserHooks();
@@ -35,10 +35,12 @@ describe('Page.Events.Dialog', function () {
     });
     page.on('dialog', onDialog);
 
-    await page.evaluate(() => alert('yo'));
+    await page.evaluate(() => {
+      return alert('yo');
+    });
 
     expect(onDialog.callCount).toEqual(1);
-    const dialog = onDialog.firstCall.args[0];
+    const dialog = onDialog.firstCall.args[0]!;
     expect(dialog.type()).toBe('alert');
     expect(dialog.defaultValue()).toBe('');
     expect(dialog.message()).toBe('yo');
@@ -52,10 +54,12 @@ describe('Page.Events.Dialog', function () {
     });
     page.on('dialog', onDialog);
 
-    const result = await page.evaluate(() => prompt('question?', 'yes.'));
+    const result = await page.evaluate(() => {
+      return prompt('question?', 'yes.');
+    });
 
     expect(onDialog.callCount).toEqual(1);
-    const dialog = onDialog.firstCall.args[0];
+    const dialog = onDialog.firstCall.args[0]!;
     expect(dialog.type()).toBe('prompt');
     expect(dialog.defaultValue()).toBe('yes.');
     expect(dialog.message()).toBe('question?');
@@ -68,7 +72,9 @@ describe('Page.Events.Dialog', function () {
     page.on('dialog', (dialog) => {
       dialog.dismiss();
     });
-    const result = await page.evaluate(() => prompt('question?'));
+    const result = await page.evaluate(() => {
+      return prompt('question?');
+    });
     expect(result).toBe(null);
   });
 });

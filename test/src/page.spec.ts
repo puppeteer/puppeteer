@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import fs from 'fs';
-import path from 'path';
-import utils from './utils.js';
-const { waitEvent } = utils;
 import expect from 'expect';
+import fs from 'fs';
+import { ServerResponse } from 'http';
+import path from 'path';
 import sinon from 'sinon';
+import { CDPSession } from '../../lib/cjs/puppeteer/common/Connection.js';
+import { ConsoleMessage } from '../../lib/cjs/puppeteer/common/ConsoleMessage.js';
+import { JSHandle } from '../../lib/cjs/puppeteer/common/JSHandle.js';
+import { Metrics, Page } from '../../lib/cjs/puppeteer/common/Page.js';
 import {
+  describeFailsFirefox,
   getTestState,
+  itFailsFirefox,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
-  itFailsFirefox,
-  describeFailsFirefox,
-} from './mocha-utils'; // eslint-disable-line import/extensions
-import { Page, Metrics } from '../../lib/cjs/puppeteer/common/Page.js';
-import { CDPSession } from '../../lib/cjs/puppeteer/common/Connection.js';
-import { JSHandle } from '../../lib/cjs/puppeteer/common/JSHandle.js';
+} from './mocha-utils.js';
+import utils, { attachFrame, waitEvent } from './utils.js';
 
 describe('Page', function () {
   setupTestBrowserHooks();
@@ -38,11 +39,15 @@ describe('Page', function () {
       const { context } = getTestState();
 
       const newPage = await context.newPage();
-      let error = null;
+      let error!: Error;
       await Promise.all([
         newPage
-          .evaluate(() => new Promise(() => {}))
-          .catch((error_) => (error = error_)),
+          .evaluate(() => {
+            return new Promise(() => {});
+          })
+          .catch((error_) => {
+            return (error = error_);
+          }),
         newPage.close(),
       ]);
       expect(error.message).toContain('Protocol error');
@@ -98,8 +103,12 @@ describe('Page', function () {
 
       const newPage = await context.newPage();
       const results = await Promise.all([
-        newPage.waitForRequest(server.EMPTY_PAGE).catch((error) => error),
-        newPage.waitForResponse(server.EMPTY_PAGE).catch((error) => error),
+        newPage.waitForRequest(server.EMPTY_PAGE).catch((error) => {
+          return error;
+        }),
+        newPage.waitForResponse(server.EMPTY_PAGE).catch((error) => {
+          return error;
+        }),
         newPage.close(),
       ]);
       for (let i = 0; i < 2; i++) {
@@ -126,7 +135,7 @@ describe('Page', function () {
       const { page, server } = getTestState();
 
       const handler = sinon.spy();
-      const onResponse = (response) => {
+      const onResponse = (response: { url: () => string }) => {
         // Ignore default favicon requests.
         if (!response.url().endsWith('favicon.ico')) {
           handler();
@@ -149,7 +158,7 @@ describe('Page', function () {
       const { page, server } = getTestState();
 
       const handler = sinon.spy();
-      const onResponse = (response) => {
+      const onResponse = (response: { url: () => string }) => {
         // Ignore default favicon requests.
         if (!response.url().endsWith('favicon.ico')) {
           handler();
@@ -178,8 +187,10 @@ describe('Page', function () {
     it('should throw when page crashes', async () => {
       const { page } = getTestState();
 
-      let error = null;
-      page.on('error', (err) => (error = err));
+      let error!: Error;
+      page.on('error', (err) => {
+        return (error = err);
+      });
       page.goto('chrome://crash').catch(() => {});
       await waitEvent(page, 'error');
       expect(error.message).toBe('Page crashed!');
@@ -191,21 +202,45 @@ describe('Page', function () {
       const { page } = getTestState();
 
       const [popup] = await Promise.all([
-        new Promise<Page>((x) => page.once('popup', x)),
-        page.evaluate(() => window.open('about:blank')),
+        new Promise<Page>((x) => {
+          return page.once('popup', x);
+        }),
+        page.evaluate(() => {
+          return window.open('about:blank');
+        }),
       ]);
-      expect(await page.evaluate(() => !!window.opener)).toBe(false);
-      expect(await popup.evaluate(() => !!window.opener)).toBe(true);
+      expect(
+        await page.evaluate(() => {
+          return !!window.opener;
+        })
+      ).toBe(false);
+      expect(
+        await popup.evaluate(() => {
+          return !!window.opener;
+        })
+      ).toBe(true);
     });
     it('should work with noopener', async () => {
       const { page } = getTestState();
 
       const [popup] = await Promise.all([
-        new Promise<Page>((x) => page.once('popup', x)),
-        page.evaluate(() => window.open('about:blank', null, 'noopener')),
+        new Promise<Page>((x) => {
+          return page.once('popup', x);
+        }),
+        page.evaluate(() => {
+          return window.open('about:blank', undefined, 'noopener');
+        }),
       ]);
-      expect(await page.evaluate(() => !!window.opener)).toBe(false);
-      expect(await popup.evaluate(() => !!window.opener)).toBe(false);
+      expect(
+        await page.evaluate(() => {
+          return !!window.opener;
+        })
+      ).toBe(false);
+      expect(
+        await popup.evaluate(() => {
+          return !!window.opener;
+        })
+      ).toBe(false);
     });
     it('should work with clicking target=_blank and without rel=opener', async () => {
       const { page, server } = getTestState();
@@ -213,11 +248,21 @@ describe('Page', function () {
       await page.goto(server.EMPTY_PAGE);
       await page.setContent('<a target=_blank href="/one-style.html">yo</a>');
       const [popup] = await Promise.all([
-        new Promise<Page>((x) => page.once('popup', x)),
+        new Promise<Page>((x) => {
+          return page.once('popup', x);
+        }),
         page.click('a'),
       ]);
-      expect(await page.evaluate(() => !!window.opener)).toBe(false);
-      expect(await popup.evaluate(() => !!window.opener)).toBe(false);
+      expect(
+        await page.evaluate(() => {
+          return !!window.opener;
+        })
+      ).toBe(false);
+      expect(
+        await popup.evaluate(() => {
+          return !!window.opener;
+        })
+      ).toBe(false);
     });
     it('should work with clicking target=_blank and with rel=opener', async () => {
       const { page, server } = getTestState();
@@ -227,11 +272,21 @@ describe('Page', function () {
         '<a target=_blank rel=opener href="/one-style.html">yo</a>'
       );
       const [popup] = await Promise.all([
-        new Promise<Page>((x) => page.once('popup', x)),
+        new Promise<Page>((x) => {
+          return page.once('popup', x);
+        }),
         page.click('a'),
       ]);
-      expect(await page.evaluate(() => !!window.opener)).toBe(false);
-      expect(await popup.evaluate(() => !!window.opener)).toBe(true);
+      expect(
+        await page.evaluate(() => {
+          return !!window.opener;
+        })
+      ).toBe(false);
+      expect(
+        await popup.evaluate(() => {
+          return !!window.opener;
+        })
+      ).toBe(true);
     });
     it('should work with fake-clicking target=_blank and rel=noopener', async () => {
       const { page, server } = getTestState();
@@ -241,11 +296,23 @@ describe('Page', function () {
         '<a target=_blank rel=noopener href="/one-style.html">yo</a>'
       );
       const [popup] = await Promise.all([
-        new Promise<Page>((x) => page.once('popup', x)),
-        page.$eval('a', (a: HTMLAnchorElement) => a.click()),
+        new Promise<Page>((x) => {
+          return page.once('popup', x);
+        }),
+        page.$eval('a', (a) => {
+          return (a as HTMLAnchorElement).click();
+        }),
       ]);
-      expect(await page.evaluate(() => !!window.opener)).toBe(false);
-      expect(await popup.evaluate(() => !!window.opener)).toBe(false);
+      expect(
+        await page.evaluate(() => {
+          return !!window.opener;
+        })
+      ).toBe(false);
+      expect(
+        await popup.evaluate(() => {
+          return !!window.opener;
+        })
+      ).toBe(false);
     });
     it('should work with clicking target=_blank and rel=noopener', async () => {
       const { page, server } = getTestState();
@@ -255,21 +322,31 @@ describe('Page', function () {
         '<a target=_blank rel=noopener href="/one-style.html">yo</a>'
       );
       const [popup] = await Promise.all([
-        new Promise<Page>((x) => page.once('popup', x)),
+        new Promise<Page>((x) => {
+          return page.once('popup', x);
+        }),
         page.click('a'),
       ]);
-      expect(await page.evaluate(() => !!window.opener)).toBe(false);
-      expect(await popup.evaluate(() => !!window.opener)).toBe(false);
+      expect(
+        await page.evaluate(() => {
+          return !!window.opener;
+        })
+      ).toBe(false);
+      expect(
+        await popup.evaluate(() => {
+          return !!window.opener;
+        })
+      ).toBe(false);
     });
   });
 
   describe('BrowserContext.overridePermissions', function () {
-    function getPermission(page, name) {
-      return page.evaluate(
-        (name) =>
-          navigator.permissions.query({ name }).then((result) => result.state),
-        name
-      );
+    function getPermission(page: Page, name: string) {
+      return page.evaluate((name: PermissionName) => {
+        return navigator.permissions.query({ name }).then((result) => {
+          return result.state;
+        });
+      }, name);
     }
 
     it('should be prompt by default', async () => {
@@ -289,11 +366,13 @@ describe('Page', function () {
       const { page, server, context } = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      let error = null;
+      let error!: Error;
       await context
         // @ts-expect-error purposeful bad input for test
         .overridePermissions(server.EMPTY_PAGE, ['foo'])
-        .catch((error_) => (error = error_));
+        .catch((error_) => {
+          return (error = error_);
+        });
       expect(error.message).toBe('Unknown permission: foo');
     });
     itFailsFirefox('should grant permission when listed', async () => {
@@ -322,35 +401,39 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
-        globalThis.events = [];
+        (globalThis as any).events = [];
         return navigator.permissions
           .query({ name: 'geolocation' })
           .then(function (result) {
-            globalThis.events.push(result.state);
+            (globalThis as any).events.push(result.state);
             result.onchange = function () {
-              globalThis.events.push(result.state);
+              (globalThis as any).events.push(result.state);
             };
           });
       });
-      expect(await page.evaluate(() => globalThis.events)).toEqual(['prompt']);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).events;
+        })
+      ).toEqual(['prompt']);
       await context.overridePermissions(server.EMPTY_PAGE, []);
-      expect(await page.evaluate(() => globalThis.events)).toEqual([
-        'prompt',
-        'denied',
-      ]);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).events;
+        })
+      ).toEqual(['prompt', 'denied']);
       await context.overridePermissions(server.EMPTY_PAGE, ['geolocation']);
-      expect(await page.evaluate(() => globalThis.events)).toEqual([
-        'prompt',
-        'denied',
-        'granted',
-      ]);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).events;
+        })
+      ).toEqual(['prompt', 'denied', 'granted']);
       await context.clearPermissionOverrides();
-      expect(await page.evaluate(() => globalThis.events)).toEqual([
-        'prompt',
-        'denied',
-        'granted',
-        'prompt',
-      ]);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).events;
+        })
+      ).toEqual(['prompt', 'denied', 'granted', 'prompt']);
     });
     itFailsFirefox(
       'should isolate permissions between browser contexts',
@@ -399,17 +482,16 @@ describe('Page', function () {
       await context.overridePermissions(server.PREFIX, ['geolocation']);
       await page.goto(server.EMPTY_PAGE);
       await page.setGeolocation({ longitude: 10, latitude: 10 });
-      const geolocation = await page.evaluate(
-        () =>
-          new Promise((resolve) =>
-            navigator.geolocation.getCurrentPosition((position) => {
-              resolve({
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-              });
-            })
-          )
-      );
+      const geolocation = await page.evaluate(() => {
+        return new Promise((resolve) => {
+          return navigator.geolocation.getCurrentPosition((position) => {
+            resolve({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            });
+          });
+        });
+      });
       expect(geolocation).toEqual({
         latitude: 10,
         longitude: 10,
@@ -418,11 +500,11 @@ describe('Page', function () {
     it('should throw when invalid longitude', async () => {
       const { page } = getTestState();
 
-      let error = null;
+      let error!: Error;
       try {
         await page.setGeolocation({ longitude: 200, latitude: 10 });
       } catch (error_) {
-        error = error_;
+        error = error_ as Error;
       }
       expect(error.message).toContain('Invalid longitude "200"');
     });
@@ -433,21 +515,35 @@ describe('Page', function () {
       const { page, server } = getTestState();
 
       await page.setOfflineMode(true);
-      let error = null;
-      await page.goto(server.EMPTY_PAGE).catch((error_) => (error = error_));
+      let error!: Error;
+      await page.goto(server.EMPTY_PAGE).catch((error_) => {
+        return (error = error_);
+      });
       expect(error).toBeTruthy();
       await page.setOfflineMode(false);
-      const response = await page.reload();
+      const response = (await page.reload())!;
       expect(response.status()).toBe(200);
     });
     it('should emulate navigator.onLine', async () => {
       const { page } = getTestState();
 
-      expect(await page.evaluate(() => window.navigator.onLine)).toBe(true);
+      expect(
+        await page.evaluate(() => {
+          return window.navigator.onLine;
+        })
+      ).toBe(true);
       await page.setOfflineMode(true);
-      expect(await page.evaluate(() => window.navigator.onLine)).toBe(false);
+      expect(
+        await page.evaluate(() => {
+          return window.navigator.onLine;
+        })
+      ).toBe(false);
       await page.setOfflineMode(false);
-      expect(await page.evaluate(() => window.navigator.onLine)).toBe(true);
+      expect(
+        await page.evaluate(() => {
+          return window.navigator.onLine;
+        })
+      ).toBe(true);
     });
   });
 
@@ -456,18 +552,20 @@ describe('Page', function () {
       const { page } = getTestState();
 
       // Instantiate an object
-      await page.evaluate(() => (globalThis.set = new Set(['hello', 'world'])));
-      const prototypeHandle = await page.evaluateHandle(() => Set.prototype);
+      await page.evaluate(() => {
+        return ((globalThis as any).set = new Set(['hello', 'world']));
+      });
+      const prototypeHandle = await page.evaluateHandle(() => {
+        return Set.prototype;
+      });
       const objectsHandle = await page.queryObjects(prototypeHandle);
-      const count = await page.evaluate(
-        (objects: JSHandle[]) => objects.length,
-        objectsHandle
-      );
+      const count = await page.evaluate((objects: JSHandle[]) => {
+        return objects.length;
+      }, objectsHandle);
       expect(count).toBe(1);
-      const values = await page.evaluate(
-        (objects) => Array.from(objects[0].values()),
-        objectsHandle
-      );
+      const values = await page.evaluate((objects) => {
+        return Array.from(objects[0]!.values());
+      }, objectsHandle);
       expect(values).toEqual(['hello', 'world']);
     });
     itFailsFirefox('should work for non-blank page', async () => {
@@ -475,36 +573,41 @@ describe('Page', function () {
 
       // Instantiate an object
       await page.goto(server.EMPTY_PAGE);
-      await page.evaluate(() => (globalThis.set = new Set(['hello', 'world'])));
-      const prototypeHandle = await page.evaluateHandle(() => Set.prototype);
+      await page.evaluate(() => {
+        return ((globalThis as any).set = new Set(['hello', 'world']));
+      });
+      const prototypeHandle = await page.evaluateHandle(() => {
+        return Set.prototype;
+      });
       const objectsHandle = await page.queryObjects(prototypeHandle);
-      const count = await page.evaluate(
-        (objects: JSHandle[]) => objects.length,
-        objectsHandle
-      );
+      const count = await page.evaluate((objects: JSHandle[]) => {
+        return objects.length;
+      }, objectsHandle);
       expect(count).toBe(1);
     });
     it('should fail for disposed handles', async () => {
       const { page } = getTestState();
 
-      const prototypeHandle = await page.evaluateHandle(
-        () => HTMLBodyElement.prototype
-      );
+      const prototypeHandle = await page.evaluateHandle(() => {
+        return HTMLBodyElement.prototype;
+      });
       await prototypeHandle.dispose();
-      let error = null;
-      await page
-        .queryObjects(prototypeHandle)
-        .catch((error_) => (error = error_));
+      let error!: Error;
+      await page.queryObjects(prototypeHandle).catch((error_) => {
+        return (error = error_);
+      });
       expect(error.message).toBe('Prototype JSHandle is disposed!');
     });
     it('should fail primitive values as prototypes', async () => {
       const { page } = getTestState();
 
-      const prototypeHandle = await page.evaluateHandle(() => 42);
-      let error = null;
-      await page
-        .queryObjects(prototypeHandle)
-        .catch((error_) => (error = error_));
+      const prototypeHandle = await page.evaluateHandle(() => {
+        return 42;
+      });
+      let error!: Error;
+      await page.queryObjects(prototypeHandle).catch((error_) => {
+        return (error = error_);
+      });
       expect(error.message).toBe(
         'Prototype JSHandle must not be referencing primitive value'
       );
@@ -515,10 +618,14 @@ describe('Page', function () {
     it('should work', async () => {
       const { page } = getTestState();
 
-      let message = null;
-      page.once('console', (m) => (message = m));
+      let message!: ConsoleMessage;
+      page.once('console', (m) => {
+        return (message = m);
+      });
       await Promise.all([
-        page.evaluate(() => console.log('hello', 5, { foo: 'bar' })),
+        page.evaluate(() => {
+          return console.log('hello', 5, { foo: 'bar' });
+        }),
         waitEvent(page, 'console'),
       ]);
       expect(message.text()).toEqual('hello 5 JSHandle@object');
@@ -530,15 +637,17 @@ describe('Page', function () {
         columnNumber: expect.any(Number),
       });
 
-      expect(await message.args()[0].jsonValue()).toEqual('hello');
-      expect(await message.args()[1].jsonValue()).toEqual(5);
-      expect(await message.args()[2].jsonValue()).toEqual({ foo: 'bar' });
+      expect(await message.args()[0]!.jsonValue()).toEqual('hello');
+      expect(await message.args()[1]!.jsonValue()).toEqual(5);
+      expect(await message.args()[2]!.jsonValue()).toEqual({ foo: 'bar' });
     });
     it('should work for different console API calls', async () => {
       const { page } = getTestState();
 
-      const messages = [];
-      page.on('console', (msg) => messages.push(msg));
+      const messages: any[] = [];
+      page.on('console', (msg) => {
+        return messages.push(msg);
+      });
       // All console events will be reported before `page.evaluate` is finished.
       await page.evaluate(() => {
         // A pair of time/timeEnd generates only one Console API call.
@@ -550,16 +659,17 @@ describe('Page', function () {
         console.error('calling console.error');
         console.log(Promise.resolve('should not wait until resolved!'));
       });
-      expect(messages.map((msg) => msg.type())).toEqual([
-        'timeEnd',
-        'trace',
-        'dir',
-        'warning',
-        'error',
-        'log',
-      ]);
-      expect(messages[0].text()).toContain('calling console.time');
-      expect(messages.slice(1).map((msg) => msg.text())).toEqual([
+      expect(
+        messages.map((msg) => {
+          return msg.type();
+        })
+      ).toEqual(['timeEnd', 'trace', 'dir', 'warning', 'error', 'log']);
+      expect(messages[0]!.text()).toContain('calling console.time');
+      expect(
+        messages.slice(1).map((msg) => {
+          return msg.text();
+        })
+      ).toEqual([
         'calling console.trace',
         'calling console.dir',
         'calling console.warn',
@@ -570,10 +680,14 @@ describe('Page', function () {
     it('should not fail for window object', async () => {
       const { page } = getTestState();
 
-      let message = null;
-      page.once('console', (msg) => (message = msg));
+      let message!: ConsoleMessage;
+      page.once('console', (msg) => {
+        return (message = msg);
+      });
       await Promise.all([
-        page.evaluate(() => console.error(window)),
+        page.evaluate(() => {
+          return console.error(window);
+        }),
         waitEvent(page, 'console'),
       ]);
       expect(message.text()).toBe('JSHandle@object');
@@ -584,10 +698,9 @@ describe('Page', function () {
       await page.goto('about:blank');
       const [message] = await Promise.all([
         waitEvent(page, 'console'),
-        page.evaluate(
-          async (url: string) => fetch(url).catch(() => {}),
-          server.EMPTY_PAGE
-        ),
+        page.evaluate(async (url: string) => {
+          return fetch(url).catch(() => {});
+        }, server.EMPTY_PAGE),
       ]);
       expect(message.text()).toContain('Access-Control-Allow-Origin');
       if (isChrome) {
@@ -657,19 +770,25 @@ describe('Page', function () {
           window.location.href,
           'Title',
           'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=780,height=200,top=0,left=0'
-        );
-        await new Promise((x) => (win.onload = x));
+        )!;
+        await new Promise((x) => {
+          return (win.onload = x);
+        });
         // 2. In this popup, create an iframe that console.logs a message.
         win.document.body.innerHTML = `<iframe src='/consolelog.html'></iframe>`;
-        const frame = win.document.querySelector('iframe');
-        await new Promise((x) => (frame.onload = x));
+        const frame = win.document.querySelector('iframe')!;
+        await new Promise((x) => {
+          return (frame.onload = x);
+        });
         // 3. After that, remove the iframe.
         frame.remove();
       });
       const popupTarget = page
         .browserContext()
         .targets()
-        .find((target) => target !== page.target());
+        .find((target) => {
+          return target !== page.target();
+        })!;
       // 4. Connect to the popup and make sure it doesn't throw.
       await popupTarget.page();
     });
@@ -696,14 +815,18 @@ describe('Page', function () {
       const { page } = getTestState();
 
       const metricsPromise = new Promise<{ metrics: Metrics; title: string }>(
-        (fulfill) => page.once('metrics', fulfill)
+        (fulfill) => {
+          return page.once('metrics', fulfill);
+        }
       );
-      await page.evaluate(() => console.timeStamp('test42'));
+      await page.evaluate(() => {
+        return console.timeStamp('test42');
+      });
       const metrics = await metricsPromise;
       expect(metrics.title).toBe('test42');
       checkMetrics(metrics.metrics);
     });
-    function checkMetrics(metrics) {
+    function checkMetrics(metrics: Metrics) {
       const metricsToCheck = new Set([
         'Timestamp',
         'Documents',
@@ -721,7 +844,7 @@ describe('Page', function () {
       ]);
       for (const name in metrics) {
         expect(metricsToCheck.has(name)).toBeTruthy();
-        expect(metrics[name]).toBeGreaterThanOrEqual(0);
+        expect(metrics[name as keyof Metrics]).toBeGreaterThanOrEqual(0);
         metricsToCheck.delete(name);
       }
       expect(metricsToCheck.size).toBe(0);
@@ -748,9 +871,9 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       const [request] = await Promise.all([
-        page.waitForRequest(
-          (request) => request.url() === server.PREFIX + '/digits/2.png'
-        ),
+        page.waitForRequest((request) => {
+          return request.url() === server.PREFIX + '/digits/2.png';
+        }),
         page.evaluate(() => {
           fetch('/digits/1.png');
           fetch('/digits/2.png');
@@ -762,20 +885,31 @@ describe('Page', function () {
     it('should respect timeout', async () => {
       const { page, puppeteer } = getTestState();
 
-      let error = null;
+      let error!: Error;
       await page
-        .waitForRequest(() => false, { timeout: 1 })
-        .catch((error_) => (error = error_));
+        .waitForRequest(
+          () => {
+            return false;
+          },
+          { timeout: 1 }
+        )
+        .catch((error_) => {
+          return (error = error_);
+        });
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should respect default timeout', async () => {
       const { page, puppeteer } = getTestState();
 
-      let error = null;
+      let error!: Error;
       page.setDefaultTimeout(1);
       await page
-        .waitForRequest(() => false)
-        .catch((error_) => (error = error_));
+        .waitForRequest(() => {
+          return false;
+        })
+        .catch((error_) => {
+          return (error = error_);
+        });
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should work with no timeout', async () => {
@@ -784,13 +918,13 @@ describe('Page', function () {
       await page.goto(server.EMPTY_PAGE);
       const [request] = await Promise.all([
         page.waitForRequest(server.PREFIX + '/digits/2.png', { timeout: 0 }),
-        page.evaluate(() =>
-          setTimeout(() => {
+        page.evaluate(() => {
+          return setTimeout(() => {
             fetch('/digits/1.png');
             fetch('/digits/2.png');
             fetch('/digits/3.png');
-          }, 50)
-        ),
+          }, 50);
+        }),
       ]);
       expect(request.url()).toBe(server.PREFIX + '/digits/2.png');
     });
@@ -814,20 +948,31 @@ describe('Page', function () {
     it('should respect timeout', async () => {
       const { page, puppeteer } = getTestState();
 
-      let error = null;
+      let error!: Error;
       await page
-        .waitForResponse(() => false, { timeout: 1 })
-        .catch((error_) => (error = error_));
+        .waitForResponse(
+          () => {
+            return false;
+          },
+          { timeout: 1 }
+        )
+        .catch((error_) => {
+          return (error = error_);
+        });
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should respect default timeout', async () => {
       const { page, puppeteer } = getTestState();
 
-      let error = null;
+      let error!: Error;
       page.setDefaultTimeout(1);
       await page
-        .waitForResponse(() => false)
-        .catch((error_) => (error = error_));
+        .waitForResponse(() => {
+          return false;
+        })
+        .catch((error_) => {
+          return (error = error_);
+        });
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should work with predicate', async () => {
@@ -835,9 +980,9 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       const [response] = await Promise.all([
-        page.waitForResponse(
-          (response) => response.url() === server.PREFIX + '/digits/2.png'
-        ),
+        page.waitForResponse((response) => {
+          return response.url() === server.PREFIX + '/digits/2.png';
+        }),
         page.evaluate(() => {
           fetch('/digits/1.png');
           fetch('/digits/2.png');
@@ -867,13 +1012,13 @@ describe('Page', function () {
       await page.goto(server.EMPTY_PAGE);
       const [response] = await Promise.all([
         page.waitForResponse(server.PREFIX + '/digits/2.png', { timeout: 0 }),
-        page.evaluate(() =>
-          setTimeout(() => {
+        page.evaluate(() => {
+          return setTimeout(() => {
             fetch('/digits/1.png');
             fetch('/digits/2.png');
             fetch('/digits/3.png');
-          }, 50)
-        ),
+          }, 50);
+        }),
       ]);
       expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
     });
@@ -890,19 +1035,25 @@ describe('Page', function () {
           return Date.now();
         }),
         page
-          .evaluate(() =>
-            (async () => {
+          .evaluate(() => {
+            return (async () => {
               await Promise.all([
                 fetch('/digits/1.png'),
                 fetch('/digits/2.png'),
               ]);
-              await new Promise((resolve) => setTimeout(resolve, 200));
+              await new Promise((resolve) => {
+                return setTimeout(resolve, 200);
+              });
               await fetch('/digits/3.png');
-              await new Promise((resolve) => setTimeout(resolve, 200));
+              await new Promise((resolve) => {
+                return setTimeout(resolve, 200);
+              });
               await fetch('/digits/4.png');
-            })()
-          )
-          .then(() => Date.now()),
+            })();
+          })
+          .then(() => {
+            return Date.now();
+          }),
       ]);
       expect(res).toBe(undefined);
       expect(t1).toBeGreaterThan(t2);
@@ -910,28 +1061,34 @@ describe('Page', function () {
     });
     it('should respect timeout', async () => {
       const { page, puppeteer } = getTestState();
-      let error = null;
-      await page
-        .waitForNetworkIdle({ timeout: 1 })
-        .catch((error_) => (error = error_));
+      let error!: Error;
+      await page.waitForNetworkIdle({ timeout: 1 }).catch((error_) => {
+        return (error = error_);
+      });
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should respect idleTime', async () => {
       const { page, server } = getTestState();
       await page.goto(server.EMPTY_PAGE);
       const [t1, t2] = await Promise.all([
-        page.waitForNetworkIdle({ idleTime: 10 }).then(() => Date.now()),
+        page.waitForNetworkIdle({ idleTime: 10 }).then(() => {
+          return Date.now();
+        }),
         page
-          .evaluate(() =>
-            (async () => {
+          .evaluate(() => {
+            return (async () => {
               await Promise.all([
                 fetch('/digits/1.png'),
                 fetch('/digits/2.png'),
               ]);
-              await new Promise((resolve) => setTimeout(resolve, 250));
-            })()
-          )
-          .then(() => Date.now()),
+              await new Promise((resolve) => {
+                return setTimeout(resolve, 250);
+              });
+            })();
+          })
+          .then(() => {
+            return Date.now();
+          }),
       ]);
       expect(t2).toBeGreaterThan(t1);
     });
@@ -940,13 +1097,13 @@ describe('Page', function () {
       await page.goto(server.EMPTY_PAGE);
       const [result] = await Promise.all([
         page.waitForNetworkIdle({ timeout: 0 }),
-        page.evaluate(() =>
-          setTimeout(() => {
+        page.evaluate(() => {
+          return setTimeout(() => {
             fetch('/digits/1.png');
             fetch('/digits/2.png');
             fetch('/digits/3.png');
-          }, 50)
-        ),
+          }, 50);
+        }),
       ]);
       expect(result).toBe(undefined);
     });
@@ -956,11 +1113,11 @@ describe('Page', function () {
     it('should work', async () => {
       const { page } = getTestState();
 
-      await page.exposeFunction('compute', function (a, b) {
+      await page.exposeFunction('compute', function (a: number, b: number) {
         return a * b;
       });
       const result = await page.evaluate(async function () {
-        return await globalThis.compute(9, 4);
+        return await (globalThis as any).compute(9, 4);
       });
       expect(result).toBe(36);
     });
@@ -972,9 +1129,12 @@ describe('Page', function () {
       });
       const { message, stack } = await page.evaluate(async () => {
         try {
-          await globalThis.woof();
+          return await (globalThis as any).woof();
         } catch (error) {
-          return { message: error.message, stack: error.stack };
+          return {
+            message: (error as Error).message,
+            stack: (error as Error).stack,
+          };
         }
       });
       expect(message).toBe('WOOF WOOF');
@@ -988,7 +1148,7 @@ describe('Page', function () {
       });
       const thrown = await page.evaluate(async () => {
         try {
-          await globalThis.woof();
+          await (globalThis as any).woof();
         } catch (error) {
           return error;
         }
@@ -1002,46 +1162,48 @@ describe('Page', function () {
       await page.exposeFunction('woof', function () {
         called = true;
       });
-      await page.evaluateOnNewDocument(() => globalThis.woof());
+      await page.evaluateOnNewDocument(() => {
+        return (globalThis as any).woof();
+      });
       await page.reload();
       expect(called).toBe(true);
     });
     it('should survive navigation', async () => {
       const { page, server } = getTestState();
 
-      await page.exposeFunction('compute', function (a, b) {
+      await page.exposeFunction('compute', function (a: number, b: number) {
         return a * b;
       });
 
       await page.goto(server.EMPTY_PAGE);
       const result = await page.evaluate(async function () {
-        return await globalThis.compute(9, 4);
+        return await (globalThis as any).compute(9, 4);
       });
       expect(result).toBe(36);
     });
     it('should await returned promise', async () => {
       const { page } = getTestState();
 
-      await page.exposeFunction('compute', function (a, b) {
+      await page.exposeFunction('compute', function (a: number, b: number) {
         return Promise.resolve(a * b);
       });
 
       const result = await page.evaluate(async function () {
-        return await globalThis.compute(3, 5);
+        return await (globalThis as any).compute(3, 5);
       });
       expect(result).toBe(15);
     });
     it('should work on frames', async () => {
       const { page, server } = getTestState();
 
-      await page.exposeFunction('compute', function (a, b) {
+      await page.exposeFunction('compute', function (a: number, b: number) {
         return Promise.resolve(a * b);
       });
 
       await page.goto(server.PREFIX + '/frames/nested-frames.html');
-      const frame = page.frames()[1];
+      const frame = page.frames()[1]!;
       const result = await frame.evaluate(async function () {
-        return await globalThis.compute(3, 5);
+        return await (globalThis as any).compute(3, 5);
       });
       expect(result).toBe(15);
     });
@@ -1049,13 +1211,13 @@ describe('Page', function () {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/frames/nested-frames.html');
-      await page.exposeFunction('compute', function (a, b) {
+      await page.exposeFunction('compute', function (a: number, b: number) {
         return Promise.resolve(a * b);
       });
 
-      const frame = page.frames()[1];
+      const frame = page.frames()[1]!;
       const result = await frame.evaluate(async function () {
-        return await globalThis.compute(3, 5);
+        return await (globalThis as any).compute(3, 5);
       });
       expect(result).toBe(15);
     });
@@ -1064,39 +1226,44 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      await page.exposeFunction('compute', function (a, b) {
+      await page.exposeFunction('compute', function (a: number, b: number) {
         return Promise.resolve(a * b);
       });
       await utils.detachFrame(page, 'frame1');
 
       await expect(
         page.evaluate(async function () {
-          return await globalThis.compute(3, 5);
+          return await (globalThis as any).compute(3, 5);
         })
       ).resolves.toEqual(15);
     });
     it('should work with complex objects', async () => {
       const { page } = getTestState();
 
-      await page.exposeFunction('complexObject', function (a, b) {
-        return { x: a.x + b.x };
-      });
+      await page.exposeFunction(
+        'complexObject',
+        function (a: { x: any }, b: { x: any }) {
+          return { x: a.x + b.x };
+        }
+      );
       const result = await page.evaluate<() => Promise<{ x: number }>>(
-        async () => globalThis.complexObject({ x: 5 }, { x: 2 })
+        async () => {
+          return (globalThis as any).complexObject({ x: 5 }, { x: 2 });
+        }
       );
       expect(result.x).toBe(7);
     });
     it('should fallback to default export when passed a module object', async () => {
       const { page, server } = getTestState();
       const moduleObject = {
-        default: function (a, b) {
+        default: function (a: number, b: number) {
           return a * b;
         },
       };
       await page.goto(server.EMPTY_PAGE);
       await page.exposeFunction('compute', moduleObject);
       const result = await page.evaluate(async function () {
-        return await globalThis.compute(9, 4);
+        return await (globalThis as any).compute(9, 4);
       });
       expect(result).toBe(36);
     });
@@ -1106,8 +1273,10 @@ describe('Page', function () {
     it('should fire', async () => {
       const { page, server } = getTestState();
 
-      let error = null;
-      page.once('pageerror', (e) => (error = e));
+      let error!: Error;
+      page.once('pageerror', (e) => {
+        return (error = e);
+      });
       await Promise.all([
         page.goto(server.PREFIX + '/error.html'),
         waitEvent(page, 'pageerror'),
@@ -1120,9 +1289,11 @@ describe('Page', function () {
     it('should work', async () => {
       const { page, server } = getTestState();
 
-      expect(await page.evaluate(() => navigator.userAgent)).toContain(
-        'Mozilla'
-      );
+      expect(
+        await page.evaluate(() => {
+          return navigator.userAgent;
+        })
+      ).toContain('Mozilla');
       await page.setUserAgent('foobar');
       const [request] = await Promise.all([
         server.waitForRequest('/empty.html'),
@@ -1133,9 +1304,11 @@ describe('Page', function () {
     it('should work for subframes', async () => {
       const { page, server } = getTestState();
 
-      expect(await page.evaluate(() => navigator.userAgent)).toContain(
-        'Mozilla'
-      );
+      expect(
+        await page.evaluate(() => {
+          return navigator.userAgent;
+        })
+      ).toContain('Mozilla');
       await page.setUserAgent('foobar');
       const [request] = await Promise.all([
         server.waitForRequest('/empty.html'),
@@ -1147,13 +1320,17 @@ describe('Page', function () {
       const { page, server, puppeteer } = getTestState();
 
       await page.goto(server.PREFIX + '/mobile.html');
-      expect(await page.evaluate(() => navigator.userAgent)).not.toContain(
-        'iPhone'
-      );
-      await page.setUserAgent(puppeteer.devices['iPhone 6'].userAgent);
-      expect(await page.evaluate(() => navigator.userAgent)).toContain(
-        'iPhone'
-      );
+      expect(
+        await page.evaluate(() => {
+          return navigator.userAgent;
+        })
+      ).not.toContain('iPhone');
+      await page.setUserAgent(puppeteer.devices['iPhone 6']!.userAgent);
+      expect(
+        await page.evaluate(() => {
+          return navigator.userAgent;
+        })
+      ).toContain('iPhone');
     });
     itFailsFirefox('should work with additional userAgentMetdata', async () => {
       const { page, server } = getTestState();
@@ -1229,12 +1406,14 @@ describe('Page', function () {
       const imgPath = '/img.png';
       // stall for image
       server.setRoute(imgPath, () => {});
-      let error = null;
+      let error!: Error;
       await page
         .setContent(`<img src="${server.PREFIX + imgPath}"></img>`, {
           timeout: 1,
         })
-        .catch((error_) => (error = error_));
+        .catch((error_) => {
+          return (error = error_);
+        });
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should respect default navigation timeout', async () => {
@@ -1244,22 +1423,28 @@ describe('Page', function () {
       const imgPath = '/img.png';
       // stall for image
       server.setRoute(imgPath, () => {});
-      let error = null;
+      let error!: Error;
       await page
         .setContent(`<img src="${server.PREFIX + imgPath}"></img>`)
-        .catch((error_) => (error = error_));
+        .catch((error_) => {
+          return (error = error_);
+        });
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should await resources to load', async () => {
       const { page, server } = getTestState();
 
       const imgPath = '/img.png';
-      let imgResponse = null;
-      server.setRoute(imgPath, (req, res) => (imgResponse = res));
+      let imgResponse!: ServerResponse;
+      server.setRoute(imgPath, (_req, res) => {
+        return (imgResponse = res);
+      });
       let loaded = false;
       const contentPromise = page
         .setContent(`<img src="${server.PREFIX + imgPath}"></img>`)
-        .then(() => (loaded = true));
+        .then(() => {
+          return (loaded = true);
+        });
       await server.waitForRequest(imgPath);
       expect(loaded).toBe(false);
       imgResponse.end();
@@ -1276,29 +1461,41 @@ describe('Page', function () {
       const { page } = getTestState();
 
       await page.setContent('<div>hello world</div>' + '\x7F');
-      expect(await page.$eval('div', (div) => div.textContent)).toBe(
-        'hello world'
-      );
+      expect(
+        await page.$eval('div', (div) => {
+          return div.textContent;
+        })
+      ).toBe('hello world');
     });
     it('should work with accents', async () => {
       const { page } = getTestState();
 
       await page.setContent('<div>aberración</div>');
-      expect(await page.$eval('div', (div) => div.textContent)).toBe(
-        'aberración'
-      );
+      expect(
+        await page.$eval('div', (div) => {
+          return div.textContent;
+        })
+      ).toBe('aberración');
     });
     it('should work with emojis', async () => {
       const { page } = getTestState();
 
       await page.setContent('<div>🐥</div>');
-      expect(await page.$eval('div', (div) => div.textContent)).toBe('🐥');
+      expect(
+        await page.$eval('div', (div) => {
+          return div.textContent;
+        })
+      ).toBe('🐥');
     });
     it('should work with newline', async () => {
       const { page } = getTestState();
 
       await page.setContent('<div>\n</div>');
-      expect(await page.$eval('div', (div) => div.textContent)).toBe('\n');
+      expect(
+        await page.$eval('div', (div) => {
+          return div.textContent;
+        })
+      ).toBe('\n');
     });
   });
 
@@ -1310,14 +1507,24 @@ describe('Page', function () {
       await page.goto(server.PREFIX + '/csp.html');
       await page
         .addScriptTag({ content: 'window.__injected = 42;' })
-        .catch((error) => void error);
-      expect(await page.evaluate(() => globalThis.__injected)).toBe(undefined);
+        .catch((error) => {
+          return void error;
+        });
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).__injected;
+        })
+      ).toBe(undefined);
 
       // By-pass CSP and try one more time.
       await page.setBypassCSP(true);
       await page.reload();
       await page.addScriptTag({ content: 'window.__injected = 42;' });
-      expect(await page.evaluate(() => globalThis.__injected)).toBe(42);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).__injected;
+        })
+      ).toBe(42);
     });
 
     it('should bypass CSP header', async () => {
@@ -1328,14 +1535,24 @@ describe('Page', function () {
       await page.goto(server.EMPTY_PAGE);
       await page
         .addScriptTag({ content: 'window.__injected = 42;' })
-        .catch((error) => void error);
-      expect(await page.evaluate(() => globalThis.__injected)).toBe(undefined);
+        .catch((error) => {
+          return void error;
+        });
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).__injected;
+        })
+      ).toBe(undefined);
 
       // By-pass CSP and try one more time.
       await page.setBypassCSP(true);
       await page.reload();
       await page.addScriptTag({ content: 'window.__injected = 42;' });
-      expect(await page.evaluate(() => globalThis.__injected)).toBe(42);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).__injected;
+        })
+      ).toBe(42);
     });
 
     it('should bypass after cross-process navigation', async () => {
@@ -1344,11 +1561,19 @@ describe('Page', function () {
       await page.setBypassCSP(true);
       await page.goto(server.PREFIX + '/csp.html');
       await page.addScriptTag({ content: 'window.__injected = 42;' });
-      expect(await page.evaluate(() => globalThis.__injected)).toBe(42);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).__injected;
+        })
+      ).toBe(42);
 
       await page.goto(server.CROSS_PROCESS_PREFIX + '/csp.html');
       await page.addScriptTag({ content: 'window.__injected = 42;' });
-      expect(await page.evaluate(() => globalThis.__injected)).toBe(42);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).__injected;
+        })
+      ).toBe(42);
     });
     it('should bypass CSP in iframes as well', async () => {
       const { page, server } = getTestState();
@@ -1356,17 +1581,21 @@ describe('Page', function () {
       await page.goto(server.EMPTY_PAGE);
       {
         // Make sure CSP prohibits addScriptTag in an iframe.
-        const frame = await utils.attachFrame(
+        const frame = (await attachFrame(
           page,
           'frame1',
           server.PREFIX + '/csp.html'
-        );
+        ))!;
         await frame
           .addScriptTag({ content: 'window.__injected = 42;' })
-          .catch((error) => void error);
-        expect(await frame.evaluate(() => globalThis.__injected)).toBe(
-          undefined
-        );
+          .catch((error) => {
+            return void error;
+          });
+        expect(
+          await frame.evaluate(() => {
+            return (globalThis as any).__injected;
+          })
+        ).toBe(undefined);
       }
 
       // By-pass CSP and try one more time.
@@ -1374,15 +1603,21 @@ describe('Page', function () {
       await page.reload();
 
       {
-        const frame = await utils.attachFrame(
+        const frame = (await attachFrame(
           page,
           'frame1',
           server.PREFIX + '/csp.html'
-        );
+        ))!;
         await frame
           .addScriptTag({ content: 'window.__injected = 42;' })
-          .catch((error) => void error);
-        expect(await frame.evaluate(() => globalThis.__injected)).toBe(42);
+          .catch((error) => {
+            return void error;
+          });
+        expect(
+          await frame.evaluate(() => {
+            return (globalThis as any).__injected;
+          })
+        ).toBe(42);
       }
     });
   });
@@ -1391,12 +1626,12 @@ describe('Page', function () {
     it('should throw an error if no options are provided', async () => {
       const { page } = getTestState();
 
-      let error = null;
+      let error!: Error;
       try {
         // @ts-expect-error purposefully passing bad options
         await page.addScriptTag('/injectedfile.js');
       } catch (error_) {
-        error = error_;
+        error = error_ as Error;
       }
       expect(error.message).toBe(
         'Provide an object with a `url`, `path` or `content` property'
@@ -1409,7 +1644,11 @@ describe('Page', function () {
       await page.goto(server.EMPTY_PAGE);
       const scriptHandle = await page.addScriptTag({ url: '/injectedfile.js' });
       expect(scriptHandle.asElement()).not.toBeNull();
-      expect(await page.evaluate(() => globalThis.__injected)).toBe(42);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).__injected;
+        })
+      ).toBe(42);
     });
 
     it('should work with a url and type=module', async () => {
@@ -1417,7 +1656,11 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.addScriptTag({ url: '/es6/es6import.js', type: 'module' });
-      expect(await page.evaluate(() => globalThis.__es6injected)).toBe(42);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).__es6injected;
+        })
+      ).toBe(42);
     });
 
     it('should work with a path and type=module', async () => {
@@ -1429,7 +1672,11 @@ describe('Page', function () {
         type: 'module',
       });
       await page.waitForFunction('window.__es6injected');
-      expect(await page.evaluate(() => globalThis.__es6injected)).toBe(42);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).__es6injected;
+        })
+      ).toBe(42);
     });
 
     it('should work with a content and type=module', async () => {
@@ -1441,18 +1688,22 @@ describe('Page', function () {
         type: 'module',
       });
       await page.waitForFunction('window.__es6injected');
-      expect(await page.evaluate(() => globalThis.__es6injected)).toBe(42);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).__es6injected;
+        })
+      ).toBe(42);
     });
 
     it('should throw an error if loading from url fail', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      let error = null;
+      let error!: Error;
       try {
         await page.addScriptTag({ url: '/nonexistfile.js' });
       } catch (error_) {
-        error = error_;
+        error = error_ as Error;
       }
       expect(error.message).toBe('Loading script from /nonexistfile.js failed');
     });
@@ -1465,7 +1716,11 @@ describe('Page', function () {
         path: path.join(__dirname, '../assets/injectedfile.js'),
       });
       expect(scriptHandle.asElement()).not.toBeNull();
-      expect(await page.evaluate(() => globalThis.__injected)).toBe(42);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).__injected;
+        })
+      ).toBe(42);
     });
 
     it('should include sourcemap when path is provided', async () => {
@@ -1475,9 +1730,9 @@ describe('Page', function () {
       await page.addScriptTag({
         path: path.join(__dirname, '../assets/injectedfile.js'),
       });
-      const result = await page.evaluate(
-        () => globalThis.__injectedError.stack
-      );
+      const result = await page.evaluate(() => {
+        return (globalThis as any).__injectedError.stack;
+      });
       expect(result).toContain(path.join('assets', 'injectedfile.js'));
     });
 
@@ -1489,7 +1744,11 @@ describe('Page', function () {
         content: 'window.__injected = 35;',
       });
       expect(scriptHandle.asElement()).not.toBeNull();
-      expect(await page.evaluate(() => globalThis.__injected)).toBe(35);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).__injected;
+        })
+      ).toBe(35);
     });
 
     it('should add id when provided', async () => {
@@ -1506,10 +1765,12 @@ describe('Page', function () {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/csp.html');
-      let error = null;
+      let error!: Error;
       await page
         .addScriptTag({ content: 'window.__injected = 35;' })
-        .catch((error_) => (error = error_));
+        .catch((error_) => {
+          return (error = error_);
+        });
       expect(error).toBeTruthy();
     });
 
@@ -1517,10 +1778,12 @@ describe('Page', function () {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/csp.html');
-      let error = null;
+      let error!: Error;
       await page
         .addScriptTag({ url: server.CROSS_PROCESS_PREFIX + '/injectedfile.js' })
-        .catch((error_) => (error = error_));
+        .catch((error_) => {
+          return (error = error_);
+        });
       expect(error).toBeTruthy();
     });
   });
@@ -1529,12 +1792,12 @@ describe('Page', function () {
     it('should throw an error if no options are provided', async () => {
       const { page } = getTestState();
 
-      let error = null;
+      let error!: Error;
       try {
         // @ts-expect-error purposefully passing bad input
         await page.addStyleTag('/injectedstyle.css');
       } catch (error_) {
-        error = error_;
+        error = error_ as Error;
       }
       expect(error.message).toBe(
         'Provide an object with a `url`, `path` or `content` property'
@@ -1558,11 +1821,11 @@ describe('Page', function () {
       const { page, server } = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      let error = null;
+      let error!: Error;
       try {
         await page.addStyleTag({ url: '/nonexistfile.js' });
       } catch (error_) {
-        error = error_;
+        error = error_ as Error;
       }
       expect(error.message).toBe('Loading style from /nonexistfile.js failed');
     });
@@ -1589,11 +1852,10 @@ describe('Page', function () {
       await page.addStyleTag({
         path: path.join(__dirname, '../assets/injectedstyle.css'),
       });
-      const styleHandle = await page.$('style');
-      const styleContent = await page.evaluate(
-        (style: HTMLStyleElement) => style.innerHTML,
-        styleHandle
-      );
+      const styleHandle = (await page.$('style'))!;
+      const styleContent = await page.evaluate((style: HTMLStyleElement) => {
+        return style.innerHTML;
+      }, styleHandle);
       expect(styleContent).toContain(path.join('assets', 'injectedstyle.css'));
     });
 
@@ -1618,10 +1880,12 @@ describe('Page', function () {
         const { page, server } = getTestState();
 
         await page.goto(server.PREFIX + '/csp.html');
-        let error = null;
+        let error!: Error;
         await page
           .addStyleTag({ content: 'body { background-color: green; }' })
-          .catch((error_) => (error = error_));
+          .catch((error_) => {
+            return (error = error_);
+          });
         expect(error).toBeTruthy();
       }
     );
@@ -1630,12 +1894,14 @@ describe('Page', function () {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/csp.html');
-      let error = null;
+      let error!: Error;
       await page
         .addStyleTag({
           url: server.CROSS_PROCESS_PREFIX + '/injectedstyle.css',
         })
-        .catch((error_) => (error = error_));
+        .catch((error_) => {
+          return (error = error_);
+        });
       expect(error).toBeTruthy();
     });
   });
@@ -1658,8 +1924,10 @@ describe('Page', function () {
       await page.goto(
         'data:text/html, <script>var something = "forbidden"</script>'
       );
-      let error = null;
-      await page.evaluate('something').catch((error_) => (error = error_));
+      let error!: Error;
+      await page.evaluate('something').catch((error_) => {
+        return (error = error_);
+      });
       expect(error.message).toContain('something is not defined');
 
       await page.setJavaScriptEnabled(true);
@@ -1747,8 +2015,10 @@ describe('Page', function () {
 
       await page.goto(server.PREFIX + '/pdf.html');
 
-      let error = null;
-      await page.pdf({ timeout: 1 }).catch((_error) => (error = _error));
+      let error!: Error;
+      await page.pdf({ timeout: 1 }).catch((_error) => {
+        return (error = _error);
+      });
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
   });
@@ -1768,35 +2038,42 @@ describe('Page', function () {
 
       await page.goto(server.PREFIX + '/input/select.html');
       await page.select('select', 'blue');
-      expect(await page.evaluate(() => globalThis.result.onInput)).toEqual([
-        'blue',
-      ]);
-      expect(await page.evaluate(() => globalThis.result.onChange)).toEqual([
-        'blue',
-      ]);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).result.onInput;
+        })
+      ).toEqual(['blue']);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).result.onChange;
+        })
+      ).toEqual(['blue']);
     });
     it('should select only first option', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/input/select.html');
       await page.select('select', 'blue', 'green', 'red');
-      expect(await page.evaluate(() => globalThis.result.onInput)).toEqual([
-        'blue',
-      ]);
-      expect(await page.evaluate(() => globalThis.result.onChange)).toEqual([
-        'blue',
-      ]);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).result.onInput;
+        })
+      ).toEqual(['blue']);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).result.onChange;
+        })
+      ).toEqual(['blue']);
     });
     it('should not throw when select causes navigation', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/input/select.html');
-      await page.$eval('select', (select) =>
-        select.addEventListener(
-          'input',
-          () => ((window as any).location = '/empty.html')
-        )
-      );
+      await page.$eval('select', (select) => {
+        return select.addEventListener('input', () => {
+          return ((window as any).location = '/empty.html');
+        });
+      });
       await Promise.all([
         page.select('select', 'blue'),
         page.waitForNavigation(),
@@ -1807,18 +2084,20 @@ describe('Page', function () {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/input/select.html');
-      await page.evaluate(() => globalThis.makeMultiple());
+      await page.evaluate(() => {
+        return (globalThis as any).makeMultiple();
+      });
       await page.select('select', 'blue', 'green', 'red');
-      expect(await page.evaluate(() => globalThis.result.onInput)).toEqual([
-        'blue',
-        'green',
-        'red',
-      ]);
-      expect(await page.evaluate(() => globalThis.result.onChange)).toEqual([
-        'blue',
-        'green',
-        'red',
-      ]);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).result.onInput;
+        })
+      ).toEqual(['blue', 'green', 'red']);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).result.onChange;
+        })
+      ).toEqual(['blue', 'green', 'red']);
     });
     it('should respect event bubbling', async () => {
       const { page, server } = getTestState();
@@ -1826,18 +2105,24 @@ describe('Page', function () {
       await page.goto(server.PREFIX + '/input/select.html');
       await page.select('select', 'blue');
       expect(
-        await page.evaluate(() => globalThis.result.onBubblingInput)
+        await page.evaluate(() => {
+          return (globalThis as any).result.onBubblingInput;
+        })
       ).toEqual(['blue']);
       expect(
-        await page.evaluate(() => globalThis.result.onBubblingChange)
+        await page.evaluate(() => {
+          return (globalThis as any).result.onBubblingChange;
+        })
       ).toEqual(['blue']);
     });
     it('should throw when element is not a <select>', async () => {
       const { page, server } = getTestState();
 
-      let error = null;
+      let error!: Error;
       await page.goto(server.PREFIX + '/input/select.html');
-      await page.select('body', '').catch((error_) => (error = error_));
+      await page.select('body', '').catch((error_) => {
+        return (error = error_);
+      });
       expect(error.message).toContain('Element is not a <select> element.');
     });
     it('should return [] on no matched values', async () => {
@@ -1851,14 +2136,14 @@ describe('Page', function () {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/input/select.html');
-      await page.evaluate(() => globalThis.makeMultiple());
+      await page.evaluate(() => {
+        return (globalThis as any).makeMultiple();
+      });
       const result = await page.select('select', 'blue', 'black', 'magenta');
       expect(
-        result.reduce(
-          (accumulator, current) =>
-            ['blue', 'black', 'magenta'].includes(current) && accumulator,
-          true
-        )
+        result.reduce((accumulator, current) => {
+          return ['blue', 'black', 'magenta'].includes(current) && accumulator;
+        }, true)
       ).toEqual(true);
     });
     it('should return an array of one element when multiple is not set', async () => {
@@ -1885,15 +2170,19 @@ describe('Page', function () {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/input/select.html');
-      await page.evaluate(() => globalThis.makeMultiple());
+      await page.evaluate(() => {
+        return (globalThis as any).makeMultiple();
+      });
       await page.select('select', 'blue', 'black', 'magenta');
       await page.select('select');
       expect(
-        await page.$eval('select', (select: HTMLSelectElement) =>
-          Array.from(select.options).every(
-            (option: HTMLOptionElement) => !option.selected
-          )
-        )
+        await page.$eval('select', (select) => {
+          return Array.from((select as HTMLSelectElement).options).every(
+            (option) => {
+              return !option.selected;
+            }
+          );
+        })
       ).toEqual(true);
     });
     it('should deselect all options when passed no values for a select without multiple', async () => {
@@ -1903,24 +2192,25 @@ describe('Page', function () {
       await page.select('select', 'blue', 'black', 'magenta');
       await page.select('select');
       expect(
-        await page.$eval(
-          'select',
-          (select: HTMLSelectElement) =>
-            Array.from(select.options).filter((option) => option.selected)[0]
-              .value
-        )
+        await page.$eval('select', (select) => {
+          return Array.from((select as HTMLSelectElement).options).filter(
+            (option) => {
+              return option.selected;
+            }
+          )[0]!.value;
+        })
       ).toEqual('');
     });
     it('should throw if passed in non-strings', async () => {
       const { page } = getTestState();
 
       await page.setContent('<select><option value="12"/></select>');
-      let error = null;
+      let error!: Error;
       try {
         // @ts-expect-error purposefully passing bad input
         await page.select('select', 12);
       } catch (error_) {
-        error = error_;
+        error = error_ as Error;
       }
       expect(error.message).toContain('Values must be strings');
     });
@@ -1931,14 +2221,21 @@ describe('Page', function () {
         const { page, server } = getTestState();
 
         await page.goto(server.PREFIX + '/input/select.html');
-        await page.evaluate(() => (window.Event = null));
+        await page.evaluate(() => {
+          // @ts-expect-error Expected.
+          return (window.Event = undefined);
+        });
         await page.select('select', 'blue');
-        expect(await page.evaluate(() => globalThis.result.onInput)).toEqual([
-          'blue',
-        ]);
-        expect(await page.evaluate(() => globalThis.result.onChange)).toEqual([
-          'blue',
-        ]);
+        expect(
+          await page.evaluate(() => {
+            return (globalThis as any).result.onInput;
+          })
+        ).toEqual(['blue']);
+        expect(
+          await page.evaluate(() => {
+            return (globalThis as any).result.onChange;
+          })
+        ).toEqual(['blue']);
       }
     );
   });
@@ -1947,22 +2244,30 @@ describe('Page', function () {
     itFailsFirefox('should work with window.close', async () => {
       const { page, context } = getTestState();
 
-      const newPagePromise = new Promise<Page>((fulfill) =>
-        context.once('targetcreated', (target) => fulfill(target.page()))
-      );
-      await page.evaluate(
-        () => (window['newPage'] = window.open('about:blank'))
-      );
+      const newPagePromise = new Promise<Page>((fulfill) => {
+        return context.once('targetcreated', (target) => {
+          return fulfill(target.page());
+        });
+      });
+      await page.evaluate(() => {
+        return ((window as any)['newPage'] = window.open('about:blank'));
+      });
       const newPage = await newPagePromise;
-      const closedPromise = new Promise((x) => newPage.on('close', x));
-      await page.evaluate(() => window['newPage'].close());
+      const closedPromise = new Promise((x) => {
+        return newPage.on('close', x);
+      });
+      await page.evaluate(() => {
+        return (window as any)['newPage'].close();
+      });
       await closedPromise;
     });
     it('should work with page.close', async () => {
       const { context } = getTestState();
 
       const newPage = await context.newPage();
-      const closedPromise = new Promise((x) => newPage.on('close', x));
+      const closedPromise = new Promise((x) => {
+        return newPage.on('close', x);
+      });
       await newPage.close();
       await closedPromise;
     });

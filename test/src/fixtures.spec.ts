@@ -17,7 +17,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 import expect from 'expect';
-import { getTestState, itHeadlessOnly } from './mocha-utils'; // eslint-disable-line import/extensions
+import { getTestState, itHeadlessOnly } from './mocha-utils.js';
 
 import path from 'path';
 
@@ -36,8 +36,12 @@ describe('Fixtures', function () {
       puppeteerPath,
       JSON.stringify(options),
     ]);
-    res.stderr.on('data', (data) => (dumpioData += data.toString('utf8')));
-    await new Promise((resolve) => res.on('close', resolve));
+    res.stderr.on('data', (data) => {
+      return (dumpioData += data.toString('utf8'));
+    });
+    await new Promise((resolve) => {
+      return res.on('close', resolve);
+    });
     expect(dumpioData).toContain('message from dumpio');
   });
   it('should dump browser process stderr', async () => {
@@ -51,8 +55,12 @@ describe('Fixtures', function () {
       puppeteerPath,
       JSON.stringify(options),
     ]);
-    res.stderr.on('data', (data) => (dumpioData += data.toString('utf8')));
-    await new Promise((resolve) => res.on('close', resolve));
+    res.stderr.on('data', (data) => {
+      return (dumpioData += data.toString('utf8'));
+    });
+    await new Promise((resolve) => {
+      return res.on('close', resolve);
+    });
     expect(dumpioData).toContain('DevTools listening on ws://');
   });
   it('should close the browser when the node process closes', async () => {
@@ -68,10 +76,10 @@ describe('Fixtures', function () {
       puppeteerPath,
       JSON.stringify(options),
     ]);
-    let wsEndPointCallback;
-    const wsEndPointPromise = new Promise<string>(
-      (x) => (wsEndPointCallback = x)
-    );
+    let wsEndPointCallback: (value: string) => void;
+    const wsEndPointPromise = new Promise<string>((x) => {
+      return (wsEndPointCallback = x);
+    });
     let output = '';
     res.stdout.on('data', (data) => {
       output += data;
@@ -83,13 +91,17 @@ describe('Fixtures', function () {
       browserWSEndpoint: await wsEndPointPromise,
     });
     const promises = [
-      new Promise((resolve) => browser.once('disconnected', resolve)),
-      new Promise((resolve) => res.on('close', resolve)),
+      new Promise((resolve) => {
+        return browser.once('disconnected', resolve);
+      }),
+      new Promise((resolve) => {
+        return res.on('close', resolve);
+      }),
     ];
     if (process.platform === 'win32') {
       execSync(`taskkill /pid ${res.pid} /T /F`);
     } else {
-      process.kill(res.pid);
+      process.kill(res.pid!);
     }
     await Promise.all(promises);
   });

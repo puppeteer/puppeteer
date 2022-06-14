@@ -3,7 +3,7 @@
 /.dev_profile*
 /.local-chromium/
 /.local-firefox/
-/test/test-user-data-dir*
+/test/output-*/
 build/
 coverage
 coverage/

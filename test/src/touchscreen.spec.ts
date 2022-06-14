@@ -20,7 +20,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   describeFailsFirefox,
-} from './mocha-utils'; // eslint-disable-line import/extensions
+} from './mocha-utils.js';
 
 describeFailsFirefox('Touchscreen', function () {
   setupTestBrowserHooks();
@@ -28,22 +28,27 @@ describeFailsFirefox('Touchscreen', function () {
 
   it('should tap the button', async () => {
     const { puppeteer, page, server } = getTestState();
-    const iPhone = puppeteer.devices['iPhone 6'];
+    const iPhone = puppeteer.devices['iPhone 6']!;
     await page.emulate(iPhone);
     await page.goto(server.PREFIX + '/input/button.html');
     await page.tap('button');
-    expect(await page.evaluate(() => globalThis.result)).toBe('Clicked');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).result;
+      })
+    ).toBe('Clicked');
   });
   it('should report touches', async () => {
     const { puppeteer, page, server } = getTestState();
-    const iPhone = puppeteer.devices['iPhone 6'];
+    const iPhone = puppeteer.devices['iPhone 6']!;
     await page.emulate(iPhone);
     await page.goto(server.PREFIX + '/input/touches.html');
-    const button = await page.$('button');
+    const button = (await page.$('button'))!;
     await button.tap();
-    expect(await page.evaluate(() => globalThis.getResult())).toEqual([
-      'Touchstart: 0',
-      'Touchend: 0',
-    ]);
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).getResult();
+      })
+    ).toEqual(['Touchstart: 0', 'Touchend: 0']);
   });
 });

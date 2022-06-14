@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { describeChromeOnly } from './mocha-utils'; // eslint-disable-line import/extensions
+import { describeChromeOnly } from './mocha-utils.js';
 
 import expect from 'expect';
 import {

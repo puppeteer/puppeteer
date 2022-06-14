@@ -1,11 +1,11 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "lib",
-    "composite": true,
     "allowJs": true,
-    "module": "CommonJS"
+    "composite": true,
+    "module": "CommonJS",
+    "outDir": "lib",
+    "rootDir": "src"
   },
   "include": ["src"]
 }

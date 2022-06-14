@@ -21,7 +21,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   describeFailsFirefox,
-} from './mocha-utils'; // eslint-disable-line import/extensions
+} from './mocha-utils.js';
 
 const FILE_TO_UPLOAD = path.join(__dirname, '/../assets/file-to-upload.txt');
 
@@ -35,33 +35,42 @@ describe('input tests', function () {
 
       await page.goto(server.PREFIX + '/input/fileupload.html');
       const filePath = path.relative(process.cwd(), FILE_TO_UPLOAD);
-      const input = await page.$('input');
+      const input = (await page.$('input'))!;
       await page.evaluate((e: HTMLElement) => {
-        globalThis._inputEvents = [];
-        e.addEventListener('change', (ev) =>
-          globalThis._inputEvents.push(ev.type)
-        );
-        e.addEventListener('input', (ev) =>
-          globalThis._inputEvents.push(ev.type)
-        );
+        (globalThis as any)._inputEvents = [];
+        e.addEventListener('change', (ev) => {
+          return (globalThis as any)._inputEvents.push(ev.type);
+        });
+        e.addEventListener('input', (ev) => {
+          return (globalThis as any)._inputEvents.push(ev.type);
+        });
       }, input);
       await input.uploadFile(filePath);
       expect(
-        await page.evaluate((e: HTMLInputElement) => e.files[0].name, input)
+        await page.evaluate((e: HTMLInputElement) => {
+          return e.files![0]!.name;
+        }, input)
       ).toBe('file-to-upload.txt');
       expect(
-        await page.evaluate((e: HTMLInputElement) => e.files[0].type, input)
+        await page.evaluate((e: HTMLInputElement) => {
+          return e.files![0]!.type;
+        }, input)
       ).toBe('text/plain');
-      expect(await page.evaluate(() => globalThis._inputEvents)).toEqual([
-        'input',
-        'change',
-      ]);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any)._inputEvents;
+        })
+      ).toEqual(['input', 'change']);
       expect(
         await page.evaluate((e: HTMLInputElement) => {
           const reader = new FileReader();
-          const promise = new Promise((fulfill) => (reader.onload = fulfill));
-          reader.readAsText(e.files[0]);
-          return promise.then(() => reader.result);
+          const promise = new Promise((fulfill) => {
+            return (reader.onload = fulfill);
+          });
+          reader.readAsText(e.files![0]!);
+          return promise.then(() => {
+            return reader.result;
+          });
         }, input)
       ).toBe('contents of the file');
     });
@@ -94,28 +103,30 @@ describe('input tests', function () {
     it('should respect timeout', async () => {
       const { page, puppeteer } = getTestState();
 
-      let error = null;
-      await page
-        .waitForFileChooser({ timeout: 1 })
-        .catch((error_) => (error = error_));
+      let error!: Error;
+      await page.waitForFileChooser({ timeout: 1 }).catch((error_) => {
+        return (error = error_);
+      });
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should respect default timeout when there is no custom timeout', async () => {
       const { page, puppeteer } = getTestState();
 
       page.setDefaultTimeout(1);
-      let error = null;
-      await page.waitForFileChooser().catch((error_) => (error = error_));
+      let error!: Error;
+      await page.waitForFileChooser().catch((error_) => {
+        return (error = error_);
+      });
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should prioritize exact timeout over default timeout', async () => {
       const { page, puppeteer } = getTestState();
 
       page.setDefaultTimeout(0);
-      let error = null;
-      await page
-        .waitForFileChooser({ timeout: 1 })
-        .catch((error_) => (error = error_));
+      let error!: Error;
+      await page.waitForFileChooser({ timeout: 1 }).catch((error_) => {
+        return (error = error_);
+      });
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should work with no timeout', async () => {
@@ -123,13 +134,13 @@ describe('input tests', function () {
 
       const [chooser] = await Promise.all([
         page.waitForFileChooser({ timeout: 0 }),
-        page.evaluate(() =>
-          setTimeout(() => {
+        page.evaluate(() => {
+          return setTimeout(() => {
             const el = document.createElement('input');
             el.type = 'file';
             el.click();
-          }, 50)
-        ),
+          }, 50);
+        }),
       ]);
       expect(chooser).toBeTruthy();
     });
@@ -140,7 +151,9 @@ describe('input tests', function () {
       const [fileChooser1, fileChooser2] = await Promise.all([
         page.waitForFileChooser(),
         page.waitForFileChooser(),
-        page.$eval('input', (input: HTMLInputElement) => input.click()),
+        page.$eval('input', (input) => {
+          return (input as HTMLInputElement).click();
+        }),
       ]);
       expect(fileChooser1 === fileChooser2).toBe(true);
     });
@@ -159,36 +172,43 @@ describe('input tests', function () {
       ]);
       await Promise.all([
         chooser.accept([FILE_TO_UPLOAD]),
-        new Promise((x) => page.once('metrics', x)),
+        new Promise((x) => {
+          return page.once('metrics', x);
+        }),
       ]);
       expect(
-        await page.$eval(
-          'input',
-          (input: HTMLInputElement) => input.files.length
-        )
+        await page.$eval('input', (input) => {
+          return (input as HTMLInputElement).files!.length;
+        })
       ).toBe(1);
       expect(
-        await page.$eval(
-          'input',
-          (input: HTMLInputElement) => input.files[0].name
-        )
+        await page.$eval('input', (input) => {
+          return (input as HTMLInputElement).files![0]!.name;
+        })
       ).toBe('file-to-upload.txt');
     });
     it('should be able to read selected file', async () => {
       const { page } = getTestState();
 
       await page.setContent(`<input type=file>`);
-      page
-        .waitForFileChooser()
-        .then((chooser) => chooser.accept([FILE_TO_UPLOAD]));
+      page.waitForFileChooser().then((chooser) => {
+        return chooser.accept([FILE_TO_UPLOAD]);
+      });
       expect(
-        await page.$eval('input', async (picker: HTMLInputElement) => {
-          picker.click();
-          await new Promise((x) => (picker.oninput = x));
+        await page.$eval('input', async (picker) => {
+          const pick = picker as HTMLInputElement;
+          pick.click();
+          await new Promise((x) => {
+            return (pick.oninput = x);
+          });
           const reader = new FileReader();
-          const promise = new Promise((fulfill) => (reader.onload = fulfill));
-          reader.readAsText(picker.files[0]);
-          return promise.then(() => reader.result);
+          const promise = new Promise((fulfill) => {
+            return (reader.onload = fulfill);
+          });
+          reader.readAsText(pick.files![0]!);
+          return promise.then(() => {
+            return reader.result;
+          });
         })
       ).toBe('contents of the file');
     });
@@ -196,22 +216,30 @@ describe('input tests', function () {
       const { page } = getTestState();
 
       await page.setContent(`<input type=file>`);
-      page
-        .waitForFileChooser()
-        .then((chooser) => chooser.accept([FILE_TO_UPLOAD]));
+      page.waitForFileChooser().then((chooser) => {
+        return chooser.accept([FILE_TO_UPLOAD]);
+      });
       expect(
-        await page.$eval('input', async (picker: HTMLInputElement) => {
-          picker.click();
-          await new Promise((x) => (picker.oninput = x));
-          return picker.files.length;
+        await page.$eval('input', async (picker) => {
+          const pick = picker as HTMLInputElement;
+          pick.click();
+          await new Promise((x) => {
+            return (pick.oninput = x);
+          });
+          return pick.files!.length;
         })
       ).toBe(1);
-      page.waitForFileChooser().then((chooser) => chooser.accept([]));
+      page.waitForFileChooser().then((chooser) => {
+        return chooser.accept([]);
+      });
       expect(
-        await page.$eval('input', async (picker: HTMLInputElement) => {
-          picker.click();
-          await new Promise((x) => (picker.oninput = x));
-          return picker.files.length;
+        await page.$eval('input', async (picker) => {
+          const pick = picker as HTMLInputElement;
+          pick.click();
+          await new Promise((x) => {
+            return (pick.oninput = x);
+          });
+          return pick.files!.length;
         })
       ).toBe(0);
     });
@@ -223,7 +251,7 @@ describe('input tests', function () {
         page.waitForFileChooser(),
         page.click('input'),
       ]);
-      let error = null;
+      let error!: Error;
       await chooser
         .accept([
           path.relative(
@@ -232,7 +260,9 @@ describe('input tests', function () {
           ),
           path.relative(process.cwd(), __dirname + '/../assets/pptr.png'),
         ])
-        .catch((error_) => (error = error_));
+        .catch((error_) => {
+          return (error = error_);
+        });
       expect(error).not.toBe(null);
     });
     it('should succeed even for non-existent files', async () => {
@@ -243,27 +273,34 @@ describe('input tests', function () {
         page.waitForFileChooser(),
         page.click('input'),
       ]);
-      let error: Error | undefined;
-      await chooser
-        .accept(['file-does-not-exist.txt'])
-        .catch((error_) => (error = error_));
+      let error!: Error;
+      await chooser.accept(['file-does-not-exist.txt']).catch((error_) => {
+        return (error = error_);
+      });
       expect(error).toBeUndefined();
     });
     it('should error on read of non-existent files', async () => {
       const { page } = getTestState();
 
       await page.setContent(`<input type=file>`);
-      page
-        .waitForFileChooser()
-        .then((chooser) => chooser.accept(['file-does-not-exist.txt']));
+      page.waitForFileChooser().then((chooser) => {
+        return chooser.accept(['file-does-not-exist.txt']);
+      });
       expect(
-        await page.$eval('input', async (picker: HTMLInputElement) => {
-          picker.click();
-          await new Promise((x) => (picker.oninput = x));
+        await page.$eval('input', async (picker) => {
+          const pick = picker as HTMLInputElement;
+          pick.click();
+          await new Promise((x) => {
+            return (pick.oninput = x);
+          });
           const reader = new FileReader();
-          const promise = new Promise((fulfill) => (reader.onerror = fulfill));
-          reader.readAsText(picker.files[0]);
-          return promise.then(() => false);
+          const promise = new Promise((fulfill) => {
+            return (reader.onerror = fulfill);
+          });
+          reader.readAsText(pick.files![0]!);
+          return promise.then(() => {
+            return false;
+          });
         })
       ).toBeFalsy();
     });
@@ -273,11 +310,15 @@ describe('input tests', function () {
       await page.setContent(`<input type=file>`);
       const [fileChooser] = await Promise.all([
         page.waitForFileChooser(),
-        page.$eval('input', (input: HTMLInputElement) => input.click()),
+        page.$eval('input', (input) => {
+          return (input as HTMLInputElement).click();
+        }),
       ]);
       await fileChooser.accept([]);
-      let error = null;
-      await fileChooser.accept([]).catch((error_) => (error = error_));
+      let error!: Error;
+      await fileChooser.accept([]).catch((error_) => {
+        return (error = error_);
+      });
       expect(error.message).toBe(
         'Cannot accept FileChooser which is already handled!'
       );
@@ -294,13 +335,17 @@ describe('input tests', function () {
       await page.setContent(`<input type=file>`);
       const [fileChooser1] = await Promise.all([
         page.waitForFileChooser(),
-        page.$eval('input', (input: HTMLInputElement) => input.click()),
+        page.$eval('input', (input) => {
+          return (input as HTMLInputElement).click();
+        }),
       ]);
       await fileChooser1.cancel();
       // If this resolves, than we successfully canceled file chooser.
       await Promise.all([
         page.waitForFileChooser(),
-        page.$eval('input', (input: HTMLInputElement) => input.click()),
+        page.$eval('input', (input) => {
+          return (input as HTMLInputElement).click();
+        }),
       ]);
     });
     it('should fail when canceling file chooser twice', async () => {
@@ -309,15 +354,17 @@ describe('input tests', function () {
       await page.setContent(`<input type=file>`);
       const [fileChooser] = await Promise.all([
         page.waitForFileChooser(),
-        page.$eval('input', (input: HTMLInputElement) => input.click()),
+        page.$eval('input', (input) => {
+          return (input as HTMLElement).click();
+        }),
       ]);
       await fileChooser.cancel();
-      let error = null;
+      let error!: Error;
 
       try {
         fileChooser.cancel();
       } catch (error_) {
-        error = error_;
+        error = error_ as Error;
       }
 
       expect(error.message).toBe(

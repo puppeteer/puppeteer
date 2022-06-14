@@ -65,7 +65,7 @@ export const debug = (prefix: string): ((...args: unknown[]) => void) => {
   }
 
   return (...logArgs: unknown[]): void => {
-    const debugLevel = globalThis.__PUPPETEER_DEBUG;
+    const debugLevel = (globalThis as any).__PUPPETEER_DEBUG;
     if (!debugLevel) {
       return;
     }

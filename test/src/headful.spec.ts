@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-import path from 'path';
-import os from 'os';
-import fs from 'fs';
-import { promisify } from 'util';
 import expect from 'expect';
-import {
-  getTestState,
-  describeChromeOnly,
-  itFailsWindows,
-} from './mocha-utils'; // eslint-disable-line import/extensions
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 import rimraf from 'rimraf';
+import { promisify } from 'util';
+import {
+  PuppeteerLaunchOptions,
+  PuppeteerNode,
+} from '../../lib/cjs/puppeteer/node/Puppeteer.js';
+import {
+  describeChromeOnly,
+  getTestState,
+  itFailsWindows,
+} from './mocha-utils.js';
 
 const rmAsync = promisify(rimraf);
 const mkdtempAsync = promisify(fs.mkdtemp);
@@ -39,12 +43,22 @@ describeChromeOnly('headful tests', function () {
    */
   this.timeout(20 * 1000);
 
-  let headfulOptions;
-  let headlessOptions;
-  let extensionOptions;
-  let forcedOopifOptions;
-  let devtoolsOptions;
-  const browsers = [];
+  let headfulOptions: PuppeteerLaunchOptions | undefined;
+  let headlessOptions: PuppeteerLaunchOptions & { headless: boolean };
+  let extensionOptions: PuppeteerLaunchOptions & {
+    headless: boolean;
+    args: string[];
+  };
+  let forcedOopifOptions: PuppeteerLaunchOptions & {
+    headless: boolean;
+    devtools: boolean;
+    args: string[];
+  };
+  let devtoolsOptions: PuppeteerLaunchOptions & {
+    headless: boolean;
+    devtools: boolean;
+  };
+  const browsers: any[] = [];
 
   beforeEach(() => {
     const { server, defaultBrowserOptions } = getTestState();
@@ -81,7 +95,7 @@ describeChromeOnly('headful tests', function () {
     });
   });
 
-  async function launchBrowser(puppeteer, options) {
+  async function launchBrowser(puppeteer: PuppeteerNode, options: any) {
     const browser = await puppeteer.launch(options);
     browsers.push(browser);
     return browser;
@@ -106,7 +120,9 @@ describeChromeOnly('headful tests', function () {
       );
       const page = await browserWithExtension.newPage();
       const backgroundPageTarget = await browserWithExtension.waitForTarget(
-        (target) => target.type() === 'background_page'
+        (target: { type: () => string }) => {
+          return target.type() === 'background_page';
+        }
       );
       await page.close();
       await browserWithExtension.close();
@@ -119,11 +135,21 @@ describeChromeOnly('headful tests', function () {
         extensionOptions
       );
       const backgroundPageTarget = await browserWithExtension.waitForTarget(
-        (target) => target.type() === 'background_page'
+        (target: { type: () => string }) => {
+          return target.type() === 'background_page';
+        }
       );
-      const page = await backgroundPageTarget.page();
-      expect(await page.evaluate(() => 2 * 3)).toBe(6);
-      expect(await page.evaluate(() => globalThis.MAGIC)).toBe(42);
+      const page = (await backgroundPageTarget.page())!;
+      expect(
+        await page.evaluate(() => {
+          return 2 * 3;
+        })
+      ).toBe(6);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).MAGIC;
+        })
+      ).toBe(42);
       await browserWithExtension.close();
     });
     it('target.page() should return a DevTools page if custom isPageTarget is provided', async function () {
@@ -140,18 +166,24 @@ describeChromeOnly('headful tests', function () {
           );
         },
       });
-      const devtoolsPageTarget = await browser.waitForTarget(
-        (target) => target.type() === 'other'
-      );
-      const page = await devtoolsPageTarget.page();
-      expect(await page.evaluate(() => 2 * 3)).toBe(6);
+      const devtoolsPageTarget = await browser.waitForTarget((target) => {
+        return target.type() === 'other';
+      });
+      const page = (await devtoolsPageTarget.page())!;
+      expect(
+        await page.evaluate(() => {
+          return 2 * 3;
+        })
+      ).toBe(6);
       expect(await browser.pages()).toContainEqual(page);
       await browser.close();
     });
     it('should have default url when launching browser', async function () {
       const { puppeteer } = getTestState();
       const browser = await launchBrowser(puppeteer, extensionOptions);
-      const pages = (await browser.pages()).map((page) => page.url());
+      const pages = (await browser.pages()).map((page: { url: () => any }) => {
+        return page.url();
+      });
       expect(pages).toEqual(['about:blank']);
       await browser.close();
     });
@@ -169,11 +201,10 @@ describeChromeOnly('headful tests', function () {
         );
         const headfulPage = await headfulBrowser.newPage();
         await headfulPage.goto(server.EMPTY_PAGE);
-        await headfulPage.evaluate(
-          () =>
-            (document.cookie =
-              'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT')
-        );
+        await headfulPage.evaluate(() => {
+          return (document.cookie =
+            'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT');
+        });
         await headfulBrowser.close();
         // Read the cookie from headless chrome
         const headlessBrowser = await launchBrowser(
@@ -182,7 +213,9 @@ describeChromeOnly('headful tests', function () {
         );
         const headlessPage = await headlessBrowser.newPage();
         await headlessPage.goto(server.EMPTY_PAGE);
-        const cookie = await headlessPage.evaluate(() => document.cookie);
+        const cookie = await headlessPage.evaluate(() => {
+          return document.cookie;
+        });
         await headlessBrowser.close();
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(() => {});
@@ -198,17 +231,23 @@ describeChromeOnly('headful tests', function () {
       const page = await browser.newPage();
       await page.goto(server.EMPTY_PAGE);
       await page.setRequestInterception(true);
-      page.on('request', (r) => r.respond({ body: 'YO, GOOGLE.COM' }));
+      page.on('request', (r: { respond: (arg0: { body: string }) => any }) => {
+        return r.respond({ body: 'YO, GOOGLE.COM' });
+      });
       await page.evaluate(() => {
         const frame = document.createElement('iframe');
         frame.setAttribute('src', 'https://google.com/');
         document.body.appendChild(frame);
-        return new Promise((x) => (frame.onload = x));
+        return new Promise((x) => {
+          return (frame.onload = x);
+        });
       });
       await page.waitForSelector('iframe[src="https://google.com/"]');
       const urls = page
         .frames()
-        .map((frame) => frame.url())
+        .map((frame: { url: () => any }) => {
+          return frame.url();
+        })
         .sort();
       expect(urls).toEqual([server.EMPTY_PAGE, 'https://google.com/']);
       await browser.close();
@@ -221,26 +260,32 @@ describeChromeOnly('headful tests', function () {
 
       // Setup our session listeners to observe OOPIF activity.
       const session = await page.target().createCDPSession();
-      const networkEvents = [];
-      const otherSessions = [];
+      const networkEvents: any[] = [];
+      const otherSessions: any[] = [];
       await session.send('Target.setAutoAttach', {
         autoAttach: true,
         flatten: true,
         waitForDebuggerOnStart: true,
       });
-      session.on('sessionattached', async (session) => {
-        otherSessions.push(session);
+      session.on(
+        'sessionattached',
+        async (session: {
+          on: (arg0: string, arg1: (params: any) => number) => void;
+          send: (arg0: string) => any;
+        }) => {
+          otherSessions.push(session);
 
-        session.on('Network.requestWillBeSent', (params) =>
-          networkEvents.push(params)
-        );
-        await session.send('Network.enable');
-        await session.send('Runtime.runIfWaitingForDebugger');
-      });
+          session.on('Network.requestWillBeSent', (params: any) => {
+            return networkEvents.push(params);
+          });
+          await session.send('Network.enable');
+          await session.send('Runtime.runIfWaitingForDebugger');
+        }
+      );
 
       // Navigate to the empty page and add an OOPIF iframe with at least one request.
       await page.goto(server.EMPTY_PAGE);
-      await page.evaluate((frameUrl) => {
+      await page.evaluate((frameUrl: string) => {
         const frame = document.createElement('iframe');
         frame.setAttribute('src', frameUrl);
         document.body.appendChild(frame);
@@ -255,14 +300,16 @@ describeChromeOnly('headful tests', function () {
       expect(otherSessions).toHaveLength(1);
 
       // Resume the iframe and trigger another request.
-      const iframeSession = otherSessions[0];
+      const iframeSession = otherSessions[0]!;
       await iframeSession.send('Runtime.evaluate', {
         expression: `fetch('/fetch')`,
         awaitPromise: true,
       });
       await browser.close();
 
-      const requests = networkEvents.map((event) => event.request.url);
+      const requests = networkEvents.map((event) => {
+        return event.request.url;
+      });
       expect(requests).toContain(`http://oopifdomain:${server.PORT}/fetch`);
     });
     it('should close browser with beforeunload page', async () => {
@@ -286,7 +333,9 @@ describeChromeOnly('headful tests', function () {
       const context = await browser.createIncognitoBrowserContext();
       await Promise.all([
         context.newPage(),
-        browser.waitForTarget((target) => target.url().includes('devtools://')),
+        browser.waitForTarget((target: { url: () => string | string[] }) => {
+          return target.url().includes('devtools://');
+        }),
       ]);
       await browser.close();
     });
@@ -300,20 +349,28 @@ describeChromeOnly('headful tests', function () {
       const page2 = await browser.newPage();
 
       await page1.bringToFront();
-      expect(await page1.evaluate(() => document.visibilityState)).toBe(
-        'visible'
-      );
-      expect(await page2.evaluate(() => document.visibilityState)).toBe(
-        'hidden'
-      );
+      expect(
+        await page1.evaluate(() => {
+          return document.visibilityState;
+        })
+      ).toBe('visible');
+      expect(
+        await page2.evaluate(() => {
+          return document.visibilityState;
+        })
+      ).toBe('hidden');
 
       await page2.bringToFront();
-      expect(await page1.evaluate(() => document.visibilityState)).toBe(
-        'hidden'
-      );
-      expect(await page2.evaluate(() => document.visibilityState)).toBe(
-        'visible'
-      );
+      expect(
+        await page1.evaluate(() => {
+          return document.visibilityState;
+        })
+      ).toBe('hidden');
+      expect(
+        await page2.evaluate(() => {
+          return document.visibilityState;
+        })
+      ).toBe('visible');
 
       await page1.close();
       await page2.close();
@@ -340,7 +397,7 @@ describeChromeOnly('headful tests', function () {
       const promises = [];
       for (let i = 0; i < N; ++i) {
         promises.push(
-          pages[i].screenshot({
+          pages[i]!.screenshot({
             clip: { x: 50 * i, y: 0, width: 50, height: 50 },
           })
         );
@@ -349,7 +406,11 @@ describeChromeOnly('headful tests', function () {
       for (let i = 0; i < N; ++i) {
         expect(screenshots[i]).toBeGolden(`grid-cell-${i}.png`);
       }
-      await Promise.all(pages.map((page) => page.close()));
+      await Promise.all(
+        pages.map((page) => {
+          return page.close();
+        })
+      );
 
       await browser.close();
     });

@@ -22,7 +22,7 @@ import {
   setupTestPageAndContextHooks,
   itFailsFirefox,
   shortWaitForArrayToHaveAtLeastNElements,
-} from './mocha-utils'; // eslint-disable-line import/extensions
+} from './mocha-utils.js';
 
 describe('JSHandle', function () {
   setupTestBrowserHooks();
@@ -32,24 +32,31 @@ describe('JSHandle', function () {
     it('should work', async () => {
       const { page } = getTestState();
 
-      const windowHandle = await page.evaluateHandle(() => window);
+      const windowHandle = await page.evaluateHandle(() => {
+        return window;
+      });
       expect(windowHandle).toBeTruthy();
     });
     it('should accept object handle as an argument', async () => {
       const { page } = getTestState();
 
-      const navigatorHandle = await page.evaluateHandle(() => navigator);
-      const text = await page.evaluate(
-        (e: Navigator) => e.userAgent,
-        navigatorHandle
-      );
+      const navigatorHandle = await page.evaluateHandle(() => {
+        return navigator;
+      });
+      const text = await page.evaluate((e: Navigator) => {
+        return e.userAgent;
+      }, navigatorHandle);
       expect(text).toContain('Mozilla');
     });
     it('should accept object handle to primitive types', async () => {
       const { page } = getTestState();
 
-      const aHandle = await page.evaluateHandle(() => 5);
-      const isFive = await page.evaluate((e) => Object.is(e, 5), aHandle);
+      const aHandle = await page.evaluateHandle(() => {
+        return 5;
+      });
+      const isFive = await page.evaluate((e) => {
+        return Object.is(e, 5);
+      }, aHandle);
       expect(isFive).toBeTruthy();
     });
     it('should warn about recursive objects', async () => {
@@ -57,31 +64,44 @@ describe('JSHandle', function () {
 
       const test: { obj?: unknown } = {};
       test.obj = test;
-      let error = null;
+      let error!: Error;
       await page
-        // @ts-expect-error we are deliberately passing a bad type here (nested object)
-        .evaluateHandle((opts) => opts.elem, { test })
-        .catch((error_) => (error = error_));
+        .evaluateHandle(
+          (opts) => {
+            return opts.elem;
+          },
+          // @ts-expect-error we are deliberately passing a bad type here (nested object)
+          { test }
+        )
+        .catch((error_) => {
+          return (error = error_);
+        });
       expect(error.message).toContain('Recursive objects are not allowed.');
     });
     it('should accept object handle to unserializable value', async () => {
       const { page } = getTestState();
 
-      const aHandle = await page.evaluateHandle(() => Infinity);
-      expect(await page.evaluate((e) => Object.is(e, Infinity), aHandle)).toBe(
-        true
-      );
+      const aHandle = await page.evaluateHandle(() => {
+        return Infinity;
+      });
+      expect(
+        await page.evaluate((e) => {
+          return Object.is(e, Infinity);
+        }, aHandle)
+      ).toBe(true);
     });
     it('should use the same JS wrappers', async () => {
       const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
-        globalThis.FOO = 123;
+        (globalThis as any).FOO = 123;
         return window;
       });
-      expect(await page.evaluate((e: { FOO: number }) => e.FOO, aHandle)).toBe(
-        123
-      );
+      expect(
+        await page.evaluate((e: { FOO: number }) => {
+          return e.FOO;
+        }, aHandle)
+      ).toBe(123);
     });
   });
 
@@ -89,11 +109,13 @@ describe('JSHandle', function () {
     it('should work', async () => {
       const { page } = getTestState();
 
-      const aHandle = await page.evaluateHandle(() => ({
-        one: 1,
-        two: 2,
-        three: 3,
-      }));
+      const aHandle = await page.evaluateHandle(() => {
+        return {
+          one: 1,
+          two: 2,
+          three: 3,
+        };
+      });
       const twoHandle = await aHandle.getProperty('two');
       expect(await twoHandle.jsonValue()).toEqual(2);
     });
@@ -101,11 +123,13 @@ describe('JSHandle', function () {
     it('should return a JSHandle even if the property does not exist', async () => {
       const { page } = getTestState();
 
-      const aHandle = await page.evaluateHandle(() => ({
-        one: 1,
-        two: 2,
-        three: 3,
-      }));
+      const aHandle = await page.evaluateHandle(() => {
+        return {
+          one: 1,
+          two: 2,
+          three: 3,
+        };
+      });
       const undefinedHandle = await aHandle.getProperty('doesnotexist');
       expect(undefinedHandle).toBeInstanceOf(JSHandle);
       expect(await undefinedHandle.jsonValue()).toBe(undefined);
@@ -116,7 +140,9 @@ describe('JSHandle', function () {
     it('should work', async () => {
       const { page } = getTestState();
 
-      const aHandle = await page.evaluateHandle(() => ({ foo: 'bar' }));
+      const aHandle = await page.evaluateHandle(() => {
+        return { foo: 'bar' };
+      });
       const json = await aHandle.jsonValue<Record<string, string>>();
       expect(json).toEqual({ foo: 'bar' });
     });
@@ -124,7 +150,9 @@ describe('JSHandle', function () {
     it('works with jsonValues that are not objects', async () => {
       const { page } = getTestState();
 
-      const aHandle = await page.evaluateHandle(() => ['a', 'b']);
+      const aHandle = await page.evaluateHandle(() => {
+        return ['a', 'b'];
+      });
       const json = await aHandle.jsonValue<string[]>();
       expect(json).toEqual(['a', 'b']);
     });
@@ -132,7 +160,9 @@ describe('JSHandle', function () {
     it('works with jsonValues that are primitives', async () => {
       const { page } = getTestState();
 
-      const aHandle = await page.evaluateHandle(() => 'foo');
+      const aHandle = await page.evaluateHandle(() => {
+        return 'foo';
+      });
       const json = await aHandle.jsonValue<string>();
       expect(json).toEqual('foo');
     });
@@ -140,9 +170,9 @@ describe('JSHandle', function () {
     itFailsFirefox('should not work with dates', async () => {
       const { page } = getTestState();
 
-      const dateHandle = await page.evaluateHandle(
-        () => new Date('2017-09-26T00:00:00.000Z')
-      );
+      const dateHandle = await page.evaluateHandle(() => {
+        return new Date('2017-09-26T00:00:00.000Z');
+      });
       const json = await dateHandle.jsonValue();
       expect(json).toEqual({});
     });
@@ -150,8 +180,10 @@ describe('JSHandle', function () {
       const { page, isChrome } = getTestState();
 
       const windowHandle = await page.evaluateHandle('window');
-      let error = null;
-      await windowHandle.jsonValue().catch((error_) => (error = error_));
+      let error!: Error;
+      await windowHandle.jsonValue().catch((error_) => {
+        return (error = error_);
+      });
       if (isChrome) {
         expect(error.message).toContain('Object reference chain is too long');
       } else {
@@ -164,11 +196,13 @@ describe('JSHandle', function () {
     it('should work', async () => {
       const { page } = getTestState();
 
-      const aHandle = await page.evaluateHandle(() => ({
-        foo: 'bar',
-      }));
+      const aHandle = await page.evaluateHandle(() => {
+        return {
+          foo: 'bar',
+        };
+      });
       const properties = await aHandle.getProperties();
-      const foo = properties.get('foo');
+      const foo = properties.get('foo')!;
       expect(foo).toBeTruthy();
       expect(await foo.jsonValue()).toBe('bar');
     });
@@ -192,8 +226,8 @@ describe('JSHandle', function () {
         return new B();
       });
       const properties = await aHandle.getProperties();
-      expect(await properties.get('a').jsonValue()).toBe('1');
-      expect(await properties.get('b').jsonValue()).toBe('2');
+      expect(await properties.get('a')!.jsonValue()).toBe('1');
+      expect(await properties.get('b')!.jsonValue()).toBe('2');
     });
   });
 
@@ -201,14 +235,18 @@ describe('JSHandle', function () {
     it('should work', async () => {
       const { page } = getTestState();
 
-      const aHandle = await page.evaluateHandle(() => document.body);
+      const aHandle = await page.evaluateHandle(() => {
+        return document.body;
+      });
       const element = aHandle.asElement();
       expect(element).toBeTruthy();
     });
     it('should return null for non-elements', async () => {
       const { page } = getTestState();
 
-      const aHandle = await page.evaluateHandle(() => 2);
+      const aHandle = await page.evaluateHandle(() => {
+        return 2;
+      });
       const element = aHandle.asElement();
       expect(element).toBeFalsy();
     });
@@ -216,16 +254,15 @@ describe('JSHandle', function () {
       const { page } = getTestState();
 
       await page.setContent('<div>ee!</div>');
-      const aHandle = await page.evaluateHandle(
-        () => document.querySelector('div').firstChild
-      );
+      const aHandle = await page.evaluateHandle(() => {
+        return document.querySelector('div')!.firstChild;
+      });
       const element = aHandle.asElement();
       expect(element).toBeTruthy();
       expect(
-        await page.evaluate(
-          (e: HTMLElement) => e.nodeType === Node.TEXT_NODE,
-          element
-        )
+        await page.evaluate((e: HTMLElement) => {
+          return e.nodeType === Node.TEXT_NODE;
+        }, element)
       );
     });
   });
@@ -234,15 +271,21 @@ describe('JSHandle', function () {
     it('should work for primitives', async () => {
       const { page } = getTestState();
 
-      const numberHandle = await page.evaluateHandle(() => 2);
+      const numberHandle = await page.evaluateHandle(() => {
+        return 2;
+      });
       expect(numberHandle.toString()).toBe('JSHandle:2');
-      const stringHandle = await page.evaluateHandle(() => 'a');
+      const stringHandle = await page.evaluateHandle(() => {
+        return 'a';
+      });
       expect(stringHandle.toString()).toBe('JSHandle:a');
     });
     it('should work for complicated objects', async () => {
       const { page } = getTestState();
 
-      const aHandle = await page.evaluateHandle(() => window);
+      const aHandle = await page.evaluateHandle(() => {
+        return window;
+      });
       expect(aHandle.toString()).toBe('JSHandle@object');
     });
     it('should work with different subtypes', async () => {
@@ -315,9 +358,11 @@ describe('JSHandle', function () {
         `;
       });
       await page.evaluate(async () => {
-        return new Promise((resolve) => window.requestAnimationFrame(resolve));
+        return new Promise((resolve) => {
+          return window.requestAnimationFrame(resolve);
+        });
       });
-      const divHandle = await page.$('div');
+      const divHandle = (await page.$('div'))!;
       expect(await divHandle.clickablePoint()).toEqual({
         x: 45 + 60, // margin + middle point offset
         y: 45 + 30, // margin + middle point offset
@@ -343,10 +388,12 @@ describe('JSHandle', function () {
         `;
       });
       await page.evaluate(async () => {
-        return new Promise((resolve) => window.requestAnimationFrame(resolve));
+        return new Promise((resolve) => {
+          return window.requestAnimationFrame(resolve);
+        });
       });
-      const frame = page.frames()[1];
-      const divHandle = await frame.$('div');
+      const frame = page.frames()[1]!;
+      const divHandle = (await frame.$('div'))!;
       expect(await divHandle.clickablePoint()).toEqual({
         x: 20 + 45 + 60, // iframe pos + margin + middle point offset
         y: 20 + 45 + 30, // iframe pos + margin + middle point offset
@@ -367,7 +414,7 @@ describe('JSHandle', function () {
     itFailsFirefox('should work', async () => {
       const { page } = getTestState();
 
-      const clicks = [];
+      const clicks: [x: number, y: number][] = [];
 
       await page.exposeFunction('reportClick', (x: number, y: number): void => {
         clicks.push([x, y]);
@@ -384,7 +431,7 @@ describe('JSHandle', function () {
         });
       });
 
-      const divHandle = await page.$('div');
+      const divHandle = (await page.$('div'))!;
       await divHandle.click();
       await divHandle.click({
         offset: {

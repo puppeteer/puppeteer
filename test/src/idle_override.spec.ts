@@ -20,7 +20,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   describeFailsFirefox,
-} from './mocha-utils'; // eslint-disable-line import/extensions
+} from './mocha-utils.js';
 
 describeFailsFirefox('Emulate idle state', () => {
   setupTestBrowserHooks();
@@ -29,7 +29,7 @@ describeFailsFirefox('Emulate idle state', () => {
   async function getIdleState() {
     const { page } = getTestState();
 
-    const stateElement = await page.$('#state');
+    const stateElement = (await page.$('#state'))!;
     return await page.evaluate((element: HTMLElement) => {
       return element.innerText;
     }, stateElement);

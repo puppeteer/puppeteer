@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import utils from './utils.js';
 import expect from 'expect';
+import { CDPSession } from '../../lib/cjs/puppeteer/common/Connection.js';
+import { Frame } from '../../lib/cjs/puppeteer/common/FrameManager.js';
 import {
   getTestState,
+  itFailsFirefox,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
-  itFailsFirefox,
-} from './mocha-utils'; // eslint-disable-line import/extensions
-import { CDPSession } from '../../lib/cjs/puppeteer/common/Connection.js';
+} from './mocha-utils.js';
+import utils, { dumpFrames } from './utils.js';
 
 describe('Frame specs', function () {
   setupTestBrowserHooks();
@@ -36,8 +37,8 @@ describe('Frame specs', function () {
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       expect(page.frames().length).toBe(2);
       const [frame1, frame2] = page.frames();
-      const context1 = await frame1.executionContext();
-      const context2 = await frame2.executionContext();
+      const context1 = await frame1!.executionContext();
+      const context2 = await frame2!.executionContext();
       expect(context1).toBeTruthy();
       expect(context2).toBeTruthy();
       expect(context1 !== context2).toBeTruthy();
@@ -45,12 +46,20 @@ describe('Frame specs', function () {
       expect(context2.frame()).toBe(frame2);
 
       await Promise.all([
-        context1.evaluate(() => (globalThis.a = 1)),
-        context2.evaluate(() => (globalThis.a = 2)),
+        context1.evaluate(() => {
+          return ((globalThis as any).a = 1);
+        }),
+        context2.evaluate(() => {
+          return ((globalThis as any).a = 2);
+        }),
       ]);
       const [a1, a2] = await Promise.all([
-        context1.evaluate(() => globalThis.a),
-        context2.evaluate(() => globalThis.a),
+        context1.evaluate(() => {
+          return (globalThis as any).a;
+        }),
+        context2.evaluate(() => {
+          return (globalThis as any).a;
+        }),
       ]);
       expect(a1).toBe(1);
       expect(a2).toBe(2);
@@ -63,7 +72,9 @@ describe('Frame specs', function () {
 
       await page.goto(server.EMPTY_PAGE);
       const mainFrame = page.mainFrame();
-      const windowHandle = await mainFrame.evaluateHandle(() => window);
+      const windowHandle = await mainFrame.evaluateHandle(() => {
+        return window;
+      });
       expect(windowHandle).toBeTruthy();
     });
   });
@@ -72,10 +83,20 @@ describe('Frame specs', function () {
     itFailsFirefox('should throw for detached frames', async () => {
       const { page, server } = getTestState();
 
-      const frame1 = await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      const frame1 = (await utils.attachFrame(
+        page,
+        'frame1',
+        server.EMPTY_PAGE
+      ))!;
       await utils.detachFrame(page, 'frame1');
-      let error = null;
-      await frame1.evaluate(() => 7 * 8).catch((error_) => (error = error_));
+      let error!: Error;
+      await frame1
+        .evaluate(() => {
+          return 7 * 8;
+        })
+        .catch((error_) => {
+          return (error = error_);
+        });
       expect(error.message).toContain(
         'Execution context is not available in detached frame'
       );
@@ -89,7 +110,9 @@ describe('Frame specs', function () {
       // This test checks if Frame.evaluate allows a readonly array to be an argument.
       // See https://github.com/puppeteer/puppeteer/issues/6953.
       const readonlyArray: readonly string[] = ['a', 'b', 'c'];
-      await mainFrame.evaluate((arr) => arr, readonlyArray);
+      await mainFrame.evaluate((arr) => {
+        return arr;
+      }, readonlyArray);
     });
   });
 
@@ -98,7 +121,7 @@ describe('Frame specs', function () {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/frames/nested-frames.html');
-      expect(utils.dumpFrames(page.mainFrame())).toEqual([
+      expect(dumpFrames(page.mainFrame())).toEqual([
         'http://localhost:<PORT>/frames/nested-frames.html',
         '    http://localhost:<PORT>/frames/two-frames.html (2frames)',
         '        http://localhost:<PORT>/frames/frame.html (uno)',
@@ -113,25 +136,31 @@ describe('Frame specs', function () {
 
         await page.goto(server.EMPTY_PAGE);
         // validate frameattached events
-        const attachedFrames = [];
-        page.on('frameattached', (frame) => attachedFrames.push(frame));
+        const attachedFrames: Frame[] = [];
+        page.on('frameattached', (frame) => {
+          return attachedFrames.push(frame);
+        });
         await utils.attachFrame(page, 'frame1', './assets/frame.html');
         expect(attachedFrames.length).toBe(1);
-        expect(attachedFrames[0].url()).toContain('/assets/frame.html');
+        expect(attachedFrames[0]!.url()).toContain('/assets/frame.html');
 
         // validate framenavigated events
-        const navigatedFrames = [];
-        page.on('framenavigated', (frame) => navigatedFrames.push(frame));
+        const navigatedFrames: Frame[] = [];
+        page.on('framenavigated', (frame) => {
+          return navigatedFrames.push(frame);
+        });
         await utils.navigateFrame(page, 'frame1', './empty.html');
         expect(navigatedFrames.length).toBe(1);
-        expect(navigatedFrames[0].url()).toBe(server.EMPTY_PAGE);
+        expect(navigatedFrames[0]!.url()).toBe(server.EMPTY_PAGE);
 
         // validate framedetached events
-        const detachedFrames = [];
-        page.on('framedetached', (frame) => detachedFrames.push(frame));
+        const detachedFrames: Frame[] = [];
+        page.on('framedetached', (frame) => {
+          return detachedFrames.push(frame);
+        });
         await utils.detachFrame(page, 'frame1');
         expect(detachedFrames.length).toBe(1);
-        expect(detachedFrames[0].isDetached()).toBe(true);
+        expect(detachedFrames[0]!.isDetached()).toBe(true);
       }
     );
     it('should send "framenavigated" when navigating on anchor URLs', async () => {
@@ -156,8 +185,12 @@ describe('Frame specs', function () {
       const { page, server } = getTestState();
 
       let hasEvents = false;
-      page.on('frameattached', () => (hasEvents = true));
-      page.on('framedetached', () => (hasEvents = true));
+      page.on('frameattached', () => {
+        return (hasEvents = true);
+      });
+      page.on('framedetached', () => {
+        return (hasEvents = true);
+      });
       await page.goto(server.EMPTY_PAGE);
       expect(hasEvents).toBe(false);
     });
@@ -167,9 +200,15 @@ describe('Frame specs', function () {
       let attachedFrames = [];
       let detachedFrames = [];
       let navigatedFrames = [];
-      page.on('frameattached', (frame) => attachedFrames.push(frame));
-      page.on('framedetached', (frame) => detachedFrames.push(frame));
-      page.on('framenavigated', (frame) => navigatedFrames.push(frame));
+      page.on('frameattached', (frame) => {
+        return attachedFrames.push(frame);
+      });
+      page.on('framedetached', (frame) => {
+        return detachedFrames.push(frame);
+      });
+      page.on('framenavigated', (frame) => {
+        return navigatedFrames.push(frame);
+      });
       await page.goto(server.PREFIX + '/frames/nested-frames.html');
       expect(attachedFrames.length).toBe(4);
       expect(detachedFrames.length).toBe(0);
@@ -189,9 +228,15 @@ describe('Frame specs', function () {
       let attachedFrames = [];
       let detachedFrames = [];
       let navigatedFrames = [];
-      page.on('frameattached', (frame) => attachedFrames.push(frame));
-      page.on('framedetached', (frame) => detachedFrames.push(frame));
-      page.on('framenavigated', (frame) => navigatedFrames.push(frame));
+      page.on('frameattached', (frame) => {
+        return attachedFrames.push(frame);
+      });
+      page.on('framedetached', (frame) => {
+        return detachedFrames.push(frame);
+      });
+      page.on('framenavigated', (frame) => {
+        return navigatedFrames.push(frame);
+      });
       await page.goto(server.PREFIX + '/frames/frameset.html');
       expect(attachedFrames.length).toBe(4);
       expect(detachedFrames.length).toBe(0);
@@ -212,11 +257,13 @@ describe('Frame specs', function () {
       await page.evaluate(async (url: string) => {
         const frame = document.createElement('iframe');
         frame.src = url;
-        document.body.shadowRoot.appendChild(frame);
-        await new Promise((x) => (frame.onload = x));
+        document.body.shadowRoot!.appendChild(frame);
+        await new Promise((x) => {
+          return (frame.onload = x);
+        });
       }, server.EMPTY_PAGE);
       expect(page.frames().length).toBe(2);
-      expect(page.frames()[1].url()).toBe(server.EMPTY_PAGE);
+      expect(page.frames()[1]!.url()).toBe(server.EMPTY_PAGE);
     });
     itFailsFirefox('should report frame.name()', async () => {
       const { page, server } = getTestState();
@@ -227,20 +274,22 @@ describe('Frame specs', function () {
         frame.name = 'theFrameName';
         frame.src = url;
         document.body.appendChild(frame);
-        return new Promise((x) => (frame.onload = x));
+        return new Promise((x) => {
+          return (frame.onload = x);
+        });
       }, server.EMPTY_PAGE);
-      expect(page.frames()[0].name()).toBe('');
-      expect(page.frames()[1].name()).toBe('theFrameId');
-      expect(page.frames()[2].name()).toBe('theFrameName');
+      expect(page.frames()[0]!.name()).toBe('');
+      expect(page.frames()[1]!.name()).toBe('theFrameId');
+      expect(page.frames()[2]!.name()).toBe('theFrameName');
     });
     itFailsFirefox('should report frame.parent()', async () => {
       const { page, server } = getTestState();
 
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       await utils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
-      expect(page.frames()[0].parentFrame()).toBe(null);
-      expect(page.frames()[1].parentFrame()).toBe(page.mainFrame());
-      expect(page.frames()[2].parentFrame()).toBe(page.mainFrame());
+      expect(page.frames()[0]!.parentFrame()).toBe(null);
+      expect(page.frames()[1]!.parentFrame()).toBe(page.mainFrame());
+      expect(page.frames()[2]!.parentFrame()).toBe(page.mainFrame());
     });
     itFailsFirefox(
       'should report different frame instance when frame re-attaches',
@@ -253,13 +302,15 @@ describe('Frame specs', function () {
           server.EMPTY_PAGE
         );
         await page.evaluate(() => {
-          globalThis.frame = document.querySelector('#frame1');
-          globalThis.frame.remove();
+          (globalThis as any).frame = document.querySelector('#frame1');
+          (globalThis as any).frame.remove();
         });
-        expect(frame1.isDetached()).toBe(true);
+        expect(frame1!.isDetached()).toBe(true);
         const [frame2] = await Promise.all([
           utils.waitEvent(page, 'frameattached'),
-          page.evaluate(() => document.body.appendChild(globalThis.frame)),
+          page.evaluate(() => {
+            return document.body.appendChild((globalThis as any).frame);
+          }),
         ]);
         expect(frame2.isDetached()).toBe(false);
         expect(frame1).not.toBe(frame2);
@@ -271,7 +322,7 @@ describe('Frame specs', function () {
       await page.goto(server.PREFIX + '/frames/one-frame-url-fragment.html');
 
       expect(page.frames().length).toBe(2);
-      expect(page.frames()[1].url()).toBe(
+      expect(page.frames()[1]!.url()).toBe(
         server.PREFIX + '/frames/frame.html?param=value#fragment'
       );
     });
@@ -281,11 +332,11 @@ describe('Frame specs', function () {
       await page.setViewport({ width: 1000, height: 1000 });
       await page.goto(server.PREFIX + '/frames/lazy-frame.html');
 
-      expect(page.frames().map((frame) => frame._hasStartedLoading)).toEqual([
-        true,
-        true,
-        false,
-      ]);
+      expect(
+        page.frames().map((frame) => {
+          return frame._hasStartedLoading;
+        })
+      ).toEqual([true, true, false]);
     });
   });
 

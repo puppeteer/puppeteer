@@ -21,7 +21,8 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   describeChromeOnly,
-} from './mocha-utils'; // eslint-disable-line import/extensions
+} from './mocha-utils.js';
+import { isErrorLike } from '../../lib/cjs/puppeteer/common/util.js';
 
 describeChromeOnly('Target.createCDPSession', function () {
   setupTestBrowserHooks();
@@ -36,7 +37,9 @@ describeChromeOnly('Target.createCDPSession', function () {
       client.send('Runtime.enable'),
       client.send('Runtime.evaluate', { expression: 'window.foo = "bar"' }),
     ]);
-    const foo = await page.evaluate(() => globalThis.foo);
+    const foo = await page.evaluate(() => {
+      return (globalThis as any).foo;
+    });
     expect(foo).toBe('bar');
   });
   it('should send events', async () => {
@@ -45,7 +48,9 @@ describeChromeOnly('Target.createCDPSession', function () {
     const client = await page.target().createCDPSession();
     await client.send('Network.enable');
     const events = [];
-    client.on('Network.requestWillBeSent', (event) => events.push(event));
+    client.on('Network.requestWillBeSent', (event) => {
+      return events.push(event);
+    });
     await page.goto(server.EMPTY_PAGE);
     expect(events.length).toBe(1);
   });
@@ -77,14 +82,16 @@ describeChromeOnly('Target.createCDPSession', function () {
     });
     expect(evalResponse.result.value).toBe(3);
     await client.detach();
-    let error = null;
+    let error!: Error;
     try {
       await client.send('Runtime.evaluate', {
         expression: '3 + 1',
         returnByValue: true,
       });
     } catch (error_) {
-      error = error_;
+      if (isErrorLike(error_)) {
+        error = error_ as Error;
+      }
     }
     expect(error.message).toContain('Session closed.');
   });
@@ -92,7 +99,9 @@ describeChromeOnly('Target.createCDPSession', function () {
     const { page } = getTestState();
 
     const client = await page.target().createCDPSession();
-    const error = await theSourceOfTheProblems().catch((error) => error);
+    const error = await theSourceOfTheProblems().catch((error) => {
+      return error;
+    });
     expect(error.stack).toContain('theSourceOfTheProblems');
     expect(error.message).toContain('ThisCommand.DoesNotExist');
 
