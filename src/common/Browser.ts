@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { assert } from './assert.js';
-import { helper } from './helper.js';
-import { Target } from './Target.js';
-import { EventEmitter } from './EventEmitter.js';
-import { Connection, ConnectionEmittedEvents } from './Connection.js';
-import { Protocol } from 'devtools-protocol';
-import { Page } from './Page.js';
-import { TaskQueue } from './TaskQueue.js';
 import { ChildProcess } from 'child_process';
+import { Protocol } from 'devtools-protocol';
+import { assert } from './assert.js';
+import { Connection, ConnectionEmittedEvents } from './Connection.js';
+import { EventEmitter } from './EventEmitter.js';
+import { waitWithTimeout } from './util.js';
+import { Page } from './Page.js';
 import { Viewport } from './PuppeteerViewport.js';
+import { Target } from './Target.js';
+import { TaskQueue } from './TaskQueue.js';
 
 /**
  * BrowserContext options.
@@ -582,7 +582,7 @@ export class Browser extends EventEmitter {
     try {
       if (!timeout) return await targetPromise;
       this.targets().forEach(check);
-      return await helper.waitWithTimeout(targetPromise, 'target', timeout);
+      return await waitWithTimeout(targetPromise, 'target', timeout);
     } finally {
       this.off(BrowserEmittedEvents.TargetCreated, check);
       this.off(BrowserEmittedEvents.TargetChanged, check);

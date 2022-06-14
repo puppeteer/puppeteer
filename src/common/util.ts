@@ -25,7 +25,7 @@ import { CommonEventEmitter } from './EventEmitter.js';
 
 export const debugError = debug('puppeteer:error');
 
-function getExceptionMessage(
+export function getExceptionMessage(
   exceptionDetails: Protocol.Runtime.ExceptionDetails
 ): string {
   if (exceptionDetails.exception)
@@ -48,7 +48,7 @@ function getExceptionMessage(
   return message;
 }
 
-function valueFromRemoteObject(
+export function valueFromRemoteObject(
   remoteObject: Protocol.Runtime.RemoteObject
 ): any {
   assert(!remoteObject.objectId, 'Cannot extract value when objectId is given');
@@ -74,7 +74,7 @@ function valueFromRemoteObject(
   return remoteObject.value;
 }
 
-async function releaseObject(
+export async function releaseObject(
   client: CDPSession,
   remoteObject: Protocol.Runtime.RemoteObject
 ): Promise<void> {
@@ -88,16 +88,13 @@ async function releaseObject(
     });
 }
 
-/**
- * @public
- */
 export interface PuppeteerEventListener {
   emitter: CommonEventEmitter;
   eventName: string | symbol;
   handler: (...args: any[]) => void;
 }
 
-function addEventListener(
+export function addEventListener(
   emitter: CommonEventEmitter,
   eventName: string | symbol,
   handler: (...args: any[]) => void
@@ -106,7 +103,7 @@ function addEventListener(
   return { emitter, eventName, handler };
 }
 
-function removeEventListeners(
+export function removeEventListeners(
   listeners: Array<{
     emitter: CommonEventEmitter;
     eventName: string | symbol;
@@ -118,15 +115,15 @@ function removeEventListeners(
   listeners.length = 0;
 }
 
-function isString(obj: unknown): obj is string {
+export const isString = (obj: unknown): obj is string => {
   return typeof obj === 'string' || obj instanceof String;
-}
+};
 
-function isNumber(obj: unknown): obj is number {
+export const isNumber = (obj: unknown): obj is number => {
   return typeof obj === 'number' || obj instanceof Number;
-}
+};
 
-async function waitForEvent<T>(
+export async function waitForEvent<T>(
   emitter: CommonEventEmitter,
   eventName: string | symbol,
   predicate: (event: T) => Promise<boolean> | boolean,
@@ -172,7 +169,10 @@ async function waitForEvent<T>(
   return result;
 }
 
-function evaluationString(fun: Function | string, ...args: unknown[]): string {
+export function evaluationString(
+  fun: Function | string,
+  ...args: unknown[]
+): string {
   if (isString(fun)) {
     assert(args.length === 0, 'Cannot evaluate a string with arguments');
     return fun;
@@ -186,7 +186,7 @@ function evaluationString(fun: Function | string, ...args: unknown[]): string {
   return `(${fun})(${args.map(serializeArgument).join(',')})`;
 }
 
-function pageBindingInitString(type: string, name: string): string {
+export function pageBindingInitString(type: string, name: string): string {
   function addPageBinding(type: string, bindingName: string): void {
     /* Cast window to any here as we're about to add properties to it
      * via win[bindingName] which TypeScript doesn't like.
@@ -213,7 +213,7 @@ function pageBindingInitString(type: string, name: string): string {
   return evaluationString(addPageBinding, type, name);
 }
 
-function pageBindingDeliverResultString(
+export function pageBindingDeliverResultString(
   name: string,
   seq: number,
   result: unknown
@@ -225,7 +225,7 @@ function pageBindingDeliverResultString(
   return evaluationString(deliverResult, name, seq, result);
 }
 
-function pageBindingDeliverErrorString(
+export function pageBindingDeliverErrorString(
   name: string,
   seq: number,
   message: string,
@@ -245,7 +245,7 @@ function pageBindingDeliverErrorString(
   return evaluationString(deliverError, name, seq, message, stack);
 }
 
-function pageBindingDeliverErrorValueString(
+export function pageBindingDeliverErrorValueString(
   name: string,
   seq: number,
   value: unknown
@@ -257,7 +257,7 @@ function pageBindingDeliverErrorValueString(
   return evaluationString(deliverErrorValue, name, seq, value);
 }
 
-function makePredicateString(
+export function makePredicateString(
   predicate: Function,
   predicateQueryHandler?: Function
 ): string {
@@ -296,7 +296,7 @@ function makePredicateString(
     })() `;
 }
 
-async function waitWithTimeout<T>(
+export async function waitWithTimeout<T>(
   promise: Promise<T>,
   taskName: string,
   timeout: number
@@ -315,7 +315,7 @@ async function waitWithTimeout<T>(
   }
 }
 
-async function getReadableAsBuffer(
+export async function getReadableAsBuffer(
   readable: Readable,
   path?: string
 ): Promise<Buffer | null> {
@@ -350,7 +350,7 @@ async function getReadableAsBuffer(
   }
 }
 
-async function getReadableFromProtocolStream(
+export async function getReadableFromProtocolStream(
   client: CDPSession,
   handle: string
 ): Promise<Readable> {
@@ -395,23 +395,3 @@ export function isErrnoException(obj: unknown): obj is NodeJS.ErrnoException {
     ('errno' in obj || 'code' in obj || 'path' in obj || 'syscall' in obj)
   );
 }
-
-export const helper = {
-  evaluationString,
-  pageBindingInitString,
-  pageBindingDeliverResultString,
-  pageBindingDeliverErrorString,
-  pageBindingDeliverErrorValueString,
-  makePredicateString,
-  getReadableAsBuffer,
-  getReadableFromProtocolStream,
-  waitWithTimeout,
-  waitForEvent,
-  isString,
-  isNumber,
-  addEventListener,
-  removeEventListeners,
-  valueFromRemoteObject,
-  getExceptionMessage,
-  releaseObject,
-};

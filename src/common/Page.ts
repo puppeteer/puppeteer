@@ -43,11 +43,28 @@ import {
   FrameManager,
   FrameManagerEmittedEvents,
 } from './FrameManager.js';
-import { debugError, helper, isErrorLike } from './helper.js';
+import {
+  debugError,
+  evaluationString,
+  getExceptionMessage,
+  getReadableAsBuffer,
+  getReadableFromProtocolStream,
+  isErrorLike,
+  isNumber,
+  isString,
+  pageBindingDeliverErrorString,
+  pageBindingDeliverErrorValueString,
+  pageBindingDeliverResultString,
+  pageBindingInitString,
+  releaseObject,
+  valueFromRemoteObject,
+  waitForEvent,
+  waitWithTimeout,
+} from './util.js';
 import { HTTPRequest } from './HTTPRequest.js';
 import { HTTPResponse } from './HTTPResponse.js';
 import { Keyboard, Mouse, MouseButton, Touchscreen } from './Input.js';
-import { _createJSHandle, ElementHandle, JSHandle } from './JSHandle.js';
+import { ElementHandle, JSHandle, _createJSHandle } from './JSHandle.js';
 import { PuppeteerLifeCycleEvent } from './LifecycleWatcher.js';
 import {
   Credentials,
@@ -56,8 +73,8 @@ import {
 } from './NetworkManager.js';
 import {
   LowerCasePaperFormat,
-  _paperFormats,
   PDFOptions,
+  _paperFormats,
 } from './PDFOptions.js';
 import { Viewport } from './PuppeteerViewport.js';
 import { Target } from './Target.js';
@@ -703,16 +720,14 @@ export class Page extends EventEmitter {
     let callback!: (value: FileChooser | PromiseLike<FileChooser>) => void;
     const promise = new Promise<FileChooser>((x) => (callback = x));
     this.#fileChooserInterceptors.add(callback);
-    return helper
-      .waitWithTimeout<FileChooser>(
-        promise,
-        'waiting for file chooser',
-        timeout
-      )
-      .catch((error) => {
-        this.#fileChooserInterceptors.delete(callback);
-        throw error;
-      });
+    return waitWithTimeout<FileChooser>(
+      promise,
+      'waiting for file chooser',
+      timeout
+    ).catch((error) => {
+      this.#fileChooserInterceptors.delete(callback);
+      throw error;
+    });
   }
 
   /**
@@ -780,7 +795,7 @@ export class Page extends EventEmitter {
 
   #onLogEntryAdded(event: Protocol.Log.EntryAddedEvent): void {
     const { level, text, args, source, url, lineNumber } = event.entry;
-    if (args) args.map((arg) => helper.releaseObject(this.#client, arg));
+    if (args) args.map((arg) => releaseObject(this.#client, arg));
     if (source !== 'worker')
       this.emit(
         PageEmittedEvents.Console,
@@ -1413,7 +1428,7 @@ export class Page extends EventEmitter {
 
     this.#pageBindings.set(name, exposedFunction);
 
-    const expression = helper.pageBindingInitString('exposedFun', name);
+    const expression = pageBindingInitString('exposedFun', name);
     await this.#client.send('Runtime.addBinding', { name: name });
     await this.#client.send('Page.addScriptToEvaluateOnNewDocument', {
       source: expression,
@@ -1520,7 +1535,7 @@ export class Page extends EventEmitter {
   }
 
   #handleException(exceptionDetails: Protocol.Runtime.ExceptionDetails): void {
-    const message = helper.getExceptionMessage(exceptionDetails);
+    const message = getExceptionMessage(exceptionDetails);
     const err = new Error(message);
     err.stack = ''; // Don't report clientside error with a node stack attached
     this.emit(PageEmittedEvents.PageError, err);
@@ -1571,21 +1586,16 @@ export class Page extends EventEmitter {
       const pageBinding = this.#pageBindings.get(name);
       assert(pageBinding);
       const result = await pageBinding(...args);
-      expression = helper.pageBindingDeliverResultString(name, seq, result);
+      expression = pageBindingDeliverResultString(name, seq, result);
     } catch (error) {
       if (isErrorLike(error))
-        expression = helper.pageBindingDeliverErrorString(
+        expression = pageBindingDeliverErrorString(
           name,
           seq,
           error.message,
           error.stack
         );
-      else
-        expression = helper.pageBindingDeliverErrorValueString(
-          name,
-          seq,
-          error
-        );
+      else expression = pageBindingDeliverErrorValueString(name, seq, error);
     }
     this.#client
       .send('Runtime.evaluate', {
@@ -1608,7 +1618,7 @@ export class Page extends EventEmitter {
     for (const arg of args) {
       const remoteObject = arg._remoteObject;
       if (remoteObject.objectId) textTokens.push(arg.toString());
-      else textTokens.push(helper.valueFromRemoteObject(remoteObject));
+      else textTokens.push(valueFromRemoteObject(remoteObject));
     }
     const stackTraceLocations = [];
     if (stackTrace) {
@@ -1882,12 +1892,11 @@ export class Page extends EventEmitter {
     options: { timeout?: number } = {}
   ): Promise<HTTPRequest> {
     const { timeout = this.#timeoutSettings.timeout() } = options;
-    return helper.waitForEvent(
+    return waitForEvent(
       this.#frameManager.networkManager(),
       NetworkManagerEmittedEvents.Request,
       (request) => {
-        if (helper.isString(urlOrPredicate))
-          return urlOrPredicate === request.url();
+        if (isString(urlOrPredicate)) return urlOrPredicate === request.url();
         if (typeof urlOrPredicate === 'function')
           return !!urlOrPredicate(request);
         return false;
@@ -1929,12 +1938,11 @@ export class Page extends EventEmitter {
     options: { timeout?: number } = {}
   ): Promise<HTTPResponse> {
     const { timeout = this.#timeoutSettings.timeout() } = options;
-    return helper.waitForEvent(
+    return waitForEvent(
       this.#frameManager.networkManager(),
       NetworkManagerEmittedEvents.Response,
       async (response) => {
-        if (helper.isString(urlOrPredicate))
-          return urlOrPredicate === response.url();
+        if (isString(urlOrPredicate)) return urlOrPredicate === response.url();
         if (typeof urlOrPredicate === 'function')
           return !!(await urlOrPredicate(response));
         return false;
@@ -1988,13 +1996,7 @@ export class Page extends EventEmitter {
     };
 
     const listenToEvent = (event: symbol) =>
-      helper.waitForEvent(
-        networkManager,
-        event,
-        eventHandler,
-        timeout,
-        abortPromise
-      );
+      waitForEvent(networkManager, event, eventHandler, timeout, abortPromise);
 
     const eventPromises = [
       listenToEvent(NetworkManagerEmittedEvents.Request),
@@ -2041,7 +2043,7 @@ export class Page extends EventEmitter {
     const { timeout = this.#timeoutSettings.timeout() } = options;
 
     let predicate: (frame: Frame) => Promise<boolean>;
-    if (helper.isString(urlOrPredicate)) {
+    if (isString(urlOrPredicate)) {
       predicate = (frame: Frame) =>
         Promise.resolve(urlOrPredicate === frame.url());
     } else {
@@ -2055,14 +2057,14 @@ export class Page extends EventEmitter {
     }
 
     const eventRace: Promise<Frame> = Promise.race([
-      helper.waitForEvent(
+      waitForEvent(
         this.#frameManager,
         FrameManagerEmittedEvents.FrameAttached,
         predicate,
         timeout,
         this.#sessionClosePromise()
       ),
-      helper.waitForEvent(
+      waitForEvent(
         this.#frameManager,
         FrameManagerEmittedEvents.FrameNavigated,
         predicate,
@@ -2605,7 +2607,7 @@ export class Page extends EventEmitter {
     pageFunction: Function | string,
     ...args: unknown[]
   ): Promise<void> {
-    const source = helper.evaluationString(pageFunction, ...args);
+    const source = evaluationString(pageFunction, ...args);
     await this.#client.send('Page.addScriptToEvaluateOnNewDocument', {
       source,
     });
@@ -2919,7 +2921,7 @@ export class Page extends EventEmitter {
       preferCSSPageSize,
     });
 
-    const result = await helper.waitWithTimeout(
+    const result = await waitWithTimeout(
       printCommandPromise,
       'Page.printToPDF',
       timeout
@@ -2930,7 +2932,7 @@ export class Page extends EventEmitter {
     }
 
     assert(result.stream, '`stream` is missing from `Page.printToPDF');
-    return helper.getReadableFromProtocolStream(this.#client, result.stream);
+    return getReadableFromProtocolStream(this.#client, result.stream);
   }
 
   /**
@@ -2940,7 +2942,7 @@ export class Page extends EventEmitter {
   async pdf(options: PDFOptions = {}): Promise<Buffer> {
     const { path = undefined } = options;
     const readable = await this.createPDFStream(options);
-    const buffer = await helper.getReadableAsBuffer(readable, path);
+    const buffer = await getReadableAsBuffer(readable, path);
     assert(buffer, 'Could not create buffer');
     return buffer;
   }
@@ -3414,10 +3416,10 @@ function convertPrintParameterToInches(
 ): number | undefined {
   if (typeof parameter === 'undefined') return undefined;
   let pixels;
-  if (helper.isNumber(parameter)) {
+  if (isNumber(parameter)) {
     // Treat numbers as pixel values to be aligned with phantom's paperSize.
     pixels = parameter;
-  } else if (helper.isString(parameter)) {
+  } else if (isString(parameter)) {
     const text = parameter;
     let unit = text.substring(text.length - 2).toLowerCase();
     let valueText = '';

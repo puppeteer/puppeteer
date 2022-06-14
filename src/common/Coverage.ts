@@ -15,11 +15,16 @@
  */
 
 import { assert } from './assert.js';
-import { helper, debugError, PuppeteerEventListener } from './helper.js';
+import {
+  addEventListener,
+  debugError,
+  PuppeteerEventListener,
+} from './util.js';
 import { Protocol } from 'devtools-protocol';
 import { CDPSession } from './Connection.js';
 
 import { EVALUATION_SCRIPT_URL } from './ExecutionContext.js';
+import { removeEventListeners } from './util.js';
 
 /**
  * @internal
@@ -216,12 +221,12 @@ export class JSCoverage {
     this.#scriptURLs.clear();
     this.#scriptSources.clear();
     this.#eventListeners = [
-      helper.addEventListener(
+      addEventListener(
         this.#client,
         'Debugger.scriptParsed',
         this.#onScriptParsed.bind(this)
       ),
-      helper.addEventListener(
+      addEventListener(
         this.#client,
         'Runtime.executionContextsCleared',
         this.#onExecutionContextsCleared.bind(this)
@@ -274,7 +279,7 @@ export class JSCoverage {
       this.#client.send('Debugger.disable'),
     ]);
 
-    helper.removeEventListeners(this.#eventListeners);
+    removeEventListeners(this.#eventListeners);
 
     const coverage = [];
     const profileResponse = result[0];
@@ -321,12 +326,12 @@ export class CSSCoverage {
     this.#stylesheetURLs.clear();
     this.#stylesheetSources.clear();
     this.#eventListeners = [
-      helper.addEventListener(
+      addEventListener(
         this.#client,
         'CSS.styleSheetAdded',
         this.#onStyleSheet.bind(this)
       ),
-      helper.addEventListener(
+      addEventListener(
         this.#client,
         'Runtime.executionContextsCleared',
         this.#onExecutionContextsCleared.bind(this)
@@ -371,7 +376,7 @@ export class CSSCoverage {
       this.#client.send('CSS.disable'),
       this.#client.send('DOM.disable'),
     ]);
-    helper.removeEventListeners(this.#eventListeners);
+    removeEventListeners(this.#eventListeners);
 
     // aggregate by styleSheetId
     const styleSheetIdToCoverage = new Map();

@@ -28,7 +28,13 @@ import {
 } from './EvalTypes.js';
 import { ExecutionContext } from './ExecutionContext.js';
 import { Frame, FrameManager } from './FrameManager.js';
-import { debugError, helper } from './helper.js';
+import {
+  debugError,
+  isNumber,
+  isString,
+  makePredicateString,
+  pageBindingInitString,
+} from './util.js';
 import { MouseButton } from './Input.js';
 import { ElementHandle, JSHandle } from './JSHandle.js';
 import {
@@ -609,7 +615,7 @@ export class DOMWorld {
     }
 
     const bind = async (name: string) => {
-      const expression = helper.pageBindingInitString('internal', name);
+      const expression = pageBindingInitString('internal', name);
       try {
         // TODO: In theory, it would be enough to call this just once
         await context._client.send('Runtime.addBinding', {
@@ -725,7 +731,7 @@ export class DOMWorld {
     }
     const waitTaskOptions: WaitTaskOptions = {
       domWorld: this,
-      predicateBody: helper.makePredicateString(predicate, queryOne),
+      predicateBody: makePredicateString(predicate, queryOne),
       predicateAcceptsContextElement: true,
       title,
       polling,
@@ -772,7 +778,7 @@ export class DOMWorld {
     }
     const waitTaskOptions: WaitTaskOptions = {
       domWorld: this,
-      predicateBody: helper.makePredicateString(predicate),
+      predicateBody: makePredicateString(predicate),
       predicateAcceptsContextElement: true,
       title,
       polling,
@@ -853,12 +859,12 @@ export class WaitTask {
   promise: Promise<JSHandle>;
 
   constructor(options: WaitTaskOptions) {
-    if (helper.isString(options.polling))
+    if (isString(options.polling))
       assert(
         options.polling === 'raf' || options.polling === 'mutation',
         'Unknown polling option: ' + options.polling
       );
-    else if (helper.isNumber(options.polling))
+    else if (isNumber(options.polling))
       assert(
         options.polling > 0,
         'Cannot poll with non-positive interval: ' + options.polling
@@ -866,7 +872,7 @@ export class WaitTask {
     else throw new Error('Unknown polling options: ' + options.polling);
 
     function getPredicateBody(predicateBody: Function | string) {
-      if (helper.isString(predicateBody)) return `return (${predicateBody});`;
+      if (isString(predicateBody)) return `return (${predicateBody});`;
       return `return (${predicateBody})(...args);`;
     }
 

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { Protocol } from 'devtools-protocol';
 import { ProtocolMapping } from 'devtools-protocol/types/protocol-mapping.js';
+import { assert } from './assert.js';
 import { EventEmitter } from './EventEmitter.js';
 import { Frame } from './FrameManager.js';
-import { assert } from './assert.js';
-import { helper, debugError } from './helper.js';
-import { Protocol } from 'devtools-protocol';
 import { HTTPRequest } from './HTTPRequest.js';
 import { HTTPResponse } from './HTTPResponse.js';
 import { FetchRequestId, NetworkEventManager } from './NetworkEventManager.js';
+import { debugError, isString } from './util.js';
 
 /**
  * @public
@@ -151,7 +151,7 @@ export class NetworkManager extends EventEmitter {
     for (const key of Object.keys(extraHTTPHeaders)) {
       const value = extraHTTPHeaders[key];
       assert(
-        helper.isString(value),
+        isString(value),
         `Expected value of header "${key}" to be String, but "${typeof value}" is found.`
       );
       this.#extraHTTPHeaders[key.toLowerCase()] = value;

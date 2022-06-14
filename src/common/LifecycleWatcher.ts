@@ -15,7 +15,11 @@
  */
 
 import { assert } from './assert.js';
-import { helper, PuppeteerEventListener } from './helper.js';
+import {
+  addEventListener,
+  PuppeteerEventListener,
+  removeEventListeners,
+} from './util.js';
 import { TimeoutError } from './Errors.js';
 import {
   FrameManager,
@@ -114,7 +118,7 @@ export class LifecycleWatcher {
     this.#frame = frame;
     this.#timeout = timeout;
     this.#eventListeners = [
-      helper.addEventListener(
+      addEventListener(
         frameManager._client,
         CDPSessionEmittedEvents.Disconnected,
         this.#terminate.bind(
@@ -122,32 +126,32 @@ export class LifecycleWatcher {
           new Error('Navigation failed because browser has disconnected!')
         )
       ),
-      helper.addEventListener(
+      addEventListener(
         this.#frameManager,
         FrameManagerEmittedEvents.LifecycleEvent,
         this.#checkLifecycleComplete.bind(this)
       ),
-      helper.addEventListener(
+      addEventListener(
         this.#frameManager,
         FrameManagerEmittedEvents.FrameNavigatedWithinDocument,
         this.#navigatedWithinDocument.bind(this)
       ),
-      helper.addEventListener(
+      addEventListener(
         this.#frameManager,
         FrameManagerEmittedEvents.FrameNavigated,
         this.#navigated.bind(this)
       ),
-      helper.addEventListener(
+      addEventListener(
         this.#frameManager,
         FrameManagerEmittedEvents.FrameSwapped,
         this.#frameSwapped.bind(this)
       ),
-      helper.addEventListener(
+      addEventListener(
         this.#frameManager,
         FrameManagerEmittedEvents.FrameDetached,
         this.#onFrameDetached.bind(this)
       ),
-      helper.addEventListener(
+      addEventListener(
         this.#frameManager.networkManager(),
         NetworkManagerEmittedEvents.Request,
         this.#onRequest.bind(this)
@@ -257,7 +261,7 @@ export class LifecycleWatcher {
   }
 
   dispose(): void {
-    helper.removeEventListeners(this.#eventListeners);
+    removeEventListeners(this.#eventListeners);
     this.#maximumTimer !== undefined && clearTimeout(this.#maximumTimer);
   }
 }

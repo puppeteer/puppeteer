@@ -14,29 +14,28 @@
  * limitations under the License.
  */
 
-import { debug } from '../common/Debug.js';
-
 import * as childProcess from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
 import removeFolder from 'rimraf';
 import { promisify } from 'util';
-
 import { assert } from '../common/assert.js';
-import {
-  helper,
-  debugError,
-  PuppeteerEventListener,
-  isErrorLike,
-  isErrnoException,
-} from '../common/helper.js';
-import { LaunchOptions } from './LaunchOptions.js';
 import { Connection } from '../common/Connection.js';
-import { NodeWebSocketTransport as WebSocketTransport } from '../node/NodeWebSocketTransport.js';
-import { PipeTransport } from './PipeTransport.js';
-import { Product } from '../common/Product.js';
+import { debug } from '../common/Debug.js';
 import { TimeoutError } from '../common/Errors.js';
+import {
+  debugError,
+  addEventListener,
+  isErrnoException,
+  isErrorLike,
+  PuppeteerEventListener,
+  removeEventListeners,
+} from '../common/util.js';
+import { Product } from '../common/Product.js';
+import { NodeWebSocketTransport as WebSocketTransport } from '../node/NodeWebSocketTransport.js';
+import { LaunchOptions } from './LaunchOptions.js';
+import { PipeTransport } from './PipeTransport.js';
 
 const removeFolderAsync = promisify(removeFolder);
 const renameAsync = promisify(fs.rename);
@@ -147,23 +146,21 @@ export class BrowserRunner {
         }
       });
     });
-    this.#listeners = [
-      helper.addEventListener(process, 'exit', this.kill.bind(this)),
-    ];
+    this.#listeners = [addEventListener(process, 'exit', this.kill.bind(this))];
     if (handleSIGINT)
       this.#listeners.push(
-        helper.addEventListener(process, 'SIGINT', () => {
+        addEventListener(process, 'SIGINT', () => {
           this.kill();
           process.exit(130);
         })
       );
     if (handleSIGTERM)
       this.#listeners.push(
-        helper.addEventListener(process, 'SIGTERM', this.close.bind(this))
+        addEventListener(process, 'SIGTERM', this.close.bind(this))
       );
     if (handleSIGHUP)
       this.#listeners.push(
-        helper.addEventListener(process, 'SIGHUP', this.close.bind(this))
+        addEventListener(process, 'SIGHUP', this.close.bind(this))
       );
   }
 
@@ -180,7 +177,7 @@ export class BrowserRunner {
     }
     // Cleanup this listener last, as that makes sure the full callback runs. If we
     // perform this earlier, then the previous function calls would not happen.
-    helper.removeEventListeners(this.#listeners);
+    removeEventListeners(this.#listeners);
     return this.#processClosing;
   }
 
@@ -232,7 +229,7 @@ export class BrowserRunner {
 
     // Cleanup this listener last, as that makes sure the full callback runs. If we
     // perform this earlier, then the previous function calls would not happen.
-    helper.removeEventListeners(this.#listeners);
+    removeEventListeners(this.#listeners);
   }
 
   async setupConnection(options: {
@@ -277,12 +274,10 @@ function waitForWSEndpoint(
 
   return new Promise((resolve, reject) => {
     const listeners = [
-      helper.addEventListener(rl, 'line', onLine),
-      helper.addEventListener(rl, 'close', () => onClose()),
-      helper.addEventListener(browserProcess, 'exit', () => onClose()),
-      helper.addEventListener(browserProcess, 'error', (error) =>
-        onClose(error)
-      ),
+      addEventListener(rl, 'line', onLine),
+      addEventListener(rl, 'close', () => onClose()),
+      addEventListener(browserProcess, 'exit', () => onClose()),
+      addEventListener(browserProcess, 'error', (error) => onClose(error)),
     ];
     const timeoutId = timeout ? setTimeout(onTimeout, timeout) : 0;
 
@@ -322,7 +317,7 @@ function waitForWSEndpoint(
 
     function cleanup(): void {
       if (timeoutId) clearTimeout(timeoutId);
-      helper.removeEventListeners(listeners);
+      removeEventListeners(listeners);
     }
   });
 }
