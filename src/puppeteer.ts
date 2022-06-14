@@ -24,8 +24,11 @@ export const {
   createBrowserFetcher,
   customQueryHandlerNames,
   defaultArgs,
+  devices,
+  errors,
   executablePath,
   launch,
+  networkConditions,
   registerCustomQueryHandler,
   unregisterCustomQueryHandler,
 } = puppeteer;
