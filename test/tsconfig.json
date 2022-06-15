@@ -1,6 +1,21 @@
 {
-  "extends": "./tsconfig.test.json",
   "compilerOptions": {
-    "noEmit": true
-  }
+    "esModuleInterop": true,
+    "allowJs": true,
+    "checkJs": false,
+    "target": "esnext",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "declaration": false,
+    "declarationMap": false,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "rootDir": "src",
+    "outDir": "build"
+  },
+  "include": ["src"],
+  "references": [
+    { "path": "../src/tsconfig.cjs.json" },
+    { "path": "../utils/testserver/tsconfig.json" }
+  ]
 }
