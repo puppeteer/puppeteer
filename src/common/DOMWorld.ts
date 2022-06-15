@@ -108,8 +108,9 @@ export class DOMWorld {
     return this.#boundFunctions;
   }
 
-  static #bindingIdentifier = (name: string, contextId: number) =>
-    `${name}_${contextId}`;
+  static #bindingIdentifier = (name: string, contextId: number) => {
+    return `${name}_${contextId}`;
+  };
 
   constructor(
     client: CDPSession,
@@ -444,7 +445,9 @@ export class DOMWorld {
         script.id = id;
       }
       let error = null;
-      script.onerror = (e) => (error = e);
+      script.onerror = (e) => {
+        return (error = e);
+      };
       document.head.appendChild(script);
       if (error) {
         throw error;
@@ -843,7 +846,9 @@ export class DOMWorld {
   }
 
   async title(): Promise<string> {
-    return this.evaluate(() => document.title);
+    return this.evaluate(() => {
+      return document.title;
+    });
   }
 }
 
@@ -933,10 +938,9 @@ export class WaitTask {
       const timeoutError = new TimeoutError(
         `waiting for ${options.title} failed: timeout ${options.timeout}ms exceeded`
       );
-      this.#timeoutTimer = setTimeout(
-        () => this.terminate(timeoutError),
-        options.timeout
-      );
+      this.#timeoutTimer = setTimeout(() => {
+        return this.terminate(timeoutError);
+      }, options.timeout);
     }
     this.rerun();
   }
@@ -987,7 +991,13 @@ export class WaitTask {
     // throw an error - ignore this predicate run altogether.
     if (
       !error &&
-      (await this.#domWorld.evaluate((s) => !s, success).catch(() => true))
+      (await this.#domWorld
+        .evaluate((s) => {
+          return !s;
+        }, success)
+        .catch(() => {
+          return true;
+        }))
     ) {
       if (!success) {
         throw new Error('Assertion: result handle is not available');
@@ -1053,7 +1063,9 @@ async function waitForPredicatePageFunction(
   const predicate = new Function('...args', predicateBody);
   let timedOut = false;
   if (timeout) {
-    setTimeout(() => (timedOut = true), timeout);
+    setTimeout(() => {
+      return (timedOut = true);
+    }, timeout);
   }
   switch (polling) {
     case 'raf':
@@ -1073,7 +1085,9 @@ async function waitForPredicatePageFunction(
     }
 
     let fulfill = (_?: unknown) => {};
-    const result = new Promise((x) => (fulfill = x));
+    const result = new Promise((x) => {
+      return (fulfill = x);
+    });
     const observer = new MutationObserver(async () => {
       if (timedOut) {
         observer.disconnect();
@@ -1100,7 +1114,9 @@ async function waitForPredicatePageFunction(
 
   async function pollRaf(): Promise<unknown> {
     let fulfill = (_?: unknown): void => {};
-    const result = new Promise((x) => (fulfill = x));
+    const result = new Promise((x) => {
+      return (fulfill = x);
+    });
     await onRaf();
     return result;
 
@@ -1122,7 +1138,9 @@ async function waitForPredicatePageFunction(
 
   async function pollInterval(pollInterval: number): Promise<unknown> {
     let fulfill = (_?: unknown): void => {};
-    const result = new Promise((x) => (fulfill = x));
+    const result = new Promise((x) => {
+      return (fulfill = x);
+    });
     await onTimeout();
     return result;
 

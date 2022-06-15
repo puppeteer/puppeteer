@@ -130,7 +130,9 @@ export class Connection extends EventEmitter {
 
   async #onMessage(message: string): Promise<void> {
     if (this.#delay) {
-      await new Promise((f) => setTimeout(f, this.#delay));
+      await new Promise((f) => {
+        return setTimeout(f, this.#delay);
+      });
     }
     debugProtocolReceive(message);
     const object = JSON.parse(message);

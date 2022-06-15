@@ -78,7 +78,9 @@ function makeQueryHandler(handler: CustomQueryHandler): InternalQueryHandler {
       domWorld: DOMWorld,
       selector: string,
       options: WaitForSelectorOptions
-    ) => domWorld._waitForSelectorInPage(queryOne, selector, options);
+    ) => {
+      return domWorld._waitForSelectorInPage(queryOne, selector, options);
+    };
   }
 
   if (handler.queryAll) {
@@ -99,7 +101,9 @@ function makeQueryHandler(handler: CustomQueryHandler): InternalQueryHandler {
     internalHandler.queryAllArray = async (element, selector) => {
       const resultHandle = await element.evaluateHandle(queryAll, selector);
       const arrayHandle = await resultHandle.evaluateHandle(
-        (res: Element[] | NodeListOf<Element>) => Array.from(res)
+        (res: Element[] | NodeListOf<Element>) => {
+          return Array.from(res);
+        }
       );
       return arrayHandle;
     };
@@ -109,10 +113,12 @@ function makeQueryHandler(handler: CustomQueryHandler): InternalQueryHandler {
 }
 
 const _defaultHandler = makeQueryHandler({
-  queryOne: (element: Element | Document, selector: string) =>
-    element.querySelector(selector),
-  queryAll: (element: Element | Document, selector: string) =>
-    element.querySelectorAll(selector),
+  queryOne: (element: Element | Document, selector: string) => {
+    return element.querySelector(selector);
+  },
+  queryAll: (element: Element | Document, selector: string) => {
+    return element.querySelectorAll(selector);
+  },
 });
 
 const pierceHandler = makeQueryHandler({
@@ -205,7 +211,9 @@ export function _unregisterCustomQueryHandler(name: string): void {
  * @internal
  */
 export function _customQueryHandlerNames(): string[] {
-  return [...queryHandlers.keys()].filter((name) => !builtInHandlers.has(name));
+  return [...queryHandlers.keys()].filter((name) => {
+    return !builtInHandlers.has(name);
+  });
 }
 
 /**

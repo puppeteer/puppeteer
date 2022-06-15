@@ -35,7 +35,9 @@ import {
 
 import { Product } from '../common/Product.js';
 
-const tmpDir = () => process.env['PUPPETEER_TMP_DIR'] || os.tmpdir();
+const tmpDir = () => {
+  return process.env['PUPPETEER_TMP_DIR'] || os.tmpdir();
+};
 
 /**
  * Describes a launcher - a class that is able to create and launch a browser instance.
@@ -100,18 +102,18 @@ class ChromeLauncher implements ProductLauncher {
       chromeArguments.push(...this.defaultArgs(options));
     } else if (Array.isArray(ignoreDefaultArgs)) {
       chromeArguments.push(
-        ...this.defaultArgs(options).filter(
-          (arg) => !ignoreDefaultArgs.includes(arg)
-        )
+        ...this.defaultArgs(options).filter((arg) => {
+          return !ignoreDefaultArgs.includes(arg);
+        })
       );
     } else {
       chromeArguments.push(...args);
     }
 
     if (
-      !chromeArguments.some((argument) =>
-        argument.startsWith('--remote-debugging-')
-      )
+      !chromeArguments.some((argument) => {
+        return argument.startsWith('--remote-debugging-');
+      })
     ) {
       if (pipe) {
         assert(
@@ -202,7 +204,12 @@ class ChromeLauncher implements ProductLauncher {
 
     if (waitForInitialPage) {
       try {
-        await browser.waitForTarget((t) => t.type() === 'page', { timeout });
+        await browser.waitForTarget(
+          (t) => {
+            return t.type() === 'page';
+          },
+          { timeout }
+        );
       } catch (error) {
         await browser.close();
         throw error;
@@ -264,7 +271,11 @@ class ChromeLauncher implements ProductLauncher {
         '--mute-audio'
       );
     }
-    if (args.every((arg) => arg.startsWith('-'))) {
+    if (
+      args.every((arg) => {
+        return arg.startsWith('-');
+      })
+    ) {
       chromeArguments.push('about:blank');
     }
     chromeArguments.push(...args);
@@ -337,18 +348,18 @@ class FirefoxLauncher implements ProductLauncher {
       firefoxArguments.push(...this.defaultArgs(options));
     } else if (Array.isArray(ignoreDefaultArgs)) {
       firefoxArguments.push(
-        ...this.defaultArgs(options).filter(
-          (arg) => !ignoreDefaultArgs.includes(arg)
-        )
+        ...this.defaultArgs(options).filter((arg) => {
+          return !ignoreDefaultArgs.includes(arg);
+        })
       );
     } else {
       firefoxArguments.push(...args);
     }
 
     if (
-      !firefoxArguments.some((argument) =>
-        argument.startsWith('--remote-debugging-')
-      )
+      !firefoxArguments.some((argument) => {
+        return argument.startsWith('--remote-debugging-');
+      })
     ) {
       if (pipe) {
         assert(
@@ -438,7 +449,12 @@ class FirefoxLauncher implements ProductLauncher {
 
     if (waitForInitialPage) {
       try {
-        await browser.waitForTarget((t) => t.type() === 'page', { timeout });
+        await browser.waitForTarget(
+          (t) => {
+            return t.type() === 'page';
+          },
+          { timeout }
+        );
       } catch (error) {
         await browser.close();
         throw error;
@@ -499,7 +515,11 @@ class FirefoxLauncher implements ProductLauncher {
     if (devtools) {
       firefoxArguments.push('--devtools');
     }
-    if (args.every((arg) => arg.startsWith('-'))) {
+    if (
+      args.every((arg) => {
+        return arg.startsWith('-');
+      })
+    ) {
       firefoxArguments.push('about:blank');
     }
     firefoxArguments.push(...args);

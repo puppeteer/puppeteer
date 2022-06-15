@@ -280,7 +280,11 @@ export class Browser extends EventEmitter {
     this.#screenshotTaskQueue = new TaskQueue();
     this.#connection = connection;
     this.#closeCallback = closeCallback || function (): void {};
-    this.#targetFilterCallback = targetFilterCallback || ((): boolean => true);
+    this.#targetFilterCallback =
+      targetFilterCallback ||
+      ((): boolean => {
+        return true;
+      });
     this.#setIsPageTargetCallback(isPageTargetCallback);
 
     this.#defaultContext = new BrowserContext(this.#connection, this);
@@ -293,9 +297,9 @@ export class Browser extends EventEmitter {
     }
 
     this.#targets = new Map();
-    this.#connection.on(ConnectionEmittedEvents.Disconnected, () =>
-      this.emit(BrowserEmittedEvents.Disconnected)
-    );
+    this.#connection.on(ConnectionEmittedEvents.Disconnected, () => {
+      return this.emit(BrowserEmittedEvents.Disconnected);
+    });
     this.#connection.on('Target.targetCreated', this.#targetCreated.bind(this));
     this.#connection.on(
       'Target.targetDestroyed',
@@ -423,7 +427,9 @@ export class Browser extends EventEmitter {
     const target = new Target(
       targetInfo,
       context,
-      () => this.#connection.createSession(targetInfo),
+      () => {
+        return this.#connection.createSession(targetInfo);
+      },
       this.#ignoreHTTPSErrors,
       this.#defaultViewport ?? null,
       this.#screenshotTaskQueue,
@@ -542,18 +548,18 @@ export class Browser extends EventEmitter {
    * an array with all the targets in all browser contexts.
    */
   targets(): Target[] {
-    return Array.from(this.#targets.values()).filter(
-      (target) => target._isInitialized
-    );
+    return Array.from(this.#targets.values()).filter((target) => {
+      return target._isInitialized;
+    });
   }
 
   /**
    * The target associated with the browser.
    */
   target(): Target {
-    const browserTarget = this.targets().find(
-      (target) => target.type() === 'browser'
-    );
+    const browserTarget = this.targets().find((target) => {
+      return target.type() === 'browser';
+    });
     if (!browserTarget) {
       throw new Error('Browser target is not found');
     }
@@ -581,7 +587,9 @@ export class Browser extends EventEmitter {
     const { timeout = 30000 } = options;
     let resolve: (value: Target | PromiseLike<Target>) => void;
     let isResolved = false;
-    const targetPromise = new Promise<Target>((x) => (resolve = x));
+    const targetPromise = new Promise<Target>((x) => {
+      return (resolve = x);
+    });
     this.on(BrowserEmittedEvents.TargetCreated, check);
     this.on(BrowserEmittedEvents.TargetChanged, check);
     try {
@@ -614,10 +622,14 @@ export class Browser extends EventEmitter {
    */
   async pages(): Promise<Page[]> {
     const contextPages = await Promise.all(
-      this.browserContexts().map((context) => context.pages())
+      this.browserContexts().map((context) => {
+        return context.pages();
+      })
     );
     // Flatten array.
-    return contextPages.reduce((acc, x) => acc.concat(x), []);
+    return contextPages.reduce((acc, x) => {
+      return acc.concat(x);
+    }, []);
   }
 
   /**
@@ -750,9 +762,9 @@ export class BrowserContext extends EventEmitter {
    * An array of all active targets inside the browser context.
    */
   targets(): Target[] {
-    return this.#browser
-      .targets()
-      .filter((target) => target.browserContext() === this);
+    return this.#browser.targets().filter((target) => {
+      return target.browserContext() === this;
+    });
   }
 
   /**
@@ -776,10 +788,9 @@ export class BrowserContext extends EventEmitter {
     predicate: (x: Target) => boolean | Promise<boolean>,
     options: { timeout?: number } = {}
   ): Promise<Target> {
-    return this.#browser.waitForTarget(
-      (target) => target.browserContext() === this && predicate(target),
-      options
-    );
+    return this.#browser.waitForTarget((target) => {
+      return target.browserContext() === this && predicate(target);
+    }, options);
   }
 
   /**
@@ -792,17 +803,22 @@ export class BrowserContext extends EventEmitter {
   async pages(): Promise<Page[]> {
     const pages = await Promise.all(
       this.targets()
-        .filter(
-          (target) =>
+        .filter((target) => {
+          return (
             target.type() === 'page' ||
             (target.type() === 'other' &&
               this.#browser._getIsPageTargetCallback()?.(
                 target._getTargetInfo()
               ))
-        )
-        .map((target) => target.page())
+          );
+        })
+        .map((target) => {
+          return target.page();
+        })
     );
-    return pages.filter((page): page is Page => !!page);
+    return pages.filter((page): page is Page => {
+      return !!page;
+    });
   }
 
   /**

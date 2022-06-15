@@ -38,7 +38,9 @@ export class PipeTransport implements ConnectionTransport {
   ) {
     this.#pipeWrite = pipeWrite;
     this.#eventListeners = [
-      addEventListener(pipeRead, 'data', (buffer) => this.#dispatch(buffer)),
+      addEventListener(pipeRead, 'data', (buffer) => {
+        return this.#dispatch(buffer);
+      }),
       addEventListener(pipeRead, 'close', () => {
         if (this.onclose) {
           this.onclose.call(null);

@@ -166,9 +166,9 @@ export class FrameManager extends EventEmitter {
       this.#handleFrameTree(client, frameTree);
       await Promise.all([
         client.send('Page.setLifecycleEventsEnabled', { enabled: true }),
-        client
-          .send('Runtime.enable')
-          .then(() => this._ensureIsolatedWorld(client, UTILITY_WORLD_NAME)),
+        client.send('Runtime.enable').then(() => {
+          return this._ensureIsolatedWorld(client, UTILITY_WORLD_NAME);
+        }),
         // TODO: Network manager is not aware of OOP iframes yet.
         client === this.#client
           ? this.#networkManager.initialize()
@@ -443,16 +443,18 @@ export class FrameManager extends EventEmitter {
     // Frames might be removed before we send this.
     await Promise.all(
       this.frames()
-        .filter((frame) => frame._client() === session)
-        .map((frame) =>
-          session
+        .filter((frame) => {
+          return frame._client() === session;
+        })
+        .map((frame) => {
+          return session
             .send('Page.createIsolatedWorld', {
               frameId: frame._id,
               worldName: name,
               grantUniveralAccess: true,
             })
-            .catch(debugError)
-        )
+            .catch(debugError);
+        })
     );
   }
 
@@ -1281,9 +1283,9 @@ export class Frame {
       return this.waitForSelector(string, options);
     }
     if (isNumber(selectorOrFunctionOrTimeout)) {
-      return new Promise((fulfill) =>
-        setTimeout(fulfill, selectorOrFunctionOrTimeout)
-      );
+      return new Promise((fulfill) => {
+        return setTimeout(fulfill, selectorOrFunctionOrTimeout);
+      });
     }
     if (typeof selectorOrFunctionOrTimeout === 'function') {
       return this.waitForFunction(

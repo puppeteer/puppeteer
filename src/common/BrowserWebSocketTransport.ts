@@ -20,9 +20,9 @@ export class BrowserWebSocketTransport implements ConnectionTransport {
     return new Promise((resolve, reject) => {
       const ws = new WebSocket(url);
 
-      ws.addEventListener('open', () =>
-        resolve(new BrowserWebSocketTransport(ws))
-      );
+      ws.addEventListener('open', () => {
+        return resolve(new BrowserWebSocketTransport(ws));
+      });
       ws.addEventListener('error', reject);
     });
   }

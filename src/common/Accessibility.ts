@@ -193,9 +193,9 @@ export class Accessibility {
     const defaultRoot = AXNode.createTree(nodes);
     let needle: AXNode | null = defaultRoot;
     if (backendNodeId) {
-      needle = defaultRoot.find(
-        (node) => node.payload.backendDOMNodeId === backendNodeId
-      );
+      needle = defaultRoot.find((node) => {
+        return node.payload.backendDOMNodeId === backendNodeId;
+      });
       if (!needle) {
         return null;
       }
@@ -455,8 +455,9 @@ class AXNode {
       'roledescription',
       'valuetext',
     ];
-    const getUserStringPropertyValue = (key: UserStringProperty): string =>
-      properties.get(key) as string;
+    const getUserStringPropertyValue = (key: UserStringProperty): string => {
+      return properties.get(key) as string;
+    };
 
     for (const userStringProperty of userStringProperties) {
       if (!properties.has(userStringProperty)) {
@@ -487,8 +488,9 @@ class AXNode {
       'required',
       'selected',
     ];
-    const getBooleanPropertyValue = (key: BooleanProperty): boolean =>
-      properties.get(key) as boolean;
+    const getBooleanPropertyValue = (key: BooleanProperty): boolean => {
+      return properties.get(key) as boolean;
+    };
 
     for (const booleanProperty of booleanProperties) {
       // RootWebArea's treat focus differently than other nodes. They report whether
@@ -521,8 +523,9 @@ class AXNode {
       'valuemax',
       'valuemin',
     ];
-    const getNumericalPropertyValue = (key: NumbericalProperty): number =>
-      properties.get(key) as number;
+    const getNumericalPropertyValue = (key: NumbericalProperty): number => {
+      return properties.get(key) as number;
+    };
     for (const numericalProperty of numericalProperties) {
       if (!properties.has(numericalProperty)) {
         continue;
@@ -541,8 +544,9 @@ class AXNode {
       'invalid',
       'orientation',
     ];
-    const getTokenPropertyValue = (key: TokenProperty): string =>
-      properties.get(key) as string;
+    const getTokenPropertyValue = (key: TokenProperty): string => {
+      return properties.get(key) as string;
+    };
     for (const tokenProperty of tokenProperties) {
       const value = getTokenPropertyValue(tokenProperty);
       if (!value || value === 'false') {

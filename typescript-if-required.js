@@ -22,10 +22,15 @@ const { promisify } = require('util');
 const exec = promisify(child_process.exec);
 const fsAccess = promisify(fs.access);
 
-const fileExists = async (filePath) =>
-  fsAccess(filePath)
-    .then(() => true)
-    .catch(() => false);
+const fileExists = async (filePath) => {
+  return fsAccess(filePath)
+    .then(() => {
+      return true;
+    })
+    .catch(() => {
+      return false;
+    });
+};
 /*
 
  * Now Puppeteer is built with TypeScript, we need to ensure that

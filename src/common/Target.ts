@@ -84,9 +84,9 @@ export class Target {
     this.#defaultViewport = defaultViewport ?? undefined;
     this.#screenshotTaskQueue = screenshotTaskQueue;
     this._isPageTargetCallback = isPageTargetCallback;
-    this._initializedPromise = new Promise<boolean>(
-      (fulfill) => (this._initializedCallback = fulfill)
-    ).then(async (success) => {
+    this._initializedPromise = new Promise<boolean>((fulfill) => {
+      return (this._initializedCallback = fulfill);
+    }).then(async (success) => {
       if (!success) {
         return false;
       }
@@ -102,9 +102,9 @@ export class Target {
       openerPage.emit(PageEmittedEvents.Popup, popupPage);
       return true;
     });
-    this._isClosedPromise = new Promise<void>(
-      (fulfill) => (this._closedCallback = fulfill)
-    );
+    this._isClosedPromise = new Promise<void>((fulfill) => {
+      return (this._closedCallback = fulfill);
+    });
     this._isInitialized =
       !this._isPageTargetCallback(this.#targetInfo) ||
       this.#targetInfo.url !== '';
@@ -132,15 +132,15 @@ export class Target {
    */
   async page(): Promise<Page | null> {
     if (this._isPageTargetCallback(this.#targetInfo) && !this.#pagePromise) {
-      this.#pagePromise = this.#sessionFactory().then((client) =>
-        Page._create(
+      this.#pagePromise = this.#sessionFactory().then((client) => {
+        return Page._create(
           client,
           this,
           this.#ignoreHTTPSErrors,
           this.#defaultViewport ?? null,
           this.#screenshotTaskQueue
-        )
-      );
+        );
+      });
     }
     return (await this.#pagePromise) ?? null;
   }
@@ -157,15 +157,14 @@ export class Target {
     }
     if (!this.#workerPromise) {
       // TODO(einbinder): Make workers send their console logs.
-      this.#workerPromise = this.#sessionFactory().then(
-        (client) =>
-          new WebWorker(
-            client,
-            this.#targetInfo.url,
-            () => {} /* consoleAPICalled */,
-            () => {} /* exceptionThrown */
-          )
-      );
+      this.#workerPromise = this.#sessionFactory().then((client) => {
+        return new WebWorker(
+          client,
+          this.#targetInfo.url,
+          () => {} /* consoleAPICalled */,
+          () => {} /* exceptionThrown */
+        );
+      });
     }
     return this.#workerPromise;
   }

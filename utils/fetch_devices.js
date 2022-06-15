@@ -86,8 +86,12 @@ async function main(url) {
     return;
   }
   const devicePayloads = json.extensions
-    .filter((extension) => extension.type === 'emulated-device')
-    .map((extension) => extension.device);
+    .filter((extension) => {
+      return extension.type === 'emulated-device';
+    })
+    .map((extension) => {
+      return extension.device;
+    });
   let devices = [];
   for (const payload of devicePayloads) {
     let names = [];
@@ -112,8 +116,12 @@ async function main(url) {
       }
     }
   }
-  devices = devices.filter((device) => device.viewport.isMobile);
-  devices.sort((a, b) => a.name.localeCompare(b.name));
+  devices = devices.filter((device) => {
+    return device.viewport.isMobile;
+  });
+  devices.sort((a, b) => {
+    return a.name.localeCompare(b.name);
+  });
   // Use single-quotes instead of double-quotes to conform with codestyle.
   const serialized = JSON.stringify(devices, null, 2)
     .replace(/'/g, `\\'`)
@@ -282,8 +290,12 @@ function httpGET(url) {
   const request = driver.get(url, (response) => {
     let data = '';
     response.setEncoding('utf8');
-    response.on('data', (chunk) => (data += chunk));
-    response.on('end', () => fulfill(data));
+    response.on('data', (chunk) => {
+      return (data += chunk);
+    });
+    response.on('end', () => {
+      return fulfill(data);
+    });
     response.on('error', reject);
   });
   request.on('error', reject);

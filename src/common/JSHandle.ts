@@ -86,8 +86,15 @@ export function _createJSHandle(
   return new JSHandle(context, context._client, remoteObject);
 }
 
-const applyOffsetsToQuad = (quad: Point[], offsetX: number, offsetY: number) =>
-  quad.map((part) => ({ x: part.x + offsetX, y: part.y + offsetY }));
+const applyOffsetsToQuad = (
+  quad: Point[],
+  offsetX: number,
+  offsetY: number
+) => {
+  return quad.map((part) => {
+    return { x: part.x + offsetX, y: part.y + offsetY };
+  });
+};
 
 /**
  * Represents an in-page JavaScript object. JSHandles can be created with the
@@ -634,12 +641,18 @@ export class ElementHandle<
       layoutMetrics.cssLayoutViewport || layoutMetrics.layoutViewport;
     const { offsetX, offsetY } = await this.#getOOPIFOffsets(this.#frame);
     const quads = result.quads
-      .map((quad) => this.#fromProtocolQuad(quad))
-      .map((quad) => applyOffsetsToQuad(quad, offsetX, offsetY))
-      .map((quad) =>
-        this.#intersectQuadWithViewport(quad, clientWidth, clientHeight)
-      )
-      .filter((quad) => computeQuadArea(quad) > 1);
+      .map((quad) => {
+        return this.#fromProtocolQuad(quad);
+      })
+      .map((quad) => {
+        return applyOffsetsToQuad(quad, offsetX, offsetY);
+      })
+      .map((quad) => {
+        return this.#intersectQuadWithViewport(quad, clientWidth, clientHeight);
+      })
+      .filter((quad) => {
+        return computeQuadArea(quad) > 1;
+      });
     if (!quads.length) {
       throw new Error('Node is either not clickable or not an HTMLElement');
     }
@@ -683,9 +696,9 @@ export class ElementHandle<
     const params: Protocol.DOM.GetBoxModelRequest = {
       objectId: this._remoteObject.objectId,
     };
-    return this._client
-      .send('DOM.getBoxModel', params)
-      .catch((error) => debugError(error));
+    return this._client.send('DOM.getBoxModel', params).catch((error) => {
+      return debugError(error);
+    });
   }
 
   #fromProtocolQuad(quad: number[]): Point[] {
@@ -702,10 +715,12 @@ export class ElementHandle<
     width: number,
     height: number
   ): Point[] {
-    return quad.map((point) => ({
-      x: Math.min(Math.max(point.x, 0), width),
-      y: Math.min(Math.max(point.y, 0), height),
-    }));
+    return quad.map((point) => {
+      return {
+        x: Math.min(Math.max(point.x, 0), width),
+        y: Math.min(Math.max(point.y, 0), height),
+      };
+    });
   }
 
   /**
@@ -930,9 +945,9 @@ export class ElementHandle<
    * Calls {@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus | focus} on the element.
    */
   async focus(): Promise<void> {
-    await (this as ElementHandle<HTMLElement>).evaluate((element) =>
-      element.focus()
-    );
+    await (this as ElementHandle<HTMLElement>).evaluate((element) => {
+      return element.focus();
+    });
   }
 
   /**

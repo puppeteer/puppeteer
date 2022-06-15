@@ -33,14 +33,16 @@ async function queryAXTree(
     role,
   });
   const filteredNodes: Protocol.Accessibility.AXNode[] = nodes.filter(
-    (node: Protocol.Accessibility.AXNode) =>
-      !node.role || node.role.value !== 'StaticText'
+    (node: Protocol.Accessibility.AXNode) => {
+      return !node.role || node.role.value !== 'StaticText';
+    }
   );
   return filteredNodes;
 }
 
-const normalizeValue = (value: string): string =>
-  value.replace(/ +/g, ' ').trim();
+const normalizeValue = (value: string): string => {
+  return value.replace(/ +/g, ' ').trim();
+};
 const knownAttributes = new Set(['name', 'role']);
 const attributeRegexp =
   /\[\s*(?<attribute>\w+)\s*=\s*(?<quote>"|')(?<value>\\.|.*?(?=\k<quote>))\k<quote>\s*\]/g;
@@ -109,12 +111,13 @@ const waitFor = async (
     },
   };
   return domWorld._waitForSelectorInPage(
-    (_: Element, selector: string) =>
-      (
+    (_: Element, selector: string) => {
+      return (
         globalThis as any as unknown as {
           ariaQuerySelector(selector: string): void;
         }
-      ).ariaQuerySelector(selector),
+      ).ariaQuerySelector(selector);
+    },
     selector,
     options,
     binding
@@ -129,7 +132,9 @@ const queryAll = async (
   const { name, role } = parseAriaSelector(selector);
   const res = await queryAXTree(exeCtx._client, element, name, role);
   return Promise.all(
-    res.map((axNode) => exeCtx._adoptBackendNodeId(axNode.backendDOMNodeId))
+    res.map((axNode) => {
+      return exeCtx._adoptBackendNodeId(axNode.backendDOMNodeId);
+    })
   );
 };
 
@@ -139,10 +144,9 @@ const queryAllArray = async (
 ): Promise<JSHandle> => {
   const elementHandles = await queryAll(element, selector);
   const exeCtx = element.executionContext();
-  const jsHandle = exeCtx.evaluateHandle(
-    (...elements) => elements,
-    ...elementHandles
-  );
+  const jsHandle = exeCtx.evaluateHandle((...elements) => {
+    return elements;
+  }, ...elementHandles);
   return jsHandle;
 };
 

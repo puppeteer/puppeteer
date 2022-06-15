@@ -143,7 +143,9 @@ const chmodAsync = promisify(fs.chmod.bind(fs));
 
 function existsAsync(filePath: string): Promise<boolean> {
   return new Promise((resolve) => {
-    fs.access(filePath, (err) => resolve(!err));
+    fs.access(filePath, (err) => {
+      return resolve(!err);
+    });
   });
 }
 
@@ -365,14 +367,19 @@ export class BrowserFetcher {
     }
     const fileNames = await readdirAsync(this.#downloadsFolder);
     return fileNames
-      .map((fileName) => parseFolderPath(this.#product, fileName))
+      .map((fileName) => {
+        return parseFolderPath(this.#product, fileName);
+      })
       .filter(
         (
           entry
-        ): entry is { product: string; platform: string; revision: string } =>
-          (entry && entry.platform === this.#platform) ?? false
+        ): entry is { product: string; platform: string; revision: string } => {
+          return (entry && entry.platform === this.#platform) ?? false;
+        }
       )
-      .map((entry) => entry.revision);
+      .map((entry) => {
+        return entry.revision;
+      });
   }
 
   /**
@@ -388,7 +395,9 @@ export class BrowserFetcher {
       await existsAsync(folderPath),
       `Failed to remove: revision ${revision} is not downloaded`
     );
-    await new Promise((fulfill) => removeRecursive(folderPath, fulfill));
+    await new Promise((fulfill) => {
+      return removeRecursive(folderPath, fulfill);
+    });
   }
 
   /**
@@ -518,15 +527,21 @@ function _downloadFile(
       return;
     }
     const file = fs.createWriteStream(destinationPath);
-    file.on('finish', () => fulfill());
-    file.on('error', (error) => reject(error));
+    file.on('finish', () => {
+      return fulfill();
+    });
+    file.on('error', (error) => {
+      return reject(error);
+    });
     response.pipe(file);
     totalBytes = parseInt(response.headers['content-length']!, 10);
     if (progressCallback) {
       response.on('data', onData);
     }
   });
-  request.on('error', (error) => reject(error));
+  request.on('error', (error) => {
+    return reject(error);
+  });
   return promise;
 
   function onData(chunk: string): void {
@@ -542,9 +557,9 @@ function install(archivePath: string, folderPath: string): Promise<unknown> {
   } else if (archivePath.endsWith('.tar.bz2')) {
     return _extractTar(archivePath, folderPath);
   } else if (archivePath.endsWith('.dmg')) {
-    return mkdirAsync(folderPath).then(() =>
-      _installDMG(archivePath, folderPath)
-    );
+    return mkdirAsync(folderPath).then(() => {
+      return _installDMG(archivePath, folderPath);
+    });
   } else {
     throw new Error(`Unsupported archive format: ${archivePath}`);
   }
@@ -582,9 +597,9 @@ function _installDMG(dmgPath: string, folderPath: string): Promise<void> {
       mountPath = volumes[0]!;
       readdirAsync(mountPath)
         .then((fileNames) => {
-          const appName = fileNames.find(
-            (item) => typeof item === 'string' && item.endsWith('.app')
-          );
+          const appName = fileNames.find((item) => {
+            return typeof item === 'string' && item.endsWith('.app');
+          });
           if (!appName) {
             return reject(new Error(`Cannot find app in ${mountPath}`));
           }

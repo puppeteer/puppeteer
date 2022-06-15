@@ -155,7 +155,9 @@ async function checkOmahaProxyAvailability() {
         'https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/LAST_CHANGE'
       ),
     ])
-  ).map((s) => parseInt(s, 10));
+  ).map((s) => {
+    return parseInt(s, 10);
+  });
   const from = Math.max(...latestRevisions);
   await checkRangeAvailability({
     fromRevision: from,
@@ -183,7 +185,9 @@ async function printLatestRevisionForPlatform(platform) {
         'https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/LAST_CHANGE'
       ),
     ])
-  ).map((s) => parseInt(s, 10));
+  ).map((s) => {
+    return parseInt(s, 10);
+  });
   const from = Math.max(...latestRevisions);
   await checkRangeAvailability({
     fromRevision: from,
@@ -233,13 +237,18 @@ async function checkRangeAvailability({
   platforms = platforms || SUPPORTED_PLATFORMS;
   let table;
   if (printAsTable) {
-    table = new Table([10, ...platforms.map(() => 7)]);
+    table = new Table([
+      10,
+      ...platforms.map(() => {
+        return 7;
+      }),
+    ]);
     table.drawRow([''].concat(platforms));
   }
 
-  const fetchers = platforms.map(
-    (platform) => new BrowserFetcher('', { platform })
-  );
+  const fetchers = platforms.map((platform) => {
+    return new BrowserFetcher('', { platform });
+  });
 
   const inc = fromRevision < toRevision ? 1 : -1;
   const revisionToStop = toRevision + inc; // +inc so the range is fully inclusive
@@ -248,9 +257,13 @@ async function checkRangeAvailability({
     revision !== revisionToStop;
     revision += inc
   ) {
-    const promises = fetchers.map((fetcher) => fetcher.canDownload(revision));
+    const promises = fetchers.map((fetcher) => {
+      return fetcher.canDownload(revision);
+    });
     const availability = await Promise.all(promises);
-    const allAvailable = availability.every((e) => !!e);
+    const allAvailable = availability.every((e) => {
+      return !!e;
+    });
     if (table) {
       const values = [
         ' ' +
@@ -279,7 +292,9 @@ async function checkRangeAvailability({
  */
 function fetch(url) {
   let resolve;
-  const promise = new Promise((x) => (resolve = x));
+  const promise = new Promise((x) => {
+    return (resolve = x);
+  });
   https
     .get(url, (response) => {
       if (response.statusCode !== 200) {

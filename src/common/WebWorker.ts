@@ -79,31 +79,32 @@ export class WebWorker extends EventEmitter {
     super();
     this.#client = client;
     this.#url = url;
-    this.#executionContextPromise = new Promise<ExecutionContext>(
-      (x) => (this.#executionContextCallback = x)
-    );
+    this.#executionContextPromise = new Promise<ExecutionContext>((x) => {
+      return (this.#executionContextCallback = x);
+    });
 
     let jsHandleFactory: JSHandleFactory;
     this.#client.once('Runtime.executionContextCreated', async (event) => {
       // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-      jsHandleFactory = (remoteObject) =>
-        new JSHandle(executionContext, client, remoteObject);
+      jsHandleFactory = (remoteObject) => {
+        return new JSHandle(executionContext, client, remoteObject);
+      };
       const executionContext = new ExecutionContext(client, event.context);
       this.#executionContextCallback(executionContext);
     });
 
     // This might fail if the target is closed before we receive all execution contexts.
     this.#client.send('Runtime.enable').catch(debugError);
-    this.#client.on('Runtime.consoleAPICalled', (event) =>
-      consoleAPICalled(
+    this.#client.on('Runtime.consoleAPICalled', (event) => {
+      return consoleAPICalled(
         event.type,
         event.args.map(jsHandleFactory),
         event.stackTrace
-      )
-    );
-    this.#client.on('Runtime.exceptionThrown', (exception) =>
-      exceptionThrown(exception.exceptionDetails)
-    );
+      );
+    });
+    this.#client.on('Runtime.exceptionThrown', (exception) => {
+      return exceptionThrown(exception.exceptionDetails);
+    });
   }
 
   /**

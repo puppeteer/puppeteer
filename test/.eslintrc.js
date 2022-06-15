@@ -1,6 +1,5 @@
 module.exports = {
   rules: {
-    'arrow-body-style': ['error', 'always'],
     'no-restricted-imports': [
       'error',
       {

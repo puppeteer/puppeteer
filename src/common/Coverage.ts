@@ -480,5 +480,7 @@ function convertToDisjointRanges(
     }
   }
   // Filter out empty ranges.
-  return results.filter((range) => range.end - range.start > 1);
+  return results.filter((range) => {
+    return range.end - range.start > 1;
+  });
 }

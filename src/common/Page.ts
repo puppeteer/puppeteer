@@ -554,49 +554,67 @@ export class Page extends EventEmitter {
       this.emit(PageEmittedEvents.WorkerDestroyed, worker);
     });
 
-    this.#frameManager.on(FrameManagerEmittedEvents.FrameAttached, (event) =>
-      this.emit(PageEmittedEvents.FrameAttached, event)
-    );
-    this.#frameManager.on(FrameManagerEmittedEvents.FrameDetached, (event) =>
-      this.emit(PageEmittedEvents.FrameDetached, event)
-    );
-    this.#frameManager.on(FrameManagerEmittedEvents.FrameNavigated, (event) =>
-      this.emit(PageEmittedEvents.FrameNavigated, event)
-    );
+    this.#frameManager.on(FrameManagerEmittedEvents.FrameAttached, (event) => {
+      return this.emit(PageEmittedEvents.FrameAttached, event);
+    });
+    this.#frameManager.on(FrameManagerEmittedEvents.FrameDetached, (event) => {
+      return this.emit(PageEmittedEvents.FrameDetached, event);
+    });
+    this.#frameManager.on(FrameManagerEmittedEvents.FrameNavigated, (event) => {
+      return this.emit(PageEmittedEvents.FrameNavigated, event);
+    });
 
     const networkManager = this.#frameManager.networkManager();
-    networkManager.on(NetworkManagerEmittedEvents.Request, (event) =>
-      this.emit(PageEmittedEvents.Request, event)
-    );
+    networkManager.on(NetworkManagerEmittedEvents.Request, (event) => {
+      return this.emit(PageEmittedEvents.Request, event);
+    });
     networkManager.on(
       NetworkManagerEmittedEvents.RequestServedFromCache,
-      (event) => this.emit(PageEmittedEvents.RequestServedFromCache, event)
+      (event) => {
+        return this.emit(PageEmittedEvents.RequestServedFromCache, event);
+      }
     );
-    networkManager.on(NetworkManagerEmittedEvents.Response, (event) =>
-      this.emit(PageEmittedEvents.Response, event)
-    );
-    networkManager.on(NetworkManagerEmittedEvents.RequestFailed, (event) =>
-      this.emit(PageEmittedEvents.RequestFailed, event)
-    );
-    networkManager.on(NetworkManagerEmittedEvents.RequestFinished, (event) =>
-      this.emit(PageEmittedEvents.RequestFinished, event)
-    );
+    networkManager.on(NetworkManagerEmittedEvents.Response, (event) => {
+      return this.emit(PageEmittedEvents.Response, event);
+    });
+    networkManager.on(NetworkManagerEmittedEvents.RequestFailed, (event) => {
+      return this.emit(PageEmittedEvents.RequestFailed, event);
+    });
+    networkManager.on(NetworkManagerEmittedEvents.RequestFinished, (event) => {
+      return this.emit(PageEmittedEvents.RequestFinished, event);
+    });
     this.#fileChooserInterceptors = new Set();
 
-    client.on('Page.domContentEventFired', () =>
-      this.emit(PageEmittedEvents.DOMContentLoaded)
-    );
-    client.on('Page.loadEventFired', () => this.emit(PageEmittedEvents.Load));
-    client.on('Runtime.consoleAPICalled', (event) => this.#onConsoleAPI(event));
-    client.on('Runtime.bindingCalled', (event) => this.#onBindingCalled(event));
-    client.on('Page.javascriptDialogOpening', (event) => this.#onDialog(event));
-    client.on('Runtime.exceptionThrown', (exception) =>
-      this.#handleException(exception.exceptionDetails)
-    );
-    client.on('Inspector.targetCrashed', () => this.#onTargetCrashed());
-    client.on('Performance.metrics', (event) => this.#emitMetrics(event));
-    client.on('Log.entryAdded', (event) => this.#onLogEntryAdded(event));
-    client.on('Page.fileChooserOpened', (event) => this.#onFileChooser(event));
+    client.on('Page.domContentEventFired', () => {
+      return this.emit(PageEmittedEvents.DOMContentLoaded);
+    });
+    client.on('Page.loadEventFired', () => {
+      return this.emit(PageEmittedEvents.Load);
+    });
+    client.on('Runtime.consoleAPICalled', (event) => {
+      return this.#onConsoleAPI(event);
+    });
+    client.on('Runtime.bindingCalled', (event) => {
+      return this.#onBindingCalled(event);
+    });
+    client.on('Page.javascriptDialogOpening', (event) => {
+      return this.#onDialog(event);
+    });
+    client.on('Runtime.exceptionThrown', (exception) => {
+      return this.#handleException(exception.exceptionDetails);
+    });
+    client.on('Inspector.targetCrashed', () => {
+      return this.#onTargetCrashed();
+    });
+    client.on('Performance.metrics', (event) => {
+      return this.#emitMetrics(event);
+    });
+    client.on('Log.entryAdded', (event) => {
+      return this.#onLogEntryAdded(event);
+    });
+    client.on('Page.fileChooserOpened', (event) => {
+      return this.#onFileChooser(event);
+    });
     this.#target._isClosedPromise.then(() => {
       this.emit(PageEmittedEvents.Close);
       this.#closed = true;
@@ -662,9 +680,9 @@ export class Page extends EventEmitter {
       const wrap =
         this.#handlerMap.get(handler) ||
         ((event: HTTPRequest) => {
-          event.enqueueInterceptAction(() =>
-            handler(event as PageEventObject[K])
-          );
+          event.enqueueInterceptAction(() => {
+            return handler(event as PageEventObject[K]);
+          });
         });
 
       this.#handlerMap.set(handler, wrap);
@@ -727,7 +745,9 @@ export class Page extends EventEmitter {
 
     const { timeout = this.#timeoutSettings.timeout() } = options;
     let callback!: (value: FileChooser | PromiseLike<FileChooser>) => void;
-    const promise = new Promise<FileChooser>((x) => (callback = x));
+    const promise = new Promise<FileChooser>((x) => {
+      return (callback = x);
+    });
     this.#fileChooserInterceptors.add(callback);
     return waitWithTimeout<FileChooser>(
       promise,
@@ -808,7 +828,9 @@ export class Page extends EventEmitter {
   #onLogEntryAdded(event: Protocol.Log.EntryAddedEvent): void {
     const { level, text, args, source, url, lineNumber } = event.entry;
     if (args) {
-      args.map((arg) => releaseObject(this.#client, arg));
+      args.map((arg) => {
+        return releaseObject(this.#client, arg);
+      });
     }
     if (source !== 'worker') {
       this.emit(
@@ -1455,7 +1477,9 @@ export class Page extends EventEmitter {
       source: expression,
     });
     await Promise.all(
-      this.frames().map((frame) => frame.evaluate(expression).catch(debugError))
+      this.frames().map((frame) => {
+        return frame.evaluate(expression).catch(debugError);
+      })
     );
   }
 
@@ -1585,7 +1609,9 @@ export class Page extends EventEmitter {
       event.executionContextId,
       this.#client
     );
-    const values = event.args.map((arg) => _createJSHandle(context, arg));
+    const values = event.args.map((arg) => {
+      return _createJSHandle(context, arg);
+    });
     this.#addConsoleMessage(event.type, values, event.stackTrace);
   }
 
@@ -1636,7 +1662,9 @@ export class Page extends EventEmitter {
     stackTrace?: Protocol.Runtime.StackTrace
   ): void {
     if (!this.listenerCount(PageEmittedEvents.Console)) {
-      args.forEach((arg) => arg.dispose());
+      args.forEach((arg) => {
+        return arg.dispose();
+      });
       return;
     }
     const textTokens = [];
@@ -1882,11 +1910,11 @@ export class Page extends EventEmitter {
 
   #sessionClosePromise(): Promise<Error> {
     if (!this.#disconnectPromise) {
-      this.#disconnectPromise = new Promise((fulfill) =>
-        this.#client.once(CDPSessionEmittedEvents.Disconnected, () =>
-          fulfill(new Error('Target closed'))
-        )
-      );
+      this.#disconnectPromise = new Promise((fulfill) => {
+        return this.#client.once(CDPSessionEmittedEvents.Disconnected, () => {
+          return fulfill(new Error('Target closed'));
+        });
+      });
     }
     return this.#disconnectPromise;
   }
@@ -2010,7 +2038,9 @@ export class Page extends EventEmitter {
     });
 
     let idleTimer: NodeJS.Timeout;
-    const onIdle = () => idleResolveCallback();
+    const onIdle = () => {
+      return idleResolveCallback();
+    };
 
     const cleanup = () => {
       idleTimer && clearTimeout(idleTimer);
@@ -2031,8 +2061,15 @@ export class Page extends EventEmitter {
       return false;
     };
 
-    const listenToEvent = (event: symbol) =>
-      waitForEvent(networkManager, event, eventHandler, timeout, abortPromise);
+    const listenToEvent = (event: symbol) => {
+      return waitForEvent(
+        networkManager,
+        event,
+        eventHandler,
+        timeout,
+        abortPromise
+      );
+    };
 
     const eventPromises = [
       listenToEvent(NetworkManagerEmittedEvents.Request),
@@ -2080,8 +2117,9 @@ export class Page extends EventEmitter {
 
     let predicate: (frame: Frame) => Promise<boolean>;
     if (isString(urlOrPredicate)) {
-      predicate = (frame: Frame) =>
-        Promise.resolve(urlOrPredicate === frame.url());
+      predicate = (frame: Frame) => {
+        return Promise.resolve(urlOrPredicate === frame.url());
+      };
     } else {
       predicate = (frame: Frame) => {
         const value = urlOrPredicate(frame);
@@ -2799,9 +2837,9 @@ export class Page extends EventEmitter {
         'Expected options.clip.height not to be 0.'
       );
     }
-    return this.#screenshotTaskQueue.postTask(() =>
-      this.#screenshotTask(screenshotType, options)
-    );
+    return this.#screenshotTaskQueue.postTask(() => {
+      return this.#screenshotTask(screenshotType, options);
+    });
   }
 
   async #screenshotTask(
