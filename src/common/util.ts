@@ -212,9 +212,9 @@ export function pageBindingInitString(type: string, name: string): string {
       }
       const seq = (me.lastSeq || 0) + 1;
       me.lastSeq = seq;
-      const promise = new Promise((resolve, reject) =>
-        callbacks.set(seq, { resolve, reject })
-      );
+      const promise = new Promise((resolve, reject) => {
+        return callbacks.set(seq, { resolve, reject });
+      });
       binding(JSON.stringify({ type, name: bindingName, seq, args }));
       return promise;
     };
@@ -318,10 +318,14 @@ export async function waitWithTimeout<T>(
   const timeoutError = new TimeoutError(
     `waiting for ${taskName} failed: timeout ${timeout}ms exceeded`
   );
-  const timeoutPromise = new Promise<T>((_res, rej) => (reject = rej));
+  const timeoutPromise = new Promise<T>((_res, rej) => {
+    return (reject = rej);
+  });
   let timeoutTimer = null;
   if (timeout) {
-    timeoutTimer = setTimeout(() => reject(timeoutError), timeout);
+    timeoutTimer = setTimeout(() => {
+      return reject(timeoutError);
+    }, timeout);
   }
   try {
     return await Promise.race([promise, timeoutPromise]);

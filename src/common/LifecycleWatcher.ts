@@ -214,9 +214,9 @@ export class LifecycleWatcher {
     }
     const errorMessage =
       'Navigation timeout of ' + this.#timeout + ' ms exceeded';
-    await new Promise(
-      (fulfill) => (this.#maximumTimer = setTimeout(fulfill, this.#timeout))
-    );
+    await new Promise((fulfill) => {
+      return (this.#maximumTimer = setTimeout(fulfill, this.#timeout));
+    });
     return new TimeoutError(errorMessage);
   }
 

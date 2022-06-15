@@ -43,9 +43,9 @@ export class NodeWebSocketTransport implements ConnectionTransport {
         },
       });
 
-      ws.addEventListener('open', () =>
-        resolve(new NodeWebSocketTransport(ws))
-      );
+      ws.addEventListener('open', () => {
+        return resolve(new NodeWebSocketTransport(ws));
+      });
       ws.addEventListener('error', reject);
     });
   }

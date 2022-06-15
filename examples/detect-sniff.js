@@ -38,7 +38,12 @@ function sniffDetector() {
   const page = await browser.newPage();
   await page.evaluateOnNewDocument(sniffDetector);
   await page.goto('https://www.google.com', { waitUntil: 'networkidle2' });
-  console.log('Sniffed: ' + (await page.evaluate(() => !!navigator.sniffed)));
+  console.log(
+    'Sniffed: ' +
+      (await page.evaluate(() => {
+        return !!navigator.sniffed;
+      }))
+  );
 
   await browser.close();
 })();

@@ -119,7 +119,9 @@ export async function _connectToBrowser(
     ignoreHTTPSErrors,
     defaultViewport,
     undefined,
-    () => connection.send('Browser.close').catch(debugError),
+    () => {
+      return connection.send('Browser.close').catch(debugError);
+    },
     targetFilter,
     isPageTarget
   );

@@ -23,7 +23,9 @@ async function attachFrame(frameId, url) {
   frame.src = url;
   frame.id = frameId;
   document.body.appendChild(frame);
-  await new Promise((x) => (frame.onload = x));
+  await new Promise((x) => {
+    return (frame.onload = x);
+  });
   return frame;
 }
 

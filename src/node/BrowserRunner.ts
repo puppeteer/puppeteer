@@ -286,9 +286,15 @@ function waitForWSEndpoint(
   return new Promise((resolve, reject) => {
     const listeners = [
       addEventListener(rl, 'line', onLine),
-      addEventListener(rl, 'close', () => onClose()),
-      addEventListener(browserProcess, 'exit', () => onClose()),
-      addEventListener(browserProcess, 'error', (error) => onClose(error)),
+      addEventListener(rl, 'close', () => {
+        return onClose();
+      }),
+      addEventListener(browserProcess, 'exit', () => {
+        return onClose();
+      }),
+      addEventListener(browserProcess, 'error', (error) => {
+        return onClose(error);
+      }),
     ];
     const timeoutId = timeout ? setTimeout(onTimeout, timeout) : 0;
 

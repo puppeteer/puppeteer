@@ -277,7 +277,9 @@ export class Keyboard {
         await this.press(char, { delay });
       } else {
         if (delay) {
-          await new Promise((f) => setTimeout(f, delay));
+          await new Promise((f) => {
+            return setTimeout(f, delay);
+          });
         }
         await this.sendCharacter(char);
       }
@@ -311,7 +313,9 @@ export class Keyboard {
     const { delay = null } = options;
     await this.down(key, options);
     if (delay) {
-      await new Promise((f) => setTimeout(f, options.delay));
+      await new Promise((f) => {
+        return setTimeout(f, options.delay);
+      });
     }
     await this.up(key);
   }
@@ -453,7 +457,9 @@ export class Mouse {
     if (delay !== null) {
       await this.move(x, y);
       await this.down(options);
-      await new Promise((f) => setTimeout(f, delay));
+      await new Promise((f) => {
+        return setTimeout(f, delay);
+      });
       await this.up(options);
     } else {
       await this.move(x, y);
@@ -535,9 +541,9 @@ export class Mouse {
    */
   async drag(start: Point, target: Point): Promise<Protocol.Input.DragData> {
     const promise = new Promise<Protocol.Input.DragData>((resolve) => {
-      this.#client.once('Input.dragIntercepted', (event) =>
-        resolve(event.data)
-      );
+      this.#client.once('Input.dragIntercepted', (event) => {
+        return resolve(event.data);
+      });
     });
     await this.move(start.x, start.y);
     await this.down();
@@ -608,7 +614,9 @@ export class Mouse {
     await this.dragEnter(target, data);
     await this.dragOver(target, data);
     if (delay) {
-      await new Promise((resolve) => setTimeout(resolve, delay));
+      await new Promise((resolve) => {
+        return setTimeout(resolve, delay);
+      });
     }
     await this.drop(target, data);
     await this.up();

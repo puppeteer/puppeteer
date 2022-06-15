@@ -269,10 +269,9 @@ export class HTTPRequest {
    * the request interception.
    */
   async finalizeInterceptions(): Promise<void> {
-    await this.#interceptHandlers.reduce(
-      (promiseChain, interceptAction) => promiseChain.then(interceptAction),
-      Promise.resolve()
-    );
+    await this.#interceptHandlers.reduce((promiseChain, interceptAction) => {
+      return promiseChain.then(interceptAction);
+    }, Promise.resolve());
     const { action } = this.interceptResolutionState();
     switch (action) {
       case 'abort':
@@ -576,7 +575,9 @@ export class HTTPRequest {
         const value = response.headers[header];
 
         responseHeaders[header.toLowerCase()] = Array.isArray(value)
-          ? value.map((item) => String(item))
+          ? value.map((item) => {
+              return String(item);
+            })
           : String(value);
       }
     }
@@ -738,7 +739,11 @@ function headersArray(
     if (!Object.is(value, undefined)) {
       const values = Array.isArray(value) ? value : [value];
 
-      result.push(...values.map((value) => ({ name, value: value + '' })));
+      result.push(
+        ...values.map((value) => {
+          return { name, value: value + '' };
+        })
+      );
     }
   }
   return result;

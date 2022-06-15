@@ -67,7 +67,9 @@ export class TestServer {
 
   static async create(dirPath: string, port: number): Promise<TestServer> {
     const server = new TestServer(dirPath, port);
-    await new Promise((x) => server.#server.once('listening', x));
+    await new Promise((x) => {
+      return server.#server.once('listening', x);
+    });
     return server;
   }
 
@@ -77,7 +79,9 @@ export class TestServer {
       cert: readFileSync(join(__dirname, '..', 'cert.pem')),
       passphrase: 'aaaa',
     });
-    await new Promise((x) => server.#server.once('listening', x));
+    await new Promise((x) => {
+      return server.#server.once('listening', x);
+    });
     return server;
   }
 
@@ -104,7 +108,9 @@ export class TestServer {
         throw error;
       }
     });
-    connection.once('close', () => this.#connections.delete(connection));
+    connection.once('close', () => {
+      return this.#connections.delete(connection);
+    });
   };
 
   enableHTTPCache(pathPrefix: string): void {
@@ -129,7 +135,9 @@ export class TestServer {
       socket.destroy();
     }
     this.#connections.clear();
-    await new Promise((x) => this.#server.close(x));
+    await new Promise((x) => {
+      return this.#server.close(x);
+    });
   }
 
   setRoute(
@@ -186,8 +194,12 @@ export class TestServer {
     });
     request.postBody = new Promise((resolve) => {
       let body = '';
-      request.on('data', (chunk: string) => (body += chunk));
-      request.on('end', () => resolve(body));
+      request.on('data', (chunk: string) => {
+        return (body += chunk);
+      });
+      request.on('end', () => {
+        return resolve(body);
+      });
     });
     assert(request.url);
     const url = new URL(request.url, `https://${request.headers.host}`);

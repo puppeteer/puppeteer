@@ -168,8 +168,12 @@ function runScript(scriptPath, revisionInfo) {
     },
   });
   return new Promise((resolve, reject) => {
-    child.on('error', (err) => reject(err));
-    child.on('exit', (code) => resolve(code));
+    child.on('error', (err) => {
+      return reject(err);
+    });
+    child.on('exit', (code) => {
+      return resolve(code);
+    });
   });
 }
 
@@ -185,8 +189,12 @@ function runUnitTest(pattern, revisionInfo) {
     },
   });
   return new Promise((resolve, reject) => {
-    child.on('error', (err) => reject(err));
-    child.on('exit', (code) => resolve(code));
+    child.on('error', (err) => {
+      return reject(err);
+    });
+    child.on('exit', (code) => {
+      return resolve(code);
+    });
   });
 }
 
@@ -274,10 +282,16 @@ function fetchJSON(url) {
     const req = agent.request(options, function (res) {
       let result = '';
       res.setEncoding('utf8');
-      res.on('data', (chunk) => (result += chunk));
-      res.on('end', () => resolve(JSON.parse(result)));
+      res.on('data', (chunk) => {
+        return (result += chunk);
+      });
+      res.on('end', () => {
+        return resolve(JSON.parse(result));
+      });
     });
-    req.on('error', (err) => reject(err));
+    req.on('error', (err) => {
+      return reject(err);
+    });
     req.end();
   });
 }

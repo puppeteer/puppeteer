@@ -171,9 +171,9 @@ function testProject(folder: string) {
   const result = compileAndCatchErrors(projectLocation);
   const expectedErrors = EXPECTED_ERRORS.get(folder) || [];
   if (
-    result.tsErrorMesssage.find(
-      (line) => line.includes('good.ts') || line.includes('good.js')
-    )
+    result.tsErrorMesssage.find((line) => {
+      return line.includes('good.ts') || line.includes('good.js');
+    })
   ) {
     console.error(
       `Error for ${projectLocation} contained unexpected failures in good.ts/good.js:\n${result.tsErrorMesssage.join(
@@ -182,9 +182,9 @@ function testProject(folder: string) {
     );
     process.exit(1);
   }
-  const errorsInTsMessage = result.tsErrorMesssage.filter(
-    (line) => line.includes('bad.ts') || line.includes('bad.js')
-  );
+  const errorsInTsMessage = result.tsErrorMesssage.filter((line) => {
+    return line.includes('bad.ts') || line.includes('bad.js');
+  });
   const expectedErrorsThatHaveOccurred = new Set<string>();
   const unexpectedErrors = errorsInTsMessage.filter((message) => {
     const isExpected = expectedErrors.some((expectedError) => {

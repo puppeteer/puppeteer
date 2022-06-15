@@ -111,12 +111,12 @@ export async function downloadBrowser(): Promise<void> {
       logPolitely(
         `${supportedProducts[product]} (${revisionInfo.revision}) downloaded to ${revisionInfo.folderPath}`
       );
-      localRevisions = localRevisions.filter(
-        (revision) => revision !== revisionInfo.revision
-      );
-      const cleanupOldVersions = localRevisions.map((revision) =>
-        browserFetcher.remove(revision)
-      );
+      localRevisions = localRevisions.filter((revision) => {
+        return revision !== revisionInfo.revision;
+      });
+      const cleanupOldVersions = localRevisions.map((revision) => {
+        return browserFetcher.remove(revision);
+      });
       Promise.all([...cleanupOldVersions]);
     }
 
@@ -151,7 +151,9 @@ export async function downloadBrowser(): Promise<void> {
 
     return browserFetcher
       .download(revisionInfo.revision, onProgress)
-      .then(() => browserFetcher.localRevisions())
+      .then(() => {
+        return browserFetcher.localRevisions();
+      })
       .then(onSuccess)
       .catch(onError);
   }

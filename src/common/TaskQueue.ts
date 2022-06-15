@@ -24,8 +24,12 @@ export class TaskQueue {
   postTask<T>(task: () => Promise<T>): Promise<T> {
     const result = this.#chain.then(task);
     this.#chain = result.then(
-      () => undefined,
-      () => undefined
+      () => {
+        return undefined;
+      },
+      () => {
+        return undefined;
+      }
     );
     return result;
   }

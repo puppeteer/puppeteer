@@ -23,6 +23,8 @@ module.exports = {
   rules: {
     // Brackets keep code readable.
     curly: [2, 'all'],
+    // Brackets keep code readable and `return` intentions clear.
+    'arrow-body-style': ['error', 'always'],
     // Error if files are not formatted with Prettier correctly.
     'prettier/prettier': 2,
     // syntax preferences
@@ -134,6 +136,8 @@ module.exports = {
       rules: {
         // Brackets keep code readable.
         curly: [2, 'all'],
+        // Brackets keep code readable and `return` intentions clear.
+        'arrow-body-style': ['error', 'always'],
         // Error if comments do not adhere to `tsdoc`.
         'tsdoc/syntax': 2,
         'no-unused-vars': 0,

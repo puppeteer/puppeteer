@@ -94,9 +94,15 @@ export class Tracing {
     }
 
     const excludedCategories = categories
-      .filter((cat) => cat.startsWith('-'))
-      .map((cat) => cat.slice(1));
-    const includedCategories = categories.filter((cat) => !cat.startsWith('-'));
+      .filter((cat) => {
+        return cat.startsWith('-');
+      })
+      .map((cat) => {
+        return cat.slice(1);
+      });
+    const includedCategories = categories.filter((cat) => {
+      return !cat.startsWith('-');
+    });
 
     this.#path = path;
     this.#recording = true;
