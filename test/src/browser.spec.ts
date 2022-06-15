@@ -15,7 +15,7 @@
  */
 
 import expect from 'expect';
-import { getTestState, setupTestBrowserHooks } from './mocha-utils'; // eslint-disable-line import/extensions
+import { getTestState, setupTestBrowserHooks } from './mocha-utils.js';
 
 describe('Browser specs', function () {
   setupTestBrowserHooks();
@@ -60,7 +60,7 @@ describe('Browser specs', function () {
       const { browser } = getTestState();
 
       const process = await browser.process();
-      expect(process.pid).toBeGreaterThan(0);
+      expect(process!.pid).toBeGreaterThan(0);
     });
     it('should not return child_process for remote browser', async () => {
       const { browser, puppeteer } = getTestState();

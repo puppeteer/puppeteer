@@ -1527,6 +1527,7 @@ const devices: Device[] = [
     },
   },
 ];
+
 /**
  * @public
  */

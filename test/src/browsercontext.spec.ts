@@ -19,7 +19,7 @@ import {
   getTestState,
   setupTestBrowserHooks,
   itFailsFirefox,
-} from './mocha-utils'; // eslint-disable-line import/extensions
+} from './mocha-utils.js';
 import utils from './utils.js';
 
 describe('BrowserContext', function () {
@@ -27,10 +27,12 @@ describe('BrowserContext', function () {
   it('should have default context', async () => {
     const { browser } = getTestState();
     expect(browser.browserContexts().length).toEqual(1);
-    const defaultContext = browser.browserContexts()[0];
-    expect(defaultContext.isIncognito()).toBe(false);
-    let error = null;
-    await defaultContext.close().catch((error_) => (error = error_));
+    const defaultContext = browser.browserContexts()[0]!;
+    expect(defaultContext!.isIncognito()).toBe(false);
+    let error!: Error;
+    await defaultContext!.close().catch((error_) => {
+      return (error = error_);
+    });
     expect(browser.defaultBrowserContext()).toBe(defaultContext);
     expect(error.message).toContain('cannot be closed');
   });
@@ -66,10 +68,9 @@ describe('BrowserContext', function () {
     await page.goto(server.EMPTY_PAGE);
     const [popupTarget] = await Promise.all([
       utils.waitEvent(browser, 'targetcreated'),
-      page.evaluate<(url: string) => void>(
-        (url) => window.open(url),
-        server.EMPTY_PAGE
-      ),
+      page.evaluate<(url: string) => void>((url) => {
+        return window.open(url);
+      }, server.EMPTY_PAGE),
     ]);
     expect(popupTarget.browserContext()).toBe(context);
     await context.close();
@@ -78,16 +79,16 @@ describe('BrowserContext', function () {
     const { browser, server } = getTestState();
 
     const context = await browser.createIncognitoBrowserContext();
-    const events = [];
-    context.on('targetcreated', (target) =>
-      events.push('CREATED: ' + target.url())
-    );
-    context.on('targetchanged', (target) =>
-      events.push('CHANGED: ' + target.url())
-    );
-    context.on('targetdestroyed', (target) =>
-      events.push('DESTROYED: ' + target.url())
-    );
+    const events: any[] = [];
+    context.on('targetcreated', (target) => {
+      return events.push('CREATED: ' + target.url());
+    });
+    context.on('targetchanged', (target) => {
+      return events.push('CHANGED: ' + target.url());
+    });
+    context.on('targetdestroyed', (target) => {
+      return events.push('DESTROYED: ' + target.url());
+    });
     const page = await context.newPage();
     await page.goto(server.EMPTY_PAGE);
     await page.close();
@@ -104,11 +105,13 @@ describe('BrowserContext', function () {
     const context = await browser.createIncognitoBrowserContext();
     let resolved = false;
 
-    const targetPromise = context.waitForTarget(
-      (target) => target.url() === server.EMPTY_PAGE
-    );
+    const targetPromise = context.waitForTarget((target) => {
+      return target.url() === server.EMPTY_PAGE;
+    });
     targetPromise
-      .then(() => (resolved = true))
+      .then(() => {
+        return (resolved = true);
+      })
       .catch((error) => {
         resolved = true;
         if (error instanceof puppeteer.errors.TimeoutError) {
@@ -138,10 +141,17 @@ describe('BrowserContext', function () {
 
     const context = await browser.createIncognitoBrowserContext();
     const error = await context
-      .waitForTarget((target) => target.url() === server.EMPTY_PAGE, {
-        timeout: 1,
-      })
-      .catch((error_) => error_);
+      .waitForTarget(
+        (target) => {
+          return target.url() === server.EMPTY_PAGE;
+        },
+        {
+          timeout: 1,
+        }
+      )
+      .catch((error_) => {
+        return error_;
+      });
     expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     await context.close();
   });
@@ -175,19 +185,31 @@ describe('BrowserContext', function () {
     });
 
     expect(context1.targets().length).toBe(1);
-    expect(context1.targets()[0]).toBe(page1.target());
+    expect(context1.targets()[0]!).toBe(page1.target());
     expect(context2.targets().length).toBe(1);
-    expect(context2.targets()[0]).toBe(page2.target());
+    expect(context2.targets()[0]!).toBe(page2.target());
 
     // Make sure pages don't share localstorage or cookies.
-    expect(await page1.evaluate(() => localStorage.getItem('name'))).toBe(
-      'page1'
-    );
-    expect(await page1.evaluate(() => document.cookie)).toBe('name=page1');
-    expect(await page2.evaluate(() => localStorage.getItem('name'))).toBe(
-      'page2'
-    );
-    expect(await page2.evaluate(() => document.cookie)).toBe('name=page2');
+    expect(
+      await page1.evaluate(() => {
+        return localStorage.getItem('name');
+      })
+    ).toBe('page1');
+    expect(
+      await page1.evaluate(() => {
+        return document.cookie;
+      })
+    ).toBe('name=page1');
+    expect(
+      await page2.evaluate(() => {
+        return localStorage.getItem('name');
+      })
+    ).toBe('page2');
+    expect(
+      await page2.evaluate(() => {
+        return document.cookie;
+      })
+    ).toBe('name=page2');
 
     // Cleanup contexts.
     await Promise.all([context1.close(), context2.close()]);

@@ -20,7 +20,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   itFailsFirefox,
-} from './mocha-utils'; // eslint-disable-line import/extensions
+} from './mocha-utils.js';
 
 describe('Screenshots', function () {
   setupTestBrowserHooks();
@@ -86,7 +86,7 @@ describe('Screenshots', function () {
         );
       }
       const screenshots = await Promise.all(promises);
-      expect(screenshots[1]).toBeGolden('grid-cell-1.png');
+      expect(screenshots[1]!).toBeGolden('grid-cell-1.png');
     });
     itFailsFirefox('should take fullPage screenshots', async () => {
       const { page, server } = getTestState();
@@ -114,7 +114,7 @@ describe('Screenshots', function () {
       const promises = [];
       for (let i = 0; i < N; ++i) {
         promises.push(
-          pages[i].screenshot({
+          pages[i]!.screenshot({
             clip: { x: 50 * i, y: 0, width: 50, height: 50 },
           })
         );
@@ -123,7 +123,11 @@ describe('Screenshots', function () {
       for (let i = 0; i < N; ++i) {
         expect(screenshots[i]).toBeGolden(`grid-cell-${i}.png`);
       }
-      await Promise.all(pages.map((page) => page.close()));
+      await Promise.all(
+        pages.map((page) => {
+          return page.close();
+        })
+      );
     });
     itFailsFirefox('should allow transparency', async () => {
       const { page, server } = getTestState();
@@ -192,8 +196,10 @@ describe('Screenshots', function () {
 
       await page.setViewport({ width: 500, height: 500 });
       await page.goto(server.PREFIX + '/grid.html');
-      await page.evaluate(() => window.scrollBy(50, 100));
-      const elementHandle = await page.$('.box:nth-of-type(3)');
+      await page.evaluate(() => {
+        return window.scrollBy(50, 100);
+      });
+      const elementHandle = (await page.$('.box:nth-of-type(3)'))!;
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-bounding-box.png');
     });
@@ -212,7 +218,7 @@ describe('Screenshots', function () {
         </style>
         <div></div>
       `);
-      const elementHandle = await page.$('div');
+      const elementHandle = (await page.$('div'))!;
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
     });
@@ -238,17 +244,19 @@ describe('Screenshots', function () {
           </style>
           <div class="to-screenshot"></div>
         `);
-        const elementHandle = await page.$('div.to-screenshot');
+        const elementHandle = (await page.$('div.to-screenshot'))!;
         const screenshot = await elementHandle.screenshot();
         expect(screenshot).toBeGolden(
           'screenshot-element-larger-than-viewport.png'
         );
 
         expect(
-          await page.evaluate(() => ({
-            w: window.innerWidth,
-            h: window.innerHeight,
-          }))
+          await page.evaluate(() => {
+            return {
+              w: window.innerWidth,
+              h: window.innerHeight,
+            };
+          })
         ).toEqual({ w: 500, h: 500 });
       }
     );
@@ -273,7 +281,7 @@ describe('Screenshots', function () {
         <div class="above"></div>
         <div class="to-screenshot"></div>
       `);
-      const elementHandle = await page.$('div.to-screenshot');
+      const elementHandle = (await page.$('div.to-screenshot'))!;
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden(
         'screenshot-element-scrolled-into-view.png'
@@ -290,7 +298,7 @@ describe('Screenshots', function () {
                                         height: 100px;
                                         background: green;
                                         transform: rotateZ(200deg);">&nbsp;</div>`);
-      const elementHandle = await page.$('div');
+      const elementHandle = (await page.$('div'))!;
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-rotate.png');
     });
@@ -298,14 +306,15 @@ describe('Screenshots', function () {
       const { page } = getTestState();
 
       await page.setContent('<h1>remove this</h1>');
-      const elementHandle = await page.$('h1');
-      await page.evaluate(
-        (element: HTMLElement) => element.remove(),
-        elementHandle
-      );
+      const elementHandle = (await page.$('h1'))!;
+      await page.evaluate((element: HTMLElement) => {
+        return element.remove();
+      }, elementHandle);
       const screenshotError = await elementHandle
         .screenshot()
-        .catch((error) => error);
+        .catch((error) => {
+          return error;
+        });
       expect(screenshotError.message).toBe(
         'Node is either not visible or not an HTMLElement'
       );
@@ -314,8 +323,10 @@ describe('Screenshots', function () {
       const { page } = getTestState();
 
       await page.setContent('<div style="width: 50px; height: 0"></div>');
-      const div = await page.$('div');
-      const error = await div.screenshot().catch((error_) => error_);
+      const div = (await page.$('div'))!;
+      const error = await div.screenshot().catch((error_) => {
+        return error_;
+      });
       expect(error.message).toBe('Node has 0 height.');
     });
     it('should work for an element with fractional dimensions', async () => {
@@ -324,7 +335,7 @@ describe('Screenshots', function () {
       await page.setContent(
         '<div style="width:48.51px;height:19.8px;border:1px solid black;"></div>'
       );
-      const elementHandle = await page.$('div');
+      const elementHandle = (await page.$('div'))!;
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-fractional.png');
     });
@@ -334,7 +345,7 @@ describe('Screenshots', function () {
       await page.setContent(
         '<div style="position:absolute; top: 10.3px; left: 20.4px;width:50.3px;height:20.2px;border:1px solid black;"></div>'
       );
-      const elementHandle = await page.$('div');
+      const elementHandle = (await page.$('div'))!;
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-fractional-offset.png');
     });

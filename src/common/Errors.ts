@@ -36,6 +36,7 @@ export class CustomError extends Error {
  * @public
  */
 export class TimeoutError extends CustomError {}
+
 /**
  * ProtocolError is emitted whenever there is an error from the protocol.
  *
@@ -45,13 +46,19 @@ export class ProtocolError extends CustomError {
   public code?: number;
   public originalMessage = '';
 }
+
 /**
  * @public
  */
-export type PuppeteerErrors = Record<string, typeof CustomError>;
+export interface PuppeteerErrors {
+  TimeoutError: typeof TimeoutError;
+  ProtocolError: typeof ProtocolError;
+}
+
 /**
  * @public
  */
-export const puppeteerErrors: PuppeteerErrors = {
+export const puppeteerErrors: PuppeteerErrors = Object.freeze({
   TimeoutError,
-};
+  ProtocolError,
+});

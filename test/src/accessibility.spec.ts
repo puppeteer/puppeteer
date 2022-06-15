@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import assert from 'assert';
 import expect from 'expect';
+import { SerializedAXNode } from '../../lib/cjs/puppeteer/common/Accessibility.js';
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   describeFailsFirefox,
-} from './mocha-utils'; // eslint-disable-line import/extensions
+} from './mocha-utils.js';
 
 describeFailsFirefox('Accessibility', function () {
   setupTestBrowserHooks();
@@ -170,7 +172,10 @@ describeFailsFirefox('Accessibility', function () {
     );
     const snapshot = await page.accessibility.snapshot();
     // See https://chromium-review.googlesource.com/c/chromium/src/+/3088862
-    expect(snapshot.children[0].roledescription).toEqual(undefined);
+    assert(snapshot);
+    assert(snapshot.children);
+    assert(snapshot.children[0]!);
+    expect(snapshot.children[0]!.roledescription).toBeUndefined();
   });
   it('orientation', async () => {
     const { page } = getTestState();
@@ -179,14 +184,20 @@ describeFailsFirefox('Accessibility', function () {
       '<a href="" role="slider" aria-orientation="vertical">11</a>'
     );
     const snapshot = await page.accessibility.snapshot();
-    expect(snapshot.children[0].orientation).toEqual('vertical');
+    assert(snapshot);
+    assert(snapshot.children);
+    assert(snapshot.children[0]!);
+    expect(snapshot.children[0]!.orientation).toEqual('vertical');
   });
   it('autocomplete', async () => {
     const { page } = getTestState();
 
     await page.setContent('<input type="number" aria-autocomplete="list" />');
     const snapshot = await page.accessibility.snapshot();
-    expect(snapshot.children[0].autocomplete).toEqual('list');
+    assert(snapshot);
+    assert(snapshot.children);
+    assert(snapshot.children[0]!);
+    expect(snapshot.children[0]!.autocomplete).toEqual('list');
   });
   it('multiselectable', async () => {
     const { page } = getTestState();
@@ -195,7 +206,10 @@ describeFailsFirefox('Accessibility', function () {
       '<div role="grid" tabIndex=-1 aria-multiselectable=true>hey</div>'
     );
     const snapshot = await page.accessibility.snapshot();
-    expect(snapshot.children[0].multiselectable).toEqual(true);
+    assert(snapshot);
+    assert(snapshot.children);
+    assert(snapshot.children[0]!);
+    expect(snapshot.children[0]!.multiselectable).toEqual(true);
   });
   it('keyshortcuts', async () => {
     const { page } = getTestState();
@@ -204,7 +218,10 @@ describeFailsFirefox('Accessibility', function () {
       '<div role="grid" tabIndex=-1 aria-keyshortcuts="foo">hey</div>'
     );
     const snapshot = await page.accessibility.snapshot();
-    expect(snapshot.children[0].keyshortcuts).toEqual('foo');
+    assert(snapshot);
+    assert(snapshot.children);
+    assert(snapshot.children[0]!);
+    expect(snapshot.children[0]!.keyshortcuts).toEqual('foo');
   });
   describe('filtering children of leaf nodes', function () {
     it('should not report text nodes inside controls', async () => {
@@ -286,7 +303,9 @@ describeFailsFirefox('Accessibility', function () {
             ],
           };
       const snapshot = await page.accessibility.snapshot();
-      expect(snapshot.children[0]).toEqual(golden);
+      assert(snapshot);
+      assert(snapshot.children);
+      expect(snapshot.children[0]!).toEqual(golden);
     });
     it('rich text editable fields with role should have children', async () => {
       const { page, isFirefox } = getTestState();
@@ -324,7 +343,9 @@ describeFailsFirefox('Accessibility', function () {
             ],
           };
       const snapshot = await page.accessibility.snapshot();
-      expect(snapshot.children[0]).toEqual(golden);
+      assert(snapshot);
+      assert(snapshot.children);
+      expect(snapshot.children[0]!).toEqual(golden);
     });
 
     // Firefox does not support contenteditable="plaintext-only".
@@ -335,7 +356,9 @@ describeFailsFirefox('Accessibility', function () {
         await page.setContent(`
           <div contenteditable="plaintext-only" role='textbox'>Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
         const snapshot = await page.accessibility.snapshot();
-        expect(snapshot.children[0]).toEqual({
+        assert(snapshot);
+        assert(snapshot.children);
+        expect(snapshot.children[0]!).toEqual({
           role: 'textbox',
           name: '',
           value: 'Edit this image:',
@@ -363,7 +386,9 @@ describeFailsFirefox('Accessibility', function () {
             value: 'this is the inner content ',
           };
       const snapshot = await page.accessibility.snapshot();
-      expect(snapshot.children[0]).toEqual(golden);
+      assert(snapshot);
+      assert(snapshot.children);
+      expect(snapshot.children[0]!).toEqual(golden);
     });
     it('checkbox with and tabIndex and label should not have children', async () => {
       const { page, isFirefox } = getTestState();
@@ -385,7 +410,9 @@ describeFailsFirefox('Accessibility', function () {
             checked: true,
           };
       const snapshot = await page.accessibility.snapshot();
-      expect(snapshot.children[0]).toEqual(golden);
+      assert(snapshot);
+      assert(snapshot.children);
+      expect(snapshot.children[0]!).toEqual(golden);
     });
     it('checkbox without label should not have children', async () => {
       const { page, isFirefox } = getTestState();
@@ -407,7 +434,9 @@ describeFailsFirefox('Accessibility', function () {
             checked: true,
           };
       const snapshot = await page.accessibility.snapshot();
-      expect(snapshot.children[0]).toEqual(golden);
+      assert(snapshot);
+      assert(snapshot.children);
+      expect(snapshot.children[0]!).toEqual(golden);
     });
 
     describe('root option', function () {
@@ -416,7 +445,7 @@ describeFailsFirefox('Accessibility', function () {
 
         await page.setContent(`<button>My Button</button>`);
 
-        const button = await page.$<HTMLButtonElement>('button');
+        const button = (await page.$('button'))!;
         expect(await page.accessibility.snapshot({ root: button })).toEqual({
           role: 'button',
           name: 'My Button',
@@ -427,7 +456,7 @@ describeFailsFirefox('Accessibility', function () {
 
         await page.setContent(`<input title="My Input" value="My Value">`);
 
-        const input = await page.$('input');
+        const input = (await page.$('input'))!;
         expect(await page.accessibility.snapshot({ root: input })).toEqual({
           role: 'textbox',
           name: 'My Input',
@@ -445,7 +474,7 @@ describeFailsFirefox('Accessibility', function () {
             </div>
           `);
 
-        const menu = await page.$('div[role="menu"]');
+        const menu = (await page.$('div[role="menu"]'))!;
         expect(await page.accessibility.snapshot({ root: menu })).toEqual({
           role: 'menu',
           name: 'My Menu',
@@ -461,8 +490,10 @@ describeFailsFirefox('Accessibility', function () {
         const { page } = getTestState();
 
         await page.setContent(`<button>My Button</button>`);
-        const button = await page.$('button');
-        await page.$eval('button', (button) => button.remove());
+        const button = (await page.$('button'))!;
+        await page.$eval('button', (button) => {
+          return button.remove();
+        });
         expect(await page.accessibility.snapshot({ root: button })).toEqual(
           null
         );
@@ -471,7 +502,7 @@ describeFailsFirefox('Accessibility', function () {
         const { page } = getTestState();
 
         await page.setContent(`<div><button>My Button</button></div>`);
-        const div = await page.$('div');
+        const div = (await page.$('div'))!;
         expect(await page.accessibility.snapshot({ root: div })).toEqual(null);
         expect(
           await page.accessibility.snapshot({
@@ -492,11 +523,14 @@ describeFailsFirefox('Accessibility', function () {
       });
     });
   });
-  function findFocusedNode(node) {
-    if (node.focused) {
+
+  function findFocusedNode(
+    node: SerializedAXNode | null
+  ): SerializedAXNode | null {
+    if (node?.focused) {
       return node;
     }
-    for (const child of node.children || []) {
+    for (const child of node?.children || []) {
       const focusedChild = findFocusedNode(child);
       if (focusedChild) {
         return focusedChild;

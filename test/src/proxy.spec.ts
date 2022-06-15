@@ -21,7 +21,7 @@ import {
   getTestState,
   describeFailsFirefox,
   itFailsWindows,
-} from './mocha-utils'; // eslint-disable-line import/extensions
+} from './mocha-utils.js';
 import type { Server, IncomingMessage, ServerResponse } from 'http';
 import type { Browser } from '../../lib/cjs/puppeteer/common/Browser.js';
 import type { AddressInfo } from 'net';
@@ -108,7 +108,7 @@ describeFailsFirefox('request proxy', () => {
     });
 
     const page = await browser.newPage();
-    const response = await page.goto(emptyPageUrl);
+    const response = (await page.goto(emptyPageUrl))!;
 
     expect(response.ok()).toBe(true);
 
@@ -129,7 +129,7 @@ describeFailsFirefox('request proxy', () => {
     });
 
     const page = await browser.newPage();
-    const response = await page.goto(emptyPageUrl);
+    const response = (await page.goto(emptyPageUrl))!;
 
     expect(response.ok()).toBe(true);
 
@@ -148,7 +148,7 @@ describeFailsFirefox('request proxy', () => {
 
       const context = await browser.createIncognitoBrowserContext();
       const page = await context.newPage();
-      const response = await page.goto(emptyPageUrl);
+      const response = (await page.goto(emptyPageUrl))!;
 
       expect(response.ok()).toBe(true);
 
@@ -170,7 +170,7 @@ describeFailsFirefox('request proxy', () => {
 
       const context = await browser.createIncognitoBrowserContext();
       const page = await context.newPage();
-      const response = await page.goto(emptyPageUrl);
+      const response = (await page.goto(emptyPageUrl))!;
 
       expect(response.ok()).toBe(true);
 
@@ -195,7 +195,7 @@ describeFailsFirefox('request proxy', () => {
           proxyServer: proxyServerUrl,
         });
         const page = await context.newPage();
-        const response = await page.goto(emptyPageUrl);
+        const response = (await page.goto(emptyPageUrl))!;
 
         expect(response.ok()).toBe(true);
 
@@ -217,7 +217,7 @@ describeFailsFirefox('request proxy', () => {
         proxyBypassList: [new URL(emptyPageUrl).host],
       });
       const page = await context.newPage();
-      const response = await page.goto(emptyPageUrl);
+      const response = (await page.goto(emptyPageUrl))!;
 
       expect(response.ok()).toBe(true);
 

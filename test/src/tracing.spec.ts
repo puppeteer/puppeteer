@@ -17,12 +17,14 @@
 import fs from 'fs';
 import path from 'path';
 import expect from 'expect';
-import { getTestState, describeChromeOnly } from './mocha-utils'; // eslint-disable-line import/extensions
+import { getTestState, describeChromeOnly } from './mocha-utils.js';
+import { Browser } from '../../lib/cjs/puppeteer/common/Browser.js';
+import { Page } from '../../lib/cjs/puppeteer/common/Page.js';
 
 describeChromeOnly('Tracing', function () {
-  let outputFile;
-  let browser;
-  let page;
+  let outputFile!: string;
+  let browser!: Browser;
+  let page!: Page;
 
   /* we manually manage the browser here as we want a new browser for each
    * individual test, which isn't the default behaviour of getTestState()
@@ -37,11 +39,8 @@ describeChromeOnly('Tracing', function () {
 
   afterEach(async () => {
     await browser.close();
-    browser = null;
-    page = null;
     if (fs.existsSync(outputFile)) {
       fs.unlinkSync(outputFile);
-      outputFile = null;
     }
   });
   it('should output a trace', async () => {
@@ -93,10 +92,10 @@ describeChromeOnly('Tracing', function () {
   it('should throw if tracing on two pages', async () => {
     await page.tracing.start({ path: outputFile });
     const newPage = await browser.newPage();
-    let error = null;
-    await newPage.tracing
-      .start({ path: outputFile })
-      .catch((error_) => (error = error_));
+    let error!: Error;
+    await newPage.tracing.start({ path: outputFile }).catch((error_) => {
+      return (error = error_);
+    });
     await newPage.close();
     expect(error).toBeTruthy();
     await page.tracing.stop();
@@ -106,7 +105,7 @@ describeChromeOnly('Tracing', function () {
 
     await page.tracing.start({ screenshots: true, path: outputFile });
     await page.goto(server.PREFIX + '/grid.html');
-    const trace = await page.tracing.stop();
+    const trace = (await page.tracing.stop())!;
     const buf = fs.readFileSync(outputFile);
     expect(trace.toString()).toEqual(buf.toString());
   });
@@ -138,18 +137,18 @@ describeChromeOnly('Tracing', function () {
 
     await page.tracing.start({ screenshots: true });
     await page.goto(server.PREFIX + '/grid.html');
-    const trace = await page.tracing.stop();
+    const trace = (await page.tracing.stop())!;
     expect(trace.toString()).toContain('screenshot');
   });
 
   it('should properly fail if readProtocolStream errors out', async () => {
     await page.tracing.start({ path: __dirname });
 
-    let error: Error = null;
+    let error!: Error;
     try {
       await page.tracing.stop();
     } catch (error_) {
-      error = error_;
+      error = error_ as Error;
     }
     expect(error).toBeDefined();
   });

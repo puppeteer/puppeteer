@@ -19,7 +19,7 @@ import sinon from 'sinon';
 import expect from 'expect';
 
 describe('EventEmitter', () => {
-  let emitter;
+  let emitter: EventEmitter;
 
   beforeEach(() => {
     emitter = new EventEmitter();
@@ -40,7 +40,7 @@ describe('EventEmitter', () => {
         emitter[methodName]('foo', listener);
         emitter.emit('foo', data);
         expect(listener.callCount).toEqual(1);
-        expect(listener.firstCall.args[0]).toBe(data);
+        expect(listener.firstCall.args[0]!).toBe(data);
       });
 
       it(`${methodName}: supports chaining`, () => {
@@ -116,7 +116,7 @@ describe('EventEmitter', () => {
 
       emitter.emit('foo', data);
       expect(listener.callCount).toEqual(1);
-      expect(listener.firstCall.args[0]).toBe(data);
+      expect(listener.firstCall.args[0]!).toBe(data);
     });
 
     it('returns true if the event has listeners', () => {

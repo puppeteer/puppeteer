@@ -43,10 +43,10 @@ interface Subscriber {
 type TestIncomingMessage = IncomingMessage & { postBody?: Promise<string> };
 
 export class TestServer {
-  PORT?: number;
-  PREFIX?: string;
-  CROSS_PROCESS_PREFIX?: string;
-  EMPTY_PAGE?: string;
+  PORT!: number;
+  PREFIX!: string;
+  CROSS_PROCESS_PREFIX!: string;
+  EMPTY_PAGE!: string;
 
   #dirPath: string;
   #server: HttpsServer | HttpServer;

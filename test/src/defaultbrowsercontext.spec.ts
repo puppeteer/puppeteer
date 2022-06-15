@@ -20,7 +20,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   itFailsFirefox,
-} from './mocha-utils'; // eslint-disable-line import/extensions
+} from './mocha-utils.js';
 
 describe('DefaultBrowserContext', function () {
   setupTestBrowserHooks();
@@ -57,9 +57,11 @@ describe('DefaultBrowserContext', function () {
       name: 'username',
       value: 'John Doe',
     });
-    expect(await page.evaluate(() => document.cookie)).toBe(
-      'username=John Doe'
-    );
+    expect(
+      await page.evaluate(() => {
+        return document.cookie;
+      })
+    ).toBe('username=John Doe');
     expectCookieEquals(await page.cookies(), [
       {
         name: 'username',

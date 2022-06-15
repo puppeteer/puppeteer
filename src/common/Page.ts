@@ -2293,7 +2293,9 @@ export class Page extends EventEmitter {
    */
   async emulateMediaType(type?: string): Promise<void> {
     assert(
-      type === 'screen' || type === 'print' || type === null,
+      type === 'screen' ||
+        type === 'print' ||
+        (type ?? undefined) === undefined,
       'Unsupported media type: ' + type
     );
     await this.#client.send('Emulation.setEmulatedMedia', {

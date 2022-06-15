@@ -1,17 +1,11 @@
 {
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "esModuleInterop": true,
-    "allowJs": true,
-    "checkJs": false,
-    "target": "esnext",
-    "module": "CommonJS",
-    "moduleResolution": "node",
     "declaration": false,
     "declarationMap": false,
-    "resolveJsonModule": true,
-    "sourceMap": true,
-    "rootDir": "src",
-    "outDir": "build"
+    "module": "CommonJS",
+    "outDir": "build",
+    "rootDir": "src"
   },
   "include": ["src"],
   "references": [

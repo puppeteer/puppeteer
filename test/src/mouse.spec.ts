@@ -20,7 +20,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   itFailsFirefox,
-} from './mocha-utils'; // eslint-disable-line import/extensions
+} from './mocha-utils.js';
 import { KeyInput } from '../../lib/cjs/puppeteer/common/USKeyboardLayout.js';
 
 interface Dimensions {
@@ -31,7 +31,7 @@ interface Dimensions {
 }
 
 function dimensions(): Dimensions {
-  const rect = document.querySelector('textarea').getBoundingClientRect();
+  const rect = document.querySelector('textarea')!.getBoundingClientRect();
   return {
     x: rect.left,
     y: rect.top,
@@ -47,7 +47,7 @@ describe('Mouse', function () {
     const { page } = getTestState();
 
     await page.evaluate(() => {
-      globalThis.clickPromise = new Promise((resolve) => {
+      (globalThis as any).clickPromise = new Promise((resolve) => {
         document.addEventListener('click', (event) => {
           resolve({
             type: event.type,
@@ -61,9 +61,9 @@ describe('Mouse', function () {
       });
     });
     await page.mouse.click(50, 60);
-    const event = await page.evaluate<() => MouseEvent>(
-      () => globalThis.clickPromise
-    );
+    const event = await page.evaluate<() => MouseEvent>(() => {
+      return (globalThis as any).clickPromise;
+    });
     expect(event.type).toBe('click');
     expect(event.detail).toBe(1);
     expect(event.clientX).toBe(50);
@@ -96,10 +96,12 @@ describe('Mouse', function () {
       "This is the text that we are going to try to select. Let's see how it goes.";
     await page.keyboard.type(text);
     // Firefox needs an extra frame here after typing or it will fail to set the scrollTop
-    await page.evaluate(() => new Promise(requestAnimationFrame));
-    await page.evaluate(
-      () => (document.querySelector('textarea').scrollTop = 0)
-    );
+    await page.evaluate(() => {
+      return new Promise(requestAnimationFrame);
+    });
+    await page.evaluate(() => {
+      return (document.querySelector('textarea')!.scrollTop = 0);
+    });
     const { x, y } = await page.evaluate(dimensions);
     await page.mouse.move(x + 2, y + 2);
     await page.mouse.down();
@@ -107,7 +109,7 @@ describe('Mouse', function () {
     await page.mouse.up();
     expect(
       await page.evaluate(() => {
-        const textarea = document.querySelector('textarea');
+        const textarea = document.querySelector('textarea')!;
         return textarea.value.substring(
           textarea.selectionStart,
           textarea.selectionEnd
@@ -121,15 +123,21 @@ describe('Mouse', function () {
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.hover('#button-6');
     expect(
-      await page.evaluate(() => document.querySelector('button:hover').id)
+      await page.evaluate(() => {
+        return document.querySelector('button:hover')!.id;
+      })
     ).toBe('button-6');
     await page.hover('#button-2');
     expect(
-      await page.evaluate(() => document.querySelector('button:hover').id)
+      await page.evaluate(() => {
+        return document.querySelector('button:hover')!.id;
+      })
     ).toBe('button-2');
     await page.hover('#button-91');
     expect(
-      await page.evaluate(() => document.querySelector('button:hover').id)
+      await page.evaluate(() => {
+        return document.querySelector('button:hover')!.id;
+      })
     ).toBe('button-91');
   });
   itFailsFirefox(
@@ -138,10 +146,15 @@ describe('Mouse', function () {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/input/scrollable.html');
-      await page.evaluate(() => delete window.Node);
+      await page.evaluate(() => {
+        // @ts-expect-error Expected.
+        return delete window.Node;
+      });
       await page.hover('#button-6');
       expect(
-        await page.evaluate(() => document.querySelector('button:hover').id)
+        await page.evaluate(() => {
+          return document.querySelector('button:hover')!.id;
+        })
       ).toBe('button-6');
     }
   );
@@ -149,11 +162,15 @@ describe('Mouse', function () {
     const { page, server, isFirefox } = getTestState();
 
     await page.goto(server.PREFIX + '/input/scrollable.html');
-    await page.evaluate(() =>
-      document
-        .querySelector('#button-3')
-        .addEventListener('mousedown', (e) => (globalThis.lastEvent = e), true)
-    );
+    await page.evaluate(() => {
+      return document.querySelector('#button-3')!.addEventListener(
+        'mousedown',
+        (e) => {
+          return ((globalThis as any).lastEvent = e);
+        },
+        true
+      );
+    });
     const modifiers = new Map<KeyInput, string>([
       ['Shift', 'shiftKey'],
       ['Control', 'ctrlKey'],
@@ -162,13 +179,15 @@ describe('Mouse', function () {
     ]);
     // In Firefox, the Meta modifier only exists on Mac
     if (isFirefox && os.platform() !== 'darwin') {
-      delete modifiers['Meta'];
+      modifiers.delete('Meta');
     }
     for (const [modifier, key] of modifiers) {
       await page.keyboard.down(modifier);
       await page.click('#button-3');
       if (
-        !(await page.evaluate((mod: string) => globalThis.lastEvent[mod], key))
+        !(await page.evaluate((mod: string) => {
+          return (globalThis as any).lastEvent[mod];
+        }, key))
       ) {
         throw new Error(key + ' should be true');
       }
@@ -177,9 +196,11 @@ describe('Mouse', function () {
     await page.click('#button-3');
     for (const [modifier, key] of modifiers) {
       if (
-        await page.evaluate((mod: string) => globalThis.lastEvent[mod], key)
+        await page.evaluate((mod: string) => {
+          return (globalThis as any).lastEvent[mod];
+        }, key)
       ) {
-        throw new Error(modifiers[modifier] + ' should be false');
+        throw new Error(modifiers.get(modifier) + ' should be false');
       }
     }
   });
@@ -187,8 +208,8 @@ describe('Mouse', function () {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/wheel.html');
-    const elem = await page.$('div');
-    const boundingBoxBefore = await elem.boundingBox();
+    const elem = (await page.$('div'))!;
+    const boundingBoxBefore = (await elem.boundingBox())!;
     expect(boundingBoxBefore).toMatchObject({
       width: 115,
       height: 115,
@@ -211,9 +232,9 @@ describe('Mouse', function () {
 
     await page.mouse.move(100, 100);
     await page.evaluate(() => {
-      globalThis.result = [];
+      (globalThis as any).result = [];
       document.addEventListener('mousemove', (event) => {
-        globalThis.result.push([event.clientX, event.clientY]);
+        (globalThis as any).result.push([event.clientX, event.clientY]);
       });
     });
     await page.mouse.move(200, 300, { steps: 5 });
@@ -234,7 +255,7 @@ describe('Mouse', function () {
     await page.goto(server.CROSS_PROCESS_PREFIX + '/mobile.html');
     await page.evaluate(() => {
       document.addEventListener('click', (event) => {
-        globalThis.result = { x: event.clientX, y: event.clientY };
+        (globalThis as any).result = { x: event.clientX, y: event.clientY };
       });
     });
 

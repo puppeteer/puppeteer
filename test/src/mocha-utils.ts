@@ -25,12 +25,15 @@ import {
   Browser,
   BrowserContext,
 } from '../../lib/cjs/puppeteer/common/Browser.js';
-import { isErrorLike } from '../../lib/cjs/puppeteer/common/util.js';
 import { Page } from '../../lib/cjs/puppeteer/common/Page.js';
-import { PuppeteerNode } from '../../lib/cjs/puppeteer/node/Puppeteer.js';
+import { isErrorLike } from '../../lib/cjs/puppeteer/common/util.js';
+import {
+  PuppeteerLaunchOptions,
+  PuppeteerNode,
+} from '../../lib/cjs/puppeteer/node/Puppeteer.js';
 import puppeteer from '../../lib/cjs/puppeteer/puppeteer.js';
-import utils from './utils.js';
 import { TestServer } from '../../utils/testserver/lib/index.js';
+import { extendExpectWithToBeGolden } from './utils.js';
 
 const setupServer = async () => {
   const assetsPath = path.join(__dirname, '../assets');
@@ -55,8 +58,9 @@ const setupServer = async () => {
   return { server, httpsServer };
 };
 
-export const getTestState = (): PuppeteerTestState =>
-  state as PuppeteerTestState;
+export const getTestState = (): PuppeteerTestState => {
+  return state as PuppeteerTestState;
+};
 
 const product =
   process.env['PRODUCT'] || process.env['PUPPETEER_PRODUCT'] || 'Chromium';
@@ -127,7 +131,7 @@ const setupGoldenAssertions = (): void => {
   if (fs.existsSync(OUTPUT_DIR)) {
     rimraf.sync(OUTPUT_DIR);
   }
-  utils.extendExpectWithToBeGolden(GOLDEN_DIR, OUTPUT_DIR);
+  extendExpectWithToBeGolden(GOLDEN_DIR, OUTPUT_DIR);
 };
 
 setupGoldenAssertions();
@@ -137,9 +141,7 @@ interface PuppeteerTestState {
   context: BrowserContext;
   page: Page;
   puppeteer: PuppeteerNode;
-  defaultBrowserOptions: {
-    [x: string]: any;
-  };
+  defaultBrowserOptions: PuppeteerLaunchOptions;
   server: TestServer;
   httpsServer: TestServer;
   isFirefox: boolean;
@@ -304,16 +306,16 @@ export const mochaHooks = {
   ],
 
   beforeEach: async (): Promise<void> => {
-    state.server.reset();
-    state.httpsServer.reset();
+    state.server!.reset();
+    state.httpsServer!.reset();
   },
 
   afterAll: [
     async (): Promise<void> => {
-      await state.server.stop();
-      state.server = null;
-      await state.httpsServer.stop();
-      state.httpsServer = null;
+      await state.server!.stop();
+      state.server = undefined;
+      await state.httpsServer!.stop();
+      state.httpsServer = undefined;
     },
   ],
 
@@ -357,6 +359,8 @@ export const shortWaitForArrayToHaveAtLeastNElements = async (
     if (data.length >= minLength) {
       break;
     }
-    await new Promise((resolve) => setTimeout(resolve, timeout));
+    await new Promise((resolve) => {
+      return setTimeout(resolve, timeout);
+    });
   }
 };

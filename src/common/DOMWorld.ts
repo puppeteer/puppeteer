@@ -719,10 +719,10 @@ export class DOMWorld {
     function deliverResult(name: string, seq: number, result: unknown): void {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore Code is evaluated in a different context.
-      globalThis[name].callbacks.get(seq).resolve(result);
+      (globalThis as any)[name].callbacks.get(seq).resolve(result);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore Code is evaluated in a different context.
-      globalThis[name].callbacks.delete(seq);
+      (globalThis as any)[name].callbacks.delete(seq);
     }
   };
 

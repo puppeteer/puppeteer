@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import Protocol from 'devtools-protocol';
+import expect from 'expect';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+import rimraf from 'rimraf';
 import sinon from 'sinon';
+import { TLSSocket } from 'tls';
 import { promisify } from 'util';
-import Protocol from 'devtools-protocol';
+import { Page } from '../../lib/cjs/puppeteer/common/Page.js';
+import { Product } from '../../lib/cjs/puppeteer/common/Product.js';
 import {
   getTestState,
   itChromeOnly,
   itFailsFirefox,
   itFirefoxOnly,
   itOnlyRegularInstall,
-} from './mocha-utils'; // eslint-disable-line import/extensions
+} from './mocha-utils.js';
 import utils from './utils.js';
-import expect from 'expect';
-import rimraf from 'rimraf';
-import { Page } from '../../lib/cjs/puppeteer/common/Page.js';
-import { TLSSocket } from 'tls';
 
 const mkdtempAsync = promisify(fs.mkdtemp);
 const readFileAsync = promisify(fs.readFile);
@@ -73,7 +74,7 @@ describe('Launcher specs', function () {
         expect(await browserFetcher.canDownload('100000')).toBe(false);
         expect(await browserFetcher.canDownload(expectedRevision)).toBe(true);
 
-        revisionInfo = await browserFetcher.download(expectedRevision);
+        revisionInfo = (await browserFetcher.download(expectedRevision))!;
         expect(revisionInfo.local).toBe(true);
         expect(await readFileAsync(revisionInfo.executablePath, 'utf8')).toBe(
           'LINUX BINARY\n'
@@ -118,7 +119,7 @@ describe('Launcher specs', function () {
         expect(await browserFetcher.canDownload('100000')).toBe(false);
         expect(await browserFetcher.canDownload(expectedVersion)).toBe(true);
 
-        revisionInfo = await browserFetcher.download(expectedVersion);
+        revisionInfo = (await browserFetcher.download(expectedVersion))!;
         expect(revisionInfo.local).toBe(true);
         expect(await readFileAsync(revisionInfo.executablePath, 'utf8')).toBe(
           'FIREFOX LINUX BINARY\n'
@@ -147,7 +148,9 @@ describe('Launcher specs', function () {
         const page = await remote.newPage();
         const navigationPromise = page
           .goto(server.PREFIX + '/one-style.html', { timeout: 60000 })
-          .catch((error_) => error_);
+          .catch((error_) => {
+            return error_;
+          });
         await server.waitForRequest('/one-style.css');
         remote.disconnect();
         const error = await navigationPromise;
@@ -170,7 +173,9 @@ describe('Launcher specs', function () {
         const page = await remote.newPage();
         const watchdog = page
           .waitForSelector('div', { timeout: 60000 })
-          .catch((error_) => error_);
+          .catch((error_) => {
+            return error_;
+          });
         remote.disconnect();
         const error = await watchdog;
         expect(error.message).toContain('Protocol error');
@@ -187,8 +192,12 @@ describe('Launcher specs', function () {
         });
         const newPage = await remote.newPage();
         const results = await Promise.all([
-          newPage.waitForRequest(server.EMPTY_PAGE).catch((error) => error),
-          newPage.waitForResponse(server.EMPTY_PAGE).catch((error) => error),
+          newPage.waitForRequest(server.EMPTY_PAGE).catch((error) => {
+            return error;
+          }),
+          newPage.waitForResponse(server.EMPTY_PAGE).catch((error) => {
+            return error;
+          }),
           browser.close(),
         ]);
         for (let i = 0; i < 2; i++) {
@@ -204,10 +213,14 @@ describe('Launcher specs', function () {
         const { defaultBrowserOptions, puppeteer } = getTestState();
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const page = await browser.newPage();
-        let error = null;
+        let error!: Error;
         const neverResolves = page
-          .evaluate(() => new Promise(() => {}))
-          .catch((error_) => (error = error_));
+          .evaluate(() => {
+            return new Promise(() => {});
+          })
+          .catch((error_) => {
+            return (error = error_);
+          });
         await browser.close();
         await neverResolves;
         expect(error.message).toContain('Protocol error');
@@ -215,11 +228,13 @@ describe('Launcher specs', function () {
       it('should reject if executable path is invalid', async () => {
         const { defaultBrowserOptions, puppeteer } = getTestState();
 
-        let waitError = null;
+        let waitError!: Error;
         const options = Object.assign({}, defaultBrowserOptions, {
           executablePath: 'random-invalid-path',
         });
-        await puppeteer.launch(options).catch((error) => (waitError = error));
+        await puppeteer.launch(options).catch((error) => {
+          return (waitError = error);
+        });
         expect(waitError.message).toContain('Failed to launch');
       });
       it('userDataDir option', async () => {
@@ -315,13 +330,19 @@ describe('Launcher specs', function () {
         const browser = await puppeteer.launch(options);
         const page = await browser.newPage();
         await page.goto(server.EMPTY_PAGE);
-        await page.evaluate(() => (localStorage.hey = 'hello'));
+        await page.evaluate(() => {
+          return (localStorage['hey'] = 'hello');
+        });
         await browser.close();
 
         const browser2 = await puppeteer.launch(options);
         const page2 = await browser2.newPage();
         await page2.goto(server.EMPTY_PAGE);
-        expect(await page2.evaluate(() => localStorage.hey)).toBe('hello');
+        expect(
+          await page2.evaluate(() => {
+            return localStorage['hey'];
+          })
+        ).toBe('hello');
         await browser2.close();
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(() => {});
@@ -336,19 +357,20 @@ describe('Launcher specs', function () {
         const browser = await puppeteer.launch(options);
         const page = await browser.newPage();
         await page.goto(server.EMPTY_PAGE);
-        await page.evaluate(
-          () =>
-            (document.cookie =
-              'doSomethingOnlyOnce=true; expires=Fri, 31 Dec 9999 23:59:59 GMT')
-        );
+        await page.evaluate(() => {
+          return (document.cookie =
+            'doSomethingOnlyOnce=true; expires=Fri, 31 Dec 9999 23:59:59 GMT');
+        });
         await browser.close();
 
         const browser2 = await puppeteer.launch(options);
         const page2 = await browser2.newPage();
         await page2.goto(server.EMPTY_PAGE);
-        expect(await page2.evaluate(() => document.cookie)).toBe(
-          'doSomethingOnlyOnce=true'
-        );
+        expect(
+          await page2.evaluate(() => {
+            return document.cookie;
+          })
+        ).toBe('doSomethingOnlyOnce=true');
         await browser2.close();
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(() => {});
@@ -422,16 +444,16 @@ describe('Launcher specs', function () {
           const browser = await puppeteer.launch(
             Object.assign({}, defaultBrowserOptions, {
               // Ignore first and third default argument.
-              ignoreDefaultArgs: [defaultArgs[0], defaultArgs[2]],
+              ignoreDefaultArgs: [defaultArgs[0]!, defaultArgs[2]],
             })
           );
-          const spawnargs = browser.process().spawnargs;
+          const spawnargs = browser.process()!.spawnargs;
           if (!spawnargs) {
             throw new Error('spawnargs not present');
           }
-          expect(spawnargs.indexOf(defaultArgs[0])).toBe(-1);
-          expect(spawnargs.indexOf(defaultArgs[1])).not.toBe(-1);
-          expect(spawnargs.indexOf(defaultArgs[2])).toBe(-1);
+          expect(spawnargs.indexOf(defaultArgs[0]!)).toBe(-1);
+          expect(spawnargs.indexOf(defaultArgs[1]!)).not.toBe(-1);
+          expect(spawnargs.indexOf(defaultArgs[2]!)).toBe(-1);
           await browser.close();
         }
       );
@@ -444,22 +466,24 @@ describe('Launcher specs', function () {
           const browser = await puppeteer.launch(
             Object.assign({}, defaultBrowserOptions, {
               // Only the first argument is fixed, others are optional.
-              ignoreDefaultArgs: [defaultArgs[0]],
+              ignoreDefaultArgs: [defaultArgs[0]!],
             })
           );
-          const spawnargs = browser.process().spawnargs;
+          const spawnargs = browser.process()!.spawnargs;
           if (!spawnargs) {
             throw new Error('spawnargs not present');
           }
-          expect(spawnargs.indexOf(defaultArgs[0])).toBe(-1);
-          expect(spawnargs.indexOf(defaultArgs[1])).not.toBe(-1);
+          expect(spawnargs.indexOf(defaultArgs[0]!)).toBe(-1);
+          expect(spawnargs.indexOf(defaultArgs[1]!)).not.toBe(-1);
           await browser.close();
         }
       );
       it('should have default URL when launching browser', async function () {
         const { defaultBrowserOptions, puppeteer } = getTestState();
         const browser = await puppeteer.launch(defaultBrowserOptions);
-        const pages = (await browser.pages()).map((page) => page.url());
+        const pages = (await browser.pages()).map((page) => {
+          return page.url();
+        });
         expect(pages).toEqual(['about:blank']);
         await browser.close();
       });
@@ -473,7 +497,7 @@ describe('Launcher specs', function () {
           const browser = await puppeteer.launch(options);
           const pages = await browser.pages();
           expect(pages.length).toBe(1);
-          const page = pages[0];
+          const page = pages[0]!;
           if (page.url() !== server.EMPTY_PAGE) {
             await page.waitForNavigation();
           }
@@ -486,8 +510,10 @@ describe('Launcher specs', function () {
         const options = Object.assign({}, defaultBrowserOptions, {
           timeout: 1,
         });
-        let error = null;
-        await puppeteer.launch(options).catch((error_) => (error = error_));
+        let error!: Error;
+        await puppeteer.launch(options).catch((error_) => {
+          return (error = error_);
+        });
         expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
       });
       it('should set the default viewport', async () => {
@@ -550,8 +576,10 @@ describe('Launcher specs', function () {
           pipe: true,
         });
 
-        let error = null;
-        await puppeteer.launch(options).catch((error_) => (error = error_));
+        let error!: Error;
+        await puppeteer.launch(options).catch((error_) => {
+          return (error = error_);
+        });
         expect(error.message).toContain('either pipe or debugging port');
       });
       itChromeOnly(
@@ -575,11 +603,11 @@ describe('Launcher specs', function () {
     });
 
     describe('Puppeteer.launch', function () {
-      let productName;
+      let productName!: Product;
 
       before(async () => {
         const { puppeteer } = getTestState();
-        productName = puppeteer._productName;
+        productName = puppeteer._productName!;
       });
 
       after(async () => {
@@ -639,11 +667,19 @@ describe('Launcher specs', function () {
           browserWSEndpoint: originalBrowser.wsEndpoint(),
         });
         const page = await otherBrowser.newPage();
-        expect(await page.evaluate(() => 7 * 8)).toBe(56);
+        expect(
+          await page.evaluate(() => {
+            return 7 * 8;
+          })
+        ).toBe(56);
         otherBrowser.disconnect();
 
         const secondPage = await originalBrowser.newPage();
-        expect(await secondPage.evaluate(() => 7 * 6)).toBe(42);
+        expect(
+          await secondPage.evaluate(() => {
+            return 7 * 6;
+          })
+        ).toBe(42);
         await originalBrowser.close();
       });
       it('should be able to close remote browser', async () => {
@@ -670,16 +706,18 @@ describe('Launcher specs', function () {
           ignoreHTTPSErrors: true,
         });
         const page = await browser.newPage();
-        let error = null;
+        let error!: Error;
         const [serverRequest, response] = await Promise.all([
           httpsServer.waitForRequest('/empty.html'),
-          page.goto(httpsServer.EMPTY_PAGE).catch((error_) => (error = error_)),
+          page.goto(httpsServer.EMPTY_PAGE).catch((error_) => {
+            return (error = error_);
+          }),
         ]);
-        expect(error).toBe(null);
+        expect(error).toBeUndefined();
         expect(response.ok()).toBe(true);
         expect(response.securityDetails()).toBeTruthy();
         const protocol = (serverRequest.socket as TLSSocket)
-          .getProtocol()
+          .getProtocol()!
           .replace('v', ' ');
         expect(response.securityDetails().protocol()).toBe(protocol);
         await page.close();
@@ -700,8 +738,9 @@ describe('Launcher specs', function () {
 
         const browser = await puppeteer.connect({
           browserWSEndpoint,
-          targetFilter: (targetInfo: Protocol.Target.TargetInfo) =>
-            !targetInfo.url?.includes('should-be-ignored'),
+          targetFilter: (targetInfo: Protocol.Target.TargetInfo) => {
+            return !targetInfo.url?.includes('should-be-ignored');
+          },
         });
 
         const pages = await browser.pages();
@@ -711,10 +750,13 @@ describe('Launcher specs', function () {
         await browser.disconnect();
         await originalBrowser.close();
 
-        expect(pages.map((p: Page) => p.url()).sort()).toEqual([
-          'about:blank',
-          server.EMPTY_PAGE,
-        ]);
+        expect(
+          pages
+            .map((p: Page) => {
+              return p.url();
+            })
+            .sort()
+        ).toEqual(['about:blank', server.EMPTY_PAGE]);
       });
       itFailsFirefox(
         'should be able to reconnect to a disconnected browser',
@@ -729,10 +771,9 @@ describe('Launcher specs', function () {
 
           const browser = await puppeteer.connect({ browserWSEndpoint });
           const pages = await browser.pages();
-          const restoredPage = pages.find(
-            (page) =>
-              page.url() === server.PREFIX + '/frames/nested-frames.html'
-          );
+          const restoredPage = pages.find((page) => {
+            return page.url() === server.PREFIX + '/frames/nested-frames.html';
+          })!;
           expect(utils.dumpFrames(restoredPage.mainFrame())).toEqual([
             'http://localhost:<PORT>/frames/nested-frames.html',
             '    http://localhost:<PORT>/frames/two-frames.html (2frames)',
@@ -740,7 +781,11 @@ describe('Launcher specs', function () {
             '        http://localhost:<PORT>/frames/frame.html (dos)',
             '    http://localhost:<PORT>/frames/frame.html (aframe)',
           ]);
-          expect(await restoredPage.evaluate(() => 7 * 8)).toBe(56);
+          expect(
+            await restoredPage.evaluate(() => {
+              return 7 * 8;
+            })
+          ).toBe(56);
           await browser.close();
         }
       );
@@ -755,13 +800,23 @@ describe('Launcher specs', function () {
             browserWSEndpoint: browserOne.wsEndpoint(),
           });
           const [page1, page2] = await Promise.all([
-            new Promise<Page>((x) =>
-              browserOne.once('targetcreated', (target) => x(target.page()))
-            ),
+            new Promise<Page>((x) => {
+              return browserOne.once('targetcreated', (target) => {
+                return x(target.page());
+              });
+            }),
             browserTwo.newPage(),
           ]);
-          expect(await page1.evaluate(() => 7 * 8)).toBe(56);
-          expect(await page2.evaluate(() => 7 * 6)).toBe(42);
+          expect(
+            await page1.evaluate(() => {
+              return 7 * 8;
+            })
+          ).toBe(56);
+          expect(
+            await page2.evaluate(() => {
+              return 7 * 6;
+            })
+          ).toBe(42);
           await browserOne.close();
         }
       );
@@ -775,12 +830,14 @@ describe('Launcher specs', function () {
 
         const browserTwo = await puppeteer.connect({ browserWSEndpoint });
         const pages = await browserTwo.pages();
-        const pageTwo = pages.find((page) => page.url() === server.EMPTY_PAGE);
+        const pageTwo = pages.find((page) => {
+          return page.url() === server.EMPTY_PAGE;
+        })!;
         await pageTwo.reload();
         const bodyHandle = await pageTwo.waitForSelector('body', {
           timeout: 10000,
         });
-        await bodyHandle.dispose();
+        await bodyHandle!.dispose();
         await browserTwo.close();
       });
     });
@@ -802,13 +859,15 @@ describe('Launcher specs', function () {
         const sandbox = sinon.createSandbox();
 
         beforeEach(() => {
-          process.env.PUPPETEER_EXECUTABLE_PATH = '';
+          process.env['PUPPETEER_EXECUTABLE_PATH'] = '';
           sandbox
             .stub(process.env, 'PUPPETEER_EXECUTABLE_PATH')
             .value('SOME_CUSTOM_EXECUTABLE');
         });
 
-        afterEach(() => sandbox.restore());
+        afterEach(() => {
+          return sandbox.restore();
+        });
 
         it('its value is returned', async () => {
           const { puppeteer } = getTestState();
@@ -840,13 +899,15 @@ describe('Launcher specs', function () {
             const sandbox = sinon.createSandbox();
 
             beforeEach(() => {
-              process.env.PUPPETEER_EXECUTABLE_PATH = '';
+              process.env['PUPPETEER_EXECUTABLE_PATH'] = '';
               sandbox
                 .stub(process.env, 'PUPPETEER_EXECUTABLE_PATH')
                 .value('SOME_CUSTOM_EXECUTABLE');
             });
 
-            afterEach(() => sandbox.restore());
+            afterEach(() => {
+              return sandbox.restore();
+            });
 
             it('its value is returned', async () => {
               const { puppeteer } = getTestState();
@@ -888,10 +949,16 @@ describe('Launcher specs', function () {
       const { server, puppeteer, defaultBrowserOptions } = getTestState();
 
       const browser = await puppeteer.launch(defaultBrowserOptions);
-      const events = [];
-      browser.on('targetcreated', () => events.push('CREATED'));
-      browser.on('targetchanged', () => events.push('CHANGED'));
-      browser.on('targetdestroyed', () => events.push('DESTROYED'));
+      const events: string[] = [];
+      browser.on('targetcreated', () => {
+        return events.push('CREATED');
+      });
+      browser.on('targetchanged', () => {
+        return events.push('CHANGED');
+      });
+      browser.on('targetdestroyed', () => {
+        return events.push('DESTROYED');
+      });
       const page = await browser.newPage();
       await page.goto(server.EMPTY_PAGE);
       await page.close();
@@ -911,9 +978,15 @@ describe('Launcher specs', function () {
       let disconnectedOriginal = 0;
       let disconnectedRemote1 = 0;
       let disconnectedRemote2 = 0;
-      originalBrowser.on('disconnected', () => ++disconnectedOriginal);
-      remoteBrowser1.on('disconnected', () => ++disconnectedRemote1);
-      remoteBrowser2.on('disconnected', () => ++disconnectedRemote2);
+      originalBrowser.on('disconnected', () => {
+        return ++disconnectedOriginal;
+      });
+      remoteBrowser1.on('disconnected', () => {
+        return ++disconnectedRemote1;
+      });
+      remoteBrowser2.on('disconnected', () => {
+        return ++disconnectedRemote2;
+      });
 
       await Promise.all([
         utils.waitEvent(remoteBrowser2, 'disconnected'),

@@ -111,7 +111,9 @@ const waitFor = async (
   return domWorld._waitForSelectorInPage(
     (_: Element, selector: string) =>
       (
-        globalThis as unknown as { ariaQuerySelector(selector: string): void }
+        globalThis as any as unknown as {
+          ariaQuerySelector(selector: string): void;
+        }
       ).ariaQuerySelector(selector),
     selector,
     options,

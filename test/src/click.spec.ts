@@ -20,7 +20,7 @@ import {
   setupTestPageAndContextHooks,
   setupTestBrowserHooks,
   itFailsFirefox,
-} from './mocha-utils'; // eslint-disable-line import/extensions
+} from './mocha-utils.js';
 import utils from './utils.js';
 
 describe('Page.click', function () {
@@ -31,7 +31,11 @@ describe('Page.click', function () {
 
     await page.goto(server.PREFIX + '/input/button.html');
     await page.click('button');
-    expect(await page.evaluate(() => globalThis.result)).toBe('Clicked');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).result;
+      })
+    ).toBe('Clicked');
   });
   it('should click svg', async () => {
     const { page } = getTestState();
@@ -42,7 +46,11 @@ describe('Page.click', function () {
         </svg>
       `);
     await page.click('circle');
-    expect(await page.evaluate(() => globalThis.__CLICKED)).toBe(42);
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).__CLICKED;
+      })
+    ).toBe(42);
   });
   itFailsFirefox(
     'should click the button if window.Node is removed',
@@ -50,9 +58,16 @@ describe('Page.click', function () {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/input/button.html');
-      await page.evaluate(() => delete window.Node);
+      await page.evaluate(() => {
+        // @ts-expect-error Expected.
+        return delete window.Node;
+      });
       await page.click('button');
-      expect(await page.evaluate(() => globalThis.result)).toBe('Clicked');
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).result;
+        })
+      ).toBe('Clicked');
     }
   );
   // @see https://github.com/puppeteer/puppeteer/issues/4281
@@ -68,7 +83,11 @@ describe('Page.click', function () {
         <span onclick='javascript:window.CLICKED=42'></span>
       `);
     await page.click('span');
-    expect(await page.evaluate(() => globalThis.CLICKED)).toBe(42);
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).CLICKED;
+      })
+    ).toBe(42);
   });
   it('should not throw UnhandledPromiseRejection when page closes', async () => {
     const { page } = getTestState();
@@ -85,7 +104,11 @@ describe('Page.click', function () {
     await page.click('button');
     await page.goto(server.PREFIX + '/input/button.html');
     await page.click('button');
-    expect(await page.evaluate(() => globalThis.result)).toBe('Clicked');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).result;
+      })
+    ).toBe('Clicked');
   });
   itFailsFirefox('should click with disabled javascript', async () => {
     const { page, server } = getTestState();
@@ -108,7 +131,11 @@ describe('Page.click', function () {
         <span onclick='javascript:window.CLICKED = 42;'><i>woof</i><b>doggo</b></span>
       `);
     await page.click('span');
-    expect(await page.evaluate(() => globalThis.CLICKED)).toBe(42);
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).CLICKED;
+      })
+    ).toBe(42);
   });
   it('should select the text by triple clicking', async () => {
     const { page, server } = getTestState();
@@ -124,9 +151,9 @@ describe('Page.click', function () {
     expect(
       await page.evaluate(() => {
         const textarea = document.querySelector('textarea');
-        return textarea.value.substring(
-          textarea.selectionStart,
-          textarea.selectionEnd
+        return textarea!.value.substring(
+          textarea!.selectionStart,
+          textarea!.selectionEnd
         );
       })
     ).toBe(text);
@@ -135,11 +162,15 @@ describe('Page.click', function () {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/offscreenbuttons.html');
-    const messages = [];
-    page.on('console', (msg) => messages.push(msg.text()));
+    const messages: any[] = [];
+    page.on('console', (msg) => {
+      return messages.push(msg.text());
+    });
     for (let i = 0; i < 11; ++i) {
       // We might've scrolled to click a button - reset to (0, 0).
-      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.evaluate(() => {
+        return window.scrollTo(0, 0);
+      });
       await page.click(`#btn${i}`);
     }
     expect(messages).toEqual([
@@ -162,17 +193,33 @@ describe('Page.click', function () {
 
     await page.goto(server.PREFIX + '/wrappedlink.html');
     await page.click('a');
-    expect(await page.evaluate(() => globalThis.__clicked)).toBe(true);
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).__clicked;
+      })
+    ).toBe(true);
   });
 
   it('should click on checkbox input and toggle', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/checkbox.html');
-    expect(await page.evaluate(() => globalThis.result.check)).toBe(null);
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).result.check;
+      })
+    ).toBe(null);
     await page.click('input#agree');
-    expect(await page.evaluate(() => globalThis.result.check)).toBe(true);
-    expect(await page.evaluate(() => globalThis.result.events)).toEqual([
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).result.check;
+      })
+    ).toBe(true);
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).result.events;
+      })
+    ).toEqual([
       'mouseover',
       'mouseenter',
       'mousemove',
@@ -183,33 +230,49 @@ describe('Page.click', function () {
       'change',
     ]);
     await page.click('input#agree');
-    expect(await page.evaluate(() => globalThis.result.check)).toBe(false);
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).result.check;
+      })
+    ).toBe(false);
   });
 
   itFailsFirefox('should click on checkbox label and toggle', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/checkbox.html');
-    expect(await page.evaluate(() => globalThis.result.check)).toBe(null);
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).result.check;
+      })
+    ).toBe(null);
     await page.click('label[for="agree"]');
-    expect(await page.evaluate(() => globalThis.result.check)).toBe(true);
-    expect(await page.evaluate(() => globalThis.result.events)).toEqual([
-      'click',
-      'input',
-      'change',
-    ]);
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).result.check;
+      })
+    ).toBe(true);
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).result.events;
+      })
+    ).toEqual(['click', 'input', 'change']);
     await page.click('label[for="agree"]');
-    expect(await page.evaluate(() => globalThis.result.check)).toBe(false);
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).result.check;
+      })
+    ).toBe(false);
   });
 
   it('should fail to click a missing button', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/button.html');
-    let error = null;
-    await page
-      .click('button.does-not-exist')
-      .catch((error_) => (error = error_));
+    let error!: Error;
+    await page.click('button.does-not-exist').catch((error_) => {
+      return (error = error_);
+    });
     expect(error.message).toBe(
       'No element found for selector: button.does-not-exist'
     );
@@ -218,7 +281,7 @@ describe('Page.click', function () {
   it('should not hang with touch-enabled viewports', async () => {
     const { page, puppeteer } = getTestState();
 
-    await page.setViewport(puppeteer.devices['iPhone 6'].viewport);
+    await page.setViewport(puppeteer.devices['iPhone 6']!.viewport);
     await page.mouse.down();
     await page.mouse.move(100, 10);
     await page.mouse.up();
@@ -229,13 +292,15 @@ describe('Page.click', function () {
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.click('#button-5');
     expect(
-      await page.evaluate(() => document.querySelector('#button-5').textContent)
+      await page.evaluate(() => {
+        return document.querySelector('#button-5')!.textContent;
+      })
     ).toBe('clicked');
     await page.click('#button-80');
     expect(
-      await page.evaluate(
-        () => document.querySelector('#button-80').textContent
-      )
+      await page.evaluate(() => {
+        return document.querySelector('#button-80')!.textContent;
+      })
     ).toBe('clicked');
   });
   it('should double click the button', async () => {
@@ -243,14 +308,14 @@ describe('Page.click', function () {
 
     await page.goto(server.PREFIX + '/input/button.html');
     await page.evaluate(() => {
-      globalThis.double = false;
+      (globalThis as any).double = false;
       const button = document.querySelector('button');
-      button.addEventListener('dblclick', () => {
-        globalThis.double = true;
+      button!.addEventListener('dblclick', () => {
+        (globalThis as any).double = true;
       });
     });
-    const button = await page.$('button');
-    await button.click({ clickCount: 2 });
+    const button = (await page.$('button'))!;
+    await button!.click({ clickCount: 2 });
     expect(await page.evaluate('double')).toBe(true);
     expect(await page.evaluate('result')).toBe('Clicked');
   });
@@ -260,19 +325,27 @@ describe('Page.click', function () {
     await page.goto(server.PREFIX + '/input/button.html');
     await page.evaluate(() => {
       const button = document.querySelector('button');
-      button.textContent = 'Some really long text that will go offscreen';
-      button.style.position = 'absolute';
-      button.style.left = '368px';
+      button!.textContent = 'Some really long text that will go offscreen';
+      button!.style.position = 'absolute';
+      button!.style.left = '368px';
     });
     await page.click('button');
-    expect(await page.evaluate(() => globalThis.result)).toBe('Clicked');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).result;
+      })
+    ).toBe('Clicked');
   });
   it('should click a rotated button', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/rotatedButton.html');
     await page.click('button');
-    expect(await page.evaluate(() => globalThis.result)).toBe('Clicked');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).result;
+      })
+    ).toBe('Clicked');
   });
   it('should fire contextmenu event on right click', async () => {
     const { page, server } = getTestState();
@@ -280,7 +353,9 @@ describe('Page.click', function () {
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.click('#button-8', { button: 'right' });
     expect(
-      await page.evaluate(() => document.querySelector('#button-8').textContent)
+      await page.evaluate(() => {
+        return document.querySelector('#button-8')!.textContent;
+      })
     ).toBe('context menu');
   });
   it('should fire aux event on middle click', async () => {
@@ -289,7 +364,9 @@ describe('Page.click', function () {
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.click('#button-8', { button: 'middle' });
     expect(
-      await page.evaluate(() => document.querySelector('#button-8').textContent)
+      await page.evaluate(() => {
+        return document.querySelector('#button-8')!.textContent;
+      })
     ).toBe('aux click');
   });
   it('should fire back click', async () => {
@@ -298,7 +375,9 @@ describe('Page.click', function () {
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.click('#button-8', { button: 'back' });
     expect(
-      await page.evaluate(() => document.querySelector('#button-8').textContent)
+      await page.evaluate(() => {
+        return document.querySelector('#button-8')!.textContent;
+      })
     ).toBe('back click');
   });
   it('should fire forward click', async () => {
@@ -307,7 +386,9 @@ describe('Page.click', function () {
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.click('#button-8', { button: 'forward' });
     expect(
-      await page.evaluate(() => document.querySelector('#button-8').textContent)
+      await page.evaluate(() => {
+        return document.querySelector('#button-8')!.textContent;
+      })
     ).toBe('forward click');
   });
   // @see https://github.com/puppeteer/puppeteer/issues/206
@@ -329,9 +410,13 @@ describe('Page.click', function () {
       server.PREFIX + '/input/button.html'
     );
     const frame = page.frames()[1];
-    const button = await frame.$('button');
-    await button.click();
-    expect(await frame.evaluate(() => globalThis.result)).toBe('Clicked');
+    const button = await frame!.$('button');
+    await button!.click();
+    expect(
+      await frame!.evaluate(() => {
+        return (globalThis as any).result;
+      })
+    ).toBe('Clicked');
   });
   // @see https://github.com/puppeteer/puppeteer/issues/4110
   xit('should click the button with fixed position inside an iframe', async () => {
@@ -348,17 +433,25 @@ describe('Page.click', function () {
       server.CROSS_PROCESS_PREFIX + '/input/button.html'
     );
     const frame = page.frames()[1];
-    await frame.$eval('button', (button: HTMLElement) =>
-      button.style.setProperty('position', 'fixed')
-    );
-    await frame.click('button');
-    expect(await frame.evaluate(() => globalThis.result)).toBe('Clicked');
+    await frame!.$eval('button', (button: Element) => {
+      return (button as HTMLElement).style.setProperty('position', 'fixed');
+    });
+    await frame!.click('button');
+    expect(
+      await frame!.evaluate(() => {
+        return (globalThis as any).result;
+      })
+    ).toBe('Clicked');
   });
   it('should click the button with deviceScaleFactor set', async () => {
     const { page, server } = getTestState();
 
     await page.setViewport({ width: 400, height: 400, deviceScaleFactor: 5 });
-    expect(await page.evaluate(() => window.devicePixelRatio)).toBe(5);
+    expect(
+      await page.evaluate(() => {
+        return window.devicePixelRatio;
+      })
+    ).toBe(5);
     await page.setContent('<div style="width:100px;height:100px">spacer</div>');
     await utils.attachFrame(
       page,
@@ -366,8 +459,12 @@ describe('Page.click', function () {
       server.PREFIX + '/input/button.html'
     );
     const frame = page.frames()[1];
-    const button = await frame.$('button');
-    await button.click();
-    expect(await frame.evaluate(() => globalThis.result)).toBe('Clicked');
+    const button = await frame!.$('button');
+    await button!.click();
+    expect(
+      await frame!.evaluate(() => {
+        return (globalThis as any).result;
+      })
+    ).toBe('Clicked');
   });
 });
