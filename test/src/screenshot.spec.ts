@@ -194,7 +194,7 @@ describe('Screenshots', function () {
       await page.setViewport({ width: 500, height: 500 });
       await page.goto(server.PREFIX + '/grid.html');
       const screenshot = await page.screenshot({
-        fromSurface: false
+        fromSurface: false,
       });
       expect(screenshot).toBeGolden('screenshot-fromsurface-false.png');
     });
