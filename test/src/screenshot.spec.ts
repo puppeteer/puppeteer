@@ -188,14 +188,14 @@ describe('Screenshots', function () {
         'screenshot-sanity.png'
       );
     });
-    itHeadfulOnly('should work in \'fromSurface: false\' mode', async () => {
+    itHeadfulOnly('should work in "fromSurface: false" mode', async () => {
       const { page, server } = getTestState();
 
       await page.setViewport({ width: 500, height: 500 });
       await page.goto(server.PREFIX + '/grid.html');
       const screenshot = await page.screenshot({
         fromSurface: false
-	  });
+      });
       expect(screenshot).toBeGolden('screenshot-fromsurface-false.png');
     });
   });
