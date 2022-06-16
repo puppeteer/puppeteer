@@ -185,6 +185,17 @@ export const itHeadlessOnly = (
   }
 };
 
+export const itHeadfulOnly = (
+  description: string,
+  body: Mocha.Func
+): Mocha.Test => {
+  if (isChrome && isHeadless === false) {
+    return it(description, body);
+  } else {
+    return xit(description, body);
+  }
+};
+
 export const itFirefoxOnly = (
   description: string,
   body: Mocha.Func
