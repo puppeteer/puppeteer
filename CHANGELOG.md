@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [14.4.1](https://github.com/puppeteer/puppeteer/compare/v14.4.0...v14.4.1) (2022-06-17)
+
+
+### Bug Fixes
+
+* avoid `instanceof Object` check in `isErrorLike` ([#8527](https://github.com/puppeteer/puppeteer/issues/8527)) ([6cd5cd0](https://github.com/puppeteer/puppeteer/commit/6cd5cd043997699edca6e3458f90adc1118cf4a5))
+* export `devices`, `errors`, and more ([cba58a1](https://github.com/puppeteer/puppeteer/commit/cba58a12c4e2043f6a5acf7d4754e4a7b7f6e198))
+
 ## [14.4.0](https://github.com/puppeteer/puppeteer/compare/v14.3.0...v14.4.0) (2022-06-13)
 
 
