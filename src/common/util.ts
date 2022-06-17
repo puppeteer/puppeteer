@@ -407,7 +407,9 @@ interface ErrorLike extends Error {
 }
 
 export function isErrorLike(obj: unknown): obj is ErrorLike {
-  return obj instanceof Object && 'name' in obj && 'message' in obj;
+  return (
+    typeof obj === 'object' && obj !== null && 'name' in obj && 'message' in obj
+  );
 }
 
 export function isErrnoException(obj: unknown): obj is NodeJS.ErrnoException {
