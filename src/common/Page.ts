@@ -2751,7 +2751,7 @@ export class Page extends EventEmitter {
    *
    * - `fromSurface` : When true, captures screenshot
    *   {@link https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot
-   *   from the surface rather than the view}. When false, works only in
+   *   | from the surface rather than the view}. When false, works only in
    *   headful mode and ignores page viewport (but not browser window's
    *   bounds). Defaults to `true`.
    *
