@@ -60,6 +60,7 @@ jobs:
       - name: Create PR
         uses: peter-evans/create-pull-request@v4
         with:
+          token: ${{secrets.PR_PAT}}
           committer: 'release-please[bot] <55107282+release-please[bot]@users.noreply.github.com>'
           author: 'release-please[bot] <55107282+release-please[bot]@users.noreply.github.com>'
           title: 'chore: unfreeze version on docs'
