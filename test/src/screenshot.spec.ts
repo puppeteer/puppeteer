@@ -20,6 +20,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   itFailsFirefox,
+  itHeadfulOnly,
 } from './mocha-utils.js';
 
 describe('Screenshots', function () {
