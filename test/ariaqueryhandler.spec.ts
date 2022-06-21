@@ -169,15 +169,13 @@ describeChromeOnly('AriaQueryHandler', () => {
     it('$$eval should handle many elements', async () => {
       const { page } = getTestState();
       await page.setContent('');
-      await page.evaluate(
-        `
-        for (var i = 0; i <= 10000; i++) {
-            const button = document.createElement('button');
-            button.textContent = i;
-            document.body.appendChild(button);
+      await page.evaluate(() => {
+        for (let i = 0; i <= 10000; i++) {
+          const button = document.createElement('button');
+          button.textContent = i.toString();
+          document.body.appendChild(button);
         }
-        `
-      );
+      });
       const sum = await page.$$eval('aria/[role="button"]', (buttons) =>
         buttons.reduce((acc, button) => acc + Number(button.textContent), 0)
       );
@@ -238,7 +236,9 @@ describeChromeOnly('AriaQueryHandler', () => {
       await page.exposeFunction('ariaQuerySelector', (a, b) => a + b);
       await page.evaluate(addElement, 'button');
       await page.waitForSelector('aria/[role="button"]');
-      const result = await page.evaluate('globalThis.ariaQuerySelector(2,8)');
+      const result = await page.evaluate(() =>
+        globalThis.ariaQuerySelector(2, 8)
+      );
       expect(result).toBe(10);
     });
 

@@ -78,11 +78,9 @@ describe('JSHandle', function () {
 
       const aHandle = await page.evaluateHandle(() => {
         globalThis.FOO = 123;
-        return window;
+        return window as typeof window & { FOO: number };
       });
-      expect(await page.evaluate((e: { FOO: number }) => e.FOO, aHandle)).toBe(
-        123
-      );
+      expect(await page.evaluate((e) => e.FOO, aHandle)).toBe(123);
     });
   });
 
@@ -118,7 +116,7 @@ describe('JSHandle', function () {
       const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => ({ foo: 'bar' }));
-      const json = await aHandle.jsonValue<Record<string, string>>();
+      const json = await aHandle.jsonValue();
       expect(json).toEqual({ foo: 'bar' });
     });
 
@@ -150,7 +148,7 @@ describe('JSHandle', function () {
     it('should throw for circular objects', async () => {
       const { page, isChrome } = getTestState();
 
-      const windowHandle = await page.evaluateHandle('window');
+      const windowHandle = await page.evaluateHandle(() => window);
       let error = null;
       await windowHandle.jsonValue().catch((error_) => (error = error_));
       if (isChrome)
@@ -247,58 +245,60 @@ describe('JSHandle', function () {
     it('should work with different subtypes', async () => {
       const { page } = getTestState();
 
-      expect((await page.evaluateHandle('(function(){})')).toString()).toBe(
+      expect((await page.evaluateHandle(() => function () {})).toString()).toBe(
         'JSHandle@function'
       );
-      expect((await page.evaluateHandle('12')).toString()).toBe('JSHandle:12');
-      expect((await page.evaluateHandle('true')).toString()).toBe(
+      expect((await page.evaluateHandle(() => 12)).toString()).toBe(
+        'JSHandle:12'
+      );
+      expect((await page.evaluateHandle(() => true)).toString()).toBe(
         'JSHandle:true'
       );
-      expect((await page.evaluateHandle('undefined')).toString()).toBe(
+      expect((await page.evaluateHandle(() => undefined)).toString()).toBe(
         'JSHandle:undefined'
       );
-      expect((await page.evaluateHandle('"foo"')).toString()).toBe(
+      expect((await page.evaluateHandle(() => 'foo')).toString()).toBe(
         'JSHandle:foo'
       );
-      expect((await page.evaluateHandle('Symbol()')).toString()).toBe(
+      expect((await page.evaluateHandle(() => Symbol())).toString()).toBe(
         'JSHandle@symbol'
       );
-      expect((await page.evaluateHandle('new Map()')).toString()).toBe(
+      expect((await page.evaluateHandle(() => new Map())).toString()).toBe(
         'JSHandle@map'
       );
-      expect((await page.evaluateHandle('new Set()')).toString()).toBe(
+      expect((await page.evaluateHandle(() => new Set())).toString()).toBe(
         'JSHandle@set'
       );
-      expect((await page.evaluateHandle('[]')).toString()).toBe(
+      expect((await page.evaluateHandle(() => [])).toString()).toBe(
         'JSHandle@array'
       );
-      expect((await page.evaluateHandle('null')).toString()).toBe(
+      expect((await page.evaluateHandle(() => null)).toString()).toBe(
         'JSHandle:null'
       );
-      expect((await page.evaluateHandle('/foo/')).toString()).toBe(
+      expect((await page.evaluateHandle(() => /foo/)).toString()).toBe(
         'JSHandle@regexp'
       );
-      expect((await page.evaluateHandle('document.body')).toString()).toBe(
+      expect((await page.evaluateHandle(() => document.body)).toString()).toBe(
         'JSHandle@node'
       );
-      expect((await page.evaluateHandle('new Date()')).toString()).toBe(
+      expect((await page.evaluateHandle(() => new Date())).toString()).toBe(
         'JSHandle@date'
       );
-      expect((await page.evaluateHandle('new WeakMap()')).toString()).toBe(
+      expect((await page.evaluateHandle(() => new WeakMap())).toString()).toBe(
         'JSHandle@weakmap'
       );
-      expect((await page.evaluateHandle('new WeakSet()')).toString()).toBe(
+      expect((await page.evaluateHandle(() => new WeakSet())).toString()).toBe(
         'JSHandle@weakset'
       );
-      expect((await page.evaluateHandle('new Error()')).toString()).toBe(
+      expect((await page.evaluateHandle(() => new Error())).toString()).toBe(
         'JSHandle@error'
       );
-      expect((await page.evaluateHandle('new Int32Array()')).toString()).toBe(
-        'JSHandle@typedarray'
-      );
-      expect((await page.evaluateHandle('new Proxy({}, {})')).toString()).toBe(
-        'JSHandle@proxy'
-      );
+      expect(
+        (await page.evaluateHandle(() => new Int32Array())).toString()
+      ).toBe('JSHandle@typedarray');
+      expect(
+        (await page.evaluateHandle(() => new Proxy({}, {}))).toString()
+      ).toBe('JSHandle@proxy');
     });
   });
 

@@ -91,9 +91,11 @@ describe('DefaultBrowserContext', function () {
         value: '2',
       }
     );
-    expect(await page.evaluate('document.cookie')).toBe('cookie1=1; cookie2=2');
+    expect(await page.evaluate(() => document.cookie)).toBe(
+      'cookie1=1; cookie2=2'
+    );
     await page.deleteCookie({ name: 'cookie2' });
-    expect(await page.evaluate('document.cookie')).toBe('cookie1=1');
+    expect(await page.evaluate(() => document.cookie)).toBe('cookie1=1');
     expectCookieEquals(await page.cookies(), [
       {
         name: 'cookie1',

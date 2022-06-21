@@ -68,8 +68,8 @@ describe('ElementHandle specs', function () {
         '<div style="width: 100px; height: 100px">hello</div>'
       );
       const elementHandle = await page.$('div');
-      await page.evaluate<(element: HTMLElement) => void>(
-        (element) => (element.style.height = '200px'),
+      await page.evaluate(
+        (element) => ((element as HTMLElement).style.height = '200px'),
         elementHandle
       );
       const box = await elementHandle.boundingBox();
@@ -184,28 +184,24 @@ describe('ElementHandle specs', function () {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/shadow.html');
-      const buttonHandle = await page.evaluateHandle<ElementHandle>(
-        // @ts-expect-error button is expected to be in the page's scope.
-        () => button
-      );
+      const buttonHandle = (await page.evaluateHandle(
+        () => globalThis.button
+      )) as ElementHandle;
       await buttonHandle.click();
-      expect(
-        await page.evaluate(
-          // @ts-expect-error clicked is expected to be in the page's scope.
-          () => clicked
-        )
-      ).toBe(true);
+      expect(await page.evaluate(() => globalThis.clicked)).toBe(true);
     });
-    it('should work for TextNodes', async () => {
+    it('should throw for TextNodes', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/input/button.html');
-      const buttonTextNode = await page.evaluateHandle<ElementHandle>(
+      const buttonTextNode = (await page.evaluateHandle(
         () => document.querySelector('button').firstChild
-      );
-      let error = null;
-      await buttonTextNode.click().catch((error_) => (error = error_));
-      expect(error.message).toBe('Node is not of type HTMLElement');
+      )) as unknown as ElementHandle;
+      if (buttonTextNode) {
+        let error = null;
+        await buttonTextNode.click().catch((error_) => (error = error_));
+        expect(error.message).toBe('Node is not of type HTMLElement');
+      }
     });
     it('should throw for detached nodes', async () => {
       const { page, server } = getTestState();
@@ -299,11 +295,15 @@ describe('ElementHandle specs', function () {
       const el2 = await page.waitForSelector('#el1');
 
       expect(
-        await (await el2.waitForXPath('//div')).evaluate((el) => el.id)
+        await (
+          (await el2.waitForXPath('//div')) as ElementHandle<Element>
+        ).evaluate((el) => el.id)
       ).toStrictEqual('el2');
 
       expect(
-        await (await el2.waitForXPath('.//div')).evaluate((el) => el.id)
+        await (
+          (await el2.waitForXPath('.//div')) as ElementHandle<Element>
+        ).evaluate((el) => el.id)
       ).toStrictEqual('el2');
     });
   });
@@ -376,12 +376,7 @@ describe('ElementHandle specs', function () {
           document.querySelector(`[id="${selector}"]`),
       });
       const element = await page.$('getById/foo');
-      expect(
-        await page.evaluate<(element: HTMLElement) => string>(
-          (element) => element.id,
-          element
-        )
-      ).toBe('foo');
+      expect(await page.evaluate((element) => element.id, element)).toBe('foo');
       const handlerNamesAfterRegistering = puppeteer.customQueryHandlerNames();
       expect(handlerNamesAfterRegistering.includes('getById')).toBeTruthy();
 
@@ -429,10 +424,7 @@ describe('ElementHandle specs', function () {
       const classNames = await Promise.all(
         elements.map(
           async (element) =>
-            await page.evaluate<(element: HTMLElement) => string>(
-              (element) => element.className,
-              element
-            )
+            await page.evaluate((element) => element.className, element)
         )
       );
 

@@ -37,7 +37,7 @@ import { assert } from './assert.js';
  * @public
  */
 export class FileChooser {
-  private _element: ElementHandle;
+  private _element: ElementHandle<HTMLInputElement>;
   private _multiple: boolean;
   private _handled = false;
 
@@ -45,7 +45,7 @@ export class FileChooser {
    * @internal
    */
   constructor(
-    element: ElementHandle,
+    element: ElementHandle<HTMLInputElement>,
     event: Protocol.Page.FileChooserOpenedEvent
   ) {
     this._element = element;

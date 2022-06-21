@@ -16,8 +16,8 @@
 
 import { EventEmitter } from './EventEmitter.js';
 import { assert } from './assert.js';
-import { helper, debugError } from './helper.js';
-import { ExecutionContext, EVALUATION_SCRIPT_URL } from './ExecutionContext.js';
+import { debugError, helper } from './helper.js';
+import { EVALUATION_SCRIPT_URL, ExecutionContext } from './ExecutionContext.js';
 import {
   LifecycleWatcher,
   PuppeteerLifeCycleEvent,
@@ -25,19 +25,19 @@ import {
 import { DOMWorld, WaitForSelectorOptions } from './DOMWorld.js';
 import { NetworkManager } from './NetworkManager.js';
 import { TimeoutSettings } from './TimeoutSettings.js';
-import { Connection, CDPSession } from './Connection.js';
-import { JSHandle, ElementHandle } from './JSHandle.js';
+import { CDPSession, Connection } from './Connection.js';
+import { ElementHandle } from './JSHandle.js';
 import { MouseButton } from './Input.js';
 import { Page } from './Page.js';
 import { HTTPResponse } from './HTTPResponse.js';
 import { Protocol } from 'devtools-protocol';
 import {
-  SerializableOrJSHandle,
-  EvaluateHandleFn,
-  WrapElementHandle,
   EvaluateFn,
-  EvaluateFnReturnType,
-  UnwrapPromiseLike,
+  EvaluateHandleElementReturn,
+  EvaluateHandleFn,
+  EvaluateReturn,
+  EvaluateSubjectFn,
+  SerializableOrJSHandle,
 } from './EvalTypes.js';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
@@ -541,7 +541,7 @@ export interface FrameWaitForFunctionOptions {
    *
    * - `mutation` - to execute `pageFunction` on every DOM mutation.
    */
-  polling?: string | number;
+  polling?: 'raf' | 'mutation' | number;
   /**
    * Maximum time to wait in milliseconds. Defaults to `30000` (30 seconds).
    * Pass `0` to disable the timeout. Puppeteer's default timeout can be changed
@@ -844,32 +844,37 @@ export class Frame {
    * wrapped in an in-page object.
    *
    * This method behaves identically to {@link Page.evaluateHandle} except it's
-   * run within the context of the `frame`, rather than the entire page.
+   * run within the context of `frame`, rather than {@link Page.mainFrame}.
    *
    * @param pageFunction - a function that is run within the frame
    * @param args - arguments to be passed to the pageFunction
    */
-  async evaluateHandle<HandlerType extends JSHandle = JSHandle>(
-    pageFunction: EvaluateHandleFn,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<HandlerType> {
-    return this._mainWorld.evaluateHandle<HandlerType>(pageFunction, ...args);
+  async evaluateHandle<
+    Func extends EvaluateHandleFn<Args>,
+    Args extends SerializableOrJSHandle[]
+  >(
+    pageFunction: Func,
+    ...args: Args
+  ): Promise<EvaluateHandleElementReturn<Func>> {
+    return this._mainWorld.evaluateHandle(pageFunction, ...args) as Promise<
+      EvaluateHandleElementReturn<Func>
+    >;
   }
 
   /**
    * @remarks
    *
    * This method behaves identically to {@link Page.evaluate} except it's run
-   * within the context of the `frame`, rather than the entire page.
+   * within the context of the `frame`, rather than {@link Page.mainFrame}.
    *
    * @param pageFunction - a function that is run within the frame
    * @param args - arguments to be passed to the pageFunction
    */
-  async evaluate<T extends EvaluateFn>(
-    pageFunction: T,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<UnwrapPromiseLike<EvaluateFnReturnType<T>>> {
-    return this._mainWorld.evaluate<T>(pageFunction, ...args);
+  async evaluate<
+    Func extends EvaluateFn<Args>,
+    Args extends SerializableOrJSHandle[]
+  >(pageFunction: Func, ...args: Args): Promise<EvaluateReturn<Func>> {
+    return this._mainWorld.evaluate(pageFunction, ...args);
   }
 
   /**
@@ -913,15 +918,15 @@ export class Frame {
    * @param pageFunction - the function to be evaluated in the frame's context
    * @param args - additional arguments to pass to `pageFunction`
    */
-  async $eval<ReturnType>(
+  async $eval<
+    Func extends EvaluateSubjectFn<Element, Args>,
+    Args extends SerializableOrJSHandle[]
+  >(
     selector: string,
-    pageFunction: (
-      element: Element,
-      ...args: unknown[]
-    ) => ReturnType | Promise<ReturnType>,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<WrapElementHandle<ReturnType>> {
-    return this._mainWorld.$eval<ReturnType>(selector, pageFunction, ...args);
+    pageFunction: Func,
+    ...args: Args
+  ): Promise<EvaluateReturn<Func>> {
+    return this._mainWorld.$eval(selector, pageFunction, ...args);
   }
 
   /**
@@ -943,15 +948,15 @@ export class Frame {
    * @param pageFunction - the function to be evaluated in the frame's context
    * @param args - additional arguments to pass to `pageFunction`
    */
-  async $$eval<ReturnType>(
+  async $$eval<
+    Func extends EvaluateSubjectFn<Element[], Args>,
+    Args extends SerializableOrJSHandle[]
+  >(
     selector: string,
-    pageFunction: (
-      elements: Element[],
-      ...args: unknown[]
-    ) => ReturnType | Promise<ReturnType>,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<WrapElementHandle<ReturnType>> {
-    return this._mainWorld.$$eval<ReturnType>(selector, pageFunction, ...args);
+    pageFunction: Func,
+    ...args: Args
+  ): Promise<EvaluateReturn<Func>> {
+    return this._mainWorld.$$eval(selector, pageFunction, ...args);
   }
 
   /**
@@ -1220,19 +1225,34 @@ export class Frame {
    * {@link Frame.waitForXPath}, {@link Frame.waitForFunction} or
    * {@link Frame.waitForTimeout}.
    */
-  waitFor(
-    selectorOrFunctionOrTimeout: string | number | Function,
-    options: Record<string, unknown> = {},
-    ...args: SerializableOrJSHandle[]
-  ): Promise<JSHandle | null> {
+  waitFor<
+    Subject extends string | number | EvaluateHandleFn<Args>,
+    Args extends Subject extends string | number ? [] : SerializableOrJSHandle[]
+  >(
+    selectorOrFunctionOrTimeout: Subject,
+    options: Subject extends (...args: never) => unknown
+      ? FrameWaitForFunctionOptions
+      : WaitForSelectorOptions = {},
+    ...args: Args
+  ): Promise<
+    Subject extends (...args: never) => unknown
+      ? EvaluateHandleElementReturn<Subject>
+      : Subject extends string
+      ? ElementHandle | null
+      : null
+  > {
     console.warn(
       'waitFor is deprecated and will be removed in a future release. See https://github.com/puppeteer/puppeteer/issues/6214 for details and how to migrate your code.'
     );
 
+    // All the `as never` casts are a hack to avoid
+    // TypeScript's doubt if the return type is correct.
+    // Not ideal, but this is legacy anyway
     if (helper.isString(selectorOrFunctionOrTimeout)) {
       const string = selectorOrFunctionOrTimeout;
-      if (xPathPattern.test(string)) return this.waitForXPath(string, options);
-      return this.waitForSelector(string, options);
+      if (xPathPattern.test(string))
+        return this.waitForXPath(string, options) as never;
+      return this.waitForSelector(string, options) as never;
     }
     if (helper.isNumber(selectorOrFunctionOrTimeout))
       return new Promise((fulfill) =>
@@ -1243,7 +1263,7 @@ export class Frame {
         selectorOrFunctionOrTimeout,
         options,
         ...args
-      );
+      ) as never;
     return Promise.reject(
       new Error(
         'Unsupported target type: ' + typeof selectorOrFunctionOrTimeout
@@ -1313,7 +1333,7 @@ export class Frame {
   async waitForSelector(
     selector: string,
     options: WaitForSelectorOptions = {}
-  ): Promise<ElementHandle | null> {
+  ): Promise<ElementHandle<Element> | null> {
     const handle = await this._secondaryWorld.waitForSelector(
       selector,
       options
@@ -1387,12 +1407,19 @@ export class Frame {
    * @param args - arguments to pass to the `pageFunction`.
    * @returns the promise which resolve when the `pageFunction` returns a truthy value.
    */
-  waitForFunction(
-    pageFunction: Function | string,
+  waitForFunction<
+    Func extends EvaluateHandleFn<Args>,
+    Args extends SerializableOrJSHandle[]
+  >(
+    pageFunction: Func,
     options: FrameWaitForFunctionOptions = {},
-    ...args: SerializableOrJSHandle[]
-  ): Promise<JSHandle> {
-    return this._mainWorld.waitForFunction(pageFunction, options, ...args);
+    ...args: Args
+  ): Promise<EvaluateHandleElementReturn<Func>> {
+    return this._mainWorld.waitForFunction(
+      pageFunction,
+      options,
+      ...args
+    ) as Promise<EvaluateHandleElementReturn<Func>>;
   }
 
   /**

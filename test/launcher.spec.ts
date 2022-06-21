@@ -400,7 +400,7 @@ describe('Launcher specs', function () {
         options.ignoreDefaultArgs = true;
         const browser = await puppeteer.launch(options);
         const page = await browser.newPage();
-        expect(await page.evaluate('11 * 11')).toBe(121);
+        expect(await page.evaluate(() => 11 * 11)).toBe(121);
         await page.close();
         await browser.close();
       });
@@ -489,8 +489,8 @@ describe('Launcher specs', function () {
         });
         const browser = await puppeteer.launch(options);
         const page = await browser.newPage();
-        expect(await page.evaluate('window.innerWidth')).toBe(456);
-        expect(await page.evaluate('window.innerHeight')).toBe(789);
+        expect(await page.evaluate(() => window.innerWidth)).toBe(456);
+        expect(await page.evaluate(() => window.innerHeight)).toBe(789);
         await browser.close();
       });
       it('should disable the default viewport', async () => {

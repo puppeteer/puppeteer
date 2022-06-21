@@ -110,7 +110,9 @@ describeFailsFirefox('Workers', function () {
       () => new Worker(`data:text/javascript,console.log(1)`)
     );
     const worker = await workerCreatedPromise;
-    expect(await (await worker.executionContext()).evaluate('1+1')).toBe(2);
+    expect(await (await worker.executionContext()).evaluate(() => 1 + 1)).toBe(
+      2
+    );
   });
   it('should report errors', async () => {
     const { page } = getTestState();

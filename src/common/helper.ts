@@ -23,6 +23,7 @@ import { Protocol } from 'devtools-protocol';
 import { CommonEventEmitter } from './EventEmitter.js';
 import { assert } from './assert.js';
 import { isNode } from '../environment.js';
+import { ConstantSerializable } from './EvalTypes.js';
 
 export const debugError = debug('puppeteer:error');
 
@@ -171,21 +172,29 @@ async function waitForEvent<T>(
   return result;
 }
 
-function evaluationString(fun: Function | string, ...args: unknown[]): string {
+function evaluationFunc<
+  Func extends string | ((...args: Args) => void),
+  Args extends Func extends string ? [] : ConstantSerializable[]
+>(
+  fun: Func,
+  ...args: Args
+): () => Func extends (...args: never) => infer Return ? Return : unknown {
   if (isString(fun)) {
     assert(args.length === 0, 'Cannot evaluate a string with arguments');
-    return fun;
+    return Function(fun) as never;
   }
 
-  function serializeArgument(arg: unknown): string {
+  function serializeArgument(arg: ConstantSerializable): string {
     if (Object.is(arg, undefined)) return 'undefined';
     return JSON.stringify(arg);
   }
 
-  return `(${fun})(${args.map(serializeArgument).join(',')})`;
+  return Function(
+    `return (${fun})(${args.map(serializeArgument).join(',')});`
+  ) as never;
 }
 
-function pageBindingInitString(type: string, name: string): string {
+function pageBindingInitFunc(type: string, name: string): () => void {
   function addPageBinding(type: string, bindingName: string): void {
     /* Cast window to any here as we're about to add properties to it
      * via win[bindingName] which TypeScript doesn't like.
@@ -209,27 +218,27 @@ function pageBindingInitString(type: string, name: string): string {
       return promise;
     };
   }
-  return evaluationString(addPageBinding, type, name);
+  return evaluationFunc(addPageBinding, type, name);
 }
 
-function pageBindingDeliverResultString(
+function pageBindingDeliverResultFunc(
   name: string,
   seq: number,
-  result: unknown
-): string {
+  result: ConstantSerializable
+): () => void {
   function deliverResult(name: string, seq: number, result: unknown): void {
     (window as any)[name].callbacks.get(seq).resolve(result);
     (window as any)[name].callbacks.delete(seq);
   }
-  return evaluationString(deliverResult, name, seq, result);
+  return evaluationFunc(deliverResult, name, seq, result);
 }
 
-function pageBindingDeliverErrorString(
+function pageBindingDeliverErrorFunc(
   name: string,
   seq: number,
   message: string,
   stack?: string
-): string {
+): () => void {
   function deliverError(
     name: string,
     seq: number,
@@ -241,30 +250,41 @@ function pageBindingDeliverErrorString(
     (window as any)[name].callbacks.get(seq).reject(error);
     (window as any)[name].callbacks.delete(seq);
   }
-  return evaluationString(deliverError, name, seq, message, stack);
+  return evaluationFunc(deliverError, name, seq, message, stack);
 }
 
-function pageBindingDeliverErrorValueString(
+function pageBindingDeliverErrorValueFunc(
   name: string,
   seq: number,
-  value: unknown
-): string {
+  value: ConstantSerializable
+): () => void {
   function deliverErrorValue(name: string, seq: number, value: unknown): void {
     (window as any)[name].callbacks.get(seq).reject(value);
     (window as any)[name].callbacks.delete(seq);
   }
-  return evaluationString(deliverErrorValue, name, seq, value);
+  return evaluationFunc(deliverErrorValue, name, seq, value);
 }
 
-function makePredicateString(
-  predicate: Function,
-  predicateQueryHandler?: Function
-): string {
-  function checkWaitForOptions(
-    node: Node | null,
-    waitForVisible: boolean,
-    waitForHidden: boolean
-  ): Node | null | boolean {
+export type CheckWaitForOptionsFunc = (
+  node: Node | null,
+  waitForVisible: boolean,
+  waitForHidden: boolean
+) => Node | null | boolean;
+
+export type PredicateQueryHandler = (
+  element: ParentNode,
+  selector: string
+) => Element | null | PromiseLike<Element | null>;
+
+function makePredicateFunc<Func extends (...args: never) => unknown>(
+  predicate: Func,
+  predicateQueryHandler?: PredicateQueryHandler
+): Func {
+  const checkWaitForOptions: CheckWaitForOptionsFunc = (
+    node,
+    waitForVisible,
+    waitForHidden
+  ) => {
     if (!node) return waitForHidden;
     if (!waitForVisible && !waitForHidden) return node;
     const element =
@@ -283,16 +303,18 @@ function makePredicateString(
       const rect = element.getBoundingClientRect();
       return !!(rect.top || rect.bottom || rect.width || rect.height);
     }
-  }
+  };
   const predicateQueryHandlerDef = predicateQueryHandler
     ? `const predicateQueryHandler = ${predicateQueryHandler};`
     : '';
-  return `
-    (() => {
-      ${predicateQueryHandlerDef}
-      const checkWaitForOptions = ${checkWaitForOptions};
-      return (${predicate})(...args)
-    })() `;
+  return Function(
+    '...args',
+    `
+    ${predicateQueryHandlerDef}
+    const checkWaitForOptions = ${checkWaitForOptions};
+    return (${predicate})(...args);
+  `
+  ) as Func;
 }
 
 async function waitWithTimeout<T>(
@@ -377,12 +399,12 @@ async function getReadableFromProtocolStream(
 }
 
 export const helper = {
-  evaluationString,
-  pageBindingInitString,
-  pageBindingDeliverResultString,
-  pageBindingDeliverErrorString,
-  pageBindingDeliverErrorValueString,
-  makePredicateString,
+  evaluationFunc,
+  pageBindingInitFunc,
+  pageBindingDeliverResultFunc,
+  pageBindingDeliverErrorFunc,
+  pageBindingDeliverErrorValueFunc,
+  makePredicateFunc,
   getReadableAsBuffer,
   getReadableFromProtocolStream,
   waitWithTimeout,

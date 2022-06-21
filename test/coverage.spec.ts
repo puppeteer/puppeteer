@@ -74,7 +74,7 @@ describe('Coverage specs', function () {
 
       await page.coverage.startJSCoverage({ reportAnonymousScripts: true });
       await page.goto(server.EMPTY_PAGE);
-      await page.evaluate('console.log("foo")');
+      await page.evaluate(Function('console.log("foo")') as () => void);
       await page.evaluate(() => console.log('bar'));
       const coverage = await page.coverage.stopJSCoverage();
       expect(coverage.length).toBe(0);
@@ -279,7 +279,7 @@ describe('Coverage specs', function () {
       const { page, server } = getTestState();
 
       await page.coverage.startCSSCoverage();
-      await page.evaluate<(url: string) => Promise<void>>(async (url) => {
+      await page.evaluate(async (url) => {
         document.body.textContent = 'hello, world';
 
         const link = document.createElement('link');

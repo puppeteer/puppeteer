@@ -138,8 +138,9 @@ function checkSources(sources) {
          * it uses a complex type from the devtools-protocol method. Doclint
          * isn't going to be here for much longer so we'll just silence this
          * warning than try to add support which would warrant a huge rewrite.
+         * Same with args param of evaluate* functions
          */
-        if (name !== 'paramArgs') throw error;
+        if (!['paramArgs', 'args'].includes(name)) throw error;
       }
     }
     return Documentation.Member.createProperty(

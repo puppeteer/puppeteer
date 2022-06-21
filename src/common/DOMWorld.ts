@@ -15,25 +15,34 @@
  */
 
 import { assert } from './assert.js';
-import { helper, debugError } from './helper.js';
+import {
+  CheckWaitForOptionsFunc,
+  debugError,
+  helper,
+  PredicateQueryHandler,
+} from './helper.js';
 import {
   LifecycleWatcher,
   PuppeteerLifeCycleEvent,
 } from './LifecycleWatcher.js';
 import { TimeoutError } from './Errors.js';
-import { JSHandle, ElementHandle } from './JSHandle.js';
+import { ElementHandle, JSHandle } from './JSHandle.js';
 import { ExecutionContext } from './ExecutionContext.js';
 import { TimeoutSettings } from './TimeoutSettings.js';
 import { MouseButton } from './Input.js';
-import { FrameManager, Frame } from './FrameManager.js';
+import {
+  Frame,
+  FrameManager,
+  FrameWaitForFunctionOptions,
+} from './FrameManager.js';
 import { getQueryHandlerAndSelector } from './QueryHandler.js';
 import {
-  SerializableOrJSHandle,
-  EvaluateHandleFn,
-  WrapElementHandle,
   EvaluateFn,
-  EvaluateFnReturnType,
-  UnwrapPromiseLike,
+  EvaluateHandleFn,
+  EvaluateHandleReturn,
+  EvaluateReturn,
+  EvaluateSubjectFn,
+  SerializableOrJSHandle,
 } from './EvalTypes.js';
 import { isNode } from '../environment.js';
 import { Protocol } from 'devtools-protocol';
@@ -41,15 +50,8 @@ import { CDPSession } from './Connection.js';
 
 // predicateQueryHandler and checkWaitForOptions are declared here so that
 // TypeScript knows about them when used in the predicate function below.
-declare const predicateQueryHandler: (
-  element: Element | Document,
-  selector: string
-) => Promise<Element | Element[] | NodeListOf<Element>>;
-declare const checkWaitForOptions: (
-  node: Node | null,
-  waitForVisible: boolean,
-  waitForHidden: boolean
-) => Element | null | boolean;
+declare const predicateQueryHandler: PredicateQueryHandler;
+declare const checkWaitForOptions: CheckWaitForOptionsFunc;
 
 /**
  * @public
@@ -77,7 +79,7 @@ export class DOMWorld {
   private _client: CDPSession;
   private _frame: Frame;
   private _timeoutSettings: TimeoutSettings;
-  private _documentPromise: Promise<ElementHandle> | null = null;
+  private _documentPromise: Promise<ElementHandle<Document>> | null = null;
   private _contextPromise: Promise<ExecutionContext> | null = null;
 
   private _contextResolveCallback: ((x: ExecutionContext) => void) | null =
@@ -161,23 +163,20 @@ export class DOMWorld {
     return this._contextPromise;
   }
 
-  async evaluateHandle<HandlerType extends JSHandle = JSHandle>(
-    pageFunction: EvaluateHandleFn,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<HandlerType> {
+  async evaluateHandle<
+    Func extends EvaluateHandleFn<Args>,
+    Args extends SerializableOrJSHandle[]
+  >(pageFunction: Func, ...args: Args): Promise<EvaluateHandleReturn<Func>> {
     const context = await this.executionContext();
     return context.evaluateHandle(pageFunction, ...args);
   }
 
-  async evaluate<T extends EvaluateFn>(
-    pageFunction: T,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<UnwrapPromiseLike<EvaluateFnReturnType<T>>> {
+  async evaluate<
+    Func extends EvaluateFn<Args>,
+    Args extends SerializableOrJSHandle[]
+  >(pageFunction: Func, ...args: Args): Promise<EvaluateReturn<Func>> {
     const context = await this.executionContext();
-    return context.evaluate<UnwrapPromiseLike<EvaluateFnReturnType<T>>>(
-      pageFunction,
-      ...args
-    );
+    return context.evaluate(pageFunction, ...args);
   }
 
   async $<T extends Element = Element>(
@@ -188,10 +187,10 @@ export class DOMWorld {
     return value;
   }
 
-  async _document(): Promise<ElementHandle> {
+  async _document(): Promise<ElementHandle<Document>> {
     if (this._documentPromise) return this._documentPromise;
     this._documentPromise = this.executionContext().then(async (context) => {
-      const document = await context.evaluateHandle('document');
+      const document = await context.evaluateHandle(() => window.document);
       const element = document.asElement();
       if (element === null) {
         throw new Error('Document is null');
@@ -207,32 +206,28 @@ export class DOMWorld {
     return value;
   }
 
-  async $eval<ReturnType>(
+  async $eval<
+    Func extends EvaluateSubjectFn<Element, Args>,
+    Args extends SerializableOrJSHandle[]
+  >(
     selector: string,
-    pageFunction: (
-      element: Element,
-      ...args: unknown[]
-    ) => ReturnType | Promise<ReturnType>,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<WrapElementHandle<ReturnType>> {
+    pageFunction: Func,
+    ...args: Args
+  ): Promise<EvaluateReturn<Func>> {
     const document = await this._document();
-    return document.$eval<ReturnType>(selector, pageFunction, ...args);
+    return document.$eval(selector, pageFunction, ...args);
   }
 
-  async $$eval<ReturnType>(
+  async $$eval<
+    Func extends EvaluateSubjectFn<Element[], Args>,
+    Args extends SerializableOrJSHandle[]
+  >(
     selector: string,
-    pageFunction: (
-      elements: Element[],
-      ...args: unknown[]
-    ) => ReturnType | Promise<ReturnType>,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<WrapElementHandle<ReturnType>> {
+    pageFunction: Func,
+    ...args: Args
+  ): Promise<EvaluateReturn<Func>> {
     const document = await this._document();
-    const value = await document.$$eval<ReturnType>(
-      selector,
-      pageFunction,
-      ...args
-    );
+    const value = await document.$$eval(selector, pageFunction, ...args);
     return value;
   }
 
@@ -268,7 +263,7 @@ export class DOMWorld {
     } = options;
     // We rely upon the fact that document.open() will reset frame lifecycle with "init"
     // lifecycle event. @see https://crrev.com/608658
-    await this.evaluate<(x: string) => void>((html) => {
+    await this.evaluate((html) => {
       document.open();
       document.write(html);
       document.close();
@@ -547,8 +542,8 @@ export class DOMWorld {
 
   async waitForSelector(
     selector: string,
-    options: WaitForSelectorOptions
-  ): Promise<ElementHandle | null> {
+    options: WaitForSelectorOptions = {}
+  ): Promise<ElementHandle<Element> | null> {
     const { updatedSelector, queryHandler } =
       getQueryHandlerAndSelector(selector);
     assert(queryHandler.waitFor, 'Query handler does not support waiting');
@@ -580,7 +575,7 @@ export class DOMWorld {
     }
 
     const bind = async (name: string) => {
-      const expression = helper.pageBindingInitString('internal', name);
+      const expression = helper.pageBindingInitFunc('internal', name);
       try {
         // TODO: In theory, it would be enough to call this just once
         await context._client.send('Runtime.addBinding', {
@@ -669,11 +664,11 @@ export class DOMWorld {
    * @internal
    */
   async waitForSelectorInPage(
-    queryOne: Function,
+    queryOne: PredicateQueryHandler,
     selector: string,
     options: WaitForSelectorOptions,
     binding?: PageBinding
-  ): Promise<ElementHandle | null> {
+  ): Promise<ElementHandle<Element> | null> {
     const {
       visible: waitForVisible = false,
       hidden: waitForHidden = false,
@@ -690,13 +685,13 @@ export class DOMWorld {
       waitForHidden: boolean
     ): Promise<Node | null | boolean> {
       const node = predicateQueryHandler
-        ? ((await predicateQueryHandler(root, selector)) as Element)
+        ? await predicateQueryHandler(root, selector)
         : root.querySelector(selector);
       return checkWaitForOptions(node, waitForVisible, waitForHidden);
     }
     const waitTaskOptions: WaitTaskOptions = {
       domWorld: this,
-      predicateBody: helper.makePredicateString(predicate, queryOne),
+      predicate: helper.makePredicateFunc(predicate, queryOne),
       predicateAcceptsContextElement: true,
       title,
       polling,
@@ -712,7 +707,7 @@ export class DOMWorld {
       await jsHandle.dispose();
       return null;
     }
-    return elementHandle;
+    return elementHandle as ElementHandle<Element>;
   }
 
   async waitForXPath(
@@ -743,7 +738,7 @@ export class DOMWorld {
     }
     const waitTaskOptions: WaitTaskOptions = {
       domWorld: this,
-      predicateBody: helper.makePredicateString(predicate),
+      predicate: helper.makePredicateFunc(predicate),
       predicateAcceptsContextElement: true,
       title,
       polling,
@@ -761,16 +756,19 @@ export class DOMWorld {
     return elementHandle;
   }
 
-  waitForFunction(
-    pageFunction: Function | string,
-    options: { polling?: string | number; timeout?: number } = {},
-    ...args: SerializableOrJSHandle[]
-  ): Promise<JSHandle> {
+  waitForFunction<
+    Func extends EvaluateHandleFn<Args>,
+    Args extends SerializableOrJSHandle[]
+  >(
+    pageFunction: Func,
+    options: FrameWaitForFunctionOptions = {},
+    ...args: Args
+  ): Promise<EvaluateHandleReturn<Func>> {
     const { polling = 'raf', timeout = this._timeoutSettings.timeout() } =
       options;
     const waitTaskOptions: WaitTaskOptions = {
       domWorld: this,
-      predicateBody: pageFunction,
+      predicate: pageFunction,
       predicateAcceptsContextElement: false,
       title: 'function',
       polling,
@@ -778,7 +776,7 @@ export class DOMWorld {
       args,
     };
     const waitTask = new WaitTask(waitTaskOptions);
-    return waitTask.promise;
+    return waitTask.promise as Promise<EvaluateHandleReturn<Func>>;
   }
 
   async title(): Promise<string> {
@@ -791,10 +789,10 @@ export class DOMWorld {
  */
 export interface WaitTaskOptions {
   domWorld: DOMWorld;
-  predicateBody: Function | string;
+  predicate: (...args: never) => unknown;
   predicateAcceptsContextElement: boolean;
   title: string;
-  polling: string | number;
+  polling: 'raf' | 'mutation' | number;
   timeout: number;
   binding?: PageBinding;
   args: SerializableOrJSHandle[];
@@ -808,7 +806,7 @@ const noop = (): void => {};
  */
 export class WaitTask {
   _domWorld: DOMWorld;
-  _polling: string | number;
+  _polling: 'raf' | 'mutation' | number;
   _timeout: number;
   _predicateBody: string;
   _predicateAcceptsContextElement: boolean;
@@ -835,16 +833,11 @@ export class WaitTask {
       );
     else throw new Error('Unknown polling options: ' + options.polling);
 
-    function getPredicateBody(predicateBody: Function | string) {
-      if (helper.isString(predicateBody)) return `return (${predicateBody});`;
-      return `return (${predicateBody})(...args);`;
-    }
-
     this._domWorld = options.domWorld;
     this._polling = options.polling;
     this._timeout = options.timeout;
     this._root = options.root || null;
-    this._predicateBody = getPredicateBody(options.predicateBody);
+    this._predicateBody = `return (${options.predicate})(...args);`;
     this._predicateAcceptsContextElement =
       options.predicateAcceptsContextElement;
     this._args = options.args;
@@ -965,7 +958,7 @@ export class WaitTask {
 }
 
 async function waitForPredicatePageFunction(
-  root: Element | Document | null,
+  root: ParentNode | null,
   predicateBody: string,
   predicateAcceptsContextElement: boolean,
   polling: 'raf' | 'mutation' | number,

@@ -25,16 +25,16 @@ export interface InternalQueryHandler {
   queryOne?: (
     element: ElementHandle,
     selector: string
-  ) => Promise<ElementHandle | null>;
+  ) => Promise<ElementHandle<Element> | null>;
   waitFor?: (
     domWorld: DOMWorld,
     selector: string,
     options: WaitForSelectorOptions
-  ) => Promise<ElementHandle | null>;
+  ) => Promise<ElementHandle<Element> | null>;
   queryAll?: (
     element: ElementHandle,
     selector: string
-  ) => Promise<ElementHandle[]>;
+  ) => Promise<Array<ElementHandle<Element>>>;
   queryAllArray?: (
     element: ElementHandle,
     selector: string
@@ -53,9 +53,9 @@ export interface InternalQueryHandler {
  * @public
  */
 export interface CustomQueryHandler {
-  queryOne?: (element: Element | Document, selector: string) => Element | null;
+  queryOne?: (element: ParentNode, selector: string) => Element | null;
   queryAll?: (
-    element: Element | Document,
+    element: ParentNode,
     selector: string
   ) => Element[] | NodeListOf<Element>;
 }
@@ -83,7 +83,10 @@ function makeQueryHandler(handler: CustomQueryHandler): InternalQueryHandler {
     const queryAll = handler.queryAll;
     internalHandler.queryAll = async (element, selector) => {
       const jsHandle = await element.evaluateHandle(queryAll, selector);
-      const properties = await jsHandle.getProperties();
+      const properties = (await jsHandle.getProperties()) as Map<
+        string,
+        ElementHandle<Element>
+      >;
       await jsHandle.dispose();
       const result = [];
       for (const property of properties.values()) {
@@ -105,16 +108,16 @@ function makeQueryHandler(handler: CustomQueryHandler): InternalQueryHandler {
 }
 
 const _defaultHandler = makeQueryHandler({
-  queryOne: (element: Element | Document, selector: string) =>
+  queryOne: (element: ParentNode, selector: string) =>
     element.querySelector(selector),
-  queryAll: (element: Element | Document, selector: string) =>
+  queryAll: (element: ParentNode, selector: string) =>
     element.querySelectorAll(selector),
 });
 
 const pierceHandler = makeQueryHandler({
   queryOne: (element, selector) => {
     let found: Element | null = null;
-    const search = (root: Element | ShadowRoot) => {
+    const search = (root: ParentNode) => {
       const iter = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
       do {
         const currentNode = iter.currentNode as HTMLElement;
@@ -138,7 +141,7 @@ const pierceHandler = makeQueryHandler({
 
   queryAll: (element, selector) => {
     const result: Element[] = [];
-    const collect = (root: Element | ShadowRoot) => {
+    const collect = (root: ParentNode) => {
       const iter = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
       do {
         const currentNode = iter.currentNode as HTMLElement;

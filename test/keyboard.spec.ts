@@ -52,7 +52,7 @@ describe('Keyboard', function () {
       );
     });
     await page.keyboard.press('Meta');
-    expect(await page.evaluate('keyPromise')).toBe(
+    expect(await page.evaluate(() => globalThis.keyPromise)).toBe(
       isFirefox && os.platform() !== 'darwin' ? 'OS' : 'Meta'
     );
   });
@@ -302,7 +302,7 @@ describe('Keyboard', function () {
     await page.focus('textarea');
     const text = 'This text goes onto two lines.\nThis character is 嗨.';
     await page.keyboard.type(text);
-    expect(await page.evaluate('result')).toBe(text);
+    expect(await page.evaluate(() => globalThis.result)).toBe(text);
   });
   itFailsFirefox('should specify location', async () => {
     const { page, server } = getTestState();
@@ -318,16 +318,16 @@ describe('Keyboard', function () {
     const textarea = await page.$('textarea');
 
     await textarea.press('Digit5');
-    expect(await page.evaluate('keyLocation')).toBe(0);
+    expect(await page.evaluate(() => globalThis.keyLocation)).toBe(0);
 
     await textarea.press('ControlLeft');
-    expect(await page.evaluate('keyLocation')).toBe(1);
+    expect(await page.evaluate(() => globalThis.keyLocation)).toBe(1);
 
     await textarea.press('ControlRight');
-    expect(await page.evaluate('keyLocation')).toBe(2);
+    expect(await page.evaluate(() => globalThis.keyLocation)).toBe(2);
 
     await textarea.press('NumpadSubtract');
-    expect(await page.evaluate('keyLocation')).toBe(3);
+    expect(await page.evaluate(() => globalThis.keyLocation)).toBe(3);
   });
   it('should throw on unknown keys', async () => {
     const { page } = getTestState();
@@ -391,11 +391,9 @@ describe('Keyboard', function () {
     // string not a function. This is why functions are recommended rather than
     // using strings (although we'll leave this test so we have coverage of both
     // approaches.)
-    const [key, code, metaKey] = (await page.evaluate('result')) as [
-      string,
-      string,
-      boolean
-    ];
+    const [key, code, metaKey] = (await page.evaluate(
+      () => globalThis.result
+    )) as [string, string, boolean];
     if (isFirefox && os.platform() !== 'darwin') expect(key).toBe('OS');
     else expect(key).toBe('Meta');
 

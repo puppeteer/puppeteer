@@ -30,12 +30,13 @@ import { Coverage } from './Coverage.js';
 import { Dialog } from './Dialog.js';
 import { EmulationManager } from './EmulationManager.js';
 import {
+  ConstantSerializable,
   EvaluateFn,
-  EvaluateFnReturnType,
+  EvaluateHandleElementReturn,
   EvaluateHandleFn,
+  EvaluateReturn,
+  EvaluateSubjectFn,
   SerializableOrJSHandle,
-  UnwrapPromiseLike,
-  WrapElementHandle,
 } from './EvalTypes.js';
 import { EventEmitter, Handler } from './EventEmitter.js';
 import { FileChooser } from './FileChooser.js';
@@ -43,6 +44,7 @@ import {
   Frame,
   FrameManager,
   FrameManagerEmittedEvents,
+  FrameWaitForFunctionOptions,
 } from './FrameManager.js';
 import { debugError, helper } from './helper.js';
 import { HTTPRequest } from './HTTPRequest.js';
@@ -66,6 +68,7 @@ import { TaskQueue } from './TaskQueue.js';
 import { TimeoutSettings } from './TimeoutSettings.js';
 import { Tracing } from './Tracing.js';
 import { WebWorker } from './WebWorker.js';
+import { WaitForSelectorOptions } from './DOMWorld.js';
 
 /**
  * @public
@@ -603,7 +606,9 @@ export class Page extends EventEmitter {
     const frame = this._frameManager.frame(event.frameId);
     assert(frame);
     const context = await frame.executionContext();
-    const element = await context._adoptBackendNodeId(event.backendNodeId);
+    const element = (await context._adoptBackendNodeId(
+      event.backendNodeId
+    )) as ElementHandle<HTMLInputElement>;
     const interceptors = Array.from(this._fileChooserInterceptors);
     this._fileChooserInterceptors.clear();
     const fileChooser = new FileChooser(element, event);
@@ -979,15 +984,15 @@ export class Page extends EventEmitter {
    * `page.evaluateHandle` is that `evaluateHandle` will return the value
    * wrapped in an in-page object.
    *
-   * If the function passed to `page.evaluteHandle` returns a Promise, the
+   * If the function passed to `page.evaluateHandle` returns a Promise, the
    * function will wait for the promise to resolve and return its value.
    *
-   * You can pass a string instead of a function (although functions are
-   * recommended as they are easier to debug and use with TypeScript):
-   *
    * @example
-   * ```
-   * const aHandle = await page.evaluateHandle('document')
+   * A dynamically generated function can also be passed.
+   *
+   * ```js
+   * const docHandle = await page.evaluateHandle(Function('return document;'));
+   * // Cast function to `() => Document` in TypeScript
    * ```
    *
    * @example
@@ -1010,23 +1015,17 @@ export class Page extends EventEmitter {
    * await button.click();
    * ```
    *
-   * The TypeScript definitions assume that `evaluateHandle` returns
-   *  a `JSHandle`, but if you know it's going to return an
-   * `ElementHandle`, pass it as the generic argument:
-   *
-   * ```
-   * const button = await page.evaluateHandle<ElementHandle>(...);
-   * ```
-   *
    * @param pageFunction - a function that is run within the page
    * @param args - arguments to be passed to the pageFunction
    */
-  async evaluateHandle<HandlerType extends JSHandle = JSHandle>(
-    pageFunction: EvaluateHandleFn,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<HandlerType> {
-    const context = await this.mainFrame().executionContext();
-    return context.evaluateHandle<HandlerType>(pageFunction, ...args);
+  async evaluateHandle<
+    Func extends EvaluateHandleFn<Args>,
+    Args extends SerializableOrJSHandle[]
+  >(
+    pageFunction: Func,
+    ...args: Args
+  ): Promise<EvaluateHandleElementReturn<Func>> {
+    return this.mainFrame().evaluateHandle(pageFunction, ...args);
   }
 
   /**
@@ -1080,33 +1079,6 @@ export class Page extends EventEmitter {
    * const html = await page.$eval('.main-container', el => el.outerHTML);
    * ```
    *
-   * If you are using TypeScript, you may have to provide an explicit type to the
-   * first argument of the `pageFunction`.
-   * By default it is typed as `Element`, but you may need to provide a more
-   * specific sub-type:
-   *
-   * @example
-   *
-   * ```
-   * // if you don't provide HTMLInputElement here, TS will error
-   * // as `value` is not on `Element`
-   * const searchValue = await page.$eval('#search', (el: HTMLInputElement) => el.value);
-   * ```
-   *
-   * The compiler should be able to infer the return type
-   * from the `pageFunction` you provide. If it is unable to, you can use the generic
-   * type to tell the compiler what return type you expect from `$eval`:
-   *
-   * @example
-   *
-   * ```
-   * // The compiler can infer the return type in this case, but if it can't
-   * // or if you want to be more explicit, provide it as the generic type.
-   * const searchValue = await page.$eval<string>(
-   *  '#search', (el: HTMLInputElement) => el.value
-   * );
-   * ```
-   *
    * @param selector - the
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
    * to query for
@@ -1115,29 +1087,17 @@ export class Page extends EventEmitter {
    * first argument.
    * @param args - any additional arguments to pass through to `pageFunction`.
    *
-   * @returns The result of calling `pageFunction`. If it returns an element it
-   * is wrapped in an {@link ElementHandle}, else the raw value itself is
-   * returned.
+   * @returns The result of calling `pageFunction`.
    */
-  async $eval<ReturnType>(
+  async $eval<
+    Func extends EvaluateSubjectFn<Element, Args>,
+    Args extends SerializableOrJSHandle[]
+  >(
     selector: string,
-    pageFunction: (
-      element: Element,
-      /* Unfortunately this has to be unknown[] because it's hard to get
-       * TypeScript to understand that the arguments will be left alone unless
-       * they are an ElementHandle, in which case they will be unwrapped.
-       * The nice thing about unknown vs any is that unknown will force the user
-       * to type the item before using it to avoid errors.
-       *
-       * TODO(@jackfranklin): We could fix this by using overloads like
-       * DefinitelyTyped does:
-       * https://github.com/DefinitelyTyped/DefinitelyTyped/blob/HEAD/types/puppeteer/index.d.ts#L114
-       */
-      ...args: unknown[]
-    ) => ReturnType | Promise<ReturnType>,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<WrapElementHandle<ReturnType>> {
-    return this.mainFrame().$eval<ReturnType>(selector, pageFunction, ...args);
+    pageFunction: Func,
+    ...args: Args
+  ): Promise<EvaluateReturn<Func>> {
+    return this.mainFrame().$eval(selector, pageFunction, ...args);
   }
 
   /**
@@ -1161,35 +1121,6 @@ export class Page extends EventEmitter {
    * });
    * ```
    *
-   * If you are using TypeScript, you may have to provide an explicit type to the
-   * first argument of the `pageFunction`.
-   * By default it is typed as `Element[]`, but you may need to provide a more
-   * specific sub-type:
-   *
-   * @example
-   *
-   * ```
-   * // if you don't provide HTMLInputElement here, TS will error
-   * // as `value` is not on `Element`
-   * await page.$$eval('input', (elements: HTMLInputElement[]) => {
-   *   return elements.map(e => e.value);
-   * });
-   * ```
-   *
-   * The compiler should be able to infer the return type
-   * from the `pageFunction` you provide. If it is unable to, you can use the generic
-   * type to tell the compiler what return type you expect from `$$eval`:
-   *
-   * @example
-   *
-   * ```
-   * // The compiler can infer the return type in this case, but if it can't
-   * // or if you want to be more explicit, provide it as the generic type.
-   * const allInputValues = await page.$$eval<string[]>(
-   *  'input', (elements: HTMLInputElement[]) => elements.map(e => e.textContent)
-   * );
-   * ```
-   *
    * @param selector - the
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
    * to query for
@@ -1202,19 +1133,15 @@ export class Page extends EventEmitter {
    * is wrapped in an {@link ElementHandle}, else the raw value itself is
    * returned.
    */
-  async $$eval<ReturnType>(
+  async $$eval<
+    Func extends EvaluateSubjectFn<Element[], Args>,
+    Args extends SerializableOrJSHandle[]
+  >(
     selector: string,
-    pageFunction: (
-      elements: Element[],
-      /* These have to be typed as unknown[] for the same reason as the $eval
-       * definition above, please see that comment for more details and the TODO
-       * that will improve things.
-       */
-      ...args: unknown[]
-    ) => ReturnType | Promise<ReturnType>,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<WrapElementHandle<ReturnType>> {
-    return this.mainFrame().$$eval<ReturnType>(selector, pageFunction, ...args);
+    pageFunction: Func,
+    ...args: Args
+  ): Promise<EvaluateReturn<Func>> {
+    return this.mainFrame().$$eval(selector, pageFunction, ...args);
   }
 
   /**
@@ -1415,13 +1342,13 @@ export class Page extends EventEmitter {
 
     this._pageBindings.set(name, exposedFunction);
 
-    const expression = helper.pageBindingInitString('exposedFun', name);
+    const func = helper.pageBindingInitFunc('exposedFun', name);
     await this._client.send('Runtime.addBinding', { name: name });
     await this._client.send('Page.addScriptToEvaluateOnNewDocument', {
-      source: expression,
+      source: `(${func})()`,
     });
     await Promise.all(
-      this.frames().map((frame) => frame.evaluate(expression).catch(debugError))
+      this.frames().map((frame) => frame.evaluate(func).catch(debugError))
     );
   }
 
@@ -1572,30 +1499,30 @@ export class Page extends EventEmitter {
     }
     const { type, name, seq, args } = payload;
     if (type !== 'exposedFun' || !this._pageBindings.has(name)) return;
-    let expression = null;
+    let func;
     try {
       const pageBinding = this._pageBindings.get(name);
       assert(pageBinding);
       const result = await pageBinding(...args);
-      expression = helper.pageBindingDeliverResultString(name, seq, result);
+      func = helper.pageBindingDeliverResultFunc(name, seq, result);
     } catch (error) {
       if (error instanceof Error)
-        expression = helper.pageBindingDeliverErrorString(
+        func = helper.pageBindingDeliverErrorFunc(
           name,
           seq,
           error.message,
           error.stack
         );
       else
-        expression = helper.pageBindingDeliverErrorValueString(
+        func = helper.pageBindingDeliverErrorValueFunc(
           name,
           seq,
-          error
+          error as ConstantSerializable // Hope for the best
         );
     }
     this._client
       .send('Runtime.evaluate', {
-        expression,
+        expression: `(${func})()`,
         contextId: event.executionContextId,
       })
       .catch(debugError);
@@ -2525,7 +2452,7 @@ export class Page extends EventEmitter {
    *
    * Evaluates a function in the page's context and returns the result.
    *
-   * If the function passed to `page.evaluteHandle` returns a Promise, the
+   * If the function passed to `page.evaluate` returns a Promise, the
    * function will wait for the promise to resolve and return its value.
    *
    * @example
@@ -2537,19 +2464,13 @@ export class Page extends EventEmitter {
    * console.log(result); // prints "56"
    * ```
    *
-   * You can pass a string instead of a function (although functions are
-   * recommended as they are easier to debug and use with TypeScript):
-   *
    * @example
-   * ```
-   * const aHandle = await page.evaluate('1 + 2');
-   * ```
+   * A dynamically generated function can also be passed.
    *
-   * To get the best TypeScript experience, you should pass in as the
-   * generic the type of `pageFunction`:
-   *
-   * ```
-   * const aHandle = await page.evaluate<() => number>(() => 2);
+   * ```js
+   * console.log(await executionContext.evaluate(Function('return 1 + 2;')));
+   * // prints "3"
+   * // Cast function to `() => number` in TypeScript
    * ```
    *
    * @example
@@ -2568,11 +2489,11 @@ export class Page extends EventEmitter {
    *
    * @returns the return value of `pageFunction`.
    */
-  async evaluate<T extends EvaluateFn>(
-    pageFunction: T,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<UnwrapPromiseLike<EvaluateFnReturnType<T>>> {
-    return this._frameManager.mainFrame().evaluate<T>(pageFunction, ...args);
+  async evaluate<
+    Func extends EvaluateFn<Args>,
+    Args extends SerializableOrJSHandle[]
+  >(pageFunction: Func, ...args: Args): Promise<EvaluateReturn<Func>> {
+    return this.mainFrame().evaluate(pageFunction, ...args);
   }
 
   /**
@@ -2606,13 +2527,13 @@ export class Page extends EventEmitter {
    * await page.evaluateOnNewDocument(preloadFile);
    * ```
    */
-  async evaluateOnNewDocument(
-    pageFunction: Function | string,
-    ...args: unknown[]
-  ): Promise<void> {
-    const source = helper.evaluationString(pageFunction, ...args);
+  async evaluateOnNewDocument<
+    Func extends string | ((...args: Args) => void),
+    Args extends Func extends string ? [] : ConstantSerializable[]
+  >(pageFunction: Func, ...args: Args): Promise<void> {
+    const func = helper.evaluationFunc(pageFunction, ...args);
     await this._client.send('Page.addScriptToEvaluateOnNewDocument', {
-      source,
+      source: `(${func})()`,
     });
   }
 
@@ -3150,16 +3071,22 @@ export class Page extends EventEmitter {
    * {@link Page.waitForXPath}, {@link Page.waitForFunction} or
    * {@link Page.waitForTimeout}.
    */
-  waitFor(
-    selectorOrFunctionOrTimeout: string | number | Function,
-    options: {
-      visible?: boolean;
-      hidden?: boolean;
-      timeout?: number;
-      polling?: string | number;
-    } = {},
-    ...args: SerializableOrJSHandle[]
-  ): Promise<JSHandle | null> {
+  waitFor<
+    Subject extends string | number | EvaluateHandleFn<Args>,
+    Args extends Subject extends string | number ? [] : SerializableOrJSHandle[]
+  >(
+    selectorOrFunctionOrTimeout: Subject,
+    options: Subject extends (...args: never) => unknown
+      ? FrameWaitForFunctionOptions
+      : WaitForSelectorOptions = {},
+    ...args: Args
+  ): Promise<
+    Subject extends (...args: never) => unknown
+      ? EvaluateHandleElementReturn<Subject>
+      : Subject extends string
+      ? ElementHandle | null
+      : null
+  > {
     return this.mainFrame().waitFor(
       selectorOrFunctionOrTimeout,
       options,
@@ -3240,12 +3167,8 @@ export class Page extends EventEmitter {
    */
   waitForSelector(
     selector: string,
-    options: {
-      visible?: boolean;
-      hidden?: boolean;
-      timeout?: number;
-    } = {}
-  ): Promise<ElementHandle | null> {
+    options: WaitForSelectorOptions = {}
+  ): Promise<ElementHandle<Element> | null> {
     return this.mainFrame().waitForSelector(selector, options);
   }
 
@@ -3299,11 +3222,7 @@ export class Page extends EventEmitter {
    */
   waitForXPath(
     xpath: string,
-    options: {
-      visible?: boolean;
-      hidden?: boolean;
-      timeout?: number;
-    } = {}
+    options: WaitForSelectorOptions = {}
   ): Promise<ElementHandle | null> {
     return this.mainFrame().waitForXPath(xpath, options);
   }
@@ -3316,7 +3235,7 @@ export class Page extends EventEmitter {
    * (async () => {
    * const browser = await puppeteer.launch();
    * const page = await browser.newPage();
-   * const watchDog = page.waitForFunction('window.innerWidth < 100');
+   * const watchDog = page.waitForFunction(() => window.innerWidth < 100);
    * await page.setViewport({ width: 50, height: 50 });
    * await watchDog;
    * await browser.close();
@@ -3335,20 +3254,20 @@ export class Page extends EventEmitter {
    * ```
    * const username = 'github-username';
    * await page.waitForFunction(
-   * async (username) => {
-   * const githubResponse = await fetch(
-   *  `https://api.github.com/users/${username}`
-   * );
-   * const githubUser = await githubResponse.json();
-   * // show the avatar
-   * const img = document.createElement('img');
-   * img.src = githubUser.avatar_url;
-   * // wait 3 seconds
-   * await new Promise((resolve, reject) => setTimeout(resolve, 3000));
-   * img.remove();
-   * },
-   * {},
-   * username
+   *  async (username) => {
+   *    const githubResponse = await fetch(
+   *     `https://api.github.com/users/${username}`
+   *    );
+   *    const githubUser = await githubResponse.json();
+   *    // show the avatar
+   *    const img = document.createElement('img');
+   *    img.src = githubUser.avatar_url;
+   *    // wait 3 seconds
+   *    await new Promise((resolve, reject) => setTimeout(resolve, 3000));
+   *    img.remove();
+   *  },
+   *  {},
+   *  username
    * );
    * ```
    * @param pageFunction - Function to be evaluated in browser context
@@ -3374,14 +3293,14 @@ export class Page extends EventEmitter {
    * {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)} method.
    *
    */
-  waitForFunction(
-    pageFunction: Function | string,
-    options: {
-      timeout?: number;
-      polling?: string | number;
-    } = {},
-    ...args: SerializableOrJSHandle[]
-  ): Promise<JSHandle> {
+  waitForFunction<
+    Func extends EvaluateHandleFn<Args>,
+    Args extends SerializableOrJSHandle[]
+  >(
+    pageFunction: Func,
+    options: FrameWaitForFunctionOptions = {},
+    ...args: Args
+  ): Promise<EvaluateHandleElementReturn<Func>> {
     return this.mainFrame().waitForFunction(pageFunction, options, ...args);
   }
 }

@@ -1073,8 +1073,8 @@ describe('Page', function () {
       await page.exposeFunction('complexObject', function (a, b) {
         return { x: a.x + b.x };
       });
-      const result = await page.evaluate<() => Promise<{ x: number }>>(
-        async () => globalThis.complexObject({ x: 5 }, { x: 2 })
+      const result = await page.evaluate(async () =>
+        globalThis.complexObject({ x: 5 }, { x: 2 })
       );
       expect(result.x).toBe(7);
     });
@@ -1418,7 +1418,7 @@ describe('Page', function () {
         path: path.join(__dirname, 'assets/es6/es6pathimport.js'),
         type: 'module',
       });
-      await page.waitForFunction('window.__es6injected');
+      await page.waitForFunction(() => globalThis.__es6injected);
       expect(await page.evaluate(() => globalThis.__es6injected)).toBe(42);
     });
 
@@ -1430,7 +1430,7 @@ describe('Page', function () {
         content: `import num from '/es6/es6module.js';window.__es6injected = num;`,
         type: 'module',
       });
-      await page.waitForFunction('window.__es6injected');
+      await page.waitForFunction(() => globalThis.__es6injected);
       expect(await page.evaluate(() => globalThis.__es6injected)).toBe(42);
     });
 
@@ -1538,8 +1538,10 @@ describe('Page', function () {
       const styleHandle = await page.addStyleTag({ url: '/injectedstyle.css' });
       expect(styleHandle.asElement()).not.toBeNull();
       expect(
-        await page.evaluate(
-          `window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`
+        await page.evaluate(() =>
+          window
+            .getComputedStyle(document.querySelector('body'))
+            .getPropertyValue('background-color')
         )
       ).toBe('rgb(255, 0, 0)');
     });
@@ -1566,8 +1568,10 @@ describe('Page', function () {
       });
       expect(styleHandle.asElement()).not.toBeNull();
       expect(
-        await page.evaluate(
-          `window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`
+        await page.evaluate(() =>
+          window
+            .getComputedStyle(document.querySelector('body'))
+            .getPropertyValue('background-color')
         )
       ).toBe('rgb(255, 0, 0)');
     });
@@ -1596,8 +1600,10 @@ describe('Page', function () {
       });
       expect(styleHandle.asElement()).not.toBeNull();
       expect(
-        await page.evaluate(
-          `window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`
+        await page.evaluate(() =>
+          window
+            .getComputedStyle(document.querySelector('body'))
+            .getPropertyValue('background-color')
         )
       ).toBe('rgb(0, 128, 0)');
     });
@@ -1649,14 +1655,20 @@ describe('Page', function () {
         'data:text/html, <script>var something = "forbidden"</script>'
       );
       let error = null;
-      await page.evaluate('something').catch((error_) => (error = error_));
+      await page
+        .evaluate(
+          () =>
+            // @ts-expect-error something is not actually defined
+            something
+        )
+        .catch((error_) => (error = error_));
       expect(error.message).toContain('something is not defined');
 
       await page.setJavaScriptEnabled(true);
       await page.goto(
         'data:text/html, <script>var something = "forbidden"</script>'
       );
-      expect(await page.evaluate('something')).toBe('forbidden');
+      expect(await page.evaluate(() => globalThis.something)).toBe('forbidden');
     });
   });
 

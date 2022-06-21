@@ -395,15 +395,15 @@ describe('Emulation', () => {
       const fast3G = puppeteer.networkConditions['Fast 3G'];
 
       expect(
-        await page.evaluate('window.navigator.connection.effectiveType')
+        await page.evaluate(() => window.navigator.connection['effectiveType'])
       ).toBe('4g');
       await page.emulateNetworkConditions(fast3G);
       expect(
-        await page.evaluate('window.navigator.connection.effectiveType')
+        await page.evaluate(() => window.navigator.connection['effectiveType'])
       ).toBe('3g');
       await page.emulateNetworkConditions(slow3G);
       expect(
-        await page.evaluate('window.navigator.connection.effectiveType')
+        await page.evaluate(() => window.navigator.connection['effectiveType'])
       ).toBe('2g');
       await page.emulateNetworkConditions(null);
     });

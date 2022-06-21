@@ -304,12 +304,16 @@ describe('Cookie specs', () => {
           sourceScheme: 'NonSecure',
         },
       ]);
-      expect(await page.evaluate('document.cookie')).toBe('gridcookie=GRID');
+      expect(await page.evaluate(() => document.cookie)).toBe(
+        'gridcookie=GRID'
+      );
       await page.goto(server.EMPTY_PAGE);
       expectCookieEquals(await page.cookies(), []);
-      expect(await page.evaluate('document.cookie')).toBe('');
+      expect(await page.evaluate(() => document.cookie)).toBe('');
       await page.goto(server.PREFIX + '/grid.html');
-      expect(await page.evaluate('document.cookie')).toBe('gridcookie=GRID');
+      expect(await page.evaluate(() => document.cookie)).toBe(
+        'gridcookie=GRID'
+      );
     });
     it('should not set a cookie on a blank page', async () => {
       const { page } = getTestState();
@@ -394,7 +398,7 @@ describe('Cookie specs', () => {
         name: 'example-cookie',
         value: 'best',
       });
-      expect(await page.evaluate('document.cookie')).toBe('');
+      expect(await page.evaluate(() => document.cookie)).toBe('');
       expectCookieEquals(await page.cookies(), []);
       expectCookieEquals(await page.cookies('https://www.example.com'), [
         {
@@ -418,7 +422,7 @@ describe('Cookie specs', () => {
 
       await page.goto(server.PREFIX + '/grid.html');
       await page.setCookie({ name: 'localhost-cookie', value: 'best' });
-      await page.evaluate<(src: string) => Promise<void>>((src) => {
+      await page.evaluate((src) => {
         let fulfill;
         const promise = new Promise<void>((x) => (fulfill = x));
         const iframe = document.createElement('iframe');
@@ -432,10 +436,10 @@ describe('Cookie specs', () => {
         value: 'worst',
         url: server.CROSS_PROCESS_PREFIX,
       });
-      expect(await page.evaluate('document.cookie')).toBe(
+      expect(await page.evaluate(() => document.cookie)).toBe(
         'localhost-cookie=best'
       );
-      expect(await page.frames()[1].evaluate('document.cookie')).toBe('');
+      expect(await page.frames()[1].evaluate(() => document.cookie)).toBe('');
 
       expectCookieEquals(await page.cookies(), [
         {
@@ -486,7 +490,7 @@ describe('Cookie specs', () => {
 
         try {
           await page.goto(httpsServer.PREFIX + '/grid.html');
-          await page.evaluate<(src: string) => Promise<void>>((src) => {
+          await page.evaluate((src) => {
             let fulfill;
             const promise = new Promise<void>((x) => (fulfill = x));
             const iframe = document.createElement('iframe');
@@ -502,7 +506,7 @@ describe('Cookie specs', () => {
             sameSite: 'None',
           });
 
-          expect(await page.frames()[1].evaluate('document.cookie')).toBe(
+          expect(await page.frames()[1].evaluate(() => document.cookie)).toBe(
             '127-same-site-cookie=best'
           );
           expectCookieEquals(
@@ -552,11 +556,11 @@ describe('Cookie specs', () => {
           value: '3',
         }
       );
-      expect(await page.evaluate('document.cookie')).toBe(
+      expect(await page.evaluate(() => document.cookie)).toBe(
         'cookie1=1; cookie2=2; cookie3=3'
       );
       await page.deleteCookie({ name: 'cookie2' });
-      expect(await page.evaluate('document.cookie')).toBe(
+      expect(await page.evaluate(() => document.cookie)).toBe(
         'cookie1=1; cookie3=3'
       );
     });

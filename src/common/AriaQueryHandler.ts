@@ -20,6 +20,7 @@ import { Protocol } from 'devtools-protocol';
 import { CDPSession } from './Connection.js';
 import { DOMWorld, PageBinding, WaitForSelectorOptions } from './DOMWorld.js';
 import { assert } from './assert.js';
+import { ExposedFunctionToInPage } from './EvalTypes.js';
 
 async function queryAXTree(
   client: CDPSession,
@@ -84,14 +85,16 @@ function parseAriaSelector(selector: string): ARIAQueryOption {
 const queryOne = async (
   element: ElementHandle,
   selector: string
-): Promise<ElementHandle | null> => {
+): Promise<ElementHandle<Element> | null> => {
   const exeCtx = element.executionContext();
   const { name, role } = parseAriaSelector(selector);
   const res = await queryAXTree(exeCtx._client, element, name, role);
   if (!res[0] || !res[0].backendDOMNodeId) {
     return null;
   }
-  return exeCtx._adoptBackendNodeId(res[0].backendDOMNodeId);
+  return exeCtx._adoptBackendNodeId(res[0].backendDOMNodeId) as Promise<
+    ElementHandle<Element>
+  >;
 };
 
 const waitFor = async (
@@ -99,18 +102,21 @@ const waitFor = async (
   selector: string,
   options: WaitForSelectorOptions
 ): Promise<ElementHandle<Element> | null> => {
+  async function ariaQuerySelector(selector: string) {
+    const root = options.root || (await domWorld._document());
+    const element = await queryOne(root, selector);
+    return element;
+  }
   const binding: PageBinding = {
     name: 'ariaQuerySelector',
-    pptrFunction: async (selector: string) => {
-      const root = options.root || (await domWorld._document());
-      const element = await queryOne(root, selector);
-      return element;
-    },
+    pptrFunction: ariaQuerySelector,
   };
   return domWorld.waitForSelectorInPage(
-    (_: Element, selector: string) =>
+    (_, selector: string) =>
       (
-        globalThis as unknown as { ariaQuerySelector(selector: string): void }
+        globalThis as unknown as {
+          ariaQuerySelector: ExposedFunctionToInPage<typeof ariaQuerySelector>;
+        }
       ).ariaQuerySelector(selector),
     selector,
     options,
@@ -121,19 +127,24 @@ const waitFor = async (
 const queryAll = async (
   element: ElementHandle,
   selector: string
-): Promise<ElementHandle[]> => {
+): Promise<Array<ElementHandle<Element>>> => {
   const exeCtx = element.executionContext();
   const { name, role } = parseAriaSelector(selector);
   const res = await queryAXTree(exeCtx._client, element, name, role);
   return Promise.all(
-    res.map((axNode) => exeCtx._adoptBackendNodeId(axNode.backendDOMNodeId))
+    res.map(
+      (axNode) =>
+        exeCtx._adoptBackendNodeId(axNode.backendDOMNodeId) as Promise<
+          ElementHandle<Element>
+        >
+    )
   );
 };
 
 const queryAllArray = async (
   element: ElementHandle,
   selector: string
-): Promise<JSHandle> => {
+): Promise<JSHandle<Element[]>> => {
   const elementHandles = await queryAll(element, selector);
   const exeCtx = element.executionContext();
   const jsHandle = exeCtx.evaluateHandle(

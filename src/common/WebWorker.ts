@@ -19,7 +19,13 @@ import { ExecutionContext } from './ExecutionContext.js';
 import { JSHandle } from './JSHandle.js';
 import { CDPSession } from './Connection.js';
 import { Protocol } from 'devtools-protocol';
-import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes.js';
+import {
+  EvaluateFn,
+  EvaluateHandleFn,
+  EvaluateHandleReturn,
+  EvaluateReturn,
+  SerializableOrJSHandle,
+} from './EvalTypes.js';
 import { ConsoleMessageType } from './ConsoleMessage.js';
 
 /**
@@ -124,22 +130,21 @@ export class WebWorker extends EventEmitter {
   /**
    * If the function passed to the `worker.evaluate` returns a Promise, then
    * `worker.evaluate` would wait for the promise to resolve and return its
-   * value. If the function passed to the `worker.evaluate` returns a
-   * non-serializable value, then `worker.evaluate` resolves to `undefined`.
+   * value.
    * DevTools Protocol also supports transferring some additional values that
    * are not serializable by `JSON`: `-0`, `NaN`, `Infinity`, `-Infinity`, and
    * bigint literals.
-   * Shortcut for `await worker.executionContext()).evaluate(pageFunction, ...args)`.
+   * Shortcut for `(await worker.executionContext()).evaluate(pageFunction, ...args)`.
    *
    * @param pageFunction - Function to be evaluated in the worker context.
    * @param args - Arguments to pass to `pageFunction`.
    * @returns Promise which resolves to the return value of `pageFunction`.
    */
-  async evaluate<ReturnType>(
-    pageFunction: Function | string,
-    ...args: any[]
-  ): Promise<ReturnType> {
-    return (await this._executionContextPromise).evaluate<ReturnType>(
+  async evaluate<
+    Func extends EvaluateFn<Args>,
+    Args extends SerializableOrJSHandle[]
+  >(pageFunction: Func, ...args: Args): Promise<EvaluateReturn<Func>> {
+    return (await this._executionContextPromise).evaluate(
       pageFunction,
       ...args
     );
@@ -151,17 +156,17 @@ export class WebWorker extends EventEmitter {
    * function passed to the `worker.evaluateHandle` returns a `Promise`, then
    * `worker.evaluateHandle` would wait for the promise to resolve and return
    * its value. Shortcut for
-   * `await worker.executionContext()).evaluateHandle(pageFunction, ...args)`
+   * `(await worker.executionContext()).evaluateHandle(pageFunction, ...args)`
    *
    * @param pageFunction - Function to be evaluated in the page context.
    * @param args - Arguments to pass to `pageFunction`.
    * @returns Promise which resolves to the return value of `pageFunction`.
    */
-  async evaluateHandle<HandlerType extends JSHandle = JSHandle>(
-    pageFunction: EvaluateHandleFn,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<JSHandle> {
-    return (await this._executionContextPromise).evaluateHandle<HandlerType>(
+  async evaluateHandle<
+    Func extends EvaluateHandleFn<Args>,
+    Args extends SerializableOrJSHandle[]
+  >(pageFunction: Func, ...args: Args): Promise<EvaluateHandleReturn<Func>> {
+    return (await this._executionContextPromise).evaluateHandle(
       pageFunction,
       ...args
     );

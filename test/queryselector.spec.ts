@@ -172,15 +172,13 @@ describe('querySelector', function () {
     });
     it('should handle many elements', async () => {
       const { page } = getTestState();
-      await page.evaluate(
-        `
-        for (var i = 0; i <= 1000; i++) {
-            const section = document.createElement('section');
-            section.textContent = i;
-            document.body.appendChild(section);
+      await page.evaluate(() => {
+        for (let i = 0; i <= 1000; i++) {
+          const section = document.createElement('section');
+          section.textContent = i.toString();
+          document.body.appendChild(section);
         }
-        `
-      );
+      });
       const sum = await page.$$eval('section', (sections) =>
         sections.reduce((acc, section) => acc + Number(section.textContent), 0)
       );
@@ -509,15 +507,13 @@ describe('querySelector', function () {
     });
     it('$$eval should handle many elements', async () => {
       const { page } = getTestState();
-      await page.evaluate(
-        `
-        for (var i = 0; i <= 1000; i++) {
-            const section = document.createElement('section');
-            section.textContent = i;
-            document.body.appendChild(section);
+      await page.evaluate(() => {
+        for (let i = 0; i <= 1000; i++) {
+          const section = document.createElement('section');
+          section.textContent = i.toString();
+          document.body.appendChild(section);
         }
-        `
-      );
+      });
       const sum = await page.$$eval('allArray/section', (sections) =>
         sections.reduce((acc, section) => acc + Number(section.textContent), 0)
       );

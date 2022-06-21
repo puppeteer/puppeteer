@@ -98,7 +98,7 @@ describeChromeOnly('Chromium-Specific Launcher tests', function () {
       expect((await browser.pages()).length).toBe(1);
       expect(browser.wsEndpoint()).toBe('');
       const page = await browser.newPage();
-      expect(await page.evaluate('11 * 11')).toBe(121);
+      expect(await page.evaluate(() => 11 * 11)).toBe(121);
       await page.close();
       await browser.close();
     });
@@ -109,7 +109,7 @@ describeChromeOnly('Chromium-Specific Launcher tests', function () {
       const browser = await puppeteer.launch(options);
       expect(browser.wsEndpoint()).toBe('');
       const page = await browser.newPage();
-      expect(await page.evaluate('11 * 11')).toBe(121);
+      expect(await page.evaluate(() => 11 * 11)).toBe(121);
       await page.close();
       await browser.close();
     });

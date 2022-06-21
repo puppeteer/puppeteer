@@ -16,17 +16,23 @@
 
 import { assert } from './assert.js';
 import { helper } from './helper.js';
-import { createJSHandle, JSHandle, ElementHandle } from './JSHandle.js';
+import { createJSHandle, ElementHandle, JSHandle } from './JSHandle.js';
 import { CDPSession } from './Connection.js';
 import { DOMWorld } from './DOMWorld.js';
 import { Frame } from './FrameManager.js';
 import { Protocol } from 'devtools-protocol';
-import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes.js';
+import {
+  EvaluateFn,
+  EvaluateHandleFn,
+  EvaluateHandleReturn,
+  EvaluateReturn,
+  SerializableOrJSHandle,
+} from './EvalTypes.js';
+
 /**
  * @public
  */
 export const EVALUATION_SCRIPT_URL = 'pptr://__puppeteer_evaluation_script__';
-const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
 
 /**
  * This class represents a context for JavaScript execution. A [Page] might have
@@ -94,9 +100,7 @@ export class ExecutionContext {
    * @remarks
    * If the function passed to the `executionContext.evaluate` returns a
    * Promise, then `executionContext.evaluate` would wait for the promise to
-   * resolve and return its value. If the function passed to the
-   * `executionContext.evaluate` returns a non-serializable value, then
-   * `executionContext.evaluate` resolves to `undefined`. DevTools Protocol also
+   * resolve and return its value. DevTools Protocol also
    * supports transferring some additional values that are not serializable by
    * `JSON`: `-0`, `NaN`, `Infinity`, `-Infinity`, and bigint literals.
    *
@@ -109,10 +113,12 @@ export class ExecutionContext {
    * ```
    *
    * @example
-   * A string can also be passed in instead of a function.
+   * A dynamically generated function can also be passed.
    *
    * ```js
-   * console.log(await executionContext.evaluate('1 + 2')); // prints "3"
+   * console.log(await executionContext.evaluate(Function('return 1 + 2;')));
+   * // prints "3"
+   * // Cast function to `() => number` in TypeScript
    * ```
    *
    * @example
@@ -133,15 +139,11 @@ export class ExecutionContext {
    *
    * @returns A promise that resolves to the return value of the given function.
    */
-  async evaluate<ReturnType>(
-    pageFunction: Function | string,
-    ...args: unknown[]
-  ): Promise<ReturnType> {
-    return await this._evaluateInternal<ReturnType>(
-      true,
-      pageFunction,
-      ...args
-    );
+  async evaluate<
+    Func extends EvaluateFn<Args>,
+    Args extends SerializableOrJSHandle[]
+  >(pageFunction: Func, ...args: Args): Promise<EvaluateReturn<Func>> {
+    return await this._evaluateInternal(true, pageFunction, ...args);
   }
 
   /**
@@ -161,11 +163,11 @@ export class ExecutionContext {
    * ```
    *
    * @example
-   * A string can also be passed in instead of a function.
+   * A dynamically generated function can also be passed.
    *
    * ```js
-   * // Handle for the '3' * object.
-   * const aHandle = await context.evaluateHandle('1 + 2');
+   * const docHandle = await context.evaluateHandle(Function('return document;'));
+   * // Cast function to `() => Document` in TypeScript
    * ```
    *
    * @example
@@ -186,55 +188,38 @@ export class ExecutionContext {
    * @returns A promise that resolves to the return value of the given function
    * as an in-page object (a {@link JSHandle}).
    */
-  async evaluateHandle<HandleType extends JSHandle | ElementHandle = JSHandle>(
-    pageFunction: EvaluateHandleFn,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<HandleType> {
-    return this._evaluateInternal<HandleType>(false, pageFunction, ...args);
+  async evaluateHandle<
+    Func extends EvaluateHandleFn<Args>,
+    Args extends SerializableOrJSHandle[]
+  >(pageFunction: Func, ...args: Args): Promise<EvaluateHandleReturn<Func>> {
+    return this._evaluateInternal(false, pageFunction, ...args);
   }
 
-  private async _evaluateInternal<ReturnType>(
-    returnByValue: boolean,
-    pageFunction: Function | string,
-    ...args: unknown[]
-  ): Promise<ReturnType> {
+  private async _evaluateInternal<
+    Func extends ReturnByValue extends true
+      ? EvaluateFn<Args>
+      : EvaluateHandleFn<Args>,
+    Args extends SerializableOrJSHandle[],
+    ReturnByValue extends boolean
+  >(
+    returnByValue: ReturnByValue,
+    pageFunction: Func,
+    ...args: Args
+  ): Promise<
+    ReturnByValue extends true
+      ? EvaluateReturn<Func>
+      : EvaluateHandleReturn<Func>
+  > {
     const suffix = `//# sourceURL=${EVALUATION_SCRIPT_URL}`;
-
-    if (helper.isString(pageFunction)) {
-      const contextId = this._contextId;
-      const expression = pageFunction;
-      const expressionWithSourceUrl = SOURCE_URL_REGEX.test(expression)
-        ? expression
-        : expression + '\n' + suffix;
-
-      const { exceptionDetails, result: remoteObject } = await this._client
-        .send('Runtime.evaluate', {
-          expression: expressionWithSourceUrl,
-          contextId,
-          returnByValue,
-          awaitPromise: true,
-          userGesture: true,
-        })
-        .catch(rewriteError);
-
-      if (exceptionDetails)
-        throw new Error(
-          'Evaluation failed: ' + helper.getExceptionMessage(exceptionDetails)
-        );
-
-      return returnByValue
-        ? helper.valueFromRemoteObject(remoteObject)
-        : createJSHandle(this, remoteObject);
-    }
 
     if (typeof pageFunction !== 'function')
       throw new Error(
-        `Expected to get |string| or |function| as the first argument, but got "${pageFunction}" instead.`
+        `Expected to get |function| as the first argument, but got "${pageFunction}" instead.`
       );
 
     let functionText = pageFunction.toString();
     try {
-      new Function('(' + functionText + ')');
+      Function('(' + functionText + ')');
     } catch (error) {
       // This means we might have a function shorthand. Try another
       // time prefixing 'function '.
@@ -243,7 +228,7 @@ export class ExecutionContext {
           'async function ' + functionText.substring('async '.length);
       else functionText = 'function ' + functionText;
       try {
-        new Function('(' + functionText + ')');
+        Function('(' + functionText + ')');
       } catch (error) {
         // We tried hard to serialize, but there's a weird beast here.
         throw new Error('Passed function is not well-serializable!');
@@ -374,9 +359,9 @@ export class ExecutionContext {
   /**
    * @internal
    */
-  async _adoptElementHandle(
-    elementHandle: ElementHandle
-  ): Promise<ElementHandle> {
+  async _adoptElementHandle<NodeType extends ParentNode>(
+    elementHandle: ElementHandle<NodeType>
+  ): Promise<ElementHandle<NodeType>> {
     assert(
       elementHandle.executionContext() !== this,
       'Cannot adopt handle that already belongs to this execution context'
@@ -385,6 +370,8 @@ export class ExecutionContext {
     const nodeInfo = await this._client.send('DOM.describeNode', {
       objectId: elementHandle._remoteObject.objectId,
     });
-    return this._adoptBackendNodeId(nodeInfo.node.backendNodeId);
+    return this._adoptBackendNodeId(nodeInfo.node.backendNodeId) as Promise<
+      ElementHandle<NodeType>
+    >;
   }
 }

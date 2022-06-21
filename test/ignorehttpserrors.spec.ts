@@ -20,15 +20,20 @@ import {
   describeFailsFirefox,
   itFailsFirefox,
 } from './mocha-utils'; // eslint-disable-line import/extensions
+import {
+  Browser,
+  BrowserContext,
+} from '../lib/cjs/puppeteer/common/Browser.js';
+import { Page } from '../lib/cjs/puppeteer/common/Page.js';
 
 describe('ignoreHTTPSErrors', function () {
   /* Note that this test creates its own browser rather than use
    * the one provided by the test set-up as we need one
    * with ignoreHTTPSErrors set to true
    */
-  let browser;
-  let context;
-  let page;
+  let browser: Browser;
+  let context: BrowserContext;
+  let page: Page;
 
   before(async () => {
     const { defaultBrowserOptions, puppeteer } = getTestState();
@@ -129,7 +134,7 @@ describe('ignoreHTTPSErrors', function () {
     expect(page.frames().length).toBe(2);
     // Make sure blocked iframe has functional execution context
     // @see https://github.com/puppeteer/puppeteer/issues/2709
-    expect(await page.frames()[0].evaluate('1 + 2')).toBe(3);
-    expect(await page.frames()[1].evaluate('2 + 3')).toBe(5);
+    expect(await page.frames()[0].evaluate(() => 1 + 2)).toBe(3);
+    expect(await page.frames()[1].evaluate(() => 2 + 3)).toBe(5);
   });
 });

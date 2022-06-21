@@ -83,13 +83,17 @@ describe('Evaluation specs', function () {
       const { page } = getTestState();
 
       await page.evaluate(() => (globalThis.globalVar = 123));
-      expect(await page.evaluate('globalVar')).toBe(123);
+      expect(
+        await page.evaluate(Function('return globalVar') as () => 123)
+      ).toBe(123);
     });
     it('should evaluate in the page context', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/global-var.html');
-      expect(await page.evaluate('globalVar')).toBe(123);
+      expect(
+        await page.evaluate(Function('return globalVar') as () => 123)
+      ).toBe(123);
     });
     itFailsFirefox(
       'should return undefined for objects with symbols',
@@ -155,11 +159,7 @@ describe('Evaluation specs', function () {
 
       // Setup inpage callback, which calls Page.evaluate
       await page.exposeFunction('callController', async function (a, b) {
-        return await page.evaluate<(a: number, b: number) => number>(
-          (a, b) => a * b,
-          a,
-          b
-        );
+        return await page.evaluate((a, b) => a * b, a, b);
       });
       const result = await page.evaluate(async function () {
         return await globalThis.callController(9, 3);
@@ -281,28 +281,30 @@ describe('Evaluation specs', function () {
         .jsonValue<string>()
         .catch((error_) => error_.message);
       const error = await page
-        .evaluate<(errorText: string) => Error>((errorText) => {
+        .evaluate((errorText) => {
           throw new Error(errorText);
         }, errorText)
         .catch((error_) => error_);
       expect(error.message).toContain(errorText);
     });
-    it('should accept a string', async () => {
+    it('should accept a dynamic Function', async () => {
       const { page } = getTestState();
 
-      const result = await page.evaluate('1 + 2');
+      const result = await page.evaluate(Function('return 1 + 2') as () => 3);
       expect(result).toBe(3);
     });
-    it('should accept a string with semi colons', async () => {
+    it('should accept a dynamic Function with semi colons', async () => {
       const { page } = getTestState();
 
-      const result = await page.evaluate('1 + 5;');
+      const result = await page.evaluate(Function('return 1 + 5;') as () => 6);
       expect(result).toBe(6);
     });
-    it('should accept a string with comments', async () => {
+    it('should accept a dynamic Function with comments', async () => {
       const { page } = getTestState();
 
-      const result = await page.evaluate('2 + 5;\n// do some math!');
+      const result = await page.evaluate(
+        Function('return 2 + 5;\n// do some math!') as () => 7
+      );
       expect(result).toBe(7);
     });
     it('should accept element handle as an argument', async () => {
@@ -310,10 +312,7 @@ describe('Evaluation specs', function () {
 
       await page.setContent('<section>42</section>');
       const element = await page.$('section');
-      const text = await page.evaluate<(e: HTMLElement) => string>(
-        (e) => e.textContent,
-        element
-      );
+      const text = await page.evaluate((e) => e.textContent, element);
       expect(text).toBe('42');
     });
     it('should throw if underlying element was disposed', async () => {
@@ -386,7 +385,7 @@ describe('Evaluation specs', function () {
     it('should transfer 100Mb of data from page to node.js', async function () {
       const { page } = getTestState();
 
-      const a = await page.evaluate<() => string>(() =>
+      const a = await page.evaluate(() =>
         Array(100 * 1024 * 1024 + 1).join('a')
       );
       expect(a.length).toBe(100 * 1024 * 1024);

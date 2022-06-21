@@ -61,10 +61,10 @@ describeChromeOnly('Target.createCDPSession', function () {
     // generate a script in page and wait for the event.
     const [event] = await Promise.all([
       waitEvent(client, 'Debugger.scriptParsed'),
-      page.evaluate('//# sourceURL=foo.js'),
+      page.evaluate(Function('//') as () => void),
     ]);
     // expect events to be dispatched.
-    expect(event.url).toBe('foo.js');
+    expect(event.url).toBe('pptr://__puppeteer_evaluation_script__');
   });
   it('should be able to detach session', async () => {
     const { page } = getTestState();

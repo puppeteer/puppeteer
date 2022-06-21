@@ -89,9 +89,11 @@ describe('waittask specs', function () {
     it('should work with multiline body', async () => {
       const { page } = getTestState();
 
-      const result = await page.waitForFunction(`
-        (() => true)()
-      `);
+      const result = await page.waitForFunction(
+        Function(`
+          return true;
+        `) as () => true
+      );
       expect(await result.jsonValue()).toBe(true);
     });
     it('should wait for predicate', async () => {
@@ -113,7 +115,7 @@ describe('waittask specs', function () {
     it('should wait for predicate with arguments', async () => {
       const { page } = getTestState();
 
-      await page.waitFor((arg1, arg2) => arg1 !== arg2, {}, 1, 2);
+      await page.waitFor((arg1: number, arg2) => arg1 !== arg2, {}, 1, 2);
     });
 
     it('should log a deprecation warning', async () => {
@@ -134,10 +136,12 @@ describe('waittask specs', function () {
   });
 
   describe('Frame.waitForFunction', function () {
-    it('should accept a string', async () => {
+    it('should accept a dynamic Function', async () => {
       const { page } = getTestState();
 
-      const watchdog = page.waitForFunction('window.__FOO === 1');
+      const watchdog = page.waitForFunction(
+        Function('return window.__FOO === 1;') as () => true
+      );
       await page.evaluate(() => (globalThis.__FOO = 1));
       await watchdog;
     });
@@ -256,7 +260,7 @@ describe('waittask specs', function () {
       let error = null;
       try {
         await page.waitForFunction(() => !!document.body, {
-          polling: 'unknown',
+          polling: 'unknown' as never,
         });
       } catch (error_) {
         error = error_;
@@ -308,7 +312,7 @@ describe('waittask specs', function () {
 
       let error = null;
       await page
-        .waitForFunction('false', { timeout: 10 })
+        .waitForFunction(() => false, { timeout: 10 })
         .catch((error_) => (error = error_));
       expect(error).toBeTruthy();
       expect(error.message).toContain('waiting for function failed: timeout');
@@ -319,7 +323,9 @@ describe('waittask specs', function () {
 
       page.setDefaultTimeout(1);
       let error = null;
-      await page.waitForFunction('false').catch((error_) => (error = error_));
+      await page
+        .waitForFunction(() => false)
+        .catch((error_) => (error = error_));
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
       expect(error.message).toContain('waiting for function failed: timeout');
     });
@@ -342,7 +348,7 @@ describe('waittask specs', function () {
 
       let fooFound = false;
       const waitForFunction = page
-        .waitForFunction('globalThis.__FOO === 1')
+        .waitForFunction(() => globalThis.__FOO === 1)
         .then(() => (fooFound = true));
       await page.goto(server.EMPTY_PAGE);
       expect(fooFound).toBe(false);
