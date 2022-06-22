@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { NetworkConditions } from './NetworkManager.js';
+import {NetworkConditions} from './NetworkManager.js';
 
 /**
  * @public
  */
-export type PredefinedNetworkConditions = { [name: string]: NetworkConditions };
+export type PredefinedNetworkConditions = {[name: string]: NetworkConditions};
 
 /**
  * @public

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { Protocol } from 'devtools-protocol';
-import { ProtocolMapping } from 'devtools-protocol/types/protocol-mapping.js';
-import { assert } from './assert.js';
-import { EventEmitter } from './EventEmitter.js';
-import { Frame } from './FrameManager.js';
-import { HTTPRequest } from './HTTPRequest.js';
-import { HTTPResponse } from './HTTPResponse.js';
-import { FetchRequestId, NetworkEventManager } from './NetworkEventManager.js';
-import { debugError, isString } from './util.js';
+import {Protocol} from 'devtools-protocol';
+import {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
+import {assert} from './assert.js';
+import {EventEmitter} from './EventEmitter.js';
+import {Frame} from './FrameManager.js';
+import {HTTPRequest} from './HTTPRequest.js';
+import {HTTPResponse} from './HTTPResponse.js';
+import {FetchRequestId, NetworkEventManager} from './NetworkEventManager.js';
+import {debugError, isString} from './util.js';
 
 /**
  * @public
@@ -231,7 +231,7 @@ export class NetworkManager extends EventEmitter {
         this.#updateProtocolCacheDisabled(),
         this.#client.send('Fetch.enable', {
           handleAuthRequests: true,
-          patterns: [{ urlPattern: '*' }],
+          patterns: [{urlPattern: '*'}],
         }),
       ]);
     } else {
@@ -258,7 +258,7 @@ export class NetworkManager extends EventEmitter {
       this.#userRequestInterceptionEnabled &&
       !event.request.url.startsWith('data:')
     ) {
-      const { requestId: networkRequestId } = event;
+      const {requestId: networkRequestId} = event;
 
       this.#networkEventManager.storeRequestWillBeSent(networkRequestId, event);
 
@@ -268,7 +268,7 @@ export class NetworkManager extends EventEmitter {
       const requestPausedEvent =
         this.#networkEventManager.getRequestPaused(networkRequestId);
       if (requestPausedEvent) {
-        const { requestId: fetchRequestId } = requestPausedEvent;
+        const {requestId: fetchRequestId} = requestPausedEvent;
         this.#patchRequestEventHeaders(event, requestPausedEvent);
         this.#onRequest(event, fetchRequestId);
         this.#networkEventManager.forgetRequestPaused(networkRequestId);
@@ -291,14 +291,14 @@ export class NetworkManager extends EventEmitter {
       response = 'ProvideCredentials';
       this.#attemptedAuthentications.add(event.requestId);
     }
-    const { username, password } = this.#credentials || {
+    const {username, password} = this.#credentials || {
       username: undefined,
       password: undefined,
     };
     this.#client
       .send('Fetch.continueWithAuth', {
         requestId: event.requestId,
-        authChallengeResponse: { response, username, password },
+        authChallengeResponse: {response, username, password},
       })
       .catch(debugError);
   }
@@ -322,7 +322,7 @@ export class NetworkManager extends EventEmitter {
         .catch(debugError);
     }
 
-    const { networkId: networkRequestId, requestId: fetchRequestId } = event;
+    const {networkId: networkRequestId, requestId: fetchRequestId} = event;
 
     if (!networkRequestId) {
       return;

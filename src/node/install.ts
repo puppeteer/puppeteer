@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-import https, { RequestOptions } from 'https';
+import https, {RequestOptions} from 'https';
 import ProgressBar from 'progress';
 import URL from 'url';
 import puppeteer from '../puppeteer.js';
-import { PUPPETEER_REVISIONS } from '../revisions.js';
-import { PuppeteerNode } from './Puppeteer.js';
-import createHttpsProxyAgent, {
-  HttpsProxyAgentOptions,
-} from 'https-proxy-agent';
-import { getProxyForUrl } from 'proxy-from-env';
+import {PUPPETEER_REVISIONS} from '../revisions.js';
+import {PuppeteerNode} from './Puppeteer.js';
+import createHttpsProxyAgent, {HttpsProxyAgentOptions} from 'https-proxy-agent';
+import {getProxyForUrl} from 'proxy-from-env';
 
 const supportedProducts = {
   chrome: 'Chromium',
@@ -70,7 +68,7 @@ export async function downloadBrowser(): Promise<void> {
     } else if (product === 'firefox') {
       (puppeteer as PuppeteerNode)._preferredRevision =
         PUPPETEER_REVISIONS.firefox;
-      return getFirefoxNightlyVersion().catch((error) => {
+      return getFirefoxNightlyVersion().catch(error => {
         console.error(error);
         process.exit(1);
       });
@@ -111,10 +109,10 @@ export async function downloadBrowser(): Promise<void> {
       logPolitely(
         `${supportedProducts[product]} (${revisionInfo.revision}) downloaded to ${revisionInfo.folderPath}`
       );
-      localRevisions = localRevisions.filter((revision) => {
+      localRevisions = localRevisions.filter(revision => {
         return revision !== revisionInfo.revision;
       });
-      const cleanupOldVersions = localRevisions.map((revision) => {
+      const cleanupOldVersions = localRevisions.map(revision => {
         return browserFetcher.remove(revision);
       });
       Promise.all([...cleanupOldVersions]);
@@ -189,11 +187,11 @@ export async function downloadBrowser(): Promise<void> {
         `Requesting latest Firefox Nightly version from ${firefoxVersionsUrl}`
       );
       https
-        .get(firefoxVersionsUrl, requestOptions, (r) => {
+        .get(firefoxVersionsUrl, requestOptions, r => {
           if (r.statusCode && r.statusCode >= 400) {
             return reject(new Error(`Got status code ${r.statusCode}`));
           }
-          r.on('data', (chunk) => {
+          r.on('data', chunk => {
             data += chunk;
           });
           r.on('end', () => {

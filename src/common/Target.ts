@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Page, PageEmittedEvents } from './Page.js';
-import { WebWorker } from './WebWorker.js';
-import { CDPSession } from './Connection.js';
-import { Browser, BrowserContext, IsPageTargetCallback } from './Browser.js';
-import { Viewport } from './PuppeteerViewport.js';
-import { Protocol } from 'devtools-protocol';
-import { TaskQueue } from './TaskQueue.js';
+import {Page, PageEmittedEvents} from './Page.js';
+import {WebWorker} from './WebWorker.js';
+import {CDPSession} from './Connection.js';
+import {Browser, BrowserContext, IsPageTargetCallback} from './Browser.js';
+import {Viewport} from './PuppeteerViewport.js';
+import {Protocol} from 'devtools-protocol';
+import {TaskQueue} from './TaskQueue.js';
 
 /**
  * @public
@@ -84,9 +84,9 @@ export class Target {
     this.#defaultViewport = defaultViewport ?? undefined;
     this.#screenshotTaskQueue = screenshotTaskQueue;
     this._isPageTargetCallback = isPageTargetCallback;
-    this._initializedPromise = new Promise<boolean>((fulfill) => {
+    this._initializedPromise = new Promise<boolean>(fulfill => {
       return (this._initializedCallback = fulfill);
-    }).then(async (success) => {
+    }).then(async success => {
       if (!success) {
         return false;
       }
@@ -102,7 +102,7 @@ export class Target {
       openerPage.emit(PageEmittedEvents.Popup, popupPage);
       return true;
     });
-    this._isClosedPromise = new Promise<void>((fulfill) => {
+    this._isClosedPromise = new Promise<void>(fulfill => {
       return (this._closedCallback = fulfill);
     });
     this._isInitialized =
@@ -132,7 +132,7 @@ export class Target {
    */
   async page(): Promise<Page | null> {
     if (this._isPageTargetCallback(this.#targetInfo) && !this.#pagePromise) {
-      this.#pagePromise = this.#sessionFactory().then((client) => {
+      this.#pagePromise = this.#sessionFactory().then(client => {
         return Page._create(
           client,
           this,
@@ -157,7 +157,7 @@ export class Target {
     }
     if (!this.#workerPromise) {
       // TODO(einbinder): Make workers send their console logs.
-      this.#workerPromise = this.#sessionFactory().then((client) => {
+      this.#workerPromise = this.#sessionFactory().then(client => {
         return new WebWorker(
           client,
           this.#targetInfo.url,
@@ -220,7 +220,7 @@ export class Target {
    * Get the target that opened this target. Top-level targets return `null`.
    */
   opener(): Target | undefined {
-    const { openerId } = this.#targetInfo;
+    const {openerId} = this.#targetInfo;
     if (!openerId) {
       return;
     }

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { Protocol } from 'devtools-protocol';
-import type { Readable } from 'stream';
-import { isNode } from '../environment.js';
-import { assert } from './assert.js';
-import { CDPSession } from './Connection.js';
-import { debug } from './Debug.js';
-import { TimeoutError } from './Errors.js';
-import { CommonEventEmitter } from './EventEmitter.js';
+import {Protocol} from 'devtools-protocol';
+import type {Readable} from 'stream';
+import {isNode} from '../environment.js';
+import {assert} from './assert.js';
+import {CDPSession} from './Connection.js';
+import {debug} from './Debug.js';
+import {TimeoutError} from './Errors.js';
+import {CommonEventEmitter} from './EventEmitter.js';
 
 export const debugError = debug('puppeteer:error');
 
@@ -84,8 +84,8 @@ export async function releaseObject(
     return;
   }
   await client
-    .send('Runtime.releaseObject', { objectId: remoteObject.objectId })
-    .catch((error) => {
+    .send('Runtime.releaseObject', {objectId: remoteObject.objectId})
+    .catch(error => {
       // Exceptions might happen in case of a page been navigated or closed.
       // Swallow these since they are harmless and we don't leak anything in this case.
       debugError(error);
@@ -104,7 +104,7 @@ export function addEventListener(
   handler: (...args: any[]) => void
 ): PuppeteerEventListener {
   emitter.on(eventName, handler);
-  return { emitter, eventName, handler };
+  return {emitter, eventName, handler};
 }
 
 export function removeEventListeners(
@@ -142,7 +142,7 @@ export async function waitForEvent<T>(
     resolveCallback = resolve;
     rejectCallback = reject;
   });
-  const listener = addEventListener(emitter, eventName, async (event) => {
+  const listener = addEventListener(emitter, eventName, async event => {
     if (!(await predicate(event))) {
       return;
     }
@@ -160,11 +160,11 @@ export async function waitForEvent<T>(
     clearTimeout(eventTimeout);
   }
   const result = await Promise.race([promise, abortPromise]).then(
-    (r) => {
+    r => {
       cleanup();
       return r;
     },
-    (error) => {
+    error => {
       cleanup();
       throw error;
     }
@@ -213,9 +213,9 @@ export function pageBindingInitString(type: string, name: string): string {
       const seq = (me.lastSeq || 0) + 1;
       me.lastSeq = seq;
       const promise = new Promise((resolve, reject) => {
-        return callbacks.set(seq, { resolve, reject });
+        return callbacks.set(seq, {resolve, reject});
       });
-      binding(JSON.stringify({ type, name: bindingName, seq, args }));
+      binding(JSON.stringify({type, name: bindingName, seq, args}));
       return promise;
     };
   }
@@ -381,7 +381,7 @@ export async function getReadableFromProtocolStream(
     throw new Error('Cannot create a stream outside of Node.js environment.');
   }
 
-  const { Readable } = await import('stream');
+  const {Readable} = await import('stream');
 
   let eof = false;
   return new Readable({
@@ -390,11 +390,11 @@ export async function getReadableFromProtocolStream(
         return;
       }
 
-      const response = await client.send('IO.read', { handle, size });
+      const response = await client.send('IO.read', {handle, size});
       this.push(response.data, response.base64Encoded ? 'base64' : undefined);
       if (response.eof) {
         eof = true;
-        await client.send('IO.close', { handle });
+        await client.send('IO.close', {handle});
         this.push(null);
       }
     },

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import NodeWebSocket from 'ws';
-import { ConnectionTransport } from '../common/ConnectionTransport.js';
-import { packageVersion } from '../generated/version.js';
-import { promises as dns } from 'dns';
+import {ConnectionTransport} from '../common/ConnectionTransport.js';
+import {packageVersion} from '../generated/version.js';
+import {promises as dns} from 'dns';
 
 export class NodeWebSocketTransport implements ConnectionTransport {
   static async create(urlString: string): Promise<NodeWebSocketTransport> {
@@ -29,7 +29,7 @@ export class NodeWebSocketTransport implements ConnectionTransport {
     // because of https://bugzilla.mozilla.org/show_bug.cgi?id=1769994.
     const url = new URL(urlString);
     if (url.hostname === 'localhost') {
-      const { address } = await dns.lookup(url.hostname, { verbatim: false });
+      const {address} = await dns.lookup(url.hostname, {verbatim: false});
       url.hostname = address;
     }
 
@@ -56,7 +56,7 @@ export class NodeWebSocketTransport implements ConnectionTransport {
 
   constructor(ws: NodeWebSocket) {
     this.#ws = ws;
-    this.#ws.addEventListener('message', (event) => {
+    this.#ws.addEventListener('message', event => {
       if (this.onmessage) {
         this.onmessage.call(null, event.data);
       }

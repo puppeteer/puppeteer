@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { WaitForSelectorOptions, DOMWorld } from './DOMWorld.js';
-import { ElementHandle, JSHandle } from './JSHandle.js';
-import { _ariaHandler } from './AriaQueryHandler.js';
+import {WaitForSelectorOptions, DOMWorld} from './DOMWorld.js';
+import {ElementHandle, JSHandle} from './JSHandle.js';
+import {_ariaHandler} from './AriaQueryHandler.js';
 
 /**
  * @internal
@@ -211,7 +211,7 @@ export function _unregisterCustomQueryHandler(name: string): void {
  * @internal
  */
 export function _customQueryHandlerNames(): string[] {
-  return [...queryHandlers.keys()].filter((name) => {
+  return [...queryHandlers.keys()].filter(name => {
     return !builtInHandlers.has(name);
   });
 }
@@ -232,7 +232,7 @@ export function _getQueryHandlerAndSelector(selector: string): {
 } {
   const hasCustomQueryHandler = /^[a-zA-Z]+\//.test(selector);
   if (!hasCustomQueryHandler) {
-    return { updatedSelector: selector, queryHandler: _defaultHandler };
+    return {updatedSelector: selector, queryHandler: _defaultHandler};
   }
 
   const index = selector.indexOf('/');

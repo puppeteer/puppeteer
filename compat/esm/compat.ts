@@ -1,6 +1,6 @@
-import { createRequire } from 'module';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import {createRequire} from 'module';
+import {dirname} from 'path';
+import {fileURLToPath} from 'url';
 
 const require = createRequire(import.meta.url);
 
@@ -16,4 +16,4 @@ try {
   puppeteerDirname = dirname(fileURLToPath(import.meta.url));
 }
 
-export { puppeteerDirname };
+export {puppeteerDirname};

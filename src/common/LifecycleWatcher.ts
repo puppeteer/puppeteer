@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import { assert } from './assert.js';
+import {assert} from './assert.js';
 import {
   addEventListener,
   PuppeteerEventListener,
   removeEventListeners,
 } from './util.js';
-import { TimeoutError } from './Errors.js';
+import {TimeoutError} from './Errors.js';
 import {
   FrameManager,
   Frame,
   FrameManagerEmittedEvents,
 } from './FrameManager.js';
-import { HTTPRequest } from './HTTPRequest.js';
-import { HTTPResponse } from './HTTPResponse.js';
-import { NetworkManagerEmittedEvents } from './NetworkManager.js';
-import { CDPSessionEmittedEvents } from './Connection.js';
+import {HTTPRequest} from './HTTPRequest.js';
+import {HTTPResponse} from './HTTPResponse.js';
+import {NetworkManagerEmittedEvents} from './NetworkManager.js';
+import {CDPSessionEmittedEvents} from './Connection.js';
 /**
  * @public
  */
@@ -72,24 +72,24 @@ export class LifecycleWatcher {
   #eventListeners: PuppeteerEventListener[];
 
   #sameDocumentNavigationCompleteCallback: (x?: Error) => void = noop;
-  #sameDocumentNavigationPromise = new Promise<Error | undefined>((fulfill) => {
+  #sameDocumentNavigationPromise = new Promise<Error | undefined>(fulfill => {
     this.#sameDocumentNavigationCompleteCallback = fulfill;
   });
 
   #lifecycleCallback: () => void = noop;
-  #lifecyclePromise: Promise<void> = new Promise((fulfill) => {
+  #lifecyclePromise: Promise<void> = new Promise(fulfill => {
     this.#lifecycleCallback = fulfill;
   });
 
   #newDocumentNavigationCompleteCallback: (x?: Error) => void = noop;
   #newDocumentNavigationPromise: Promise<Error | undefined> = new Promise(
-    (fulfill) => {
+    fulfill => {
       this.#newDocumentNavigationCompleteCallback = fulfill;
     }
   );
 
   #terminationCallback: (x?: Error) => void = noop;
-  #terminationPromise: Promise<Error | undefined> = new Promise((fulfill) => {
+  #terminationPromise: Promise<Error | undefined> = new Promise(fulfill => {
     this.#terminationCallback = fulfill;
   });
 
@@ -111,7 +111,7 @@ export class LifecycleWatcher {
     } else if (typeof waitUntil === 'string') {
       waitUntil = [waitUntil];
     }
-    this.#expectedLifecycle = waitUntil.map((value) => {
+    this.#expectedLifecycle = waitUntil.map(value => {
       const protocolEvent = puppeteerToProtocolLifecycle.get(value);
       assert(protocolEvent, 'Unknown value for options.waitUntil: ' + value);
       return protocolEvent as ProtocolLifeCycleEvent;
@@ -214,7 +214,7 @@ export class LifecycleWatcher {
     }
     const errorMessage =
       'Navigation timeout of ' + this.#timeout + ' ms exceeded';
-    await new Promise((fulfill) => {
+    await new Promise(fulfill => {
       return (this.#maximumTimer = setTimeout(fulfill, this.#timeout));
     });
     return new TimeoutError(errorMessage);

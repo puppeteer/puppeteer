@@ -25,15 +25,15 @@ import {
   Browser,
   BrowserContext,
 } from '../../lib/cjs/puppeteer/common/Browser.js';
-import { Page } from '../../lib/cjs/puppeteer/common/Page.js';
-import { isErrorLike } from '../../lib/cjs/puppeteer/common/util.js';
+import {Page} from '../../lib/cjs/puppeteer/common/Page.js';
+import {isErrorLike} from '../../lib/cjs/puppeteer/common/util.js';
 import {
   PuppeteerLaunchOptions,
   PuppeteerNode,
 } from '../../lib/cjs/puppeteer/node/Puppeteer.js';
 import puppeteer from '../../lib/cjs/puppeteer/puppeteer.js';
-import { TestServer } from '../../utils/testserver/lib/index.js';
-import { extendExpectWithToBeGolden } from './utils.js';
+import {TestServer} from '../../utils/testserver/lib/index.js';
+import {extendExpectWithToBeGolden} from './utils.js';
 
 const setupServer = async () => {
   const assetsPath = path.join(__dirname, '../assets');
@@ -55,7 +55,7 @@ const setupServer = async () => {
   httpsServer.CROSS_PROCESS_PREFIX = `https://127.0.0.1:${httpsPort}`;
   httpsServer.EMPTY_PAGE = `https://localhost:${httpsPort}/empty.html`;
 
-  return { server, httpsServer };
+  return {server, httpsServer};
 };
 
 export const getTestState = (): PuppeteerTestState => {
@@ -259,7 +259,7 @@ console.log(
   }`
 );
 
-process.on('unhandledRejection', (reason) => {
+process.on('unhandledRejection', reason => {
   throw reason;
 });
 
@@ -291,7 +291,7 @@ export const setupTestPageAndContextHooks = (): void => {
 export const mochaHooks = {
   beforeAll: [
     async (): Promise<void> => {
-      const { server, httpsServer } = await setupServer();
+      const {server, httpsServer} = await setupServer();
 
       state.puppeteer = puppeteer;
       state.defaultBrowserOptions = defaultBrowserOptions;
@@ -328,10 +328,10 @@ export const expectCookieEquals = (
   cookies: Protocol.Network.Cookie[],
   expectedCookies: Array<Partial<Protocol.Network.Cookie>>
 ): void => {
-  const { isChrome } = getTestState();
+  const {isChrome} = getTestState();
   if (!isChrome) {
     // Only keep standard properties when testing on a browser other than Chrome.
-    expectedCookies = expectedCookies.map((cookie) => {
+    expectedCookies = expectedCookies.map(cookie => {
       return {
         domain: cookie.domain,
         expires: cookie.expires,
@@ -359,7 +359,7 @@ export const shortWaitForArrayToHaveAtLeastNElements = async (
     if (data.length >= minLength) {
       break;
     }
-    await new Promise((resolve) => {
+    await new Promise(resolve => {
       return setTimeout(resolve, timeout);
     });
   }

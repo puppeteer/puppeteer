@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { waitEvent } from './utils.js';
+import {waitEvent} from './utils.js';
 import expect from 'expect';
 import {
   getTestState,
@@ -22,20 +22,20 @@ import {
   setupTestPageAndContextHooks,
   describeChromeOnly,
 } from './mocha-utils.js';
-import { isErrorLike } from '../../lib/cjs/puppeteer/common/util.js';
+import {isErrorLike} from '../../lib/cjs/puppeteer/common/util.js';
 
 describeChromeOnly('Target.createCDPSession', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
 
   it('should work', async () => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     const client = await page.target().createCDPSession();
 
     await Promise.all([
       client.send('Runtime.enable'),
-      client.send('Runtime.evaluate', { expression: 'window.foo = "bar"' }),
+      client.send('Runtime.evaluate', {expression: 'window.foo = "bar"'}),
     ]);
     const foo = await page.evaluate(() => {
       return (globalThis as any).foo;
@@ -43,19 +43,19 @@ describeChromeOnly('Target.createCDPSession', function () {
     expect(foo).toBe('bar');
   });
   it('should send events', async () => {
-    const { page, server } = getTestState();
+    const {page, server} = getTestState();
 
     const client = await page.target().createCDPSession();
     await client.send('Network.enable');
     const events = [];
-    client.on('Network.requestWillBeSent', (event) => {
+    client.on('Network.requestWillBeSent', event => {
       return events.push(event);
     });
     await page.goto(server.EMPTY_PAGE);
     expect(events.length).toBe(1);
   });
   it('should enable and disable domains independently', async () => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     const client = await page.target().createCDPSession();
     await client.send('Runtime.enable');
@@ -72,7 +72,7 @@ describeChromeOnly('Target.createCDPSession', function () {
     expect(event.url).toBe('foo.js');
   });
   it('should be able to detach session', async () => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     const client = await page.target().createCDPSession();
     await client.send('Runtime.enable');
@@ -96,10 +96,10 @@ describeChromeOnly('Target.createCDPSession', function () {
     expect(error.message).toContain('Session closed.');
   });
   it('should throw nice errors', async () => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     const client = await page.target().createCDPSession();
-    const error = await theSourceOfTheProblems().catch((error) => {
+    const error = await theSourceOfTheProblems().catch(error => {
       return error;
     });
     expect(error.stack).toContain('theSourceOfTheProblems');
@@ -114,7 +114,7 @@ describeChromeOnly('Target.createCDPSession', function () {
   });
 
   it('should expose the underlying connection', async () => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     const client = await page.target().createCDPSession();
     expect(client.connection()).toBeTruthy();

@@ -34,8 +34,8 @@
  */
 
 // eslint-disable-next-line import/extensions
-import { PUPPETEER_REVISIONS } from '../src/revisions';
-import { execSync } from 'child_process';
+import {PUPPETEER_REVISIONS} from '../src/revisions';
+import {execSync} from 'child_process';
 
 import packageJson from '../package.json';
 

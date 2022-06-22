@@ -34,7 +34,7 @@ describeChromeOnly('OOPIF', function () {
   let page: Page;
 
   before(async () => {
-    const { puppeteer, defaultBrowserOptions } = getTestState();
+    const {puppeteer, defaultBrowserOptions} = getTestState();
     browser = await puppeteer.launch(
       Object.assign({}, defaultBrowserOptions, {
         args: (defaultBrowserOptions.args || []).concat([
@@ -60,10 +60,10 @@ describeChromeOnly('OOPIF', function () {
   });
 
   it('should treat OOP iframes and normal iframes the same', async () => {
-    const { server } = getTestState();
+    const {server} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
-    const framePromise = page.waitForFrame((frame) => {
+    const framePromise = page.waitForFrame(frame => {
       return frame.url().endsWith('/empty.html');
     });
     await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
@@ -76,10 +76,10 @@ describeChromeOnly('OOPIF', function () {
     expect(page.mainFrame().childFrames()).toHaveLength(2);
   });
   it('should track navigations within OOP iframes', async () => {
-    const { server } = getTestState();
+    const {server} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
-    const framePromise = page.waitForFrame((frame) => {
+    const framePromise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 1;
     });
     await utils.attachFrame(
@@ -97,10 +97,10 @@ describeChromeOnly('OOPIF', function () {
     expect(frame.url()).toContain('/assets/frame.html');
   });
   it('should support OOP iframes becoming normal iframes again', async () => {
-    const { server } = getTestState();
+    const {server} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
-    const framePromise = page.waitForFrame((frame) => {
+    const framePromise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 1;
     });
     await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
@@ -118,13 +118,13 @@ describeChromeOnly('OOPIF', function () {
     expect(page.frames()).toHaveLength(2);
   });
   it('should support frames within OOP frames', async () => {
-    const { server } = getTestState();
+    const {server} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
-    const frame1Promise = page.waitForFrame((frame) => {
+    const frame1Promise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 1;
     });
-    const frame2Promise = page.waitForFrame((frame) => {
+    const frame2Promise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 2;
     });
     await utils.attachFrame(
@@ -147,10 +147,10 @@ describeChromeOnly('OOPIF', function () {
     ).toMatch(/frames\/frame\.html$/);
   });
   it('should support OOP iframes getting detached', async () => {
-    const { server } = getTestState();
+    const {server} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
-    const framePromise = page.waitForFrame((frame) => {
+    const framePromise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 1;
     });
     await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
@@ -168,10 +168,10 @@ describeChromeOnly('OOPIF', function () {
   });
 
   it('should support wait for navigation for transitions from local to OOPIF', async () => {
-    const { server } = getTestState();
+    const {server} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
-    const framePromise = page.waitForFrame((frame) => {
+    const framePromise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 1;
     });
     await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
@@ -191,10 +191,10 @@ describeChromeOnly('OOPIF', function () {
   });
 
   it('should keep track of a frames OOP state', async () => {
-    const { server } = getTestState();
+    const {server} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
-    const framePromise = page.waitForFrame((frame) => {
+    const framePromise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 1;
     });
     await utils.attachFrame(
@@ -208,10 +208,10 @@ describeChromeOnly('OOPIF', function () {
     expect(frame.url()).toBe(server.EMPTY_PAGE);
   });
   it('should support evaluating in oop iframes', async () => {
-    const { server } = getTestState();
+    const {server} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
-    const framePromise = page.waitForFrame((frame) => {
+    const framePromise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 1;
     });
     await utils.attachFrame(
@@ -233,7 +233,7 @@ describeChromeOnly('OOPIF', function () {
     expect(result).toBe('Test 123!');
   });
   it('should provide access to elements', async () => {
-    const { server, isHeadless, headless } = getTestState();
+    const {server, isHeadless, headless} = getTestState();
 
     if (!isHeadless || headless === 'chrome') {
       // TODO: this test is partially blocked on crbug.com/1334119. Enable test once
@@ -250,7 +250,7 @@ describeChromeOnly('OOPIF', function () {
     }
 
     await page.goto(server.EMPTY_PAGE);
-    const framePromise = page.waitForFrame((frame) => {
+    const framePromise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 1;
     });
     await utils.attachFrame(
@@ -274,14 +274,14 @@ describeChromeOnly('OOPIF', function () {
       document.body.style.margin = '250px';
       document.body.style.padding = '50px';
     });
-    await frame.waitForSelector('#test-button', { visible: true });
+    await frame.waitForSelector('#test-button', {visible: true});
     await frame.click('#test-button');
     await frame.waitForSelector('#clicked');
   });
   it('should report oopif frames', async () => {
-    const { server } = getTestState();
+    const {server} = getTestState();
 
-    const frame = page.waitForFrame((frame) => {
+    const frame = page.waitForFrame(frame => {
       return frame.url().endsWith('/oopif.html');
     });
     await page.goto(server.PREFIX + '/dynamic-oopif.html');
@@ -291,14 +291,14 @@ describeChromeOnly('OOPIF', function () {
   });
 
   it('should wait for inner OOPIFs', async () => {
-    const { server } = getTestState();
+    const {server} = getTestState();
     await page.goto(`http://mainframe:${server.PORT}/main-frame.html`);
-    const frame2 = await page.waitForFrame((frame) => {
+    const frame2 = await page.waitForFrame(frame => {
       return frame.url().endsWith('inner-frame2.html');
     });
     expect(oopifs(context).length).toBe(2);
     expect(
-      page.frames().filter((frame) => {
+      page.frames().filter(frame => {
         return frame.isOOPFrame();
       }).length
     ).toBe(2);
@@ -310,13 +310,13 @@ describeChromeOnly('OOPIF', function () {
   });
 
   it('should load oopif iframes with subresources and request interception', async () => {
-    const { server } = getTestState();
+    const {server} = getTestState();
 
-    const frame = page.waitForFrame((frame) => {
+    const frame = page.waitForFrame(frame => {
       return frame.url().endsWith('/oopif.html');
     });
     await page.setRequestInterception(true);
-    page.on('request', (request) => {
+    page.on('request', request => {
       return request.continue();
     });
     await page.goto(server.PREFIX + '/dynamic-oopif.html');
@@ -324,9 +324,9 @@ describeChromeOnly('OOPIF', function () {
     expect(oopifs(context).length).toBe(1);
   });
   it('should support frames within OOP iframes', async () => {
-    const { server } = getTestState();
+    const {server} = getTestState();
 
-    const oopIframePromise = page.waitForFrame((frame) => {
+    const oopIframePromise = page.waitForFrame(frame => {
       return frame.url().endsWith('/oopif.html');
     });
     await page.goto(server.PREFIX + '/dynamic-oopif.html');
@@ -347,7 +347,7 @@ describeChromeOnly('OOPIF', function () {
     expect(frame1.url()).toMatch(/oopif.html$/);
     await frame1.goto(
       server.CROSS_PROCESS_PREFIX + '/oopif.html#navigate-within-document',
-      { waitUntil: 'load' }
+      {waitUntil: 'load'}
     );
     expect(frame1.url()).toMatch(/oopif.html#navigate-within-document$/);
     await utils.detachFrame(oopIframe, 'frame1');
@@ -355,9 +355,9 @@ describeChromeOnly('OOPIF', function () {
   });
 
   it('clickablePoint, boundingBox, boxModel should work for elements inside OOPIFs', async () => {
-    const { server } = getTestState();
+    const {server} = getTestState();
     await page.goto(server.EMPTY_PAGE);
-    const framePromise = page.waitForFrame((frame) => {
+    const framePromise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 1;
     });
     await utils.attachFrame(
@@ -401,9 +401,9 @@ describeChromeOnly('OOPIF', function () {
   });
 
   it('should detect existing OOPIFs when Puppeteer connects to an existing page', async () => {
-    const { server, puppeteer } = getTestState();
+    const {server, puppeteer} = getTestState();
 
-    const frame = page.waitForFrame((frame) => {
+    const frame = page.waitForFrame(frame => {
       return frame.url().endsWith('/oopif.html');
     });
     await page.goto(server.PREFIX + '/dynamic-oopif.html');
@@ -412,21 +412,21 @@ describeChromeOnly('OOPIF', function () {
     expect(page.frames().length).toBe(2);
 
     const browserURL = 'http://127.0.0.1:21222';
-    const browser1 = await puppeteer.connect({ browserURL });
-    const target = await browser1.waitForTarget((target) => {
+    const browser1 = await puppeteer.connect({browserURL});
+    const target = await browser1.waitForTarget(target => {
       return target.url().endsWith('dynamic-oopif.html');
     });
     await target.page();
     browser1.disconnect();
   });
   itFailsFirefox('should support lazy OOP frames', async () => {
-    const { server } = getTestState();
+    const {server} = getTestState();
 
     await page.goto(server.PREFIX + '/lazy-oopif-frame.html');
-    await page.setViewport({ width: 1000, height: 1000 });
+    await page.setViewport({width: 1000, height: 1000});
 
     expect(
-      page.frames().map((frame) => {
+      page.frames().map(frame => {
         return frame._hasStartedLoading;
       })
     ).toEqual([true, true, false]);
@@ -434,7 +434,7 @@ describeChromeOnly('OOPIF', function () {
 
   describe('waitForFrame', () => {
     it('should resolve immediately if the frame already exists', async () => {
-      const { server } = getTestState();
+      const {server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       await utils.attachFrame(
@@ -443,7 +443,7 @@ describeChromeOnly('OOPIF', function () {
         server.CROSS_PROCESS_PREFIX + '/empty.html'
       );
 
-      await page.waitForFrame((frame) => {
+      await page.waitForFrame(frame => {
         return frame.url().endsWith('/empty.html');
       });
     });
@@ -451,7 +451,7 @@ describeChromeOnly('OOPIF', function () {
 });
 
 function oopifs(context: BrowserContext) {
-  return context.targets().filter((target) => {
+  return context.targets().filter(target => {
     return target._getTargetInfo().type === 'iframe';
   });
 }

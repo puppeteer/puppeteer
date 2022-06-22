@@ -21,7 +21,7 @@ const pptr = require('..');
 const browserFetcher = pptr.createBrowserFetcher();
 const path = require('path');
 const fs = require('fs');
-const { fork, spawn, execSync } = require('child_process');
+const {fork, spawn, execSync} = require('child_process');
 
 const COLOR_RESET = '\x1b[0m';
 const COLOR_RED = '\x1b[31m';
@@ -168,10 +168,10 @@ function runScript(scriptPath, revisionInfo) {
     },
   });
   return new Promise((resolve, reject) => {
-    child.on('error', (err) => {
+    child.on('error', err => {
       return reject(err);
     });
-    child.on('exit', (code) => {
+    child.on('exit', code => {
       return resolve(code);
     });
   });
@@ -189,10 +189,10 @@ function runUnitTest(pattern, revisionInfo) {
     },
   });
   return new Promise((resolve, reject) => {
-    child.on('error', (err) => {
+    child.on('error', err => {
       return reject(err);
     });
-    child.on('exit', (code) => {
+    child.on('exit', code => {
       return resolve(code);
     });
   });
@@ -282,14 +282,14 @@ function fetchJSON(url) {
     const req = agent.request(options, function (res) {
       let result = '';
       res.setEncoding('utf8');
-      res.on('data', (chunk) => {
+      res.on('data', chunk => {
         return (result += chunk);
       });
       res.on('end', () => {
         return resolve(JSON.parse(result));
       });
     });
-    req.on('error', (err) => {
+    req.on('error', err => {
       return reject(err);
     });
     req.end();

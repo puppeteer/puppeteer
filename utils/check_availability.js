@@ -155,7 +155,7 @@ async function checkOmahaProxyAvailability() {
         'https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/LAST_CHANGE'
       ),
     ])
-  ).map((s) => {
+  ).map(s => {
     return parseInt(s, 10);
   });
   const from = Math.max(...latestRevisions);
@@ -185,7 +185,7 @@ async function printLatestRevisionForPlatform(platform) {
         'https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/LAST_CHANGE'
       ),
     ])
-  ).map((s) => {
+  ).map(s => {
     return parseInt(s, 10);
   });
   const from = Math.max(...latestRevisions);
@@ -246,8 +246,8 @@ async function checkRangeAvailability({
     table.drawRow([''].concat(platforms));
   }
 
-  const fetchers = platforms.map((platform) => {
-    return new BrowserFetcher('', { platform });
+  const fetchers = platforms.map(platform => {
+    return new BrowserFetcher('', {platform});
   });
 
   const inc = fromRevision < toRevision ? 1 : -1;
@@ -257,11 +257,11 @@ async function checkRangeAvailability({
     revision !== revisionToStop;
     revision += inc
   ) {
-    const promises = fetchers.map((fetcher) => {
+    const promises = fetchers.map(fetcher => {
       return fetcher.canDownload(revision);
     });
     const availability = await Promise.all(promises);
-    const allAvailable = availability.every((e) => {
+    const allAvailable = availability.every(e => {
       return !!e;
     });
     if (table) {
@@ -292,11 +292,11 @@ async function checkRangeAvailability({
  */
 function fetch(url) {
   let resolve;
-  const promise = new Promise((x) => {
+  const promise = new Promise(x => {
     return (resolve = x);
   });
   https
-    .get(url, (response) => {
+    .get(url, response => {
       if (response.statusCode !== 200) {
         resolve(null);
         return;

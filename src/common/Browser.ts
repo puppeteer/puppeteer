@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { ChildProcess } from 'child_process';
-import { Protocol } from 'devtools-protocol';
-import { assert } from './assert.js';
-import { Connection, ConnectionEmittedEvents } from './Connection.js';
-import { EventEmitter } from './EventEmitter.js';
-import { waitWithTimeout } from './util.js';
-import { Page } from './Page.js';
-import { Viewport } from './PuppeteerViewport.js';
-import { Target } from './Target.js';
-import { TaskQueue } from './TaskQueue.js';
+import {ChildProcess} from 'child_process';
+import {Protocol} from 'devtools-protocol';
+import {assert} from './assert.js';
+import {Connection, ConnectionEmittedEvents} from './Connection.js';
+import {EventEmitter} from './EventEmitter.js';
+import {waitWithTimeout} from './util.js';
+import {Page} from './Page.js';
+import {Viewport} from './PuppeteerViewport.js';
+import {Target} from './Target.js';
+import {TaskQueue} from './TaskQueue.js';
 
 /**
  * BrowserContext options.
@@ -237,7 +237,7 @@ export class Browser extends EventEmitter {
       targetFilterCallback,
       isPageTargetCallback
     );
-    await connection.send('Target.setDiscoverTargets', { discover: true });
+    await connection.send('Target.setDiscoverTargets', {discover: true});
     return browser;
   }
   #ignoreHTTPSErrors: boolean;
@@ -358,9 +358,9 @@ export class Browser extends EventEmitter {
   async createIncognitoBrowserContext(
     options: BrowserContextOptions = {}
   ): Promise<BrowserContext> {
-    const { proxyServer, proxyBypassList } = options;
+    const {proxyServer, proxyBypassList} = options;
 
-    const { browserContextId } = await this.#connection.send(
+    const {browserContextId} = await this.#connection.send(
       'Target.createBrowserContext',
       {
         proxyServer,
@@ -408,7 +408,7 @@ export class Browser extends EventEmitter {
     event: Protocol.Target.TargetCreatedEvent
   ): Promise<void> {
     const targetInfo = event.targetInfo;
-    const { browserContextId } = targetInfo;
+    const {browserContextId} = targetInfo;
     const context =
       browserContextId && this.#contexts.has(browserContextId)
         ? this.#contexts.get(browserContextId)
@@ -447,7 +447,7 @@ export class Browser extends EventEmitter {
     }
   }
 
-  async #targetDestroyed(event: { targetId: string }): Promise<void> {
+  async #targetDestroyed(event: {targetId: string}): Promise<void> {
     if (this.#ignoredTargets.has(event.targetId)) {
       return;
     }
@@ -522,7 +522,7 @@ export class Browser extends EventEmitter {
    * @internal
    */
   async _createPageInContext(contextId?: string): Promise<Page> {
-    const { targetId } = await this.#connection.send('Target.createTarget', {
+    const {targetId} = await this.#connection.send('Target.createTarget', {
       url: 'about:blank',
       browserContextId: contextId || undefined,
     });
@@ -548,7 +548,7 @@ export class Browser extends EventEmitter {
    * an array with all the targets in all browser contexts.
    */
   targets(): Target[] {
-    return Array.from(this.#targets.values()).filter((target) => {
+    return Array.from(this.#targets.values()).filter(target => {
       return target._isInitialized;
     });
   }
@@ -557,7 +557,7 @@ export class Browser extends EventEmitter {
    * The target associated with the browser.
    */
   target(): Target {
-    const browserTarget = this.targets().find((target) => {
+    const browserTarget = this.targets().find(target => {
       return target.type() === 'browser';
     });
     if (!browserTarget) {
@@ -584,10 +584,10 @@ export class Browser extends EventEmitter {
     predicate: (x: Target) => boolean | Promise<boolean>,
     options: WaitForTargetOptions = {}
   ): Promise<Target> {
-    const { timeout = 30000 } = options;
+    const {timeout = 30000} = options;
     let resolve: (value: Target | PromiseLike<Target>) => void;
     let isResolved = false;
-    const targetPromise = new Promise<Target>((x) => {
+    const targetPromise = new Promise<Target>(x => {
       return (resolve = x);
     });
     this.on(BrowserEmittedEvents.TargetCreated, check);
@@ -622,7 +622,7 @@ export class Browser extends EventEmitter {
    */
   async pages(): Promise<Page[]> {
     const contextPages = await Promise.all(
-      this.browserContexts().map((context) => {
+      this.browserContexts().map(context => {
         return context.pages();
       })
     );
@@ -762,7 +762,7 @@ export class BrowserContext extends EventEmitter {
    * An array of all active targets inside the browser context.
    */
   targets(): Target[] {
-    return this.#browser.targets().filter((target) => {
+    return this.#browser.targets().filter(target => {
       return target.browserContext() === this;
     });
   }
@@ -786,9 +786,9 @@ export class BrowserContext extends EventEmitter {
    */
   waitForTarget(
     predicate: (x: Target) => boolean | Promise<boolean>,
-    options: { timeout?: number } = {}
+    options: {timeout?: number} = {}
   ): Promise<Target> {
-    return this.#browser.waitForTarget((target) => {
+    return this.#browser.waitForTarget(target => {
       return target.browserContext() === this && predicate(target);
     }, options);
   }
@@ -803,7 +803,7 @@ export class BrowserContext extends EventEmitter {
   async pages(): Promise<Page[]> {
     const pages = await Promise.all(
       this.targets()
-        .filter((target) => {
+        .filter(target => {
           return (
             target.type() === 'page' ||
             (target.type() === 'other' &&
@@ -812,7 +812,7 @@ export class BrowserContext extends EventEmitter {
               ))
           );
         })
-        .map((target) => {
+        .map(target => {
           return target.page();
         })
     );
@@ -847,7 +847,7 @@ export class BrowserContext extends EventEmitter {
     origin: string,
     permissions: Permission[]
   ): Promise<void> {
-    const protocolPermissions = permissions.map((permission) => {
+    const protocolPermissions = permissions.map(permission => {
       const protocolPermission =
         WEB_PERMISSION_TO_PROTOCOL_PERMISSION.get(permission);
       if (!protocolPermission) {

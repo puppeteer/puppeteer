@@ -17,16 +17,16 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 import expect from 'expect';
-import { getTestState, itHeadlessOnly } from './mocha-utils.js';
+import {getTestState, itHeadlessOnly} from './mocha-utils.js';
 
 import path from 'path';
 
 describe('Fixtures', function () {
   itHeadlessOnly('dumpio option should work with pipe option ', async () => {
-    const { defaultBrowserOptions, puppeteerPath } = getTestState();
+    const {defaultBrowserOptions, puppeteerPath} = getTestState();
 
     let dumpioData = '';
-    const { spawn } = await import('child_process');
+    const {spawn} = await import('child_process');
     const options = Object.assign({}, defaultBrowserOptions, {
       pipe: true,
       dumpio: true,
@@ -36,37 +36,37 @@ describe('Fixtures', function () {
       puppeteerPath,
       JSON.stringify(options),
     ]);
-    res.stderr.on('data', (data) => {
+    res.stderr.on('data', data => {
       return (dumpioData += data.toString('utf8'));
     });
-    await new Promise((resolve) => {
+    await new Promise(resolve => {
       return res.on('close', resolve);
     });
     expect(dumpioData).toContain('message from dumpio');
   });
   it('should dump browser process stderr', async () => {
-    const { defaultBrowserOptions, puppeteerPath } = getTestState();
+    const {defaultBrowserOptions, puppeteerPath} = getTestState();
 
     let dumpioData = '';
-    const { spawn } = await import('child_process');
-    const options = Object.assign({}, defaultBrowserOptions, { dumpio: true });
+    const {spawn} = await import('child_process');
+    const options = Object.assign({}, defaultBrowserOptions, {dumpio: true});
     const res = spawn('node', [
       path.join(__dirname, '../fixtures', 'dumpio.js'),
       puppeteerPath,
       JSON.stringify(options),
     ]);
-    res.stderr.on('data', (data) => {
+    res.stderr.on('data', data => {
       return (dumpioData += data.toString('utf8'));
     });
-    await new Promise((resolve) => {
+    await new Promise(resolve => {
       return res.on('close', resolve);
     });
     expect(dumpioData).toContain('DevTools listening on ws://');
   });
   it('should close the browser when the node process closes', async () => {
-    const { defaultBrowserOptions, puppeteerPath, puppeteer } = getTestState();
+    const {defaultBrowserOptions, puppeteerPath, puppeteer} = getTestState();
 
-    const { spawn, execSync } = await import('child_process');
+    const {spawn, execSync} = await import('child_process');
     const options = Object.assign({}, defaultBrowserOptions, {
       // Disable DUMPIO to cleanly read stdout.
       dumpio: false,
@@ -77,11 +77,11 @@ describe('Fixtures', function () {
       JSON.stringify(options),
     ]);
     let wsEndPointCallback: (value: string) => void;
-    const wsEndPointPromise = new Promise<string>((x) => {
+    const wsEndPointPromise = new Promise<string>(x => {
       return (wsEndPointCallback = x);
     });
     let output = '';
-    res.stdout.on('data', (data) => {
+    res.stdout.on('data', data => {
       output += data;
       if (output.indexOf('\n')) {
         wsEndPointCallback(output.substring(0, output.indexOf('\n')));
@@ -91,10 +91,10 @@ describe('Fixtures', function () {
       browserWSEndpoint: await wsEndPointPromise,
     });
     const promises = [
-      new Promise((resolve) => {
+      new Promise(resolve => {
         return browser.once('disconnected', resolve);
       }),
-      new Promise((resolve) => {
+      new Promise(resolve => {
         return res.on('close', resolve);
       }),
     ];

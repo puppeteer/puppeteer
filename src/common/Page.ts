@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-import { Protocol } from 'devtools-protocol';
-import type { Readable } from 'stream';
-import { Accessibility } from './Accessibility.js';
-import { assert, assertNever } from './assert.js';
-import { Browser, BrowserContext } from './Browser.js';
-import {
-  CDPSession,
-  CDPSessionEmittedEvents,
-  Connection,
-} from './Connection.js';
-import { ConsoleMessage, ConsoleMessageType } from './ConsoleMessage.js';
-import { Coverage } from './Coverage.js';
-import { Dialog } from './Dialog.js';
-import { EmulationManager } from './EmulationManager.js';
+import {Protocol} from 'devtools-protocol';
+import type {Readable} from 'stream';
+import {Accessibility} from './Accessibility.js';
+import {assert, assertNever} from './assert.js';
+import {Browser, BrowserContext} from './Browser.js';
+import {CDPSession, CDPSessionEmittedEvents, Connection} from './Connection.js';
+import {ConsoleMessage, ConsoleMessageType} from './ConsoleMessage.js';
+import {Coverage} from './Coverage.js';
+import {Dialog} from './Dialog.js';
+import {EmulationManager} from './EmulationManager.js';
 import {
   EvaluateFn,
   EvaluateFnReturnType,
@@ -36,8 +32,8 @@ import {
   UnwrapPromiseLike,
   WrapElementHandle,
 } from './EvalTypes.js';
-import { EventEmitter, Handler } from './EventEmitter.js';
-import { FileChooser } from './FileChooser.js';
+import {EventEmitter, Handler} from './EventEmitter.js';
+import {FileChooser} from './FileChooser.js';
 import {
   Frame,
   FrameManager,
@@ -61,27 +57,23 @@ import {
   waitForEvent,
   waitWithTimeout,
 } from './util.js';
-import { HTTPRequest } from './HTTPRequest.js';
-import { HTTPResponse } from './HTTPResponse.js';
-import { Keyboard, Mouse, MouseButton, Touchscreen } from './Input.js';
-import { ElementHandle, JSHandle, _createJSHandle } from './JSHandle.js';
-import { PuppeteerLifeCycleEvent } from './LifecycleWatcher.js';
+import {HTTPRequest} from './HTTPRequest.js';
+import {HTTPResponse} from './HTTPResponse.js';
+import {Keyboard, Mouse, MouseButton, Touchscreen} from './Input.js';
+import {ElementHandle, JSHandle, _createJSHandle} from './JSHandle.js';
+import {PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {
   Credentials,
   NetworkConditions,
   NetworkManagerEmittedEvents,
 } from './NetworkManager.js';
-import {
-  LowerCasePaperFormat,
-  PDFOptions,
-  _paperFormats,
-} from './PDFOptions.js';
-import { Viewport } from './PuppeteerViewport.js';
-import { Target } from './Target.js';
-import { TaskQueue } from './TaskQueue.js';
-import { TimeoutSettings } from './TimeoutSettings.js';
-import { Tracing } from './Tracing.js';
-import { WebWorker } from './WebWorker.js';
+import {LowerCasePaperFormat, PDFOptions, _paperFormats} from './PDFOptions.js';
+import {Viewport} from './PuppeteerViewport.js';
+import {Target} from './Target.js';
+import {TaskQueue} from './TaskQueue.js';
+import {TimeoutSettings} from './TimeoutSettings.js';
+import {Tracing} from './Tracing.js';
+import {WebWorker} from './WebWorker.js';
 
 /**
  * @public
@@ -378,7 +370,7 @@ export interface PageEventObject {
   framedetached: Frame;
   framenavigated: Frame;
   load: never;
-  metrics: { title: string; metrics: Metrics };
+  metrics: {title: string; metrics: Metrics};
   pageerror: Error;
   popup: Page;
   request: HTTPRequest;
@@ -545,7 +537,7 @@ export class Page extends EventEmitter {
         }
       }
     );
-    client.on('Target.detachedFromTarget', (event) => {
+    client.on('Target.detachedFromTarget', event => {
       const worker = this.#workers.get(event.sessionId);
       if (!worker) {
         return;
@@ -554,33 +546,33 @@ export class Page extends EventEmitter {
       this.emit(PageEmittedEvents.WorkerDestroyed, worker);
     });
 
-    this.#frameManager.on(FrameManagerEmittedEvents.FrameAttached, (event) => {
+    this.#frameManager.on(FrameManagerEmittedEvents.FrameAttached, event => {
       return this.emit(PageEmittedEvents.FrameAttached, event);
     });
-    this.#frameManager.on(FrameManagerEmittedEvents.FrameDetached, (event) => {
+    this.#frameManager.on(FrameManagerEmittedEvents.FrameDetached, event => {
       return this.emit(PageEmittedEvents.FrameDetached, event);
     });
-    this.#frameManager.on(FrameManagerEmittedEvents.FrameNavigated, (event) => {
+    this.#frameManager.on(FrameManagerEmittedEvents.FrameNavigated, event => {
       return this.emit(PageEmittedEvents.FrameNavigated, event);
     });
 
     const networkManager = this.#frameManager.networkManager();
-    networkManager.on(NetworkManagerEmittedEvents.Request, (event) => {
+    networkManager.on(NetworkManagerEmittedEvents.Request, event => {
       return this.emit(PageEmittedEvents.Request, event);
     });
     networkManager.on(
       NetworkManagerEmittedEvents.RequestServedFromCache,
-      (event) => {
+      event => {
         return this.emit(PageEmittedEvents.RequestServedFromCache, event);
       }
     );
-    networkManager.on(NetworkManagerEmittedEvents.Response, (event) => {
+    networkManager.on(NetworkManagerEmittedEvents.Response, event => {
       return this.emit(PageEmittedEvents.Response, event);
     });
-    networkManager.on(NetworkManagerEmittedEvents.RequestFailed, (event) => {
+    networkManager.on(NetworkManagerEmittedEvents.RequestFailed, event => {
       return this.emit(PageEmittedEvents.RequestFailed, event);
     });
-    networkManager.on(NetworkManagerEmittedEvents.RequestFinished, (event) => {
+    networkManager.on(NetworkManagerEmittedEvents.RequestFinished, event => {
       return this.emit(PageEmittedEvents.RequestFinished, event);
     });
     this.#fileChooserInterceptors = new Set();
@@ -591,28 +583,28 @@ export class Page extends EventEmitter {
     client.on('Page.loadEventFired', () => {
       return this.emit(PageEmittedEvents.Load);
     });
-    client.on('Runtime.consoleAPICalled', (event) => {
+    client.on('Runtime.consoleAPICalled', event => {
       return this.#onConsoleAPI(event);
     });
-    client.on('Runtime.bindingCalled', (event) => {
+    client.on('Runtime.bindingCalled', event => {
       return this.#onBindingCalled(event);
     });
-    client.on('Page.javascriptDialogOpening', (event) => {
+    client.on('Page.javascriptDialogOpening', event => {
       return this.#onDialog(event);
     });
-    client.on('Runtime.exceptionThrown', (exception) => {
+    client.on('Runtime.exceptionThrown', exception => {
       return this.#handleException(exception.exceptionDetails);
     });
     client.on('Inspector.targetCrashed', () => {
       return this.#onTargetCrashed();
     });
-    client.on('Performance.metrics', (event) => {
+    client.on('Performance.metrics', event => {
       return this.#emitMetrics(event);
     });
-    client.on('Log.entryAdded', (event) => {
+    client.on('Log.entryAdded', event => {
       return this.#onLogEntryAdded(event);
     });
-    client.on('Page.fileChooserOpened', (event) => {
+    client.on('Page.fileChooserOpened', event => {
       return this.#onFileChooser(event);
     });
     this.#target._isClosedPromise.then(() => {
@@ -743,9 +735,9 @@ export class Page extends EventEmitter {
       });
     }
 
-    const { timeout = this.#timeoutSettings.timeout() } = options;
+    const {timeout = this.#timeoutSettings.timeout()} = options;
     let callback!: (value: FileChooser | PromiseLike<FileChooser>) => void;
-    const promise = new Promise<FileChooser>((x) => {
+    const promise = new Promise<FileChooser>(x => {
       return (callback = x);
     });
     this.#fileChooserInterceptors.add(callback);
@@ -753,7 +745,7 @@ export class Page extends EventEmitter {
       promise,
       'waiting for file chooser',
       timeout
-    ).catch((error) => {
+    ).catch(error => {
       this.#fileChooserInterceptors.delete(callback);
       throw error;
     });
@@ -770,7 +762,7 @@ export class Page extends EventEmitter {
    * ```
    */
   async setGeolocation(options: GeolocationOptions): Promise<void> {
-    const { longitude, latitude, accuracy = 0 } = options;
+    const {longitude, latitude, accuracy = 0} = options;
     if (longitude < -180 || longitude > 180) {
       throw new Error(
         `Invalid longitude "${longitude}": precondition -180 <= LONGITUDE <= 180 failed.`
@@ -826,16 +818,16 @@ export class Page extends EventEmitter {
   }
 
   #onLogEntryAdded(event: Protocol.Log.EntryAddedEvent): void {
-    const { level, text, args, source, url, lineNumber } = event.entry;
+    const {level, text, args, source, url, lineNumber} = event.entry;
     if (args) {
-      args.map((arg) => {
+      args.map(arg => {
         return releaseObject(this.#client, arg);
       });
     }
     if (source !== 'worker') {
       this.emit(
         PageEmittedEvents.Console,
-        new ConsoleMessage(level, text, [], [{ url, lineNumber }])
+        new ConsoleMessage(level, text, [], [{url, lineNumber}])
       );
     }
   }
@@ -934,7 +926,7 @@ export class Page extends EventEmitter {
    */
   async setDragInterception(enabled: boolean): Promise<void> {
     this.#userDragInterceptionEnabled = enabled;
-    return this.#client.send('Input.setInterceptDrags', { enabled });
+    return this.#client.send('Input.setInterceptDrags', {enabled});
   }
 
   /**
@@ -1337,7 +1329,7 @@ export class Page extends EventEmitter {
   async setCookie(...cookies: Protocol.Network.CookieParam[]): Promise<void> {
     const pageURL = this.url();
     const startsWithHTTP = pageURL.startsWith('http');
-    const items = cookies.map((cookie) => {
+    const items = cookies.map(cookie => {
       const item = Object.assign({}, cookie);
       if (!item.url && startsWithHTTP) {
         item.url = pageURL;
@@ -1354,7 +1346,7 @@ export class Page extends EventEmitter {
     });
     await this.deleteCookie(...items);
     if (items.length) {
-      await this.#client.send('Network.setCookies', { cookies: items });
+      await this.#client.send('Network.setCookies', {cookies: items});
     }
   }
 
@@ -1450,7 +1442,7 @@ export class Page extends EventEmitter {
    */
   async exposeFunction(
     name: string,
-    puppeteerFunction: Function | { default: Function }
+    puppeteerFunction: Function | {default: Function}
   ): Promise<void> {
     if (this.#pageBindings.has(name)) {
       throw new Error(
@@ -1472,12 +1464,12 @@ export class Page extends EventEmitter {
     this.#pageBindings.set(name, exposedFunction);
 
     const expression = pageBindingInitString('exposedFun', name);
-    await this.#client.send('Runtime.addBinding', { name: name });
+    await this.#client.send('Runtime.addBinding', {name: name});
     await this.#client.send('Page.addScriptToEvaluateOnNewDocument', {
       source: expression,
     });
     await Promise.all(
-      this.frames().map((frame) => {
+      this.frames().map(frame => {
         return frame.evaluate(expression).catch(debugError);
       })
     );
@@ -1609,7 +1601,7 @@ export class Page extends EventEmitter {
       event.executionContextId,
       this.#client
     );
-    const values = event.args.map((arg) => {
+    const values = event.args.map(arg => {
       return _createJSHandle(context, arg);
     });
     this.#addConsoleMessage(event.type, values, event.stackTrace);
@@ -1618,7 +1610,7 @@ export class Page extends EventEmitter {
   async #onBindingCalled(
     event: Protocol.Runtime.BindingCalledEvent
   ): Promise<void> {
-    let payload: { type: string; name: string; seq: number; args: unknown[] };
+    let payload: {type: string; name: string; seq: number; args: unknown[]};
     try {
       payload = JSON.parse(event.payload);
     } catch {
@@ -1626,7 +1618,7 @@ export class Page extends EventEmitter {
       // called before our wrapper was initialized.
       return;
     }
-    const { type, name, seq, args } = payload;
+    const {type, name, seq, args} = payload;
     if (type !== 'exposedFun' || !this.#pageBindings.has(name)) {
       return;
     }
@@ -1662,7 +1654,7 @@ export class Page extends EventEmitter {
     stackTrace?: Protocol.Runtime.StackTrace
   ): void {
     if (!this.listenerCount(PageEmittedEvents.Console)) {
-      args.forEach((arg) => {
+      args.forEach(arg => {
         return arg.dispose();
       });
       return;
@@ -1730,7 +1722,7 @@ export class Page extends EventEmitter {
    */
   async #setTransparentBackgroundColor(): Promise<void> {
     await this.#client.send('Emulation.setDefaultBackgroundColorOverride', {
-      color: { r: 0, g: 0, b: 0, a: 0 },
+      color: {r: 0, g: 0, b: 0, a: 0},
     });
   }
 
@@ -1836,7 +1828,7 @@ export class Page extends EventEmitter {
    */
   async goto(
     url: string,
-    options: WaitForOptions & { referer?: string } = {}
+    options: WaitForOptions & {referer?: string} = {}
   ): Promise<HTTPResponse | null> {
     return await this.#frameManager.mainFrame().goto(url, options);
   }
@@ -1910,7 +1902,7 @@ export class Page extends EventEmitter {
 
   #sessionClosePromise(): Promise<Error> {
     if (!this.#disconnectPromise) {
-      this.#disconnectPromise = new Promise((fulfill) => {
+      this.#disconnectPromise = new Promise(fulfill => {
         return this.#client.once(CDPSessionEmittedEvents.Disconnected, () => {
           return fulfill(new Error('Target closed'));
         });
@@ -1946,13 +1938,13 @@ export class Page extends EventEmitter {
    */
   async waitForRequest(
     urlOrPredicate: string | ((req: HTTPRequest) => boolean | Promise<boolean>),
-    options: { timeout?: number } = {}
+    options: {timeout?: number} = {}
   ): Promise<HTTPRequest> {
-    const { timeout = this.#timeoutSettings.timeout() } = options;
+    const {timeout = this.#timeoutSettings.timeout()} = options;
     return waitForEvent(
       this.#frameManager.networkManager(),
       NetworkManagerEmittedEvents.Request,
-      (request) => {
+      request => {
         if (isString(urlOrPredicate)) {
           return urlOrPredicate === request.url();
         }
@@ -1995,13 +1987,13 @@ export class Page extends EventEmitter {
     urlOrPredicate:
       | string
       | ((res: HTTPResponse) => boolean | Promise<boolean>),
-    options: { timeout?: number } = {}
+    options: {timeout?: number} = {}
   ): Promise<HTTPResponse> {
-    const { timeout = this.#timeoutSettings.timeout() } = options;
+    const {timeout = this.#timeoutSettings.timeout()} = options;
     return waitForEvent(
       this.#frameManager.networkManager(),
       NetworkManagerEmittedEvents.Response,
-      async (response) => {
+      async response => {
         if (isString(urlOrPredicate)) {
           return urlOrPredicate === response.url();
         }
@@ -2020,15 +2012,14 @@ export class Page extends EventEmitter {
    * @returns Promise which resolves when network is idle
    */
   async waitForNetworkIdle(
-    options: { idleTime?: number; timeout?: number } = {}
+    options: {idleTime?: number; timeout?: number} = {}
   ): Promise<void> {
-    const { idleTime = 500, timeout = this.#timeoutSettings.timeout() } =
-      options;
+    const {idleTime = 500, timeout = this.#timeoutSettings.timeout()} = options;
 
     const networkManager = this.#frameManager.networkManager();
 
     let idleResolveCallback: () => void;
-    const idlePromise = new Promise<void>((resolve) => {
+    const idlePromise = new Promise<void>(resolve => {
       idleResolveCallback = resolve;
     });
 
@@ -2081,11 +2072,11 @@ export class Page extends EventEmitter {
       ...eventPromises,
       this.#sessionClosePromise(),
     ]).then(
-      (r) => {
+      r => {
         cleanup();
         return r;
       },
-      (error) => {
+      error => {
         cleanup();
         throw error;
       }
@@ -2111,9 +2102,9 @@ export class Page extends EventEmitter {
    */
   async waitForFrame(
     urlOrPredicate: string | ((frame: Frame) => boolean | Promise<boolean>),
-    options: { timeout?: number } = {}
+    options: {timeout?: number} = {}
   ): Promise<Frame> {
-    const { timeout = this.#timeoutSettings.timeout() } = options;
+    const {timeout = this.#timeoutSettings.timeout()} = options;
 
     let predicate: (frame: Frame) => Promise<boolean>;
     if (isString(urlOrPredicate)) {
@@ -2145,7 +2136,7 @@ export class Page extends EventEmitter {
         timeout,
         this.#sessionClosePromise()
       ),
-      ...this.frames().map(async (frame) => {
+      ...this.frames().map(async frame => {
         if (await predicate(frame)) {
           return frame;
         }
@@ -2231,7 +2222,7 @@ export class Page extends EventEmitter {
     }
     const result = await Promise.all([
       this.waitForNavigation(options),
-      this.#client.send('Page.navigateToHistoryEntry', { entryId: entry.id }),
+      this.#client.send('Page.navigateToHistoryEntry', {entryId: entry.id}),
     ]);
     return result[0];
   }
@@ -2302,7 +2293,7 @@ export class Page extends EventEmitter {
    * before navigating to the domain.
    */
   async setBypassCSP(enabled: boolean): Promise<void> {
-    await this.#client.send('Page.setBypassCSP', { enabled });
+    await this.#client.send('Page.setBypassCSP', {enabled});
   }
 
   /**
@@ -2850,17 +2841,17 @@ export class Page extends EventEmitter {
       targetId: this.#target._targetId,
     });
     let clip = options.clip ? processClip(options.clip) : undefined;
-    let { captureBeyondViewport = true } = options;
+    let {captureBeyondViewport = true} = options;
     captureBeyondViewport =
       typeof captureBeyondViewport === 'boolean' ? captureBeyondViewport : true;
 
     if (options.fullPage) {
       const metrics = await this.#client.send('Page.getLayoutMetrics');
       // Fallback to `contentSize` in case of using Firefox.
-      const { width, height } = metrics.cssContentSize || metrics.contentSize;
+      const {width, height} = metrics.cssContentSize || metrics.contentSize;
 
       // Overwrite clip for full page.
-      clip = { x: 0, y: 0, width, height, scale: 1 };
+      clip = {x: 0, y: 0, width, height, scale: 1};
 
       if (!captureBeyondViewport) {
         const {
@@ -2870,8 +2861,8 @@ export class Page extends EventEmitter {
         } = this.#viewport || {};
         const screenOrientation: Protocol.Emulation.ScreenOrientation =
           isLandscape
-            ? { angle: 90, type: 'landscapePrimary' }
-            : { angle: 0, type: 'portraitPrimary' };
+            ? {angle: 90, type: 'landscapePrimary'}
+            : {angle: 0, type: 'portraitPrimary'};
         await this.#client.send('Emulation.setDeviceMetricsOverride', {
           mobile: isMobile,
           width,
@@ -2923,12 +2914,12 @@ export class Page extends EventEmitter {
 
     function processClip(
       clip: ScreenshotClip
-    ): ScreenshotClip & { scale: number } {
+    ): ScreenshotClip & {scale: number} {
       const x = Math.round(clip.x);
       const y = Math.round(clip.y);
       const width = Math.round(clip.width + clip.x - x);
       const height = Math.round(clip.height + clip.y - y);
-      return { x, y, width, height, scale: 1 };
+      return {x, y, width, height, scale: 1};
     }
   }
 
@@ -3025,7 +3016,7 @@ export class Page extends EventEmitter {
    * @returns
    */
   async pdf(options: PDFOptions = {}): Promise<Buffer> {
-    const { path = undefined } = options;
+    const {path = undefined} = options;
     const readable = await this.createPDFStream(options);
     const buffer = await getReadableAsBuffer(readable, path);
     assert(buffer, 'Could not create buffer');
@@ -3042,7 +3033,7 @@ export class Page extends EventEmitter {
   }
 
   async close(
-    options: { runBeforeUnload?: boolean } = { runBeforeUnload: undefined }
+    options: {runBeforeUnload?: boolean} = {runBeforeUnload: undefined}
   ): Promise<void> {
     const connection = this.#client.connection();
     assert(
@@ -3207,7 +3198,7 @@ export class Page extends EventEmitter {
   type(
     selector: string,
     text: string,
-    options?: { delay: number }
+    options?: {delay: number}
   ): Promise<void> {
     return this.mainFrame().type(selector, text, options);
   }

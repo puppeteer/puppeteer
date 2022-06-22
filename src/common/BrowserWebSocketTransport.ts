@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ConnectionTransport } from './ConnectionTransport.js';
+import {ConnectionTransport} from './ConnectionTransport.js';
 
 export class BrowserWebSocketTransport implements ConnectionTransport {
   static create(url: string): Promise<BrowserWebSocketTransport> {
@@ -33,7 +33,7 @@ export class BrowserWebSocketTransport implements ConnectionTransport {
 
   constructor(ws: WebSocket) {
     this.#ws = ws;
-    this.#ws.addEventListener('message', (event) => {
+    this.#ws.addEventListener('message', event => {
       if (this.onmessage) {
         this.onmessage.call(null, event.data);
       }

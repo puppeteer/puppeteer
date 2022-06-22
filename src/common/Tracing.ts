@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { assert } from './assert.js';
+import {assert} from './assert.js';
 import {
   getReadableAsBuffer,
   getReadableFromProtocolStream,
   isErrorLike,
 } from './util.js';
-import { CDPSession } from './Connection.js';
+import {CDPSession} from './Connection.js';
 
 /**
  * @public
@@ -83,24 +83,20 @@ export class Tracing {
       'disabled-by-default-devtools.timeline.stack',
       'disabled-by-default-v8.cpu_profiler',
     ];
-    const {
-      path,
-      screenshots = false,
-      categories = defaultCategories,
-    } = options;
+    const {path, screenshots = false, categories = defaultCategories} = options;
 
     if (screenshots) {
       categories.push('disabled-by-default-devtools.screenshot');
     }
 
     const excludedCategories = categories
-      .filter((cat) => {
+      .filter(cat => {
         return cat.startsWith('-');
       })
-      .map((cat) => {
+      .map(cat => {
         return cat.slice(1);
       });
-    const includedCategories = categories.filter((cat) => {
+    const includedCategories = categories.filter(cat => {
       return !cat.startsWith('-');
     });
 
@@ -126,7 +122,7 @@ export class Tracing {
       resolve = x;
       reject = y;
     });
-    this.#client.once('Tracing.tracingComplete', async (event) => {
+    this.#client.once('Tracing.tracingComplete', async event => {
       try {
         const readable = await getReadableFromProtocolStream(
           this.#client,

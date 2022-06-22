@@ -19,11 +19,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
 import removeFolder from 'rimraf';
-import { promisify } from 'util';
-import { assert } from '../common/assert.js';
-import { Connection } from '../common/Connection.js';
-import { debug } from '../common/Debug.js';
-import { TimeoutError } from '../common/Errors.js';
+import {promisify} from 'util';
+import {assert} from '../common/assert.js';
+import {Connection} from '../common/Connection.js';
+import {debug} from '../common/Debug.js';
+import {TimeoutError} from '../common/Errors.js';
 import {
   debugError,
   addEventListener,
@@ -32,10 +32,10 @@ import {
   PuppeteerEventListener,
   removeEventListeners,
 } from '../common/util.js';
-import { Product } from '../common/Product.js';
-import { NodeWebSocketTransport as WebSocketTransport } from '../node/NodeWebSocketTransport.js';
-import { LaunchOptions } from './LaunchOptions.js';
-import { PipeTransport } from './PipeTransport.js';
+import {Product} from '../common/Product.js';
+import {NodeWebSocketTransport as WebSocketTransport} from '../node/NodeWebSocketTransport.js';
+import {LaunchOptions} from './LaunchOptions.js';
+import {PipeTransport} from './PipeTransport.js';
 
 const removeFolderAsync = promisify(removeFolder);
 const renameAsync = promisify(fs.rename);
@@ -76,7 +76,7 @@ export class BrowserRunner {
   }
 
   start(options: LaunchOptions): void {
-    const { handleSIGINT, handleSIGTERM, handleSIGHUP, dumpio, env, pipe } =
+    const {handleSIGINT, handleSIGTERM, handleSIGHUP, dumpio, env, pipe} =
       options;
     let stdio: Array<'ignore' | 'pipe'>;
     if (pipe) {
@@ -181,7 +181,7 @@ export class BrowserRunner {
       this.kill();
     } else if (this.connection) {
       // Attempt to close the browser gracefully
-      this.connection.send('Browser.close').catch((error) => {
+      this.connection.send('Browser.close').catch(error => {
         debugError(error);
         this.kill();
       });
@@ -200,7 +200,7 @@ export class BrowserRunner {
       const proc = this.proc;
       try {
         if (process.platform === 'win32') {
-          childProcess.exec(`taskkill /pid ${this.proc.pid} /T /F`, (error) => {
+          childProcess.exec(`taskkill /pid ${this.proc.pid} /T /F`, error => {
             if (error) {
               // taskkill can fail to kill the process e.g. due to missing permissions.
               // Let's kill the process via Node API. This delays killing of all child
@@ -251,7 +251,7 @@ export class BrowserRunner {
   }): Promise<Connection> {
     assert(this.proc, 'BrowserRunner not started.');
 
-    const { usePipe, timeout, slowMo, preferredRevision } = options;
+    const {usePipe, timeout, slowMo, preferredRevision} = options;
     if (!usePipe) {
       const browserWSEndpoint = await waitForWSEndpoint(
         this.proc,
@@ -263,7 +263,7 @@ export class BrowserRunner {
     } else {
       // stdio was assigned during start(), and the 'pipe' option there adds the
       // 4th and 5th items to stdio array
-      const { 3: pipeWrite, 4: pipeRead } = this.proc.stdio;
+      const {3: pipeWrite, 4: pipeRead} = this.proc.stdio;
       const transport = new PipeTransport(
         pipeWrite as NodeJS.WritableStream,
         pipeRead as NodeJS.ReadableStream
@@ -292,7 +292,7 @@ function waitForWSEndpoint(
       addEventListener(browserProcess, 'exit', () => {
         return onClose();
       }),
-      addEventListener(browserProcess, 'error', (error) => {
+      addEventListener(browserProcess, 'error', error => {
         return onClose(error);
       }),
     ];
