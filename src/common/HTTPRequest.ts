@@ -196,11 +196,10 @@ export class HTTPRequest {
     return this.#url;
   }
   
-
   /**
    * @returns the respective client of the request
    */
-  client(): string {
+  _client(): string {
     return this.#client;
   }
 
