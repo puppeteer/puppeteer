@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import {JSHandle, ElementHandle} from './JSHandle.js';
+import {JSHandle} from './JSHandle.js';
+import {ElementHandle} from './ElementHandle.js';
 
 export type Awaitable<T> = T | PromiseLike<T>;
 

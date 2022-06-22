@@ -22,7 +22,7 @@ import {EventEmitter} from './EventEmitter.js';
 import {EVALUATION_SCRIPT_URL, ExecutionContext} from './ExecutionContext.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {MouseButton} from './Input.js';
-import {ElementHandle} from './JSHandle.js';
+import {ElementHandle} from './ElementHandle.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {NetworkManager} from './NetworkManager.js';
 import {Page} from './Page.js';

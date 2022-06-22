@@ -20,8 +20,14 @@ import {CDPSession} from './Connection.js';
 import {DOMWorld} from './DOMWorld.js';
 import {EvaluateFunc, HandleFor, EvaluateParams} from './types.js';
 import {Frame} from './FrameManager.js';
-import {ElementHandle, JSHandle, _createJSHandle} from './JSHandle.js';
-import {getExceptionMessage, isString, valueFromRemoteObject} from './util.js';
+import {JSHandle} from './JSHandle.js';
+import {ElementHandle} from './ElementHandle.js';
+import {
+  getExceptionMessage,
+  _createJSHandle,
+  isString,
+  valueFromRemoteObject,
+} from './util.js';
 
 /**
  * @public
