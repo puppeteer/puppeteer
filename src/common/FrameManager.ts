@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Protocol } from 'devtools-protocol';
-import { assert } from './assert.js';
-import { CDPSession, Connection } from './Connection.js';
-import { DOMWorld, WaitForSelectorOptions } from './DOMWorld.js';
+import {Protocol} from 'devtools-protocol';
+import {assert} from './assert.js';
+import {CDPSession, Connection} from './Connection.js';
+import {DOMWorld, WaitForSelectorOptions} from './DOMWorld.js';
 import {
   EvaluateFn,
   EvaluateFnReturnType,
@@ -26,19 +26,16 @@ import {
   UnwrapPromiseLike,
   WrapElementHandle,
 } from './EvalTypes.js';
-import { EventEmitter } from './EventEmitter.js';
-import { EVALUATION_SCRIPT_URL, ExecutionContext } from './ExecutionContext.js';
-import { HTTPResponse } from './HTTPResponse.js';
-import { MouseButton } from './Input.js';
-import { ElementHandle, JSHandle } from './JSHandle.js';
-import {
-  LifecycleWatcher,
-  PuppeteerLifeCycleEvent,
-} from './LifecycleWatcher.js';
-import { NetworkManager } from './NetworkManager.js';
-import { Page } from './Page.js';
-import { TimeoutSettings } from './TimeoutSettings.js';
-import { debugError, isErrorLike, isNumber, isString } from './util.js';
+import {EventEmitter} from './EventEmitter.js';
+import {EVALUATION_SCRIPT_URL, ExecutionContext} from './ExecutionContext.js';
+import {HTTPResponse} from './HTTPResponse.js';
+import {MouseButton} from './Input.js';
+import {ElementHandle, JSHandle} from './JSHandle.js';
+import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
+import {NetworkManager} from './NetworkManager.js';
+import {Page} from './Page.js';
+import {TimeoutSettings} from './TimeoutSettings.js';
+import {debugError, isErrorLike, isNumber, isString} from './util.js';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 const xPathPattern = /^\(\/\/[^\)]+\)|^\/\//;
@@ -104,13 +101,13 @@ export class FrameManager extends EventEmitter {
   }
 
   private setupEventListeners(session: CDPSession) {
-    session.on('Page.frameAttached', (event) => {
+    session.on('Page.frameAttached', event => {
       this.#onFrameAttached(session, event.frameId, event.parentFrameId);
     });
-    session.on('Page.frameNavigated', (event) => {
+    session.on('Page.frameNavigated', event => {
       this.#onFrameNavigated(event.frame);
     });
-    session.on('Page.navigatedWithinDocument', (event) => {
+    session.on('Page.navigatedWithinDocument', event => {
       this.#onFrameNavigatedWithinDocument(event.frameId, event.url);
     });
     session.on(
@@ -122,28 +119,28 @@ export class FrameManager extends EventEmitter {
         );
       }
     );
-    session.on('Page.frameStartedLoading', (event) => {
+    session.on('Page.frameStartedLoading', event => {
       this.#onFrameStartedLoading(event.frameId);
     });
-    session.on('Page.frameStoppedLoading', (event) => {
+    session.on('Page.frameStoppedLoading', event => {
       this.#onFrameStoppedLoading(event.frameId);
     });
-    session.on('Runtime.executionContextCreated', (event) => {
+    session.on('Runtime.executionContextCreated', event => {
       this.#onExecutionContextCreated(event.context, session);
     });
-    session.on('Runtime.executionContextDestroyed', (event) => {
+    session.on('Runtime.executionContextDestroyed', event => {
       this.#onExecutionContextDestroyed(event.executionContextId, session);
     });
     session.on('Runtime.executionContextsCleared', () => {
       this.#onExecutionContextsCleared(session);
     });
-    session.on('Page.lifecycleEvent', (event) => {
+    session.on('Page.lifecycleEvent', event => {
       this.#onLifecycleEvent(event);
     });
-    session.on('Target.attachedToTarget', async (event) => {
+    session.on('Target.attachedToTarget', async event => {
       this.#onAttachedToTarget(event);
     });
-    session.on('Target.detachedFromTarget', async (event) => {
+    session.on('Target.detachedFromTarget', async event => {
       this.#onDetachedFromTarget(event);
     });
   }
@@ -162,10 +159,10 @@ export class FrameManager extends EventEmitter {
           : Promise.resolve(),
       ]);
 
-      const { frameTree } = result[1];
+      const {frameTree} = result[1];
       this.#handleFrameTree(client, frameTree);
       await Promise.all([
-        client.send('Page.setLifecycleEventsEnabled', { enabled: true }),
+        client.send('Page.setLifecycleEventsEnabled', {enabled: true}),
         client.send('Runtime.enable').then(() => {
           return this._ensureIsolatedWorld(client, UTILITY_WORLD_NAME);
         }),
@@ -443,10 +440,10 @@ export class FrameManager extends EventEmitter {
     // Frames might be removed before we send this.
     await Promise.all(
       this.frames()
-        .filter((frame) => {
+        .filter(frame => {
           return frame._client() === session;
         })
-        .map((frame) => {
+        .map(frame => {
           return session
             .send('Page.createIsolatedWorld', {
               frameId: frame._id,
@@ -489,7 +486,7 @@ export class FrameManager extends EventEmitter {
     contextPayload: Protocol.Runtime.ExecutionContextDescription,
     session: CDPSession
   ): void {
-    const auxData = contextPayload.auxData as { frameId?: string } | undefined;
+    const auxData = contextPayload.auxData as {frameId?: string} | undefined;
     const frameId = auxData && auxData.frameId;
     const frame =
       typeof frameId === 'string' ? this.#frames.get(frameId) : undefined;
@@ -1236,7 +1233,7 @@ export class Frame {
   async type(
     selector: string,
     text: string,
-    options?: { delay: number }
+    options?: {delay: number}
   ): Promise<void> {
     return this._mainWorld.type(selector, text, options);
   }
@@ -1283,7 +1280,7 @@ export class Frame {
       return this.waitForSelector(string, options);
     }
     if (isNumber(selectorOrFunctionOrTimeout)) {
-      return new Promise((fulfill) => {
+      return new Promise(fulfill => {
         return setTimeout(fulfill, selectorOrFunctionOrTimeout);
       });
     }
@@ -1320,7 +1317,7 @@ export class Frame {
    * @param milliseconds - the number of milliseconds to wait.
    */
   waitForTimeout(milliseconds: number): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       setTimeout(resolve, milliseconds);
     });
   }

@@ -15,24 +15,24 @@
  */
 
 import expect from 'expect';
-import { ConsoleMessage } from '../../lib/cjs/puppeteer/common/ConsoleMessage.js';
-import { WebWorker } from '../../lib/cjs/puppeteer/common/WebWorker.js';
+import {ConsoleMessage} from '../../lib/cjs/puppeteer/common/ConsoleMessage.js';
+import {WebWorker} from '../../lib/cjs/puppeteer/common/WebWorker.js';
 import {
   describeFailsFirefox,
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import { waitEvent } from './utils.js';
+import {waitEvent} from './utils.js';
 
 describeFailsFirefox('Workers', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
   it('Page.workers', async () => {
-    const { page, server } = getTestState();
+    const {page, server} = getTestState();
 
     await Promise.all([
-      new Promise((x) => {
+      new Promise(x => {
         return page.once('workercreated', x);
       }),
       page.goto(server.PREFIX + '/worker/worker.html'),
@@ -50,9 +50,9 @@ describeFailsFirefox('Workers', function () {
     expect(page.workers().length).toBe(0);
   });
   it('should emit created and destroyed events', async () => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
-    const workerCreatedPromise = new Promise<WebWorker>((x) => {
+    const workerCreatedPromise = new Promise<WebWorker>(x => {
       return page.once('workercreated', x);
     });
     const workerObj = await page.evaluateHandle(() => {
@@ -62,20 +62,20 @@ describeFailsFirefox('Workers', function () {
     const workerThisObj = await worker.evaluateHandle(() => {
       return this;
     });
-    const workerDestroyedPromise = new Promise((x) => {
+    const workerDestroyedPromise = new Promise(x => {
       return page.once('workerdestroyed', x);
     });
     await page.evaluate((workerObj: Worker) => {
       return workerObj.terminate();
     }, workerObj);
     expect(await workerDestroyedPromise).toBe(worker);
-    const error = await workerThisObj.getProperty('self').catch((error) => {
+    const error = await workerThisObj.getProperty('self').catch(error => {
       return error;
     });
     expect(error.message).toContain('Most likely the worker has been closed.');
   });
   it('should report console logs', async () => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     const [message] = await Promise.all([
       waitEvent(page, 'console'),
@@ -91,9 +91,9 @@ describeFailsFirefox('Workers', function () {
     });
   });
   it('should have JSHandles for console logs', async () => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
-    const logPromise = new Promise<ConsoleMessage>((x) => {
+    const logPromise = new Promise<ConsoleMessage>(x => {
       return page.on('console', x);
     });
     await page.evaluate(() => {
@@ -107,9 +107,9 @@ describeFailsFirefox('Workers', function () {
     );
   });
   it('should have an execution context', async () => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
-    const workerCreatedPromise = new Promise<WebWorker>((x) => {
+    const workerCreatedPromise = new Promise<WebWorker>(x => {
       return page.once('workercreated', x);
     });
     await page.evaluate(() => {
@@ -119,9 +119,9 @@ describeFailsFirefox('Workers', function () {
     expect(await (await worker.executionContext()).evaluate('1+1')).toBe(2);
   });
   it('should report errors', async () => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
-    const errorPromise = new Promise<Error>((x) => {
+    const errorPromise = new Promise<Error>(x => {
       return page.on('pageerror', x);
     });
     await page.evaluate(() => {

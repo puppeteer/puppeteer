@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isNode } from '../environment.js';
+import {isNode} from '../environment.js';
 
 declare global {
   // eslint-disable-next-line no-var

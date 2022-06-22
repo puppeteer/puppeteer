@@ -16,10 +16,10 @@
 
 import expect from 'expect';
 import path from 'path';
-import { Frame } from '../../lib/cjs/puppeteer/common/FrameManager.js';
-import { Page } from '../../lib/cjs/puppeteer/common/Page.js';
-import { EventEmitter } from '../../lib/cjs/puppeteer/common/EventEmitter.js';
-import { compare } from './golden-utils.js';
+import {Frame} from '../../lib/cjs/puppeteer/common/FrameManager.js';
+import {Page} from '../../lib/cjs/puppeteer/common/Page.js';
+import {EventEmitter} from '../../lib/cjs/puppeteer/common/EventEmitter.js';
+import {compare} from './golden-utils.js';
 
 const PROJECT_ROOT = path.join(__dirname, '..', '..');
 
@@ -72,16 +72,14 @@ export const attachFrame = async (
     frame.src = url;
     frame.id = frameId;
     document.body.appendChild(frame);
-    await new Promise((x) => {
+    await new Promise(x => {
       return (frame.onload = x);
     });
     return frame;
   }
 };
 
-export const isFavicon = (request: {
-  url: () => string | string[];
-}): boolean => {
+export const isFavicon = (request: {url: () => string | string[]}): boolean => {
   return request.url().includes('favicon.ico');
 };
 
@@ -107,7 +105,7 @@ export async function navigateFrame(
   function navigateFrame(frameId: string, url: any) {
     const frame = document.getElementById(frameId) as HTMLIFrameElement;
     frame.src = url;
-    return new Promise((x) => {
+    return new Promise(x => {
       return (frame.onload = x);
     });
   }
@@ -136,7 +134,7 @@ export const waitEvent = (
     return true;
   }
 ): Promise<any> => {
-  return new Promise((fulfill) => {
+  return new Promise(fulfill => {
     emitter.on(eventName, function listener(event: any) {
       if (!predicate(event)) {
         return;

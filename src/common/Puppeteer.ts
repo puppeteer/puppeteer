@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { puppeteerErrors, PuppeteerErrors } from './Errors.js';
-import { ConnectionTransport } from './ConnectionTransport.js';
-import { _devicesMap, DevicesMap } from './DeviceDescriptors.js';
-import { Browser } from './Browser.js';
+import {puppeteerErrors, PuppeteerErrors} from './Errors.js';
+import {ConnectionTransport} from './ConnectionTransport.js';
+import {_devicesMap, DevicesMap} from './DeviceDescriptors.js';
+import {Browser} from './Browser.js';
 import {
   _registerCustomQueryHandler,
   _unregisterCustomQueryHandler,
@@ -24,11 +24,8 @@ import {
   _clearCustomQueryHandlers,
   CustomQueryHandler,
 } from './QueryHandler.js';
-import { Product } from './Product.js';
-import {
-  _connectToBrowser,
-  BrowserConnectOptions,
-} from './BrowserConnector.js';
+import {Product} from './Product.js';
+import {_connectToBrowser, BrowserConnectOptions} from './BrowserConnector.js';
 import {
   PredefinedNetworkConditions,
   networkConditions,

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { debugError, isErrorLike } from './util.js';
-import { isNode } from '../environment.js';
-import { assert } from './assert.js';
+import {debugError, isErrorLike} from './util.js';
+import {isNode} from '../environment.js';
+import {assert} from './assert.js';
 import {
   Browser,
   IsPageTargetCallback,
   TargetFilterCallback,
 } from './Browser.js';
-import { Connection } from './Connection.js';
-import { ConnectionTransport } from './ConnectionTransport.js';
-import { getFetch } from './fetch.js';
-import { Viewport } from './PuppeteerViewport.js';
+import {Connection} from './Connection.js';
+import {ConnectionTransport} from './ConnectionTransport.js';
+import {getFetch} from './fetch.js';
+import {Viewport} from './PuppeteerViewport.js';
 
 /**
  * Generic browser options that can be passed when launching any browser or when
@@ -81,7 +81,7 @@ export async function _connectToBrowser(
     browserWSEndpoint,
     browserURL,
     ignoreHTTPSErrors = false,
-    defaultViewport = { width: 800, height: 600 },
+    defaultViewport = {width: 800, height: 600},
     transport,
     slowMo = 0,
     targetFilter,
@@ -110,7 +110,7 @@ export async function _connectToBrowser(
     connection = new Connection(connectionURL, connectionTransport, slowMo);
   }
 
-  const { browserContextIds } = await connection.send(
+  const {browserContextIds} = await connection.send(
     'Target.getBrowserContexts'
   );
   return Browser._create(

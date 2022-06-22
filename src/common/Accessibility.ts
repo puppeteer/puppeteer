@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { CDPSession } from './Connection.js';
-import { ElementHandle } from './JSHandle.js';
-import { Protocol } from 'devtools-protocol';
+import {CDPSession} from './Connection.js';
+import {ElementHandle} from './JSHandle.js';
+import {Protocol} from 'devtools-protocol';
 
 /**
  * Represents a Node and the properties of it that are relevant to Accessibility.
@@ -181,11 +181,11 @@ export class Accessibility {
   public async snapshot(
     options: SnapshotOptions = {}
   ): Promise<SerializedAXNode | null> {
-    const { interestingOnly = true, root = null } = options;
-    const { nodes } = await this.#client.send('Accessibility.getFullAXTree');
+    const {interestingOnly = true, root = null} = options;
+    const {nodes} = await this.#client.send('Accessibility.getFullAXTree');
     let backendNodeId: number | undefined;
     if (root) {
-      const { node } = await this.#client.send('DOM.describeNode', {
+      const {node} = await this.#client.send('DOM.describeNode', {
         objectId: root._remoteObject.objectId,
       });
       backendNodeId = node.backendNodeId;
@@ -193,7 +193,7 @@ export class Accessibility {
     const defaultRoot = AXNode.createTree(nodes);
     let needle: AXNode | null = defaultRoot;
     if (backendNodeId) {
-      needle = defaultRoot.find((node) => {
+      needle = defaultRoot.find(node => {
         return node.payload.backendDOMNodeId === backendNodeId;
       });
       if (!needle) {

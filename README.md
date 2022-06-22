@@ -76,7 +76,7 @@ const puppeteer = require('puppeteer');
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto('https://example.com');
-  await page.screenshot({ path: 'example.png' });
+  await page.screenshot({path: 'example.png'});
 
   await browser.close();
 })();
@@ -103,7 +103,7 @@ const puppeteer = require('puppeteer');
   await page.goto('https://news.ycombinator.com', {
     waitUntil: 'networkidle2',
   });
-  await page.pdf({ path: 'hn.pdf', format: 'a4' });
+  await page.pdf({path: 'hn.pdf', format: 'a4'});
 
   await browser.close();
 })();
@@ -163,7 +163,7 @@ See [`Page.evaluate()`](https://github.com/puppeteer/puppeteer/blob/main/docs/ap
 Puppeteer launches Chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). To launch a full version of Chromium, set the [`headless` option](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#puppeteerlaunchoptions) when launching a browser:
 
 ```js
-const browser = await puppeteer.launch({ headless: false }); // default is true
+const browser = await puppeteer.launch({headless: false}); // default is true
 ```
 
 **2. Runs a bundled version of Chromium**
@@ -173,7 +173,7 @@ is guaranteed to work out of the box. To use Puppeteer with a different version 
 pass in the executable's path when creating a `Browser` instance:
 
 ```js
-const browser = await puppeteer.launch({ executablePath: '/path/to/Chrome' });
+const browser = await puppeteer.launch({executablePath: '/path/to/Chrome'});
 ```
 
 You can also use Puppeteer with Firefox Nightly (experimental support). See [`Puppeteer.launch()`](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#puppeteerlaunchoptions) for more information.
@@ -201,7 +201,7 @@ Puppeteer creates its own browser user profile which it **cleans up on every run
     the browser using `headless: false`:
 
     ```js
-    const browser = await puppeteer.launch({ headless: false });
+    const browser = await puppeteer.launch({headless: false});
     ```
 
 2.  Slow it down - the `slowMo` option slows down Puppeteer operations by the
@@ -218,7 +218,7 @@ Puppeteer creates its own browser user profile which it **cleans up on every run
     This is also handy when debugging code in `page.evaluate()`:
 
     ```js
-    page.on('console', (msg) => console.log('PAGE LOG:', msg.text()));
+    page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
     await page.evaluate(() => console.log(`url is ${location.href}`));
     ```
@@ -232,7 +232,7 @@ Puppeteer creates its own browser user profile which it **cleans up on every run
     - Use `{devtools: true}` when launching Puppeteer:
 
       ```js
-      const browser = await puppeteer.launch({ devtools: true });
+      const browser = await puppeteer.launch({devtools: true});
       ```
 
     - Change default test timeout:

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { InternalQueryHandler } from './QueryHandler.js';
-import { ElementHandle, JSHandle } from './JSHandle.js';
-import { Protocol } from 'devtools-protocol';
-import { CDPSession } from './Connection.js';
-import { DOMWorld, PageBinding, WaitForSelectorOptions } from './DOMWorld.js';
-import { assert } from './assert.js';
+import {InternalQueryHandler} from './QueryHandler.js';
+import {ElementHandle, JSHandle} from './JSHandle.js';
+import {Protocol} from 'devtools-protocol';
+import {CDPSession} from './Connection.js';
+import {DOMWorld, PageBinding, WaitForSelectorOptions} from './DOMWorld.js';
+import {assert} from './assert.js';
 
 async function queryAXTree(
   client: CDPSession,
@@ -27,7 +27,7 @@ async function queryAXTree(
   accessibleName?: string,
   role?: string
 ): Promise<Protocol.Accessibility.AXNode[]> {
-  const { nodes } = await client.send('Accessibility.queryAXTree', {
+  const {nodes} = await client.send('Accessibility.queryAXTree', {
     objectId: element._remoteObject.objectId,
     accessibleName,
     role,
@@ -47,7 +47,7 @@ const knownAttributes = new Set(['name', 'role']);
 const attributeRegexp =
   /\[\s*(?<attribute>\w+)\s*=\s*(?<quote>"|')(?<value>\\.|.*?(?=\k<quote>))\k<quote>\s*\]/g;
 
-type ARIAQueryOption = { name?: string; role?: string };
+type ARIAQueryOption = {name?: string; role?: string};
 function isKnownAttribute(
   attribute: string
 ): attribute is keyof ARIAQueryOption {
@@ -89,7 +89,7 @@ const queryOne = async (
   selector: string
 ): Promise<ElementHandle | null> => {
   const exeCtx = element.executionContext();
-  const { name, role } = parseAriaSelector(selector);
+  const {name, role} = parseAriaSelector(selector);
   const res = await queryAXTree(exeCtx._client, element, name, role);
   if (!res[0] || !res[0].backendDOMNodeId) {
     return null;
@@ -129,10 +129,10 @@ const queryAll = async (
   selector: string
 ): Promise<ElementHandle[]> => {
   const exeCtx = element.executionContext();
-  const { name, role } = parseAriaSelector(selector);
+  const {name, role} = parseAriaSelector(selector);
   const res = await queryAXTree(exeCtx._client, element, name, role);
   return Promise.all(
-    res.map((axNode) => {
+    res.map(axNode => {
       return exeCtx._adoptBackendNodeId(axNode.backendDOMNodeId);
     })
   );

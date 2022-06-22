@@ -515,7 +515,7 @@ const puppeteer = require('puppeteer');
     ],
   });
   const backgroundPageTarget = await browser.waitForTarget(
-    (target) => target.type() === 'background_page'
+    target => target.type() === 'background_page'
   );
   const backgroundPage = await backgroundPageTarget.page();
   // Test the background page as you would any other page.
@@ -858,7 +858,7 @@ const puppeteer = require('puppeteer');
   browser.disconnect();
 
   // Use the endpoint to reestablish a connection
-  const browser2 = await puppeteer.connect({ browserWSEndpoint });
+  const browser2 = await puppeteer.connect({browserWSEndpoint});
   // Close Chromium
   await browser2.close();
 })();
@@ -1003,7 +1003,7 @@ An example of finding a target for a page opened via `window.open`:
 ```js
 await page.evaluate(() => window.open('https://www.example.com/'));
 const newWindowTarget = await browser.waitForTarget(
-  (target) => target.url() === 'https://www.example.com/'
+  target => target.url() === 'https://www.example.com/'
 );
 ```
 
@@ -1155,7 +1155,7 @@ An example of finding a target for a page opened via `window.open`:
 ```js
 await page.evaluate(() => window.open('https://www.example.com/'));
 const newWindowTarget = await browserContext.waitForTarget(
-  (target) => target.url() === 'https://www.example.com/'
+  target => target.url() === 'https://www.example.com/'
 );
 ```
 
@@ -1174,7 +1174,7 @@ const puppeteer = require('puppeteer');
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto('https://example.com');
-  await page.screenshot({ path: 'screenshot.png' });
+  await page.screenshot({path: 'screenshot.png'});
   await browser.close();
 })();
 ```
@@ -1215,11 +1215,11 @@ The arguments passed into `console.log` appear as arguments on the event handler
 An example of handling `console` event:
 
 ```js
-page.on('console', (msg) => {
+page.on('console', msg => {
   for (let i = 0; i < msg.args().length; ++i)
     console.log(`${i}: ${msg.args()[i]}`);
 });
-page.evaluate(() => console.log('hello', 5, { foo: 'bar' }));
+page.evaluate(() => console.log('hello', 5, {foo: 'bar'}));
 ```
 
 #### event: 'dialog'
@@ -1286,14 +1286,14 @@ Emitted when the page opens a new tab or window.
 
 ```js
 const [popup] = await Promise.all([
-  new Promise((resolve) => page.once('popup', resolve)),
+  new Promise(resolve => page.once('popup', resolve)),
   page.click('a[target=_blank]'),
 ]);
 ```
 
 ```js
 const [popup] = await Promise.all([
-  new Promise((resolve) => page.once('popup', resolve)),
+  new Promise(resolve => page.once('popup', resolve)),
   page.evaluate(() => window.open('https://example.com')),
 ]);
 ```
@@ -1369,12 +1369,12 @@ If `pageFunction` returns a [Promise], then `page.$$eval` would wait for the pro
 Examples:
 
 ```js
-const divCount = await page.$$eval('div', (divs) => divs.length);
+const divCount = await page.$$eval('div', divs => divs.length);
 ```
 
 ```js
-const options = await page.$$eval('div > span.options', (options) =>
-  options.map((option) => option.textContent)
+const options = await page.$$eval('div > span.options', options =>
+  options.map(option => option.textContent)
 );
 ```
 
@@ -1392,9 +1392,9 @@ If `pageFunction` returns a [Promise], then `page.$eval` would wait for the prom
 Examples:
 
 ```js
-const searchValue = await page.$eval('#search', (el) => el.value);
-const preloadHref = await page.$eval('link[rel=preload]', (el) => el.href);
-const html = await page.$eval('.main-container', (e) => e.outerHTML);
+const searchValue = await page.$eval('#search', el => el.value);
+const preloadHref = await page.$eval('link[rel=preload]', el => el.href);
+const html = await page.$eval('.main-container', e => e.outerHTML);
 ```
 
 Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector-pagefunction-args).
@@ -1662,7 +1662,7 @@ const slow3G = puppeteer.networkConditions['Slow 3G'];
 
 ```js
 await page.emulateMediaFeatures([
-  { name: 'prefers-color-scheme', value: 'dark' },
+  {name: 'prefers-color-scheme', value: 'dark'},
 ]);
 await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches);
 // → true
@@ -1670,7 +1670,7 @@ await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches);
 // → false
 
 await page.emulateMediaFeatures([
-  { name: 'prefers-reduced-motion', value: 'reduce' },
+  {name: 'prefers-reduced-motion', value: 'reduce'},
 ]);
 await page.evaluate(
   () => matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -1682,8 +1682,8 @@ await page.evaluate(
 // → false
 
 await page.emulateMediaFeatures([
-  { name: 'prefers-color-scheme', value: 'dark' },
-  { name: 'prefers-reduced-motion', value: 'reduce' },
+  {name: 'prefers-color-scheme', value: 'dark'},
+  {name: 'prefers-reduced-motion', value: 'reduce'},
 ]);
 await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches);
 // → true
@@ -1698,7 +1698,7 @@ await page.evaluate(
 );
 // → false
 
-await page.emulateMediaFeatures([{ name: 'color-gamut', value: 'p3' }]);
+await page.emulateMediaFeatures([{name: 'color-gamut', value: 'p3'}]);
 await page.evaluate(() => matchMedia('(color-gamut: srgb)').matches);
 // → true
 await page.evaluate(() => matchMedia('(color-gamut: p3)').matches);
@@ -1774,13 +1774,13 @@ const puppeteer = require('puppeteer');
   await page.goto('https://v8.dev/blog/10-years');
 
   await page.emulateVisionDeficiency('achromatopsia');
-  await page.screenshot({ path: 'achromatopsia.png' });
+  await page.screenshot({path: 'achromatopsia.png'});
 
   await page.emulateVisionDeficiency('deuteranopia');
-  await page.screenshot({ path: 'deuteranopia.png' });
+  await page.screenshot({path: 'deuteranopia.png'});
 
   await page.emulateVisionDeficiency('blurredVision');
-  await page.screenshot({ path: 'blurred-vision.png' });
+  await page.screenshot({path: 'blurred-vision.png'});
 
   await browser.close();
 })();
@@ -1799,7 +1799,7 @@ If the function passed to the `page.evaluate` returns a non-[Serializable] value
 Passing arguments to `pageFunction`:
 
 ```js
-const result = await page.evaluate((x) => {
+const result = await page.evaluate(x => {
   return Promise.resolve(8 * x);
 }, 7);
 console.log(result); // prints "56"
@@ -1817,7 +1817,7 @@ console.log(await page.evaluate(`1 + ${x}`)); // prints "11"
 
 ```js
 const bodyHandle = await page.$('body');
-const html = await page.evaluate((body) => body.innerHTML, bodyHandle);
+const html = await page.evaluate(body => body.innerHTML, bodyHandle);
 await bodyHandle.dispose();
 ```
 
@@ -1843,10 +1843,7 @@ const aHandle = await page.evaluateHandle('document'); // Handle for the 'docume
 
 ```js
 const aHandle = await page.evaluateHandle(() => document.body);
-const resultHandle = await page.evaluateHandle(
-  (body) => body.innerHTML,
-  aHandle
-);
+const resultHandle = await page.evaluateHandle(body => body.innerHTML, aHandle);
 console.log(await resultHandle.jsonValue());
 await resultHandle.dispose();
 ```
@@ -1915,8 +1912,8 @@ const crypto = require('crypto');
 (async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  page.on('console', (msg) => console.log(msg.text()));
-  await page.exposeFunction('md5', (text) =>
+  page.on('console', msg => console.log(msg.text()));
+  await page.exposeFunction('md5', text =>
     crypto.createHash('md5').update(text).digest('hex')
   );
   await page.evaluate(async () => {
@@ -1938,8 +1935,8 @@ const fs = require('fs');
 (async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  page.on('console', (msg) => console.log(msg.text()));
-  await page.exposeFunction('readfile', async (filePath) => {
+  page.on('console', msg => console.log(msg.text()));
+  await page.exposeFunction('readfile', async filePath => {
     return new Promise((resolve, reject) => {
       fs.readFile(filePath, 'utf8', (err, text) => {
         if (err) reject(err);
@@ -2128,7 +2125,7 @@ Page is guaranteed to have a main frame which persists during navigations.
 ```js
 // Generates a PDF with 'screen' media type.
 await page.emulateMediaType('screen');
-await page.pdf({ path: 'page.pdf' });
+await page.pdf({path: 'page.pdf'});
 ```
 
 The `width`, `height`, and `margin` options accept values labeled with units. Unlabeled values are treated as pixels.
@@ -2180,7 +2177,7 @@ const mapPrototype = await page.evaluateHandle(() => Map.prototype);
 // Query all map instances into an array
 const mapInstances = await page.queryObjects(mapPrototype);
 // Count amount of map objects in heap
-const count = await page.evaluate((maps) => maps.length, mapInstances);
+const count = await page.evaluate(maps => maps.length, mapInstances);
 await mapInstances.dispose();
 await mapPrototype.dispose();
 ```
@@ -2343,7 +2340,7 @@ The extra HTTP headers will be sent with every request the page initiates.
 Sets the page's geolocation.
 
 ```js
-await page.setGeolocation({ latitude: 59.95, longitude: 30.31667 });
+await page.setGeolocation({latitude: 59.95, longitude: 30.31667});
 ```
 
 > **NOTE** Consider using [browserContext.overridePermissions](#browsercontextoverridepermissionsorigin-permissions) to grant permissions for the page to read its geolocation.
@@ -2380,7 +2377,7 @@ const puppeteer = require('puppeteer');
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.setRequestInterception(true);
-  page.on('request', (interceptedRequest) => {
+  page.on('request', interceptedRequest => {
     if (interceptedRequest.isInterceptResolutionHandled()) return;
     if (
       interceptedRequest.url().endsWith('.png') ||
@@ -2411,7 +2408,7 @@ This example demonstrates two synchronous handlers working together:
 /*
 This first handler will succeed in calling request.continue because the request interception has never been resolved.
 */
-page.on('request', (interceptedRequest) => {
+page.on('request', interceptedRequest => {
   if (interceptedRequest.isInterceptResolutionHandled()) return;
   interceptedRequest.continue();
 });
@@ -2420,7 +2417,7 @@ page.on('request', (interceptedRequest) => {
 This second handler will return before calling request.abort because request.continue was already
 called by the first handler.
 */
-page.on('request', (interceptedRequest) => {
+page.on('request', interceptedRequest => {
   if (interceptedRequest.isInterceptResolutionHandled()) return;
   interceptedRequest.abort();
 });
@@ -2432,12 +2429,12 @@ This example demonstrates asynchronous handlers working together:
 /*
 This first handler will succeed in calling request.continue because the request interception has never been resolved.
 */
-page.on('request', (interceptedRequest) => {
+page.on('request', interceptedRequest => {
   // The interception has not been handled yet. Control will pass through this guard.
   if (interceptedRequest.isInterceptResolutionHandled()) return;
 
   // It is not strictly necessary to return a promise, but doing so will allow Puppeteer to await this handler.
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     // Continue after 500ms
     setTimeout(() => {
       // Inside, check synchronously to verify that the intercept wasn't handled already.
@@ -2451,7 +2448,7 @@ page.on('request', (interceptedRequest) => {
     }, 500);
   });
 });
-page.on('request', async (interceptedRequest) => {
+page.on('request', async interceptedRequest => {
   // The interception has not been handled yet. Control will pass through this guard.
   if (interceptedRequest.isInterceptResolutionHandled()) return;
 
@@ -2471,18 +2468,18 @@ Here is the example above rewritten using `request.interceptResolutionState`
 /*
 This first handler will succeed in calling request.continue because the request interception has never been resolved.
 */
-page.on('request', (interceptedRequest) => {
+page.on('request', interceptedRequest => {
   // The interception has not been handled yet. Control will pass through this guard.
-  const { action } = interceptedRequest.interceptResolutionState();
+  const {action} = interceptedRequest.interceptResolutionState();
   if (action === InterceptResolutionAction.AlreadyHandled) return;
 
   // It is not strictly necessary to return a promise, but doing so will allow Puppeteer to await this handler.
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     // Continue after 500ms
     setTimeout(() => {
       // Inside, check synchronously to verify that the intercept wasn't handled already.
       // It might have been handled during the 500ms while the other handler awaited an async op of its own.
-      const { action } = interceptedRequest.interceptResolutionState();
+      const {action} = interceptedRequest.interceptResolutionState();
       if (action === InterceptResolutionAction.AlreadyHandled) {
         resolve();
         return;
@@ -2492,7 +2489,7 @@ page.on('request', (interceptedRequest) => {
     }, 500);
   });
 });
-page.on('request', async (interceptedRequest) => {
+page.on('request', async interceptedRequest => {
   // The interception has not been handled yet. Control will pass through this guard.
   if (
     interceptedRequest.interceptResolutionState().action ===
@@ -2534,13 +2531,13 @@ In this example, Legacy Mode prevails and the request is aborted immediately bec
 ```ts
 // Final outcome: immediate abort()
 page.setRequestInterception(true);
-page.on('request', (request) => {
+page.on('request', request => {
   if (request.isInterceptResolutionHandled()) return;
 
   // Legacy Mode: interception is aborted immediately.
   request.abort('failed');
 });
-page.on('request', (request) => {
+page.on('request', request => {
   if (request.isInterceptResolutionHandled()) return;
   // Control will never reach this point because the request was already aborted in Legacy Mode
 
@@ -2554,13 +2551,13 @@ In this example, Legacy Mode prevails and the request is continued because at le
 ```ts
 // Final outcome: immediate continue()
 page.setRequestInterception(true);
-page.on('request', (request) => {
+page.on('request', request => {
   if (request.isInterceptResolutionHandled()) return;
 
   // Cooperative Intercept Mode: votes to abort at priority 0.
   request.abort('failed', 0);
 });
-page.on('request', (request) => {
+page.on('request', request => {
   if (request.isInterceptResolutionHandled()) return;
 
   // Control reaches this point because the request was cooperatively aborted which postpones resolution.
@@ -2571,7 +2568,7 @@ page.on('request', (request) => {
   // Legacy Mode: intercept continues immediately.
   request.continue({});
 });
-page.on('request', (request) => {
+page.on('request', request => {
   // { action: InterceptResolutionAction.AlreadyHandled }, because continue in Legacy Mode was called
   console.log(request.interceptResolutionState());
 });
@@ -2582,19 +2579,19 @@ In this example, Cooperative Intercept Mode is active because all handlers speci
 ```ts
 // Final outcome: cooperative continue() @ 5
 page.setRequestInterception(true);
-page.on('request', (request) => {
+page.on('request', request => {
   if (request.isInterceptResolutionHandled()) return;
 
   // Cooperative Intercept Mode: votes to abort at priority 10
   request.abort('failed', 0);
 });
-page.on('request', (request) => {
+page.on('request', request => {
   if (request.isInterceptResolutionHandled()) return;
 
   // Cooperative Intercept Mode: votes to continue at priority 5
   request.continue(request.continueRequestOverrides(), 5);
 });
-page.on('request', (request) => {
+page.on('request', request => {
   // { action: InterceptResolutionAction.Continue, priority: 5 }, because continue @ 5 > abort @ 0
   console.log(request.interceptResolutionState());
 });
@@ -2605,31 +2602,31 @@ In this example, Cooperative Intercept Mode is active because all handlers speci
 ```ts
 // Final outcome: cooperative respond() @ 15
 page.setRequestInterception(true);
-page.on('request', (request) => {
+page.on('request', request => {
   if (request.isInterceptResolutionHandled()) return;
 
   // Cooperative Intercept Mode: votes to abort at priority 10
   request.abort('failed', 10);
 });
-page.on('request', (request) => {
+page.on('request', request => {
   if (request.isInterceptResolutionHandled()) return;
 
   // Cooperative Intercept Mode: votes to continue at priority 15
   request.continue(request.continueRequestOverrides(), 15);
 });
-page.on('request', (request) => {
+page.on('request', request => {
   if (request.isInterceptResolutionHandled()) return;
 
   // Cooperative Intercept Mode: votes to respond at priority 15
   request.respond(request.responseForRequest(), 15);
 });
-page.on('request', (request) => {
+page.on('request', request => {
   if (request.isInterceptResolutionHandled()) return;
 
   // Cooperative Intercept Mode: votes to respond at priority 12
   request.respond(request.responseForRequest(), 12);
 });
-page.on('request', (request) => {
+page.on('request', request => {
   // { action: InterceptResolutionAction.Respond, priority: 15 }, because respond @ 15 > continue @ 15 > respond @ 12 > abort @ 10
   console.log(request.interceptResolutionState());
 });
@@ -2656,7 +2653,7 @@ To summarize, reason through whether your use of `request.continue` is just mean
 If you are package maintainer and your package uses intercept handlers, you can update your intercept handlers to use Cooperative Intercept Mode. Suppose you have the following existing handler:
 
 ```ts
-page.on('request', (interceptedRequest) => {
+page.on('request', interceptedRequest => {
   if (request.isInterceptResolutionHandled()) return;
   if (
     interceptedRequest.url().endsWith('.png') ||
@@ -2670,7 +2667,7 @@ page.on('request', (interceptedRequest) => {
 To use Cooperative Intercept Mode, upgrade `continue()` and `abort()`:
 
 ```ts
-page.on('request', (interceptedRequest) => {
+page.on('request', interceptedRequest => {
   if (request.isInterceptResolutionHandled()) return;
   if (
     interceptedRequest.url().endsWith('.png') ||
@@ -2706,7 +2703,7 @@ export const setInterceptResolutionConfig = (priority = 0) =>
  * Note that this handler uses `DEFAULT_INTERCEPT_RESOLUTION_PRIORITY` to "pass" on this request. It is important to use
  * the default priority when your handler has no opinion on the request and the intent is to continue() by default.
  */
-page.on('request', (interceptedRequest) => {
+page.on('request', interceptedRequest => {
   if (request.isInterceptResolutionHandled()) return;
   if (
     interceptedRequest.url().endsWith('.png') ||
@@ -2742,9 +2739,9 @@ let _config: Partial<InterceptResolutionConfig> = {};
 
 export const setInterceptResolutionConfig = (
   config: InterceptResolutionConfig
-) => (_config = { ...DEFAULT_CONFIG, ...config });
+) => (_config = {...DEFAULT_CONFIG, ...config});
 
-page.on('request', (interceptedRequest) => {
+page.on('request', interceptedRequest => {
   if (request.isInterceptResolutionHandled()) return;
   if (
     interceptedRequest.url().endsWith('.png') ||
@@ -2868,7 +2865,7 @@ To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#k
 
 ```js
 await page.type('#mytextarea', 'Hello'); // Types instantly
-await page.type('#mytextarea', 'World', { delay: 100 }); // Types slower, like a user
+await page.type('#mytextarea', 'World', {delay: 100}); // Types slower, like a user
 ```
 
 Shortcut for [page.mainFrame().type(selector, text[, options])](#frametypeselector-text-options).
@@ -2931,7 +2928,7 @@ To pass arguments from node.js to the predicate of `page.waitFor` function:
 ```js
 const selector = '.foo';
 await page.waitFor(
-  (selector) => !!document.querySelector(selector),
+  selector => !!document.querySelector(selector),
   {},
   selector
 );
@@ -2970,7 +2967,7 @@ await fileChooser.accept(['/tmp/myfile.pdf']);
 - returns: <[Promise]<[Frame]>> Promise which resolves to the matched frame.
 
 ```js
-const frame = await page.waitForFrame(async (frame) => {
+const frame = await page.waitForFrame(async frame => {
   return frame.name() === 'Test';
 });
 ```
@@ -2995,7 +2992,7 @@ const puppeteer = require('puppeteer');
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   const watchDog = page.waitForFunction('window.innerWidth < 100');
-  await page.setViewport({ width: 50, height: 50 });
+  await page.setViewport({width: 50, height: 50});
   await watchDog;
   await browser.close();
 })();
@@ -3006,7 +3003,7 @@ To pass arguments from node.js to the predicate of `page.waitForFunction` functi
 ```js
 const selector = '.foo';
 await page.waitForFunction(
-  (selector) => !!document.querySelector(selector),
+  selector => !!document.querySelector(selector),
   {},
   selector
 );
@@ -3017,7 +3014,7 @@ The predicate of `page.waitForFunction` can be asynchronous too:
 ```js
 const username = 'github-username';
 await page.waitForFunction(
-  async (username) => {
+  async username => {
     const githubResponse = await fetch(
       `https://api.github.com/users/${username}`
     );
@@ -3083,7 +3080,7 @@ page.waitForNetworkIdle(); // The promise resolves after fetch above finishes
 ```js
 const firstRequest = await page.waitForRequest('http://example.com/resource');
 const finalRequest = await page.waitForRequest(
-  (request) =>
+  request =>
     request.url() === 'http://example.com' && request.method() === 'GET'
 );
 return firstRequest.url();
@@ -3101,10 +3098,10 @@ const firstResponse = await page.waitForResponse(
   'https://example.com/resource'
 );
 const finalResponse = await page.waitForResponse(
-  (response) =>
+  response =>
     response.url() === 'https://example.com' && response.status() === 200
 );
-const finalResponse = await page.waitForResponse(async (response) => {
+const finalResponse = await page.waitForResponse(async response => {
   return (await response.text()).includes('<html>');
 });
 return finalResponse.ok();
@@ -3228,10 +3225,10 @@ The WebWorker class represents a [WebWorker](https://developer.mozilla.org/en-US
 The events `workercreated` and `workerdestroyed` are emitted on the page object to signal the worker lifecycle.
 
 ```js
-page.on('workercreated', (worker) =>
+page.on('workercreated', worker =>
   console.log('Worker created: ' + worker.url())
 );
-page.on('workerdestroyed', (worker) =>
+page.on('workerdestroyed', worker =>
   console.log('Worker destroyed: ' + worker.url())
 );
 
@@ -3435,7 +3432,7 @@ To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#k
 
 ```js
 await page.keyboard.type('Hello'); // Types instantly
-await page.keyboard.type('World', { delay: 100 }); // Types slower, like a user
+await page.keyboard.type('World', {delay: 100}); // Types slower, like a user
 ```
 
 > **NOTE** Modifier keys DO NOT affect `keyboard.type`. Holding down `Shift` will not type the text in upper case.
@@ -3627,7 +3624,7 @@ await page.mouse.move(
   boundingBox.y + boundingBox.height / 2
 );
 
-await page.mouse.wheel({ deltaY: -100 });
+await page.mouse.wheel({deltaY: -100});
 ```
 
 ### class: Touchscreen
@@ -3645,7 +3642,7 @@ Dispatches a `touchstart` and `touchend` event.
 You can use [`tracing.start`](#tracingstartoptions) and [`tracing.stop`](#tracingstop) to create a trace file which can be opened in Chrome DevTools or [timeline viewer](https://chromedevtools.github.io/timeline-viewer/).
 
 ```js
-await page.tracing.start({ path: 'trace.json' });
+await page.tracing.start({path: 'trace.json'});
 await page.goto('https://www.google.com');
 await page.tracing.stop();
 ```
@@ -3708,7 +3705,7 @@ const puppeteer = require('puppeteer');
 (async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  page.on('dialog', async (dialog) => {
+  page.on('dialog', async dialog => {
     console.log(dialog.message());
     await dialog.dismiss();
     await browser.close();
@@ -3804,8 +3801,8 @@ const puppeteer = require('puppeteer');
 An example of getting text from an iframe element:
 
 ```js
-const frame = page.frames().find((frame) => frame.name() === 'myframe');
-const text = await frame.$eval('.selector', (element) => element.textContent);
+const frame = page.frames().find(frame => frame.name() === 'myframe');
+const text = await frame.$eval('.selector', element => element.textContent);
 console.log(text);
 ```
 
@@ -3837,7 +3834,7 @@ If `pageFunction` returns a [Promise], then `frame.$$eval` would wait for the pr
 Examples:
 
 ```js
-const divsCounts = await frame.$$eval('div', (divs) => divs.length);
+const divsCounts = await frame.$$eval('div', divs => divs.length);
 ```
 
 #### frame.$eval(selector, pageFunction[, ...args])
@@ -3854,9 +3851,9 @@ If `pageFunction` returns a [Promise], then `frame.$eval` would wait for the pro
 Examples:
 
 ```js
-const searchValue = await frame.$eval('#search', (el) => el.value);
-const preloadHref = await frame.$eval('link[rel=preload]', (el) => el.href);
-const html = await frame.$eval('.main-container', (e) => e.outerHTML);
+const searchValue = await frame.$eval('#search', el => el.value);
+const preloadHref = await frame.$eval('link[rel=preload]', el => el.href);
+const html = await frame.$eval('.main-container', e => e.outerHTML);
 ```
 
 #### frame.$x(expression)
@@ -3946,7 +3943,7 @@ console.log(await frame.evaluate('1 + 2')); // prints "3"
 
 ```js
 const bodyHandle = await frame.$('body');
-const html = await frame.evaluate((body) => body.innerHTML, bodyHandle);
+const html = await frame.evaluate(body => body.innerHTML, bodyHandle);
 await bodyHandle.dispose();
 ```
 
@@ -3978,7 +3975,7 @@ const aHandle = await frame.evaluateHandle('document'); // Handle for the 'docum
 ```js
 const aHandle = await frame.evaluateHandle(() => document.body);
 const resultHandle = await frame.evaluateHandle(
-  (body) => body.innerHTML,
+  body => body.innerHTML,
   aHandle
 );
 console.log(await resultHandle.jsonValue());
@@ -4112,7 +4109,7 @@ To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#k
 
 ```js
 await frame.type('#mytextarea', 'Hello'); // Types instantly
-await frame.type('#mytextarea', 'World', { delay: 100 }); // Types slower, like a user
+await frame.type('#mytextarea', 'World', {delay: 100}); // Types slower, like a user
 ```
 
 #### frame.url()
@@ -4157,7 +4154,7 @@ To pass arguments from node.js to the predicate of `page.waitFor` function:
 ```js
 const selector = '.foo';
 await page.waitFor(
-  (selector) => !!document.querySelector(selector),
+  selector => !!document.querySelector(selector),
   {},
   selector
 );
@@ -4183,7 +4180,7 @@ const puppeteer = require('puppeteer');
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   const watchDog = page.mainFrame().waitForFunction('window.innerWidth < 100');
-  page.setViewport({ width: 50, height: 50 });
+  page.setViewport({width: 50, height: 50});
   await watchDog;
   await browser.close();
 })();
@@ -4194,7 +4191,7 @@ To pass arguments from node.js to the predicate of `page.waitForFunction` functi
 ```js
 const selector = '.foo';
 await page.waitForFunction(
-  (selector) => !!document.querySelector(selector),
+  selector => !!document.querySelector(selector),
   {},
   selector
 );
@@ -4395,7 +4392,7 @@ const aHandle = await context.evaluateHandle('1 + 2'); // Handle for the '3' obj
 ```js
 const aHandle = await context.evaluateHandle(() => document.body);
 const resultHandle = await context.evaluateHandle(
-  (body) => body.innerHTML,
+  body => body.innerHTML,
   aHandle
 );
 console.log(await resultHandle.jsonValue()); // prints body's innerHTML
@@ -4424,7 +4421,7 @@ const mapPrototype = await page.evaluateHandle(() => Map.prototype);
 // Query all map instances into an array
 const mapInstances = await page.queryObjects(mapPrototype);
 // Count amount of map objects in heap
-const count = await page.evaluate((maps) => maps.length, mapInstances);
+const count = await page.evaluate(maps => maps.length, mapInstances);
 await mapInstances.dispose();
 await mapPrototype.dispose();
 ```
@@ -4468,7 +4465,7 @@ Examples:
 
 ```js
 const tweetHandle = await page.$('.tweet .retweets');
-expect(await tweetHandle.evaluate((node) => node.innerText)).toBe('10');
+expect(await tweetHandle.evaluate(node => node.innerText)).toBe('10');
 ```
 
 #### jsHandle.evaluateHandle(pageFunction[, ...args])
@@ -4500,7 +4497,7 @@ Returns execution context the handle belongs to.
 The method returns a map with property names as keys and JSHandle instances for the property values.
 
 ```js
-const handle = await page.evaluateHandle(() => ({ window, document }));
+const handle = await page.evaluateHandle(() => ({window, document}));
 const properties = await handle.getProperties();
 const windowHandle = properties.get('window');
 const documentHandle = properties.get('document');
@@ -4584,7 +4581,7 @@ Examples:
 ```js
 const feedHandle = await page.$('.feed');
 expect(
-  await feedHandle.$$eval('.tweet', (nodes) => nodes.map((n) => n.innerText))
+  await feedHandle.$$eval('.tweet', nodes => nodes.map(n => n.innerText))
 ).toEqual(['Hello!', 'Hi!']);
 ```
 
@@ -4603,10 +4600,8 @@ Examples:
 
 ```js
 const tweetHandle = await page.$('.tweet');
-expect(await tweetHandle.$eval('.like', (node) => node.innerText)).toBe('100');
-expect(await tweetHandle.$eval('.retweets', (node) => node.innerText)).toBe(
-  '10'
-);
+expect(await tweetHandle.$eval('.like', node => node.innerText)).toBe('100');
+expect(await tweetHandle.$eval('.retweets', node => node.innerText)).toBe('10');
 ```
 
 #### elementHandle.$x(expression)
@@ -4740,7 +4735,7 @@ Examples:
 
 ```js
 const tweetHandle = await page.$('.tweet .retweets');
-expect(await tweetHandle.evaluate((node) => node.innerText)).toBe('10');
+expect(await tweetHandle.evaluate(node => node.innerText)).toBe('10');
 ```
 
 #### elementHandle.evaluateHandle(pageFunction[, ...args])
@@ -4873,7 +4868,7 @@ To press a special key, like `Control` or `ArrowDown`, use [`elementHandle.press
 
 ```js
 await elementHandle.type('Hello'); // Types instantly
-await elementHandle.type('World', { delay: 100 }); // Types slower, like a user
+await elementHandle.type('World', {delay: 100}); // Types slower, like a user
 ```
 
 An example of typing into a text field and then submitting the form:
@@ -5005,7 +5000,7 @@ your handler has no opinion about it.
 
 ```js
 await page.setRequestInterception(true);
-page.on('request', (request) => {
+page.on('request', request => {
   if (request.isInterceptResolutionHandled()) return;
 
   // Override headers
@@ -5013,7 +5008,7 @@ page.on('request', (request) => {
     foo: 'bar', // set "foo" header
     origin: undefined, // remove "origin" header
   });
-  request.continue({ headers });
+  request.continue({headers});
 });
 ```
 
@@ -5044,7 +5039,7 @@ The method returns `null` unless this request was failed, as reported by
 Example of logging all failed requests:
 
 ```js
-page.on('requestfailed', (request) => {
+page.on('requestfailed', request => {
   console.log(request.url() + ' ' + request.failure().errorText);
 });
 ```
@@ -5091,8 +5086,8 @@ This example will `continue()` a request at a slightly higher priority than the 
 already handled and is not already being continued.
 
 ```js
-page.on('request', (interceptedRequest) => {
-  const { action, priority } = interceptedRequest.interceptResolutionState();
+page.on('request', interceptedRequest => {
+  const {action, priority} = interceptedRequest.interceptResolutionState();
   if (action === InterceptResolutionAction.AlreadyHandled) return;
   if (action === InterceptResolutionAction.Continue) return;
 
@@ -5180,7 +5175,7 @@ An example of fulfilling all requests with 404 responses:
 
 ```js
 await page.setRequestInterception(true);
-page.on('request', (request) => {
+page.on('request', request => {
   if (request.isInterceptResolutionHandled()) return;
 
   request.respond({

@@ -25,7 +25,7 @@ import {
 } from './mocha-utils.js';
 
 import utils from './utils.js';
-import { ElementHandle } from '../../lib/cjs/puppeteer/common/JSHandle.js';
+import {ElementHandle} from '../../lib/cjs/puppeteer/common/JSHandle.js';
 
 describe('ElementHandle specs', function () {
   setupTestBrowserHooks();
@@ -33,39 +33,39 @@ describe('ElementHandle specs', function () {
 
   describeFailsFirefox('ElementHandle.boundingBox', function () {
     it('should work', async () => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
-      await page.setViewport({ width: 500, height: 500 });
+      await page.setViewport({width: 500, height: 500});
       await page.goto(server.PREFIX + '/grid.html');
       const elementHandle = (await page.$('.box:nth-of-type(13)'))!;
       const box = await elementHandle.boundingBox();
-      expect(box).toEqual({ x: 100, y: 50, width: 50, height: 50 });
+      expect(box).toEqual({x: 100, y: 50, width: 50, height: 50});
     });
     it('should handle nested frames', async () => {
-      const { page, server, isChrome } = getTestState();
+      const {page, server, isChrome} = getTestState();
 
-      await page.setViewport({ width: 500, height: 500 });
+      await page.setViewport({width: 500, height: 500});
       await page.goto(server.PREFIX + '/frames/nested-frames.html');
       const nestedFrame = page.frames()[1]!.childFrames()[1]!;
       const elementHandle = (await nestedFrame.$('div'))!;
       const box = await elementHandle.boundingBox();
       if (isChrome) {
-        expect(box).toEqual({ x: 28, y: 182, width: 264, height: 18 });
+        expect(box).toEqual({x: 28, y: 182, width: 264, height: 18});
       } else {
-        expect(box).toEqual({ x: 28, y: 182, width: 254, height: 18 });
+        expect(box).toEqual({x: 28, y: 182, width: 254, height: 18});
       }
     });
     it('should return null for invisible elements', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.setContent('<div style="display:none">hi</div>');
       const element = (await page.$('div'))!;
       expect(await element.boundingBox()).toBe(null);
     });
     it('should force a layout', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
-      await page.setViewport({ width: 500, height: 500 });
+      await page.setViewport({width: 500, height: 500});
       await page.setContent(
         '<div style="width: 100px; height: 100px">hello</div>'
       );
@@ -74,10 +74,10 @@ describe('ElementHandle specs', function () {
         return (element.style.height = '200px');
       }, elementHandle);
       const box = await elementHandle.boundingBox();
-      expect(box).toEqual({ x: 8, y: 8, width: 100, height: 200 });
+      expect(box).toEqual({x: 8, y: 8, width: 100, height: 200});
     });
     it('should work with SVG nodes', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.setContent(`
         <svg xmlns="http://www.w3.org/2000/svg" width="500" height="500">
@@ -88,7 +88,7 @@ describe('ElementHandle specs', function () {
       const pptrBoundingBox = await element.boundingBox();
       const webBoundingBox = await page.evaluate((e: HTMLElement) => {
         const rect = e.getBoundingClientRect();
-        return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+        return {x: rect.x, y: rect.y, width: rect.width, height: rect.height};
       }, element);
       expect(pptrBoundingBox).toEqual(webBoundingBox);
     });
@@ -96,7 +96,7 @@ describe('ElementHandle specs', function () {
 
   describeFailsFirefox('ElementHandle.boxModel', function () {
     it('should work', async () => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/resetcss.html');
 
@@ -151,7 +151,7 @@ describe('ElementHandle specs', function () {
     });
 
     it('should return null for invisible elements', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.setContent('<div style="display:none">hi</div>');
       const element = (await page.$('div'))!;
@@ -161,7 +161,7 @@ describe('ElementHandle specs', function () {
 
   describe('ElementHandle.contentFrame', function () {
     itFailsFirefox('should work', async () => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
@@ -174,7 +174,7 @@ describe('ElementHandle specs', function () {
   describe('ElementHandle.click', function () {
     // See https://github.com/puppeteer/puppeteer/issues/7175
     itFailsFirefox('should work', async () => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/input/button.html');
       const button = (await page.$('button'))!;
@@ -186,7 +186,7 @@ describe('ElementHandle specs', function () {
       ).toBe('Clicked');
     });
     it('should work for Shadow DOM v1', async () => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/shadow.html');
       const buttonHandle = await page.evaluateHandle<ElementHandle>(() => {
@@ -202,20 +202,20 @@ describe('ElementHandle specs', function () {
       ).toBe(true);
     });
     it('should work for TextNodes', async () => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/input/button.html');
       const buttonTextNode = await page.evaluateHandle<ElementHandle>(() => {
         return document.querySelector('button')!.firstChild;
       });
       let error!: Error;
-      await buttonTextNode.click().catch((error_) => {
+      await buttonTextNode.click().catch(error_ => {
         return (error = error_);
       });
       expect(error.message).toBe('Node is not of type HTMLElement');
     });
     it('should throw for detached nodes', async () => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/input/button.html');
       const button = (await page.$('button'))!;
@@ -223,20 +223,20 @@ describe('ElementHandle specs', function () {
         return button.remove();
       }, button);
       let error!: Error;
-      await button.click().catch((error_) => {
+      await button.click().catch(error_ => {
         return (error = error_);
       });
       expect(error.message).toBe('Node is detached from document');
     });
     it('should throw for hidden nodes', async () => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/input/button.html');
       const button = (await page.$('button'))!;
       await page.evaluate((button: HTMLElement) => {
         return (button.style.display = 'none');
       }, button);
-      const error = await button.click().catch((error_) => {
+      const error = await button.click().catch(error_ => {
         return error_;
       });
       expect(error.message).toBe(
@@ -244,14 +244,14 @@ describe('ElementHandle specs', function () {
       );
     });
     it('should throw for recursively hidden nodes', async () => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/input/button.html');
       const button = (await page.$('button'))!;
       await page.evaluate((button: HTMLElement) => {
         return (button.parentElement!.style.display = 'none');
       }, button);
-      const error = await button.click().catch((error_) => {
+      const error = await button.click().catch(error_ => {
         return error_;
       });
       expect(error.message).toBe(
@@ -259,11 +259,11 @@ describe('ElementHandle specs', function () {
       );
     });
     it('should throw for <br> elements', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.setContent('hello<br>goodbye');
       const br = (await page.$('br'))!;
-      const error = await br.click().catch((error_) => {
+      const error = await br.click().catch(error_ => {
         return error_;
       });
       expect(error.message).toBe(
@@ -274,7 +274,7 @@ describe('ElementHandle specs', function () {
 
   describe('Element.waitForSelector', () => {
     it('should wait correctly with waitForSelector on an element', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
       const waitFor = page.waitForSelector('.foo');
       // Set the page content after the waitFor has been started.
       await page.setContent(
@@ -284,13 +284,13 @@ describe('ElementHandle specs', function () {
       expect(element).toBeDefined();
 
       const innerWaitFor = element.waitForSelector('.bar');
-      await element.evaluate((el) => {
+      await element.evaluate(el => {
         el.innerHTML = '<div class="bar">bar1</div>';
       });
       element = (await innerWaitFor)!;
       expect(element).toBeDefined();
       expect(
-        await element.evaluate((el) => {
+        await element.evaluate(el => {
           return (el as HTMLElement).innerText;
         })
       ).toStrictEqual('bar1');
@@ -299,7 +299,7 @@ describe('ElementHandle specs', function () {
 
   describe('Element.waitForXPath', () => {
     it('should wait correctly with waitForXPath on an element', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
       // Set the page content after the waitFor has been started.
       await page.setContent(
         `<div id=el1>
@@ -316,13 +316,13 @@ describe('ElementHandle specs', function () {
       const el2 = (await page.waitForSelector('#el1'))!;
 
       expect(
-        await (await el2.waitForXPath('//div'))!.evaluate((el) => {
+        await (await el2.waitForXPath('//div'))!.evaluate(el => {
           return el.id;
         })
       ).toStrictEqual('el2');
 
       expect(
-        await (await el2.waitForXPath('.//div'))!.evaluate((el) => {
+        await (await el2.waitForXPath('.//div'))!.evaluate(el => {
           return el.id;
         })
       ).toStrictEqual('el2');
@@ -331,7 +331,7 @@ describe('ElementHandle specs', function () {
 
   describe('ElementHandle.hover', function () {
     it('should work', async () => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/input/scrollable.html');
       const button = (await page.$('#button-6'))!;
@@ -346,7 +346,7 @@ describe('ElementHandle specs', function () {
 
   describe('ElementHandle.isIntersectingViewport', function () {
     it('should work', async () => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/offscreenbuttons.html');
       for (let i = 0; i < 11; ++i) {
@@ -357,7 +357,7 @@ describe('ElementHandle specs', function () {
       }
     });
     it('should work with threshold', async () => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/offscreenbuttons.html');
       // a button almost cannot be seen
@@ -370,7 +370,7 @@ describe('ElementHandle specs', function () {
       ).toBe(false);
     });
     it('should work with threshold of 1', async () => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/offscreenbuttons.html');
       // a button almost cannot be seen
@@ -386,11 +386,11 @@ describe('ElementHandle specs', function () {
 
   describe('Custom queries', function () {
     this.afterEach(() => {
-      const { puppeteer } = getTestState();
+      const {puppeteer} = getTestState();
       puppeteer.clearCustomQueryHandlers();
     });
     it('should register and unregister', async () => {
-      const { page, puppeteer } = getTestState();
+      const {page, puppeteer} = getTestState();
       await page.setContent('<div id="not-foo"></div><div id="foo"></div>');
 
       // Register.
@@ -401,7 +401,7 @@ describe('ElementHandle specs', function () {
       });
       const element = (await page.$('getById/foo'))!;
       expect(
-        await page.evaluate<(element: HTMLElement) => string>((element) => {
+        await page.evaluate<(element: HTMLElement) => string>(element => {
           return element.id;
         }, element)
       ).toBe('foo');
@@ -426,7 +426,7 @@ describe('ElementHandle specs', function () {
     });
     it('should throw with invalid query names', () => {
       try {
-        const { puppeteer } = getTestState();
+        const {puppeteer} = getTestState();
         puppeteer.registerCustomQueryHandler('1/2/3', {
           queryOne: () => {
             return document.querySelector('foo');
@@ -442,7 +442,7 @@ describe('ElementHandle specs', function () {
       }
     });
     it('should work for multiple elements', async () => {
-      const { page, puppeteer } = getTestState();
+      const {page, puppeteer} = getTestState();
       await page.setContent(
         '<div id="not-foo"></div><div class="foo">Foo1</div><div class="foo baz">Foo2</div>'
       );
@@ -453,9 +453,9 @@ describe('ElementHandle specs', function () {
       });
       const elements = await page.$$('getByClass/foo');
       const classNames = await Promise.all(
-        elements.map(async (element) => {
+        elements.map(async element => {
           return await page.evaluate<(element: HTMLElement) => string>(
-            (element) => {
+            element => {
               return element.className;
             },
             element
@@ -466,7 +466,7 @@ describe('ElementHandle specs', function () {
       expect(classNames).toStrictEqual(['foo', 'foo baz']);
     });
     it('should eval correctly', async () => {
-      const { page, puppeteer } = getTestState();
+      const {page, puppeteer} = getTestState();
       await page.setContent(
         '<div id="not-foo"></div><div class="foo">Foo1</div><div class="foo baz">Foo2</div>'
       );
@@ -475,14 +475,14 @@ describe('ElementHandle specs', function () {
           return document.querySelectorAll(`.${selector}`);
         },
       });
-      const elements = await page.$$eval('getByClass/foo', (divs) => {
+      const elements = await page.$$eval('getByClass/foo', divs => {
         return divs.length;
       });
 
       expect(elements).toBe(2);
     });
     it('should wait correctly with waitForSelector', async () => {
-      const { page, puppeteer } = getTestState();
+      const {page, puppeteer} = getTestState();
       puppeteer.registerCustomQueryHandler('getByClass', {
         queryOne: (element, selector) => {
           return element.querySelector(`.${selector}`);
@@ -500,7 +500,7 @@ describe('ElementHandle specs', function () {
     });
 
     it('should wait correctly with waitForSelector on an element', async () => {
-      const { page, puppeteer } = getTestState();
+      const {page, puppeteer} = getTestState();
       puppeteer.registerCustomQueryHandler('getByClass', {
         queryOne: (element, selector) => {
           return element.querySelector(`.${selector}`);
@@ -517,14 +517,14 @@ describe('ElementHandle specs', function () {
 
       const innerWaitFor = element.waitForSelector('getByClass/bar');
 
-      await element.evaluate((el) => {
+      await element.evaluate(el => {
         el.innerHTML = '<div class="bar">bar1</div>';
       });
 
       element = (await innerWaitFor)!;
       expect(element).toBeDefined();
       expect(
-        await element.evaluate((el) => {
+        await element.evaluate(el => {
           return (el as HTMLElement).innerText;
         })
       ).toStrictEqual('bar1');
@@ -533,7 +533,7 @@ describe('ElementHandle specs', function () {
     it('should wait correctly with waitFor', async () => {
       /* page.waitFor is deprecated so we silence the warning to avoid test noise */
       sinon.stub(console, 'warn').callsFake(() => {});
-      const { page, puppeteer } = getTestState();
+      const {page, puppeteer} = getTestState();
       puppeteer.registerCustomQueryHandler('getByClass', {
         queryOne: (element, selector) => {
           return element.querySelector(`.${selector}`);
@@ -550,7 +550,7 @@ describe('ElementHandle specs', function () {
       expect(element).toBeDefined();
     });
     it('should work when both queryOne and queryAll are registered', async () => {
-      const { page, puppeteer } = getTestState();
+      const {page, puppeteer} = getTestState();
       await page.setContent(
         '<div id="not-foo"></div><div class="foo"><div id="nested-foo" class="foo"/></div><div class="foo baz">Foo2</div>'
       );
@@ -570,7 +570,7 @@ describe('ElementHandle specs', function () {
       expect(elements.length).toBe(3);
     });
     it('should eval when both queryOne and queryAll are registered', async () => {
-      const { page, puppeteer } = getTestState();
+      const {page, puppeteer} = getTestState();
       await page.setContent(
         '<div id="not-foo"></div><div class="foo">text</div><div class="foo baz">content</div>'
       );
@@ -583,14 +583,14 @@ describe('ElementHandle specs', function () {
         },
       });
 
-      const txtContent = await page.$eval('getByClass/foo', (div) => {
+      const txtContent = await page.$eval('getByClass/foo', div => {
         return div.textContent;
       });
       expect(txtContent).toBe('text');
 
-      const txtContents = await page.$$eval('getByClass/foo', (divs) => {
+      const txtContents = await page.$$eval('getByClass/foo', divs => {
         return divs
-          .map((d) => {
+          .map(d => {
             return d.textContent;
           })
           .join('');

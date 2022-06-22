@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Protocol } from 'devtools-protocol';
-import { CDPSession } from './Connection.js';
-import { ConsoleMessageType } from './ConsoleMessage.js';
-import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes.js';
-import { EventEmitter } from './EventEmitter.js';
-import { ExecutionContext } from './ExecutionContext.js';
-import { debugError } from './util.js';
-import { JSHandle } from './JSHandle.js';
+import {Protocol} from 'devtools-protocol';
+import {CDPSession} from './Connection.js';
+import {ConsoleMessageType} from './ConsoleMessage.js';
+import {EvaluateHandleFn, SerializableOrJSHandle} from './EvalTypes.js';
+import {EventEmitter} from './EventEmitter.js';
+import {ExecutionContext} from './ExecutionContext.js';
+import {debugError} from './util.js';
+import {JSHandle} from './JSHandle.js';
 
 /**
  * @internal
@@ -79,14 +79,14 @@ export class WebWorker extends EventEmitter {
     super();
     this.#client = client;
     this.#url = url;
-    this.#executionContextPromise = new Promise<ExecutionContext>((x) => {
+    this.#executionContextPromise = new Promise<ExecutionContext>(x => {
       return (this.#executionContextCallback = x);
     });
 
     let jsHandleFactory: JSHandleFactory;
-    this.#client.once('Runtime.executionContextCreated', async (event) => {
+    this.#client.once('Runtime.executionContextCreated', async event => {
       // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-      jsHandleFactory = (remoteObject) => {
+      jsHandleFactory = remoteObject => {
         return new JSHandle(executionContext, client, remoteObject);
       };
       const executionContext = new ExecutionContext(client, event.context);
@@ -95,14 +95,14 @@ export class WebWorker extends EventEmitter {
 
     // This might fail if the target is closed before we receive all execution contexts.
     this.#client.send('Runtime.enable').catch(debugError);
-    this.#client.on('Runtime.consoleAPICalled', (event) => {
+    this.#client.on('Runtime.consoleAPICalled', event => {
       return consoleAPICalled(
         event.type,
         event.args.map(jsHandleFactory),
         event.stackTrace
       );
     });
-    this.#client.on('Runtime.exceptionThrown', (exception) => {
+    this.#client.on('Runtime.exceptionThrown', exception => {
       return exceptionThrown(exception.exceptionDetails);
     });
   }

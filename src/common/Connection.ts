@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { assert } from './assert.js';
-import { debug } from './Debug.js';
+import {assert} from './assert.js';
+import {debug} from './Debug.js';
 const debugProtocolSend = debug('puppeteer:protocol:SEND ►');
 const debugProtocolReceive = debug('puppeteer:protocol:RECV ◀');
 
-import { Protocol } from 'devtools-protocol';
-import { ProtocolMapping } from 'devtools-protocol/types/protocol-mapping.js';
-import { ConnectionTransport } from './ConnectionTransport.js';
-import { EventEmitter } from './EventEmitter.js';
-import { ProtocolError } from './Errors.js';
+import {Protocol} from 'devtools-protocol';
+import {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
+import {ConnectionTransport} from './ConnectionTransport.js';
+import {EventEmitter} from './EventEmitter.js';
+import {ProtocolError} from './Errors.js';
 
 /**
  * @public
  */
-export { ConnectionTransport, ProtocolMapping };
+export {ConnectionTransport, ProtocolMapping};
 
 /**
  * @public
@@ -104,7 +104,7 @@ export class Connection extends EventEmitter {
     // type-inference.
     // So now we check if there are any params or not and deal with them accordingly.
     const params = paramArgs.length ? paramArgs[0] : undefined;
-    const id = this._rawSend({ method, params });
+    const id = this._rawSend({method, params});
     return new Promise((resolve, reject) => {
       this.#callbacks.set(id, {
         resolve,
@@ -120,9 +120,7 @@ export class Connection extends EventEmitter {
    */
   _rawSend(message: Record<string, unknown>): number {
     const id = ++this.#lastId;
-    const stringifiedMessage = JSON.stringify(
-      Object.assign({}, message, { id })
-    );
+    const stringifiedMessage = JSON.stringify(Object.assign({}, message, {id}));
     debugProtocolSend(stringifiedMessage);
     this.#transport.send(stringifiedMessage);
     return id;
@@ -130,7 +128,7 @@ export class Connection extends EventEmitter {
 
   async #onMessage(message: string): Promise<void> {
     if (this.#delay) {
-      await new Promise((f) => {
+      await new Promise(f => {
         return setTimeout(f, this.#delay);
       });
     }
@@ -219,7 +217,7 @@ export class Connection extends EventEmitter {
   async createSession(
     targetInfo: Protocol.Target.TargetInfo
   ): Promise<CDPSession> {
-    const { sessionId } = await this.send('Target.attachToTarget', {
+    const {sessionId} = await this.send('Target.attachToTarget', {
       targetId: targetInfo.targetId,
       flatten: true,
     });
@@ -238,7 +236,7 @@ export interface CDPSessionOnMessageObject {
   id?: number;
   method: string;
   params: Record<string, unknown>;
-  error: { message: string; data: any; code: number };
+  error: {message: string; data: any; code: number};
   result?: any;
 }
 
@@ -394,7 +392,7 @@ export class CDPSession extends EventEmitter {
 function createProtocolError(
   error: ProtocolError,
   method: string,
-  object: { error: { message: string; data: any; code: number } }
+  object: {error: {message: string; data: any; code: number}}
 ): Error {
   let message = `Protocol error (${method}): ${object.error.message}`;
   if ('data' in object.error) {

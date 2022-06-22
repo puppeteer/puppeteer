@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { sync } from 'pkg-dir';
-import { Product } from './common/Product.js';
-import { rootDirname } from './constants.js';
-import { PuppeteerNode } from './node/Puppeteer.js';
-import { PUPPETEER_REVISIONS } from './revisions.js';
+import {sync} from 'pkg-dir';
+import {Product} from './common/Product.js';
+import {rootDirname} from './constants.js';
+import {PuppeteerNode} from './node/Puppeteer.js';
+import {PUPPETEER_REVISIONS} from './revisions.js';
 
 export const initializePuppeteer = (packageName: string): PuppeteerNode => {
   const isPuppeteerCore = packageName === 'puppeteer-core';

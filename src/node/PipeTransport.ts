@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { assert } from '../common/assert.js';
-import { ConnectionTransport } from '../common/ConnectionTransport.js';
+import {assert} from '../common/assert.js';
+import {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {
   addEventListener,
   debugError,
@@ -38,7 +38,7 @@ export class PipeTransport implements ConnectionTransport {
   ) {
     this.#pipeWrite = pipeWrite;
     this.#eventListeners = [
-      addEventListener(pipeRead, 'data', (buffer) => {
+      addEventListener(pipeRead, 'data', buffer => {
         return this.#dispatch(buffer);
       }),
       addEventListener(pipeRead, 'close', () => {

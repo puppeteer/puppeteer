@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Protocol } from 'devtools-protocol';
-import { assert } from './assert.js';
-import { CDPSession } from './Connection.js';
+import {Protocol} from 'devtools-protocol';
+import {assert} from './assert.js';
+import {CDPSession} from './Connection.js';
 import {
   EvaluateFn,
   EvaluateFnReturnType,
@@ -25,12 +25,12 @@ import {
   UnwrapPromiseLike,
   WrapElementHandle,
 } from './EvalTypes.js';
-import { ExecutionContext } from './ExecutionContext.js';
-import { Frame, FrameManager } from './FrameManager.js';
-import { MouseButton } from './Input.js';
-import { Page, ScreenshotOptions } from './Page.js';
-import { _getQueryHandlerAndSelector } from './QueryHandler.js';
-import { KeyInput } from './USKeyboardLayout.js';
+import {ExecutionContext} from './ExecutionContext.js';
+import {Frame, FrameManager} from './FrameManager.js';
+import {MouseButton} from './Input.js';
+import {Page, ScreenshotOptions} from './Page.js';
+import {_getQueryHandlerAndSelector} from './QueryHandler.js';
+import {KeyInput} from './USKeyboardLayout.js';
 import {
   debugError,
   isString,
@@ -91,8 +91,8 @@ const applyOffsetsToQuad = (
   offsetX: number,
   offsetY: number
 ) => {
-  return quad.map((part) => {
-    return { x: part.x + offsetX, y: part.y + offsetY };
+  return quad.map(part => {
+    return {x: part.x + offsetX, y: part.y + offsetY};
   });
 };
 
@@ -219,7 +219,7 @@ export class JSHandle<HandleObjectType = unknown> {
   async getProperty(propertyName: string): Promise<JSHandle> {
     const objectHandle = await this.evaluateHandle(
       (object: Element, propertyName: keyof Element) => {
-        const result: Record<string, unknown> = { __proto__: null };
+        const result: Record<string, unknown> = {__proto__: null};
         result[propertyName] = object[propertyName];
         return result;
       },
@@ -561,8 +561,8 @@ export class ElementHandle<
           });
           return false;
         }
-        const visibleRatio = await new Promise((resolve) => {
-          const observer = new IntersectionObserver((entries) => {
+        const visibleRatio = await new Promise(resolve => {
+          const observer = new IntersectionObserver(entries => {
             resolve(entries[0]!.intersectionRatio);
             observer.disconnect();
           });
@@ -590,7 +590,7 @@ export class ElementHandle<
 
   async #getOOPIFOffsets(
     frame: Frame
-  ): Promise<{ offsetX: number; offsetY: number }> {
+  ): Promise<{offsetX: number; offsetY: number}> {
     let offsetX = 0;
     let offsetY = 0;
     let currentFrame: Frame | null = frame;
@@ -600,11 +600,9 @@ export class ElementHandle<
         currentFrame = parent;
         continue;
       }
-      const { backendNodeId } = await parent
-        ._client()
-        .send('DOM.getFrameOwner', {
-          frameId: currentFrame._id,
-        });
+      const {backendNodeId} = await parent._client().send('DOM.getFrameOwner', {
+        frameId: currentFrame._id,
+      });
       const result = await parent._client().send('DOM.getBoxModel', {
         backendNodeId: backendNodeId,
       });
@@ -617,7 +615,7 @@ export class ElementHandle<
       offsetY += topLeftCorner!.y;
       currentFrame = parent;
     }
-    return { offsetX, offsetY };
+    return {offsetX, offsetY};
   }
 
   /**
@@ -637,20 +635,20 @@ export class ElementHandle<
     }
     // Filter out quads that have too small area to click into.
     // Fallback to `layoutViewport` in case of using Firefox.
-    const { clientWidth, clientHeight } =
+    const {clientWidth, clientHeight} =
       layoutMetrics.cssLayoutViewport || layoutMetrics.layoutViewport;
-    const { offsetX, offsetY } = await this.#getOOPIFOffsets(this.#frame);
+    const {offsetX, offsetY} = await this.#getOOPIFOffsets(this.#frame);
     const quads = result.quads
-      .map((quad) => {
+      .map(quad => {
         return this.#fromProtocolQuad(quad);
       })
-      .map((quad) => {
+      .map(quad => {
         return applyOffsetsToQuad(quad, offsetX, offsetY);
       })
-      .map((quad) => {
+      .map(quad => {
         return this.#intersectQuadWithViewport(quad, clientWidth, clientHeight);
       })
-      .filter((quad) => {
+      .filter(quad => {
         return computeQuadArea(quad) > 1;
       });
     if (!quads.length) {
@@ -696,17 +694,17 @@ export class ElementHandle<
     const params: Protocol.DOM.GetBoxModelRequest = {
       objectId: this._remoteObject.objectId,
     };
-    return this._client.send('DOM.getBoxModel', params).catch((error) => {
+    return this._client.send('DOM.getBoxModel', params).catch(error => {
       return debugError(error);
     });
   }
 
   #fromProtocolQuad(quad: number[]): Point[] {
     return [
-      { x: quad[0]!, y: quad[1]! },
-      { x: quad[2]!, y: quad[3]! },
-      { x: quad[4]!, y: quad[5]! },
-      { x: quad[6]!, y: quad[7]! },
+      {x: quad[0]!, y: quad[1]!},
+      {x: quad[2]!, y: quad[3]!},
+      {x: quad[4]!, y: quad[5]!},
+      {x: quad[6]!, y: quad[7]!},
     ];
   }
 
@@ -715,7 +713,7 @@ export class ElementHandle<
     width: number,
     height: number
   ): Point[] {
-    return quad.map((point) => {
+    return quad.map(point => {
       return {
         x: Math.min(Math.max(point.x, 0), width),
         y: Math.min(Math.max(point.y, 0), height),
@@ -730,7 +728,7 @@ export class ElementHandle<
    */
   async hover(): Promise<void> {
     await this.#scrollIntoViewIfNeeded();
-    const { x, y } = await this.clickablePoint();
+    const {x, y} = await this.clickablePoint();
     await this.#page.mouse.move(x, y);
   }
 
@@ -741,7 +739,7 @@ export class ElementHandle<
    */
   async click(options: ClickOptions = {}): Promise<void> {
     await this.#scrollIntoViewIfNeeded();
-    const { x, y } = await this.clickablePoint(options.offset);
+    const {x, y} = await this.clickablePoint(options.offset);
     await this.#page.mouse.click(x, y, options);
   }
 
@@ -762,7 +760,7 @@ export class ElementHandle<
    * This method creates a `dragenter` event on the element.
    */
   async dragEnter(
-    data: Protocol.Input.DragData = { items: [], dragOperationsMask: 1 }
+    data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
   ): Promise<void> {
     await this.#scrollIntoViewIfNeeded();
     const target = await this.clickablePoint();
@@ -773,7 +771,7 @@ export class ElementHandle<
    * This method creates a `dragover` event on the element.
    */
   async dragOver(
-    data: Protocol.Input.DragData = { items: [], dragOperationsMask: 1 }
+    data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
   ): Promise<void> {
     await this.#scrollIntoViewIfNeeded();
     const target = await this.clickablePoint();
@@ -784,7 +782,7 @@ export class ElementHandle<
    * This method triggers a drop on the element.
    */
   async drop(
-    data: Protocol.Input.DragData = { items: [], dragOperationsMask: 1 }
+    data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
   ): Promise<void> {
     await this.#scrollIntoViewIfNeeded();
     const destination = await this.clickablePoint();
@@ -796,7 +794,7 @@ export class ElementHandle<
    */
   async dragAndDrop(
     target: ElementHandle,
-    options?: { delay: number }
+    options?: {delay: number}
   ): Promise<void> {
     await this.#scrollIntoViewIfNeeded();
     const startPoint = await this.clickablePoint();
@@ -856,8 +854,8 @@ export class ElementHandle<
           }
         }
       }
-      element.dispatchEvent(new Event('input', { bubbles: true }));
-      element.dispatchEvent(new Event('change', { bubbles: true }));
+      element.dispatchEvent(new Event('input', {bubbles: true}));
+      element.dispatchEvent(new Event('change', {bubbles: true}));
       return [...selectedValues.values()];
     }, values);
   }
@@ -874,7 +872,7 @@ export class ElementHandle<
    */
   async uploadFile(...filePaths: string[]): Promise<void> {
     const isMultiple = await this.evaluate<(element: Element) => boolean>(
-      (element) => {
+      element => {
         if (!(element instanceof HTMLInputElement)) {
           throw new Error('uploadFile can only be called on an input element.');
         }
@@ -898,28 +896,28 @@ export class ElementHandle<
       }
       throw error;
     }
-    const files = filePaths.map((filePath) => {
+    const files = filePaths.map(filePath => {
       if (path.win32.isAbsolute(filePath) || path.posix.isAbsolute(filePath)) {
         return filePath;
       } else {
         return path.resolve(filePath);
       }
     });
-    const { objectId } = this._remoteObject;
-    const { node } = await this._client.send('DOM.describeNode', { objectId });
-    const { backendNodeId } = node;
+    const {objectId} = this._remoteObject;
+    const {node} = await this._client.send('DOM.describeNode', {objectId});
+    const {backendNodeId} = node;
 
     /*  The zero-length array is a special case, it seems that
          DOM.setFileInputFiles does not actually update the files in that case,
          so the solution is to eval the element value to a new FileList directly.
      */
     if (files.length === 0) {
-      await (this as ElementHandle<HTMLInputElement>).evaluate((element) => {
+      await (this as ElementHandle<HTMLInputElement>).evaluate(element => {
         element.files = new DataTransfer().files;
 
         // Dispatch events for this case because it should behave akin to a user action.
-        element.dispatchEvent(new Event('input', { bubbles: true }));
-        element.dispatchEvent(new Event('change', { bubbles: true }));
+        element.dispatchEvent(new Event('input', {bubbles: true}));
+        element.dispatchEvent(new Event('change', {bubbles: true}));
       });
     } else {
       await this._client.send('DOM.setFileInputFiles', {
@@ -937,7 +935,7 @@ export class ElementHandle<
    */
   async tap(): Promise<void> {
     await this.#scrollIntoViewIfNeeded();
-    const { x, y } = await this.clickablePoint();
+    const {x, y} = await this.clickablePoint();
     await this.#page.touchscreen.tap(x, y);
   }
 
@@ -945,7 +943,7 @@ export class ElementHandle<
    * Calls {@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus | focus} on the element.
    */
   async focus(): Promise<void> {
-    await (this as ElementHandle<HTMLElement>).evaluate((element) => {
+    await (this as ElementHandle<HTMLElement>).evaluate(element => {
       return element.focus();
     });
   }
@@ -972,7 +970,7 @@ export class ElementHandle<
    * await elementHandle.press('Enter');
    * ```
    */
-  async type(text: string, options?: { delay: number }): Promise<void> {
+  async type(text: string, options?: {delay: number}): Promise<void> {
     await this.focus();
     await this.#page.keyboard.type(text, options);
   }
@@ -1007,14 +1005,14 @@ export class ElementHandle<
       return null;
     }
 
-    const { offsetX, offsetY } = await this.#getOOPIFOffsets(this.#frame);
+    const {offsetX, offsetY} = await this.#getOOPIFOffsets(this.#frame);
     const quad = result.model.border;
     const x = Math.min(quad[0]!, quad[2]!, quad[4]!, quad[6]!);
     const y = Math.min(quad[1]!, quad[3]!, quad[5]!, quad[7]!);
     const width = Math.max(quad[0]!, quad[2]!, quad[4]!, quad[6]!) - x;
     const height = Math.max(quad[1]!, quad[3]!, quad[5]!, quad[7]!) - y;
 
-    return { x: x + offsetX, y: y + offsetY, width, height };
+    return {x: x + offsetX, y: y + offsetY, width, height};
   }
 
   /**
@@ -1032,9 +1030,9 @@ export class ElementHandle<
       return null;
     }
 
-    const { offsetX, offsetY } = await this.#getOOPIFOffsets(this.#frame);
+    const {offsetX, offsetY} = await this.#getOOPIFOffsets(this.#frame);
 
-    const { content, padding, border, margin, width, height } = result.model;
+    const {content, padding, border, margin, width, height} = result.model;
     return {
       content: applyOffsetsToQuad(
         this.#fromProtocolQuad(content),
@@ -1097,7 +1095,7 @@ export class ElementHandle<
 
     const layoutMetrics = await this._client.send('Page.getLayoutMetrics');
     // Fallback to `layoutViewport` in case of using Firefox.
-    const { pageX, pageY } =
+    const {pageX, pageY} =
       layoutMetrics.cssVisualViewport || layoutMetrics.layoutViewport;
 
     const clip = Object.assign({}, boundingBox);
@@ -1131,7 +1129,7 @@ export class ElementHandle<
   async $<T extends Element = Element>(
     selector: string
   ): Promise<ElementHandle<T> | null> {
-    const { updatedSelector, queryHandler } =
+    const {updatedSelector, queryHandler} =
       _getQueryHandlerAndSelector(selector);
     assert(
       queryHandler.queryOne,
@@ -1154,7 +1152,7 @@ export class ElementHandle<
   async $$<T extends Element = Element>(
     selector: string
   ): Promise<Array<ElementHandle<T>>> {
-    const { updatedSelector, queryHandler } =
+    const {updatedSelector, queryHandler} =
       _getQueryHandlerAndSelector(selector);
     assert(
       queryHandler.queryAll,
@@ -1243,7 +1241,7 @@ export class ElementHandle<
     >,
     ...args: SerializableOrJSHandle[]
   ): Promise<WrapElementHandle<ReturnType>> {
-    const { updatedSelector, queryHandler } =
+    const {updatedSelector, queryHandler} =
       _getQueryHandlerAndSelector(selector);
     assert(queryHandler.queryAllArray);
     const arrayHandle = await queryHandler.queryAllArray(this, updatedSelector);
@@ -1300,10 +1298,10 @@ export class ElementHandle<
   async isIntersectingViewport(options?: {
     threshold?: number;
   }): Promise<boolean> {
-    const { threshold = 0 } = options || {};
+    const {threshold = 0} = options || {};
     return await this.evaluate(async (element: Element, threshold: number) => {
-      const visibleRatio = await new Promise<number>((resolve) => {
-        const observer = new IntersectionObserver((entries) => {
+      const visibleRatio = await new Promise<number>(resolve => {
+        const observer = new IntersectionObserver(entries => {
           resolve(entries[0]!.intersectionRatio);
           observer.disconnect();
         });

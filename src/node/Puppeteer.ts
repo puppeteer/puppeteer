@@ -19,16 +19,13 @@ import {
   CommonPuppeteerSettings,
   ConnectOptions,
 } from '../common/Puppeteer.js';
-import { BrowserFetcher, BrowserFetcherOptions } from './BrowserFetcher.js';
-import {
-  LaunchOptions,
-  BrowserLaunchArgumentOptions,
-} from './LaunchOptions.js';
-import { BrowserConnectOptions } from '../common/BrowserConnector.js';
-import { Browser } from '../common/Browser.js';
-import Launcher, { ProductLauncher } from './Launcher.js';
-import { PUPPETEER_REVISIONS } from '../revisions.js';
-import { Product } from '../common/Product.js';
+import {BrowserFetcher, BrowserFetcherOptions} from './BrowserFetcher.js';
+import {LaunchOptions, BrowserLaunchArgumentOptions} from './LaunchOptions.js';
+import {BrowserConnectOptions} from '../common/BrowserConnector.js';
+import {Browser} from '../common/Browser.js';
+import Launcher, {ProductLauncher} from './Launcher.js';
+import {PUPPETEER_REVISIONS} from '../revisions.js';
+import {Product} from '../common/Product.js';
 
 /**
  * @public
@@ -93,7 +90,7 @@ export class PuppeteerNode extends Puppeteer {
       productName?: Product;
     } & CommonPuppeteerSettings
   ) {
-    const { projectRoot, preferredRevision, productName, ...commonSettings } =
+    const {projectRoot, preferredRevision, productName, ...commonSettings} =
       settings;
     super(commonSettings);
     this.#projectRoot = projectRoot;

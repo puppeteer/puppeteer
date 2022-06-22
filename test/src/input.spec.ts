@@ -31,17 +31,17 @@ describe('input tests', function () {
 
   describeFailsFirefox('input', function () {
     it('should upload the file', async () => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/input/fileupload.html');
       const filePath = path.relative(process.cwd(), FILE_TO_UPLOAD);
       const input = (await page.$('input'))!;
       await page.evaluate((e: HTMLElement) => {
         (globalThis as any)._inputEvents = [];
-        e.addEventListener('change', (ev) => {
+        e.addEventListener('change', ev => {
           return (globalThis as any)._inputEvents.push(ev.type);
         });
-        e.addEventListener('input', (ev) => {
+        e.addEventListener('input', ev => {
           return (globalThis as any)._inputEvents.push(ev.type);
         });
       }, input);
@@ -64,7 +64,7 @@ describe('input tests', function () {
       expect(
         await page.evaluate((e: HTMLInputElement) => {
           const reader = new FileReader();
-          const promise = new Promise((fulfill) => {
+          const promise = new Promise(fulfill => {
             return (reader.onload = fulfill);
           });
           reader.readAsText(e.files![0]!);
@@ -78,7 +78,7 @@ describe('input tests', function () {
 
   describeFailsFirefox('Page.waitForFileChooser', function () {
     it('should work when file input is attached to DOM', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.setContent(`<input type=file>`);
       const [chooser] = await Promise.all([
@@ -88,7 +88,7 @@ describe('input tests', function () {
       expect(chooser).toBeTruthy();
     });
     it('should work when file input is not attached to DOM', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       const [chooser] = await Promise.all([
         page.waitForFileChooser(),
@@ -101,39 +101,39 @@ describe('input tests', function () {
       expect(chooser).toBeTruthy();
     });
     it('should respect timeout', async () => {
-      const { page, puppeteer } = getTestState();
+      const {page, puppeteer} = getTestState();
 
       let error!: Error;
-      await page.waitForFileChooser({ timeout: 1 }).catch((error_) => {
+      await page.waitForFileChooser({timeout: 1}).catch(error_ => {
         return (error = error_);
       });
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should respect default timeout when there is no custom timeout', async () => {
-      const { page, puppeteer } = getTestState();
+      const {page, puppeteer} = getTestState();
 
       page.setDefaultTimeout(1);
       let error!: Error;
-      await page.waitForFileChooser().catch((error_) => {
+      await page.waitForFileChooser().catch(error_ => {
         return (error = error_);
       });
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should prioritize exact timeout over default timeout', async () => {
-      const { page, puppeteer } = getTestState();
+      const {page, puppeteer} = getTestState();
 
       page.setDefaultTimeout(0);
       let error!: Error;
-      await page.waitForFileChooser({ timeout: 1 }).catch((error_) => {
+      await page.waitForFileChooser({timeout: 1}).catch(error_ => {
         return (error = error_);
       });
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should work with no timeout', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       const [chooser] = await Promise.all([
-        page.waitForFileChooser({ timeout: 0 }),
+        page.waitForFileChooser({timeout: 0}),
         page.evaluate(() => {
           return setTimeout(() => {
             const el = document.createElement('input');
@@ -145,13 +145,13 @@ describe('input tests', function () {
       expect(chooser).toBeTruthy();
     });
     it('should return the same file chooser when there are many watchdogs simultaneously', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.setContent(`<input type=file>`);
       const [fileChooser1, fileChooser2] = await Promise.all([
         page.waitForFileChooser(),
         page.waitForFileChooser(),
-        page.$eval('input', (input) => {
+        page.$eval('input', input => {
           return (input as HTMLInputElement).click();
         }),
       ]);
@@ -161,7 +161,7 @@ describe('input tests', function () {
 
   describeFailsFirefox('FileChooser.accept', function () {
     it('should accept single file', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.setContent(
         `<input type=file oninput='javascript:console.timeStamp()'>`
@@ -172,37 +172,37 @@ describe('input tests', function () {
       ]);
       await Promise.all([
         chooser.accept([FILE_TO_UPLOAD]),
-        new Promise((x) => {
+        new Promise(x => {
           return page.once('metrics', x);
         }),
       ]);
       expect(
-        await page.$eval('input', (input) => {
+        await page.$eval('input', input => {
           return (input as HTMLInputElement).files!.length;
         })
       ).toBe(1);
       expect(
-        await page.$eval('input', (input) => {
+        await page.$eval('input', input => {
           return (input as HTMLInputElement).files![0]!.name;
         })
       ).toBe('file-to-upload.txt');
     });
     it('should be able to read selected file', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.setContent(`<input type=file>`);
-      page.waitForFileChooser().then((chooser) => {
+      page.waitForFileChooser().then(chooser => {
         return chooser.accept([FILE_TO_UPLOAD]);
       });
       expect(
-        await page.$eval('input', async (picker) => {
+        await page.$eval('input', async picker => {
           const pick = picker as HTMLInputElement;
           pick.click();
-          await new Promise((x) => {
+          await new Promise(x => {
             return (pick.oninput = x);
           });
           const reader = new FileReader();
-          const promise = new Promise((fulfill) => {
+          const promise = new Promise(fulfill => {
             return (reader.onload = fulfill);
           });
           reader.readAsText(pick.files![0]!);
@@ -213,30 +213,30 @@ describe('input tests', function () {
       ).toBe('contents of the file');
     });
     it('should be able to reset selected files with empty file list', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.setContent(`<input type=file>`);
-      page.waitForFileChooser().then((chooser) => {
+      page.waitForFileChooser().then(chooser => {
         return chooser.accept([FILE_TO_UPLOAD]);
       });
       expect(
-        await page.$eval('input', async (picker) => {
+        await page.$eval('input', async picker => {
           const pick = picker as HTMLInputElement;
           pick.click();
-          await new Promise((x) => {
+          await new Promise(x => {
             return (pick.oninput = x);
           });
           return pick.files!.length;
         })
       ).toBe(1);
-      page.waitForFileChooser().then((chooser) => {
+      page.waitForFileChooser().then(chooser => {
         return chooser.accept([]);
       });
       expect(
-        await page.$eval('input', async (picker) => {
+        await page.$eval('input', async picker => {
           const pick = picker as HTMLInputElement;
           pick.click();
-          await new Promise((x) => {
+          await new Promise(x => {
             return (pick.oninput = x);
           });
           return pick.files!.length;
@@ -244,7 +244,7 @@ describe('input tests', function () {
       ).toBe(0);
     });
     it('should not accept multiple files for single-file input', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.setContent(`<input type=file>`);
       const [chooser] = await Promise.all([
@@ -260,13 +260,13 @@ describe('input tests', function () {
           ),
           path.relative(process.cwd(), __dirname + '/../assets/pptr.png'),
         ])
-        .catch((error_) => {
+        .catch(error_ => {
           return (error = error_);
         });
       expect(error).not.toBe(null);
     });
     it('should succeed even for non-existent files', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.setContent(`<input type=file>`);
       const [chooser] = await Promise.all([
@@ -274,27 +274,27 @@ describe('input tests', function () {
         page.click('input'),
       ]);
       let error!: Error;
-      await chooser.accept(['file-does-not-exist.txt']).catch((error_) => {
+      await chooser.accept(['file-does-not-exist.txt']).catch(error_ => {
         return (error = error_);
       });
       expect(error).toBeUndefined();
     });
     it('should error on read of non-existent files', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.setContent(`<input type=file>`);
-      page.waitForFileChooser().then((chooser) => {
+      page.waitForFileChooser().then(chooser => {
         return chooser.accept(['file-does-not-exist.txt']);
       });
       expect(
-        await page.$eval('input', async (picker) => {
+        await page.$eval('input', async picker => {
           const pick = picker as HTMLInputElement;
           pick.click();
-          await new Promise((x) => {
+          await new Promise(x => {
             return (pick.oninput = x);
           });
           const reader = new FileReader();
-          const promise = new Promise((fulfill) => {
+          const promise = new Promise(fulfill => {
             return (reader.onerror = fulfill);
           });
           reader.readAsText(pick.files![0]!);
@@ -305,18 +305,18 @@ describe('input tests', function () {
       ).toBeFalsy();
     });
     it('should fail when accepting file chooser twice', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.setContent(`<input type=file>`);
       const [fileChooser] = await Promise.all([
         page.waitForFileChooser(),
-        page.$eval('input', (input) => {
+        page.$eval('input', input => {
           return (input as HTMLInputElement).click();
         }),
       ]);
       await fileChooser.accept([]);
       let error!: Error;
-      await fileChooser.accept([]).catch((error_) => {
+      await fileChooser.accept([]).catch(error_ => {
         return (error = error_);
       });
       expect(error.message).toBe(
@@ -327,7 +327,7 @@ describe('input tests', function () {
 
   describeFailsFirefox('FileChooser.cancel', function () {
     it('should cancel dialog', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       // Consider file chooser canceled if we can summon another one.
       // There's no reliable way in WebPlatform to see that FileChooser was
@@ -335,7 +335,7 @@ describe('input tests', function () {
       await page.setContent(`<input type=file>`);
       const [fileChooser1] = await Promise.all([
         page.waitForFileChooser(),
-        page.$eval('input', (input) => {
+        page.$eval('input', input => {
           return (input as HTMLInputElement).click();
         }),
       ]);
@@ -343,18 +343,18 @@ describe('input tests', function () {
       // If this resolves, than we successfully canceled file chooser.
       await Promise.all([
         page.waitForFileChooser(),
-        page.$eval('input', (input) => {
+        page.$eval('input', input => {
           return (input as HTMLInputElement).click();
         }),
       ]);
     });
     it('should fail when canceling file chooser twice', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.setContent(`<input type=file>`);
       const [fileChooser] = await Promise.all([
         page.waitForFileChooser(),
-        page.$eval('input', (input) => {
+        page.$eval('input', input => {
           return (input as HTMLElement).click();
         }),
       ]);
@@ -375,7 +375,7 @@ describe('input tests', function () {
 
   describeFailsFirefox('FileChooser.isMultiple', () => {
     it('should work for single file pick', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.setContent(`<input type=file>`);
       const [chooser] = await Promise.all([
@@ -385,7 +385,7 @@ describe('input tests', function () {
       expect(chooser.isMultiple()).toBe(false);
     });
     it('should work for "multiple"', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.setContent(`<input multiple type=file>`);
       const [chooser] = await Promise.all([
@@ -395,7 +395,7 @@ describe('input tests', function () {
       expect(chooser.isMultiple()).toBe(true);
     });
     it('should work for "webkitdirectory"', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.setContent(`<input multiple webkitdirectory type=file>`);
       const [chooser] = await Promise.all([

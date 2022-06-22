@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Protocol } from 'devtools-protocol';
-import { assert } from './assert.js';
-import { CDPSession } from './Connection.js';
-import { TimeoutError } from './Errors.js';
+import {Protocol} from 'devtools-protocol';
+import {assert} from './assert.js';
+import {CDPSession} from './Connection.js';
+import {TimeoutError} from './Errors.js';
 import {
   EvaluateFn,
   EvaluateFnReturnType,
@@ -26,8 +26,8 @@ import {
   UnwrapPromiseLike,
   WrapElementHandle,
 } from './EvalTypes.js';
-import { ExecutionContext } from './ExecutionContext.js';
-import { Frame, FrameManager } from './FrameManager.js';
+import {ExecutionContext} from './ExecutionContext.js';
+import {Frame, FrameManager} from './FrameManager.js';
 import {
   debugError,
   isNumber,
@@ -35,14 +35,11 @@ import {
   makePredicateString,
   pageBindingInitString,
 } from './util.js';
-import { MouseButton } from './Input.js';
-import { ElementHandle, JSHandle } from './JSHandle.js';
-import {
-  LifecycleWatcher,
-  PuppeteerLifeCycleEvent,
-} from './LifecycleWatcher.js';
-import { _getQueryHandlerAndSelector } from './QueryHandler.js';
-import { TimeoutSettings } from './TimeoutSettings.js';
+import {MouseButton} from './Input.js';
+import {ElementHandle, JSHandle} from './JSHandle.js';
+import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
+import {_getQueryHandlerAndSelector} from './QueryHandler.js';
+import {TimeoutSettings} from './TimeoutSettings.js';
 
 // predicateQueryHandler and checkWaitForOptions are declared here so that
 // TypeScript knows about them when used in the predicate function below.
@@ -149,7 +146,7 @@ export class DOMWorld {
       }
     } else {
       this.#documentPromise = null;
-      this.#contextPromise = new Promise((fulfill) => {
+      this.#contextPromise = new Promise(fulfill => {
         this.#contextResolveCallback = fulfill;
       });
     }
@@ -221,7 +218,7 @@ export class DOMWorld {
     if (this.#documentPromise) {
       return this.#documentPromise;
     }
-    this.#documentPromise = this.executionContext().then(async (context) => {
+    this.#documentPromise = this.executionContext().then(async context => {
       const document = await context.evaluateHandle('document');
       const element = document.asElement();
       if (element === null) {
@@ -301,7 +298,7 @@ export class DOMWorld {
     } = options;
     // We rely upon the fact that document.open() will reset frame lifecycle with "init"
     // lifecycle event. @see https://crrev.com/608658
-    await this.evaluate<(x: string) => void>((html) => {
+    await this.evaluate<(x: string) => void>(html => {
       document.open();
       document.write(html);
       document.close();
@@ -445,7 +442,7 @@ export class DOMWorld {
         script.id = id;
       }
       let error = null;
-      script.onerror = (e) => {
+      script.onerror = e => {
         return (error = e);
       };
       document.head.appendChild(script);
@@ -471,7 +468,7 @@ export class DOMWorld {
     path?: string;
     content?: string;
   }): Promise<ElementHandle> {
-    const { url = null, path = null, content = null } = options;
+    const {url = null, path = null, content = null} = options;
     if (url !== null) {
       try {
         const context = await this.executionContext();
@@ -553,7 +550,7 @@ export class DOMWorld {
 
   async click(
     selector: string,
-    options: { delay?: number; button?: MouseButton; clickCount?: number }
+    options: {delay?: number; button?: MouseButton; clickCount?: number}
   ): Promise<void> {
     const handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);
@@ -593,7 +590,7 @@ export class DOMWorld {
   async type(
     selector: string,
     text: string,
-    options?: { delay: number }
+    options?: {delay: number}
   ): Promise<void> {
     const handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);
@@ -605,7 +602,7 @@ export class DOMWorld {
     selector: string,
     options: WaitForSelectorOptions
   ): Promise<ElementHandle | null> {
-    const { updatedSelector, queryHandler } =
+    const {updatedSelector, queryHandler} =
       _getQueryHandlerAndSelector(selector);
     assert(queryHandler.waitFor, 'Query handler does not support waiting');
     return queryHandler.waitFor(this, updatedSelector, options);
@@ -677,7 +674,7 @@ export class DOMWorld {
   #onBindingCalled = async (
     event: Protocol.Runtime.BindingCalledEvent
   ): Promise<void> => {
-    let payload: { type: string; name: string; seq: number; args: unknown[] };
+    let payload: {type: string; name: string; seq: number; args: unknown[]};
     if (!this._hasContext()) {
       return;
     }
@@ -689,7 +686,7 @@ export class DOMWorld {
       // called before our wrapper was initialized.
       return;
     }
-    const { type, name, seq, args } = payload;
+    const {type, name, seq, args} = payload;
     if (
       type !== 'internal' ||
       !this.#ctxBindings.has(
@@ -827,10 +824,10 @@ export class DOMWorld {
 
   waitForFunction(
     pageFunction: Function | string,
-    options: { polling?: string | number; timeout?: number } = {},
+    options: {polling?: string | number; timeout?: number} = {},
     ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle> {
-    const { polling = 'raf', timeout = this.#timeoutSettings.timeout() } =
+    const {polling = 'raf', timeout = this.#timeoutSettings.timeout()} =
       options;
     const waitTaskOptions: WaitTaskOptions = {
       domWorld: this,
@@ -992,7 +989,7 @@ export class WaitTask {
     if (
       !error &&
       (await this.#domWorld
-        .evaluate((s) => {
+        .evaluate(s => {
           return !s;
         }, success)
         .catch(() => {
@@ -1085,7 +1082,7 @@ async function waitForPredicatePageFunction(
     }
 
     let fulfill = (_?: unknown) => {};
-    const result = new Promise((x) => {
+    const result = new Promise(x => {
       return (fulfill = x);
     });
     const observer = new MutationObserver(async () => {
@@ -1114,7 +1111,7 @@ async function waitForPredicatePageFunction(
 
   async function pollRaf(): Promise<unknown> {
     let fulfill = (_?: unknown): void => {};
-    const result = new Promise((x) => {
+    const result = new Promise(x => {
       return (fulfill = x);
     });
     await onRaf();
@@ -1138,7 +1135,7 @@ async function waitForPredicatePageFunction(
 
   async function pollInterval(pollInterval: number): Promise<unknown> {
     let fulfill = (_?: unknown): void => {};
-    const result = new Promise((x) => {
+    const result = new Promise(x => {
       return (fulfill = x);
     });
     await onTimeout();

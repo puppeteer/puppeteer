@@ -22,10 +22,10 @@ import {
   describeFailsFirefox,
   itFailsWindows,
 } from './mocha-utils.js';
-import type { Server, IncomingMessage, ServerResponse } from 'http';
-import type { Browser } from '../../lib/cjs/puppeteer/common/Browser.js';
-import type { AddressInfo } from 'net';
-import { TestServer } from '../../utils/testserver/lib/index.js';
+import type {Server, IncomingMessage, ServerResponse} from 'http';
+import type {Browser} from '../../lib/cjs/puppeteer/common/Browser.js';
+import type {AddressInfo} from 'net';
+import {TestServer} from '../../utils/testserver/lib/index.js';
 
 const HOSTNAME = os.hostname().toLowerCase();
 
@@ -65,16 +65,16 @@ describeFailsFirefox('request proxy', () => {
               method: originalRequest.method,
               headers: originalRequest.headers,
             },
-            (proxyResponse) => {
+            proxyResponse => {
               originalResponse.writeHead(
                 proxyResponse.statusCode as number,
                 proxyResponse.headers
               );
-              proxyResponse.pipe(originalResponse, { end: true });
+              proxyResponse.pipe(originalResponse, {end: true});
             }
           );
 
-          originalRequest.pipe(proxyRequest, { end: true });
+          originalRequest.pipe(proxyRequest, {end: true});
         }
       )
       .listen();
@@ -88,7 +88,7 @@ describeFailsFirefox('request proxy', () => {
     await browser.close();
 
     await new Promise((resolve, reject) => {
-      proxyServer.close((error) => {
+      proxyServer.close(error => {
         if (error) {
           reject(error);
         } else {
@@ -99,7 +99,7 @@ describeFailsFirefox('request proxy', () => {
   });
 
   it('should proxy requests when configured', async () => {
-    const { puppeteer, defaultBrowserOptions, server } = getTestState();
+    const {puppeteer, defaultBrowserOptions, server} = getTestState();
     const emptyPageUrl = getEmptyPageUrl(server);
 
     browser = await puppeteer.launch({
@@ -116,7 +116,7 @@ describeFailsFirefox('request proxy', () => {
   });
 
   it('should respect proxy bypass list', async () => {
-    const { puppeteer, defaultBrowserOptions, server } = getTestState();
+    const {puppeteer, defaultBrowserOptions, server} = getTestState();
     const emptyPageUrl = getEmptyPageUrl(server);
 
     browser = await puppeteer.launch({
@@ -138,7 +138,7 @@ describeFailsFirefox('request proxy', () => {
 
   describe('in incognito browser context', () => {
     it('should proxy requests when configured at browser level', async () => {
-      const { puppeteer, defaultBrowserOptions, server } = getTestState();
+      const {puppeteer, defaultBrowserOptions, server} = getTestState();
       const emptyPageUrl = getEmptyPageUrl(server);
 
       browser = await puppeteer.launch({
@@ -156,7 +156,7 @@ describeFailsFirefox('request proxy', () => {
     });
 
     it('should respect proxy bypass list when configured at browser level', async () => {
-      const { puppeteer, defaultBrowserOptions, server } = getTestState();
+      const {puppeteer, defaultBrowserOptions, server} = getTestState();
       const emptyPageUrl = getEmptyPageUrl(server);
 
       browser = await puppeteer.launch({
@@ -183,7 +183,7 @@ describeFailsFirefox('request proxy', () => {
     itFailsWindows(
       'should proxy requests when configured at context level',
       async () => {
-        const { puppeteer, defaultBrowserOptions, server } = getTestState();
+        const {puppeteer, defaultBrowserOptions, server} = getTestState();
         const emptyPageUrl = getEmptyPageUrl(server);
 
         browser = await puppeteer.launch({
@@ -204,7 +204,7 @@ describeFailsFirefox('request proxy', () => {
     );
 
     it('should respect proxy bypass list when configured at context level', async () => {
-      const { puppeteer, defaultBrowserOptions, server } = getTestState();
+      const {puppeteer, defaultBrowserOptions, server} = getTestState();
       const emptyPageUrl = getEmptyPageUrl(server);
 
       browser = await puppeteer.launch({

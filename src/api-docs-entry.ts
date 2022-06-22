@@ -18,14 +18,14 @@ import {
   LaunchOptions,
   BrowserLaunchArgumentOptions,
 } from './node/LaunchOptions.js';
-import { BrowserConnectOptions } from './common/BrowserConnector.js';
-import { Product } from './common/Product.js';
-import { Browser } from './common/Browser.js';
-import { ConnectOptions } from './common/Puppeteer.js';
-import { DevicesMap } from './common/DeviceDescriptors.js';
-import { PuppeteerErrors } from './common/Errors.js';
-import { PredefinedNetworkConditions } from './common/NetworkConditions.js';
-import { CustomQueryHandler } from './common/QueryHandler.js';
+import {BrowserConnectOptions} from './common/BrowserConnector.js';
+import {Product} from './common/Product.js';
+import {Browser} from './common/Browser.js';
+import {ConnectOptions} from './common/Puppeteer.js';
+import {DevicesMap} from './common/DeviceDescriptors.js';
+import {PuppeteerErrors} from './common/Errors.js';
+import {PredefinedNetworkConditions} from './common/NetworkConditions.js';
+import {CustomQueryHandler} from './common/QueryHandler.js';
 
 /*
  * This file re-exports any APIs that we want to have documentation generated

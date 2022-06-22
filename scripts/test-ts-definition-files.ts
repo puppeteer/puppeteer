@@ -1,5 +1,5 @@
-import { spawnSync } from 'child_process';
-import { version } from '../package.json';
+import {spawnSync} from 'child_process';
+import {version} from '../package.json';
 import path from 'path';
 import fs from 'fs';
 const PROJECT_FOLDERS_ROOT = 'test-ts-types';
@@ -108,7 +108,7 @@ const tar = packPuppeteer();
 const tarPath = path.join(process.cwd(), tar);
 
 function compileAndCatchErrors(projectLocation: string) {
-  const { status, stdout, stderr } = spawnSync('npm', ['run', 'compile'], {
+  const {status, stdout, stderr} = spawnSync('npm', ['run', 'compile'], {
     cwd: projectLocation,
     encoding: 'utf-8',
   });
@@ -146,18 +146,14 @@ function testProject(folder: string) {
     // there was no node_modules folder, which is fine.
   }
   console.log('===> Installing Puppeteer from tar file', tarLocation);
-  const { status, stderr, stdout } = spawnSync(
-    'npm',
-    ['install', tarLocation],
-    {
-      env: {
-        ...process.env,
-        PUPPETEER_SKIP_DOWNLOAD: '1',
-      },
-      cwd: projectLocation,
-      encoding: 'utf-8',
-    }
-  );
+  const {status, stderr, stdout} = spawnSync('npm', ['install', tarLocation], {
+    env: {
+      ...process.env,
+      PUPPETEER_SKIP_DOWNLOAD: '1',
+    },
+    cwd: projectLocation,
+    encoding: 'utf-8',
+  });
 
   if (status) {
     console.error(
@@ -171,7 +167,7 @@ function testProject(folder: string) {
   const result = compileAndCatchErrors(projectLocation);
   const expectedErrors = EXPECTED_ERRORS.get(folder) || [];
   if (
-    result.tsErrorMesssage.find((line) => {
+    result.tsErrorMesssage.find(line => {
       return line.includes('good.ts') || line.includes('good.js');
     })
   ) {
@@ -182,12 +178,12 @@ function testProject(folder: string) {
     );
     process.exit(1);
   }
-  const errorsInTsMessage = result.tsErrorMesssage.filter((line) => {
+  const errorsInTsMessage = result.tsErrorMesssage.filter(line => {
     return line.includes('bad.ts') || line.includes('bad.js');
   });
   const expectedErrorsThatHaveOccurred = new Set<string>();
-  const unexpectedErrors = errorsInTsMessage.filter((message) => {
-    const isExpected = expectedErrors.some((expectedError) => {
+  const unexpectedErrors = errorsInTsMessage.filter(message => {
+    const isExpected = expectedErrors.some(expectedError => {
       const isExpected = message.startsWith(expectedError);
       if (isExpected) {
         expectedErrorsThatHaveOccurred.add(expectedError);
@@ -205,7 +201,7 @@ function testProject(folder: string) {
     );
     process.exit(1);
   }
-  expectedErrors.forEach((expected) => {
+  expectedErrors.forEach(expected => {
     if (!expectedErrorsThatHaveOccurred.has(expected)) {
       console.error(
         `${projectLocation} expected error that was not thrown: ${expected}`
@@ -216,6 +212,6 @@ function testProject(folder: string) {
   console.log('===> ✅ Type-checked correctly.');
 }
 
-PROJECT_FOLDERS.forEach((folder) => {
+PROJECT_FOLDERS.forEach(folder => {
   testProject(folder);
 });

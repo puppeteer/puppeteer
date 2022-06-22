@@ -27,7 +27,7 @@ describeFailsFirefox('Emulate idle state', () => {
   setupTestPageAndContextHooks();
 
   async function getIdleState() {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     const stateElement = (await page.$('#state'))!;
     return await page.evaluate((element: HTMLElement) => {
@@ -41,7 +41,7 @@ describeFailsFirefox('Emulate idle state', () => {
   }
 
   it('changing idle state emulation causes change of the IdleDetector state', async () => {
-    const { page, server, context } = getTestState();
+    const {page, server, context} = getTestState();
     await context.overridePermissions(server.PREFIX + '/idle-detector.html', [
       'idle-detection',
     ]);

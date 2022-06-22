@@ -1,5 +1,5 @@
-const { writeFileSync, readFileSync } = require('fs');
-const { join } = require('path');
+const {writeFileSync, readFileSync} = require('fs');
+const {join} = require('path');
 
 writeFileSync(
   join(__dirname, '../src/generated/version.ts'),

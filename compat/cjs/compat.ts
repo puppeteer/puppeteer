@@ -1,4 +1,4 @@
-import { dirname } from 'path';
+import {dirname} from 'path';
 
 let puppeteerDirname: string;
 
@@ -13,4 +13,4 @@ try {
   puppeteerDirname = __dirname;
 }
 
-export { puppeteerDirname };
+export {puppeteerDirname};

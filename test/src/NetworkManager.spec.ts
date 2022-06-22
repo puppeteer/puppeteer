@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { describeChromeOnly } from './mocha-utils.js';
+import {describeChromeOnly} from './mocha-utils.js';
 
 import expect from 'expect';
 import {
   NetworkManager,
   NetworkManagerEmittedEvents,
 } from '../../lib/cjs/puppeteer/common/NetworkManager.js';
-import { HTTPRequest } from '../../lib/cjs/puppeteer/common/HTTPRequest.js';
-import { EventEmitter } from '../../lib/cjs/puppeteer/common/EventEmitter.js';
-import { Frame } from '../../lib/cjs/puppeteer/common/FrameManager.js';
+import {HTTPRequest} from '../../lib/cjs/puppeteer/common/HTTPRequest.js';
+import {EventEmitter} from '../../lib/cjs/puppeteer/common/EventEmitter.js';
+import {Frame} from '../../lib/cjs/puppeteer/common/FrameManager.js';
 
 class MockCDPSession extends EventEmitter {
   async send(): Promise<any> {}
@@ -56,7 +56,7 @@ describeChromeOnly('NetworkManager', () => {
       },
       timestamp: 2111.55635,
       wallTime: 1637315638.473634,
-      initiator: { type: 'other' },
+      initiator: {type: 'other'},
       redirectHasExtraInfo: false,
       type: 'Document',
       frameId: '099A5216AF03AAFEC988F214B024DF08',
@@ -80,7 +80,7 @@ describeChromeOnly('NetworkManager', () => {
         'Sec-Fetch-Dest': 'document',
         'Accept-Encoding': 'gzip, deflate, br',
       },
-      connectTiming: { requestTime: 2111.557593 },
+      connectTiming: {requestTime: 2111.557593},
     });
     mockCDPSession.emit('Network.responseReceivedExtraInfo', {
       requestId: '7760711DEFCFA23132D98ABA6B4E175C',
@@ -116,7 +116,7 @@ describeChromeOnly('NetworkManager', () => {
       },
       timestamp: 2111.559124,
       wallTime: 1637315638.47642,
-      initiator: { type: 'other' },
+      initiator: {type: 'other'},
       redirectHasExtraInfo: true,
       redirectResponse: {
         url: 'http://localhost:8907/redirect/1.html',
@@ -183,7 +183,7 @@ describeChromeOnly('NetworkManager', () => {
         'Sec-Fetch-Dest': 'document',
         'Accept-Encoding': 'gzip, deflate, br',
       },
-      connectTiming: { requestTime: 2111.559346 },
+      connectTiming: {requestTime: 2111.559346},
     });
     mockCDPSession.emit('Network.requestWillBeSent', {
       requestId: '7760711DEFCFA23132D98ABA6B4E175C',
@@ -204,7 +204,7 @@ describeChromeOnly('NetworkManager', () => {
       },
       timestamp: 2111.560249,
       wallTime: 1637315638.477543,
-      initiator: { type: 'other' },
+      initiator: {type: 'other'},
       redirectHasExtraInfo: true,
       redirectResponse: {
         url: 'http://localhost:8907/redirect/2.html',
@@ -286,7 +286,7 @@ describeChromeOnly('NetworkManager', () => {
         'Sec-Fetch-Dest': 'document',
         'Accept-Encoding': 'gzip, deflate, br',
       },
-      connectTiming: { requestTime: 2111.560482 },
+      connectTiming: {requestTime: 2111.560482},
     });
     mockCDPSession.emit('Network.requestWillBeSent', {
       requestId: '7760711DEFCFA23132D98ABA6B4E175C',
@@ -307,7 +307,7 @@ describeChromeOnly('NetworkManager', () => {
       },
       timestamp: 2111.561542,
       wallTime: 1637315638.478837,
-      initiator: { type: 'other' },
+      initiator: {type: 'other'},
       redirectHasExtraInfo: true,
       redirectResponse: {
         url: 'http://localhost:8907/redirect/3.html',
@@ -389,7 +389,7 @@ describeChromeOnly('NetworkManager', () => {
         'Sec-Fetch-Dest': 'document',
         'Accept-Encoding': 'gzip, deflate, br',
       },
-      connectTiming: { requestTime: 2111.561759 },
+      connectTiming: {requestTime: 2111.561759},
     });
     mockCDPSession.emit('Network.responseReceivedExtraInfo', {
       requestId: '7760711DEFCFA23132D98ABA6B4E175C',
@@ -508,7 +508,7 @@ describeChromeOnly('NetworkManager', () => {
       },
       timestamp: 224604.980827,
       wallTime: 1637955746.786191,
-      initiator: { type: 'other' },
+      initiator: {type: 'other'},
       redirectHasExtraInfo: false,
       type: 'Document',
       frameId: '84AC261A351B86932B775B76D1DD79F8',
