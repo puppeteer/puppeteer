@@ -195,6 +195,14 @@ export class HTTPRequest {
   url(): string {
     return this.#url;
   }
+  
+
+  /**
+   * @returns the respective client of the request
+   */
+  client(): string {
+    return this.#client;
+  }
 
   /**
    * @returns the `ContinueRequestOverrides` that will be used
