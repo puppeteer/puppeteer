@@ -23,7 +23,7 @@ import {BrowserFetcher, BrowserFetcherOptions} from './BrowserFetcher.js';
 import {LaunchOptions, BrowserLaunchArgumentOptions} from './LaunchOptions.js';
 import {BrowserConnectOptions} from '../common/BrowserConnector.js';
 import {Browser} from '../common/Browser.js';
-import Launcher, {ProductLauncher} from './Launcher.js';
+import {createLauncher, ProductLauncher} from './ProductLauncher.js';
 import {PUPPETEER_REVISIONS} from '../revisions.js';
 import {Product} from '../common/Product.js';
 
@@ -74,7 +74,7 @@ export interface PuppeteerLaunchOptions
  * @public
  */
 export class PuppeteerNode extends Puppeteer {
-  #lazyLauncher?: ProductLauncher;
+  #launcher?: ProductLauncher;
   #projectRoot?: string;
   #productName?: Product;
 
@@ -187,8 +187,8 @@ export class PuppeteerNode extends Puppeteer {
    */
   get _launcher(): ProductLauncher {
     if (
-      !this.#lazyLauncher ||
-      this.#lazyLauncher.product !== this._productName ||
+      !this.#launcher ||
+      this.#launcher.product !== this._productName ||
       this._changedProduct
     ) {
       switch (this._productName) {
@@ -200,14 +200,14 @@ export class PuppeteerNode extends Puppeteer {
           this._preferredRevision = PUPPETEER_REVISIONS.chromium;
       }
       this._changedProduct = false;
-      this.#lazyLauncher = Launcher(
+      this.#launcher = createLauncher(
         this.#projectRoot,
         this._preferredRevision,
         this._isPuppeteerCore,
         this._productName
       );
     }
-    return this.#lazyLauncher;
+    return this.#launcher;
   }
 
   /**

@@ -625,25 +625,6 @@ describe('Launcher specs', function () {
       });
 
       itOnlyRegularInstall(
-        'falls back to launching chrome if there is an unknown product but logs a warning',
-        async () => {
-          const {puppeteer} = getTestState();
-          const consoleStub = sinon.stub(console, 'warn');
-          const browser = await puppeteer.launch({
-            // @ts-expect-error purposeful bad input
-            product: 'SO_NOT_A_PRODUCT',
-          });
-          const userAgent = await browser.userAgent();
-          await browser.close();
-          expect(userAgent).toContain('Chrome');
-          expect(consoleStub.callCount).toEqual(1);
-          expect(consoleStub.firstCall.args).toEqual([
-            'Warning: unknown product name SO_NOT_A_PRODUCT. Falling back to chrome.',
-          ]);
-        }
-      );
-
-      itOnlyRegularInstall(
         'should be able to launch Firefox',
         async function () {
           this.timeout(FIREFOX_TIMEOUT);

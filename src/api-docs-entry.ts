@@ -61,7 +61,7 @@ export * from './common/Page.js';
 export * from './common/Product.js';
 export * from './common/Puppeteer.js';
 export * from './common/BrowserConnector.js';
-export * from './node/Launcher.js';
+export * from './node/ProductLauncher.js';
 export * from './node/LaunchOptions.js';
 export * from './common/HTTPRequest.js';
 export * from './common/HTTPResponse.js';
