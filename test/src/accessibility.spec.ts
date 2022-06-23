@@ -16,7 +16,7 @@
 
 import assert from 'assert';
 import expect from 'expect';
-import { SerializedAXNode } from '../../lib/cjs/puppeteer/common/Accessibility.js';
+import {SerializedAXNode} from '../../lib/cjs/puppeteer/common/Accessibility.js';
 import {
   getTestState,
   setupTestBrowserHooks,
@@ -29,7 +29,7 @@ describeFailsFirefox('Accessibility', function () {
   setupTestPageAndContextHooks();
 
   it('should work', async () => {
-    const { page, isFirefox } = getTestState();
+    const {page, isFirefox} = getTestState();
 
     await page.setContent(`
       <head>
@@ -58,14 +58,14 @@ describeFailsFirefox('Accessibility', function () {
           role: 'document',
           name: 'Accessibility Test',
           children: [
-            { role: 'text leaf', name: 'Hello World' },
-            { role: 'heading', name: 'Inputs', level: 1 },
-            { role: 'entry', name: 'Empty input', focused: true },
-            { role: 'entry', name: 'readonly input', readonly: true },
-            { role: 'entry', name: 'disabled input', disabled: true },
-            { role: 'entry', name: 'Input with whitespace', value: '  ' },
-            { role: 'entry', name: '', value: 'value only' },
-            { role: 'entry', name: '', value: 'and a value' }, // firefox doesn't use aria-placeholder for the name
+            {role: 'text leaf', name: 'Hello World'},
+            {role: 'heading', name: 'Inputs', level: 1},
+            {role: 'entry', name: 'Empty input', focused: true},
+            {role: 'entry', name: 'readonly input', readonly: true},
+            {role: 'entry', name: 'disabled input', disabled: true},
+            {role: 'entry', name: 'Input with whitespace', value: '  '},
+            {role: 'entry', name: '', value: 'value only'},
+            {role: 'entry', name: '', value: 'and a value'}, // firefox doesn't use aria-placeholder for the name
             {
               role: 'entry',
               name: '',
@@ -83,7 +83,7 @@ describeFailsFirefox('Accessibility', function () {
                   name: 'First Option',
                   selected: true,
                 },
-                { role: 'combobox option', name: 'Second Option' },
+                {role: 'combobox option', name: 'Second Option'},
               ],
             },
           ],
@@ -92,14 +92,14 @@ describeFailsFirefox('Accessibility', function () {
           role: 'RootWebArea',
           name: 'Accessibility Test',
           children: [
-            { role: 'StaticText', name: 'Hello World' },
-            { role: 'heading', name: 'Inputs', level: 1 },
-            { role: 'textbox', name: 'Empty input', focused: true },
-            { role: 'textbox', name: 'readonly input', readonly: true },
-            { role: 'textbox', name: 'disabled input', disabled: true },
-            { role: 'textbox', name: 'Input with whitespace', value: '  ' },
-            { role: 'textbox', name: '', value: 'value only' },
-            { role: 'textbox', name: 'placeholder', value: 'and a value' },
+            {role: 'StaticText', name: 'Hello World'},
+            {role: 'heading', name: 'Inputs', level: 1},
+            {role: 'textbox', name: 'Empty input', focused: true},
+            {role: 'textbox', name: 'readonly input', readonly: true},
+            {role: 'textbox', name: 'disabled input', disabled: true},
+            {role: 'textbox', name: 'Input with whitespace', value: '  '},
+            {role: 'textbox', name: '', value: 'value only'},
+            {role: 'textbox', name: 'placeholder', value: 'and a value'},
             {
               role: 'textbox',
               name: 'placeholder',
@@ -112,8 +112,8 @@ describeFailsFirefox('Accessibility', function () {
               value: 'First Option',
               haspopup: 'menu',
               children: [
-                { role: 'menuitem', name: 'First Option', selected: true },
-                { role: 'menuitem', name: 'Second Option' },
+                {role: 'menuitem', name: 'First Option', selected: true},
+                {role: 'menuitem', name: 'Second Option'},
               ],
             },
           ],
@@ -121,7 +121,7 @@ describeFailsFirefox('Accessibility', function () {
     expect(await page.accessibility.snapshot()).toEqual(golden);
   });
   it('should report uninteresting nodes', async () => {
-    const { page, isFirefox } = getTestState();
+    const {page, isFirefox} = getTestState();
 
     await page.setContent(`<textarea>hi</textarea>`);
     await page.focus('textarea');
@@ -160,12 +160,12 @@ describeFailsFirefox('Accessibility', function () {
         };
     expect(
       findFocusedNode(
-        await page.accessibility.snapshot({ interestingOnly: false })
+        await page.accessibility.snapshot({interestingOnly: false})
       )
     ).toEqual(golden);
   });
   it('roledescription', async () => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     await page.setContent(
       '<div tabIndex=-1 aria-roledescription="foo">Hi</div>'
@@ -178,7 +178,7 @@ describeFailsFirefox('Accessibility', function () {
     expect(snapshot.children[0]!.roledescription).toBeUndefined();
   });
   it('orientation', async () => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     await page.setContent(
       '<a href="" role="slider" aria-orientation="vertical">11</a>'
@@ -190,7 +190,7 @@ describeFailsFirefox('Accessibility', function () {
     expect(snapshot.children[0]!.orientation).toEqual('vertical');
   });
   it('autocomplete', async () => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     await page.setContent('<input type="number" aria-autocomplete="list" />');
     const snapshot = await page.accessibility.snapshot();
@@ -200,7 +200,7 @@ describeFailsFirefox('Accessibility', function () {
     expect(snapshot.children[0]!.autocomplete).toEqual('list');
   });
   it('multiselectable', async () => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     await page.setContent(
       '<div role="grid" tabIndex=-1 aria-multiselectable=true>hey</div>'
@@ -212,7 +212,7 @@ describeFailsFirefox('Accessibility', function () {
     expect(snapshot.children[0]!.multiselectable).toEqual(true);
   });
   it('keyshortcuts', async () => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     await page.setContent(
       '<div role="grid" tabIndex=-1 aria-keyshortcuts="foo">hey</div>'
@@ -225,7 +225,7 @@ describeFailsFirefox('Accessibility', function () {
   });
   describe('filtering children of leaf nodes', function () {
     it('should not report text nodes inside controls', async () => {
-      const { page, isFirefox } = getTestState();
+      const {page, isFirefox} = getTestState();
 
       await page.setContent(`
         <div role="tablist">
@@ -266,7 +266,7 @@ describeFailsFirefox('Accessibility', function () {
       expect(await page.accessibility.snapshot()).toEqual(golden);
     });
     it('rich text editable fields should have children', async () => {
-      const { page, isFirefox } = getTestState();
+      const {page, isFirefox} = getTestState();
 
       await page.setContent(`
         <div contenteditable="true">
@@ -308,7 +308,7 @@ describeFailsFirefox('Accessibility', function () {
       expect(snapshot.children[0]!).toEqual(golden);
     });
     it('rich text editable fields with role should have children', async () => {
-      const { page, isFirefox } = getTestState();
+      const {page, isFirefox} = getTestState();
 
       await page.setContent(`
         <div contenteditable="true" role='textbox'>
@@ -351,7 +351,7 @@ describeFailsFirefox('Accessibility', function () {
     // Firefox does not support contenteditable="plaintext-only".
     describeFailsFirefox('plaintext contenteditable', function () {
       it('plain text field with role should not have children', async () => {
-        const { page } = getTestState();
+        const {page} = getTestState();
 
         await page.setContent(`
           <div contenteditable="plaintext-only" role='textbox'>Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
@@ -367,7 +367,7 @@ describeFailsFirefox('Accessibility', function () {
       });
     });
     it('non editable textbox with role and tabIndex and label should not have children', async () => {
-      const { page, isFirefox } = getTestState();
+      const {page, isFirefox} = getTestState();
 
       await page.setContent(`
         <div role="textbox" tabIndex=0 aria-checked="true" aria-label="my favorite textbox">
@@ -391,7 +391,7 @@ describeFailsFirefox('Accessibility', function () {
       expect(snapshot.children[0]!).toEqual(golden);
     });
     it('checkbox with and tabIndex and label should not have children', async () => {
-      const { page, isFirefox } = getTestState();
+      const {page, isFirefox} = getTestState();
 
       await page.setContent(`
         <div role="checkbox" tabIndex=0 aria-checked="true" aria-label="my favorite checkbox">
@@ -415,7 +415,7 @@ describeFailsFirefox('Accessibility', function () {
       expect(snapshot.children[0]!).toEqual(golden);
     });
     it('checkbox without label should not have children', async () => {
-      const { page, isFirefox } = getTestState();
+      const {page, isFirefox} = getTestState();
 
       await page.setContent(`
         <div role="checkbox" aria-checked="true">
@@ -441,30 +441,30 @@ describeFailsFirefox('Accessibility', function () {
 
     describe('root option', function () {
       it('should work a button', async () => {
-        const { page } = getTestState();
+        const {page} = getTestState();
 
         await page.setContent(`<button>My Button</button>`);
 
         const button = (await page.$('button'))!;
-        expect(await page.accessibility.snapshot({ root: button })).toEqual({
+        expect(await page.accessibility.snapshot({root: button})).toEqual({
           role: 'button',
           name: 'My Button',
         });
       });
       it('should work an input', async () => {
-        const { page } = getTestState();
+        const {page} = getTestState();
 
         await page.setContent(`<input title="My Input" value="My Value">`);
 
         const input = (await page.$('input'))!;
-        expect(await page.accessibility.snapshot({ root: input })).toEqual({
+        expect(await page.accessibility.snapshot({root: input})).toEqual({
           role: 'textbox',
           name: 'My Input',
           value: 'My Value',
         });
       });
       it('should work a menu', async () => {
-        const { page } = getTestState();
+        const {page} = getTestState();
 
         await page.setContent(`
             <div role="menu" title="My Menu">
@@ -475,35 +475,33 @@ describeFailsFirefox('Accessibility', function () {
           `);
 
         const menu = (await page.$('div[role="menu"]'))!;
-        expect(await page.accessibility.snapshot({ root: menu })).toEqual({
+        expect(await page.accessibility.snapshot({root: menu})).toEqual({
           role: 'menu',
           name: 'My Menu',
           children: [
-            { role: 'menuitem', name: 'First Item' },
-            { role: 'menuitem', name: 'Second Item' },
-            { role: 'menuitem', name: 'Third Item' },
+            {role: 'menuitem', name: 'First Item'},
+            {role: 'menuitem', name: 'Second Item'},
+            {role: 'menuitem', name: 'Third Item'},
           ],
           orientation: 'vertical',
         });
       });
       it('should return null when the element is no longer in DOM', async () => {
-        const { page } = getTestState();
+        const {page} = getTestState();
 
         await page.setContent(`<button>My Button</button>`);
         const button = (await page.$('button'))!;
-        await page.$eval('button', (button) => {
+        await page.$eval('button', button => {
           return button.remove();
         });
-        expect(await page.accessibility.snapshot({ root: button })).toEqual(
-          null
-        );
+        expect(await page.accessibility.snapshot({root: button})).toEqual(null);
       });
       it('should support the interestingOnly option', async () => {
-        const { page } = getTestState();
+        const {page} = getTestState();
 
         await page.setContent(`<div><button>My Button</button></div>`);
         const div = (await page.$('div'))!;
-        expect(await page.accessibility.snapshot({ root: div })).toEqual(null);
+        expect(await page.accessibility.snapshot({root: div})).toEqual(null);
         expect(
           await page.accessibility.snapshot({
             root: div,
@@ -516,7 +514,7 @@ describeFailsFirefox('Accessibility', function () {
             {
               role: 'button',
               name: 'My Button',
-              children: [{ role: 'StaticText', name: 'My Button' }],
+              children: [{role: 'StaticText', name: 'My Button'}],
             },
           ],
         });

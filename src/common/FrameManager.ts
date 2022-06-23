@@ -14,34 +14,23 @@
  * limitations under the License.
  */
 
-import { Protocol } from 'devtools-protocol';
-import { assert } from './assert.js';
-import { CDPSession, Connection } from './Connection.js';
-import { DOMWorld, WaitForSelectorOptions } from './DOMWorld.js';
-import {
-  EvaluateFn,
-  EvaluateFnReturnType,
-  EvaluateHandleFn,
-  SerializableOrJSHandle,
-  UnwrapPromiseLike,
-  WrapElementHandle,
-} from './EvalTypes.js';
-import { EventEmitter } from './EventEmitter.js';
-import { EVALUATION_SCRIPT_URL, ExecutionContext } from './ExecutionContext.js';
-import { HTTPResponse } from './HTTPResponse.js';
-import { MouseButton } from './Input.js';
-import { ElementHandle, JSHandle } from './JSHandle.js';
-import {
-  LifecycleWatcher,
-  PuppeteerLifeCycleEvent,
-} from './LifecycleWatcher.js';
-import { NetworkManager } from './NetworkManager.js';
-import { Page } from './Page.js';
-import { TimeoutSettings } from './TimeoutSettings.js';
-import { debugError, isErrorLike, isNumber, isString } from './util.js';
+import {Protocol} from 'devtools-protocol';
+import {assert} from './assert.js';
+import {CDPSession, Connection} from './Connection.js';
+import {DOMWorld, WaitForSelectorOptions} from './DOMWorld.js';
+import {EventEmitter} from './EventEmitter.js';
+import {EVALUATION_SCRIPT_URL, ExecutionContext} from './ExecutionContext.js';
+import {HTTPResponse} from './HTTPResponse.js';
+import {MouseButton} from './Input.js';
+import {ElementHandle} from './ElementHandle.js';
+import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
+import {NetworkManager} from './NetworkManager.js';
+import {Page} from './Page.js';
+import {TimeoutSettings} from './TimeoutSettings.js';
+import {EvaluateFunc, EvaluateParams, HandleFor} from './types.js';
+import {debugError, isErrorLike} from './util.js';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
-const xPathPattern = /^\(\/\/[^\)]+\)|^\/\//;
 
 /**
  * We use symbols to prevent external parties listening to these events.
@@ -104,13 +93,13 @@ export class FrameManager extends EventEmitter {
   }
 
   private setupEventListeners(session: CDPSession) {
-    session.on('Page.frameAttached', (event) => {
+    session.on('Page.frameAttached', event => {
       this.#onFrameAttached(session, event.frameId, event.parentFrameId);
     });
-    session.on('Page.frameNavigated', (event) => {
+    session.on('Page.frameNavigated', event => {
       this.#onFrameNavigated(event.frame);
     });
-    session.on('Page.navigatedWithinDocument', (event) => {
+    session.on('Page.navigatedWithinDocument', event => {
       this.#onFrameNavigatedWithinDocument(event.frameId, event.url);
     });
     session.on(
@@ -122,28 +111,28 @@ export class FrameManager extends EventEmitter {
         );
       }
     );
-    session.on('Page.frameStartedLoading', (event) => {
+    session.on('Page.frameStartedLoading', event => {
       this.#onFrameStartedLoading(event.frameId);
     });
-    session.on('Page.frameStoppedLoading', (event) => {
+    session.on('Page.frameStoppedLoading', event => {
       this.#onFrameStoppedLoading(event.frameId);
     });
-    session.on('Runtime.executionContextCreated', (event) => {
+    session.on('Runtime.executionContextCreated', event => {
       this.#onExecutionContextCreated(event.context, session);
     });
-    session.on('Runtime.executionContextDestroyed', (event) => {
+    session.on('Runtime.executionContextDestroyed', event => {
       this.#onExecutionContextDestroyed(event.executionContextId, session);
     });
     session.on('Runtime.executionContextsCleared', () => {
       this.#onExecutionContextsCleared(session);
     });
-    session.on('Page.lifecycleEvent', (event) => {
+    session.on('Page.lifecycleEvent', event => {
       this.#onLifecycleEvent(event);
     });
-    session.on('Target.attachedToTarget', async (event) => {
+    session.on('Target.attachedToTarget', async event => {
       this.#onAttachedToTarget(event);
     });
-    session.on('Target.detachedFromTarget', async (event) => {
+    session.on('Target.detachedFromTarget', async event => {
       this.#onDetachedFromTarget(event);
     });
   }
@@ -162,10 +151,10 @@ export class FrameManager extends EventEmitter {
           : Promise.resolve(),
       ]);
 
-      const { frameTree } = result[1];
+      const {frameTree} = result[1];
       this.#handleFrameTree(client, frameTree);
       await Promise.all([
-        client.send('Page.setLifecycleEventsEnabled', { enabled: true }),
+        client.send('Page.setLifecycleEventsEnabled', {enabled: true}),
         client.send('Runtime.enable').then(() => {
           return this._ensureIsolatedWorld(client, UTILITY_WORLD_NAME);
         }),
@@ -443,10 +432,10 @@ export class FrameManager extends EventEmitter {
     // Frames might be removed before we send this.
     await Promise.all(
       this.frames()
-        .filter((frame) => {
+        .filter(frame => {
           return frame._client() === session;
         })
-        .map((frame) => {
+        .map(frame => {
           return session
             .send('Page.createIsolatedWorld', {
               frameId: frame._id,
@@ -489,7 +478,7 @@ export class FrameManager extends EventEmitter {
     contextPayload: Protocol.Runtime.ExecutionContextDescription,
     session: CDPSession
   ): void {
-    const auxData = contextPayload.auxData as { frameId?: string } | undefined;
+    const auxData = contextPayload.auxData as {frameId?: string} | undefined;
     const frameId = auxData && auxData.frameId;
     const frame =
       typeof frameId === 'string' ? this.#frames.get(frameId) : undefined;
@@ -895,11 +884,14 @@ export class Frame {
    * @param pageFunction - a function that is run within the frame
    * @param args - arguments to be passed to the pageFunction
    */
-  async evaluateHandle<HandlerType extends JSHandle = JSHandle>(
-    pageFunction: EvaluateHandleFn,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<HandlerType> {
-    return this._mainWorld.evaluateHandle<HandlerType>(pageFunction, ...args);
+  async evaluateHandle<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    return this._mainWorld.evaluateHandle(pageFunction, ...args);
   }
 
   /**
@@ -911,11 +903,14 @@ export class Frame {
    * @param pageFunction - a function that is run within the frame
    * @param args - arguments to be passed to the pageFunction
    */
-  async evaluate<T extends EvaluateFn>(
-    pageFunction: T,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<UnwrapPromiseLike<EvaluateFnReturnType<T>>> {
-    return this._mainWorld.evaluate<T>(pageFunction, ...args);
+  async evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>> {
+    return this._mainWorld.evaluate(pageFunction, ...args);
   }
 
   /**
@@ -925,10 +920,26 @@ export class Frame {
    * @returns A promise which resolves to an `ElementHandle` pointing at the
    * element, or `null` if it was not found.
    */
-  async $<T extends Element = Element>(
-    selector: string
-  ): Promise<ElementHandle<T> | null> {
-    return this._mainWorld.$<T>(selector);
+  async $<Selector extends keyof HTMLElementTagNameMap>(
+    selector: Selector
+  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;
+  async $(selector: string): Promise<ElementHandle | null>;
+  async $(selector: string): Promise<ElementHandle | null> {
+    return this._mainWorld.$(selector);
+  }
+
+  /**
+   * This runs `document.querySelectorAll` in the frame and returns the result.
+   *
+   * @param selector - a selector to search for
+   * @returns An array of element handles pointing to the found frame elements.
+   */
+  async $$<Selector extends keyof HTMLElementTagNameMap>(
+    selector: Selector
+  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]>[]>;
+  async $$(selector: string): Promise<ElementHandle[]>;
+  async $$(selector: string): Promise<ElementHandle[]> {
+    return this._mainWorld.$$(selector);
   }
 
   /**
@@ -959,15 +970,38 @@ export class Frame {
    * @param pageFunction - the function to be evaluated in the frame's context
    * @param args - additional arguments to pass to `pageFunction`
    */
-  async $eval<ReturnType>(
+  async $eval<
+    Selector extends keyof HTMLElementTagNameMap,
+    Params extends unknown[],
+    Func extends EvaluateFunc<
+      [HTMLElementTagNameMap[Selector], ...Params]
+    > = EvaluateFunc<[HTMLElementTagNameMap[Selector], ...Params]>
+  >(
+    selector: Selector,
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>>;
+  async $eval<
+    Params extends unknown[],
+    Func extends EvaluateFunc<[Element, ...Params]> = EvaluateFunc<
+      [Element, ...Params]
+    >
+  >(
     selector: string,
-    pageFunction: (
-      element: Element,
-      ...args: unknown[]
-    ) => ReturnType | Promise<ReturnType>,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<WrapElementHandle<ReturnType>> {
-    return this._mainWorld.$eval<ReturnType>(selector, pageFunction, ...args);
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>>;
+  async $eval<
+    Params extends unknown[],
+    Func extends EvaluateFunc<[Element, ...Params]> = EvaluateFunc<
+      [Element, ...Params]
+    >
+  >(
+    selector: string,
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>> {
+    return this._mainWorld.$eval(selector, pageFunction, ...args);
   }
 
   /**
@@ -989,27 +1023,38 @@ export class Frame {
    * @param pageFunction - the function to be evaluated in the frame's context
    * @param args - additional arguments to pass to `pageFunction`
    */
-  async $$eval<ReturnType>(
+  async $$eval<
+    Selector extends keyof HTMLElementTagNameMap,
+    Params extends unknown[],
+    Func extends EvaluateFunc<
+      [HTMLElementTagNameMap[Selector][], ...Params]
+    > = EvaluateFunc<[HTMLElementTagNameMap[Selector][], ...Params]>
+  >(
+    selector: Selector,
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>>;
+  async $$eval<
+    Params extends unknown[],
+    Func extends EvaluateFunc<[Element[], ...Params]> = EvaluateFunc<
+      [Element[], ...Params]
+    >
+  >(
     selector: string,
-    pageFunction: (
-      elements: Element[],
-      ...args: unknown[]
-    ) => ReturnType | Promise<ReturnType>,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<WrapElementHandle<ReturnType>> {
-    return this._mainWorld.$$eval<ReturnType>(selector, pageFunction, ...args);
-  }
-
-  /**
-   * This runs `document.querySelectorAll` in the frame and returns the result.
-   *
-   * @param selector - a selector to search for
-   * @returns An array of element handles pointing to the found frame elements.
-   */
-  async $$<T extends Element = Element>(
-    selector: string
-  ): Promise<Array<ElementHandle<T>>> {
-    return this._mainWorld.$$<T>(selector);
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>>;
+  async $$eval<
+    Params extends unknown[],
+    Func extends EvaluateFunc<[Element[], ...Params]> = EvaluateFunc<
+      [Element[], ...Params]
+    >
+  >(
+    selector: string,
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>> {
+    return this._mainWorld.$$eval(selector, pageFunction, ...args);
   }
 
   /**
@@ -1236,69 +1281,9 @@ export class Frame {
   async type(
     selector: string,
     text: string,
-    options?: { delay: number }
+    options?: {delay: number}
   ): Promise<void> {
     return this._mainWorld.type(selector, text, options);
-  }
-
-  /**
-   * @remarks
-   *
-   * This method behaves differently depending on the first parameter. If it's a
-   * `string`, it will be treated as a `selector` or `xpath` (if the string
-   * starts with `//`). This method then is a shortcut for
-   * {@link Frame.waitForSelector} or {@link Frame.waitForXPath}.
-   *
-   * If the first argument is a function this method is a shortcut for
-   * {@link Frame.waitForFunction}.
-   *
-   * If the first argument is a `number`, it's treated as a timeout in
-   * milliseconds and the method returns a promise which resolves after the
-   * timeout.
-   *
-   * @param selectorOrFunctionOrTimeout - a selector, predicate or timeout to
-   * wait for.
-   * @param options - optional waiting parameters.
-   * @param args - arguments to pass to `pageFunction`.
-   *
-   * @deprecated Don't use this method directly. Instead use the more explicit
-   * methods available: {@link Frame.waitForSelector},
-   * {@link Frame.waitForXPath}, {@link Frame.waitForFunction} or
-   * {@link Frame.waitForTimeout}.
-   */
-  waitFor(
-    selectorOrFunctionOrTimeout: string | number | Function,
-    options: Record<string, unknown> = {},
-    ...args: SerializableOrJSHandle[]
-  ): Promise<JSHandle | null> {
-    console.warn(
-      'waitFor is deprecated and will be removed in a future release. See https://github.com/puppeteer/puppeteer/issues/6214 for details and how to migrate your code.'
-    );
-
-    if (isString(selectorOrFunctionOrTimeout)) {
-      const string = selectorOrFunctionOrTimeout;
-      if (xPathPattern.test(string)) {
-        return this.waitForXPath(string, options);
-      }
-      return this.waitForSelector(string, options);
-    }
-    if (isNumber(selectorOrFunctionOrTimeout)) {
-      return new Promise((fulfill) => {
-        return setTimeout(fulfill, selectorOrFunctionOrTimeout);
-      });
-    }
-    if (typeof selectorOrFunctionOrTimeout === 'function') {
-      return this.waitForFunction(
-        selectorOrFunctionOrTimeout,
-        options,
-        ...args
-      );
-    }
-    return Promise.reject(
-      new Error(
-        'Unsupported target type: ' + typeof selectorOrFunctionOrTimeout
-      )
-    );
   }
 
   /**
@@ -1320,7 +1305,7 @@ export class Frame {
    * @param milliseconds - the number of milliseconds to wait.
    */
   waitForTimeout(milliseconds: number): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       setTimeout(resolve, milliseconds);
     });
   }
@@ -1360,6 +1345,14 @@ export class Frame {
    * @returns a promise which resolves when an element matching the selector
    * string is added to the DOM.
    */
+  async waitForSelector<Selector extends keyof HTMLElementTagNameMap>(
+    selector: Selector,
+    options?: WaitForSelectorOptions
+  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;
+  async waitForSelector(
+    selector: string,
+    options?: WaitForSelectorOptions
+  ): Promise<ElementHandle | null>;
   async waitForSelector(
     selector: string,
     options: WaitForSelectorOptions = {}
@@ -1441,12 +1434,20 @@ export class Frame {
    * @param args - arguments to pass to the `pageFunction`.
    * @returns the promise which resolve when the `pageFunction` returns a truthy value.
    */
-  waitForFunction(
-    pageFunction: Function | string,
+  waitForFunction<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    pageFunction: Func | string,
     options: FrameWaitForFunctionOptions = {},
-    ...args: SerializableOrJSHandle[]
-  ): Promise<JSHandle> {
-    return this._mainWorld.waitForFunction(pageFunction, options, ...args);
+    ...args: EvaluateParams<Params>
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    // TODO: Fix when NodeHandle has been added.
+    return this._mainWorld.waitForFunction(
+      pageFunction,
+      options,
+      ...args
+    ) as Promise<HandleFor<Awaited<ReturnType<Func>>>>;
   }
 
   /**

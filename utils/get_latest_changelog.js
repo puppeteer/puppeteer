@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 (async () => {
-  const { createReadStream } = require('fs');
-  const { join } = require('path');
-  const { createInterface } = require('readline');
+  const {createReadStream} = require('fs');
+  const {join} = require('path');
+  const {createInterface} = require('readline');
 
   const lines = [];
   let isRecording = false;

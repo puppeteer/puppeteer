@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { WaitForSelectorOptions, DOMWorld } from './DOMWorld.js';
-import { ElementHandle, JSHandle } from './JSHandle.js';
-import { _ariaHandler } from './AriaQueryHandler.js';
+import {WaitForSelectorOptions, DOMWorld} from './DOMWorld.js';
+import {JSHandle} from './JSHandle.js';
+import {ariaHandler} from './AriaQueryHandler.js';
+import {ElementHandle} from './ElementHandle.js';
 
 /**
  * @internal
@@ -99,12 +100,13 @@ function makeQueryHandler(handler: CustomQueryHandler): InternalQueryHandler {
       return result;
     };
     internalHandler.queryAllArray = async (element, selector) => {
-      const resultHandle = await element.evaluateHandle(queryAll, selector);
-      const arrayHandle = await resultHandle.evaluateHandle(
-        (res: Element[] | NodeListOf<Element>) => {
-          return Array.from(res);
-        }
-      );
+      const resultHandle = (await element.evaluateHandle(
+        queryAll,
+        selector
+      )) as JSHandle<Element[] | NodeListOf<Element>>;
+      const arrayHandle = await resultHandle.evaluateHandle(res => {
+        return Array.from(res);
+      });
       return arrayHandle;
     };
   }
@@ -172,7 +174,7 @@ const pierceHandler = makeQueryHandler({
 });
 
 const builtInHandlers = new Map([
-  ['aria', _ariaHandler],
+  ['aria', ariaHandler],
   ['pierce', pierceHandler],
 ]);
 const queryHandlers = new Map(builtInHandlers);
@@ -211,7 +213,7 @@ export function _unregisterCustomQueryHandler(name: string): void {
  * @internal
  */
 export function _customQueryHandlerNames(): string[] {
-  return [...queryHandlers.keys()].filter((name) => {
+  return [...queryHandlers.keys()].filter(name => {
     return !builtInHandlers.has(name);
   });
 }
@@ -232,7 +234,7 @@ export function _getQueryHandlerAndSelector(selector: string): {
 } {
   const hasCustomQueryHandler = /^[a-zA-Z]+\//.test(selector);
   if (!hasCustomQueryHandler) {
-    return { updatedSelector: selector, queryHandler: _defaultHandler };
+    return {updatedSelector: selector, queryHandler: _defaultHandler};
   }
 
   const index = selector.indexOf('/');

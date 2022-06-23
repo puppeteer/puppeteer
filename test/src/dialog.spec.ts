@@ -28,9 +28,9 @@ describe('Page.Events.Dialog', function () {
   setupTestPageAndContextHooks();
 
   it('should fire', async () => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
-    const onDialog = sinon.stub().callsFake((dialog) => {
+    const onDialog = sinon.stub().callsFake(dialog => {
       dialog.accept();
     });
     page.on('dialog', onDialog);
@@ -47,9 +47,9 @@ describe('Page.Events.Dialog', function () {
   });
 
   itFailsFirefox('should allow accepting prompts', async () => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
-    const onDialog = sinon.stub().callsFake((dialog) => {
+    const onDialog = sinon.stub().callsFake(dialog => {
       dialog.accept('answer!');
     });
     page.on('dialog', onDialog);
@@ -67,9 +67,9 @@ describe('Page.Events.Dialog', function () {
     expect(result).toBe('answer!');
   });
   it('should dismiss the prompt', async () => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
-    page.on('dialog', (dialog) => {
+    page.on('dialog', dialog => {
       dialog.dismiss();
     });
     const result = await page.evaluate(() => {

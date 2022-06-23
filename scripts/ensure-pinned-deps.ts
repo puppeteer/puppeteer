@@ -16,7 +16,7 @@
 
 import packageJson from '../package.json';
 
-const allDeps = { ...packageJson.dependencies, ...packageJson.devDependencies };
+const allDeps = {...packageJson.dependencies, ...packageJson.devDependencies};
 
 const invalidDeps = new Map<string, string>();
 
@@ -32,7 +32,7 @@ if (invalidDeps.size > 0) {
   console.error('Found non-pinned dependencies in package.json:');
   console.log(
     [...invalidDeps.keys()]
-      .map((k) => {
+      .map(k => {
         return `  ${k}`;
       })
       .join('\n')

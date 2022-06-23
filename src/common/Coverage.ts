@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-import { assert } from './assert.js';
-import {
-  addEventListener,
-  debugError,
-  PuppeteerEventListener,
-} from './util.js';
-import { Protocol } from 'devtools-protocol';
-import { CDPSession } from './Connection.js';
+import {assert} from './assert.js';
+import {addEventListener, debugError, PuppeteerEventListener} from './util.js';
+import {Protocol} from 'devtools-protocol';
+import {CDPSession} from './Connection.js';
 
-import { EVALUATION_SCRIPT_URL } from './ExecutionContext.js';
-import { removeEventListeners } from './util.js';
+import {EVALUATION_SCRIPT_URL} from './ExecutionContext.js';
+import {removeEventListeners} from './util.js';
 
 /**
  * @internal
  */
-export { PuppeteerEventListener };
+export {PuppeteerEventListener};
 
 /**
  * The CoverageEntry class represents one entry of the coverage report.
@@ -47,7 +43,7 @@ export interface CoverageEntry {
   /**
    * The covered range as start and end positions.
    */
-  ranges: Array<{ start: number; end: number }>;
+  ranges: Array<{start: number; end: number}>;
 }
 
 /**
@@ -239,7 +235,7 @@ export class JSCoverage {
         detailed: true,
       }),
       this.#client.send('Debugger.enable'),
-      this.#client.send('Debugger.setSkipAllPauses', { skip: true }),
+      this.#client.send('Debugger.setSkipAllPauses', {skip: true}),
     ]);
   }
 
@@ -305,9 +301,9 @@ export class JSCoverage {
       }
       const ranges = convertToDisjointRanges(flattenRanges);
       if (!this.#includeRawScriptCoverage) {
-        coverage.push({ url, ranges, text });
+        coverage.push({url, ranges, text});
       } else {
-        coverage.push({ url, ranges, text, rawScriptCoverage: entry });
+        coverage.push({url, ranges, text, rawScriptCoverage: entry});
       }
     }
     return coverage;
@@ -329,9 +325,9 @@ export class CSSCoverage {
     this.#client = client;
   }
 
-  async start(options: { resetOnNavigation?: boolean } = {}): Promise<void> {
+  async start(options: {resetOnNavigation?: boolean} = {}): Promise<void> {
     assert(!this.#enabled, 'CSSCoverage is already enabled');
-    const { resetOnNavigation = true } = options;
+    const {resetOnNavigation = true} = options;
     this.#resetOnNavigation = resetOnNavigation;
     this.#enabled = true;
     this.#stylesheetURLs.clear();
@@ -417,7 +413,7 @@ export class CSSCoverage {
       const ranges = convertToDisjointRanges(
         styleSheetIdToCoverage.get(styleSheetId) || []
       );
-      coverage.push({ url, ranges, text });
+      coverage.push({url, ranges, text});
     }
 
     return coverage;
@@ -425,12 +421,12 @@ export class CSSCoverage {
 }
 
 function convertToDisjointRanges(
-  nestedRanges: Array<{ startOffset: number; endOffset: number; count: number }>
-): Array<{ start: number; end: number }> {
+  nestedRanges: Array<{startOffset: number; endOffset: number; count: number}>
+): Array<{start: number; end: number}> {
   const points = [];
   for (const range of nestedRanges) {
-    points.push({ offset: range.startOffset, type: 0, range });
-    points.push({ offset: range.endOffset, type: 1, range });
+    points.push({offset: range.startOffset, type: 0, range});
+    points.push({offset: range.endOffset, type: 1, range});
   }
   // Sort points to form a valid parenthesis sequence.
   points.sort((a, b) => {
@@ -469,7 +465,7 @@ function convertToDisjointRanges(
       if (lastResult && lastResult.end === lastOffset) {
         lastResult.end = point.offset;
       } else {
-        results.push({ start: lastOffset, end: point.offset });
+        results.push({start: lastOffset, end: point.offset});
       }
     }
     lastOffset = point.offset;
@@ -480,7 +476,7 @@ function convertToDisjointRanges(
     }
   }
   // Filter out empty ranges.
-  return results.filter((range) => {
+  return results.filter(range => {
     return range.end - range.start > 1;
   });
 }

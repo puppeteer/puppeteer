@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import expect from 'expect';
-import { IncomingMessage } from 'http';
+import {IncomingMessage} from 'http';
 import {
   getTestState,
   setupTestBrowserHooks,
@@ -25,7 +25,7 @@ import {
 describeChromeOnly('Chromium-Specific Launcher tests', function () {
   describe('Puppeteer.launch |browserURL| option', function () {
     it('should be able to connect using browserUrl, with and without trailing slash', async () => {
-      const { defaultBrowserOptions, puppeteer } = getTestState();
+      const {defaultBrowserOptions, puppeteer} = getTestState();
 
       const originalBrowser = await puppeteer.launch(
         Object.assign({}, defaultBrowserOptions, {
@@ -34,7 +34,7 @@ describeChromeOnly('Chromium-Specific Launcher tests', function () {
       );
       const browserURL = 'http://127.0.0.1:21222';
 
-      const browser1 = await puppeteer.connect({ browserURL });
+      const browser1 = await puppeteer.connect({browserURL});
       const page1 = await browser1.newPage();
       expect(
         await page1.evaluate(() => {
@@ -56,7 +56,7 @@ describeChromeOnly('Chromium-Specific Launcher tests', function () {
       originalBrowser.close();
     });
     it('should throw when using both browserWSEndpoint and browserURL', async () => {
-      const { defaultBrowserOptions, puppeteer } = getTestState();
+      const {defaultBrowserOptions, puppeteer} = getTestState();
 
       const originalBrowser = await puppeteer.launch(
         Object.assign({}, defaultBrowserOptions, {
@@ -71,7 +71,7 @@ describeChromeOnly('Chromium-Specific Launcher tests', function () {
           browserURL,
           browserWSEndpoint: originalBrowser.wsEndpoint(),
         })
-        .catch((error_) => {
+        .catch(error_ => {
           return (error = error_);
         });
       expect(error.message).toContain(
@@ -81,7 +81,7 @@ describeChromeOnly('Chromium-Specific Launcher tests', function () {
       originalBrowser.close();
     });
     it('should throw when trying to connect to non-existing browser', async () => {
-      const { defaultBrowserOptions, puppeteer } = getTestState();
+      const {defaultBrowserOptions, puppeteer} = getTestState();
 
       const originalBrowser = await puppeteer.launch(
         Object.assign({}, defaultBrowserOptions, {
@@ -91,7 +91,7 @@ describeChromeOnly('Chromium-Specific Launcher tests', function () {
       const browserURL = 'http://127.0.0.1:32333';
 
       let error!: Error;
-      await puppeteer.connect({ browserURL }).catch((error_) => {
+      await puppeteer.connect({browserURL}).catch(error_ => {
         return (error = error_);
       });
       expect(error.message).toContain(
@@ -103,8 +103,8 @@ describeChromeOnly('Chromium-Specific Launcher tests', function () {
 
   describe('Puppeteer.launch |pipe| option', function () {
     it('should support the pipe option', async () => {
-      const { defaultBrowserOptions, puppeteer } = getTestState();
-      const options = Object.assign({ pipe: true }, defaultBrowserOptions);
+      const {defaultBrowserOptions, puppeteer} = getTestState();
+      const options = Object.assign({pipe: true}, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
       expect((await browser.pages()).length).toBe(1);
       expect(browser.wsEndpoint()).toBe('');
@@ -114,7 +114,7 @@ describeChromeOnly('Chromium-Specific Launcher tests', function () {
       await browser.close();
     });
     it('should support the pipe argument', async () => {
-      const { defaultBrowserOptions, puppeteer } = getTestState();
+      const {defaultBrowserOptions, puppeteer} = getTestState();
       const options = Object.assign({}, defaultBrowserOptions);
       options.args = ['--remote-debugging-pipe'].concat(options.args || []);
       const browser = await puppeteer.launch(options);
@@ -125,10 +125,10 @@ describeChromeOnly('Chromium-Specific Launcher tests', function () {
       await browser.close();
     });
     it('should fire "disconnected" when closing with pipe', async () => {
-      const { defaultBrowserOptions, puppeteer } = getTestState();
-      const options = Object.assign({ pipe: true }, defaultBrowserOptions);
+      const {defaultBrowserOptions, puppeteer} = getTestState();
+      const options = Object.assign({pipe: true}, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
-      const disconnectedEventPromise = new Promise((resolve) => {
+      const disconnectedEventPromise = new Promise(resolve => {
         return browser.once('disconnected', resolve);
       });
       // Emulate user exiting browser.
@@ -142,7 +142,7 @@ describeChromeOnly('Chromium-Specific Page Tests', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
   it('Page.setRequestInterception should work with intervention headers', async () => {
-    const { server, page } = getTestState();
+    const {server, page} = getTestState();
 
     server.setRoute('/intervention', (_req, res) => {
       return res.end(`
@@ -159,7 +159,7 @@ describeChromeOnly('Chromium-Specific Page Tests', function () {
     });
 
     await page.setRequestInterception(true);
-    page.on('request', (request) => {
+    page.on('request', request => {
       return request.continue();
     });
     await page.goto(server.PREFIX + '/intervention');

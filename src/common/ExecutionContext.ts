@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import { Protocol } from 'devtools-protocol';
-import { assert } from './assert.js';
-import { CDPSession } from './Connection.js';
-import { DOMWorld } from './DOMWorld.js';
-import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes.js';
-import { Frame } from './FrameManager.js';
+import {Protocol} from 'devtools-protocol';
+import {assert} from './assert.js';
+import {CDPSession} from './Connection.js';
+import {DOMWorld} from './DOMWorld.js';
+import {EvaluateFunc, HandleFor, EvaluateParams} from './types.js';
+import {Frame} from './FrameManager.js';
+import {JSHandle} from './JSHandle.js';
+import {ElementHandle} from './ElementHandle.js';
 import {
   getExceptionMessage,
+  _createJSHandle,
   isString,
   valueFromRemoteObject,
 } from './util.js';
-import { ElementHandle, JSHandle, _createJSHandle } from './JSHandle.js';
 
 /**
  * @public
@@ -138,11 +140,14 @@ export class ExecutionContext {
    *
    * @returns A promise that resolves to the return value of the given function.
    */
-  async evaluate<ReturnType>(
-    pageFunction: Function | string,
-    ...args: unknown[]
-  ): Promise<ReturnType> {
-    return await this.#evaluate<ReturnType>(true, pageFunction, ...args);
+  async evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>> {
+    return await this.#evaluate(true, pageFunction, ...args);
   }
 
   /**
@@ -187,18 +192,40 @@ export class ExecutionContext {
    * @returns A promise that resolves to the return value of the given function
    * as an in-page object (a {@link JSHandle}).
    */
-  async evaluateHandle<HandleType extends JSHandle | ElementHandle = JSHandle>(
-    pageFunction: EvaluateHandleFn,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<HandleType> {
-    return this.#evaluate<HandleType>(false, pageFunction, ...args);
+  async evaluateHandle<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    return this.#evaluate(false, pageFunction, ...args);
   }
 
-  async #evaluate<ReturnType>(
+  async #evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    returnByValue: true,
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>>;
+  async #evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    returnByValue: false,
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
+  async #evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
     returnByValue: boolean,
-    pageFunction: Function | string,
-    ...args: unknown[]
-  ): Promise<ReturnType> {
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>> | Awaited<ReturnType<Func>>> {
     const suffix = `//# sourceURL=${EVALUATION_SCRIPT_URL}`;
 
     if (isString(pageFunction)) {
@@ -208,7 +235,7 @@ export class ExecutionContext {
         ? expression
         : expression + '\n' + suffix;
 
-      const { exceptionDetails, result: remoteObject } = await this._client
+      const {exceptionDetails, result: remoteObject} = await this._client
         .send('Runtime.evaluate', {
           expression: expressionWithSourceUrl,
           contextId,
@@ -273,7 +300,7 @@ export class ExecutionContext {
       }
       throw error;
     }
-    const { exceptionDetails, result: remoteObject } =
+    const {exceptionDetails, result: remoteObject} =
       await callFunctionOnPromise.catch(rewriteError);
     if (exceptionDetails) {
       throw new Error(
@@ -290,19 +317,19 @@ export class ExecutionContext {
     ): Protocol.Runtime.CallArgument {
       if (typeof arg === 'bigint') {
         // eslint-disable-line valid-typeof
-        return { unserializableValue: `${arg.toString()}n` };
+        return {unserializableValue: `${arg.toString()}n`};
       }
       if (Object.is(arg, -0)) {
-        return { unserializableValue: '-0' };
+        return {unserializableValue: '-0'};
       }
       if (Object.is(arg, Infinity)) {
-        return { unserializableValue: 'Infinity' };
+        return {unserializableValue: 'Infinity'};
       }
       if (Object.is(arg, -Infinity)) {
-        return { unserializableValue: '-Infinity' };
+        return {unserializableValue: '-Infinity'};
       }
       if (Object.is(arg, NaN)) {
-        return { unserializableValue: 'NaN' };
+        return {unserializableValue: 'NaN'};
       }
       const objectHandle = arg && arg instanceof JSHandle ? arg : null;
       if (objectHandle) {
@@ -320,19 +347,19 @@ export class ExecutionContext {
           };
         }
         if (!objectHandle._remoteObject.objectId) {
-          return { value: objectHandle._remoteObject.value };
+          return {value: objectHandle._remoteObject.value};
         }
-        return { objectId: objectHandle._remoteObject.objectId };
+        return {objectId: objectHandle._remoteObject.objectId};
       }
-      return { value: arg };
+      return {value: arg};
     }
 
     function rewriteError(error: Error): Protocol.Runtime.EvaluateResponse {
       if (error.message.includes('Object reference chain is too long')) {
-        return { result: { type: 'undefined' } };
+        return {result: {type: 'undefined'}};
       }
       if (error.message.includes("Object couldn't be returned by value")) {
-        return { result: { type: 'undefined' } };
+        return {result: {type: 'undefined'}};
       }
 
       if (
@@ -369,7 +396,9 @@ export class ExecutionContext {
    *
    * @returns A handle to an array of objects with the given prototype.
    */
-  async queryObjects(prototypeHandle: JSHandle): Promise<JSHandle> {
+  async queryObjects<Prototype>(
+    prototypeHandle: JSHandle<Prototype>
+  ): Promise<HandleFor<Prototype[]>> {
     assert(!prototypeHandle._disposed, 'Prototype JSHandle is disposed!');
     assert(
       prototypeHandle._remoteObject.objectId,
@@ -378,7 +407,7 @@ export class ExecutionContext {
     const response = await this._client.send('Runtime.queryObjects', {
       prototypeObjectId: prototypeHandle._remoteObject.objectId,
     });
-    return _createJSHandle(this, response.objects);
+    return _createJSHandle(this, response.objects) as HandleFor<Prototype[]>;
   }
 
   /**
@@ -387,7 +416,7 @@ export class ExecutionContext {
   async _adoptBackendNodeId(
     backendNodeId?: Protocol.DOM.BackendNodeId
   ): Promise<ElementHandle> {
-    const { object } = await this._client.send('DOM.resolveNode', {
+    const {object} = await this._client.send('DOM.resolveNode', {
       backendNodeId: backendNodeId,
       executionContextId: this._contextId,
     });

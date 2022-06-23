@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ProtocolMapping } from 'devtools-protocol/types/protocol-mapping.js';
+import {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
-import { EventEmitter } from './EventEmitter.js';
-import { Frame } from './FrameManager.js';
-import { HTTPRequest } from './HTTPRequest.js';
-import { SecurityDetails } from './SecurityDetails.js';
-import { Protocol } from 'devtools-protocol';
-import { ProtocolError } from './Errors.js';
+import {EventEmitter} from './EventEmitter.js';
+import {Frame} from './FrameManager.js';
+import {HTTPRequest} from './HTTPRequest.js';
+import {SecurityDetails} from './SecurityDetails.js';
+import {Protocol} from 'devtools-protocol';
+import {ProtocolError} from './Errors.js';
 
 /**
  * @public
@@ -71,7 +71,7 @@ export class HTTPResponse {
     this.#client = client;
     this.#request = request;
 
-    this.#bodyLoadedPromise = new Promise((fulfill) => {
+    this.#bodyLoadedPromise = new Promise(fulfill => {
       this.#bodyLoadedPromiseFulfill = fulfill;
     });
 
@@ -195,7 +195,7 @@ export class HTTPResponse {
    */
   buffer(): Promise<Buffer> {
     if (!this.#contentPromise) {
-      this.#contentPromise = this.#bodyLoadedPromise.then(async (error) => {
+      this.#contentPromise = this.#bodyLoadedPromise.then(async error => {
         if (error) {
           throw error;
         }

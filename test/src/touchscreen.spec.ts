@@ -27,7 +27,7 @@ describeFailsFirefox('Touchscreen', function () {
   setupTestPageAndContextHooks();
 
   it('should tap the button', async () => {
-    const { puppeteer, page, server } = getTestState();
+    const {puppeteer, page, server} = getTestState();
     const iPhone = puppeteer.devices['iPhone 6']!;
     await page.emulate(iPhone);
     await page.goto(server.PREFIX + '/input/button.html');
@@ -39,7 +39,7 @@ describeFailsFirefox('Touchscreen', function () {
     ).toBe('Clicked');
   });
   it('should report touches', async () => {
-    const { puppeteer, page, server } = getTestState();
+    const {puppeteer, page, server} = getTestState();
     const iPhone = puppeteer.devices['iPhone 6']!;
     await page.emulate(iPhone);
     await page.goto(server.PREFIX + '/input/touches.html');

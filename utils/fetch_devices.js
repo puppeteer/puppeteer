@@ -55,7 +55,7 @@ devices and save to the <outputPath>.
 `;
 
 const argv = require('minimist')(process.argv.slice(2), {
-  alias: { u: 'url', h: 'help' },
+  alias: {u: 'url', h: 'help'},
 });
 
 if (argv.help) {
@@ -86,10 +86,10 @@ async function main(url) {
     return;
   }
   const devicePayloads = json.extensions
-    .filter((extension) => {
+    .filter(extension => {
       return extension.type === 'emulated-device';
     })
-    .map((extension) => {
+    .map(extension => {
       return extension.device;
     });
   let devices = [];
@@ -116,7 +116,7 @@ async function main(url) {
       }
     }
   }
-  devices = devices.filter((device) => {
+  devices = devices.filter(device => {
     return device.viewport.isMobile;
   });
   devices.sort((a, b) => {
@@ -287,10 +287,10 @@ function httpGET(url) {
   const driver = url.startsWith('https://')
     ? require('https')
     : require('http');
-  const request = driver.get(url, (response) => {
+  const request = driver.get(url, response => {
     let data = '';
     response.setEncoding('utf8');
-    response.on('data', (chunk) => {
+    response.on('data', chunk => {
       return (data += chunk);
     });
     response.on('end', () => {

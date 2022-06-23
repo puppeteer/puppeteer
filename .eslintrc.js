@@ -143,7 +143,7 @@ module.exports = {
         'no-unused-vars': 0,
         '@typescript-eslint/no-unused-vars': [
           'error',
-          { argsIgnorePattern: '^_' },
+          {argsIgnorePattern: '^_'},
         ],
         'func-call-spacing': 0,
         '@typescript-eslint/func-call-spacing': 2,

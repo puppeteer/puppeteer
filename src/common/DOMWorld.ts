@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-import { Protocol } from 'devtools-protocol';
-import { assert } from './assert.js';
-import { CDPSession } from './Connection.js';
-import { TimeoutError } from './Errors.js';
-import {
-  EvaluateFn,
-  EvaluateFnReturnType,
-  EvaluateHandleFn,
-  SerializableOrJSHandle,
-  UnwrapPromiseLike,
-  WrapElementHandle,
-} from './EvalTypes.js';
-import { ExecutionContext } from './ExecutionContext.js';
-import { Frame, FrameManager } from './FrameManager.js';
+import {Protocol} from 'devtools-protocol';
+import {assert} from './assert.js';
+import {CDPSession} from './Connection.js';
+import {ElementHandle} from './ElementHandle.js';
+import {TimeoutError} from './Errors.js';
+import {ExecutionContext} from './ExecutionContext.js';
+import {Frame, FrameManager} from './FrameManager.js';
+import {MouseButton} from './Input.js';
+import {JSHandle} from './JSHandle.js';
+import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
+import {_getQueryHandlerAndSelector} from './QueryHandler.js';
+import {TimeoutSettings} from './TimeoutSettings.js';
+import {EvaluateFunc, EvaluateParams, HandleFor} from './types.js';
 import {
   debugError,
   isNumber,
@@ -35,14 +34,6 @@ import {
   makePredicateString,
   pageBindingInitString,
 } from './util.js';
-import { MouseButton } from './Input.js';
-import { ElementHandle, JSHandle } from './JSHandle.js';
-import {
-  LifecycleWatcher,
-  PuppeteerLifeCycleEvent,
-} from './LifecycleWatcher.js';
-import { _getQueryHandlerAndSelector } from './QueryHandler.js';
-import { TimeoutSettings } from './TimeoutSettings.js';
 
 // predicateQueryHandler and checkWaitForOptions are declared here so that
 // TypeScript knows about them when used in the predicate function below.
@@ -149,7 +140,7 @@ export class DOMWorld {
       }
     } else {
       this.#documentPromise = null;
-      this.#contextPromise = new Promise((fulfill) => {
+      this.#contextPromise = new Promise(fulfill => {
         this.#contextResolveCallback = fulfill;
       });
     }
@@ -187,30 +178,45 @@ export class DOMWorld {
     return this.#contextPromise;
   }
 
-  async evaluateHandle<HandlerType extends JSHandle = JSHandle>(
-    pageFunction: EvaluateHandleFn,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<HandlerType> {
+  async evaluateHandle<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     const context = await this.executionContext();
     return context.evaluateHandle(pageFunction, ...args);
   }
 
-  async evaluate<T extends EvaluateFn>(
-    pageFunction: T,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<UnwrapPromiseLike<EvaluateFnReturnType<T>>> {
+  async evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>> {
     const context = await this.executionContext();
-    return context.evaluate<UnwrapPromiseLike<EvaluateFnReturnType<T>>>(
-      pageFunction,
-      ...args
-    );
+    return context.evaluate(pageFunction, ...args);
   }
 
-  async $<T extends Element = Element>(
-    selector: string
-  ): Promise<ElementHandle<T> | null> {
+  async $<Selector extends keyof HTMLElementTagNameMap>(
+    selector: Selector
+  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;
+  async $(selector: string): Promise<ElementHandle | null>;
+  async $(selector: string): Promise<ElementHandle | null> {
     const document = await this._document();
-    const value = await document.$<T>(selector);
+    const value = await document.$(selector);
+    return value;
+  }
+
+  async $$<Selector extends keyof HTMLElementTagNameMap>(
+    selector: Selector
+  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]>[]>;
+  async $$(selector: string): Promise<ElementHandle[]>;
+  async $$(selector: string): Promise<ElementHandle[]> {
+    const document = await this._document();
+    const value = await document.$$(selector);
     return value;
   }
 
@@ -221,7 +227,7 @@ export class DOMWorld {
     if (this.#documentPromise) {
       return this.#documentPromise;
     }
-    this.#documentPromise = this.executionContext().then(async (context) => {
+    this.#documentPromise = this.executionContext().then(async context => {
       const document = await context.evaluateHandle('document');
       const element = document.asElement();
       if (element === null) {
@@ -238,40 +244,74 @@ export class DOMWorld {
     return value;
   }
 
-  async $eval<ReturnType>(
+  async $eval<
+    Selector extends keyof HTMLElementTagNameMap,
+    Params extends unknown[],
+    Func extends EvaluateFunc<
+      [HTMLElementTagNameMap[Selector], ...Params]
+    > = EvaluateFunc<[HTMLElementTagNameMap[Selector], ...Params]>
+  >(
+    selector: Selector,
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>>;
+  async $eval<
+    Params extends unknown[],
+    Func extends EvaluateFunc<[Element, ...Params]> = EvaluateFunc<
+      [Element, ...Params]
+    >
+  >(
     selector: string,
-    pageFunction: (
-      element: Element,
-      ...args: unknown[]
-    ) => ReturnType | Promise<ReturnType>,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<WrapElementHandle<ReturnType>> {
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>>;
+  async $eval<
+    Params extends unknown[],
+    Func extends EvaluateFunc<[Element, ...Params]> = EvaluateFunc<
+      [Element, ...Params]
+    >
+  >(
+    selector: string,
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>> {
     const document = await this._document();
-    return document.$eval<ReturnType>(selector, pageFunction, ...args);
+    return document.$eval(selector, pageFunction, ...args);
   }
 
-  async $$eval<ReturnType>(
+  async $$eval<
+    Selector extends keyof HTMLElementTagNameMap,
+    Params extends unknown[],
+    Func extends EvaluateFunc<
+      [HTMLElementTagNameMap[Selector][], ...Params]
+    > = EvaluateFunc<[HTMLElementTagNameMap[Selector][], ...Params]>
+  >(
+    selector: Selector,
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>>;
+  async $$eval<
+    Params extends unknown[],
+    Func extends EvaluateFunc<[Element[], ...Params]> = EvaluateFunc<
+      [Element[], ...Params]
+    >
+  >(
     selector: string,
-    pageFunction: (
-      elements: Element[],
-      ...args: unknown[]
-    ) => ReturnType | Promise<ReturnType>,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<WrapElementHandle<ReturnType>> {
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>>;
+  async $$eval<
+    Params extends unknown[],
+    Func extends EvaluateFunc<[Element[], ...Params]> = EvaluateFunc<
+      [Element[], ...Params]
+    >
+  >(
+    selector: string,
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>> {
     const document = await this._document();
-    const value = await document.$$eval<ReturnType>(
-      selector,
-      pageFunction,
-      ...args
-    );
-    return value;
-  }
-
-  async $$<T extends Element = Element>(
-    selector: string
-  ): Promise<Array<ElementHandle<T>>> {
-    const document = await this._document();
-    const value = await document.$$<T>(selector);
+    const value = await document.$$eval(selector, pageFunction, ...args);
     return value;
   }
 
@@ -301,7 +341,7 @@ export class DOMWorld {
     } = options;
     // We rely upon the fact that document.open() will reset frame lifecycle with "init"
     // lifecycle event. @see https://crrev.com/608658
-    await this.evaluate<(x: string) => void>((html) => {
+    await this.evaluate(html => {
       document.open();
       document.write(html);
       document.close();
@@ -445,7 +485,7 @@ export class DOMWorld {
         script.id = id;
       }
       let error = null;
-      script.onerror = (e) => {
+      script.onerror = e => {
         return (error = e);
       };
       document.head.appendChild(script);
@@ -471,7 +511,7 @@ export class DOMWorld {
     path?: string;
     content?: string;
   }): Promise<ElementHandle> {
-    const { url = null, path = null, content = null } = options;
+    const {url = null, path = null, content = null} = options;
     if (url !== null) {
       try {
         const context = await this.executionContext();
@@ -539,7 +579,6 @@ export class DOMWorld {
 
     async function addStyleContent(content: string): Promise<HTMLElement> {
       const style = document.createElement('style');
-      style.type = 'text/css';
       style.appendChild(document.createTextNode(content));
       const promise = new Promise((res, rej) => {
         style.onload = res;
@@ -553,7 +592,7 @@ export class DOMWorld {
 
   async click(
     selector: string,
-    options: { delay?: number; button?: MouseButton; clickCount?: number }
+    options: {delay?: number; button?: MouseButton; clickCount?: number}
   ): Promise<void> {
     const handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);
@@ -593,7 +632,7 @@ export class DOMWorld {
   async type(
     selector: string,
     text: string,
-    options?: { delay: number }
+    options?: {delay: number}
   ): Promise<void> {
     const handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);
@@ -601,11 +640,19 @@ export class DOMWorld {
     await handle.dispose();
   }
 
+  async waitForSelector<Selector extends keyof HTMLElementTagNameMap>(
+    selector: Selector,
+    options: WaitForSelectorOptions
+  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;
+  async waitForSelector(
+    selector: string,
+    options: WaitForSelectorOptions
+  ): Promise<ElementHandle | null>;
   async waitForSelector(
     selector: string,
     options: WaitForSelectorOptions
   ): Promise<ElementHandle | null> {
-    const { updatedSelector, queryHandler } =
+    const {updatedSelector, queryHandler} =
       _getQueryHandlerAndSelector(selector);
     assert(queryHandler.waitFor, 'Query handler does not support waiting');
     return queryHandler.waitFor(this, updatedSelector, options);
@@ -677,7 +724,7 @@ export class DOMWorld {
   #onBindingCalled = async (
     event: Protocol.Runtime.BindingCalledEvent
   ): Promise<void> => {
-    let payload: { type: string; name: string; seq: number; args: unknown[] };
+    let payload: {type: string; name: string; seq: number; args: unknown[]};
     if (!this._hasContext()) {
       return;
     }
@@ -689,7 +736,7 @@ export class DOMWorld {
       // called before our wrapper was initialized.
       return;
     }
-    const { type, name, seq, args } = payload;
+    const {type, name, seq, args} = payload;
     if (
       type !== 'internal' ||
       !this.#ctxBindings.has(
@@ -827,10 +874,10 @@ export class DOMWorld {
 
   waitForFunction(
     pageFunction: Function | string,
-    options: { polling?: string | number; timeout?: number } = {},
-    ...args: SerializableOrJSHandle[]
+    options: {polling?: string | number; timeout?: number} = {},
+    ...args: unknown[]
   ): Promise<JSHandle> {
-    const { polling = 'raf', timeout = this.#timeoutSettings.timeout() } =
+    const {polling = 'raf', timeout = this.#timeoutSettings.timeout()} =
       options;
     const waitTaskOptions: WaitTaskOptions = {
       domWorld: this,
@@ -863,7 +910,7 @@ export interface WaitTaskOptions {
   polling: string | number;
   timeout: number;
   binding?: PageBinding;
-  args: SerializableOrJSHandle[];
+  args: unknown[];
   root?: ElementHandle;
 }
 
@@ -874,11 +921,11 @@ const noop = (): void => {};
  */
 export class WaitTask {
   #domWorld: DOMWorld;
-  #polling: string | number;
+  #polling: 'raf' | 'mutation' | number;
   #timeout: number;
   #predicateBody: string;
   #predicateAcceptsContextElement: boolean;
-  #args: SerializableOrJSHandle[];
+  #args: unknown[];
   #binding?: PageBinding;
   #runCount = 0;
   #resolve: (x: JSHandle) => void = noop;
@@ -992,7 +1039,7 @@ export class WaitTask {
     if (
       !error &&
       (await this.#domWorld
-        .evaluate((s) => {
+        .evaluate(s => {
           return !s;
         }, success)
         .catch(() => {
@@ -1085,7 +1132,7 @@ async function waitForPredicatePageFunction(
     }
 
     let fulfill = (_?: unknown) => {};
-    const result = new Promise((x) => {
+    const result = new Promise(x => {
       return (fulfill = x);
     });
     const observer = new MutationObserver(async () => {
@@ -1114,7 +1161,7 @@ async function waitForPredicatePageFunction(
 
   async function pollRaf(): Promise<unknown> {
     let fulfill = (_?: unknown): void => {};
-    const result = new Promise((x) => {
+    const result = new Promise(x => {
       return (fulfill = x);
     });
     await onRaf();
@@ -1138,7 +1185,7 @@ async function waitForPredicatePageFunction(
 
   async function pollInterval(pollInterval: number): Promise<unknown> {
     let fulfill = (_?: unknown): void => {};
-    const result = new Promise((x) => {
+    const result = new Promise(x => {
       return (fulfill = x);
     });
     await onTimeout();

@@ -22,23 +22,23 @@ import * as childProcess from 'child_process';
 import * as https from 'https';
 import * as http from 'http';
 
-import { Product } from '../common/Product.js';
+import {Product} from '../common/Product.js';
 import extractZip from 'extract-zip';
-import { debug } from '../common/Debug.js';
-import { promisify } from 'util';
+import {debug} from '../common/Debug.js';
+import {promisify} from 'util';
 import removeRecursive from 'rimraf';
 import * as URL from 'url';
 import createHttpsProxyAgent, {
   HttpsProxyAgent,
   HttpsProxyAgentOptions,
 } from 'https-proxy-agent';
-import { getProxyForUrl } from 'proxy-from-env';
-import { assert } from '../common/assert.js';
+import {getProxyForUrl} from 'proxy-from-env';
+import {assert} from '../common/assert.js';
 
 import tar from 'tar-fs';
 import bzip from 'unbzip2-stream';
 
-const { PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM } = process.env;
+const {PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM} = process.env;
 
 const debugFetcher = debug('puppeteer:fetcher');
 
@@ -142,8 +142,8 @@ const unlinkAsync = promisify(fs.unlink.bind(fs));
 const chmodAsync = promisify(fs.chmod.bind(fs));
 
 function existsAsync(filePath: string): Promise<boolean> {
-  return new Promise((resolve) => {
-    fs.access(filePath, (err) => {
+  return new Promise(resolve => {
+    fs.access(filePath, err => {
       return resolve(!err);
     });
   });
@@ -288,16 +288,16 @@ export class BrowserFetcher {
       this.#downloadHost,
       revision
     );
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const request = httpRequest(
         url,
         'HEAD',
-        (response) => {
+        response => {
           resolve(response.statusCode === 200);
         },
         false
       );
-      request.on('error', (error) => {
+      request.on('error', error => {
         console.error(error);
         resolve(false);
       });
@@ -367,17 +367,17 @@ export class BrowserFetcher {
     }
     const fileNames = await readdirAsync(this.#downloadsFolder);
     return fileNames
-      .map((fileName) => {
+      .map(fileName => {
         return parseFolderPath(this.#product, fileName);
       })
       .filter(
         (
           entry
-        ): entry is { product: string; platform: string; revision: string } => {
+        ): entry is {product: string; platform: string; revision: string} => {
           return (entry && entry.platform === this.#platform) ?? false;
         }
       )
-      .map((entry) => {
+      .map(entry => {
         return entry.revision;
       });
   }
@@ -395,7 +395,7 @@ export class BrowserFetcher {
       await existsAsync(folderPath),
       `Failed to remove: revision ${revision} is not downloaded`
     );
-    await new Promise((fulfill) => {
+    await new Promise(fulfill => {
       return removeRecursive(folderPath, fulfill);
     });
   }
@@ -484,7 +484,7 @@ export class BrowserFetcher {
 function parseFolderPath(
   product: Product,
   folderPath: string
-): { product: string; platform: string; revision: string } | undefined {
+): {product: string; platform: string; revision: string} | undefined {
   const name = path.basename(folderPath);
   const splits = name.split('-');
   if (splits.length !== 2) {
@@ -494,7 +494,7 @@ function parseFolderPath(
   if (!revision || !platform || !(platform in downloadURLs[product])) {
     return;
   }
-  return { product, platform, revision };
+  return {product, platform, revision};
 }
 
 /**
@@ -516,7 +516,7 @@ function _downloadFile(
   let downloadedBytes = 0;
   let totalBytes = 0;
 
-  const request = httpRequest(url, 'GET', (response) => {
+  const request = httpRequest(url, 'GET', response => {
     if (response.statusCode !== 200) {
       const error = new Error(
         `Download failed: server returned code ${response.statusCode}. URL: ${url}`
@@ -530,7 +530,7 @@ function _downloadFile(
     file.on('finish', () => {
       return fulfill();
     });
-    file.on('error', (error) => {
+    file.on('error', error => {
       return reject(error);
     });
     response.pipe(file);
@@ -539,7 +539,7 @@ function _downloadFile(
       response.on('data', onData);
     }
   });
-  request.on('error', (error) => {
+  request.on('error', error => {
     return reject(error);
   });
   return promise;
@@ -553,7 +553,7 @@ function _downloadFile(
 function install(archivePath: string, folderPath: string): Promise<unknown> {
   debugFetcher(`Installing ${archivePath} to ${folderPath}`);
   if (archivePath.endsWith('.zip')) {
-    return extractZip(archivePath, { dir: folderPath });
+    return extractZip(archivePath, {dir: folderPath});
   } else if (archivePath.endsWith('.tar.bz2')) {
     return _extractTar(archivePath, folderPath);
   } else if (archivePath.endsWith('.dmg')) {
@@ -596,8 +596,8 @@ function _installDMG(dmgPath: string, folderPath: string): Promise<void> {
       }
       mountPath = volumes[0]!;
       readdirAsync(mountPath)
-        .then((fileNames) => {
-          const appName = fileNames.find((item) => {
+        .then(fileNames => {
+          const appName = fileNames.find(item => {
             return typeof item === 'string' && item.endsWith('.app');
           });
           if (!appName) {
@@ -605,7 +605,7 @@ function _installDMG(dmgPath: string, folderPath: string): Promise<void> {
           }
           const copyPath = path.join(mountPath!, appName);
           debugFetcher(`Copying ${copyPath} to ${folderPath}`);
-          childProcess.exec(`cp -R "${copyPath}" "${folderPath}"`, (err) => {
+          childProcess.exec(`cp -R "${copyPath}" "${folderPath}"`, err => {
             if (err) {
               reject(err);
             } else {
@@ -616,7 +616,7 @@ function _installDMG(dmgPath: string, folderPath: string): Promise<void> {
         .catch(reject);
     });
   })
-    .catch((error) => {
+    .catch(error => {
       console.error(error);
     })
     .finally((): void => {
@@ -625,7 +625,7 @@ function _installDMG(dmgPath: string, folderPath: string): Promise<void> {
       }
       const unmountCommand = `hdiutil detach "${mountPath}" -quiet`;
       debugFetcher(`Unmounting ${mountPath}`);
-      childProcess.exec(unmountCommand, (err) => {
+      childProcess.exec(unmountCommand, err => {
         if (err) {
           console.error(`Error unmounting dmg: ${err}`);
         }

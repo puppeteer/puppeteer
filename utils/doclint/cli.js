@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line import/extensions
-const puppeteer = require('../..');
 const path = require('path');
 const Source = require('./Source.js');
 
@@ -71,38 +69,6 @@ async function run() {
       IS_RELEASE
     ))
   );
-
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  const checkPublicAPI = require('./check_public_api/index.js');
-  const tsSources = [
-    /* Source.readdir doesn't deal with nested directories well.
-     * Rather than invest time here when we're going to remove this Doc tooling soon
-     * we'll just list the directories manually.
-     */
-    ...(await Source.readdir(path.join(PROJECT_DIR, 'src'), 'ts')),
-    ...(await Source.readdir(path.join(PROJECT_DIR, 'src', 'common'), 'ts')),
-    ...(await Source.readdir(path.join(PROJECT_DIR, 'src', 'node'), 'ts')),
-  ];
-
-  const tsSourcesNoDefinitions = tsSources.filter(
-    (source) => !source.filePath().endsWith('.d.ts')
-  );
-
-  const jsSources = [
-    ...(await Source.readdir(path.join(PROJECT_DIR, 'lib'))),
-    ...(await Source.readdir(path.join(PROJECT_DIR, 'lib', 'cjs'))),
-    ...(await Source.readdir(
-      path.join(PROJECT_DIR, 'lib', 'cjs', 'puppeteer', 'common')
-    )),
-    ...(await Source.readdir(
-      path.join(PROJECT_DIR, 'lib', 'cjs', 'puppeteer', 'node')
-    )),
-  ];
-  const allSrcCode = [...jsSources, ...tsSourcesNoDefinitions];
-  messages.push(...(await checkPublicAPI(page, mdSources, allSrcCode)));
-
-  await browser.close();
 
   for (const source of mdSources) {
     if (!source.hasUpdatedText()) {

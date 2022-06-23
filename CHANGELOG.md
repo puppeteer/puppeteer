@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [15.0.0](https://github.com/puppeteer/puppeteer/compare/v14.4.1...v15.0.0) (2022-06-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* type inference for evaluation types (#8547)
+
+### Features
+
+* add experimental `client` to `HTTPRequest` ([#8556](https://github.com/puppeteer/puppeteer/issues/8556)) ([ec79f3a](https://github.com/puppeteer/puppeteer/commit/ec79f3a58a44c9ea60a82f9cd2df4c8f19e82ab8))
+* type inference for evaluation types ([#8547](https://github.com/puppeteer/puppeteer/issues/8547)) ([26c3acb](https://github.com/puppeteer/puppeteer/commit/26c3acbb0795eb66f29479f442e156832f794f01))
+
 ## [14.4.1](https://github.com/puppeteer/puppeteer/compare/v14.4.0...v14.4.1) (2022-06-17)
 
 

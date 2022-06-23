@@ -21,7 +21,7 @@ import {
   setupTestPageAndContextHooks,
   itFailsFirefox,
 } from './mocha-utils.js';
-import { KeyInput } from '../../lib/cjs/puppeteer/common/USKeyboardLayout.js';
+import {KeyInput} from '../../lib/cjs/puppeteer/common/USKeyboardLayout.js';
 
 interface Dimensions {
   x: number;
@@ -44,11 +44,11 @@ describe('Mouse', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
   it('should click the document', async () => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     await page.evaluate(() => {
-      (globalThis as any).clickPromise = new Promise((resolve) => {
-        document.addEventListener('click', (event) => {
+      (globalThis as any).clickPromise = new Promise(resolve => {
+        document.addEventListener('click', event => {
           resolve({
             type: event.type,
             detail: event.detail,
@@ -61,7 +61,7 @@ describe('Mouse', function () {
       });
     });
     await page.mouse.click(50, 60);
-    const event = await page.evaluate<() => MouseEvent>(() => {
+    const event = await page.evaluate(() => {
       return (globalThis as any).clickPromise;
     });
     expect(event.type).toBe('click');
@@ -72,23 +72,21 @@ describe('Mouse', function () {
     expect(event.button).toBe(0);
   });
   it('should resize the textarea', async () => {
-    const { page, server } = getTestState();
+    const {page, server} = getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
-    const { x, y, width, height } = await page.evaluate<() => Dimensions>(
-      dimensions
-    );
+    const {x, y, width, height} = await page.evaluate(dimensions);
     const mouse = page.mouse;
     await mouse.move(x + width - 4, y + height - 4);
     await mouse.down();
     await mouse.move(x + width + 100, y + height + 100);
     await mouse.up();
-    const newDimensions = await page.evaluate<() => Dimensions>(dimensions);
+    const newDimensions = await page.evaluate(dimensions);
     expect(newDimensions.width).toBe(Math.round(width + 104));
     expect(newDimensions.height).toBe(Math.round(height + 104));
   });
   it('should select the text with mouse', async () => {
-    const { page, server } = getTestState();
+    const {page, server} = getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
     await page.focus('textarea');
@@ -102,7 +100,7 @@ describe('Mouse', function () {
     await page.evaluate(() => {
       return (document.querySelector('textarea')!.scrollTop = 0);
     });
-    const { x, y } = await page.evaluate(dimensions);
+    const {x, y} = await page.evaluate(dimensions);
     await page.mouse.move(x + 2, y + 2);
     await page.mouse.down();
     await page.mouse.move(100, 100);
@@ -118,7 +116,7 @@ describe('Mouse', function () {
     ).toBe(text);
   });
   itFailsFirefox('should trigger hover state', async () => {
-    const { page, server } = getTestState();
+    const {page, server} = getTestState();
 
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.hover('#button-6');
@@ -143,7 +141,7 @@ describe('Mouse', function () {
   itFailsFirefox(
     'should trigger hover state with removed window.Node',
     async () => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/input/scrollable.html');
       await page.evaluate(() => {
@@ -159,13 +157,13 @@ describe('Mouse', function () {
     }
   );
   it('should set modifier keys on click', async () => {
-    const { page, server, isFirefox } = getTestState();
+    const {page, server, isFirefox} = getTestState();
 
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.evaluate(() => {
       return document.querySelector('#button-3')!.addEventListener(
         'mousedown',
-        (e) => {
+        e => {
           return ((globalThis as any).lastEvent = e);
         },
         true
@@ -205,7 +203,7 @@ describe('Mouse', function () {
     }
   });
   itFailsFirefox('should send mouse wheel events', async () => {
-    const { page, server } = getTestState();
+    const {page, server} = getTestState();
 
     await page.goto(server.PREFIX + '/input/wheel.html');
     const elem = (await page.$('div'))!;
@@ -220,7 +218,7 @@ describe('Mouse', function () {
       boundingBoxBefore.y + boundingBoxBefore.height / 2
     );
 
-    await page.mouse.wheel({ deltaY: -100 });
+    await page.mouse.wheel({deltaY: -100});
     const boundingBoxAfter = await elem.boundingBox();
     expect(boundingBoxAfter).toMatchObject({
       width: 230,
@@ -228,16 +226,16 @@ describe('Mouse', function () {
     });
   });
   itFailsFirefox('should tween mouse movement', async () => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     await page.mouse.move(100, 100);
     await page.evaluate(() => {
       (globalThis as any).result = [];
-      document.addEventListener('mousemove', (event) => {
+      document.addEventListener('mousemove', event => {
         (globalThis as any).result.push([event.clientX, event.clientY]);
       });
     });
-    await page.mouse.move(200, 300, { steps: 5 });
+    await page.mouse.move(200, 300, {steps: 5});
     expect(await page.evaluate('result')).toEqual([
       [120, 140],
       [140, 180],
@@ -248,19 +246,19 @@ describe('Mouse', function () {
   });
   // @see https://crbug.com/929806
   it('should work with mobile viewports and cross process navigations', async () => {
-    const { page, server } = getTestState();
+    const {page, server} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
-    await page.setViewport({ width: 360, height: 640, isMobile: true });
+    await page.setViewport({width: 360, height: 640, isMobile: true});
     await page.goto(server.CROSS_PROCESS_PREFIX + '/mobile.html');
     await page.evaluate(() => {
-      document.addEventListener('click', (event) => {
-        (globalThis as any).result = { x: event.clientX, y: event.clientY };
+      document.addEventListener('click', event => {
+        (globalThis as any).result = {x: event.clientX, y: event.clientY};
       });
     });
 
     await page.mouse.click(30, 40);
 
-    expect(await page.evaluate('result')).toEqual({ x: 30, y: 40 });
+    expect(await page.evaluate('result')).toEqual({x: 30, y: 40});
   });
 });

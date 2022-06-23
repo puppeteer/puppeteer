@@ -20,7 +20,7 @@ import jpeg from 'jpeg-js';
 import mime from 'mime';
 import path from 'path';
 import pixelmatch from 'pixelmatch';
-import { PNG } from 'pngjs';
+import {PNG} from 'pngjs';
 
 interface DiffFile {
   diff: string | Buffer;
@@ -69,16 +69,16 @@ const compareImages = (
       `Sizes differ: expected image ${expected.width}px X ${expected.height}px, but got ${actual.width}px X ${actual.height}px.`
     );
   }
-  const diff = new PNG({ width: expected.width, height: expected.height });
+  const diff = new PNG({width: expected.width, height: expected.height});
   const count = pixelmatch(
     expected.data,
     actual.data,
     diff.data,
     expected.width,
     expected.height,
-    { threshold: 0.1 }
+    {threshold: 0.1}
   );
-  return count > 0 ? { diff: PNG.sync.write(diff) } : undefined;
+  return count > 0 ? {diff: PNG.sync.write(diff)} : undefined;
 };
 
 const compareText = (
@@ -114,7 +114,7 @@ export const compare = (
   outputPath: string,
   actual: string | Buffer,
   goldenName: string
-): { pass: true } | { pass: false; message: string } => {
+): {pass: true} | {pass: false; message: string} => {
   goldenPath = path.normalize(goldenPath);
   outputPath = path.normalize(outputPath);
   const expectedPath = path.join(goldenPath, goldenName);
@@ -144,7 +144,7 @@ export const compare = (
   }
   const result = comparator(actual, expected, mimeType);
   if (!result) {
-    return { pass: true };
+    return {pass: true};
   }
   ensureOutputDir();
   if (goldenPath === outputPath) {

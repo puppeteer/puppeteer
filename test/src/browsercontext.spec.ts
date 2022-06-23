@@ -17,27 +17,27 @@
 import expect from 'expect';
 import {
   getTestState,
-  setupTestBrowserHooks,
   itFailsFirefox,
+  setupTestBrowserHooks,
 } from './mocha-utils.js';
-import utils from './utils.js';
+import {waitEvent} from './utils.js';
 
 describe('BrowserContext', function () {
   setupTestBrowserHooks();
   it('should have default context', async () => {
-    const { browser } = getTestState();
+    const {browser} = getTestState();
     expect(browser.browserContexts().length).toEqual(1);
     const defaultContext = browser.browserContexts()[0]!;
     expect(defaultContext!.isIncognito()).toBe(false);
     let error!: Error;
-    await defaultContext!.close().catch((error_) => {
+    await defaultContext!.close().catch(error_ => {
       return (error = error_);
     });
     expect(browser.defaultBrowserContext()).toBe(defaultContext);
     expect(error.message).toContain('cannot be closed');
   });
   it('should create new incognito context', async () => {
-    const { browser } = getTestState();
+    const {browser} = getTestState();
 
     expect(browser.browserContexts().length).toBe(1);
     const context = await browser.createIncognitoBrowserContext();
@@ -48,7 +48,7 @@ describe('BrowserContext', function () {
     expect(browser.browserContexts().length).toBe(1);
   });
   it('should close all belonging targets once closing context', async () => {
-    const { browser } = getTestState();
+    const {browser} = getTestState();
 
     expect((await browser.pages()).length).toBe(1);
 
@@ -61,14 +61,14 @@ describe('BrowserContext', function () {
     expect((await browser.pages()).length).toBe(1);
   });
   itFailsFirefox('window.open should use parent tab context', async () => {
-    const { browser, server } = getTestState();
+    const {browser, server} = getTestState();
 
     const context = await browser.createIncognitoBrowserContext();
     const page = await context.newPage();
     await page.goto(server.EMPTY_PAGE);
     const [popupTarget] = await Promise.all([
-      utils.waitEvent(browser, 'targetcreated'),
-      page.evaluate<(url: string) => void>((url) => {
+      waitEvent(browser, 'targetcreated'),
+      page.evaluate(url => {
         return window.open(url);
       }, server.EMPTY_PAGE),
     ]);
@@ -76,17 +76,17 @@ describe('BrowserContext', function () {
     await context.close();
   });
   itFailsFirefox('should fire target events', async () => {
-    const { browser, server } = getTestState();
+    const {browser, server} = getTestState();
 
     const context = await browser.createIncognitoBrowserContext();
     const events: any[] = [];
-    context.on('targetcreated', (target) => {
+    context.on('targetcreated', target => {
       return events.push('CREATED: ' + target.url());
     });
-    context.on('targetchanged', (target) => {
+    context.on('targetchanged', target => {
       return events.push('CHANGED: ' + target.url());
     });
-    context.on('targetdestroyed', (target) => {
+    context.on('targetdestroyed', target => {
       return events.push('DESTROYED: ' + target.url());
     });
     const page = await context.newPage();
@@ -100,19 +100,19 @@ describe('BrowserContext', function () {
     await context.close();
   });
   itFailsFirefox('should wait for a target', async () => {
-    const { browser, puppeteer, server } = getTestState();
+    const {browser, puppeteer, server} = getTestState();
 
     const context = await browser.createIncognitoBrowserContext();
     let resolved = false;
 
-    const targetPromise = context.waitForTarget((target) => {
+    const targetPromise = context.waitForTarget(target => {
       return target.url() === server.EMPTY_PAGE;
     });
     targetPromise
       .then(() => {
         return (resolved = true);
       })
-      .catch((error) => {
+      .catch(error => {
         resolved = true;
         if (error instanceof puppeteer.errors.TimeoutError) {
           console.error(error);
@@ -137,19 +137,19 @@ describe('BrowserContext', function () {
   });
 
   it('should timeout waiting for a non-existent target', async () => {
-    const { browser, puppeteer, server } = getTestState();
+    const {browser, puppeteer, server} = getTestState();
 
     const context = await browser.createIncognitoBrowserContext();
     const error = await context
       .waitForTarget(
-        (target) => {
+        target => {
           return target.url() === server.EMPTY_PAGE;
         },
         {
           timeout: 1,
         }
       )
-      .catch((error_) => {
+      .catch(error_ => {
         return error_;
       });
     expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
@@ -157,7 +157,7 @@ describe('BrowserContext', function () {
   });
 
   itFailsFirefox('should isolate localStorage and cookies', async () => {
-    const { browser, server } = getTestState();
+    const {browser, server} = getTestState();
 
     // Create two incognito contexts.
     const context1 = await browser.createIncognitoBrowserContext();
@@ -217,7 +217,7 @@ describe('BrowserContext', function () {
   });
 
   itFailsFirefox('should work across sessions', async () => {
-    const { browser, puppeteer } = getTestState();
+    const {browser, puppeteer} = getTestState();
 
     expect(browser.browserContexts().length).toBe(1);
     const context = await browser.createIncognitoBrowserContext();

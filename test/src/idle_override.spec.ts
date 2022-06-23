@@ -15,6 +15,7 @@
  */
 
 import expect from 'expect';
+import {ElementHandle} from '../../lib/cjs/puppeteer/common/ElementHandle.js';
 import {
   getTestState,
   setupTestBrowserHooks,
@@ -27,10 +28,10 @@ describeFailsFirefox('Emulate idle state', () => {
   setupTestPageAndContextHooks();
 
   async function getIdleState() {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
-    const stateElement = (await page.$('#state'))!;
-    return await page.evaluate((element: HTMLElement) => {
+    const stateElement = (await page.$('#state')) as ElementHandle<HTMLElement>;
+    return await page.evaluate(element => {
       return element.innerText;
     }, stateElement);
   }
@@ -41,7 +42,7 @@ describeFailsFirefox('Emulate idle state', () => {
   }
 
   it('changing idle state emulation causes change of the IdleDetector state', async () => {
-    const { page, server, context } = getTestState();
+    const {page, server, context} = getTestState();
     await context.overridePermissions(server.PREFIX + '/idle-detector.html', [
       'idle-detection',
     ]);

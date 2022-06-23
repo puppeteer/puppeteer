@@ -15,7 +15,7 @@
  */
 
 import assert from 'assert';
-import { readFile, readFileSync } from 'fs';
+import {readFile, readFileSync} from 'fs';
 import {
   createServer as createHttpServer,
   IncomingMessage,
@@ -28,11 +28,11 @@ import {
   Server as HttpsServer,
   ServerOptions as HttpsServerOptions,
 } from 'https';
-import { getType as getMimeType } from 'mime';
-import { join } from 'path';
-import { Duplex } from 'stream';
-import { Server as WebSocketServer, WebSocket } from 'ws';
-import { gzip } from 'zlib';
+import {getType as getMimeType} from 'mime';
+import {join} from 'path';
+import {Duplex} from 'stream';
+import {Server as WebSocketServer, WebSocket} from 'ws';
+import {gzip} from 'zlib';
 
 interface Subscriber {
   resolve: (msg: IncomingMessage) => void;
@@ -40,7 +40,7 @@ interface Subscriber {
   promise: Promise<IncomingMessage>;
 }
 
-type TestIncomingMessage = IncomingMessage & { postBody?: Promise<string> };
+type TestIncomingMessage = IncomingMessage & {postBody?: Promise<string>};
 
 export class TestServer {
   PORT!: number;
@@ -60,14 +60,14 @@ export class TestServer {
     string,
     (msg: IncomingMessage, res: ServerResponse) => void
   >();
-  #auths = new Map<string, { username: string; password: string }>();
+  #auths = new Map<string, {username: string; password: string}>();
   #csp = new Map<string, string>();
   #gzipRoutes = new Set<string>();
   #requestSubscribers = new Map<string, Subscriber>();
 
   static async create(dirPath: string, port: number): Promise<TestServer> {
     const server = new TestServer(dirPath, port);
-    await new Promise((x) => {
+    await new Promise(x => {
       return server.#server.once('listening', x);
     });
     return server;
@@ -79,7 +79,7 @@ export class TestServer {
       cert: readFileSync(join(__dirname, '..', 'cert.pem')),
       passphrase: 'aaaa',
     });
-    await new Promise((x) => {
+    await new Promise(x => {
       return server.#server.once('listening', x);
     });
     return server;
@@ -94,7 +94,7 @@ export class TestServer {
       this.#server = createHttpServer(this.#onRequest);
     }
     this.#server.on('connection', this.#onServerConnection);
-    this.#wsServer = new WebSocketServer({ server: this.#server });
+    this.#wsServer = new WebSocketServer({server: this.#server});
     this.#wsServer.on('connection', this.#onWebSocketConnection);
     this.#server.listen(port);
   }
@@ -103,7 +103,7 @@ export class TestServer {
     this.#connections.add(connection);
     // ECONNRESET is a legit error given
     // that tab closing simply kills process.
-    connection.on('error', (error) => {
+    connection.on('error', error => {
       if ((error as NodeJS.ErrnoException).code !== 'ECONNRESET') {
         throw error;
       }
@@ -118,7 +118,7 @@ export class TestServer {
   }
 
   setAuth(path: string, username: string, password: string): void {
-    this.#auths.set(path, { username, password });
+    this.#auths.set(path, {username, password});
   }
 
   enableGzip(path: string): void {
@@ -135,7 +135,7 @@ export class TestServer {
       socket.destroy();
     }
     this.#connections.clear();
-    await new Promise((x) => {
+    await new Promise(x => {
       return this.#server.close(x);
     });
   }
@@ -149,7 +149,7 @@ export class TestServer {
 
   setRedirect(from: string, to: string): void {
     this.setRoute(from, (_, res) => {
-      res.writeHead(302, { location: to });
+      res.writeHead(302, {location: to});
       res.end();
     });
   }
@@ -165,7 +165,7 @@ export class TestServer {
       resolve = res;
       reject = rej;
     });
-    this.#requestSubscribers.set(path, { resolve, reject, promise });
+    this.#requestSubscribers.set(path, {resolve, reject, promise});
     return promise;
   }
 
@@ -185,14 +185,14 @@ export class TestServer {
     request: TestIncomingMessage,
     response
   ): void => {
-    request.on('error', (error: { code: string }) => {
+    request.on('error', (error: {code: string}) => {
       if (error.code === 'ECONNRESET') {
         response.end();
       } else {
         throw error;
       }
     });
-    request.postBody = new Promise((resolve) => {
+    request.postBody = new Promise(resolve => {
       let body = '';
       request.on('data', (chunk: string) => {
         return (body += chunk);

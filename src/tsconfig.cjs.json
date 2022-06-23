@@ -6,7 +6,7 @@
     "module": "CommonJS"
   },
   "references": [
-    { "path": "../vendor/tsconfig.cjs.json" },
-    { "path": "../compat/cjs/tsconfig.json" }
+    {"path": "../vendor/tsconfig.cjs.json"},
+    {"path": "../compat/cjs/tsconfig.json"}
   ]
 }

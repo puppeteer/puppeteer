@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Protocol } from 'devtools-protocol';
-import { ProtocolMapping } from 'devtools-protocol/types/protocol-mapping.js';
-import { assert } from './assert.js';
-import { ProtocolError } from './Errors.js';
-import { EventEmitter } from './EventEmitter.js';
-import { Frame } from './FrameManager.js';
-import { debugError, isString } from './util.js';
-import { HTTPResponse } from './HTTPResponse.js';
+import {Protocol} from 'devtools-protocol';
+import {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
+import {assert} from './assert.js';
+import {ProtocolError} from './Errors.js';
+import {EventEmitter} from './EventEmitter.js';
+import {Frame} from './FrameManager.js';
+import {debugError, isString} from './util.js';
+import {HTTPResponse} from './HTTPResponse.js';
 
 /**
  * @public
@@ -158,6 +158,15 @@ export class HTTPRequest {
   #initiator: Protocol.Network.Initiator;
 
   /**
+   * Warning! Using this client can break Puppeteer. Use with caution.
+   *
+   * @experimental
+   */
+  get client(): CDPSession {
+    return this.#client;
+  }
+
+  /**
    * @internal
    */
   constructor(
@@ -236,12 +245,12 @@ export class HTTPRequest {
    */
   interceptResolutionState(): InterceptResolutionState {
     if (!this.#allowInterception) {
-      return { action: InterceptResolutionAction.Disabled };
+      return {action: InterceptResolutionAction.Disabled};
     }
     if (this.#interceptionHandled) {
-      return { action: InterceptResolutionAction.AlreadyHandled };
+      return {action: InterceptResolutionAction.AlreadyHandled};
     }
-    return { ...this.#interceptResolutionState };
+    return {...this.#interceptResolutionState};
   }
 
   /**
@@ -272,7 +281,7 @@ export class HTTPRequest {
     await this.#interceptHandlers.reduce((promiseChain, interceptAction) => {
       return promiseChain.then(interceptAction);
     }, Promise.resolve());
-    const { action } = this.interceptResolutionState();
+    const {action} = this.interceptResolutionState();
     switch (action) {
       case 'abort':
         return this.#abort(this.#abortErrorReason);
@@ -397,7 +406,7 @@ export class HTTPRequest {
    * message, e.g. `net::ERR_FAILED`. It is not guaranteed that there will be
    * failure text if the request fails.
    */
-  failure(): { errorText: string } | null {
+  failure(): {errorText: string} | null {
     if (!this._failureText) {
       return null;
     }
@@ -472,7 +481,7 @@ export class HTTPRequest {
   }
 
   async #continue(overrides: ContinueRequestOverrides = {}): Promise<void> {
-    const { url, method, postData, headers } = overrides;
+    const {url, method, postData, headers} = overrides;
     this.#interceptionHandled = true;
 
     const postDataBinaryBase64 = postData
@@ -492,7 +501,7 @@ export class HTTPRequest {
         postData: postDataBinaryBase64,
         headers: headers ? headersArray(headers) : undefined,
       })
-      .catch((error) => {
+      .catch(error => {
         this.#interceptionHandled = false;
         return handleError(error);
       });
@@ -575,7 +584,7 @@ export class HTTPRequest {
         const value = response.headers[header];
 
         responseHeaders[header.toLowerCase()] = Array.isArray(value)
-          ? value.map((item) => {
+          ? value.map(item => {
               return String(item);
             })
           : String(value);
@@ -604,7 +613,7 @@ export class HTTPRequest {
         responseHeaders: headersArray(responseHeaders),
         body: responseBody ? responseBody.toString('base64') : undefined,
       })
-      .catch((error) => {
+      .catch(error => {
         this.#interceptionHandled = false;
         return handleError(error);
       });
@@ -731,7 +740,7 @@ export type ActionResult = 'continue' | 'abort' | 'respond';
 
 function headersArray(
   headers: Record<string, string | string[]>
-): Array<{ name: string; value: string }> {
+): Array<{name: string; value: string}> {
   const result = [];
   for (const name in headers) {
     const value = headers[name];
@@ -740,8 +749,8 @@ function headersArray(
       const values = Array.isArray(value) ? value : [value];
 
       result.push(
-        ...values.map((value) => {
-          return { name, value: value + '' };
+        ...values.map(value => {
+          return {name, value: value + ''};
         })
       );
     }
@@ -762,7 +771,7 @@ async function handleError(error: ProtocolError) {
 // List taken from
 // https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
 // with extra 306 and 418 codes.
-const STATUS_TEXTS: { [key: string]: string | undefined } = {
+const STATUS_TEXTS: {[key: string]: string | undefined} = {
   '100': 'Continue',
   '101': 'Switching Protocols',
   '102': 'Processing',

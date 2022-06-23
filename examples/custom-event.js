@@ -23,7 +23,7 @@ const puppeteer = require('puppeteer');
   const page = await browser.newPage();
 
   // Define a window.onCustomEvent function on the page.
-  await page.exposeFunction('onCustomEvent', (e) => {
+  await page.exposeFunction('onCustomEvent', e => {
     console.log(`${e.type} fired`, e.detail || '');
   });
 
@@ -33,9 +33,9 @@ const puppeteer = require('puppeteer');
    * @returns {!Promise}
    */
   function listenFor(type) {
-    return page.evaluateOnNewDocument((type) => {
-      document.addEventListener(type, (e) => {
-        window.onCustomEvent({ type, detail: e.detail });
+    return page.evaluateOnNewDocument(type => {
+      document.addEventListener(type, e => {
+        window.onCustomEvent({type, detail: e.detail});
       });
     }, type);
   }

@@ -18,14 +18,14 @@ import {
   LaunchOptions,
   BrowserLaunchArgumentOptions,
 } from './node/LaunchOptions.js';
-import { BrowserConnectOptions } from './common/BrowserConnector.js';
-import { Product } from './common/Product.js';
-import { Browser } from './common/Browser.js';
-import { ConnectOptions } from './common/Puppeteer.js';
-import { DevicesMap } from './common/DeviceDescriptors.js';
-import { PuppeteerErrors } from './common/Errors.js';
-import { PredefinedNetworkConditions } from './common/NetworkConditions.js';
-import { CustomQueryHandler } from './common/QueryHandler.js';
+import {BrowserConnectOptions} from './common/BrowserConnector.js';
+import {Product} from './common/Product.js';
+import {Browser} from './common/Browser.js';
+import {ConnectOptions} from './common/Puppeteer.js';
+import {DevicesMap} from './common/DeviceDescriptors.js';
+import {PuppeteerErrors} from './common/Errors.js';
+import {PredefinedNetworkConditions} from './common/NetworkConditions.js';
+import {CustomQueryHandler} from './common/QueryHandler.js';
 
 /*
  * This file re-exports any APIs that we want to have documentation generated
@@ -61,7 +61,7 @@ export * from './common/Page.js';
 export * from './common/Product.js';
 export * from './common/Puppeteer.js';
 export * from './common/BrowserConnector.js';
-export * from './node/Launcher.js';
+export * from './node/ProductLauncher.js';
 export * from './node/LaunchOptions.js';
 export * from './common/HTTPRequest.js';
 export * from './common/HTTPResponse.js';
@@ -72,7 +72,7 @@ export * from './common/Tracing.js';
 export * from './common/NetworkManager.js';
 export * from './common/WebWorker.js';
 export * from './common/USKeyboardLayout.js';
-export * from './common/EvalTypes.js';
+export * from './common/types.js';
 export * from './common/PDFOptions.js';
 export * from './common/TimeoutSettings.js';
 export * from './common/LifecycleWatcher.js';

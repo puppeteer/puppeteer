@@ -15,12 +15,11 @@
  */
 
 import expect from 'expect';
-import { JSHandle } from '../../lib/cjs/puppeteer/common/JSHandle.js';
 import {
   getTestState,
+  itFailsFirefox,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
-  itFailsFirefox,
   shortWaitForArrayToHaveAtLeastNElements,
 } from './mocha-utils.js';
 
@@ -30,7 +29,7 @@ describe('JSHandle', function () {
 
   describe('Page.evaluateHandle', function () {
     it('should work', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       const windowHandle = await page.evaluateHandle(() => {
         return window;
@@ -38,68 +37,69 @@ describe('JSHandle', function () {
       expect(windowHandle).toBeTruthy();
     });
     it('should accept object handle as an argument', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       const navigatorHandle = await page.evaluateHandle(() => {
         return navigator;
       });
-      const text = await page.evaluate((e: Navigator) => {
+      const text = await page.evaluate(e => {
         return e.userAgent;
       }, navigatorHandle);
       expect(text).toContain('Mozilla');
     });
     it('should accept object handle to primitive types', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         return 5;
       });
-      const isFive = await page.evaluate((e) => {
+      const isFive = await page.evaluate(e => {
         return Object.is(e, 5);
       }, aHandle);
       expect(isFive).toBeTruthy();
     });
     it('should warn about recursive objects', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
-      const test: { obj?: unknown } = {};
+      const test: {obj?: unknown} = {};
       test.obj = test;
       let error!: Error;
       await page
         .evaluateHandle(
-          (opts) => {
+          opts => {
+            // @ts-expect-error we are deliberately passing a bad type here
+            // (nested object)
             return opts.elem;
           },
-          // @ts-expect-error we are deliberately passing a bad type here (nested object)
-          { test }
+          {test}
         )
-        .catch((error_) => {
+        .catch(error_ => {
           return (error = error_);
         });
       expect(error.message).toContain('Recursive objects are not allowed.');
     });
     it('should accept object handle to unserializable value', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         return Infinity;
       });
       expect(
-        await page.evaluate((e) => {
+        await page.evaluate(e => {
           return Object.is(e, Infinity);
         }, aHandle)
       ).toBe(true);
     });
     it('should use the same JS wrappers', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         (globalThis as any).FOO = 123;
         return window;
       });
       expect(
-        await page.evaluate((e: { FOO: number }) => {
-          return e.FOO;
+        await page.evaluate(e => {
+          return (e as any).FOO;
         }, aHandle)
       ).toBe(123);
     });
@@ -107,7 +107,7 @@ describe('JSHandle', function () {
 
   describe('JSHandle.getProperty', function () {
     it('should work', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         return {
@@ -119,36 +119,21 @@ describe('JSHandle', function () {
       const twoHandle = await aHandle.getProperty('two');
       expect(await twoHandle.jsonValue()).toEqual(2);
     });
-
-    it('should return a JSHandle even if the property does not exist', async () => {
-      const { page } = getTestState();
-
-      const aHandle = await page.evaluateHandle(() => {
-        return {
-          one: 1,
-          two: 2,
-          three: 3,
-        };
-      });
-      const undefinedHandle = await aHandle.getProperty('doesnotexist');
-      expect(undefinedHandle).toBeInstanceOf(JSHandle);
-      expect(await undefinedHandle.jsonValue()).toBe(undefined);
-    });
   });
 
   describe('JSHandle.jsonValue', function () {
     it('should work', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
-        return { foo: 'bar' };
+        return {foo: 'bar'};
       });
       const json = await aHandle.jsonValue<Record<string, string>>();
-      expect(json).toEqual({ foo: 'bar' });
+      expect(json).toEqual({foo: 'bar'});
     });
 
     it('works with jsonValues that are not objects', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         return ['a', 'b'];
@@ -158,7 +143,7 @@ describe('JSHandle', function () {
     });
 
     it('works with jsonValues that are primitives', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         return 'foo';
@@ -168,7 +153,7 @@ describe('JSHandle', function () {
     });
 
     itFailsFirefox('should not work with dates', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       const dateHandle = await page.evaluateHandle(() => {
         return new Date('2017-09-26T00:00:00.000Z');
@@ -177,11 +162,11 @@ describe('JSHandle', function () {
       expect(json).toEqual({});
     });
     it('should throw for circular objects', async () => {
-      const { page, isChrome } = getTestState();
+      const {page, isChrome} = getTestState();
 
       const windowHandle = await page.evaluateHandle('window');
       let error!: Error;
-      await windowHandle.jsonValue().catch((error_) => {
+      await windowHandle.jsonValue().catch(error_ => {
         return (error = error_);
       });
       if (isChrome) {
@@ -194,7 +179,7 @@ describe('JSHandle', function () {
 
   describe('JSHandle.getProperties', function () {
     it('should work', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         return {
@@ -207,7 +192,7 @@ describe('JSHandle', function () {
       expect(await foo.jsonValue()).toBe('bar');
     });
     it('should return even non-own properties', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         class A {
@@ -233,7 +218,7 @@ describe('JSHandle', function () {
 
   describe('JSHandle.asElement', function () {
     it('should work', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         return document.body;
@@ -242,7 +227,7 @@ describe('JSHandle', function () {
       expect(element).toBeTruthy();
     });
     it('should return null for non-elements', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         return 2;
@@ -251,7 +236,7 @@ describe('JSHandle', function () {
       expect(element).toBeFalsy();
     });
     it('should return ElementHandle for TextNodes', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.setContent('<div>ee!</div>');
       const aHandle = await page.evaluateHandle(() => {
@@ -269,7 +254,7 @@ describe('JSHandle', function () {
 
   describe('JSHandle.toString', function () {
     it('should work for primitives', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       const numberHandle = await page.evaluateHandle(() => {
         return 2;
@@ -281,7 +266,7 @@ describe('JSHandle', function () {
       expect(stringHandle.toString()).toBe('JSHandle:a');
     });
     it('should work for complicated objects', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         return window;
@@ -289,7 +274,7 @@ describe('JSHandle', function () {
       expect(aHandle.toString()).toBe('JSHandle@object');
     });
     it('should work with different subtypes', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       expect((await page.evaluateHandle('(function(){})')).toString()).toBe(
         'JSHandle@function'
@@ -348,7 +333,7 @@ describe('JSHandle', function () {
 
   describe('JSHandle.clickablePoint', function () {
     it('should work', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.evaluate(() => {
         document.body.style.padding = '0';
@@ -358,7 +343,7 @@ describe('JSHandle', function () {
         `;
       });
       await page.evaluate(async () => {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
           return window.requestAnimationFrame(resolve);
         });
       });
@@ -379,7 +364,7 @@ describe('JSHandle', function () {
     });
 
     it('should work for iframes', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
       await page.evaluate(() => {
         document.body.style.padding = '10px';
         document.body.style.margin = '10px';
@@ -388,7 +373,7 @@ describe('JSHandle', function () {
         `;
       });
       await page.evaluate(async () => {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
           return window.requestAnimationFrame(resolve);
         });
       });
@@ -412,7 +397,7 @@ describe('JSHandle', function () {
 
   describe('JSHandle.click', function () {
     itFailsFirefox('should work', async () => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       const clicks: [x: number, y: number][] = [];
 
@@ -426,7 +411,7 @@ describe('JSHandle', function () {
         document.body.innerHTML = `
           <div style="cursor: pointer; width: 120px; height: 60px; margin: 30px; padding: 15px;"></div>
         `;
-        document.body.addEventListener('click', (e) => {
+        document.body.addEventListener('click', e => {
           (window as any).reportClick(e.clientX, e.clientY);
         });
       });
