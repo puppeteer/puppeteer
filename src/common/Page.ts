@@ -2897,7 +2897,7 @@ export class Page extends EventEmitter {
       targetId: this.#target._targetId,
     });
     let clip = options.clip ? processClip(options.clip) : undefined;
-    let {captureBeyondViewport = true, fromSurface = true} = options;
+    let {captureBeyondViewport = true, fromSurface: boolean? = true} = options;
     captureBeyondViewport =
       typeof captureBeyondViewport === 'boolean' ? captureBeyondViewport : true;
     fromSurface = typeof fromSurface === 'boolean' ? fromSurface : undefined;
