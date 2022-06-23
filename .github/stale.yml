@@ -1,0 +1,22 @@
+# Comment to post when closing a stale issue. Set to `false` to disable
+closeComment: >
+  We are closing this issue. If the issue still persists in the latest version of
+  Puppeteer, please reopen the issue and update the description. We will try our
+  best to accomodate it!
+# Number of days of inactivity before an issue becomes stale
+daysUntilStale: 60
+# Number of days of inactivity before a stale issue is closed
+daysUntilClose: 30
+# Issues with these labels will never be considered stale
+exemptLabels:
+  - confirmed
+  - feature
+# Comment to post when marking an issue as stale.
+markComment: >
+  We're marking this issue as unconfirmed because it has not had recent activity and 
+  we weren't able to confirm it yet. It will be closed if no further activity occurs
+  within the next 30 days.
+# Only mark issues.
+only: issues
+# Label to use when marking an issue as stale
+staleLabel: unconfirmed
