@@ -158,6 +158,15 @@ export class HTTPRequest {
   #initiator: Protocol.Network.Initiator;
 
   /**
+   * Warning! Using this client can break Puppeteer. Use with caution.
+   *
+   * @experimental
+   */
+  get client(): CDPSession {
+    return this.#client;
+  }
+
+  /**
    * @internal
    */
   constructor(
