@@ -17,15 +17,14 @@
 import expect from 'expect';
 import sinon from 'sinon';
 import {
+  describeFailsFirefox,
   getTestState,
+  itFailsFirefox,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
-  describeFailsFirefox,
-  itFailsFirefox,
 } from './mocha-utils.js';
 
 import utils from './utils.js';
-import {ElementHandle} from '../../lib/cjs/puppeteer/common/JSHandle.js';
 
 describe('ElementHandle specs', function () {
   setupTestBrowserHooks();
@@ -86,7 +85,7 @@ describe('ElementHandle specs', function () {
       `);
       const element = (await page.$('#therect'))!;
       const pptrBoundingBox = await element.boundingBox();
-      const webBoundingBox = await page.evaluate((e: HTMLElement) => {
+      const webBoundingBox = await page.evaluate(e => {
         const rect = e.getBoundingClientRect();
         return {x: rect.x, y: rect.y, width: rect.width, height: rect.height};
       }, element);
@@ -189,9 +188,9 @@ describe('ElementHandle specs', function () {
       const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/shadow.html');
-      const buttonHandle = await page.evaluateHandle<ElementHandle>(() => {
+      const buttonHandle = await page.evaluateHandle(() => {
         // @ts-expect-error button is expected to be in the page's scope.
-        return button;
+        return button as HTMLButtonElement;
       });
       await buttonHandle.click();
       expect(
@@ -205,8 +204,8 @@ describe('ElementHandle specs', function () {
       const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/input/button.html');
-      const buttonTextNode = await page.evaluateHandle<ElementHandle>(() => {
-        return document.querySelector('button')!.firstChild;
+      const buttonTextNode = await page.evaluateHandle(() => {
+        return document.querySelector('button')!.firstChild as HTMLElement;
       });
       let error!: Error;
       await buttonTextNode.click().catch(error_ => {
@@ -401,7 +400,7 @@ describe('ElementHandle specs', function () {
       });
       const element = (await page.$('getById/foo'))!;
       expect(
-        await page.evaluate<(element: HTMLElement) => string>(element => {
+        await page.evaluate(element => {
           return element.id;
         }, element)
       ).toBe('foo');
@@ -454,12 +453,9 @@ describe('ElementHandle specs', function () {
       const elements = await page.$$('getByClass/foo');
       const classNames = await Promise.all(
         elements.map(async element => {
-          return await page.evaluate<(element: HTMLElement) => string>(
-            element => {
-              return element.className;
-            },
-            element
-          );
+          return await page.evaluate(element => {
+            return element.className;
+          }, element);
         })
       );
 
@@ -539,7 +535,7 @@ describe('ElementHandle specs', function () {
           return element.querySelector(`.${selector}`);
         },
       });
-      const waitFor = page.waitFor('getByClass/foo');
+      const waitFor = page.waitForSelector('getByClass/foo');
 
       // Set the page content after the waitFor has been started.
       await page.setContent(

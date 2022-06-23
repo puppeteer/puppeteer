@@ -15,7 +15,6 @@
  */
 
 import expect from 'expect';
-import sinon from 'sinon';
 import {isErrorLike} from '../../lib/cjs/puppeteer/common/util.js';
 import {
   getTestState,
@@ -28,122 +27,6 @@ import {attachFrame, detachFrame} from './utils.js';
 describe('waittask specs', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
-
-  describe('Page.waitFor', function () {
-    /* This method is deprecated but we don't want the warnings showing up in
-     * tests. Until we remove this method we still want to ensure we don't break
-     * it.
-     */
-    beforeEach(() => {
-      return sinon.stub(console, 'warn').callsFake(() => {});
-    });
-
-    it('should wait for selector', async () => {
-      const {page, server} = getTestState();
-
-      let found = false;
-      const waitFor = page.waitForSelector('div').then(() => {
-        return (found = true);
-      });
-      await page.goto(server.EMPTY_PAGE);
-      expect(found).toBe(false);
-      await page.goto(server.PREFIX + '/grid.html');
-      await waitFor;
-      expect(found).toBe(true);
-    });
-
-    it('should wait for an xpath', async () => {
-      const {page, server} = getTestState();
-
-      let found = false;
-      const waitFor = page.waitFor('//div').then(() => {
-        return (found = true);
-      });
-      await page.goto(server.EMPTY_PAGE);
-      expect(found).toBe(false);
-      await page.goto(server.PREFIX + '/grid.html');
-      await waitFor;
-      expect(found).toBe(true);
-    });
-    it('should allow you to select an element with parenthesis-starting xpath', async () => {
-      const {page, server} = getTestState();
-      let found = false;
-      const waitFor = page.waitFor('(//img)[200]').then(() => {
-        found = true;
-      });
-      await page.goto(server.EMPTY_PAGE);
-      expect(found).toBe(false);
-      await page.goto(server.PREFIX + '/grid.html');
-      await waitFor;
-      expect(found).toBe(true);
-    });
-    it('should not allow you to select an element with single slash xpath', async () => {
-      const {page} = getTestState();
-
-      await page.setContent(`<div>some text</div>`);
-      let error!: Error;
-      await page.waitFor('/html/body/div').catch(error_ => {
-        return (error = error_);
-      });
-      expect(error).toBeTruthy();
-    });
-    it('should timeout', async () => {
-      const {page} = getTestState();
-
-      const startTime = Date.now();
-      const timeout = 42;
-      await page.waitFor(timeout);
-      expect(Date.now() - startTime).not.toBeLessThan(timeout / 2);
-    });
-    it('should work with multiline body', async () => {
-      const {page} = getTestState();
-
-      const result = await page.waitForFunction(`
-        (() => true)()
-      `);
-      expect(await result.jsonValue()).toBe(true);
-    });
-    it('should wait for predicate', async () => {
-      const {page} = getTestState();
-
-      await Promise.all([
-        page.waitFor(() => {
-          return window.innerWidth < 100;
-        }),
-        page.setViewport({width: 10, height: 10}),
-      ]);
-    });
-    it('should wait for predicate with arguments', async () => {
-      const {page} = getTestState();
-
-      await page.waitFor(
-        (arg1: number, arg2: number) => {
-          return arg1 !== arg2;
-        },
-        {},
-        1,
-        2
-      );
-    });
-
-    it('should log a deprecation warning', async () => {
-      const {page} = getTestState();
-
-      await page.waitFor(() => {
-        return true;
-      });
-
-      const consoleWarnStub = console.warn as sinon.SinonSpy;
-
-      expect(consoleWarnStub.calledOnce).toBe(true);
-      expect(
-        consoleWarnStub.firstCall.calledWith(
-          'waitFor is deprecated and will be removed in a future release. See https://github.com/puppeteer/puppeteer/issues/6214 for details and how to migrate your code.'
-        )
-      ).toBe(true);
-      expect((console.warn as sinon.SinonSpy).calledOnce).toBe(true);
-    });
-  });
 
   describe('Frame.waitForFunction', function () {
     it('should accept a string', async () => {

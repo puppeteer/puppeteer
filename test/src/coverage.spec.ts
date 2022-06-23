@@ -287,7 +287,7 @@ describe('Coverage specs', function () {
       const {page, server} = getTestState();
 
       await page.coverage.startCSSCoverage();
-      await page.evaluate<(url: string) => Promise<void>>(async url => {
+      await page.evaluate(async url => {
         document.body.textContent = 'hello, world';
 
         const link = document.createElement('link');

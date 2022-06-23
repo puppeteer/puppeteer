@@ -15,12 +15,11 @@
  */
 
 import expect from 'expect';
-import {JSHandle} from '../../lib/cjs/puppeteer/common/JSHandle.js';
 import {
   getTestState,
+  itFailsFirefox,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
-  itFailsFirefox,
   shortWaitForArrayToHaveAtLeastNElements,
 } from './mocha-utils.js';
 
@@ -43,7 +42,7 @@ describe('JSHandle', function () {
       const navigatorHandle = await page.evaluateHandle(() => {
         return navigator;
       });
-      const text = await page.evaluate((e: Navigator) => {
+      const text = await page.evaluate(e => {
         return e.userAgent;
       }, navigatorHandle);
       expect(text).toContain('Mozilla');
@@ -68,9 +67,10 @@ describe('JSHandle', function () {
       await page
         .evaluateHandle(
           opts => {
+            // @ts-expect-error we are deliberately passing a bad type here
+            // (nested object)
             return opts.elem;
           },
-          // @ts-expect-error we are deliberately passing a bad type here (nested object)
           {test}
         )
         .catch(error_ => {
@@ -98,8 +98,8 @@ describe('JSHandle', function () {
         return window;
       });
       expect(
-        await page.evaluate((e: {FOO: number}) => {
-          return e.FOO;
+        await page.evaluate(e => {
+          return (e as any).FOO;
         }, aHandle)
       ).toBe(123);
     });
@@ -118,21 +118,6 @@ describe('JSHandle', function () {
       });
       const twoHandle = await aHandle.getProperty('two');
       expect(await twoHandle.jsonValue()).toEqual(2);
-    });
-
-    it('should return a JSHandle even if the property does not exist', async () => {
-      const {page} = getTestState();
-
-      const aHandle = await page.evaluateHandle(() => {
-        return {
-          one: 1,
-          two: 2,
-          three: 3,
-        };
-      });
-      const undefinedHandle = await aHandle.getProperty('doesnotexist');
-      expect(undefinedHandle).toBeInstanceOf(JSHandle);
-      expect(await undefinedHandle.jsonValue()).toBe(undefined);
     });
   });
 

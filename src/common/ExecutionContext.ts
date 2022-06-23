@@ -18,10 +18,10 @@ import {Protocol} from 'devtools-protocol';
 import {assert} from './assert.js';
 import {CDPSession} from './Connection.js';
 import {DOMWorld} from './DOMWorld.js';
-import {EvaluateHandleFn, SerializableOrJSHandle} from './EvalTypes.js';
+import {EvaluateFunc, HandleFor, EvaluateParams} from './types.js';
 import {Frame} from './FrameManager.js';
-import {getExceptionMessage, isString, valueFromRemoteObject} from './util.js';
 import {ElementHandle, JSHandle, _createJSHandle} from './JSHandle.js';
+import {getExceptionMessage, isString, valueFromRemoteObject} from './util.js';
 
 /**
  * @public
@@ -134,11 +134,14 @@ export class ExecutionContext {
    *
    * @returns A promise that resolves to the return value of the given function.
    */
-  async evaluate<ReturnType>(
-    pageFunction: Function | string,
-    ...args: unknown[]
-  ): Promise<ReturnType> {
-    return await this.#evaluate<ReturnType>(true, pageFunction, ...args);
+  async evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>> {
+    return await this.#evaluate(true, pageFunction, ...args);
   }
 
   /**
@@ -183,18 +186,40 @@ export class ExecutionContext {
    * @returns A promise that resolves to the return value of the given function
    * as an in-page object (a {@link JSHandle}).
    */
-  async evaluateHandle<HandleType extends JSHandle | ElementHandle = JSHandle>(
-    pageFunction: EvaluateHandleFn,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<HandleType> {
-    return this.#evaluate<HandleType>(false, pageFunction, ...args);
+  async evaluateHandle<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    return this.#evaluate(false, pageFunction, ...args);
   }
 
-  async #evaluate<ReturnType>(
+  async #evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    returnByValue: true,
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>>;
+  async #evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    returnByValue: false,
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
+  async #evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
     returnByValue: boolean,
-    pageFunction: Function | string,
-    ...args: unknown[]
-  ): Promise<ReturnType> {
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>> | Awaited<ReturnType<Func>>> {
     const suffix = `//# sourceURL=${EVALUATION_SCRIPT_URL}`;
 
     if (isString(pageFunction)) {
@@ -365,7 +390,9 @@ export class ExecutionContext {
    *
    * @returns A handle to an array of objects with the given prototype.
    */
-  async queryObjects(prototypeHandle: JSHandle): Promise<JSHandle> {
+  async queryObjects<Prototype>(
+    prototypeHandle: JSHandle<Prototype>
+  ): Promise<HandleFor<Prototype[]>> {
     assert(!prototypeHandle._disposed, 'Prototype JSHandle is disposed!');
     assert(
       prototypeHandle._remoteObject.objectId,
@@ -374,7 +401,7 @@ export class ExecutionContext {
     const response = await this._client.send('Runtime.queryObjects', {
       prototypeObjectId: prototypeHandle._remoteObject.objectId,
     });
-    return _createJSHandle(this, response.objects);
+    return _createJSHandle(this, response.objects) as HandleFor<Prototype[]>;
   }
 
   /**

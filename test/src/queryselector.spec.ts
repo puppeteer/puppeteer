@@ -433,7 +433,7 @@ describe('querySelector', function () {
       const html = (await page.$('html'))!;
       const second = await html.$x(`./body/div[contains(@class, 'second')]`);
       const inner = await second[0]!.$x(`./div[contains(@class, 'inner')]`);
-      const content = await page.evaluate((e: HTMLElement) => {
+      const content = await page.evaluate(e => {
         return e.textContent;
       }, inner[0]!);
       expect(content).toBe('A');
@@ -480,7 +480,7 @@ describe('querySelector', function () {
       const elements = await html.$$('allArray/div');
       expect(elements.length).toBe(2);
       const promises = elements.map(element => {
-        return page.evaluate((e: HTMLElement) => {
+        return page.evaluate(e => {
           return e.textContent;
         }, element);
       });

@@ -33,8 +33,8 @@ export {ConnectionTransport, ProtocolMapping};
  * @public
  */
 export interface ConnectionCallback {
-  resolve: Function;
-  reject: Function;
+  resolve(args: unknown): void;
+  reject(args: unknown): void;
   error: ProtocolError;
   method: string;
 }

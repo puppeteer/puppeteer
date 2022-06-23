@@ -20,7 +20,6 @@ import path from 'path';
 import sinon from 'sinon';
 import {CDPSession} from '../../lib/cjs/puppeteer/common/Connection.js';
 import {ConsoleMessage} from '../../lib/cjs/puppeteer/common/ConsoleMessage.js';
-import {JSHandle} from '../../lib/cjs/puppeteer/common/JSHandle.js';
 import {Metrics, Page} from '../../lib/cjs/puppeteer/common/Page.js';
 import {
   describeFailsFirefox,
@@ -341,8 +340,8 @@ describe('Page', function () {
   });
 
   describe('BrowserContext.overridePermissions', function () {
-    function getPermission(page: Page, name: string) {
-      return page.evaluate((name: PermissionName) => {
+    function getPermission(page: Page, name: PermissionName) {
+      return page.evaluate(name => {
         return navigator.permissions.query({name}).then(result => {
           return result.state;
         });
@@ -559,7 +558,7 @@ describe('Page', function () {
         return Set.prototype;
       });
       const objectsHandle = await page.queryObjects(prototypeHandle);
-      const count = await page.evaluate((objects: JSHandle[]) => {
+      const count = await page.evaluate(objects => {
         return objects.length;
       }, objectsHandle);
       expect(count).toBe(1);
@@ -580,7 +579,7 @@ describe('Page', function () {
         return Set.prototype;
       });
       const objectsHandle = await page.queryObjects(prototypeHandle);
-      const count = await page.evaluate((objects: JSHandle[]) => {
+      const count = await page.evaluate(objects => {
         return objects.length;
       }, objectsHandle);
       expect(count).toBe(1);
@@ -1246,11 +1245,9 @@ describe('Page', function () {
           return {x: a.x + b.x};
         }
       );
-      const result = await page.evaluate<() => Promise<{x: number}>>(
-        async () => {
-          return (globalThis as any).complexObject({x: 5}, {x: 2});
-        }
-      );
+      const result = await page.evaluate(async () => {
+        return (globalThis as any).complexObject({x: 5}, {x: 2});
+      });
       expect(result.x).toBe(7);
     });
     it('should fallback to default export when passed a module object', async () => {

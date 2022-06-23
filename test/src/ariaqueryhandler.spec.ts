@@ -276,8 +276,9 @@ describeChromeOnly('AriaQueryHandler', () => {
         page.waitForSelector('aria/anything'),
         page.setContent(`<h1>anything</h1>`),
       ]);
+      assert(handle);
       expect(
-        await page.evaluate((x: HTMLElement) => {
+        await page.evaluate(x => {
           return x.textContent;
         }, handle)
       ).toBe('anything');
@@ -651,7 +652,9 @@ describeChromeOnly('AriaQueryHandler', () => {
     });
     it('should find by role "button"', async () => {
       const {page} = getTestState();
-      const found = await page.$$<HTMLButtonElement>('aria/[role="button"]');
+      const found = (await page.$$(
+        'aria/[role="button"]'
+      )) as ElementHandle<HTMLButtonElement>[];
       const ids = await getIds(found);
       expect(ids).toEqual([
         'node5',
