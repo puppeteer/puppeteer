@@ -17,14 +17,7 @@
 import {Protocol} from 'devtools-protocol';
 import {assert} from './assert.js';
 import {CDPSession} from './Connection.js';
-import {
-  EvaluateFn,
-  EvaluateFnReturnType,
-  EvaluateHandleFn,
-  SerializableOrJSHandle,
-  UnwrapPromiseLike,
-  WrapElementHandle,
-} from './EvalTypes.js';
+import {EvaluateFunc, EvaluateParams, HandleFor, HandleOr} from './types.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {Frame, FrameManager} from './FrameManager.js';
 import {MouseButton} from './Input.js';
@@ -37,6 +30,7 @@ import {
   releaseObject,
   valueFromRemoteObject,
 } from './util.js';
+import {WaitForSelectorOptions} from './DOMWorld.js';
 
 /**
  * @public
@@ -70,7 +64,7 @@ export interface BoundingBox extends Point {
 export function _createJSHandle(
   context: ExecutionContext,
   remoteObject: Protocol.Runtime.RemoteObject
-): JSHandle {
+): JSHandle | ElementHandle {
   const frame = context.frame();
   if (remoteObject.subtype === 'node' && frame) {
     const frameManager = frame._frameManager;
@@ -114,7 +108,7 @@ const applyOffsetsToQuad = (
  *
  * @public
  */
-export class JSHandle<HandleObjectType = unknown> {
+export class JSHandle<T = unknown> {
   #client: CDPSession;
   #disposed = false;
   #context: ExecutionContext;
@@ -179,13 +173,14 @@ export class JSHandle<HandleObjectType = unknown> {
    * ```
    */
 
-  async evaluate<T extends EvaluateFn<HandleObjectType>>(
-    pageFunction: T | string,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<UnwrapPromiseLike<EvaluateFnReturnType<T>>> {
-    return await this.executionContext().evaluate<
-      UnwrapPromiseLike<EvaluateFnReturnType<T>>
-    >(pageFunction, this, ...args);
+  async evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<[T, ...Params]> = EvaluateFunc<[T, ...Params]>
+  >(
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>> {
+    return await this.executionContext().evaluate(pageFunction, this, ...args);
   }
 
   /**
@@ -203,10 +198,13 @@ export class JSHandle<HandleObjectType = unknown> {
    *
    * See {@link Page.evaluateHandle} for more details.
    */
-  async evaluateHandle<HandleType extends JSHandle = JSHandle>(
-    pageFunction: EvaluateHandleFn,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<HandleType> {
+  async evaluateHandle<
+    Params extends unknown[],
+    Func extends EvaluateFunc<[T, ...Params]> = EvaluateFunc<[T, ...Params]>
+  >(
+    pageFunction: Func,
+    ...args: EvaluateParams<Params>
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     return await this.executionContext().evaluateHandle(
       pageFunction,
       this,
@@ -214,22 +212,19 @@ export class JSHandle<HandleObjectType = unknown> {
     );
   }
 
-  /** Fetches a single property from the referenced object.
+  /**
+   * Fetches a single property from the referenced object.
    */
-  async getProperty(propertyName: string): Promise<JSHandle> {
-    const objectHandle = await this.evaluateHandle(
-      (object: Element, propertyName: keyof Element) => {
-        const result: Record<string, unknown> = {__proto__: null};
-        result[propertyName] = object[propertyName];
-        return result;
-      },
-      propertyName
-    );
-    const properties = await objectHandle.getProperties();
-    const result = properties.get(propertyName);
-    assert(result instanceof JSHandle);
-    await objectHandle.dispose();
-    return result;
+  async getProperty<K extends keyof T>(
+    propertyName: HandleOr<K>
+  ): Promise<HandleFor<T[K]>>;
+  async getProperty(propertyName: string): Promise<JSHandle<unknown>>;
+  async getProperty<K extends keyof T>(
+    propertyName: HandleOr<K>
+  ): Promise<HandleFor<T[K]>> {
+    return await this.evaluateHandle((object, propertyName) => {
+      return object[propertyName];
+    }, propertyName);
   }
 
   /**
@@ -412,13 +407,17 @@ export class ElementHandle<
    * (30 seconds). Pass `0` to disable timeout. The default value can be changed
    * by using the {@link Page.setDefaultTimeout} method.
    */
+  async waitForSelector<Selector extends keyof HTMLElementTagNameMap>(
+    selector: Selector,
+    options?: Exclude<WaitForSelectorOptions, 'root'>
+  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;
   async waitForSelector(
     selector: string,
-    options: {
-      visible?: boolean;
-      hidden?: boolean;
-      timeout?: number;
-    } = {}
+    options?: Exclude<WaitForSelectorOptions, 'root'>
+  ): Promise<ElementHandle | null>;
+  async waitForSelector(
+    selector: string,
+    options: Exclude<WaitForSelectorOptions, 'root'> = {}
   ): Promise<ElementHandle | null> {
     const frame = this._context.frame();
     assert(frame);
@@ -539,10 +538,7 @@ export class ElementHandle<
 
   async #scrollIntoViewIfNeeded(): Promise<void> {
     const error = await this.evaluate(
-      async (
-        element: Element,
-        pageJavascriptEnabled: boolean
-      ): Promise<string | false> => {
+      async (element, pageJavascriptEnabled): Promise<string | false> => {
         if (!element.isConnected) {
           return 'Node is detached from document';
         }
@@ -828,7 +824,7 @@ export class ElementHandle<
       );
     }
 
-    return this.evaluate((element: Element, vals: string[]): string[] => {
+    return this.evaluate((element, vals): string[] => {
       const values = new Set(vals);
       if (!(element instanceof HTMLSelectElement)) {
         throw new Error('Element is not a <select> element.');
@@ -870,15 +866,13 @@ export class ElementHandle<
    *    Note for locals script connecting to remote chrome environments,
    *    paths must be absolute.
    */
-  async uploadFile(...filePaths: string[]): Promise<void> {
-    const isMultiple = await this.evaluate<(element: Element) => boolean>(
-      element => {
-        if (!(element instanceof HTMLInputElement)) {
-          throw new Error('uploadFile can only be called on an input element.');
-        }
-        return element.multiple;
-      }
-    );
+  async uploadFile(
+    this: ElementHandle<HTMLInputElement>,
+    ...filePaths: string[]
+  ): Promise<void> {
+    const isMultiple = await this.evaluate(element => {
+      return element.multiple;
+    });
     assert(
       filePaths.length <= 1 || isMultiple,
       'Multiple file uploads only work with <input type=file multiple>'
@@ -912,7 +906,7 @@ export class ElementHandle<
          so the solution is to eval the element value to a new FileList directly.
      */
     if (files.length === 0) {
-      await (this as ElementHandle<HTMLInputElement>).evaluate(element => {
+      await this.evaluate(element => {
         element.files = new DataTransfer().files;
 
         // Dispatch events for this case because it should behave akin to a user action.
@@ -943,7 +937,10 @@ export class ElementHandle<
    * Calls {@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus | focus} on the element.
    */
   async focus(): Promise<void> {
-    await (this as ElementHandle<HTMLElement>).evaluate(element => {
+    await this.evaluate(element => {
+      if (!(element instanceof HTMLElement)) {
+        throw new Error('Cannot focus non-HTMLElement');
+      }
       return element.focus();
     });
   }
@@ -1126,9 +1123,11 @@ export class ElementHandle<
    * @returns `null` if no element matches the selector.
    * @throws `Error` if the selector has no associated query handler.
    */
-  async $<T extends Element = Element>(
-    selector: string
-  ): Promise<ElementHandle<T> | null> {
+  async $<Selector extends keyof HTMLElementTagNameMap>(
+    selector: Selector
+  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;
+  async $(selector: string): Promise<ElementHandle | null>;
+  async $(selector: string): Promise<ElementHandle | null> {
     const {updatedSelector, queryHandler} =
       _getQueryHandlerAndSelector(selector);
     assert(
@@ -1149,9 +1148,11 @@ export class ElementHandle<
    * @returns `[]` if no element matches the selector.
    * @throws `Error` if the selector has no associated query handler.
    */
-  async $$<T extends Element = Element>(
-    selector: string
-  ): Promise<Array<ElementHandle<T>>> {
+  async $$<Selector extends keyof HTMLElementTagNameMap>(
+    selector: Selector
+  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]>[]>;
+  async $$(selector: string): Promise<ElementHandle[]>;
+  async $$(selector: string): Promise<ElementHandle[]> {
     const {updatedSelector, queryHandler} =
       _getQueryHandlerAndSelector(selector);
     assert(
@@ -1176,37 +1177,46 @@ export class ElementHandle<
    * expect(await tweetHandle.$eval('.retweets', node => node.innerText)).toBe('10');
    * ```
    */
-  async $eval<ReturnType>(
+  async $eval<
+    Selector extends keyof HTMLElementTagNameMap,
+    Params extends unknown[],
+    Func extends EvaluateFunc<
+      [HTMLElementTagNameMap[Selector], ...Params]
+    > = EvaluateFunc<[HTMLElementTagNameMap[Selector], ...Params]>
+  >(
+    selector: Selector,
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>>;
+  async $eval<
+    Params extends unknown[],
+    Func extends EvaluateFunc<[Element, ...Params]> = EvaluateFunc<
+      [Element, ...Params]
+    >
+  >(
     selector: string,
-    pageFunction: (
-      element: Element,
-      ...args: unknown[]
-    ) => ReturnType | Promise<ReturnType>,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<WrapElementHandle<ReturnType>> {
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>>;
+  async $eval<
+    Params extends unknown[],
+    Func extends EvaluateFunc<[Element, ...Params]> = EvaluateFunc<
+      [Element, ...Params]
+    >
+  >(
+    selector: string,
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>> {
     const elementHandle = await this.$(selector);
     if (!elementHandle) {
       throw new Error(
         `Error: failed to find element matching selector "${selector}"`
       );
     }
-    const result = await elementHandle.evaluate<
-      (
-        element: Element,
-        ...args: SerializableOrJSHandle[]
-      ) => ReturnType | Promise<ReturnType>
-    >(pageFunction, ...args);
+    const result = await elementHandle.evaluate(pageFunction, ...args);
     await elementHandle.dispose();
-
-    /**
-     * This `as` is a little unfortunate but helps TS understand the behavior of
-     * `elementHandle.evaluate`. If evaluate returns an element it will return an
-     * ElementHandle instance, rather than the plain object. All the
-     * WrapElementHandle type does is wrap ReturnType into
-     * ElementHandle<ReturnType> if it is an ElementHandle, or leave it alone as
-     * ReturnType if it isn't.
-     */
-    return result as WrapElementHandle<ReturnType>;
+    return result;
   }
 
   /**
@@ -1232,28 +1242,44 @@ export class ElementHandle<
    *  .toEqual(['Hello!', 'Hi!']);
    * ```
    */
-  async $$eval<ReturnType>(
+  async $$eval<
+    Selector extends keyof HTMLElementTagNameMap,
+    Params extends unknown[],
+    Func extends EvaluateFunc<
+      [HTMLElementTagNameMap[Selector][], ...Params]
+    > = EvaluateFunc<[HTMLElementTagNameMap[Selector][], ...Params]>
+  >(
+    selector: Selector,
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>>;
+  async $$eval<
+    Params extends unknown[],
+    Func extends EvaluateFunc<[Element[], ...Params]> = EvaluateFunc<
+      [Element[], ...Params]
+    >
+  >(
     selector: string,
-    pageFunction: EvaluateFn<
-      Element[],
-      unknown,
-      ReturnType | Promise<ReturnType>
-    >,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<WrapElementHandle<ReturnType>> {
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>>;
+  async $$eval<
+    Params extends unknown[],
+    Func extends EvaluateFunc<[Element[], ...Params]> = EvaluateFunc<
+      [Element[], ...Params]
+    >
+  >(
+    selector: string,
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>> {
     const {updatedSelector, queryHandler} =
       _getQueryHandlerAndSelector(selector);
     assert(queryHandler.queryAllArray);
     const arrayHandle = await queryHandler.queryAllArray(this, updatedSelector);
-    const result = await arrayHandle.evaluate<EvaluateFn<Element[]>>(
-      pageFunction,
-      ...args
-    );
+    const result = await arrayHandle.evaluate(pageFunction, ...args);
     await arrayHandle.dispose();
-    /* This `as` exists for the same reason as the `as` in $eval above.
-     * See the comment there for a full explanation.
-     */
-    return result as WrapElementHandle<ReturnType>;
+    return result;
   }
 
   /**
@@ -1262,24 +1288,21 @@ export class ElementHandle<
    * @param expression - Expression to {@link https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate | evaluate}
    */
   async $x(expression: string): Promise<ElementHandle[]> {
-    const arrayHandle = await this.evaluateHandle(
-      (element: Document, expression: string) => {
-        const document = element.ownerDocument || element;
-        const iterator = document.evaluate(
-          expression,
-          element,
-          null,
-          XPathResult.ORDERED_NODE_ITERATOR_TYPE
-        );
-        const array = [];
-        let item;
-        while ((item = iterator.iterateNext())) {
-          array.push(item);
-        }
-        return array;
-      },
-      expression
-    );
+    const arrayHandle = await this.evaluateHandle((element, expression) => {
+      const document = element.ownerDocument || element;
+      const iterator = document.evaluate(
+        expression,
+        element,
+        null,
+        XPathResult.ORDERED_NODE_ITERATOR_TYPE
+      );
+      const array = [];
+      let item;
+      while ((item = iterator.iterateNext())) {
+        array.push(item);
+      }
+      return array;
+    }, expression);
     const properties = await arrayHandle.getProperties();
     await arrayHandle.dispose();
     const result = [];
@@ -1298,8 +1321,8 @@ export class ElementHandle<
   async isIntersectingViewport(options?: {
     threshold?: number;
   }): Promise<boolean> {
-    const {threshold = 0} = options || {};
-    return await this.evaluate(async (element: Element, threshold: number) => {
+    const {threshold = 0} = options ?? {};
+    return await this.evaluate(async (element, threshold) => {
       const visibleRatio = await new Promise<number>(resolve => {
         const observer = new IntersectionObserver(entries => {
           resolve(entries[0]!.intersectionRatio);

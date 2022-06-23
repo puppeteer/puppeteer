@@ -467,7 +467,7 @@ describe('Keyboard', function () {
     await page.type('textarea', '👹 Tokyo street Japan 🇯🇵');
     expect(
       await page.$eval('textarea', textarea => {
-        return (textarea as HTMLInputElement).value;
+        return textarea.value;
       })
     ).toBe('👹 Tokyo street Japan 🇯🇵');
   });
@@ -485,7 +485,7 @@ describe('Keyboard', function () {
     await textarea.type('👹 Tokyo street Japan 🇯🇵');
     expect(
       await frame.$eval('textarea', textarea => {
-        return (textarea as HTMLInputElement).value;
+        return textarea.value;
       })
     ).toBe('👹 Tokyo street Japan 🇯🇵');
   });

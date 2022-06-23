@@ -430,12 +430,12 @@ describe('Cookie specs', () => {
 
       await page.goto(server.PREFIX + '/grid.html');
       await page.setCookie({name: 'localhost-cookie', value: 'best'});
-      await page.evaluate<(src: string) => Promise<void>>(src => {
+      await page.evaluate(src => {
         let fulfill!: () => void;
         const promise = new Promise<void>(x => {
           return (fulfill = x);
         });
-        const iframe = document.createElement('iframe') as HTMLIFrameElement;
+        const iframe = document.createElement('iframe');
         document.body.appendChild(iframe);
         iframe.onload = fulfill;
         iframe.src = src;
@@ -499,7 +499,7 @@ describe('Cookie specs', () => {
 
         try {
           await page.goto(httpsServer.PREFIX + '/grid.html');
-          await page.evaluate<(src: string) => Promise<void>>(src => {
+          await page.evaluate(src => {
             let fulfill!: () => void;
             const promise = new Promise<void>(x => {
               return (fulfill = x);

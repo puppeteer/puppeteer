@@ -16,11 +16,11 @@
 import {Protocol} from 'devtools-protocol';
 import {CDPSession} from './Connection.js';
 import {ConsoleMessageType} from './ConsoleMessage.js';
-import {EvaluateHandleFn, SerializableOrJSHandle} from './EvalTypes.js';
+import {EvaluateFunc, EvaluateParams, HandleFor} from './types.js';
 import {EventEmitter} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {debugError} from './util.js';
 import {JSHandle} from './JSHandle.js';
+import {debugError} from './util.js';
 
 /**
  * @internal
@@ -136,11 +136,14 @@ export class WebWorker extends EventEmitter {
    * @param args - Arguments to pass to `pageFunction`.
    * @returns Promise which resolves to the return value of `pageFunction`.
    */
-  async evaluate<ReturnType>(
-    pageFunction: Function | string,
-    ...args: any[]
-  ): Promise<ReturnType> {
-    return (await this.#executionContextPromise).evaluate<ReturnType>(
+  async evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<Awaited<ReturnType<Func>>> {
+    return (await this.#executionContextPromise).evaluate(
       pageFunction,
       ...args
     );
@@ -158,11 +161,14 @@ export class WebWorker extends EventEmitter {
    * @param args - Arguments to pass to `pageFunction`.
    * @returns Promise which resolves to the return value of `pageFunction`.
    */
-  async evaluateHandle<HandlerType extends JSHandle = JSHandle>(
-    pageFunction: EvaluateHandleFn,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<JSHandle> {
-    return (await this.#executionContextPromise).evaluateHandle<HandlerType>(
+  async evaluateHandle<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    pageFunction: Func | string,
+    ...args: EvaluateParams<Params>
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    return (await this.#executionContextPromise).evaluateHandle(
       pageFunction,
       ...args
     );

@@ -357,7 +357,7 @@ describe('Evaluation specs', function () {
         return error_.message;
       });
       const error = await page
-        .evaluate<(errorText: string) => Error>(errorText => {
+        .evaluate(errorText => {
           throw new Error(errorText);
         }, errorText)
         .catch(error_ => {
@@ -477,7 +477,7 @@ describe('Evaluation specs', function () {
     it('should transfer 100Mb of data from page to node.js', async function () {
       const {page} = getTestState();
 
-      const a = await page.evaluate<() => string>(() => {
+      const a = await page.evaluate(() => {
         return Array(100 * 1024 * 1024 + 1).join('a');
       });
       expect(a.length).toBe(100 * 1024 * 1024);

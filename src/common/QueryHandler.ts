@@ -16,7 +16,7 @@
 
 import {WaitForSelectorOptions, DOMWorld} from './DOMWorld.js';
 import {ElementHandle, JSHandle} from './JSHandle.js';
-import {_ariaHandler} from './AriaQueryHandler.js';
+import {ariaHandler} from './AriaQueryHandler.js';
 
 /**
  * @internal
@@ -99,12 +99,13 @@ function makeQueryHandler(handler: CustomQueryHandler): InternalQueryHandler {
       return result;
     };
     internalHandler.queryAllArray = async (element, selector) => {
-      const resultHandle = await element.evaluateHandle(queryAll, selector);
-      const arrayHandle = await resultHandle.evaluateHandle(
-        (res: Element[] | NodeListOf<Element>) => {
-          return Array.from(res);
-        }
-      );
+      const resultHandle = (await element.evaluateHandle(
+        queryAll,
+        selector
+      )) as JSHandle<Element[] | NodeListOf<Element>>;
+      const arrayHandle = await resultHandle.evaluateHandle(res => {
+        return Array.from(res);
+      });
       return arrayHandle;
     };
   }
@@ -172,7 +173,7 @@ const pierceHandler = makeQueryHandler({
 });
 
 const builtInHandlers = new Map([
-  ['aria', _ariaHandler],
+  ['aria', ariaHandler],
   ['pierce', pierceHandler],
 ]);
 const queryHandlers = new Map(builtInHandlers);

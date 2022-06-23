@@ -15,6 +15,7 @@
  */
 
 import expect from 'expect';
+import {ElementHandle} from '../../lib/cjs/puppeteer/common/JSHandle.js';
 import {
   getTestState,
   setupTestBrowserHooks,
@@ -29,8 +30,8 @@ describeFailsFirefox('Emulate idle state', () => {
   async function getIdleState() {
     const {page} = getTestState();
 
-    const stateElement = (await page.$('#state'))!;
-    return await page.evaluate((element: HTMLElement) => {
+    const stateElement = (await page.$('#state')) as ElementHandle<HTMLElement>;
+    return await page.evaluate(element => {
       return element.innerText;
     }, stateElement);
   }

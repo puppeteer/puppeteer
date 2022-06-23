@@ -17,10 +17,10 @@
 import expect from 'expect';
 import {
   getTestState,
-  setupTestBrowserHooks,
   itFailsFirefox,
+  setupTestBrowserHooks,
 } from './mocha-utils.js';
-import utils from './utils.js';
+import {waitEvent} from './utils.js';
 
 describe('BrowserContext', function () {
   setupTestBrowserHooks();
@@ -67,8 +67,8 @@ describe('BrowserContext', function () {
     const page = await context.newPage();
     await page.goto(server.EMPTY_PAGE);
     const [popupTarget] = await Promise.all([
-      utils.waitEvent(browser, 'targetcreated'),
-      page.evaluate<(url: string) => void>(url => {
+      waitEvent(browser, 'targetcreated'),
+      page.evaluate(url => {
         return window.open(url);
       }, server.EMPTY_PAGE),
     ]);

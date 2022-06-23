@@ -422,7 +422,7 @@ describe('network', function () {
       });
 
       // Trigger a request with a preflight.
-      await page.evaluate<(src: string) => void>(async src => {
+      await page.evaluate(async src => {
         const response = await fetch(src, {
           method: 'POST',
           headers: {'x-ping': 'pong'},
@@ -855,7 +855,7 @@ describe('network', function () {
         const response = await new Promise<HTTPResponse>(resolve => {
           page.on('response', resolve);
           const url = httpsServer.CROSS_PROCESS_PREFIX + '/setcookie.html';
-          page.evaluate<(src: string) => void>(src => {
+          page.evaluate(src => {
             const xhr = new XMLHttpRequest();
             xhr.open('GET', src);
             xhr.send();

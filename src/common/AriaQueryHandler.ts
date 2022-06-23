@@ -141,7 +141,7 @@ const queryAll = async (
 const queryAllArray = async (
   element: ElementHandle,
   selector: string
-): Promise<JSHandle> => {
+): Promise<JSHandle<Element[]>> => {
   const elementHandles = await queryAll(element, selector);
   const exeCtx = element.executionContext();
   const jsHandle = exeCtx.evaluateHandle((...elements) => {
@@ -153,7 +153,7 @@ const queryAllArray = async (
 /**
  * @internal
  */
-export const _ariaHandler: InternalQueryHandler = {
+export const ariaHandler: InternalQueryHandler = {
   queryOne,
   waitFor,
   queryAll,
