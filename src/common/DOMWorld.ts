@@ -17,11 +17,12 @@
 import {Protocol} from 'devtools-protocol';
 import {assert} from './assert.js';
 import {CDPSession} from './Connection.js';
+import {ElementHandle} from './ElementHandle.js';
 import {TimeoutError} from './Errors.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {Frame, FrameManager} from './FrameManager.js';
 import {MouseButton} from './Input.js';
-import {ElementHandle, JSHandle} from './JSHandle.js';
+import {JSHandle} from './JSHandle.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {_getQueryHandlerAndSelector} from './QueryHandler.js';
 import {TimeoutSettings} from './TimeoutSettings.js';

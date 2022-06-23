@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import {InternalQueryHandler} from './QueryHandler.js';
-import {ElementHandle, JSHandle} from './JSHandle.js';
 import {Protocol} from 'devtools-protocol';
+import {assert} from './assert.js';
 import {CDPSession} from './Connection.js';
 import {DOMWorld, PageBinding, WaitForSelectorOptions} from './DOMWorld.js';
-import {assert} from './assert.js';
+import {ElementHandle} from './ElementHandle.js';
+import {JSHandle} from './JSHandle.js';
+import {InternalQueryHandler} from './QueryHandler.js';
 
 async function queryAXTree(
   client: CDPSession,

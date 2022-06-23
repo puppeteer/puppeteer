@@ -22,7 +22,7 @@ import {
   describeChromeOnly,
 } from './mocha-utils.js';
 
-import {ElementHandle} from '../../lib/cjs/puppeteer/common/JSHandle.js';
+import {ElementHandle} from '../../lib/cjs/puppeteer/common/ElementHandle.js';
 import utils from './utils.js';
 import assert from 'assert';
 

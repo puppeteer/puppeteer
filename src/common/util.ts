@@ -20,8 +20,11 @@ import {isNode} from '../environment.js';
 import {assert} from './assert.js';
 import {CDPSession} from './Connection.js';
 import {debug} from './Debug.js';
+import {ElementHandle} from './ElementHandle.js';
 import {TimeoutError} from './Errors.js';
 import {CommonEventEmitter} from './EventEmitter.js';
+import {ExecutionContext} from './ExecutionContext.js';
+import {JSHandle} from './JSHandle.js';
 
 export const debugError = debug('puppeteer:error');
 
@@ -174,6 +177,28 @@ export async function waitForEvent<T>(
   }
 
   return result;
+}
+
+/**
+ * @internal
+ */
+export function _createJSHandle(
+  context: ExecutionContext,
+  remoteObject: Protocol.Runtime.RemoteObject
+): JSHandle | ElementHandle {
+  const frame = context.frame();
+  if (remoteObject.subtype === 'node' && frame) {
+    const frameManager = frame._frameManager;
+    return new ElementHandle(
+      context,
+      context._client,
+      remoteObject,
+      frame,
+      frameManager.page(),
+      frameManager
+    );
+  }
+  return new JSHandle(context, context._client, remoteObject);
 }
 
 export function evaluationString(

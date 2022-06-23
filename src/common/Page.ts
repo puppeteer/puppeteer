@@ -24,6 +24,7 @@ import {ConsoleMessage, ConsoleMessageType} from './ConsoleMessage.js';
 import {Coverage} from './Coverage.js';
 import {Dialog} from './Dialog.js';
 import {WaitForSelectorOptions} from './DOMWorld.js';
+import {ElementHandle} from './ElementHandle.js';
 import {EmulationManager} from './EmulationManager.js';
 import {EventEmitter, Handler} from './EventEmitter.js';
 import {FileChooser} from './FileChooser.js';
@@ -35,7 +36,7 @@ import {
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {Keyboard, Mouse, MouseButton, Touchscreen} from './Input.js';
-import {ElementHandle, JSHandle, _createJSHandle} from './JSHandle.js';
+import {JSHandle} from './JSHandle.js';
 import {PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {
   Credentials,
@@ -66,6 +67,7 @@ import {
   valueFromRemoteObject,
   waitForEvent,
   waitWithTimeout,
+  _createJSHandle,
 } from './util.js';
 import {WebWorker} from './WebWorker.js';
 
