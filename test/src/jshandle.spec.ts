@@ -245,8 +245,8 @@ describe('JSHandle', function () {
       const element = aHandle.asElement();
       expect(element).toBeTruthy();
       expect(
-        await page.evaluate((e: HTMLElement) => {
-          return e.nodeType === Node.TEXT_NODE;
+        await page.evaluate(e => {
+          return e?.nodeType === Node.TEXT_NODE;
         }, element)
       );
     });

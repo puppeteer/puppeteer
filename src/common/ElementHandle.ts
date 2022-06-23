@@ -16,7 +16,7 @@ import {
 } from './JSHandle.js';
 import {Page, ScreenshotOptions} from './Page.js';
 import {_getQueryHandlerAndSelector} from './QueryHandler.js';
-import {EvaluateFunc, EvaluateParams} from './types.js';
+import {EvaluateFunc} from './types.js';
 import {KeyInput} from './USKeyboardLayout.js';
 import {debugError, isString} from './util.js';
 
@@ -898,7 +898,7 @@ export class ElementHandle<
   >(
     selector: Selector,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
   async $eval<
     Params extends unknown[],
@@ -908,7 +908,7 @@ export class ElementHandle<
   >(
     selector: string,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
   async $eval<
     Params extends unknown[],
@@ -918,7 +918,7 @@ export class ElementHandle<
   >(
     selector: string,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     const elementHandle = await this.$(selector);
     if (!elementHandle) {
@@ -963,7 +963,7 @@ export class ElementHandle<
   >(
     selector: Selector,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
   async $$eval<
     Params extends unknown[],
@@ -973,7 +973,7 @@ export class ElementHandle<
   >(
     selector: string,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
   async $$eval<
     Params extends unknown[],
@@ -983,7 +983,7 @@ export class ElementHandle<
   >(
     selector: string,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     const {updatedSelector, queryHandler} =
       _getQueryHandlerAndSelector(selector);

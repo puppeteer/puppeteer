@@ -22,12 +22,11 @@ export type Awaitable<T> = T | PromiseLike<T>;
 export type HandleFor<T> = T extends Element ? ElementHandle<T> : JSHandle<T>;
 export type HandleOr<T> = HandleFor<T> | JSHandle<T> | T;
 
-export type EvaluateParams<T extends unknown[]> = {
-  [K in keyof T]: T[K] extends HandleOr<unknown> ? T[K] : HandleOr<T[K]>;
-};
+type FlattenHandle<T> = T extends HandleOr<infer U> ? U : never;
 export type InnerParams<T extends unknown[]> = {
-  [K in keyof T]: T[K] extends HandleOr<infer U> ? U : never;
+  [K in keyof T]: FlattenHandle<T[K]>;
 };
+
 export type EvaluateFunc<T extends unknown[]> = (
   ...params: InnerParams<T>
 ) => Awaitable<unknown>;

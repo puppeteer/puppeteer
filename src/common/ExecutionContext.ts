@@ -18,15 +18,15 @@ import {Protocol} from 'devtools-protocol';
 import {assert} from './assert.js';
 import {CDPSession} from './Connection.js';
 import {DOMWorld} from './DOMWorld.js';
-import {EvaluateFunc, HandleFor, EvaluateParams} from './types.js';
+import {ElementHandle} from './ElementHandle.js';
 import {Frame} from './FrameManager.js';
 import {JSHandle} from './JSHandle.js';
-import {ElementHandle} from './ElementHandle.js';
+import {EvaluateFunc, HandleFor} from './types.js';
 import {
   getExceptionMessage,
-  _createJSHandle,
   isString,
   valueFromRemoteObject,
+  _createJSHandle,
 } from './util.js';
 
 /**
@@ -145,7 +145,7 @@ export class ExecutionContext {
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
   >(
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     return await this.#evaluate(true, pageFunction, ...args);
   }
@@ -197,7 +197,7 @@ export class ExecutionContext {
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
   >(
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     return this.#evaluate(false, pageFunction, ...args);
   }
@@ -208,7 +208,7 @@ export class ExecutionContext {
   >(
     returnByValue: true,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
   async #evaluate<
     Params extends unknown[],
@@ -216,7 +216,7 @@ export class ExecutionContext {
   >(
     returnByValue: false,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
   async #evaluate<
     Params extends unknown[],
@@ -224,7 +224,7 @@ export class ExecutionContext {
   >(
     returnByValue: boolean,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>> | Awaited<ReturnType<Func>>> {
     const suffix = `//# sourceURL=${EVALUATION_SCRIPT_URL}`;
 

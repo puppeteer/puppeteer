@@ -49,7 +49,7 @@ import {Target} from './Target.js';
 import {TaskQueue} from './TaskQueue.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {Tracing} from './Tracing.js';
-import {EvaluateFunc, EvaluateParams, HandleFor} from './types.js';
+import {EvaluateFunc, HandleFor} from './types.js';
 import {
   debugError,
   evaluationString,
@@ -1083,7 +1083,7 @@ export class Page extends EventEmitter {
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
   >(
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     const context = await this.mainFrame().executionContext();
     return context.evaluateHandle(pageFunction, ...args);
@@ -1190,7 +1190,7 @@ export class Page extends EventEmitter {
   >(
     selector: Selector,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
   async $eval<
     Params extends unknown[],
@@ -1200,7 +1200,7 @@ export class Page extends EventEmitter {
   >(
     selector: string,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
   async $eval<
     Params extends unknown[],
@@ -1210,7 +1210,7 @@ export class Page extends EventEmitter {
   >(
     selector: string,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     return this.mainFrame().$eval(selector, pageFunction, ...args);
   }
@@ -1286,7 +1286,7 @@ export class Page extends EventEmitter {
   >(
     selector: Selector,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
   async $$eval<
     Params extends unknown[],
@@ -1296,7 +1296,7 @@ export class Page extends EventEmitter {
   >(
     selector: string,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
   async $$eval<
     Params extends unknown[],
@@ -1306,7 +1306,7 @@ export class Page extends EventEmitter {
   >(
     selector: string,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     return this.mainFrame().$$eval(selector, pageFunction, ...args);
   }
@@ -2683,7 +2683,7 @@ export class Page extends EventEmitter {
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
   >(
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     return this.#frameManager.mainFrame().evaluate(pageFunction, ...args);
   }
@@ -3464,7 +3464,7 @@ export class Page extends EventEmitter {
       timeout?: number;
       polling?: string | number;
     } = {},
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     return this.mainFrame().waitForFunction(pageFunction, options, ...args);
   }
