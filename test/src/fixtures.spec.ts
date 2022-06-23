@@ -22,8 +22,12 @@ import {getTestState, itHeadlessOnly} from './mocha-utils.js';
 import path from 'path';
 
 describe('Fixtures', function () {
-  itHeadlessOnly('dumpio option should work with pipe option ', async () => {
-    const {defaultBrowserOptions, puppeteerPath} = getTestState();
+  itHeadlessOnly('dumpio option should work with pipe option', async () => {
+    const {defaultBrowserOptions, puppeteerPath, headless} = getTestState();
+    if (headless === 'chrome') {
+      // This test only works in the old headless mode.
+      return;
+    }
 
     let dumpioData = '';
     const {spawn} = await import('child_process');
