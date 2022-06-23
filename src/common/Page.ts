@@ -2900,7 +2900,7 @@ export class Page extends EventEmitter {
     let {captureBeyondViewport = true, fromSurface = true} = options;
     captureBeyondViewport =
       typeof captureBeyondViewport === 'boolean' ? captureBeyondViewport : true;
-    fromSurface = typeof fromSurface === 'boolean' ? fromSurface : true;
+    fromSurface = typeof fromSurface === 'boolean' ? fromSurface : undefined;
 
     if (options.fullPage) {
       const metrics = await this.#client.send('Page.getLayoutMetrics');
