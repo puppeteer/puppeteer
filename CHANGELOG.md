@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [15.0.2](https://github.com/puppeteer/puppeteer/compare/v15.0.1...v15.0.2) (2022-06-24)
+
+
+### Bug Fixes
+
+* CSS coverage should work with empty stylesheets ([#8570](https://github.com/puppeteer/puppeteer/issues/8570)) ([383e855](https://github.com/puppeteer/puppeteer/commit/383e8558477fae7708734ab2160ef50f385e2983)), closes [#8535](https://github.com/puppeteer/puppeteer/issues/8535)
+
 ## [15.0.1](https://github.com/puppeteer/puppeteer/compare/v15.0.0...v15.0.1) (2022-06-24)
 
 
