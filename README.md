@@ -2,7 +2,7 @@
 
 <!-- [START badges] -->
 
-[![Build status](https://github.com/puppeteer/puppeteer/workflows/run-checks/badge.svg)](https://github.com/puppeteer/puppeteer/actions?query=workflow%3Arun-checks) [![npm puppeteer package](https://img.shields.io/npm/v/puppeteer.svg)](https://npmjs.org/package/puppeteer)
+[![Build status](https://github.com/puppeteer/puppeteer/workflows/CI/badge.svg)](https://github.com/puppeteer/puppeteer/actions?query=workflow%3ACI) [![npm puppeteer package](https://img.shields.io/npm/v/puppeteer.svg)](https://npmjs.org/package/puppeteer)
 
 <!-- [END badges] -->
 
