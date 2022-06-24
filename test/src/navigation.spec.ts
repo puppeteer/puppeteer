@@ -160,15 +160,20 @@ describe('navigation', function () {
       }
     });
 
-    /* If you are running this on pre-Catalina versions of macOS this will fail locally.
-    /* Mac OSX Catalina outputs a different message than other platforms.
-     * See https://support.google.com/chrome/thread/18125056?hl=en for details.
-     * If you're running pre-Catalina Mac OSX this test will fail locally.
-     */
-    const EXPECTED_SSL_CERT_MESSAGE =
-      os.platform() === 'darwin'
+    function getExpectedSSLCertMessage(): string {
+      const {headless} = getTestState();
+      /**
+       * If you are running this on pre-Catalina versions of macOS this will fail
+       * locally. Mac OSX Catalina outputs a different message than other
+       * platforms. See https://support.google.com/chrome/thread/18125056?hl=en
+       * for details. If you're running pre-Catalina Mac OSX this test will fail
+       * locally.
+       * In chrome-headless, the message is also different.
+       */
+      return os.platform() === 'darwin' && headless !== 'chrome'
         ? 'net::ERR_CERT_INVALID'
         : 'net::ERR_CERT_AUTHORITY_INVALID';
+    }
 
     itFailsFirefox('should fail when navigating to bad SSL', async () => {
       const {page, httpsServer, isChrome} = getTestState();
@@ -191,7 +196,7 @@ describe('navigation', function () {
         return (error = error_);
       });
       if (isChrome) {
-        expect(error.message).toContain(EXPECTED_SSL_CERT_MESSAGE);
+        expect(error.message).toContain(getExpectedSSLCertMessage());
       } else {
         expect(error.message).toContain('SSL_ERROR_UNKNOWN');
       }
@@ -210,7 +215,7 @@ describe('navigation', function () {
         return (error = error_);
       });
       if (isChrome) {
-        expect(error.message).toContain(EXPECTED_SSL_CERT_MESSAGE);
+        expect(error.message).toContain(getExpectedSSLCertMessage());
       } else {
         expect(error.message).toContain('SSL_ERROR_UNKNOWN');
       }
