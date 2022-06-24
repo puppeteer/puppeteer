@@ -2899,9 +2899,12 @@ export class Page extends EventEmitter {
     let clip = options.clip ? processClip(options.clip) : undefined;
     const captureBeyondViewport =
       typeof options.captureBeyondViewport === 'boolean'
-      ? options.captureBeyondViewport : true;
-    const fromSurface = typeof options.fromSurface === 'boolean'
-      ? options.fromSurface : undefined;
+        ? options.captureBeyondViewport
+        : true;
+    const fromSurface =
+      typeof options.fromSurface === 'boolean'
+        ? options.fromSurface
+        : undefined;
 
     if (options.fullPage) {
       const metrics = await this.#client.send('Page.getLayoutMetrics');
