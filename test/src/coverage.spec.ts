@@ -270,6 +270,15 @@ describe('Coverage specs', function () {
         JSON.stringify(coverage, null, 2).replace(/:\d{4}\//g, ':<PORT>/')
       ).toBeGolden('csscoverage-involved.txt');
     });
+    it('should work with empty stylesheets', async () => {
+      const {page, server} = getTestState();
+
+      await page.coverage.startCSSCoverage();
+      await page.goto(server.PREFIX + '/csscoverage/empty.html');
+      const coverage = await page.coverage.stopCSSCoverage();
+      expect(coverage.length).toEqual(1);
+      expect(coverage[0]!.text).toEqual('');
+    });
     it('should ignore injected stylesheets', async () => {
       const {page} = getTestState();
 

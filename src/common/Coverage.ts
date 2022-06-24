@@ -407,9 +407,15 @@ export class CSSCoverage {
     const coverage: CoverageEntry[] = [];
     for (const styleSheetId of this.#stylesheetURLs.keys()) {
       const url = this.#stylesheetURLs.get(styleSheetId);
-      assert(url);
+      assert(
+        typeof url !== 'undefined',
+        `Stylesheet URL is undefined (styleSheetId=${styleSheetId})`
+      );
       const text = this.#stylesheetSources.get(styleSheetId);
-      assert(text);
+      assert(
+        typeof text !== 'undefined',
+        `Stylesheet text is undefined (styleSheetId=${styleSheetId})`
+      );
       const ranges = convertToDisjointRanges(
         styleSheetIdToCoverage.get(styleSheetId) || []
       );
