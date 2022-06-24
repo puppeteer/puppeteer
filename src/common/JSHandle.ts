@@ -17,7 +17,7 @@
 import {Protocol} from 'devtools-protocol';
 import {assert} from './assert.js';
 import {CDPSession} from './Connection.js';
-import {EvaluateFunc, EvaluateParams, HandleFor, HandleOr} from './types.js';
+import {EvaluateFunc, HandleFor, HandleOr} from './types.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {MouseButton} from './Input.js';
 import {releaseObject, valueFromRemoteObject, _createJSHandle} from './util.js';
@@ -121,9 +121,9 @@ export class JSHandle<T = unknown> {
   }
 
   /**
-   * This method passes this handle as the first argument to `pageFunction`.
-   * If `pageFunction` returns a Promise, then `handle.evaluate` would wait
-   * for the promise to resolve and return its value.
+   * This method passes this handle as the first argument to `pageFunction`. If
+   * `pageFunction` returns a Promise, then `handle.evaluate` would wait for the
+   * promise to resolve and return its value.
    *
    * @example
    * ```js
@@ -134,11 +134,15 @@ export class JSHandle<T = unknown> {
 
   async evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<[T, ...Params]> = EvaluateFunc<[T, ...Params]>
+    Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
+      [this, ...Params]
+    >
   >(
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
-  ): Promise<Awaited<ReturnType<Func>>> {
+    ...args: Params
+  ): // @ts-expect-error Circularity here is okay because we only need the return
+  // type which doesn't use `this`.
+  Promise<Awaited<ReturnType<Func>>> {
     return await this.executionContext().evaluate(pageFunction, this, ...args);
   }
 
@@ -148,22 +152,26 @@ export class JSHandle<T = unknown> {
    * @remarks
    *
    * The only difference between `jsHandle.evaluate` and
-   * `jsHandle.evaluateHandle` is that `jsHandle.evaluateHandle`
-   * returns an in-page object (JSHandle).
+   * `jsHandle.evaluateHandle` is that `jsHandle.evaluateHandle` returns an
+   * in-page object (JSHandle).
    *
-   * If the function passed to `jsHandle.evaluateHandle` returns a Promise,
-   * then `evaluateHandle.evaluateHandle` waits for the promise to resolve and
+   * If the function passed to `jsHandle.evaluateHandle` returns a Promise, then
+   * `evaluateHandle.evaluateHandle` waits for the promise to resolve and
    * returns its value.
    *
    * See {@link Page.evaluateHandle} for more details.
    */
   async evaluateHandle<
     Params extends unknown[],
-    Func extends EvaluateFunc<[T, ...Params]> = EvaluateFunc<[T, ...Params]>
+    Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
+      [this, ...Params]
+    >
   >(
     pageFunction: Func,
-    ...args: EvaluateParams<Params>
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    ...args: Params
+  ): // @ts-expect-error Circularity here is okay because we only need the return
+  // type which doesn't use `this`.
+  Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     return await this.executionContext().evaluateHandle(
       pageFunction,
       this,
@@ -187,8 +195,8 @@ export class JSHandle<T = unknown> {
   }
 
   /**
-   * The method returns a map with property names as keys and JSHandle
-   * instances for the property values.
+   * The method returns a map with property names as keys and JSHandle instances
+   * for the property values.
    *
    * @example
    * ```js

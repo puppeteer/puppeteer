@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [15.0.1](https://github.com/puppeteer/puppeteer/compare/v15.0.0...v15.0.1) (2022-06-24)
+
+
+### Bug Fixes
+
+* infer unioned handles ([#8562](https://github.com/puppeteer/puppeteer/issues/8562)) ([8100cbb](https://github.com/puppeteer/puppeteer/commit/8100cbb29569541541f61001983efb9a80d89890))
+
 ## [15.0.0](https://github.com/puppeteer/puppeteer/compare/v14.4.1...v15.0.0) (2022-06-23)
 
 

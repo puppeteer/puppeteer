@@ -419,8 +419,8 @@ describe('Evaluation specs', function () {
         const bodyHandle = await page.frames()[1]!.$('body');
         let error!: Error;
         await page
-          .evaluate((body: HTMLElement) => {
-            return body.innerHTML;
+          .evaluate(body => {
+            return body?.innerHTML;
           }, bodyHandle)
           .catch(error_ => {
             return (error = error_);

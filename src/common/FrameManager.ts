@@ -27,7 +27,7 @@ import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {NetworkManager} from './NetworkManager.js';
 import {Page} from './Page.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
-import {EvaluateFunc, EvaluateParams, HandleFor} from './types.js';
+import {EvaluateFunc, HandleFor} from './types.js';
 import {debugError, isErrorLike} from './util.js';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
@@ -889,7 +889,7 @@ export class Frame {
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
   >(
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     return this._mainWorld.evaluateHandle(pageFunction, ...args);
   }
@@ -908,7 +908,7 @@ export class Frame {
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
   >(
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     return this._mainWorld.evaluate(pageFunction, ...args);
   }
@@ -979,7 +979,7 @@ export class Frame {
   >(
     selector: Selector,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
   async $eval<
     Params extends unknown[],
@@ -989,7 +989,7 @@ export class Frame {
   >(
     selector: string,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
   async $eval<
     Params extends unknown[],
@@ -999,7 +999,7 @@ export class Frame {
   >(
     selector: string,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     return this._mainWorld.$eval(selector, pageFunction, ...args);
   }
@@ -1032,7 +1032,7 @@ export class Frame {
   >(
     selector: Selector,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
   async $$eval<
     Params extends unknown[],
@@ -1042,7 +1042,7 @@ export class Frame {
   >(
     selector: string,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
   async $$eval<
     Params extends unknown[],
@@ -1052,7 +1052,7 @@ export class Frame {
   >(
     selector: string,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     return this._mainWorld.$$eval(selector, pageFunction, ...args);
   }
@@ -1440,7 +1440,7 @@ export class Frame {
   >(
     pageFunction: Func | string,
     options: FrameWaitForFunctionOptions = {},
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     // TODO: Fix when NodeHandle has been added.
     return this._mainWorld.waitForFunction(
