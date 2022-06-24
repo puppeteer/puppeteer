@@ -433,8 +433,8 @@ describe('waittask specs', function () {
         page.setContent(`<div class='zombo'>anything</div>`),
       ]);
       expect(
-        await page.evaluate((x: HTMLElement) => {
-          return x.textContent;
+        await page.evaluate(x => {
+          return x?.textContent;
         }, handle)
       ).toBe('anything');
     });
@@ -690,8 +690,8 @@ describe('waittask specs', function () {
       const waitForSelector = page.waitForSelector('.zombo');
       await page.setContent(`<div class='zombo'>anything</div>`);
       expect(
-        await page.evaluate((x: HTMLElement) => {
-          return x.textContent;
+        await page.evaluate(x => {
+          return x?.textContent;
         }, await waitForSelector)
       ).toBe('anything');
     });
@@ -721,8 +721,8 @@ describe('waittask specs', function () {
         '//p[normalize-space(.)="hello world"]'
       );
       expect(
-        await page.evaluate((x: HTMLElement) => {
-          return x.textContent;
+        await page.evaluate(x => {
+          return x?.textContent;
         }, await waitForXPath)
       ).toBe('hello  world  ');
     });
@@ -795,8 +795,8 @@ describe('waittask specs', function () {
       const waitForXPath = page.waitForXPath('//*[@class="zombo"]');
       await page.setContent(`<div class='zombo'>anything</div>`);
       expect(
-        await page.evaluate((x: HTMLElement) => {
-          return x.textContent;
+        await page.evaluate(x => {
+          return x?.textContent;
         }, await waitForXPath)
       ).toBe('anything');
     });
@@ -815,8 +815,8 @@ describe('waittask specs', function () {
       await page.setContent(`<div>some text</div>`);
       const waitForXPath = page.waitForXPath('/html/body/div');
       expect(
-        await page.evaluate((x: HTMLElement) => {
-          return x.textContent;
+        await page.evaluate(x => {
+          return x?.textContent;
         }, await waitForXPath)
       ).toBe('some text');
     });

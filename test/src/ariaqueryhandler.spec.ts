@@ -557,8 +557,8 @@ describeChromeOnly('AriaQueryHandler', () => {
       const waitForSelector = page.waitForSelector('aria/zombo');
       await page.setContent(`<div aria-label='zombo'>anything</div>`);
       expect(
-        await page.evaluate((x: HTMLElement) => {
-          return x.textContent;
+        await page.evaluate(x => {
+          return x?.textContent;
         }, await waitForSelector)
       ).toBe('anything');
     });

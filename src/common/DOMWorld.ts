@@ -26,7 +26,7 @@ import {JSHandle} from './JSHandle.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {_getQueryHandlerAndSelector} from './QueryHandler.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
-import {EvaluateFunc, EvaluateParams, HandleFor} from './types.js';
+import {EvaluateFunc, HandleFor} from './types.js';
 import {
   debugError,
   isNumber,
@@ -183,7 +183,7 @@ export class DOMWorld {
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
   >(
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     const context = await this.executionContext();
     return context.evaluateHandle(pageFunction, ...args);
@@ -194,7 +194,7 @@ export class DOMWorld {
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
   >(
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     const context = await this.executionContext();
     return context.evaluate(pageFunction, ...args);
@@ -253,7 +253,7 @@ export class DOMWorld {
   >(
     selector: Selector,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
   async $eval<
     Params extends unknown[],
@@ -263,7 +263,7 @@ export class DOMWorld {
   >(
     selector: string,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
   async $eval<
     Params extends unknown[],
@@ -273,7 +273,7 @@ export class DOMWorld {
   >(
     selector: string,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     const document = await this._document();
     return document.$eval(selector, pageFunction, ...args);
@@ -288,7 +288,7 @@ export class DOMWorld {
   >(
     selector: Selector,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
   async $$eval<
     Params extends unknown[],
@@ -298,7 +298,7 @@ export class DOMWorld {
   >(
     selector: string,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
   async $$eval<
     Params extends unknown[],
@@ -308,7 +308,7 @@ export class DOMWorld {
   >(
     selector: string,
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     const document = await this._document();
     const value = await document.$$eval(selector, pageFunction, ...args);

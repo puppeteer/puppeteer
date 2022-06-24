@@ -16,7 +16,7 @@
 import {Protocol} from 'devtools-protocol';
 import {CDPSession} from './Connection.js';
 import {ConsoleMessageType} from './ConsoleMessage.js';
-import {EvaluateFunc, EvaluateParams, HandleFor} from './types.js';
+import {EvaluateFunc, HandleFor} from './types.js';
 import {EventEmitter} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {JSHandle} from './JSHandle.js';
@@ -141,7 +141,7 @@ export class WebWorker extends EventEmitter {
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
   >(
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     return (await this.#executionContextPromise).evaluate(
       pageFunction,
@@ -166,7 +166,7 @@ export class WebWorker extends EventEmitter {
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
   >(
     pageFunction: Func | string,
-    ...args: EvaluateParams<Params>
+    ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     return (await this.#executionContextPromise).evaluateHandle(
       pageFunction,

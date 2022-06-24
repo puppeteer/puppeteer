@@ -284,8 +284,8 @@ describe('querySelector', function () {
       const html = (await page.$('html'))!;
       const second = (await html.$('.second'))!;
       const inner = await second.$('.inner');
-      const content = await page.evaluate((e: HTMLElement) => {
-        return e.textContent;
+      const content = await page.evaluate(e => {
+        return e?.textContent;
       }, inner);
       expect(content).toBe('A');
     });
@@ -456,7 +456,10 @@ describe('querySelector', function () {
   describe('QueryAll', function () {
     const handler: CustomQueryHandler = {
       queryAll: (element, selector) => {
-        return Array.from(element.querySelectorAll(selector));
+        if (element instanceof Document || element instanceof Element) {
+          return element.querySelectorAll(selector);
+        }
+        return [];
       },
     };
     before(() => {
