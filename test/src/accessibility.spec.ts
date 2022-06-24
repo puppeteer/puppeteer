@@ -314,6 +314,7 @@ describeFailsFirefox('Accessibility', function () {
         <div contenteditable="true" role='textbox'>
           Edit this image: <img src="fakeimage.png" alt="my fake image">
         </div>`);
+      // Image node should not be exposed in contenteditable elements. See https://crbug.com/1324392.
       const golden = isFirefox
         ? {
             role: 'entry',
@@ -335,10 +336,6 @@ describeFailsFirefox('Accessibility', function () {
               {
                 role: 'StaticText',
                 name: 'Edit this image:',
-              },
-              {
-                role: 'img',
-                name: 'my fake image',
               },
             ],
           };
