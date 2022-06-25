@@ -251,6 +251,35 @@ describe('Launcher specs', function () {
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(() => {});
       });
+      it('tmp profile should be deleted without userDataDir option', async () => {
+        const {defaultBrowserOptions, puppeteer} = getTestState();
+
+        // Set a custom test tmp dir so that we can validate that
+        // the profile dir is created and then cleaned up.
+        const testTmpDir = await fs.promises.mkdtemp(
+          path.join(os.tmpdir(), 'puppeteer_test_chrome_profile-')
+        );
+        process.env['PUPPETEER_TMP_DIR'] = testTmpDir;
+
+        // Path should be empty before starting the browser.
+        expect(fs.readdirSync(testTmpDir).length).toEqual(0);
+        const browser = await puppeteer.launch(defaultBrowserOptions);
+
+        // One profile folder should have been created at this moment.
+        const profiles = fs.readdirSync(testTmpDir);
+        expect(profiles.length).toEqual(1);
+        expect(profiles[0]?.startsWith('puppeteer_dev_chrome_profile-')).toBe(
+          true
+        );
+
+        // Open a page to make sure its functional.
+        await browser.newPage();
+        await browser.close();
+        // Profile should be deleted after closing the browser
+        expect(fs.readdirSync(testTmpDir).length).toEqual(0);
+        // Restore env var
+        process.env['PUPPETEER_TMP_DIR'] = '';
+      });
       itFirefoxOnly('userDataDir option restores preferences', async () => {
         const {defaultBrowserOptions, puppeteer} = getTestState();
 
