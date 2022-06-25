@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [15.1.1](https://github.com/puppeteer/puppeteer/compare/v15.1.0...v15.1.1) (2022-06-25)
+
+
+### Bug Fixes
+
+* export `ElementHandle` ([e0198a7](https://github.com/puppeteer/puppeteer/commit/e0198a79e06c8bb72dde554db0246a3db5fec4c2))
+
 ## [15.1.0](https://github.com/puppeteer/puppeteer/compare/v15.0.2...v15.1.0) (2022-06-24)
 
 
