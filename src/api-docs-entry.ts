@@ -49,6 +49,7 @@ export * from './common/Coverage.js';
 export * from './common/DeviceDescriptors.js';
 export * from './common/Dialog.js';
 export * from './common/DOMWorld.js';
+export * from './common/ElementHandle.js';
 export * from './common/Errors.js';
 export * from './common/EventEmitter.js';
 export * from './common/ExecutionContext.js';
