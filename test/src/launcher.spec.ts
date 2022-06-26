@@ -251,7 +251,7 @@ describe('Launcher specs', function () {
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(() => {});
       });
-      it('tmp profile should be deleted without userDataDir option', async () => {
+      itChromeOnly('tmp profile should be cleaned up', async () => {
         const {defaultBrowserOptions, puppeteer} = getTestState();
 
         // Set a custom test tmp dir so that we can validate that
