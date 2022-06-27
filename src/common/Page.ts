@@ -2928,8 +2928,8 @@ export class Page extends EventEmitter {
       await this.#setTransparentBackgroundColor();
     }
 
-    if (!fromSurface) {
-      await this.setViewport(this.#viewport!);
+    if (!fromSurface && this.#viewport) {
+      await this.setViewport(this.#viewport);
     }
 
     const result = await this.#client.send('Page.captureScreenshot', {
@@ -2943,8 +2943,8 @@ export class Page extends EventEmitter {
       await this.#resetDefaultBackgroundColor();
     }
 
-    if (options.fullPage && !captureBeyondViewport) {
-      await this.setViewport(viewport!);
+    if (options.fullPage && !captureBeyondViewport && viewport) {
+      await this.setViewport(viewport);
     }
 
     const buffer =
