@@ -197,10 +197,15 @@ export interface ScreenshotOptions {
    */
   encoding?: 'base64' | 'binary';
   /**
-   * If you need a screenshot bigger than the Viewport
+   * Capture the screenshot beyond the viewport.
    * @defaultValue true
    */
   captureBeyondViewport?: boolean;
+  /**
+   * Capture the screenshot from the surface, rather than the view.
+   * @defaultValue true
+   */
+  fromSurface?: boolean;
 }
 
 /**
@@ -2759,7 +2764,7 @@ export class Page extends EventEmitter {
    *   applicable to `png` images.
    *
    * - `fullPage` : When true, takes a screenshot of the full
-   *   scrollable page. Defaults to `false`
+   *   scrollable page. Defaults to `false`.
    *
    * - `clip` : An object which specifies clipping region of the page.
    *   Should have the following fields:<br/>
@@ -2769,11 +2774,21 @@ export class Page extends EventEmitter {
    *  - `height` : height of clipping area.
    *
    * - `omitBackground` : Hides default white background and allows
-   *   capturing screenshots with transparency. Defaults to `false`
+   *   capturing screenshots with transparency. Defaults to `false`.
    *
    * - `encoding` : The encoding of the image, can be either base64 or
    *   binary. Defaults to `binary`.
    *
+   * - `captureBeyondViewport` : When true, captures screenshot
+   *   {@link https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot
+   *   | beyond the viewport}. When false, falls back to old behaviour,
+   *   and cuts the screenshot by the viewport size. Defaults to `true`.
+   *
+   * - `fromSurface` : When true, captures screenshot
+   *   {@link https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot
+   *   | from the surface rather than the view}. When false, works only in
+   *   headful mode and ignores page viewport (but not browser window's
+   *   bounds). Defaults to `true`.
    *
    * NOTE: Screenshots take at least 1/6 second on OS X. See
    * {@link https://crbug.com/741689} for discussion.
@@ -2881,9 +2896,14 @@ export class Page extends EventEmitter {
       targetId: this.#target._targetId,
     });
     let clip = options.clip ? processClip(options.clip) : undefined;
-    let {captureBeyondViewport = true} = options;
-    captureBeyondViewport =
-      typeof captureBeyondViewport === 'boolean' ? captureBeyondViewport : true;
+    const captureBeyondViewport =
+      typeof options.captureBeyondViewport === 'boolean'
+        ? options.captureBeyondViewport
+        : true;
+    const fromSurface =
+      typeof options.fromSurface === 'boolean'
+        ? options.fromSurface
+        : undefined;
 
     if (options.fullPage) {
       const metrics = await this.#client.send('Page.getLayoutMetrics');
@@ -2923,6 +2943,7 @@ export class Page extends EventEmitter {
       quality: options.quality,
       clip,
       captureBeyondViewport,
+      fromSurface,
     });
     if (shouldSetDefaultBackground) {
       await this.#resetDefaultBackgroundColor();

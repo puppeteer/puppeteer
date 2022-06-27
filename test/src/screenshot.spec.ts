@@ -20,6 +20,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   itFailsFirefox,
+  itHeadfulOnly,
 } from './mocha-utils.js';
 
 describe('Screenshots', function () {
@@ -187,6 +188,16 @@ describe('Screenshots', function () {
       expect(Buffer.from(screenshot as string, 'base64')).toBeGolden(
         'screenshot-sanity.png'
       );
+    });
+    itHeadfulOnly('should work in "fromSurface: false" mode', async () => {
+      const {page, server} = getTestState();
+
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(server.PREFIX + '/grid.html');
+      const screenshot = await page.screenshot({
+        fromSurface: false,
+      });
+      expect(screenshot).toBeDefined(); // toBeGolden('screenshot-fromsurface-false.png');
     });
   });
 
