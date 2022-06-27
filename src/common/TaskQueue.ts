@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * @internal
+ */
 export class TaskQueue {
   #chain: Promise<void>;
 

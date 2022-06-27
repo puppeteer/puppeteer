@@ -23,11 +23,17 @@ import {PuppeteerNode} from './Puppeteer.js';
 import createHttpsProxyAgent, {HttpsProxyAgentOptions} from 'https-proxy-agent';
 import {getProxyForUrl} from 'proxy-from-env';
 
+/**
+ * @internal
+ */
 const supportedProducts = {
   chrome: 'Chromium',
   firefox: 'Firefox Nightly',
 } as const;
 
+/**
+ * @internal
+ */
 function getProduct(input: string): 'chrome' | 'firefox' {
   if (input !== 'chrome' && input !== 'firefox') {
     throw new Error(`Unsupported product ${input}`);
@@ -35,6 +41,9 @@ function getProduct(input: string): 'chrome' | 'firefox' {
   return input;
 }
 
+/**
+ * @internal
+ */
 export async function downloadBrowser(): Promise<void> {
   const downloadHost =
     process.env['PUPPETEER_DOWNLOAD_HOST'] ||
@@ -209,6 +218,9 @@ export async function downloadBrowser(): Promise<void> {
   }
 }
 
+/**
+ * @internal
+ */
 export function logPolitely(toBeLogged: unknown): void {
   const logLevel = process.env['npm_config_loglevel'] || '';
   const logLevelDisplay = ['silent', 'error', 'warn'].indexOf(logLevel) > -1;

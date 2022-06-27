@@ -18,6 +18,9 @@ import {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {packageVersion} from '../generated/version.js';
 import {promises as dns} from 'dns';
 
+/**
+ * @internal
+ */
 export class NodeWebSocketTransport implements ConnectionTransport {
   static async create(urlString: string): Promise<NodeWebSocketTransport> {
     // TODO(jrandolf): Starting in Node 17, IPv6 is favoured over IPv4 due to a change

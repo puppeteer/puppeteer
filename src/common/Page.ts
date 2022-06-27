@@ -17,7 +17,7 @@
 import {Protocol} from 'devtools-protocol';
 import type {Readable} from 'stream';
 import {Accessibility} from './Accessibility.js';
-import {assert, assertNever} from './assert.js';
+import {assert} from './assert.js';
 import {Browser, BrowserContext} from './Browser.js';
 import {CDPSession, CDPSessionEmittedEvents, Connection} from './Connection.js';
 import {ConsoleMessage, ConsoleMessageType} from './ConsoleMessage.js';
@@ -51,6 +51,7 @@ import {TimeoutSettings} from './TimeoutSettings.js';
 import {Tracing} from './Tracing.js';
 import {EvaluateFunc, HandleFor} from './types.js';
 import {
+  createJSHandle,
   debugError,
   evaluationString,
   getExceptionMessage,
@@ -67,7 +68,6 @@ import {
   valueFromRemoteObject,
   waitForEvent,
   waitWithTimeout,
-  _createJSHandle,
 } from './util.js';
 import {WebWorker} from './WebWorker.js';
 
@@ -1640,7 +1640,7 @@ export class Page extends EventEmitter {
       this.#client
     );
     const values = event.args.map(arg => {
-      return _createJSHandle(context, arg);
+      return createJSHandle(context, arg);
     });
     this.#addConsoleMessage(event.type, values, event.stackTrace);
   }
@@ -2273,12 +2273,15 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * Emulates given device metrics and user agent. This method is a shortcut for
-   * calling two methods: {@link Page.setUserAgent} and {@link Page.setViewport}
-   * To aid emulation, Puppeteer provides a list of device descriptors that can
-   * be obtained via the {@link Puppeteer.devices} `page.emulate` will resize
-   * the page. A lot of websites don't expect phones to change size, so you
-   * should emulate before navigating to the page.
+   * Emulates given device metrics and user agent.
+   *
+   * @remarks
+   * This method is a shortcut for calling two methods:
+   * {@link Page.setUserAgent} and {@link Page.setViewport} To aid emulation,
+   * Puppeteer provides a list of device descriptors that can be obtained via
+   * {@link devices}. `page.emulate` will resize the page. A lot of websites
+   * don't expect phones to change size, so you should emulate before navigating
+   * to the page.
    * @example
    * ```js
    * const puppeteer = require('puppeteer');
@@ -2783,10 +2786,6 @@ export class Page extends EventEmitter {
     // because it may be a 0-length file with no extension created beforehand
     // (i.e. as a temp file).
     if (options.type) {
-      const type = options.type;
-      if (type !== 'png' && type !== 'jpeg' && type !== 'webp') {
-        assertNever(type, 'Unknown options.type value: ' + type);
-      }
       screenshotType =
         options.type as Protocol.Page.CaptureScreenshotRequestFormat;
     } else if (options.path) {

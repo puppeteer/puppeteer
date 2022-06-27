@@ -20,6 +20,9 @@ import {rootDirname} from './constants.js';
 import {PuppeteerNode} from './node/Puppeteer.js';
 import {PUPPETEER_REVISIONS} from './revisions.js';
 
+/**
+ * @internal
+ */
 export const initializePuppeteer = (packageName: string): PuppeteerNode => {
   const isPuppeteerCore = packageName === 'puppeteer-core';
   const puppeteerRootDirectory = sync(rootDirname);

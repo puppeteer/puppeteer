@@ -26,7 +26,7 @@ import {
   getExceptionMessage,
   isString,
   valueFromRemoteObject,
-  _createJSHandle,
+  createJSHandle,
 } from './util.js';
 
 /**
@@ -253,7 +253,7 @@ export class ExecutionContext {
 
       return returnByValue
         ? valueFromRemoteObject(remoteObject)
-        : _createJSHandle(this, remoteObject);
+        : createJSHandle(this, remoteObject);
     }
 
     if (typeof pageFunction !== 'function') {
@@ -309,7 +309,7 @@ export class ExecutionContext {
     }
     return returnByValue
       ? valueFromRemoteObject(remoteObject)
-      : _createJSHandle(this, remoteObject);
+      : createJSHandle(this, remoteObject);
 
     function convertArgument(
       this: ExecutionContext,
@@ -407,7 +407,7 @@ export class ExecutionContext {
     const response = await this._client.send('Runtime.queryObjects', {
       prototypeObjectId: prototypeHandle._remoteObject.objectId,
     });
-    return _createJSHandle(this, response.objects) as HandleFor<Prototype[]>;
+    return createJSHandle(this, response.objects) as HandleFor<Prototype[]>;
   }
 
   /**
@@ -420,7 +420,7 @@ export class ExecutionContext {
       backendNodeId: backendNodeId,
       executionContextId: this._contextId,
     });
-    return _createJSHandle(this, object) as ElementHandle;
+    return createJSHandle(this, object) as ElementHandle;
   }
 
   /**

@@ -1,25 +1,38 @@
 import {Protocol} from 'devtools-protocol';
 import {HTTPRequest} from './HTTPRequest.js';
 
+/**
+ * @internal
+ */
 export type QueuedEventGroup = {
   responseReceivedEvent: Protocol.Network.ResponseReceivedEvent;
   loadingFinishedEvent?: Protocol.Network.LoadingFinishedEvent;
   loadingFailedEvent?: Protocol.Network.LoadingFailedEvent;
 };
 
+/**
+ * @internal
+ */
 export type FetchRequestId = string;
-export type NetworkRequestId = string;
-
-type RedirectInfo = {
-  event: Protocol.Network.RequestWillBeSentEvent;
-  fetchRequestId?: FetchRequestId;
-};
-export type RedirectInfoList = RedirectInfo[];
 
 /**
  * @internal
- *
+ */
+export type RedirectInfo = {
+  event: Protocol.Network.RequestWillBeSentEvent;
+  fetchRequestId?: FetchRequestId;
+};
+type RedirectInfoList = RedirectInfo[];
+
+/**
+ * @internal
+ */
+export type NetworkRequestId = string;
+
+/**
  * Helper class to track network events by request ID
+ *
+ * @internal
  */
 export class NetworkEventManager {
   /*

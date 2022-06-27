@@ -26,12 +26,12 @@ export class CustomError extends Error {
 }
 
 /**
- * TimeoutError is emitted whenever certain operations are terminated due to timeout.
+ * TimeoutError is emitted whenever certain operations are terminated due to
+ * timeout.
  *
  * @remarks
- *
- * Example operations are {@link Page.waitForSelector | page.waitForSelector}
- * or {@link PuppeteerNode.launch | puppeteer.launch}.
+ * Example operations are {@link Page.waitForSelector | page.waitForSelector} or
+ * {@link PuppeteerNode.launch | puppeteer.launch}.
  *
  * @public
  */
@@ -56,9 +56,28 @@ export interface PuppeteerErrors {
 }
 
 /**
+ * Puppeteer methods might throw errors if they are unable to fulfill a request.
+ * For example, `page.waitForSelector(selector[, options])` might fail if the
+ * selector doesn't match any nodes during the given timeframe.
+ *
+ * For certain types of errors Puppeteer uses specific error classes. These
+ * classes are available via `puppeteer.errors`.
+ *
+ * @example
+ * An example of handling a timeout error:
+ * ```js
+ * try {
+ *   await page.waitForSelector('.foo');
+ * } catch (e) {
+ *   if (e instanceof puppeteer.errors.TimeoutError) {
+ *     // Do something if this is a timeout.
+ *   }
+ * }
+ * ```
+ *
  * @public
  */
-export const puppeteerErrors: PuppeteerErrors = Object.freeze({
+export const errors: PuppeteerErrors = Object.freeze({
   TimeoutError,
   ProtocolError,
 });

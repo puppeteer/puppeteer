@@ -20,7 +20,7 @@ import {CDPSession} from './Connection.js';
 import {EvaluateFunc, HandleFor, HandleOr} from './types.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {MouseButton} from './Input.js';
-import {releaseObject, valueFromRemoteObject, _createJSHandle} from './util.js';
+import {releaseObject, valueFromRemoteObject, createJSHandle} from './util.js';
 import type {ElementHandle} from './ElementHandle.js';
 
 /**
@@ -222,7 +222,7 @@ export class JSHandle<T = unknown> {
       if (!property.enumerable || !property.value) {
         continue;
       }
-      result.set(property.name, _createJSHandle(this.#context, property.value));
+      result.set(property.name, createJSHandle(this.#context, property.value));
     }
     return result;
   }
@@ -344,17 +344,4 @@ export interface PressOptions {
 export interface Point {
   x: number;
   y: number;
-}
-
-export function computeQuadArea(quad: Point[]): number {
-  /* Compute sum of all directed areas of adjacent triangles
-     https://en.wikipedia.org/wiki/Polygon#Simple_polygons
-   */
-  let area = 0;
-  for (let i = 0; i < quad.length; ++i) {
-    const p1 = quad[i]!;
-    const p2 = quad[(i + 1) % quad.length]!;
-    area += (p1.x * p2.y - p2.x * p1.y) / 2;
-  }
-  return Math.abs(area);
 }

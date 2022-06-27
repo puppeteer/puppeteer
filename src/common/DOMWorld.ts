@@ -24,7 +24,7 @@ import {Frame, FrameManager} from './FrameManager.js';
 import {MouseButton} from './Input.js';
 import {JSHandle} from './JSHandle.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
-import {_getQueryHandlerAndSelector} from './QueryHandler.js';
+import {getQueryHandlerAndSelector} from './QueryHandler.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {EvaluateFunc, HandleFor} from './types.js';
 import {
@@ -653,7 +653,7 @@ export class DOMWorld {
     options: WaitForSelectorOptions
   ): Promise<ElementHandle | null> {
     const {updatedSelector, queryHandler} =
-      _getQueryHandlerAndSelector(selector);
+      getQueryHandlerAndSelector(selector);
     assert(queryHandler.waitFor, 'Query handler does not support waiting');
     return queryHandler.waitFor(this, updatedSelector, options);
   }

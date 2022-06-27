@@ -18,21 +18,14 @@
  * Asserts that the given value is truthy.
  * @param value - some conditional statement
  * @param message - the error message to throw if the value is not truthy.
+ *
+ * @internal
  */
 export const assert: (value: unknown, message?: string) => asserts value = (
   value,
   message
 ) => {
   if (!value) {
-    throw new Error(message);
-  }
-};
-
-export const assertNever: (
-  value: unknown,
-  message?: string
-) => asserts value is never = (value, message) => {
-  if (value) {
     throw new Error(message);
   }
 };
