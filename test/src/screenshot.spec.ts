@@ -197,7 +197,7 @@ describe('Screenshots', function () {
       const screenshot = await page.screenshot({
         fromSurface: false,
       });
-      expect(screenshot).anything(); // toBeGolden('screenshot-fromsurface-false.png');
+      expect(screenshot).toBeDefined(); // toBeGolden('screenshot-fromsurface-false.png');
     });
   });
 
