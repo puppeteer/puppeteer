@@ -2928,7 +2928,7 @@ export class Page extends EventEmitter {
       await this.#setTransparentBackgroundColor();
     }
 
-    if (!fromSurface && this.#viewport) {
+    if ((fromSurface === false) && this.#viewport) {
       await this.setViewport(this.#viewport);
     }
 
