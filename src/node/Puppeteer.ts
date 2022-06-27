@@ -39,14 +39,13 @@ export interface PuppeteerLaunchOptions
 }
 
 /**
- * Extends the main {@link Puppeteer} class with Node specific behaviour for fetching and
- * downloading browsers.
+ * Extends the main {@link Puppeteer} class with Node specific behaviour for
+ * fetching and downloading browsers.
  *
  * If you're using Puppeteer in a Node environment, this is the class you'll get
  * when you run `require('puppeteer')` (or the equivalent ES `import`).
  *
  * @remarks
- *
  * The most common method to use is {@link PuppeteerNode.launch | launch}, which
  * is used to launch and connect to a new browser instance.
  *
@@ -107,8 +106,6 @@ export class PuppeteerNode extends Puppeteer {
   /**
    * This method attaches Puppeteer to an existing browser instance.
    *
-   * @remarks
-   *
    * @param options - Set of configurable options to set on the browser.
    * @returns Promise which resolves to browser instance.
    */
@@ -125,10 +122,6 @@ export class PuppeteerNode extends Puppeteer {
   get _productName(): Product | undefined {
     return this.#productName;
   }
-
-  /**
-   * @internal
-   */
   set _productName(name: Product | undefined) {
     if (this.#productName !== name) {
       this._changedProduct = true;
@@ -137,10 +130,8 @@ export class PuppeteerNode extends Puppeteer {
   }
 
   /**
-   * Launches puppeteer and launches a browser instance with given arguments
-   * and options when specified.
-   *
-   * @remarks
+   * Launches puppeteer and launches a browser instance with given arguments and
+   * options when specified.
    *
    * @example
    * You can use `ignoreDefaultArgs` to filter out `--mute-audio` from default arguments:
@@ -150,13 +141,20 @@ export class PuppeteerNode extends Puppeteer {
    * });
    * ```
    *
-   * **NOTE** Puppeteer can also be used to control the Chrome browser,
-   * but it works best with the version of Chromium it is bundled with.
-   * There is no guarantee it will work with any other version.
-   * Use `executablePath` option with extreme caution.
-   * If Google Chrome (rather than Chromium) is preferred, a {@link https://www.google.com/chrome/browser/canary.html | Chrome Canary} or {@link https://www.chromium.org/getting-involved/dev-channel | Dev Channel} build is suggested.
-   * In `puppeteer.launch([options])`, any mention of Chromium also applies to Chrome.
-   * See {@link https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/ | this article} for a description of the differences between Chromium and Chrome. {@link https://chromium.googlesource.com/chromium/src/+/lkgr/docs/chromium_browser_vs_google_chrome.md | This article} describes some differences for Linux users.
+   * @remarks
+   * **NOTE** Puppeteer can also be used to control the Chrome browser, but it
+   * works best with the version of Chromium it is bundled with. There is no
+   * guarantee it will work with any other version. Use `executablePath` option
+   * with extreme caution. If Google Chrome (rather than Chromium) is preferred,
+   * a {@link https://www.google.com/chrome/browser/canary.html | Chrome Canary}
+   * or
+   * {@link https://www.chromium.org/getting-involved/dev-channel | Dev Channel}
+   * build is suggested. In `puppeteer.launch([options])`, any mention of
+   * Chromium also applies to Chrome. See
+   * {@link https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/ | this article}
+   * for a description of the differences between Chromium and Chrome.
+   * {@link https://chromium.googlesource.com/chromium/src/+/lkgr/docs/chromium_browser_vs_google_chrome.md | This article}
+   * describes some differences for Linux users.
    *
    * @param options - Set of configurable options to set on the browser.
    * @returns Promise which resolves to browser instance.
@@ -170,13 +168,13 @@ export class PuppeteerNode extends Puppeteer {
 
   /**
    * @remarks
+   * **NOTE** `puppeteer.executablePath()` is affected by the
+   * `PUPPETEER_EXECUTABLE_PATH` and `PUPPETEER_CHROMIUM_REVISION` environment
+   * variables.
    *
-   * **NOTE** `puppeteer.executablePath()` is affected by the `PUPPETEER_EXECUTABLE_PATH`
-   * and `PUPPETEER_CHROMIUM_REVISION` environment variables.
-   *
-   * @returns A path where Puppeteer expects to find the bundled browser.
-   * The browser binary might not be there if the download was skipped with
-   * the `PUPPETEER_SKIP_DOWNLOAD` environment variable.
+   * @returns A path where Puppeteer expects to find the bundled browser. The
+   * browser binary might not be there if the download was skipped with the
+   * `PUPPETEER_SKIP_DOWNLOAD` environment variable.
    */
   executablePath(channel?: string): string {
     return this._launcher.executablePath(channel);
@@ -211,11 +209,12 @@ export class PuppeteerNode extends Puppeteer {
   }
 
   /**
-   * The name of the browser that is under automation (`"chrome"` or `"firefox"`)
+   * The name of the browser that is under automation (`"chrome"` or
+   * `"firefox"`)
    *
    * @remarks
-   * The product is set by the `PUPPETEER_PRODUCT` environment variable or the `product`
-   * option in `puppeteer.launch([options])` and defaults to `chrome`.
+   * The product is set by the `PUPPETEER_PRODUCT` environment variable or the
+   * `product` option in `puppeteer.launch([options])` and defaults to `chrome`.
    * Firefox support is experimental.
    */
   get product(): string {
@@ -223,7 +222,6 @@ export class PuppeteerNode extends Puppeteer {
   }
 
   /**
-   *
    * @param options - Set of configurable options to set on the browser.
    * @returns The default flags that Chromium will be launched with.
    */
@@ -232,8 +230,8 @@ export class PuppeteerNode extends Puppeteer {
   }
 
   /**
-   * @param options - Set of configurable options to specify the settings
-   * of the BrowserFetcher.
+   * @param options - Set of configurable options to specify the settings of the
+   * BrowserFetcher.
    * @returns A new BrowserFetcher instance.
    */
   createBrowserFetcher(options: BrowserFetcherOptions): BrowserFetcher {

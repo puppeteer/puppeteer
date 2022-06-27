@@ -26,8 +26,14 @@ import {CommonEventEmitter} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {JSHandle} from './JSHandle.js';
 
+/**
+ * @internal
+ */
 export const debugError = debug('puppeteer:error');
 
+/**
+ * @internal
+ */
 export function getExceptionMessage(
   exceptionDetails: Protocol.Runtime.ExceptionDetails
 ): string {
@@ -52,6 +58,9 @@ export function getExceptionMessage(
   return message;
 }
 
+/**
+ * @internal
+ */
 export function valueFromRemoteObject(
   remoteObject: Protocol.Runtime.RemoteObject
 ): any {
@@ -79,6 +88,9 @@ export function valueFromRemoteObject(
   return remoteObject.value;
 }
 
+/**
+ * @internal
+ */
 export async function releaseObject(
   client: CDPSession,
   remoteObject: Protocol.Runtime.RemoteObject
@@ -95,12 +107,18 @@ export async function releaseObject(
     });
 }
 
+/**
+ * @internal
+ */
 export interface PuppeteerEventListener {
   emitter: CommonEventEmitter;
   eventName: string | symbol;
   handler: (...args: any[]) => void;
 }
 
+/**
+ * @internal
+ */
 export function addEventListener(
   emitter: CommonEventEmitter,
   eventName: string | symbol,
@@ -110,6 +128,9 @@ export function addEventListener(
   return {emitter, eventName, handler};
 }
 
+/**
+ * @internal
+ */
 export function removeEventListeners(
   listeners: Array<{
     emitter: CommonEventEmitter;
@@ -123,14 +144,23 @@ export function removeEventListeners(
   listeners.length = 0;
 }
 
+/**
+ * @internal
+ */
 export const isString = (obj: unknown): obj is string => {
   return typeof obj === 'string' || obj instanceof String;
 };
 
+/**
+ * @internal
+ */
 export const isNumber = (obj: unknown): obj is number => {
   return typeof obj === 'number' || obj instanceof Number;
 };
 
+/**
+ * @internal
+ */
 export async function waitForEvent<T>(
   emitter: CommonEventEmitter,
   eventName: string | symbol,
@@ -182,7 +212,7 @@ export async function waitForEvent<T>(
 /**
  * @internal
  */
-export function _createJSHandle(
+export function createJSHandle(
   context: ExecutionContext,
   remoteObject: Protocol.Runtime.RemoteObject
 ): JSHandle | ElementHandle {
@@ -201,6 +231,9 @@ export function _createJSHandle(
   return new JSHandle(context, context._client, remoteObject);
 }
 
+/**
+ * @internal
+ */
 export function evaluationString(
   fun: Function | string,
   ...args: unknown[]
@@ -220,6 +253,9 @@ export function evaluationString(
   return `(${fun})(${args.map(serializeArgument).join(',')})`;
 }
 
+/**
+ * @internal
+ */
 export function pageBindingInitString(type: string, name: string): string {
   function addPageBinding(type: string, bindingName: string): void {
     /* Cast window to any here as we're about to add properties to it
@@ -247,6 +283,9 @@ export function pageBindingInitString(type: string, name: string): string {
   return evaluationString(addPageBinding, type, name);
 }
 
+/**
+ * @internal
+ */
 export function pageBindingDeliverResultString(
   name: string,
   seq: number,
@@ -259,6 +298,9 @@ export function pageBindingDeliverResultString(
   return evaluationString(deliverResult, name, seq, result);
 }
 
+/**
+ * @internal
+ */
 export function pageBindingDeliverErrorString(
   name: string,
   seq: number,
@@ -279,6 +321,9 @@ export function pageBindingDeliverErrorString(
   return evaluationString(deliverError, name, seq, message, stack);
 }
 
+/**
+ * @internal
+ */
 export function pageBindingDeliverErrorValueString(
   name: string,
   seq: number,
@@ -291,6 +336,9 @@ export function pageBindingDeliverErrorValueString(
   return evaluationString(deliverErrorValue, name, seq, value);
 }
 
+/**
+ * @internal
+ */
 export function makePredicateString(
   predicate: Function,
   predicateQueryHandler?: Function
@@ -334,6 +382,9 @@ export function makePredicateString(
     })() `;
 }
 
+/**
+ * @internal
+ */
 export async function waitWithTimeout<T>(
   promise: Promise<T>,
   taskName: string,
@@ -361,6 +412,9 @@ export async function waitWithTimeout<T>(
   }
 }
 
+/**
+ * @internal
+ */
 export async function getReadableAsBuffer(
   readable: Readable,
   path?: string
@@ -396,6 +450,9 @@ export async function getReadableAsBuffer(
   }
 }
 
+/**
+ * @internal
+ */
 export async function getReadableFromProtocolStream(
   client: CDPSession,
   handle: string
@@ -426,17 +483,26 @@ export async function getReadableFromProtocolStream(
   });
 }
 
-interface ErrorLike extends Error {
+/**
+ * @internal
+ */
+export interface ErrorLike extends Error {
   name: string;
   message: string;
 }
 
+/**
+ * @internal
+ */
 export function isErrorLike(obj: unknown): obj is ErrorLike {
   return (
     typeof obj === 'object' && obj !== null && 'name' in obj && 'message' in obj
   );
 }
 
+/**
+ * @internal
+ */
 export function isErrnoException(obj: unknown): obj is NodeJS.ErrnoException {
   return (
     isErrorLike(obj) &&

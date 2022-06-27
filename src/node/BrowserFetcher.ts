@@ -71,6 +71,7 @@ const browserConfig = {
 
 /**
  * Supported platforms.
+ *
  * @public
  */
 export type Platform = 'linux' | 'mac' | 'mac_arm' | 'win32' | 'win64';
@@ -100,10 +101,7 @@ function archiveName(
   }
 }
 
-/**
- * @internal
- */
-function _downloadURL(
+function downloadURL(
   product: Product,
   platform: Platform,
   host: string,
@@ -282,7 +280,7 @@ export class BrowserFetcher {
    * from the host.
    */
   canDownload(revision: string): Promise<boolean> {
-    const url = _downloadURL(
+    const url = downloadURL(
       this.#product,
       this.#platform,
       this.#downloadHost,
@@ -318,7 +316,7 @@ export class BrowserFetcher {
     revision: string,
     progressCallback: (x: number, y: number) => void = (): void => {}
   ): Promise<BrowserFetcherRevisionInfo | undefined> {
-    const url = _downloadURL(
+    const url = downloadURL(
       this.#product,
       this.#platform,
       this.#downloadHost,
@@ -451,7 +449,7 @@ export class BrowserFetcher {
     } else {
       throw new Error('Unsupported product: ' + this.#product);
     }
-    const url = _downloadURL(
+    const url = downloadURL(
       this.#product,
       this.#platform,
       this.#downloadHost,

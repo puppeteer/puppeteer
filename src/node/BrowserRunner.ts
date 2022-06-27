@@ -48,6 +48,9 @@ This means that, on future Puppeteer launches, Puppeteer might not be able to la
 Please check your open processes and ensure that the browser processes that Puppeteer launched have been killed.
 If you think this is a bug, please report it on the Puppeteer issue tracker.`;
 
+/**
+ * @internal
+ */
 export class BrowserRunner {
   #product: Product;
   #executablePath: string;

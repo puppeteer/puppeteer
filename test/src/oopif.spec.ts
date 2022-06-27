@@ -24,8 +24,8 @@ import {
 import {
   Browser,
   BrowserContext,
-  Page,
-} from '../../lib/cjs/puppeteer/api-docs-entry.js';
+} from '../../lib/cjs/puppeteer/common/Browser.js';
+import {Page} from '../../lib/cjs/puppeteer/common/Page.js';
 
 describeChromeOnly('OOPIF', function () {
   /* We use a special browser for this test as we need the --site-per-process flag */

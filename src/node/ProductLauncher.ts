@@ -40,6 +40,9 @@ export interface ProductLauncher {
   product: Product;
 }
 
+/**
+ * @internal
+ */
 export function executablePathForChannel(
   channel: ChromeReleaseChannel
 ): string {
@@ -116,6 +119,9 @@ export function executablePathForChannel(
   return chromePath;
 }
 
+/**
+ * @internal
+ */
 export function resolveExecutablePath(
   launcher: ChromeLauncher | FirefoxLauncher
 ): {

@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
+/**
+ * @internal
+ */
 export const isNode = !!(typeof process !== 'undefined' && process.version);

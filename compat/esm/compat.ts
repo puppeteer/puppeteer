@@ -4,6 +4,9 @@ import {fileURLToPath} from 'url';
 
 const require = createRequire(import.meta.url);
 
+/**
+ * @internal
+ */
 let puppeteerDirname: string;
 
 try {

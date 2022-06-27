@@ -22,6 +22,9 @@ import {
   removeEventListeners,
 } from '../common/util.js';
 
+/**
+ * @internal
+ */
 export class PipeTransport implements ConnectionTransport {
   #pipeWrite: NodeJS.WritableStream;
   #eventListeners: PuppeteerEventListener[];

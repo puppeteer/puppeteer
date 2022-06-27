@@ -44,7 +44,7 @@ export interface InternalQueryHandler {
 
 /**
  * Contains two functions `queryOne` and `queryAll` that can
- * be {@link Puppeteer.registerCustomQueryHandler | registered}
+ * be {@link registerCustomQueryHandler | registered}
  * as alternative querying strategies. The functions `queryOne` and `queryAll`
  * are executed in the page context.  `queryOne` should take an `Element` and a
  * selector string as argument and return a single `Element` or `null` if no
@@ -114,7 +114,7 @@ function makeQueryHandler(handler: CustomQueryHandler): InternalQueryHandler {
   return internalHandler;
 }
 
-const _defaultHandler = makeQueryHandler({
+const defaultHandler = makeQueryHandler({
   queryOne: (element: Element | Document, selector: string) => {
     return element.querySelector(selector);
   },
@@ -180,9 +180,27 @@ const builtInHandlers = new Map([
 const queryHandlers = new Map(builtInHandlers);
 
 /**
- * @internal
+ * Registers a {@link CustomQueryHandler | custom query handler}.
+ *
+ * @remarks
+ * After registration, the handler can be used everywhere where a selector is
+ * expected by prepending the selection string with `<name>/`. The name is only
+ * allowed to consist of lower- and upper case latin letters.
+ *
+ * @example
+ * ```
+ * puppeteer.registerCustomQueryHandler('text', { … });
+ * const aHandle = await page.$('text/…');
+ * ```
+ *
+ * @param name - The name that the custom query handler will be registered
+ * under.
+ * @param queryHandler - The {@link CustomQueryHandler | custom query handler}
+ * to register.
+ *
+ * @public
  */
-export function _registerCustomQueryHandler(
+export function registerCustomQueryHandler(
   name: string,
   handler: CustomQueryHandler
 ): void {
@@ -201,40 +219,46 @@ export function _registerCustomQueryHandler(
 }
 
 /**
- * @internal
+ * @param name - The name of the query handler to unregistered.
+ *
+ * @public
  */
-export function _unregisterCustomQueryHandler(name: string): void {
+export function unregisterCustomQueryHandler(name: string): void {
   if (queryHandlers.has(name) && !builtInHandlers.has(name)) {
     queryHandlers.delete(name);
   }
 }
 
 /**
- * @internal
+ * @returns a list with the names of all registered custom query handlers.
+ *
+ * @public
  */
-export function _customQueryHandlerNames(): string[] {
+export function customQueryHandlerNames(): string[] {
   return [...queryHandlers.keys()].filter(name => {
     return !builtInHandlers.has(name);
   });
 }
 
 /**
- * @internal
+ * Clears all registered handlers.
+ *
+ * @public
  */
-export function _clearCustomQueryHandlers(): void {
-  _customQueryHandlerNames().forEach(_unregisterCustomQueryHandler);
+export function clearCustomQueryHandlers(): void {
+  customQueryHandlerNames().forEach(unregisterCustomQueryHandler);
 }
 
 /**
  * @internal
  */
-export function _getQueryHandlerAndSelector(selector: string): {
+export function getQueryHandlerAndSelector(selector: string): {
   updatedSelector: string;
   queryHandler: InternalQueryHandler;
 } {
   const hasCustomQueryHandler = /^[a-zA-Z]+\//.test(selector);
   if (!hasCustomQueryHandler) {
-    return {updatedSelector: selector, queryHandler: _defaultHandler};
+    return {updatedSelector: selector, queryHandler: defaultHandler};
   }
 
   const index = selector.indexOf('/');
