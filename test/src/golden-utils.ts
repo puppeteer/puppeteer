@@ -65,9 +65,7 @@ const compareImages = (
       ? PNG.sync.read(expectedBuffer)
       : jpeg.decode(expectedBuffer);
   if (expected.width !== actual.width || expected.height !== actual.height) {
-    throw new Error(
-      `Sizes differ: expected image ${expected.width}px X ${expected.height}px, but got ${actual.width}px X ${actual.height}px.`
-    );
+    return {diff: PNG.sync.write(new PNG(actual))};
   }
   const diff = new PNG({width: expected.width, height: expected.height});
   const count = pixelmatch(
