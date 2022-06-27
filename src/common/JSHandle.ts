@@ -167,7 +167,7 @@ export class JSHandle<T = unknown> {
       [this, ...Params]
     >
   >(
-    pageFunction: Func,
+    pageFunction: Func | string,
     ...args: Params
   ): // @ts-expect-error Circularity here is okay because we only need the return
   // type which doesn't use `this`.

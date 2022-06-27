@@ -36,7 +36,7 @@
     "test:pinned-deps": "ts-node -s scripts/ensure-pinned-deps",
     "test:install": "scripts/test-install.sh",
     "test:debug": "npm run build:test && mocha --inspect-brk",
-    "test:types": "ts-node -s scripts/test-ts-definition-files.ts",
+    "test:types": "tsc -b test-d",
     "prepublishOnly": "npm run build",
     "prepare": "node typescript-if-required.js && ([[ $HUSKY = 0 ]] || husky install)",
     "lint": "npm run build && npm run lint:eslint && npm run doc && npm run lint:prettier",
@@ -126,6 +126,7 @@
     "sinon": "14.0.0",
     "source-map-support": "0.5.21",
     "text-diff": "1.0.1",
+    "tsd": "0.21.0",
     "typescript": "4.7.2"
   }
 }

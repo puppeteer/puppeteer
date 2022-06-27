@@ -55,8 +55,7 @@ jobs:
           # See https://github.com/puppeteer/puppeteer/issues/7710 for more info
           # npm run generate:docs
           npm run test:protocol-revision
-          # TODO(jrandolf): Find a better way to test TypeScript source files.
-          # npm run test:types
+          npm run test:types
 
       - name: Run commit lint
         run: |
@@ -184,9 +183,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # Include active LTS + current Node.js version.
+        # Include a current Node.js version.
         # https://github.com/nodejs/Release#release-schedule
-        node: [16, 18]
+        node: [18]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -210,7 +209,6 @@ jobs:
           npm run build
       - name: Run unit tests in headful mode
         uses: nick-invision/retry@v2
-        continue-on-error: true
         env:
           CHROMIUM: true
           HEADLESS: false
@@ -219,15 +217,14 @@ jobs:
           command: xvfb-run --auto-servernum npm run test:unit
           timeout_minutes: 10
 
-  chrome-headless:
+  linux-chrome-headless:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         # https://github.com/actions/virtual-environments#available-environments
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        # Include active LTS + current Node.js version.
+        os: [ubuntu-latest]
         # https://github.com/nodejs/Release#release-schedule
-        node: [16, 18]
+        node: [18]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -239,17 +236,19 @@ jobs:
           node-version: ${{ matrix.node }}
       - name: Install dependencies
         run: |
+          sudo apt-get install xvfb
+          # Ensure both a Chromium and a Firefox binary are available.
+          PUPPETEER_PRODUCT=firefox npm install
           npm install
-          ls .local-chromium
+          ls .local-chromium .local-firefox
       - name: Build
         run: |
           npm run build
       - name: Run unit tests
         uses: nick-invision/retry@v2
-        continue-on-error: true
         env:
           CHROMIUM: true
         with:
           max_attempts: 1
-          command: npm run test:unit:chrome-headless
-          timeout_minutes: 30
+          command: xvfb-run --auto-servernum npm run test:unit:chrome-headless
+          timeout_minutes: 10
