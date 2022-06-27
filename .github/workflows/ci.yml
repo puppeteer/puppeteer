@@ -55,8 +55,7 @@ jobs:
           # See https://github.com/puppeteer/puppeteer/issues/7710 for more info
           # npm run generate:docs
           npm run test:protocol-revision
-          # TODO(jrandolf): Find a better way to test TypeScript source files.
-          # npm run test:types
+          npm run test:types
 
       - name: Run commit lint
         run: |
