@@ -15,6 +15,9 @@
  */
 import {ConnectionTransport} from './ConnectionTransport.js';
 
+/**
+ * @internal
+ */
 export class BrowserWebSocketTransport implements ConnectionTransport {
   static create(url: string): Promise<BrowserWebSocketTransport> {
     return new Promise((resolve, reject) => {

@@ -17,16 +17,34 @@
 import {JSHandle} from './JSHandle.js';
 import {ElementHandle} from './ElementHandle.js';
 
+/**
+ * @public
+ */
 export type Awaitable<T> = T | PromiseLike<T>;
 
+/**
+ * @public
+ */
 export type HandleFor<T> = T extends Element ? ElementHandle<T> : JSHandle<T>;
+/**
+ * @public
+ */
 export type HandleOr<T> = HandleFor<T> | JSHandle<T> | T;
 
-type FlattenHandle<T> = T extends HandleOr<infer U> ? U : never;
+/**
+ * @public
+ */
+export type FlattenHandle<T> = T extends HandleOr<infer U> ? U : never;
+/**
+ * @public
+ */
 export type InnerParams<T extends unknown[]> = {
   [K in keyof T]: FlattenHandle<T[K]>;
 };
 
+/**
+ * @public
+ */
 export type EvaluateFunc<T extends unknown[]> = (
   ...params: InnerParams<T>
 ) => Awaitable<unknown>;

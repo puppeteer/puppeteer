@@ -1,5 +1,8 @@
 import {dirname} from 'path';
 
+/**
+ * @internal
+ */
 let puppeteerDirname: string;
 
 try {

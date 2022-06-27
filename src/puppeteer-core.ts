@@ -16,21 +16,19 @@
 
 import {initializePuppeteer} from './initializePuppeteer.js';
 
+export * from './common/NetworkConditions.js';
+export * from './common/QueryHandler.js';
+export * from './common/DeviceDescriptors.js';
+export * from './common/Errors.js';
+
 const puppeteer = initializePuppeteer('puppeteer-core');
 
 export const {
-  clearCustomQueryHandlers,
   connect,
   createBrowserFetcher,
-  customQueryHandlerNames,
   defaultArgs,
-  devices,
-  errors,
   executablePath,
   launch,
-  networkConditions,
-  registerCustomQueryHandler,
-  unregisterCustomQueryHandler,
 } = puppeteer;
 
 export default puppeteer;

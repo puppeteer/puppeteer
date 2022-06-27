@@ -13,6 +13,7 @@ docs/api.html
 lib/
 node_modules/
 package-lock.json
+puppeteer.api.json
 puppeteer*.tgz
 test-ts-types/**/dist/
 test-ts-types/**/node_modules

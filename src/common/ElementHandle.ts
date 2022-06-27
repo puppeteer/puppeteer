@@ -8,14 +8,13 @@ import {
   BoundingBox,
   BoxModel,
   ClickOptions,
-  computeQuadArea,
   JSHandle,
   Offset,
   Point,
   PressOptions,
 } from './JSHandle.js';
 import {Page, ScreenshotOptions} from './Page.js';
-import {_getQueryHandlerAndSelector} from './QueryHandler.js';
+import {getQueryHandlerAndSelector} from './QueryHandler.js';
 import {EvaluateFunc} from './types.js';
 import {KeyInput} from './USKeyboardLayout.js';
 import {debugError, isString} from './util.js';
@@ -841,7 +840,7 @@ export class ElementHandle<
   async $(selector: string): Promise<ElementHandle | null>;
   async $(selector: string): Promise<ElementHandle | null> {
     const {updatedSelector, queryHandler} =
-      _getQueryHandlerAndSelector(selector);
+      getQueryHandlerAndSelector(selector);
     assert(
       queryHandler.queryOne,
       'Cannot handle queries for a single element with the given selector'
@@ -866,7 +865,7 @@ export class ElementHandle<
   async $$(selector: string): Promise<ElementHandle[]>;
   async $$(selector: string): Promise<ElementHandle[]> {
     const {updatedSelector, queryHandler} =
-      _getQueryHandlerAndSelector(selector);
+      getQueryHandlerAndSelector(selector);
     assert(
       queryHandler.queryAll,
       'Cannot handle queries for a multiple element with the given selector'
@@ -986,7 +985,7 @@ export class ElementHandle<
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     const {updatedSelector, queryHandler} =
-      _getQueryHandlerAndSelector(selector);
+      getQueryHandlerAndSelector(selector);
     assert(queryHandler.queryAllArray);
     const arrayHandle = await queryHandler.queryAllArray(this, updatedSelector);
     const result = await arrayHandle.evaluate(pageFunction, ...args);
@@ -1045,4 +1044,17 @@ export class ElementHandle<
       return threshold === 1 ? visibleRatio === 1 : visibleRatio > threshold;
     }, threshold);
   }
+}
+
+function computeQuadArea(quad: Point[]): number {
+  /* Compute sum of all directed areas of adjacent triangles
+     https://en.wikipedia.org/wiki/Polygon#Simple_polygons
+   */
+  let area = 0;
+  for (let i = 0; i < quad.length; ++i) {
+    const p1 = quad[i]!;
+    const p2 = quad[(i + 1) % quad.length]!;
+    area += (p1.x * p2.y - p2.x * p1.y) / 2;
+  }
+  return Math.abs(area);
 }

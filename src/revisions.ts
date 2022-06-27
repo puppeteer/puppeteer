@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * @internal
+ */
 export const PUPPETEER_REVISIONS = Object.freeze({
   chromium: '1011831',
   firefox: 'latest',
