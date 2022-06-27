@@ -9,7 +9,6 @@ lib/
 node_modules/
 package-lock.json
 package.json
-test-ts-types/
 test/assets/
 tsconfig.tsbuildinfo
 vendor/
