@@ -2791,8 +2791,7 @@ export class Page extends EventEmitter {
    * - `fromSurface` : When true, captures screenshot
    *   {@link https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot
    *   | from the surface rather than the view}. When false, works only in
-   *   headful mode and ignores page viewport (but not browser window's
-   *   bounds). Defaults to `true`.
+   *   headful mode. Defaults to `true`.
    *
    * NOTE: Screenshots take at least 1/6 second on OS X. See
    * {@link https://crbug.com/741689} for discussion.
@@ -2909,6 +2908,8 @@ export class Page extends EventEmitter {
         ? options.fromSurface
         : undefined;
 
+    const viewport = this.#viewport;
+
     if (options.fullPage) {
       const metrics = await this.#client.send('Page.getLayoutMetrics');
       // Fallback to `contentSize` in case of using Firefox.
@@ -2918,28 +2919,17 @@ export class Page extends EventEmitter {
       clip = {x: 0, y: 0, width, height, scale: 1};
 
       if (!captureBeyondViewport) {
-        const {
-          isMobile = false,
-          deviceScaleFactor = 1,
-          isLandscape = false,
-        } = this.#viewport || {};
-        const screenOrientation: Protocol.Emulation.ScreenOrientation =
-          isLandscape
-            ? {angle: 90, type: 'landscapePrimary'}
-            : {angle: 0, type: 'portraitPrimary'};
-        await this.#client.send('Emulation.setDeviceMetricsOverride', {
-          mobile: isMobile,
-          width,
-          height,
-          deviceScaleFactor,
-          screenOrientation,
-        });
+        this.setViewport({...viewport, width, height});
       }
     }
     const shouldSetDefaultBackground =
       options.omitBackground && (format === 'png' || format === 'webp');
     if (shouldSetDefaultBackground) {
       await this.#setTransparentBackgroundColor();
+    }
+
+	if (!fromSurface) {
+      await this.setViewport(this.#viewport!);
     }
 
     const result = await this.#client.send('Page.captureScreenshot', {
@@ -2953,8 +2943,8 @@ export class Page extends EventEmitter {
       await this.#resetDefaultBackgroundColor();
     }
 
-    if (options.fullPage && this.#viewport) {
-      await this.setViewport(this.#viewport);
+    if (options.fullPage && !captureBeyondViewport) {
+      await this.setViewport(viewport!);
     }
 
     const buffer =
