@@ -66,7 +66,7 @@ export class Connection extends EventEmitter {
     this.#delay = delay;
 
     this.#transport = transport;
-    this.#transport.onmessage = this.#onMessage.bind(this);
+    this.#transport.onmessage = this.onMessage.bind(this);
     this.#transport.onclose = this.#onClose.bind(this);
   }
 
@@ -79,6 +79,13 @@ export class Connection extends EventEmitter {
    */
   get _closed(): boolean {
     return this.#closed;
+  }
+
+  /**
+   * @internal
+   */
+  get _sessions(): Map<string, CDPSession> {
+    return this.#sessions;
   }
 
   /**
@@ -126,7 +133,10 @@ export class Connection extends EventEmitter {
     return id;
   }
 
-  async #onMessage(message: string): Promise<void> {
+  /**
+   * @internal
+   */
+  protected async onMessage(message: string): Promise<void> {
     if (this.#delay) {
       await new Promise(f => {
         return setTimeout(f, this.#delay);
