@@ -155,6 +155,7 @@ export class ChromeLauncher implements ProductLauncher {
         preferredRevision: this._preferredRevision,
       });
       browser = await Browser._create(
+        this.product,
         connection,
         [],
         ignoreHTTPSErrors,

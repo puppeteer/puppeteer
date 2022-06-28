@@ -173,7 +173,7 @@ describe('Target', function () {
       });
       await page.evaluate(() => {
         return (globalThis as any).registrationPromise.then(
-          (registration: {unregister: () => any}) => {
+          (registration: any) => {
             return registration.unregister();
           }
         );
@@ -196,6 +196,7 @@ describe('Target', function () {
       })
     ).toBe('[object ServiceWorkerGlobalScope]');
   });
+  // TODO: fix shared workers.
   itFailsFirefox('should create a worker from a shared worker', async () => {
     const {page, server, context} = getTestState();
 
