@@ -35,7 +35,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES
 
-* type inference for evaluation types (#8547)
+* type inference for evaluation types ([#8547](https://github.com/puppeteer/puppeteer/issues/8547))
 
 ### Features
 
