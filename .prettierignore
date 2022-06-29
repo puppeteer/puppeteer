@@ -4,7 +4,6 @@ assets/
 build/
 CHANGELOG.md
 coverage/
-doclint/
 lib/
 node_modules/
 package-lock.json
@@ -14,3 +13,5 @@ tsconfig.tsbuildinfo
 vendor/
 yarn.lock
 puppeteer.api.json
+website/
+docs/

@@ -53,7 +53,7 @@ npm run build:tsc && npm run test:unit
 
 - To run a specific test, substitute the `it` with `it.only`:
 
-```js
+```ts
   ...
   it.only('should work', async function() {
     const {server, page} = getTestState();
@@ -64,7 +64,7 @@ npm run build:tsc && npm run test:unit
 
 - To disable a specific test, substitute the `it` with `xit` (mnemonic rule: '_cross it_'):
 
-```js
+```ts
   ...
   // Using "xit" to skip specific test
   xit('should work', async function({server, page}) {

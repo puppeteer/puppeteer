@@ -24,7 +24,7 @@ import {ElementHandle} from './ElementHandle.js';
  * `FileChooser` objects are returned via the `page.waitForFileChooser` method.
  * @example
  * An example of using `FileChooser`:
- * ```js
+ * ```ts
  * const [fileChooser] = await Promise.all([
  *   page.waitForFileChooser(),
  *   page.click('#upload-file-button'), // some button that triggers file selection

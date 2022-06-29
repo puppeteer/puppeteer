@@ -364,7 +364,7 @@ export class HTTPRequest {
    * For example, if the website `http://example.com` has a single redirect to
    * `https://example.com`, then the chain will contain one request:
    *
-   * ```js
+   * ```ts
    * const response = await page.goto('http://example.com');
    * const chain = response.request().redirectChain();
    * console.log(chain.length); // 1
@@ -373,7 +373,7 @@ export class HTTPRequest {
    *
    * If the website `https://google.com` has no redirects, then the chain will be empty:
    *
-   * ```js
+   * ```ts
    * const response = await page.goto('https://google.com');
    * const chain = response.request().redirectChain();
    * console.log(chain.length); // 0
@@ -395,7 +395,7 @@ export class HTTPRequest {
    *
    * Example of logging all failed requests:
    *
-   * ```js
+   * ```ts
    * page.on('requestfailed', request => {
    *   console.log(request.url() + ' ' + request.failure().errorText);
    * });
@@ -426,7 +426,7 @@ export class HTTPRequest {
    * Exception is immediately thrown if the request interception is not enabled.
    *
    * @example
-   * ```js
+   * ```ts
    * await page.setRequestInterception(true);
    * page.on('request', request => {
    *   // Override headers
@@ -519,7 +519,7 @@ export class HTTPRequest {
    *
    * @example
    * An example of fulfilling all requests with 404 responses:
-   * ```js
+   * ```ts
    * await page.setRequestInterception(true);
    * page.on('request', request => {
    *   request.respond({

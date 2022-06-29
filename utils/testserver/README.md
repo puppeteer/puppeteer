@@ -4,7 +4,7 @@ This test server is used internally by Puppeteer to test Puppeteer itself.
 
 ### Example
 
-```js
+```ts
 const {TestServer} = require('@pptr/testserver');
 
 (async(() => {

@@ -1540,7 +1540,7 @@ export type DevicesMap = {
  *
  * @example
  *
- * ```js
+ * ```ts
  * const puppeteer = require('puppeteer');
  * const iPhone = puppeteer.devices['iPhone 6'];
  *

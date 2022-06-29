@@ -33,10 +33,9 @@ const applyOffsetsToQuad = (
  * ElementHandle represents an in-page DOM element.
  *
  * @remarks
- *
  * ElementHandles can be created with the {@link Page.$} method.
  *
- * ```js
+ * ```ts
  * const puppeteer = require('puppeteer');
  *
  * (async () => {
@@ -157,7 +156,7 @@ export class ElementHandle<
    * If `xpath` starts with `//` instead of `.//`, the dot will be appended automatically.
    *
    * This method works across navigation
-   * ```js
+   * ```ts
    * const puppeteer = require('puppeteer');
    * (async () => {
    * const browser = await puppeteer.launch();
@@ -515,7 +514,7 @@ export class ElementHandle<
    * throws an error.
    *
    * @example
-   * ```js
+   * ```ts
    * handle.select('blue'); // single selection
    * handle.select('red', 'green', 'blue'); // multiple selections
    * ```
@@ -664,7 +663,7 @@ export class ElementHandle<
    * use {@link ElementHandle.press}.
    *
    * @example
-   * ```js
+   * ```ts
    * await elementHandle.type('Hello'); // Types instantly
    * await elementHandle.type('World', {delay: 100}); // Types slower, like a user
    * ```
@@ -672,7 +671,7 @@ export class ElementHandle<
    * @example
    * An example of typing into a text field and then submitting the form:
    *
-   * ```js
+   * ```ts
    * const elementHandle = await page.$('input');
    * await elementHandle.type('some text');
    * await elementHandle.press('Enter');
@@ -882,7 +881,7 @@ export class ElementHandle<
    * to resolve and return its value.
    *
    * @example
-   * ```js
+   * ```ts
    * const tweetHandle = await page.$('.tweet');
    * expect(await tweetHandle.$eval('.like', node => node.innerText)).toBe('100');
    * expect(await tweetHandle.$eval('.retweets', node => node.innerText)).toBe('10');
@@ -947,7 +946,7 @@ export class ElementHandle<
    * ```
    *
    * @example
-   * ```js
+   * ```ts
    * const feedHandle = await page.$('.feed');
    * expect(await feedHandle.$$eval('.tweet', nodes => nodes.map(n => n.innerText)))
    *  .toEqual(['Hello!', 'Hi!']);

@@ -36,25 +36,3 @@ jobs:
           npm config set registry 'https://wombat-dressing-room.appspot.com/'
           npm config set '//wombat-dressing-room.appspot.com/:_authToken' '${NPM_TOKEN}'
           npm publish
-
-  post-publish:
-    needs: publish
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          ref: main
-      - name: Install dependencies
-        run: npm install
-      - name: Build main docs
-        run: npm run doc
-      - name: Commit
-        run: |
-          git config --global user.email "55107282+release-please[bot]@users.noreply.github.com"
-          git config --global user.name "release-please[bot]"
-          git commit -am "chore: unfreeze version on docs"
-          git push

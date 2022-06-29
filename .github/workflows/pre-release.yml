@@ -21,10 +21,16 @@ jobs:
       - name: Build
         run: |
           node utils/generate_version_file.js
-          IS_RELEASE=1 npm run doc
+          npm run docs
+      - name: Version docs
+        working-directory: ./website
+        run: |
+          npm install
+          npm run docusaurus docs:version $(jq -r .version ../package.json)
       - name: Commit
         run: |
           git config --global user.name 'release-please[bot]'
           git config --global user.email '55107282+release-please[bot]@users.noreply.github.com'
-          git commit -am 'chore: freeze version on docs'
+          git add .
+          git commit -m 'chore: generated versioned docs'
           git push --no-verify

@@ -98,7 +98,7 @@ export interface CSSCoverageOptions {
  * @example
  * An example of using JavaScript and CSS coverage to get percentage of initially
  * executed code:
- * ```js
+ * ```ts
  * // Enable both JavaScript and CSS coverage
  * await Promise.all([
  *   page.coverage.startJSCoverage(),

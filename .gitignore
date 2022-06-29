@@ -1,19 +1,33 @@
-.DS_Store
-.vscode
-/.dev_profile*
-/.local-chromium/
-/.local-firefox/
-/test/output-*/
-build/
+# Dependencies
+node_modules
+
+# Production
+build
+lib
+
+# Generated files
 coverage
-coverage/
-doclint/
-docs-api-json/
-docs/api.html
-lib/
-node_modules/
-package-lock.json
+tsconfig.tsbuildinfo
 puppeteer.api.json
 puppeteer*.tgz
-tsconfig.tsbuildinfo
 yarn.lock
+.docusaurus
+.cache-loader
+.local-chromium
+.local-firefox
+test/output-*/
+.dev_profile*
+
+# IDE Artifacts
+.vscode
+
+# Misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

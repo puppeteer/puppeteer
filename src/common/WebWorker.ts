@@ -48,7 +48,7 @@ type JSHandleFactory = (obj: Protocol.Runtime.RemoteObject) => JSHandle;
  * object to signal the worker lifecycle.
  *
  * @example
- * ```js
+ * ```ts
  * page.on('workercreated', worker => console.log('Worker created: ' + worker.url()));
  * page.on('workerdestroyed', worker => console.log('Worker destroyed: ' + worker.url()));
  *

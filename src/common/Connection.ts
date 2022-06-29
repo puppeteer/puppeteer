@@ -271,7 +271,7 @@ export const CDPSessionEmittedEvents = {
  * and {@link https://github.com/aslushnikov/getting-started-with-cdp/blob/HEAD/README.md | Getting Started with DevTools Protocol}.
  *
  * @example
- * ```js
+ * ```ts
  * const client = await page.target().createCDPSession();
  * await client.send('Animation.enable');
  * client.on('Animation.animationCreated', () => console.log('Animation created!'));
