@@ -105,7 +105,18 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
   }
 
   async initialize(): Promise<void> {
-    this.#targetsIdsForInit = new Set(this.#discoveredTargetsByTargetId.keys());
+    this.#targetsIdsForInit = new Set();
+    for (const [
+      targetId,
+      targetInfo,
+    ] of this.#discoveredTargetsByTargetId.entries()) {
+      if (
+        !this.#targetFilterCallback ||
+        this.#targetFilterCallback(targetInfo)
+      ) {
+        this.#targetsIdsForInit.add(targetId);
+      }
+    }
     await this.#connection.send('Target.setAutoAttach', {
       waitForDebuggerOnStart: true,
       flatten: true,
@@ -118,6 +129,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
     this.#connection.off('Target.targetCreated', this.#onTargetCreated);
     this.#connection.off('Target.targetDestroyed', this.#onTargetDestroyed);
     this.#connection.off('Target.targetInfoChanged', this.#onTargetInfoChanged);
+    this.#connection.off('sessiondetached', this.#onSessionDetached);
 
     this.#removeAttachmentListeners(this.#connection);
   }
