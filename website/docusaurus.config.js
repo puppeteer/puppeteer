@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * Copyright 2022 Google Inc. All rights reserved.
  *
@@ -14,6 +15,8 @@
  * limitations under the License.
  */
 
+=======
+>>>>>>> a6789de1 (feat: add documentation)
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
@@ -23,13 +26,36 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const DOC_ROUTE_BASE_PATH = '/';
 const DOC_PATH = '../docs';
 
+<<<<<<< HEAD
+=======
+// Reverse the sidebar items ordering (including nested category items)
+function reverseSidebarItems(items) {
+  // Reverse items in categories
+  const result = items.map(item => {
+    if (item.type === 'category') {
+      return {...item, items: reverseSidebarItems(item.items)};
+    }
+    return item;
+  });
+  // Reverse items at current level
+  result.reverse();
+  return result;
+}
+
+>>>>>>> a6789de1 (feat: add documentation)
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Puppeteer',
   tagline: 'Headless Chrome Node.js API',
+<<<<<<< HEAD
   url: 'https://pptr.dev',
   baseUrl: '/',
   onBrokenLinks: 'warn',
+=======
+  url: 'https://puppeteer.github.io',
+  baseUrl: '/puppeteer/',
+  onBrokenLinks: 'throw',
+>>>>>>> a6789de1 (feat: add documentation)
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
   organizationName: 'puppeteer',
@@ -63,32 +89,53 @@ const config = {
                 return -1;
               })) {
                 if ('id' in item) {
+<<<<<<< HEAD
                   // @ts-ignore
                   const [namespace, object] = item.label.split('.');
                   const currentItem = newItems[newItems.length - 1];
                   if (
                     !currentItem || 
+=======
+                  const [, namespace, object] = item.id.split('.', 3);
+                  const currentItem = newItems[newItems.length - 1];
+                  if (
+                    !currentItem ||
+>>>>>>> a6789de1 (feat: add documentation)
                     !('label' in currentItem) ||
                     currentItem.label !== namespace
                   ) {
                     if (object) {
+<<<<<<< HEAD
                       newItems.push({
                         type: 'category',
                         // @ts-ignore
+=======
+                      item.label = object;
+                      newItems.push({
+                        type: 'category',
+>>>>>>> a6789de1 (feat: add documentation)
                         label: namespace,
                         items: [item],
                       });
                     } else {
                       newItems.push({
                         type: 'category',
+<<<<<<< HEAD
                         // @ts-ignore
                         label: item.label,
+=======
+                        label: namespace,
+>>>>>>> a6789de1 (feat: add documentation)
                         items: [],
                         link: {type: 'doc', id: item.id},
                       });
                     }
                   } else {
                     if (object) {
+<<<<<<< HEAD
+=======
+                      item.label = object;
+>>>>>>> a6789de1 (feat: add documentation)
                       // @ts-ignore
                       currentItem.items.push(item);
                     } else {
@@ -98,7 +145,11 @@ const config = {
                   }
                 }
               }
+<<<<<<< HEAD
               apiCategoryItem.items = newItems;
+=======
+              apiCategoryItem.items = reverseSidebarItems(newItems);
+>>>>>>> a6789de1 (feat: add documentation)
             }
             return sidebarItems;
           },

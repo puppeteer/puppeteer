@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * Copyright 2022 Google Inc. All rights reserved.
  *
@@ -14,6 +15,8 @@
  * limitations under the License.
  */
 
+=======
+>>>>>>> a6789de1 (feat: add documentation)
 module.exports = {
   presets: [require.resolve('@docusaurus/core/lib/babel/preset')],
 };

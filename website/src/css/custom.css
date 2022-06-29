@@ -1,4 +1,5 @@
 /**
+<<<<<<< HEAD
  * Copyright 2022 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +15,13 @@
  * limitations under the License.
  */
  
+=======
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+>>>>>>> a6789de1 (feat: add documentation)
 /* You can override the default Infima variables here. */
 :root {
   --ifm-color-primary: #2e8555;
