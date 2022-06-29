@@ -339,6 +339,10 @@ export class Browser extends EventEmitter {
       TargetManagerEmittedEvents.TargetChanged,
       this.#onTargetChanged
     );
+    this.#targetManager.on(
+      TargetManagerEmittedEvents.TargetDiscovered,
+      this.#onTargetDiscovered
+    );
     await this.#targetManager.initialize();
   }
 
@@ -361,6 +365,10 @@ export class Browser extends EventEmitter {
     this.#targetManager.off(
       TargetManagerEmittedEvents.TargetChanged,
       this.#onTargetChanged
+    );
+    this.#targetManager.off(
+      TargetManagerEmittedEvents.TargetDiscovered,
+      this.#onTargetDiscovered
     );
   }
 
@@ -529,6 +537,10 @@ export class Browser extends EventEmitter {
         .browserContext()
         .emit(BrowserContextEmittedEvents.TargetChanged, target);
     }
+  };
+
+  #onTargetDiscovered = (targetInfo: Protocol.Target.TargetInfo): void => {
+    this.emit('targetdiscovered', targetInfo);
   };
 
   /**

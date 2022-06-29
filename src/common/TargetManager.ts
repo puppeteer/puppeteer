@@ -63,6 +63,7 @@ export interface TargetManager extends EventEmitter {
  * @internal
  */
 export const enum TargetManagerEmittedEvents {
+  TargetDiscovered = 'targetDiscovered',
   TargetAvailable = 'targetAvailable',
   TargetGone = 'targetGone',
   TargetChanged = 'targetChanged',

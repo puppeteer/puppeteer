@@ -207,6 +207,8 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
       event.targetInfo
     );
 
+    this.emit(TargetManagerEmittedEvents.TargetDiscovered, event.targetInfo);
+
     // The connection is already attached to the browser target implicitly,
     // therefore, no new CDPSession is created and we have special handling
     // here.
