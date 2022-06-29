@@ -57,14 +57,4 @@ jobs:
           git config --global user.email "55107282+release-please[bot]@users.noreply.github.com"
           git config --global user.name "release-please[bot]"
           git commit -am "chore: unfreeze version on docs"
-      - name: Create PR
-        uses: peter-evans/create-pull-request@v4
-        with:
-          token: ${{secrets.PR_PAT}}
-          committer: 'release-please[bot] <55107282+release-please[bot]@users.noreply.github.com>'
-          author: 'release-please[bot] <55107282+release-please[bot]@users.noreply.github.com>'
-          title: 'chore: unfreeze version on docs'
-          body: ''
-          labels: automated pr
-          branch: create-pull-request/unfreeze
-          delete-branch: true
+          git push
