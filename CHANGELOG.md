@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [15.2.0](https://github.com/puppeteer/puppeteer/compare/v15.1.1...v15.2.0) (2022-06-29)
+
+
+### Features
+
+* add fromSurface option to page.screenshot ([#8496](https://github.com/puppeteer/puppeteer/issues/8496)) ([79e1198](https://github.com/puppeteer/puppeteer/commit/79e11985ba44b72b1ad6b8cd861fe316f1945e64))
+* export public types only ([#8584](https://github.com/puppeteer/puppeteer/issues/8584)) ([7001322](https://github.com/puppeteer/puppeteer/commit/7001322cd1cf9f77ee2c370d50a6707e7aaad72d))
+
+
+### Bug Fixes
+
+* clean up tmp profile dirs when browser is closed ([#8580](https://github.com/puppeteer/puppeteer/issues/8580)) ([9787a1d](https://github.com/puppeteer/puppeteer/commit/9787a1d8df7768017b36d42327faab402695c4bb))
+
 ## [15.1.1](https://github.com/puppeteer/puppeteer/compare/v15.1.0...v15.1.1) (2022-06-25)
 
 
