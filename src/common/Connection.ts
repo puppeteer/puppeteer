@@ -66,7 +66,7 @@ export class Connection extends EventEmitter {
     this.#delay = delay;
 
     this.#transport = transport;
-    this.#transport.onmessage = this.onMessage.bind(this);
+    this.#transport.onmessage = this._onMessage.bind(this);
     this.#transport.onclose = this.#onClose.bind(this);
   }
 
@@ -136,7 +136,7 @@ export class Connection extends EventEmitter {
   /**
    * @internal
    */
-  protected async onMessage(message: string): Promise<void> {
+  protected async _onMessage(message: string): Promise<void> {
     if (this.#delay) {
       await new Promise(f => {
         return setTimeout(f, this.#delay);
