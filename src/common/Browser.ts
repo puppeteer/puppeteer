@@ -292,19 +292,19 @@ export class Browser extends EventEmitter {
         return true;
       });
     this.#setIsPageTargetCallback(isPageTargetCallback);
-    this.#targetManager =
-      product === 'chrome'
-        ? new ChromeTargetManager(
-            connection,
-            this.#createTarget,
-            this.#targetFilterCallback
-          )
-        : new FirefoxTargetManager(
-            connection,
-            this.#createTarget,
-            this.#targetFilterCallback
-          );
-
+    if (product === 'firefox') {
+      this.#targetManager = new FirefoxTargetManager(
+        connection,
+        this.#createTarget,
+        this.#targetFilterCallback
+      );
+    } else {
+      this.#targetManager = new ChromeTargetManager(
+        connection,
+        this.#createTarget,
+        this.#targetFilterCallback
+      );
+    }
     this.#defaultContext = new BrowserContext(this.#connection, this);
     this.#contexts = new Map();
     for (const contextId of contextIds) {
@@ -727,6 +727,7 @@ export class Browser extends EventEmitter {
    * cannot be used anymore.
    */
   disconnect(): void {
+    this.#targetManager.dispose();
     this.#connection.dispose();
   }
 

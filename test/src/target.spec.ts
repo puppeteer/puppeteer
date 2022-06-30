@@ -172,11 +172,13 @@ describe('Target', function () {
         });
       });
       await page.evaluate(() => {
-        return (globalThis as any).registrationPromise.then(
-          (registration: any) => {
-            return registration.unregister();
+        return (
+          globalThis as unknown as {
+            registrationPromise: Promise<{unregister: () => void}>;
           }
-        );
+        ).registrationPromise.then((registration: any) => {
+          return registration.unregister();
+        });
       });
       expect(await destroyedTarget).toBe(await createdTarget);
     }
@@ -196,7 +198,6 @@ describe('Target', function () {
       })
     ).toBe('[object ServiceWorkerGlobalScope]');
   });
-  // TODO: fix shared workers.
   itFailsFirefox('should create a worker from a shared worker', async () => {
     const {page, server, context} = getTestState();
 

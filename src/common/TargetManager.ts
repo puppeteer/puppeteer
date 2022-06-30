@@ -49,6 +49,7 @@ export type TargetInterceptor = (
 export interface TargetManager extends EventEmitter {
   getAvailableTargets(): Map<string, Target>;
   initialize(): Promise<void>;
+  dispose(): void;
   addTargetInterceptor(
     session: CDPSession,
     interceptor: TargetInterceptor
