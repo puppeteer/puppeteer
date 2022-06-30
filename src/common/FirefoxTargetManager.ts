@@ -29,12 +29,15 @@ import {EventEmitter} from './EventEmitter.js';
 
 /**
  * FirefoxTargetManager implements target management using
- * `Target.setDiscoverTargets` without using auto-attach. It, therefore,
- * creates targets that lazily establish their CDP sessions.
+ * `Target.setDiscoverTargets` without using auto-attach. It, therefore, creates
+ * targets that lazily establish their CDP sessions.
  *
- * Although the approach is potentially flaky, there is no other way
- * for Firefox because Firefox's CDP implementation does not support
- * auto-attach.
+ * Although the approach is potentially flaky, there is no other way for Firefox
+ * because Firefox's CDP implementation does not support auto-attach.
+ *
+ * Firefox does not support targetInfoChanged and detachedFromTarget events:
+ * - https://bugzilla.mozilla.org/show_bug.cgi?id=1610855
+ * - https://bugzilla.mozilla.org/show_bug.cgi?id=1636979
  * @internal
  */
 export class FirefoxTargetManager
@@ -44,7 +47,7 @@ export class FirefoxTargetManager
   #connection: Connection;
   /**
    * Keeps track of the following events: 'Target.targetCreated',
-   * 'Target.targetDestroyed', 'Target.targetInfoChanged'.
+   * 'Target.targetDestroyed'.
    *
    * A target becomes discovered when 'Target.targetCreated' is received.
    * A target is removed from this map once 'Target.targetDestroyed' is
@@ -80,10 +83,6 @@ export class FirefoxTargetManager
     CDPSession | Connection,
     (event: Protocol.Target.AttachedToTargetEvent) => Promise<void>
   > = new WeakMap();
-  #detachedFromTargetListenersBySession: WeakMap<
-    CDPSession | Connection,
-    (event: Protocol.Target.DetachedFromTargetEvent) => void
-  > = new WeakMap();
 
   #initializeCallback = () => {};
   #initializePromise: Promise<void> = new Promise(resolve => {
@@ -101,9 +100,8 @@ export class FirefoxTargetManager
     this.#targetFilterCallback = targetFilterCallback;
     this.#targetFactory = targetFactory;
 
-    this.#connection.on('Target.targetCreated', this.onTargetCreated);
-    this.#connection.on('Target.targetDestroyed', this.onTargetDestroyed);
-    this.#connection.on('Target.targetInfoChanged', this.onTargetInfoChanged);
+    this.#connection.on('Target.targetCreated', this.#onTargetCreated);
+    this.#connection.on('Target.targetDestroyed', this.#onTargetDestroyed);
     this.#connection.on('sessiondetached', this.#onSessionDetached);
     this.setupAttachmentListeners(this.#connection);
   }
@@ -137,15 +135,6 @@ export class FirefoxTargetManager
     assert(!this.#attachedToTargetListenersBySession.has(session));
     this.#attachedToTargetListenersBySession.set(session, listener);
     session.on('Target.attachedToTarget', listener);
-
-    const detachedListener = (
-      event: Protocol.Target.DetachedFromTargetEvent
-    ) => {
-      return this.#onDetachedFromTarget(session, event);
-    };
-    assert(!this.#detachedFromTargetListenersBySession.has(session));
-    this.#detachedFromTargetListenersBySession.set(session, detachedListener);
-    session.on('Target.detachedFromTarget', detachedListener);
   }
 
   #onSessionDetached = (session: CDPSession) => {
@@ -162,14 +151,6 @@ export class FirefoxTargetManager
       );
       this.#attachedToTargetListenersBySession.delete(session);
     }
-
-    if (this.#detachedFromTargetListenersBySession.has(session)) {
-      session.off(
-        'Target.detachedFromTarget',
-        this.#detachedFromTargetListenersBySession.get(session)!
-      );
-      this.#detachedFromTargetListenersBySession.delete(session);
-    }
   }
 
   getAvailableTargets(): Map<string, Target> {
@@ -177,9 +158,8 @@ export class FirefoxTargetManager
   }
 
   dispose(): void {
-    this.#connection.off('Target.targetCreated', this.onTargetCreated);
-    this.#connection.off('Target.targetDestroyed', this.onTargetDestroyed);
-    this.#connection.off('Target.targetInfoChanged', this.onTargetInfoChanged);
+    this.#connection.off('Target.targetCreated', this.#onTargetCreated);
+    this.#connection.off('Target.targetDestroyed', this.#onTargetDestroyed);
   }
 
   async initialize(): Promise<void> {
@@ -188,7 +168,7 @@ export class FirefoxTargetManager
     await this.#initializePromise;
   }
 
-  protected onTargetCreated = async (
+  #onTargetCreated = async (
     event: Protocol.Target.TargetCreatedEvent
   ): Promise<void> => {
     if (this.#discoveredTargetsByTargetId.has(event.targetInfo.targetId)) {
@@ -222,9 +202,7 @@ export class FirefoxTargetManager
     this.#finishInitializationIfReady(target._targetId);
   };
 
-  protected onTargetDestroyed = (
-    event: Protocol.Target.TargetDestroyedEvent
-  ): void => {
+  #onTargetDestroyed = (event: Protocol.Target.TargetDestroyedEvent): void => {
     this.#discoveredTargetsByTargetId.delete(event.targetId);
     this.#finishInitializationIfReady(event.targetId);
     const target = this.#availableTargetsByTargetId.get(event.targetId);
@@ -232,31 +210,6 @@ export class FirefoxTargetManager
       this.emit(TargetManagerEmittedEvents.TargetGone, target);
       this.#availableTargetsByTargetId.delete(event.targetId);
     }
-  };
-
-  protected onTargetInfoChanged = (
-    event: Protocol.Target.TargetInfoChangedEvent
-  ): void => {
-    this.#discoveredTargetsByTargetId.set(
-      event.targetInfo.targetId,
-      event.targetInfo
-    );
-
-    if (
-      this.#ignoredTargets.has(event.targetInfo.targetId) ||
-      !this.#availableTargetsByTargetId.has(event.targetInfo.targetId) ||
-      !event.targetInfo.attached
-    ) {
-      return;
-    }
-
-    const target = this.#availableTargetsByTargetId.get(
-      event.targetInfo.targetId
-    );
-    this.emit(TargetManagerEmittedEvents.TargetChanged, {
-      target: target!,
-      targetInfo: event.targetInfo,
-    });
   };
 
   #onAttachedToTarget = async (
@@ -273,17 +226,13 @@ export class FirefoxTargetManager
 
     assert(target, `Target ${targetInfo.targetId} is missing`);
 
-    // 4) Set up listeners for the session so that session events are received.
     this.setupAttachmentListeners(session);
 
-    // 5) Update the maps
     this.#availableTargetsBySessionId.set(
       session.id(),
       this.#availableTargetsByTargetId.get(targetInfo.targetId)!
     );
 
-    // 6) At this point the target is paused so we can allow clients to
-    //    configure themselves using hooks.
     for (const hook of this.#targetInterceptors.get(parentSession) || []) {
       if (!(parentSession instanceof Connection)) {
         assert(this.#availableTargetsBySessionId.has(parentSession.id()));
@@ -295,13 +244,6 @@ export class FirefoxTargetManager
           : this.#availableTargetsBySessionId.get(parentSession.id())!
       );
     }
-  };
-
-  #onDetachedFromTarget = (
-    _parentSession: Connection | CDPSession,
-    event: Protocol.Target.DetachedFromTargetEvent
-  ) => {
-    this.#availableTargetsBySessionId.delete(event.sessionId);
   };
 
   #finishInitializationIfReady(targetId: string): void {
