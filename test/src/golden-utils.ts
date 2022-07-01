@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import assert from 'assert';
-import diff from 'diff';
+import {diffLines} from 'diff';
 import fs from 'fs';
 import jpeg from 'jpeg-js';
 import mime from 'mime';
@@ -90,7 +90,7 @@ const compareText = (
   if (expected === actual) {
     return;
   }
-  const result = diff.diffLines(expected, actual);
+  const result = diffLines(expected, actual);
   const html = result.reduce((text, change) => {
     text += change.added
       ? `<span class='ins'>${change.value}</span>`

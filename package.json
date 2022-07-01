@@ -31,7 +31,7 @@
     "test:types": "tsc -b test-d",
     "test:install": "scripts/test-install.sh",
     "test:firefox": "cross-env PUPPETEER_PRODUCT=firefox MOZ_WEBRENDER=0 mocha",
-    "test:chrome": "mocha",
+    "test:chrome": "mocha --parallel",
     "test:chrome:headless": "cross-env HEADLESS=chrome mocha",
     "test:chrome:headful": "cross-env HEADLESS=false mocha",
     "prepublishOnly": "npm run build",
