@@ -1,6 +1,6 @@
 assets/
 build/
 coverage/
-lib/
+lib
 tsconfig.tsbuildinfo
 vendor/
