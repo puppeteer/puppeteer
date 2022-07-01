@@ -12,11 +12,7 @@ sidebar_position: 1
 
 <img src="https://user-images.githubusercontent.com/10379601/29446482-04f7036a-841f-11e7-9872-91d1fc2ea683.png" height="200" align="right"/>
 
-<<<<<<< HEAD
 ###### [API](https://pptr.dev/api) | [FAQ](https://pptr.dev/faq) | [Contributing](https://pptr.dev/contributing) | [Troubleshooting](https://pptr.dev/troubleshooting)
-=======
-###### [API](https://puppeteer.github.io/puppeteer/api) | [FAQ](https://puppeteer.github.io/puppeteer/faq) | [Contributing](https://puppeteer.github.io/puppeteer/contributing) | [Troubleshooting](https://puppeteer.github.io/puppeteer/troubleshooting)
->>>>>>> a6789de1 (feat: add documentation)
 
 > Puppeteer is a Node library which provides a high-level API to control Chrome or Chromium over the [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/). Puppeteer runs [headless](https://developers.google.com/web/updates/2017/04/headless-chrome) by default, but can be configured to run full (non-headless) Chrome or Chromium.
 
@@ -59,24 +55,14 @@ If Puppeteer doesn't find them in the environment during the installation step, 
 - `PUPPETEER_TMP_DIR` - defines the directory to be used by Puppeteer for creating temporary files. Defaults to [`os.tmpdir()`](https://nodejs.org/api/os.html#os_os_tmpdir).
 - `PUPPETEER_DOWNLOAD_HOST` - overwrite URL prefix that is used to download Chromium. Note: this includes protocol and might even include path prefix. Defaults to `https://storage.googleapis.com`.
 - `PUPPETEER_DOWNLOAD_PATH` - overwrite the path for the downloads folder. Defaults to `<root>/.local-chromium`, where `<root>` is Puppeteer's package root.
-<<<<<<< HEAD
 - `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of Chromium you'd like Puppeteer to use. See [`puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch) on how executable path is inferred.
 - `PUPPETEER_EXECUTABLE_PATH` - specify an executable path to be used in [`puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch).
 - `PUPPETEER_PRODUCT` - specify which browser you'd like Puppeteer to use. Must be one of `chrome` or `firefox`. This can also be used during installation to fetch the recommended browser binary. Setting `product` programmatically in [`puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch) supersedes this environment variable. The product is exposed in [`puppeteer.product`](https://pptr.dev/api/puppeteer.product)
-=======
-- `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of Chromium you'd like Puppeteer to use. See [`puppeteer.launch`](https://puppeteer.github.io/puppeteer/api/puppeteer.puppeteernode.launch) on how executable path is inferred.
-- `PUPPETEER_EXECUTABLE_PATH` - specify an executable path to be used in [`puppeteer.launch`](https://puppeteer.github.io/puppeteer/api/puppeteer.puppeteernode.launch).
-- `PUPPETEER_PRODUCT` - specify which browser you'd like Puppeteer to use. Must be one of `chrome` or `firefox`. This can also be used during installation to fetch the recommended browser binary. Setting `product` programmatically in [`puppeteer.launch`](https://puppeteer.github.io/puppeteer/api/puppeteer.puppeteernode.launch) supersedes this environment variable. The product is exposed in [`puppeteer.product`](https://puppeteer.github.io/puppeteer/api/puppeteer.product)
->>>>>>> a6789de1 (feat: add documentation)
 - `PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM` — specify Puppeteer download Chromium for Apple M1. On Apple M1 devices Puppeteer by default downloads the version for Intel's processor which runs via Rosetta. It works without any problems, however, with this option, you should get more efficient resource usage (CPU and RAM) that could lead to a faster execution time.
 
 :::danger
 
-<<<<<<< HEAD
 Puppeteer is only [guaranteed to work](https://pptr.dev/faq#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
-=======
-Puppeteer is only [guaranteed to work](https://puppeteer.github.io/puppeteer/faq#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
->>>>>>> a6789de1 (feat: add documentation)
 
 :::
 
@@ -114,30 +100,18 @@ However, you should use `puppeteer-core` if:
 
 When using `puppeteer-core`, remember to change the _include_ line:
 
-<<<<<<< HEAD
 ```ts
 const puppeteer = require('puppeteer-core');
 ```
 
 You will then need to call [`puppeteer.connect`](https://pptr.dev/api/puppeteer.puppeteer.connect) or [`puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch) with an explicit `executablePath` or `channel` option.
-=======
-```js
-const puppeteer = require('puppeteer-core');
-```
-
-You will then need to call [`puppeteer.connect`](https://puppeteer.github.io/puppeteer/api/puppeteer.puppeteer.connect) or [`puppeteer.launch`](https://puppeteer.github.io/puppeteer/api/puppeteer.puppeteernode.launch) with an explicit `executablePath` or `channel` option.
->>>>>>> a6789de1 (feat: add documentation)
 
 ### Usage
 
 Puppeteer follows the latest [maintenance LTS](https://github.com/nodejs/Release#release-schedule) version of Node.
 
 Puppeteer will be familiar to people using other browser testing frameworks. You create an instance
-<<<<<<< HEAD
 of `Browser`, open pages, and then manipulate them with [Puppeteer's API](https://pptr.dev/api).
-=======
-of `Browser`, open pages, and then manipulate them with [Puppeteer's API](https://puppeteer.github.io/puppeteer/api).
->>>>>>> a6789de1 (feat: add documentation)
 
 **Example** - navigating to https://example.com and saving a screenshot as _example.png_:
 
@@ -162,11 +136,7 @@ Execute script on the command line
 node example.js
 ```
 
-<<<<<<< HEAD
 Puppeteer sets an initial page size to 800×600px, which defines the screenshot size. The page size can be customized with [`Page.setViewport()`](https://pptr.dev/api/puppeteer.page.setviewport).
-=======
-Puppeteer sets an initial page size to 800×600px, which defines the screenshot size. The page size can be customized with [`Page.setViewport()`](https://puppeteer.github.io/puppeteer/api/puppeteer.page.setviewport).
->>>>>>> a6789de1 (feat: add documentation)
 
 **Example** - create a PDF.
 
@@ -193,11 +163,7 @@ Execute script on the command line
 node hn.js
 ```
 
-<<<<<<< HEAD
 See [`Page.pdf`](https://pptr.dev/api/puppeteer.page.pdf) for more information about creating pdfs.
-=======
-See [`Page.pdf`](https://puppeteer.github.io/puppeteer/api/puppeteer.page.pdf) for more information about creating pdfs.
->>>>>>> a6789de1 (feat: add documentation)
 
 **Example** - evaluate script in the context of the page
 
@@ -232,11 +198,7 @@ Execute script on the command line
 node get-dimensions.js
 ```
 
-<<<<<<< HEAD
 See [`Page.evaluate`](https://pptr.dev/api/puppeteer.page.evaluate) and related methods like [`Page.evaluateOnNewDocument`](https://pptr.dev/api/puppeteer.page.evaluateOnNewDocument) and [`Page.exposeFunction`](https://pptr.dev/api/puppeteer.page.exposeFunction).
-=======
-See [`Page.evaluate`](https://puppeteer.github.io/puppeteer/api/puppeteer.page.evaluate) and related methods like [`Page.evaluateOnNewDocument`](https://puppeteer.github.io/puppeteer/api/puppeteer.page.evaluateOnNewDocument) and [`Page.exposeFunction`](https://puppeteer.github.io/puppeteer/api/puppeteer.page.exposeFunction).
->>>>>>> a6789de1 (feat: add documentation)
 
 <!-- [END getstarted] -->
 
@@ -252,11 +214,7 @@ Extensions in Chrome / Chromium currently only work in non-headless mode and exp
 
 The following is code for getting a handle to the [background page](https://developer.chrome.com/extensions/background_pages) of an extension whose source is located in `./my-extension`:
 
-<<<<<<< HEAD
 ```ts
-=======
-```js
->>>>>>> a6789de1 (feat: add documentation)
 const puppeteer = require('puppeteer');
 
 (async () => {
@@ -295,11 +253,7 @@ It is not yet possible to test extension popups or content scripts.
 
 **1. Uses Headless mode**
 
-<<<<<<< HEAD
 Puppeteer launches Chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). To launch a full version of Chromium, set the [`headless` option](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions.headless) when launching a browser:
-=======
-Puppeteer launches Chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). To launch a full version of Chromium, set the [`headless` option](https://puppeteer.github.io/puppeteer/api/puppeteer.browserlaunchargumentoptions.headless) when launching a browser:
->>>>>>> a6789de1 (feat: add documentation)
 
 ```ts
 const browser = await puppeteer.launch({headless: false}); // default is true
@@ -315,11 +269,7 @@ pass in the executable's path when creating a `Browser` instance:
 const browser = await puppeteer.launch({executablePath: '/path/to/Chrome'});
 ```
 
-<<<<<<< HEAD
 You can also use Puppeteer with Firefox Nightly (experimental support). See [`Puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch) for more information.
-=======
-You can also use Puppeteer with Firefox Nightly (experimental support). See [`Puppeteer.launch`](https://puppeteer.github.io/puppeteer/api/puppeteer.puppeteernode.launch) for more information.
->>>>>>> a6789de1 (feat: add documentation)
 
 See [`this article`](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) for a description of the differences between Chromium and Chrome. [`This article`](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/chromium_browser_vs_google_chrome.md) describes some differences for Linux users.
 
@@ -331,11 +281,7 @@ Puppeteer creates its own browser user profile which it **cleans up on every run
 
 ## Resources
 
-<<<<<<< HEAD
 - [API Documentation](https://pptr.dev/api)
-=======
-- [API Documentation](https://puppeteer.github.io/puppeteer/api)
->>>>>>> a6789de1 (feat: add documentation)
 - [Examples](https://github.com/puppeteer/puppeteer/tree/main/examples)
 - [Community list of Puppeteer resources](https://github.com/transitive-bullshit/awesome-puppeteer)
 
@@ -446,16 +392,8 @@ Puppeteer creates its own browser user profile which it **cleans up on every run
 
 ## Contributing
 
-<<<<<<< HEAD
 Check out our [contributing guide](https://pptr.dev/contributing) to get an overview of Puppeteer development.
 
 ## FAQ
 
 Our [FAQ](https://pptr.dev/faq) has migrated to [our site](https://pptr.dev/faq).
-=======
-Check out our [contributing guide](https://puppeteer.github.io/puppeteer/contributing) to get an overview of Puppeteer development.
-
-## FAQ
-
-Our [FAQ](https://puppeteer.github.io/puppeteer/faq) has migrated to [our site](https://puppeteer.github.io/puppeteer/faq).
->>>>>>> a6789de1 (feat: add documentation)
