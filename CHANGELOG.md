@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [15.3.0](https://github.com/puppeteer/puppeteer/compare/v15.2.0...v15.3.0) (2022-07-01)
+
+
+### Features
+
+* add documentation ([#8593](https://github.com/puppeteer/puppeteer/issues/8593)) ([066f440](https://github.com/puppeteer/puppeteer/commit/066f440ba7bdc9aca9423d7205adf36f2858bd78))
+
+
+### Bug Fixes
+
+* remove unused imports ([#8613](https://github.com/puppeteer/puppeteer/issues/8613)) ([0cf4832](https://github.com/puppeteer/puppeteer/commit/0cf4832878731ffcfc84570315f326eb851d7629))
+
 ## [15.2.0](https://github.com/puppeteer/puppeteer/compare/v15.1.1...v15.2.0) (2022-06-29)
 
 
