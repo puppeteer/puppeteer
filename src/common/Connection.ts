@@ -221,6 +221,9 @@ export class Connection extends EventEmitter {
     this.#transport.close();
   }
 
+  /**
+   * @internal
+   */
   isAutoAttached(targetId: string): boolean {
     return !this.#manuallyAttached.has(targetId);
   }

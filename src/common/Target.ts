@@ -121,6 +121,9 @@ export class Target {
     }
   }
 
+  /**
+   * @internal
+   */
   _session(): CDPSession | undefined {
     return this.#session;
   }
@@ -132,6 +135,9 @@ export class Target {
     return this.#sessionFactory();
   }
 
+  /**
+   * @internal
+   */
   _targetManager(): TargetManager {
     return this.#targetManager;
   }
