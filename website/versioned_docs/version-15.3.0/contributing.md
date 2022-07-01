@@ -28,16 +28,19 @@ git clone https://github.com/puppeteer/puppeteer
 cd puppeteer
 ```
 
-2. Install dependencies
+2. Install the dependencies
 
 ```bash
 npm install
+# Downloads the Firefox binary for Firefox tests
+PUPPETEER_PRODUCT=firefox npm install
 ```
 
-3. Build and run Puppeteer tests locally. For more information about tests, read [Running & Writing Tests](#running--writing-tests).
+3. Build and run Puppeteer tests locally. For more information about tests, read
+   [Running & Writing Tests](#running--writing-tests).
 
 ```bash
-npm run build && npm run test:chrome
+npm run build && npm run test
 ```
 
 ## Code reviews
@@ -49,39 +52,41 @@ information on using pull requests.
 
 ## Code Style
 
-- Coding style is fully defined in [`.eslintrc`](https://github.com/puppeteer/puppeteer/blob/main/.eslintrc.js) and we automatically format our code with [Prettier](https://prettier.io).
-- It's recommended to set-up Prettier into your editor, or you can run `npm run lint:eslint:fix` to automatically format any files.
-- If you're working in a JS file, code should be annotated with [closure annotations](https://github.com/google/closure-compiler/wiki/Annotating-JavaScript-for-the-Closure-Compiler).
-- If you're working in a TS file, you should explicitly type all variables and return types. You'll get ESLint warnings if you don't so if you're not sure use them as guidelines, and feel free to ask us for help!
+Our coding style is fully defined in
+[`.eslintrc`](https://github.com/puppeteer/puppeteer/blob/main/.eslintrc.js)
+([ESLint](https://eslint.org/)) and
+[`.prettierrc.cjs`](https://github.com/puppeteer/puppeteer/blob/main/.prettierrc.cjs)
+([Prettier](https://prettier.io)).
 
-To run ESLint, use:
-
-```bash
-npm run lint:eslint
-```
-
-You can check your code by running:
+Code is checked during `pre-push` using
+[Husky](https://typicode.github.io/husky/#/), but you can check your code
+manually by running:
 
 ```bash
-npm run build
+npm run lint
 ```
 
-## TypeScript guidelines
+If some errors are returned, you can attempt to fix them using:
 
-- Try to avoid the use of `any` when possible. Consider `unknown` as a better alternative. You are able to use `any` if needbe, but it will generate an ESLint warning.
+```bash
+npm run format
+```
 
-## Project structure and TypeScript compilation
+## Project structure
 
-The code in Puppeteer is split primarily into two folders:
+The following is a description of the primary folders in Puppeteer:
 
-- `src` contains all source code
-- `vendor` contains all dependencies that we've vendored into the codebase. See the [`vendor/README.md`](https://github.com/puppeteer/puppeteer/blob/main/vendor/README.md) for details.
-
-We structure these using TypeScript's project references, which lets us treat each folder like a standalone TypeScript project.
+- `src` - contains the source code for Puppeteer.
+- `test/src` - contains the source code for Puppeteer tests.
+- `utils`/`scripts` - contains various scripts.
+- `utils/testserver` - contains the source code for our test servers in testing.
+- `compat` - contains code separated by module import type. See [`compat/README.md`](https://github.com/puppeteer/puppeteer/blob/main/compat/README.md) for details.
+- `test-d` contains type tests using [`tsd`](https://github.com/SamVerschueren/tsd).
+- `vendor` contains all dependencies that we vendor into the final build. See the [`vendor/README.md`](https://github.com/puppeteer/puppeteer/blob/main/vendor/README.md) for details.
 
 ### Shipping CJS and ESM bundles
 
-Currently Puppeteer ships both CommonJS and ESM, therefore we maintain two `tsconfig` files for each project: `tsconfig.esm.json` and `tsconfig.cjs.json`. At build time we compile twice, once outputting to CJS and another time to output to ESM.
+Puppeteer ships both CommonJS and ES modules, therefore we maintain two `tsconfig` files for each project: `tsconfig.esm.json` and `tsconfig.cjs.json`. At build time we compile twice, once for CommonJS and once for ES modules.
 
 We compile into the `lib` directory which is what we publish on the npm repository and it's structured like so:
 
@@ -95,13 +100,13 @@ lib
   - vendor <== the output of compiling `vendor/tsconfig.esm.json`
 ```
 
-### `tsconfig.ts` for the tests
+### `tsconfig.json` for the tests
 
-We also maintain `test/tsconfig.json`. This is **only used to compile the unit test `*.spec.ts` files**. When the tests are run, we first compile Puppeteer as normal before running the unit tests **against the compiled output**. Doing this lets the test run against the compiled code we ship to users so it gives us more confidence in our compiled output being correct.
+We also maintain `test/tsconfig.json`. This is used to incrementally compile the unit test `*.spec.ts` files. Tests are run against the compiled code we ship to users so it gives us more confidence in our compiled output being correct.
 
 ### Root `tsconfig.json`
 
-The root `tsconfig.json` exists for the API Extractor; it has to find a `tsconfig.json` in the project's root directory. It is _not_ used for anything else.
+The root `tsconfig.json` exists for the API Extractor; it has to find a `tsconfig.json` in the project's root directory.
 
 ## API guidelines
 
@@ -115,7 +120,7 @@ When authoring new API methods, consider the following:
 
 ## Commit messages
 
-Commit messages should follow [the Conventional Commits format](https://www.conventionalcommits.org/en/v1.0.0/#summary). This is enforced via `npm run lint`.
+Commit messages should follow [the Conventional Commits format](https://www.conventionalcommits.org/en/v1.0.0/#summary). This is enforced via `npm run commitlint`.
 
 In particular, breaking changes should clearly be noted as “BREAKING CHANGE:” in the commit message footer. Example:
 
@@ -144,10 +149,10 @@ Each change to Puppeteer should be thoroughly documented using TSDoc comments. R
 
 ## Running the documentation site locally
 
-- In the Puppeteer's folder, install all dependencies with `npm i`.
-- run `npm run docs` which will generate all the `.md` files on `puppeteer/docs/api`.
-- run `npm i` on `puppeteer/website`.
-- run `npm start` on `puppeteer/website`.
+1. At root, install all dependencies with `npm i`.
+2. run `npm run docs` which will generate all the `.md` files on `puppeteer/docs/api`.
+3. run `npm i` in `puppeteer/website`.
+4. run `npm start` in `puppeteer/website`.
 
 ## Adding new dependencies
 
@@ -176,7 +181,7 @@ Despite being named 'unit', these are integration tests, making sure public API 
 - To run all tests:
 
 ```bash
-npm run test:unit
+npm run test
 ```
 
 - To run a specific test, substitute the `it` with `it.only`:
@@ -200,41 +205,35 @@ npm run test:unit
   });
 ```
 
-- To run tests in non-headless mode:
+- To run Chrome tests in non-headless mode:
 
 ```bash
-HEADLESS=false npm run test:unit
+HEADLESS=false npm run test:chrome
 ```
 
 - To run Firefox tests, firstly ensure you have Firefox installed locally (you only need to do this once, not on every test run) and then you can run the tests:
 
 ```bash
-PUPPETEER_PRODUCT=firefox node install.js
-PUPPETEER_PRODUCT=firefox npm run test:unit
+PUPPETEER_PRODUCT=firefox npm install
+npm run test:firefox
 ```
 
 - To run experimental Chromium MacOS ARM tests, firstly ensure you have correct Chromium version installed locally (you only need to do this once, not on every test run) and then you can run the tests:
 
 ```bash
-PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM=1 node install.js
-PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM=1 npm run test:unit
+PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM=1 npm install
+PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM=1 npm run test:chrome
 ```
 
 - To run tests with custom browser executable:
 
 ```bash
-BINARY=<path-to-executable> npm run test:unit
+BINARY=<path-to-executable> npm run test:chrome # Or npm run test:firefox
 ```
 
-## Public API Coverage
+## API Coverage
 
-Every public API method or event should be called at least once in tests. To ensure this, there's a `coverage` command which tracks calls to public API and reports back if some methods/events were not called.
-
-Run coverage:
-
-```bash
-npm run coverage
-```
+Every public API method or event should be called at least once in tests. To ensure this, the main `test` command runs coverage during testing.
 
 ## Debugging Puppeteer
 
@@ -254,7 +253,7 @@ The following steps are needed to update the Chromium version.
 1. Run `npm run check:protocol-revision`.
    If it fails, update `package.json` with the expected `devtools-protocol` version.
 1. Run `npm run build` and `npm install`.
-1. Run `npm run test` and ensure that all tests pass. If a test fails, [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and either update the test expectations accordingly (if it was an intended change) or work around the changes in Puppeteer (if it’s not desirable to change Puppeteer’s observable behavior).
+1. Run `npm test` and ensure that all tests pass. If a test fails, [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and either update the test expectations accordingly (if it was an intended change) or work around the changes in Puppeteer (if it’s not desirable to change Puppeteer’s observable behavior).
 1. Commit and push your changes and open a pull request.
    The commit message must contain the version in `Chromium <version> (<revision>)` format to ensure that [pptr.dev](https://pptr.dev/) can parse it correctly, e.g. `'feat(chromium): roll to Chromium 90.0.4427.0 (r856583)'`.
 
@@ -264,7 +263,6 @@ Sometimes, performing a Chromium roll causes tests to fail. To figure out the ca
 
 ```sh
 node utils/bisect.js --good 686378 --bad 706915 script.js
-
 node utils/bisect.js --unit-test Response.fromCache
 ```
 
