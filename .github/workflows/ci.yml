@@ -159,9 +159,7 @@ jobs:
         if: ${{ matrix.spec.name == 'Linux' }}
         run: sudo apt-get install xvfb
       - name: Build
-        run: |
-          npm run build
-          npm run build:test
+        run: npm run build
       - name: Test types
         run: npm run test:types
       - name: Run all tests (only on Linux)

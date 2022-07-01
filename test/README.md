@@ -37,18 +37,16 @@ There are also tests that assume a normal install flow, with browser binaries en
 
 ## Running tests
 
-Despite being named 'unit', these are integration tests, making sure public API methods and events work as expected.
-
 - To run all tests:
 
 ```bash
-npm run test:unit
+npm test
 ```
 
-- **Important**: don't forget to first run TypeScript if you're testing local changes:
+- **Important**: don't forget to first build the code if you're testing local changes:
 
 ```bash
-npm run build:tsc && npm run test:unit
+npm run build && npm test
 ```
 
 - To run a specific test, substitute the `it` with `it.only`:
@@ -74,14 +72,14 @@ npm run build:tsc && npm run test:unit
   });
 ```
 
-- To run tests in non-headless mode:
+- To run Chrome headful tests:
 
 ```bash
-HEADLESS=false npm run test:unit
+npm run test:chrome:headful
 ```
 
 - To run tests with custom browser executable:
 
 ```bash
-BINARY=<path-to-executable> npm run test:unit
+BINARY=<path-to-executable> npm run test:chrome # Or npm run test:firefox
 ```
