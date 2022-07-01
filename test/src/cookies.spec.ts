@@ -51,7 +51,6 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: false,
           session: true,
-          sourcePort: 8907,
           sourceScheme: 'NonSecure',
         },
       ]);
@@ -112,7 +111,6 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: false,
           session: true,
-          sourcePort: 8907,
           sourceScheme: 'NonSecure',
         },
         {
@@ -126,7 +124,6 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: false,
           session: true,
-          sourcePort: 8907,
           sourceScheme: 'NonSecure',
         },
       ]);
