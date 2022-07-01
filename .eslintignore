@@ -1,7 +1,6 @@
 assets/
 build/
 coverage/
-doclint/
 lib/
 tsconfig.tsbuildinfo
 vendor/

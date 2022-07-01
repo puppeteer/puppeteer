@@ -109,7 +109,7 @@ export class ExecutionContext {
    *
    *
    * @example
-   * ```js
+   * ```ts
    * const executionContext = await page.mainFrame().executionContext();
    * const result = await executionContext.evaluate(() => Promise.resolve(8 * 7))* ;
    * console.log(result); // prints "56"
@@ -118,14 +118,14 @@ export class ExecutionContext {
    * @example
    * A string can also be passed in instead of a function.
    *
-   * ```js
+   * ```ts
    * console.log(await executionContext.evaluate('1 + 2')); // prints "3"
    * ```
    *
    * @example
    * {@link JSHandle} instances can be passed as arguments to the
    * `executionContext.* evaluate`:
-   * ```js
+   * ```ts
    * const oneHandle = await executionContext.evaluateHandle(() => 1);
    * const twoHandle = await executionContext.evaluateHandle(() => 2);
    * const result = await executionContext.evaluate(
@@ -160,7 +160,7 @@ export class ExecutionContext {
    * promise to resolve and return its value.
    *
    * @example
-   * ```js
+   * ```ts
    * const context = await page.mainFrame().executionContext();
    * const aHandle = await context.evaluateHandle(() => Promise.resolve(self));
    * aHandle; // Handle for the global object.
@@ -169,7 +169,7 @@ export class ExecutionContext {
    * @example
    * A string can also be passed in instead of a function.
    *
-   * ```js
+   * ```ts
    * // Handle for the '3' * object.
    * const aHandle = await context.evaluateHandle('1 + 2');
    * ```
@@ -178,7 +178,7 @@ export class ExecutionContext {
    * JSHandle instances can be passed as arguments
    * to the `executionContext.* evaluateHandle`:
    *
-   * ```js
+   * ```ts
    * const aHandle = await context.evaluateHandle(() => document.body);
    * const resultHandle = await context.evaluateHandle(body => body.innerHTML, * aHandle);
    * console.log(await resultHandle.jsonValue()); // prints body's innerHTML
@@ -379,7 +379,7 @@ export class ExecutionContext {
    * given prototype.
    * @remarks
    * @example
-   * ```js
+   * ```ts
    * // Create a Map object
    * await page.evaluate(() => window.map = new Map());
    * // Get a handle to the Map object prototype

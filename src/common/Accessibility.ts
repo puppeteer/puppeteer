@@ -152,14 +152,14 @@ export class Accessibility {
    *
    * @example
    * An example of dumping the entire accessibility tree:
-   * ```js
+   * ```ts
    * const snapshot = await page.accessibility.snapshot();
    * console.log(snapshot);
    * ```
    *
    * @example
    * An example of logging the focused node's name:
-   * ```js
+   * ```ts
    * const snapshot = await page.accessibility.snapshot();
    * const node = findFocusedNode(snapshot);
    * console.log(node && node.name);

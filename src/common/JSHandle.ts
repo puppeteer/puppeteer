@@ -54,7 +54,7 @@ export interface BoundingBox extends Point {
  * {@link Page.evaluateHandle | page.evaluateHandle} method.
  *
  * @example
- * ```js
+ * ```ts
  * const windowHandle = await page.evaluateHandle(() => window);
  * ```
  *
@@ -126,7 +126,7 @@ export class JSHandle<T = unknown> {
    * promise to resolve and return its value.
    *
    * @example
-   * ```js
+   * ```ts
    * const tweetHandle = await page.$('.tweet .retweets');
    * expect(await tweetHandle.evaluate(node => node.innerText)).toBe('10');
    * ```
@@ -199,7 +199,7 @@ export class JSHandle<T = unknown> {
    * for the property values.
    *
    * @example
-   * ```js
+   * ```ts
    * const listHandle = await page.evaluateHandle(() => document.body.children);
    * const properties = await listHandle.getProperties();
    * const children = [];

@@ -24,7 +24,7 @@ import {NetworkConditions} from './NetworkManager.js';
  *
  * @example
  *
- * ```js
+ * ```ts
  * const puppeteer = require('puppeteer');
  * const slow3G = puppeteer.networkConditions['Slow 3G'];
  *

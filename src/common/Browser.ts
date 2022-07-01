@@ -180,7 +180,7 @@ export const enum BrowserEmittedEvents {
  * @example
  *
  * An example of using a {@link Browser} to create a {@link Page}:
- * ```js
+ * ```ts
  * const puppeteer = require('puppeteer');
  *
  * (async () => {
@@ -194,7 +194,7 @@ export const enum BrowserEmittedEvents {
  * @example
  *
  * An example of disconnecting from and reconnecting to a {@link Browser}:
- * ```js
+ * ```ts
  * const puppeteer = require('puppeteer');
  *
  * (async () => {
@@ -343,7 +343,7 @@ export class Browser extends EventEmitter {
    * browser contexts.
    *
    * @example
-   * ```js
+   * ```ts
    * (async () => {
    *  const browser = await puppeteer.launch();
    *   // Create a new incognito browser context.
@@ -575,7 +575,7 @@ export class Browser extends EventEmitter {
    * @example
    *
    * An example of finding a target for a page opened via `window.open`:
-   * ```js
+   * ```ts
    * await page.evaluate(() => window.open('https://www.example.com/'));
    * const newWindowTarget = await browser.waitForTarget(target => target.url() === 'https://www.example.com/');
    * ```
@@ -731,7 +731,7 @@ export const enum BrowserContextEmittedEvents {
  * method. "Incognito" browser contexts don't write any browsing data to disk.
  *
  * @example
- * ```js
+ * ```ts
  * // Create a new incognito browser context
  * const context = await browser.createIncognitoBrowserContext();
  * // Create a new page inside context.
@@ -772,7 +772,7 @@ export class BrowserContext extends EventEmitter {
    *
    * @example
    * An example of finding a target for a page opened via `window.open`:
-   * ```js
+   * ```ts
    * await page.evaluate(() => window.open('https://www.example.com/'));
    * const newWindowTarget = await browserContext.waitForTarget(target => target.url() === 'https://www.example.com/');
    * ```
@@ -834,7 +834,7 @@ export class BrowserContext extends EventEmitter {
 
   /**
    * @example
-   * ```js
+   * ```ts
    * const context = browser.defaultBrowserContext();
    * await context.overridePermissions('https://html5demos.com', ['geolocation']);
    * ```
@@ -866,7 +866,7 @@ export class BrowserContext extends EventEmitter {
    * Clears all permission overrides for the browser context.
    *
    * @example
-   * ```js
+   * ```ts
    * const context = browser.defaultBrowserContext();
    * context.overridePermissions('https://example.com', ['clipboard-read']);
    * // do stuff ..

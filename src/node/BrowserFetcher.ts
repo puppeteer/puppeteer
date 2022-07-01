@@ -180,7 +180,7 @@ export interface BrowserFetcherRevisionInfo {
  * An example of using BrowserFetcher to download a specific version of Chromium
  * and running Puppeteer against it:
  *
- * ```js
+ * ```ts
  * const browserFetcher = puppeteer.createBrowserFetcher();
  * const revisionInfo = await browserFetcher.download('533271');
  * const browser = await puppeteer.launch({executablePath: revisionInfo.executablePath})

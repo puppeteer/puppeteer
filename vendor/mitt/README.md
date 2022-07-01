@@ -55,7 +55,7 @@ You can find the library on `window.mitt`.
 
 ## Usage
 
-```js
+```ts
 import mitt from 'mitt'
 
 const emitter = mitt()

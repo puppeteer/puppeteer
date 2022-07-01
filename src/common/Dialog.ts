@@ -24,7 +24,7 @@ import {Protocol} from 'devtools-protocol';
  * @remarks
  *
  * @example
- * ```js
+ * ```ts
  * const puppeteer = require('puppeteer');
  *
  * (async () => {

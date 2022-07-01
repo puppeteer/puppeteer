@@ -652,7 +652,7 @@ export interface FrameAddStyleTagOptions {
  * @Example
  * An example of dumping frame tree:
  *
- * ```js
+ * ```ts
  * const puppeteer = require('puppeteer');
  *
  * (async () => {
@@ -674,7 +674,7 @@ export interface FrameAddStyleTagOptions {
  * @Example
  * An example of getting text from an iframe element:
  *
- * ```js
+ * ```ts
  * const frame = page.frames().find(frame => frame.name() === 'myframe');
  * const text = await frame.$eval('.selector', element => element.textContent);
  * console.log(text);
@@ -834,7 +834,7 @@ export class Frame {
    * you run code which will indirectly cause the frame to navigate. Consider
    * this example:
    *
-   * ```js
+   * ```ts
    * const [response] = await Promise.all([
    *   // The navigation promise resolves after navigation has finished
    *   frame.waitForNavigation(),
@@ -962,7 +962,7 @@ export class Frame {
    *
    * @example
    *
-   * ```js
+   * ```ts
    * const searchValue = await frame.$eval('#search', el => el.value);
    * ```
    *
@@ -1015,7 +1015,7 @@ export class Frame {
    *
    * @example
    *
-   * ```js
+   * ```ts
    * const divsCounts = await frame.$$eval('div', divs => divs.length);
    * ```
    *
@@ -1225,7 +1225,7 @@ export class Frame {
    * method throws an error.
    *
    * @example
-   * ```js
+   * ```ts
    * frame.select('select#colors', 'blue'); // single selection
    * frame.select('select#colors', 'red', 'green', 'blue'); // multiple selections
    * ```
@@ -1265,7 +1265,7 @@ export class Frame {
    * {@link Keyboard.press}.
    *
    * @example
-   * ```js
+   * ```ts
    * await frame.type('#mytextarea', 'Hello'); // Types instantly
    * await frame.type('#mytextarea', 'World', {delay: 100}); // Types slower, like a user
    * ```
@@ -1322,7 +1322,7 @@ export class Frame {
    * This method works across navigations.
    *
    * @example
-   * ```js
+   * ```ts
    * const puppeteer = require('puppeteer');
    *
    * (async () => {
@@ -1405,7 +1405,7 @@ export class Frame {
    * @example
    *
    * The `waitForFunction` can be used to observe viewport size change:
-   * ```js
+   * ```ts
    * const puppeteer = require('puppeteer');
    *
    * (async () => {
@@ -1420,7 +1420,7 @@ export class Frame {
    *
    * To pass arguments from Node.js to the predicate of `page.waitForFunction` function:
    *
-   * ```js
+   * ```ts
    * const selector = '.foo';
    * await frame.waitForFunction(
    *   selector => !!document.querySelector(selector),
