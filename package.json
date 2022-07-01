@@ -47,7 +47,7 @@
     "format:prettier": "prettier --write .",
     "format:eslint": "eslint --ext js --ext ts --fix .",
     "docs": "run-s build generate:markdown",
-    "debug": "npm run build:test && mocha --inspect-brk",
+    "debug": "npm run build && mocha --inspect-brk",
     "commitlint": "commitlint --from=HEAD~1",
     "clean": "rimraf lib",
     "check": "run-p check:*",
@@ -57,7 +57,7 @@
     "build:tsc": "tsc --version && run-p build:tsc:*",
     "build:tsc:esm": "tsc -b src/tsconfig.esm.json",
     "build:tsc:cjs": "tsc -b src/tsconfig.cjs.json",
-    "build:test": "tsc -b test"
+    "build:tsc:test": "tsc -b test"
   },
   "files": [
     "lib",

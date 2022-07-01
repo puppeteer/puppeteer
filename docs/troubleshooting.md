@@ -210,9 +210,8 @@ Tips-n-tricks:
 language: node_js
 node_js: node
 services: xvfb
-
 script:
-  - npm run test
+  - npm test
 ```
 
 ## Running Puppeteer on CircleCI

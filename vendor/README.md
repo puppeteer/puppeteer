@@ -9,5 +9,5 @@ The process for updating a vendored dependency is:
 1. `npm install {DEP NAME HERE}`
 2. `cp -r node_modules/DEP vendor`
 3. Update `eslintrc.js` to forbid importing DEP directly (see the `Mitt` rule already defined in there).
-4. Use the new DEP, and run `npm run build:tsc` to check everything compiles successfully.
+4. Use the new DEP, and run `npm run build` to check everything compiles successfully.
 5. If the dep ships as compiled JS, you may need to disable TypeScript checking the file. Add an entry to the `excludes` property of the TSConfig files in `vendor`. (again, see the entry that's already there for Mitt as an example). Don't forget to update both the ESM and CJS config files.
