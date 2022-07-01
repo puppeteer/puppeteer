@@ -116,7 +116,7 @@ export const dumpFrames = (
   indentation?: string
 ): Array<string> => {
   indentation = indentation || '';
-  let description = frame.url().replace(/:\d{4}\//, ':<PORT>/');
+  let description = frame.url().replace(/:\d{4,5}\//, ':<PORT>/');
   if (frame.name()) {
     description += ' (' + frame.name() + ')';
   }

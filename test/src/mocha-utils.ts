@@ -39,16 +39,16 @@ const setupServer = async () => {
   const assetsPath = path.join(__dirname, '../assets');
   const cachedPath = path.join(__dirname, '../assets', 'cached');
 
-  const port = 8907;
-  const server = await TestServer.create(assetsPath, port);
+  const server = await TestServer.create(assetsPath);
+  const port = server.port;
   server.enableHTTPCache(cachedPath);
   server.PORT = port;
   server.PREFIX = `http://localhost:${port}`;
   server.CROSS_PROCESS_PREFIX = `http://127.0.0.1:${port}`;
   server.EMPTY_PAGE = `http://localhost:${port}/empty.html`;
 
-  const httpsPort = port + 1;
-  const httpsServer = await TestServer.createHTTPS(assetsPath, httpsPort);
+  const httpsServer = await TestServer.createHTTPS(assetsPath);
+  const httpsPort = httpsServer.port;
   httpsServer.enableHTTPCache(cachedPath);
   httpsServer.PORT = httpsPort;
   httpsServer.PREFIX = `https://localhost:${httpsPort}`;
@@ -261,14 +261,16 @@ export const describeChromeOnly = (
   }
 };
 
-console.log(
-  `Running unit tests with:
+if (process.env['MOCHA_WORKER_ID'] === '0') {
+  console.log(
+    `Running unit tests with:
   -> product: ${product}
   -> binary: ${
     defaultBrowserOptions.executablePath ||
     path.relative(process.cwd(), puppeteer.executablePath())
   }`
-);
+  );
+}
 
 process.on('unhandledRejection', reason => {
   throw reason;
@@ -357,7 +359,10 @@ export const expectCookieEquals = (
     });
   }
 
-  expect(cookies).toEqual(expectedCookies);
+  expect(cookies.length).toBe(expectedCookies.length);
+  for (let i = 0; i < cookies.length; i++) {
+    expect(cookies[i]).toMatchObject(expectedCookies[i]!);
+  }
 };
 
 export const shortWaitForArrayToHaveAtLeastNElements = async (
