@@ -73,7 +73,7 @@ jobs:
       - name: Check if docs need to be deployed
         id: needs_deploying
         run: |
-          if [[ $(git diff HEAD^ -- ./docs ./website) ]]; then
+          if [[ $(git diff ${{ github.ref }}^ -- ./docs ./website) ]]; then
             needs_deploying=true
           else
             needs_deploying=false
