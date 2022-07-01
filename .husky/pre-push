@@ -1,4 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-npm run build:tsc && npm run lint:eslint && npm run doc && npm run lint:prettier && npm run test:pinned-deps
+npm run lint && npm run check
