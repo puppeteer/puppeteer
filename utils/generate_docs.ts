@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {copyFileSync, readFileSync, writeFileSync} from 'fs';
+import {readFileSync, writeFileSync} from 'fs';
 import {join} from 'path';
 import {chdir} from 'process';
 import semver from 'semver';
@@ -53,7 +53,16 @@ chdir(join(__dirname, '..'));
 
 // README
 {
-  copyFileSync('README.md', 'docs/index.md');
+  const content = readFileSync('README.md', 'utf-8');
+  const sectionContent = `
+---
+sidebar_position: 1
+---
+`;
+  writeFileSync(
+    'docs/index.md',
+    spliceIntoSection('docusaurus-metadata', content, sectionContent)
+  );
 }
 
 // Chrome Versions
