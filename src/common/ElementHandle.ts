@@ -847,7 +847,10 @@ export class ElementHandle<
       queryHandler.queryOne,
       'Cannot handle queries for a single element with the given selector'
     );
-    return queryHandler.queryOne(this, updatedSelector);
+    return (await queryHandler.queryOne(
+      this,
+      updatedSelector
+    )) as ElementHandle<NodeFor<Selector>> | null;
   }
 
   /**
@@ -870,7 +873,9 @@ export class ElementHandle<
       queryHandler.queryAll,
       'Cannot handle queries for a multiple element with the given selector'
     );
-    return await queryHandler.queryAll(this, updatedSelector);
+    return (await queryHandler.queryAll(this, updatedSelector)) as Array<
+      ElementHandle<NodeFor<Selector>>
+    >;
   }
 
   /**
