@@ -26,6 +26,12 @@ JSHandle prevents the referenced JavaScript object from being garbage-collected 
 
 JSHandle instances can be used as arguments for [Page.$eval()](./puppeteer.page._eval.md), [Page.evaluate()](./puppeteer.page.evaluate.md), and [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md).
 
+## Properties
+
+| Property                                                              | Modifiers | Type | Description                                                                      |
+| --------------------------------------------------------------------- | --------- | ---- | -------------------------------------------------------------------------------- |
+| [\[\_\_JSHandleSymbol\]?](./puppeteer.jshandle.___jshandlesymbol_.md) |           | T    | <i>(Optional)</i> Used for nominally typing [JSHandle](./puppeteer.jshandle.md). |
+
 ## Methods
 
 | Method                                                                       | Modifiers | Description                                                                                                                                                                                                                      |

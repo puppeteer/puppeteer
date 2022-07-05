@@ -111,7 +111,7 @@ const waitFor = async (
       return element;
     },
   };
-  return domWorld._waitForSelectorInPage(
+  return (await domWorld._waitForSelectorInPage(
     (_: Element, selector: string) => {
       return (
         globalThis as any as unknown as {
@@ -122,7 +122,7 @@ const waitFor = async (
     selector,
     options,
     binding
-  );
+  )) as ElementHandle<Element> | null;
 };
 
 const queryAll = async (
