@@ -128,7 +128,7 @@ describe('Coverage specs', function () {
       await page.goto(server.PREFIX + '/jscoverage/involved.html');
       const coverage = await page.coverage.stopJSCoverage();
       expect(
-        JSON.stringify(coverage, null, 2).replace(/:\d{4}\//g, ':<PORT>/')
+        JSON.stringify(coverage, null, 2).replace(/:\d{4,5}\//g, ':<PORT>/')
       ).toBeGolden('jscoverage-involved.txt');
     });
     // @see https://crbug.com/990945
@@ -267,7 +267,7 @@ describe('Coverage specs', function () {
       await page.goto(server.PREFIX + '/csscoverage/involved.html');
       const coverage = await page.coverage.stopCSSCoverage();
       expect(
-        JSON.stringify(coverage, null, 2).replace(/:\d{4}\//g, ':<PORT>/')
+        JSON.stringify(coverage, null, 2).replace(/:\d{4,5}\//g, ':<PORT>/')
       ).toBeGolden('csscoverage-involved.txt');
     });
     it('should work with empty stylesheets', async () => {

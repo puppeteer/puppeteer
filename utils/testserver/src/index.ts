@@ -29,6 +29,7 @@ import {
   ServerOptions as HttpsServerOptions,
 } from 'https';
 import {getType as getMimeType} from 'mime';
+import {AddressInfo} from 'net';
 import {join} from 'path';
 import {Duplex} from 'stream';
 import {Server as WebSocketServer, WebSocket} from 'ws';
@@ -65,27 +66,35 @@ export class TestServer {
   #gzipRoutes = new Set<string>();
   #requestSubscribers = new Map<string, Subscriber>();
 
-  static async create(dirPath: string, port: number): Promise<TestServer> {
-    const server = new TestServer(dirPath, port);
-    await new Promise(x => {
-      return server.#server.once('listening', x);
+  static async create(dirPath: string): Promise<TestServer> {
+    let res!: (value: unknown) => void;
+    const promise = new Promise(resolve => {
+      res = resolve;
     });
+    const server = new TestServer(dirPath);
+    server.#server.once('listening', res);
+    server.#server.listen(0);
+    await promise;
     return server;
   }
 
-  static async createHTTPS(dirPath: string, port: number): Promise<TestServer> {
-    const server = new TestServer(dirPath, port, {
+  static async createHTTPS(dirPath: string): Promise<TestServer> {
+    let res!: (value: unknown) => void;
+    const promise = new Promise(resolve => {
+      res = resolve;
+    });
+    const server = new TestServer(dirPath, {
       key: readFileSync(join(__dirname, '..', 'key.pem')),
       cert: readFileSync(join(__dirname, '..', 'cert.pem')),
       passphrase: 'aaaa',
     });
-    await new Promise(x => {
-      return server.#server.once('listening', x);
-    });
+    server.#server.once('listening', res);
+    server.#server.listen(0);
+    await promise;
     return server;
   }
 
-  constructor(dirPath: string, port: number, sslOptions?: HttpsServerOptions) {
+  constructor(dirPath: string, sslOptions?: HttpsServerOptions) {
     this.#dirPath = dirPath;
 
     if (sslOptions) {
@@ -96,7 +105,6 @@ export class TestServer {
     this.#server.on('connection', this.#onServerConnection);
     this.#wsServer = new WebSocketServer({server: this.#server});
     this.#wsServer.on('connection', this.#onWebSocketConnection);
-    this.#server.listen(port);
   }
 
   #onServerConnection = (connection: Duplex): void => {
@@ -112,6 +120,10 @@ export class TestServer {
       return this.#connections.delete(connection);
     });
   };
+
+  get port(): number {
+    return (this.#server.address() as AddressInfo).port;
+  }
 
   enableHTTPCache(pathPrefix: string): void {
     this.#cachedPathPrefix = pathPrefix;
