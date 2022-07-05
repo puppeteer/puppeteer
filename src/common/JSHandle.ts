@@ -253,7 +253,7 @@ export class JSHandle<T = unknown> {
    * @returns Either `null` or the object handle itself, if the object
    * handle is an instance of {@link ElementHandle}.
    */
-  asElement(): ElementHandle | null {
+  asElement(): ElementHandle<Node> | null {
     /*  This always returns null, but subclasses can override this and return an
          ElementHandle.
      */

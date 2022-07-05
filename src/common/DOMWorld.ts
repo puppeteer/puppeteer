@@ -26,7 +26,7 @@ import {JSHandle} from './JSHandle.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {getQueryHandlerAndSelector} from './QueryHandler.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
-import {EvaluateFunc, HandleFor} from './types.js';
+import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {
   debugError,
   isNumber,
@@ -54,7 +54,7 @@ export interface WaitForSelectorOptions {
   visible?: boolean;
   hidden?: boolean;
   timeout?: number;
-  root?: ElementHandle;
+  root?: ElementHandle<Node>;
 }
 
 /**
@@ -73,7 +73,7 @@ export class DOMWorld {
   #client: CDPSession;
   #frame: Frame;
   #timeoutSettings: TimeoutSettings;
-  #documentPromise: Promise<ElementHandle> | null = null;
+  #documentPromise: Promise<ElementHandle<Document>> | null = null;
   #contextPromise: Promise<ExecutionContext> | null = null;
   #contextResolveCallback: ((x: ExecutionContext) => void) | null = null;
   #detached = false;
@@ -85,16 +85,10 @@ export class DOMWorld {
   #boundFunctions = new Map<string, Function>();
   #waitTasks = new Set<WaitTask>();
 
-  /**
-   * @internal
-   */
   get _waitTasks(): Set<WaitTask> {
     return this.#waitTasks;
   }
 
-  /**
-   * @internal
-   */
   get _boundFunctions(): Map<string, Function> {
     return this.#boundFunctions;
   }
@@ -123,9 +117,6 @@ export class DOMWorld {
     return this.#frame;
   }
 
-  /**
-   * @internal
-   */
   async _setContext(context: ExecutionContext | null): Promise<void> {
     if (context) {
       assert(
@@ -146,16 +137,10 @@ export class DOMWorld {
     }
   }
 
-  /**
-   * @internal
-   */
   _hasContext(): boolean {
     return !this.#contextResolveCallback;
   }
 
-  /**
-   * @internal
-   */
   _detach(): void {
     this.#detached = true;
     this.#client.off('Runtime.bindingCalled', this.#onBindingCalled);
@@ -200,78 +185,47 @@ export class DOMWorld {
     return context.evaluate(pageFunction, ...args);
   }
 
-  async $<Selector extends keyof HTMLElementTagNameMap>(
+  async $<Selector extends string>(
     selector: Selector
-  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;
-  async $(selector: string): Promise<ElementHandle | null>;
-  async $(selector: string): Promise<ElementHandle | null> {
+  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
     const document = await this._document();
     const value = await document.$(selector);
     return value;
   }
 
-  async $$<Selector extends keyof HTMLElementTagNameMap>(
+  async $$<Selector extends string>(
     selector: Selector
-  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]>[]>;
-  async $$(selector: string): Promise<ElementHandle[]>;
-  async $$(selector: string): Promise<ElementHandle[]> {
+  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
     const document = await this._document();
-    const value = await document.$$(selector);
-    return value;
+    return document.$$(selector);
   }
 
-  /**
-   * @internal
-   */
-  async _document(): Promise<ElementHandle> {
+  async _document(): Promise<ElementHandle<Document>> {
     if (this.#documentPromise) {
       return this.#documentPromise;
     }
     this.#documentPromise = this.executionContext().then(async context => {
-      const document = await context.evaluateHandle('document');
-      const element = document.asElement();
-      if (element === null) {
-        throw new Error('Document is null');
-      }
-      return element;
+      return await context.evaluateHandle(() => {
+        return document;
+      });
     });
     return this.#documentPromise;
   }
 
-  async $x(expression: string): Promise<ElementHandle[]> {
+  async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
     const document = await this._document();
     const value = await document.$x(expression);
     return value;
   }
 
   async $eval<
-    Selector extends keyof HTMLElementTagNameMap,
+    Selector extends string,
     Params extends unknown[],
     Func extends EvaluateFunc<
-      [HTMLElementTagNameMap[Selector], ...Params]
-    > = EvaluateFunc<[HTMLElementTagNameMap[Selector], ...Params]>
+      [ElementHandle<NodeFor<Selector>>, ...Params]
+    > = EvaluateFunc<[ElementHandle<NodeFor<Selector>>, ...Params]>
   >(
     selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async $eval<
-    Params extends unknown[],
-    Func extends EvaluateFunc<[Element, ...Params]> = EvaluateFunc<
-      [Element, ...Params]
-    >
-  >(
-    selector: string,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async $eval<
-    Params extends unknown[],
-    Func extends EvaluateFunc<[Element, ...Params]> = EvaluateFunc<
-      [Element, ...Params]
-    >
-  >(
-    selector: string,
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
@@ -280,33 +234,13 @@ export class DOMWorld {
   }
 
   async $$eval<
-    Selector extends keyof HTMLElementTagNameMap,
+    Selector extends string,
     Params extends unknown[],
     Func extends EvaluateFunc<
-      [HTMLElementTagNameMap[Selector][], ...Params]
-    > = EvaluateFunc<[HTMLElementTagNameMap[Selector][], ...Params]>
+      [Array<NodeFor<Selector>>, ...Params]
+    > = EvaluateFunc<[Array<NodeFor<Selector>>, ...Params]>
   >(
     selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async $$eval<
-    Params extends unknown[],
-    Func extends EvaluateFunc<[Element[], ...Params]> = EvaluateFunc<
-      [Element[], ...Params]
-    >
-  >(
-    selector: string,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async $$eval<
-    Params extends unknown[],
-    Func extends EvaluateFunc<[Element[], ...Params]> = EvaluateFunc<
-      [Element[], ...Params]
-    >
-  >(
-    selector: string,
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
@@ -377,7 +311,7 @@ export class DOMWorld {
     content?: string;
     id?: string;
     type?: string;
-  }): Promise<ElementHandle> {
+  }): Promise<ElementHandle<HTMLScriptElement>> {
     const {
       url = null,
       path = null,
@@ -388,17 +322,7 @@ export class DOMWorld {
     if (url !== null) {
       try {
         const context = await this.executionContext();
-        const handle = await context.evaluateHandle(
-          addScriptUrl,
-          url,
-          id,
-          type
-        );
-        const elementHandle = handle.asElement();
-        if (elementHandle === null) {
-          throw new Error('Script element is not found');
-        }
-        return elementHandle;
+        return await context.evaluateHandle(addScriptUrl, url, id, type);
       } catch (error) {
         throw new Error(`Loading script from ${url} failed`);
       }
@@ -419,43 +343,19 @@ export class DOMWorld {
       let contents = await fs.readFile(path, 'utf8');
       contents += '//# sourceURL=' + path.replace(/\n/g, '');
       const context = await this.executionContext();
-      const handle = await context.evaluateHandle(
-        addScriptContent,
-        contents,
-        id,
-        type
-      );
-      const elementHandle = handle.asElement();
-      if (elementHandle === null) {
-        throw new Error('Script element is not found');
-      }
-      return elementHandle;
+      return await context.evaluateHandle(addScriptContent, contents, id, type);
     }
 
     if (content !== null) {
       const context = await this.executionContext();
-      const handle = await context.evaluateHandle(
-        addScriptContent,
-        content,
-        id,
-        type
-      );
-      const elementHandle = handle.asElement();
-      if (elementHandle === null) {
-        throw new Error('Script element is not found');
-      }
-      return elementHandle;
+      return await context.evaluateHandle(addScriptContent, content, id, type);
     }
 
     throw new Error(
       'Provide an object with a `url`, `path` or `content` property'
     );
 
-    async function addScriptUrl(
-      url: string,
-      id: string,
-      type: string
-    ): Promise<HTMLElement> {
+    async function addScriptUrl(url: string, id: string, type: string) {
       const script = document.createElement('script');
       script.src = url;
       if (id) {
@@ -477,7 +377,7 @@ export class DOMWorld {
       content: string,
       id: string,
       type = 'text/javascript'
-    ): HTMLElement {
+    ) {
       const script = document.createElement('script');
       script.type = type;
       script.text = content;
@@ -510,7 +410,7 @@ export class DOMWorld {
     url?: string;
     path?: string;
     content?: string;
-  }): Promise<ElementHandle> {
+  }): Promise<ElementHandle<Node>> {
     const {url = null, path = null, content = null} = options;
     if (url !== null) {
       try {
@@ -640,18 +540,10 @@ export class DOMWorld {
     await handle.dispose();
   }
 
-  async waitForSelector<Selector extends keyof HTMLElementTagNameMap>(
+  async waitForSelector<Selector extends string>(
     selector: Selector,
     options: WaitForSelectorOptions
-  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;
-  async waitForSelector(
-    selector: string,
-    options: WaitForSelectorOptions
-  ): Promise<ElementHandle | null>;
-  async waitForSelector(
-    selector: string,
-    options: WaitForSelectorOptions
-  ): Promise<ElementHandle | null> {
+  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
     const {updatedSelector, queryHandler} =
       getQueryHandlerAndSelector(selector);
     assert(queryHandler.waitFor, 'Query handler does not support waiting');
@@ -662,9 +554,6 @@ export class DOMWorld {
   // first one to set up the binding in the page before running the others.
   #settingUpBinding: Promise<void> | null = null;
 
-  /**
-   * @internal
-   */
   async _addBindingToContext(
     context: ExecutionContext,
     name: string
@@ -776,15 +665,12 @@ export class DOMWorld {
     }
   };
 
-  /**
-   * @internal
-   */
   async _waitForSelectorInPage(
     queryOne: Function,
     selector: string,
     options: WaitForSelectorOptions,
     binding?: PageBinding
-  ): Promise<ElementHandle | null> {
+  ): Promise<ElementHandle<Node> | null> {
     const {
       visible: waitForVisible = false,
       hidden: waitForHidden = false,
@@ -829,7 +715,7 @@ export class DOMWorld {
   async waitForXPath(
     xpath: string,
     options: WaitForSelectorOptions
-  ): Promise<ElementHandle | null> {
+  ): Promise<ElementHandle<Node> | null> {
     const {
       visible: waitForVisible = false,
       hidden: waitForHidden = false,
@@ -911,7 +797,7 @@ export interface WaitTaskOptions {
   timeout: number;
   binding?: PageBinding;
   args: unknown[];
-  root?: ElementHandle;
+  root?: ElementHandle<Node>;
 }
 
 const noop = (): void => {};
@@ -932,7 +818,7 @@ export class WaitTask {
   #reject: (x: Error) => void = noop;
   #timeoutTimer?: NodeJS.Timeout;
   #terminated = false;
-  #root: ElementHandle | null = null;
+  #root: ElementHandle<Node> | null = null;
 
   promise: Promise<JSHandle>;
 
@@ -1099,7 +985,7 @@ export class WaitTask {
 }
 
 async function waitForPredicatePageFunction(
-  root: Element | Document | null,
+  root: Node | null,
   predicateBody: string,
   predicateAcceptsContextElement: boolean,
   polling: 'raf' | 'mutation' | number,

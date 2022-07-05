@@ -20,6 +20,7 @@ import {
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
 import {CustomQueryHandler} from '../../lib/cjs/puppeteer/common/QueryHandler.js';
+import {ElementHandle} from '../../lib/cjs/puppeteer/common/ElementHandle.js';
 
 describe('querySelector', function () {
   setupTestBrowserHooks();
@@ -99,18 +100,20 @@ describe('querySelector', function () {
     });
     it('should find first element in shadow', async () => {
       const {page} = getTestState();
-      const div = (await page.$('pierce/.foo'))!;
-      const text = await div.evaluate((element: Element) => {
+      const div = (await page.$('pierce/.foo')) as ElementHandle<HTMLElement>;
+      const text = await div.evaluate(element => {
         return element.textContent;
       });
       expect(text).toBe('Hello');
     });
     it('should find all elements in shadow', async () => {
       const {page} = getTestState();
-      const divs = await page.$$('pierce/.foo');
+      const divs = (await page.$$('pierce/.foo')) as Array<
+        ElementHandle<HTMLElement>
+      >;
       const text = await Promise.all(
         divs.map(div => {
-          return div.evaluate((element: Element) => {
+          return div.evaluate(element => {
             return element.textContent;
           });
         })
@@ -120,8 +123,10 @@ describe('querySelector', function () {
     it('should find first child element', async () => {
       const {page} = getTestState();
       const parentElement = (await page.$('html > div'))!;
-      const childElement = (await parentElement.$('pierce/div'))!;
-      const text = await childElement.evaluate((element: Element) => {
+      const childElement = (await parentElement.$(
+        'pierce/div'
+      )) as ElementHandle<HTMLElement>;
+      const text = await childElement.evaluate(element => {
         return element.textContent;
       });
       expect(text).toBe('Hello');
@@ -129,10 +134,12 @@ describe('querySelector', function () {
     it('should find all child elements', async () => {
       const {page} = getTestState();
       const parentElement = (await page.$('html > div'))!;
-      const childElements = await parentElement.$$('pierce/div');
+      const childElements = (await parentElement.$$('pierce/div')) as Array<
+        ElementHandle<HTMLElement>
+      >;
       const text = await Promise.all(
         childElements.map(div => {
-          return div.evaluate((element: Element) => {
+          return div.evaluate(element => {
             return element.textContent;
           });
         })
@@ -456,10 +463,7 @@ describe('querySelector', function () {
   describe('QueryAll', function () {
     const handler: CustomQueryHandler = {
       queryAll: (element, selector) => {
-        if (element instanceof Document || element instanceof Element) {
-          return element.querySelectorAll(selector);
-        }
-        return [];
+        return [...(element as Element).querySelectorAll(selector)];
       },
     };
     before(() => {

@@ -11,11 +11,11 @@ This method runs `document.querySelector` within the page and passes the result 
 ```typescript
 class Page {
   $eval<
-    Selector extends keyof HTMLElementTagNameMap,
+    Selector extends string,
     Params extends unknown[],
     Func extends EvaluateFunc<
-      [HTMLElementTagNameMap[Selector], ...Params]
-    > = EvaluateFunc<[HTMLElementTagNameMap[Selector], ...Params]>
+      [ElementHandle<NodeFor<Selector>>, ...Params]
+    > = EvaluateFunc<[ElementHandle<NodeFor<Selector>>, ...Params]>
   >(
     selector: Selector,
     pageFunction: Func | string,

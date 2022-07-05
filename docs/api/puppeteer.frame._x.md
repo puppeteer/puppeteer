@@ -10,7 +10,7 @@ This method evaluates the given XPath expression and returns the results.
 
 ```typescript
 class Frame {
-  $x(expression: string): Promise<ElementHandle[]>;
+  $x(expression: string): Promise<Array<ElementHandle<Node>>>;
 }
 ```
 
@@ -22,4 +22,4 @@ class Frame {
 
 **Returns:**
 
-Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)\[\]&gt;
+Promise&lt;Array&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;Node&gt;&gt;&gt;

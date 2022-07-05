@@ -32,10 +32,10 @@ const puppeteer = require('puppeteer');
 
 ```typescript
 class Page {
-  waitForSelector<Selector extends keyof HTMLElementTagNameMap>(
+  waitForSelector<Selector extends string>(
     selector: Selector,
     options?: Exclude<WaitForSelectorOptions, 'root'>
-  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;
+  ): Promise<ElementHandle<NodeFor<Selector>> | null>;
 }
 ```
 
@@ -48,7 +48,7 @@ class Page {
 
 **Returns:**
 
-Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLElementTagNameMap\[Selector\]&gt; \| null&gt;
+Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt; \| null&gt;
 
 Promise which resolves when element specified by selector string is added to DOM. Resolves to `null` if waiting for hidden: `true` and selector is not found in DOM.
 

@@ -10,9 +10,9 @@ Runs `element.querySelector` within the page.
 
 ```typescript
 class ElementHandle {
-  $<Selector extends keyof HTMLElementTagNameMap>(
+  $<Selector extends string>(
     selector: Selector
-  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;
+  ): Promise<ElementHandle<NodeFor<Selector>> | null>;
 }
 ```
 
@@ -24,7 +24,7 @@ class ElementHandle {
 
 **Returns:**
 
-Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLElementTagNameMap\[Selector\]&gt; \| null&gt;
+Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt; \| null&gt;
 
 `null` if no element matches the selector.
 

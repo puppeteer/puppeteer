@@ -10,15 +10,19 @@ This method scrolls element into view if needed, and then uses [Page.screenshot(
 
 ```typescript
 class ElementHandle {
-  screenshot(options?: ScreenshotOptions): Promise<string | Buffer>;
+  screenshot(
+    this: ElementHandle<Element>,
+    options?: ScreenshotOptions
+  ): Promise<string | Buffer>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                  | Description       |
-| --------- | ----------------------------------------------------- | ----------------- |
-| options   | [ScreenshotOptions](./puppeteer.screenshotoptions.md) | <i>(Optional)</i> |
+| Parameter | Type                                                         | Description       |
+| --------- | ------------------------------------------------------------ | ----------------- |
+| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |                   |
+| options   | [ScreenshotOptions](./puppeteer.screenshotoptions.md)        | <i>(Optional)</i> |
 
 **Returns:**
 

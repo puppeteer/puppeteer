@@ -10,9 +10,9 @@ This runs `document.querySelectorAll` in the frame and returns the result.
 
 ```typescript
 class Frame {
-  $$<Selector extends keyof HTMLElementTagNameMap>(
+  $$<Selector extends string>(
     selector: Selector
-  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]>[]>;
+  ): Promise<Array<ElementHandle<NodeFor<Selector>>>>;
 }
 ```
 
@@ -24,6 +24,6 @@ class Frame {
 
 **Returns:**
 
-Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLElementTagNameMap\[Selector\]&gt;\[\]&gt;
+Promise&lt;Array&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt;&gt;&gt;
 
 An array of element handles pointing to the found frame elements.

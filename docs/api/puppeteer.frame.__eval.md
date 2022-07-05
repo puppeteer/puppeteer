@@ -9,11 +9,11 @@ sidebar_label: Frame.$$eval
 ```typescript
 class Frame {
   $$eval<
-    Selector extends keyof HTMLElementTagNameMap,
+    Selector extends string,
     Params extends unknown[],
     Func extends EvaluateFunc<
-      [HTMLElementTagNameMap[Selector][], ...Params]
-    > = EvaluateFunc<[HTMLElementTagNameMap[Selector][], ...Params]>
+      [Array<NodeFor<Selector>>, ...Params]
+    > = EvaluateFunc<[Array<NodeFor<Selector>>, ...Params]>
   >(
     selector: Selector,
     pageFunction: Func | string,

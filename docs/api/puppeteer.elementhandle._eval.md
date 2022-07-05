@@ -13,11 +13,11 @@ If `pageFunction` returns a Promise, then `frame.$eval` would wait for the promi
 ```typescript
 class ElementHandle {
   $eval<
-    Selector extends keyof HTMLElementTagNameMap,
+    Selector extends string,
     Params extends unknown[],
     Func extends EvaluateFunc<
-      [HTMLElementTagNameMap[Selector], ...Params]
-    > = EvaluateFunc<[HTMLElementTagNameMap[Selector], ...Params]>
+      [ElementHandle<NodeFor<Selector>>, ...Params]
+    > = EvaluateFunc<[ElementHandle<NodeFor<Selector>>, ...Params]>
   >(
     selector: Selector,
     pageFunction: Func | string,

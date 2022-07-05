@@ -111,10 +111,7 @@ export async function navigateFrame(
   }
 }
 
-export const dumpFrames = (
-  frame: Frame,
-  indentation?: string
-): Array<string> => {
+export const dumpFrames = (frame: Frame, indentation?: string): string[] => {
   indentation = indentation || '';
   let description = frame.url().replace(/:\d{4,5}\//, ':<PORT>/');
   if (frame.name()) {

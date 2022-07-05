@@ -415,20 +415,20 @@ export class ExecutionContext {
    */
   async _adoptBackendNodeId(
     backendNodeId?: Protocol.DOM.BackendNodeId
-  ): Promise<ElementHandle> {
+  ): Promise<ElementHandle<Node>> {
     const {object} = await this._client.send('DOM.resolveNode', {
       backendNodeId: backendNodeId,
       executionContextId: this._contextId,
     });
-    return createJSHandle(this, object) as ElementHandle;
+    return createJSHandle(this, object) as ElementHandle<Node>;
   }
 
   /**
    * @internal
    */
   async _adoptElementHandle(
-    elementHandle: ElementHandle
-  ): Promise<ElementHandle> {
+    elementHandle: ElementHandle<Node>
+  ): Promise<ElementHandle<Node>> {
     assert(
       elementHandle.executionContext() !== this,
       'Cannot adopt handle that already belongs to this execution context'

@@ -14,7 +14,7 @@ class Page {
     url?: string;
     path?: string;
     content?: string;
-  }): Promise<ElementHandle>;
+  }): Promise<ElementHandle<Node>>;
 }
 ```
 
@@ -26,6 +26,6 @@ class Page {
 
 **Returns:**
 
-Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&gt;
+Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;Node&gt;&gt;
 
 Promise which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame.

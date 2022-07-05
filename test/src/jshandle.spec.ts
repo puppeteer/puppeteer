@@ -399,7 +399,7 @@ describe('JSHandle', function () {
     itFailsFirefox('should work', async () => {
       const {page} = getTestState();
 
-      const clicks: [x: number, y: number][] = [];
+      const clicks: Array<[x: number, y: number]> = [];
 
       await page.exposeFunction('reportClick', (x: number, y: number): void => {
         clicks.push([x, y]);

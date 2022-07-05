@@ -25,7 +25,8 @@ export type Awaitable<T> = T | PromiseLike<T>;
 /**
  * @public
  */
-export type HandleFor<T> = T extends Element ? ElementHandle<T> : JSHandle<T>;
+export type HandleFor<T> = T extends Node ? ElementHandle<T> : JSHandle<T>;
+
 /**
  * @public
  */
@@ -48,3 +49,13 @@ export type InnerParams<T extends unknown[]> = {
 export type EvaluateFunc<T extends unknown[]> = (
   ...params: InnerParams<T>
 ) => Awaitable<unknown>;
+
+/**
+ * @public
+ */
+export type NodeFor<Selector extends string> =
+  Selector extends keyof HTMLElementTagNameMap
+    ? HTMLElementTagNameMap[Selector]
+    : Selector extends keyof SVGElementTagNameMap
+    ? SVGElementTagNameMap[Selector]
+    : Element;
