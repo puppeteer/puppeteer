@@ -1,6 +1,7 @@
 ---
 sidebar_label: Browser.createIncognitoBrowserContext
 ---
+
 # Browser.createIncognitoBrowserContext() method
 
 Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.
@@ -8,14 +9,18 @@ Creates a new incognito browser context. This won't share cookies/cache with oth
 **Signature:**
 
 ```typescript
-class Browser {createIncognitoBrowserContext(options?: BrowserContextOptions): Promise<BrowserContext>;}
+class Browser {
+  createIncognitoBrowserContext(
+    options?: BrowserContextOptions
+  ): Promise<BrowserContext>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  options | [BrowserContextOptions](./puppeteer.browsercontextoptions.md) | <i>(Optional)</i> |
+| Parameter | Type                                                          | Description       |
+| --------- | ------------------------------------------------------------- | ----------------- |
+| options   | [BrowserContextOptions](./puppeteer.browsercontextoptions.md) | <i>(Optional)</i> |
 
 **Returns:**
 
@@ -23,10 +28,9 @@ Promise&lt;[BrowserContext](./puppeteer.browsercontext.md)&gt;
 
 ## Example
 
-
 ```ts
 (async () => {
- const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch();
   // Create a new incognito browser context.
   const context = await browser.createIncognitoBrowserContext();
   // Create a new page in a pristine context.
@@ -35,4 +39,3 @@ Promise&lt;[BrowserContext](./puppeteer.browsercontext.md)&gt;
   await page.goto('https://example.com');
 })();
 ```
-

@@ -1,19 +1,18 @@
 ---
 sidebar_label: MediaFeature
 ---
-# MediaFeature interface
 
+# MediaFeature interface
 
 **Signature:**
 
 ```typescript
-export interface MediaFeature 
+export interface MediaFeature
 ```
 
 ## Properties
 
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [name](./puppeteer.mediafeature.name.md) |  | string |  |
-|  [value](./puppeteer.mediafeature.value.md) |  | string |  |
-
+| Property                                   | Modifiers | Type   | Description |
+| ------------------------------------------ | --------- | ------ | ----------- |
+| [name](./puppeteer.mediafeature.name.md)   |           | string |             |
+| [value](./puppeteer.mediafeature.value.md) |           | string |             |

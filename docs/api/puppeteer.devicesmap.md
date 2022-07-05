@@ -1,15 +1,15 @@
 ---
 sidebar_label: DevicesMap
 ---
-# DevicesMap type
 
+# DevicesMap type
 
 **Signature:**
 
 ```typescript
 export declare type DevicesMap = {
-    [name: string]: Device;
+  [name: string]: Device;
 };
 ```
-**References:** [Device](./puppeteer.device.md)
 
+**References:** [Device](./puppeteer.device.md)

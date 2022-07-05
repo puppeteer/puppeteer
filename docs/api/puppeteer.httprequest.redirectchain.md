@@ -1,6 +1,7 @@
 ---
 sidebar_label: HTTPRequest.redirectChain
 ---
+
 # HTTPRequest.redirectChain() method
 
 A `redirectChain` is a chain of requests initiated to fetch a resource.
@@ -8,8 +9,11 @@ A `redirectChain` is a chain of requests initiated to fetch a resource.
 **Signature:**
 
 ```typescript
-class HTTPRequest {redirectChain(): HTTPRequest[];}
+class HTTPRequest {
+  redirectChain(): HTTPRequest[];
+}
 ```
+
 **Returns:**
 
 [HTTPRequest](./puppeteer.httprequest.md)\[\]
@@ -28,6 +32,7 @@ const chain = response.request().redirectChain();
 console.log(chain.length); // 1
 console.log(chain[0].url()); // 'http://example.com'
 ```
+
 If the website `https://google.com` has no redirects, then the chain will be empty:
 
 ```ts
@@ -35,4 +40,3 @@ const response = await page.goto('https://google.com');
 const chain = response.request().redirectChain();
 console.log(chain.length); // 0
 ```
-

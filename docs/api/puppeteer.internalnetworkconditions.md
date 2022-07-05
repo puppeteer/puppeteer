@@ -1,19 +1,19 @@
 ---
 sidebar_label: InternalNetworkConditions
 ---
-# InternalNetworkConditions interface
 
+# InternalNetworkConditions interface
 
 **Signature:**
 
 ```typescript
-export interface InternalNetworkConditions extends NetworkConditions 
+export interface InternalNetworkConditions extends NetworkConditions
 ```
+
 **Extends:** [NetworkConditions](./puppeteer.networkconditions.md)
 
 ## Properties
 
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [offline](./puppeteer.internalnetworkconditions.offline.md) |  | boolean |  |
-
+| Property                                                    | Modifiers | Type    | Description |
+| ----------------------------------------------------------- | --------- | ------- | ----------- |
+| [offline](./puppeteer.internalnetworkconditions.offline.md) |           | boolean |             |

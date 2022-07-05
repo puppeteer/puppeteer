@@ -1,6 +1,7 @@
 ---
 sidebar_label: ElementHandle.type
 ---
+
 # ElementHandle.type() method
 
 Focuses the element, and then sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
@@ -10,24 +11,28 @@ To press a special key, like `Control` or `ArrowDown`, use [ElementHandle.press(
 **Signature:**
 
 ```typescript
-class ElementHandle {type(text: string, options?: {
-        delay: number;
-    }): Promise<void>;}
+class ElementHandle {
+  type(
+    text: string,
+    options?: {
+      delay: number;
+    }
+  ): Promise<void>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  text | string |  |
-|  options | { delay: number; } | <i>(Optional)</i> |
+| Parameter | Type               | Description       |
+| --------- | ------------------ | ----------------- |
+| text      | string             |                   |
+| options   | { delay: number; } | <i>(Optional)</i> |
 
 **Returns:**
 
 Promise&lt;void&gt;
 
 ## Example 1
-
 
 ```ts
 await elementHandle.type('Hello'); // Types instantly
@@ -43,4 +48,3 @@ const elementHandle = await page.$('input');
 await elementHandle.type('some text');
 await elementHandle.press('Enter');
 ```
-

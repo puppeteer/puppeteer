@@ -1,6 +1,7 @@
 ---
 sidebar_label: Keyboard.type
 ---
+
 # Keyboard.type() method
 
 Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
@@ -8,17 +9,22 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 **Signature:**
 
 ```typescript
-class Keyboard {type(text: string, options?: {
-        delay?: number;
-    }): Promise<void>;}
+class Keyboard {
+  type(
+    text: string,
+    options?: {
+      delay?: number;
+    }
+  ): Promise<void>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  text | string | A text to type into a focused element. |
-|  options | { delay?: number; } | <i>(Optional)</i> An object of options. Accepts delay which, if specified, is the time to wait between <code>keydown</code> and <code>keyup</code> in milliseconds. Defaults to 0. |
+| Parameter | Type                | Description                                                                                                                                                                        |
+| --------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| text      | string              | A text to type into a focused element.                                                                                                                                             |
+| options   | { delay?: number; } | <i>(Optional)</i> An object of options. Accepts delay which, if specified, is the time to wait between <code>keydown</code> and <code>keyup</code> in milliseconds. Defaults to 0. |
 
 **Returns:**
 
@@ -32,9 +38,7 @@ Modifier keys DO NOT effect `keyboard.type`. Holding down `Shift` will not type 
 
 ## Example
 
-
 ```ts
 await page.keyboard.type('Hello'); // Types instantly
 await page.keyboard.type('World', {delay: 100}); // Types slower, like a user
 ```
-

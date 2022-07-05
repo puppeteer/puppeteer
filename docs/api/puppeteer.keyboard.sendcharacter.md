@@ -1,6 +1,7 @@
 ---
 sidebar_label: Keyboard.sendCharacter
 ---
+
 # Keyboard.sendCharacter() method
 
 Dispatches a `keypress` and `input` event. This does not send a `keydown` or `keyup` event.
@@ -8,14 +9,16 @@ Dispatches a `keypress` and `input` event. This does not send a `keydown` or `ke
 **Signature:**
 
 ```typescript
-class Keyboard {sendCharacter(char: string): Promise<void>;}
+class Keyboard {
+  sendCharacter(char: string): Promise<void>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  char | string | Character to send into the page. |
+| Parameter | Type   | Description                      |
+| --------- | ------ | -------------------------------- |
+| char      | string | Character to send into the page. |
 
 **Returns:**
 
@@ -27,8 +30,6 @@ Modifier keys DO NOT effect [Keyboard.sendCharacter](./puppeteer.keyboard.sendch
 
 ## Example
 
-
 ```ts
 page.keyboard.sendCharacter('嗨');
 ```
-

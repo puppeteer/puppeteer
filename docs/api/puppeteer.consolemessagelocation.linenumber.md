@@ -1,6 +1,7 @@
 ---
 sidebar_label: ConsoleMessageLocation.lineNumber
 ---
+
 # ConsoleMessageLocation.lineNumber property
 
 0-based line number in the resource if known or `undefined` otherwise.
@@ -8,5 +9,7 @@ sidebar_label: ConsoleMessageLocation.lineNumber
 **Signature:**
 
 ```typescript
-interface ConsoleMessageLocation {lineNumber?: number;}
+interface ConsoleMessageLocation {
+  lineNumber?: number;
+}
 ```

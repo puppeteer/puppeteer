@@ -1,6 +1,7 @@
 ---
 sidebar_label: BrowserFetcher.canDownload
 ---
+
 # BrowserFetcher.canDownload() method
 
 Initiates a HEAD request to check if the revision is available.
@@ -8,14 +9,16 @@ Initiates a HEAD request to check if the revision is available.
 **Signature:**
 
 ```typescript
-class BrowserFetcher {canDownload(revision: string): Promise<boolean>;}
+class BrowserFetcher {
+  canDownload(revision: string): Promise<boolean>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  revision | string | The revision to check availability for. |
+| Parameter | Type   | Description                             |
+| --------- | ------ | --------------------------------------- |
+| revision  | string | The revision to check availability for. |
 
 **Returns:**
 
@@ -26,4 +29,3 @@ A promise that resolves to `true` if the revision could be downloaded from the h
 ## Remarks
 
 This method is affected by the current `product`.
-

@@ -1,6 +1,7 @@
 ---
 sidebar_label: FileChooser
 ---
+
 # FileChooser class
 
 File choosers let you react to the page requesting for a file.
@@ -8,7 +9,7 @@ File choosers let you react to the page requesting for a file.
 **Signature:**
 
 ```typescript
-export declare class FileChooser 
+export declare class FileChooser
 ```
 
 ## Remarks
@@ -28,13 +29,13 @@ const [fileChooser] = await Promise.all([
 ]);
 await fileChooser.accept(['/tmp/myfile.pdf']);
 ```
+
 \*\*NOTE\*\* In browsers, only one file chooser can be opened at a time. All file choosers must be accepted or canceled. Not doing so will prevent subsequent file choosers from appearing.
 
 ## Methods
 
-|  Method | Modifiers | Description |
-|  --- | --- | --- |
-|  [accept(filePaths)](./puppeteer.filechooser.accept.md) |  | Accept the file chooser request with given paths. |
-|  [cancel()](./puppeteer.filechooser.cancel.md) |  | Closes the file chooser without selecting any files. |
-|  [isMultiple()](./puppeteer.filechooser.ismultiple.md) |  | Whether file chooser allow for [multiple](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#attr-multiple) file selection. |
-
+| Method                                                 | Modifiers | Description                                                                                                                                   |
+| ------------------------------------------------------ | --------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| [accept(filePaths)](./puppeteer.filechooser.accept.md) |           | Accept the file chooser request with given paths.                                                                                             |
+| [cancel()](./puppeteer.filechooser.cancel.md)          |           | Closes the file chooser without selecting any files.                                                                                          |
+| [isMultiple()](./puppeteer.filechooser.ismultiple.md)  |           | Whether file chooser allow for [multiple](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#attr-multiple) file selection. |

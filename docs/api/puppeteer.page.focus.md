@@ -1,6 +1,7 @@
 ---
 sidebar_label: Page.focus
 ---
+
 # Page.focus() method
 
 This method fetches an element with `selector` and focuses it. If there's no element matching `selector`, the method throws an error.
@@ -8,14 +9,16 @@ This method fetches an element with `selector` and focuses it. If there's no ele
 **Signature:**
 
 ```typescript
-class Page {focus(selector: string): Promise<void>;}
+class Page {
+  focus(selector: string): Promise<void>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  selector | string | A [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) of an element to focus. If there are multiple elements satisfying the selector, the first will be focused. |
+| Parameter | Type   | Description                                                                                                                                                                             |
+| --------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| selector  | string | A [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) of an element to focus. If there are multiple elements satisfying the selector, the first will be focused. |
 
 **Returns:**
 
@@ -26,4 +29,3 @@ Promise which resolves when the element matching selector is successfully focuse
 ## Remarks
 
 Shortcut for [page.mainFrame().focus(selector)](./puppeteer.frame.focus.md).
-

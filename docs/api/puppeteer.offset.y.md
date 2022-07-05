@@ -1,6 +1,7 @@
 ---
 sidebar_label: Offset.y
 ---
+
 # Offset.y property
 
 y-offset for the clickable point relative to the top-left corder of the border box.
@@ -8,5 +9,7 @@ y-offset for the clickable point relative to the top-left corder of the border b
 **Signature:**
 
 ```typescript
-interface Offset {y: number;}
+interface Offset {
+  y: number;
+}
 ```

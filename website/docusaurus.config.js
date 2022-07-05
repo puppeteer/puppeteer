@@ -38,12 +38,6 @@ const config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
-  scripts: [
-    {
-      src: '/js/sw.js',
-      async: false,
-    },
-  ],
   presets: [
     [
       'classic',

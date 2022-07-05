@@ -1,6 +1,7 @@
 ---
 sidebar_label: HTTPRequest.failure
 ---
+
 # HTTPRequest.failure() method
 
 Access information about the request's failure.
@@ -8,10 +9,13 @@ Access information about the request's failure.
 **Signature:**
 
 ```typescript
-class HTTPRequest {failure(): {
-        errorText: string;
-    } | null;}
+class HTTPRequest {
+  failure(): {
+    errorText: string;
+  } | null;
+}
 ```
+
 **Returns:**
 
 { errorText: string; } \| null
@@ -19,7 +23,6 @@ class HTTPRequest {failure(): {
 `null` unless the request failed. If the request fails this can return an object with `errorText` containing a human-readable error message, e.g. `net::ERR_FAILED`. It is not guaranteed that there will be failure text if the request fails.
 
 ## Remarks
-
 
 ## Example
 
@@ -30,4 +33,3 @@ page.on('requestfailed', request => {
   console.log(request.url() + ' ' + request.failure().errorText);
 });
 ```
-

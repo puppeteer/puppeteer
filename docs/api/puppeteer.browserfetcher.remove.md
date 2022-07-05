@@ -1,19 +1,22 @@
 ---
 sidebar_label: BrowserFetcher.remove
 ---
+
 # BrowserFetcher.remove() method
 
 **Signature:**
 
 ```typescript
-class BrowserFetcher {remove(revision: string): Promise<void>;}
+class BrowserFetcher {
+  remove(revision: string): Promise<void>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  revision | string | A revision to remove for the current <code>product</code>. |
+| Parameter | Type   | Description                                                |
+| --------- | ------ | ---------------------------------------------------------- |
+| revision  | string | A revision to remove for the current <code>product</code>. |
 
 **Returns:**
 
@@ -24,4 +27,3 @@ A promise that resolves when the revision has been removes or throws if the revi
 ## Remarks
 
 This method is affected by the current `product`.
-

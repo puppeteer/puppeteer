@@ -1,10 +1,13 @@
 ---
 sidebar_label: InternalNetworkConditions.offline
 ---
+
 # InternalNetworkConditions.offline property
 
 **Signature:**
 
 ```typescript
-interface InternalNetworkConditions {offline: boolean;}
+interface InternalNetworkConditions {
+  offline: boolean;
+}
 ```

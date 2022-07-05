@@ -1,6 +1,7 @@
 ---
 sidebar_label: BrowserLaunchArgumentOptions.devtools
 ---
+
 # BrowserLaunchArgumentOptions.devtools property
 
 Whether to auto-open a DevTools panel for each tab. If this is set to `true`, then `headless` will be forced to `false`.
@@ -8,5 +9,7 @@ Whether to auto-open a DevTools panel for each tab. If this is set to `true`, th
 **Signature:**
 
 ```typescript
-interface BrowserLaunchArgumentOptions {devtools?: boolean;}
+interface BrowserLaunchArgumentOptions {
+  devtools?: boolean;
+}
 ```

@@ -1,19 +1,18 @@
 ---
 sidebar_label: Point
 ---
-# Point interface
 
+# Point interface
 
 **Signature:**
 
 ```typescript
-export interface Point 
+export interface Point
 ```
 
 ## Properties
 
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [x](./puppeteer.point.x.md) |  | number |  |
-|  [y](./puppeteer.point.y.md) |  | number |  |
-
+| Property                    | Modifiers | Type   | Description |
+| --------------------------- | --------- | ------ | ----------- |
+| [x](./puppeteer.point.x.md) |           | number |             |
+| [y](./puppeteer.point.y.md) |           | number |             |
