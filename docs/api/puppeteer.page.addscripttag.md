@@ -16,7 +16,7 @@ class Page {
     content?: string;
     type?: string;
     id?: string;
-  }): Promise<ElementHandle>;
+  }): Promise<ElementHandle<HTMLScriptElement>>;
 }
 ```
 
@@ -28,7 +28,7 @@ class Page {
 
 **Returns:**
 
-Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&gt;
+Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLScriptElement&gt;&gt;
 
 Promise which resolves to the added tag when the script's onload fires or when the script content was injected into frame.
 

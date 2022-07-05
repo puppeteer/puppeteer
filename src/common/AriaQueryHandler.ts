@@ -24,7 +24,7 @@ import {InternalQueryHandler} from './QueryHandler.js';
 
 async function queryAXTree(
   client: CDPSession,
-  element: ElementHandle,
+  element: ElementHandle<Node>,
   accessibleName?: string,
   role?: string
 ): Promise<Protocol.Accessibility.AXNode[]> {
@@ -86,9 +86,9 @@ function parseAriaSelector(selector: string): ARIAQueryOption {
 }
 
 const queryOne = async (
-  element: ElementHandle,
+  element: ElementHandle<Node>,
   selector: string
-): Promise<ElementHandle | null> => {
+): Promise<ElementHandle<Node> | null> => {
   const exeCtx = element.executionContext();
   const {name, role} = parseAriaSelector(selector);
   const res = await queryAXTree(exeCtx._client, element, name, role);
@@ -126,9 +126,9 @@ const waitFor = async (
 };
 
 const queryAll = async (
-  element: ElementHandle,
+  element: ElementHandle<Node>,
   selector: string
-): Promise<ElementHandle[]> => {
+): Promise<Array<ElementHandle<Node>>> => {
   const exeCtx = element.executionContext();
   const {name, role} = parseAriaSelector(selector);
   const res = await queryAXTree(exeCtx._client, element, name, role);
@@ -140,9 +140,9 @@ const queryAll = async (
 };
 
 const queryAllArray = async (
-  element: ElementHandle,
+  element: ElementHandle<Node>,
   selector: string
-): Promise<JSHandle<Element[]>> => {
+): Promise<JSHandle<Node[]>> => {
   const elementHandles = await queryAll(element, selector);
   const exeCtx = element.executionContext();
   const jsHandle = exeCtx.evaluateHandle((...elements) => {

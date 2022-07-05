@@ -10,7 +10,7 @@ The method evaluates the XPath expression relative to the page document as its c
 
 ```typescript
 class Page {
-  $x(expression: string): Promise<ElementHandle[]>;
+  $x(expression: string): Promise<Array<ElementHandle<Node>>>;
 }
 ```
 
@@ -22,7 +22,7 @@ class Page {
 
 **Returns:**
 
-Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)\[\]&gt;
+Promise&lt;Array&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;Node&gt;&gt;&gt;
 
 ## Remarks
 

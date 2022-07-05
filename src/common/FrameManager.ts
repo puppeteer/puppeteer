@@ -18,16 +18,16 @@ import {Protocol} from 'devtools-protocol';
 import {assert} from './assert.js';
 import {CDPSession, Connection} from './Connection.js';
 import {DOMWorld, WaitForSelectorOptions} from './DOMWorld.js';
+import {ElementHandle} from './ElementHandle.js';
 import {EventEmitter} from './EventEmitter.js';
 import {EVALUATION_SCRIPT_URL, ExecutionContext} from './ExecutionContext.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {MouseButton} from './Input.js';
-import {ElementHandle} from './ElementHandle.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {NetworkManager} from './NetworkManager.js';
 import {Page} from './Page.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
-import {EvaluateFunc, HandleFor} from './types.js';
+import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {debugError, isErrorLike} from './util.js';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
@@ -920,11 +920,9 @@ export class Frame {
    * @returns A promise which resolves to an `ElementHandle` pointing at the
    * element, or `null` if it was not found.
    */
-  async $<Selector extends keyof HTMLElementTagNameMap>(
+  async $<Selector extends string>(
     selector: Selector
-  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;
-  async $(selector: string): Promise<ElementHandle | null>;
-  async $(selector: string): Promise<ElementHandle | null> {
+  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
     return this._mainWorld.$(selector);
   }
 
@@ -934,11 +932,9 @@ export class Frame {
    * @param selector - a selector to search for
    * @returns An array of element handles pointing to the found frame elements.
    */
-  async $$<Selector extends keyof HTMLElementTagNameMap>(
+  async $$<Selector extends string>(
     selector: Selector
-  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]>[]>;
-  async $$(selector: string): Promise<ElementHandle[]>;
-  async $$(selector: string): Promise<ElementHandle[]> {
+  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
     return this._mainWorld.$$(selector);
   }
 
@@ -947,7 +943,7 @@ export class Frame {
    *
    * @param expression - the XPath expression to evaluate.
    */
-  async $x(expression: string): Promise<ElementHandle[]> {
+  async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
     return this._mainWorld.$x(expression);
   }
 
@@ -971,33 +967,13 @@ export class Frame {
    * @param args - additional arguments to pass to `pageFunction`
    */
   async $eval<
-    Selector extends keyof HTMLElementTagNameMap,
+    Selector extends string,
     Params extends unknown[],
     Func extends EvaluateFunc<
-      [HTMLElementTagNameMap[Selector], ...Params]
-    > = EvaluateFunc<[HTMLElementTagNameMap[Selector], ...Params]>
+      [ElementHandle<NodeFor<Selector>>, ...Params]
+    > = EvaluateFunc<[ElementHandle<NodeFor<Selector>>, ...Params]>
   >(
     selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async $eval<
-    Params extends unknown[],
-    Func extends EvaluateFunc<[Element, ...Params]> = EvaluateFunc<
-      [Element, ...Params]
-    >
-  >(
-    selector: string,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async $eval<
-    Params extends unknown[],
-    Func extends EvaluateFunc<[Element, ...Params]> = EvaluateFunc<
-      [Element, ...Params]
-    >
-  >(
-    selector: string,
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
@@ -1024,33 +1000,13 @@ export class Frame {
    * @param args - additional arguments to pass to `pageFunction`
    */
   async $$eval<
-    Selector extends keyof HTMLElementTagNameMap,
+    Selector extends string,
     Params extends unknown[],
     Func extends EvaluateFunc<
-      [HTMLElementTagNameMap[Selector][], ...Params]
-    > = EvaluateFunc<[HTMLElementTagNameMap[Selector][], ...Params]>
+      [Array<NodeFor<Selector>>, ...Params]
+    > = EvaluateFunc<[Array<NodeFor<Selector>>, ...Params]>
   >(
     selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async $$eval<
-    Params extends unknown[],
-    Func extends EvaluateFunc<[Element[], ...Params]> = EvaluateFunc<
-      [Element[], ...Params]
-    >
-  >(
-    selector: string,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async $$eval<
-    Params extends unknown[],
-    Func extends EvaluateFunc<[Element[], ...Params]> = EvaluateFunc<
-      [Element[], ...Params]
-    >
-  >(
-    selector: string,
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
@@ -1134,7 +1090,7 @@ export class Frame {
    */
   async addScriptTag(
     options: FrameAddScriptTagOptions
-  ): Promise<ElementHandle> {
+  ): Promise<ElementHandle<HTMLScriptElement>> {
     return this._mainWorld.addScriptTag(options);
   }
 
@@ -1148,7 +1104,9 @@ export class Frame {
    * `onload` event fires or when the CSS content was injected into the
    * frame.
    */
-  async addStyleTag(options: FrameAddStyleTagOptions): Promise<ElementHandle> {
+  async addStyleTag(
+    options: FrameAddStyleTagOptions
+  ): Promise<ElementHandle<Node>> {
     return this._mainWorld.addStyleTag(options);
   }
 
@@ -1345,18 +1303,10 @@ export class Frame {
    * @returns a promise which resolves when an element matching the selector
    * string is added to the DOM.
    */
-  async waitForSelector<Selector extends keyof HTMLElementTagNameMap>(
+  async waitForSelector<Selector extends string>(
     selector: Selector,
-    options?: WaitForSelectorOptions
-  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;
-  async waitForSelector(
-    selector: string,
-    options?: WaitForSelectorOptions
-  ): Promise<ElementHandle | null>;
-  async waitForSelector(
-    selector: string,
     options: WaitForSelectorOptions = {}
-  ): Promise<ElementHandle | null> {
+  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
     const handle = await this._secondaryWorld.waitForSelector(
       selector,
       options
@@ -1388,7 +1338,7 @@ export class Frame {
   async waitForXPath(
     xpath: string,
     options: WaitForSelectorOptions = {}
-  ): Promise<ElementHandle | null> {
+  ): Promise<ElementHandle<Node> | null> {
     const handle = await this._secondaryWorld.waitForXPath(xpath, options);
     if (!handle) {
       return null;

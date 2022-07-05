@@ -10,15 +10,16 @@ This method scrolls element into view if needed, and then uses [Page.mouse](./pu
 
 ```typescript
 class ElementHandle {
-  click(options?: ClickOptions): Promise<void>;
+  click(this: ElementHandle<Element>, options?: ClickOptions): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                        | Description       |
-| --------- | ------------------------------------------- | ----------------- |
-| options   | [ClickOptions](./puppeteer.clickoptions.md) | <i>(Optional)</i> |
+| Parameter | Type                                                         | Description       |
+| --------- | ------------------------------------------------------------ | ----------------- |
+| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |                   |
+| options   | [ClickOptions](./puppeteer.clickoptions.md)                  | <i>(Optional)</i> |
 
 **Returns:**
 

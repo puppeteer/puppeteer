@@ -10,6 +10,6 @@ Root node to get the accessibility tree for
 
 ```typescript
 interface SnapshotOptions {
-  root?: ElementHandle;
+  root?: ElementHandle<Node>;
 }
 ```

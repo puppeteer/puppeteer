@@ -10,9 +10,15 @@ This method scrolls element into view if needed, and then uses [Page.mouse](./pu
 
 ```typescript
 class ElementHandle {
-  hover(): Promise<void>;
+  hover(this: ElementHandle<Element>): Promise<void>;
 }
 ```
+
+## Parameters
+
+| Parameter | Type                                                         | Description |
+| --------- | ------------------------------------------------------------ | ----------- |
+| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |             |
 
 **Returns:**
 

@@ -10,15 +10,19 @@ This method creates and captures a dragevent from the element.
 
 ```typescript
 class ElementHandle {
-  drag(target: Point): Promise<Protocol.Input.DragData>;
+  drag(
+    this: ElementHandle<Element>,
+    target: Point
+  ): Promise<Protocol.Input.DragData>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                          | Description |
-| --------- | ----------------------------- | ----------- |
-| target    | [Point](./puppeteer.point.md) |             |
+| Parameter | Type                                                         | Description |
+| --------- | ------------------------------------------------------------ | ----------- |
+| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |             |
+| target    | [Point](./puppeteer.point.md)                                |             |
 
 **Returns:**
 

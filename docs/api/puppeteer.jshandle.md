@@ -24,7 +24,7 @@ const windowHandle = await page.evaluateHandle(() => window);
 
 JSHandle prevents the referenced JavaScript object from being garbage-collected unless the handle is [disposed](./puppeteer.jshandle.dispose.md). JSHandles are auto- disposed when their origin frame gets navigated or the parent context gets destroyed.
 
-JSHandle instances can be used as arguments for , [Page.evaluate()](./puppeteer.page.evaluate.md), and [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md).
+JSHandle instances can be used as arguments for [Page.$eval()](./puppeteer.page._eval.md), [Page.evaluate()](./puppeteer.page.evaluate.md), and [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md).
 
 ## Methods
 

@@ -26,7 +26,7 @@ Promise&lt;void&gt;
 
 ## Remarks
 
-It's generally recommended to not wait for a number of seconds, but instead use , [Page.waitForXPath()](./puppeteer.page.waitforxpath.md) or [Page.waitForFunction()](./puppeteer.page.waitforfunction.md) to wait for exactly the conditions you want.
+It's generally recommended to not wait for a number of seconds, but instead use [Page.waitForSelector()](./puppeteer.page.waitforselector.md), [Page.waitForXPath()](./puppeteer.page.waitforxpath.md) or [Page.waitForFunction()](./puppeteer.page.waitforfunction.md) to wait for exactly the conditions you want.
 
 ## Example
 

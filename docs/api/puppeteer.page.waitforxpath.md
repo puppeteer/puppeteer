@@ -39,7 +39,7 @@ class Page {
       hidden?: boolean;
       timeout?: number;
     }
-  ): Promise<ElementHandle | null>;
+  ): Promise<ElementHandle<Node> | null>;
 }
 ```
 
@@ -52,7 +52,7 @@ class Page {
 
 **Returns:**
 
-Promise&lt;[ElementHandle](./puppeteer.elementhandle.md) \| null&gt;
+Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;Node&gt; \| null&gt;
 
 Promise which resolves when element specified by xpath string is added to DOM. Resolves to `null` if waiting for `hidden: true` and xpath is not found in DOM.
 

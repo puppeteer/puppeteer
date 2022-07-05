@@ -8,12 +8,12 @@ sidebar_label: JSHandle.asElement
 
 ```typescript
 class JSHandle {
-  asElement(): ElementHandle | null;
+  asElement(): ElementHandle<Node> | null;
 }
 ```
 
 **Returns:**
 
-[ElementHandle](./puppeteer.elementhandle.md) \| null
+[ElementHandle](./puppeteer.elementhandle.md)&lt;Node&gt; \| null
 
 Either `null` or the object handle itself, if the object handle is an instance of [ElementHandle](./puppeteer.elementhandle.md).

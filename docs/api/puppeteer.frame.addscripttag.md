@@ -10,7 +10,9 @@ Adds a `<script>` tag into the page with the desired url or content.
 
 ```typescript
 class Frame {
-  addScriptTag(options: FrameAddScriptTagOptions): Promise<ElementHandle>;
+  addScriptTag(
+    options: FrameAddScriptTagOptions
+  ): Promise<ElementHandle<HTMLScriptElement>>;
 }
 ```
 
@@ -22,6 +24,6 @@ class Frame {
 
 **Returns:**
 
-Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&gt;
+Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLScriptElement&gt;&gt;
 
 a promise that resolves to the added tag when the script's `onload` event fires or when the script content was injected into the frame.

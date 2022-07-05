@@ -19,15 +19,15 @@ declare const handle: ElementHandle;
 
 {
   {
-    expectType<ElementHandle<HTMLAnchorElement>[]>(await handle.$$('a'));
-    expectNotType<ElementHandle<Element>[]>(await handle.$$('a'));
+    expectType<Array<ElementHandle<HTMLAnchorElement>>>(await handle.$$('a'));
+    expectNotType<Array<ElementHandle<Element>>>(await handle.$$('a'));
   }
   {
-    expectType<ElementHandle<HTMLDivElement>[]>(await handle.$$('div'));
-    expectNotType<ElementHandle<Element>[]>(await handle.$$('div'));
+    expectType<Array<ElementHandle<HTMLDivElement>>>(await handle.$$('div'));
+    expectNotType<Array<ElementHandle<Element>>>(await handle.$$('div'));
   }
   {
-    expectType<ElementHandle<Element>[]>(await handle.$$('some-custom'));
+    expectType<Array<ElementHandle<Element>>>(await handle.$$('some-custom'));
   }
 }
 
@@ -68,7 +68,7 @@ declare const handle: ElementHandle;
     await handle.$eval(
       'some-element',
       (element, value) => {
-        expectType<Element>(element);
+        expectType<Node>(element);
         return value;
       },
       1
