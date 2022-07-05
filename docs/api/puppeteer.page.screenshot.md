@@ -1,22 +1,19 @@
 ---
 sidebar_label: Page.screenshot
 ---
-
 # Page.screenshot() method
 
 **Signature:**
 
 ```typescript
-class Page {
-  screenshot(options?: ScreenshotOptions): Promise<Buffer | string>;
-}
+class Page {screenshot(options?: ScreenshotOptions): Promise<Buffer | string>;}
 ```
 
 ## Parameters
 
-| Parameter | Type                                                  | Description       |
-| --------- | ----------------------------------------------------- | ----------------- |
-| options   | [ScreenshotOptions](./puppeteer.screenshotoptions.md) | <i>(Optional)</i> |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  options | [ScreenshotOptions](./puppeteer.screenshotoptions.md) | <i>(Optional)</i> |
 
 **Returns:**
 
@@ -47,3 +44,4 @@ Options object which might have the following properties:
 - `fromSurface` : When true, captures screenshot [from the surface rather than the view](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot). When false, works only in headful mode and ignores page viewport (but not browser window's bounds). Defaults to `true`.
 
 NOTE: Screenshots take at least 1/6 second on OS X. See [https://crbug.com/741689](https://crbug.com/741689) for discussion.
+

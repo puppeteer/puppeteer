@@ -1,7 +1,6 @@
 ---
 sidebar_label: Page.emulateIdleState
 ---
-
 # Page.emulateIdleState() method
 
 Emulates the idle state. If no arguments set, clears idle state emulation.
@@ -9,25 +8,24 @@ Emulates the idle state. If no arguments set, clears idle state emulation.
 **Signature:**
 
 ```typescript
-class Page {
-  emulateIdleState(overrides?: {
-    isUserActive: boolean;
-    isScreenUnlocked: boolean;
-  }): Promise<void>;
-}
+class Page {emulateIdleState(overrides?: {
+        isUserActive: boolean;
+        isScreenUnlocked: boolean;
+    }): Promise<void>;}
 ```
 
 ## Parameters
 
-| Parameter | Type                                                  | Description                                                          |
-| --------- | ----------------------------------------------------- | -------------------------------------------------------------------- |
-| overrides | { isUserActive: boolean; isScreenUnlocked: boolean; } | <i>(Optional)</i> Mock idle state. If not set, clears idle overrides |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  overrides | { isUserActive: boolean; isScreenUnlocked: boolean; } | <i>(Optional)</i> Mock idle state. If not set, clears idle overrides |
 
 **Returns:**
 
 Promise&lt;void&gt;
 
 ## Example
+
 
 ```ts
 // set idle emulation
@@ -39,3 +37,4 @@ await page.emulateIdleState({isUserActive: true, isScreenUnlocked: false});
 // clear idle emulation
 await page.emulateIdleState();
 ```
+

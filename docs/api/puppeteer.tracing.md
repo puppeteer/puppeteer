@@ -1,7 +1,6 @@
 ---
 sidebar_label: Tracing
 ---
-
 # Tracing class
 
 The Tracing class exposes the tracing audit interface.
@@ -9,7 +8,7 @@ The Tracing class exposes the tracing audit interface.
 **Signature:**
 
 ```typescript
-export declare class Tracing
+export declare class Tracing 
 ```
 
 ## Remarks
@@ -20,6 +19,7 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Example
 
+
 ```ts
 await page.tracing.start({path: 'trace.json'});
 await page.goto('https://www.google.com');
@@ -28,7 +28,8 @@ await page.tracing.stop();
 
 ## Methods
 
-| Method                                         | Modifiers | Description                                               |
-| ---------------------------------------------- | --------- | --------------------------------------------------------- |
-| [start(options)](./puppeteer.tracing.start.md) |           | Starts a trace for the current page.                      |
-| [stop()](./puppeteer.tracing.stop.md)          |           | Stops a trace started with the <code>start</code> method. |
+|  Method | Modifiers | Description |
+|  --- | --- | --- |
+|  [start(options)](./puppeteer.tracing.start.md) |  | Starts a trace for the current page. |
+|  [stop()](./puppeteer.tracing.stop.md) |  | Stops a trace started with the <code>start</code> method. |
+

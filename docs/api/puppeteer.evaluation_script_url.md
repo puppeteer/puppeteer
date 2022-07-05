@@ -1,11 +1,11 @@
 ---
 sidebar_label: EVALUATION_SCRIPT_URL
 ---
+# EVALUATION\_SCRIPT\_URL variable
 
-# EVALUATION_SCRIPT_URL variable
 
 **Signature:**
 
 ```typescript
-EVALUATION_SCRIPT_URL = 'pptr://__puppeteer_evaluation_script__';
+EVALUATION_SCRIPT_URL = "pptr://__puppeteer_evaluation_script__"
 ```

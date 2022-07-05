@@ -1,30 +1,24 @@
 ---
 sidebar_label: Frame.goto
 ---
-
 # Frame.goto() method
 
 **Signature:**
 
 ```typescript
-class Frame {
-  goto(
-    url: string,
-    options?: {
-      referer?: string;
-      timeout?: number;
-      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    }
-  ): Promise<HTTPResponse | null>;
-}
+class Frame {goto(url: string, options?: {
+        referer?: string;
+        timeout?: number;
+        waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
+    }): Promise<HTTPResponse | null>;}
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                                                                                                                            | Description                                                                                                                                                                                                                                 |
-| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| url       | string                                                                                                                                                                                          | the URL to navigate the frame to. This should include the scheme, e.g. <code>https://</code>.                                                                                                                                               |
-| options   | { referer?: string; timeout?: number; waitUntil?: [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) \| [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)\[\]; } | <i>(Optional)</i> navigation options. <code>waitUntil</code> is useful to define when the navigation should be considered successful - see the docs for [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) for more details. |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  url | string | the URL to navigate the frame to. This should include the scheme, e.g. <code>https://</code>. |
+|  options | { referer?: string; timeout?: number; waitUntil?: [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) \| [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)\[\]; } | <i>(Optional)</i> navigation options. <code>waitUntil</code> is useful to define when the navigation should be considered successful - see the docs for [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) for more details. |
 
 **Returns:**
 
@@ -49,3 +43,4 @@ A promise which resolves to the main resource response. In case of multiple redi
 NOTE: `frame.goto` either throws an error or returns a main resource response. The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
 
 NOTE: Headless mode doesn't support navigation to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
+

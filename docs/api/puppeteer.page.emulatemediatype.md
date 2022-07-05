@@ -1,28 +1,26 @@
 ---
 sidebar_label: Page.emulateMediaType
 ---
-
 # Page.emulateMediaType() method
 
 **Signature:**
 
 ```typescript
-class Page {
-  emulateMediaType(type?: string): Promise<void>;
-}
+class Page {emulateMediaType(type?: string): Promise<void>;}
 ```
 
 ## Parameters
 
-| Parameter | Type   | Description                                                                                                                                                                                                  |
-| --------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| type      | string | <i>(Optional)</i> Changes the CSS media type of the page. The only allowed values are <code>screen</code>, <code>print</code> and <code>null</code>. Passing <code>null</code> disables CSS media emulation. |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  type | string | <i>(Optional)</i> Changes the CSS media type of the page. The only allowed values are <code>screen</code>, <code>print</code> and <code>null</code>. Passing <code>null</code> disables CSS media emulation. |
 
 **Returns:**
 
 Promise&lt;void&gt;
 
 ## Example
+
 
 ```ts
 await page.evaluate(() => matchMedia('screen').matches);
@@ -42,3 +40,4 @@ await page.evaluate(() => matchMedia('screen').matches);
 await page.evaluate(() => matchMedia('print').matches);
 // → false
 ```
+

@@ -1,7 +1,6 @@
 ---
 sidebar_label: Keyboard.down
 ---
-
 # Keyboard.down() method
 
 Dispatches a `keydown` event.
@@ -9,22 +8,17 @@ Dispatches a `keydown` event.
 **Signature:**
 
 ```typescript
-class Keyboard {
-  down(
-    key: KeyInput,
-    options?: {
-      text?: string;
-    }
-  ): Promise<void>;
-}
+class Keyboard {down(key: KeyInput, options?: {
+        text?: string;
+    }): Promise<void>;}
 ```
 
 ## Parameters
 
-| Parameter | Type                                | Description                                                                                                                |
-| --------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| key       | [KeyInput](./puppeteer.keyinput.md) | Name of key to press, such as <code>ArrowLeft</code>. See [KeyInput](./puppeteer.keyinput.md) for a list of all key names. |
-| options   | { text?: string; }                  | <i>(Optional)</i> An object of options. Accepts text which, if specified, generates an input event with this text.         |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  key | [KeyInput](./puppeteer.keyinput.md) | Name of key to press, such as <code>ArrowLeft</code>. See [KeyInput](./puppeteer.keyinput.md) for a list of all key names. |
+|  options | { text?: string; } | <i>(Optional)</i> An object of options. Accepts text which, if specified, generates an input event with this text. |
 
 **Returns:**
 
@@ -37,3 +31,4 @@ If `key` is a single character and no modifier keys besides `Shift` are being he
 After the key is pressed once, subsequent calls to [Keyboard.down()](./puppeteer.keyboard.down.md) will have [repeat](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/repeat) set to true. To release the key, use [Keyboard.up()](./puppeteer.keyboard.up.md).
 
 Modifier keys DO influence [Keyboard.down()](./puppeteer.keyboard.down.md). Holding down `Shift` will type the text in upper case.
+

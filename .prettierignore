@@ -1,17 +1,44 @@
+# Keep in sync with .gitignore
+
+# Dependencies
+node_modules
+
+# Production
+build/
+lib/
+
+# Generated files
+tsconfig.tsbuildinfo
+puppeteer.api.json
+puppeteer*.tgz
+yarn.lock
+.docusaurus/
+.cache-loader
 .local-chromium/
 .local-firefox/
+test/output-*/
+.dev_profile*
+
+# IDE Artifacts
+.vscode
+
+# Misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Prettier-only ignores.
 assets/
-build/
 CHANGELOG.md
-coverage/
-lib/
-node_modules/
 package-lock.json
 package.json
 test/assets/
-tsconfig.tsbuildinfo
 vendor/
-yarn.lock
-puppeteer.api.json
-website/
 docs/
+

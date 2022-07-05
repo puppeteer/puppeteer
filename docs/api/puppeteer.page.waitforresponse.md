@@ -1,30 +1,22 @@
 ---
 sidebar_label: Page.waitForResponse
 ---
-
 # Page.waitForResponse() method
 
 **Signature:**
 
 ```typescript
-class Page {
-  waitForResponse(
-    urlOrPredicate:
-      | string
-      | ((res: HTTPResponse) => boolean | Promise<boolean>),
-    options?: {
-      timeout?: number;
-    }
-  ): Promise<HTTPResponse>;
-}
+class Page {waitForResponse(urlOrPredicate: string | ((res: HTTPResponse) => boolean | Promise<boolean>), options?: {
+        timeout?: number;
+    }): Promise<HTTPResponse>;}
 ```
 
 ## Parameters
 
-| Parameter      | Type                                                                                                   | Description                                   |
-| -------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------- |
-| urlOrPredicate | string \| ((res: [HTTPResponse](./puppeteer.httpresponse.md)) =&gt; boolean \| Promise&lt;boolean&gt;) | A URL or predicate to wait for.               |
-| options        | { timeout?: number; }                                                                                  | <i>(Optional)</i> Optional waiting parameters |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  urlOrPredicate | string \| ((res: [HTTPResponse](./puppeteer.httpresponse.md)) =&gt; boolean \| Promise&lt;boolean&gt;) | A URL or predicate to wait for. |
+|  options | { timeout?: number; } | <i>(Optional)</i> Optional waiting parameters |
 
 **Returns:**
 
@@ -40,16 +32,18 @@ Optional Parameter have:
 
 ## Example
 
+
 ```ts
 const firstResponse = await page.waitForResponse(
-  'https://example.com/resource'
+'https://example.com/resource'
 );
 const finalResponse = await page.waitForResponse(
-  response =>
-    response.url() === 'https://example.com' && response.status() === 200
+(response) =>
+response.url() === 'https://example.com' && response.status() === 200
 );
-const finalResponse = await page.waitForResponse(async response => {
-  return (await response.text()).includes('<html>');
+const finalResponse = await page.waitForResponse(async (response) => {
+return (await response.text()).includes('<html>');
 });
 return finalResponse.ok();
 ```
+

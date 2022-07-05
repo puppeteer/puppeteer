@@ -1,7 +1,6 @@
 ---
 sidebar_label: PDFOptions.printBackground
 ---
-
 # PDFOptions.printBackground property
 
 Set to `true` to print background graphics.
@@ -9,7 +8,5 @@ Set to `true` to print background graphics.
 **Signature:**
 
 ```typescript
-interface PDFOptions {
-  printBackground?: boolean;
-}
+interface PDFOptions {printBackground?: boolean;}
 ```

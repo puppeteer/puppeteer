@@ -1,25 +1,22 @@
 ---
 sidebar_label: Frame.waitForNavigation
 ---
-
 # Frame.waitForNavigation() method
 
 **Signature:**
 
 ```typescript
-class Frame {
-  waitForNavigation(options?: {
-    timeout?: number;
-    waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-  }): Promise<HTTPResponse | null>;
-}
+class Frame {waitForNavigation(options?: {
+        timeout?: number;
+        waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
+    }): Promise<HTTPResponse | null>;}
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                                                                                                          | Description                                                                      |
-| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| options   | { timeout?: number; waitUntil?: [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) \| [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)\[\]; } | <i>(Optional)</i> options to configure when the navigation is consided finished. |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  options | { timeout?: number; waitUntil?: [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) \| [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)\[\]; } | <i>(Optional)</i> options to configure when the navigation is consided finished. |
 
 **Returns:**
 
@@ -39,5 +36,5 @@ const [response] = await Promise.all([
   frame.click('a.my-link'),
 ]);
 ```
-
 Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
+

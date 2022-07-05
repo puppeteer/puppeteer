@@ -1,7 +1,6 @@
 ---
 sidebar_label: BrowserFetcher.download
 ---
-
 # BrowserFetcher.download() method
 
 Initiates a GET request to download the revision from the host.
@@ -9,20 +8,15 @@ Initiates a GET request to download the revision from the host.
 **Signature:**
 
 ```typescript
-class BrowserFetcher {
-  download(
-    revision: string,
-    progressCallback?: (x: number, y: number) => void
-  ): Promise<BrowserFetcherRevisionInfo | undefined>;
-}
+class BrowserFetcher {download(revision: string, progressCallback?: (x: number, y: number) => void): Promise<BrowserFetcherRevisionInfo | undefined>;}
 ```
 
 ## Parameters
 
-| Parameter        | Type                              | Description                                                                                                                                             |
-| ---------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| revision         | string                            | The revision to download.                                                                                                                               |
-| progressCallback | (x: number, y: number) =&gt; void | <i>(Optional)</i> A function that will be called with two arguments: How many bytes have been downloaded and the total number of bytes of the download. |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  revision | string | The revision to download. |
+|  progressCallback | (x: number, y: number) =&gt; void | <i>(Optional)</i> A function that will be called with two arguments: How many bytes have been downloaded and the total number of bytes of the download. |
 
 **Returns:**
 
@@ -33,3 +27,4 @@ A promise with revision information when the revision is downloaded and extracte
 ## Remarks
 
 This method is affected by the current `product`.
+

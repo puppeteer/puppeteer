@@ -1,7 +1,6 @@
 ---
 sidebar_label: ElementHandle.$
 ---
-
 # ElementHandle.$() method
 
 Runs `element.querySelector` within the page.
@@ -9,18 +8,14 @@ Runs `element.querySelector` within the page.
 **Signature:**
 
 ```typescript
-class ElementHandle {
-  $<Selector extends keyof HTMLElementTagNameMap>(
-    selector: Selector
-  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;
-}
+class ElementHandle {$<Selector extends keyof HTMLElementTagNameMap>(selector: Selector): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;}
 ```
 
 ## Parameters
 
-| Parameter | Type     | Description                 |
-| --------- | -------- | --------------------------- |
-| selector  | Selector | The selector to query with. |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  selector | Selector | The selector to query with. |
 
 **Returns:**
 
@@ -31,3 +26,4 @@ Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLElementTagNameMa
 ## Exceptions
 
 `Error` if the selector has no associated query handler.
+

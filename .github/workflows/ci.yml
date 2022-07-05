@@ -51,6 +51,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
       - name: Set up Node.js
         uses: actions/setup-node@v3.3.0
         with:
@@ -73,7 +75,7 @@ jobs:
       - name: Check if docs need to be deployed
         id: needs_deploying
         run: |
-          if [[ $(git diff ${{ github.ref }}^ -- ./docs ./website) ]]; then
+          if [[ $(git diff HEAD^ -- ./docs ./website) ]]; then
             needs_deploying=true
           else
             needs_deploying=false
@@ -88,8 +90,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
       - name: Set up Node.js
         uses: actions/setup-node@v3.3.0
         with:
@@ -133,8 +133,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
       - name: Setup cache for Chromium binary
         uses: actions/cache@v3
         with:

@@ -1,7 +1,6 @@
 ---
 sidebar_label: Puppeteer
 ---
-
 # Puppeteer class
 
 The main Puppeteer class.
@@ -11,7 +10,7 @@ IMPORTANT: if you are using Puppeteer in a Node environment, you will get an ins
 **Signature:**
 
 ```typescript
-export declare class Puppeteer
+export declare class Puppeteer 
 ```
 
 ## Remarks
@@ -20,20 +19,21 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Properties
 
-| Property                                                        | Modifiers | Type                                                         | Description |
-| --------------------------------------------------------------- | --------- | ------------------------------------------------------------ | ----------- |
-| [\_changedProduct](./puppeteer.puppeteer._changedproduct.md)    |           | boolean                                                      |             |
-| [\_isPuppeteerCore](./puppeteer.puppeteer._ispuppeteercore.md)  |           | boolean                                                      |             |
-| [devices](./puppeteer.puppeteer.devices.md)                     |           | typeof devices                                               |             |
-| [errors](./puppeteer.puppeteer.errors.md)                       |           | typeof [errors](./puppeteer.errors.md)                       |             |
-| [networkConditions](./puppeteer.puppeteer.networkconditions.md) |           | typeof [networkConditions](./puppeteer.networkconditions.md) |             |
+|  Property | Modifiers | Type | Description |
+|  --- | --- | --- | --- |
+|  [\_changedProduct](./puppeteer.puppeteer._changedproduct.md) |  | boolean |  |
+|  [\_isPuppeteerCore](./puppeteer.puppeteer._ispuppeteercore.md) |  | boolean |  |
+|  [devices](./puppeteer.puppeteer.devices.md) |  | typeof devices |  |
+|  [errors](./puppeteer.puppeteer.errors.md) |  | typeof [errors](./puppeteer.errors.md) |  |
+|  [networkConditions](./puppeteer.puppeteer.networkconditions.md) |  | typeof [networkConditions](./puppeteer.networkconditions.md) |  |
 
 ## Methods
 
-| Method                                                                                                | Modifiers | Description                                                     |
-| ----------------------------------------------------------------------------------------------------- | --------- | --------------------------------------------------------------- |
-| [clearCustomQueryHandlers()](./puppeteer.puppeteer.clearcustomqueryhandlers.md)                       |           |                                                                 |
-| [connect(options)](./puppeteer.puppeteer.connect.md)                                                  |           | This method attaches Puppeteer to an existing browser instance. |
-| [customQueryHandlerNames()](./puppeteer.puppeteer.customqueryhandlernames.md)                         |           |                                                                 |
-| [registerCustomQueryHandler(name, queryHandler)](./puppeteer.puppeteer.registercustomqueryhandler.md) |           |                                                                 |
-| [unregisterCustomQueryHandler(name)](./puppeteer.puppeteer.unregistercustomqueryhandler.md)           |           |                                                                 |
+|  Method | Modifiers | Description |
+|  --- | --- | --- |
+|  [clearCustomQueryHandlers()](./puppeteer.puppeteer.clearcustomqueryhandlers.md) |  |  |
+|  [connect(options)](./puppeteer.puppeteer.connect.md) |  | This method attaches Puppeteer to an existing browser instance. |
+|  [customQueryHandlerNames()](./puppeteer.puppeteer.customqueryhandlernames.md) |  |  |
+|  [registerCustomQueryHandler(name, queryHandler)](./puppeteer.puppeteer.registercustomqueryhandler.md) |  |  |
+|  [unregisterCustomQueryHandler(name)](./puppeteer.puppeteer.unregistercustomqueryhandler.md) |  |  |
+

@@ -1,7 +1,6 @@
 ---
 sidebar_label: ElementHandle.$eval
 ---
-
 # ElementHandle.$eval() method
 
 This method runs `document.querySelector` within the element and passes it as the first argument to `pageFunction`. If there's no element matching `selector`, the method throws an error.
@@ -11,28 +10,19 @@ If `pageFunction` returns a Promise, then `frame.$eval` would wait for the promi
 **Signature:**
 
 ```typescript
-class ElementHandle {
-  $eval<
-    Selector extends keyof HTMLElementTagNameMap,
-    Params extends unknown[],
-    Func extends EvaluateFunc<
-      [HTMLElementTagNameMap[Selector], ...Params]
-    > = EvaluateFunc<[HTMLElementTagNameMap[Selector], ...Params]>
-  >(
-    selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-}
+class ElementHandle {$eval<Selector extends keyof HTMLElementTagNameMap, Params extends unknown[], Func extends EvaluateFunc<[
+        HTMLElementTagNameMap[Selector],
+        ...Params
+    ]> = EvaluateFunc<[HTMLElementTagNameMap[Selector], ...Params]>>(selector: Selector, pageFunction: Func | string, ...args: Params): Promise<Awaited<ReturnType<Func>>>;}
 ```
 
 ## Parameters
 
-| Parameter    | Type           | Description |
-| ------------ | -------------- | ----------- |
-| selector     | Selector       |             |
-| pageFunction | Func \| string |             |
-| args         | Params         |             |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  selector | Selector |  |
+|  pageFunction | Func \| string |  |
+|  args | Params |  |
 
 **Returns:**
 
@@ -40,8 +30,10 @@ Promise&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;
 
 ## Example
 
+
 ```ts
 const tweetHandle = await page.$('.tweet');
 expect(await tweetHandle.$eval('.like', node => node.innerText)).toBe('100');
 expect(await tweetHandle.$eval('.retweets', node => node.innerText)).toBe('10');
 ```
+

@@ -1,7 +1,6 @@
 ---
 sidebar_label: SerializedAXNode.description
 ---
-
 # SerializedAXNode.description property
 
 An additional human readable description of the node.
@@ -9,7 +8,5 @@ An additional human readable description of the node.
 **Signature:**
 
 ```typescript
-interface SerializedAXNode {
-  description?: string;
-}
+interface SerializedAXNode {description?: string;}
 ```

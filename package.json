@@ -41,7 +41,7 @@
     "lint:eslint": "([ \"$CI\" = true ] && eslint --ext js --ext ts --quiet -f codeframe . || eslint --ext js --ext ts .)",
     "install": "node install.js",
     "generate:types": "node utils/export_all.js && api-extractor run --local --verbose && eslint --ext ts --no-ignore --no-eslintrc -c .eslintrc.types.cjs --fix lib/types.d.ts",
-    "generate:markdown": "ts-node -O '{\"module\":\"commonjs\"}' utils/generate_docs.ts && prettier --ignore-path none --write docs",
+    "generate:markdown": "ts-node -O '{\"module\":\"commonjs\"}' utils/generate_docs.ts",
     "generate:esm-package-json": "echo '{\"type\": \"module\"}' > lib/esm/package.json",
     "format": "run-s format:*",
     "format:prettier": "prettier --write .",

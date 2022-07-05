@@ -1,7 +1,6 @@
 ---
 sidebar_label: ScreenshotOptions.omitBackground
 ---
-
 # ScreenshotOptions.omitBackground property
 
 Hides default white background and allows capturing screenshots with transparency.
@@ -9,7 +8,5 @@ Hides default white background and allows capturing screenshots with transparenc
 **Signature:**
 
 ```typescript
-interface ScreenshotOptions {
-  omitBackground?: boolean;
-}
+interface ScreenshotOptions {omitBackground?: boolean;}
 ```

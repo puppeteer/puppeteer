@@ -1,7 +1,6 @@
 ---
 sidebar_label: SecurityDetails
 ---
-
 # SecurityDetails class
 
 The SecurityDetails class represents the security details of a response that was received over a secure connection.
@@ -9,7 +8,7 @@ The SecurityDetails class represents the security details of a response that was
 **Signature:**
 
 ```typescript
-export declare class SecurityDetails
+export declare class SecurityDetails 
 ```
 
 ## Remarks
@@ -18,11 +17,12 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Methods
 
-| Method                                                                              | Modifiers | Description |
-| ----------------------------------------------------------------------------------- | --------- | ----------- |
-| [issuer()](./puppeteer.securitydetails.issuer.md)                                   |           |             |
-| [protocol()](./puppeteer.securitydetails.protocol.md)                               |           |             |
-| [subjectAlternativeNames()](./puppeteer.securitydetails.subjectalternativenames.md) |           |             |
-| [subjectName()](./puppeteer.securitydetails.subjectname.md)                         |           |             |
-| [validFrom()](./puppeteer.securitydetails.validfrom.md)                             |           |             |
-| [validTo()](./puppeteer.securitydetails.validto.md)                                 |           |             |
+|  Method | Modifiers | Description |
+|  --- | --- | --- |
+|  [issuer()](./puppeteer.securitydetails.issuer.md) |  |  |
+|  [protocol()](./puppeteer.securitydetails.protocol.md) |  |  |
+|  [subjectAlternativeNames()](./puppeteer.securitydetails.subjectalternativenames.md) |  |  |
+|  [subjectName()](./puppeteer.securitydetails.subjectname.md) |  |  |
+|  [validFrom()](./puppeteer.securitydetails.validfrom.md) |  |  |
+|  [validTo()](./puppeteer.securitydetails.validto.md) |  |  |
+

@@ -2,19 +2,18 @@
 node_modules
 
 # Production
-build
-lib
+build/
+lib/
 
 # Generated files
-coverage
 tsconfig.tsbuildinfo
 puppeteer.api.json
 puppeteer*.tgz
 yarn.lock
-.docusaurus
+.docusaurus/
 .cache-loader
-.local-chromium
-.local-firefox
+.local-chromium/
+.local-firefox/
 test/output-*/
 .dev_profile*
 

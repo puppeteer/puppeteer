@@ -1,7 +1,6 @@
 ---
 sidebar_label: Frame.waitForTimeout
 ---
-
 # Frame.waitForTimeout() method
 
 Causes your script to wait for the given number of milliseconds.
@@ -9,16 +8,14 @@ Causes your script to wait for the given number of milliseconds.
 **Signature:**
 
 ```typescript
-class Frame {
-  waitForTimeout(milliseconds: number): Promise<void>;
-}
+class Frame {waitForTimeout(milliseconds: number): Promise<void>;}
 ```
 
 ## Parameters
 
-| Parameter    | Type   | Description                         |
-| ------------ | ------ | ----------------------------------- |
-| milliseconds | number | the number of milliseconds to wait. |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  milliseconds | number | the number of milliseconds to wait. |
 
 **Returns:**
 
@@ -35,3 +32,4 @@ Wait for 1 second:
 ```
 await frame.waitForTimeout(1000);
 ```
+

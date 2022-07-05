@@ -1,7 +1,6 @@
 ---
 sidebar_label: ElementHandle.waitForSelector
 ---
-
 # ElementHandle.waitForSelector() method
 
 Wait for the `selector` to appear within the element. If at the moment of calling the method the `selector` already exists, the method will return immediately. If the `selector` doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
@@ -11,20 +10,15 @@ This method does not work across navigations or if the element is detached from 
 **Signature:**
 
 ```typescript
-class ElementHandle {
-  waitForSelector<Selector extends keyof HTMLElementTagNameMap>(
-    selector: Selector,
-    options?: Exclude<WaitForSelectorOptions, 'root'>
-  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;
-}
+class ElementHandle {waitForSelector<Selector extends keyof HTMLElementTagNameMap>(selector: Selector, options?: Exclude<WaitForSelectorOptions, 'root'>): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;}
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                   | Description                                                                                            |
-| --------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| selector  | Selector                                                                               | A [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) of an element to wait for |
-| options   | Exclude&lt;[WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md), 'root'&gt; | <i>(Optional)</i> Optional waiting parameters                                                          |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  selector | Selector | A [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) of an element to wait for |
+|  options | Exclude&lt;[WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md), 'root'&gt; | <i>(Optional)</i> Optional waiting parameters |
 
 **Returns:**
 
@@ -41,3 +35,4 @@ The optional parameters in `options` are:
 - `hidden`: wait for the selected element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
 
 - `timeout`: maximum time to wait in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The default value can be changed by using the [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) method.
+

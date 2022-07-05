@@ -1,22 +1,19 @@
 ---
 sidebar_label: PuppeteerNode.executablePath
 ---
-
 # PuppeteerNode.executablePath() method
 
 **Signature:**
 
 ```typescript
-class PuppeteerNode {
-  executablePath(channel?: string): string;
-}
+class PuppeteerNode {executablePath(channel?: string): string;}
 ```
 
 ## Parameters
 
-| Parameter | Type   | Description       |
-| --------- | ------ | ----------------- |
-| channel   | string | <i>(Optional)</i> |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  channel | string | <i>(Optional)</i> |
 
 **Returns:**
 
@@ -27,3 +24,4 @@ A path where Puppeteer expects to find the bundled browser. The browser binary m
 ## Remarks
 
 \*\*NOTE\*\* `puppeteer.executablePath()` is affected by the `PUPPETEER_EXECUTABLE_PATH` and `PUPPETEER_CHROMIUM_REVISION` environment variables.
+
