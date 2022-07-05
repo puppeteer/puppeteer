@@ -87,6 +87,8 @@ jobs:
     name: Deploy docs (if needed)
     if: ${{ needs.check-docs.outputs.needs_deploying == 'true' && github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3

@@ -1,10 +1,8 @@
 <!-- docusaurus-metadata-start -->
 
 ---
-
-## sidebar_position: 1
-
-<!-- docusaurus-metadata-end -->
+sidebar_position: 1
+---
 
 <!-- docusaurus-metadata-end -->
 
