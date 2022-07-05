@@ -268,6 +268,13 @@ if (process.env['MOCHA_WORKER_ID'] === '0') {
   -> binary: ${
     defaultBrowserOptions.executablePath ||
     path.relative(process.cwd(), puppeteer.executablePath())
+  }
+  -> mode: ${
+    isHeadless
+      ? headless === 'chrome'
+        ? '--headless=chrome'
+        : '--headless'
+      : 'headful'
   }`
   );
 }

@@ -355,7 +355,7 @@ export class FrameManager extends EventEmitter {
     }
     assert(parentFrameId);
     const parentFrame = this.#frames.get(parentFrameId);
-    assert(parentFrame);
+    assert(parentFrame, `Parent frame ${parentFrameId} not found`);
     const frame = new Frame(this, parentFrame, frameId, session);
     this.#frames.set(frame._id, frame);
     this.emit(FrameManagerEmittedEvents.FrameAttached, frame);

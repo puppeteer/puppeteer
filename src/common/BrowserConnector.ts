@@ -115,7 +115,7 @@ export async function _connectToBrowser(
   const {browserContextIds} = await connection.send(
     'Target.getBrowserContexts'
   );
-  return Browser._create(
+  const browser = await Browser._create(
     product || 'chrome',
     connection,
     browserContextIds,
@@ -128,6 +128,8 @@ export async function _connectToBrowser(
     targetFilter,
     isPageTarget
   );
+  await browser.pages();
+  return browser;
 }
 
 async function getWSEndpoint(browserURL: string): Promise<string> {
