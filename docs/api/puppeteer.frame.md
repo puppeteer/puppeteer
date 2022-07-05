@@ -1,6 +1,7 @@
 ---
 sidebar_label: Frame
 ---
+
 # Frame class
 
 At every point of time, page exposes its current frame tree via the [page.mainFrame](./puppeteer.page.mainframe.md) and [frame.childFrames](./puppeteer.frame.childframes.md) methods.
@@ -8,7 +9,7 @@ At every point of time, page exposes its current frame tree via the [page.mainFr
 **Signature:**
 
 ```typescript
-export declare class Frame 
+export declare class Frame
 ```
 
 ## Remarks
@@ -40,7 +41,7 @@ const puppeteer = require('puppeteer');
   function dumpFrameTree(frame, indent) {
     console.log(indent + frame.url());
     for (const child of frame.childFrames()) {
-    dumpFrameTree(child, indent + '  ');
+      dumpFrameTree(child, indent + '  ');
     }
   }
 })();
@@ -58,42 +59,41 @@ console.log(text);
 
 ## Methods
 
-|  Method | Modifiers | Description |
-|  --- | --- | --- |
-|  [$(selector)](./puppeteer.frame._.md) |  | This method queries the frame for the given selector. |
-|  [$(selector)](./puppeteer.frame.__1.md) |  |  |
-|  [$$(selector)](./puppeteer.frame.__.md) |  | This runs <code>document.querySelectorAll</code> in the frame and returns the result. |
-|  [$$(selector)](./puppeteer.frame.___1.md) |  |  |
-|  [$$eval(selector, pageFunction, args)](./puppeteer.frame.__eval.md) |  |  |
-|  [$$eval(selector, pageFunction, args)](./puppeteer.frame.__eval_1.md) |  |  |
-|  [$eval(selector, pageFunction, args)](./puppeteer.frame._eval.md) |  |  |
-|  [$eval(selector, pageFunction, args)](./puppeteer.frame._eval_1.md) |  |  |
-|  [$x(expression)](./puppeteer.frame._x.md) |  | This method evaluates the given XPath expression and returns the results. |
-|  [addScriptTag(options)](./puppeteer.frame.addscripttag.md) |  | Adds a <code>&lt;script&gt;</code> tag into the page with the desired url or content. |
-|  [addStyleTag(options)](./puppeteer.frame.addstyletag.md) |  | Adds a <code>&lt;link rel=&quot;stylesheet&quot;&gt;</code> tag into the page with the desired url or a <code>&lt;style type=&quot;text/css&quot;&gt;</code> tag with the content. |
-|  [childFrames()](./puppeteer.frame.childframes.md) |  |  |
-|  [click(selector, options)](./puppeteer.frame.click.md) |  | This method clicks the first element found that matches <code>selector</code>. |
-|  [content()](./puppeteer.frame.content.md) |  |  |
-|  [evaluate(pageFunction, args)](./puppeteer.frame.evaluate.md) |  |  |
-|  [evaluateHandle(pageFunction, args)](./puppeteer.frame.evaluatehandle.md) |  |  |
-|  [executionContext()](./puppeteer.frame.executioncontext.md) |  |  |
-|  [focus(selector)](./puppeteer.frame.focus.md) |  | This method fetches an element with <code>selector</code> and focuses it. |
-|  [goto(url, options)](./puppeteer.frame.goto.md) |  |  |
-|  [hover(selector)](./puppeteer.frame.hover.md) |  | This method fetches an element with <code>selector</code>, scrolls it into view if needed, and then uses [Page.mouse](./puppeteer.page.mouse.md) to hover over the center of the element. |
-|  [isDetached()](./puppeteer.frame.isdetached.md) |  |  |
-|  [isOOPFrame()](./puppeteer.frame.isoopframe.md) |  |  |
-|  [name()](./puppeteer.frame.name.md) |  |  |
-|  [parentFrame()](./puppeteer.frame.parentframe.md) |  |  |
-|  [select(selector, values)](./puppeteer.frame.select.md) |  | Triggers a <code>change</code> and <code>input</code> event once all the provided options have been selected. |
-|  [setContent(html, options)](./puppeteer.frame.setcontent.md) |  | Set the content of the frame. |
-|  [tap(selector)](./puppeteer.frame.tap.md) |  | This method fetches an element with <code>selector</code>, scrolls it into view if needed, and then uses [Page.touchscreen](./puppeteer.page.touchscreen.md) to tap in the center of the element. |
-|  [title()](./puppeteer.frame.title.md) |  |  |
-|  [type(selector, text, options)](./puppeteer.frame.type.md) |  | Sends a <code>keydown</code>, <code>keypress</code>/<code>input</code>, and <code>keyup</code> event for each character in the text. |
-|  [url()](./puppeteer.frame.url.md) |  |  |
-|  [waitForFunction(pageFunction, options, args)](./puppeteer.frame.waitforfunction.md) |  |  |
-|  [waitForNavigation(options)](./puppeteer.frame.waitfornavigation.md) |  |  |
-|  [waitForSelector(selector, options)](./puppeteer.frame.waitforselector.md) |  |  |
-|  [waitForSelector(selector, options)](./puppeteer.frame.waitforselector_1.md) |  |  |
-|  [waitForTimeout(milliseconds)](./puppeteer.frame.waitfortimeout.md) |  | Causes your script to wait for the given number of milliseconds. |
-|  [waitForXPath(xpath, options)](./puppeteer.frame.waitforxpath.md) |  |  |
-
+| Method                                                                               | Modifiers | Description                                                                                                                                                                                       |
+| ------------------------------------------------------------------------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [$(selector)](./puppeteer.frame._.md)                                                |           | This method queries the frame for the given selector.                                                                                                                                             |
+| [$(selector)](./puppeteer.frame.__1.md)                                              |           |                                                                                                                                                                                                   |
+| [$$(selector)](./puppeteer.frame.__.md)                                              |           | This runs <code>document.querySelectorAll</code> in the frame and returns the result.                                                                                                             |
+| [$$(selector)](./puppeteer.frame.___1.md)                                            |           |                                                                                                                                                                                                   |
+| [$$eval(selector, pageFunction, args)](./puppeteer.frame.__eval.md)                  |           |                                                                                                                                                                                                   |
+| [$$eval(selector, pageFunction, args)](./puppeteer.frame.__eval_1.md)                |           |                                                                                                                                                                                                   |
+| [$eval(selector, pageFunction, args)](./puppeteer.frame._eval.md)                    |           |                                                                                                                                                                                                   |
+| [$eval(selector, pageFunction, args)](./puppeteer.frame._eval_1.md)                  |           |                                                                                                                                                                                                   |
+| [$x(expression)](./puppeteer.frame._x.md)                                            |           | This method evaluates the given XPath expression and returns the results.                                                                                                                         |
+| [addScriptTag(options)](./puppeteer.frame.addscripttag.md)                           |           | Adds a <code>&lt;script&gt;</code> tag into the page with the desired url or content.                                                                                                             |
+| [addStyleTag(options)](./puppeteer.frame.addstyletag.md)                             |           | Adds a <code>&lt;link rel=&quot;stylesheet&quot;&gt;</code> tag into the page with the desired url or a <code>&lt;style type=&quot;text/css&quot;&gt;</code> tag with the content.                |
+| [childFrames()](./puppeteer.frame.childframes.md)                                    |           |                                                                                                                                                                                                   |
+| [click(selector, options)](./puppeteer.frame.click.md)                               |           | This method clicks the first element found that matches <code>selector</code>.                                                                                                                    |
+| [content()](./puppeteer.frame.content.md)                                            |           |                                                                                                                                                                                                   |
+| [evaluate(pageFunction, args)](./puppeteer.frame.evaluate.md)                        |           |                                                                                                                                                                                                   |
+| [evaluateHandle(pageFunction, args)](./puppeteer.frame.evaluatehandle.md)            |           |                                                                                                                                                                                                   |
+| [executionContext()](./puppeteer.frame.executioncontext.md)                          |           |                                                                                                                                                                                                   |
+| [focus(selector)](./puppeteer.frame.focus.md)                                        |           | This method fetches an element with <code>selector</code> and focuses it.                                                                                                                         |
+| [goto(url, options)](./puppeteer.frame.goto.md)                                      |           |                                                                                                                                                                                                   |
+| [hover(selector)](./puppeteer.frame.hover.md)                                        |           | This method fetches an element with <code>selector</code>, scrolls it into view if needed, and then uses [Page.mouse](./puppeteer.page.mouse.md) to hover over the center of the element.         |
+| [isDetached()](./puppeteer.frame.isdetached.md)                                      |           |                                                                                                                                                                                                   |
+| [isOOPFrame()](./puppeteer.frame.isoopframe.md)                                      |           |                                                                                                                                                                                                   |
+| [name()](./puppeteer.frame.name.md)                                                  |           |                                                                                                                                                                                                   |
+| [parentFrame()](./puppeteer.frame.parentframe.md)                                    |           |                                                                                                                                                                                                   |
+| [select(selector, values)](./puppeteer.frame.select.md)                              |           | Triggers a <code>change</code> and <code>input</code> event once all the provided options have been selected.                                                                                     |
+| [setContent(html, options)](./puppeteer.frame.setcontent.md)                         |           | Set the content of the frame.                                                                                                                                                                     |
+| [tap(selector)](./puppeteer.frame.tap.md)                                            |           | This method fetches an element with <code>selector</code>, scrolls it into view if needed, and then uses [Page.touchscreen](./puppeteer.page.touchscreen.md) to tap in the center of the element. |
+| [title()](./puppeteer.frame.title.md)                                                |           |                                                                                                                                                                                                   |
+| [type(selector, text, options)](./puppeteer.frame.type.md)                           |           | Sends a <code>keydown</code>, <code>keypress</code>/<code>input</code>, and <code>keyup</code> event for each character in the text.                                                              |
+| [url()](./puppeteer.frame.url.md)                                                    |           |                                                                                                                                                                                                   |
+| [waitForFunction(pageFunction, options, args)](./puppeteer.frame.waitforfunction.md) |           |                                                                                                                                                                                                   |
+| [waitForNavigation(options)](./puppeteer.frame.waitfornavigation.md)                 |           |                                                                                                                                                                                                   |
+| [waitForSelector(selector, options)](./puppeteer.frame.waitforselector.md)           |           |                                                                                                                                                                                                   |
+| [waitForSelector(selector, options)](./puppeteer.frame.waitforselector_1.md)         |           |                                                                                                                                                                                                   |
+| [waitForTimeout(milliseconds)](./puppeteer.frame.waitfortimeout.md)                  |           | Causes your script to wait for the given number of milliseconds.                                                                                                                                  |
+| [waitForXPath(xpath, options)](./puppeteer.frame.waitforxpath.md)                    |           |                                                                                                                                                                                                   |

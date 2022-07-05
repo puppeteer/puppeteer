@@ -1,6 +1,7 @@
 ---
 sidebar_label: Page.addScriptTag
 ---
+
 # Page.addScriptTag() method
 
 Adds a `<script>` tag into the page with the desired URL or content.
@@ -8,20 +9,22 @@ Adds a `<script>` tag into the page with the desired URL or content.
 **Signature:**
 
 ```typescript
-class Page {addScriptTag(options: {
-        url?: string;
-        path?: string;
-        content?: string;
-        type?: string;
-        id?: string;
-    }): Promise<ElementHandle>;}
+class Page {
+  addScriptTag(options: {
+    url?: string;
+    path?: string;
+    content?: string;
+    type?: string;
+    id?: string;
+  }): Promise<ElementHandle>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  options | { url?: string; path?: string; content?: string; type?: string; id?: string; } |  |
+| Parameter | Type                                                                           | Description |
+| --------- | ------------------------------------------------------------------------------ | ----------- |
+| options   | { url?: string; path?: string; content?: string; type?: string; id?: string; } |             |
 
 **Returns:**
 
@@ -32,4 +35,3 @@ Promise which resolves to the added tag when the script's onload fires or when t
 ## Remarks
 
 Shortcut for [page.mainFrame().addScriptTag(options)](./puppeteer.frame.addscripttag.md).
-

@@ -1,6 +1,7 @@
 ---
 sidebar_label: Page.evaluateOnNewDocument
 ---
+
 # Page.evaluateOnNewDocument() method
 
 Adds a function which would be invoked in one of the following scenarios:
@@ -14,15 +15,20 @@ The function is invoked after the document was created but before any of its scr
 **Signature:**
 
 ```typescript
-class Page {evaluateOnNewDocument<Params extends unknown[], Func extends (...args: Params) => unknown = (...args: Params) => unknown>(pageFunction: Func | string, ...args: Params): Promise<void>;}
+class Page {
+  evaluateOnNewDocument<
+    Params extends unknown[],
+    Func extends (...args: Params) => unknown = (...args: Params) => unknown
+  >(pageFunction: Func | string, ...args: Params): Promise<void>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  pageFunction | Func \| string | Function to be evaluated in browser context |
-|  args | Params | Arguments to pass to <code>pageFunction</code> |
+| Parameter    | Type           | Description                                    |
+| ------------ | -------------- | ---------------------------------------------- |
+| pageFunction | Func \| string | Function to be evaluated in browser context    |
+| args         | Params         | Arguments to pass to <code>pageFunction</code> |
 
 **Returns:**
 
@@ -47,4 +53,3 @@ in same folder of our script
 const preloadFile = fs.readFileSync('./preload.js', 'utf8');
 await page.evaluateOnNewDocument(preloadFile);
 ```
-

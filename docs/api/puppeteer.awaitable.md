@@ -1,8 +1,8 @@
 ---
 sidebar_label: Awaitable
 ---
-# Awaitable type
 
+# Awaitable type
 
 **Signature:**
 

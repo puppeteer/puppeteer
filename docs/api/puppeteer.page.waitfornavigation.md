@@ -1,6 +1,7 @@
 ---
 sidebar_label: Page.waitForNavigation
 ---
+
 # Page.waitForNavigation() method
 
 Waits for the page to navigate to a new URL or to reload. It is useful when you run code that will indirectly cause the page to navigate.
@@ -8,14 +9,16 @@ Waits for the page to navigate to a new URL or to reload. It is useful when you 
 **Signature:**
 
 ```typescript
-class Page {waitForNavigation(options?: WaitForOptions): Promise<HTTPResponse | null>;}
+class Page {
+  waitForNavigation(options?: WaitForOptions): Promise<HTTPResponse | null>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  options | [WaitForOptions](./puppeteer.waitforoptions.md) | <i>(Optional)</i> Navigation parameters which might have the following properties: |
+| Parameter | Type                                            | Description                                                                        |
+| --------- | ----------------------------------------------- | ---------------------------------------------------------------------------------- |
+| options   | [WaitForOptions](./puppeteer.waitforoptions.md) | <i>(Optional)</i> Navigation parameters which might have the following properties: |
 
 **Returns:**
 
@@ -29,11 +32,9 @@ Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/Hist
 
 ## Example
 
-
 ```ts
 const [response] = await Promise.all([
-page.waitForNavigation(), // The promise resolves after navigation has finished
-page.click('a.my-link'), // Clicking the link will indirectly cause a navigation
+  page.waitForNavigation(), // The promise resolves after navigation has finished
+  page.click('a.my-link'), // Clicking the link will indirectly cause a navigation
 ]);
 ```
-

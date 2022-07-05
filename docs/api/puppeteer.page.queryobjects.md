@@ -1,6 +1,7 @@
 ---
 sidebar_label: Page.queryObjects
 ---
+
 # Page.queryObjects() method
 
 This method iterates the JavaScript heap and finds all objects with the given prototype.
@@ -8,14 +9,18 @@ This method iterates the JavaScript heap and finds all objects with the given pr
 **Signature:**
 
 ```typescript
-class Page {queryObjects<Prototype>(prototypeHandle: JSHandle<Prototype>): Promise<JSHandle<Prototype[]>>;}
+class Page {
+  queryObjects<Prototype>(
+    prototypeHandle: JSHandle<Prototype>
+  ): Promise<JSHandle<Prototype[]>>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  prototypeHandle | [JSHandle](./puppeteer.jshandle.md)&lt;Prototype&gt; | a handle to the object prototype. |
+| Parameter       | Type                                                 | Description                       |
+| --------------- | ---------------------------------------------------- | --------------------------------- |
+| prototypeHandle | [JSHandle](./puppeteer.jshandle.md)&lt;Prototype&gt; | a handle to the object prototype. |
 
 **Returns:**
 
@@ -29,10 +34,9 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
 
 ## Example
 
-
 ```ts
 // Create a Map object
-await page.evaluate(() => window.map = new Map());
+await page.evaluate(() => (window.map = new Map()));
 // Get a handle to the Map object prototype
 const mapPrototype = await page.evaluateHandle(() => Map.prototype);
 // Query all map instances into an array
@@ -42,4 +46,3 @@ const count = await page.evaluate(maps => maps.length, mapInstances);
 await mapInstances.dispose();
 await mapPrototype.dispose();
 ```
-

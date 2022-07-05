@@ -1,6 +1,7 @@
 ---
 sidebar_label: Mouse.wheel
 ---
+
 # Mouse.wheel() method
 
 Dispatches a `mousewheel` event.
@@ -8,14 +9,16 @@ Dispatches a `mousewheel` event.
 **Signature:**
 
 ```typescript
-class Mouse {wheel(options?: MouseWheelOptions): Promise<void>;}
+class Mouse {
+  wheel(options?: MouseWheelOptions): Promise<void>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  options | [MouseWheelOptions](./puppeteer.mousewheeloptions.md) | <i>(Optional)</i> Optional: <code>MouseWheelOptions</code>. |
+| Parameter | Type                                                  | Description                                                 |
+| --------- | ----------------------------------------------------- | ----------------------------------------------------------- |
+| options   | [MouseWheelOptions](./puppeteer.mousewheeloptions.md) | <i>(Optional)</i> Optional: <code>MouseWheelOptions</code>. |
 
 **Returns:**
 
@@ -26,7 +29,9 @@ Promise&lt;void&gt;
 An example of zooming into an element:
 
 ```ts
-await page.goto('https://mdn.mozillademos.org/en-US/docs/Web/API/Element/wheel_event$samples/Scaling_an_element_via_the_wheel?revision=1587366');
+await page.goto(
+  'https://mdn.mozillademos.org/en-US/docs/Web/API/Element/wheel_event$samples/Scaling_an_element_via_the_wheel?revision=1587366'
+);
 
 const elem = await page.$('div');
 const boundingBox = await elem.boundingBox();
@@ -35,6 +40,5 @@ await page.mouse.move(
   boundingBox.y + boundingBox.height / 2
 );
 
-await page.mouse.wheel({ deltaY: -100 })
+await page.mouse.wheel({deltaY: -100});
 ```
-

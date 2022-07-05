@@ -1,6 +1,3 @@
-<!-- docusaurus-metadata-start -->
-<!-- docusaurus-metadata-end -->
-
 # Puppeteer
 
 <!-- [START badges] -->

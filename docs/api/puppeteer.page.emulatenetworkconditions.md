@@ -1,19 +1,24 @@
 ---
 sidebar_label: Page.emulateNetworkConditions
 ---
+
 # Page.emulateNetworkConditions() method
 
 **Signature:**
 
 ```typescript
-class Page {emulateNetworkConditions(networkConditions: NetworkConditions | null): Promise<void>;}
+class Page {
+  emulateNetworkConditions(
+    networkConditions: NetworkConditions | null
+  ): Promise<void>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  networkConditions | [NetworkConditions](./puppeteer.networkconditions.md) \| null | Passing <code>null</code> disables network condition emulation. |
+| Parameter         | Type                                                          | Description                                                     |
+| ----------------- | ------------------------------------------------------------- | --------------------------------------------------------------- |
+| networkConditions | [NetworkConditions](./puppeteer.networkconditions.md) \| null | Passing <code>null</code> disables network condition emulation. |
 
 **Returns:**
 
@@ -25,18 +30,16 @@ NOTE: This does not affect WebSockets and WebRTC PeerConnections (see https://cr
 
 ## Example
 
-
 ```ts
 const puppeteer = require('puppeteer');
 const slow3G = puppeteer.networkConditions['Slow 3G'];
 
 (async () => {
-const browser = await puppeteer.launch();
-const page = await browser.newPage();
-await page.emulateNetworkConditions(slow3G);
-await page.goto('https://www.google.com');
-// other actions...
-await browser.close();
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.emulateNetworkConditions(slow3G);
+  await page.goto('https://www.google.com');
+  // other actions...
+  await browser.close();
 })();
 ```
-

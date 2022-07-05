@@ -1,6 +1,7 @@
 ---
 sidebar_label: LaunchOptions.channel
 ---
+
 # LaunchOptions.channel property
 
 Chrome Release Channel
@@ -8,5 +9,7 @@ Chrome Release Channel
 **Signature:**
 
 ```typescript
-interface LaunchOptions {channel?: ChromeReleaseChannel;}
+interface LaunchOptions {
+  channel?: ChromeReleaseChannel;
+}
 ```

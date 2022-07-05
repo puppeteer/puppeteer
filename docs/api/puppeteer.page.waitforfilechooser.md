@@ -1,6 +1,7 @@
 ---
 sidebar_label: Page.waitForFileChooser
 ---
+
 # Page.waitForFileChooser() method
 
 This method is typically coupled with an action that triggers file choosing.
@@ -14,14 +15,16 @@ This must be called before the file chooser is launched. It will not return a cu
 **Signature:**
 
 ```typescript
-class Page {waitForFileChooser(options?: WaitTimeoutOptions): Promise<FileChooser>;}
+class Page {
+  waitForFileChooser(options?: WaitTimeoutOptions): Promise<FileChooser>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  options | [WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md) | <i>(Optional)</i> |
+| Parameter | Type                                                    | Description       |
+| --------- | ------------------------------------------------------- | ----------------- |
+| options   | [WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md) | <i>(Optional)</i> |
 
 **Returns:**
 
@@ -37,10 +40,9 @@ The following example clicks a button that issues a file chooser and then respon
 
 ```ts
 const [fileChooser] = await Promise.all([
-page.waitForFileChooser(),
-page.click('#upload-file-button'),
-// some button that triggers file selection
+  page.waitForFileChooser(),
+  page.click('#upload-file-button'),
+  // some button that triggers file selection
 ]);
 await fileChooser.accept(['/tmp/myfile.pdf']);
 ```
-

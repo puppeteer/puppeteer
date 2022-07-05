@@ -1,13 +1,17 @@
 ---
 sidebar_label: BrowserFetcher.localRevisions
 ---
+
 # BrowserFetcher.localRevisions() method
 
 **Signature:**
 
 ```typescript
-class BrowserFetcher {localRevisions(): Promise<string[]>;}
+class BrowserFetcher {
+  localRevisions(): Promise<string[]>;
+}
 ```
+
 **Returns:**
 
 Promise&lt;string\[\]&gt;
@@ -17,4 +21,3 @@ A promise with a list of all revision strings (for the current `product`) availa
 ## Remarks
 
 This method is affected by the current `product`.
-

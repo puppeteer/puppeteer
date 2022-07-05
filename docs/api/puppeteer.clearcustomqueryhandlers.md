@@ -1,6 +1,7 @@
 ---
 sidebar_label: clearCustomQueryHandlers
 ---
+
 # clearCustomQueryHandlers() function
 
 Clears all registered handlers.
@@ -10,7 +11,7 @@ Clears all registered handlers.
 ```typescript
 export declare function clearCustomQueryHandlers(): void;
 ```
+
 **Returns:**
 
 void
-
