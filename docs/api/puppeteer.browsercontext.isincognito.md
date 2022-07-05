@@ -1,7 +1,6 @@
 ---
 sidebar_label: BrowserContext.isIncognito
 ---
-
 # BrowserContext.isIncognito() method
 
 Returns whether BrowserContext is incognito. The default browser context is the only non-incognito browser context.
@@ -9,11 +8,8 @@ Returns whether BrowserContext is incognito. The default browser context is the 
 **Signature:**
 
 ```typescript
-class BrowserContext {
-  isIncognito(): boolean;
-}
+class BrowserContext {isIncognito(): boolean;}
 ```
-
 **Returns:**
 
 boolean
@@ -21,3 +17,4 @@ boolean
 ## Remarks
 
 The default browser context cannot be closed.
+

@@ -1,7 +1,6 @@
 ---
 sidebar_label: defaultArgs
 ---
-
 # defaultArgs variable
 
 **Signature:**

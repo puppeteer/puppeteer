@@ -1,7 +1,6 @@
 ---
 sidebar_label: HTTPRequest.continue
 ---
-
 # HTTPRequest.continue() method
 
 Continues request with optional request overrides.
@@ -9,20 +8,15 @@ Continues request with optional request overrides.
 **Signature:**
 
 ```typescript
-class HTTPRequest {
-  continue(
-    overrides?: ContinueRequestOverrides,
-    priority?: number
-  ): Promise<void>;
-}
+class HTTPRequest {continue(overrides?: ContinueRequestOverrides, priority?: number): Promise<void>;}
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                | Description                                                                                                                          |
-| --------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| overrides | [ContinueRequestOverrides](./puppeteer.continuerequestoverrides.md) | <i>(Optional)</i> optional overrides to apply to the request.                                                                        |
-| priority  | number                                                              | <i>(Optional)</i> If provided, intercept is resolved using cooperative handling rules. Otherwise, intercept is resolved immediately. |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  overrides | [ContinueRequestOverrides](./puppeteer.continuerequestoverrides.md) | <i>(Optional)</i> optional overrides to apply to the request. |
+|  priority | number | <i>(Optional)</i> If provided, intercept is resolved using cooperative handling rules. Otherwise, intercept is resolved immediately. |
 
 **Returns:**
 
@@ -36,6 +30,7 @@ Exception is immediately thrown if the request interception is not enabled.
 
 ## Example
 
+
 ```ts
 await page.setRequestInterception(true);
 page.on('request', request => {
@@ -47,3 +42,4 @@ page.on('request', request => {
   request.continue({headers});
 });
 ```
+

@@ -38,6 +38,12 @@ const config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
+  scripts: [
+    {
+      src: '/js/sw.js',
+      async: false,
+    },
+  ],
   presets: [
     [
       'classic',
@@ -67,7 +73,7 @@ const config = {
                   const [namespace, object] = item.label.split('.');
                   const currentItem = newItems[newItems.length - 1];
                   if (
-                    !currentItem || 
+                    !currentItem ||
                     !('label' in currentItem) ||
                     currentItem.label !== namespace
                   ) {
@@ -128,7 +134,7 @@ const config = {
           },
           {
             type: 'search',
-            position: 'right'
+            position: 'right',
           },
         ],
       },
@@ -160,17 +166,17 @@ const config = {
         darkTheme: darkCodeTheme,
       },
     }),
-    themes: [
-      // ... Your other themes.
-      [
-        require.resolve("@easyops-cn/docusaurus-search-local"),
-        {
-          docsDir: DOC_PATH,
-          docsRouteBasePath: DOC_ROUTE_BASE_PATH,
-          hashed: true,
-        },
-      ],
+  themes: [
+    // ... Your other themes.
+    [
+      require.resolve('@easyops-cn/docusaurus-search-local'),
+      {
+        docsDir: DOC_PATH,
+        docsRouteBasePath: DOC_ROUTE_BASE_PATH,
+        hashed: true,
+      },
     ],
+  ],
 };
 
 module.exports = config;

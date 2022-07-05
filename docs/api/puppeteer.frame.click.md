@@ -1,7 +1,6 @@
 ---
 sidebar_label: Frame.click
 ---
-
 # Frame.click() method
 
 This method clicks the first element found that matches `selector`.
@@ -9,24 +8,19 @@ This method clicks the first element found that matches `selector`.
 **Signature:**
 
 ```typescript
-class Frame {
-  click(
-    selector: string,
-    options?: {
-      delay?: number;
-      button?: MouseButton;
-      clickCount?: number;
-    }
-  ): Promise<void>;
-}
+class Frame {click(selector: string, options?: {
+        delay?: number;
+        button?: MouseButton;
+        clickCount?: number;
+    }): Promise<void>;}
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                         | Description                                                                                     |
-| --------- | -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| selector  | string                                                                                       | the selector to search for to click. If there are multiple elements, the first will be clicked. |
-| options   | { delay?: number; button?: [MouseButton](./puppeteer.mousebutton.md); clickCount?: number; } | <i>(Optional)</i>                                                                               |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  selector | string | the selector to search for to click. If there are multiple elements, the first will be clicked. |
+|  options | { delay?: number; button?: [MouseButton](./puppeteer.mousebutton.md); clickCount?: number; } | <i>(Optional)</i> |
 
 **Returns:**
 
@@ -44,3 +38,4 @@ const [response] = await Promise.all([
   frame.click(selector, clickOptions),
 ]);
 ```
+

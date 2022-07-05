@@ -1,7 +1,6 @@
 ---
 sidebar_label: unregisterCustomQueryHandler
 ---
-
 # unregisterCustomQueryHandler() function
 
 **Signature:**
@@ -12,10 +11,11 @@ export declare function unregisterCustomQueryHandler(name: string): void;
 
 ## Parameters
 
-| Parameter | Type   | Description                                    |
-| --------- | ------ | ---------------------------------------------- |
-| name      | string | The name of the query handler to unregistered. |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  name | string | The name of the query handler to unregistered. |
 
 **Returns:**
 
 void
+

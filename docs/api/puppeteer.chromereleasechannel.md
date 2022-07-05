@@ -1,15 +1,11 @@
 ---
 sidebar_label: ChromeReleaseChannel
 ---
-
 # ChromeReleaseChannel type
+
 
 **Signature:**
 
 ```typescript
-export declare type ChromeReleaseChannel =
-  | 'chrome'
-  | 'chrome-beta'
-  | 'chrome-canary'
-  | 'chrome-dev';
+export declare type ChromeReleaseChannel = 'chrome' | 'chrome-beta' | 'chrome-canary' | 'chrome-dev';
 ```

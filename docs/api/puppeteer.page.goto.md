@@ -1,28 +1,22 @@
 ---
 sidebar_label: Page.goto
 ---
-
 # Page.goto() method
 
 **Signature:**
 
 ```typescript
-class Page {
-  goto(
-    url: string,
-    options?: WaitForOptions & {
-      referer?: string;
-    }
-  ): Promise<HTTPResponse | null>;
-}
+class Page {goto(url: string, options?: WaitForOptions & {
+        referer?: string;
+    }): Promise<HTTPResponse | null>;}
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                        | Description                                                                        |
-| --------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| url       | string                                                                      | URL to navigate page to. The URL should include scheme, e.g. <code>https://</code> |
-| options   | [WaitForOptions](./puppeteer.waitforoptions.md) &amp; { referer?: string; } | <i>(Optional)</i> Navigation Parameter                                             |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  url | string | URL to navigate page to. The URL should include scheme, e.g. <code>https://</code> |
+|  options | [WaitForOptions](./puppeteer.waitforoptions.md) &amp; { referer?: string; } | <i>(Optional)</i> Navigation Parameter |
 
 **Returns:**
 
@@ -49,3 +43,4 @@ NOTE: `page.goto` either throws an error or returns a main resource response. Th
 NOTE: Headless mode doesn't support navigation to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
 
 Shortcut for [page.mainFrame().goto(url, options)](./puppeteer.frame.goto.md).
+

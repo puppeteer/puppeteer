@@ -1,7 +1,6 @@
 ---
 sidebar_label: TimeoutError
 ---
-
 # TimeoutError class
 
 TimeoutError is emitted whenever certain operations are terminated due to timeout.
@@ -9,11 +8,11 @@ TimeoutError is emitted whenever certain operations are terminated due to timeou
 **Signature:**
 
 ```typescript
-export declare class TimeoutError extends CustomError
+export declare class TimeoutError extends CustomError 
 ```
-
 **Extends:** [CustomError](./puppeteer.customerror.md)
 
 ## Remarks
 
-Example operations are or [puppeteer.launch](./puppeteer.puppeteernode.launch.md).
+Example operations are  or [puppeteer.launch](./puppeteer.puppeteernode.launch.md).
+

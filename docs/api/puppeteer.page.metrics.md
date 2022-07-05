@@ -1,17 +1,13 @@
 ---
 sidebar_label: Page.metrics
 ---
-
 # Page.metrics() method
 
 **Signature:**
 
 ```typescript
-class Page {
-  metrics(): Promise<Metrics>;
-}
+class Page {metrics(): Promise<Metrics>;}
 ```
-
 **Returns:**
 
 Promise&lt;[Metrics](./puppeteer.metrics.md)&gt;
@@ -47,3 +43,4 @@ Object containing metrics as key/value pairs.
 ## Remarks
 
 NOTE: All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
+

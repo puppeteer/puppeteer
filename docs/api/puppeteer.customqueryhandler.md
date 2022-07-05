@@ -1,7 +1,6 @@
 ---
 sidebar_label: CustomQueryHandler
 ---
-
 # CustomQueryHandler interface
 
 Contains two functions `queryOne` and `queryAll` that can be [registered](./puppeteer.registercustomqueryhandler.md) as alternative querying strategies. The functions `queryOne` and `queryAll` are executed in the page context. `queryOne` should take an `Element` and a selector string as argument and return a single `Element` or `null` if no element is found. `queryAll` takes the same arguments but should instead return a `NodeListOf<Element>` or `Array<Element>` with all the elements that match the given query selector.
@@ -9,12 +8,13 @@ Contains two functions `queryOne` and `queryAll` that can be [registered](./pupp
 **Signature:**
 
 ```typescript
-export interface CustomQueryHandler
+export interface CustomQueryHandler 
 ```
 
 ## Properties
 
-| Property                                                | Modifiers | Type                                                                                            | Description       |
-| ------------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------- | ----------------- |
-| [queryAll?](./puppeteer.customqueryhandler.queryall.md) |           | (element: Element \| Document, selector: string) =&gt; Element\[\] \| NodeListOf&lt;Element&gt; | <i>(Optional)</i> |
-| [queryOne?](./puppeteer.customqueryhandler.queryone.md) |           | (element: Element \| Document, selector: string) =&gt; Element \| null                          | <i>(Optional)</i> |
+|  Property | Modifiers | Type | Description |
+|  --- | --- | --- | --- |
+|  [queryAll?](./puppeteer.customqueryhandler.queryall.md) |  | (element: Element \| Document, selector: string) =&gt; Element\[\] \| NodeListOf&lt;Element&gt; | <i>(Optional)</i> |
+|  [queryOne?](./puppeteer.customqueryhandler.queryone.md) |  | (element: Element \| Document, selector: string) =&gt; Element \| null | <i>(Optional)</i> |
+

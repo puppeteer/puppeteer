@@ -1,7 +1,6 @@
 ---
 sidebar_label: Coverage
 ---
-
 # Coverage class
 
 The Coverage class provides methods to gathers information about parts of JavaScript and CSS that were used by the page.
@@ -9,7 +8,7 @@ The Coverage class provides methods to gathers information about parts of JavaSc
 **Signature:**
 
 ```typescript
-export declare class Coverage
+export declare class Coverage 
 ```
 
 ## Remarks
@@ -24,7 +23,7 @@ An example of using JavaScript and CSS coverage to get percentage of initially e
 // Enable both JavaScript and CSS coverage
 await Promise.all([
   page.coverage.startJSCoverage(),
-  page.coverage.startCSSCoverage(),
+  page.coverage.startCSSCoverage()
 ]);
 // Navigate to page
 await page.goto('https://example.com');
@@ -38,22 +37,24 @@ let usedBytes = 0;
 const coverage = [...jsCoverage, ...cssCoverage];
 for (const entry of coverage) {
   totalBytes += entry.text.length;
-  for (const range of entry.ranges) usedBytes += range.end - range.start - 1;
+  for (const range of entry.ranges)
+    usedBytes += range.end - range.start - 1;
 }
-console.log(`Bytes used: ${(usedBytes / totalBytes) * 100}%`);
+console.log(`Bytes used: ${usedBytes / totalBytes * 100}%`);
 ```
 
 ## Constructors
 
-| Constructor                                                    | Modifiers | Description                                                  |
-| -------------------------------------------------------------- | --------- | ------------------------------------------------------------ |
-| [(constructor)(client)](./puppeteer.coverage._constructor_.md) |           | Constructs a new instance of the <code>Coverage</code> class |
+|  Constructor | Modifiers | Description |
+|  --- | --- | --- |
+|  [(constructor)(client)](./puppeteer.coverage._constructor_.md) |  | Constructs a new instance of the <code>Coverage</code> class |
 
 ## Methods
 
-| Method                                                                | Modifiers | Description |
-| --------------------------------------------------------------------- | --------- | ----------- |
-| [startCSSCoverage(options)](./puppeteer.coverage.startcsscoverage.md) |           |             |
-| [startJSCoverage(options)](./puppeteer.coverage.startjscoverage.md)   |           |             |
-| [stopCSSCoverage()](./puppeteer.coverage.stopcsscoverage.md)          |           |             |
-| [stopJSCoverage()](./puppeteer.coverage.stopjscoverage.md)            |           |             |
+|  Method | Modifiers | Description |
+|  --- | --- | --- |
+|  [startCSSCoverage(options)](./puppeteer.coverage.startcsscoverage.md) |  |  |
+|  [startJSCoverage(options)](./puppeteer.coverage.startjscoverage.md) |  |  |
+|  [stopCSSCoverage()](./puppeteer.coverage.stopcsscoverage.md) |  |  |
+|  [stopJSCoverage()](./puppeteer.coverage.stopjscoverage.md) |  |  |
+

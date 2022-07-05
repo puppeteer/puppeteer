@@ -1,7 +1,6 @@
 ---
 sidebar_label: Page.setGeolocation
 ---
-
 # Page.setGeolocation() method
 
 Sets the page's geolocation.
@@ -9,16 +8,14 @@ Sets the page's geolocation.
 **Signature:**
 
 ```typescript
-class Page {
-  setGeolocation(options: GeolocationOptions): Promise<void>;
-}
+class Page {setGeolocation(options: GeolocationOptions): Promise<void>;}
 ```
 
 ## Parameters
 
-| Parameter | Type                                                    | Description |
-| --------- | ------------------------------------------------------- | ----------- |
-| options   | [GeolocationOptions](./puppeteer.geolocationoptions.md) |             |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  options | [GeolocationOptions](./puppeteer.geolocationoptions.md) |  |
 
 **Returns:**
 
@@ -30,6 +27,8 @@ NOTE: Consider using [BrowserContext.overridePermissions()](./puppeteer.browserc
 
 ## Example
 
+
 ```ts
 await page.setGeolocation({latitude: 59.95, longitude: 30.31667});
 ```
+

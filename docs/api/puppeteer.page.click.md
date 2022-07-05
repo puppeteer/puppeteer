@@ -1,7 +1,6 @@
 ---
 sidebar_label: Page.click
 ---
-
 # Page.click() method
 
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [Page.mouse](./puppeteer.page.mouse.md) to click in the center of the element. If there's no element matching `selector`, the method throws an error.
@@ -9,24 +8,19 @@ This method fetches an element with `selector`, scrolls it into view if needed, 
 **Signature:**
 
 ```typescript
-class Page {
-  click(
-    selector: string,
-    options?: {
-      delay?: number;
-      button?: MouseButton;
-      clickCount?: number;
-    }
-  ): Promise<void>;
-}
+class Page {click(selector: string, options?: {
+        delay?: number;
+        button?: MouseButton;
+        clickCount?: number;
+    }): Promise<void>;}
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                         | Description                                                                                                                                            |
-| --------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| selector  | string                                                                                       | A <code>selector</code> to search for element to click. If there are multiple elements satisfying the <code>selector</code>, the first will be clicked |
-| options   | { delay?: number; button?: [MouseButton](./puppeteer.mousebutton.md); clickCount?: number; } | <i>(Optional)</i> <code>Object</code>                                                                                                                  |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  selector | string | A <code>selector</code> to search for element to click. If there are multiple elements satisfying the <code>selector</code>, the first will be clicked |
+|  options | { delay?: number; button?: [MouseButton](./puppeteer.mousebutton.md); clickCount?: number; } | <i>(Optional)</i> <code>Object</code> |
 
 **Returns:**
 
@@ -40,9 +34,9 @@ Bear in mind that if `click()` triggers a navigation event and there's a separat
 
 ```ts
 const [response] = await Promise.all([
-  page.waitForNavigation(waitOptions),
-  page.click(selector, clickOptions),
+page.waitForNavigation(waitOptions),
+page.click(selector, clickOptions),
 ]);
 ```
-
 Shortcut for [page.mainFrame().click(selector\[, options\])](./puppeteer.frame.click.md).
+

@@ -1,13 +1,10 @@
 ---
 sidebar_label: WaitForSelectorOptions.root
 ---
-
 # WaitForSelectorOptions.root property
 
 **Signature:**
 
 ```typescript
-interface WaitForSelectorOptions {
-  root?: ElementHandle;
-}
+interface WaitForSelectorOptions {root?: ElementHandle;}
 ```

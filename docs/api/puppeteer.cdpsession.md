@@ -1,7 +1,6 @@
 ---
 sidebar_label: CDPSession
 ---
-
 # CDPSession class
 
 The `CDPSession` instances are used to talk raw Chrome Devtools Protocol.
@@ -9,9 +8,8 @@ The `CDPSession` instances are used to talk raw Chrome Devtools Protocol.
 **Signature:**
 
 ```typescript
-export declare class CDPSession extends EventEmitter
+export declare class CDPSession extends EventEmitter 
 ```
-
 **Extends:** [EventEmitter](./puppeteer.eventemitter.md)
 
 ## Remarks
@@ -24,24 +22,24 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Example
 
+
 ```ts
 const client = await page.target().createCDPSession();
 await client.send('Animation.enable');
-client.on('Animation.animationCreated', () =>
-  console.log('Animation created!')
-);
+client.on('Animation.animationCreated', () => console.log('Animation created!'));
 const response = await client.send('Animation.getPlaybackRate');
 console.log('playback rate is ' + response.playbackRate);
 await client.send('Animation.setPlaybackRate', {
-  playbackRate: response.playbackRate / 2,
+  playbackRate: response.playbackRate / 2
 });
 ```
 
 ## Methods
 
-| Method                                                    | Modifiers | Description                                                                                                                             |
-| --------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| [connection()](./puppeteer.cdpsession.connection.md)      |           |                                                                                                                                         |
-| [detach()](./puppeteer.cdpsession.detach.md)              |           | Detaches the cdpSession from the target. Once detached, the cdpSession object won't emit any events and can't be used to send messages. |
-| [id()](./puppeteer.cdpsession.id.md)                      |           | Returns the session's id.                                                                                                               |
-| [send(method, paramArgs)](./puppeteer.cdpsession.send.md) |           |                                                                                                                                         |
+|  Method | Modifiers | Description |
+|  --- | --- | --- |
+|  [connection()](./puppeteer.cdpsession.connection.md) |  |  |
+|  [detach()](./puppeteer.cdpsession.detach.md) |  | Detaches the cdpSession from the target. Once detached, the cdpSession object won't emit any events and can't be used to send messages. |
+|  [id()](./puppeteer.cdpsession.id.md) |  | Returns the session's id. |
+|  [send(method, paramArgs)](./puppeteer.cdpsession.send.md) |  |  |
+

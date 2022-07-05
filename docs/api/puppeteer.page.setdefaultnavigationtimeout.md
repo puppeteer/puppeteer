@@ -1,7 +1,6 @@
 ---
 sidebar_label: Page.setDefaultNavigationTimeout
 ---
-
 # Page.setDefaultNavigationTimeout() method
 
 This setting will change the default maximum navigation time for the following methods and related shortcuts:
@@ -21,17 +20,16 @@ This setting will change the default maximum navigation time for the following m
 **Signature:**
 
 ```typescript
-class Page {
-  setDefaultNavigationTimeout(timeout: number): void;
-}
+class Page {setDefaultNavigationTimeout(timeout: number): void;}
 ```
 
 ## Parameters
 
-| Parameter | Type   | Description                              |
-| --------- | ------ | ---------------------------------------- |
-| timeout   | number | Maximum navigation time in milliseconds. |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  timeout | number | Maximum navigation time in milliseconds. |
 
 **Returns:**
 
 void
+

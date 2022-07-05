@@ -1,6 +1,5 @@
----
-sidebar_position: 1
----
+<!-- docusaurus-metadata-start -->
+<!-- docusaurus-metadata-end -->
 
 # Puppeteer
 

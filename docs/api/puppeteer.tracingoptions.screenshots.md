@@ -1,13 +1,10 @@
 ---
 sidebar_label: TracingOptions.screenshots
 ---
-
 # TracingOptions.screenshots property
 
 **Signature:**
 
 ```typescript
-interface TracingOptions {
-  screenshots?: boolean;
-}
+interface TracingOptions {screenshots?: boolean;}
 ```

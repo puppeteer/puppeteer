@@ -1,7 +1,6 @@
 ---
 sidebar_label: launch
 ---
-
 # launch variable
 
 **Signature:**

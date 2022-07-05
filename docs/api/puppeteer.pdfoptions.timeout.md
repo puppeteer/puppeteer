@@ -1,7 +1,6 @@
 ---
 sidebar_label: PDFOptions.timeout
 ---
-
 # PDFOptions.timeout property
 
 Timeout in milliseconds
@@ -9,7 +8,5 @@ Timeout in milliseconds
 **Signature:**
 
 ```typescript
-interface PDFOptions {
-  timeout?: number;
-}
+interface PDFOptions {timeout?: number;}
 ```

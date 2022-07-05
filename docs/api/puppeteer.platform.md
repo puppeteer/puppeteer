@@ -1,7 +1,6 @@
 ---
 sidebar_label: Platform
 ---
-
 # Platform type
 
 Supported platforms.

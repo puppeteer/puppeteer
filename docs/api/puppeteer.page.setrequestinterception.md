@@ -1,22 +1,19 @@
 ---
 sidebar_label: Page.setRequestInterception
 ---
-
 # Page.setRequestInterception() method
 
 **Signature:**
 
 ```typescript
-class Page {
-  setRequestInterception(value: boolean): Promise<void>;
-}
+class Page {setRequestInterception(value: boolean): Promise<void>;}
 ```
 
 ## Parameters
 
-| Parameter | Type    | Description                             |
-| --------- | ------- | --------------------------------------- |
-| value     | boolean | Whether to enable request interception. |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  value | boolean | Whether to enable request interception. |
 
 **Returns:**
 
@@ -39,16 +36,15 @@ const puppeteer = require('puppeteer');
   const page = await browser.newPage();
   await page.setRequestInterception(true);
   page.on('request', interceptedRequest => {
-    if (
-      interceptedRequest.url().endsWith('.png') ||
-      interceptedRequest.url().endsWith('.jpg')
-    )
+    if (interceptedRequest.url().endsWith('.png') ||
+        interceptedRequest.url().endsWith('.jpg'))
       interceptedRequest.abort();
-    else interceptedRequest.continue();
-  });
+    else
+      interceptedRequest.continue();
+    });
   await page.goto('https://example.com');
   await browser.close();
 })();
 ```
-
 NOTE: Enabling request interception disables page caching.
+

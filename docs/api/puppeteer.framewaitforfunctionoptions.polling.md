@@ -1,7 +1,6 @@
 ---
 sidebar_label: FrameWaitForFunctionOptions.polling
 ---
-
 # FrameWaitForFunctionOptions.polling property
 
 An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it can be one of the following values:
@@ -13,7 +12,5 @@ An interval at which the `pageFunction` is executed, defaults to `raf`. If `poll
 **Signature:**
 
 ```typescript
-interface FrameWaitForFunctionOptions {
-  polling?: string | number;
-}
+interface FrameWaitForFunctionOptions {polling?: string | number;}
 ```

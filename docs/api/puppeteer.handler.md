@@ -1,8 +1,8 @@
 ---
 sidebar_label: Handler
 ---
-
 # Handler type
+
 
 **Signature:**
 

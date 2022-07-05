@@ -1,7 +1,6 @@
 ---
 sidebar_label: HTTPRequest.respond
 ---
-
 # HTTPRequest.respond() method
 
 Fulfills a request with the given response.
@@ -9,20 +8,15 @@ Fulfills a request with the given response.
 **Signature:**
 
 ```typescript
-class HTTPRequest {
-  respond(
-    response: Partial<ResponseForRequest>,
-    priority?: number
-  ): Promise<void>;
-}
+class HTTPRequest {respond(response: Partial<ResponseForRequest>, priority?: number): Promise<void>;}
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                   | Description                                                                                                                          |
-| --------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| response  | Partial&lt;[ResponseForRequest](./puppeteer.responseforrequest.md)&gt; | the response to fulfill the request with.                                                                                            |
-| priority  | number                                                                 | <i>(Optional)</i> If provided, intercept is resolved using cooperative handling rules. Otherwise, intercept is resolved immediately. |
+|  Parameter | Type | Description |
+|  --- | --- | --- |
+|  response | Partial&lt;[ResponseForRequest](./puppeteer.responseforrequest.md)&gt; | the response to fulfill the request with. |
+|  priority | number | <i>(Optional)</i> If provided, intercept is resolved using cooperative handling rules. Otherwise, intercept is resolved immediately. |
 
 **Returns:**
 
@@ -44,9 +38,9 @@ page.on('request', request => {
   request.respond({
     status: 404,
     contentType: 'text/plain',
-    body: 'Not Found!',
+    body: 'Not Found!'
   });
 });
 ```
-
 NOTE: Mocking responses for dataURL requests is not supported. Calling `request.respond` for a dataURL request is a noop.
+
