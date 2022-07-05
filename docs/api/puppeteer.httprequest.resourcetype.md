@@ -1,6 +1,7 @@
 ---
 sidebar_label: HTTPRequest.resourceType
 ---
+
 # HTTPRequest.resourceType() method
 
 Contains the request's resource type as it was perceived by the rendering engine.
@@ -8,9 +9,11 @@ Contains the request's resource type as it was perceived by the rendering engine
 **Signature:**
 
 ```typescript
-class HTTPRequest {resourceType(): ResourceType;}
+class HTTPRequest {
+  resourceType(): ResourceType;
+}
 ```
+
 **Returns:**
 
 [ResourceType](./puppeteer.resourcetype.md)
-

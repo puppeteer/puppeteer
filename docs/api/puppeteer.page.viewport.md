@@ -1,13 +1,17 @@
 ---
 sidebar_label: Page.viewport
 ---
+
 # Page.viewport() method
 
 **Signature:**
 
 ```typescript
-class Page {viewport(): Viewport | null;}
+class Page {
+  viewport(): Viewport | null;
+}
 ```
+
 **Returns:**
 
 [Viewport](./puppeteer.viewport.md) \| null
@@ -23,4 +27,3 @@ class Page {viewport(): Viewport | null;}
 - `hasTouch`: Specifies if viewport supports touch events. Defaults to `false`.
 
 - `isLandScape`: Specifies if viewport is in landscape mode. Defaults to `false`.
-

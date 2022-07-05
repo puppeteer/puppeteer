@@ -1,6 +1,7 @@
 ---
 sidebar_label: networkConditions
 ---
+
 # networkConditions variable
 
 A list of network conditions to be used with `page.emulateNetworkConditions(networkConditions)`. Actual list of predefined conditions can be found in [src/common/NetworkConditions.ts](https://github.com/puppeteer/puppeteer/blob/main/src/common/NetworkConditions.ts).
@@ -16,7 +17,6 @@ networkConditions: Readonly<{
 
 ## Example
 
-
 ```ts
 const puppeteer = require('puppeteer');
 const slow3G = puppeteer.networkConditions['Slow 3G'];
@@ -30,4 +30,3 @@ const slow3G = puppeteer.networkConditions['Slow 3G'];
   await browser.close();
 })();
 ```
-

@@ -1,6 +1,7 @@
 ---
 sidebar_label: PuppeteerNode.launch
 ---
+
 # PuppeteerNode.launch() method
 
 Launches puppeteer and launches a browser instance with given arguments and options when specified.
@@ -8,14 +9,16 @@ Launches puppeteer and launches a browser instance with given arguments and opti
 **Signature:**
 
 ```typescript
-class PuppeteerNode {launch(options?: PuppeteerLaunchOptions): Promise<Browser>;}
+class PuppeteerNode {
+  launch(options?: PuppeteerLaunchOptions): Promise<Browser>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  options | [PuppeteerLaunchOptions](./puppeteer.puppeteerlaunchoptions.md) | <i>(Optional)</i> Set of configurable options to set on the browser. |
+| Parameter | Type                                                            | Description                                                          |
+| --------- | --------------------------------------------------------------- | -------------------------------------------------------------------- |
+| options   | [PuppeteerLaunchOptions](./puppeteer.puppeteerlaunchoptions.md) | <i>(Optional)</i> Set of configurable options to set on the browser. |
 
 **Returns:**
 
@@ -33,7 +36,6 @@ You can use `ignoreDefaultArgs` to filter out `--mute-audio` from default argume
 
 ```ts
 const browser = await puppeteer.launch({
-  ignoreDefaultArgs: ['--mute-audio']
+  ignoreDefaultArgs: ['--mute-audio'],
 });
 ```
-

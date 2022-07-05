@@ -1,6 +1,7 @@
 ---
 sidebar_label: Touchscreen
 ---
+
 # Touchscreen class
 
 The Touchscreen class exposes touchscreen events.
@@ -8,7 +9,7 @@ The Touchscreen class exposes touchscreen events.
 **Signature:**
 
 ```typescript
-export declare class Touchscreen 
+export declare class Touchscreen
 ```
 
 ## Remarks
@@ -17,7 +18,6 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Methods
 
-|  Method | Modifiers | Description |
-|  --- | --- | --- |
-|  [tap(x, y)](./puppeteer.touchscreen.tap.md) |  | Dispatches a <code>touchstart</code> and <code>touchend</code> event. |
-
+| Method                                      | Modifiers | Description                                                           |
+| ------------------------------------------- | --------- | --------------------------------------------------------------------- |
+| [tap(x, y)](./puppeteer.touchscreen.tap.md) |           | Dispatches a <code>touchstart</code> and <code>touchend</code> event. |

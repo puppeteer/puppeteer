@@ -1,21 +1,31 @@
 ---
 sidebar_label: Frame.waitForFunction
 ---
+
 # Frame.waitForFunction() method
 
 **Signature:**
 
 ```typescript
-class Frame {waitForFunction<Params extends unknown[], Func extends EvaluateFunc<Params> = EvaluateFunc<Params>>(pageFunction: Func | string, options?: FrameWaitForFunctionOptions, ...args: Params): Promise<HandleFor<Awaited<ReturnType<Func>>>>;}
+class Frame {
+  waitForFunction<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    pageFunction: Func | string,
+    options?: FrameWaitForFunctionOptions,
+    ...args: Params
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  pageFunction | Func \| string | the function to evaluate in the frame context. |
-|  options | [FrameWaitForFunctionOptions](./puppeteer.framewaitforfunctionoptions.md) | <i>(Optional)</i> options to configure the polling method and timeout. |
-|  args | Params | arguments to pass to the <code>pageFunction</code>. |
+| Parameter    | Type                                                                      | Description                                                            |
+| ------------ | ------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| pageFunction | Func \| string                                                            | the function to evaluate in the frame context.                         |
+| options      | [FrameWaitForFunctionOptions](./puppeteer.framewaitforfunctionoptions.md) | <i>(Optional)</i> options to configure the polling method and timeout. |
+| args         | Params                                                                    | arguments to pass to the <code>pageFunction</code>.                    |
 
 **Returns:**
 
@@ -24,7 +34,6 @@ Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;Awaited&lt;ReturnType&lt;Fun
 the promise which resolve when the `pageFunction` returns a truthy value.
 
 ## Remarks
-
 
 ## Example
 
@@ -42,6 +51,7 @@ const puppeteer = require('puppeteer');
 .  await browser.close();
 })();
 ```
+
 To pass arguments from Node.js to the predicate of `page.waitForFunction` function:
 
 ```ts
@@ -52,4 +62,3 @@ await frame.waitForFunction(
   selector
 );
 ```
-

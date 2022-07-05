@@ -1,6 +1,7 @@
 ---
 sidebar_label: LaunchOptions.env
 ---
+
 # LaunchOptions.env property
 
 Specify environment variables that will be visible to the browser.
@@ -8,5 +9,7 @@ Specify environment variables that will be visible to the browser.
 **Signature:**
 
 ```typescript
-interface LaunchOptions {env?: Record<string, string | undefined>;}
+interface LaunchOptions {
+  env?: Record<string, string | undefined>;
+}
 ```

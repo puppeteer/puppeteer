@@ -1,8 +1,8 @@
 ---
 sidebar_label: ActionResult
 ---
-# ActionResult type
 
+# ActionResult type
 
 **Signature:**
 

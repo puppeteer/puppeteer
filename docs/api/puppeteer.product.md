@@ -1,6 +1,7 @@
 ---
 sidebar_label: Product
 ---
+
 # Product type
 
 Supported products.

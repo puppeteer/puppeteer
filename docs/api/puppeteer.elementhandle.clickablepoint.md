@@ -1,6 +1,7 @@
 ---
 sidebar_label: ElementHandle.clickablePoint
 ---
+
 # ElementHandle.clickablePoint() method
 
 Returns the middle point within an element unless a specific offset is provided.
@@ -8,16 +9,17 @@ Returns the middle point within an element unless a specific offset is provided.
 **Signature:**
 
 ```typescript
-class ElementHandle {clickablePoint(offset?: Offset): Promise<Point>;}
+class ElementHandle {
+  clickablePoint(offset?: Offset): Promise<Point>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  offset | [Offset](./puppeteer.offset.md) | <i>(Optional)</i> |
+| Parameter | Type                            | Description       |
+| --------- | ------------------------------- | ----------------- |
+| offset    | [Offset](./puppeteer.offset.md) | <i>(Optional)</i> |
 
 **Returns:**
 
 Promise&lt;[Point](./puppeteer.point.md)&gt;
-

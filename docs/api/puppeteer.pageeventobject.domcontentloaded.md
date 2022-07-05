@@ -1,10 +1,13 @@
 ---
 sidebar_label: PageEventObject.domcontentloaded
 ---
+
 # PageEventObject.domcontentloaded property
 
 **Signature:**
 
 ```typescript
-interface PageEventObject {domcontentloaded: never;}
+interface PageEventObject {
+  domcontentloaded: never;
+}
 ```

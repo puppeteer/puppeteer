@@ -1,6 +1,7 @@
 ---
 sidebar_label: Page.$$
 ---
+
 # Page.$$() method
 
 The method runs `document.querySelectorAll` within the page. If no elements match the selector, the return value resolves to `[]`.
@@ -8,14 +9,18 @@ The method runs `document.querySelectorAll` within the page. If no elements matc
 **Signature:**
 
 ```typescript
-class Page {$$<Selector extends keyof HTMLElementTagNameMap>(selector: Selector): Promise<ElementHandle<HTMLElementTagNameMap[Selector]>[]>;}
+class Page {
+  $$<Selector extends keyof HTMLElementTagNameMap>(
+    selector: Selector
+  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]>[]>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  selector | Selector | A <code>selector</code> to query page for |
+| Parameter | Type     | Description                               |
+| --------- | -------- | ----------------------------------------- |
+| selector  | Selector | A <code>selector</code> to query page for |
 
 **Returns:**
 
@@ -24,4 +29,3 @@ Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLElementTagNameMa
 ## Remarks
 
 Shortcut for .
-

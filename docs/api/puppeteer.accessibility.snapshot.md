@@ -1,6 +1,7 @@
 ---
 sidebar_label: Accessibility.snapshot
 ---
+
 # Accessibility.snapshot() method
 
 Captures the current state of the accessibility tree. The returned object represents the root accessible node of the page.
@@ -8,14 +9,16 @@ Captures the current state of the accessibility tree. The returned object repres
 **Signature:**
 
 ```typescript
-class Accessibility {snapshot(options?: SnapshotOptions): Promise<SerializedAXNode | null>;}
+class Accessibility {
+  snapshot(options?: SnapshotOptions): Promise<SerializedAXNode | null>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  options | [SnapshotOptions](./puppeteer.snapshotoptions.md) | <i>(Optional)</i> |
+| Parameter | Type                                              | Description       |
+| --------- | ------------------------------------------------- | ----------------- |
+| options   | [SnapshotOptions](./puppeteer.snapshotoptions.md) | <i>(Optional)</i> |
 
 **Returns:**
 
@@ -46,8 +49,7 @@ const node = findFocusedNode(snapshot);
 console.log(node && node.name);
 
 function findFocusedNode(node) {
-  if (node.focused)
-    return node;
+  if (node.focused) return node;
   for (const child of node.children || []) {
     const foundNode = findFocusedNode(child);
     return foundNode;
@@ -55,4 +57,3 @@ function findFocusedNode(node) {
   return null;
 }
 ```
-

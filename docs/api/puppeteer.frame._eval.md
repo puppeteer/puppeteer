@@ -1,24 +1,34 @@
 ---
 sidebar_label: Frame.$eval
 ---
+
 # Frame.$eval() method
 
 **Signature:**
 
 ```typescript
-class Frame {$eval<Selector extends keyof HTMLElementTagNameMap, Params extends unknown[], Func extends EvaluateFunc<[
-        HTMLElementTagNameMap[Selector],
-        ...Params
-    ]> = EvaluateFunc<[HTMLElementTagNameMap[Selector], ...Params]>>(selector: Selector, pageFunction: Func | string, ...args: Params): Promise<Awaited<ReturnType<Func>>>;}
+class Frame {
+  $eval<
+    Selector extends keyof HTMLElementTagNameMap,
+    Params extends unknown[],
+    Func extends EvaluateFunc<
+      [HTMLElementTagNameMap[Selector], ...Params]
+    > = EvaluateFunc<[HTMLElementTagNameMap[Selector], ...Params]>
+  >(
+    selector: Selector,
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<Awaited<ReturnType<Func>>>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  selector | Selector | the selector to query for |
-|  pageFunction | Func \| string | the function to be evaluated in the frame's context |
-|  args | Params | additional arguments to pass to <code>pageFunction</code> |
+| Parameter    | Type           | Description                                               |
+| ------------ | -------------- | --------------------------------------------------------- |
+| selector     | Selector       | the selector to query for                                 |
+| pageFunction | Func \| string | the function to be evaluated in the frame's context       |
+| args         | Params         | additional arguments to pass to <code>pageFunction</code> |
 
 **Returns:**
 
@@ -32,8 +42,6 @@ If `pageFunction` returns a Promise, then `frame.$eval` would wait for the promi
 
 ## Example
 
-
 ```ts
 const searchValue = await frame.$eval('#search', el => el.value);
 ```
-

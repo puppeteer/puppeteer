@@ -1,20 +1,29 @@
 ---
 sidebar_label: ExecutionContext.evaluateHandle
 ---
+
 # ExecutionContext.evaluateHandle() method
 
 **Signature:**
 
 ```typescript
-class ExecutionContext {evaluateHandle<Params extends unknown[], Func extends EvaluateFunc<Params> = EvaluateFunc<Params>>(pageFunction: Func | string, ...args: Params): Promise<HandleFor<Awaited<ReturnType<Func>>>>;}
+class ExecutionContext {
+  evaluateHandle<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  pageFunction | Func \| string | a function to be evaluated in the <code>executionContext</code> |
-|  args | Params | argument to pass to the page function |
+| Parameter    | Type           | Description                                                     |
+| ------------ | -------------- | --------------------------------------------------------------- |
+| pageFunction | Func \| string | a function to be evaluated in the <code>executionContext</code> |
+| args         | Params         | argument to pass to the page function                           |
 
 **Returns:**
 
@@ -27,7 +36,6 @@ A promise that resolves to the return value of the given function as an in-page 
 The only difference between `executionContext.evaluate` and `executionContext.evaluateHandle` is that `executionContext.evaluateHandle` returns an in-page object (a [JSHandle](./puppeteer.jshandle.md)). If the function passed to the `executionContext.evaluateHandle` returns a Promise, then `executionContext.evaluateHandle` would wait for the promise to resolve and return its value.
 
 ## Example 1
-
 
 ```ts
 const context = await page.mainFrame().executionContext();
@@ -55,4 +63,3 @@ console.log(await resultHandle.jsonValue()); // prints body's innerHTML
 await aHandle.dispose();
 await resultHandle.dispose();
 ```
-

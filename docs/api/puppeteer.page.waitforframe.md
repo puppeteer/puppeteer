@@ -1,22 +1,28 @@
 ---
 sidebar_label: Page.waitForFrame
 ---
+
 # Page.waitForFrame() method
 
 **Signature:**
 
 ```typescript
-class Page {waitForFrame(urlOrPredicate: string | ((frame: Frame) => boolean | Promise<boolean>), options?: {
-        timeout?: number;
-    }): Promise<Frame>;}
+class Page {
+  waitForFrame(
+    urlOrPredicate: string | ((frame: Frame) => boolean | Promise<boolean>),
+    options?: {
+      timeout?: number;
+    }
+  ): Promise<Frame>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  urlOrPredicate | string \| ((frame: [Frame](./puppeteer.frame.md)) =&gt; boolean \| Promise&lt;boolean&gt;) | A URL or predicate to wait for. |
-|  options | { timeout?: number; } | <i>(Optional)</i> Optional waiting parameters |
+| Parameter      | Type                                                                                       | Description                                   |
+| -------------- | ------------------------------------------------------------------------------------------ | --------------------------------------------- |
+| urlOrPredicate | string \| ((frame: [Frame](./puppeteer.frame.md)) =&gt; boolean \| Promise&lt;boolean&gt;) | A URL or predicate to wait for.               |
+| options        | { timeout?: number; }                                                                      | <i>(Optional)</i> Optional waiting parameters |
 
 **Returns:**
 
@@ -32,10 +38,8 @@ Optional Parameter have:
 
 ## Example
 
-
 ```ts
-const frame = await page.waitForFrame(async (frame) => {
+const frame = await page.waitForFrame(async frame => {
   return frame.name() === 'Test';
 });
 ```
-

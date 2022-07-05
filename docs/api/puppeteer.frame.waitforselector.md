@@ -1,20 +1,26 @@
 ---
 sidebar_label: Frame.waitForSelector
 ---
+
 # Frame.waitForSelector() method
 
 **Signature:**
 
 ```typescript
-class Frame {waitForSelector<Selector extends keyof HTMLElementTagNameMap>(selector: Selector, options?: WaitForSelectorOptions): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;}
+class Frame {
+  waitForSelector<Selector extends keyof HTMLElementTagNameMap>(
+    selector: Selector,
+    options?: WaitForSelectorOptions
+  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;
+}
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  selector | Selector | the selector to wait for. |
-|  options | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) | <i>(Optional)</i> options to define if the element should be visible and how long to wait before timing out. |
+| Parameter | Type                                                            | Description                                                                                                  |
+| --------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| selector  | Selector                                                        | the selector to wait for.                                                                                    |
+| options   | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) | <i>(Optional)</i> options to define if the element should be visible and how long to wait before timing out. |
 
 **Returns:**
 
@@ -30,7 +36,6 @@ This method works across navigations.
 
 ## Example
 
-
 ```ts
 const puppeteer = require('puppeteer');
 
@@ -38,14 +43,18 @@ const puppeteer = require('puppeteer');
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   let currentURL;
-  page.mainFrame()
-  .waitForSelector('img')
-  .then(() => console.log('First URL with image: ' + currentURL));
+  page
+    .mainFrame()
+    .waitForSelector('img')
+    .then(() => console.log('First URL with image: ' + currentURL));
 
-  for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com']) {
+  for (currentURL of [
+    'https://example.com',
+    'https://google.com',
+    'https://bbc.com',
+  ]) {
     await page.goto(currentURL);
   }
   await browser.close();
 })();
 ```
-

@@ -1,6 +1,7 @@
 ---
 sidebar_label: registerCustomQueryHandler
 ---
+
 # registerCustomQueryHandler() function
 
 Registers a [custom query handler](./puppeteer.customqueryhandler.md).
@@ -8,15 +9,18 @@ Registers a [custom query handler](./puppeteer.customqueryhandler.md).
 **Signature:**
 
 ```typescript
-export declare function registerCustomQueryHandler(name: string, handler: CustomQueryHandler): void;
+export declare function registerCustomQueryHandler(
+  name: string,
+  handler: CustomQueryHandler
+): void;
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  name | string | The name that the custom query handler will be registered under. |
-|  handler | [CustomQueryHandler](./puppeteer.customqueryhandler.md) |  |
+| Parameter | Type                                                    | Description                                                      |
+| --------- | ------------------------------------------------------- | ---------------------------------------------------------------- |
+| name      | string                                                  | The name that the custom query handler will be registered under. |
+| handler   | [CustomQueryHandler](./puppeteer.customqueryhandler.md) |                                                                  |
 
 **Returns:**
 
@@ -28,9 +32,7 @@ After registration, the handler can be used everywhere where a selector is expec
 
 ## Example
 
-
 ```
 puppeteer.registerCustomQueryHandler('text', { … });
 const aHandle = await page.$('text/…');
 ```
-

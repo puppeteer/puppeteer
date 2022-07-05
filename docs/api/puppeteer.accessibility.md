@@ -1,6 +1,7 @@
 ---
 sidebar_label: Accessibility
 ---
+
 # Accessibility class
 
 The Accessibility class provides methods for inspecting Chromium's accessibility tree. The accessibility tree is used by assistive technology such as [screen readers](https://en.wikipedia.org/wiki/Screen_reader) or [switches](https://en.wikipedia.org/wiki/Switch_access).
@@ -8,7 +9,7 @@ The Accessibility class provides methods for inspecting Chromium's accessibility
 **Signature:**
 
 ```typescript
-export declare class Accessibility 
+export declare class Accessibility
 ```
 
 ## Remarks
@@ -23,7 +24,6 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Methods
 
-|  Method | Modifiers | Description |
-|  --- | --- | --- |
-|  [snapshot(options)](./puppeteer.accessibility.snapshot.md) |  | Captures the current state of the accessibility tree. The returned object represents the root accessible node of the page. |
-
+| Method                                                     | Modifiers | Description                                                                                                                |
+| ---------------------------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------- |
+| [snapshot(options)](./puppeteer.accessibility.snapshot.md) |           | Captures the current state of the accessibility tree. The returned object represents the root accessible node of the page. |

@@ -1,6 +1,7 @@
 ---
 sidebar_label: Dialog
 ---
+
 # Dialog class
 
 Dialog instances are dispatched by the [Page](./puppeteer.page.md) via the `dialog` event.
@@ -8,7 +9,7 @@ Dialog instances are dispatched by the [Page](./puppeteer.page.md) via the `dial
 **Signature:**
 
 ```typescript
-export declare class Dialog 
+export declare class Dialog
 ```
 
 ## Remarks
@@ -16,7 +17,6 @@ export declare class Dialog
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Dialog` class.
 
 ## Example
-
 
 ```ts
 const puppeteer = require('puppeteer');
@@ -35,11 +35,10 @@ const puppeteer = require('puppeteer');
 
 ## Methods
 
-|  Method | Modifiers | Description |
-|  --- | --- | --- |
-|  [accept(promptText)](./puppeteer.dialog.accept.md) |  |  |
-|  [defaultValue()](./puppeteer.dialog.defaultvalue.md) |  |  |
-|  [dismiss()](./puppeteer.dialog.dismiss.md) |  |  |
-|  [message()](./puppeteer.dialog.message.md) |  |  |
-|  [type()](./puppeteer.dialog.type.md) |  |  |
-
+| Method                                               | Modifiers | Description |
+| ---------------------------------------------------- | --------- | ----------- |
+| [accept(promptText)](./puppeteer.dialog.accept.md)   |           |             |
+| [defaultValue()](./puppeteer.dialog.defaultvalue.md) |           |             |
+| [dismiss()](./puppeteer.dialog.dismiss.md)           |           |             |
+| [message()](./puppeteer.dialog.message.md)           |           |             |
+| [type()](./puppeteer.dialog.type.md)                 |           |             |

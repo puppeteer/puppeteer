@@ -58,11 +58,9 @@ chdir(join(__dirname, '..'));
 ---
 sidebar_position: 1
 ---
+
 `;
-  writeFileSync(
-    'docs/index.md',
-    spliceIntoSection('docusaurus-metadata', content, sectionContent)
-  );
+  writeFileSync('docs/index.md', sectionContent + content);
 }
 
 // Chrome Versions

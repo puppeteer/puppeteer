@@ -1,8 +1,8 @@
 ---
 sidebar_label: EventType
 ---
-# EventType type
 
+# EventType type
 
 **Signature:**
 

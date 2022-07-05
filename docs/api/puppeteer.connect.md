@@ -1,6 +1,7 @@
 ---
 sidebar_label: connect
 ---
+
 # connect variable
 
 **Signature:**
