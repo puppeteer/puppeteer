@@ -140,6 +140,8 @@ module.exports = {
         'arrow-body-style': ['error', 'always'],
         // Error if comments do not adhere to `tsdoc`.
         'tsdoc/syntax': 2,
+        // Keeps array types simple only when they are simple for readability.
+        '@typescript-eslint/array-type': ['error', {default: 'array-simple'}],
         'no-unused-vars': 0,
         '@typescript-eslint/no-unused-vars': [
           'error',

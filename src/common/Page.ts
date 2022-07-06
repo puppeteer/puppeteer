@@ -49,7 +49,7 @@ import {Target} from './Target.js';
 import {TaskQueue} from './TaskQueue.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {Tracing} from './Tracing.js';
-import {EvaluateFunc, HandleFor} from './types.js';
+import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {
   createJSHandle,
   debugError,
@@ -1025,11 +1025,9 @@ export class Page extends EventEmitter {
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
    * to query page for.
    */
-  async $<Selector extends keyof HTMLElementTagNameMap>(
+  async $<Selector extends string>(
     selector: Selector
-  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;
-  async $(selector: string): Promise<ElementHandle | null>;
-  async $(selector: string): Promise<ElementHandle | null> {
+  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
     return this.mainFrame().$(selector);
   }
 
@@ -1040,11 +1038,9 @@ export class Page extends EventEmitter {
    * Shortcut for {@link Frame.$$ | Page.mainFrame().$$(selector) }.
    * @param selector - A `selector` to query page for
    */
-  async $$<Selector extends keyof HTMLElementTagNameMap>(
+  async $$<Selector extends string>(
     selector: Selector
-  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]>[]>;
-  async $$(selector: string): Promise<ElementHandle[]>;
-  async $$(selector: string): Promise<ElementHandle[]> {
+  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
     return this.mainFrame().$$(selector);
   }
 
@@ -1201,33 +1197,13 @@ export class Page extends EventEmitter {
    * returned.
    */
   async $eval<
-    Selector extends keyof HTMLElementTagNameMap,
+    Selector extends string,
     Params extends unknown[],
     Func extends EvaluateFunc<
-      [HTMLElementTagNameMap[Selector], ...Params]
-    > = EvaluateFunc<[HTMLElementTagNameMap[Selector], ...Params]>
+      [ElementHandle<NodeFor<Selector>>, ...Params]
+    > = EvaluateFunc<[ElementHandle<NodeFor<Selector>>, ...Params]>
   >(
     selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async $eval<
-    Params extends unknown[],
-    Func extends EvaluateFunc<[Element, ...Params]> = EvaluateFunc<
-      [Element, ...Params]
-    >
-  >(
-    selector: string,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async $eval<
-    Params extends unknown[],
-    Func extends EvaluateFunc<[Element, ...Params]> = EvaluateFunc<
-      [Element, ...Params]
-    >
-  >(
-    selector: string,
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
@@ -1297,33 +1273,13 @@ export class Page extends EventEmitter {
    * returned.
    */
   async $$eval<
-    Selector extends keyof HTMLElementTagNameMap,
+    Selector extends string,
     Params extends unknown[],
     Func extends EvaluateFunc<
-      [HTMLElementTagNameMap[Selector][], ...Params]
-    > = EvaluateFunc<[HTMLElementTagNameMap[Selector][], ...Params]>
+      [Array<NodeFor<Selector>>, ...Params]
+    > = EvaluateFunc<[Array<NodeFor<Selector>>, ...Params]>
   >(
     selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async $$eval<
-    Params extends unknown[],
-    Func extends EvaluateFunc<[Element[], ...Params]> = EvaluateFunc<
-      [Element[], ...Params]
-    >
-  >(
-    selector: string,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async $$eval<
-    Params extends unknown[],
-    Func extends EvaluateFunc<[Element[], ...Params]> = EvaluateFunc<
-      [Element[], ...Params]
-    >
-  >(
-    selector: string,
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
@@ -1338,7 +1294,7 @@ export class Page extends EventEmitter {
    * Shortcut for {@link Frame.$x | Page.mainFrame().$x(expression) }.
    * @param expression - Expression to evaluate
    */
-  async $x(expression: string): Promise<ElementHandle[]> {
+  async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
     return this.mainFrame().$x(expression);
   }
 
@@ -1421,7 +1377,7 @@ export class Page extends EventEmitter {
     content?: string;
     type?: string;
     id?: string;
-  }): Promise<ElementHandle> {
+  }): Promise<ElementHandle<HTMLScriptElement>> {
     return this.mainFrame().addScriptTag(options);
   }
 
@@ -1435,7 +1391,7 @@ export class Page extends EventEmitter {
     url?: string;
     path?: string;
     content?: string;
-  }): Promise<ElementHandle> {
+  }): Promise<ElementHandle<Node>> {
     return this.mainFrame().addStyleTag(options);
   }
 
@@ -3339,18 +3295,10 @@ export class Page extends EventEmitter {
    * (30 seconds). Pass `0` to disable timeout. The default value can be changed
    * by using the {@link Page.setDefaultTimeout} method.
    */
-  async waitForSelector<Selector extends keyof HTMLElementTagNameMap>(
+  async waitForSelector<Selector extends string>(
     selector: Selector,
-    options?: Exclude<WaitForSelectorOptions, 'root'>
-  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;
-  async waitForSelector(
-    selector: string,
-    options?: Exclude<WaitForSelectorOptions, 'root'>
-  ): Promise<ElementHandle | null>;
-  async waitForSelector(
-    selector: string,
     options: Exclude<WaitForSelectorOptions, 'root'> = {}
-  ): Promise<ElementHandle | null> {
+  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
     return await this.mainFrame().waitForSelector(selector, options);
   }
 
@@ -3409,7 +3357,7 @@ export class Page extends EventEmitter {
       hidden?: boolean;
       timeout?: number;
     } = {}
-  ): Promise<ElementHandle | null> {
+  ): Promise<ElementHandle<Node> | null> {
     return this.mainFrame().waitForXPath(xpath, options);
   }
 

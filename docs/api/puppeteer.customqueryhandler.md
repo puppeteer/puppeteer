@@ -14,7 +14,7 @@ export interface CustomQueryHandler
 
 ## Properties
 
-| Property                                                | Modifiers | Type                                                                                            | Description       |
-| ------------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------- | ----------------- |
-| [queryAll?](./puppeteer.customqueryhandler.queryall.md) |           | (element: Element \| Document, selector: string) =&gt; Element\[\] \| NodeListOf&lt;Element&gt; | <i>(Optional)</i> |
-| [queryOne?](./puppeteer.customqueryhandler.queryone.md) |           | (element: Element \| Document, selector: string) =&gt; Element \| null                          | <i>(Optional)</i> |
+| Property                                                | Modifiers | Type                                                 | Description       |
+| ------------------------------------------------------- | --------- | ---------------------------------------------------- | ----------------- |
+| [queryAll?](./puppeteer.customqueryhandler.queryall.md) |           | (element: Node, selector: string) =&gt; Node\[\]     | <i>(Optional)</i> |
+| [queryOne?](./puppeteer.customqueryhandler.queryone.md) |           | (element: Node, selector: string) =&gt; Node \| null | <i>(Optional)</i> |

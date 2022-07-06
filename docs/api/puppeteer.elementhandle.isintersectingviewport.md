@@ -10,15 +10,21 @@ Resolves to true if the element is visible in the current viewport.
 
 ```typescript
 class ElementHandle {
-  isIntersectingViewport(options?: {threshold?: number}): Promise<boolean>;
+  isIntersectingViewport(
+    this: ElementHandle<Element>,
+    options?: {
+      threshold?: number;
+    }
+  ): Promise<boolean>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                    | Description       |
-| --------- | ----------------------- | ----------------- |
-| options   | { threshold?: number; } | <i>(Optional)</i> |
+| Parameter | Type                                                         | Description       |
+| --------- | ------------------------------------------------------------ | ----------------- |
+| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |                   |
+| options   | { threshold?: number; }                                      | <i>(Optional)</i> |
 
 **Returns:**
 

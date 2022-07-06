@@ -8,6 +8,6 @@ sidebar_label: WaitForSelectorOptions.root
 
 ```typescript
 interface WaitForSelectorOptions {
-  root?: ElementHandle;
+  root?: ElementHandle<Node>;
 }
 ```

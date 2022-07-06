@@ -98,8 +98,10 @@ describeChromeOnly('AriaQueryHandler', () => {
       await page.setContent(
         '<div id="div"><button id="btn" role="button">Submit</button></div>'
       );
-      const button = (await page.$('aria/[role="button"]'))!;
-      const id = await button!.evaluate((button: Element) => {
+      const button = (await page.$(
+        'aria/[role="button"]'
+      )) as ElementHandle<HTMLButtonElement>;
+      const id = await button!.evaluate(button => {
         return button.id;
       });
       expect(id).toBe('btn');
@@ -110,8 +112,10 @@ describeChromeOnly('AriaQueryHandler', () => {
       await page.setContent(
         '<div id="div"><button id="btn" role="button">Submit</button></div>'
       );
-      const button = (await page.$('aria/Submit[role="button"]'))!;
-      const id = await button!.evaluate((button: Element) => {
+      const button = (await page.$(
+        'aria/Submit[role="button"]'
+      )) as ElementHandle<HTMLButtonElement>;
+      const id = await button!.evaluate(button => {
         return button.id;
       });
       expect(id).toBe('btn');
@@ -125,8 +129,10 @@ describeChromeOnly('AriaQueryHandler', () => {
         <div role="menu" id="mnu2" aria-label="menu div"></div>
         `
       );
-      const div = (await page.$('aria/menu div'))!;
-      const id = await div!.evaluate((div: Element) => {
+      const div = (await page.$(
+        'aria/menu div'
+      )) as ElementHandle<HTMLDivElement>;
+      const id = await div!.evaluate(div => {
         return div.id;
       });
       expect(id).toBe('mnu1');
@@ -140,8 +146,10 @@ describeChromeOnly('AriaQueryHandler', () => {
         <div role="menu" id="mnu2" aria-label="menu-label2">menu div</div>
         `
       );
-      const menu = (await page.$('aria/menu-label1'))!;
-      const id = await menu!.evaluate((div: Element) => {
+      const menu = (await page.$(
+        'aria/menu-label1'
+      )) as ElementHandle<HTMLDivElement>;
+      const id = await menu!.evaluate(div => {
         return div.id;
       });
       expect(id).toBe('mnu1');
@@ -155,8 +163,10 @@ describeChromeOnly('AriaQueryHandler', () => {
         <div role="menu" id="mnu2" aria-label="menu-label2">menu div</div>
         `
       );
-      const menu = (await page.$('aria/menu-label2'))!;
-      const id = await menu!.evaluate((div: Element) => {
+      const menu = (await page.$(
+        'aria/menu-label2'
+      )) as ElementHandle<HTMLDivElement>;
+      const id = await menu!.evaluate(div => {
         return div.id;
       });
       expect(id).toBe('mnu2');
@@ -172,10 +182,12 @@ describeChromeOnly('AriaQueryHandler', () => {
         <div role="menu" id="mnu2" aria-label="menu div"></div>
         `
       );
-      const divs = await page.$$('aria/menu div');
+      const divs = (await page.$$('aria/menu div')) as Array<
+        ElementHandle<HTMLDivElement>
+      >;
       const ids = await Promise.all(
         divs.map(n => {
-          return n.evaluate((div: Element) => {
+          return n.evaluate(div => {
             return div.id;
           });
         })
@@ -652,9 +664,9 @@ describeChromeOnly('AriaQueryHandler', () => {
     });
     it('should find by role "button"', async () => {
       const {page} = getTestState();
-      const found = (await page.$$(
-        'aria/[role="button"]'
-      )) as ElementHandle<HTMLButtonElement>[];
+      const found = (await page.$$('aria/[role="button"]')) as Array<
+        ElementHandle<HTMLButtonElement>
+      >;
       const ids = await getIds(found);
       expect(ids).toEqual([
         'node5',

@@ -11,7 +11,8 @@ This method triggers a dragenter, dragover, and drop on the element.
 ```typescript
 class ElementHandle {
   dragAndDrop(
-    target: ElementHandle,
+    this: ElementHandle<Element>,
+    target: ElementHandle<Node>,
     options?: {
       delay: number;
     }
@@ -21,10 +22,11 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type                                          | Description       |
-| --------- | --------------------------------------------- | ----------------- |
-| target    | [ElementHandle](./puppeteer.elementhandle.md) |                   |
-| options   | { delay: number; }                            | <i>(Optional)</i> |
+| Parameter | Type                                                         | Description       |
+| --------- | ------------------------------------------------------------ | ----------------- |
+| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |                   |
+| target    | [ElementHandle](./puppeteer.elementhandle.md)&lt;Node&gt;    |                   |
+| options   | { delay: number; }                                           | <i>(Optional)</i> |
 
 **Returns:**
 

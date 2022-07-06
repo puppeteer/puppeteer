@@ -16,6 +16,7 @@ yarn.lock
 .local-firefox/
 test/output-*/
 .dev_profile*
+coverage/
 
 # IDE Artifacts
 .vscode

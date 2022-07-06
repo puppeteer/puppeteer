@@ -10,15 +10,19 @@ This method creates a `dragenter` event on the element.
 
 ```typescript
 class ElementHandle {
-  dragEnter(data?: Protocol.Input.DragData): Promise<void>;
+  dragEnter(
+    this: ElementHandle<Element>,
+    data?: Protocol.Input.DragData
+  ): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                    | Description       |
-| --------- | ----------------------- | ----------------- |
-| data      | Protocol.Input.DragData | <i>(Optional)</i> |
+| Parameter | Type                                                         | Description       |
+| --------- | ------------------------------------------------------------ | ----------------- |
+| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |                   |
+| data      | Protocol.Input.DragData                                      | <i>(Optional)</i> |
 
 **Returns:**
 

@@ -10,7 +10,7 @@ Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<s
 
 ```typescript
 class Frame {
-  addStyleTag(options: FrameAddStyleTagOptions): Promise<ElementHandle>;
+  addStyleTag(options: FrameAddStyleTagOptions): Promise<ElementHandle<Node>>;
 }
 ```
 
@@ -22,6 +22,6 @@ class Frame {
 
 **Returns:**
 
-Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&gt;
+Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;Node&gt;&gt;
 
 a promise that resolves to the added tag when the stylesheets's `onload` event fires or when the CSS content was injected into the frame.

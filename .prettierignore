@@ -1,5 +1,4 @@
-# Keep in sync with .gitignore
-
+## [START] Keep in sync with .gitignore
 # Dependencies
 node_modules
 
@@ -18,6 +17,7 @@ yarn.lock
 .local-firefox/
 test/output-*/
 .dev_profile*
+coverage/
 
 # IDE Artifacts
 .vscode
@@ -32,6 +32,7 @@ test/output-*/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+## [END] Keep in sync with .gitignore
 
 # Prettier-only ignores.
 assets/

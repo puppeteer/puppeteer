@@ -1,6 +1,39 @@
-assets/
+## [START] Keep in sync with .gitignore
+# Dependencies
+node_modules
+
+# Production
 build/
-coverage/
-lib
+lib/
+
+# Generated files
 tsconfig.tsbuildinfo
+puppeteer.api.json
+puppeteer*.tgz
+yarn.lock
+.docusaurus/
+.cache-loader
+.local-chromium/
+.local-firefox/
+test/output-*/
+.dev_profile*
+coverage/
+
+# IDE Artifacts
+.vscode
+
+# Misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+## [END] Keep in sync with .gitignore
+
+# ESLint ignores.
+assets/
 vendor/

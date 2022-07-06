@@ -16,6 +16,7 @@
 
 import expect from 'expect';
 import sinon from 'sinon';
+import {ElementHandle} from '../../lib/cjs/puppeteer/common/ElementHandle.js';
 import {
   describeFailsFirefox,
   getTestState,
@@ -83,7 +84,9 @@ describe('ElementHandle specs', function () {
           <rect id="theRect" x="30" y="50" width="200" height="300"></rect>
         </svg>
       `);
-      const element = (await page.$('#therect'))!;
+      const element = (await page.$(
+        '#therect'
+      )) as ElementHandle<SVGRectElement>;
       const pptrBoundingBox = await element.boundingBox();
       const webBoundingBox = await page.evaluate(e => {
         const rect = e.getBoundingClientRect();
@@ -274,7 +277,9 @@ describe('ElementHandle specs', function () {
   describe('Element.waitForSelector', () => {
     it('should wait correctly with waitForSelector on an element', async () => {
       const {page} = getTestState();
-      const waitFor = page.waitForSelector('.foo');
+      const waitFor = page.waitForSelector('.foo') as Promise<
+        ElementHandle<HTMLDivElement>
+      >;
       // Set the page content after the waitFor has been started.
       await page.setContent(
         '<div id="not-foo"></div><div class="bar">bar2</div><div class="foo">Foo1</div>'
@@ -282,7 +287,9 @@ describe('ElementHandle specs', function () {
       let element = (await waitFor)!;
       expect(element).toBeDefined();
 
-      const innerWaitFor = element.waitForSelector('.bar');
+      const innerWaitFor = element.waitForSelector('.bar') as Promise<
+        ElementHandle<HTMLDivElement>
+      >;
       await element.evaluate(el => {
         el.innerHTML = '<div class="bar">bar1</div>';
       });
@@ -312,19 +319,20 @@ describe('ElementHandle specs', function () {
         </div>`
       );
 
-      const el2 = (await page.waitForSelector('#el1'))!;
+      const el2 = (await page.waitForSelector(
+        '#el1'
+      )) as ElementHandle<HTMLDivElement>;
 
-      expect(
-        await (await el2.waitForXPath('//div'))!.evaluate(el => {
-          return el.id;
-        })
-      ).toStrictEqual('el2');
-
-      expect(
-        await (await el2.waitForXPath('.//div'))!.evaluate(el => {
-          return el.id;
-        })
-      ).toStrictEqual('el2');
+      for (const path of ['//div', './/div']) {
+        const e = (await el2.waitForXPath(
+          path
+        )) as ElementHandle<HTMLDivElement>;
+        expect(
+          await e.evaluate(el => {
+            return el.id;
+          })
+        ).toStrictEqual('el2');
+      }
     });
   });
 
@@ -398,7 +406,9 @@ describe('ElementHandle specs', function () {
           return document.querySelector(`[id="${selector}"]`);
         },
       });
-      const element = (await page.$('getById/foo'))!;
+      const element = (await page.$(
+        'getById/foo'
+      )) as ElementHandle<HTMLDivElement>;
       expect(
         await page.evaluate(element => {
           return element.id;
@@ -447,10 +457,12 @@ describe('ElementHandle specs', function () {
       );
       puppeteer.registerCustomQueryHandler('getByClass', {
         queryAll: (_element, selector) => {
-          return document.querySelectorAll(`.${selector}`);
+          return [...document.querySelectorAll(`.${selector}`)];
         },
       });
-      const elements = await page.$$('getByClass/foo');
+      const elements = (await page.$$('getByClass/foo')) as Array<
+        ElementHandle<HTMLDivElement>
+      >;
       const classNames = await Promise.all(
         elements.map(async element => {
           return await page.evaluate(element => {
@@ -468,7 +480,7 @@ describe('ElementHandle specs', function () {
       );
       puppeteer.registerCustomQueryHandler('getByClass', {
         queryAll: (_element, selector) => {
-          return document.querySelectorAll(`.${selector}`);
+          return [...document.querySelectorAll(`.${selector}`)];
         },
       });
       const elements = await page.$$eval('getByClass/foo', divs => {
@@ -481,7 +493,7 @@ describe('ElementHandle specs', function () {
       const {page, puppeteer} = getTestState();
       puppeteer.registerCustomQueryHandler('getByClass', {
         queryOne: (element, selector) => {
-          return element.querySelector(`.${selector}`);
+          return (element as Element).querySelector(`.${selector}`);
         },
       });
       const waitFor = page.waitForSelector('getByClass/foo');
@@ -499,10 +511,12 @@ describe('ElementHandle specs', function () {
       const {page, puppeteer} = getTestState();
       puppeteer.registerCustomQueryHandler('getByClass', {
         queryOne: (element, selector) => {
-          return element.querySelector(`.${selector}`);
+          return (element as Element).querySelector(`.${selector}`);
         },
       });
-      const waitFor = page.waitForSelector('getByClass/foo');
+      const waitFor = page.waitForSelector('getByClass/foo') as Promise<
+        ElementHandle<HTMLElement>
+      >;
 
       // Set the page content after the waitFor has been started.
       await page.setContent(
@@ -511,7 +525,9 @@ describe('ElementHandle specs', function () {
       let element = (await waitFor)!;
       expect(element).toBeDefined();
 
-      const innerWaitFor = element.waitForSelector('getByClass/bar');
+      const innerWaitFor = element.waitForSelector('getByClass/bar') as Promise<
+        ElementHandle<HTMLElement>
+      >;
 
       await element.evaluate(el => {
         el.innerHTML = '<div class="bar">bar1</div>';
@@ -521,7 +537,7 @@ describe('ElementHandle specs', function () {
       expect(element).toBeDefined();
       expect(
         await element.evaluate(el => {
-          return (el as HTMLElement).innerText;
+          return el.innerText;
         })
       ).toStrictEqual('bar1');
     });
@@ -532,7 +548,7 @@ describe('ElementHandle specs', function () {
       const {page, puppeteer} = getTestState();
       puppeteer.registerCustomQueryHandler('getByClass', {
         queryOne: (element, selector) => {
-          return element.querySelector(`.${selector}`);
+          return (element as Element).querySelector(`.${selector}`);
         },
       });
       const waitFor = page.waitForSelector('getByClass/foo');
@@ -552,10 +568,10 @@ describe('ElementHandle specs', function () {
       );
       puppeteer.registerCustomQueryHandler('getByClass', {
         queryOne: (element, selector) => {
-          return element.querySelector(`.${selector}`);
+          return (element as Element).querySelector(`.${selector}`);
         },
         queryAll: (element, selector) => {
-          return element.querySelectorAll(`.${selector}`);
+          return [...(element as Element).querySelectorAll(`.${selector}`)];
         },
       });
 
@@ -572,10 +588,10 @@ describe('ElementHandle specs', function () {
       );
       puppeteer.registerCustomQueryHandler('getByClass', {
         queryOne: (element, selector) => {
-          return element.querySelector(`.${selector}`);
+          return (element as Element).querySelector(`.${selector}`);
         },
         queryAll: (element, selector) => {
-          return element.querySelectorAll(`.${selector}`);
+          return [...(element as Element).querySelectorAll(`.${selector}`)];
         },
       });
 

@@ -1,4 +1,4 @@
-import {expectAssignable, expectNotAssignable, expectType} from 'tsd';
+import {expectNotAssignable, expectNotType, expectType} from 'tsd';
 import {ElementHandle} from '../lib/esm/puppeteer/common/ElementHandle.js';
 import {JSHandle} from '../lib/esm/puppeteer/common/JSHandle.js';
 
@@ -61,16 +61,16 @@ declare const handle2: JSHandle<{test: number}>;
 {
   {
     expectType<JSHandle<number>>(await handle2.getProperty('test'));
-    expectNotAssignable<JSHandle<string>>(await handle2.getProperty('test'));
+    expectNotType<JSHandle<unknown>>(await handle2.getProperty('test'));
   }
   {
     expectType<JSHandle<unknown>>(
       await handle2.getProperty('key-doesnt-exist')
     );
-    expectAssignable<JSHandle<string>>(
+    expectNotType<JSHandle<string>>(
       await handle2.getProperty('key-doesnt-exist')
     );
-    expectAssignable<JSHandle<number>>(
+    expectNotType<JSHandle<number>>(
       await handle2.getProperty('key-doesnt-exist')
     );
   }

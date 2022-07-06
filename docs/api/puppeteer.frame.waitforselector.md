@@ -8,10 +8,10 @@ sidebar_label: Frame.waitForSelector
 
 ```typescript
 class Frame {
-  waitForSelector<Selector extends keyof HTMLElementTagNameMap>(
+  waitForSelector<Selector extends string>(
     selector: Selector,
     options?: WaitForSelectorOptions
-  ): Promise<ElementHandle<HTMLElementTagNameMap[Selector]> | null>;
+  ): Promise<ElementHandle<NodeFor<Selector>> | null>;
 }
 ```
 
@@ -24,7 +24,7 @@ class Frame {
 
 **Returns:**
 
-Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLElementTagNameMap\[Selector\]&gt; \| null&gt;
+Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt; \| null&gt;
 
 a promise which resolves when an element matching the selector string is added to the DOM.
 
