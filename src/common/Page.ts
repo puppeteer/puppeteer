@@ -511,7 +511,7 @@ export class Page extends EventEmitter {
 
     this.#target
       ._targetManager()
-      .addTargetInterceptor(this.#client, this.#targetAttachHook);
+      .addTargetInterceptor(this.#client, this.#onAttachedToTarget);
 
     this.#target
       ._targetManager()
@@ -581,7 +581,7 @@ export class Page extends EventEmitter {
     this.#target._isClosedPromise.then(() => {
       this.#target
         ._targetManager()
-        .removeTargetInterceptor(this.#client, this.#targetAttachHook);
+        .removeTargetInterceptor(this.#client, this.#onAttachedToTarget);
 
       this.#target
         ._targetManager()
@@ -604,7 +604,7 @@ export class Page extends EventEmitter {
     this.emit(PageEmittedEvents.WorkerDestroyed, worker);
   };
 
-  #targetAttachHook = async (createdTarget: Target) => {
+  #onAttachedToTarget = async (createdTarget: Target) => {
     await this.#frameManager.onAttachedToTarget(createdTarget);
     if (createdTarget._getTargetInfo().type === 'worker') {
       const session = createdTarget._session();
@@ -623,7 +623,7 @@ export class Page extends EventEmitter {
         ._targetManager()
         .addTargetInterceptor(
           createdTarget._session()!,
-          this.#targetAttachHook
+          this.#onAttachedToTarget
         );
     }
   };
