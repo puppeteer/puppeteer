@@ -988,50 +988,53 @@ describe('Launcher specs', function () {
   });
 
   describe('Browser.Events.disconnected', function () {
-    it('should be emitted when: browser gets closed, disconnected or underlying websocket gets closed', async () => {
-      const {puppeteer, defaultBrowserOptions, isFirefox} = getTestState();
-      const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
-      const browserWSEndpoint = originalBrowser.wsEndpoint();
-      const remoteBrowser1 = await puppeteer.connect({
-        browserWSEndpoint,
-        product: isFirefox ? 'firefox' : 'chrome',
-      });
-      const remoteBrowser2 = await puppeteer.connect({
-        browserWSEndpoint,
-        product: isFirefox ? 'firefox' : 'chrome',
-      });
+    itFailsFirefox(
+      'should be emitted when: browser gets closed, disconnected or underlying websocket gets closed',
+      async () => {
+        const {puppeteer, defaultBrowserOptions, isFirefox} = getTestState();
+        const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+        const browserWSEndpoint = originalBrowser.wsEndpoint();
+        const remoteBrowser1 = await puppeteer.connect({
+          browserWSEndpoint,
+          product: isFirefox ? 'firefox' : 'chrome',
+        });
+        const remoteBrowser2 = await puppeteer.connect({
+          browserWSEndpoint,
+          product: isFirefox ? 'firefox' : 'chrome',
+        });
 
-      let disconnectedOriginal = 0;
-      let disconnectedRemote1 = 0;
-      let disconnectedRemote2 = 0;
-      originalBrowser.on('disconnected', () => {
-        return ++disconnectedOriginal;
-      });
-      remoteBrowser1.on('disconnected', () => {
-        return ++disconnectedRemote1;
-      });
-      remoteBrowser2.on('disconnected', () => {
-        return ++disconnectedRemote2;
-      });
+        let disconnectedOriginal = 0;
+        let disconnectedRemote1 = 0;
+        let disconnectedRemote2 = 0;
+        originalBrowser.on('disconnected', () => {
+          return ++disconnectedOriginal;
+        });
+        remoteBrowser1.on('disconnected', () => {
+          return ++disconnectedRemote1;
+        });
+        remoteBrowser2.on('disconnected', () => {
+          return ++disconnectedRemote2;
+        });
 
-      await Promise.all([
-        utils.waitEvent(remoteBrowser2, 'disconnected'),
-        remoteBrowser2.disconnect(),
-      ]);
+        await Promise.all([
+          utils.waitEvent(remoteBrowser2, 'disconnected'),
+          remoteBrowser2.disconnect(),
+        ]);
 
-      expect(disconnectedOriginal).toBe(0);
-      expect(disconnectedRemote1).toBe(0);
-      expect(disconnectedRemote2).toBe(1);
+        expect(disconnectedOriginal).toBe(0);
+        expect(disconnectedRemote1).toBe(0);
+        expect(disconnectedRemote2).toBe(1);
 
-      await Promise.all([
-        utils.waitEvent(remoteBrowser1, 'disconnected'),
-        utils.waitEvent(originalBrowser, 'disconnected'),
-        originalBrowser.close(),
-      ]);
+        await Promise.all([
+          utils.waitEvent(remoteBrowser1, 'disconnected'),
+          utils.waitEvent(originalBrowser, 'disconnected'),
+          originalBrowser.close(),
+        ]);
 
-      expect(disconnectedOriginal).toBe(1);
-      expect(disconnectedRemote1).toBe(1);
-      expect(disconnectedRemote2).toBe(1);
-    });
+        expect(disconnectedOriginal).toBe(1);
+        expect(disconnectedRemote1).toBe(1);
+        expect(disconnectedRemote2).toBe(1);
+      }
+    );
   });
 });

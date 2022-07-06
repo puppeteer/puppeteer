@@ -40,6 +40,11 @@ describeChromeOnly('TargetManager', () => {
         ]),
       })
     );
+    const pages = await browser.pages();
+    expect(pages).toHaveLength(1);
+    for (const page of pages) {
+      await page.close();
+    }
   });
 
   beforeEach(async () => {
@@ -58,15 +63,10 @@ describeChromeOnly('TargetManager', () => {
     const {server} = getTestState();
 
     const targetManager = browser._targetManager();
-    expect(targetManager.getAvailableTargets().size).toBe(2);
 
-    const pages = await browser.pages();
-    expect(pages).toHaveLength(1);
-    let [page] = pages;
-    await page!.close();
     expect(await browser.pages()).toHaveLength(0);
     expect(targetManager.getAvailableTargets().size).toBe(1);
-    page = await browser.newPage();
+    const page = await browser.newPage();
     expect(await browser.pages()).toHaveLength(1);
     expect(targetManager.getAvailableTargets().size).toBe(2);
 
@@ -110,5 +110,6 @@ describeChromeOnly('TargetManager', () => {
     expect(await browser.pages()).toHaveLength(1);
     expect(targetManager.getAvailableTargets().size).toBe(4);
     expect(page.frames()).toHaveLength(4);
+    await page.close();
   });
 });
