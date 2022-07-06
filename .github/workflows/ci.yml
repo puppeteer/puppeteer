@@ -172,6 +172,7 @@ jobs:
         run: npm run test:chrome
       - name: Test Firefox
         if: ${{ steps.test-chrome.conclusion != 'skipped' }}
+        continue-on-error: true
         run: npm run test:firefox
       - name: Test bundling and installation
         if: ${{ matrix.spec.name == 'Linux' }}
