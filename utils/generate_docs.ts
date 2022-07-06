@@ -55,11 +55,11 @@ chdir(join(__dirname, '..'));
 {
   const content = readFileSync('README.md', 'utf-8');
   const sectionContent = `
----
-sidebar_position: 1
----
-
-`;
+ ---
+ sidebar_position: 1
+ ---
+ 
+ `;
   writeFileSync('docs/index.md', sectionContent + content);
 }
 
@@ -77,6 +77,12 @@ sidebar_position: 1
     if (semver.lt(puppeteerVersion, '15.0.0')) {
       buffer.push(
         `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://github.com/puppeteer/puppeteer/blob/${puppeteerVersion}/docs/api.md)`
+      );
+    } else if (semver.gte(puppeteerVersion, '15.3.0')) {
+      buffer.push(
+        `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://pptr.dev/${puppeteerVersion.slice(
+          1
+        )})`
       );
     } else {
       buffer.push(
