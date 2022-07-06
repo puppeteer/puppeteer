@@ -27,6 +27,8 @@ jobs:
         run: |
           npm install
           npm run docusaurus docs:version $(jq -r .version ../package.json)
+      - name: Format
+        run: npm run format
       - name: Commit
         run: |
           git config --global user.name 'release-please[bot]'
