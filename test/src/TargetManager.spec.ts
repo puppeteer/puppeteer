@@ -40,11 +40,6 @@ describeChromeOnly('TargetManager', () => {
         ]),
       })
     );
-    const pages = await browser.pages();
-    expect(pages).toHaveLength(1);
-    for (const page of pages) {
-      await page.close();
-    }
   });
 
   beforeEach(async () => {
@@ -63,16 +58,18 @@ describeChromeOnly('TargetManager', () => {
     const {server} = getTestState();
 
     const targetManager = browser._targetManager();
-
-    expect(await browser.pages()).toHaveLength(0);
-    expect(targetManager.getAvailableTargets().size).toBe(1);
-    const page = await browser.newPage();
-    expect(await browser.pages()).toHaveLength(1);
     expect(targetManager.getAvailableTargets().size).toBe(2);
+
+    expect(await context.pages()).toHaveLength(0);
+    expect(targetManager.getAvailableTargets().size).toBe(2);
+
+    const page = await context.newPage();
+    expect(await context.pages()).toHaveLength(1);
+    expect(targetManager.getAvailableTargets().size).toBe(3);
 
     await page.goto(server.EMPTY_PAGE);
-    expect(await browser.pages()).toHaveLength(1);
-    expect(targetManager.getAvailableTargets().size).toBe(2);
+    expect(await context.pages()).toHaveLength(1);
+    expect(targetManager.getAvailableTargets().size).toBe(3);
 
     // attach a local iframe.
     let framePromise = page.waitForFrame(frame => {
@@ -80,8 +77,8 @@ describeChromeOnly('TargetManager', () => {
     });
     await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
     await framePromise;
-    expect(await browser.pages()).toHaveLength(1);
-    expect(targetManager.getAvailableTargets().size).toBe(2);
+    expect(await context.pages()).toHaveLength(1);
+    expect(targetManager.getAvailableTargets().size).toBe(3);
     expect(page.frames()).toHaveLength(2);
 
     // // attach a remote frame iframe.
@@ -94,8 +91,8 @@ describeChromeOnly('TargetManager', () => {
       server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
     await framePromise;
-    expect(await browser.pages()).toHaveLength(1);
-    expect(targetManager.getAvailableTargets().size).toBe(3);
+    expect(await context.pages()).toHaveLength(1);
+    expect(targetManager.getAvailableTargets().size).toBe(4);
     expect(page.frames()).toHaveLength(3);
 
     framePromise = page.waitForFrame(frame => {
@@ -107,9 +104,8 @@ describeChromeOnly('TargetManager', () => {
       server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
     await framePromise;
-    expect(await browser.pages()).toHaveLength(1);
-    expect(targetManager.getAvailableTargets().size).toBe(4);
+    expect(await context.pages()).toHaveLength(1);
+    expect(targetManager.getAvailableTargets().size).toBe(5);
     expect(page.frames()).toHaveLength(4);
-    await page.close();
   });
 });
