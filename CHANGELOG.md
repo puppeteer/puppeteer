@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [15.3.1](https://github.com/puppeteer/puppeteer/compare/v15.3.0...v15.3.1) (2022-07-06)
+
+
+### Bug Fixes
+
+* extends `ElementHandle` to `Node`s ([#8552](https://github.com/puppeteer/puppeteer/issues/8552)) ([5ff205d](https://github.com/puppeteer/puppeteer/commit/5ff205dc8b659eb8864b4b1862105d21dd334c8f))
+
 ## [15.3.0](https://github.com/puppeteer/puppeteer/compare/v15.2.0...v15.3.0) (2022-07-01)
 
 
