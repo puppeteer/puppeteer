@@ -36,6 +36,14 @@ describe('JSHandle', function () {
       });
       expect(windowHandle).toBeTruthy();
     });
+    it('should return the RemoteObject', async () => {
+      const {page} = getTestState();
+
+      const windowHandle = await page.evaluateHandle(() => {
+        return window;
+      });
+      expect(windowHandle.remoteObject()).toBeTruthy();
+    });
     it('should accept object handle as an argument', async () => {
       const {page} = getTestState();
 

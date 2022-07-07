@@ -49,7 +49,7 @@
     "docs": "run-s build generate:markdown",
     "debug": "npm run build && mocha --inspect-brk",
     "commitlint": "commitlint --from=HEAD~1",
-    "clean": "rimraf lib",
+    "clean": "rimraf lib && rimraf test/build",
     "check": "run-p check:*",
     "check:protocol-revision": "ts-node -s scripts/ensure-correct-devtools-protocol-package",
     "check:pinned-deps": "ts-node -s scripts/ensure-pinned-deps",
