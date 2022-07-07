@@ -164,7 +164,10 @@ describe('Page.click', function () {
     await page.goto(server.PREFIX + '/offscreenbuttons.html');
     const messages: any[] = [];
     page.on('console', msg => {
-      return messages.push(msg.text());
+      if (msg.type() === 'log') {
+        return messages.push(msg.text());
+      }
+      return;
     });
     for (let i = 0; i < 11; ++i) {
       // We might've scrolled to click a button - reset to (0, 0).
