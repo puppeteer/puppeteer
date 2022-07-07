@@ -21,6 +21,8 @@ export * from './common/QueryHandler.js';
 export * from './common/DeviceDescriptors.js';
 export * from './common/Errors.js';
 
+export {Protocol} from 'devtools-protocol';
+
 /**
  * @public
  */
