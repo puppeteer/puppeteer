@@ -29,6 +29,7 @@ import {TimeoutSettings} from './TimeoutSettings.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {
   debugError,
+  importFS,
   isNumber,
   isString,
   makePredicateString,
@@ -429,7 +430,7 @@ export class DOMWorld {
     if (path !== null) {
       let fs: typeof import('fs').promises;
       try {
-        fs = (await import('fs')).promises;
+        fs = (await importFS()).promises;
       } catch (error) {
         if (error instanceof TypeError) {
           throw new Error(
