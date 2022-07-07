@@ -55,6 +55,7 @@ import {
   debugError,
   evaluationString,
   getExceptionMessage,
+  importFS,
   getReadableAsBuffer,
   getReadableFromProtocolStream,
   isErrorLike,
@@ -2920,7 +2921,7 @@ export class Page extends EventEmitter {
 
     if (options.path) {
       try {
-        const fs = (await import('fs')).promises;
+        const fs = (await importFS()).promises;
         await fs.writeFile(options.path, buffer);
       } catch (error) {
         if (error instanceof TypeError) {

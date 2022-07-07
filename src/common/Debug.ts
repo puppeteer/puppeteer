@@ -22,6 +22,20 @@ declare global {
 }
 
 /**
+ * @internal
+ */
+let debugModule: typeof import('debug') | null = null;
+/**
+ * @internal
+ */
+export async function importDebug(): Promise<typeof import('debug')> {
+  if (!debugModule) {
+    debugModule = (await import('debug')).default;
+  }
+  return debugModule;
+}
+
+/**
  * A debug function that can be used in any environment.
  *
  * @remarks
@@ -61,7 +75,7 @@ declare global {
 export const debug = (prefix: string): ((...args: unknown[]) => void) => {
   if (isNode) {
     return async (...logArgs: unknown[]) => {
-      (await import('debug')).default(prefix)(logArgs);
+      (await importDebug())(prefix)(logArgs);
     };
   }
 
