@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [15.3.2](https://github.com/puppeteer/puppeteer/compare/v15.3.1...v15.3.2) (2022-07-08)
+
+
+### Bug Fixes
+
+* cache dynamic imports ([#8652](https://github.com/puppeteer/puppeteer/issues/8652)) ([1de0383](https://github.com/puppeteer/puppeteer/commit/1de0383abf6be31cf06faede3e59b087a2958227))
+* expose a RemoteObject getter ([#8642](https://github.com/puppeteer/puppeteer/issues/8642)) ([d0c4291](https://github.com/puppeteer/puppeteer/commit/d0c42919956bd36ad7993a0fc1de86e886e39f62)), closes [#8639](https://github.com/puppeteer/puppeteer/issues/8639)
+* **page:** fix page.#scrollIntoViewIfNeeded method ([#8631](https://github.com/puppeteer/puppeteer/issues/8631)) ([b47f066](https://github.com/puppeteer/puppeteer/commit/b47f066c2c068825e3b65cfe17b6923c77ad30b9))
+
 ## [15.3.1](https://github.com/puppeteer/puppeteer/compare/v15.3.0...v15.3.1) (2022-07-06)
 
 
