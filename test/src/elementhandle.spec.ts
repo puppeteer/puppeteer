@@ -203,7 +203,7 @@ describe('ElementHandle specs', function () {
         })
       ).toBe(true);
     });
-    it('should work for TextNodes', async () => {
+    it('should not work for TextNodes', async () => {
       const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/input/button.html');
