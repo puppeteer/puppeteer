@@ -65,7 +65,7 @@ export const attachFrame = async (
   url: string
 ): Promise<Frame | undefined> => {
   const handle = await pageOrFrame.evaluateHandle(attachFrame, frameId, url);
-  return (await handle.asElement()?.contentFrame()) ?? undefined;
+  return (await handle.contentFrame()) ?? undefined;
 
   async function attachFrame(frameId: string, url: string) {
     const frame = document.createElement('iframe');
@@ -102,11 +102,11 @@ export async function navigateFrame(
 ): Promise<void> {
   await pageOrFrame.evaluate(navigateFrame, frameId, url);
 
-  function navigateFrame(frameId: string, url: any) {
+  function navigateFrame(frameId: string, url: string) {
     const frame = document.getElementById(frameId) as HTMLIFrameElement;
     frame.src = url;
-    return new Promise(x => {
-      return (frame.onload = x);
+    return new Promise(resolve => {
+      frame.onload = resolve;
     });
   }
 }

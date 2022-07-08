@@ -116,11 +116,19 @@ describe('navigation', function () {
         window.addEventListener(
           'beforeunload',
           () => {
-            return history.replaceState(null, 'initial', window.location.href);
+            history.replaceState(null, 'initial', window.location.href);
           },
           false
         );
       });
+      // TODO: There is a determinism problem here. Because the history API is
+      // triggered before unload, if we navigate away, the navigation, say nav1,
+      // will try to take place, but the history API will intercept and attempt
+      // to navigate, say nav2, first. This results in nav2 emitting events
+      // before nav1 resulting in a null response. If we attempt to fix this by
+      // ignoring same page navigation, then the test 'should click with
+      // disabled javascript' will break since we can no longer detect same page
+      // navigation.
       const response = await page.goto(server.PREFIX + '/grid.html');
       expect(response!.status()).toBe(200);
     });
@@ -220,20 +228,6 @@ describe('navigation', function () {
         expect(error.message).toContain('SSL_ERROR_UNKNOWN');
       }
     });
-    it('should throw if networkidle is passed as an option', async () => {
-      const {page, server} = getTestState();
-
-      let error!: Error;
-      await page
-        // @ts-expect-error purposefully passing an old option
-        .goto(server.EMPTY_PAGE, {waitUntil: 'networkidle'})
-        .catch(error_ => {
-          return (error = error_);
-        });
-      expect(error.message).toContain(
-        '"networkidle" option is no longer supported'
-      );
-    });
     it('should fail when main resources failed to load', async () => {
       const {page, isChrome} = getTestState();
 
@@ -260,7 +254,7 @@ describe('navigation', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
+      expect(error.message).toContain('1ms');
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should fail when exceeding default maximum navigation timeout', async () => {
@@ -273,7 +267,7 @@ describe('navigation', function () {
       await page.goto(server.PREFIX + '/empty.html').catch(error_ => {
         return (error = error_);
       });
-      expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
+      expect(error.message).toContain('1ms');
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should fail when exceeding default maximum timeout', async () => {
@@ -286,7 +280,7 @@ describe('navigation', function () {
       await page.goto(server.PREFIX + '/empty.html').catch(error_ => {
         return (error = error_);
       });
-      expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
+      expect(error.message).toContain('1ms');
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should prioritize default navigation timeout over default timeout', async () => {
@@ -300,7 +294,7 @@ describe('navigation', function () {
       await page.goto(server.PREFIX + '/empty.html').catch(error_ => {
         return (error = error_);
       });
-      expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
+      expect(error.message).toContain('1ms');
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should disable timeout when its set to 0', async () => {
@@ -755,7 +749,7 @@ describe('navigation', function () {
         return frame.remove();
       });
       const error = await navigationPromise;
-      expect(error.message).toBe('Navigating frame was detached');
+      expect(error.message).toContain('detached');
     });
     it('should return matching responses', async () => {
       const {page, server} = getTestState();
@@ -799,7 +793,7 @@ describe('navigation', function () {
       const [response] = await Promise.all([
         frame.waitForNavigation(),
         frame.evaluate((url: string) => {
-          return (window.location.href = url);
+          window.location.href = url;
         }, server.PREFIX + '/grid.html'),
       ]);
       expect(response!.ok()).toBe(true);
@@ -828,7 +822,7 @@ describe('navigation', function () {
         return frame.remove();
       });
       await navigationPromise;
-      expect(error.message).toBe('Navigating frame was detached');
+      expect(error.message).toContain('detached');
     });
   });
 

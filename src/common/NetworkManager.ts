@@ -63,10 +63,10 @@ export interface InternalNetworkConditions extends NetworkConditions {
  */
 export const NetworkManagerEmittedEvents = {
   Request: Symbol('NetworkManager.Request'),
-  RequestServedFromCache: Symbol('NetworkManager.RequestServedFromCache'),
-  Response: Symbol('NetworkManager.Response'),
   RequestFailed: Symbol('NetworkManager.RequestFailed'),
   RequestFinished: Symbol('NetworkManager.RequestFinished'),
+  RequestServedFromCache: Symbol('NetworkManager.RequestServedFromCache'),
+  Response: Symbol('NetworkManager.Response'),
 } as const;
 
 interface CDPSession extends EventEmitter {
@@ -127,14 +127,14 @@ export class NetworkManager extends EventEmitter {
       this.#onResponseReceived.bind(this)
     );
     this.#client.on(
+      'Network.responseReceivedExtraInfo',
+      this.#onResponseReceivedExtraInfo.bind(this)
+    );
+    this.#client.on(
       'Network.loadingFinished',
       this.#onLoadingFinished.bind(this)
     );
     this.#client.on('Network.loadingFailed', this.#onLoadingFailed.bind(this));
-    this.#client.on(
-      'Network.responseReceivedExtraInfo',
-      this.#onResponseReceivedExtraInfo.bind(this)
-    );
   }
 
   /**

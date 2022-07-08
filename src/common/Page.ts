@@ -518,65 +518,71 @@ export class Page extends EventEmitter {
       .on(TargetManagerEmittedEvents.TargetGone, this.#onDetachedFromTarget);
 
     this.#frameManager.on(FrameManagerEmittedEvents.FrameAttached, event => {
-      return this.emit(PageEmittedEvents.FrameAttached, event);
+      this.emit(PageEmittedEvents.FrameAttached, event);
     });
     this.#frameManager.on(FrameManagerEmittedEvents.FrameDetached, event => {
-      return this.emit(PageEmittedEvents.FrameDetached, event);
+      this.emit(PageEmittedEvents.FrameDetached, event);
     });
     this.#frameManager.on(FrameManagerEmittedEvents.FrameNavigated, event => {
-      return this.emit(PageEmittedEvents.FrameNavigated, event);
+      this.emit(PageEmittedEvents.FrameNavigated, event);
     });
+    this.#frameManager.on(
+      FrameManagerEmittedEvents.FrameNavigatedWithinDocument,
+      event => {
+        this.emit(PageEmittedEvents.FrameNavigated, event);
+      }
+    );
 
     const networkManager = this.#frameManager.networkManager();
     networkManager.on(NetworkManagerEmittedEvents.Request, event => {
-      return this.emit(PageEmittedEvents.Request, event);
+      this.emit(PageEmittedEvents.Request, event);
     });
     networkManager.on(
       NetworkManagerEmittedEvents.RequestServedFromCache,
       event => {
-        return this.emit(PageEmittedEvents.RequestServedFromCache, event);
+        this.emit(PageEmittedEvents.RequestServedFromCache, event);
       }
     );
     networkManager.on(NetworkManagerEmittedEvents.Response, event => {
-      return this.emit(PageEmittedEvents.Response, event);
+      this.emit(PageEmittedEvents.Response, event);
     });
     networkManager.on(NetworkManagerEmittedEvents.RequestFailed, event => {
-      return this.emit(PageEmittedEvents.RequestFailed, event);
+      this.emit(PageEmittedEvents.RequestFailed, event);
     });
     networkManager.on(NetworkManagerEmittedEvents.RequestFinished, event => {
-      return this.emit(PageEmittedEvents.RequestFinished, event);
+      this.emit(PageEmittedEvents.RequestFinished, event);
     });
     this.#fileChooserInterceptors = new Set();
 
     client.on('Page.domContentEventFired', () => {
-      return this.emit(PageEmittedEvents.DOMContentLoaded);
+      this.emit(PageEmittedEvents.DOMContentLoaded);
     });
     client.on('Page.loadEventFired', () => {
-      return this.emit(PageEmittedEvents.Load);
+      this.emit(PageEmittedEvents.Load);
     });
     client.on('Runtime.consoleAPICalled', event => {
-      return this.#onConsoleAPI(event);
+      this.#onConsoleAPI(event);
     });
     client.on('Runtime.bindingCalled', event => {
-      return this.#onBindingCalled(event);
+      this.#onBindingCalled(event);
     });
     client.on('Page.javascriptDialogOpening', event => {
-      return this.#onDialog(event);
+      this.#onDialog(event);
     });
     client.on('Runtime.exceptionThrown', exception => {
-      return this.#handleException(exception.exceptionDetails);
+      this.#handleException(exception.exceptionDetails);
     });
     client.on('Inspector.targetCrashed', () => {
-      return this.#onTargetCrashed();
+      this.#onTargetCrashed();
     });
     client.on('Performance.metrics', event => {
-      return this.#emitMetrics(event);
+      this.#emitMetrics(event);
     });
     client.on('Log.entryAdded', event => {
-      return this.#onLogEntryAdded(event);
+      this.#onLogEntryAdded(event);
     });
     client.on('Page.fileChooserOpened', event => {
-      return this.#onFileChooser(event);
+      this.#onFileChooser(event);
     });
     this.#target._isClosedPromise.then(() => {
       this.#target
@@ -1358,7 +1364,7 @@ export class Page extends EventEmitter {
         `Blank page can not have cookie "${item.name}"`
       );
       assert(
-        !String.prototype.startsWith.call(item.url || '', 'data:'),
+        !(item.url ?? '').startsWith('data:'),
         `Data URL page can not have cookie "${item.name}"`
       );
       return item;

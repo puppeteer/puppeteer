@@ -284,17 +284,10 @@ export class DOMWorld {
     const watcher = new LifecycleWatcher(
       this.#frameManager,
       this.#frame,
-      waitUntil,
-      timeout
+      timeout,
+      waitUntil
     );
-    const error = await Promise.race([
-      watcher.timeoutOrTerminationPromise(),
-      watcher.lifecyclePromise(),
-    ]);
-    watcher.dispose();
-    if (error) {
-      throw error;
-    }
+    await watcher.waitForCompletion();
   }
 
   /**

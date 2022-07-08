@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import assert from 'assert';
 import Protocol from 'devtools-protocol';
 import expect from 'expect';
 import fs from 'fs';
@@ -146,19 +147,19 @@ describe('Launcher specs', function () {
           browserWSEndpoint: browser.wsEndpoint(),
         });
         const page = await remote.newPage();
+        let error: Error | undefined;
         const navigationPromise = page
           .goto(server.PREFIX + '/one-style.html', {timeout: 60000})
           .catch(error_ => {
-            return error_;
+            error = error_;
           });
         await server.waitForRequest('/one-style.css');
         remote.disconnect();
-        const error = await navigationPromise;
+        await navigationPromise;
+        assert(error);
         expect(
-          [
-            'Navigation failed because browser has disconnected!',
-            'Protocol error (Page.navigate): Target closed.',
-          ].includes(error.message)
+          error.message.includes('disconnected') ||
+            error.message.includes('Target closed')
         ).toBeTruthy();
         await browser.close();
       });

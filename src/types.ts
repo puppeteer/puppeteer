@@ -35,6 +35,7 @@ export * from './common/HTTPResponse.js';
 export * from './common/Input.js';
 export * from './common/JSHandle.js';
 export * from './common/LifecycleWatcher.js';
+export * from './common/NavigationWatcher.js';
 export * from './common/NetworkConditions.js';
 export * from './common/NetworkEventManager.js';
 export * from './common/NetworkManager.js';

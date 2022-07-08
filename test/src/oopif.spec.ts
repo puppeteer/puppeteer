@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import utils from './utils.js';
 import expect from 'expect';
-import {
-  getTestState,
-  describeChromeOnly,
-  itFailsFirefox,
-} from './mocha-utils.js';
 import {
   Browser,
   BrowserContext,
 } from '../../lib/cjs/puppeteer/common/Browser.js';
 import {Page} from '../../lib/cjs/puppeteer/common/Page.js';
+import {
+  describeChromeOnly,
+  getTestState,
+  itFailsFirefox,
+} from './mocha-utils.js';
+import {attachFrame, detachFrame, navigateFrame} from './utils.js';
 
 describeChromeOnly('OOPIF', function () {
   /* We use a special browser for this test as we need the --site-per-process flag */
@@ -66,8 +66,8 @@ describeChromeOnly('OOPIF', function () {
     const framePromise = page.waitForFrame(frame => {
       return frame.url().endsWith('/empty.html');
     });
-    await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
-    await utils.attachFrame(
+    await attachFrame(page, 'frame1', server.EMPTY_PAGE);
+    await attachFrame(
       page,
       'frame2',
       server.CROSS_PROCESS_PREFIX + '/empty.html'
@@ -82,14 +82,14 @@ describeChromeOnly('OOPIF', function () {
     const framePromise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 1;
     });
-    await utils.attachFrame(
+    await attachFrame(
       page,
       'frame1',
       server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
     const frame = await framePromise;
     expect(frame.url()).toContain('/empty.html');
-    await utils.navigateFrame(
+    await navigateFrame(
       page,
       'frame1',
       server.CROSS_PROCESS_PREFIX + '/assets/frame.html'
@@ -103,17 +103,17 @@ describeChromeOnly('OOPIF', function () {
     const framePromise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 1;
     });
-    await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+    await attachFrame(page, 'frame1', server.EMPTY_PAGE);
 
     const frame = await framePromise;
     expect(frame.isOOPFrame()).toBe(false);
-    await utils.navigateFrame(
+    await navigateFrame(
       page,
       'frame1',
       server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
     expect(frame.isOOPFrame()).toBe(true);
-    await utils.navigateFrame(page, 'frame1', server.EMPTY_PAGE);
+    await navigateFrame(page, 'frame1', server.EMPTY_PAGE);
     expect(frame.isOOPFrame()).toBe(false);
     expect(page.frames()).toHaveLength(2);
   });
@@ -127,7 +127,7 @@ describeChromeOnly('OOPIF', function () {
     const frame2Promise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 2;
     });
-    await utils.attachFrame(
+    await attachFrame(
       page,
       'frame1',
       server.CROSS_PROCESS_PREFIX + '/frames/one-frame.html'
@@ -153,17 +153,17 @@ describeChromeOnly('OOPIF', function () {
     const framePromise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 1;
     });
-    await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+    await attachFrame(page, 'frame1', server.EMPTY_PAGE);
 
     const frame = await framePromise;
     expect(frame.isOOPFrame()).toBe(false);
-    await utils.navigateFrame(
+    await navigateFrame(
       page,
       'frame1',
       server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
     expect(frame.isOOPFrame()).toBe(true);
-    await utils.detachFrame(page, 'frame1');
+    await detachFrame(page, 'frame1');
     expect(page.frames()).toHaveLength(1);
   });
 
@@ -174,19 +174,19 @@ describeChromeOnly('OOPIF', function () {
     const framePromise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 1;
     });
-    await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+    await attachFrame(page, 'frame1', server.EMPTY_PAGE);
 
     const frame = await framePromise;
     expect(frame.isOOPFrame()).toBe(false);
     const nav = frame.waitForNavigation();
-    await utils.navigateFrame(
+    await navigateFrame(
       page,
       'frame1',
       server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
     await nav;
     expect(frame.isOOPFrame()).toBe(true);
-    await utils.detachFrame(page, 'frame1');
+    await detachFrame(page, 'frame1');
     expect(page.frames()).toHaveLength(1);
   });
 
@@ -197,16 +197,17 @@ describeChromeOnly('OOPIF', function () {
     const framePromise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 1;
     });
-    await utils.attachFrame(
+    await attachFrame(
       page,
       'frame1',
       server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
     const frame = await framePromise;
     expect(frame.url()).toContain('/empty.html');
-    await utils.navigateFrame(page, 'frame1', server.EMPTY_PAGE);
+    await navigateFrame(page, 'frame1', server.EMPTY_PAGE);
     expect(frame.url()).toBe(server.EMPTY_PAGE);
   });
+
   it('should support evaluating in oop iframes', async () => {
     const {server} = getTestState();
 
@@ -214,7 +215,7 @@ describeChromeOnly('OOPIF', function () {
     const framePromise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 1;
     });
-    await utils.attachFrame(
+    await attachFrame(
       page,
       'frame1',
       server.CROSS_PROCESS_PREFIX + '/empty.html'
@@ -253,7 +254,7 @@ describeChromeOnly('OOPIF', function () {
     const framePromise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 1;
     });
-    await utils.attachFrame(
+    await attachFrame(
       page,
       'frame1',
       server.CROSS_PROCESS_PREFIX + '/empty.html'
@@ -331,7 +332,7 @@ describeChromeOnly('OOPIF', function () {
     });
     await page.goto(server.PREFIX + '/dynamic-oopif.html');
     const oopIframe = await oopIframePromise;
-    await utils.attachFrame(
+    await attachFrame(
       oopIframe,
       'frame1',
       server.CROSS_PROCESS_PREFIX + '/empty.html'
@@ -339,7 +340,7 @@ describeChromeOnly('OOPIF', function () {
 
     const frame1 = oopIframe.childFrames()[0]!;
     expect(frame1.url()).toMatch(/empty.html$/);
-    await utils.navigateFrame(
+    await navigateFrame(
       oopIframe,
       'frame1',
       server.CROSS_PROCESS_PREFIX + '/oopif.html'
@@ -350,7 +351,7 @@ describeChromeOnly('OOPIF', function () {
       {waitUntil: 'load'}
     );
     expect(frame1.url()).toMatch(/oopif.html#navigate-within-document$/);
-    await utils.detachFrame(oopIframe, 'frame1');
+    await detachFrame(oopIframe, 'frame1');
     expect(oopIframe.childFrames()).toHaveLength(0);
   });
 
@@ -360,7 +361,7 @@ describeChromeOnly('OOPIF', function () {
     const framePromise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 1;
     });
-    await utils.attachFrame(
+    await attachFrame(
       page,
       'frame1',
       server.CROSS_PROCESS_PREFIX + '/empty.html'
@@ -438,7 +439,7 @@ describeChromeOnly('OOPIF', function () {
       const {server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      await utils.attachFrame(
+      await attachFrame(
         page,
         'frame2',
         server.CROSS_PROCESS_PREFIX + '/empty.html'

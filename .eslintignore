@@ -28,6 +28,7 @@ coverage/
 .env.development.local
 .env.test.local
 .env.production.local
+.devcontainer
 
 npm-debug.log*
 yarn-debug.log*

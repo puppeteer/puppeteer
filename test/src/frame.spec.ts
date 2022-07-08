@@ -23,7 +23,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import utils, {dumpFrames} from './utils.js';
+import utils, {dumpFrames, waitEvent} from './utils.js';
 
 describe('Frame specs', function () {
   setupTestBrowserHooks();
@@ -178,7 +178,7 @@ describe('Frame specs', function () {
       await page.goto(server.EMPTY_PAGE);
       await Promise.all([
         page.goto(server.EMPTY_PAGE + '#foo'),
-        utils.waitEvent(page, 'framenavigated'),
+        waitEvent(page, 'framenavigated'),
       ]);
       expect(page.url()).toBe(server.EMPTY_PAGE + '#foo');
     });
