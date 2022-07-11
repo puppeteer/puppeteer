@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [15.4.0](https://github.com/puppeteer/puppeteer/compare/v15.3.2...v15.4.0) (2022-07-11)
+
+
+### Features
+
+* expose the page getter on Frame ([#8657](https://github.com/puppeteer/puppeteer/issues/8657)) ([af08c5c](https://github.com/puppeteer/puppeteer/commit/af08c5c90380c853e8257a51298bfed4b0635779))
+
 ## [15.3.2](https://github.com/puppeteer/puppeteer/compare/v15.3.1...v15.3.2) (2022-07-08)
 
 
