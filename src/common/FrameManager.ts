@@ -770,6 +770,13 @@ export class Frame {
   }
 
   /**
+   * @returns a page associated with the frame.
+   */
+  page(): Page {
+    return this._frameManager.page();
+  }
+
+  /**
    * @remarks
    *
    * @returns `true` if the frame is an OOP frame, or `false` otherwise.

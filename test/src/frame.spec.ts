@@ -116,6 +116,15 @@ describe('Frame specs', function () {
     });
   });
 
+  describe('Frame.page', function () {
+    it('should retrieve the page from a frame', async () => {
+      const {page, server} = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      const mainFrame = page.mainFrame();
+      expect(mainFrame.page()).toEqual(page);
+    });
+  });
+
   describe('Frame Management', function () {
     itFailsFirefox('should handle nested frames', async () => {
       const {page, server} = getTestState();
