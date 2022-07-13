@@ -6,7 +6,7 @@ build/
 lib/
 
 # Generated files
-tsconfig.tsbuildinfo
+**/*.tsbuildinfo
 puppeteer.api.json
 puppeteer*.tgz
 yarn.lock

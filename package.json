@@ -62,7 +62,8 @@
   "files": [
     "lib",
     "install.js",
-    "typescript-if-required.js"
+    "typescript-if-required.js",
+    "!**/*.tsbuildinfo"
   ],
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
