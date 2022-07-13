@@ -25,7 +25,7 @@ jobs:
         with:
           fetch-depth: 2
       - name: Set up Node.js
-        uses: actions/setup-node@v3.3.0
+        uses: actions/setup-node@v3.4.0
         with:
           node-version: 18
       - name: Setup cache for Chromium binary
@@ -54,7 +54,7 @@ jobs:
         with:
           fetch-depth: 2
       - name: Set up Node.js
-        uses: actions/setup-node@v3.3.0
+        uses: actions/setup-node@v3.4.0
         with:
           cache: npm
       - name: Setup cache for Chromium binary
@@ -93,7 +93,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Set up Node.js
-        uses: actions/setup-node@v3.3.0
+        uses: actions/setup-node@v3.4.0
         with:
           cache: npm
       - name: Install dependencies
@@ -146,7 +146,7 @@ jobs:
           path: .local-firefox
           key: ${{ runner.os }}-firefox-${{ hashFiles('src/revisions.ts') }}
       - name: Set up Node.js
-        uses: actions/setup-node@v3.3.0
+        uses: actions/setup-node@v3.4.0
         with:
           node-version: ${{ matrix.spec.node }}
       - name: Install dependencies with Chromium
