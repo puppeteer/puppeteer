@@ -21,6 +21,7 @@ import {
   setupTestPageAndContextHooks,
   itFailsFirefox,
   itHeadfulOnly,
+  itChromeOnly,
 } from './mocha-utils.js';
 
 describe('Screenshots', function () {
@@ -213,6 +214,27 @@ describe('Screenshots', function () {
       const elementHandle = (await page.$('.box:nth-of-type(3)'))!;
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-bounding-box.png');
+    });
+    itChromeOnly('should work with a null viewport', async () => {
+      const {defaultBrowserOptions, puppeteer, server} = getTestState();
+
+      const browser = await puppeteer.launch({
+        ...defaultBrowserOptions,
+        defaultViewport: null,
+      });
+
+      try {
+        const page = await browser.newPage();
+        await page.goto(server.PREFIX + '/grid.html');
+        await page.evaluate(() => {
+          return window.scrollBy(50, 100);
+        });
+        const elementHandle = (await page.$('.box:nth-of-type(3)'))!;
+        const screenshot = await elementHandle.screenshot();
+        expect(screenshot).toBeTruthy();
+      } finally {
+        await browser.close();
+      }
     });
     it('should take into account padding and border', async () => {
       const {page} = getTestState();

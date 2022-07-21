@@ -785,11 +785,11 @@ export class ElementHandle<
     assert(boundingBox, 'Node is either not visible or not an HTMLElement');
 
     const viewport = this.#page.viewport();
-    assert(viewport);
 
     if (
-      boundingBox.width > viewport.width ||
-      boundingBox.height > viewport.height
+      viewport &&
+      (boundingBox.width > viewport.width ||
+        boundingBox.height > viewport.height)
     ) {
       const newViewport = {
         width: Math.max(viewport.width, Math.ceil(boundingBox.width)),
@@ -826,7 +826,7 @@ export class ElementHandle<
       )
     );
 
-    if (needsViewportReset) {
+    if (needsViewportReset && viewport) {
       await this.#page.setViewport(viewport);
     }
 
