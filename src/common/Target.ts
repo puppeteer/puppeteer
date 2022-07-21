@@ -21,12 +21,14 @@ import {Browser, BrowserContext, IsPageTargetCallback} from './Browser.js';
 import {Viewport} from './PuppeteerViewport.js';
 import {Protocol} from 'devtools-protocol';
 import {TaskQueue} from './TaskQueue.js';
+import {TargetManager} from './TargetManager.js';
 
 /**
  * @public
  */
 export class Target {
   #browserContext: BrowserContext;
+  #session?: CDPSession;
   #targetInfo: Protocol.Target.TargetInfo;
   #sessionFactory: () => Promise<CDPSession>;
   #ignoreHTTPSErrors: boolean;
@@ -64,18 +66,24 @@ export class Target {
    */
   _isPageTargetCallback: IsPageTargetCallback;
 
+  #targetManager: TargetManager;
+
   /**
    * @internal
    */
   constructor(
     targetInfo: Protocol.Target.TargetInfo,
+    session: CDPSession | undefined,
     browserContext: BrowserContext,
+    targetManager: TargetManager,
     sessionFactory: () => Promise<CDPSession>,
     ignoreHTTPSErrors: boolean,
     defaultViewport: Viewport | null,
     screenshotTaskQueue: TaskQueue,
     isPageTargetCallback: IsPageTargetCallback
   ) {
+    this.#session = session;
+    this.#targetManager = targetManager;
     this.#targetInfo = targetInfo;
     this.#browserContext = browserContext;
     this._targetId = targetInfo.targetId;
@@ -114,10 +122,24 @@ export class Target {
   }
 
   /**
+   * @internal
+   */
+  _session(): CDPSession | undefined {
+    return this.#session;
+  }
+
+  /**
    * Creates a Chrome Devtools Protocol session attached to the target.
    */
   createCDPSession(): Promise<CDPSession> {
     return this.#sessionFactory();
+  }
+
+  /**
+   * @internal
+   */
+  _targetManager(): TargetManager {
+    return this.#targetManager;
   }
 
   /**
@@ -132,7 +154,9 @@ export class Target {
    */
   async page(): Promise<Page | null> {
     if (this._isPageTargetCallback(this.#targetInfo) && !this.#pagePromise) {
-      this.#pagePromise = this.#sessionFactory().then(client => {
+      this.#pagePromise = (
+        this.#session ? Promise.resolve(this.#session) : this.#sessionFactory()
+      ).then(client => {
         return Page._create(
           client,
           this,
@@ -157,7 +181,9 @@ export class Target {
     }
     if (!this.#workerPromise) {
       // TODO(einbinder): Make workers send their console logs.
-      this.#workerPromise = this.#sessionFactory().then(client => {
+      this.#workerPromise = (
+        this.#session ? Promise.resolve(this.#session) : this.#sessionFactory()
+      ).then(client => {
         return new WebWorker(
           client,
           this.#targetInfo.url,

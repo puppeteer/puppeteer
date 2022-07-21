@@ -68,7 +68,8 @@ describe('Fixtures', function () {
     expect(dumpioData).toContain('DevTools listening on ws://');
   });
   it('should close the browser when the node process closes', async () => {
-    const {defaultBrowserOptions, puppeteerPath, puppeteer} = getTestState();
+    const {defaultBrowserOptions, puppeteerPath, puppeteer, isFirefox} =
+      getTestState();
 
     const {spawn, execSync} = await import('child_process');
     const options = Object.assign({}, defaultBrowserOptions, {
@@ -93,6 +94,7 @@ describe('Fixtures', function () {
     });
     const browser = await puppeteer.connect({
       browserWSEndpoint: await wsEndPointPromise,
+      product: isFirefox ? 'firefox' : 'chrome',
     });
     const promises = [
       new Promise(resolve => {
