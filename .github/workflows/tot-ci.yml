@@ -48,11 +48,8 @@ jobs:
 
       - name: Run unit tests in headless
         uses: nick-invision/retry@v2
-        env:
-          CHROMIUM: true
-          HEADLESS: true
         with:
-          command: xvfb-run --auto-servernum npm run test:unit
+          command: xvfb-run --auto-servernum npm run test:chrome
           timeout_minutes: 10
           max_attempts: 3
 
@@ -89,11 +86,8 @@ jobs:
 
       - name: Run unit tests in headful
         uses: nick-invision/retry@v2
-        env:
-          CHROMIUM: true
-          HEADLESS: false
         with:
-          command: xvfb-run --auto-servernum npm run test:unit
+          command: xvfb-run --auto-servernum npm run test:chrome:headful
           timeout_minutes: 10
           max_attempts: 3
 
@@ -130,9 +124,7 @@ jobs:
 
       - name: Run unit tests in chrome headless
         uses: nick-invision/retry@v2
-        env:
-          CHROMIUM: true
         with:
-          command: xvfb-run --auto-servernum npm run test:unit:chrome-headless
+          command: xvfb-run --auto-servernum npm run test:chrome-headless
           timeout_minutes: 10
           max_attempts: 3
