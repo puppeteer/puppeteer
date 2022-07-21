@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [15.4.2](https://github.com/puppeteer/puppeteer/compare/v15.4.1...v15.4.2) (2022-07-21)
+
+
+### Bug Fixes
+
+* taking a screenshot with null viewport should be possible ([#8680](https://github.com/puppeteer/puppeteer/issues/8680)) ([2abb9f0](https://github.com/puppeteer/puppeteer/commit/2abb9f0c144779d555ecbf337a759440d0282cba)), closes [#8673](https://github.com/puppeteer/puppeteer/issues/8673)
+
 ## [15.4.1](https://github.com/puppeteer/puppeteer/compare/v15.4.0...v15.4.1) (2022-07-21)
 
 
