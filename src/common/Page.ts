@@ -19,7 +19,7 @@ import type {Readable} from 'stream';
 import {Accessibility} from './Accessibility.js';
 import {assert} from './assert.js';
 import {Browser, BrowserContext} from './Browser.js';
-import {CDPSession, CDPSessionEmittedEvents, Connection} from './Connection.js';
+import {CDPSession, CDPSessionEmittedEvents} from './Connection.js';
 import {ConsoleMessage, ConsoleMessageType} from './ConsoleMessage.js';
 import {Coverage} from './Coverage.js';
 import {Dialog} from './Dialog.js';
@@ -46,6 +46,7 @@ import {
 import {LowerCasePaperFormat, PDFOptions, _paperFormats} from './PDFOptions.js';
 import {Viewport} from './PuppeteerViewport.js';
 import {Target} from './Target.js';
+import {TargetManagerEmittedEvents} from './TargetManager.js';
 import {TaskQueue} from './TaskQueue.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {Tracing} from './Tracing.js';
@@ -508,49 +509,13 @@ export class Page extends EventEmitter {
     this.#screenshotTaskQueue = screenshotTaskQueue;
     this.#viewport = null;
 
-    client.on(
-      'Target.attachedToTarget',
-      (event: Protocol.Target.AttachedToTargetEvent) => {
-        switch (event.targetInfo.type) {
-          case 'worker':
-            const connection = Connection.fromSession(client);
-            assert(connection);
-            const session = connection.session(event.sessionId);
-            assert(session);
-            const worker = new WebWorker(
-              session,
-              event.targetInfo.url,
-              this.#addConsoleMessage.bind(this),
-              this.#handleException.bind(this)
-            );
-            this.#workers.set(event.sessionId, worker);
-            this.emit(PageEmittedEvents.WorkerCreated, worker);
-            break;
-          case 'iframe':
-            break;
-          default:
-            // If we don't detach from service workers, they will never die. We
-            // still want to attach to workers for emitting events. We still
-            // want to attach to iframes so sessions may interact with them. We
-            // detach from all other types out of an abundance of caution. See
-            // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/devtools_agent_host_impl.cc?ss=chromium&q=f:devtools%20-f:out%20%22::kTypePage%5B%5D%22
-            // for the complete list of available types.
-            client
-              .send('Target.detachFromTarget', {
-                sessionId: event.sessionId,
-              })
-              .catch(debugError);
-        }
-      }
-    );
-    client.on('Target.detachedFromTarget', event => {
-      const worker = this.#workers.get(event.sessionId);
-      if (!worker) {
-        return;
-      }
-      this.#workers.delete(event.sessionId);
-      this.emit(PageEmittedEvents.WorkerDestroyed, worker);
-    });
+    this.#target
+      ._targetManager()
+      .addTargetInterceptor(this.#client, this.#onAttachedToTarget);
+
+    this.#target
+      ._targetManager()
+      .on(TargetManagerEmittedEvents.TargetGone, this.#onDetachedFromTarget);
 
     this.#frameManager.on(FrameManagerEmittedEvents.FrameAttached, event => {
       return this.emit(PageEmittedEvents.FrameAttached, event);
@@ -614,19 +579,58 @@ export class Page extends EventEmitter {
       return this.#onFileChooser(event);
     });
     this.#target._isClosedPromise.then(() => {
+      this.#target
+        ._targetManager()
+        .removeTargetInterceptor(this.#client, this.#onAttachedToTarget);
+
+      this.#target
+        ._targetManager()
+        .off(TargetManagerEmittedEvents.TargetGone, this.#onDetachedFromTarget);
       this.emit(PageEmittedEvents.Close);
       this.#closed = true;
     });
   }
 
+  #onDetachedFromTarget = (target: Target) => {
+    const sessionId = target._session()?.id();
+
+    this.#frameManager.onDetachedFromTarget(target);
+
+    const worker = this.#workers.get(sessionId!);
+    if (!worker) {
+      return;
+    }
+    this.#workers.delete(sessionId!);
+    this.emit(PageEmittedEvents.WorkerDestroyed, worker);
+  };
+
+  #onAttachedToTarget = async (createdTarget: Target) => {
+    await this.#frameManager.onAttachedToTarget(createdTarget);
+    if (createdTarget._getTargetInfo().type === 'worker') {
+      const session = createdTarget._session();
+      assert(session);
+      const worker = new WebWorker(
+        session,
+        createdTarget.url(),
+        this.#addConsoleMessage.bind(this),
+        this.#handleException.bind(this)
+      );
+      this.#workers.set(session.id(), worker);
+      this.emit(PageEmittedEvents.WorkerCreated, worker);
+    }
+    if (createdTarget._session()) {
+      this.#target
+        ._targetManager()
+        .addTargetInterceptor(
+          createdTarget._session()!,
+          this.#onAttachedToTarget
+        );
+    }
+  };
+
   async #initialize(): Promise<void> {
     await Promise.all([
       this.#frameManager.initialize(),
-      this.#client.send('Target.setAutoAttach', {
-        autoAttach: true,
-        waitForDebuggerOnStart: false,
-        flatten: true,
-      }),
       this.#client.send('Performance.enable'),
       this.#client.send('Log.enable'),
     ]);

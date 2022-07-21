@@ -139,11 +139,13 @@ describe('Launcher specs', function () {
 
     describe('Browser.disconnect', function () {
       it('should reject navigation when browser closes', async () => {
-        const {server, puppeteer, defaultBrowserOptions} = getTestState();
+        const {server, puppeteer, defaultBrowserOptions, isFirefox} =
+          getTestState();
         server.setRoute('/one-style.css', () => {});
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const remote = await puppeteer.connect({
           browserWSEndpoint: browser.wsEndpoint(),
+          product: isFirefox ? 'firefox' : 'chrome',
         });
         const page = await remote.newPage();
         const navigationPromise = page
@@ -163,12 +165,14 @@ describe('Launcher specs', function () {
         await browser.close();
       });
       it('should reject waitForSelector when browser closes', async () => {
-        const {server, puppeteer, defaultBrowserOptions} = getTestState();
+        const {server, puppeteer, defaultBrowserOptions, isFirefox} =
+          getTestState();
 
         server.setRoute('/empty.html', () => {});
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const remote = await puppeteer.connect({
           browserWSEndpoint: browser.wsEndpoint(),
+          product: isFirefox ? 'firefox' : 'chrome',
         });
         const page = await remote.newPage();
         const watchdog = page
@@ -184,11 +188,13 @@ describe('Launcher specs', function () {
     });
     describe('Browser.close', function () {
       it('should terminate network waiters', async () => {
-        const {server, puppeteer, defaultBrowserOptions} = getTestState();
+        const {server, puppeteer, defaultBrowserOptions, isFirefox} =
+          getTestState();
 
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const remote = await puppeteer.connect({
           browserWSEndpoint: browser.wsEndpoint(),
+          product: isFirefox ? 'firefox' : 'chrome',
         });
         const newPage = await remote.newPage();
         const results = await Promise.all([
@@ -653,26 +659,24 @@ describe('Launcher specs', function () {
         expect(userAgent).toContain('Chrome');
       });
 
-      itOnlyRegularInstall(
-        'should be able to launch Firefox',
-        async function () {
-          this.timeout(FIREFOX_TIMEOUT);
-          const {puppeteer} = getTestState();
-          const browser = await puppeteer.launch({product: 'firefox'});
-          const userAgent = await browser.userAgent();
-          await browser.close();
-          expect(userAgent).toContain('Firefox');
-        }
-      );
+      it('should be able to launch Firefox', async function () {
+        this.timeout(FIREFOX_TIMEOUT);
+        const {puppeteer} = getTestState();
+        const browser = await puppeteer.launch({product: 'firefox'});
+        const userAgent = await browser.userAgent();
+        await browser.close();
+        expect(userAgent).toContain('Firefox');
+      });
     });
 
     describe('Puppeteer.connect', function () {
       it('should be able to connect multiple times to the same browser', async () => {
-        const {puppeteer, defaultBrowserOptions} = getTestState();
+        const {puppeteer, defaultBrowserOptions, isFirefox} = getTestState();
 
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
         const otherBrowser = await puppeteer.connect({
           browserWSEndpoint: originalBrowser.wsEndpoint(),
+          product: isFirefox ? 'firefox' : 'chrome',
         });
         const page = await otherBrowser.newPage();
         expect(
@@ -691,11 +695,12 @@ describe('Launcher specs', function () {
         await originalBrowser.close();
       });
       it('should be able to close remote browser', async () => {
-        const {defaultBrowserOptions, puppeteer} = getTestState();
+        const {defaultBrowserOptions, puppeteer, isFirefox} = getTestState();
 
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
         const remoteBrowser = await puppeteer.connect({
           browserWSEndpoint: originalBrowser.wsEndpoint(),
+          product: isFirefox ? 'firefox' : 'chrome',
         });
         await Promise.all([
           utils.waitEvent(originalBrowser, 'disconnected'),
@@ -703,7 +708,8 @@ describe('Launcher specs', function () {
         ]);
       });
       it('should support ignoreHTTPSErrors option', async () => {
-        const {httpsServer, puppeteer, defaultBrowserOptions} = getTestState();
+        const {httpsServer, puppeteer, defaultBrowserOptions, isFirefox} =
+          getTestState();
 
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
         const browserWSEndpoint = originalBrowser.wsEndpoint();
@@ -711,6 +717,7 @@ describe('Launcher specs', function () {
         const browser = await puppeteer.connect({
           browserWSEndpoint,
           ignoreHTTPSErrors: true,
+          product: isFirefox ? 'firefox' : 'chrome',
         });
         const page = await browser.newPage();
         let error!: Error;
@@ -732,7 +739,8 @@ describe('Launcher specs', function () {
       });
       // @see https://github.com/puppeteer/puppeteer/issues/4197
       itFailsFirefox('should support targetFilter option', async () => {
-        const {server, puppeteer, defaultBrowserOptions} = getTestState();
+        const {server, puppeteer, defaultBrowserOptions, isFirefox} =
+          getTestState();
 
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
         const browserWSEndpoint = originalBrowser.wsEndpoint();
@@ -745,6 +753,7 @@ describe('Launcher specs', function () {
 
         const browser = await puppeteer.connect({
           browserWSEndpoint,
+          product: isFirefox ? 'firefox' : 'chrome',
           targetFilter: (targetInfo: Protocol.Target.TargetInfo) => {
             return !targetInfo.url?.includes('should-be-ignored');
           },
@@ -828,14 +837,18 @@ describe('Launcher specs', function () {
         }
       );
       it('should be able to reconnect', async () => {
-        const {puppeteer, server, defaultBrowserOptions} = getTestState();
+        const {puppeteer, server, defaultBrowserOptions, isFirefox} =
+          getTestState();
         const browserOne = await puppeteer.launch(defaultBrowserOptions);
         const browserWSEndpoint = browserOne.wsEndpoint();
         const pageOne = await browserOne.newPage();
         await pageOne.goto(server.EMPTY_PAGE);
         browserOne.disconnect();
 
-        const browserTwo = await puppeteer.connect({browserWSEndpoint});
+        const browserTwo = await puppeteer.connect({
+          browserWSEndpoint,
+          product: isFirefox ? 'firefox' : 'chrome',
+        });
         const pages = await browserTwo.pages();
         const pageTwo = pages.find(page => {
           return page.url() === server.EMPTY_PAGE;
@@ -975,44 +988,53 @@ describe('Launcher specs', function () {
   });
 
   describe('Browser.Events.disconnected', function () {
-    it('should be emitted when: browser gets closed, disconnected or underlying websocket gets closed', async () => {
-      const {puppeteer, defaultBrowserOptions} = getTestState();
-      const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
-      const browserWSEndpoint = originalBrowser.wsEndpoint();
-      const remoteBrowser1 = await puppeteer.connect({browserWSEndpoint});
-      const remoteBrowser2 = await puppeteer.connect({browserWSEndpoint});
+    itFailsFirefox(
+      'should be emitted when: browser gets closed, disconnected or underlying websocket gets closed',
+      async () => {
+        const {puppeteer, defaultBrowserOptions, isFirefox} = getTestState();
+        const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+        const browserWSEndpoint = originalBrowser.wsEndpoint();
+        const remoteBrowser1 = await puppeteer.connect({
+          browserWSEndpoint,
+          product: isFirefox ? 'firefox' : 'chrome',
+        });
+        const remoteBrowser2 = await puppeteer.connect({
+          browserWSEndpoint,
+          product: isFirefox ? 'firefox' : 'chrome',
+        });
 
-      let disconnectedOriginal = 0;
-      let disconnectedRemote1 = 0;
-      let disconnectedRemote2 = 0;
-      originalBrowser.on('disconnected', () => {
-        return ++disconnectedOriginal;
-      });
-      remoteBrowser1.on('disconnected', () => {
-        return ++disconnectedRemote1;
-      });
-      remoteBrowser2.on('disconnected', () => {
-        return ++disconnectedRemote2;
-      });
+        let disconnectedOriginal = 0;
+        let disconnectedRemote1 = 0;
+        let disconnectedRemote2 = 0;
+        originalBrowser.on('disconnected', () => {
+          return ++disconnectedOriginal;
+        });
+        remoteBrowser1.on('disconnected', () => {
+          return ++disconnectedRemote1;
+        });
+        remoteBrowser2.on('disconnected', () => {
+          return ++disconnectedRemote2;
+        });
 
-      await Promise.all([
-        utils.waitEvent(remoteBrowser2, 'disconnected'),
-        remoteBrowser2.disconnect(),
-      ]);
+        await Promise.all([
+          utils.waitEvent(remoteBrowser2, 'disconnected'),
+          remoteBrowser2.disconnect(),
+        ]);
 
-      expect(disconnectedOriginal).toBe(0);
-      expect(disconnectedRemote1).toBe(0);
-      expect(disconnectedRemote2).toBe(1);
+        expect(disconnectedOriginal).toBe(0);
+        expect(disconnectedRemote1).toBe(0);
+        expect(disconnectedRemote2).toBe(1);
 
-      await Promise.all([
-        utils.waitEvent(remoteBrowser1, 'disconnected'),
-        utils.waitEvent(originalBrowser, 'disconnected'),
-        originalBrowser.close(),
-      ]);
+        await Promise.all([
+          utils.waitEvent(remoteBrowser1, 'disconnected'),
+          utils.waitEvent(originalBrowser, 'disconnected'),
+          originalBrowser.close(),
+        ]);
 
-      expect(disconnectedOriginal).toBe(1);
-      expect(disconnectedRemote1).toBe(1);
-      expect(disconnectedRemote2).toBe(1);
-    });
+        expect(disconnectedOriginal).toBe(1);
+        expect(disconnectedRemote1).toBe(1);
+        expect(disconnectedRemote2).toBe(1);
+      }
+    );
   });
 });

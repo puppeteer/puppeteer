@@ -27,7 +27,7 @@
     "node": ">=14.1.0"
   },
   "scripts": {
-    "test": "c8 --check-coverage --lines 94 run-s test:chrome test:chrome:* test:firefox",
+    "test": "c8 --check-coverage --lines 93 run-s test:chrome test:chrome:* test:firefox",
     "test:types": "tsd",
     "test:install": "scripts/test-install.sh",
     "test:firefox": "cross-env PUPPETEER_PRODUCT=firefox MOZ_WEBRENDER=0 mocha",

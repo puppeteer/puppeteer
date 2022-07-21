@@ -16,7 +16,7 @@
 
 import {Protocol} from 'devtools-protocol';
 import {assert} from './assert.js';
-import {CDPSession, Connection} from './Connection.js';
+import {CDPSession} from './Connection.js';
 import {DOMWorld, WaitForSelectorOptions} from './DOMWorld.js';
 import {ElementHandle} from './ElementHandle.js';
 import {EventEmitter} from './EventEmitter.js';
@@ -26,6 +26,7 @@ import {MouseButton} from './Input.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {NetworkManager} from './NetworkManager.js';
 import {Page} from './Page.js';
+import {Target} from './Target.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {debugError, isErrorLike} from './util.js';
@@ -129,12 +130,6 @@ export class FrameManager extends EventEmitter {
     session.on('Page.lifecycleEvent', event => {
       this.#onLifecycleEvent(event);
     });
-    session.on('Target.attachedToTarget', async event => {
-      this.#onAttachedToTarget(event);
-    });
-    session.on('Target.detachedFromTarget', async event => {
-      this.#onDetachedFromTarget(event);
-    });
   }
 
   async initialize(client: CDPSession = this.#client): Promise<void> {
@@ -142,13 +137,6 @@ export class FrameManager extends EventEmitter {
       const result = await Promise.all([
         client.send('Page.enable'),
         client.send('Page.getFrameTree'),
-        client !== this.#client
-          ? client.send('Target.setAutoAttach', {
-              autoAttach: true,
-              waitForDebuggerOnStart: false,
-              flatten: true,
-            })
-          : Promise.resolve(),
       ]);
 
       const {frameTree} = result[1];
@@ -264,28 +252,21 @@ export class FrameManager extends EventEmitter {
     return await watcher.navigationResponse();
   }
 
-  async #onAttachedToTarget(event: Protocol.Target.AttachedToTargetEvent) {
-    if (event.targetInfo.type !== 'iframe') {
+  async onAttachedToTarget(target: Target): Promise<void> {
+    if (target._getTargetInfo().type !== 'iframe') {
       return;
     }
 
-    const frame = this.#frames.get(event.targetInfo.targetId);
-    const connection = Connection.fromSession(this.#client);
-    assert(connection);
-    const session = connection.session(event.sessionId);
-    assert(session);
+    const frame = this.#frames.get(target._getTargetInfo().targetId);
     if (frame) {
-      frame._updateClient(session);
+      frame._updateClient(target._session()!);
     }
-    this.setupEventListeners(session);
-    await this.initialize(session);
+    this.setupEventListeners(target._session()!);
+    this.initialize(target._session());
   }
 
-  async #onDetachedFromTarget(event: Protocol.Target.DetachedFromTargetEvent) {
-    if (!event.targetId) {
-      return;
-    }
-    const frame = this.#frames.get(event.targetId);
+  async onDetachedFromTarget(target: Target): Promise<void> {
+    const frame = this.#frames.get(target._targetId);
     if (frame && frame.isOOPFrame()) {
       // When an OOP iframe is removed from the page, it
       // will only get a Target.detachedFromTarget event.
@@ -374,7 +355,7 @@ export class FrameManager extends EventEmitter {
     }
     assert(parentFrameId);
     const parentFrame = this.#frames.get(parentFrameId);
-    assert(parentFrame);
+    assert(parentFrame, `Parent frame ${parentFrameId} not found`);
     const frame = new Frame(this, parentFrame, frameId, session);
     this.#frames.set(frame._id, frame);
     this.emit(FrameManagerEmittedEvents.FrameAttached, frame);

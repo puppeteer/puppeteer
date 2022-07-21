@@ -122,7 +122,7 @@ export class DOMWorld {
     if (context) {
       assert(
         this.#contextResolveCallback,
-        'Execution Context has already been set.'
+        `ExecutionContext ${context._contextId} has already been set.`
       );
       this.#ctxBindings.clear();
       this.#contextResolveCallback?.call(null, context);

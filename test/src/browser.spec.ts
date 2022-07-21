@@ -63,10 +63,13 @@ describe('Browser specs', function () {
       expect(process!.pid).toBeGreaterThan(0);
     });
     it('should not return child_process for remote browser', async () => {
-      const {browser, puppeteer} = getTestState();
+      const {browser, puppeteer, isFirefox} = getTestState();
 
       const browserWSEndpoint = browser.wsEndpoint();
-      const remoteBrowser = await puppeteer.connect({browserWSEndpoint});
+      const remoteBrowser = await puppeteer.connect({
+        browserWSEndpoint,
+        product: isFirefox ? 'firefox' : 'chrome',
+      });
       expect(remoteBrowser.process()).toBe(null);
       remoteBrowser.disconnect();
     });
@@ -74,10 +77,13 @@ describe('Browser specs', function () {
 
   describe('Browser.isConnected', () => {
     it('should set the browser connected state', async () => {
-      const {browser, puppeteer} = getTestState();
+      const {browser, puppeteer, isFirefox} = getTestState();
 
       const browserWSEndpoint = browser.wsEndpoint();
-      const newBrowser = await puppeteer.connect({browserWSEndpoint});
+      const newBrowser = await puppeteer.connect({
+        browserWSEndpoint,
+        product: isFirefox ? 'firefox' : 'chrome',
+      });
       expect(newBrowser.isConnected()).toBe(true);
       newBrowser.disconnect();
       expect(newBrowser.isConnected()).toBe(false);

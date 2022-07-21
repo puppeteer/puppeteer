@@ -172,11 +172,13 @@ describe('Target', function () {
         });
       });
       await page.evaluate(() => {
-        return (globalThis as any).registrationPromise.then(
-          (registration: {unregister: () => any}) => {
-            return registration.unregister();
+        return (
+          globalThis as unknown as {
+            registrationPromise: Promise<{unregister: () => void}>;
           }
-        );
+        ).registrationPromise.then((registration: any) => {
+          return registration.unregister();
+        });
       });
       expect(await destroyedTarget).toBe(await createdTarget);
     }

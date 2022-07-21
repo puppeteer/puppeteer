@@ -59,6 +59,7 @@ export class Connection extends EventEmitter {
   #sessions: Map<string, CDPSession> = new Map();
   #closed = false;
   #callbacks: Map<number, ConnectionCallback> = new Map();
+  #manuallyAttached = new Set<string>();
 
   constructor(url: string, transport: ConnectionTransport, delay = 0) {
     super();
@@ -221,12 +222,20 @@ export class Connection extends EventEmitter {
   }
 
   /**
+   * @internal
+   */
+  isAutoAttached(targetId: string): boolean {
+    return !this.#manuallyAttached.has(targetId);
+  }
+
+  /**
    * @param targetInfo - The target info
    * @returns The CDP session that is created
    */
   async createSession(
     targetInfo: Protocol.Target.TargetInfo
   ): Promise<CDPSession> {
+    this.#manuallyAttached.add(targetInfo.targetId);
     const {sessionId} = await this.send('Target.attachToTarget', {
       targetId: targetInfo.targetId,
       flatten: true,
