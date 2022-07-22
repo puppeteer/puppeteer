@@ -29,7 +29,12 @@ import {Page} from './Page.js';
 import {Target} from './Target.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
-import {debugError, isErrorLike} from './util.js';
+import {
+  createDeferredPromiseWithTimer,
+  debugError,
+  DeferredPromise,
+  isErrorLike,
+} from './util.js';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
@@ -64,6 +69,15 @@ export class FrameManager extends EventEmitter {
   #isolatedWorlds = new Set<string>();
   #mainFrame?: Frame;
   #client: CDPSession;
+  /**
+   * Keeps track of OOPIF targets/frames (target ID == frame ID for OOPIFs)
+   * that are being initialized.
+   */
+  #framesPendingTargetInit = new Map<string, DeferredPromise<void>>();
+  /**
+   * Keeps track of frames that are in the process of being attached in #onFrameAttached.
+   */
+  #framesPendingAttachment = new Map<string, DeferredPromise<void>>();
 
   /**
    * @internal
@@ -132,8 +146,19 @@ export class FrameManager extends EventEmitter {
     });
   }
 
-  async initialize(client: CDPSession = this.#client): Promise<void> {
+  async initialize(
+    targetId: string,
+    client: CDPSession = this.#client
+  ): Promise<void> {
     try {
+      if (!this.#framesPendingTargetInit.has(targetId)) {
+        this.#framesPendingTargetInit.set(
+          targetId,
+          createDeferredPromiseWithTimer(
+            `Waiting for target frame ${targetId} failed`
+          )
+        );
+      }
       const result = await Promise.all([
         client.send('Page.enable'),
         client.send('Page.getFrameTree'),
@@ -162,6 +187,9 @@ export class FrameManager extends EventEmitter {
       }
 
       throw error;
+    } finally {
+      this.#framesPendingTargetInit.get(targetId)?.resolve();
+      this.#framesPendingTargetInit.delete(targetId);
     }
   }
 
@@ -262,7 +290,7 @@ export class FrameManager extends EventEmitter {
       frame._updateClient(target._session()!);
     }
     this.setupEventListeners(target._session()!);
-    this.initialize(target._session());
+    this.initialize(target._getTargetInfo().targetId, target._session());
   }
 
   async onDetachedFromTarget(target: Target): Promise<void> {
@@ -341,7 +369,7 @@ export class FrameManager extends EventEmitter {
   #onFrameAttached(
     session: CDPSession,
     frameId: string,
-    parentFrameId?: string
+    parentFrameId: string
   ): void {
     if (this.#frames.has(frameId)) {
       const frame = this.#frames.get(frameId)!;
@@ -353,50 +381,84 @@ export class FrameManager extends EventEmitter {
       }
       return;
     }
-    assert(parentFrameId);
     const parentFrame = this.#frames.get(parentFrameId);
-    assert(parentFrame, `Parent frame ${parentFrameId} not found`);
-    const frame = new Frame(this, parentFrame, frameId, session);
-    this.#frames.set(frame._id, frame);
-    this.emit(FrameManagerEmittedEvents.FrameAttached, frame);
+
+    const complete = (parentFrame: Frame) => {
+      assert(parentFrame, `Parent frame ${parentFrameId} not found`);
+      const frame = new Frame(this, parentFrame, frameId, session);
+      this.#frames.set(frame._id, frame);
+      this.emit(FrameManagerEmittedEvents.FrameAttached, frame);
+    };
+
+    if (parentFrame) {
+      return complete(parentFrame);
+    }
+
+    if (this.#framesPendingTargetInit.has(parentFrameId)) {
+      if (!this.#framesPendingAttachment.has(frameId)) {
+        this.#framesPendingAttachment.set(
+          frameId,
+          createDeferredPromiseWithTimer(
+            `Waiting for frame ${frameId} to attach failed`
+          )
+        );
+      }
+      this.#framesPendingTargetInit.get(parentFrameId)!.promise.then(() => {
+        complete(this.#frames.get(parentFrameId)!);
+        this.#framesPendingAttachment.get(frameId)?.resolve();
+        this.#framesPendingAttachment.delete(frameId);
+      });
+      return;
+    }
+
+    throw new Error(`Parent frame ${parentFrameId} not found`);
   }
 
   #onFrameNavigated(framePayload: Protocol.Page.Frame): void {
+    const frameId = framePayload.id;
     const isMainFrame = !framePayload.parentId;
-    let frame = isMainFrame
-      ? this.#mainFrame
-      : this.#frames.get(framePayload.id);
-    assert(
-      isMainFrame || frame,
-      'We either navigate top level or have old version of the navigated frame'
-    );
+    const frame = isMainFrame ? this.#mainFrame : this.#frames.get(frameId);
 
-    // Detach all child frames first.
-    if (frame) {
-      for (const child of frame.childFrames()) {
-        this.#removeFramesRecursively(child);
-      }
-    }
+    const complete = (frame?: Frame) => {
+      assert(
+        isMainFrame || frame,
+        `Missing frame isMainFrame=${isMainFrame}, frameId=${frameId}`
+      );
 
-    // Update or create main frame.
-    if (isMainFrame) {
+      // Detach all child frames first.
       if (frame) {
-        // Update frame id to retain frame identity on cross-process navigation.
-        this.#frames.delete(frame._id);
-        frame._id = framePayload.id;
-      } else {
-        // Initial main frame navigation.
-        frame = new Frame(this, null, framePayload.id, this.#client);
+        for (const child of frame.childFrames()) {
+          this.#removeFramesRecursively(child);
+        }
       }
-      this.#frames.set(framePayload.id, frame);
-      this.#mainFrame = frame;
+
+      // Update or create main frame.
+      if (isMainFrame) {
+        if (frame) {
+          // Update frame id to retain frame identity on cross-process navigation.
+          this.#frames.delete(frame._id);
+          frame._id = frameId;
+        } else {
+          // Initial main frame navigation.
+          frame = new Frame(this, null, frameId, this.#client);
+        }
+        this.#frames.set(frameId, frame);
+        this.#mainFrame = frame;
+      }
+
+      // Update frame payload.
+      assert(frame);
+      frame._navigated(framePayload);
+
+      this.emit(FrameManagerEmittedEvents.FrameNavigated, frame);
+    };
+    if (this.#framesPendingAttachment.has(frameId)) {
+      this.#framesPendingAttachment.get(frameId)!.promise.then(() => {
+        complete(isMainFrame ? this.#mainFrame : this.#frames.get(frameId));
+      });
+    } else {
+      complete(frame);
     }
-
-    // Update frame payload.
-    assert(frame);
-    frame._navigated(framePayload);
-
-    this.emit(FrameManagerEmittedEvents.FrameNavigated, frame);
   }
 
   async _ensureIsolatedWorld(session: CDPSession, name: string): Promise<void> {

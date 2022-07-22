@@ -523,3 +523,46 @@ export function isErrnoException(obj: unknown): obj is NodeJS.ErrnoException {
     ('errno' in obj || 'code' in obj || 'path' in obj || 'syscall' in obj)
   );
 }
+
+/**
+ * @internal
+ */
+export type DeferredPromise<T> = {
+  promise: Promise<T>;
+  resolve: (_: T) => void;
+  reject: (_: Error) => void;
+};
+
+/**
+ * Creates an returns a promise along with the resolve/reject functions.
+ *
+ * If the promise has not been resolved/rejected withing the `timeout` period,
+ * the promise gets rejected with a timeout error.
+ *
+ * @internal
+ */
+export function createDeferredPromiseWithTimer<T>(
+  timeoutMessage: string,
+  timeout = 5000
+): DeferredPromise<T> {
+  let resolver = (_: T): void => {};
+  let rejector = (_: Error) => {};
+  const taskPromise = new Promise<T>((resolve, reject) => {
+    resolver = resolve;
+    rejector = reject;
+  });
+  const timeoutId = setTimeout(() => {
+    rejector(new Error(timeoutMessage));
+  }, timeout);
+  return {
+    promise: taskPromise,
+    resolve: (value: T) => {
+      clearTimeout(timeoutId);
+      resolver(value);
+    },
+    reject: (err: Error) => {
+      clearTimeout(timeoutId);
+      rejector(err);
+    },
+  };
+}
