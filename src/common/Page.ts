@@ -3367,7 +3367,10 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * Waits for a function to finish evaluating in the page's context.
+   * Calls a function repeatedly until in the page's context until it returns a truthy value.  Promises are
+   * awaited and then checked for a truthy value.  When a truthy value is returned, its value is propagated
+   * out of {@link Page.waitForFunction} as a handle to the value in the page's context which can be used to
+   * interact with the value further.  If the timeout is reached first, an error is tyrown.
    *
    * @example
    * The {@link Page.waitForFunction} can be used to observe viewport size change:
@@ -3432,8 +3435,10 @@ export class Page extends EventEmitter {
    *   (30 seconds). Pass `0` to disable timeout. The default value can be
    *   changed by using the {@link Page.setDefaultTimeout} method.
    * @param args -  Arguments to pass to `pageFunction`
-   * @returns A `Promise` which resolves to a JSHandle/ElementHandle of the the
-   * `pageFunction`'s return value.
+   * @returns A `Promise` which resolves to a JSHandle/ElementHandle of the
+   * `pageFunction`'s return value if and when it returns a truthy value, or
+   * rejects with an error if the timeout was reached or some other error
+   * occurred.
    */
   waitForFunction<
     Params extends unknown[],
