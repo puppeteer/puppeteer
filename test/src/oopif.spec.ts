@@ -419,6 +419,7 @@ describeChromeOnly('OOPIF', function () {
     await target.page();
     browser1.disconnect();
   });
+
   itFailsFirefox('should support lazy OOP frames', async () => {
     const {server} = getTestState();
 
