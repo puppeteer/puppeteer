@@ -630,7 +630,7 @@ export class Page extends EventEmitter {
 
   async #initialize(): Promise<void> {
     await Promise.all([
-      this.#frameManager.initialize(),
+      this.#frameManager.initialize(this.#target._targetId),
       this.#client.send('Performance.enable'),
       this.#client.send('Log.enable'),
     ]);
