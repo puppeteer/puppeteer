@@ -3370,7 +3370,8 @@ export class Page extends EventEmitter {
    * Calls a function repeatedly until in the page's context until it returns a truthy value.  Promises are
    * awaited and then checked for a truthy value.  When a truthy value is returned, its value is propagated
    * out of {@link Page.waitForFunction} as a handle to the value in the page's context which can be used to
-   * interact with the value further.  If the timeout is reached first, an error is tyrown.
+   * interact with the value further.  If the timeout is reached first, an error
+   * is thrown.
    *
    * @example
    * The {@link Page.waitForFunction} can be used to observe viewport size change:
