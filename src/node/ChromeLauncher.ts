@@ -200,7 +200,8 @@ export class ChromeLauncher implements ProductLauncher {
       '--disable-extensions',
       // TODO: remove AvoidUnnecessaryBeforeUnloadCheckSync below
       // once crbug.com/1324138 is fixed and released.
-      '--disable-features=Translate,BackForwardCache,AvoidUnnecessaryBeforeUnloadCheckSync',
+      // AcceptCHFrame disabled because of crbug.com/1348106.
+      '--disable-features=Translate,BackForwardCache,AcceptCHFrame,AvoidUnnecessaryBeforeUnloadCheckSync',
       '--disable-hang-monitor',
       '--disable-ipc-flooding-protection',
       '--disable-popup-blocking',
