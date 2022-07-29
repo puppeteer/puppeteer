@@ -22,7 +22,12 @@ import {Frame} from './FrameManager.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {FetchRequestId, NetworkEventManager} from './NetworkEventManager.js';
-import {debugError, isString} from './util.js';
+import {
+  debugError,
+  isString,
+  createDeferredPromiseWithTimer,
+  DeferredPromise,
+} from './util.js';
 
 /**
  * @public
@@ -95,6 +100,7 @@ export class NetworkManager extends EventEmitter {
     download: -1,
     latency: 0,
   };
+  #deferredInitPromise?: DeferredPromise<void>;
 
   constructor(
     client: CDPSession,
@@ -131,13 +137,34 @@ export class NetworkManager extends EventEmitter {
     );
   }
 
-  async initialize(): Promise<void> {
-    await this.#client.send('Network.enable');
-    if (this.#ignoreHTTPSErrors) {
-      await this.#client.send('Security.setIgnoreCertificateErrors', {
-        ignore: true,
-      });
+  /**
+   * Initialize calls should avoid async dependencies between CDP calls as those
+   * might not resolve until after the target is resumed causing a deadlock.
+   */
+  initialize(): Promise<void> {
+    if (this.#deferredInitPromise) {
+      return this.#deferredInitPromise.promise;
     }
+    this.#deferredInitPromise = createDeferredPromiseWithTimer<void>(
+      'NetworkManager initialization timed out',
+      30000
+    );
+    const init = Promise.all([
+      this.#ignoreHTTPSErrors
+        ? this.#client.send('Security.setIgnoreCertificateErrors', {
+            ignore: true,
+          })
+        : null,
+      this.#client.send('Network.enable'),
+    ]);
+    init
+      .then(() => {
+        this.#deferredInitPromise?.resolve();
+      })
+      .catch(err => {
+        return this.#deferredInitPromise?.reject(err);
+      });
+    return this.#deferredInitPromise.promise;
   }
 
   async authenticate(credentials?: Credentials): Promise<void> {
