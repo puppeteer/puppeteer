@@ -70,6 +70,7 @@ export class LifecycleWatcher {
   #timeout: number;
   #navigationRequest: HTTPRequest | null = null;
   #eventListeners: PuppeteerEventListener[];
+  #initialLoaderId: string;
 
   #sameDocumentNavigationCompleteCallback: (x?: Error) => void = noop;
   #sameDocumentNavigationPromise = new Promise<Error | undefined>(fulfill => {
@@ -97,7 +98,6 @@ export class LifecycleWatcher {
 
   #maximumTimer?: NodeJS.Timeout;
   #hasSameDocumentNavigation?: boolean;
-  #newDocumentNavigation?: boolean;
   #swapped?: boolean;
 
   constructor(
@@ -111,6 +111,7 @@ export class LifecycleWatcher {
     } else if (typeof waitUntil === 'string') {
       waitUntil = [waitUntil];
     }
+    this.#initialLoaderId = frame._loaderId;
     this.#expectedLifecycle = waitUntil.map(value => {
       const protocolEvent = puppeteerToProtocolLifecycle.get(value);
       assert(protocolEvent, 'Unknown value for options.waitUntil: ' + value);
@@ -232,7 +233,6 @@ export class LifecycleWatcher {
     if (frame !== this.#frame) {
       return;
     }
-    this.#newDocumentNavigation = true;
     this.#checkLifecycleComplete();
   }
 
@@ -253,7 +253,7 @@ export class LifecycleWatcher {
     if (this.#hasSameDocumentNavigation) {
       this.#sameDocumentNavigationCompleteCallback();
     }
-    if (this.#swapped || this.#newDocumentNavigation) {
+    if (this.#swapped || this.#frame._loaderId !== this.#initialLoaderId) {
       this.#newDocumentNavigationCompleteCallback();
     }
 
