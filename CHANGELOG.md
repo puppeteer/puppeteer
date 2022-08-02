@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [16.0.0](https://github.com/puppeteer/puppeteer/compare/v15.5.0...v16.0.0) (2022-08-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* With Chromium, Puppeteer will now attach to page/iframe targets immediately to allow reliable configuration of targets.
+
+### Features
+
+* add Dockerfile ([#8315](https://github.com/puppeteer/puppeteer/issues/8315)) ([936ed86](https://github.com/puppeteer/puppeteer/commit/936ed8607ec0c3798d2b22b590d0be0ad361a888))
+* detect Firefox in connect() automatically ([#8718](https://github.com/puppeteer/puppeteer/issues/8718)) ([2abd772](https://github.com/puppeteer/puppeteer/commit/2abd772c9c3d2b86deb71541eaac41aceef94356))
+* use CDP's auto-attach mechanism ([#8520](https://github.com/puppeteer/puppeteer/issues/8520)) ([2cbfdeb](https://github.com/puppeteer/puppeteer/commit/2cbfdeb0ca388a45cedfae865266230e1291bd29))
+
+
+### Bug Fixes
+
+* address flakiness in frame handling ([#8688](https://github.com/puppeteer/puppeteer/issues/8688)) ([6f81b23](https://github.com/puppeteer/puppeteer/commit/6f81b23728a511f7b89eaa2b8f850b22d6c4ab24))
+* disable AcceptCHFrame ([#8706](https://github.com/puppeteer/puppeteer/issues/8706)) ([96d9608](https://github.com/puppeteer/puppeteer/commit/96d9608d1de17877414a649a0737661894dd96c8)), closes [#8479](https://github.com/puppeteer/puppeteer/issues/8479)
+* use loaderId to reduce test flakiness ([#8717](https://github.com/puppeteer/puppeteer/issues/8717)) ([d2f6db2](https://github.com/puppeteer/puppeteer/commit/d2f6db20735342bb3f419e85adbd51ed10470044))
+
 ## [15.5.0](https://github.com/puppeteer/puppeteer/compare/v15.4.2...v15.5.0) (2022-07-21)
 
 
