@@ -1,0 +1,94 @@
+---
+sidebar_label: ElementHandle
+---
+
+# ElementHandle class
+
+ElementHandle represents an in-page DOM element.
+
+**Signature:**
+
+```typescript
+export declare class ElementHandle<ElementType extends Node = Element> extends JSHandle<ElementType>
+```
+
+**Extends:** [JSHandle](./puppeteer.jshandle.md)
+
+## Remarks
+
+ElementHandles can be created with the [Page.$()](./puppeteer.page._.md) method.
+
+```ts
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto('https://example.com');
+  const hrefElement = await page.$('a');
+  await hrefElement.click();
+  // ...
+})();
+```
+
+ElementHandle prevents the DOM element from being garbage-collected unless the handle is [disposed](./puppeteer.jshandle.dispose.md). ElementHandles are auto-disposed when their origin frame gets navigated.
+
+ElementHandle instances can be used as arguments in [Page.$eval()](./puppeteer.page._eval.md) and [Page.evaluate()](./puppeteer.page.evaluate.md) methods.
+
+If you're using TypeScript, ElementHandle takes a generic argument that denotes the type of element the handle is holding within. For example, if you have a handle to a `<select>` element, you can type it as `ElementHandle<HTMLSelectElement>` and you get some nicer type checks.
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ElementHandle` class.
+
+## Methods
+
+| Method                                                                                       | Modifiers | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| -------------------------------------------------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [$(selector)](./puppeteer.elementhandle._.md)                                                |           | Runs <code>element.querySelector</code> within the page.                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| [$$(selector)](./puppeteer.elementhandle.__.md)                                              |           | Runs <code>element.querySelectorAll</code> within the page.                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| [$$eval(selector, pageFunction, args)](./puppeteer.elementhandle.__eval.md)                  |           | <p>This method runs <code>document.querySelectorAll</code> within the element and passes it as the first argument to <code>pageFunction</code>. If there's no element matching <code>selector</code>, the method throws an error.</p><p>If <code>pageFunction</code> returns a Promise, then <code>frame.$$eval</code> would wait for the promise to resolve and return its value.</p>                                                                                        |
+| [$eval(selector, pageFunction, args)](./puppeteer.elementhandle._eval.md)                    |           | <p>This method runs <code>document.querySelector</code> within the element and passes it as the first argument to <code>pageFunction</code>. If there's no element matching <code>selector</code>, the method throws an error.</p><p>If <code>pageFunction</code> returns a Promise, then <code>frame.$eval</code> would wait for the promise to resolve and return its value.</p>                                                                                            |
+| [$x(expression)](./puppeteer.elementhandle._x.md)                                            |           | The method evaluates the XPath expression relative to the elementHandle. If there are no such elements, the method will resolve to an empty array.                                                                                                                                                                                                                                                                                                                            |
+| [asElement()](./puppeteer.elementhandle.aselement.md)                                        |           |                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| [boundingBox()](./puppeteer.elementhandle.boundingbox.md)                                    |           | This method returns the bounding box of the element (relative to the main frame), or <code>null</code> if the element is not visible.                                                                                                                                                                                                                                                                                                                                         |
+| [boxModel()](./puppeteer.elementhandle.boxmodel.md)                                          |           | This method returns boxes of the element, or <code>null</code> if the element is not visible.                                                                                                                                                                                                                                                                                                                                                                                 |
+| [click(this, options)](./puppeteer.elementhandle.click.md)                                   |           | This method scrolls element into view if needed, and then uses [Page.mouse](./puppeteer.page.mouse.md) to click in the center of the element. If the element is detached from DOM, the method throws an error.                                                                                                                                                                                                                                                                |
+| [clickablePoint(offset)](./puppeteer.elementhandle.clickablepoint.md)                        |           | Returns the middle point within an element unless a specific offset is provided.                                                                                                                                                                                                                                                                                                                                                                                              |
+| [contentFrame()](./puppeteer.elementhandle.contentframe.md)                                  |           | Resolves to the content frame for element handles referencing iframe nodes, or null otherwise                                                                                                                                                                                                                                                                                                                                                                                 |
+| [drag(this, target)](./puppeteer.elementhandle.drag.md)                                      |           | This method creates and captures a dragevent from the element.                                                                                                                                                                                                                                                                                                                                                                                                                |
+| [dragAndDrop(this, target, options)](./puppeteer.elementhandle.draganddrop.md)               |           | This method triggers a dragenter, dragover, and drop on the element.                                                                                                                                                                                                                                                                                                                                                                                                          |
+| [dragEnter(this, data)](./puppeteer.elementhandle.dragenter.md)                              |           | This method creates a <code>dragenter</code> event on the element.                                                                                                                                                                                                                                                                                                                                                                                                            |
+| [dragOver(this, data)](./puppeteer.elementhandle.dragover.md)                                |           | This method creates a <code>dragover</code> event on the element.                                                                                                                                                                                                                                                                                                                                                                                                             |
+| [drop(this, data)](./puppeteer.elementhandle.drop.md)                                        |           | This method triggers a drop on the element.                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| [focus()](./puppeteer.elementhandle.focus.md)                                                |           | Calls [focus](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus) on the element.                                                                                                                                                                                                                                                                                                                                                                             |
+| [hover(this)](./puppeteer.elementhandle.hover.md)                                            |           | This method scrolls element into view if needed, and then uses [Page.mouse](./puppeteer.page.mouse.md) to hover over the center of the element. If the element is detached from DOM, the method throws an error.                                                                                                                                                                                                                                                              |
+| [isIntersectingViewport(this, options)](./puppeteer.elementhandle.isintersectingviewport.md) |           | Resolves to true if the element is visible in the current viewport.                                                                                                                                                                                                                                                                                                                                                                                                           |
+| [press(key, options)](./puppeteer.elementhandle.press.md)                                    |           | Focuses the element, and then uses [Keyboard.down()](./puppeteer.keyboard.down.md) and [Keyboard.up()](./puppeteer.keyboard.up.md).                                                                                                                                                                                                                                                                                                                                           |
+| [screenshot(this, options)](./puppeteer.elementhandle.screenshot.md)                         |           | This method scrolls element into view if needed, and then uses [Page.screenshot()](./puppeteer.page.screenshot.md) to take a screenshot of the element. If the element is detached from DOM, the method throws an error.                                                                                                                                                                                                                                                      |
+| [select(values)](./puppeteer.elementhandle.select.md)                                        |           | Triggers a <code>change</code> and <code>input</code> event once all the provided options have been selected. If there's no <code>&lt;select&gt;</code> element matching <code>selector</code>, the method throws an error.                                                                                                                                                                                                                                                   |
+| [tap(this)](./puppeteer.elementhandle.tap.md)                                                |           | This method scrolls element into view if needed, and then uses [Touchscreen.tap()](./puppeteer.touchscreen.tap.md) to tap in the center of the element. If the element is detached from DOM, the method throws an error.                                                                                                                                                                                                                                                      |
+| [type(text, options)](./puppeteer.elementhandle.type.md)                                     |           | <p>Focuses the element, and then sends a <code>keydown</code>, <code>keypress</code>/<code>input</code>, and <code>keyup</code> event for each character in the text.</p><p>To press a special key, like <code>Control</code> or <code>ArrowDown</code>, use [ElementHandle.press()](./puppeteer.elementhandle.press.md).</p>                                                                                                                                                 |
+| [uploadFile(this, filePaths)](./puppeteer.elementhandle.uploadfile.md)                       |           | This method expects <code>elementHandle</code> to point to an [input element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input).                                                                                                                                                                                                                                                                                                                               |
+| [waitForSelector(selector, options)](./puppeteer.elementhandle.waitforselector.md)           |           | <p>Wait for the <code>selector</code> to appear within the element. If at the moment of calling the method the <code>selector</code> already exists, the method will return immediately. If the <code>selector</code> doesn't appear after the <code>timeout</code> milliseconds of waiting, the function will throw.</p><p>This method does not work across navigations or if the element is detached from DOM.</p>                                                          |
+| [waitForXPath(xpath, options)](./puppeteer.elementhandle.waitforxpath.md)                    |           | <p>Wait for the <code>xpath</code> within the element. If at the moment of calling the method the <code>xpath</code> already exists, the method will return immediately. If the <code>xpath</code> doesn't appear after the <code>timeout</code> milliseconds of waiting, the function will throw.</p><p>If <code>xpath</code> starts with <code>//</code> instead of <code>.//</code>, the dot will be appended automatically.</p><p>This method works across navigation</p> |
+
+```ts
+const puppeteer = require('puppeteer');
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  let currentURL;
+  page
+    .waitForXPath('//img')
+    .then(() => console.log('First URL with image: ' + currentURL));
+  for (currentURL of [
+    'https://example.com',
+    'https://google.com',
+    'https://bbc.com',
+  ]) {
+    await page.goto(currentURL);
+  }
+  await browser.close();
+})();
+```
+
+|
