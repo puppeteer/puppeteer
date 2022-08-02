@@ -19,7 +19,6 @@ import {ConnectionTransport} from './ConnectionTransport.js';
 import {devices} from './DeviceDescriptors.js';
 import {errors} from './Errors.js';
 import {networkConditions} from './NetworkConditions.js';
-import {Product} from './Product.js';
 import {
   clearCustomQueryHandlers,
   CustomQueryHandler,
@@ -43,7 +42,6 @@ export interface ConnectOptions extends BrowserConnectOptions {
   browserWSEndpoint?: string;
   browserURL?: string;
   transport?: ConnectionTransport;
-  product?: Product;
 }
 
 /**

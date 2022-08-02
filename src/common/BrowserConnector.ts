@@ -26,7 +26,6 @@ import {Connection} from './Connection.js';
 import {ConnectionTransport} from './ConnectionTransport.js';
 import {getFetch} from './fetch.js';
 import {Viewport} from './PuppeteerViewport.js';
-import {Product} from './Product.js';
 /**
  * Generic browser options that can be passed when launching any browser or when
  * connecting to an existing browser instance.
@@ -75,7 +74,6 @@ export async function _connectToBrowser(
     browserWSEndpoint?: string;
     browserURL?: string;
     transport?: ConnectionTransport;
-    product?: Product;
   }
 ): Promise<Browser> {
   const {
@@ -87,7 +85,6 @@ export async function _connectToBrowser(
     slowMo = 0,
     targetFilter,
     _isPageTarget: isPageTarget,
-    product,
   } = options;
 
   assert(
@@ -111,6 +108,11 @@ export async function _connectToBrowser(
       await WebSocketClass.create(connectionURL);
     connection = new Connection(connectionURL, connectionTransport, slowMo);
   }
+  const version = await connection.send('Browser.getVersion');
+
+  const product = version.product.toLowerCase().includes('firefox')
+    ? 'firefox'
+    : 'chrome';
 
   const {browserContextIds} = await connection.send(
     'Target.getBrowserContexts'

@@ -110,9 +110,6 @@ export class PuppeteerNode extends Puppeteer {
    * @returns Promise which resolves to browser instance.
    */
   override connect(options: ConnectOptions): Promise<Browser> {
-    if (options.product) {
-      this._productName = options.product;
-    }
     return super.connect(options);
   }
 
