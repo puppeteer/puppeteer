@@ -20,6 +20,7 @@ coverage/
 
 # IDE Artifacts
 .vscode
+.devcontainer
 
 # Misc
 .DS_Store
