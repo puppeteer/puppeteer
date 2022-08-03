@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {ariaHandler} from './AriaQueryHandler.js';
+import {ariaHandler as ariaQueryHandler} from './AriaQueryHandler.js';
 import {DOMWorld, WaitForSelectorOptions} from './DOMWorld.js';
 import {ElementHandle} from './ElementHandle.js';
 import {JSHandle} from './JSHandle.js';
@@ -160,27 +160,22 @@ const defaultHandler = internalizeCustomQueryHandler({
   },
 });
 
-const pierceHandler = internalizeCustomQueryHandler({
+const pierceQueryHandler = internalizeCustomQueryHandler({
   queryOne: (element, selector) => {
     let found: Node | null = null;
     const search = (root: Node) => {
-      const iter = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+      const doc = root.ownerDocument || document;
+      const iter = doc.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
       do {
         const currentNode = iter.currentNode as HTMLElement;
         if (currentNode.shadowRoot) {
           search(currentNode.shadowRoot);
         }
-        if (currentNode instanceof ShadowRoot) {
-          continue;
-        }
-        if (currentNode !== root && !found && currentNode.matches(selector)) {
+        if (currentNode !== root && currentNode.matches(selector)) {
           found = currentNode;
         }
       } while (!found && iter.nextNode());
     };
-    if (element instanceof Document) {
-      element = element.documentElement;
-    }
     search(element);
     return found;
   },
@@ -188,29 +183,24 @@ const pierceHandler = internalizeCustomQueryHandler({
   queryAll: (element, selector) => {
     const result: Node[] = [];
     const collect = (root: Node) => {
-      const iter = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+      const doc = root.ownerDocument || document;
+      const iter = doc.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
       do {
         const currentNode = iter.currentNode as HTMLElement;
         if (currentNode.shadowRoot) {
           collect(currentNode.shadowRoot);
-        }
-        if (currentNode instanceof ShadowRoot) {
-          continue;
         }
         if (currentNode !== root && currentNode.matches(selector)) {
           result.push(currentNode);
         }
       } while (iter.nextNode());
     };
-    if (element instanceof Document) {
-      element = element.documentElement;
-    }
     collect(element);
     return result;
   },
 });
 
-const xpathHandler = internalizeCustomQueryHandler({
+const xpathQueryHandler = internalizeCustomQueryHandler({
   queryOne: (element, selector) => {
     const doc = element.ownerDocument || document;
     const result = doc.evaluate(
@@ -239,15 +229,61 @@ const xpathHandler = internalizeCustomQueryHandler({
   },
 });
 
+const textQueryHandler = internalizeCustomQueryHandler({
+  queryOne: (element, selector) => {
+    let found: Node | null = null;
+    const search = (root: Node) => {
+      const doc = root.ownerDocument || document;
+      const iter = doc.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+      do {
+        const currentNode = iter.currentNode as HTMLElement;
+        if (currentNode.shadowRoot) {
+          search(currentNode.shadowRoot);
+        }
+        if (
+          currentNode !== root &&
+          currentNode.textContent?.includes(selector)
+        ) {
+          found = currentNode;
+        }
+      } while (!found && iter.nextNode());
+    };
+    search(element);
+    return found;
+  },
+
+  queryAll: (element, selector) => {
+    const result: Node[] = [];
+    const collect = (root: Node) => {
+      const doc = root.ownerDocument || document;
+      const iter = doc.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+      do {
+        const currentNode = iter.currentNode as HTMLElement;
+        if (currentNode.shadowRoot) {
+          collect(currentNode.shadowRoot);
+        }
+        if (
+          currentNode !== root &&
+          currentNode.textContent?.includes(selector)
+        ) {
+          result.push(currentNode);
+        }
+      } while (iter.nextNode());
+    };
+    collect(element);
+    return result;
+  },
+});
+
 interface RegisteredQueryHandler {
   handler: InternalQueryHandler;
-  transformSelector?: (selector: string) => string;
 }
 
 const INTERNAL_QUERY_HANDLERS = new Map<string, RegisteredQueryHandler>([
-  ['aria', {handler: ariaHandler}],
-  ['pierce', {handler: pierceHandler}],
-  ['xpath', {handler: xpathHandler}],
+  ['aria', {handler: ariaQueryHandler}],
+  ['pierce', {handler: pierceQueryHandler}],
+  ['xpath', {handler: xpathQueryHandler}],
+  ['text', {handler: textQueryHandler}],
 ]);
 const QUERY_HANDLERS = new Map<string, RegisteredQueryHandler>();
 

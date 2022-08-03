@@ -94,6 +94,85 @@ describe('Query handler tests', function () {
     });
   });
 
+  describe.only('Text selectors', function () {
+    describe('in Page', function () {
+      it('should query existing element', async () => {
+        const {page} = getTestState();
+
+        await page.setContent('<section>test</section>');
+
+        expect(await page.$('text/test')).toBeTruthy();
+        expect((await page.$$('text/test')).length).toBe(1);
+      });
+      it('should return empty array for non-existing element', async () => {
+        const {page} = getTestState();
+
+        expect(await page.$('text/test')).toBeFalsy();
+        expect((await page.$$('text/test')).length).toBe(0);
+      });
+      it('should return first element', async () => {
+        const {page} = getTestState();
+
+        await page.setContent('<div>a</div><div>b</div>');
+
+        const element = await page.$('text/a');
+        expect(
+          await element?.evaluate(e => {
+            return e.textContent === 'a';
+          })
+        ).toBeTruthy();
+      });
+      it('should return multiple elements', async () => {
+        const {page} = getTestState();
+
+        await page.setContent('<div>a</div><div>a</div>');
+
+        const elements = await page.$$('text/a');
+        expect(elements.length).toBe(2);
+      });
+      it('should pierce shadow DOM', async () => {
+        const {page} = getTestState();
+
+        await page.setContent(`
+        <div>
+          <template shadowroot="open">
+            <div>a</div>
+            <div>b</div>
+          </template>
+        </div>
+        `);
+
+        const element = await page.$('text/a');
+        expect(
+          await element?.evaluate(e => {
+            return e.textContent === 'a';
+          })
+        ).toBeTruthy();
+      });
+    });
+    describe('in ElementHandles', function () {
+      it('should query existing element', async () => {
+        const {page} = getTestState();
+
+        await page.setContent('<div class="a"><span>a</span></div>');
+
+        const elementHandle = (await page.$('div'))!;
+        expect(await elementHandle.$(`text/a`)).toBeTruthy();
+        expect((await elementHandle.$$(`text/a`)).length).toBe(1);
+      });
+
+      it('should return null for non-existing element', async () => {
+        const {page} = getTestState();
+
+        await page.setContent('<div class="a">a</div>');
+
+        const elementHandle = (await page.$('div'))!;
+        expect(await elementHandle.$(`text/a`)).toBeFalsy();
+        expect((await elementHandle.$$(`text/a`)).length).toBe(0);
+      });
+    });
+  });
+
   describe('XPath selectors', function () {
     describe('in Page', function () {
       it('should query existing element', async () => {
