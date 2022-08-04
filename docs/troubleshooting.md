@@ -249,6 +249,7 @@ Running Puppeteer smoothly on CircleCI requires the following steps:
 ## Running Puppeteer in Docker
 
 > 👋 We used [Cirrus Ci](https://cirrus-ci.org/) to run our tests for Puppeteer in a Docker container until v3.0.x - see our historical [`Dockerfile.linux` (v3.0.1)](https://github.com/puppeteer/puppeteer/blob/v3.0.1/.ci/node12/Dockerfile.linux) for reference.
+> Starting from v16.0.0 we are shipping a Docker image via the GitHub registry. The Dockerfile is located [here](https://github.com/puppeteer/puppeteer/blob/main/docker/Dockerfile) and the usage instructions are in the [README.md](https://github.com/puppeteer/puppeteer#running-in-docker). The instructions below might be still helpful if you are building your own image.
 
 Getting headless Chrome up and running in Docker can be tricky.
 The bundled Chromium that Puppeteer installs is missing the necessary
