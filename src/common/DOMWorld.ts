@@ -717,52 +717,6 @@ export class DOMWorld {
     return elementHandle;
   }
 
-  async waitForXPath(
-    xpath: string,
-    options: WaitForSelectorOptions
-  ): Promise<ElementHandle<Node> | null> {
-    const {
-      visible: waitForVisible = false,
-      hidden: waitForHidden = false,
-      timeout = this.#timeoutSettings.timeout(),
-    } = options;
-    const polling = waitForVisible || waitForHidden ? 'raf' : 'mutation';
-    const title = `XPath \`${xpath}\`${waitForHidden ? ' to be hidden' : ''}`;
-    function predicate(
-      root: Element | Document,
-      xpath: string,
-      waitForVisible: boolean,
-      waitForHidden: boolean
-    ): Node | null | boolean {
-      const node = document.evaluate(
-        xpath,
-        root,
-        null,
-        XPathResult.FIRST_ORDERED_NODE_TYPE,
-        null
-      ).singleNodeValue;
-      return checkWaitForOptions(node, waitForVisible, waitForHidden);
-    }
-    const waitTaskOptions: WaitTaskOptions = {
-      domWorld: this,
-      predicateBody: makePredicateString(predicate),
-      predicateAcceptsContextElement: true,
-      title,
-      polling,
-      timeout,
-      args: [xpath, waitForVisible, waitForHidden],
-      root: options.root,
-    };
-    const waitTask = new WaitTask(waitTaskOptions);
-    const jsHandle = await waitTask.promise;
-    const elementHandle = jsHandle.asElement();
-    if (!elementHandle) {
-      await jsHandle.dispose();
-      return null;
-    }
-    return elementHandle;
-  }
-
   waitForFunction(
     pageFunction: Function | string,
     options: {polling?: string | number; timeout?: number} = {},

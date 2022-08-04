@@ -8,6 +8,6 @@ sidebar_label: CustomQueryHandler.queryOne
 
 ```typescript
 interface CustomQueryHandler {
-  queryOne?: (element: Node, selector: string) => Node | null;
+  queryOne?: (node: Node, selector: string) => Node | null;
 }
 ```

@@ -735,7 +735,7 @@ describe('waittask specs', function () {
       });
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
       expect(error?.message).toContain(
-        'waiting for XPath `//div` failed: timeout'
+        'waiting for selector `.//div` failed: timeout 10ms exceeded'
       );
     });
     itFailsFirefox('should run in specified frame', async () => {

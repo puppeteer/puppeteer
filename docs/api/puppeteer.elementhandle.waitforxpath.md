@@ -4,31 +4,35 @@ sidebar_label: ElementHandle.waitForXPath
 
 # ElementHandle.waitForXPath() method
 
-Wait for the `xpath` within the element. If at the moment of calling the method the `xpath` already exists, the method will return immediately. If the `xpath` doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
-
-If `xpath` starts with `//` instead of `.//`, the dot will be appended automatically.
-
-This method works across navigation
-
-```ts
-const puppeteer = require('puppeteer');
-(async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  let currentURL;
-  page
-    .waitForXPath('//img')
-    .then(() => console.log('First URL with image: ' + currentURL));
-  for (currentURL of [
-    'https://example.com',
-    'https://google.com',
-    'https://bbc.com',
-  ]) {
-    await page.goto(currentURL);
-  }
-  await browser.close();
-})();
-```
+> Warning: This API is now obsolete.
+>
+> Use [ElementHandle.waitForSelector()](./puppeteer.elementhandle.waitforselector.md) with the `xpath` prefix.
+>
+> Wait for the `xpath` within the element. If at the moment of calling the method the `xpath` already exists, the method will return immediately. If the `xpath` doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
+>
+> If `xpath` starts with `//` instead of `.//`, the dot will be appended automatically.
+>
+> This method works across navigation
+>
+> ```ts
+> const puppeteer = require('puppeteer');
+> (async () => {
+>   const browser = await puppeteer.launch();
+>   const page = await browser.newPage();
+>   let currentURL;
+>   page
+>     .waitForXPath('//img')
+>     .then(() => console.log('First URL with image: ' + currentURL));
+>   for (currentURL of [
+>     'https://example.com',
+>     'https://google.com',
+>     'https://bbc.com',
+>   ]) {
+>     await page.goto(currentURL);
+>   }
+>   await browser.close();
+> })();
+> ```
 
 **Signature:**
 

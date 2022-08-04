@@ -20,46 +20,65 @@ import {ElementHandle} from './ElementHandle.js';
 import {JSHandle} from './JSHandle.js';
 
 /**
+ * @public
+ */
+export interface CustomQueryHandler {
+  /**
+   * @returns A {@link Node} matching the given {@link selector} from {@link node}.
+   */
+  queryOne?: (node: Node, selector: string) => Node | null;
+  /**
+   * @returns Some {@link Node}s matching the given {@link selector} from {@link node}.
+   */
+  queryAll?: (node: Node, selector: string) => Node[];
+}
+
+/**
  * @internal
  */
 export interface InternalQueryHandler {
+  /**
+   * Queries for a single node given a selector and {@link ElementHandle}.
+   *
+   * Akin to {@link Window.prototype.querySelector}.
+   */
   queryOne?: (
     element: ElementHandle<Node>,
     selector: string
   ) => Promise<ElementHandle<Node> | null>;
+  /**
+   * Queries for multiple nodes given a selector and {@link ElementHandle}.
+   *
+   * Akin to {@link Window.prototype.querySelectorAll}.
+   */
   queryAll?: (
     element: ElementHandle<Node>,
     selector: string
   ) => Promise<Array<ElementHandle<Node>>>;
-
+  /**
+   * Queries for multiple nodes given a selector and {@link ElementHandle}.
+   * Unlike {@link queryAll}, this returns a handle to a node array.
+   *
+   * Akin to {@link Window.prototype.querySelectorAll}.
+   */
+  queryAllArray?: (
+    element: ElementHandle<Node>,
+    selector: string
+  ) => Promise<JSHandle<Node[]>>;
+  /**
+   * Waits until a single node appears for a given selector and
+   * {@link ElementHandle}.
+   *
+   * Akin to {@link Window.prototype.querySelectorAll}.
+   */
   waitFor?: (
     domWorld: DOMWorld,
     selector: string,
     options: WaitForSelectorOptions
   ) => Promise<ElementHandle<Node> | null>;
-  queryAllArray?: (
-    element: ElementHandle<Node>,
-    selector: string
-  ) => Promise<JSHandle<Node[]>>;
 }
 
-/**
- * Contains two functions `queryOne` and `queryAll` that can
- * be {@link registerCustomQueryHandler | registered}
- * as alternative querying strategies. The functions `queryOne` and `queryAll`
- * are executed in the page context.  `queryOne` should take an `Element` and a
- * selector string as argument and return a single `Element` or `null` if no
- * element is found. `queryAll` takes the same arguments but should instead
- * return a `NodeListOf<Element>` or `Array<Element>` with all the elements
- * that match the given query selector.
- * @public
- */
-export interface CustomQueryHandler {
-  queryOne?: (element: Node, selector: string) => Node | null;
-  queryAll?: (element: Node, selector: string) => Node[];
-}
-
-function createInternalQueryHandler(
+function internalizeCustomQueryHandler(
   handler: CustomQueryHandler
 ): InternalQueryHandler {
   const internalHandler: InternalQueryHandler = {};
@@ -114,7 +133,7 @@ function createInternalQueryHandler(
   return internalHandler;
 }
 
-const defaultHandler = createInternalQueryHandler({
+const defaultHandler = internalizeCustomQueryHandler({
   queryOne: (element, selector) => {
     if (!('querySelector' in element)) {
       throw new Error(
@@ -141,7 +160,7 @@ const defaultHandler = createInternalQueryHandler({
   },
 });
 
-const pierceHandler = createInternalQueryHandler({
+const pierceHandler = internalizeCustomQueryHandler({
   queryOne: (element, selector) => {
     let found: Node | null = null;
     const search = (root: Node) => {
@@ -191,11 +210,46 @@ const pierceHandler = createInternalQueryHandler({
   },
 });
 
-const builtInHandlers = new Map([
-  ['aria', ariaHandler],
-  ['pierce', pierceHandler],
+const xpathHandler = internalizeCustomQueryHandler({
+  queryOne: (element, selector) => {
+    const doc = element.ownerDocument || document;
+    const result = doc.evaluate(
+      selector,
+      element,
+      null,
+      XPathResult.FIRST_ORDERED_NODE_TYPE
+    );
+    return result.singleNodeValue;
+  },
+
+  queryAll: (element, selector) => {
+    const doc = element.ownerDocument || document;
+    const iterator = doc.evaluate(
+      selector,
+      element,
+      null,
+      XPathResult.ORDERED_NODE_ITERATOR_TYPE
+    );
+    const array: Node[] = [];
+    let item;
+    while ((item = iterator.iterateNext())) {
+      array.push(item);
+    }
+    return array;
+  },
+});
+
+interface RegisteredQueryHandler {
+  handler: InternalQueryHandler;
+  transformSelector?: (selector: string) => string;
+}
+
+const INTERNAL_QUERY_HANDLERS = new Map<string, RegisteredQueryHandler>([
+  ['aria', {handler: ariaHandler}],
+  ['pierce', {handler: pierceHandler}],
+  ['xpath', {handler: xpathHandler}],
 ]);
-const queryHandlers = new Map(builtInHandlers);
+const QUERY_HANDLERS = new Map<string, RegisteredQueryHandler>();
 
 /**
  * Registers a {@link CustomQueryHandler | custom query handler}.
@@ -222,7 +276,10 @@ export function registerCustomQueryHandler(
   name: string,
   handler: CustomQueryHandler
 ): void {
-  if (queryHandlers.get(name)) {
+  if (INTERNAL_QUERY_HANDLERS.has(name)) {
+    throw new Error(`A query handler named "${name}" already exists`);
+  }
+  if (QUERY_HANDLERS.has(name)) {
     throw new Error(`A custom query handler named "${name}" already exists`);
   }
 
@@ -231,9 +288,7 @@ export function registerCustomQueryHandler(
     throw new Error(`Custom query handler names may only contain [a-zA-Z]`);
   }
 
-  const internalHandler = createInternalQueryHandler(handler);
-
-  queryHandlers.set(name, internalHandler);
+  QUERY_HANDLERS.set(name, {handler: internalizeCustomQueryHandler(handler)});
 }
 
 /**
@@ -242,9 +297,7 @@ export function registerCustomQueryHandler(
  * @public
  */
 export function unregisterCustomQueryHandler(name: string): void {
-  if (queryHandlers.has(name) && !builtInHandlers.has(name)) {
-    queryHandlers.delete(name);
-  }
+  QUERY_HANDLERS.delete(name);
 }
 
 /**
@@ -253,9 +306,7 @@ export function unregisterCustomQueryHandler(name: string): void {
  * @public
  */
 export function customQueryHandlerNames(): string[] {
-  return [...queryHandlers.keys()].filter(name => {
-    return !builtInHandlers.has(name);
-  });
+  return [...QUERY_HANDLERS.keys()];
 }
 
 /**
@@ -264,8 +315,10 @@ export function customQueryHandlerNames(): string[] {
  * @public
  */
 export function clearCustomQueryHandlers(): void {
-  customQueryHandlerNames().forEach(unregisterCustomQueryHandler);
+  QUERY_HANDLERS.clear();
 }
+
+const CUSTOM_QUERY_SEPARATORS = ['=', '/'];
 
 /**
  * @internal
@@ -274,23 +327,22 @@ export function getQueryHandlerAndSelector(selector: string): {
   updatedSelector: string;
   queryHandler: InternalQueryHandler;
 } {
-  const hasCustomQueryHandler = /^[a-zA-Z]+\//.test(selector);
-  if (!hasCustomQueryHandler) {
-    return {updatedSelector: selector, queryHandler: defaultHandler};
+  for (const handlerMap of [QUERY_HANDLERS, INTERNAL_QUERY_HANDLERS]) {
+    for (const [
+      name,
+      {handler: queryHandler, transformSelector},
+    ] of handlerMap) {
+      for (const separator of CUSTOM_QUERY_SEPARATORS) {
+        const prefix = `${name}${separator}`;
+        if (selector.startsWith(prefix)) {
+          selector = selector.slice(prefix.length);
+          if (transformSelector) {
+            selector = transformSelector(selector);
+          }
+          return {updatedSelector: selector, queryHandler};
+        }
+      }
+    }
   }
-
-  const index = selector.indexOf('/');
-  const name = selector.slice(0, index);
-  const updatedSelector = selector.slice(index + 1);
-  const queryHandler = queryHandlers.get(name);
-  if (!queryHandler) {
-    throw new Error(
-      `Query set to use "${name}", but no query handler of that name was found`
-    );
-  }
-
-  return {
-    updatedSelector,
-    queryHandler,
-  };
+  return {updatedSelector: selector, queryHandler: defaultHandler};
 }

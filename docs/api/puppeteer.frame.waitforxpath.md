@@ -4,6 +4,14 @@ sidebar_label: Frame.waitForXPath
 
 # Frame.waitForXPath() method
 
+> Warning: This API is now obsolete.
+>
+> Use [Frame.waitForSelector()](./puppeteer.frame.waitforselector.md) with the `xpath` prefix.
+>
+> Wait for the `xpath` to appear in page. If at the moment of calling the method the `xpath` already exists, the method will return immediately. If the xpath doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
+>
+> For a code example, see the example for [Frame.waitForSelector()](./puppeteer.frame.waitforselector.md). That function behaves identically other than taking a CSS selector rather than an XPath.
+
 **Signature:**
 
 ```typescript
@@ -25,9 +33,3 @@ class Frame {
 **Returns:**
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;Node&gt; \| null&gt;
-
-## Remarks
-
-Wait for the `xpath` to appear in page. If at the moment of calling the method the `xpath` already exists, the method will return immediately. If the xpath doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
-
-For a code example, see the example for [Frame.waitForSelector()](./puppeteer.frame.waitforselector.md). That function behaves identically other than taking a CSS selector rather than an XPath.
