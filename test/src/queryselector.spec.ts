@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 import expect from 'expect';
+import {CustomQueryHandler} from '../../lib/cjs/puppeteer/common/QueryHandler.js';
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import {CustomQueryHandler} from '../../lib/cjs/puppeteer/common/QueryHandler.js';
-import {ElementHandle} from '../../lib/cjs/puppeteer/common/ElementHandle.js';
 
 describe('querySelector', function () {
   setupTestBrowserHooks();
@@ -76,75 +75,6 @@ describe('querySelector', function () {
       expect(error.message).toContain(
         'failed to find element matching selector "section"'
       );
-    });
-  });
-
-  describe('pierceHandler', function () {
-    beforeEach(async () => {
-      const {page} = getTestState();
-      await page.setContent(
-        `<script>
-        const div = document.createElement('div');
-        const shadowRoot = div.attachShadow({mode: 'open'});
-        const div1 = document.createElement('div');
-        div1.textContent = 'Hello';
-        div1.className = 'foo';
-        const div2 = document.createElement('div');
-        div2.textContent = 'World';
-        div2.className = 'foo';
-        shadowRoot.appendChild(div1);
-        shadowRoot.appendChild(div2);
-        document.documentElement.appendChild(div);
-        </script>`
-      );
-    });
-    it('should find first element in shadow', async () => {
-      const {page} = getTestState();
-      const div = (await page.$('pierce/.foo')) as ElementHandle<HTMLElement>;
-      const text = await div.evaluate(element => {
-        return element.textContent;
-      });
-      expect(text).toBe('Hello');
-    });
-    it('should find all elements in shadow', async () => {
-      const {page} = getTestState();
-      const divs = (await page.$$('pierce/.foo')) as Array<
-        ElementHandle<HTMLElement>
-      >;
-      const text = await Promise.all(
-        divs.map(div => {
-          return div.evaluate(element => {
-            return element.textContent;
-          });
-        })
-      );
-      expect(text.join(' ')).toBe('Hello World');
-    });
-    it('should find first child element', async () => {
-      const {page} = getTestState();
-      const parentElement = (await page.$('html > div'))!;
-      const childElement = (await parentElement.$(
-        'pierce/div'
-      )) as ElementHandle<HTMLElement>;
-      const text = await childElement.evaluate(element => {
-        return element.textContent;
-      });
-      expect(text).toBe('Hello');
-    });
-    it('should find all child elements', async () => {
-      const {page} = getTestState();
-      const parentElement = (await page.$('html > div'))!;
-      const childElements = (await parentElement.$$('pierce/div')) as Array<
-        ElementHandle<HTMLElement>
-      >;
-      const text = await Promise.all(
-        childElements.map(div => {
-          return div.evaluate(element => {
-            return element.textContent;
-          });
-        })
-      );
-      expect(text.join(' ')).toBe('Hello World');
     });
   });
 
@@ -256,7 +186,7 @@ describe('querySelector', function () {
     });
   });
 
-  describe('Path.$x', function () {
+  describe('Page.$x', function () {
     it('should query existing element', async () => {
       const {page} = getTestState();
 

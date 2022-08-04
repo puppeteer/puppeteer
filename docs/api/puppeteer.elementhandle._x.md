@@ -4,7 +4,11 @@ sidebar_label: ElementHandle.$x
 
 # ElementHandle.$x() method
 
-The method evaluates the XPath expression relative to the elementHandle. If there are no such elements, the method will resolve to an empty array.
+> Warning: This API is now obsolete.
+>
+> Use [ElementHandle.$$()](./puppeteer.elementhandle.__.md) with the `xpath` prefix.
+>
+> The method evaluates the XPath expression relative to the elementHandle. If there are no such elements, the method will resolve to an empty array.
 
 **Signature:**
 

@@ -140,6 +140,8 @@ export class ElementHandle<
   }
 
   /**
+   * @deprecated Use {@link ElementHandle.waitForSelector} with the `xpath` prefix.
+   *
    * Wait for the `xpath` within the element. If at the moment of calling the
    * method the `xpath` already exists, the method will return immediately. If
    * the `xpath` doesn't appear after the `timeout` milliseconds of waiting, the
@@ -197,27 +199,10 @@ export class ElementHandle<
       timeout?: number;
     } = {}
   ): Promise<ElementHandle<Node> | null> {
-    const frame = this._context.frame();
-    assert(frame);
-    const secondaryContext = await frame._secondaryWorld.executionContext();
-    const adoptedRoot = await secondaryContext._adoptElementHandle(this);
-    xpath = xpath.startsWith('//') ? '.' + xpath : xpath;
-    if (!xpath.startsWith('.//')) {
-      await adoptedRoot.dispose();
-      throw new Error('Unsupported xpath expression: ' + xpath);
+    if (xpath.startsWith('//')) {
+      xpath = `.${xpath}`;
     }
-    const handle = await frame._secondaryWorld.waitForXPath(xpath, {
-      ...options,
-      root: adoptedRoot,
-    });
-    await adoptedRoot.dispose();
-    if (!handle) {
-      return null;
-    }
-    const mainExecutionContext = await frame._mainWorld.executionContext();
-    const result = await mainExecutionContext._adoptElementHandle(handle);
-    await handle.dispose();
-    return result;
+    return this.waitForSelector(`xpath/${xpath}`, options);
   }
 
   override asElement(): ElementHandle<ElementType> | null {
@@ -964,36 +949,17 @@ export class ElementHandle<
   }
 
   /**
+   * @deprecated Use {@link ElementHandle.$$} with the `xpath` prefix.
+   *
    * The method evaluates the XPath expression relative to the elementHandle.
    * If there are no such elements, the method will resolve to an empty array.
    * @param expression - Expression to {@link https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate | evaluate}
    */
   async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
-    const arrayHandle = await this.evaluateHandle((element, expression) => {
-      const doc = element.ownerDocument || document;
-      const iterator = doc.evaluate(
-        expression,
-        element,
-        null,
-        XPathResult.ORDERED_NODE_ITERATOR_TYPE
-      );
-      const array = [];
-      let item;
-      while ((item = iterator.iterateNext())) {
-        array.push(item);
-      }
-      return array;
-    }, expression);
-    const properties = await arrayHandle.getProperties();
-    await arrayHandle.dispose();
-    const result = [];
-    for (const property of properties.values()) {
-      const elementHandle = property.asElement();
-      if (elementHandle) {
-        result.push(elementHandle);
-      }
+    if (expression.startsWith('//')) {
+      expression = `.${expression}`;
     }
-    return result;
+    return this.$$(`xpath/${expression}`);
   }
 
   /**

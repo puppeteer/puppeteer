@@ -1374,7 +1374,8 @@ export class Frame {
   }
 
   /**
-   * @remarks
+   * @deprecated Use {@link Frame.waitForSelector} with the `xpath` prefix.
+   *
    * Wait for the `xpath` to appear in page. If at the moment of calling the
    * method the `xpath` already exists, the method will return immediately. If
    * the xpath doesn't appear after the `timeout` milliseconds of waiting, the
@@ -1392,14 +1393,10 @@ export class Frame {
     xpath: string,
     options: WaitForSelectorOptions = {}
   ): Promise<ElementHandle<Node> | null> {
-    const handle = await this._secondaryWorld.waitForXPath(xpath, options);
-    if (!handle) {
-      return null;
+    if (xpath.startsWith('//')) {
+      xpath = `.${xpath}`;
     }
-    const mainExecutionContext = await this._mainWorld.executionContext();
-    const result = await mainExecutionContext._adoptElementHandle(handle);
-    await handle.dispose();
-    return result;
+    return this.waitForSelector(`xpath/${xpath}`, options);
   }
 
   /**
