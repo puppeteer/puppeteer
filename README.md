@@ -198,6 +198,26 @@ See [`Page.evaluate`](https://pptr.dev/api/puppeteer.page.evaluate) and related 
 
 <!-- [END getstarted] -->
 
+### Running in Docker
+
+Puppeteer offers a Docker image that includes Chromium along with the required dependencies and a pre-installed Puppeteer version. The image is available via the [GitHub Container Registry](https://github.com/puppeteer/puppeteer/pkgs/container/puppeteer). The latest image is tagged as `latest` and other tags match Puppeteer versions. For example,
+
+```sh
+docker pull ghcr.io/puppeteer/puppeteer:latest # pulls the latest
+docker pull ghcr.io/puppeteer/puppeteer:16.1.0 # pulls the image that contains Puppeteer v16.1.0
+```
+
+The image is meant for running the browser in the sandobx mode and therefore, running the image requires the `SYS_ADMIN` capability. For example,
+
+```sh
+docker run -i --init --cap-add=SYS_ADMIN --rm ghcr.io/puppeteer/puppeteer:latest node -e "`cat docker/test/smoke-test.js`"
+```
+
+Replace the path to [`smoke-test.js`](https://raw.githubusercontent.com/puppeteer/puppeteer/main/docker/test/smoke-test.js) with a path to your script.
+The script can import or require the `puppeteer` module because it's pre-installed inside the image.
+
+Currently, the image includes the LTS version of Node.js. If you need to built an image based on a different base image, you can use our [`Dockerfile`](https://github.com/puppeteer/puppeteer/blob/main/docker/Dockerfile) as the starting point.
+
 ### Working with Chrome Extensions
 
 Puppeteer can be used for testing Chrome Extensions.
