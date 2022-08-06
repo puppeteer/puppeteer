@@ -99,6 +99,10 @@ jobs:
       - name: Install dependencies
         working-directory: ./website
         run: npm ci
+      - name: Increase swap space
+        uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c
+        with:
+          swap-size-gb: 10
       - name: Build website
         working-directory: ./website
         env:
