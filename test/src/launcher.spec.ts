@@ -699,6 +699,24 @@ describe('Launcher specs', function () {
           remoteBrowser.close(),
         ]);
       });
+      it('should be able to connect to a browser with no page targets', async () => {
+        const {defaultBrowserOptions, puppeteer} = getTestState();
+
+        const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+        const pages = await originalBrowser.pages();
+        await Promise.all(
+          pages.map(page => {
+            return page.close();
+          })
+        );
+        const remoteBrowser = await puppeteer.connect({
+          browserWSEndpoint: originalBrowser.wsEndpoint(),
+        });
+        await Promise.all([
+          utils.waitEvent(originalBrowser, 'disconnected'),
+          remoteBrowser.close(),
+        ]);
+      });
       it('should support ignoreHTTPSErrors option', async () => {
         const {httpsServer, puppeteer, defaultBrowserOptions} = getTestState();
 

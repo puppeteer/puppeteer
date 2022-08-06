@@ -103,30 +103,37 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
 
     // TODO: remove `as any` once the protocol definitions are updated with the
     // next Chromium roll.
-    this.#connection.send('Target.setDiscoverTargets', {
-      discover: true,
-      filter: [{type: 'tab', exclude: true}, {}],
-    } as any);
+    this.#connection
+      .send('Target.setDiscoverTargets', {
+        discover: true,
+        filter: [{type: 'tab', exclude: true}, {}],
+      } as any)
+      .then(this.#storeExistingTargetsForInit)
+      .catch(debugError);
   }
 
-  async initialize(): Promise<void> {
-    this.#targetsIdsForInit = new Set();
+  #storeExistingTargetsForInit = () => {
     for (const [
       targetId,
       targetInfo,
     ] of this.#discoveredTargetsByTargetId.entries()) {
       if (
-        !this.#targetFilterCallback ||
-        this.#targetFilterCallback(targetInfo)
+        (!this.#targetFilterCallback ||
+          this.#targetFilterCallback(targetInfo)) &&
+        targetInfo.type !== 'browser'
       ) {
         this.#targetsIdsForInit.add(targetId);
       }
     }
+  };
+
+  async initialize(): Promise<void> {
     await this.#connection.send('Target.setAutoAttach', {
       waitForDebuggerOnStart: true,
       flatten: true,
       autoAttach: true,
     });
+    this.#finishInitializationIfReady();
     await this.#initializePromise;
   }
 
@@ -358,9 +365,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
 
     this.#targetsIdsForInit.delete(target._targetId);
     this.emit(TargetManagerEmittedEvents.TargetAvailable, target);
-    if (this.#targetsIdsForInit.size === 0) {
-      this.#initializeCallback();
-    }
+    this.#finishInitializationIfReady();
 
     // TODO: the browser might be shutting down here. What do we do with the
     // error?
@@ -374,8 +379,8 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
     ]).catch(debugError);
   };
 
-  #finishInitializationIfReady(targetId: string): void {
-    this.#targetsIdsForInit.delete(targetId);
+  #finishInitializationIfReady(targetId?: string): void {
+    targetId !== undefined && this.#targetsIdsForInit.delete(targetId);
     if (this.#targetsIdsForInit.size === 0) {
       this.#initializeCallback();
     }
