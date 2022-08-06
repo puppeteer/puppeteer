@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [16.1.0](https://github.com/puppeteer/puppeteer/compare/v16.0.0...v16.1.0) (2022-08-06)
+
+
+### Features
+
+* use an `xpath` query handler ([#8730](https://github.com/puppeteer/puppeteer/issues/8730)) ([5cf9b4d](https://github.com/puppeteer/puppeteer/commit/5cf9b4de8d50bd056db82bcaa23279b72c9313c5))
+
+
+### Bug Fixes
+
+* resolve target manager init if no existing targets detected ([#8748](https://github.com/puppeteer/puppeteer/issues/8748)) ([8cb5043](https://github.com/puppeteer/puppeteer/commit/8cb5043868f69cdff7f34f1cfe0c003ff09e281b)), closes [#8747](https://github.com/puppeteer/puppeteer/issues/8747)
+* specify the target filter in setDiscoverTargets ([#8742](https://github.com/puppeteer/puppeteer/issues/8742)) ([49193cb](https://github.com/puppeteer/puppeteer/commit/49193cbf1c17f16f0ca59a9fd2ebf306f812f52b))
+
 ## [16.0.0](https://github.com/puppeteer/puppeteer/compare/v15.5.0...v16.0.0) (2022-08-02)
 
 
