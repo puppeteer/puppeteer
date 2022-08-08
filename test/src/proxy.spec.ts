@@ -27,7 +27,21 @@ import type {Browser} from '../../lib/cjs/puppeteer/common/Browser.js';
 import type {AddressInfo} from 'net';
 import {TestServer} from '../../utils/testserver/lib/index.js';
 
-const HOSTNAME = os.hostname().toLowerCase();
+let HOSTNAME = os.hostname();
+
+// Hostname might not be always accessible in environments other than GitHub
+// Actions. Therefore, we try to find an external IPv4 address to be used as a
+// hostname in these tests.
+const networkInterfaces = os.networkInterfaces();
+for (const key of Object.keys(networkInterfaces)) {
+  const interfaces = networkInterfaces[key];
+  for (const net of interfaces || []) {
+    if (net.family === 'IPv4' && !net.internal) {
+      HOSTNAME = net.address;
+      break;
+    }
+  }
+}
 
 /**
  * Requests to localhost do not get proxied by default. Create a URL using the hostname
