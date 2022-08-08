@@ -2021,7 +2021,18 @@ export class Page extends EventEmitter {
 
   /**
    * @param options - Optional waiting parameters
-   * @returns Promise which resolves when network is idle
+   * @returns Promise which resolves when the network remains idle. When the
+   * `timeout` is reached and the network has not reached idle, the promise is
+   * rejected.
+   * @remarks
+   * Optional Parameter have:
+   *
+   * - `idleTime`: Minimum time in milliseconds the network needs to be idle in
+   * order for this promise to be resolved. Defaults to `500` milliseconds.
+   * - `timeout`: Maximum wait time in milliseconds, defaults to `30` seconds,
+   * pass `0` to disable the timeout. The default value can be changed by using
+   * the {@link Page.setDefaultTimeout} method.
+   */
    */
   async waitForNetworkIdle(
     options: {idleTime?: number; timeout?: number} = {}
