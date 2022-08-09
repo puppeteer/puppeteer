@@ -29,6 +29,7 @@ import {TimeoutSettings} from './TimeoutSettings.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {
   createDeferredPromise,
+  createJSHandle,
   debugError,
   DeferredPromise,
   importFS,
@@ -738,6 +739,29 @@ export class DOMWorld {
     return this.evaluate(() => {
       return document.title;
     });
+  }
+
+  async adoptBackendNode(
+    backendNodeId?: Protocol.DOM.BackendNodeId
+  ): Promise<JSHandle<Node>> {
+    const executionContext = await this.executionContext();
+    const {object} = await this.#client.send('DOM.resolveNode', {
+      backendNodeId: backendNodeId,
+      executionContextId: executionContext._contextId,
+    });
+    return createJSHandle(executionContext, object) as JSHandle<Node>;
+  }
+
+  async adoptHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
+    const executionContext = await this.executionContext();
+    assert(
+      handle.executionContext() !== executionContext,
+      'Cannot adopt handle that already belongs to this execution context'
+    );
+    const nodeInfo = await this.#client.send('DOM.describeNode', {
+      objectId: handle._remoteObject.objectId,
+    });
+    return (await this.adoptBackendNode(nodeInfo.node.backendNodeId)) as T;
   }
 }
 

@@ -644,15 +644,13 @@ export class Page extends EventEmitter {
     }
     const frame = this.#frameManager.frame(event.frameId);
     assert(frame);
-    const context = await frame.executionContext();
-    const element = await context._adoptBackendNodeId(event.backendNodeId);
+    // This is guaranteed to be an HTMLInputElement handle by the event.
+    const handle = (await frame._mainWorld.adoptBackendNode(
+      event.backendNodeId
+    )) as ElementHandle<HTMLInputElement>;
     const interceptors = Array.from(this.#fileChooserInterceptors);
     this.#fileChooserInterceptors.clear();
-    const fileChooser = new FileChooser(
-      // This is guaranteed by the event.
-      element as ElementHandle<HTMLInputElement>,
-      event
-    );
+    const fileChooser = new FileChooser(handle, event);
     for (const interceptor of interceptors) {
       interceptor.call(undefined, fileChooser);
     }

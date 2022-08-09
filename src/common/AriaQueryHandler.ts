@@ -95,7 +95,9 @@ const queryOne = async (
   if (!res[0] || !res[0].backendDOMNodeId) {
     return null;
   }
-  return exeCtx._adoptBackendNodeId(res[0].backendDOMNodeId);
+  return (await exeCtx._world!.adoptBackendNode(
+    res[0].backendDOMNodeId
+  )) as ElementHandle<Node>;
 };
 
 const waitFor = async (
@@ -132,11 +134,12 @@ const queryAll = async (
   const exeCtx = element.executionContext();
   const {name, role} = parseAriaSelector(selector);
   const res = await queryAXTree(exeCtx._client, element, name, role);
-  return Promise.all(
+  const world = exeCtx._world!;
+  return (await Promise.all(
     res.map(axNode => {
-      return exeCtx._adoptBackendNodeId(axNode.backendDOMNodeId);
+      return world.adoptBackendNode(axNode.backendDOMNodeId);
     })
-  );
+  )) as Array<ElementHandle<Node>>;
 };
 
 const queryAllArray = async (
