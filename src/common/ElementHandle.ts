@@ -1,7 +1,7 @@
 import {Protocol} from 'devtools-protocol';
 import {assert} from './assert.js';
 import {CDPSession} from './Connection.js';
-import {WaitForSelectorOptions} from './DOMWorld.js';
+import {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {Frame, FrameManager} from './FrameManager.js';
 import {

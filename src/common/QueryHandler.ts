@@ -15,7 +15,7 @@
  */
 
 import {ariaHandler} from './AriaQueryHandler.js';
-import {DOMWorld, WaitForSelectorOptions} from './DOMWorld.js';
+import {IsolatedWorld, WaitForSelectorOptions} from './IsolatedWorld.js';
 import {ElementHandle} from './ElementHandle.js';
 import {JSHandle} from './JSHandle.js';
 
@@ -72,7 +72,7 @@ export interface InternalQueryHandler {
    * Akin to {@link Window.prototype.querySelectorAll}.
    */
   waitFor?: (
-    domWorld: DOMWorld,
+    isolatedWorld: IsolatedWorld,
     selector: string,
     options: WaitForSelectorOptions
   ) => Promise<ElementHandle<Node> | null>;
@@ -95,11 +95,11 @@ function internalizeCustomQueryHandler(
       return null;
     };
     internalHandler.waitFor = (
-      domWorld: DOMWorld,
+      isolatedWorld: IsolatedWorld,
       selector: string,
       options: WaitForSelectorOptions
     ) => {
-      return domWorld._waitForSelectorInPage(queryOne, selector, options);
+      return isolatedWorld._waitForSelectorInPage(queryOne, selector, options);
     };
   }
 

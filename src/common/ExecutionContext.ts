@@ -17,7 +17,7 @@
 import {Protocol} from 'devtools-protocol';
 import {assert} from './assert.js';
 import {CDPSession} from './Connection.js';
-import {DOMWorld} from './DOMWorld.js';
+import {IsolatedWorld} from './IsolatedWorld.js';
 import {ElementHandle} from './ElementHandle.js';
 import {Frame} from './FrameManager.js';
 import {JSHandle} from './JSHandle.js';
@@ -57,7 +57,7 @@ export class ExecutionContext {
   /**
    * @internal
    */
-  _world?: DOMWorld;
+  _world?: IsolatedWorld;
   /**
    * @internal
    */
@@ -73,7 +73,7 @@ export class ExecutionContext {
   constructor(
     client: CDPSession,
     contextPayload: Protocol.Runtime.ExecutionContextDescription,
-    world?: DOMWorld
+    world?: IsolatedWorld
   ) {
     this._client = client;
     this._world = world;

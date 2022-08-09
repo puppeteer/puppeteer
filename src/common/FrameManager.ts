@@ -17,7 +17,7 @@
 import {Protocol} from 'devtools-protocol';
 import {assert} from './assert.js';
 import {CDPSession} from './Connection.js';
-import {DOMWorld, WaitForSelectorOptions} from './DOMWorld.js';
+import {IsolatedWorld, WaitForSelectorOptions} from './IsolatedWorld.js';
 import {ElementHandle} from './ElementHandle.js';
 import {EventEmitter} from './EventEmitter.js';
 import {EVALUATION_SCRIPT_URL, ExecutionContext} from './ExecutionContext.js';
@@ -530,7 +530,7 @@ export class FrameManager extends EventEmitter {
     const frameId = auxData && auxData.frameId;
     const frame =
       typeof frameId === 'string' ? this.#frames.get(frameId) : undefined;
-    let world: DOMWorld | undefined;
+    let world: IsolatedWorld | undefined;
     if (frame) {
       // Only care about execution contexts created for the current session.
       if (frame._client() !== session) {
@@ -763,11 +763,11 @@ export class Frame {
   /**
    * @internal
    */
-  _mainWorld!: DOMWorld;
+  _mainWorld!: IsolatedWorld;
   /**
    * @internal
    */
-  _secondaryWorld!: DOMWorld;
+  _secondaryWorld!: IsolatedWorld;
   /**
    * @internal
    */
@@ -803,13 +803,13 @@ export class Frame {
    */
   _updateClient(client: CDPSession): void {
     this.#client = client;
-    this._mainWorld = new DOMWorld(
+    this._mainWorld = new IsolatedWorld(
       this.#client,
       this._frameManager,
       this,
       this._frameManager._timeoutSettings
     );
-    this._secondaryWorld = new DOMWorld(
+    this._secondaryWorld = new IsolatedWorld(
       this.#client,
       this._frameManager,
       this,

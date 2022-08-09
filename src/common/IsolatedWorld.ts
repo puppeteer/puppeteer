@@ -72,7 +72,7 @@ export interface PageBinding {
 /**
  * @internal
  */
-export class DOMWorld {
+export class IsolatedWorld {
   #frameManager: FrameManager;
   #client: CDPSession;
   #frame: Frame;
@@ -564,7 +564,7 @@ export class DOMWorld {
     // Previous operation added the binding so we are done.
     if (
       this.#ctxBindings.has(
-        DOMWorld.#bindingIdentifier(name, context._contextId)
+        IsolatedWorld.#bindingIdentifier(name, context._contextId)
       )
     ) {
       return;
@@ -604,7 +604,7 @@ export class DOMWorld {
         }
       }
       this.#ctxBindings.add(
-        DOMWorld.#bindingIdentifier(name, context._contextId)
+        IsolatedWorld.#bindingIdentifier(name, context._contextId)
       );
     };
 
@@ -632,7 +632,7 @@ export class DOMWorld {
     if (
       type !== 'internal' ||
       !this.#ctxBindings.has(
-        DOMWorld.#bindingIdentifier(name, context._contextId)
+        IsolatedWorld.#bindingIdentifier(name, context._contextId)
       )
     ) {
       return;
@@ -695,7 +695,7 @@ export class DOMWorld {
       return checkWaitForOptions(node, waitForVisible, waitForHidden);
     }
     const waitTaskOptions: WaitTaskOptions = {
-      domWorld: this,
+      isolatedWorld: this,
       predicateBody: makePredicateString(predicate, queryOne),
       predicateAcceptsContextElement: true,
       title,
@@ -723,7 +723,7 @@ export class DOMWorld {
     const {polling = 'raf', timeout = this.#timeoutSettings.timeout()} =
       options;
     const waitTaskOptions: WaitTaskOptions = {
-      domWorld: this,
+      isolatedWorld: this,
       predicateBody: pageFunction,
       predicateAcceptsContextElement: false,
       title: 'function',
@@ -769,7 +769,7 @@ export class DOMWorld {
  * @internal
  */
 export interface WaitTaskOptions {
-  domWorld: DOMWorld;
+  isolatedWorld: IsolatedWorld;
   predicateBody: Function | string;
   predicateAcceptsContextElement: boolean;
   title: string;
@@ -786,7 +786,7 @@ const noop = (): void => {};
  * @internal
  */
 export class WaitTask {
-  #domWorld: DOMWorld;
+  #isolatedWorld: IsolatedWorld;
   #polling: 'raf' | 'mutation' | number;
   #timeout: number;
   #predicateBody: string;
@@ -824,7 +824,7 @@ export class WaitTask {
       return `return (${predicateBody})(...args);`;
     }
 
-    this.#domWorld = options.domWorld;
+    this.#isolatedWorld = options.isolatedWorld;
     this.#polling = options.polling;
     this.#timeout = options.timeout;
     this.#root = options.root || null;
@@ -834,9 +834,9 @@ export class WaitTask {
     this.#args = options.args;
     this.#binding = options.binding;
     this.#runCount = 0;
-    this.#domWorld._waitTasks.add(this);
+    this.#isolatedWorld._waitTasks.add(this);
     if (this.#binding) {
-      this.#domWorld._boundFunctions.set(
+      this.#isolatedWorld._boundFunctions.set(
         this.#binding.name,
         this.#binding.pptrFunction
       );
@@ -868,12 +868,15 @@ export class WaitTask {
     const runCount = ++this.#runCount;
     let success: JSHandle | null = null;
     let error: Error | null = null;
-    const context = await this.#domWorld.executionContext();
+    const context = await this.#isolatedWorld.executionContext();
     if (this.#terminated || runCount !== this.#runCount) {
       return;
     }
     if (this.#binding) {
-      await this.#domWorld._addBindingToContext(context, this.#binding.name);
+      await this.#isolatedWorld._addBindingToContext(
+        context,
+        this.#binding.name
+      );
     }
     if (this.#terminated || runCount !== this.#runCount) {
       return;
@@ -904,7 +907,7 @@ export class WaitTask {
     // throw an error - ignore this predicate run altogether.
     if (
       !error &&
-      (await this.#domWorld
+      (await this.#isolatedWorld
         .evaluate(s => {
           return !s;
         }, success)
@@ -922,7 +925,7 @@ export class WaitTask {
       if (error.message.includes('TypeError: binding is not a function')) {
         return this.rerun();
       }
-      // When frame is detached the task should have been terminated by the DOMWorld.
+      // When frame is detached the task should have been terminated by the IsolatedWorld.
       // This can fail if we were adding this task while the frame was detached,
       // so we terminate here instead.
       if (
@@ -960,7 +963,7 @@ export class WaitTask {
 
   #cleanup(): void {
     this.#timeoutTimer !== undefined && clearTimeout(this.#timeoutTimer);
-    this.#domWorld._waitTasks.delete(this);
+    this.#isolatedWorld._waitTasks.delete(this);
   }
 }
 

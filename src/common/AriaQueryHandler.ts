@@ -17,7 +17,11 @@
 import {Protocol} from 'devtools-protocol';
 import {assert} from './assert.js';
 import {CDPSession} from './Connection.js';
-import {DOMWorld, PageBinding, WaitForSelectorOptions} from './DOMWorld.js';
+import {
+  IsolatedWorld,
+  PageBinding,
+  WaitForSelectorOptions,
+} from './IsolatedWorld.js';
 import {ElementHandle} from './ElementHandle.js';
 import {JSHandle} from './JSHandle.js';
 import {InternalQueryHandler} from './QueryHandler.js';
@@ -101,19 +105,19 @@ const queryOne = async (
 };
 
 const waitFor = async (
-  domWorld: DOMWorld,
+  isolatedWorld: IsolatedWorld,
   selector: string,
   options: WaitForSelectorOptions
 ): Promise<ElementHandle<Element> | null> => {
   const binding: PageBinding = {
     name: 'ariaQuerySelector',
     pptrFunction: async (selector: string) => {
-      const root = options.root || (await domWorld._document());
+      const root = options.root || (await isolatedWorld._document());
       const element = await queryOne(root, selector);
       return element;
     },
   };
-  return (await domWorld._waitForSelectorInPage(
+  return (await isolatedWorld._waitForSelectorInPage(
     (_: Element, selector: string) => {
       return (
         globalThis as unknown as {
@@ -135,11 +139,13 @@ const queryAll = async (
   const {name, role} = parseAriaSelector(selector);
   const res = await queryAXTree(exeCtx._client, element, name, role);
   const world = exeCtx._world!;
-  return (await Promise.all(
+  return Promise.all(
     res.map(axNode => {
-      return world.adoptBackendNode(axNode.backendDOMNodeId);
+      return world.adoptBackendNode(axNode.backendDOMNodeId) as Promise<
+        ElementHandle<Node>
+      >;
     })
-  )) as Array<ElementHandle<Node>>;
+  );
 };
 
 const queryAllArray = async (
