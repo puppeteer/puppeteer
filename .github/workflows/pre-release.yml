@@ -27,6 +27,7 @@ jobs:
         run: |
           npm install
           npm run docusaurus docs:version $(jq -r .version ../package.json)
+          npm run archive
       - name: Format
         run: npm run format
       - name: Commit

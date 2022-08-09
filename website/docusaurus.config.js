@@ -20,6 +20,8 @@
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
+const archivedVersions = require('./versionsArchived.json');
+
 const DOC_ROUTE_BASE_PATH = '/';
 const DOC_PATH = '../docs';
 
@@ -125,6 +127,24 @@ const config = {
           {
             type: 'docsVersionDropdown',
             position: 'right',
+            dropdownActiveClassDisabled: true,
+            dropdownItemsAfter: [
+              {
+                type: 'html',
+                value: '<hr class="dropdown-separator">',
+              },
+              {
+                type: 'html',
+                className: 'dropdown-archived-versions',
+                value: '<b>Archived versions</b>',
+              },
+              ...archivedVersions.map(version => {
+                return {
+                  label: version,
+                  href: `https://github.com/puppeteer/puppeteer/blob/v${version}/docs/api/index.md`,
+                };
+              }),
+            ],
           },
           {
             type: 'search',
