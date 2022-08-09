@@ -53,9 +53,11 @@ const config = {
             const apiCategoryItem = sidebarItems.find(value => {
               return value.type === 'category';
             });
-            if (apiCategoryItem && apiCategoryItem.type === 'category') {
-              apiCategoryItem.label = 'API';
-
+            if (
+              apiCategoryItem &&
+              apiCategoryItem.type === 'category' &&
+              apiCategoryItem.label === 'API'
+            ) {
               /** @type {typeof sidebarItems} */
               const newItems = [];
               for (const item of apiCategoryItem.items.sort((a, b) => {

@@ -4,6 +4,14 @@ sidebar_label: Page.setRequestInterception
 
 # Page.setRequestInterception() method
 
+Activating request interception enables [HTTPRequest.abort()](./puppeteer.httprequest.abort.md), [HTTPRequest.continue()](./puppeteer.httprequest.continue.md) and [HTTPRequest.respond()](./puppeteer.httprequest.respond.md) methods. This provides the capability to modify network requests that are made by a page.
+
+Once request interception is enabled, every request will stall unless it's continued, responded or aborted; or completed using the browser cache.
+
+NOTE: Enabling request interception disables page caching.
+
+See the [Request interception guide](https://pptr.dev/next/guides/request-interception) for more details.
+
 **Signature:**
 
 ```typescript
@@ -21,12 +29,6 @@ class Page {
 **Returns:**
 
 Promise&lt;void&gt;
-
-## Remarks
-
-Activating request interception enables [HTTPRequest.abort()](./puppeteer.httprequest.abort.md), [HTTPRequest.continue()](./puppeteer.httprequest.continue.md) and [HTTPRequest.respond()](./puppeteer.httprequest.respond.md) methods. This provides the capability to modify network requests that are made by a page.
-
-Once request interception is enabled, every request will stall unless it's continued, responded or aborted; or completed using the browser cache.
 
 ## Example
 
@@ -50,5 +52,3 @@ const puppeteer = require('puppeteer');
   await browser.close();
 })();
 ```
-
-NOTE: Enabling request interception disables page caching.
