@@ -906,15 +906,16 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @param value - Whether to enable request interception.
-   *
-   * @remarks
    * Activating request interception enables {@link HTTPRequest.abort},
    * {@link HTTPRequest.continue} and {@link HTTPRequest.respond} methods.  This
    * provides the capability to modify network requests that are made by a page.
    *
    * Once request interception is enabled, every request will stall unless it's
    * continued, responded or aborted; or completed using the browser cache.
+   *
+   * NOTE: Enabling request interception disables page caching.
+   *
+   * See the {@link https://pptr.dev/next/guides/request-interception|Request interception guide} for more details.
    *
    * @example
    * An example of a naïve request interceptor that aborts all image requests:
@@ -935,7 +936,8 @@ export class Page extends EventEmitter {
    *   await browser.close();
    * })();
    * ```
-   * NOTE: Enabling request interception disables page caching.
+   *
+   * @param value - Whether to enable request interception.
    */
   async setRequestInterception(value: boolean): Promise<void> {
     return this.#frameManager.networkManager().setRequestInterception(value);

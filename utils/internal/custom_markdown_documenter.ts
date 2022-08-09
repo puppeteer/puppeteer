@@ -123,6 +123,7 @@ export class MarkdownDocumenter {
           outputFolder: this._outputFolder,
           documenter: new MarkdownDocumenterAccessor({
             getLinkForApiItem: (apiItem: ApiItem) => {
+              console.log(apiItem);
               return this._getLinkFilenameForApiItem(apiItem);
             },
           }),
