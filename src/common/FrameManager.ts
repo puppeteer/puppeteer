@@ -1369,10 +1369,11 @@ export class Frame {
     if (!handle) {
       return null;
     }
-    const mainExecutionContext = await this._mainWorld.executionContext();
-    const result = await mainExecutionContext._adoptElementHandle(handle);
+    const mainHandle = (await this._mainWorld.adoptHandle(
+      handle
+    )) as ElementHandle<NodeFor<Selector>>;
     await handle.dispose();
-    return result;
+    return mainHandle;
   }
 
   /**

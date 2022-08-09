@@ -123,8 +123,7 @@ export class ElementHandle<
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
     const frame = this._context.frame();
     assert(frame);
-    const secondaryContext = await frame._secondaryWorld.executionContext();
-    const adoptedRoot = await secondaryContext._adoptElementHandle(this);
+    const adoptedRoot = await frame._secondaryWorld.adoptHandle(this);
     const handle = await frame._secondaryWorld.waitForSelector(selector, {
       ...options,
       root: adoptedRoot,
@@ -133,8 +132,9 @@ export class ElementHandle<
     if (!handle) {
       return null;
     }
-    const mainExecutionContext = await frame._mainWorld.executionContext();
-    const result = await mainExecutionContext._adoptElementHandle(handle);
+    const result = (await frame._mainWorld.adoptHandle(
+      handle
+    )) as ElementHandle<NodeFor<Selector>>;
     await handle.dispose();
     return result;
   }

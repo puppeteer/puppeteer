@@ -38,19 +38,16 @@ const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
 /**
  * This class represents a context for JavaScript execution. A [Page] might have
  * many execution contexts:
- * - each
- *   {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe |
- *   frame } has "default" execution context that is always created after frame is
+ * - each {@link
+ *   https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe | frame}
+ *   has "default" execution context that is always created after frame is
  *   attached to DOM. This context is returned by the
  *   {@link Frame.executionContext} method.
- * - {@link https://developer.chrome.com/extensions | Extension}'s content scripts
- *   create additional execution contexts.
+ * - {@link https://developer.chrome.com/extensions | Extension}'s content
+ *   scripts create additional execution contexts.
  *
- * Besides pages, execution contexts can be found in
- * {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API |
- * workers }.
- *
- * @public
+ * Besides pages, execution contexts can be found in {@link
+ * https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API | workers}.
  */
 export class ExecutionContext {
   /**
@@ -87,9 +84,9 @@ export class ExecutionContext {
   /**
    * @remarks
    *
-   * Not every execution context is associated with a frame. For
-   * example, workers and extensions have execution contexts that are not
-   * associated with frames.
+   * Not every execution context is associated with a frame. For example,
+   * workers and extensions have execution contexts that are not associated with
+   * frames.
    *
    * @returns The frame associated with this execution context.
    */
@@ -421,22 +418,5 @@ export class ExecutionContext {
       executionContextId: this._contextId,
     });
     return createJSHandle(this, object) as ElementHandle<Node>;
-  }
-
-  /**
-   * @internal
-   */
-  async _adoptElementHandle<T extends ElementHandle<Node>>(
-    elementHandle: T
-  ): Promise<T> {
-    assert(
-      elementHandle.executionContext() !== this,
-      'Cannot adopt handle that already belongs to this execution context'
-    );
-    assert(this._world, 'Cannot adopt handle without DOMWorld');
-    const nodeInfo = await this._client.send('DOM.describeNode', {
-      objectId: elementHandle._remoteObject.objectId,
-    });
-    return (await this._adoptBackendNodeId(nodeInfo.node.backendNodeId)) as T;
   }
 }
