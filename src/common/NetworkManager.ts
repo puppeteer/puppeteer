@@ -143,7 +143,7 @@ export class NetworkManager extends EventEmitter {
    */
   initialize(): Promise<void> {
     if (this.#deferredInitPromise) {
-      return this.#deferredInitPromise.promise;
+      return this.#deferredInitPromise;
     }
     this.#deferredInitPromise = createDeferredPromiseWithTimer<void>(
       'NetworkManager initialization timed out',
@@ -157,14 +157,15 @@ export class NetworkManager extends EventEmitter {
         : null,
       this.#client.send('Network.enable'),
     ]);
+    const deferredInitPromise = this.#deferredInitPromise;
     init
       .then(() => {
-        this.#deferredInitPromise?.resolve();
+        deferredInitPromise.resolve();
       })
       .catch(err => {
-        return this.#deferredInitPromise?.reject(err);
+        deferredInitPromise.reject(err);
       });
-    return this.#deferredInitPromise.promise;
+    return this.#deferredInitPromise;
   }
 
   async authenticate(credentials?: Credentials): Promise<void> {

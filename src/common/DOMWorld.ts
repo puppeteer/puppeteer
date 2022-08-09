@@ -28,7 +28,9 @@ import {getQueryHandlerAndSelector} from './QueryHandler.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {
+  createDeferredPromise,
   debugError,
+  DeferredPromise,
   importFS,
   isNumber,
   isString,
@@ -75,8 +77,7 @@ export class DOMWorld {
   #frame: Frame;
   #timeoutSettings: TimeoutSettings;
   #documentPromise: Promise<ElementHandle<Document>> | null = null;
-  #contextPromise: Promise<ExecutionContext> | null = null;
-  #contextResolveCallback: ((x: ExecutionContext) => void) | null = null;
+  #contextPromise: DeferredPromise<ExecutionContext> = createDeferredPromise();
   #detached = false;
 
   // Set of bindings that have been registered in the current context.
@@ -110,7 +111,6 @@ export class DOMWorld {
     this.#frameManager = frameManager;
     this.#frame = frame;
     this.#timeoutSettings = timeoutSettings;
-    this._setContext(null);
     this.#client.on('Runtime.bindingCalled', this.#onBindingCalled);
   }
 
@@ -118,28 +118,25 @@ export class DOMWorld {
     return this.#frame;
   }
 
-  async _setContext(context: ExecutionContext | null): Promise<void> {
-    if (context) {
-      assert(
-        this.#contextResolveCallback,
-        `ExecutionContext ${context._contextId} has already been set.`
-      );
-      this.#ctxBindings.clear();
-      this.#contextResolveCallback?.call(null, context);
-      this.#contextResolveCallback = null;
-      for (const waitTask of this._waitTasks) {
-        waitTask.rerun();
-      }
-    } else {
-      this.#documentPromise = null;
-      this.#contextPromise = new Promise(fulfill => {
-        this.#contextResolveCallback = fulfill;
-      });
+  clearContext(): void {
+    this.#documentPromise = null;
+    this.#contextPromise = createDeferredPromise();
+  }
+
+  setContext(context: ExecutionContext): void {
+    assert(
+      this.#contextPromise,
+      `ExecutionContext ${context._contextId} has already been set.`
+    );
+    this.#ctxBindings.clear();
+    this.#contextPromise.resolve(context);
+    for (const waitTask of this._waitTasks) {
+      waitTask.rerun();
     }
   }
 
-  _hasContext(): boolean {
-    return !this.#contextResolveCallback;
+  hasContext(): boolean {
+    return this.#contextPromise.resolved();
   }
 
   _detach(): void {
@@ -619,7 +616,7 @@ export class DOMWorld {
     event: Protocol.Runtime.BindingCalledEvent
   ): Promise<void> => {
     let payload: {type: string; name: string; seq: number; args: unknown[]};
-    if (!this._hasContext()) {
+    if (!this.hasContext()) {
       return;
     }
     const context = await this.executionContext();
