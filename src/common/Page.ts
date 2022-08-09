@@ -2033,7 +2033,6 @@ export class Page extends EventEmitter {
    * pass `0` to disable the timeout. The default value can be changed by using
    * the {@link Page.setDefaultTimeout} method.
    */
-   */
   async waitForNetworkIdle(
     options: {idleTime?: number; timeout?: number} = {}
   ): Promise<void> {
