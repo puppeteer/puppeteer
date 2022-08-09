@@ -397,7 +397,8 @@ export class FrameManager extends EventEmitter {
       return complete(parentFrame);
     }
 
-    if (this.#framesPendingTargetInit.has(parentFrameId)) {
+    const frame = this.#framesPendingTargetInit.get(parentFrameId);
+    if (frame) {
       if (!this.#framesPendingAttachment.has(frameId)) {
         this.#framesPendingAttachment.set(
           frameId,
@@ -406,7 +407,7 @@ export class FrameManager extends EventEmitter {
           )
         );
       }
-      this.#framesPendingTargetInit.get(parentFrameId)!.promise.then(() => {
+      frame.then(() => {
         complete(this.#frames.get(parentFrameId)!);
         this.#framesPendingAttachment.get(frameId)?.resolve();
         this.#framesPendingAttachment.delete(frameId);
@@ -455,8 +456,9 @@ export class FrameManager extends EventEmitter {
 
       this.emit(FrameManagerEmittedEvents.FrameNavigated, frame);
     };
-    if (this.#framesPendingAttachment.has(frameId)) {
-      this.#framesPendingAttachment.get(frameId)!.promise.then(() => {
+    const pendingFrame = this.#framesPendingAttachment.get(frameId);
+    if (pendingFrame) {
+      pendingFrame.then(() => {
         complete(isMainFrame ? this.#mainFrame : this.#frames.get(frameId));
       });
     } else {
@@ -539,7 +541,7 @@ export class FrameManager extends EventEmitter {
         world = frame._mainWorld;
       } else if (
         contextPayload.name === UTILITY_WORLD_NAME &&
-        !frame._secondaryWorld._hasContext()
+        !frame._secondaryWorld.hasContext()
       ) {
         // In case of multiple sessions to the same target, there's a race between
         // connections so we might end up creating multiple isolated worlds.
@@ -553,7 +555,7 @@ export class FrameManager extends EventEmitter {
       world
     );
     if (world) {
-      world._setContext(context);
+      world.setContext(context);
     }
     const key = `${session.id()}:${contextPayload.id}`;
     this.#contextIdToContext.set(key, context);
@@ -570,7 +572,7 @@ export class FrameManager extends EventEmitter {
     }
     this.#contextIdToContext.delete(key);
     if (context._world) {
-      context._world._setContext(null);
+      context._world.clearContext();
     }
   }
 
@@ -582,7 +584,7 @@ export class FrameManager extends EventEmitter {
         continue;
       }
       if (context._world) {
-        context._world._setContext(null);
+        context._world.clearContext();
       }
       this.#contextIdToContext.delete(key);
     }

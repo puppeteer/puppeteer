@@ -527,11 +527,11 @@ export function isErrnoException(obj: unknown): obj is NodeJS.ErrnoException {
 /**
  * @internal
  */
-export type DeferredPromise<T> = {
-  promise: Promise<T>;
+export interface DeferredPromise<T> extends Promise<T> {
+  resolved: () => boolean;
   resolve: (_: T) => void;
   reject: (_: Error) => void;
-};
+}
 
 /**
  * Creates an returns a promise along with the resolve/reject functions.
@@ -545,6 +545,7 @@ export function createDeferredPromiseWithTimer<T>(
   timeoutMessage: string,
   timeout = 5000
 ): DeferredPromise<T> {
+  let isResolved = false;
   let resolver = (_: T): void => {};
   let rejector = (_: Error) => {};
   const taskPromise = new Promise<T>((resolve, reject) => {
@@ -554,15 +555,45 @@ export function createDeferredPromiseWithTimer<T>(
   const timeoutId = setTimeout(() => {
     rejector(new Error(timeoutMessage));
   }, timeout);
-  return {
-    promise: taskPromise,
+  return Object.assign(taskPromise, {
+    resolved: () => {
+      return isResolved;
+    },
     resolve: (value: T) => {
       clearTimeout(timeoutId);
+      isResolved = true;
       resolver(value);
     },
     reject: (err: Error) => {
       clearTimeout(timeoutId);
       rejector(err);
     },
-  };
+  });
+}
+
+/**
+ * Creates an returns a promise along with the resolve/reject functions.
+ *
+ * @internal
+ */
+export function createDeferredPromise<T>(): DeferredPromise<T> {
+  let isResolved = false;
+  let resolver = (_: T): void => {};
+  let rejector = (_: Error) => {};
+  const taskPromise = new Promise<T>((resolve, reject) => {
+    resolver = resolve;
+    rejector = reject;
+  });
+  return Object.assign(taskPromise, {
+    resolved: () => {
+      return isResolved;
+    },
+    resolve: (value: T) => {
+      isResolved = true;
+      resolver(value);
+    },
+    reject: (err: Error) => {
+      rejector(err);
+    },
+  });
 }
