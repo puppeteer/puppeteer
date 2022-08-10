@@ -142,6 +142,12 @@ export const waitEvent = (
   });
 };
 
+export async function sleep(time: number): Promise<void> {
+  await new Promise(resolve => {
+    return setTimeout(resolve, time);
+  });
+}
+
 /**
  * @deprecated Use exports directly.
  */
