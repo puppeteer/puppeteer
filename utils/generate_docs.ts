@@ -19,6 +19,7 @@ import {join} from 'path';
 import {chdir} from 'process';
 import semver from 'semver';
 import {versionsPerRelease} from '../versions.js';
+import versionsArchived from '../website/versionsArchived.json';
 
 // eslint-disable-next-line import/extensions
 import {generateDocs} from './internal/custom_markdown_action';
@@ -58,7 +59,7 @@ chdir(join(__dirname, '..'));
  ---
  sidebar_position: 1
  ---
- 
+
  `;
   writeFileSync('docs/index.md', sectionContent + content);
 }
@@ -74,7 +75,11 @@ chdir(join(__dirname, '..'));
     if (puppeteerVersion === 'NEXT') {
       continue;
     }
-    if (semver.lt(puppeteerVersion, '15.0.0')) {
+    if (versionsArchived.includes(puppeteerVersion.substring(1))) {
+      buffer.push(
+        `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://github.com/puppeteer/puppeteer/blob/${puppeteerVersion}/docs/api/index.md)`
+      );
+    } else if (semver.lt(puppeteerVersion, '15.0.0')) {
       buffer.push(
         `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://github.com/puppeteer/puppeteer/blob/${puppeteerVersion}/docs/api.md)`
       );

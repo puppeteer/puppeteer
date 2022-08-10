@@ -8,6 +8,7 @@ The following versions of Chromium are supported, mapped to Puppeteer version:
 
 <!-- version-start -->
 
+- Chromium 105.0.5173.0 - [Puppeteer v15.5.0](https://github.com/puppeteer/puppeteer/blob/v15.5.0/docs/api/index.md)
 - Chromium 104.0.5109.0 - Puppeteer v15.1.0
 - Chromium 103.0.5059.0 - [Puppeteer v14.2.0](https://github.com/puppeteer/puppeteer/blob/v14.2.0/docs/api.md)
 - Chromium 102.0.5002.0 - [Puppeteer v14.0.0](https://github.com/puppeteer/puppeteer/blob/v14.0.0/docs/api.md)
