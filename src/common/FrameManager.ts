@@ -227,11 +227,15 @@ export class FrameManager extends EventEmitter {
           : watcher.sameDocumentNavigationPromise(),
       ]);
     }
-    watcher.dispose();
-    if (error) {
-      throw error;
+
+    try {
+      if (error) {
+        throw error;
+      }
+      return await watcher.navigationResponse();
+    } finally {
+      watcher.dispose();
     }
-    return await watcher.navigationResponse();
 
     async function navigate(
       client: CDPSession,
@@ -276,11 +280,14 @@ export class FrameManager extends EventEmitter {
       watcher.sameDocumentNavigationPromise(),
       watcher.newDocumentNavigationPromise(),
     ]);
-    watcher.dispose();
-    if (error) {
-      throw error;
+    try {
+      if (error) {
+        throw error;
+      }
+      return await watcher.navigationResponse();
+    } finally {
+      watcher.dispose();
     }
-    return await watcher.navigationResponse();
   }
 
   async onAttachedToTarget(target: Target): Promise<void> {

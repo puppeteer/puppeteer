@@ -24,6 +24,7 @@ import {
 import {HTTPRequest} from '../../lib/cjs/puppeteer/common/HTTPRequest.js';
 import {EventEmitter} from '../../lib/cjs/puppeteer/common/EventEmitter.js';
 import {Frame} from '../../lib/cjs/puppeteer/common/FrameManager.js';
+import {HTTPResponse} from '../../lib/cjs/puppeteer/common/HTTPResponse.js';
 
 class MockCDPSession extends EventEmitter {
   async send(): Promise<any> {}
@@ -659,5 +660,466 @@ describeChromeOnly('NetworkManager', () => {
     });
 
     expect(requests.length).toBe(1);
+  });
+
+  it(`should resolve the response once the late responseReceivedExtraInfo event arrives`, async () => {
+    const mockCDPSession = new MockCDPSession();
+    const manager = new NetworkManager(mockCDPSession, true, {
+      frame(): Frame | null {
+        return null;
+      },
+    });
+
+    const finishedRequests: HTTPRequest[] = [];
+    const pendingRequests: HTTPRequest[] = [];
+    manager.on(
+      NetworkManagerEmittedEvents.RequestFinished,
+      (request: HTTPRequest) => {
+        finishedRequests.push(request);
+      }
+    );
+
+    manager.on(NetworkManagerEmittedEvents.Request, (request: HTTPRequest) => {
+      pendingRequests.push(request);
+    });
+
+    mockCDPSession.emit('Network.requestWillBeSent', {
+      requestId: 'LOADERID',
+      loaderId: 'LOADERID',
+      documentURL: 'http://10.1.0.39:42915/empty.html',
+      request: {
+        url: 'http://10.1.0.39:42915/empty.html',
+        method: 'GET',
+        headers: {
+          'Upgrade-Insecure-Requests': '1',
+          'User-Agent':
+            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36',
+        },
+        mixedContentType: 'none',
+        initialPriority: 'VeryHigh',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+        isSameSite: true,
+      },
+      timestamp: 671.229856,
+      wallTime: 1660121157.913774,
+      initiator: {type: 'other'},
+      redirectHasExtraInfo: false,
+      type: 'Document',
+      frameId: 'FRAMEID',
+      hasUserGesture: false,
+    });
+
+    mockCDPSession.emit('Network.responseReceived', {
+      requestId: 'LOADERID',
+      loaderId: 'LOADERID',
+      timestamp: 671.236025,
+      type: 'Document',
+      response: {
+        url: 'http://10.1.0.39:42915/empty.html',
+        status: 200,
+        statusText: 'OK',
+        headers: {
+          'Cache-Control': 'no-cache, no-store',
+          Connection: 'keep-alive',
+          'Content-Length': '0',
+          'Content-Type': 'text/html; charset=utf-8',
+          Date: 'Wed, 10 Aug 2022 08:45:57 GMT',
+          'Keep-Alive': 'timeout=5',
+        },
+        mimeType: 'text/html',
+        connectionReused: true,
+        connectionId: 18,
+        remoteIPAddress: '10.1.0.39',
+        remotePort: 42915,
+        fromDiskCache: false,
+        fromServiceWorker: false,
+        fromPrefetchCache: false,
+        encodedDataLength: 197,
+        timing: {
+          requestTime: 671.232585,
+          proxyStart: -1,
+          proxyEnd: -1,
+          dnsStart: -1,
+          dnsEnd: -1,
+          connectStart: -1,
+          connectEnd: -1,
+          sslStart: -1,
+          sslEnd: -1,
+          workerStart: -1,
+          workerReady: -1,
+          workerFetchStart: -1,
+          workerRespondWithSettled: -1,
+          sendStart: 0.308,
+          sendEnd: 0.364,
+          pushStart: 0,
+          pushEnd: 0,
+          receiveHeadersEnd: 1.554,
+        },
+        responseTime: 1.660121157917951e12,
+        protocol: 'http/1.1',
+        securityState: 'insecure',
+      },
+      hasExtraInfo: true,
+      frameId: 'FRAMEID',
+    });
+
+    mockCDPSession.emit('Network.requestWillBeSentExtraInfo', {
+      requestId: 'LOADERID',
+      associatedCookies: [],
+      headers: {
+        Accept:
+          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'Accept-Encoding': 'gzip, deflate',
+        'Accept-Language': 'en-US,en;q=0.9',
+        Connection: 'keep-alive',
+        Host: '10.1.0.39:42915',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent':
+          'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36',
+      },
+      connectTiming: {requestTime: 671.232585},
+    });
+
+    mockCDPSession.emit('Network.loadingFinished', {
+      requestId: 'LOADERID',
+      timestamp: 671.234448,
+      encodedDataLength: 197,
+      shouldReportCorbBlocking: false,
+    });
+
+    expect(pendingRequests.length).toBe(1);
+    expect(finishedRequests.length).toBe(0);
+    expect(pendingRequests[0]!.response()).toEqual(null);
+
+    // The extra info might arrive late.
+    mockCDPSession.emit('Network.responseReceivedExtraInfo', {
+      requestId: 'LOADERID',
+      blockedCookies: [],
+      headers: {
+        'Cache-Control': 'no-cache, no-store',
+        Connection: 'keep-alive',
+        'Content-Length': '0',
+        'Content-Type': 'text/html; charset=utf-8',
+        Date: 'Wed, 10 Aug 2022 09:04:39 GMT',
+        'Keep-Alive': 'timeout=5',
+      },
+      resourceIPAddressSpace: 'Private',
+      statusCode: 200,
+      headersText:
+        'HTTP/1.1 200 OK\\r\\nCache-Control: no-cache, no-store\\r\\nContent-Type: text/html; charset=utf-8\\r\\nDate: Wed, 10 Aug 2022 09:04:39 GMT\\r\\nConnection: keep-alive\\r\\nKeep-Alive: timeout=5\\r\\nContent-Length: 0\\r\\n\\r\\n',
+    });
+
+    expect(pendingRequests.length).toBe(1);
+    expect(finishedRequests.length).toBe(1);
+    expect(pendingRequests[0]!.response()).not.toEqual(null);
+  });
+
+  it(`should send responses for iframe that don't receive loadingFinished event`, async () => {
+    const mockCDPSession = new MockCDPSession();
+    const manager = new NetworkManager(mockCDPSession, true, {
+      frame(): Frame | null {
+        return null;
+      },
+    });
+
+    const responses: HTTPResponse[] = [];
+    const requests: HTTPRequest[] = [];
+    manager.on(
+      NetworkManagerEmittedEvents.Response,
+      (response: HTTPResponse) => {
+        responses.push(response);
+      }
+    );
+
+    manager.on(NetworkManagerEmittedEvents.Request, (request: HTTPRequest) => {
+      requests.push(request);
+    });
+
+    mockCDPSession.emit('Network.requestWillBeSent', {
+      requestId: '94051D839ACF29E53A3D1273FB20B4C4',
+      loaderId: '94051D839ACF29E53A3D1273FB20B4C4',
+      documentURL: 'http://127.0.0.1:54590/empty.html',
+      request: {
+        url: 'http://127.0.0.1:54590/empty.html',
+        method: 'GET',
+        headers: {
+          Referer: 'http://localhost:54590/',
+          'Upgrade-Insecure-Requests': '1',
+          'User-Agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/105.0.5173.0 Safari/537.36',
+        },
+        mixedContentType: 'none',
+        initialPriority: 'VeryHigh',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+        isSameSite: false,
+      },
+      timestamp: 504903.99901,
+      wallTime: 1660125092.026021,
+      initiator: {
+        type: 'script',
+        stack: {
+          callFrames: [
+            {
+              functionName: 'navigateFrame',
+              scriptId: '8',
+              url: 'pptr://__puppeteer_evaluation_script__',
+              lineNumber: 2,
+              columnNumber: 18,
+            },
+          ],
+        },
+      },
+      redirectHasExtraInfo: false,
+      type: 'Document',
+      frameId: '07D18B8630A8161C72B6079B74123D60',
+      hasUserGesture: true,
+    });
+
+    mockCDPSession.emit('Network.requestWillBeSentExtraInfo', {
+      requestId: '94051D839ACF29E53A3D1273FB20B4C4',
+      associatedCookies: [],
+      headers: {
+        Accept:
+          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'Accept-Encoding': 'gzip, deflate, br',
+        Connection: 'keep-alive',
+        Host: '127.0.0.1:54590',
+        Referer: 'http://localhost:54590/',
+        'Sec-Fetch-Dest': 'iframe',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'cross-site',
+        'Sec-Fetch-User': '?1',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent':
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/105.0.5173.0 Safari/537.36',
+      },
+      connectTiming: {requestTime: 504904.000422},
+      clientSecurityState: {
+        initiatorIsSecureContext: true,
+        initiatorIPAddressSpace: 'Local',
+        privateNetworkRequestPolicy: 'Allow',
+      },
+    });
+
+    mockCDPSession.emit('Network.responseReceivedExtraInfo', {
+      requestId: '94051D839ACF29E53A3D1273FB20B4C4',
+      blockedCookies: [],
+      headers: {
+        'Cache-Control': 'no-cache, no-store',
+        Connection: 'keep-alive',
+        'Content-Length': '0',
+        'Content-Type': 'text/html; charset=utf-8',
+        Date: 'Wed, 10 Aug 2022 09:51:32 GMT',
+        'Keep-Alive': 'timeout=5',
+      },
+      resourceIPAddressSpace: 'Local',
+      statusCode: 200,
+      headersText:
+        'HTTP/1.1 200 OK\r\nCache-Control: no-cache, no-store\r\nContent-Type: text/html; charset=utf-8\r\nDate: Wed, 10 Aug 2022 09:51:32 GMT\r\nConnection: keep-alive\r\nKeep-Alive: timeout=5\r\nContent-Length: 0\r\n\r\n',
+    });
+
+    mockCDPSession.emit('Network.responseReceived', {
+      requestId: '94051D839ACF29E53A3D1273FB20B4C4',
+      loaderId: '94051D839ACF29E53A3D1273FB20B4C4',
+      timestamp: 504904.00338,
+      type: 'Document',
+      response: {
+        url: 'http://127.0.0.1:54590/empty.html',
+        status: 200,
+        statusText: 'OK',
+        headers: {
+          'Cache-Control': 'no-cache, no-store',
+          Connection: 'keep-alive',
+          'Content-Length': '0',
+          'Content-Type': 'text/html; charset=utf-8',
+          Date: 'Wed, 10 Aug 2022 09:51:32 GMT',
+          'Keep-Alive': 'timeout=5',
+        },
+        mimeType: 'text/html',
+        connectionReused: true,
+        connectionId: 13,
+        remoteIPAddress: '127.0.0.1',
+        remotePort: 54590,
+        fromDiskCache: false,
+        fromServiceWorker: false,
+        fromPrefetchCache: false,
+        encodedDataLength: 197,
+        timing: {
+          requestTime: 504904.000422,
+          proxyStart: -1,
+          proxyEnd: -1,
+          dnsStart: -1,
+          dnsEnd: -1,
+          connectStart: -1,
+          connectEnd: -1,
+          sslStart: -1,
+          sslEnd: -1,
+          workerStart: -1,
+          workerReady: -1,
+          workerFetchStart: -1,
+          workerRespondWithSettled: -1,
+          sendStart: 0.338,
+          sendEnd: 0.413,
+          pushStart: 0,
+          pushEnd: 0,
+          receiveHeadersEnd: 1.877,
+        },
+        responseTime: 1.660125092029241e12,
+        protocol: 'http/1.1',
+        securityState: 'secure',
+      },
+      hasExtraInfo: true,
+      frameId: '07D18B8630A8161C72B6079B74123D60',
+    });
+
+    expect(requests.length).toBe(1);
+    expect(responses.length).toBe(1);
+    expect(requests[0]!.response()).not.toEqual(null);
+  });
+
+  it(`should send responses for iframe that don't receive loadingFinished event`, async () => {
+    const mockCDPSession = new MockCDPSession();
+    const manager = new NetworkManager(mockCDPSession, true, {
+      frame(): Frame | null {
+        return null;
+      },
+    });
+
+    const responses: HTTPResponse[] = [];
+    const requests: HTTPRequest[] = [];
+    manager.on(
+      NetworkManagerEmittedEvents.Response,
+      (response: HTTPResponse) => {
+        responses.push(response);
+      }
+    );
+
+    manager.on(NetworkManagerEmittedEvents.Request, (request: HTTPRequest) => {
+      requests.push(request);
+    });
+
+    mockCDPSession.emit('Network.requestWillBeSent', {
+      requestId: 'E18BEB94B486CA8771F9AFA2030FEA37',
+      loaderId: 'E18BEB94B486CA8771F9AFA2030FEA37',
+      documentURL: 'http://localhost:56295/empty.html',
+      request: {
+        url: 'http://localhost:56295/empty.html',
+        method: 'GET',
+        headers: {
+          'Upgrade-Insecure-Requests': '1',
+          'User-Agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/105.0.5173.0 Safari/537.36',
+        },
+        mixedContentType: 'none',
+        initialPriority: 'VeryHigh',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+        isSameSite: true,
+      },
+      timestamp: 510294.105656,
+      wallTime: 1660130482.230591,
+      initiator: {type: 'other'},
+      redirectHasExtraInfo: false,
+      type: 'Document',
+      frameId: 'F9C89A517341F1EFFE63310141630189',
+      hasUserGesture: false,
+    });
+    mockCDPSession.emit('Network.responseReceived', {
+      requestId: 'E18BEB94B486CA8771F9AFA2030FEA37',
+      loaderId: 'E18BEB94B486CA8771F9AFA2030FEA37',
+      timestamp: 510294.119816,
+      type: 'Document',
+      response: {
+        url: 'http://localhost:56295/empty.html',
+        status: 200,
+        statusText: 'OK',
+        headers: {
+          'Cache-Control': 'no-cache, no-store',
+          Connection: 'keep-alive',
+          'Content-Length': '0',
+          'Content-Type': 'text/html; charset=utf-8',
+          Date: 'Wed, 10 Aug 2022 11:21:22 GMT',
+          'Keep-Alive': 'timeout=5',
+        },
+        mimeType: 'text/html',
+        connectionReused: true,
+        connectionId: 13,
+        remoteIPAddress: '[::1]',
+        remotePort: 56295,
+        fromDiskCache: false,
+        fromServiceWorker: false,
+        fromPrefetchCache: false,
+        encodedDataLength: 197,
+        timing: {
+          requestTime: 510294.106734,
+          proxyStart: -1,
+          proxyEnd: -1,
+          dnsStart: -1,
+          dnsEnd: -1,
+          connectStart: -1,
+          connectEnd: -1,
+          sslStart: -1,
+          sslEnd: -1,
+          workerStart: -1,
+          workerReady: -1,
+          workerFetchStart: -1,
+          workerRespondWithSettled: -1,
+          sendStart: 2.195,
+          sendEnd: 2.29,
+          pushStart: 0,
+          pushEnd: 0,
+          receiveHeadersEnd: 6.493,
+        },
+        responseTime: 1.660130482238109e12,
+        protocol: 'http/1.1',
+        securityState: 'secure',
+      },
+      hasExtraInfo: true,
+      frameId: 'F9C89A517341F1EFFE63310141630189',
+    });
+    mockCDPSession.emit('Network.requestWillBeSentExtraInfo', {
+      requestId: 'E18BEB94B486CA8771F9AFA2030FEA37',
+      associatedCookies: [],
+      headers: {
+        Accept:
+          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'Accept-Encoding': 'gzip, deflate, br',
+        Connection: 'keep-alive',
+        Host: 'localhost:56295',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Sec-Fetch-User': '?1',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent':
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/105.0.5173.0 Safari/537.36',
+      },
+      connectTiming: {requestTime: 510294.106734},
+    });
+    mockCDPSession.emit('Network.loadingFinished', {
+      requestId: 'E18BEB94B486CA8771F9AFA2030FEA37',
+      timestamp: 510294.113383,
+      encodedDataLength: 197,
+      shouldReportCorbBlocking: false,
+    });
+    mockCDPSession.emit('Network.responseReceivedExtraInfo', {
+      requestId: 'E18BEB94B486CA8771F9AFA2030FEA37',
+      blockedCookies: [],
+      headers: {
+        'Cache-Control': 'no-cache, no-store',
+        Connection: 'keep-alive',
+        'Content-Length': '0',
+        'Content-Type': 'text/html; charset=utf-8',
+        Date: 'Wed, 10 Aug 2022 11:21:22 GMT',
+        'Keep-Alive': 'timeout=5',
+      },
+      resourceIPAddressSpace: 'Local',
+      statusCode: 200,
+      headersText:
+        'HTTP/1.1 200 OK\r\nCache-Control: no-cache, no-store\r\nContent-Type: text/html; charset=utf-8\r\nDate: Wed, 10 Aug 2022 11:21:22 GMT\r\nConnection: keep-alive\r\nKeep-Alive: timeout=5\r\nContent-Length: 0\r\n\r\n',
+    });
+
+    expect(requests.length).toBe(1);
+    expect(responses.length).toBe(1);
+    expect(requests[0]!.response()).not.toEqual(null);
   });
 });
