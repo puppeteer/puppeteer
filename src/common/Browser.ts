@@ -649,10 +649,10 @@ export class Browser extends EventEmitter {
     this.on(BrowserEmittedEvents.TargetCreated, check);
     this.on(BrowserEmittedEvents.TargetChanged, check);
     try {
+      this.targets().forEach(check);
       if (!timeout) {
         return await targetPromise;
       }
-      this.targets().forEach(check);
       return await waitWithTimeout(targetPromise, 'target', timeout);
     } finally {
       this.off(BrowserEmittedEvents.TargetCreated, check);
