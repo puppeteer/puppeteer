@@ -12,7 +12,7 @@ ElementHandle represents an in-page DOM element.
 export declare class ElementHandle<ElementType extends Node = Element> extends JSHandle<ElementType>
 ```
 
-**Extends:** [JSHandle](./puppeteer.jshandle.md)
+**Extends:** [JSHandle](./puppeteer.jshandle.md)&lt;ElementType&gt;
 
 ## Remarks
 

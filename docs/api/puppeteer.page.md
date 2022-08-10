@@ -63,14 +63,14 @@ page.off('request', logRequest);
 
 ## Properties
 
-| Property                                           | Modifiers | Type                                          | Description |
-| -------------------------------------------------- | --------- | --------------------------------------------- | ----------- |
-| [accessibility](./puppeteer.page.accessibility.md) |           | [Accessibility](./puppeteer.accessibility.md) |             |
-| [coverage](./puppeteer.page.coverage.md)           |           | [Coverage](./puppeteer.coverage.md)           |             |
-| [keyboard](./puppeteer.page.keyboard.md)           |           | [Keyboard](./puppeteer.keyboard.md)           |             |
-| [mouse](./puppeteer.page.mouse.md)                 |           | [Mouse](./puppeteer.mouse.md)                 |             |
-| [touchscreen](./puppeteer.page.touchscreen.md)     |           | [Touchscreen](./puppeteer.touchscreen.md)     |             |
-| [tracing](./puppeteer.page.tracing.md)             |           | [Tracing](./puppeteer.tracing.md)             |             |
+| Property                                           | Modifiers             | Type                                          | Description |
+| -------------------------------------------------- | --------------------- | --------------------------------------------- | ----------- |
+| [accessibility](./puppeteer.page.accessibility.md) | <code>readonly</code> | [Accessibility](./puppeteer.accessibility.md) |             |
+| [coverage](./puppeteer.page.coverage.md)           | <code>readonly</code> | [Coverage](./puppeteer.coverage.md)           |             |
+| [keyboard](./puppeteer.page.keyboard.md)           | <code>readonly</code> | [Keyboard](./puppeteer.keyboard.md)           |             |
+| [mouse](./puppeteer.page.mouse.md)                 | <code>readonly</code> | [Mouse](./puppeteer.mouse.md)                 |             |
+| [touchscreen](./puppeteer.page.touchscreen.md)     | <code>readonly</code> | [Touchscreen](./puppeteer.touchscreen.md)     |             |
+| [tracing](./puppeteer.page.tracing.md)             | <code>readonly</code> | [Tracing](./puppeteer.tracing.md)             |             |
 
 ## Methods
 
