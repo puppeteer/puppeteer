@@ -20,4 +20,4 @@ all of the dedicated [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/A
 
 ## Remarks
 
-NOTE: This does not contain ServiceWorkers
+This does not contain ServiceWorkers

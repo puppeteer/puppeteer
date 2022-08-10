@@ -16,4 +16,4 @@ class Frame {
 
 Promise&lt;string&gt;
 
-the full HTML contents of the frame, including the doctype.
+The full HTML contents of the frame, including the DOCTYPE.

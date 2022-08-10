@@ -18,9 +18,9 @@ class Frame {
 
 ## Parameters
 
-| Parameter | Type                                                                | Description                              |
-| --------- | ------------------------------------------------------------------- | ---------------------------------------- |
-| options   | [FrameAddScriptTagOptions](./puppeteer.frameaddscripttagoptions.md) | configure the script to add to the page. |
+| Parameter | Type                                                                | Description             |
+| --------- | ------------------------------------------------------------------- | ----------------------- |
+| options   | [FrameAddScriptTagOptions](./puppeteer.frameaddscripttagoptions.md) | Options for the script. |
 
 **Returns:**
 

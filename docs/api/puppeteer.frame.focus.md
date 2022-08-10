@@ -4,7 +4,7 @@ sidebar_label: Frame.focus
 
 # Frame.focus() method
 
-This method fetches an element with `selector` and focuses it.
+Focuses the first element that matches the `selector`.
 
 **Signature:**
 
@@ -16,14 +16,14 @@ class Frame {
 
 ## Parameters
 
-| Parameter | Type   | Description                                                                                       |
-| --------- | ------ | ------------------------------------------------------------------------------------------------- |
-| selector  | string | the selector for the element to focus. If there are multiple elements, the first will be focused. |
+| Parameter | Type   | Description                |
+| --------- | ------ | -------------------------- |
+| selector  | string | The selector to query for. |
 
 **Returns:**
 
 Promise&lt;void&gt;
 
-## Remarks
+## Exceptions
 
-If there's no element matching `selector`, the method throws an error.
+Throws if there's no element matching `selector`.

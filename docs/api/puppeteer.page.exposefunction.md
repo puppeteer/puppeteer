@@ -8,7 +8,11 @@ The method adds a function called `name` on the page's `window` object. When cal
 
 If the puppeteerFunction returns a `Promise`, it will be awaited.
 
-NOTE: Functions installed via `page.exposeFunction` survive navigations.
+:::note
+
+Functions installed via `page.exposeFunction` survive navigations.
+
+:::note
 
 **Signature:**
 
@@ -36,7 +40,7 @@ class Page {
 
 Promise&lt;void&gt;
 
-## Example
+## Example 1
 
 An example of adding an `md5` function into the page:
 
@@ -60,6 +64,8 @@ const crypto = require('crypto');
   await browser.close();
 })();
 ```
+
+## Example 2
 
 An example of adding a `window.readfile` function into the page:
 

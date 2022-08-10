@@ -23,7 +23,7 @@ import {CDPSession, CDPSessionEmittedEvents} from './Connection.js';
 import {ConsoleMessage, ConsoleMessageType} from './ConsoleMessage.js';
 import {Coverage} from './Coverage.js';
 import {Dialog} from './Dialog.js';
-import {WaitForSelectorOptions} from './IsolatedWorld.js';
+import {MAIN_WORLD, WaitForSelectorOptions} from './IsolatedWorld.js';
 import {ElementHandle} from './ElementHandle.js';
 import {EmulationManager} from './EmulationManager.js';
 import {EventEmitter, Handler} from './EventEmitter.js';
@@ -70,6 +70,8 @@ import {
   valueFromRemoteObject,
   waitForEvent,
   waitWithTimeout,
+  createDeferredPromiseWithTimer,
+  DeferredPromise,
 } from './util.js';
 import {WebWorker} from './WebWorker.js';
 
@@ -97,12 +99,12 @@ export interface Metrics {
  */
 export interface WaitTimeoutOptions {
   /**
-   * Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to
-   * disable the timeout.
+   * Maximum wait time in milliseconds. Pass 0 to disable the timeout.
    *
-   * @remarks
    * The default value can be changed by using the
    * {@link Page.setDefaultTimeout} method.
+   *
+   * @defaultValue `30000`
    */
   timeout?: number;
 }
@@ -112,13 +114,13 @@ export interface WaitTimeoutOptions {
  */
 export interface WaitForOptions {
   /**
-   * Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to
-   * disable the timeout.
+   * Maximum wait time in milliseconds. Pass 0 to disable the timeout.
    *
-   * @remarks
    * The default value can be changed by using the
    * {@link Page.setDefaultTimeout} or {@link Page.setDefaultNavigationTimeout}
    * methods.
+   *
+   * @defaultValue `30000`
    */
   timeout?: number;
   waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
@@ -129,11 +131,11 @@ export interface WaitForOptions {
  */
 export interface GeolocationOptions {
   /**
-   * Latitude between -90 and 90.
+   * Latitude between `-90` and `90`.
    */
   longitude: number;
   /**
-   * Longitude between -180 and 180.
+   * Longitude between `-180` and `180`.
    */
   latitude: number;
   /**
@@ -165,7 +167,7 @@ export interface ScreenshotClip {
  */
 export interface ScreenshotOptions {
   /**
-   * @defaultValue 'png'
+   * @defaultValue `png`
    */
   type?: 'png' | 'jpeg' | 'webp';
   /**
@@ -176,8 +178,8 @@ export interface ScreenshotOptions {
    */
   path?: string;
   /**
-   * When true, takes a screenshot of the full page.
-   * @defaultValue false
+   * When `true`, takes a screenshot of the full page.
+   * @defaultValue `false`
    */
   fullPage?: boolean;
   /**
@@ -190,22 +192,22 @@ export interface ScreenshotOptions {
   quality?: number;
   /**
    * Hides default white background and allows capturing screenshots with transparency.
-   * @defaultValue false
+   * @defaultValue `false`
    */
   omitBackground?: boolean;
   /**
    * Encoding of the image.
-   * @defaultValue 'binary'
+   * @defaultValue `binary`
    */
   encoding?: 'base64' | 'binary';
   /**
    * Capture the screenshot beyond the viewport.
-   * @defaultValue true
+   * @defaultValue `true`
    */
   captureBeyondViewport?: boolean;
   /**
    * Capture the screenshot from the surface, rather than the view.
-   * @defaultValue true
+   * @defaultValue `true`
    */
   fromSurface?: boolean;
 }
@@ -216,7 +218,8 @@ export interface ScreenshotOptions {
  * @public
  */
 export const enum PageEmittedEvents {
-  /** Emitted when the page closes.
+  /**
+   * Emitted when the page closes.
    * @eventProperty
    */
   Close = 'close',
@@ -283,8 +286,8 @@ export const enum PageEmittedEvents {
    */
   Metrics = 'metrics',
   /**
-   * Emitted when an uncaught exception happens within the page.
-   * Contains an `Error`.
+   * Emitted when an uncaught exception happens within the page. Contains an
+   * `Error`.
    */
   PageError = 'pageerror',
   /**
@@ -294,31 +297,32 @@ export const enum PageEmittedEvents {
    *
    * @example
    *
-   * ```ts
-   * const [popup] = await Promise.all([
-   *   new Promise(resolve => page.once('popup', resolve)),
-   *   page.click('a[target=_blank]'),
-   * ]);
-   * ```
+   *```ts
+   *const [popup] = await Promise.all([
+   *  new Promise(resolve => page.once('popup', resolve)),
+   *  page.click('a[target=_blank]'),
+   *]);
+   *```
    *
-   * ```ts
-   * const [popup] = await Promise.all([
-   *   new Promise(resolve => page.once('popup', resolve)),
-   *   page.evaluate(() => window.open('https://example.com')),
-   * ]);
-   * ```
+   *```ts
+   *const [popup] = await Promise.all([
+   *  new Promise(resolve => page.once('popup', resolve)),
+   *  page.evaluate(() => window.open('https://example.com')),
+   *]);
+   *```
    */
   Popup = 'popup',
   /**
    * Emitted when a page issues a request and contains a {@link HTTPRequest}.
    *
    * @remarks
-   * The object is readonly. See {@link Page.setRequestInterception} for intercepting
-   * and mutating requests.
+   * The object is readonly. See {@link Page.setRequestInterception} for
+   * intercepting and mutating requests.
    */
   Request = 'request',
   /**
-   * Emitted when a request ended up loading from cache. Contains a {@link HTTPRequest}.
+   * Emitted when a request ended up loading from cache. Contains a
+   * {@link HTTPRequest}.
    *
    * @remarks
    * For certain requests, might contain undefined.
@@ -337,7 +341,8 @@ export const enum PageEmittedEvents {
    */
   RequestFailed = 'requestfailed',
   /**
-   * Emitted when a request finishes successfully. Contains a {@link HTTPRequest}.
+   * Emitted when a request finishes successfully. Contains a
+   * {@link HTTPRequest}.
    */
   RequestFinished = 'requestfinished',
   /**
@@ -363,6 +368,7 @@ export const enum PageEmittedEvents {
  *
  * See {@link PageEmittedEvents} for more detail on the events and when they are
  * emitted.
+ *
  * @public
  */
 export interface PageEventObject {
@@ -475,7 +481,7 @@ export class Page extends EventEmitter {
   #viewport: Viewport | null;
   #screenshotTaskQueue: TaskQueue;
   #workers = new Map<string, WebWorker>();
-  #fileChooserInterceptors = new Set<(chooser: FileChooser) => void>();
+  #fileChooserPromises = new Set<DeferredPromise<FileChooser>>();
 
   #disconnectPromise?: Promise<Error>;
   #userDragInterceptionEnabled = false;
@@ -527,7 +533,7 @@ export class Page extends EventEmitter {
       return this.emit(PageEmittedEvents.FrameNavigated, event);
     });
 
-    const networkManager = this.#frameManager.networkManager();
+    const networkManager = this.#frameManager.networkManager;
     networkManager.on(NetworkManagerEmittedEvents.Request, event => {
       return this.emit(PageEmittedEvents.Request, event);
     });
@@ -546,7 +552,6 @@ export class Page extends EventEmitter {
     networkManager.on(NetworkManagerEmittedEvents.RequestFinished, event => {
       return this.emit(PageEmittedEvents.RequestFinished, event);
     });
-    this.#fileChooserInterceptors = new Set();
 
     client.on('Page.domContentEventFired', () => {
       return this.emit(PageEmittedEvents.DOMContentLoaded);
@@ -605,7 +610,7 @@ export class Page extends EventEmitter {
   };
 
   #onAttachedToTarget = async (createdTarget: Target) => {
-    await this.#frameManager.onAttachedToTarget(createdTarget);
+    this.#frameManager.onAttachedToTarget(createdTarget);
     if (createdTarget._getTargetInfo().type === 'worker') {
       const session = createdTarget._session();
       assert(session);
@@ -639,21 +644,23 @@ export class Page extends EventEmitter {
   async #onFileChooser(
     event: Protocol.Page.FileChooserOpenedEvent
   ): Promise<void> {
-    if (!this.#fileChooserInterceptors.size) {
+    if (!this.#fileChooserPromises.size) {
       return;
     }
+
     const frame = this.#frameManager.frame(event.frameId);
-    assert(frame);
+    assert(frame, 'This should never happen.');
+
     // This is guaranteed to be an HTMLInputElement handle by the event.
-    const handle = (await frame._mainWorld.adoptBackendNode(
+    const handle = (await frame.worlds[MAIN_WORLD].adoptBackendNode(
       event.backendNodeId
     )) as ElementHandle<HTMLInputElement>;
-    const interceptors = Array.from(this.#fileChooserInterceptors);
-    this.#fileChooserInterceptors.clear();
+
     const fileChooser = new FileChooser(handle, event);
-    for (const interceptor of interceptors) {
-      interceptor.call(undefined, fileChooser);
+    for (const promise of this.#fileChooserPromises) {
+      promise.resolve(fileChooser);
     }
+    this.#fileChooserPromises.clear();
   }
 
   /**
@@ -666,7 +673,7 @@ export class Page extends EventEmitter {
   /**
    * @returns `true` if the page has JavaScript enabled, `false` otherwise.
    */
-  public isJavaScriptEnabled(): boolean {
+  isJavaScriptEnabled(): boolean {
     return this.#javascriptEnabled;
   }
 
@@ -681,7 +688,7 @@ export class Page extends EventEmitter {
    *
    * :::
    */
-  public override on<K extends keyof PageEventObject>(
+  override on<K extends keyof PageEventObject>(
     eventName: K,
     handler: (event: PageEventObject[K]) => void
   ): EventEmitter {
@@ -701,7 +708,7 @@ export class Page extends EventEmitter {
     return super.on(eventName, handler);
   }
 
-  public override once<K extends keyof PageEventObject>(
+  override once<K extends keyof PageEventObject>(
     eventName: K,
     handler: (event: PageEventObject[K]) => void
   ): EventEmitter {
@@ -752,33 +759,30 @@ export class Page extends EventEmitter {
   async waitForFileChooser(
     options: WaitTimeoutOptions = {}
   ): Promise<FileChooser> {
-    if (!this.#fileChooserInterceptors.size) {
+    if (!this.#fileChooserPromises.size) {
       await this.#client.send('Page.setInterceptFileChooserDialog', {
         enabled: true,
       });
     }
 
     const {timeout = this.#timeoutSettings.timeout()} = options;
-    let callback!: (value: FileChooser) => void;
-    const promise = new Promise<FileChooser>(x => {
-      return (callback = x);
-    });
-    this.#fileChooserInterceptors.add(callback);
-    return waitWithTimeout<FileChooser>(
-      promise,
-      'waiting for file chooser',
-      timeout
-    ).catch(error => {
-      this.#fileChooserInterceptors.delete(callback);
+    const promise = createDeferredPromiseWithTimer<FileChooser>(
+      `Waiting for \`FileChooser\` failed: ${timeout}ms exceeded`
+    );
+    this.#fileChooserPromises.add(promise);
+    return promise.catch(error => {
+      this.#fileChooserPromises.delete(promise);
       throw error;
     });
   }
 
   /**
    * Sets the page's geolocation.
+   *
    * @remarks
-   * NOTE: Consider using {@link BrowserContext.overridePermissions} to grant
+   * Consider using {@link BrowserContext.overridePermissions} to grant
    * permissions for the page to read its geolocation.
+   *
    * @example
    * ```ts
    * await page.setGeolocation({latitude: 59.95, longitude: 30.31667});
@@ -857,6 +861,7 @@ export class Page extends EventEmitter {
 
   /**
    * @returns The page's main frame.
+   *
    * @remarks
    * Page is guaranteed to have a main frame which persists during navigations.
    */
@@ -892,12 +897,12 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @returns all of the dedicated
-   * {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API |
-   * WebWorkers}
-   * associated with the page.
+   * @returns all of the dedicated {@link
+   * https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API |
+   * WebWorkers} associated with the page.
+   *
    * @remarks
-   * NOTE: This does not contain ServiceWorkers
+   * This does not contain ServiceWorkers
    */
   workers(): WebWorker[] {
     return Array.from(this.#workers.values());
@@ -911,9 +916,11 @@ export class Page extends EventEmitter {
    * Once request interception is enabled, every request will stall unless it's
    * continued, responded or aborted; or completed using the browser cache.
    *
-   * NOTE: Enabling request interception disables page caching.
+   * Enabling request interception disables page caching.
    *
-   * See the {@link https://pptr.dev/next/guides/request-interception|Request interception guide} for more details.
+   * See the
+   * {@link https://pptr.dev/next/guides/request-interception|Request interception guide}
+   * for more details.
    *
    * @example
    * An example of a naïve request interceptor that aborts all image requests:
@@ -938,7 +945,7 @@ export class Page extends EventEmitter {
    * @param value - Whether to enable request interception.
    */
   async setRequestInterception(value: boolean): Promise<void> {
-    return this.#frameManager.networkManager().setRequestInterception(value);
+    return this.#frameManager.networkManager.setRequestInterception(value);
   }
 
   /**
@@ -962,7 +969,7 @@ export class Page extends EventEmitter {
    * (#pageemulatenetworkconditionsnetworkconditions)
    */
   setOfflineMode(enabled: boolean): Promise<void> {
-    return this.#frameManager.networkManager().setOfflineMode(enabled);
+    return this.#frameManager.networkManager.setOfflineMode(enabled);
   }
 
   /**
@@ -989,9 +996,9 @@ export class Page extends EventEmitter {
   emulateNetworkConditions(
     networkConditions: NetworkConditions | null
   ): Promise<void> {
-    return this.#frameManager
-      .networkManager()
-      .emulateNetworkConditions(networkConditions);
+    return this.#frameManager.networkManager.emulateNetworkConditions(
+      networkConditions
+    );
   }
 
   /**
@@ -1220,12 +1227,10 @@ export class Page extends EventEmitter {
    * the page and passes the result as the first argument to the `pageFunction`.
    *
    * @remarks
-   *
    * If `pageFunction` returns a promise `$$eval` will wait for the promise to
    * resolve and then return its value.
    *
    * @example
-   *
    * ```ts
    * // get the amount of divs on the page
    * const divCount = await page.$$eval('div', divs => divs.length);
@@ -1242,7 +1247,6 @@ export class Page extends EventEmitter {
    * specific sub-type:
    *
    * @example
-   *
    * ```ts
    * // if you don't provide HTMLInputElement here, TS will error
    * // as `value` is not on `Element`
@@ -1256,7 +1260,6 @@ export class Page extends EventEmitter {
    * type to tell the compiler what return type you expect from `$$eval`:
    *
    * @example
-   *
    * ```ts
    * // The compiler can infer the return type in this case, but if it can't
    * // or if you want to be more explicit, provide it as the generic type.
@@ -1268,9 +1271,9 @@ export class Page extends EventEmitter {
    * @param selector - the
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
    * to query for
-   * @param pageFunction - the function to be evaluated in the page context. Will
-   * be passed the result of `Array.from(document.querySelectorAll(selector))`
-   * as its first argument.
+   * @param pageFunction - the function to be evaluated in the page context.
+   * Will be passed the result of
+   * `Array.from(document.querySelectorAll(selector))` as its first argument.
    * @param args - any additional arguments to pass through to `pageFunction`.
    *
    * @returns The result of calling `pageFunction`. If it returns an element it
@@ -1295,8 +1298,10 @@ export class Page extends EventEmitter {
    * The method evaluates the XPath expression relative to the page document as
    * its context node. If there are no such elements, the method resolves to an
    * empty array.
+   *
    * @remarks
    * Shortcut for {@link Frame.$x | Page.mainFrame().$x(expression) }.
+   *
    * @param expression - Expression to evaluate
    */
   async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
@@ -1371,10 +1376,13 @@ export class Page extends EventEmitter {
 
   /**
    * Adds a `<script>` tag into the page with the desired URL or content.
+   *
    * @remarks
-   * Shortcut for {@link Frame.addScriptTag | page.mainFrame().addScriptTag(options) }.
-   * @returns Promise which resolves to the added tag when the script's onload fires or
-   * when the script content was injected into frame.
+   * Shortcut for
+   * {@link Frame.addScriptTag | page.mainFrame().addScriptTag(options)}.
+   *
+   * @returns Promise which resolves to the added tag when the script's onload
+   * fires or when the script content was injected into frame.
    */
   async addScriptTag(options: {
     url?: string;
@@ -1401,16 +1409,19 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * The method adds a function called `name` on the page's `window` object. When
-   * called, the function executes `puppeteerFunction` in node.js and returns a
-   * `Promise` which resolves to the return value of `puppeteerFunction`.
+   * The method adds a function called `name` on the page's `window` object.
+   * When called, the function executes `puppeteerFunction` in node.js and
+   * returns a `Promise` which resolves to the return value of
+   * `puppeteerFunction`.
    *
    * If the puppeteerFunction returns a `Promise`, it will be awaited.
    *
-   * NOTE: Functions installed via `page.exposeFunction` survive navigations.
-   * @param name - Name of the function on the window object
-   * @param pptrFunction -  Callback function which will be called in
-   * Puppeteer's context.
+   * :::note
+   *
+   * Functions installed via `page.exposeFunction` survive navigations.
+   *
+   * :::note
+   *
    * @example
    * An example of adding an `md5` function into the page:
    * ```ts
@@ -1433,6 +1444,8 @@ export class Page extends EventEmitter {
    * await browser.close();
    * })();
    * ```
+   *
+   * @example
    * An example of adding a `window.readfile` function into the page:
    * ```ts
    * const puppeteer = require('puppeteer');
@@ -1458,6 +1471,10 @@ export class Page extends EventEmitter {
    * await browser.close();
    * })();
    * ```
+   *
+   * @param name - Name of the function on the window object
+   * @param pptrFunction - Callback function which will be called in Puppeteer's
+   * context.
    */
   async exposeFunction(
     name: string,
@@ -1495,24 +1512,36 @@ export class Page extends EventEmitter {
 
   /**
    * Provide credentials for `HTTP authentication`.
-   * @remarks To disable authentication, pass `null`.
+   *
+   * @remarks
+   * To disable authentication, pass `null`.
    */
   async authenticate(credentials: Credentials): Promise<void> {
-    return this.#frameManager.networkManager().authenticate(credentials);
+    return this.#frameManager.networkManager.authenticate(credentials);
   }
 
   /**
    * The extra HTTP headers will be sent with every request the page initiates.
-   * NOTE: All HTTP header names are lowercased. (HTTP headers are
+   *
+   * :::tip
+   *
+   * All HTTP header names are lowercased. (HTTP headers are
    * case-insensitive, so this shouldn’t impact your server code.)
-   * NOTE: page.setExtraHTTPHeaders does not guarantee the order of headers in
+   *
+   * :::
+   *
+   * :::note
+   *
+   * page.setExtraHTTPHeaders does not guarantee the order of headers in
    * the outgoing requests.
+   *
+   * :::
+   *
    * @param headers - An object containing additional HTTP headers to be sent
    * with every request. All header values must be strings.
-   * @returns
    */
   async setExtraHTTPHeaders(headers: Record<string, string>): Promise<void> {
-    return this.#frameManager.networkManager().setExtraHTTPHeaders(headers);
+    return this.#frameManager.networkManager.setExtraHTTPHeaders(headers);
   }
 
   /**
@@ -1525,9 +1554,10 @@ export class Page extends EventEmitter {
     userAgent: string,
     userAgentMetadata?: Protocol.Emulation.UserAgentMetadata
   ): Promise<void> {
-    return this.#frameManager
-      .networkManager()
-      .setUserAgent(userAgent, userAgentMetadata);
+    return this.#frameManager.networkManager.setUserAgent(
+      userAgent,
+      userAgentMetadata
+    );
   }
 
   /**
@@ -1560,8 +1590,9 @@ export class Page extends EventEmitter {
    * - `JSHeapUsedSize` : Used JavaScript heap size.
    *
    * - `JSHeapTotalSize` : Total JavaScript heap size.
+   *
    * @remarks
-   * NOTE: All timestamps are in monotonic time: monotonically increasing time
+   * All timestamps are in monotonic time: monotonically increasing time
    * in seconds since an arbitrary point in the past.
    */
   async metrics(): Promise<Metrics> {
@@ -1954,7 +1985,7 @@ export class Page extends EventEmitter {
   ): Promise<HTTPRequest> {
     const {timeout = this.#timeoutSettings.timeout()} = options;
     return waitForEvent(
-      this.#frameManager.networkManager(),
+      this.#frameManager.networkManager,
       NetworkManagerEmittedEvents.Request,
       request => {
         if (isString(urlOrPredicate)) {
@@ -2003,7 +2034,7 @@ export class Page extends EventEmitter {
   ): Promise<HTTPResponse> {
     const {timeout = this.#timeoutSettings.timeout()} = options;
     return waitForEvent(
-      this.#frameManager.networkManager(),
+      this.#frameManager.networkManager,
       NetworkManagerEmittedEvents.Response,
       async response => {
         if (isString(urlOrPredicate)) {
@@ -2028,7 +2059,7 @@ export class Page extends EventEmitter {
   ): Promise<void> {
     const {idleTime = 500, timeout = this.#timeoutSettings.timeout()} = options;
 
-    const networkManager = this.#frameManager.networkManager();
+    const networkManager = this.#frameManager.networkManager;
 
     let idleResolveCallback: () => void;
     const idlePromise = new Promise<void>(resolve => {
@@ -2604,8 +2635,6 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @remarks
-   *
    * Evaluates a function in the page's context and returns the result.
    *
    * If the function passed to `page.evaluteHandle` returns a Promise, the
@@ -2708,7 +2737,7 @@ export class Page extends EventEmitter {
    * @param enabled - sets the `enabled` state of cache
    */
   async setCacheEnabled(enabled = true): Promise<void> {
-    await this.#frameManager.networkManager().setCacheEnabled(enabled);
+    await this.#frameManager.networkManager.setCacheEnabled(enabled);
   }
 
   /**

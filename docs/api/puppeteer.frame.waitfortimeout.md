@@ -4,6 +4,10 @@ sidebar_label: Frame.waitForTimeout
 
 # Frame.waitForTimeout() method
 
+> Warning: This API is now obsolete.
+>
+> DO NOT USE.
+
 Causes your script to wait for the given number of milliseconds.
 
 **Signature:**

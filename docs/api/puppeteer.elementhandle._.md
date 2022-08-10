@@ -4,7 +4,7 @@ sidebar_label: ElementHandle.$
 
 # ElementHandle.$() method
 
-Runs `element.querySelector` within the page.
+Queries the current element for an element matching the given selector.
 
 **Signature:**
 
@@ -18,16 +18,12 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type     | Description                 |
-| --------- | -------- | --------------------------- |
-| selector  | Selector | The selector to query with. |
+| Parameter | Type     | Description                |
+| --------- | -------- | -------------------------- |
+| selector  | Selector | The selector to query for. |
 
 **Returns:**
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt; \| null&gt;
 
-`null` if no element matches the selector.
-
-## Exceptions
-
-`Error` if the selector has no associated query handler.
+A [element handle](./puppeteer.elementhandle.md) to the first element matching the given selector. Otherwise, `null`.

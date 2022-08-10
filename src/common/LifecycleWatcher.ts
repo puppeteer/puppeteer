@@ -127,7 +127,7 @@ export class LifecycleWatcher {
     this.#timeout = timeout;
     this.#eventListeners = [
       addEventListener(
-        frameManager._client,
+        frameManager.client,
         CDPSessionEmittedEvents.Disconnected,
         this.#terminate.bind(
           this,
@@ -160,12 +160,12 @@ export class LifecycleWatcher {
         this.#onFrameDetached.bind(this)
       ),
       addEventListener(
-        this.#frameManager.networkManager(),
+        this.#frameManager.networkManager,
         NetworkManagerEmittedEvents.Request,
         this.#onRequest.bind(this)
       ),
       addEventListener(
-        this.#frameManager.networkManager(),
+        this.#frameManager.networkManager,
         NetworkManagerEmittedEvents.Response,
         this.#onResponse.bind(this)
       ),

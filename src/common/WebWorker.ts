@@ -37,10 +37,11 @@ export type ConsoleAPICalledCallback = (
 export type ExceptionThrownCallback = (
   details: Protocol.Runtime.ExceptionDetails
 ) => void;
+
 type JSHandleFactory = (obj: Protocol.Runtime.RemoteObject) => JSHandle;
 
 /**
- * The WebWorker class represents a
+ * This class represents a
  * {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API | WebWorker}.
  *
  * @remarks
@@ -67,7 +68,6 @@ export class WebWorker extends EventEmitter {
   #executionContextCallback!: (value: ExecutionContext) => void;
 
   /**
-   *
    * @internal
    */
   constructor(

@@ -176,7 +176,6 @@ export class Accessibility {
    * ```
    *
    * @returns An AXNode object representing the snapshot.
-   *
    */
   public async snapshot(
     options: SnapshotOptions = {}

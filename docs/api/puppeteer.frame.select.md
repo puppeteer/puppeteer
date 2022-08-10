@@ -4,7 +4,7 @@ sidebar_label: Frame.select
 
 # Frame.select() method
 
-Triggers a `change` and `input` event once all the provided options have been selected.
+Selects a set of value on the first `<select>` element that matches the `selector`.
 
 **Signature:**
 
@@ -16,10 +16,10 @@ class Frame {
 
 ## Parameters
 
-| Parameter | Type       | Description                                                                                                                                                                              |
-| --------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| selector  | string     | a selector to query the frame for                                                                                                                                                        |
-| values    | string\[\] | an array of values to select. If the <code>&lt;select&gt;</code> has the <code>multiple</code> attribute, all values are considered, otherwise only the first one is taken into account. |
+| Parameter | Type       | Description                                                                                                                                                                               |
+| --------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| selector  | string     | The selector to query for.                                                                                                                                                                |
+| values    | string\[\] | The array of values to select. If the <code>&lt;select&gt;</code> has the <code>multiple</code> attribute, all values are considered, otherwise only the first one is taken into account. |
 
 **Returns:**
 
@@ -27,9 +27,9 @@ Promise&lt;string\[\]&gt;
 
 the list of values that were successfully selected.
 
-## Remarks
+## Exceptions
 
-If there's no `<select>` element matching `selector`, the method throws an error.
+Throws if there's no `<select>` matching `selector`.
 
 ## Example
 

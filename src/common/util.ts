@@ -553,7 +553,7 @@ export function createDeferredPromiseWithTimer<T>(
     rejector = reject;
   });
   const timeoutId = setTimeout(() => {
-    rejector(new Error(timeoutMessage));
+    rejector(new TimeoutError(timeoutMessage));
   }, timeout);
   return Object.assign(taskPromise, {
     resolved: () => {

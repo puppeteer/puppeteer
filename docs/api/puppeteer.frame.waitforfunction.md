@@ -33,8 +33,6 @@ Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;Awaited&lt;ReturnType&lt;Fun
 
 the promise which resolve when the `pageFunction` returns a truthy value.
 
-## Remarks
-
 ## Example
 
 The `waitForFunction` can be used to observe viewport size change:

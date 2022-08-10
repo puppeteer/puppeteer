@@ -1,9 +1,13 @@
 import {Protocol} from 'devtools-protocol';
 import {assert} from './assert.js';
 import {CDPSession} from './Connection.js';
-import {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {Frame, FrameManager} from './FrameManager.js';
+import {
+  MAIN_WORLD,
+  PUPPETEER_WORLD,
+  WaitForSelectorOptions,
+} from './IsolatedWorld.js';
 import {
   BoundingBox,
   BoxModel,
@@ -88,34 +92,186 @@ export class ElementHandle<
   }
 
   /**
-   * Wait for the `selector` to appear within the element. If at the moment of calling the
-   * method the `selector` already exists, the method will return immediately. If
-   * the `selector` doesn't appear after the `timeout` milliseconds of waiting, the
-   * function will throw.
+   * Queries the current element for an element matching the given selector.
    *
-   * This method does not work across navigations or if the element is detached from DOM.
+   * @param selector - The selector to query for.
+   * @returns A {@link ElementHandle | element handle} to the first element
+   * matching the given selector. Otherwise, `null`.
+   */
+  async $<Selector extends string>(
+    selector: Selector
+  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
+    const {updatedSelector, queryHandler} =
+      getQueryHandlerAndSelector(selector);
+    assert(
+      queryHandler.queryOne,
+      'Cannot handle queries for a single element with the given selector'
+    );
+    return (await queryHandler.queryOne(
+      this,
+      updatedSelector
+    )) as ElementHandle<NodeFor<Selector>> | null;
+  }
+
+  /**
+   * Queries the current element for all elements matching the given selector.
    *
-   * @param selector - A
-   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
-   * of an element to wait for
-   * @param options - Optional waiting parameters
-   * @returns Promise which resolves when element specified by selector string
-   * is added to DOM. Resolves to `null` if waiting for hidden: `true` and
-   * selector is not found in DOM.
-   * @remarks
-   * The optional parameters in `options` are:
+   * @param selector - The selector to query for.
+   * @returns An array of {@link ElementHandle | element handles} that point to
+   * elements matching the given selector.
+   */
+  async $$<Selector extends string>(
+    selector: Selector
+  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
+    const {updatedSelector, queryHandler} =
+      getQueryHandlerAndSelector(selector);
+    assert(
+      queryHandler.queryAll,
+      'Cannot handle queries for a multiple element with the given selector'
+    );
+    return (await queryHandler.queryAll(this, updatedSelector)) as Array<
+      ElementHandle<NodeFor<Selector>>
+    >;
+  }
+
+  /**
+   * Runs the given function on the first element matching the given selector in
+   * the current element.
    *
-   * - `visible`: wait for the selected element to be present in DOM and to be
-   * visible, i.e. to not have `display: none` or `visibility: hidden` CSS
-   * properties. Defaults to `false`.
+   * If the given function returns a promise, then this method will wait till
+   * the promise resolves.
    *
-   * - `hidden`: wait for the selected element to not be found in the DOM or to be hidden,
-   * i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to
-   * `false`.
+   * @example
+   * ```ts
+   * const tweetHandle = await page.$('.tweet');
+   * expect(await tweetHandle.$eval('.like', node => node.innerText)).toBe('100');
+   * expect(await tweetHandle.$eval('.retweets', node => node.innerText)).toBe('10');
+   * ```
    *
-   * - `timeout`: maximum time to wait in milliseconds. Defaults to `30000`
-   * (30 seconds). Pass `0` to disable timeout. The default value can be changed
-   * by using the {@link Page.setDefaultTimeout} method.
+   * @param selector - The selector to query for.
+   * @param pageFunction - The function to be evaluated in this element's page's
+   * context. The first element matching the selector will be passed in as the
+   * first argument.
+   * @param args - Additional arguments to pass to `pageFunction`.
+   * @returns A promise to the result of the function.
+   */
+  async $eval<
+    Selector extends string,
+    Params extends unknown[],
+    Func extends EvaluateFunc<
+      [ElementHandle<NodeFor<Selector>>, ...Params]
+    > = EvaluateFunc<[ElementHandle<NodeFor<Selector>>, ...Params]>
+  >(
+    selector: Selector,
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<Awaited<ReturnType<Func>>> {
+    const elementHandle = await this.$(selector);
+    if (!elementHandle) {
+      throw new Error(
+        `Error: failed to find element matching selector "${selector}"`
+      );
+    }
+    const result = await elementHandle.evaluate(pageFunction, ...args);
+    await elementHandle.dispose();
+    return result;
+  }
+
+  /**
+   * Runs the given function on an array of elements matching the given selector
+   * in the current element.
+   *
+   * If the given function returns a promise, then this method will wait till
+   * the promise resolves.
+   *
+   * @example
+   * HTML:
+   * ```html
+   * <div class="feed">
+   *   <div class="tweet">Hello!</div>
+   *   <div class="tweet">Hi!</div>
+   * </div>
+   * ```
+   * JavaScript:
+   * ```js
+   * const feedHandle = await page.$('.feed');
+   * expect(await feedHandle.$$eval('.tweet', nodes => nodes.map(n => n.innerText)))
+   *  .toEqual(['Hello!', 'Hi!']);
+   * ```
+   *
+   * @param selector - The selector to query for.
+   * @param pageFunction - The function to be evaluated in the element's page's
+   * context. An array of elements matching the given selector will be passed to
+   * the function as its first argument.
+   * @param args - Additional arguments to pass to `pageFunction`.
+   * @returns A promise to the result of the function.
+   */
+  async $$eval<
+    Selector extends string,
+    Params extends unknown[],
+    Func extends EvaluateFunc<
+      [Array<NodeFor<Selector>>, ...Params]
+    > = EvaluateFunc<[Array<NodeFor<Selector>>, ...Params]>
+  >(
+    selector: Selector,
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<Awaited<ReturnType<Func>>> {
+    const {updatedSelector, queryHandler} =
+      getQueryHandlerAndSelector(selector);
+    assert(queryHandler.queryAllArray);
+    const arrayHandle = (await queryHandler.queryAllArray(
+      this,
+      updatedSelector
+    )) as JSHandle<Array<NodeFor<Selector>>>;
+    const result = await arrayHandle.evaluate(pageFunction, ...args);
+    await arrayHandle.dispose();
+    return result;
+  }
+
+  /**
+   * @deprecated Use {@link ElementHandle.$$} with the `xpath` prefix.
+   *
+   * The method evaluates the XPath expression relative to the elementHandle.
+   * If there are no such elements, the method will resolve to an empty array.
+   * @param expression - Expression to {@link https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate | evaluate}
+   */
+  async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
+    if (expression.startsWith('//')) {
+      expression = `.${expression}`;
+    }
+    return this.$$(`xpath/${expression}`);
+  }
+
+  /**
+   * Wait for an element matching the given selector to appear in the current
+   * element.
+   *
+   * Unlike {@link Frame.waitForSelector}, this method does not work across
+   * navigations or if the element is detached from DOM.
+   *
+   * @example
+   * ```ts
+   * const puppeteer = require('puppeteer');
+   *
+   * (async () => {
+   *   const browser = await puppeteer.launch();
+   *   const page = await browser.newPage();
+   *   let currentURL;
+   *   page.mainFrame()
+   *   .waitForSelector('img')
+   *   .then(() => console.log('First URL with image: ' + currentURL));
+   *
+   *   for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com']) {
+   *     await page.goto(currentURL);
+   *   }
+   *   await browser.close();
+   * })();
+   * ```
+   * @param selector - The selector to query and wait for.
+   * @param options - Options for customizing waiting behavior.
+   * @returns An element matching the given selector.
+   * @throws Throws if an element matching the given selector doesn't appear.
    */
   async waitForSelector<Selector extends string>(
     selector: Selector,
@@ -123,16 +279,19 @@ export class ElementHandle<
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
     const frame = this._context.frame();
     assert(frame);
-    const adoptedRoot = await frame._secondaryWorld.adoptHandle(this);
-    const handle = await frame._secondaryWorld.waitForSelector(selector, {
-      ...options,
-      root: adoptedRoot,
-    });
+    const adoptedRoot = await frame.worlds[PUPPETEER_WORLD].adoptHandle(this);
+    const handle = await frame.worlds[PUPPETEER_WORLD].waitForSelector(
+      selector,
+      {
+        ...options,
+        root: adoptedRoot,
+      }
+    );
     await adoptedRoot.dispose();
     if (!handle) {
       return null;
     }
-    const result = (await frame._mainWorld.adoptHandle(
+    const result = (await frame.worlds[MAIN_WORLD].adoptHandle(
       handle
     )) as ElementHandle<NodeFor<Selector>>;
     await handle.dispose();
@@ -140,14 +299,16 @@ export class ElementHandle<
   }
 
   /**
-   * @deprecated Use {@link ElementHandle.waitForSelector} with the `xpath` prefix.
+   * @deprecated Use {@link ElementHandle.waitForSelector} with the `xpath`
+   * prefix.
    *
    * Wait for the `xpath` within the element. If at the moment of calling the
    * method the `xpath` already exists, the method will return immediately. If
    * the `xpath` doesn't appear after the `timeout` milliseconds of waiting, the
    * function will throw.
    *
-   * If `xpath` starts with `//` instead of `.//`, the dot will be appended automatically.
+   * If `xpath` starts with `//` instead of `.//`, the dot will be appended
+   * automatically.
    *
    * This method works across navigation
    * ```ts
@@ -180,16 +341,17 @@ export class ElementHandle<
    * The optional Argument `options` have properties:
    *
    * - `visible`: A boolean to wait for element to be present in DOM and to be
-   * visible, i.e. to not have `display: none` or `visibility: hidden` CSS
-   * properties. Defaults to `false`.
+   *   visible, i.e. to not have `display: none` or `visibility: hidden` CSS
+   *   properties. Defaults to `false`.
    *
    * - `hidden`: A boolean wait for element to not be found in the DOM or to be
-   * hidden, i.e. have `display: none` or `visibility: hidden` CSS properties.
-   * Defaults to `false`.
+   *   hidden, i.e. have `display: none` or `visibility: hidden` CSS properties.
+   *   Defaults to `false`.
    *
    * - `timeout`: A number which is maximum time to wait for in milliseconds.
-   * Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The default
-   * value can be changed by using the {@link Page.setDefaultTimeout} method.
+   *   Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The
+   *   default value can be changed by using the {@link Page.setDefaultTimeout}
+   *   method.
    */
   async waitForXPath(
     xpath: string,
@@ -816,150 +978,6 @@ export class ElementHandle<
     }
 
     return imageData;
-  }
-
-  /**
-   * Runs `element.querySelector` within the page.
-   *
-   * @param selector - The selector to query with.
-   * @returns `null` if no element matches the selector.
-   * @throws `Error` if the selector has no associated query handler.
-   */
-  async $<Selector extends string>(
-    selector: Selector
-  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    const {updatedSelector, queryHandler} =
-      getQueryHandlerAndSelector(selector);
-    assert(
-      queryHandler.queryOne,
-      'Cannot handle queries for a single element with the given selector'
-    );
-    return (await queryHandler.queryOne(
-      this,
-      updatedSelector
-    )) as ElementHandle<NodeFor<Selector>> | null;
-  }
-
-  /**
-   * Runs `element.querySelectorAll` within the page. If no elements match the selector,
-   * the return value resolves to `[]`.
-   */
-  /**
-   * Runs `element.querySelectorAll` within the page.
-   *
-   * @param selector - The selector to query with.
-   * @returns `[]` if no element matches the selector.
-   * @throws `Error` if the selector has no associated query handler.
-   */
-  async $$<Selector extends string>(
-    selector: Selector
-  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    const {updatedSelector, queryHandler} =
-      getQueryHandlerAndSelector(selector);
-    assert(
-      queryHandler.queryAll,
-      'Cannot handle queries for a multiple element with the given selector'
-    );
-    return (await queryHandler.queryAll(this, updatedSelector)) as Array<
-      ElementHandle<NodeFor<Selector>>
-    >;
-  }
-
-  /**
-   * This method runs `document.querySelector` within the element and passes it as
-   * the first argument to `pageFunction`. If there's no element matching `selector`,
-   * the method throws an error.
-   *
-   * If `pageFunction` returns a Promise, then `frame.$eval` would wait for the promise
-   * to resolve and return its value.
-   *
-   * @example
-   * ```ts
-   * const tweetHandle = await page.$('.tweet');
-   * expect(await tweetHandle.$eval('.like', node => node.innerText)).toBe('100');
-   * expect(await tweetHandle.$eval('.retweets', node => node.innerText)).toBe('10');
-   * ```
-   */
-  async $eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFunc<
-      [ElementHandle<NodeFor<Selector>>, ...Params]
-    > = EvaluateFunc<[ElementHandle<NodeFor<Selector>>, ...Params]>
-  >(
-    selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    const elementHandle = await this.$(selector);
-    if (!elementHandle) {
-      throw new Error(
-        `Error: failed to find element matching selector "${selector}"`
-      );
-    }
-    const result = await elementHandle.evaluate(pageFunction, ...args);
-    await elementHandle.dispose();
-    return result;
-  }
-
-  /**
-   * This method runs `document.querySelectorAll` within the element and passes it as
-   * the first argument to `pageFunction`. If there's no element matching `selector`,
-   * the method throws an error.
-   *
-   * If `pageFunction` returns a Promise, then `frame.$$eval` would wait for the
-   * promise to resolve and return its value.
-   *
-   * @example
-   * ```html
-   * <div class="feed">
-   *   <div class="tweet">Hello!</div>
-   *   <div class="tweet">Hi!</div>
-   * </div>
-   * ```
-   *
-   * @example
-   * ```ts
-   * const feedHandle = await page.$('.feed');
-   * expect(await feedHandle.$$eval('.tweet', nodes => nodes.map(n => n.innerText)))
-   *  .toEqual(['Hello!', 'Hi!']);
-   * ```
-   */
-  async $$eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFunc<
-      [Array<NodeFor<Selector>>, ...Params]
-    > = EvaluateFunc<[Array<NodeFor<Selector>>, ...Params]>
-  >(
-    selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    const {updatedSelector, queryHandler} =
-      getQueryHandlerAndSelector(selector);
-    assert(queryHandler.queryAllArray);
-    const arrayHandle = (await queryHandler.queryAllArray(
-      this,
-      updatedSelector
-    )) as JSHandle<Array<NodeFor<Selector>>>;
-    const result = await arrayHandle.evaluate(pageFunction, ...args);
-    await arrayHandle.dispose();
-    return result;
-  }
-
-  /**
-   * @deprecated Use {@link ElementHandle.$$} with the `xpath` prefix.
-   *
-   * The method evaluates the XPath expression relative to the elementHandle.
-   * If there are no such elements, the method will resolve to an empty array.
-   * @param expression - Expression to {@link https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate | evaluate}
-   */
-  async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
-    if (expression.startsWith('//')) {
-      expression = `.${expression}`;
-    }
-    return this.$$(`xpath/${expression}`);
   }
 
   /**

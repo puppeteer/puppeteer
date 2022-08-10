@@ -55,8 +55,27 @@ declare const checkWaitForOptions: (
  * @public
  */
 export interface WaitForSelectorOptions {
+  /**
+   * Wait for the selected element to be present in DOM and to be visible, i.e.
+   * to not have `display: none` or `visibility: hidden` CSS properties.
+   *
+   * @defaultValue `false`
+   */
   visible?: boolean;
+  /**
+   * Wait for the selected element to not be found in the DOM or to be hidden,
+   * i.e. have `display: none` or `visibility: hidden` CSS properties.
+   *
+   * @defaultValue `false`
+   */
   hidden?: boolean;
+  /**
+   * Maximum time to wait in milliseconds. Pass `0` to disable timeout.
+   *
+   * The default value can be changed by using {@link Page.setDefaultTimeout}
+   *
+   * @defaultValue `30000` (30 seconds)
+   */
   timeout?: number;
   root?: ElementHandle<Node>;
 }
@@ -67,6 +86,29 @@ export interface WaitForSelectorOptions {
 export interface PageBinding {
   name: string;
   pptrFunction: Function;
+}
+
+/**
+ * A unique key for {@link IsolatedWorldChart} to denote the default world.
+ * Execution contexts are automatically created in the default world.
+ *
+ * @internal
+ */
+export const MAIN_WORLD = Symbol('mainWorld');
+/**
+ * A unique key for {@link IsolatedWorldChart} to denote the puppeteer world.
+ * This world contains all puppeteer-internal bindings/code.
+ *
+ * @internal
+ */
+export const PUPPETEER_WORLD = Symbol('puppeteerWorld');
+/**
+ * @internal
+ */
+export interface IsolatedWorldChart {
+  [key: string]: IsolatedWorld;
+  [MAIN_WORLD]: IsolatedWorld;
+  [PUPPETEER_WORLD]: IsolatedWorld;
 }
 
 /**
@@ -187,19 +229,18 @@ export class IsolatedWorld {
   async $<Selector extends string>(
     selector: Selector
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    const document = await this._document();
-    const value = await document.$(selector);
-    return value;
+    const document = await this.document();
+    return document.$(selector);
   }
 
   async $$<Selector extends string>(
     selector: Selector
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    const document = await this._document();
+    const document = await this.document();
     return document.$$(selector);
   }
 
-  async _document(): Promise<ElementHandle<Document>> {
+  async document(): Promise<ElementHandle<Document>> {
     if (this.#documentPromise) {
       return this.#documentPromise;
     }
@@ -212,9 +253,8 @@ export class IsolatedWorld {
   }
 
   async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
-    const document = await this._document();
-    const value = await document.$x(expression);
-    return value;
+    const document = await this.document();
+    return document.$x(expression);
   }
 
   async $eval<
@@ -228,7 +268,7 @@ export class IsolatedWorld {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
-    const document = await this._document();
+    const document = await this.document();
     return document.$eval(selector, pageFunction, ...args);
   }
 
@@ -243,9 +283,22 @@ export class IsolatedWorld {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
-    const document = await this._document();
-    const value = await document.$$eval(selector, pageFunction, ...args);
-    return value;
+    const document = await this.document();
+    return document.$$eval(selector, pageFunction, ...args);
+  }
+
+  async waitForSelector<Selector extends string>(
+    selector: Selector,
+    options: WaitForSelectorOptions
+  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
+    const {updatedSelector, queryHandler} =
+      getQueryHandlerAndSelector(selector);
+    assert(queryHandler.waitFor, 'Query handler does not support waiting');
+    return (await queryHandler.waitFor(
+      this,
+      updatedSelector,
+      options
+    )) as ElementHandle<NodeFor<Selector>> | null;
   }
 
   async content(): Promise<string> {
@@ -299,7 +352,6 @@ export class IsolatedWorld {
    * Adds a script tag into the current context.
    *
    * @remarks
-   *
    * You can pass a URL, filepath or string of contents. Note that when running Puppeteer
    * in a browser environment you cannot pass a filepath and should use either
    * `url` or `content`.
@@ -399,27 +451,23 @@ export class IsolatedWorld {
    * Adds a style tag into the current context.
    *
    * @remarks
-   *
    * You can pass a URL, filepath or string of contents. Note that when running Puppeteer
    * in a browser environment you cannot pass a filepath and should use either
    * `url` or `content`.
-   *
    */
   async addStyleTag(options: {
     url?: string;
     path?: string;
     content?: string;
-  }): Promise<ElementHandle<Node>> {
+  }): Promise<ElementHandle<HTMLStyleElement | HTMLLinkElement>> {
     const {url = null, path = null, content = null} = options;
     if (url !== null) {
       try {
         const context = await this.executionContext();
-        const handle = await context.evaluateHandle(addStyleUrl, url);
-        const elementHandle = handle.asElement();
-        if (elementHandle === null) {
-          throw new Error('Style element is not found');
-        }
-        return elementHandle;
+        return (await context.evaluateHandle(
+          addStyleUrl,
+          url
+        )) as ElementHandle<HTMLLinkElement>;
       } catch (error) {
         throw new Error(`Loading style from ${url} failed`);
       }
@@ -441,22 +489,18 @@ export class IsolatedWorld {
       let contents = await fs.readFile(path, 'utf8');
       contents += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
       const context = await this.executionContext();
-      const handle = await context.evaluateHandle(addStyleContent, contents);
-      const elementHandle = handle.asElement();
-      if (elementHandle === null) {
-        throw new Error('Style element is not found');
-      }
-      return elementHandle;
+      return (await context.evaluateHandle(
+        addStyleContent,
+        contents
+      )) as ElementHandle<HTMLStyleElement>;
     }
 
     if (content !== null) {
       const context = await this.executionContext();
-      const handle = await context.evaluateHandle(addStyleContent, content);
-      const elementHandle = handle.asElement();
-      if (elementHandle === null) {
-        throw new Error('Style element is not found');
-      }
-      return elementHandle;
+      return (await context.evaluateHandle(
+        addStyleContent,
+        content
+      )) as ElementHandle<HTMLStyleElement>;
     }
 
     throw new Error(
@@ -537,20 +581,6 @@ export class IsolatedWorld {
     assert(handle, `No element found for selector: ${selector}`);
     await handle.type(text, options);
     await handle.dispose();
-  }
-
-  async waitForSelector<Selector extends string>(
-    selector: Selector,
-    options: WaitForSelectorOptions
-  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    const {updatedSelector, queryHandler} =
-      getQueryHandlerAndSelector(selector);
-    assert(queryHandler.waitFor, 'Query handler does not support waiting');
-    return (await queryHandler.waitFor(
-      this,
-      updatedSelector,
-      options
-    )) as ElementHandle<NodeFor<Selector>> | null;
   }
 
   // If multiple waitFor are set up asynchronously, we need to wait for the

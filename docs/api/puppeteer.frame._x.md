@@ -4,7 +4,11 @@ sidebar_label: Frame.$x
 
 # Frame.$x() method
 
-This method evaluates the given XPath expression and returns the results.
+> Warning: This API is now obsolete.
+>
+> Use [Frame.$$()](./puppeteer.frame.__.md) with the `xpath` prefix.
+>
+> This method evaluates the given XPath expression and returns the results.
 
 **Signature:**
 

@@ -112,7 +112,7 @@ const waitFor = async (
   const binding: PageBinding = {
     name: 'ariaQuerySelector',
     pptrFunction: async (selector: string) => {
-      const root = options.root || (await isolatedWorld._document());
+      const root = options.root || (await isolatedWorld.document());
       const element = await queryOne(root, selector);
       return element;
     },

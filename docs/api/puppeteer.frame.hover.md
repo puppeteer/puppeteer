@@ -4,7 +4,7 @@ sidebar_label: Frame.hover
 
 # Frame.hover() method
 
-This method fetches an element with `selector`, scrolls it into view if needed, and then uses [Page.mouse](./puppeteer.page.mouse.md) to hover over the center of the element.
+Hovers the pointer over the center of the first element that matches the `selector`.
 
 **Signature:**
 
@@ -16,14 +16,14 @@ class Frame {
 
 ## Parameters
 
-| Parameter | Type   | Description                                                                                       |
-| --------- | ------ | ------------------------------------------------------------------------------------------------- |
-| selector  | string | the selector for the element to hover. If there are multiple elements, the first will be hovered. |
+| Parameter | Type   | Description                |
+| --------- | ------ | -------------------------- |
+| selector  | string | The selector to query for. |
 
 **Returns:**
 
 Promise&lt;void&gt;
 
-## Remarks
+## Exceptions
 
-If there's no element matching `selector`, the method throws an
+Throws if there's no element matching `selector`.

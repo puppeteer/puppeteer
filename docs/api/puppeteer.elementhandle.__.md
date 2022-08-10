@@ -4,7 +4,7 @@ sidebar_label: ElementHandle.$$
 
 # ElementHandle.$$() method
 
-Runs `element.querySelectorAll` within the page.
+Queries the current element for all elements matching the given selector.
 
 **Signature:**
 
@@ -18,16 +18,12 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type     | Description                 |
-| --------- | -------- | --------------------------- |
-| selector  | Selector | The selector to query with. |
+| Parameter | Type     | Description                |
+| --------- | -------- | -------------------------- |
+| selector  | Selector | The selector to query for. |
 
 **Returns:**
 
 Promise&lt;Array&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt;&gt;&gt;
 
-`[]` if no element matches the selector.
-
-## Exceptions
-
-`Error` if the selector has no associated query handler.
+An array of [element handles](./puppeteer.elementhandle.md) that point to elements matching the given selector.

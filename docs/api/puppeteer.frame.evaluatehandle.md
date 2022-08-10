@@ -4,6 +4,8 @@ sidebar_label: Frame.evaluateHandle
 
 # Frame.evaluateHandle() method
 
+Behaves identically to [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md) except it's run within the context of this frame.
+
 **Signature:**
 
 ```typescript
@@ -28,9 +30,3 @@ class Frame {
 **Returns:**
 
 Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;&gt;
-
-## Remarks
-
-The only difference between [Frame.evaluate()](./puppeteer.frame.evaluate.md) and `frame.evaluateHandle` is that `evaluateHandle` will return the value wrapped in an in-page object.
-
-This method behaves identically to [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md) except it's run within the context of the `frame`, rather than the entire page.

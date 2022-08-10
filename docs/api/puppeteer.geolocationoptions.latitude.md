@@ -4,7 +4,7 @@ sidebar_label: GeolocationOptions.latitude
 
 # GeolocationOptions.latitude property
 
-Longitude between -180 and 180.
+Longitude between `-180` and `180`.
 
 **Signature:**
 
