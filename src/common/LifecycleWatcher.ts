@@ -19,6 +19,8 @@ import {
   addEventListener,
   PuppeteerEventListener,
   removeEventListeners,
+  DeferredPromise,
+  createDeferredPromise,
 } from './util.js';
 import {TimeoutError} from './Errors.js';
 import {
@@ -100,6 +102,8 @@ export class LifecycleWatcher {
   #hasSameDocumentNavigation?: boolean;
   #swapped?: boolean;
 
+  #navigationResponseReceived?: DeferredPromise<void>;
+
   constructor(
     frameManager: FrameManager,
     frame: Frame,
@@ -160,6 +164,11 @@ export class LifecycleWatcher {
         NetworkManagerEmittedEvents.Request,
         this.#onRequest.bind(this)
       ),
+      addEventListener(
+        this.#frameManager.networkManager(),
+        NetworkManagerEmittedEvents.Response,
+        this.#onResponse.bind(this)
+      ),
     ];
 
     this.#timeoutPromise = this.#createTimeoutPromise();
@@ -171,6 +180,20 @@ export class LifecycleWatcher {
       return;
     }
     this.#navigationRequest = request;
+    this.#navigationResponseReceived?.reject(
+      new Error('New navigation request was received')
+    );
+    this.#navigationResponseReceived = createDeferredPromise();
+    if (request.response() !== null) {
+      this.#navigationResponseReceived?.resolve();
+    }
+  }
+
+  #onResponse(response: HTTPResponse): void {
+    if (this.#navigationRequest?._requestId !== response.request()._requestId) {
+      return;
+    }
+    this.#navigationResponseReceived?.resolve();
   }
 
   #onFrameDetached(frame: Frame): void {
@@ -185,7 +208,8 @@ export class LifecycleWatcher {
   }
 
   async navigationResponse(): Promise<HTTPResponse | null> {
-    // We may need to wait for ExtraInfo events before the request is complete.
+    // Continue with a possibly null response.
+    await this.#navigationResponseReceived?.catch(() => {});
     return this.#navigationRequest ? this.#navigationRequest.response() : null;
   }
 
