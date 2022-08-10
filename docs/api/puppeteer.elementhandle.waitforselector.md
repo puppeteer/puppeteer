@@ -4,9 +4,9 @@ sidebar_label: ElementHandle.waitForSelector
 
 # ElementHandle.waitForSelector() method
 
-Wait for the `selector` to appear within the element. If at the moment of calling the method the `selector` already exists, the method will return immediately. If the `selector` doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
+Wait for an element matching the given selector to appear in the current element.
 
-This method does not work across navigations or if the element is detached from DOM.
+Unlike [Frame.waitForSelector()](./puppeteer.frame.waitforselector.md), this method does not work across navigations or if the element is detached from DOM.
 
 **Signature:**
 
@@ -21,23 +21,42 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type                                                                                   | Description                                                                                            |
-| --------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| selector  | Selector                                                                               | A [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) of an element to wait for |
-| options   | Exclude&lt;[WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md), 'root'&gt; | <i>(Optional)</i> Optional waiting parameters                                                          |
+| Parameter | Type                                                                                   | Description                                                 |
+| --------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| selector  | Selector                                                                               | The selector to query and wait for.                         |
+| options   | Exclude&lt;[WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md), 'root'&gt; | <i>(Optional)</i> Options for customizing waiting behavior. |
 
 **Returns:**
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt; \| null&gt;
 
-Promise which resolves when element specified by selector string is added to DOM. Resolves to `null` if waiting for hidden: `true` and selector is not found in DOM.
+An element matching the given selector.
 
-## Remarks
+## Exceptions
 
-The optional parameters in `options` are:
+Throws if an element matching the given selector doesn't appear.
 
-- `visible`: wait for the selected element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+## Example
 
-- `hidden`: wait for the selected element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+```ts
+const puppeteer = require('puppeteer');
 
-- `timeout`: maximum time to wait in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The default value can be changed by using the [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) method.
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  let currentURL;
+  page
+    .mainFrame()
+    .waitForSelector('img')
+    .then(() => console.log('First URL with image: ' + currentURL));
+
+  for (currentURL of [
+    'https://example.com',
+    'https://google.com',
+    'https://bbc.com',
+  ]) {
+    await page.goto(currentURL);
+  }
+  await browser.close();
+})();
+```

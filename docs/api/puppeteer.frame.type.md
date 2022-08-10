@@ -32,8 +32,6 @@ class Frame {
 
 Promise&lt;void&gt;
 
-a promise that resolves when the typing is complete.
-
 ## Remarks
 
 To press a special key, like `Control` or `ArrowDown`, use [Keyboard.press()](./puppeteer.keyboard.press.md).

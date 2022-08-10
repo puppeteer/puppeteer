@@ -4,7 +4,7 @@ sidebar_label: WebWorker
 
 # WebWorker class
 
-The WebWorker class represents a [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
+This class represents a [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
 
 **Signature:**
 

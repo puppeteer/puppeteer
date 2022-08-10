@@ -4,7 +4,7 @@ sidebar_label: Frame.$$
 
 # Frame.$$() method
 
-This runs `document.querySelectorAll` in the frame and returns the result.
+Queries the frame for all elements matching the given selector.
 
 **Signature:**
 
@@ -18,12 +18,12 @@ class Frame {
 
 ## Parameters
 
-| Parameter | Type     | Description              |
-| --------- | -------- | ------------------------ |
-| selector  | Selector | a selector to search for |
+| Parameter | Type     | Description                |
+| --------- | -------- | -------------------------- |
+| selector  | Selector | The selector to query for. |
 
 **Returns:**
 
 Promise&lt;Array&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt;&gt;&gt;
 
-An array of element handles pointing to the found frame elements.
+An array of [element handles](./puppeteer.elementhandle.md) that point to elements matching the given selector.

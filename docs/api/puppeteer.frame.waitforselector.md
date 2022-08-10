@@ -4,6 +4,10 @@ sidebar_label: Frame.waitForSelector
 
 # Frame.waitForSelector() method
 
+Wait for an element matching the given selector to appear in the frame.
+
+This method works across navigations.
+
 **Signature:**
 
 ```typescript
@@ -17,22 +21,20 @@ class Frame {
 
 ## Parameters
 
-| Parameter | Type                                                            | Description                                                                                                  |
-| --------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| selector  | Selector                                                        | the selector to wait for.                                                                                    |
-| options   | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) | <i>(Optional)</i> options to define if the element should be visible and how long to wait before timing out. |
+| Parameter | Type                                                            | Description                                                 |
+| --------- | --------------------------------------------------------------- | ----------------------------------------------------------- |
+| selector  | Selector                                                        | The selector to query and wait for.                         |
+| options   | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) | <i>(Optional)</i> Options for customizing waiting behavior. |
 
 **Returns:**
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt; \| null&gt;
 
-a promise which resolves when an element matching the selector string is added to the DOM.
+An element matching the given selector.
 
-## Remarks
+## Exceptions
 
-Wait for the `selector` to appear in page. If at the moment of calling the method the `selector` already exists, the method will return immediately. If the selector doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
-
-This method works across navigations.
+Throws if an element matching the given selector doesn't appear.
 
 ## Example
 

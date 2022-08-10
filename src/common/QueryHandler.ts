@@ -24,11 +24,11 @@ import {JSHandle} from './JSHandle.js';
  */
 export interface CustomQueryHandler {
   /**
-   * @returns A {@link Node} matching the given {@link selector} from {@link node}.
+   * @returns A {@link Node} matching the given `selector` from {@link node}.
    */
   queryOne?: (node: Node, selector: string) => Node | null;
   /**
-   * @returns Some {@link Node}s matching the given {@link selector} from {@link node}.
+   * @returns Some {@link Node}s matching the given `selector` from {@link node}.
    */
   queryAll?: (node: Node, selector: string) => Node[];
 }
@@ -65,6 +65,7 @@ export interface InternalQueryHandler {
     element: ElementHandle<Node>,
     selector: string
   ) => Promise<JSHandle<Node[]>>;
+
   /**
    * Waits until a single node appears for a given selector and
    * {@link ElementHandle}.
@@ -95,11 +96,11 @@ function internalizeCustomQueryHandler(
       return null;
     };
     internalHandler.waitFor = (
-      isolatedWorld: IsolatedWorld,
+      domWorld: IsolatedWorld,
       selector: string,
       options: WaitForSelectorOptions
     ) => {
-      return isolatedWorld._waitForSelectorInPage(queryOne, selector, options);
+      return domWorld._waitForSelectorInPage(queryOne, selector, options);
     };
   }
 

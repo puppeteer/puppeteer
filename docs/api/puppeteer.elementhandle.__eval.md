@@ -4,9 +4,9 @@ sidebar_label: ElementHandle.$$eval
 
 # ElementHandle.$$eval() method
 
-This method runs `document.querySelectorAll` within the element and passes it as the first argument to `pageFunction`. If there's no element matching `selector`, the method throws an error.
+Runs the given function on an array of elements matching the given selector in the current element.
 
-If `pageFunction` returns a Promise, then `frame.$$eval` would wait for the promise to resolve and return its value.
+If the given function returns a promise, then this method will wait till the promise resolves.
 
 **Signature:**
 
@@ -28,17 +28,21 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter    | Type           | Description |
-| ------------ | -------------- | ----------- |
-| selector     | Selector       |             |
-| pageFunction | Func \| string |             |
-| args         | Params         |             |
+| Parameter    | Type           | Description                                                                                                                                                          |
+| ------------ | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| selector     | Selector       | The selector to query for.                                                                                                                                           |
+| pageFunction | Func \| string | The function to be evaluated in the element's page's context. An array of elements matching the given selector will be passed to the function as its first argument. |
+| args         | Params         | Additional arguments to pass to <code>pageFunction</code>.                                                                                                           |
 
 **Returns:**
 
 Promise&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;
 
-## Example 1
+A promise to the result of the function.
+
+## Example
+
+HTML:
 
 ```html
 <div class="feed">
@@ -47,9 +51,9 @@ Promise&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;
 </div>
 ```
 
-## Example 2
+JavaScript:
 
-```ts
+```js
 const feedHandle = await page.$('.feed');
 expect(
   await feedHandle.$$eval('.tweet', nodes => nodes.map(n => n.innerText))

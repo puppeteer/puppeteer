@@ -4,6 +4,8 @@ sidebar_label: Frame.goto
 
 # Frame.goto() method
 
+Navigates a frame to the given url.
+
 **Signature:**
 
 ```typescript
@@ -32,20 +34,20 @@ Promise&lt;[HTTPResponse](./puppeteer.httpresponse.md) \| null&gt;
 
 A promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
+## Exceptions
+
+This method will throw an error if:
+
+- there's an SSL error (e.g. in case of self-signed certificates). - target URL is invalid. - the `timeout` is exceeded during navigation. - the remote server does not respond or is unreachable. - the main resource failed to load.
+
+This method will not throw an error when any valid HTTP status code is returned by the remote server, including 404 "Not Found" and 500 "Internal Server Error". The status code for such responses can be retrieved by calling [HTTPResponse.status()](./puppeteer.httpresponse.status.md).
+
 ## Remarks
 
-`frame.goto` will throw an error if: - there's an SSL error (e.g. in case of self-signed certificates).
+Navigation to `about:blank` or navigation to the same URL with a different hash will succeed and return `null`.
 
-- target URL is invalid.
+:::warning
 
-- the `timeout` is exceeded during navigation.
+Headless mode doesn't support navigation to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
 
-- the remote server does not respond or is unreachable.
-
-- the main resource failed to load.
-
-`frame.goto` will not throw an error when any valid HTTP status code is returned by the remote server, including 404 "Not Found" and 500 "Internal Server Error". The status code for such responses can be retrieved by calling [HTTPResponse.status()](./puppeteer.httpresponse.status.md).
-
-NOTE: `frame.goto` either throws an error or returns a main resource response. The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
-
-NOTE: Headless mode doesn't support navigation to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
+:::

@@ -26,7 +26,7 @@ Promise&lt;void&gt;
 
 ## Remarks
 
-NOTE: Consider using [BrowserContext.overridePermissions()](./puppeteer.browsercontext.overridepermissions.md) to grant permissions for the page to read its geolocation.
+Consider using [BrowserContext.overridePermissions()](./puppeteer.browsercontext.overridepermissions.md) to grant permissions for the page to read its geolocation.
 
 ## Example
 

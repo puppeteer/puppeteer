@@ -16,4 +16,4 @@ class Frame {
 
 [Page](./puppeteer.page.md)
 
-a page associated with the frame.
+The page associated with the frame.

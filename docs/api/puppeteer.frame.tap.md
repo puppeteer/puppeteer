@@ -4,7 +4,7 @@ sidebar_label: Frame.tap
 
 # Frame.tap() method
 
-This method fetches an element with `selector`, scrolls it into view if needed, and then uses [Page.touchscreen](./puppeteer.page.touchscreen.md) to tap in the center of the element.
+Taps the first element that matches the `selector`.
 
 **Signature:**
 
@@ -16,16 +16,14 @@ class Frame {
 
 ## Parameters
 
-| Parameter | Type   | Description          |
-| --------- | ------ | -------------------- |
-| selector  | string | the selector to tap. |
+| Parameter | Type   | Description                |
+| --------- | ------ | -------------------------- |
+| selector  | string | The selector to query for. |
 
 **Returns:**
 
 Promise&lt;void&gt;
 
-a promise that resolves when the element has been tapped.
+## Exceptions
 
-## Remarks
-
-If there's no element matching `selector`, the method throws an error.
+Throws if there's no element matching `selector`.

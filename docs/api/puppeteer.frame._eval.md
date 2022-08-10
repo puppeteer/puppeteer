@@ -4,6 +4,10 @@ sidebar_label: Frame.$eval
 
 # Frame.$eval() method
 
+Runs the given function on the first element matching the given selector in the frame.
+
+If the given function returns a promise, then this method will wait till the promise resolves.
+
 **Signature:**
 
 ```typescript
@@ -24,21 +28,17 @@ class Frame {
 
 ## Parameters
 
-| Parameter    | Type           | Description                                               |
-| ------------ | -------------- | --------------------------------------------------------- |
-| selector     | Selector       | the selector to query for                                 |
-| pageFunction | Func \| string | the function to be evaluated in the frame's context       |
-| args         | Params         | additional arguments to pass to <code>pageFunction</code> |
+| Parameter    | Type           | Description                                                                                                                                        |
+| ------------ | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| selector     | Selector       | The selector to query for.                                                                                                                         |
+| pageFunction | Func \| string | The function to be evaluated in the frame's context. The first element matching the selector will be passed to the function as its first argument. |
+| args         | Params         | Additional arguments to pass to <code>pageFunction</code>.                                                                                         |
 
 **Returns:**
 
 Promise&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;
 
-## Remarks
-
-This method runs `document.querySelector` within the frame and passes it as the first argument to `pageFunction`.
-
-If `pageFunction` returns a Promise, then `frame.$eval` would wait for the promise to resolve and return its value.
+A promise to the result of the function.
 
 ## Example
 
