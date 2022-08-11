@@ -35,7 +35,7 @@ Usage:
   node bisect.js --good <revision> --bad <revision> <script>
 
 Parameters:
-  --good       revision that is known to be GOOD, defaults to the chromium revision in src/revision.ts in the main branch 
+  --good       revision that is known to be GOOD, defaults to the chromium revision in src/revision.ts in the main branch
   --bad        revision that is known to be BAD, defaults to the chromium revision in src/revision.ts
   --no-cache   do not keep downloaded Chromium revisions
   --unit-test  pattern that identifies a unit tests that should be checked
@@ -180,7 +180,7 @@ function runScript(scriptPath, revisionInfo) {
 function runUnitTest(pattern, revisionInfo) {
   const log = debug('bisect:rununittest');
   log('Running unit test');
-  const child = spawn('npm run test:chrome', ['--', '-g', pattern], {
+  const child = spawn('npm run test:chrome:headless', ['--', '-g', pattern], {
     stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
     shell: true,
     env: {

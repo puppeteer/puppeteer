@@ -208,7 +208,7 @@ npm run test
 - To run Chrome tests in non-headless mode:
 
 ```bash
-HEADLESS=false npm run test:chrome
+HEADLESS=false npm run test:chrome:headless
 ```
 
 - To run Firefox tests, firstly ensure you have Firefox installed locally (you only need to do this once, not on every test run) and then you can run the tests:
@@ -222,13 +222,13 @@ npm run test:firefox
 
 ```bash
 PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM=1 npm install
-PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM=1 npm run test:chrome
+PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM=1 npm run test:chrome:headless
 ```
 
 - To run tests with custom browser executable:
 
 ```bash
-BINARY=<path-to-executable> npm run test:chrome # Or npm run test:firefox
+BINARY=<path-to-executable> npm run test:chrome:headless # Or npm run test:firefox
 ```
 
 ## API Coverage

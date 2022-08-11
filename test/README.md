@@ -81,5 +81,5 @@ npm run test:chrome:headful
 - To run tests with custom browser executable:
 
 ```bash
-BINARY=<path-to-executable> npm run test:chrome # Or npm run test:firefox
+BINARY=<path-to-executable> npm run test:chrome:headless # Or npm run test:firefox
 ```
