@@ -4,7 +4,7 @@ sidebar_label: JSHandle.evaluate
 
 # JSHandle.evaluate() method
 
-This method passes this handle as the first argument to `pageFunction`. If `pageFunction` returns a Promise, then `handle.evaluate` would wait for the promise to resolve and return its value.
+Evaluates the given function with the current handle as its first argument.
 
 **Signature:**
 
@@ -32,10 +32,3 @@ class JSHandle {
 **Returns:**
 
 Promise&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;
-
-## Example
-
-```ts
-const tweetHandle = await page.$('.tweet .retweets');
-expect(await tweetHandle.evaluate(node => node.innerText)).toBe('10');
-```

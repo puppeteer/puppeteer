@@ -4,7 +4,7 @@ sidebar_label: JSHandle.getProperties
 
 # JSHandle.getProperties() method
 
-The method returns a map with property names as keys and JSHandle instances for the property values.
+Gets a map of handles representing the properties of the current handle.
 
 **Signature:**
 
@@ -26,7 +26,9 @@ const properties = await listHandle.getProperties();
 const children = [];
 for (const property of properties.values()) {
   const element = property.asElement();
-  if (element) children.push(element);
+  if (element) {
+    children.push(element);
+  }
 }
 children; // holds elementHandles to all children of document.body
 ```

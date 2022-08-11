@@ -1710,7 +1710,7 @@ export class Page extends EventEmitter {
     }
     const textTokens = [];
     for (const arg of args) {
-      const remoteObject = arg._remoteObject;
+      const remoteObject = arg.remoteObject();
       if (remoteObject.objectId) {
         textTokens.push(arg.toString());
       } else {

@@ -277,7 +277,7 @@ export class ElementHandle<
     selector: Selector,
     options: Exclude<WaitForSelectorOptions, 'root'> = {}
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    const frame = this._context.frame();
+    const frame = this.executionContext().frame();
     assert(frame);
     const adoptedRoot = await frame.worlds[PUPPETEER_WORLD].adoptHandle(this);
     const handle = await frame.worlds[PUPPETEER_WORLD].waitForSelector(
@@ -376,8 +376,8 @@ export class ElementHandle<
    * iframe nodes, or null otherwise
    */
   async contentFrame(): Promise<Frame | null> {
-    const nodeInfo = await this._client.send('DOM.describeNode', {
-      objectId: this._remoteObject.objectId,
+    const nodeInfo = await this.client.send('DOM.describeNode', {
+      objectId: this.remoteObject().objectId,
     });
     if (typeof nodeInfo.node.frameId !== 'string') {
       return null;
@@ -403,8 +403,8 @@ export class ElementHandle<
     }
 
     try {
-      await this._client.send('DOM.scrollIntoViewIfNeeded', {
-        objectId: this._remoteObject.objectId,
+      await this.client.send('DOM.scrollIntoViewIfNeeded', {
+        objectId: this.remoteObject().objectId,
       });
     } catch (_err) {
       // Fallback to Element.scrollIntoView if DOM.scrollIntoViewIfNeeded is not supported
@@ -470,9 +470,9 @@ export class ElementHandle<
    */
   async clickablePoint(offset?: Offset): Promise<Point> {
     const [result, layoutMetrics] = await Promise.all([
-      this._client
+      this.client
         .send('DOM.getContentQuads', {
-          objectId: this._remoteObject.objectId,
+          objectId: this.remoteObject().objectId,
         })
         .catch(debugError),
       this.#page._client().send('Page.getLayoutMetrics'),
@@ -539,9 +539,9 @@ export class ElementHandle<
 
   #getBoxModel(): Promise<void | Protocol.DOM.GetBoxModelResponse> {
     const params: Protocol.DOM.GetBoxModelRequest = {
-      objectId: this._remoteObject.objectId,
+      objectId: this.remoteObject().objectId,
     };
-    return this._client.send('DOM.getBoxModel', params).catch(error => {
+    return this.client.send('DOM.getBoxModel', params).catch(error => {
       return debugError(error);
     });
   }
@@ -758,8 +758,8 @@ export class ElementHandle<
         return path.resolve(filePath);
       }
     });
-    const {objectId} = this._remoteObject;
-    const {node} = await this._client.send('DOM.describeNode', {objectId});
+    const {objectId} = this.remoteObject();
+    const {node} = await this.client.send('DOM.describeNode', {objectId});
     const {backendNodeId} = node;
 
     /*  The zero-length array is a special case, it seems that
@@ -775,7 +775,7 @@ export class ElementHandle<
         element.dispatchEvent(new Event('change', {bubbles: true}));
       });
     } else {
-      await this._client.send('DOM.setFileInputFiles', {
+      await this.client.send('DOM.setFileInputFiles', {
         objectId,
         files,
         backendNodeId,
@@ -954,7 +954,7 @@ export class ElementHandle<
     assert(boundingBox.width !== 0, 'Node has 0 width.');
     assert(boundingBox.height !== 0, 'Node has 0 height.');
 
-    const layoutMetrics = await this._client.send('Page.getLayoutMetrics');
+    const layoutMetrics = await this.client.send('Page.getLayoutMetrics');
     // Fallback to `layoutViewport` in case of using Firefox.
     const {pageX, pageY} =
       layoutMetrics.cssVisualViewport || layoutMetrics.layoutViewport;

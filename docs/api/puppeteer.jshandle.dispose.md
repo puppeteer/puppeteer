@@ -4,7 +4,7 @@ sidebar_label: JSHandle.dispose
 
 # JSHandle.dispose() method
 
-Stops referencing the element handle, and resolves when the object handle is successfully disposed of.
+Releases the object referenced by the handle for garbage collection.
 
 **Signature:**
 

@@ -4,7 +4,7 @@ sidebar_label: ExecutionContext.queryObjects
 
 # ExecutionContext.queryObjects() method
 
-This method iterates the JavaScript heap and finds all the objects with the given prototype.
+Iterates through the JavaScript heap and finds all the objects with the given prototype.
 
 **Signature:**
 
@@ -27,8 +27,6 @@ class ExecutionContext {
 Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;Prototype\[\]&gt;&gt;
 
 A handle to an array of objects with the given prototype.
-
-## Remarks
 
 ## Example
 
