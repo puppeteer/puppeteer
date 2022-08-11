@@ -60,6 +60,7 @@ export async function importDebug(): Promise<typeof import('debug')> {
  * ```
  *
  * @example
+ *
  * ```
  * const log = debug('Page');
  *

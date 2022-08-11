@@ -261,6 +261,7 @@ const QUERY_HANDLERS = new Map<string, RegisteredQueryHandler>();
  * allowed to consist of lower- and upper case latin letters.
  *
  * @example
+ *
  * ```
  * puppeteer.registerCustomQueryHandler('text', { … });
  * const aHandle = await page.$('text/…');

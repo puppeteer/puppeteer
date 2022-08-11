@@ -36,9 +36,10 @@ import {EventEmitter} from './EventEmitter.js';
  * because Firefox's CDP implementation does not support auto-attach.
  *
  * Firefox does not support targetInfoChanged and detachedFromTarget events:
+ *
  * - https://bugzilla.mozilla.org/show_bug.cgi?id=1610855
  * - https://bugzilla.mozilla.org/show_bug.cgi?id=1636979
- * @internal
+ *   @internal
  */
 export class FirefoxTargetManager
   extends EventEmitter

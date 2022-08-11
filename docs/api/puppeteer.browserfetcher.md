@@ -30,7 +30,7 @@ const browser = await puppeteer.launch({
 });
 ```
 
-\*\*NOTE\*\* BrowserFetcher is not designed to work concurrently with other instances of BrowserFetcher that share the same downloads directory.
+**NOTE** BrowserFetcher is not designed to work concurrently with other instances of BrowserFetcher that share the same downloads directory.
 
 ## Methods
 

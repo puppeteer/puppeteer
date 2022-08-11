@@ -59,11 +59,12 @@ function isKnownAttribute(
   return knownAttributes.has(attribute);
 }
 
-/*
+/**
  * The selectors consist of an accessible name to query for and optionally
  * further aria attributes on the form `[<attribute>=<value>]`.
  * Currently, we only support the `name` and `role` attribute.
  * The following examples showcase how the syntax works wrt. querying:
+ *
  * - 'title[role="heading"]' queries for elements with name 'title' and role 'heading'.
  * - '[role="img"]' queries for elements with role 'img' and any name.
  * - 'label' queries for elements with name 'label' and any role.

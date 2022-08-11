@@ -160,7 +160,7 @@ export class HTTPResponse {
   }
 
   /**
-   * @returns  The status text of the response (e.g. usually an "OK" for a
+   * @returns The status text of the response (e.g. usually an "OK" for a
    * success).
    */
   statusText(): string {

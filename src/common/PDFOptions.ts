@@ -46,6 +46,7 @@ export type LowerCasePaperFormat =
  * @remarks
  *
  * The sizes of each format are as follows:
+ *
  * - `Letter`: 8.5in x 11in
  *
  * - `Legal`: 8.5in x 14in
@@ -93,6 +94,7 @@ export interface PDFOptions {
   /**
    * HTML template for the print header. Should be valid HTML with the following
    * classes used to inject values into them:
+   *
    * - `date` formatted print date
    *
    * - `title` document title

@@ -481,18 +481,19 @@ describeChromeOnly('NetworkManager', () => {
      * This sequence was taken from an actual CDP session produced by the following
      * test script:
      *
-     * const browser = await puppeteer.launch(\{ headless: false \});
+     * ```ts
+     * const browser = await puppeteer.launch({headless: false});
      * const page = await browser.newPage();
      * await page.setCacheEnabled(false);
      *
-     * await page.setRequestInterception(true)
-     * page.on('request', (interceptedRequest) =\> \{
+     * await page.setRequestInterception(true);
+     * page.on('request', interceptedRequest => {
      *   interceptedRequest.continue();
-     * \});
+     * });
      *
      * await page.goto('https://www.google.com');
      * await browser.close();
-     *
+     * ```
      */
     mockCDPSession.emit('Network.requestWillBeSent', {
       requestId: '11ACE9783588040D644B905E8B55285B',

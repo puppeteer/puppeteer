@@ -95,7 +95,7 @@ export interface IMarkdownDocumenterOptions {
 
 /**
  * Renders API documentation in the Markdown file format.
- * For more info:  https://en.wikipedia.org/wiki/Markdown
+ * For more info: https://en.wikipedia.org/wiki/Markdown
  */
 export class MarkdownDocumenter {
   private readonly _apiModel: ApiModel;
@@ -392,6 +392,7 @@ export class MarkdownDocumenter {
       pageContent;
     pageContent = pageContent.replace('##', '#');
     pageContent = pageContent.replace(/<!-- -->/g, '');
+    pageContent = pageContent.replace(/\\\*\\\*/g, '**');
     pageContent = pageContent.replace(/<b>|<\/b>/g, '**');
     FileSystem.writeFile(filename, pageContent, {
       convertLineEndings: this._documenterConfig

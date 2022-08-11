@@ -1,12 +1,3 @@
-// TODO: Enable this at some point.
-// const RESTRICTED_UNDERSCORED_IDENTIFIERS = [
-//   'PropertyDefinition > Identifier[name=/^_[a-z].*$/]',
-// ].map((selector) => ({
-//   selector,
-//   message:
-//     'Use private fields (fields prefixed with #) and an appropriate getter/setter.',
-// }));
-
 module.exports = {
   root: true,
   env: {
@@ -132,8 +123,10 @@ module.exports = {
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
       ],
-      plugins: ['eslint-plugin-tsdoc'],
+      plugins: ['eslint-plugin-tsdoc', 'local'],
       rules: {
+        // Keeps comments formatted.
+        'local/prettier-comments': 2,
         // Brackets keep code readable.
         curly: [2, 'all'],
         // Brackets keep code readable and `return` intentions clear.
@@ -189,9 +182,6 @@ module.exports = {
             selector: "CallExpression[callee.name='require']",
             message: '`require` statements are not allowed. Use `import`.',
           },
-
-          // Don't allow underscored declarations on camelCased variables/properties.
-          // ...RESTRICTED_UNDERSCORED_IDENTIFIERS,
         ],
       },
     },

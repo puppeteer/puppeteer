@@ -29,6 +29,7 @@ import {ElementHandle} from './ElementHandle.js';
  * subsequent file choosers from appearing.
  *
  * @example
+ *
  * ```ts
  * const [fileChooser] = await Promise.all([
  *   page.waitForFileChooser(),
@@ -67,7 +68,7 @@ export class FileChooser {
   /**
    * Accept the file chooser request with given paths.
    *
-   * @param filePaths - If some of the  `filePaths` are relative paths, then
+   * @param filePaths - If some of the `filePaths` are relative paths, then
    * they are resolved relative to the
    * {@link https://nodejs.org/api/process.html#process_process_cwd | current working directory}.
    */

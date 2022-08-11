@@ -81,8 +81,9 @@ export class Puppeteer {
   /**
    * @deprecated Import directly puppeteer.
    * @example
+   *
    * ```ts
-   * import { devices } from 'puppeteer';
+   * import {devices} from 'puppeteer';
    * ```
    */
   get devices(): typeof devices {
@@ -92,8 +93,9 @@ export class Puppeteer {
   /**
    * @deprecated Import directly puppeteer.
    * @example
+   *
    * ```ts
-   * import { errors } from 'puppeteer';
+   * import {errors} from 'puppeteer';
    * ```
    */
   get errors(): typeof errors {
@@ -103,8 +105,9 @@ export class Puppeteer {
   /**
    * @deprecated Import directly puppeteer.
    * @example
+   *
    * ```ts
-   * import { networkConditions } from 'puppeteer';
+   * import {networkConditions} from 'puppeteer';
    * ```
    */
   get networkConditions(): typeof networkConditions {
@@ -114,8 +117,9 @@ export class Puppeteer {
   /**
    * @deprecated Import directly puppeteer.
    * @example
+   *
    * ```ts
-   * import { registerCustomQueryHandler } from 'puppeteer';
+   * import {registerCustomQueryHandler} from 'puppeteer';
    * ```
    */
   registerCustomQueryHandler(
@@ -128,8 +132,9 @@ export class Puppeteer {
   /**
    * @deprecated Import directly puppeteer.
    * @example
+   *
    * ```ts
-   * import { unregisterCustomQueryHandler } from 'puppeteer';
+   * import {unregisterCustomQueryHandler} from 'puppeteer';
    * ```
    */
   unregisterCustomQueryHandler(name: string): void {
@@ -139,8 +144,9 @@ export class Puppeteer {
   /**
    * @deprecated Import directly puppeteer.
    * @example
+   *
    * ```ts
-   * import { customQueryHandlerNames } from 'puppeteer';
+   * import {customQueryHandlerNames} from 'puppeteer';
    * ```
    */
   customQueryHandlerNames(): string[] {
@@ -150,8 +156,9 @@ export class Puppeteer {
   /**
    * @deprecated Import directly puppeteer.
    * @example
+   *
    * ```ts
-   * import { clearCustomQueryHandlers } from 'puppeteer';
+   * import {clearCustomQueryHandlers} from 'puppeteer';
    * ```
    */
   clearCustomQueryHandlers(): void {
