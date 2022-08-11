@@ -17,11 +17,11 @@
 import {Protocol} from 'devtools-protocol';
 import {assert} from './assert.js';
 import {CDPSession} from './Connection.js';
-import {EvaluateFunc, HandleFor, HandleOr} from './types.js';
+import type {ElementHandle} from './ElementHandle.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {MouseButton} from './Input.js';
-import {releaseObject, valueFromRemoteObject, createJSHandle} from './util.js';
-import type {ElementHandle} from './ElementHandle.js';
+import {EvaluateFunc, HandleFor, HandleOr} from './types.js';
+import {createJSHandle, releaseObject, valueFromRemoteObject} from './util.js';
 
 declare const __JSHandleSymbol: unique symbol;
 
@@ -52,20 +52,22 @@ export interface BoundingBox extends Point {
 }
 
 /**
- * Represents an in-page JavaScript object. JSHandles can be created with the
- * {@link Page.evaluateHandle | page.evaluateHandle} method.
+ * Represents a reference to a JavaScript object. Instances can be created using
+ * {@link Page.evaluateHandle}.
+ *
+ * Handles prevent the referenced JavaScript object from being garbage-collected
+ * unless the handle is purposely {@link JSHandle.dispose | disposed}. JSHandles
+ * are auto-disposed when their associated frame is navigated away or the parent
+ * context gets destroyed.
+ *
+ * Handles can be used as arguments for any evaluation function such as
+ * {@link Page.$eval}, {@link Page.evaluate}, and {@link Page.evaluateHandle}.
+ * They are resolved to their referenced object.
  *
  * @example
  * ```ts
  * const windowHandle = await page.evaluateHandle(() => window);
  * ```
- *
- * JSHandle prevents the referenced JavaScript object from being garbage-collected
- * unless the handle is {@link JSHandle.dispose | disposed}. JSHandles are auto-
- * disposed when their origin frame gets navigated or the parent context gets destroyed.
- *
- * JSHandle instances can be used as arguments for {@link Page.$eval},
- * {@link Page.evaluate}, and {@link Page.evaluateHandle}.
  *
  * @public
  */
@@ -83,29 +85,15 @@ export class JSHandle<T = unknown> {
   /**
    * @internal
    */
-  get _client(): CDPSession {
+  get client(): CDPSession {
     return this.#client;
   }
 
   /**
    * @internal
    */
-  get _disposed(): boolean {
+  get disposed(): boolean {
     return this.#disposed;
-  }
-
-  /**
-   * @internal
-   */
-  get _remoteObject(): Protocol.Runtime.RemoteObject {
-    return this.#remoteObject;
-  }
-
-  /**
-   * @internal
-   */
-  get _context(): ExecutionContext {
-    return this.#context;
   }
 
   /**
@@ -121,24 +109,18 @@ export class JSHandle<T = unknown> {
     this.#remoteObject = remoteObject;
   }
 
-  /** Returns the execution context the handle belongs to.
+  /**
+   * @returns The execution context the handle belongs to.
    */
   executionContext(): ExecutionContext {
     return this.#context;
   }
 
   /**
-   * This method passes this handle as the first argument to `pageFunction`. If
-   * `pageFunction` returns a Promise, then `handle.evaluate` would wait for the
-   * promise to resolve and return its value.
+   * Evaluates the given function with the current handle as its first argument.
    *
-   * @example
-   * ```ts
-   * const tweetHandle = await page.$('.tweet .retweets');
-   * expect(await tweetHandle.evaluate(node => node.innerText)).toBe('10');
-   * ```
+   * @see {@link ExecutionContext.evaluate} for more details.
    */
-
   async evaluate<
     Params extends unknown[],
     Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
@@ -154,19 +136,9 @@ export class JSHandle<T = unknown> {
   }
 
   /**
-   * This method passes this handle as the first argument to `pageFunction`.
+   * Evaluates the given function with the current handle as its first argument.
    *
-   * @remarks
-   *
-   * The only difference between `jsHandle.evaluate` and
-   * `jsHandle.evaluateHandle` is that `jsHandle.evaluateHandle` returns an
-   * in-page object (JSHandle).
-   *
-   * If the function passed to `jsHandle.evaluateHandle` returns a Promise, then
-   * `evaluateHandle.evaluateHandle` waits for the promise to resolve and
-   * returns its value.
-   *
-   * See {@link Page.evaluateHandle} for more details.
+   * @see {@link ExecutionContext.evaluateHandle} for more details.
    */
   async evaluateHandle<
     Params extends unknown[],
@@ -196,14 +168,13 @@ export class JSHandle<T = unknown> {
   async getProperty<K extends keyof T>(
     propertyName: HandleOr<K>
   ): Promise<HandleFor<T[K]>> {
-    return await this.evaluateHandle((object, propertyName) => {
+    return this.evaluateHandle((object, propertyName) => {
       return object[propertyName];
     }, propertyName);
   }
 
   /**
-   * The method returns a map with property names as keys and JSHandle instances
-   * for the property values.
+   * Gets a map of handles representing the properties of the current handle.
    *
    * @example
    * ```ts
@@ -212,14 +183,17 @@ export class JSHandle<T = unknown> {
    * const children = [];
    * for (const property of properties.values()) {
    *   const element = property.asElement();
-   *   if (element)
+   *   if (element) {
    *     children.push(element);
+   *   }
    * }
    * children; // holds elementHandles to all children of document.body
    * ```
    */
   async getProperties(): Promise<Map<string, JSHandle>> {
     assert(this.#remoteObject.objectId);
+    // We use Runtime.getProperties rather than iterative building because the
+    // iterative approach might create a distorted snapshot.
     const response = await this.#client.send('Runtime.getProperties', {
       objectId: this.#remoteObject.objectId,
       ownProperties: true,
@@ -235,41 +209,36 @@ export class JSHandle<T = unknown> {
   }
 
   /**
-   * @returns Returns a JSON representation of the object.If the object has a
-   * `toJSON` function, it will not be called.
-   * @remarks
+   * @returns A vanilla object representing the serializable portions of the
+   * referenced object.
+   * @throws Throws if the object cannot be serialized due to circularity.
    *
-   * The JSON is generated by running {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify | JSON.stringify}
-   * on the object in page and consequent {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse | JSON.parse} in puppeteer.
-   * **NOTE** The method throws if the referenced object is not stringifiable.
+   * @remarks
+   * If the object has a `toJSON` function, it *will not* be called.
    */
-  async jsonValue<T = unknown>(): Promise<T> {
-    if (this.#remoteObject.objectId) {
-      const response = await this.#client.send('Runtime.callFunctionOn', {
-        functionDeclaration: 'function() { return this; }',
-        objectId: this.#remoteObject.objectId,
-        returnByValue: true,
-        awaitPromise: true,
-      });
-      return valueFromRemoteObject(response.result) as T;
+  async jsonValue(): Promise<T> {
+    if (!this.#remoteObject.objectId) {
+      return valueFromRemoteObject(this.#remoteObject);
     }
-    return valueFromRemoteObject(this.#remoteObject) as T;
+    const value = await this.evaluate(object => {
+      return object;
+    });
+    if (value === undefined) {
+      throw new Error('Could not serialize referenced object');
+    }
+    return value;
   }
 
   /**
-   * @returns Either `null` or the object handle itself, if the object
-   * handle is an instance of {@link ElementHandle}.
+   * @returns Either `null` or the handle itself if the handle is an
+   * instance of {@link ElementHandle}.
    */
   asElement(): ElementHandle<Node> | null {
-    /*  This always returns null, but subclasses can override this and return an
-         ElementHandle.
-     */
     return null;
   }
 
   /**
-   * Stops referencing the element handle, and resolves when the object handle is
-   * successfully disposed of.
+   * Releases the object referenced by the handle for garbage collection.
    */
   async dispose(): Promise<void> {
     if (this.#disposed) {
@@ -282,18 +251,21 @@ export class JSHandle<T = unknown> {
   /**
    * Returns a string representation of the JSHandle.
    *
-   * @remarks Useful during debugging.
+   * @remarks
+   * Useful during debugging.
    */
   toString(): string {
-    if (this.#remoteObject.objectId) {
-      const type = this.#remoteObject.subtype || this.#remoteObject.type;
-      return 'JSHandle@' + type;
+    if (!this.#remoteObject.objectId) {
+      return 'JSHandle:' + valueFromRemoteObject(this.#remoteObject);
     }
-    return 'JSHandle:' + valueFromRemoteObject(this.#remoteObject);
+    const type = this.#remoteObject.subtype || this.#remoteObject.type;
+    return 'JSHandle@' + type;
   }
 
   /**
-   * Provides access to [Protocol.Runtime.RemoteObject](https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-RemoteObject) backing this JSHandle.
+   * Provides access to the
+   * [Protocol.Runtime.RemoteObject](https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-RemoteObject)
+   * backing this handle.
    */
   remoteObject(): Protocol.Runtime.RemoteObject {
     return this.#remoteObject;

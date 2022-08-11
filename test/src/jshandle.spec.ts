@@ -73,14 +73,9 @@ describe('JSHandle', function () {
       test.obj = test;
       let error!: Error;
       await page
-        .evaluateHandle(
-          opts => {
-            // @ts-expect-error we are deliberately passing a bad type here
-            // (nested object)
-            return opts.elem;
-          },
-          {test}
-        )
+        .evaluateHandle(opts => {
+          return opts;
+        }, test)
         .catch(error_ => {
           return (error = error_);
         });
@@ -136,7 +131,7 @@ describe('JSHandle', function () {
       const aHandle = await page.evaluateHandle(() => {
         return {foo: 'bar'};
       });
-      const json = await aHandle.jsonValue<Record<string, string>>();
+      const json = await aHandle.jsonValue();
       expect(json).toEqual({foo: 'bar'});
     });
 
@@ -146,7 +141,7 @@ describe('JSHandle', function () {
       const aHandle = await page.evaluateHandle(() => {
         return ['a', 'b'];
       });
-      const json = await aHandle.jsonValue<string[]>();
+      const json = await aHandle.jsonValue();
       expect(json).toEqual(['a', 'b']);
     });
 
@@ -156,8 +151,12 @@ describe('JSHandle', function () {
       const aHandle = await page.evaluateHandle(() => {
         return 'foo';
       });
-      const json = await aHandle.jsonValue<string>();
-      expect(json).toEqual('foo');
+      expect(await aHandle.jsonValue()).toEqual('foo');
+
+      const bHandle = await page.evaluateHandle(() => {
+        return undefined;
+      });
+      expect(await bHandle.jsonValue()).toEqual(undefined);
     });
 
     itFailsFirefox('should not work with dates', async () => {
@@ -172,13 +171,19 @@ describe('JSHandle', function () {
     it('should throw for circular objects', async () => {
       const {page, isChrome} = getTestState();
 
-      const windowHandle = await page.evaluateHandle('window');
+      const handle = await page.evaluateHandle(() => {
+        const t: {t?: unknown; g: number} = {g: 1};
+        t.t = t;
+        return t;
+      });
       let error!: Error;
-      await windowHandle.jsonValue().catch(error_ => {
+      await handle.jsonValue().catch(error_ => {
         return (error = error_);
       });
       if (isChrome) {
-        expect(error.message).toContain('Object reference chain is too long');
+        expect(error.message).toContain(
+          'Could not serialize referenced object'
+        );
       } else {
         expect(error.message).toContain('Object is not serializable');
       }

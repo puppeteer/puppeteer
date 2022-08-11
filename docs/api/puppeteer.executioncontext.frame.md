@@ -20,4 +20,4 @@ The frame associated with this execution context.
 
 ## Remarks
 
-Not every execution context is associated with a frame. For example, workers and extensions have execution contexts that are not associated with frames.
+Not every execution context is associated with a frame. For example, [workers](./puppeteer.webworker.md) have execution contexts that are not associated with frames.

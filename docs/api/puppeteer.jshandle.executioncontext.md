@@ -4,8 +4,6 @@ sidebar_label: JSHandle.executionContext
 
 # JSHandle.executionContext() method
 
-Returns the execution context the handle belongs to.
-
 **Signature:**
 
 ```typescript
@@ -17,3 +15,5 @@ class JSHandle {
 **Returns:**
 
 [ExecutionContext](./puppeteer.executioncontext.md)
+
+The execution context the handle belongs to.

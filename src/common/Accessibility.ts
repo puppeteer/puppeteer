@@ -185,7 +185,7 @@ export class Accessibility {
     let backendNodeId: number | undefined;
     if (root) {
       const {node} = await this.#client.send('DOM.describeNode', {
-        objectId: root._remoteObject.objectId,
+        objectId: root.remoteObject().objectId,
       });
       backendNodeId = node.backendNodeId;
     }
