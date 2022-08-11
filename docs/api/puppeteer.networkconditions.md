@@ -10,9 +10,9 @@ A list of network conditions to be used with `page.emulateNetworkConditions(netw
 
 ```typescript
 networkConditions: Readonly<{
-    'Slow 3G': NetworkConditions;
-    'Fast 3G': NetworkConditions;
-}>
+  'Slow 3G': NetworkConditions;
+  'Fast 3G': NetworkConditions;
+}>;
 ```
 
 ## Example

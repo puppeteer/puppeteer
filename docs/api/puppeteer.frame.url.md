@@ -16,4 +16,4 @@ class Frame {
 
 string
 
-the frame's URL.
+The frame's URL.

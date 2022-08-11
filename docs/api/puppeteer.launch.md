@@ -7,5 +7,6 @@ sidebar_label: launch
 **Signature:**
 
 ```typescript
-launch: (options?: import("./types.js").PuppeteerLaunchOptions) => Promise<import("./types.js").Browser>
+launch: (options?: import('./types.js').PuppeteerLaunchOptions) =>
+  Promise<import('./types.js').Browser>;
 ```

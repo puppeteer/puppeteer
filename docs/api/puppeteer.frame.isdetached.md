@@ -16,4 +16,4 @@ class Frame {
 
 boolean
 
-`true` if the frame has been detached, or `false` otherwise.
+`true` if the frame has been detached. Otherwise, `false`.

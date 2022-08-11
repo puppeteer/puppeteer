@@ -16,4 +16,4 @@ class Frame {
 
 [Frame](./puppeteer.frame.md) \| null
 
-the parent `Frame`, if any. Detached and main frames return `null`.
+The parent frame, if any. Detached and main frames return `null`.
