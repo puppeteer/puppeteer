@@ -161,7 +161,8 @@ export class ChromeLauncher implements ProductLauncher {
         ignoreHTTPSErrors,
         defaultViewport,
         runner.proc,
-        runner.close.bind(runner)
+        runner.close.bind(runner),
+        options.targetFilter
       );
     } catch (error) {
       runner.kill();

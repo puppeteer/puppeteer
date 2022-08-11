@@ -753,6 +753,29 @@ describe('Launcher specs', function () {
         await page.close();
         await browser.close();
       });
+
+      it('should support targetFilter option in puppeteer.launch', async () => {
+        const {puppeteer, defaultBrowserOptions} = getTestState();
+        const browser = await puppeteer.launch({
+          ...defaultBrowserOptions,
+          targetFilter: target => {
+            return target.type !== 'page';
+          },
+          waitForInitialPage: false,
+        });
+        try {
+          const targets = browser.targets();
+          expect(targets.length).toEqual(1);
+          expect(
+            targets.find(target => {
+              return target.type() === 'page';
+            })
+          ).toBeUndefined();
+        } finally {
+          await browser.close();
+        }
+      });
+
       // @see https://github.com/puppeteer/puppeteer/issues/4197
       itFailsFirefox('should support targetFilter option', async () => {
         const {server, puppeteer, defaultBrowserOptions} = getTestState();

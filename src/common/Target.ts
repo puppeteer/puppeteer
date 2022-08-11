@@ -138,6 +138,13 @@ export class Target {
   /**
    * @internal
    */
+  get [Symbol.toStringTag](): string {
+    return JSON.stringify(this.#targetInfo, null, 2);
+  }
+
+  /**
+   * @internal
+   */
   _targetManager(): TargetManager {
     return this.#targetManager;
   }
