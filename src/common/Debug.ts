@@ -76,6 +76,10 @@ export async function importDebug(): Promise<typeof import('debug')> {
 export const debug = (prefix: string): ((...args: unknown[]) => void) => {
   if (isNode) {
     return async (...logArgs: unknown[]) => {
+      if (captureLogs) {
+        capturedLogs.push(prefix + logArgs);
+        return;
+      }
       (await importDebug())(prefix)(logArgs);
     };
   }
@@ -107,3 +111,27 @@ export const debug = (prefix: string): ((...args: unknown[]) => void) => {
     console.log(`${prefix}:`, ...logArgs);
   };
 };
+
+/**
+ * @internal
+ */
+let capturedLogs: string[] = [];
+/**
+ * @internal
+ */
+let captureLogs = false;
+
+/**
+ * @internal
+ */
+export function setLogCapture(value: boolean): void {
+  capturedLogs = [];
+  captureLogs = value;
+}
+
+/**
+ * @internal
+ */
+export function getCapturedLogs(): string[] {
+  return capturedLogs;
+}
