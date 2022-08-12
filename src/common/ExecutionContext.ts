@@ -102,6 +102,7 @@ export class ExecutionContext {
    * Evaluates the given function.
    *
    * @example
+   *
    * ```ts
    * const executionContext = await page.mainFrame().executionContext();
    * const result = await executionContext.evaluate(() => Promise.resolve(8 * 7))* ;
@@ -110,17 +111,21 @@ export class ExecutionContext {
    *
    * @example
    * A string can also be passed in instead of a function:
+   *
    * ```ts
    * console.log(await executionContext.evaluate('1 + 2')); // prints "3"
    * ```
    *
    * @example
    * Handles can also be passed as `args`. They resolve to their referenced object:
+   *
    * ```ts
    * const oneHandle = await executionContext.evaluateHandle(() => 1);
    * const twoHandle = await executionContext.evaluateHandle(() => 2);
    * const result = await executionContext.evaluate(
-   *    (a, b) => a + b, oneHandle, twoHandle
+   *   (a, b) => a + b,
+   *   oneHandle,
+   *   twoHandle
    * );
    * await oneHandle.dispose();
    * await twoHandle.dispose();
@@ -153,27 +158,29 @@ export class ExecutionContext {
    * `Map`) and requires further manipulation.
    *
    * @example
+   *
    * ```ts
    * const context = await page.mainFrame().executionContext();
-   * const handle: JSHandle<typeof globalThis> = await context.evaluateHandle(() =>
-   *   Promise.resolve(self)
+   * const handle: JSHandle<typeof globalThis> = await context.evaluateHandle(
+   *   () => Promise.resolve(self)
    * );
    * ```
    *
    * @example
    * A string can also be passed in instead of a function.
+   *
    * ```ts
    * const handle: JSHandle<number> = await context.evaluateHandle('1 + 2');
    * ```
    *
    * @example
    * Handles can also be passed as `args`. They resolve to their referenced object:
+   *
    * ```ts
-   * const bodyHandle: ElementHandle<HTMLBodyElement> = await context.evaluateHandle(
-   *   () => {
+   * const bodyHandle: ElementHandle<HTMLBodyElement> =
+   *   await context.evaluateHandle(() => {
    *     return document.body;
-   *   }
-   * );
+   *   });
    * const stringHandle: JSHandle<string> = await context.evaluateHandle(
    *   body => body.innerHTML,
    *   body
@@ -372,9 +379,10 @@ export class ExecutionContext {
    * given prototype.
    *
    * @example
+   *
    * ```ts
    * // Create a Map object
-   * await page.evaluate(() => window.map = new Map());
+   * await page.evaluate(() => (window.map = new Map()));
    * // Get a handle to the Map object prototype
    * const mapPrototype = await page.evaluateHandle(() => Map.prototype);
    * // Query all map instances into an array

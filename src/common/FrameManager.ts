@@ -630,7 +630,7 @@ export interface FrameAddStyleTagOptions {
  *   function dumpFrameTree(frame, indent) {
  *     console.log(indent + frame.url());
  *     for (const child of frame.childFrames()) {
- *     dumpFrameTree(child, indent + '  ');
+ *       dumpFrameTree(child, indent + '  ');
  *     }
  *   }
  * })();
@@ -780,7 +780,7 @@ export class Frame {
    *
    * This method will not throw an error when any valid HTTP status code is
    * returned by the remote server, including 404 "Not Found" and 500 "Internal
-   * Server Error".  The status code for such responses can be retrieved by
+   * Server Error". The status code for such responses can be retrieved by
    * calling {@link HTTPResponse.status}.
    */
   async goto(
@@ -861,6 +861,7 @@ export class Frame {
    * to change the URL is considered a navigation.
    *
    * @example
+   *
    * ```ts
    * const [response] = await Promise.all([
    *   // The navigation promise resolves after navigation has finished
@@ -988,6 +989,7 @@ export class Frame {
    * the promise resolves.
    *
    * @example
+   *
    * ```ts
    * const searchValue = await frame.$eval('#search', el => el.value);
    * ```
@@ -1021,6 +1023,7 @@ export class Frame {
    * the promise resolves.
    *
    * @example
+   *
    * ```js
    * const divsCounts = await frame.$$eval('div', divs => divs.length);
    * ```
@@ -1062,6 +1065,7 @@ export class Frame {
    * This method works across navigations.
    *
    * @example
+   *
    * ```ts
    * const puppeteer = require('puppeteer');
    *
@@ -1069,16 +1073,22 @@ export class Frame {
    *   const browser = await puppeteer.launch();
    *   const page = await browser.newPage();
    *   let currentURL;
-   *   page.mainFrame()
-   *   .waitForSelector('img')
-   *   .then(() => console.log('First URL with image: ' + currentURL));
+   *   page
+   *     .mainFrame()
+   *     .waitForSelector('img')
+   *     .then(() => console.log('First URL with image: ' + currentURL));
    *
-   *   for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com']) {
+   *   for (currentURL of [
+   *     'https://example.com',
+   *     'https://google.com',
+   *     'https://bbc.com',
+   *   ]) {
    *     await page.goto(currentURL);
    *   }
    *   await browser.close();
    * })();
    * ```
+   *
    * @param selector - The selector to query and wait for.
    * @param options - Options for customizing waiting behavior.
    * @returns An element matching the given selector.
@@ -1115,7 +1125,7 @@ export class Frame {
    * an XPath.
    *
    * @param xpath - the XPath expression to wait for.
-   * @param options  - options to configure the visiblity of the element and how
+   * @param options - options to configure the visiblity of the element and how
    * long to wait before timing out.
    */
   async waitForXPath(
@@ -1131,6 +1141,7 @@ export class Frame {
   /**
    * @example
    * The `waitForFunction` can be used to observe viewport size change:
+   *
    * ```ts
    * const puppeteer = require('puppeteer');
    *
@@ -1152,7 +1163,7 @@ export class Frame {
    *   selector => !!document.querySelector(selector),
    *   {}, // empty options object
    *   selector
-   *);
+   * );
    * ```
    *
    * @param pageFunction - the function to evaluate in the frame context.
@@ -1326,6 +1337,7 @@ export class Frame {
    * `selector`.
    *
    * @example
+   *
    * ```ts
    * frame.select('select#colors', 'blue'); // single selection
    * frame.select('select#colors', 'red', 'green', 'blue'); // multiple selections
@@ -1361,6 +1373,7 @@ export class Frame {
    * {@link Keyboard.press}.
    *
    * @example
+   *
    * ```ts
    * await frame.type('#mytextarea', 'Hello'); // Types instantly
    * await frame.type('#mytextarea', 'World', {delay: 100}); // Types slower, like a user

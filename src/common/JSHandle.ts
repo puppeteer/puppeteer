@@ -65,6 +65,7 @@ export interface BoundingBox extends Point {
  * They are resolved to their referenced object.
  *
  * @example
+ *
  * ```ts
  * const windowHandle = await page.evaluateHandle(() => window);
  * ```
@@ -177,6 +178,7 @@ export class JSHandle<T = unknown> {
    * Gets a map of handles representing the properties of the current handle.
    *
    * @example
+   *
    * ```ts
    * const listHandle = await page.evaluateHandle(() => document.body.children);
    * const properties = await listHandle.getProperties();
@@ -214,7 +216,7 @@ export class JSHandle<T = unknown> {
    * @throws Throws if the object cannot be serialized due to circularity.
    *
    * @remarks
-   * If the object has a `toJSON` function, it *will not* be called.
+   * If the object has a `toJSON` function, it **will not** be called.
    */
   async jsonValue(): Promise<T> {
     if (!this.#remoteObject.objectId) {

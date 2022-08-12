@@ -43,12 +43,12 @@ const applyOffsetsToQuad = (
  * const puppeteer = require('puppeteer');
  *
  * (async () => {
- *  const browser = await puppeteer.launch();
- *  const page = await browser.newPage();
- *  await page.goto('https://example.com');
- *  const hrefElement = await page.$('a');
- *  await hrefElement.click();
- *  // ...
+ *   const browser = await puppeteer.launch();
+ *   const page = await browser.newPage();
+ *   await page.goto('https://example.com');
+ *   const hrefElement = await page.$('a');
+ *   await hrefElement.click();
+ *   // ...
  * })();
  * ```
  *
@@ -142,10 +142,15 @@ export class ElementHandle<
    * the promise resolves.
    *
    * @example
+   *
    * ```ts
    * const tweetHandle = await page.$('.tweet');
-   * expect(await tweetHandle.$eval('.like', node => node.innerText)).toBe('100');
-   * expect(await tweetHandle.$eval('.retweets', node => node.innerText)).toBe('10');
+   * expect(await tweetHandle.$eval('.like', node => node.innerText)).toBe(
+   *   '100'
+   * );
+   * expect(await tweetHandle.$eval('.retweets', node => node.innerText)).toBe(
+   *   '10'
+   * );
    * ```
    *
    * @param selector - The selector to query for.
@@ -186,17 +191,21 @@ export class ElementHandle<
    *
    * @example
    * HTML:
+   *
    * ```html
    * <div class="feed">
    *   <div class="tweet">Hello!</div>
    *   <div class="tweet">Hi!</div>
    * </div>
    * ```
+   *
    * JavaScript:
+   *
    * ```js
    * const feedHandle = await page.$('.feed');
-   * expect(await feedHandle.$$eval('.tweet', nodes => nodes.map(n => n.innerText)))
-   *  .toEqual(['Hello!', 'Hi!']);
+   * expect(
+   *   await feedHandle.$$eval('.tweet', nodes => nodes.map(n => n.innerText))
+   * ).toEqual(['Hello!', 'Hi!']);
    * ```
    *
    * @param selector - The selector to query for.
@@ -251,6 +260,7 @@ export class ElementHandle<
    * navigations or if the element is detached from DOM.
    *
    * @example
+   *
    * ```ts
    * const puppeteer = require('puppeteer');
    *
@@ -258,16 +268,22 @@ export class ElementHandle<
    *   const browser = await puppeteer.launch();
    *   const page = await browser.newPage();
    *   let currentURL;
-   *   page.mainFrame()
-   *   .waitForSelector('img')
-   *   .then(() => console.log('First URL with image: ' + currentURL));
+   *   page
+   *     .mainFrame()
+   *     .waitForSelector('img')
+   *     .then(() => console.log('First URL with image: ' + currentURL));
    *
-   *   for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com']) {
+   *   for (currentURL of [
+   *     'https://example.com',
+   *     'https://google.com',
+   *     'https://bbc.com',
+   *   ]) {
    *     await page.goto(currentURL);
    *   }
    *   await browser.close();
    * })();
    * ```
+   *
    * @param selector - The selector to query and wait for.
    * @param options - Options for customizing waiting behavior.
    * @returns An element matching the given selector.
@@ -311,25 +327,27 @@ export class ElementHandle<
    * automatically.
    *
    * This method works across navigation
+   *
    * ```ts
    * const puppeteer = require('puppeteer');
    * (async () => {
-   * const browser = await puppeteer.launch();
-   * const page = await browser.newPage();
-   * let currentURL;
-   * page
-   * .waitForXPath('//img')
-   * .then(() => console.log('First URL with image: ' + currentURL));
-   * for (currentURL of [
-   * 'https://example.com',
-   * 'https://google.com',
-   * 'https://bbc.com',
-   * ]) {
-   * await page.goto(currentURL);
-   * }
-   * await browser.close();
+   *   const browser = await puppeteer.launch();
+   *   const page = await browser.newPage();
+   *   let currentURL;
+   *   page
+   *     .waitForXPath('//img')
+   *     .then(() => console.log('First URL with image: ' + currentURL));
+   *   for (currentURL of [
+   *     'https://example.com',
+   *     'https://google.com',
+   *     'https://bbc.com',
+   *   ]) {
+   *     await page.goto(currentURL);
+   *   }
+   *   await browser.close();
    * })();
    * ```
+   *
    * @param xpath - A
    * {@link https://developer.mozilla.org/en-US/docs/Web/XPath | xpath} of an
    * element to wait for
@@ -665,13 +683,15 @@ export class ElementHandle<
    * throws an error.
    *
    * @example
+   *
    * ```ts
    * handle.select('blue'); // single selection
    * handle.select('red', 'green', 'blue'); // multiple selections
    * ```
+   *
    * @param values - Values of options to select. If the `<select>` has the
-   *    `multiple` attribute, all values are considered, otherwise only the first
-   *    one is taken into account.
+   * `multiple` attribute, all values are considered, otherwise only the first
+   * one is taken into account.
    */
   async select(...values: string[]): Promise<string[]> {
     for (const value of values) {
@@ -722,10 +742,10 @@ export class ElementHandle<
    * {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input | input element}.
    *
    * @param filePaths - Sets the value of the file input to these paths.
-   *    If a path is relative, then it is resolved against the
-   *    {@link https://nodejs.org/api/process.html#process_process_cwd | current working directory}.
-   *    Note for locals script connecting to remote chrome environments,
-   *    paths must be absolute.
+   * If a path is relative, then it is resolved against the
+   * {@link https://nodejs.org/api/process.html#process_process_cwd | current working directory}.
+   * Note for locals script connecting to remote chrome environments,
+   * paths must be absolute.
    */
   async uploadFile(
     this: ElementHandle<HTMLInputElement>,
@@ -814,6 +834,7 @@ export class ElementHandle<
    * use {@link ElementHandle.press}.
    *
    * @example
+   *
    * ```ts
    * await elementHandle.type('Hello'); // Types instantly
    * await elementHandle.type('World', {delay: 100}); // Types slower, like a user
@@ -845,7 +866,7 @@ export class ElementHandle<
    * will type the text in upper case.
    *
    * @param key - Name of key to press, such as `ArrowLeft`.
-   *    See {@link KeyInput} for a list of all key names.
+   * See {@link KeyInput} for a list of all key names.
    */
   async press(key: KeyInput, options?: PressOptions): Promise<void> {
     await this.focus();

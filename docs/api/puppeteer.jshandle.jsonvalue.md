@@ -24,4 +24,4 @@ Throws if the object cannot be serialized due to circularity.
 
 ## Remarks
 
-If the object has a `toJSON` function, it \*will not\* be called.
+If the object has a `toJSON` function, it **will not** be called.

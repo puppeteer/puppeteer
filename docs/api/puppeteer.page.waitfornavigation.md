@@ -24,7 +24,9 @@ class Page {
 
 Promise&lt;[HTTPResponse](./puppeteer.httpresponse.md) \| null&gt;
 
-A `Promise` which resolves to the main resource response. - In case of multiple redirects, the navigation will resolve with the response of the last redirect. - In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
+A `Promise` which resolves to the main resource response.
+
+- In case of multiple redirects, the navigation will resolve with the response of the last redirect. - In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
 
 ## Remarks
 

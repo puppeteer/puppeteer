@@ -37,6 +37,7 @@ export interface TracingOptions {
  * which can be opened in Chrome DevTools or {@link https://chromedevtools.github.io/timeline-viewer/ | timeline viewer}.
  *
  * @example
+ *
  * ```ts
  * await page.tracing.start({path: 'trace.json'});
  * await page.goto('https://www.google.com');

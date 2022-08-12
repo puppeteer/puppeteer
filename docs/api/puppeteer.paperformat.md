@@ -19,7 +19,9 @@ export declare type PaperFormat =
 
 ## Remarks
 
-The sizes of each format are as follows: - `Letter`: 8.5in x 11in
+The sizes of each format are as follows:
+
+- `Letter`: 8.5in x 11in
 
 - `Legal`: 8.5in x 14in
 
