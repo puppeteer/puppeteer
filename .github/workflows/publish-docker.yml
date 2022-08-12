@@ -25,7 +25,7 @@ jobs:
         run: npm run build
       # Based on https://docs.github.com/en/actions/publishing-packages/publishing-docker-images.
       - name: Log in to the Container registry
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        uses: docker/login-action@49ed152c8eca782a232dede0303416e8f356c37b
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
