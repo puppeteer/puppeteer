@@ -42,7 +42,7 @@ jobs:
       - name: Pack Puppeteer for docker
         run: docker/pack.sh
       - name: Build and push the Docker image
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        uses: docker/build-push-action@c84f38281176d4c9cdb1626ffafcd6b3911b5d94
         with:
           context: ./docker
           push: true
