@@ -30,7 +30,7 @@ export class Target {
   #browserContext: BrowserContext;
   #session?: CDPSession;
   #targetInfo: Protocol.Target.TargetInfo;
-  #sessionFactory: () => Promise<CDPSession>;
+  #sessionFactory: (isAutoAttachEmulated: boolean) => Promise<CDPSession>;
   #ignoreHTTPSErrors: boolean;
   #defaultViewport?: Viewport;
   #pagePromise?: Promise<Page>;
@@ -76,7 +76,7 @@ export class Target {
     session: CDPSession | undefined,
     browserContext: BrowserContext,
     targetManager: TargetManager,
-    sessionFactory: () => Promise<CDPSession>,
+    sessionFactory: (isAutoAttachEmulated: boolean) => Promise<CDPSession>,
     ignoreHTTPSErrors: boolean,
     defaultViewport: Viewport | null,
     screenshotTaskQueue: TaskQueue,
@@ -132,7 +132,7 @@ export class Target {
    * Creates a Chrome Devtools Protocol session attached to the target.
    */
   createCDPSession(): Promise<CDPSession> {
-    return this.#sessionFactory();
+    return this.#sessionFactory(false);
   }
 
   /**
@@ -155,7 +155,9 @@ export class Target {
   async page(): Promise<Page | null> {
     if (this._isPageTargetCallback(this.#targetInfo) && !this.#pagePromise) {
       this.#pagePromise = (
-        this.#session ? Promise.resolve(this.#session) : this.#sessionFactory()
+        this.#session
+          ? Promise.resolve(this.#session)
+          : this.#sessionFactory(true)
       ).then(client => {
         return Page._create(
           client,
@@ -182,7 +184,9 @@ export class Target {
     if (!this.#workerPromise) {
       // TODO(einbinder): Make workers send their console logs.
       this.#workerPromise = (
-        this.#session ? Promise.resolve(this.#session) : this.#sessionFactory()
+        this.#session
+          ? Promise.resolve(this.#session)
+          : this.#sessionFactory(false)
       ).then(client => {
         return new WebWorker(
           client,

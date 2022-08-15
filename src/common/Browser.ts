@@ -492,8 +492,11 @@ export class Browser extends EventEmitter {
       session,
       context,
       this.#targetManager,
-      () => {
-        return this.#connection.createSession(targetInfo);
+      (isAutoAttachEmulated: boolean) => {
+        return this.#connection._createSession(
+          targetInfo,
+          isAutoAttachEmulated
+        );
       },
       this.#ignoreHTTPSErrors,
       this.#defaultViewport ?? null,

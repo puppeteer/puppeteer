@@ -229,22 +229,35 @@ export class Connection extends EventEmitter {
   }
 
   /**
+   * @internal
+   */
+  async _createSession(
+    targetInfo: Protocol.Target.TargetInfo,
+    isAutoAttachEmulated = true
+  ): Promise<CDPSession> {
+    if (!isAutoAttachEmulated) {
+      this.#manuallyAttached.add(targetInfo.targetId);
+    }
+    const {sessionId} = await this.send('Target.attachToTarget', {
+      targetId: targetInfo.targetId,
+      flatten: true,
+    });
+    this.#manuallyAttached.delete(targetInfo.targetId);
+    const session = this.#sessions.get(sessionId);
+    if (!session) {
+      throw new Error('CDPSession creation failed.');
+    }
+    return session;
+  }
+
+  /**
    * @param targetInfo - The target info
    * @returns The CDP session that is created
    */
   async createSession(
     targetInfo: Protocol.Target.TargetInfo
   ): Promise<CDPSession> {
-    this.#manuallyAttached.add(targetInfo.targetId);
-    const {sessionId} = await this.send('Target.attachToTarget', {
-      targetId: targetInfo.targetId,
-      flatten: true,
-    });
-    const session = this.#sessions.get(sessionId);
-    if (!session) {
-      throw new Error('CDPSession creation failed.');
-    }
-    return session;
+    return await this._createSession(targetInfo, false);
   }
 }
 
