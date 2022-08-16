@@ -4,7 +4,9 @@ sidebar_label: Frame
 
 # Frame class
 
-At every point of time, page exposes its current frame tree via the [page.mainFrame](./puppeteer.page.mainframe.md) and [frame.childFrames](./puppeteer.frame.childframes.md) methods.
+Represents a DOM frame.
+
+To understand frames, you can think of frames as `<iframe>` elements. Just like iframes, frames can be nested, and when JavaScript is executed in a frame, the JavaScript does not effect frames inside the ambient frame the JavaScript executes in.
 
 **Signature:**
 
@@ -14,13 +16,17 @@ export declare class Frame
 
 ## Remarks
 
-`Frame` object lifecycles are controlled by three events that are all dispatched on the page object:
+Frame lifecycles are controlled by three events that are all dispatched on the parent [page](./puppeteer.frame.page.md):
 
 - [PageEmittedEvents.FrameAttached](./puppeteer.pageemittedevents.md) - [PageEmittedEvents.FrameNavigated](./puppeteer.pageemittedevents.md) - [PageEmittedEvents.FrameDetached](./puppeteer.pageemittedevents.md)
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Frame` class.
 
 ## Example 1
+
+At any point in time, [pages](./puppeteer.page.md) expose their current frame tree via the [Page.mainFrame()](./puppeteer.page.mainframe.md) and [Frame.childFrames()](./puppeteer.frame.childframes.md) methods.
+
+## Example 2
 
 An example of dumping frame tree:
 
@@ -43,7 +49,7 @@ const puppeteer = require('puppeteer');
 })();
 ```
 
-## Example 2
+## Example 3
 
 An example of getting text from an iframe element:
 
@@ -86,6 +92,6 @@ console.log(text);
 | [url()](./puppeteer.frame.url.md)                                                    |           |                                                                                                                                                                                                                                                                            |
 | [waitForFunction(pageFunction, options, args)](./puppeteer.frame.waitforfunction.md) |           |                                                                                                                                                                                                                                                                            |
 | [waitForNavigation(options)](./puppeteer.frame.waitfornavigation.md)                 |           | <p>Waits for the frame to navigate. It is useful for when you run code which will indirectly cause the frame to navigate.</p><p>Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.</p> |
-| [waitForSelector(selector, options)](./puppeteer.frame.waitforselector.md)           |           | <p>Wait for an element matching the given selector to appear in the frame.</p><p>This method works across navigations.</p>                                                                                                                                                 |
+| [waitForSelector(selector, options)](./puppeteer.frame.waitforselector.md)           |           | <p>Waits for an element matching the given selector to appear in the frame.</p><p>This method works across navigations.</p>                                                                                                                                                |
 | [waitForTimeout(milliseconds)](./puppeteer.frame.waitfortimeout.md)                  |           | Causes your script to wait for the given number of milliseconds.                                                                                                                                                                                                           |
 | [waitForXPath(xpath, options)](./puppeteer.frame.waitforxpath.md)                    |           |                                                                                                                                                                                                                                                                            |

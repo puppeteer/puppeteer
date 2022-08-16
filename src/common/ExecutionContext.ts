@@ -35,6 +35,8 @@ export const EVALUATION_SCRIPT_URL = 'pptr://__puppeteer_evaluation_script__';
 const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
 
 /**
+ * @deprecated Do not use directly.
+ *
  * Represents a context for JavaScript execution.
  *
  * @example

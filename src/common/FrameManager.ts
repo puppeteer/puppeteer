@@ -602,17 +602,16 @@ export interface FrameAddStyleTagOptions {
 }
 
 /**
- * At every point of time, page exposes its current frame tree via the
- * {@link Page.mainFrame | page.mainFrame} and
- * {@link Frame.childFrames | frame.childFrames} methods.
+ * Represents a DOM frame.
  *
- * @remarks
- * `Frame` object lifecycles are controlled by three events that are all
- * dispatched on the page object:
+ * To understand frames, you can think of frames as `<iframe>` elements. Just
+ * like iframes, frames can be nested, and when JavaScript is executed in a
+ * frame, the JavaScript does not effect frames inside the ambient frame the
+ * JavaScript executes in.
  *
- * - {@link PageEmittedEvents.FrameAttached}
- * - {@link PageEmittedEvents.FrameNavigated}
- * - {@link PageEmittedEvents.FrameDetached}
+ * @example
+ * At any point in time, {@link Page | pages} expose their current frame
+ * tree via the {@link Page.mainFrame} and {@link Frame.childFrames} methods.
  *
  * @example
  * An example of dumping frame tree:
@@ -644,6 +643,14 @@ export interface FrameAddStyleTagOptions {
  * const text = await frame.$eval('.selector', element => element.textContent);
  * console.log(text);
  * ```
+ *
+ * @remarks
+ * Frame lifecycles are controlled by three events that are all dispatched on
+ * the parent {@link Frame.page | page}:
+ *
+ * - {@link PageEmittedEvents.FrameAttached}
+ * - {@link PageEmittedEvents.FrameNavigated}
+ * - {@link PageEmittedEvents.FrameDetached}
  *
  * @public
  */
@@ -740,7 +747,8 @@ export class Frame {
   }
 
   /**
-   * @returns `true` if the frame is an OOP frame, or `false` otherwise.
+   * @returns `true` if the frame is an out-of-process (OOP) frame. Otherwise,
+   * `false`.
    */
   isOOPFrame(): boolean {
     return this.#client !== this._frameManager.client;
@@ -915,6 +923,8 @@ export class Frame {
   }
 
   /**
+   * @deprecated Do not use the execution context directly.
+   *
    * @returns a promise that resolves to the frame's default execution context.
    */
   executionContext(): Promise<ExecutionContext> {
@@ -925,8 +935,7 @@ export class Frame {
    * Behaves identically to {@link Page.evaluateHandle} except it's run within
    * the context of this frame.
    *
-   * @param pageFunction - a function that is run within the frame
-   * @param args - arguments to be passed to the pageFunction
+   * @see {@link Page.evaluateHandle} for details.
    */
   async evaluateHandle<
     Params extends unknown[],
@@ -942,8 +951,7 @@ export class Frame {
    * Behaves identically to {@link Page.evaluate} except it's run within the
    * the context of this frame.
    *
-   * @param pageFunction - a function that is run within the frame
-   * @param args - arguments to be passed to the pageFunction
+   * @see {@link Page.evaluate} for details.
    */
   async evaluate<
     Params extends unknown[],
@@ -1060,7 +1068,7 @@ export class Frame {
   }
 
   /**
-   * Wait for an element matching the given selector to appear in the frame.
+   * Waits for an element matching the given selector to appear in the frame.
    *
    * This method works across navigations.
    *

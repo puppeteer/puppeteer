@@ -4,7 +4,11 @@ sidebar_label: ExecutionContext
 
 # ExecutionContext class
 
-Represents a context for JavaScript execution.
+> Warning: This API is now obsolete.
+>
+> Do not use directly.
+>
+> Represents a context for JavaScript execution.
 
 **Signature:**
 

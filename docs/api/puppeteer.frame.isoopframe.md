@@ -16,4 +16,4 @@ class Frame {
 
 boolean
 
-`true` if the frame is an OOP frame, or `false` otherwise.
+`true` if the frame is an out-of-process (OOP) frame. Otherwise, `false`.

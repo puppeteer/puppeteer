@@ -22,10 +22,10 @@ class Frame {
 
 ## Parameters
 
-| Parameter    | Type           | Description                                |
-| ------------ | -------------- | ------------------------------------------ |
-| pageFunction | Func \| string | a function that is run within the frame    |
-| args         | Params         | arguments to be passed to the pageFunction |
+| Parameter    | Type           | Description |
+| ------------ | -------------- | ----------- |
+| pageFunction | Func \| string |             |
+| args         | Params         |             |
 
 **Returns:**
 
