@@ -3318,13 +3318,14 @@ export class Page extends EventEmitter {
   }
 
   /**
+   * @deprecated Use `new Promise(r => setTimeout(r, milliseconds));`.
+   *
    * Causes your script to wait for the given number of milliseconds.
    *
    * @remarks
-   *
    * It's generally recommended to not wait for a number of seconds, but instead
-   * use {@link Page.waitForSelector}, {@link Page.waitForXPath} or
-   * {@link Page.waitForFunction} to wait for exactly the conditions you want.
+   * use {@link Frame.waitForSelector}, {@link Frame.waitForXPath} or
+   * {@link Frame.waitForFunction} to wait for exactly the conditions you want.
    *
    * @example
    *

@@ -6,9 +6,9 @@ sidebar_label: Frame.waitForTimeout
 
 > Warning: This API is now obsolete.
 >
-> DO NOT USE.
-
-Causes your script to wait for the given number of milliseconds.
+> Use `new Promise(r => setTimeout(r, milliseconds));`.
+>
+> Causes your script to wait for the given number of milliseconds.
 
 **Signature:**
 
@@ -36,6 +36,6 @@ It's generally recommended to not wait for a number of seconds, but instead use 
 
 Wait for 1 second:
 
-```
+```ts
 await frame.waitForTimeout(1000);
 ```

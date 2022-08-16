@@ -1402,6 +1402,8 @@ export class Frame {
   }
 
   /**
+   * @deprecated Use `new Promise(r => setTimeout(r, milliseconds));`.
+   *
    * Causes your script to wait for the given number of milliseconds.
    *
    * @remarks
@@ -1413,13 +1415,11 @@ export class Frame {
    *
    * Wait for 1 second:
    *
-   * ```
+   * ```ts
    * await frame.waitForTimeout(1000);
    * ```
    *
    * @param milliseconds - the number of milliseconds to wait.
-   *
-   * @deprecated DO NOT USE.
    */
   waitForTimeout(milliseconds: number): Promise<void> {
     return new Promise(resolve => {

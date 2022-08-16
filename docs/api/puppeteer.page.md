@@ -174,7 +174,7 @@ const puppeteer = require('puppeteer');
 ```
 
 |
-| [waitForTimeout(milliseconds)](./puppeteer.page.waitfortimeout.md) | | Causes your script to wait for the given number of milliseconds. |
+| [waitForTimeout(milliseconds)](./puppeteer.page.waitfortimeout.md) | | |
 | [waitForXPath(xpath, options)](./puppeteer.page.waitforxpath.md) | | <p>Wait for the <code>xpath</code> to appear in page. If at the moment of calling the method the <code>xpath</code> already exists, the method will return immediately. If the <code>xpath</code> doesn't appear after the <code>timeout</code> milliseconds of waiting, the function will throw.</p><p>This method works across navigation</p>
 
 ```ts
