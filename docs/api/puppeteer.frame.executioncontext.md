@@ -4,6 +4,10 @@ sidebar_label: Frame.executionContext
 
 # Frame.executionContext() method
 
+> Warning: This API is now obsolete.
+>
+> Do not use the execution context directly.
+
 **Signature:**
 
 ```typescript

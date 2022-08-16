@@ -4,7 +4,7 @@ sidebar_label: Frame.waitForSelector
 
 # Frame.waitForSelector() method
 
-Wait for an element matching the given selector to appear in the frame.
+Waits for an element matching the given selector to appear in the frame.
 
 This method works across navigations.
 
