@@ -16,7 +16,7 @@
 
 const versionsPerRelease = new Map([
   // This is a mapping from Chromium version => Puppeteer version.
-  // In Chromium roll patches, use 'NEXT' for the Puppeteer version.
+  // In Chromium roll patches, use 'v16.1.1' for the Puppeteer version.
   ['105.0.5173.0', 'v15.5.0'],
   ['104.0.5109.0', 'v15.1.0'],
   ['103.0.5059.0', 'v14.2.0'],
