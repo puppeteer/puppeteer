@@ -4,7 +4,11 @@ sidebar_label: Page.waitForTimeout
 
 # Page.waitForTimeout() method
 
-Causes your script to wait for the given number of milliseconds.
+> Warning: This API is now obsolete.
+>
+> Use `new Promise(r => setTimeout(r, milliseconds));`.
+>
+> Causes your script to wait for the given number of milliseconds.
 
 **Signature:**
 
@@ -26,7 +30,7 @@ Promise&lt;void&gt;
 
 ## Remarks
 
-It's generally recommended to not wait for a number of seconds, but instead use [Page.waitForSelector()](./puppeteer.page.waitforselector.md), [Page.waitForXPath()](./puppeteer.page.waitforxpath.md) or [Page.waitForFunction()](./puppeteer.page.waitforfunction.md) to wait for exactly the conditions you want.
+It's generally recommended to not wait for a number of seconds, but instead use [Frame.waitForSelector()](./puppeteer.frame.waitforselector.md), [Frame.waitForXPath()](./puppeteer.frame.waitforxpath.md) or [Frame.waitForFunction()](./puppeteer.frame.waitforfunction.md) to wait for exactly the conditions you want.
 
 ## Example
 
