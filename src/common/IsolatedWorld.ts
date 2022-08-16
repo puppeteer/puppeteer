@@ -77,6 +77,9 @@ export interface WaitForSelectorOptions {
    * @defaultValue `30000` (30 seconds)
    */
   timeout?: number;
+  /**
+   * @deprecated Do not use. Use the {@link ElementHandle.waitForSelector}
+   */
   root?: ElementHandle<Node>;
 }
 
