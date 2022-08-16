@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [16.1.1](https://github.com/puppeteer/puppeteer/compare/v16.1.0...v16.1.1) (2022-08-16)
+
+
+### Bug Fixes
+
+* custom sessions should not emit targetcreated events ([#8788](https://github.com/puppeteer/puppeteer/issues/8788)) ([3fad05d](https://github.com/puppeteer/puppeteer/commit/3fad05d333b79f41a7b58582c4ca493200bb5a79)), closes [#8787](https://github.com/puppeteer/puppeteer/issues/8787)
+* deprecate `ExecutionContext` ([#8792](https://github.com/puppeteer/puppeteer/issues/8792)) ([b5da718](https://github.com/puppeteer/puppeteer/commit/b5da718e2e4a2004a36cf23cad555e1fc3b50333))
+* deprecate `root` in `WaitForSelectorOptions` ([#8795](https://github.com/puppeteer/puppeteer/issues/8795)) ([65a5ce8](https://github.com/puppeteer/puppeteer/commit/65a5ce8464c56fcc55e5ac3ed490f31311bbe32a))
+* deprecate `waitForTimeout` ([#8793](https://github.com/puppeteer/puppeteer/issues/8793)) ([8f612d5](https://github.com/puppeteer/puppeteer/commit/8f612d5ff855d48ae4b38bdaacf2a8fbda8e9ce8))
+* make sure there is a check for targets when timeout=0 ([#8765](https://github.com/puppeteer/puppeteer/issues/8765)) ([c23cdb7](https://github.com/puppeteer/puppeteer/commit/c23cdb73a7b113c1dd29f7e4a7a61326422c4080)), closes [#8763](https://github.com/puppeteer/puppeteer/issues/8763)
+* resolve navigation flakiness ([#8768](https://github.com/puppeteer/puppeteer/issues/8768)) ([2580347](https://github.com/puppeteer/puppeteer/commit/2580347b50091d172b2a5591138a2e41ede072fe)), closes [#8644](https://github.com/puppeteer/puppeteer/issues/8644)
+* specify Puppeteer version for Chromium 105.0.5173.0 ([#8766](https://github.com/puppeteer/puppeteer/issues/8766)) ([b5064b7](https://github.com/puppeteer/puppeteer/commit/b5064b7b8bd3bd9eb481b6807c65d9d06d23b9dd))
+* use targetFilter in puppeteer.launch ([#8774](https://github.com/puppeteer/puppeteer/issues/8774)) ([ee2540b](https://github.com/puppeteer/puppeteer/commit/ee2540baefeced44f6b336f2b979af5c3a4cb040)), closes [#8772](https://github.com/puppeteer/puppeteer/issues/8772)
+
 ## [16.1.0](https://github.com/puppeteer/puppeteer/compare/v16.0.0...v16.1.0) (2022-08-06)
 
 
