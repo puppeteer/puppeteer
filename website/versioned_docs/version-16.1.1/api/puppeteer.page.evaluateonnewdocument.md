@@ -48,8 +48,7 @@ return ['en-US', 'en', 'bn'];
 },
 });
 
-// In your puppeteer script, assuming the preload.js file is
-in same folder of our script
+// In your puppeteer script, assuming the preload.js file is in same folder of our script
 const preloadFile = fs.readFileSync('./preload.js', 'utf8');
 await page.evaluateOnNewDocument(preloadFile);
 ```
