@@ -236,7 +236,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
       // Special case (https://crbug.com/1338156): currently, shared_workers
       // don't get auto-attached. This should be removed once the auto-attach
       // works.
-      await this.#connection.createSession(event.targetInfo);
+      await this.#connection._createSession(event.targetInfo, true);
     }
   };
 
@@ -299,6 +299,10 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
         })
         .catch(debugError);
     };
+
+    if (!this.#connection.isAutoAttached(targetInfo.targetId)) {
+      return;
+    }
 
     // Special case for service workers: being attached to service workers will
     // prevent them from ever being destroyed. Therefore, we silently detach
@@ -364,7 +368,9 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
     }
 
     this.#targetsIdsForInit.delete(target._targetId);
-    this.emit(TargetManagerEmittedEvents.TargetAvailable, target);
+    if (!existingTarget) {
+      this.emit(TargetManagerEmittedEvents.TargetAvailable, target);
+    }
     this.#finishInitializationIfReady();
 
     // TODO: the browser might be shutting down here. What do we do with the

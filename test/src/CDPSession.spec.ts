@@ -42,6 +42,20 @@ describeChromeOnly('Target.createCDPSession', function () {
     });
     expect(foo).toBe('bar');
   });
+
+  it('should not report created targets for custom CDP sessions', async () => {
+    const {browser} = getTestState();
+    let called = 0;
+    browser.browserContexts()[0]!.on('targetcreated', async target => {
+      called++;
+      if (called > 1) {
+        throw new Error('Too many targets created');
+      }
+      await target.createCDPSession();
+    });
+    await browser.newPage();
+  });
+
   it('should send events', async () => {
     const {page, server} = getTestState();
 
