@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import {readFileSync, writeFileSync} from 'fs';
-import {join} from 'path';
-import {chdir} from 'process';
+import {readFile, writeFile} from 'fs/promises';
+import rimraf from 'rimraf';
 import semver from 'semver';
-import {versionsPerRelease} from '../versions.js';
-import versionsArchived from '../website/versionsArchived.json';
 import {generateDocs} from './internal/custom_markdown_action';
+import {job} from './internal/job';
 
 function getOffsetAndLimit(
   sectionName: string,
@@ -47,56 +45,66 @@ function spliceIntoSection(
   return lines.join('\n');
 }
 
-// Change to root directory
-chdir(join(__dirname, '..'));
+(async () => {
+  job('', async ({inputs, outputs}) => {
+    const content = await readFile(inputs[0]!, 'utf-8');
+    const sectionContent = `
+---
+sidebar_position: 1
+---
+`;
+    await writeFile(outputs[0]!, sectionContent + content);
+  })
+    .inputs(['README.md'])
+    .outputs(['docs/index.md'])
+    .build();
 
-// README
-{
-  const content = readFileSync('README.md', 'utf-8');
-  const sectionContent = `
- ---
- sidebar_position: 1
- ---
+  // Chrome Versions
+  job('', async ({inputs, outputs}) => {
+    let content = await readFile(outputs[0]!, {encoding: 'utf8'});
+    const {versionsPerRelease} = await import(inputs[0]!);
+    const versionsArchived = JSON.parse(await readFile(inputs[1]!, 'utf8'));
 
- `;
-  writeFileSync('docs/index.md', sectionContent + content);
-}
-
-// Chrome Versions
-{
-  const filename = 'docs/chromium-support.md';
-  let content = readFileSync(filename, {encoding: 'utf8'});
-
-  // Generate versions
-  const buffer: string[] = [];
-  for (const [chromiumVersion, puppeteerVersion] of versionsPerRelease) {
-    if (puppeteerVersion === 'NEXT') {
-      continue;
+    // Generate versions
+    const buffer: string[] = [];
+    for (const [chromiumVersion, puppeteerVersion] of versionsPerRelease) {
+      if (puppeteerVersion === 'NEXT') {
+        continue;
+      }
+      if (versionsArchived.includes(puppeteerVersion.substring(1))) {
+        buffer.push(
+          `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://github.com/puppeteer/puppeteer/blob/${puppeteerVersion}/docs/api/index.md)`
+        );
+      } else if (semver.lt(puppeteerVersion, '15.0.0')) {
+        buffer.push(
+          `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://github.com/puppeteer/puppeteer/blob/${puppeteerVersion}/docs/api.md)`
+        );
+      } else if (semver.gte(puppeteerVersion, '15.3.0')) {
+        buffer.push(
+          `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://pptr.dev/${puppeteerVersion.slice(
+            1
+          )})`
+        );
+      } else {
+        buffer.push(
+          `  * Chromium ${chromiumVersion} - Puppeteer ${puppeteerVersion}`
+        );
+      }
     }
-    if (versionsArchived.includes(puppeteerVersion.substring(1))) {
-      buffer.push(
-        `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://github.com/puppeteer/puppeteer/blob/${puppeteerVersion}/docs/api/index.md)`
-      );
-    } else if (semver.lt(puppeteerVersion, '15.0.0')) {
-      buffer.push(
-        `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://github.com/puppeteer/puppeteer/blob/${puppeteerVersion}/docs/api.md)`
-      );
-    } else if (semver.gte(puppeteerVersion, '15.3.0')) {
-      buffer.push(
-        `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://pptr.dev/${puppeteerVersion.slice(
-          1
-        )})`
-      );
-    } else {
-      buffer.push(
-        `  * Chromium ${chromiumVersion} - Puppeteer ${puppeteerVersion}`
-      );
-    }
-  }
-  content = spliceIntoSection('version', content, buffer.join('\n'));
+    content = spliceIntoSection('version', content, buffer.join('\n'));
 
-  writeFileSync(filename, content);
-}
+    await writeFile(outputs[0]!, content);
+  })
+    .inputs(['versions.js', 'website/versionsArchived.json'])
+    .outputs(['docs/chromium-support.md'])
+    .build();
 
-// Generate documentation
-generateDocs('docs/puppeteer.api.json', 'docs/api');
+  // Generate documentation
+  job('', async ({inputs, outputs}) => {
+    rimraf.sync(outputs[0]!);
+    generateDocs(inputs[0]!, outputs[0]!);
+  })
+    .inputs(['docs/puppeteer.api.json'])
+    .outputs(['docs/api'])
+    .build();
+})();
