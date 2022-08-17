@@ -36,6 +36,7 @@ import {Target} from './Target.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {
+  createDeferredPromise,
   createDeferredPromiseWithTimer,
   debugError,
   DeferredPromise,
@@ -90,6 +91,9 @@ export class FrameManager extends EventEmitter {
    */
   #framesPendingAttachment = new Map<string, DeferredPromise<void>>();
 
+  #framesRequestingNavigation = new Set<string>();
+  #framesThatMightReattach = new Map<string, DeferredPromise<void>>();
+
   get timeoutSettings(): TimeoutSettings {
     return this.#timeoutSettings;
   }
@@ -133,6 +137,9 @@ export class FrameManager extends EventEmitter {
         JSON.stringify(event)
       );
       this.#onFrameAttached(session, event.frameId, event.parentFrameId);
+    });
+    session.on('Page.frameRequestedNavigation', event => {
+      this.#framesRequestingNavigation.add(event.frameId);
     });
     session.on('Page.frameNavigated', event => {
       log(
@@ -300,8 +307,19 @@ export class FrameManager extends EventEmitter {
         'Frame is an OOPIF, removing frames recursively, frameId = ',
         frame._id
       );
-      // When an OOP iframe is removed from the page, it
-      // will only get a Target.detachedFromTarget event.
+      if (this.#framesRequestingNavigation.has(frame._id)) {
+        this.#framesThatMightReattach.set(frame._id, createDeferredPromise());
+        setTimeout(() => {
+          this.#framesThatMightReattach.get(frame._id)?.resolve();
+        }, 1000);
+        this.#framesThatMightReattach.get(frame._id)?.then(() => {
+          this.#framesThatMightReattach.delete(frame._id);
+          if (frame.isOOPFrame()) {
+            this.#removeFramesRecursively(frame);
+          }
+        });
+        return;
+      }
       this.#removeFramesRecursively(frame);
     }
   }
@@ -372,6 +390,7 @@ export class FrameManager extends EventEmitter {
       'parentFrameId = ',
       parentFrameId
     );
+    this.#framesThatMightReattach.get(frameId)?.resolve();
     if (this.#frames.has(frameId)) {
       const frame = this.#frames.get(frameId)!;
       log('session', session.id());
@@ -426,6 +445,7 @@ export class FrameManager extends EventEmitter {
   #onFrameNavigated(framePayload: Protocol.Page.Frame): void {
     log('#onFrameNavigated', JSON.stringify(framePayload));
     const frameId = framePayload.id;
+    this.#framesRequestingNavigation.delete(frameId);
     const isMainFrame = !framePayload.parentId;
     const frame = isMainFrame ? this.#mainFrame : this.#frames.get(frameId);
 
