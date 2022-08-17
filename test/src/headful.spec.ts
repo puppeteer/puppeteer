@@ -36,6 +36,13 @@ const mkdtempAsync = promisify(fs.mkdtemp);
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 
 const extensionPath = path.join(__dirname, '../assets', 'simple-extension');
+const serviceWorkerExtensionPath = path.join(
+  __dirname,
+  '..',
+  'assets',
+  'serviceworkers',
+  'extension'
+);
 
 describeChromeOnly('headful tests', function () {
   /* These tests fire up an actual browser so let's
@@ -120,13 +127,33 @@ describeChromeOnly('headful tests', function () {
       );
       const page = await browserWithExtension.newPage();
       const backgroundPageTarget = await browserWithExtension.waitForTarget(
-        (target: {type: () => string}) => {
+        target => {
           return target.type() === 'background_page';
         }
       );
       await page.close();
       await browserWithExtension.close();
       expect(backgroundPageTarget).toBeTruthy();
+    });
+    it('service_worker target type should be available', async () => {
+      const {puppeteer, defaultBrowserOptions} = getTestState();
+      const browserWithExtension = await launchBrowser(puppeteer, {
+        ...defaultBrowserOptions,
+        headless: false,
+        args: [
+          `--disable-extensions-except=${serviceWorkerExtensionPath}`,
+          `--load-extension=${serviceWorkerExtensionPath}`,
+        ],
+      });
+      const page = await browserWithExtension.newPage();
+      const serviceWorkerTarget = await browserWithExtension.waitForTarget(
+        target => {
+          return target.type() === 'service_worker';
+        }
+      );
+      await page.close();
+      await browserWithExtension.close();
+      expect(serviceWorkerTarget).toBeTruthy();
     });
     it('target.page() should return a background_page', async function () {
       const {puppeteer} = getTestState();
@@ -135,7 +162,7 @@ describeChromeOnly('headful tests', function () {
         extensionOptions
       );
       const backgroundPageTarget = await browserWithExtension.waitForTarget(
-        (target: {type: () => string}) => {
+        target => {
           return target.type() === 'background_page';
         }
       );
