@@ -17,8 +17,8 @@
 import {readFile, writeFile} from 'fs/promises';
 import rimraf from 'rimraf';
 import semver from 'semver';
-import {generateDocs} from './internal/custom_markdown_action';
-import {job} from './internal/job';
+import {generateDocs} from './internal/custom_markdown_action.js';
+import {job} from './internal/job.js';
 
 function getOffsetAndLimit(
   sectionName: string,
