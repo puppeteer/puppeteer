@@ -28,6 +28,7 @@ export * from './common/EventEmitter.js';
 export * from './common/ExecutionContext.js';
 export * from './common/FileChooser.js';
 export * from './common/FirefoxTargetManager.js';
+export * from './common/Frame.js';
 export * from './common/FrameManager.js';
 export * from './common/HTTPRequest.js';
 export * from './common/HTTPResponse.js';

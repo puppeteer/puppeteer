@@ -16,7 +16,7 @@
 
 import expect from 'expect';
 import {CDPSession} from '../../lib/cjs/puppeteer/common/Connection.js';
-import {Frame} from '../../lib/cjs/puppeteer/common/FrameManager.js';
+import {Frame} from '../../lib/cjs/puppeteer/common/Frame.js';
 import {
   getTestState,
   itFailsFirefox,
