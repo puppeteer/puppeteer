@@ -75,7 +75,7 @@
     "devtools-protocol": "0.0.1019158",
     "extract-zip": "2.0.1",
     "https-proxy-agent": "5.0.1",
-    "pkg-dir": "4.2.0",
+    "pkg-dir": "7.0.0",
     "progress": "2.0.3",
     "proxy-from-env": "1.1.0",
     "rimraf": "3.0.2",
