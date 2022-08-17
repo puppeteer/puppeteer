@@ -34,6 +34,10 @@ import {
 import puppeteer from '../../lib/cjs/puppeteer/puppeteer.js';
 import {TestServer} from '../../utils/testserver/lib/index.js';
 import {extendExpectWithToBeGolden} from './utils.js';
+import {
+  setLogCapture,
+  getCapturedLogs,
+} from '../../lib/cjs/puppeteer/common/Debug.js';
 
 const setupServer = async () => {
   const assetsPath = path.join(__dirname, '../assets');
@@ -259,6 +263,27 @@ export const describeChromeOnly = (
   if (isChrome) {
     return describe(description, body);
   }
+};
+
+export const describeWithDebugLogs = (
+  description: string,
+  body: (this: Mocha.Suite) => void
+): Mocha.Suite | void => {
+  beforeEach(() => {
+    setLogCapture(true);
+  });
+
+  afterEach(function () {
+    if (this.currentTest?.state === 'failed') {
+      console.log(
+        `\n"${this.currentTest.fullTitle()}" failed. Here is a debug log:`
+      );
+      console.log(getCapturedLogs().join('\n') + '\n');
+    }
+    setLogCapture(false);
+  });
+
+  return describe(description, body);
 };
 
 if (process.env['MOCHA_WORKER_ID'] === '0') {

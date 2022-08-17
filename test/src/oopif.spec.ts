@@ -20,16 +20,13 @@ import {
   getTestState,
   describeChromeOnly,
   itFailsFirefox,
+  describeWithDebugLogs,
 } from './mocha-utils.js';
 import {
   Browser,
   BrowserContext,
 } from '../../lib/cjs/puppeteer/common/Browser.js';
 import {Page} from '../../lib/cjs/puppeteer/common/Page.js';
-import {
-  setLogCapture,
-  getCapturedLogs,
-} from '../../lib/cjs/puppeteer/common/Debug.js';
 
 describeChromeOnly('OOPIF', function () {
   /* We use a special browser for this test as we need the --site-per-process flag */
@@ -63,21 +60,7 @@ describeChromeOnly('OOPIF', function () {
     await browser.close();
   });
 
-  describe('CDP debugger', () => {
-    beforeEach(() => {
-      setLogCapture(true);
-    });
-
-    afterEach(function () {
-      if (this.currentTest?.state === 'failed') {
-        console.log(
-          `\n"${this.currentTest.fullTitle()}" failed. Here is a debug log:`
-        );
-        console.log(getCapturedLogs().join('\n') + '\n');
-      }
-      setLogCapture(false);
-    });
-
+  describeWithDebugLogs('OOPIF tests', () => {
     it('should treat OOP iframes and normal iframes the same', async () => {
       const {server} = getTestState();
 
@@ -239,6 +222,7 @@ describeChromeOnly('OOPIF', function () {
       await navigateFrame(page, 'frame1', server.EMPTY_PAGE);
       expect(frame.url()).toBe(server.EMPTY_PAGE);
     });
+
     it('should support evaluating in oop iframes', async () => {
       const {server} = getTestState();
 

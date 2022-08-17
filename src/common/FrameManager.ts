@@ -41,6 +41,9 @@ import {
   DeferredPromise,
   isErrorLike,
 } from './util.js';
+import {debug} from './Debug.js';
+
+const log = debug('puppeteer:frameManager ');
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
@@ -111,21 +114,27 @@ export class FrameManager extends EventEmitter {
     this.#networkManager = new NetworkManager(client, ignoreHTTPSErrors, this);
     this.#timeoutSettings = timeoutSettings;
     this.setupEventListeners(this.#client);
+    log(`Created for ${JSON.stringify(page.target()._getTargetInfo())}, sessionId = ${client.id()}`);
   }
 
   private setupEventListeners(session: CDPSession) {
+    log(`Sets up listeners for ${JSON.stringify(this.#page.target()._getTargetInfo())}, sessionId = ${session.id()}`);
     session.on('Page.frameAttached', event => {
+      log(`Page.frameAttached sessionId = ${session.id()}`, JSON.stringify(event));
       this.#onFrameAttached(session, event.frameId, event.parentFrameId);
     });
     session.on('Page.frameNavigated', event => {
+      log(`Page.frameNavigated sessionId = ${session.id()}`, JSON.stringify(event));
       this.#onFrameNavigated(event.frame);
     });
     session.on('Page.navigatedWithinDocument', event => {
+      log(`Page.navigatedWithinDocument sessionId = ${session.id()}`, JSON.stringify(event));
       this.#onFrameNavigatedWithinDocument(event.frameId, event.url);
     });
     session.on(
       'Page.frameDetached',
       (event: Protocol.Page.FrameDetachedEvent) => {
+        log(`Page.frameDetached sessionId = ${session.id()}`, JSON.stringify(event));
         this.#onFrameDetached(
           event.frameId,
           event.reason as Protocol.Page.FrameDetachedEventReason
@@ -133,21 +142,27 @@ export class FrameManager extends EventEmitter {
       }
     );
     session.on('Page.frameStartedLoading', event => {
+      log(`Page.frameStartedLoading sessionId = ${session.id()}`, JSON.stringify(event));
       this.#onFrameStartedLoading(event.frameId);
     });
     session.on('Page.frameStoppedLoading', event => {
+      log(`Page.frameStoppedLoading sessionId = ${session.id()}`, JSON.stringify(event));
       this.#onFrameStoppedLoading(event.frameId);
     });
     session.on('Runtime.executionContextCreated', event => {
+      log(`Runtime.executionContextCreated sessionId = ${session.id()}`, JSON.stringify(event));
       this.#onExecutionContextCreated(event.context, session);
     });
     session.on('Runtime.executionContextDestroyed', event => {
+      log(`Runtime.executionContextDestroyed sessionId = ${session.id()}`, JSON.stringify(event));
       this.#onExecutionContextDestroyed(event.executionContextId, session);
     });
     session.on('Runtime.executionContextsCleared', () => {
+      log(`Runtime.executionContextsCleared sessionId = ${session.id()}`);
       this.#onExecutionContextsCleared(session);
     });
     session.on('Page.lifecycleEvent', event => {
+      log(`Page.lifecycleEvent sessionId = ${session.id()}`, JSON.stringify(event));
       this.#onLifecycleEvent(event);
     });
   }
@@ -156,6 +171,7 @@ export class FrameManager extends EventEmitter {
     targetId: string,
     client: CDPSession = this.#client
   ): Promise<void> {
+    log(`Init started for ${targetId}, sessionId = ${client.id()}`);
     try {
       if (!this.#framesPendingTargetInit.has(targetId)) {
         this.#framesPendingTargetInit.set(
@@ -194,6 +210,7 @@ export class FrameManager extends EventEmitter {
 
       throw error;
     } finally {
+      log(`Init finished for ${targetId}, sessionId = ${client.id()}`);
       this.#framesPendingTargetInit.get(targetId)?.resolve();
       this.#framesPendingTargetInit.delete(targetId);
     }
@@ -230,9 +247,10 @@ export class FrameManager extends EventEmitter {
     if (target._getTargetInfo().type !== 'iframe') {
       return;
     }
-
+    log('Attached to target', JSON.stringify(target._getTargetInfo()));
     const frame = this.#frames.get(target._getTargetInfo().targetId);
     if (frame) {
+      log('Frame found', frame._id);
       frame.updateClient(target._session()!);
     }
     this.setupEventListeners(target._session()!);
@@ -240,8 +258,10 @@ export class FrameManager extends EventEmitter {
   }
 
   onDetachedFromTarget(target: Target): void {
+    log('Detached from target', JSON.stringify(target._getTargetInfo()));
     const frame = this.#frames.get(target._targetId);
     if (frame && frame.isOOPFrame()) {
+      log('Frame is an OOPIF, removing frames recursively, frameId = ', frame._id);
       // When an OOP iframe is removed from the page, it
       // will only get a Target.detachedFromTarget event.
       this.#removeFramesRecursively(frame);
@@ -278,6 +298,7 @@ export class FrameManager extends EventEmitter {
     session: CDPSession,
     frameTree: Protocol.Page.FrameTree
   ): void {
+    log('Started handling a frame tree for sessionID = ', session.id(), frameTree);
     if (frameTree.frame.parentId) {
       this.#onFrameAttached(
         session,
@@ -293,6 +314,7 @@ export class FrameManager extends EventEmitter {
     for (const child of frameTree.childFrames) {
       this.#handleFrameTree(session, child);
     }
+    log('Finished handling tree for sessionID = ', session.id(), frameTree);
   }
 
   #onFrameAttached(
@@ -300,13 +322,18 @@ export class FrameManager extends EventEmitter {
     frameId: string,
     parentFrameId: string
   ): void {
+    log('#onFrameAttached, sessionId = ', session.id(), 'frameId = ', frameId, 'parentFrameId = ', parentFrameId);
     if (this.#frames.has(frameId)) {
       const frame = this.#frames.get(frameId)!;
+      log('session', session.id());
       if (session && frame.isOOPFrame()) {
+        log('frame found and is OOPIF');
         // If an OOP iframes becomes a normal iframe again
         // it is first attached to the parent page before
         // the target is removed.
         frame.updateClient(session);
+      } else {
+        log('frame is not oopif, leaving the function');
       }
       return;
     }
@@ -314,17 +341,20 @@ export class FrameManager extends EventEmitter {
 
     const complete = (parentFrame: Frame) => {
       assert(parentFrame, `Parent frame ${parentFrameId} not found`);
+      log('Frame attached');
       const frame = new Frame(this, parentFrame, frameId, session);
       this.#frames.set(frame._id, frame);
       this.emit(FrameManagerEmittedEvents.FrameAttached, frame);
     };
 
     if (parentFrame) {
+      log('parentFrame exists');
       return complete(parentFrame);
     }
 
     const frame = this.#framesPendingTargetInit.get(parentFrameId);
     if (frame) {
+      log('parentFrame is pending');
       if (!this.#framesPendingAttachment.has(frameId)) {
         this.#framesPendingAttachment.set(
           frameId,
@@ -345,6 +375,7 @@ export class FrameManager extends EventEmitter {
   }
 
   #onFrameNavigated(framePayload: Protocol.Page.Frame): void {
+    log('#onFrameNavigated', JSON.stringify(framePayload));
     const frameId = framePayload.id;
     const isMainFrame = !framePayload.parentId;
     const frame = isMainFrame ? this.#mainFrame : this.#frames.get(frameId);
@@ -355,6 +386,8 @@ export class FrameManager extends EventEmitter {
         `Missing frame isMainFrame=${isMainFrame}, frameId=${frameId}`
       );
 
+      log('#onFrameNavigated complete',  JSON.stringify(framePayload), 'hasFrame', !!frame, 'isMainFrame', isMainFrame);
+
       // Detach all child frames first.
       if (frame) {
         for (const child of frame.childFrames()) {
@@ -364,13 +397,16 @@ export class FrameManager extends EventEmitter {
 
       // Update or create main frame.
       if (isMainFrame) {
+        log('#onFrameNavigated isMainFrame',  JSON.stringify(framePayload), 'hasFrame', !!frame, 'isMainFrame', isMainFrame);
         if (frame) {
           // Update frame id to retain frame identity on cross-process navigation.
           this.#frames.delete(frame._id);
           frame._id = frameId;
+          log('nav update');
         } else {
           // Initial main frame navigation.
           frame = new Frame(this, null, frameId, this.#client);
+          log('initial main frame nav');
         }
         this.#frames.set(frameId, frame);
         this.#mainFrame = frame;
@@ -439,12 +475,14 @@ export class FrameManager extends EventEmitter {
     frameId: string,
     reason: Protocol.Page.FrameDetachedEventReason
   ): void {
+    log('#onFrameDetached frameId=', frameId, 'reason=', reason);
     const frame = this.#frames.get(frameId);
     if (reason === 'remove') {
       // Only remove the frame if the reason for the detached event is
       // an actual removement of the frame.
       // For frames that become OOP iframes, the reason would be 'swap'.
       if (frame) {
+        log('#onFrameDetached frame exists')
         this.#removeFramesRecursively(frame);
       }
     } else if (reason === 'swap') {
