@@ -16,32 +16,32 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  inspect-code:
-    name: Inspect code
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
-      - name: Set up Node.js
-        uses: actions/setup-node@v3.4.1
-        with:
-          node-version: 18
-      - name: Setup cache for Chromium binary
-        uses: actions/cache@v3
-        with:
-          path: .local-chromium
-          key: ${{ runner.os }}-chromium-${{ hashFiles('src/revisions.ts') }}
-      - name: Install dependencies
-        run: npm ci
-      - name: Check code
-        run: npm run check
-      - name: Lint code
-        run: npm run lint
-      - name: Lint commits
-        run: npm run commitlint
-        if: github.event_name != 'pull_request'
+  # inspect-code:
+  #   name: Inspect code
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 2
+  #     - name: Set up Node.js
+  #       uses: actions/setup-node@v3.4.1
+  #       with:
+  #         node-version: 18
+  #     - name: Setup cache for Chromium binary
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: .local-chromium
+  #         key: ${{ runner.os }}-chromium-${{ hashFiles('src/revisions.ts') }}
+  #     - name: Install dependencies
+  #       run: npm ci
+  #     - name: Check code
+  #       run: npm run check
+  #     - name: Lint code
+  #       run: npm run lint
+  #     - name: Lint commits
+  #       run: npm run commitlint
+  #       if: github.event_name != 'pull_request'
 
   check-docs:
     name: Check documentation
@@ -172,27 +172,27 @@ jobs:
       - name: Run all Chrome tests (only on Linux)
         if: ${{ matrix.spec.name == 'Linux' }}
         run: xvfb-run --auto-servernum npm run test:chrome
-      - name: Run all Firefox tests (only on Linux)
-        if: ${{ matrix.spec.name == 'Linux' }}
-        uses: nick-invision/retry@v2
-        with:
-          command: xvfb-run --auto-servernum npm run test:firefox
-          timeout_minutes: 20
-          max_attempts: 3
+      # - name: Run all Firefox tests (only on Linux)
+      #   if: ${{ matrix.spec.name == 'Linux' }}
+      #   uses: nick-invision/retry@v2
+      #   with:
+      #     command: xvfb-run --auto-servernum npm run test:firefox
+      #     timeout_minutes: 20
+      #     max_attempts: 3
       # On other platforms we only run chrome:headless tests and continue on Firefox errors.
       - name: Test Chrome Headless (not on Linux)
         id: test-chrome
         if: ${{ matrix.spec.name != 'Linux' }}
         run: npm run test:chrome:headless
-      - name: Run all Firefox tests (not on Linux)
-        if: ${{ matrix.spec.name != 'Linux' }}
-        continue-on-error: true
-        run: npm run test:firefox
-      - name: Test bundling and installation
-        if: ${{ matrix.spec.name == 'Linux' }}
-        run: |
-          # Note: this modifies package.json to test puppeteer-core, so we test this last.
-          npm run test:install
+      # - name: Run all Firefox tests (not on Linux)
+      #   if: ${{ matrix.spec.name != 'Linux' }}
+      #   continue-on-error: true
+      #   run: npm run test:firefox
+      # - name: Test bundling and installation
+      #   if: ${{ matrix.spec.name == 'Linux' }}
+      #   run: |
+      #     # Note: this modifies package.json to test puppeteer-core, so we test this last.
+      #     npm run test:install
 
   docker-tests:
     runs-on: ${{ matrix.os }}
