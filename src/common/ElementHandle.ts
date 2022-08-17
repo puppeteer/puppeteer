@@ -2,7 +2,8 @@ import {Protocol} from 'devtools-protocol';
 import {assert} from '../util/assert.js';
 import {CDPSession} from './Connection.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {Frame, FrameManager} from './FrameManager.js';
+import {FrameManager} from './FrameManager.js';
+import {Frame} from './Frame.js';
 import {
   MAIN_WORLD,
   PUPPETEER_WORLD,

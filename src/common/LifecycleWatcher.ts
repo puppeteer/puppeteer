@@ -25,11 +25,8 @@ import {
   createDeferredPromise,
 } from '../util/DeferredPromise.js';
 import {TimeoutError} from './Errors.js';
-import {
-  FrameManager,
-  Frame,
-  FrameManagerEmittedEvents,
-} from './FrameManager.js';
+import {FrameManager, FrameManagerEmittedEvents} from './FrameManager.js';
+import {Frame} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {NetworkManagerEmittedEvents} from './NetworkManager.js';

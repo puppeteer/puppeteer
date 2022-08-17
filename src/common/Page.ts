@@ -28,11 +28,8 @@ import {ElementHandle} from './ElementHandle.js';
 import {EmulationManager} from './EmulationManager.js';
 import {EventEmitter, Handler} from './EventEmitter.js';
 import {FileChooser} from './FileChooser.js';
-import {
-  Frame,
-  FrameManager,
-  FrameManagerEmittedEvents,
-} from './FrameManager.js';
+import {FrameManager, FrameManagerEmittedEvents} from './FrameManager.js';
+import {Frame} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {Keyboard, Mouse, MouseButton, Touchscreen} from './Input.js';

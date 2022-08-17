@@ -17,7 +17,7 @@
 import {Protocol} from 'devtools-protocol';
 import {assert} from '../util/assert.js';
 import {CDPSession} from './Connection.js';
-import {Frame} from './FrameManager.js';
+import {Frame} from './Frame.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {JSHandle} from './JSHandle.js';
 import {EvaluateFunc, HandleFor} from './types.js';

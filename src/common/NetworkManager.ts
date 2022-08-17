@@ -18,7 +18,7 @@ import {Protocol} from 'devtools-protocol';
 import {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 import {assert} from '../util/assert.js';
 import {EventEmitter} from './EventEmitter.js';
-import {Frame} from './FrameManager.js';
+import {Frame} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {FetchRequestId, NetworkEventManager} from './NetworkEventManager.js';

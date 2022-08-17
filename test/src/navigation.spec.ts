@@ -220,20 +220,6 @@ describe('navigation', function () {
         expect(error.message).toContain('SSL_ERROR_UNKNOWN');
       }
     });
-    it('should throw if networkidle is passed as an option', async () => {
-      const {page, server} = getTestState();
-
-      let error!: Error;
-      await page
-        // @ts-expect-error purposefully passing an old option
-        .goto(server.EMPTY_PAGE, {waitUntil: 'networkidle'})
-        .catch(error_ => {
-          return (error = error_);
-        });
-      expect(error.message).toContain(
-        '"networkidle" option is no longer supported'
-      );
-    });
     it('should fail when main resources failed to load', async () => {
       const {page, isChrome} = getTestState();
 

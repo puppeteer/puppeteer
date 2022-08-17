@@ -23,7 +23,7 @@ import {
 } from '../../lib/cjs/puppeteer/common/NetworkManager.js';
 import {HTTPRequest} from '../../lib/cjs/puppeteer/common/HTTPRequest.js';
 import {EventEmitter} from '../../lib/cjs/puppeteer/common/EventEmitter.js';
-import {Frame} from '../../lib/cjs/puppeteer/common/FrameManager.js';
+import {Frame} from '../../lib/cjs/puppeteer/common/Frame.js';
 import {HTTPResponse} from '../../lib/cjs/puppeteer/common/HTTPResponse.js';
 
 class MockCDPSession extends EventEmitter {
