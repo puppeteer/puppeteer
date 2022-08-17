@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import {assert} from './assert.js';
+import {assert} from '../util/assert.js';
 import {
   addEventListener,
   PuppeteerEventListener,
   removeEventListeners,
+} from './util.js';
+import {
   DeferredPromise,
   createDeferredPromise,
-} from './util.js';
+} from '../util/DeferredPromise.js';
 import {TimeoutError} from './Errors.js';
 import {
   FrameManager,

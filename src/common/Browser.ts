@@ -16,7 +16,7 @@
 
 import {ChildProcess} from 'child_process';
 import {Protocol} from 'devtools-protocol';
-import {assert} from './assert.js';
+import {assert} from '../util/assert.js';
 import {CDPSession, Connection, ConnectionEmittedEvents} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
 import {waitWithTimeout} from './util.js';

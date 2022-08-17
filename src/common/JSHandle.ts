@@ -15,7 +15,7 @@
  */
 
 import {Protocol} from 'devtools-protocol';
-import {assert} from './assert.js';
+import {assert} from '../util/assert.js';
 import {CDPSession} from './Connection.js';
 import type {ElementHandle} from './ElementHandle.js';
 import {ExecutionContext} from './ExecutionContext.js';

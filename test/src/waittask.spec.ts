@@ -15,7 +15,7 @@
  */
 
 import expect from 'expect';
-import {isErrorLike} from '../../lib/cjs/puppeteer/common/util.js';
+import {isErrorLike} from '../../lib/cjs/puppeteer/util/ErrorLike.js';
 import {
   getTestState,
   itFailsFirefox,

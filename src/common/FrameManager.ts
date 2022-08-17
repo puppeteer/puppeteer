@@ -15,7 +15,7 @@
  */
 
 import {Protocol} from 'devtools-protocol';
-import {assert} from './assert.js';
+import {assert} from '../util/assert.js';
 import {CDPSession} from './Connection.js';
 import {ElementHandle} from './ElementHandle.js';
 import {EventEmitter} from './EventEmitter.js';
@@ -35,12 +35,12 @@ import {Page} from './Page.js';
 import {Target} from './Target.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
+import {debugError} from './util.js';
+import {isErrorLike} from '../util/ErrorLike.js';
 import {
   createDeferredPromiseWithTimer,
-  debugError,
   DeferredPromise,
-  isErrorLike,
-} from './util.js';
+} from '../util/DeferredPromise.js';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 

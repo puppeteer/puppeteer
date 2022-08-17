@@ -15,7 +15,7 @@
  */
 
 import Protocol from 'devtools-protocol';
-import {assert} from './assert.js';
+import {assert} from '../util/assert.js';
 import {CDPSession, Connection} from './Connection.js';
 import {Target} from './Target.js';
 import {TargetFilterCallback} from './Browser.js';

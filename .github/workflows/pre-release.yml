@@ -20,7 +20,7 @@ jobs:
         run: npm install
       - name: Build
         run: |
-          node utils/generate_version_file.js
+          ts-node utils/generate_sources.ts
           npm run docs
       - name: Version docs
         working-directory: ./website

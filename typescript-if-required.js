@@ -45,7 +45,7 @@ const fileExists = async filePath => {
  * place.
  */
 async function compileTypeScript() {
-  return exec('npm run build:tsc').catch(error => {
+  return exec('npm run build').catch(error => {
     console.error('Error running TypeScript', error);
     process.exit(1);
   });

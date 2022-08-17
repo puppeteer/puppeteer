@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {assert} from './assert.js';
+import {assert} from '../util/assert.js';
 import {addEventListener, debugError, PuppeteerEventListener} from './util.js';
 import {Protocol} from 'devtools-protocol';
 import {CDPSession} from './Connection.js';

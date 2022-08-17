@@ -15,7 +15,7 @@
  */
 
 import {Protocol} from 'devtools-protocol';
-import {assert} from './assert.js';
+import {assert} from '../util/assert.js';
 import {CDPSession} from './Connection.js';
 import {ElementHandle} from './ElementHandle.js';
 import {TimeoutError} from './Errors.js';
@@ -28,16 +28,18 @@ import {getQueryHandlerAndSelector} from './QueryHandler.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {
-  createDeferredPromise,
   createJSHandle,
   debugError,
-  DeferredPromise,
   importFS,
   isNumber,
   isString,
   makePredicateString,
   pageBindingInitString,
 } from './util.js';
+import {
+  createDeferredPromise,
+  DeferredPromise,
+} from '../util/DeferredPromise.js';
 
 // predicateQueryHandler and checkWaitForOptions are declared here so that
 // TypeScript knows about them when used in the predicate function below.
@@ -722,9 +724,7 @@ export class IsolatedWorld {
       waitForVisible: boolean,
       waitForHidden: boolean
     ): Promise<Node | null | boolean> {
-      const node = predicateQueryHandler
-        ? ((await predicateQueryHandler(root, selector)) as Element)
-        : root.querySelector(selector);
+      const node = (await predicateQueryHandler(root, selector)) as Element;
       return checkWaitForOptions(node, waitForVisible, waitForHidden);
     }
     const waitTaskOptions: WaitTaskOptions = {

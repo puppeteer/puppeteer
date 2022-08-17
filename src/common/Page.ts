@@ -17,7 +17,7 @@
 import {Protocol} from 'devtools-protocol';
 import type {Readable} from 'stream';
 import {Accessibility} from './Accessibility.js';
-import {assert} from './assert.js';
+import {assert} from '../util/assert.js';
 import {Browser, BrowserContext} from './Browser.js';
 import {CDPSession, CDPSessionEmittedEvents} from './Connection.js';
 import {ConsoleMessage, ConsoleMessageType} from './ConsoleMessage.js';
@@ -59,7 +59,6 @@ import {
   importFS,
   getReadableAsBuffer,
   getReadableFromProtocolStream,
-  isErrorLike,
   isNumber,
   isString,
   pageBindingDeliverErrorString,
@@ -70,9 +69,12 @@ import {
   valueFromRemoteObject,
   waitForEvent,
   waitWithTimeout,
+} from './util.js';
+import {isErrorLike} from '../util/ErrorLike.js';
+import {
   createDeferredPromiseWithTimer,
   DeferredPromise,
-} from './util.js';
+} from '../util/DeferredPromise.js';
 import {WebWorker} from './WebWorker.js';
 
 /**
