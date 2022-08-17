@@ -1655,7 +1655,7 @@ describe('Page', function () {
       await page.addScriptTag({url: '/es6/es6import.js', type: 'module'});
       expect(
         await page.evaluate(() => {
-          return (globalThis as any).__es6injected;
+          return (window as unknown as {__es6injected: number}).__es6injected;
         })
       ).toBe(42);
     });
@@ -1668,10 +1668,12 @@ describe('Page', function () {
         path: path.join(__dirname, '../assets/es6/es6pathimport.js'),
         type: 'module',
       });
-      await page.waitForFunction('window.__es6injected');
+      await page.waitForFunction(() => {
+        return (window as unknown as {__es6injected: number}).__es6injected;
+      });
       expect(
         await page.evaluate(() => {
-          return (globalThis as any).__es6injected;
+          return (window as unknown as {__es6injected: number}).__es6injected;
         })
       ).toBe(42);
     });
@@ -1684,10 +1686,12 @@ describe('Page', function () {
         content: `import num from '/es6/es6module.js';window.__es6injected = num;`,
         type: 'module',
       });
-      await page.waitForFunction('window.__es6injected');
+      await page.waitForFunction(() => {
+        return (window as unknown as {__es6injected: number}).__es6injected;
+      });
       expect(
         await page.evaluate(() => {
-          return (globalThis as any).__es6injected;
+          return (window as unknown as {__es6injected: number}).__es6injected;
         })
       ).toBe(42);
     });

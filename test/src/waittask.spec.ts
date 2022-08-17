@@ -15,7 +15,6 @@
  */
 
 import expect from 'expect';
-import {isErrorLike} from '../../lib/cjs/puppeteer/util/ErrorLike.js';
 import {
   getTestState,
   itFailsFirefox,
@@ -32,7 +31,9 @@ describe('waittask specs', function () {
     it('should accept a string', async () => {
       const {page} = getTestState();
 
-      const watchdog = page.waitForFunction('window.__FOO === 1');
+      const watchdog = page.waitForFunction(() => {
+        return (window as unknown as {__FOO: number}).__FOO === 1;
+      });
       await page.evaluate(() => {
         return ((globalThis as any).__FOO = 1);
       });
@@ -213,46 +214,6 @@ describe('waittask specs', function () {
       ]);
       expect(error).toBeUndefined();
     });
-    it('should throw on bad polling value', async () => {
-      const {page} = getTestState();
-
-      let error!: Error;
-      try {
-        await page.waitForFunction(
-          () => {
-            return !!document.body;
-          },
-          {
-            polling: 'unknown',
-          }
-        );
-      } catch (error_) {
-        if (isErrorLike(error_)) {
-          error = error_ as Error;
-        }
-      }
-      expect(error?.message).toContain('polling');
-    });
-    it('should throw negative polling interval', async () => {
-      const {page} = getTestState();
-
-      let error!: Error;
-      try {
-        await page.waitForFunction(
-          () => {
-            return !!document.body;
-          },
-          {polling: -10}
-        );
-      } catch (error_) {
-        if (isErrorLike(error_)) {
-          error = error_ as Error;
-        }
-      }
-      expect(error?.message).toContain(
-        'Cannot poll with non-positive interval'
-      );
-    });
     it('should return the success value as a JSHandle', async () => {
       const {page} = getTestState();
 
@@ -300,9 +261,16 @@ describe('waittask specs', function () {
       const {page, puppeteer} = getTestState();
 
       let error!: Error;
-      await page.waitForFunction('false', {timeout: 10}).catch(error_ => {
-        return (error = error_);
-      });
+      await page
+        .waitForFunction(
+          () => {
+            return false;
+          },
+          {timeout: 10}
+        )
+        .catch(error_ => {
+          return (error = error_);
+        });
 
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
       expect(error?.message).toContain('waiting for function failed: timeout');
@@ -312,9 +280,13 @@ describe('waittask specs', function () {
 
       page.setDefaultTimeout(1);
       let error!: Error;
-      await page.waitForFunction('false').catch(error_ => {
-        return (error = error_);
-      });
+      await page
+        .waitForFunction(() => {
+          return false;
+        })
+        .catch(error_ => {
+          return (error = error_);
+        });
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
       expect(error?.message).toContain('waiting for function failed: timeout');
     });
@@ -342,7 +314,9 @@ describe('waittask specs', function () {
 
       let fooFound = false;
       const waitForFunction = page
-        .waitForFunction('globalThis.__FOO === 1')
+        .waitForFunction(() => {
+          return (globalThis as unknown as {__FOO: number}).__FOO === 1;
+        })
         .then(() => {
           return (fooFound = true);
         });

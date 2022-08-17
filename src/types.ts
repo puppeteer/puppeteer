@@ -9,7 +9,6 @@ export * from './revisions.js';
 
 // Exports from `common`
 export * from './common/Accessibility.js';
-export * from './common/AriaQueryHandler.js';
 export * from './common/Browser.js';
 export * from './common/BrowserConnector.js';
 export * from './common/BrowserWebSocketTransport.js';
@@ -52,7 +51,9 @@ export * from './common/TaskQueue.js';
 export * from './common/TimeoutSettings.js';
 export * from './common/Tracing.js';
 export * from './common/USKeyboardLayout.js';
+export * from './common/WaitTask.js';
 export * from './common/WebWorker.js';
+export * from './common/ariaQuerySelector.js';
 export * from './common/fetch.js';
 export * from './common/types.js';
 export * from './common/util.js';

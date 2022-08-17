@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import {ariaHandler} from './AriaQueryHandler.js';
-import {IsolatedWorld, WaitForSelectorOptions} from './IsolatedWorld.js';
+import {checkVisibility, createFunction} from '../injected/util.js';
+import {assert} from '../util/assert.js';
+import {ariaQuerySelectorAll} from './ariaQuerySelector.js';
 import {ElementHandle} from './ElementHandle.js';
-import {JSHandle} from './JSHandle.js';
+import {WaitForSelectorOptions} from './IsolatedWorld.js';
 
 /**
  * @public
@@ -55,16 +56,6 @@ export interface InternalQueryHandler {
     element: ElementHandle<Node>,
     selector: string
   ) => Promise<Array<ElementHandle<Node>>>;
-  /**
-   * Queries for multiple nodes given a selector and {@link ElementHandle}.
-   * Unlike {@link queryAll}, this returns a handle to a node array.
-   *
-   * Akin to {@link Window.prototype.querySelectorAll}.
-   */
-  queryAllArray?: (
-    element: ElementHandle<Node>,
-    selector: string
-  ) => Promise<JSHandle<Node[]>>;
 
   /**
    * Waits until a single node appears for a given selector and
@@ -73,7 +64,7 @@ export interface InternalQueryHandler {
    * Akin to {@link Window.prototype.querySelectorAll}.
    */
   waitFor?: (
-    isolatedWorld: IsolatedWorld,
+    element: ElementHandle<Node>,
     selector: string,
     options: WaitForSelectorOptions
   ) => Promise<ElementHandle<Node> | null>;
@@ -95,12 +86,36 @@ function internalizeCustomQueryHandler(
       await jsHandle.dispose();
       return null;
     };
-    internalHandler.waitFor = (
-      domWorld: IsolatedWorld,
-      selector: string,
-      options: WaitForSelectorOptions
-    ) => {
-      return domWorld._waitForSelectorInPage(queryOne, selector, options);
+    internalHandler.waitFor = async (element, selector, options) => {
+      const context = element.executionContext();
+      const world = context._world;
+      assert(world);
+      const {
+        visible: waitForVisible = false,
+        hidden: waitForHidden = false,
+        timeout = world.timeoutSettings.timeout(),
+      } = options;
+      const handle = await world.waitForFunction(
+        (query, selector, root, visible) => {
+          const node = createFunction<typeof queryOne>(query)(root, selector);
+          return checkVisibility(node, visible);
+        },
+        {
+          polling: waitForVisible || waitForHidden ? 'raf' : 'mutation',
+          timeout,
+          root: element,
+        },
+        queryOne.toString(),
+        selector,
+        element,
+        waitForVisible ? true : waitForHidden ? false : undefined
+      );
+      const elementHandle = handle.asElement();
+      if (!elementHandle) {
+        await handle.dispose();
+        return null;
+      }
+      return elementHandle;
     };
   }
 
@@ -118,16 +133,6 @@ function internalizeCustomQueryHandler(
         }
       }
       return result;
-    };
-    internalHandler.queryAllArray = async (element, selector) => {
-      const resultHandle = (await element.evaluateHandle(
-        queryAll,
-        selector
-      )) as JSHandle<Element[] | NodeListOf<Element>>;
-      const arrayHandle = await resultHandle.evaluateHandle(res => {
-        return Array.from(res);
-      });
-      return arrayHandle;
     };
   }
 
@@ -160,6 +165,24 @@ const defaultHandler = internalizeCustomQueryHandler({
     ];
   },
 });
+
+const ariaHandler = {
+  ...internalizeCustomQueryHandler({
+    queryOne: (element, selector) => {
+      if (!('querySelector' in element)) {
+        throw new Error(
+          `Could not invoke \`querySelector\` on node of type ${element.nodeName}.`
+        );
+      }
+      return (
+        globalThis as unknown as {
+          ariaQuerySelector(element: Node, selector: string): Node | null;
+        }
+      ).ariaQuerySelector(element, selector);
+    },
+  }),
+  queryAll: ariaQuerySelectorAll,
+};
 
 const pierceHandler = internalizeCustomQueryHandler({
   queryOne: (element, selector) => {

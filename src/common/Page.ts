@@ -128,6 +128,31 @@ export interface WaitForOptions {
 /**
  * @public
  */
+export interface WaitForFunctionOptions {
+  /**
+   * An interval at which the `pageFunction` is executed, defaults to `raf`. If
+   * `polling` is a number, then it is treated as an interval in milliseconds at
+   * which the function would be executed. If `polling` is a string, then it can
+   * be one of the following values:
+   *
+   * - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame`
+   *   callback. This is the tightest polling mode which is suitable to observe
+   *   styling changes.
+   *
+   * - `mutation` - to execute `pageFunction` on every DOM mutation.
+   */
+  polling?: 'mutation' | 'raf' | number;
+  /**
+   * Maximum time to wait in milliseconds. Defaults to `30000` (30 seconds).
+   * Pass `0` to disable the timeout. Puppeteer's default timeout can be changed
+   * using {@link Page.setDefaultTimeout}.
+   */
+  timeout?: number;
+}
+
+/**
+ * @public
+ */
 export interface GeolocationOptions {
   /**
    * Latitude between `-90` and `90`.
@@ -3392,7 +3417,7 @@ export class Page extends EventEmitter {
    */
   async waitForSelector<Selector extends string>(
     selector: Selector,
-    options: Exclude<WaitForSelectorOptions, 'root'> = {}
+    options: WaitForSelectorOptions = {}
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
     return await this.mainFrame().waitForSelector(selector, options);
   }
@@ -3534,11 +3559,8 @@ export class Page extends EventEmitter {
     Params extends unknown[],
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
   >(
-    pageFunction: Func | string,
-    options: {
-      timeout?: number;
-      polling?: string | number;
-    } = {},
+    pageFunction: Func,
+    options: WaitForFunctionOptions = {},
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     return this.mainFrame().waitForFunction(pageFunction, options, ...args);

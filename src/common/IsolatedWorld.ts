@@ -15,45 +15,30 @@
  */
 
 import {Protocol} from 'devtools-protocol';
+import {injectedSourceCode} from '../generated/injected.js';
 import {assert} from '../util/assert.js';
+import {
+  createDeferredPromise,
+  DeferredPromise,
+} from '../util/DeferredPromise.js';
+import {ariaQuerySelector} from './ariaQuerySelector.js';
 import {CDPSession} from './Connection.js';
 import {ElementHandle} from './ElementHandle.js';
-import {TimeoutError} from './Errors.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {FrameManager} from './FrameManager.js';
 import {Frame} from './Frame.js';
+import {FrameManager} from './FrameManager.js';
 import {MouseButton} from './Input.js';
 import {JSHandle} from './JSHandle.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
-import {getQueryHandlerAndSelector} from './QueryHandler.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {
   createJSHandle,
   debugError,
   importFS,
-  isNumber,
-  isString,
-  makePredicateString,
   pageBindingInitString,
 } from './util.js';
-import {
-  createDeferredPromise,
-  DeferredPromise,
-} from '../util/DeferredPromise.js';
-import {injectedSourceCode} from '../generated/injected.js';
-
-// predicateQueryHandler and checkWaitForOptions are declared here so that
-// TypeScript knows about them when used in the predicate function below.
-declare const predicateQueryHandler: (
-  element: Element | Document,
-  selector: string
-) => Promise<Element | Element[] | NodeListOf<Element>>;
-declare const checkWaitForOptions: (
-  node: Node | null,
-  waitForVisible: boolean,
-  waitForHidden: boolean
-) => Element | null | boolean;
+import {TaskManager, WaitTask} from './WaitTask.js';
 
 /**
  * @public
@@ -81,10 +66,6 @@ export interface WaitForSelectorOptions {
    * @defaultValue `30000` (30 seconds)
    */
   timeout?: number;
-  /**
-   * @deprecated Do not use. Use the {@link ElementHandle.waitForSelector}
-   */
-  root?: ElementHandle<Node>;
 }
 
 /**
@@ -131,24 +112,14 @@ export class IsolatedWorld {
   #contextPromise: DeferredPromise<ExecutionContext> = createDeferredPromise();
   #detached = false;
 
-  // Set of bindings that have been registered in the current context.
-  #ctxBindings = new Set<string>();
+  // Map of bindings that have been registered in the current context.
+  #bindings = new Map<string, Function>();
 
-  // Contains mapping from functions that should be bound to Puppeteer functions.
-  #boundFunctions = new Map<string, Function>();
-  #waitTasks = new Set<WaitTask>();
+  #taskManager = new TaskManager();
 
-  get _waitTasks(): Set<WaitTask> {
-    return this.#waitTasks;
+  get timeoutSettings(): TimeoutSettings {
+    return this.#timeoutSettings;
   }
-
-  get _boundFunctions(): Map<string, Function> {
-    return this.#boundFunctions;
-  }
-
-  static #bindingIdentifier = (name: string, contextId: number) => {
-    return `${name}_${contextId}`;
-  };
 
   /**
    * @param injected - Whether to inject Puppeteer code or not.
@@ -185,14 +156,13 @@ export class IsolatedWorld {
       this.#contextPromise,
       `ExecutionContext ${context._contextId} has already been set.`
     );
-    this.#ctxBindings.clear();
+    this.#bindings.clear();
     if (this.#injected) {
+      this.#addBinding(context, ariaQuerySelector);
       await context.evaluate(injectedSourceCode);
     }
     this.#contextPromise.resolve(context);
-    for (const waitTask of this._waitTasks) {
-      waitTask.rerun();
-    }
+    this.#taskManager.rerunAll();
   }
 
   hasContext(): boolean {
@@ -202,11 +172,7 @@ export class IsolatedWorld {
   _detach(): void {
     this.#detached = true;
     this.#client.off('Runtime.bindingCalled', this.#onBindingCalled);
-    for (const waitTask of this._waitTasks) {
-      waitTask.terminate(
-        new Error('waitForFunction failed: frame got detached.')
-      );
-    }
+    this.#taskManager.terminateAll(new Error('Waiting failed: Frame detached'));
   }
 
   executionContext(): Promise<ExecutionContext> {
@@ -214,9 +180,6 @@ export class IsolatedWorld {
       throw new Error(
         `Execution context is not available in detached frame "${this.#frame.url()}" (are you trying to evaluate?)`
       );
-    }
-    if (this.#contextPromise === null) {
-      throw new Error(`Execution content promise is missing`);
     }
     return this.#contextPromise;
   }
@@ -308,14 +271,8 @@ export class IsolatedWorld {
     selector: Selector,
     options: WaitForSelectorOptions
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    const {updatedSelector, queryHandler} =
-      getQueryHandlerAndSelector(selector);
-    assert(queryHandler.waitFor, 'Query handler does not support waiting');
-    return (await queryHandler.waitFor(
-      this,
-      updatedSelector,
-      options
-    )) as ElementHandle<NodeFor<Selector>> | null;
+    const document = await this.document();
+    return document.waitForSelector(selector, options);
   }
 
   async content(): Promise<string> {
@@ -604,22 +561,15 @@ export class IsolatedWorld {
   // first one to set up the binding in the page before running the others.
   #settingUpBinding: Promise<void> | null = null;
 
-  async _addBindingToContext(
-    context: ExecutionContext,
-    name: string
-  ): Promise<void> {
+  async #addBinding(context: ExecutionContext, fn: Function): Promise<void> {
     // Previous operation added the binding so we are done.
-    if (
-      this.#ctxBindings.has(
-        IsolatedWorld.#bindingIdentifier(name, context._contextId)
-      )
-    ) {
+    if (this.#bindings.has(fn.name)) {
       return;
     }
     // Wait for other operation to finish
     if (this.#settingUpBinding) {
       await this.#settingUpBinding;
-      return this._addBindingToContext(context, name);
+      return this.#addBinding(context, fn);
     }
 
     const bind = async (name: string) => {
@@ -650,12 +600,10 @@ export class IsolatedWorld {
           return;
         }
       }
-      this.#ctxBindings.add(
-        IsolatedWorld.#bindingIdentifier(name, context._contextId)
-      );
+      this.#bindings.set(name, fn);
     };
 
-    this.#settingUpBinding = bind(name);
+    this.#settingUpBinding = bind(fn.name);
     await this.#settingUpBinding;
     this.#settingUpBinding = null;
   }
@@ -676,19 +624,14 @@ export class IsolatedWorld {
       return;
     }
     const {type, name, seq, args} = payload;
-    if (
-      type !== 'internal' ||
-      !this.#ctxBindings.has(
-        IsolatedWorld.#bindingIdentifier(name, context._contextId)
-      )
-    ) {
+    if (type !== 'internal' || !this.#bindings.has(name)) {
       return;
     }
     if (context._contextId !== event.executionContextId) {
       return;
     }
     try {
-      const fn = this._boundFunctions.get(name);
+      const fn = this.#bindings.get(name);
       if (!fn) {
         throw new Error(`Bound function $name is not found`);
       }
@@ -715,69 +658,32 @@ export class IsolatedWorld {
     }
   };
 
-  async _waitForSelectorInPage(
-    queryOne: Function,
-    selector: string,
-    options: WaitForSelectorOptions,
-    binding?: PageBinding
-  ): Promise<ElementHandle<Node> | null> {
-    const {
-      visible: waitForVisible = false,
-      hidden: waitForHidden = false,
-      timeout = this.#timeoutSettings.timeout(),
-    } = options;
-    const polling = waitForVisible || waitForHidden ? 'raf' : 'mutation';
-    const title = `selector \`${selector}\`${
-      waitForHidden ? ' to be hidden' : ''
-    }`;
-    async function predicate(
-      root: Element | Document,
-      selector: string,
-      waitForVisible: boolean,
-      waitForHidden: boolean
-    ): Promise<Node | null | boolean> {
-      const node = (await predicateQueryHandler(root, selector)) as Element;
-      return checkWaitForOptions(node, waitForVisible, waitForHidden);
-    }
-    const waitTaskOptions: WaitTaskOptions = {
-      isolatedWorld: this,
-      predicateBody: makePredicateString(predicate, queryOne),
-      predicateAcceptsContextElement: true,
-      title,
-      polling,
-      timeout,
-      args: [selector, waitForVisible, waitForHidden],
-      binding,
-      root: options.root,
-    };
-    const waitTask = new WaitTask(waitTaskOptions);
-    const jsHandle = await waitTask.promise;
-    const elementHandle = jsHandle.asElement();
-    if (!elementHandle) {
-      await jsHandle.dispose();
-      return null;
-    }
-    return elementHandle;
-  }
-
-  waitForFunction(
-    pageFunction: Function | string,
-    options: {polling?: string | number; timeout?: number} = {},
-    ...args: unknown[]
-  ): Promise<JSHandle> {
+  waitForFunction<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    pageFunction: Func,
+    options: {
+      polling?: 'raf' | 'mutation' | number;
+      timeout?: number;
+      root?: ElementHandle<Node>;
+    } = {},
+    ...args: Params
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     const {polling = 'raf', timeout = this.#timeoutSettings.timeout()} =
       options;
-    const waitTaskOptions: WaitTaskOptions = {
-      isolatedWorld: this,
-      predicateBody: pageFunction,
-      predicateAcceptsContextElement: false,
-      title: 'function',
-      polling,
-      timeout,
-      args,
-    };
-    const waitTask = new WaitTask(waitTaskOptions);
-    return waitTask.promise;
+    const waitTask = new WaitTask(
+      this,
+      {
+        polling,
+        timeout,
+      },
+      pageFunction as unknown as (
+        ...args: unknown[]
+      ) => Promise<Awaited<ReturnType<Func>>>,
+      ...args
+    );
+    return waitTask.result;
   }
 
   async title(): Promise<string> {
@@ -807,317 +713,5 @@ export class IsolatedWorld {
       objectId: handle.remoteObject().objectId,
     });
     return (await this.adoptBackendNode(nodeInfo.node.backendNodeId)) as T;
-  }
-}
-
-/**
- * @internal
- */
-export interface WaitTaskOptions {
-  isolatedWorld: IsolatedWorld;
-  predicateBody: Function | string;
-  predicateAcceptsContextElement: boolean;
-  title: string;
-  polling: string | number;
-  timeout: number;
-  binding?: PageBinding;
-  args: unknown[];
-  root?: ElementHandle<Node>;
-}
-
-const noop = (): void => {};
-
-/**
- * @internal
- */
-export class WaitTask {
-  #isolatedWorld: IsolatedWorld;
-  #polling: 'raf' | 'mutation' | number;
-  #timeout: number;
-  #predicateBody: string;
-  #predicateAcceptsContextElement: boolean;
-  #args: unknown[];
-  #binding?: PageBinding;
-  #runCount = 0;
-  #resolve: (x: JSHandle) => void = noop;
-  #reject: (x: Error) => void = noop;
-  #timeoutTimer?: NodeJS.Timeout;
-  #terminated = false;
-  #root: ElementHandle<Node> | null = null;
-
-  promise: Promise<JSHandle>;
-
-  constructor(options: WaitTaskOptions) {
-    if (isString(options.polling)) {
-      assert(
-        options.polling === 'raf' || options.polling === 'mutation',
-        'Unknown polling option: ' + options.polling
-      );
-    } else if (isNumber(options.polling)) {
-      assert(
-        options.polling > 0,
-        'Cannot poll with non-positive interval: ' + options.polling
-      );
-    } else {
-      throw new Error('Unknown polling options: ' + options.polling);
-    }
-
-    function getPredicateBody(predicateBody: Function | string) {
-      if (isString(predicateBody)) {
-        return `return (${predicateBody});`;
-      }
-      return `return (${predicateBody})(...args);`;
-    }
-
-    this.#isolatedWorld = options.isolatedWorld;
-    this.#polling = options.polling;
-    this.#timeout = options.timeout;
-    this.#root = options.root || null;
-    this.#predicateBody = getPredicateBody(options.predicateBody);
-    this.#predicateAcceptsContextElement =
-      options.predicateAcceptsContextElement;
-    this.#args = options.args;
-    this.#binding = options.binding;
-    this.#runCount = 0;
-    this.#isolatedWorld._waitTasks.add(this);
-    if (this.#binding) {
-      this.#isolatedWorld._boundFunctions.set(
-        this.#binding.name,
-        this.#binding.pptrFunction
-      );
-    }
-    this.promise = new Promise<JSHandle>((resolve, reject) => {
-      this.#resolve = resolve;
-      this.#reject = reject;
-    });
-    // Since page navigation requires us to re-install the pageScript, we should track
-    // timeout on our end.
-    if (options.timeout) {
-      const timeoutError = new TimeoutError(
-        `waiting for ${options.title} failed: timeout ${options.timeout}ms exceeded`
-      );
-      this.#timeoutTimer = setTimeout(() => {
-        return this.terminate(timeoutError);
-      }, options.timeout);
-    }
-    this.rerun();
-  }
-
-  terminate(error: Error): void {
-    this.#terminated = true;
-    this.#reject(error);
-    this.#cleanup();
-  }
-
-  async rerun(): Promise<void> {
-    const runCount = ++this.#runCount;
-    let success: JSHandle | null = null;
-    let error: Error | null = null;
-    const context = await this.#isolatedWorld.executionContext();
-    if (this.#terminated || runCount !== this.#runCount) {
-      return;
-    }
-    if (this.#binding) {
-      await this.#isolatedWorld._addBindingToContext(
-        context,
-        this.#binding.name
-      );
-    }
-    if (this.#terminated || runCount !== this.#runCount) {
-      return;
-    }
-    try {
-      success = await context.evaluateHandle(
-        waitForPredicatePageFunction,
-        this.#root || null,
-        this.#predicateBody,
-        this.#predicateAcceptsContextElement,
-        this.#polling,
-        this.#timeout,
-        ...this.#args
-      );
-    } catch (error_) {
-      error = error_ as Error;
-    }
-
-    if (this.#terminated || runCount !== this.#runCount) {
-      if (success) {
-        await success.dispose();
-      }
-      return;
-    }
-
-    // Ignore timeouts in pageScript - we track timeouts ourselves.
-    // If the frame's execution context has already changed, `frame.evaluate` will
-    // throw an error - ignore this predicate run altogether.
-    if (
-      !error &&
-      (await this.#isolatedWorld
-        .evaluate(s => {
-          return !s;
-        }, success)
-        .catch(() => {
-          return true;
-        }))
-    ) {
-      if (!success) {
-        throw new Error('Assertion: result handle is not available');
-      }
-      await success.dispose();
-      return;
-    }
-    if (error) {
-      if (error.message.includes('TypeError: binding is not a function')) {
-        return this.rerun();
-      }
-      // When frame is detached the task should have been terminated by the IsolatedWorld.
-      // This can fail if we were adding this task while the frame was detached,
-      // so we terminate here instead.
-      if (
-        error.message.includes(
-          'Execution context is not available in detached frame'
-        )
-      ) {
-        this.terminate(
-          new Error('waitForFunction failed: frame got detached.')
-        );
-        return;
-      }
-
-      // When the page is navigated, the promise is rejected.
-      // We will try again in the new execution context.
-      if (error.message.includes('Execution context was destroyed')) {
-        return;
-      }
-
-      // We could have tried to evaluate in a context which was already
-      // destroyed.
-      if (error.message.includes('Cannot find context with specified id')) {
-        return;
-      }
-
-      this.#reject(error);
-    } else {
-      if (!success) {
-        throw new Error('Assertion: result handle is not available');
-      }
-      this.#resolve(success);
-    }
-    this.#cleanup();
-  }
-
-  #cleanup(): void {
-    this.#timeoutTimer !== undefined && clearTimeout(this.#timeoutTimer);
-    this.#isolatedWorld._waitTasks.delete(this);
-  }
-}
-
-async function waitForPredicatePageFunction(
-  root: Node | null,
-  predicateBody: string,
-  predicateAcceptsContextElement: boolean,
-  polling: 'raf' | 'mutation' | number,
-  timeout: number,
-  ...args: unknown[]
-): Promise<unknown> {
-  root = root || document;
-  const predicate = new Function('...args', predicateBody);
-  let timedOut = false;
-  if (timeout) {
-    setTimeout(() => {
-      return (timedOut = true);
-    }, timeout);
-  }
-  switch (polling) {
-    case 'raf':
-      return await pollRaf();
-    case 'mutation':
-      return await pollMutation();
-    default:
-      return await pollInterval(polling);
-  }
-
-  async function pollMutation(): Promise<unknown> {
-    const success = predicateAcceptsContextElement
-      ? await predicate(root, ...args)
-      : await predicate(...args);
-    if (success) {
-      return Promise.resolve(success);
-    }
-
-    let fulfill = (_?: unknown) => {};
-    const result = new Promise(x => {
-      return (fulfill = x);
-    });
-    const observer = new MutationObserver(async () => {
-      if (timedOut) {
-        observer.disconnect();
-        fulfill();
-      }
-      const success = predicateAcceptsContextElement
-        ? await predicate(root, ...args)
-        : await predicate(...args);
-      if (success) {
-        observer.disconnect();
-        fulfill(success);
-      }
-    });
-    if (!root) {
-      throw new Error('Root element is not found.');
-    }
-    observer.observe(root, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-    });
-    return result;
-  }
-
-  async function pollRaf(): Promise<unknown> {
-    let fulfill = (_?: unknown): void => {};
-    const result = new Promise(x => {
-      return (fulfill = x);
-    });
-    await onRaf();
-    return result;
-
-    async function onRaf(): Promise<void> {
-      if (timedOut) {
-        fulfill();
-        return;
-      }
-      const success = predicateAcceptsContextElement
-        ? await predicate(root, ...args)
-        : await predicate(...args);
-      if (success) {
-        fulfill(success);
-      } else {
-        requestAnimationFrame(onRaf);
-      }
-    }
-  }
-
-  async function pollInterval(pollInterval: number): Promise<unknown> {
-    let fulfill = (_?: unknown): void => {};
-    const result = new Promise(x => {
-      return (fulfill = x);
-    });
-    await onTimeout();
-    return result;
-
-    async function onTimeout(): Promise<void> {
-      if (timedOut) {
-        fulfill();
-        return;
-      }
-      const success = predicateAcceptsContextElement
-        ? await predicate(root, ...args)
-        : await predicate(...args);
-      if (success) {
-        fulfill(success);
-      } else {
-        setTimeout(onTimeout, pollInterval);
-      }
-    }
   }
 }

@@ -340,50 +340,6 @@ export function pageBindingDeliverErrorValueString(
 /**
  * @internal
  */
-export function makePredicateString(
-  predicate: Function,
-  predicateQueryHandler: Function
-): string {
-  function checkWaitForOptions(
-    node: Node | null,
-    waitForVisible: boolean,
-    waitForHidden: boolean
-  ): Node | null | boolean {
-    if (!node) {
-      return waitForHidden;
-    }
-    if (!waitForVisible && !waitForHidden) {
-      return node;
-    }
-    const element =
-      node.nodeType === Node.TEXT_NODE
-        ? (node.parentElement as Element)
-        : (node as Element);
-
-    const style = window.getComputedStyle(element);
-    const isVisible =
-      style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
-    const success =
-      waitForVisible === isVisible || waitForHidden === !isVisible;
-    return success ? node : null;
-
-    function hasVisibleBoundingBox(): boolean {
-      const rect = element.getBoundingClientRect();
-      return !!(rect.top || rect.bottom || rect.width || rect.height);
-    }
-  }
-
-  return `
-    (() => {
-      const predicateQueryHandler = ${predicateQueryHandler};
-      const checkWaitForOptions = ${checkWaitForOptions};
-      return (${predicate})(...args)
-    })() `;
-}
-
-/**
- * @internal
- */
 export async function waitWithTimeout<T>(
   promise: Promise<T>,
   taskName: string,

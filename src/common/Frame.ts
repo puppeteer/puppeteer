@@ -14,33 +14,8 @@ import {
   WaitForSelectorOptions,
 } from './IsolatedWorld.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
-import {Page} from './Page.js';
+import {Page, WaitForFunctionOptions} from './Page.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
-
-/**
- * @public
- */
-export interface FrameWaitForFunctionOptions {
-  /**
-   * An interval at which the `pageFunction` is executed, defaults to `raf`. If
-   * `polling` is a number, then it is treated as an interval in milliseconds at
-   * which the function would be executed. If `polling` is a string, then it can
-   * be one of the following values:
-   *
-   * - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame`
-   *   callback. This is the tightest polling mode which is suitable to observe
-   *   styling changes.
-   *
-   * - `mutation` - to execute `pageFunction` on every DOM mutation.
-   */
-  polling?: string | number;
-  /**
-   * Maximum time to wait in milliseconds. Defaults to `30000` (30 seconds).
-   * Pass `0` to disable the timeout. Puppeteer's default timeout can be changed
-   * using {@link Page.setDefaultTimeout}.
-   */
-  timeout?: number;
-}
 
 /**
  * @public
@@ -669,11 +644,10 @@ export class Frame {
     Params extends unknown[],
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
   >(
-    pageFunction: Func | string,
-    options: FrameWaitForFunctionOptions = {},
+    pageFunction: Func,
+    options: WaitForFunctionOptions = {},
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    // TODO: Fix when NodeHandle has been added.
     return this.worlds[MAIN_WORLD].waitForFunction(
       pageFunction,
       options,

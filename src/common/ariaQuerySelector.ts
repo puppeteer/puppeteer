@@ -17,14 +17,7 @@
 import {Protocol} from 'devtools-protocol';
 import {assert} from '../util/assert.js';
 import {CDPSession} from './Connection.js';
-import {
-  IsolatedWorld,
-  PageBinding,
-  WaitForSelectorOptions,
-} from './IsolatedWorld.js';
 import {ElementHandle} from './ElementHandle.js';
-import {JSHandle} from './JSHandle.js';
-import {InternalQueryHandler} from './QueryHandler.js';
 
 async function queryAXTree(
   client: CDPSession,
@@ -90,49 +83,28 @@ function parseAriaSelector(selector: string): ARIAQueryOption {
   return queryOptions;
 }
 
-const queryOne = async (
-  element: ElementHandle<Node>,
+/**
+ * @internal
+ */
+export const ariaQuerySelector = async (
+  node: ElementHandle<Node>,
   selector: string
 ): Promise<ElementHandle<Node> | null> => {
-  const exeCtx = element.executionContext();
+  const context = node.executionContext();
   const {name, role} = parseAriaSelector(selector);
-  const res = await queryAXTree(exeCtx._client, element, name, role);
+  const res = await queryAXTree(context._client, node, name, role);
   if (!res[0] || !res[0].backendDOMNodeId) {
     return null;
   }
-  return (await exeCtx._world!.adoptBackendNode(
+  return (await context._world!.adoptBackendNode(
     res[0].backendDOMNodeId
   )) as ElementHandle<Node>;
 };
 
-const waitFor = async (
-  isolatedWorld: IsolatedWorld,
-  selector: string,
-  options: WaitForSelectorOptions
-): Promise<ElementHandle<Element> | null> => {
-  const binding: PageBinding = {
-    name: 'ariaQuerySelector',
-    pptrFunction: async (selector: string) => {
-      const root = options.root || (await isolatedWorld.document());
-      const element = await queryOne(root, selector);
-      return element;
-    },
-  };
-  return (await isolatedWorld._waitForSelectorInPage(
-    (_: Element, selector: string) => {
-      return (
-        globalThis as unknown as {
-          ariaQuerySelector(selector: string): void;
-        }
-      ).ariaQuerySelector(selector);
-    },
-    selector,
-    options,
-    binding
-  )) as ElementHandle<Element> | null;
-};
-
-const queryAll = async (
+/**
+ * @internal
+ */
+export const ariaQuerySelectorAll = async (
   element: ElementHandle<Node>,
   selector: string
 ): Promise<Array<ElementHandle<Node>>> => {
@@ -147,26 +119,4 @@ const queryAll = async (
       >;
     })
   );
-};
-
-const queryAllArray = async (
-  element: ElementHandle<Node>,
-  selector: string
-): Promise<JSHandle<Node[]>> => {
-  const elementHandles = await queryAll(element, selector);
-  const exeCtx = element.executionContext();
-  const jsHandle = exeCtx.evaluateHandle((...elements) => {
-    return elements;
-  }, ...elementHandles);
-  return jsHandle;
-};
-
-/**
- * @internal
- */
-export const ariaHandler: InternalQueryHandler = {
-  queryOne,
-  waitFor,
-  queryAll,
-  queryAllArray,
 };
