@@ -17,6 +17,7 @@ yarn.lock
 test/output-*/
 .dev_profile*
 coverage/
+src/generated
 
 # IDE Artifacts
 .vscode

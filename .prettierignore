@@ -7,7 +7,7 @@ build/
 lib/
 
 # Generated files
-tsconfig.tsbuildinfo
+**/*.tsbuildinfo
 puppeteer.api.json
 puppeteer*.tgz
 yarn.lock
@@ -18,9 +18,11 @@ yarn.lock
 test/output-*/
 .dev_profile*
 coverage/
+src/generated
 
 # IDE Artifacts
 .vscode
+.devcontainer
 
 # Misc
 .DS_Store

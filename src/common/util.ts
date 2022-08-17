@@ -17,10 +17,11 @@
 import {Protocol} from 'devtools-protocol';
 import type {Readable} from 'stream';
 import {isNode} from '../environment.js';
-import {assert} from './assert.js';
+import {assert} from '../util/assert.js';
 import {CDPSession} from './Connection.js';
 import {debug} from './Debug.js';
 import {ElementHandle} from './ElementHandle.js';
+import {isErrorLike} from '../util/ErrorLike.js';
 import {TimeoutError} from './Errors.js';
 import {CommonEventEmitter} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
@@ -341,7 +342,7 @@ export function pageBindingDeliverErrorValueString(
  */
 export function makePredicateString(
   predicate: Function,
-  predicateQueryHandler?: Function
+  predicateQueryHandler: Function
 ): string {
   function checkWaitForOptions(
     node: Node | null,
@@ -371,12 +372,10 @@ export function makePredicateString(
       return !!(rect.top || rect.bottom || rect.width || rect.height);
     }
   }
-  const predicateQueryHandlerDef = predicateQueryHandler
-    ? `const predicateQueryHandler = ${predicateQueryHandler};`
-    : '';
+
   return `
     (() => {
-      ${predicateQueryHandlerDef}
+      const predicateQueryHandler = ${predicateQueryHandler};
       const checkWaitForOptions = ${checkWaitForOptions};
       return (${predicate})(...args)
     })() `;
@@ -493,107 +492,6 @@ export async function getReadableFromProtocolStream(
         await client.send('IO.close', {handle});
         this.push(null);
       }
-    },
-  });
-}
-
-/**
- * @internal
- */
-export interface ErrorLike extends Error {
-  name: string;
-  message: string;
-}
-
-/**
- * @internal
- */
-export function isErrorLike(obj: unknown): obj is ErrorLike {
-  return (
-    typeof obj === 'object' && obj !== null && 'name' in obj && 'message' in obj
-  );
-}
-
-/**
- * @internal
- */
-export function isErrnoException(obj: unknown): obj is NodeJS.ErrnoException {
-  return (
-    isErrorLike(obj) &&
-    ('errno' in obj || 'code' in obj || 'path' in obj || 'syscall' in obj)
-  );
-}
-
-/**
- * @internal
- */
-export interface DeferredPromise<T> extends Promise<T> {
-  resolved: () => boolean;
-  resolve: (_: T) => void;
-  reject: (_: Error) => void;
-}
-
-/**
- * Creates an returns a promise along with the resolve/reject functions.
- *
- * If the promise has not been resolved/rejected withing the `timeout` period,
- * the promise gets rejected with a timeout error.
- *
- * @internal
- */
-export function createDeferredPromiseWithTimer<T>(
-  timeoutMessage: string,
-  timeout = 5000
-): DeferredPromise<T> {
-  let isResolved = false;
-  let resolver = (_: T): void => {};
-  let rejector = (_: Error) => {};
-  const taskPromise = new Promise<T>((resolve, reject) => {
-    resolver = resolve;
-    rejector = reject;
-  });
-  const timeoutId = setTimeout(() => {
-    rejector(new TimeoutError(timeoutMessage));
-  }, timeout);
-  return Object.assign(taskPromise, {
-    resolved: () => {
-      return isResolved;
-    },
-    resolve: (value: T) => {
-      clearTimeout(timeoutId);
-      isResolved = true;
-      resolver(value);
-    },
-    reject: (err: Error) => {
-      clearTimeout(timeoutId);
-      rejector(err);
-    },
-  });
-}
-
-/**
- * Creates an returns a promise along with the resolve/reject functions.
- *
- * @internal
- */
-export function createDeferredPromise<T>(): DeferredPromise<T> {
-  let isResolved = false;
-  let resolver = (_: T): void => {};
-  let rejector = (_: Error) => {};
-  const taskPromise = new Promise<T>((resolve, reject) => {
-    resolver = resolve;
-    rejector = reject;
-  });
-  return Object.assign(taskPromise, {
-    resolved: () => {
-      return isResolved;
-    },
-    resolve: (value: T) => {
-      isResolved = true;
-      resolver(value);
-    },
-    reject: (err: Error) => {
-      rejector(err);
     },
   });
 }

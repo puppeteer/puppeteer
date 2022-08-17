@@ -20,8 +20,6 @@ import {chdir} from 'process';
 import semver from 'semver';
 import {versionsPerRelease} from '../versions.js';
 import versionsArchived from '../website/versionsArchived.json';
-
-// eslint-disable-next-line import/extensions
 import {generateDocs} from './internal/custom_markdown_action';
 
 function getOffsetAndLimit(

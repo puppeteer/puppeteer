@@ -26,7 +26,7 @@ import {
   BrowserContext,
 } from '../../lib/cjs/puppeteer/common/Browser.js';
 import {Page} from '../../lib/cjs/puppeteer/common/Page.js';
-import {isErrorLike} from '../../lib/cjs/puppeteer/common/util.js';
+import {isErrorLike} from '../../lib/cjs/puppeteer/util/ErrorLike.js';
 import {
   PuppeteerLaunchOptions,
   PuppeteerNode,

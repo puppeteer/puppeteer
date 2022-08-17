@@ -15,7 +15,7 @@
  */
 import {Protocol} from 'devtools-protocol';
 import {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
-import {assert} from './assert.js';
+import {assert} from '../util/assert.js';
 import {ProtocolError} from './Errors.js';
 import {EventEmitter} from './EventEmitter.js';
 import {Frame} from './FrameManager.js';

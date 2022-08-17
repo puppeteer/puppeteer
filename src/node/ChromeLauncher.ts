@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import {assert} from '../common/assert.js';
+import {assert} from '../util/assert.js';
 import {Browser} from '../common/Browser.js';
 import {Product} from '../common/Product.js';
 import {BrowserRunner} from './BrowserRunner.js';

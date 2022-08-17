@@ -20,18 +20,17 @@ import * as path from 'path';
 import * as readline from 'readline';
 import removeFolder from 'rimraf';
 import {promisify} from 'util';
-import {assert} from '../common/assert.js';
+import {assert} from '../util/assert.js';
 import {Connection} from '../common/Connection.js';
 import {debug} from '../common/Debug.js';
 import {TimeoutError} from '../common/Errors.js';
 import {
   debugError,
   addEventListener,
-  isErrnoException,
-  isErrorLike,
   PuppeteerEventListener,
   removeEventListeners,
 } from '../common/util.js';
+import {isErrnoException, isErrorLike} from '../util/ErrorLike.js';
 import {Product} from '../common/Product.js';
 import {NodeWebSocketTransport as WebSocketTransport} from '../node/NodeWebSocketTransport.js';
 import {LaunchOptions} from './LaunchOptions.js';

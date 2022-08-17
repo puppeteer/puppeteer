@@ -52,7 +52,6 @@ export * from './common/TimeoutSettings.js';
 export * from './common/Tracing.js';
 export * from './common/USKeyboardLayout.js';
 export * from './common/WebWorker.js';
-export * from './common/assert.js';
 export * from './common/fetch.js';
 export * from './common/types.js';
 export * from './common/util.js';
@@ -71,4 +70,5 @@ export * from './node/install.js';
 export * from './node/util.js';
 
 // Exports from `generated`
+export * from './generated/injected.js';
 export * from './generated/version.js';

@@ -33,7 +33,7 @@ import createHttpsProxyAgent, {
   HttpsProxyAgentOptions,
 } from 'https-proxy-agent';
 import {getProxyForUrl} from 'proxy-from-env';
-import {assert} from '../common/assert.js';
+import {assert} from '../util/assert.js';
 
 import tar from 'tar-fs';
 import bzip from 'unbzip2-stream';
