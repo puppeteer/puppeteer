@@ -41,9 +41,9 @@
     "lint:prettier": "prettier --check .",
     "lint:eslint": "([ \"$CI\" = true ] && eslint --ext js --ext ts --quiet -f codeframe . || eslint --ext js --ext ts .)",
     "install": "node install.js",
-    "generate:sources": "ts-node utils/generate_sources.ts",
+    "generate:sources": "tsx utils/generate_sources.ts",
     "generate:types": "node utils/export_all.js && api-extractor run --local --verbose && eslint --ext ts --no-ignore --no-eslintrc -c .eslintrc.types.cjs --fix lib/types.d.ts",
-    "generate:markdown": "ts-node utils/generate_docs.ts && prettier --ignore-path none --write docs",
+    "generate:markdown": "tsx utils/generate_docs.ts && prettier --ignore-path none --write docs",
     "generate:esm-package-json": "echo '{\"type\": \"module\"}' > lib/esm/package.json",
     "format": "run-s format:*",
     "format:prettier": "prettier --write .",
@@ -53,8 +53,8 @@
     "commitlint": "commitlint --from=HEAD~1",
     "clean": "rimraf lib && rimraf test/build",
     "check": "run-p check:*",
-    "check:protocol-revision": "ts-node -s scripts/ensure-correct-devtools-protocol-package",
-    "check:pinned-deps": "ts-node -s scripts/ensure-pinned-deps",
+    "check:protocol-revision": "tsx scripts/ensure-correct-devtools-protocol-package",
+    "check:pinned-deps": "tsx scripts/ensure-pinned-deps",
     "build": "run-s generate:sources build:tsc generate:types generate:esm-package-json",
     "build:tsc": "tsc --version && run-p build:tsc:*",
     "build:tsc:esm": "tsc -b src/tsconfig.esm.json",
@@ -138,6 +138,7 @@
     "source-map-support": "0.5.21",
     "text-diff": "1.0.1",
     "tsd": "0.22.0",
+    "tsx": "3.8.2",
     "typescript": "4.7.4"
   }
 }
