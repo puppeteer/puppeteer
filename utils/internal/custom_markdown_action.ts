@@ -15,8 +15,6 @@
  */
 
 import {ApiModel} from '@microsoft/api-extractor-model';
-
-// eslint-disable-next-line import/extensions
 import {MarkdownDocumenter} from './custom_markdown_documenter';
 
 export const generateDocs = (jsonPath: string, outputDir: string): void => {
