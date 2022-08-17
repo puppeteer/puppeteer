@@ -3,7 +3,7 @@ import esbuild from 'esbuild';
 import {mkdir, mkdtemp, readFile, writeFile} from 'fs/promises';
 import path from 'path';
 import rimraf from 'rimraf';
-import {job} from './internal/job';
+import {job} from './internal/job.js';
 
 (async () => {
   await job('', async ({outputs}) => {

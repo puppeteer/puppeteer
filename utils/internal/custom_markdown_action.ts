@@ -15,7 +15,7 @@
  */
 
 import {ApiModel} from '@microsoft/api-extractor-model';
-import {MarkdownDocumenter} from './custom_markdown_documenter';
+import {MarkdownDocumenter} from './custom_markdown_documenter.js';
 
 export const generateDocs = (jsonPath: string, outputDir: string): void => {
   const apiModel = new ApiModel();
