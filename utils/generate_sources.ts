@@ -32,10 +32,10 @@ import {job} from './internal/job.js';
       'utf-8'
     );
     const scriptContent = `/** @internal */
-export const source = ${JSON.stringify(content)};
+export const injectedSourceCode = ${JSON.stringify(content)};
 `;
     await writeFile(outputs[0]!, scriptContent);
-    await rimraf.sync(tmp);
+    rimraf.sync(tmp);
   })
     .inputs(['src/injected/**.ts'])
     .outputs(['src/generated/injected.ts'])

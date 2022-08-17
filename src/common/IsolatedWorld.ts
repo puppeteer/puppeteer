@@ -41,6 +41,7 @@ import {
   createDeferredPromise,
   DeferredPromise,
 } from '../util/DeferredPromise.js';
+import {injectedSourceCode} from '../generated/injected.js';
 
 // predicateQueryHandler and checkWaitForOptions are declared here so that
 // TypeScript knows about them when used in the predicate function below.
@@ -125,6 +126,7 @@ export class IsolatedWorld {
   #client: CDPSession;
   #frame: Frame;
   #timeoutSettings: TimeoutSettings;
+  #injected: boolean;
   #documentPromise: Promise<ElementHandle<Document>> | null = null;
   #contextPromise: DeferredPromise<ExecutionContext> = createDeferredPromise();
   #detached = false;
@@ -148,11 +150,15 @@ export class IsolatedWorld {
     return `${name}_${contextId}`;
   };
 
+  /**
+   * @param injected - Whether to inject Puppeteer code or not.
+   */
   constructor(
     client: CDPSession,
     frameManager: FrameManager,
     frame: Frame,
-    timeoutSettings: TimeoutSettings
+    timeoutSettings: TimeoutSettings,
+    injected = false
   ) {
     // Keep own reference to client because it might differ from the FrameManager's
     // client for OOP iframes.
@@ -160,6 +166,8 @@ export class IsolatedWorld {
     this.#frameManager = frameManager;
     this.#frame = frame;
     this.#timeoutSettings = timeoutSettings;
+    this.#injected = injected;
+
     this.#client.on('Runtime.bindingCalled', this.#onBindingCalled);
   }
 
@@ -172,12 +180,15 @@ export class IsolatedWorld {
     this.#contextPromise = createDeferredPromise();
   }
 
-  setContext(context: ExecutionContext): void {
+  async setContext(context: ExecutionContext): Promise<void> {
     assert(
       this.#contextPromise,
       `ExecutionContext ${context._contextId} has already been set.`
     );
     this.#ctxBindings.clear();
+    if (this.#injected) {
+      await context.evaluate(injectedSourceCode);
+    }
     this.#contextPromise.resolve(context);
     for (const waitTask of this._waitTasks) {
       waitTask.rerun();

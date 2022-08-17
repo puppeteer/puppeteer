@@ -221,7 +221,8 @@ export class Frame {
         client,
         this._frameManager,
         this,
-        this._frameManager.timeoutSettings
+        this._frameManager.timeoutSettings,
+        true
       ),
     };
   }
