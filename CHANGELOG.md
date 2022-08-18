@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [16.2.0](https://github.com/puppeteer/puppeteer/compare/v16.1.1...v16.2.0) (2022-08-18)
+
+
+### Features
+
+* add Khmer (Cambodian) language support ([#8809](https://github.com/puppeteer/puppeteer/issues/8809)) ([34f8737](https://github.com/puppeteer/puppeteer/commit/34f873721804d57a5faf3eab8ef50340c69ed180))
+
+
+### Bug Fixes
+
+* handle service workers in extensions ([#8807](https://github.com/puppeteer/puppeteer/issues/8807)) ([2a0eefb](https://github.com/puppeteer/puppeteer/commit/2a0eefb99f0ae00dacc9e768a253308c0d18a4c3)), closes [#8800](https://github.com/puppeteer/puppeteer/issues/8800)
+
 ## [16.1.1](https://github.com/puppeteer/puppeteer/compare/v16.1.0...v16.1.1) (2022-08-16)
 
 
