@@ -18,6 +18,7 @@ import expect from 'expect';
 import {ServerResponse} from 'http';
 import {Page} from '../../lib/cjs/puppeteer/common/Page.js';
 import {Target} from '../../lib/cjs/puppeteer/common/Target.js';
+import { Connection, CDPSession } from  '../../lib/cjs/puppeteer/common/Connection.js';
 import {
   getTestState,
   itFailsFirefox,
@@ -183,6 +184,36 @@ describe('Target', function () {
       expect(await destroyedTarget).toBe(await createdTarget);
     }
   );
+  it.only('should create a worker from a service worker', async () => {
+    const {server, browser} = getTestState();
+
+    const customSession = await browser.target().createCDPSession();
+    const connection = customSession.connection() as Connection;
+
+    customSession.on('Target.attachedToTarget', event => {
+      const subsession = connection.session(event.sessionId) as CDPSession;
+      subsession.on('Network.responseReceived', event => {
+        console.log('response received', event);
+      });
+      subsession.send('Network.enable');
+      subsession.send('Runtime.runIfWaitingForDebugger');
+      console.log('custom session resume');
+    });
+
+    await customSession.send('Target.setAutoAttach', {
+      flatten: true,
+      waitForDebuggerOnStart: true,
+      autoAttach: true,
+    });
+
+    console.log('new page');
+    const page = await browser.newPage();
+    console.log('nav');
+    await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
+    console.log('after nav');
+    await new Promise(resolve => setTimeout(resolve, 3000))
+  });
+
   itFailsFirefox('should create a worker from a service worker', async () => {
     const {page, server, context} = getTestState();
 
