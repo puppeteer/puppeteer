@@ -4,7 +4,9 @@ sidebar_label: WebWorker.executionContext
 
 # WebWorker.executionContext() method
 
-Returns the ExecutionContext the WebWorker runs in
+> Warning: This API is now obsolete.
+>
+> Do not use directly.
 
 **Signature:**
 
