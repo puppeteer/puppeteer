@@ -16,27 +16,12 @@
 import NodeWebSocket from 'ws';
 import {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {packageVersion} from '../generated/version.js';
-import {promises as dns} from 'dns';
-import {URL} from 'url';
 
 /**
  * @internal
  */
 export class NodeWebSocketTransport implements ConnectionTransport {
-  static async create(urlString: string): Promise<NodeWebSocketTransport> {
-    // TODO(jrandolf): Starting in Node 17, IPv6 is favoured over IPv4 due to a change
-    // in a default option:
-    // - https://github.com/nodejs/node/issues/40537,
-    // Due to this, for Firefox, we must parse and resolve the `localhost` hostname
-    // manually with the previous behavior according to:
-    // - https://nodejs.org/api/dns.html#dnslookuphostname-options-callback
-    // because of https://bugzilla.mozilla.org/show_bug.cgi?id=1769994.
-    const url = new URL(urlString);
-    if (url.hostname === 'localhost') {
-      const {address} = await dns.lookup(url.hostname, {verbatim: false});
-      url.hostname = address;
-    }
-
+  static create(url: string): Promise<NodeWebSocketTransport> {
     return new Promise((resolve, reject) => {
       const ws = new NodeWebSocket(url, [], {
         followRedirects: true,
