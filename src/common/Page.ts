@@ -28,7 +28,11 @@ import {ElementHandle} from './ElementHandle.js';
 import {EmulationManager} from './EmulationManager.js';
 import {EventEmitter, Handler} from './EventEmitter.js';
 import {FileChooser} from './FileChooser.js';
-import {FrameManager, FrameManagerEmittedEvents} from './FrameManager.js';
+import {
+  FrameManager,
+  FrameManagerEmittedEvents,
+  UTILITY_WORLD_NAME,
+} from './FrameManager.js';
 import {Frame} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
@@ -73,6 +77,7 @@ import {
   DeferredPromise,
 } from '../util/DeferredPromise.js';
 import {WebWorker} from './WebWorker.js';
+import {EVALUATION_SCRIPT_URL} from './ExecutionContext.js';
 
 /**
  * @public
@@ -641,6 +646,10 @@ export class Page extends EventEmitter {
       this.#frameManager.initialize(this.#target._targetId),
       this.#client.send('Performance.enable'),
       this.#client.send('Log.enable'),
+      this.#client.send('Page.addScriptToEvaluateOnNewDocument', {
+        source: `//# sourceURL=${EVALUATION_SCRIPT_URL}`,
+        worldName: UTILITY_WORLD_NAME,
+      }),
     ]);
   }
 

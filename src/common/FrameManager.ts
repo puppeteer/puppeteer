@@ -23,7 +23,7 @@ import {
 import {isErrorLike} from '../util/ErrorLike.js';
 import {CDPSession} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
-import {EVALUATION_SCRIPT_URL, ExecutionContext} from './ExecutionContext.js';
+import {ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
 import {IsolatedWorld, MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorld.js';
 import {NetworkManager} from './NetworkManager.js';
@@ -32,7 +32,10 @@ import {Target} from './Target.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {debugError} from './util.js';
 
-const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
+/**
+ * @internal
+ */
+export const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
 /**
  * We use symbols to prevent external parties listening to these events.
@@ -388,11 +391,6 @@ export class FrameManager extends EventEmitter {
     if (this.#isolatedWorlds.has(key)) {
       return;
     }
-
-    await session.send('Page.addScriptToEvaluateOnNewDocument', {
-      source: `//# sourceURL=${EVALUATION_SCRIPT_URL}`,
-      worldName: name,
-    });
 
     await Promise.all(
       this.frames()
