@@ -18,3 +18,12 @@
  * @internal
  */
 export const isNode = !!(typeof process !== 'undefined' && process.version);
+
+/**
+ * @internal
+ */
+export const deferredPromiseDebugTimeout =
+  typeof process !== 'undefined' &&
+  typeof process.env['PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT'] !== 'undefined'
+    ? Number(process.env['PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT'])
+    : -1;
