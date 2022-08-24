@@ -121,10 +121,7 @@ export interface IsolatedWorldChart {
  * @internal
  */
 export class IsolatedWorld {
-  #frameManager: FrameManager;
-  #client: CDPSession;
   #frame: Frame;
-  #timeoutSettings: TimeoutSettings;
   #documentPromise: Promise<ElementHandle<Document>> | null = null;
   #contextPromise: DeferredPromise<ExecutionContext> = createDeferredPromise();
   #detached = false;
@@ -148,19 +145,23 @@ export class IsolatedWorld {
     return `${name}_${contextId}`;
   };
 
-  constructor(
-    client: CDPSession,
-    frameManager: FrameManager,
-    frame: Frame,
-    timeoutSettings: TimeoutSettings
-  ) {
+  constructor(frame: Frame) {
     // Keep own reference to client because it might differ from the FrameManager's
     // client for OOP iframes.
-    this.#client = client;
-    this.#frameManager = frameManager;
     this.#frame = frame;
-    this.#timeoutSettings = timeoutSettings;
     this.#client.on('Runtime.bindingCalled', this.#onBindingCalled);
+  }
+
+  get #client(): CDPSession {
+    return this.#frame._client();
+  }
+
+  get #frameManager(): FrameManager {
+    return this.#frame._frameManager;
+  }
+
+  get #timeoutSettings(): TimeoutSettings {
+    return this.#frameManager.timeoutSettings;
   }
 
   frame(): Frame {

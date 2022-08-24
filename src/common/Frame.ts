@@ -211,18 +211,8 @@ export class Frame {
   updateClient(client: CDPSession): void {
     this.#client = client;
     this.worlds = {
-      [MAIN_WORLD]: new IsolatedWorld(
-        client,
-        this._frameManager,
-        this,
-        this._frameManager.timeoutSettings
-      ),
-      [PUPPETEER_WORLD]: new IsolatedWorld(
-        client,
-        this._frameManager,
-        this,
-        this._frameManager.timeoutSettings
-      ),
+      [MAIN_WORLD]: new IsolatedWorld(this),
+      [PUPPETEER_WORLD]: new IsolatedWorld(this),
     };
   }
 
