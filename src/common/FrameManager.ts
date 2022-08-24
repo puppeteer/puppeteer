@@ -17,7 +17,7 @@
 import {Protocol} from 'devtools-protocol';
 import {assert} from '../util/assert.js';
 import {
-  createDeferredPromiseWithTimer,
+  createDebuggableDeferredPromise,
   DeferredPromise,
 } from '../util/DeferredPromise.js';
 import {isErrorLike} from '../util/ErrorLike.js';
@@ -150,7 +150,7 @@ export class FrameManager extends EventEmitter {
       if (!this.#framesPendingTargetInit.has(targetId)) {
         this.#framesPendingTargetInit.set(
           targetId,
-          createDeferredPromiseWithTimer(
+          createDebuggableDeferredPromise(
             `Waiting for target frame ${targetId} failed`
           )
         );
@@ -318,7 +318,7 @@ export class FrameManager extends EventEmitter {
       if (!this.#framesPendingAttachment.has(frameId)) {
         this.#framesPendingAttachment.set(
           frameId,
-          createDeferredPromiseWithTimer(
+          createDebuggableDeferredPromise(
             `Waiting for frame ${frameId} to attach failed`
           )
         );

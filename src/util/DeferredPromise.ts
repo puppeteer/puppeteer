@@ -1,15 +1,16 @@
 import {TimeoutError} from '../common/Errors.js';
+import {deferredPromiseDebugTimeout} from '../environment.js';
 
 /**
  * @internal
  */
-
 export interface DeferredPromise<T> extends Promise<T> {
   finished: () => boolean;
   resolved: () => boolean;
   resolve: (_: T) => void;
   reject: (_: Error) => void;
 }
+
 /**
  * Creates an returns a promise along with the resolve/reject functions.
  *
@@ -18,7 +19,6 @@ export interface DeferredPromise<T> extends Promise<T> {
  *
  * @internal
  */
-
 export function createDeferredPromiseWithTimer<T>(
   timeoutMessage: string,
   timeout = 5000
@@ -54,12 +54,12 @@ export function createDeferredPromiseWithTimer<T>(
     },
   });
 }
+
 /**
  * Creates an returns a promise along with the resolve/reject functions.
  *
  * @internal
  */
-
 export function createDeferredPromise<T>(): DeferredPromise<T> {
   let isResolved = false;
   let isRejected = false;
@@ -85,4 +85,19 @@ export function createDeferredPromise<T>(): DeferredPromise<T> {
       rejector(err);
     },
   });
+}
+
+/**
+ * @internal
+ */
+export function createDebuggableDeferredPromise<T>(
+  timeoutMessage: string
+): DeferredPromise<T> {
+  if (deferredPromiseDebugTimeout > 0) {
+    return createDeferredPromiseWithTimer(
+      timeoutMessage,
+      deferredPromiseDebugTimeout
+    );
+  }
+  return createDeferredPromise();
 }
