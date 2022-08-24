@@ -2,13 +2,9 @@ import {Protocol} from 'devtools-protocol';
 import {assert} from '../util/assert.js';
 import {CDPSession} from './Connection.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {FrameManager} from './FrameManager.js';
 import {Frame} from './Frame.js';
-import {
-  MAIN_WORLD,
-  PUPPETEER_WORLD,
-  WaitForSelectorOptions,
-} from './IsolatedWorld.js';
+import {FrameManager} from './FrameManager.js';
+import {PUPPETEER_WORLD, WaitForSelectorOptions} from './IsolatedWorld.js';
 import {
   BoundingBox,
   BoxModel,
@@ -296,19 +292,20 @@ export class ElementHandle<
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
     const frame = this.executionContext().frame();
     assert(frame);
-    const adoptedRoot = await frame.worlds[PUPPETEER_WORLD].adoptHandle(this);
-    const handle = await frame.worlds[PUPPETEER_WORLD].waitForSelector(
-      selector,
-      {
+    const adoptedRoot = await frame.worldManager
+      .get(PUPPETEER_WORLD)
+      .adoptHandle(this);
+    const handle = await frame.worldManager
+      .get(PUPPETEER_WORLD)
+      .waitForSelector(selector, {
         ...options,
         root: adoptedRoot,
-      }
-    );
+      });
     await adoptedRoot.dispose();
     if (!handle) {
       return null;
     }
-    const result = (await frame.worlds[MAIN_WORLD].adoptHandle(
+    const result = (await frame.worldManager.defaultWorld.adoptHandle(
       handle
     )) as ElementHandle<NodeFor<Selector>>;
     await handle.dispose();

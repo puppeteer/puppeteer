@@ -6,15 +6,11 @@ import {ExecutionContext} from './ExecutionContext.js';
 import {FrameManager} from './FrameManager.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {MouseButton} from './Input.js';
-import {
-  IsolatedWorld,
-  IsolatedWorldChart,
-  MAIN_WORLD,
-  PUPPETEER_WORLD,
-  WaitForSelectorOptions,
-} from './IsolatedWorld.js';
+import {PUPPETEER_WORLD, WaitForSelectorOptions} from './IsolatedWorld.js';
+import {IsolatedWorldManager} from './IsolatedWorldManager.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {Page} from './Page.js';
+import {TimeoutSettings} from './TimeoutSettings.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 
 /**
@@ -142,7 +138,7 @@ export interface FrameAddStyleTagOptions {
  * @public
  */
 export class Frame {
-  #parentFrame: Frame | null;
+  #parentFrame?: Frame;
   #url = '';
   #detached = false;
   #client!: CDPSession;
@@ -150,7 +146,7 @@ export class Frame {
   /**
    * @internal
    */
-  worlds!: IsolatedWorldChart;
+  worldManager!: IsolatedWorldManager;
   /**
    * @internal
    */
@@ -178,31 +174,36 @@ export class Frame {
   /**
    * @internal
    */
-  _childFrames: Set<Frame>;
+  _childFrames = new Set<Frame>();
 
   /**
    * @internal
    */
   constructor(
     frameManager: FrameManager,
-    parentFrame: Frame | null,
+    parentFrame: Frame | undefined,
     frameId: string,
     client: CDPSession
   ) {
-    this._frameManager = frameManager;
-    this.#parentFrame = parentFrame ?? null;
-    this.#url = '';
     this._id = frameId;
+    this._frameManager = frameManager;
+    this.#parentFrame = parentFrame;
     this.#detached = false;
+    this.#client = client;
 
-    this._loaderId = '';
-
-    this._childFrames = new Set();
     if (this.#parentFrame) {
       this.#parentFrame._childFrames.add(this);
     }
 
-    this.updateClient(client);
+    this.worldManager = new IsolatedWorldManager(client, this);
+    this.worldManager.add(PUPPETEER_WORLD);
+  }
+
+  /**
+   * @internal
+   */
+  get timeoutSettings(): TimeoutSettings {
+    return this._frameManager.timeoutSettings;
   }
 
   /**
@@ -210,20 +211,7 @@ export class Frame {
    */
   updateClient(client: CDPSession): void {
     this.#client = client;
-    this.worlds = {
-      [MAIN_WORLD]: new IsolatedWorld(
-        client,
-        this._frameManager,
-        this,
-        this._frameManager.timeoutSettings
-      ),
-      [PUPPETEER_WORLD]: new IsolatedWorld(
-        client,
-        this._frameManager,
-        this,
-        this._frameManager.timeoutSettings
-      ),
-    };
+    this.worldManager.updateClient(this.#client);
   }
 
   /**
@@ -413,7 +401,7 @@ export class Frame {
    * @returns a promise that resolves to the frame's default execution context.
    */
   executionContext(): Promise<ExecutionContext> {
-    return this.worlds[MAIN_WORLD].executionContext();
+    return this.worldManager.defaultWorld.executionContext();
   }
 
   /**
@@ -429,7 +417,7 @@ export class Frame {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    return this.worlds[MAIN_WORLD].evaluateHandle(pageFunction, ...args);
+    return this.worldManager.defaultWorld.evaluateHandle(pageFunction, ...args);
   }
 
   /**
@@ -445,7 +433,7 @@ export class Frame {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
-    return this.worlds[MAIN_WORLD].evaluate(pageFunction, ...args);
+    return this.worldManager.defaultWorld.evaluate(pageFunction, ...args);
   }
 
   /**
@@ -458,7 +446,7 @@ export class Frame {
   async $<Selector extends string>(
     selector: Selector
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    return this.worlds[MAIN_WORLD].$(selector);
+    return this.worldManager.defaultWorld.$(selector);
   }
 
   /**
@@ -471,7 +459,7 @@ export class Frame {
   async $$<Selector extends string>(
     selector: Selector
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    return this.worlds[MAIN_WORLD].$$(selector);
+    return this.worldManager.defaultWorld.$$(selector);
   }
 
   /**
@@ -505,7 +493,11 @@ export class Frame {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
-    return this.worlds[MAIN_WORLD].$eval(selector, pageFunction, ...args);
+    return this.worldManager.defaultWorld.$eval(
+      selector,
+      pageFunction,
+      ...args
+    );
   }
 
   /**
@@ -539,7 +531,11 @@ export class Frame {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
-    return this.worlds[MAIN_WORLD].$$eval(selector, pageFunction, ...args);
+    return this.worldManager.defaultWorld.$$eval(
+      selector,
+      pageFunction,
+      ...args
+    );
   }
 
   /**
@@ -549,7 +545,7 @@ export class Frame {
    * @param expression - the XPath expression to evaluate.
    */
   async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
-    return this.worlds[MAIN_WORLD].$x(expression);
+    return this.worldManager.defaultWorld.$x(expression);
   }
 
   /**
@@ -591,14 +587,13 @@ export class Frame {
     selector: Selector,
     options: WaitForSelectorOptions = {}
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    const handle = await this.worlds[PUPPETEER_WORLD].waitForSelector(
-      selector,
-      options
-    );
+    const handle = await this.worldManager
+      .get(PUPPETEER_WORLD)
+      .waitForSelector(selector, options);
     if (!handle) {
       return null;
     }
-    const mainHandle = (await this.worlds[MAIN_WORLD].adoptHandle(
+    const mainHandle = (await this.worldManager.defaultWorld.adoptHandle(
       handle
     )) as ElementHandle<NodeFor<Selector>>;
     await handle.dispose();
@@ -673,7 +668,7 @@ export class Frame {
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     // TODO: Fix when NodeHandle has been added.
-    return this.worlds[MAIN_WORLD].waitForFunction(
+    return this.worldManager.defaultWorld.waitForFunction(
       pageFunction,
       options,
       ...args
@@ -684,7 +679,7 @@ export class Frame {
    * @returns The full HTML contents of the frame, including the DOCTYPE.
    */
   async content(): Promise<string> {
-    return this.worlds[PUPPETEER_WORLD].content();
+    return this.worldManager.get(PUPPETEER_WORLD).content();
   }
 
   /**
@@ -701,7 +696,7 @@ export class Frame {
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
     } = {}
   ): Promise<void> {
-    return this.worlds[PUPPETEER_WORLD].setContent(html, options);
+    return this.worldManager.get(PUPPETEER_WORLD).setContent(html, options);
   }
 
   /**
@@ -729,7 +724,7 @@ export class Frame {
    * @returns The parent frame, if any. Detached and main frames return `null`.
    */
   parentFrame(): Frame | null {
-    return this.#parentFrame;
+    return this.#parentFrame ?? null;
   }
 
   /**
@@ -757,7 +752,7 @@ export class Frame {
   async addScriptTag(
     options: FrameAddScriptTagOptions
   ): Promise<ElementHandle<HTMLScriptElement>> {
-    return this.worlds[MAIN_WORLD].addScriptTag(options);
+    return this.worldManager.defaultWorld.addScriptTag(options);
   }
 
   /**
@@ -772,7 +767,7 @@ export class Frame {
   async addStyleTag(
     options: FrameAddStyleTagOptions
   ): Promise<ElementHandle<HTMLStyleElement | HTMLLinkElement>> {
-    return this.worlds[MAIN_WORLD].addStyleTag(options);
+    return this.worldManager.defaultWorld.addStyleTag(options);
   }
 
   /**
@@ -801,7 +796,7 @@ export class Frame {
       clickCount?: number;
     } = {}
   ): Promise<void> {
-    return this.worlds[PUPPETEER_WORLD].click(selector, options);
+    return this.worldManager.get(PUPPETEER_WORLD).click(selector, options);
   }
 
   /**
@@ -811,7 +806,7 @@ export class Frame {
    * @throws Throws if there's no element matching `selector`.
    */
   async focus(selector: string): Promise<void> {
-    return this.worlds[PUPPETEER_WORLD].focus(selector);
+    return this.worldManager.get(PUPPETEER_WORLD).focus(selector);
   }
 
   /**
@@ -822,7 +817,7 @@ export class Frame {
    * @throws Throws if there's no element matching `selector`.
    */
   async hover(selector: string): Promise<void> {
-    return this.worlds[PUPPETEER_WORLD].hover(selector);
+    return this.worldManager.get(PUPPETEER_WORLD).hover(selector);
   }
 
   /**
@@ -844,7 +839,7 @@ export class Frame {
    * @throws Throws if there's no `<select>` matching `selector`.
    */
   select(selector: string, ...values: string[]): Promise<string[]> {
-    return this.worlds[PUPPETEER_WORLD].select(selector, ...values);
+    return this.worldManager.get(PUPPETEER_WORLD).select(selector, ...values);
   }
 
   /**
@@ -854,7 +849,7 @@ export class Frame {
    * @throws Throws if there's no element matching `selector`.
    */
   async tap(selector: string): Promise<void> {
-    return this.worlds[PUPPETEER_WORLD].tap(selector);
+    return this.worldManager.get(PUPPETEER_WORLD).tap(selector);
   }
 
   /**
@@ -883,7 +878,7 @@ export class Frame {
     text: string,
     options?: {delay: number}
   ): Promise<void> {
-    return this.worlds[PUPPETEER_WORLD].type(selector, text, options);
+    return this.worldManager.get(PUPPETEER_WORLD).type(selector, text, options);
   }
 
   /**
@@ -916,7 +911,7 @@ export class Frame {
    * @returns the frame's title.
    */
   async title(): Promise<string> {
-    return this.worlds[PUPPETEER_WORLD].title();
+    return this.worldManager.get(PUPPETEER_WORLD).title();
   }
 
   /**
@@ -965,11 +960,10 @@ export class Frame {
    */
   _detach(): void {
     this.#detached = true;
-    this.worlds[MAIN_WORLD]._detach();
-    this.worlds[PUPPETEER_WORLD]._detach();
+    this.worldManager._detach();
     if (this.#parentFrame) {
       this.#parentFrame._childFrames.delete(this);
     }
-    this.#parentFrame = null;
+    this.#parentFrame = undefined;
   }
 }

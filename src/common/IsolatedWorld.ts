@@ -16,17 +16,22 @@
 
 import {Protocol} from 'devtools-protocol';
 import {assert} from '../util/assert.js';
+import {createDeferredPromise} from '../util/DeferredPromise.js';
+import {NamedSymbol} from '../util/NamedSymbol.js';
 import {CDPSession} from './Connection.js';
 import {ElementHandle} from './ElementHandle.js';
 import {TimeoutError} from './Errors.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {FrameManager} from './FrameManager.js';
 import {Frame} from './Frame.js';
+import {FrameManager} from './FrameManager.js';
 import {MouseButton} from './Input.js';
+import {
+  IsolatedWorldManager,
+  IsolatedWorldManagerEmittedEvents,
+} from './IsolatedWorldManager.js';
 import {JSHandle} from './JSHandle.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {getQueryHandlerAndSelector} from './QueryHandler.js';
-import {TimeoutSettings} from './TimeoutSettings.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {
   createJSHandle,
@@ -37,10 +42,6 @@ import {
   makePredicateString,
   pageBindingInitString,
 } from './util.js';
-import {
-  createDeferredPromise,
-  DeferredPromise,
-} from '../util/DeferredPromise.js';
 
 // predicateQueryHandler and checkWaitForOptions are declared here so that
 // TypeScript knows about them when used in the predicate function below.
@@ -95,38 +96,21 @@ export interface PageBinding {
 }
 
 /**
- * A unique key for {@link IsolatedWorldChart} to denote the default world.
- * Execution contexts are automatically created in the default world.
- *
- * @internal
- */
-export const MAIN_WORLD = Symbol('mainWorld');
-/**
  * A unique key for {@link IsolatedWorldChart} to denote the puppeteer world.
  * This world contains all puppeteer-internal bindings/code.
  *
  * @internal
  */
-export const PUPPETEER_WORLD = Symbol('puppeteerWorld');
-/**
- * @internal
- */
-export interface IsolatedWorldChart {
-  [key: string]: IsolatedWorld;
-  [MAIN_WORLD]: IsolatedWorld;
-  [PUPPETEER_WORLD]: IsolatedWorld;
-}
+export const PUPPETEER_WORLD = NamedSymbol('__puppeteer_utility_world__');
 
 /**
  * @internal
  */
 export class IsolatedWorld {
-  #frameManager: FrameManager;
-  #client: CDPSession;
-  #frame: Frame;
-  #timeoutSettings: TimeoutSettings;
+  #manager: IsolatedWorldManager;
+
   #documentPromise: Promise<ElementHandle<Document>> | null = null;
-  #contextPromise: DeferredPromise<ExecutionContext> = createDeferredPromise();
+  #contextPromise = createDeferredPromise<ExecutionContext>();
   #detached = false;
 
   // Set of bindings that have been registered in the current context.
@@ -148,23 +132,36 @@ export class IsolatedWorld {
     return `${name}_${contextId}`;
   };
 
-  constructor(
-    client: CDPSession,
-    frameManager: FrameManager,
-    frame: Frame,
-    timeoutSettings: TimeoutSettings
-  ) {
-    // Keep own reference to client because it might differ from the FrameManager's
-    // client for OOP iframes.
-    this.#client = client;
-    this.#frameManager = frameManager;
-    this.#frame = frame;
-    this.#timeoutSettings = timeoutSettings;
-    this.#client.on('Runtime.bindingCalled', this.#onBindingCalled);
+  constructor(manager: IsolatedWorldManager) {
+    this.#manager = manager;
+
+    this.#manager.on(
+      IsolatedWorldManagerEmittedEvents.ClientUpdated,
+      (client: CDPSession) => {
+        this.clearContext();
+        for (const waitTask of this._waitTasks) {
+          waitTask.terminate(new Error('CDP session changed'));
+        }
+        this._waitTasks.clear();
+        this.#boundFunctions.clear();
+        this.#ctxBindings.clear();
+        client.on('Runtime.bindingCalled', this.onBindingCalled);
+      }
+    );
   }
 
-  frame(): Frame {
-    return this.#frame;
+  get frameManager(): FrameManager {
+    return this.frame._frameManager;
+  }
+
+  get frame(): Frame {
+    const owner = this.#manager.owner;
+    assert(owner instanceof Frame);
+    return owner;
+  }
+
+  get client(): CDPSession {
+    return this.#manager.client;
   }
 
   clearContext(): void {
@@ -190,7 +187,7 @@ export class IsolatedWorld {
 
   _detach(): void {
     this.#detached = true;
-    this.#client.off('Runtime.bindingCalled', this.#onBindingCalled);
+    this.client.off('Runtime.bindingCalled', this.onBindingCalled);
     for (const waitTask of this._waitTasks) {
       waitTask.terminate(
         new Error('waitForFunction failed: frame got detached.')
@@ -201,7 +198,7 @@ export class IsolatedWorld {
   executionContext(): Promise<ExecutionContext> {
     if (this.#detached) {
       throw new Error(
-        `Execution context is not available in detached frame "${this.#frame.url()}" (are you trying to evaluate?)`
+        `Execution context is not available in detached frame "${this.frame.url()}" (are you trying to evaluate?)`
       );
     }
     if (this.#contextPromise === null) {
@@ -329,7 +326,7 @@ export class IsolatedWorld {
   ): Promise<void> {
     const {
       waitUntil = ['load'],
-      timeout = this.#timeoutSettings.navigationTimeout(),
+      timeout = this.frameManager.timeoutSettings.navigationTimeout(),
     } = options;
     // We rely upon the fact that document.open() will reset frame lifecycle with "init"
     // lifecycle event. @see https://crrev.com/608658
@@ -339,8 +336,8 @@ export class IsolatedWorld {
       document.close();
     }, html);
     const watcher = new LifecycleWatcher(
-      this.#frameManager,
-      this.#frame,
+      this.frameManager,
+      this.frame,
       waitUntil,
       timeout
     );
@@ -649,7 +646,7 @@ export class IsolatedWorld {
     this.#settingUpBinding = null;
   }
 
-  #onBindingCalled = async (
+  onBindingCalled = async (
     event: Protocol.Runtime.BindingCalledEvent
   ): Promise<void> => {
     let payload: {type: string; name: string; seq: number; args: unknown[]};
@@ -713,7 +710,7 @@ export class IsolatedWorld {
     const {
       visible: waitForVisible = false,
       hidden: waitForHidden = false,
-      timeout = this.#timeoutSettings.timeout(),
+      timeout = this.frameManager.timeoutSettings.timeout(),
     } = options;
     const polling = waitForVisible || waitForHidden ? 'raf' : 'mutation';
     const title = `selector \`${selector}\`${
@@ -754,8 +751,10 @@ export class IsolatedWorld {
     options: {polling?: string | number; timeout?: number} = {},
     ...args: unknown[]
   ): Promise<JSHandle> {
-    const {polling = 'raf', timeout = this.#timeoutSettings.timeout()} =
-      options;
+    const {
+      polling = 'raf',
+      timeout = this.frameManager.timeoutSettings.timeout(),
+    } = options;
     const waitTaskOptions: WaitTaskOptions = {
       isolatedWorld: this,
       predicateBody: pageFunction,
@@ -779,7 +778,7 @@ export class IsolatedWorld {
     backendNodeId?: Protocol.DOM.BackendNodeId
   ): Promise<JSHandle<Node>> {
     const executionContext = await this.executionContext();
-    const {object} = await this.#client.send('DOM.resolveNode', {
+    const {object} = await this.client.send('DOM.resolveNode', {
       backendNodeId: backendNodeId,
       executionContextId: executionContext._contextId,
     });
@@ -792,7 +791,7 @@ export class IsolatedWorld {
       handle.executionContext() !== executionContext,
       'Cannot adopt handle that already belongs to this execution context'
     );
-    const nodeInfo = await this.#client.send('DOM.describeNode', {
+    const nodeInfo = await this.client.send('DOM.describeNode', {
       objectId: handle.remoteObject().objectId,
     });
     return (await this.adoptBackendNode(nodeInfo.node.backendNodeId)) as T;

@@ -34,6 +34,7 @@ export * from './common/HTTPRequest.js';
 export * from './common/HTTPResponse.js';
 export * from './common/Input.js';
 export * from './common/IsolatedWorld.js';
+export * from './common/IsolatedWorldManager.js';
 export * from './common/JSHandle.js';
 export * from './common/LifecycleWatcher.js';
 export * from './common/NetworkConditions.js';

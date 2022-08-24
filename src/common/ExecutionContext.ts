@@ -97,7 +97,7 @@ export class ExecutionContext {
    * with frames.
    */
   frame(): Frame | null {
-    return this._world ? this._world.frame() : null;
+    return this._world ? this._world.frame : null;
   }
 
   /**
