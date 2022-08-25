@@ -93,6 +93,13 @@ export class ElementHandle<
   }
 
   /**
+   * @internal
+   */
+  get frame(): Frame {
+    return this.#frame;
+  }
+
+  /**
    * Queries the current element for an element matching the given selector.
    *
    * @param selector - The selector to query for.
@@ -294,8 +301,7 @@ export class ElementHandle<
     selector: Selector,
     options: Exclude<WaitForSelectorOptions, 'root'> = {}
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    const frame = this.executionContext().frame();
-    assert(frame);
+    const frame = this.#frame;
     const adoptedRoot = await frame.worlds[PUPPETEER_WORLD].adoptHandle(this);
     const handle = await frame.worlds[PUPPETEER_WORLD].waitForSelector(
       selector,
