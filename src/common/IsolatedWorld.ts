@@ -16,16 +16,19 @@
 
 import {Protocol} from 'devtools-protocol';
 import {assert} from '../util/assert.js';
+import {
+  createDeferredPromise,
+  DeferredPromise,
+} from '../util/DeferredPromise.js';
 import {CDPSession} from './Connection.js';
 import {ElementHandle} from './ElementHandle.js';
 import {TimeoutError} from './Errors.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {FrameManager} from './FrameManager.js';
 import {Frame} from './Frame.js';
+import {FrameManager} from './FrameManager.js';
 import {MouseButton} from './Input.js';
 import {JSHandle} from './JSHandle.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
-import {getQueryHandlerAndSelector} from './QueryHandler.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {
@@ -37,10 +40,6 @@ import {
   makePredicateString,
   pageBindingInitString,
 } from './util.js';
-import {
-  createDeferredPromise,
-  DeferredPromise,
-} from '../util/DeferredPromise.js';
 
 // predicateQueryHandler and checkWaitForOptions are declared here so that
 // TypeScript knows about them when used in the predicate function below.
@@ -80,10 +79,6 @@ export interface WaitForSelectorOptions {
    * @defaultValue `30000` (30 seconds)
    */
   timeout?: number;
-  /**
-   * @deprecated Do not use. Use the {@link ElementHandle.waitForSelector}
-   */
-  root?: ElementHandle<Node>;
 }
 
 /**
@@ -122,7 +117,7 @@ export interface IsolatedWorldChart {
  */
 export class IsolatedWorld {
   #frame: Frame;
-  #documentPromise: Promise<ElementHandle<Document>> | null = null;
+  #document?: ElementHandle<Document>;
   #contextPromise: DeferredPromise<ExecutionContext> = createDeferredPromise();
   #detached = false;
 
@@ -169,7 +164,7 @@ export class IsolatedWorld {
   }
 
   clearContext(): void {
-    this.#documentPromise = null;
+    this.#document = undefined;
     this.#contextPromise = createDeferredPromise();
   }
 
@@ -248,15 +243,14 @@ export class IsolatedWorld {
   }
 
   async document(): Promise<ElementHandle<Document>> {
-    if (this.#documentPromise) {
-      return this.#documentPromise;
+    if (this.#document) {
+      return this.#document;
     }
-    this.#documentPromise = this.executionContext().then(async context => {
-      return await context.evaluateHandle(() => {
-        return document;
-      });
+    const context = await this.executionContext();
+    this.#document = await context.evaluateHandle(() => {
+      return document;
     });
-    return this.#documentPromise;
+    return this.#document;
   }
 
   async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
@@ -292,20 +286,6 @@ export class IsolatedWorld {
   ): Promise<Awaited<ReturnType<Func>>> {
     const document = await this.document();
     return document.$$eval(selector, pageFunction, ...args);
-  }
-
-  async waitForSelector<Selector extends string>(
-    selector: Selector,
-    options: WaitForSelectorOptions
-  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    const {updatedSelector, queryHandler} =
-      getQueryHandlerAndSelector(selector);
-    assert(queryHandler.waitFor, 'Query handler does not support waiting');
-    return (await queryHandler.waitFor(
-      this,
-      updatedSelector,
-      options
-    )) as ElementHandle<NodeFor<Selector>> | null;
   }
 
   async content(): Promise<string> {
@@ -707,10 +687,11 @@ export class IsolatedWorld {
 
   async _waitForSelectorInPage(
     queryOne: Function,
+    root: ElementHandle<Node> | undefined,
     selector: string,
     options: WaitForSelectorOptions,
     binding?: PageBinding
-  ): Promise<ElementHandle<Node> | null> {
+  ): Promise<JSHandle<unknown> | null> {
     const {
       visible: waitForVisible = false,
       hidden: waitForHidden = false,
@@ -738,16 +719,10 @@ export class IsolatedWorld {
       timeout,
       args: [selector, waitForVisible, waitForHidden],
       binding,
-      root: options.root,
+      root,
     };
     const waitTask = new WaitTask(waitTaskOptions);
-    const jsHandle = await waitTask.promise;
-    const elementHandle = jsHandle.asElement();
-    if (!elementHandle) {
-      await jsHandle.dispose();
-      return null;
-    }
-    return elementHandle;
+    return waitTask.promise;
   }
 
   waitForFunction(
@@ -797,6 +772,12 @@ export class IsolatedWorld {
       objectId: handle.remoteObject().objectId,
     });
     return (await this.adoptBackendNode(nodeInfo.node.backendNodeId)) as T;
+  }
+
+  async transferHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
+    const result = await this.adoptHandle(handle);
+    await handle.dispose();
+    return result;
   }
 }
 

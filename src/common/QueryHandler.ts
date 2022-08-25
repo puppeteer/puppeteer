@@ -16,7 +16,12 @@
 
 import {ariaHandler} from './AriaQueryHandler.js';
 import {ElementHandle} from './ElementHandle.js';
-import {IsolatedWorld, WaitForSelectorOptions} from './IsolatedWorld.js';
+import {Frame} from './Frame.js';
+import {
+  MAIN_WORLD,
+  PUPPETEER_WORLD,
+  WaitForSelectorOptions,
+} from './IsolatedWorld.js';
 
 /**
  * @public
@@ -58,11 +63,9 @@ export interface InternalQueryHandler {
   /**
    * Waits until a single node appears for a given selector and
    * {@link ElementHandle}.
-   *
-   * Akin to {@link Window.prototype.querySelectorAll}.
    */
   waitFor?: (
-    isolatedWorld: IsolatedWorld,
+    elementOrFrame: ElementHandle<Node> | Frame,
     selector: string,
     options: WaitForSelectorOptions
   ) => Promise<ElementHandle<Node> | null>;
@@ -84,12 +87,34 @@ function internalizeCustomQueryHandler(
       await jsHandle.dispose();
       return null;
     };
-    internalHandler.waitFor = (
-      domWorld: IsolatedWorld,
-      selector: string,
-      options: WaitForSelectorOptions
-    ) => {
-      return domWorld._waitForSelectorInPage(queryOne, selector, options);
+    internalHandler.waitFor = async (elementOrFrame, selector, options) => {
+      let frame: Frame;
+      let element: ElementHandle<Node> | undefined;
+      if (elementOrFrame instanceof Frame) {
+        frame = elementOrFrame;
+      } else {
+        frame = elementOrFrame.frame;
+        element = await frame.worlds[PUPPETEER_WORLD].adoptHandle(
+          elementOrFrame
+        );
+      }
+      const result = await frame.worlds[PUPPETEER_WORLD]._waitForSelectorInPage(
+        queryOne,
+        element,
+        selector,
+        options
+      );
+      if (element) {
+        await element.dispose();
+      }
+      if (!result) {
+        return null;
+      }
+      if (!(result instanceof ElementHandle)) {
+        await result.dispose();
+        return null;
+      }
+      return frame.worlds[MAIN_WORLD].transferHandle(result);
     };
   }
 

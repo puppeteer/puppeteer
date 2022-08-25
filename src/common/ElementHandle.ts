@@ -3,11 +3,7 @@ import {assert} from '../util/assert.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
-import {
-  MAIN_WORLD,
-  PUPPETEER_WORLD,
-  WaitForSelectorOptions,
-} from './IsolatedWorld.js';
+import {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {
   BoundingBox,
   BoxModel,
@@ -310,26 +306,16 @@ export class ElementHandle<
    */
   async waitForSelector<Selector extends string>(
     selector: Selector,
-    options: Exclude<WaitForSelectorOptions, 'root'> = {}
+    options: WaitForSelectorOptions = {}
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    const frame = this.#frame;
-    const adoptedRoot = await frame.worlds[PUPPETEER_WORLD].adoptHandle(this);
-    const handle = await frame.worlds[PUPPETEER_WORLD].waitForSelector(
-      selector,
-      {
-        ...options,
-        root: adoptedRoot,
-      }
-    );
-    await adoptedRoot.dispose();
-    if (!handle) {
-      return null;
-    }
-    const result = (await frame.worlds[MAIN_WORLD].adoptHandle(
-      handle
-    )) as ElementHandle<NodeFor<Selector>>;
-    await handle.dispose();
-    return result;
+    const {updatedSelector, queryHandler} =
+      getQueryHandlerAndSelector(selector);
+    assert(queryHandler.waitFor, 'Query handler does not support waiting');
+    return (await queryHandler.waitFor(
+      this,
+      updatedSelector,
+      options
+    )) as ElementHandle<NodeFor<Selector>> | null;
   }
 
   /**

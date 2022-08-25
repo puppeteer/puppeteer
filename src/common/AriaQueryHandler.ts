@@ -18,11 +18,8 @@ import {Protocol} from 'devtools-protocol';
 import {assert} from '../util/assert.js';
 import {CDPSession} from './Connection.js';
 import {ElementHandle} from './ElementHandle.js';
-import {
-  IsolatedWorld,
-  PageBinding,
-  WaitForSelectorOptions,
-} from './IsolatedWorld.js';
+import {Frame} from './Frame.js';
+import {MAIN_WORLD, PageBinding, PUPPETEER_WORLD} from './IsolatedWorld.js';
 import {InternalQueryHandler} from './QueryHandler.js';
 
 async function queryAXTree(
@@ -89,52 +86,86 @@ function parseAriaSelector(selector: string): ARIAQueryOption {
   return queryOptions;
 }
 
-const queryOne = async (
-  element: ElementHandle<Node>,
-  selector: string
-): Promise<ElementHandle<Node> | null> => {
-  const exeCtx = element.executionContext();
+const queryOneId = async (element: ElementHandle<Node>, selector: string) => {
   const {name, role} = parseAriaSelector(selector);
-  const res = await queryAXTree(exeCtx._client, element, name, role);
+  const res = await queryAXTree(element.client, element, name, role);
   if (!res[0] || !res[0].backendDOMNodeId) {
     return null;
   }
-  return (await exeCtx._world!.adoptBackendNode(
-    res[0].backendDOMNodeId
+  return res[0].backendDOMNodeId;
+};
+
+const queryOne: InternalQueryHandler['queryOne'] = async (
+  element,
+  selector
+) => {
+  const id = await queryOneId(element, selector);
+  if (!id) {
+    return null;
+  }
+  return (await element.frame.worlds[MAIN_WORLD].adoptBackendNode(
+    id
   )) as ElementHandle<Node>;
 };
 
-const waitFor = async (
-  isolatedWorld: IsolatedWorld,
-  selector: string,
-  options: WaitForSelectorOptions
-): Promise<ElementHandle<Element> | null> => {
+const waitFor: InternalQueryHandler['waitFor'] = async (
+  elementOrFrame,
+  selector,
+  options
+) => {
+  let frame: Frame;
+  let element: ElementHandle<Node> | undefined;
+  if (elementOrFrame instanceof Frame) {
+    frame = elementOrFrame;
+  } else {
+    frame = elementOrFrame.frame;
+    element = await frame.worlds[PUPPETEER_WORLD].adoptHandle(elementOrFrame);
+  }
   const binding: PageBinding = {
     name: 'ariaQuerySelector',
     pptrFunction: async (selector: string) => {
-      const root = options.root || (await isolatedWorld.document());
-      const element = await queryOne(root, selector);
-      return element;
+      const id = await queryOneId(
+        element || (await frame.worlds[PUPPETEER_WORLD].document()),
+        selector
+      );
+      if (!id) {
+        return null;
+      }
+      return (await frame.worlds[PUPPETEER_WORLD].adoptBackendNode(
+        id
+      )) as ElementHandle<Node>;
     },
   };
-  return (await isolatedWorld._waitForSelectorInPage(
+  const result = await frame.worlds[PUPPETEER_WORLD]._waitForSelectorInPage(
     (_: Element, selector: string) => {
       return (
         globalThis as unknown as {
-          ariaQuerySelector(selector: string): void;
+          ariaQuerySelector(selector: string): Node | null;
         }
       ).ariaQuerySelector(selector);
     },
+    element,
     selector,
     options,
     binding
-  )) as ElementHandle<Element> | null;
+  );
+  if (element) {
+    await element.dispose();
+  }
+  if (!result) {
+    return null;
+  }
+  if (!(result instanceof ElementHandle)) {
+    await result.dispose();
+    return null;
+  }
+  return result.frame.worlds[MAIN_WORLD].transferHandle(result);
 };
 
-const queryAll = async (
-  element: ElementHandle<Node>,
-  selector: string
-): Promise<Array<ElementHandle<Node>>> => {
+const queryAll: InternalQueryHandler['queryAll'] = async (
+  element,
+  selector
+) => {
   const exeCtx = element.executionContext();
   const {name, role} = parseAriaSelector(selector);
   const res = await queryAXTree(exeCtx._client, element, name, role);
