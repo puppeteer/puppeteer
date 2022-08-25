@@ -367,9 +367,14 @@ describeChromeOnly('AriaQueryHandler', () => {
       await utils.detachFrame(page, 'frame1');
       await waitPromise;
       expect(waitError).toBeTruthy();
-      expect(waitError.message).toContain(
-        'waitForFunction failed: frame got detached.'
-      );
+      expect(
+        waitError.message.includes(
+          'waitForFunction failed: frame got detached.'
+        ) ||
+          waitError.message.includes(
+            'Execution context is not available in detached frame'
+          )
+      ).toBeTruthy();
     });
 
     it('should survive cross-process navigation', async () => {

@@ -1,4 +1,5 @@
 import {Protocol} from 'devtools-protocol';
+import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {CDPSession} from './Connection.js';
 import {ElementHandle} from './ElementHandle.js';
@@ -15,7 +16,9 @@ import {
 } from './IsolatedWorld.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {Page} from './Page.js';
+import {TimeoutSettings} from './TimeoutSettings.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
+import {importFS} from './util.js';
 
 /**
  * @public
@@ -65,6 +68,10 @@ export interface FrameAddScriptTagOptions {
    * Set the script's `type`. Use `module` in order to load an ES2015 module.
    */
   type?: string;
+  /**
+   * Set the id of the script element.
+   */
+  id?: string;
 }
 
 /**
@@ -205,6 +212,10 @@ export class Frame {
     this.updateClient(client);
   }
 
+  get #timeoutSettings(): TimeoutSettings {
+    return this._frameManager.timeoutSettings;
+  }
+
   /**
    * @internal
    */
@@ -279,7 +290,7 @@ export class Frame {
     const {
       referer = this._frameManager.networkManager.extraHTTPHeaders()['referer'],
       waitUntil = ['load'],
-      timeout = this._frameManager.timeoutSettings.navigationTimeout(),
+      timeout = this.#timeoutSettings.navigationTimeout(),
     } = options;
 
     let ensureNewDocumentNavigation = false;
@@ -367,7 +378,7 @@ export class Frame {
   ): Promise<HTTPResponse | null> {
     const {
       waitUntil = ['load'],
-      timeout = this._frameManager.timeoutSettings.navigationTimeout(),
+      timeout = this.#timeoutSettings.navigationTimeout(),
     } = options;
     const watcher = new LifecycleWatcher(
       this._frameManager,
@@ -448,7 +459,8 @@ export class Frame {
   async $<Selector extends string>(
     selector: Selector
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    return this.worlds[MAIN_WORLD].$(selector);
+    const document = await this.document();
+    return document.$(selector);
   }
 
   /**
@@ -461,7 +473,8 @@ export class Frame {
   async $$<Selector extends string>(
     selector: Selector
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    return this.worlds[MAIN_WORLD].$$(selector);
+    const document = await this.document();
+    return document.$$(selector);
   }
 
   /**
@@ -495,7 +508,8 @@ export class Frame {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
-    return this.worlds[MAIN_WORLD].$eval(selector, pageFunction, ...args);
+    const document = await this.document();
+    return document.$eval(selector, pageFunction, ...args);
   }
 
   /**
@@ -529,7 +543,8 @@ export class Frame {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
-    return this.worlds[MAIN_WORLD].$$eval(selector, pageFunction, ...args);
+    const document = await this.document();
+    return document.$$eval(selector, pageFunction, ...args);
   }
 
   /**
@@ -539,7 +554,8 @@ export class Frame {
    * @param expression - the XPath expression to evaluate.
    */
   async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
-    return this.worlds[MAIN_WORLD].$x(expression);
+    const document = await this.document();
+    return document.$x(expression);
   }
 
   /**
@@ -674,7 +690,16 @@ export class Frame {
    * @returns The full HTML contents of the frame, including the DOCTYPE.
    */
   async content(): Promise<string> {
-    return this.worlds[PUPPETEER_WORLD].content();
+    return await this.worlds[PUPPETEER_WORLD].evaluate(() => {
+      let retVal = '';
+      if (document.doctype) {
+        retVal = new XMLSerializer().serializeToString(document.doctype);
+      }
+      if (document.documentElement) {
+        retVal += document.documentElement.outerHTML;
+      }
+      return retVal;
+    });
   }
 
   /**
@@ -691,7 +716,31 @@ export class Frame {
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
     } = {}
   ): Promise<void> {
-    return this.worlds[PUPPETEER_WORLD].setContent(html, options);
+    const {
+      waitUntil = ['load'],
+      timeout = this.#timeoutSettings.navigationTimeout(),
+    } = options;
+    // We rely upon the fact that document.open() will reset frame lifecycle with "init"
+    // lifecycle event. @see https://crrev.com/608658
+    await this.worlds[PUPPETEER_WORLD].evaluate(html => {
+      document.open();
+      document.write(html);
+      document.close();
+    }, html);
+    const watcher = new LifecycleWatcher(
+      this._frameManager,
+      this,
+      waitUntil,
+      timeout
+    );
+    const error = await Promise.race([
+      watcher.timeoutOrTerminationPromise(),
+      watcher.lifecyclePromise(),
+    ]);
+    watcher.dispose();
+    if (error) {
+      throw error;
+    }
   }
 
   /**
@@ -744,10 +793,95 @@ export class Frame {
    * `onload` event fires or when the script content was injected into the
    * frame.
    */
-  async addScriptTag(
-    options: FrameAddScriptTagOptions
-  ): Promise<ElementHandle<HTMLScriptElement>> {
-    return this.worlds[MAIN_WORLD].addScriptTag(options);
+  async addScriptTag(options: {
+    url?: string;
+    path?: string;
+    content?: string;
+    type?: string;
+    id?: string;
+  }): Promise<ElementHandle<HTMLScriptElement>> {
+    const {
+      url = null,
+      path = null,
+      content = null,
+      id = '',
+      type = '',
+    } = options;
+    if (url !== null) {
+      try {
+        const context = await this.executionContext();
+        return await context.evaluateHandle(addScriptUrl, url, id, type);
+      } catch (error) {
+        throw new Error(`Loading script from ${url} failed`);
+      }
+    }
+
+    if (path !== null) {
+      let fs;
+      try {
+        fs = (await import('fs')).promises;
+      } catch (error) {
+        if (error instanceof TypeError) {
+          throw new Error(
+            'Can only pass a filepath to addScriptTag in a Node-like environment.'
+          );
+        }
+        throw error;
+      }
+      let contents = await fs.readFile(path, 'utf8');
+      contents += '//# sourceURL=' + path.replace(/\n/g, '');
+      const context = await this.executionContext();
+      return await context.evaluateHandle(addScriptContent, contents, id, type);
+    }
+
+    if (content !== null) {
+      const context = await this.executionContext();
+      return await context.evaluateHandle(addScriptContent, content, id, type);
+    }
+
+    throw new Error(
+      'Provide an object with a `url`, `path` or `content` property'
+    );
+
+    async function addScriptUrl(url: string, id: string, type: string) {
+      const script = document.createElement('script');
+      script.src = url;
+      if (id) {
+        script.id = id;
+      }
+      if (type) {
+        script.type = type;
+      }
+      const promise = new Promise((res, rej) => {
+        script.onload = res;
+        script.onerror = rej;
+      });
+      document.head.appendChild(script);
+      await promise;
+      return script;
+    }
+
+    function addScriptContent(
+      content: string,
+      id: string,
+      type = 'text/javascript'
+    ) {
+      const script = document.createElement('script');
+      script.type = type;
+      script.text = content;
+      if (id) {
+        script.id = id;
+      }
+      let error = null;
+      script.onerror = e => {
+        return (error = e);
+      };
+      document.head.appendChild(script);
+      if (error) {
+        throw error;
+      }
+      return script;
+    }
   }
 
   /**
@@ -760,9 +894,85 @@ export class Frame {
    * frame.
    */
   async addStyleTag(
+    options: Omit<FrameAddStyleTagOptions, 'url'>
+  ): Promise<ElementHandle<HTMLStyleElement>>;
+  async addStyleTag(
+    options: FrameAddStyleTagOptions
+  ): Promise<ElementHandle<HTMLLinkElement>>;
+  async addStyleTag(
     options: FrameAddStyleTagOptions
   ): Promise<ElementHandle<HTMLStyleElement | HTMLLinkElement>> {
-    return this.worlds[MAIN_WORLD].addStyleTag(options);
+    const {url = null, path = null, content = null} = options;
+    if (url !== null) {
+      try {
+        const context = await this.executionContext();
+        return (await context.evaluateHandle(
+          addStyleUrl,
+          url
+        )) as ElementHandle<HTMLLinkElement>;
+      } catch (error) {
+        throw new Error(`Loading style from ${url} failed`);
+      }
+    }
+
+    if (path !== null) {
+      let fs: typeof import('fs').promises;
+      try {
+        fs = (await importFS()).promises;
+      } catch (error) {
+        if (error instanceof TypeError) {
+          throw new Error(
+            'Cannot pass a filepath to addStyleTag in the browser environment.'
+          );
+        }
+        throw error;
+      }
+
+      let contents = await fs.readFile(path, 'utf8');
+      contents += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
+      const context = await this.executionContext();
+      return (await context.evaluateHandle(
+        addStyleContent,
+        contents
+      )) as ElementHandle<HTMLStyleElement>;
+    }
+
+    if (content !== null) {
+      const context = await this.executionContext();
+      return (await context.evaluateHandle(
+        addStyleContent,
+        content
+      )) as ElementHandle<HTMLStyleElement>;
+    }
+
+    throw new Error(
+      'Provide an object with a `url`, `path` or `content` property'
+    );
+
+    async function addStyleUrl(url: string): Promise<HTMLElement> {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = url;
+      const promise = new Promise((res, rej) => {
+        link.onload = res;
+        link.onerror = rej;
+      });
+      document.head.appendChild(link);
+      await promise;
+      return link;
+    }
+
+    async function addStyleContent(content: string): Promise<HTMLElement> {
+      const style = document.createElement('style');
+      style.appendChild(document.createTextNode(content));
+      const promise = new Promise((res, rej) => {
+        style.onload = res;
+        style.onerror = rej;
+      });
+      document.head.appendChild(style);
+      await promise;
+      return style;
+    }
   }
 
   /**
@@ -791,7 +1001,10 @@ export class Frame {
       clickCount?: number;
     } = {}
   ): Promise<void> {
-    return this.worlds[PUPPETEER_WORLD].click(selector, options);
+    const handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.click(options);
+    await handle.dispose();
   }
 
   /**
@@ -801,7 +1014,10 @@ export class Frame {
    * @throws Throws if there's no element matching `selector`.
    */
   async focus(selector: string): Promise<void> {
-    return this.worlds[PUPPETEER_WORLD].focus(selector);
+    const handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.focus();
+    await handle.dispose();
   }
 
   /**
@@ -812,7 +1028,10 @@ export class Frame {
    * @throws Throws if there's no element matching `selector`.
    */
   async hover(selector: string): Promise<void> {
-    return this.worlds[PUPPETEER_WORLD].hover(selector);
+    const handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.hover();
+    await handle.dispose();
   }
 
   /**
@@ -833,8 +1052,12 @@ export class Frame {
    * @returns the list of values that were successfully selected.
    * @throws Throws if there's no `<select>` matching `selector`.
    */
-  select(selector: string, ...values: string[]): Promise<string[]> {
-    return this.worlds[PUPPETEER_WORLD].select(selector, ...values);
+  async select(selector: string, ...values: string[]): Promise<string[]> {
+    const handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    const result = await handle.select(...values);
+    await handle.dispose();
+    return result;
   }
 
   /**
@@ -844,7 +1067,10 @@ export class Frame {
    * @throws Throws if there's no element matching `selector`.
    */
   async tap(selector: string): Promise<void> {
-    return this.worlds[PUPPETEER_WORLD].tap(selector);
+    const handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.tap();
+    await handle.dispose();
   }
 
   /**
@@ -873,7 +1099,10 @@ export class Frame {
     text: string,
     options?: {delay: number}
   ): Promise<void> {
-    return this.worlds[PUPPETEER_WORLD].type(selector, text, options);
+    const handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.type(text, options);
+    await handle.dispose();
   }
 
   /**
@@ -906,7 +1135,9 @@ export class Frame {
    * @returns the frame's title.
    */
   async title(): Promise<string> {
-    return this.worlds[PUPPETEER_WORLD].title();
+    return this.evaluate(() => {
+      return document.title;
+    });
   }
 
   /**
@@ -961,5 +1192,12 @@ export class Frame {
       this.#parentFrame._childFrames.delete(this);
     }
     this.#parentFrame = null;
+  }
+
+  /**
+   * @internal
+   */
+  async document(): Promise<ElementHandle<Document>> {
+    return this.worlds[MAIN_WORLD].document();
   }
 }

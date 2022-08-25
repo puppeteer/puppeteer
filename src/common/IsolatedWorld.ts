@@ -16,31 +16,25 @@
 
 import {Protocol} from 'devtools-protocol';
 import {assert} from '../util/assert.js';
+import {createDeferredPromise} from '../util/DeferredPromise.js';
 import {CDPSession} from './Connection.js';
 import {ElementHandle} from './ElementHandle.js';
 import {TimeoutError} from './Errors.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {FrameManager} from './FrameManager.js';
 import {Frame} from './Frame.js';
-import {MouseButton} from './Input.js';
+import {FrameManager} from './FrameManager.js';
 import {JSHandle} from './JSHandle.js';
-import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {getQueryHandlerAndSelector} from './QueryHandler.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {
   createJSHandle,
   debugError,
-  importFS,
   isNumber,
   isString,
   makePredicateString,
   pageBindingInitString,
 } from './util.js';
-import {
-  createDeferredPromise,
-  DeferredPromise,
-} from '../util/DeferredPromise.js';
 
 // predicateQueryHandler and checkWaitForOptions are declared here so that
 // TypeScript knows about them when used in the predicate function below.
@@ -122,8 +116,8 @@ export interface IsolatedWorldChart {
  */
 export class IsolatedWorld {
   #frame: Frame;
-  #documentPromise: Promise<ElementHandle<Document>> | null = null;
-  #contextPromise: DeferredPromise<ExecutionContext> = createDeferredPromise();
+  #document?: Promise<ElementHandle<Document>>;
+  #context = createDeferredPromise<ExecutionContext>();
   #detached = false;
 
   // Set of bindings that have been registered in the current context.
@@ -169,24 +163,24 @@ export class IsolatedWorld {
   }
 
   clearContext(): void {
-    this.#documentPromise = null;
-    this.#contextPromise = createDeferredPromise();
+    this.#document = undefined;
+    this.#context = createDeferredPromise();
   }
 
   setContext(context: ExecutionContext): void {
     assert(
-      this.#contextPromise,
+      this.#context,
       `ExecutionContext ${context._contextId} has already been set.`
     );
     this.#ctxBindings.clear();
-    this.#contextPromise.resolve(context);
+    this.#context.resolve(context);
     for (const waitTask of this._waitTasks) {
       waitTask.rerun();
     }
   }
 
   hasContext(): boolean {
-    return this.#contextPromise.resolved();
+    return this.#context.resolved();
   }
 
   _detach(): void {
@@ -205,10 +199,10 @@ export class IsolatedWorld {
         `Execution context is not available in detached frame "${this.#frame.url()}" (are you trying to evaluate?)`
       );
     }
-    if (this.#contextPromise === null) {
+    if (this.#context === null) {
       throw new Error(`Execution content promise is missing`);
     }
-    return this.#contextPromise;
+    return this.#context;
   }
 
   async evaluateHandle<
@@ -233,65 +227,16 @@ export class IsolatedWorld {
     return context.evaluate(pageFunction, ...args);
   }
 
-  async $<Selector extends string>(
-    selector: Selector
-  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    const document = await this.document();
-    return document.$(selector);
-  }
-
-  async $$<Selector extends string>(
-    selector: Selector
-  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    const document = await this.document();
-    return document.$$(selector);
-  }
-
   async document(): Promise<ElementHandle<Document>> {
-    if (this.#documentPromise) {
-      return this.#documentPromise;
+    if (this.#document) {
+      return this.#document;
     }
-    this.#documentPromise = this.executionContext().then(async context => {
-      return await context.evaluateHandle(() => {
+    this.#document = this.executionContext().then(context => {
+      return context.evaluateHandle(() => {
         return document;
       });
     });
-    return this.#documentPromise;
-  }
-
-  async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
-    const document = await this.document();
-    return document.$x(expression);
-  }
-
-  async $eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFunc<
-      [ElementHandle<NodeFor<Selector>>, ...Params]
-    > = EvaluateFunc<[ElementHandle<NodeFor<Selector>>, ...Params]>
-  >(
-    selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    const document = await this.document();
-    return document.$eval(selector, pageFunction, ...args);
-  }
-
-  async $$eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFunc<
-      [Array<NodeFor<Selector>>, ...Params]
-    > = EvaluateFunc<[Array<NodeFor<Selector>>, ...Params]>
-  >(
-    selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    const document = await this.document();
-    return document.$$eval(selector, pageFunction, ...args);
+    return this.#document;
   }
 
   async waitForSelector<Selector extends string>(
@@ -306,288 +251,6 @@ export class IsolatedWorld {
       updatedSelector,
       options
     )) as ElementHandle<NodeFor<Selector>> | null;
-  }
-
-  async content(): Promise<string> {
-    return await this.evaluate(() => {
-      let retVal = '';
-      if (document.doctype) {
-        retVal = new XMLSerializer().serializeToString(document.doctype);
-      }
-      if (document.documentElement) {
-        retVal += document.documentElement.outerHTML;
-      }
-      return retVal;
-    });
-  }
-
-  async setContent(
-    html: string,
-    options: {
-      timeout?: number;
-      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    } = {}
-  ): Promise<void> {
-    const {
-      waitUntil = ['load'],
-      timeout = this.#timeoutSettings.navigationTimeout(),
-    } = options;
-    // We rely upon the fact that document.open() will reset frame lifecycle with "init"
-    // lifecycle event. @see https://crrev.com/608658
-    await this.evaluate(html => {
-      document.open();
-      document.write(html);
-      document.close();
-    }, html);
-    const watcher = new LifecycleWatcher(
-      this.#frameManager,
-      this.#frame,
-      waitUntil,
-      timeout
-    );
-    const error = await Promise.race([
-      watcher.timeoutOrTerminationPromise(),
-      watcher.lifecyclePromise(),
-    ]);
-    watcher.dispose();
-    if (error) {
-      throw error;
-    }
-  }
-
-  /**
-   * Adds a script tag into the current context.
-   *
-   * @remarks
-   * You can pass a URL, filepath or string of contents. Note that when running Puppeteer
-   * in a browser environment you cannot pass a filepath and should use either
-   * `url` or `content`.
-   */
-  async addScriptTag(options: {
-    url?: string;
-    path?: string;
-    content?: string;
-    id?: string;
-    type?: string;
-  }): Promise<ElementHandle<HTMLScriptElement>> {
-    const {
-      url = null,
-      path = null,
-      content = null,
-      id = '',
-      type = '',
-    } = options;
-    if (url !== null) {
-      try {
-        const context = await this.executionContext();
-        return await context.evaluateHandle(addScriptUrl, url, id, type);
-      } catch (error) {
-        throw new Error(`Loading script from ${url} failed`);
-      }
-    }
-
-    if (path !== null) {
-      let fs;
-      try {
-        fs = (await import('fs')).promises;
-      } catch (error) {
-        if (error instanceof TypeError) {
-          throw new Error(
-            'Can only pass a filepath to addScriptTag in a Node-like environment.'
-          );
-        }
-        throw error;
-      }
-      let contents = await fs.readFile(path, 'utf8');
-      contents += '//# sourceURL=' + path.replace(/\n/g, '');
-      const context = await this.executionContext();
-      return await context.evaluateHandle(addScriptContent, contents, id, type);
-    }
-
-    if (content !== null) {
-      const context = await this.executionContext();
-      return await context.evaluateHandle(addScriptContent, content, id, type);
-    }
-
-    throw new Error(
-      'Provide an object with a `url`, `path` or `content` property'
-    );
-
-    async function addScriptUrl(url: string, id: string, type: string) {
-      const script = document.createElement('script');
-      script.src = url;
-      if (id) {
-        script.id = id;
-      }
-      if (type) {
-        script.type = type;
-      }
-      const promise = new Promise((res, rej) => {
-        script.onload = res;
-        script.onerror = rej;
-      });
-      document.head.appendChild(script);
-      await promise;
-      return script;
-    }
-
-    function addScriptContent(
-      content: string,
-      id: string,
-      type = 'text/javascript'
-    ) {
-      const script = document.createElement('script');
-      script.type = type;
-      script.text = content;
-      if (id) {
-        script.id = id;
-      }
-      let error = null;
-      script.onerror = e => {
-        return (error = e);
-      };
-      document.head.appendChild(script);
-      if (error) {
-        throw error;
-      }
-      return script;
-    }
-  }
-
-  /**
-   * Adds a style tag into the current context.
-   *
-   * @remarks
-   * You can pass a URL, filepath or string of contents. Note that when running Puppeteer
-   * in a browser environment you cannot pass a filepath and should use either
-   * `url` or `content`.
-   */
-  async addStyleTag(options: {
-    url?: string;
-    path?: string;
-    content?: string;
-  }): Promise<ElementHandle<HTMLStyleElement | HTMLLinkElement>> {
-    const {url = null, path = null, content = null} = options;
-    if (url !== null) {
-      try {
-        const context = await this.executionContext();
-        return (await context.evaluateHandle(
-          addStyleUrl,
-          url
-        )) as ElementHandle<HTMLLinkElement>;
-      } catch (error) {
-        throw new Error(`Loading style from ${url} failed`);
-      }
-    }
-
-    if (path !== null) {
-      let fs: typeof import('fs').promises;
-      try {
-        fs = (await importFS()).promises;
-      } catch (error) {
-        if (error instanceof TypeError) {
-          throw new Error(
-            'Cannot pass a filepath to addStyleTag in the browser environment.'
-          );
-        }
-        throw error;
-      }
-
-      let contents = await fs.readFile(path, 'utf8');
-      contents += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
-      const context = await this.executionContext();
-      return (await context.evaluateHandle(
-        addStyleContent,
-        contents
-      )) as ElementHandle<HTMLStyleElement>;
-    }
-
-    if (content !== null) {
-      const context = await this.executionContext();
-      return (await context.evaluateHandle(
-        addStyleContent,
-        content
-      )) as ElementHandle<HTMLStyleElement>;
-    }
-
-    throw new Error(
-      'Provide an object with a `url`, `path` or `content` property'
-    );
-
-    async function addStyleUrl(url: string): Promise<HTMLElement> {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = url;
-      const promise = new Promise((res, rej) => {
-        link.onload = res;
-        link.onerror = rej;
-      });
-      document.head.appendChild(link);
-      await promise;
-      return link;
-    }
-
-    async function addStyleContent(content: string): Promise<HTMLElement> {
-      const style = document.createElement('style');
-      style.appendChild(document.createTextNode(content));
-      const promise = new Promise((res, rej) => {
-        style.onload = res;
-        style.onerror = rej;
-      });
-      document.head.appendChild(style);
-      await promise;
-      return style;
-    }
-  }
-
-  async click(
-    selector: string,
-    options: {delay?: number; button?: MouseButton; clickCount?: number}
-  ): Promise<void> {
-    const handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    await handle.click(options);
-    await handle.dispose();
-  }
-
-  async focus(selector: string): Promise<void> {
-    const handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    await handle.focus();
-    await handle.dispose();
-  }
-
-  async hover(selector: string): Promise<void> {
-    const handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    await handle.hover();
-    await handle.dispose();
-  }
-
-  async select(selector: string, ...values: string[]): Promise<string[]> {
-    const handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    const result = await handle.select(...values);
-    await handle.dispose();
-    return result;
-  }
-
-  async tap(selector: string): Promise<void> {
-    const handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    await handle.tap();
-    await handle.dispose();
-  }
-
-  async type(
-    selector: string,
-    text: string,
-    options?: {delay: number}
-  ): Promise<void> {
-    const handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    await handle.type(text, options);
-    await handle.dispose();
   }
 
   // If multiple waitFor are set up asynchronously, we need to wait for the
@@ -768,12 +431,6 @@ export class IsolatedWorld {
     };
     const waitTask = new WaitTask(waitTaskOptions);
     return waitTask.promise;
-  }
-
-  async title(): Promise<string> {
-    return this.evaluate(() => {
-      return document.title;
-    });
   }
 
   async adoptBackendNode(
