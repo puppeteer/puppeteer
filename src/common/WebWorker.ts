@@ -93,7 +93,7 @@ export class WebWorker extends EventEmitter {
       return consoleAPICalled(
         event.type,
         event.args.map((object: Protocol.Runtime.RemoteObject) => {
-          return new JSHandle(context, this.#client, object);
+          return new JSHandle(context, object);
         }),
         event.stackTrace
       );
