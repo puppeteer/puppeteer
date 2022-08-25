@@ -222,14 +222,13 @@ export function createJSHandle(
     const frameManager = frame._frameManager;
     return new ElementHandle(
       context,
-      context._client,
       remoteObject,
       frame,
       frameManager.page(),
       frameManager
     );
   }
-  return new JSHandle(context, context._client, remoteObject);
+  return new JSHandle(context, remoteObject);
 }
 
 /**

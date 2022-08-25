@@ -78,7 +78,6 @@ export class JSHandle<T = unknown> {
    */
   [__JSHandleSymbol]?: T;
 
-  #client: CDPSession;
   #disposed = false;
   #context: ExecutionContext;
   #remoteObject: Protocol.Runtime.RemoteObject;
@@ -87,7 +86,7 @@ export class JSHandle<T = unknown> {
    * @internal
    */
   get client(): CDPSession {
-    return this.#client;
+    return this.#context._client;
   }
 
   /**
@@ -102,11 +101,9 @@ export class JSHandle<T = unknown> {
    */
   constructor(
     context: ExecutionContext,
-    client: CDPSession,
     remoteObject: Protocol.Runtime.RemoteObject
   ) {
     this.#context = context;
-    this.#client = client;
     this.#remoteObject = remoteObject;
   }
 
@@ -196,7 +193,7 @@ export class JSHandle<T = unknown> {
     assert(this.#remoteObject.objectId);
     // We use Runtime.getProperties rather than iterative building because the
     // iterative approach might create a distorted snapshot.
-    const response = await this.#client.send('Runtime.getProperties', {
+    const response = await this.client.send('Runtime.getProperties', {
       objectId: this.#remoteObject.objectId,
       ownProperties: true,
     });
@@ -247,7 +244,7 @@ export class JSHandle<T = unknown> {
       return;
     }
     this.#disposed = true;
-    await releaseObject(this.#client, this.#remoteObject);
+    await releaseObject(this.client, this.#remoteObject);
   }
 
   /**
