@@ -19,7 +19,7 @@ import {
 } from './JSHandle.js';
 import {Page, ScreenshotOptions} from './Page.js';
 import {getQueryHandlerAndSelector} from './QueryHandler.js';
-import {EvaluateFunc, NodeFor} from './types.js';
+import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {KeyInput} from './USKeyboardLayout.js';
 import {debugError, isString} from './util.js';
 
@@ -236,13 +236,24 @@ export class ElementHandle<
   ): Promise<Awaited<ReturnType<Func>>> {
     const {updatedSelector, queryHandler} =
       getQueryHandlerAndSelector(selector);
-    assert(queryHandler.queryAllArray);
-    const arrayHandle = (await queryHandler.queryAllArray(
+    assert(
+      queryHandler.queryAll,
+      'Cannot handle queries for a multiple element with the given selector'
+    );
+    const handles = (await queryHandler.queryAll(
       this,
       updatedSelector
-    )) as JSHandle<Array<NodeFor<Selector>>>;
-    const result = await arrayHandle.evaluate(pageFunction, ...args);
-    await arrayHandle.dispose();
+    )) as Array<HandleFor<NodeFor<Selector>>>;
+    const elements = await this.evaluateHandle((_, ...elements) => {
+      return elements;
+    }, ...handles);
+    const [result] = await Promise.all([
+      elements.evaluate(pageFunction, ...args),
+      ...handles.map(handle => {
+        return handle.dispose();
+      }),
+    ]);
+    await elements.dispose();
     return result;
   }
 

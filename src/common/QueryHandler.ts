@@ -15,9 +15,8 @@
  */
 
 import {ariaHandler} from './AriaQueryHandler.js';
-import {IsolatedWorld, WaitForSelectorOptions} from './IsolatedWorld.js';
 import {ElementHandle} from './ElementHandle.js';
-import {JSHandle} from './JSHandle.js';
+import {IsolatedWorld, WaitForSelectorOptions} from './IsolatedWorld.js';
 
 /**
  * @public
@@ -55,16 +54,6 @@ export interface InternalQueryHandler {
     element: ElementHandle<Node>,
     selector: string
   ) => Promise<Array<ElementHandle<Node>>>;
-  /**
-   * Queries for multiple nodes given a selector and {@link ElementHandle}.
-   * Unlike {@link queryAll}, this returns a handle to a node array.
-   *
-   * Akin to {@link Window.prototype.querySelectorAll}.
-   */
-  queryAllArray?: (
-    element: ElementHandle<Node>,
-    selector: string
-  ) => Promise<JSHandle<Node[]>>;
 
   /**
    * Waits until a single node appears for a given selector and
@@ -118,16 +107,6 @@ function internalizeCustomQueryHandler(
         }
       }
       return result;
-    };
-    internalHandler.queryAllArray = async (element, selector) => {
-      const resultHandle = (await element.evaluateHandle(
-        queryAll,
-        selector
-      )) as JSHandle<Element[] | NodeListOf<Element>>;
-      const arrayHandle = await resultHandle.evaluateHandle(res => {
-        return Array.from(res);
-      });
-      return arrayHandle;
     };
   }
 

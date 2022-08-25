@@ -17,13 +17,12 @@
 import {Protocol} from 'devtools-protocol';
 import {assert} from '../util/assert.js';
 import {CDPSession} from './Connection.js';
+import {ElementHandle} from './ElementHandle.js';
 import {
   IsolatedWorld,
   PageBinding,
   WaitForSelectorOptions,
 } from './IsolatedWorld.js';
-import {ElementHandle} from './ElementHandle.js';
-import {JSHandle} from './JSHandle.js';
 import {InternalQueryHandler} from './QueryHandler.js';
 
 async function queryAXTree(
@@ -149,18 +148,6 @@ const queryAll = async (
   );
 };
 
-const queryAllArray = async (
-  element: ElementHandle<Node>,
-  selector: string
-): Promise<JSHandle<Node[]>> => {
-  const elementHandles = await queryAll(element, selector);
-  const exeCtx = element.executionContext();
-  const jsHandle = exeCtx.evaluateHandle((...elements) => {
-    return elements;
-  }, ...elementHandles);
-  return jsHandle;
-};
-
 /**
  * @internal
  */
@@ -168,5 +155,4 @@ export const ariaHandler: InternalQueryHandler = {
   queryOne,
   waitFor,
   queryAll,
-  queryAllArray,
 };
