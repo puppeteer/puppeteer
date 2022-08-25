@@ -334,7 +334,7 @@ describeChromeOnly('AriaQueryHandler', () => {
       await otherFrame!.evaluate(addElement, 'button');
       await page.evaluate(addElement, 'button');
       const elementHandle = await watchdog;
-      expect(elementHandle!.executionContext().frame()).toBe(page.mainFrame());
+      expect(elementHandle!.frame).toBe(page.mainFrame());
     });
 
     it('should run in specified frame', async () => {
@@ -350,7 +350,7 @@ describeChromeOnly('AriaQueryHandler', () => {
       await frame1!.evaluate(addElement, 'button');
       await frame2!.evaluate(addElement, 'button');
       const elementHandle = await waitForSelectorPromise;
-      expect(elementHandle!.executionContext().frame()).toBe(frame2);
+      expect(elementHandle!.frame).toBe(frame2);
     });
 
     it('should throw when frame is detached', async () => {

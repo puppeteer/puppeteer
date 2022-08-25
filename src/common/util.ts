@@ -25,7 +25,6 @@ import {ElementHandle} from './ElementHandle.js';
 import {TimeoutError} from './Errors.js';
 import {CommonEventEmitter} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {Frame} from './Frame.js';
 import {JSHandle} from './JSHandle.js';
 
 /**
@@ -218,9 +217,8 @@ export function createJSHandle(
   context: ExecutionContext,
   remoteObject: Protocol.Runtime.RemoteObject
 ): JSHandle | ElementHandle<Node> {
-  const frame = context.frame();
-  if (remoteObject.subtype === 'node' && frame instanceof Frame) {
-    return new ElementHandle(context, remoteObject, frame);
+  if (remoteObject.subtype === 'node' && context._world) {
+    return new ElementHandle(context, remoteObject, context._world.frame());
   }
   return new JSHandle(context, remoteObject);
 }
