@@ -16,23 +16,32 @@
 
 import {Protocol} from 'devtools-protocol';
 import type {Readable} from 'stream';
-import {Accessibility} from './Accessibility.js';
 import {assert} from '../util/assert.js';
+import {
+  createDeferredPromiseWithTimer,
+  DeferredPromise,
+} from '../util/DeferredPromise.js';
+import {isErrorLike} from '../util/ErrorLike.js';
+import {Accessibility} from './Accessibility.js';
 import {Browser, BrowserContext} from './Browser.js';
 import {CDPSession, CDPSessionEmittedEvents} from './Connection.js';
 import {ConsoleMessage, ConsoleMessageType} from './ConsoleMessage.js';
 import {Coverage} from './Coverage.js';
 import {Dialog} from './Dialog.js';
-import {MAIN_WORLD, WaitForSelectorOptions} from './IsolatedWorld.js';
 import {ElementHandle} from './ElementHandle.js';
 import {EmulationManager} from './EmulationManager.js';
 import {EventEmitter, Handler} from './EventEmitter.js';
 import {FileChooser} from './FileChooser.js';
+import {
+  Frame,
+  FrameAddScriptTagOptions,
+  FrameAddStyleTagOptions,
+} from './Frame.js';
 import {FrameManager, FrameManagerEmittedEvents} from './FrameManager.js';
-import {Frame} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {Keyboard, Mouse, MouseButton, Touchscreen} from './Input.js';
+import {MAIN_WORLD, WaitForSelectorOptions} from './IsolatedWorld.js';
 import {JSHandle} from './JSHandle.js';
 import {PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {
@@ -53,9 +62,9 @@ import {
   debugError,
   evaluationString,
   getExceptionMessage,
-  importFS,
   getReadableAsBuffer,
   getReadableFromProtocolStream,
+  importFS,
   isNumber,
   isString,
   pageBindingDeliverErrorString,
@@ -67,11 +76,6 @@ import {
   waitForEvent,
   waitWithTimeout,
 } from './util.js';
-import {isErrorLike} from '../util/ErrorLike.js';
-import {
-  createDeferredPromiseWithTimer,
-  DeferredPromise,
-} from '../util/DeferredPromise.js';
 import {WebWorker} from './WebWorker.js';
 
 /**
@@ -1403,34 +1407,35 @@ export class Page extends EventEmitter {
   /**
    * Adds a `<script>` tag into the page with the desired URL or content.
    *
-   * @remarks
    * Shortcut for
    * {@link Frame.addScriptTag | page.mainFrame().addScriptTag(options)}.
    *
-   * @returns Promise which resolves to the added tag when the script's onload
-   * fires or when the script content was injected into frame.
+   * @returns An element handle to the injected `<script>` element.
    */
-  async addScriptTag(options: {
-    url?: string;
-    path?: string;
-    content?: string;
-    type?: string;
-    id?: string;
-  }): Promise<ElementHandle<HTMLScriptElement>> {
+  async addScriptTag(
+    options: FrameAddScriptTagOptions
+  ): Promise<ElementHandle<HTMLScriptElement>> {
     return this.mainFrame().addScriptTag(options);
   }
 
   /**
    * Adds a `<link rel="stylesheet">` tag into the page with the desired URL or a
    * `<style type="text/css">` tag with the content.
-   * @returns Promise which resolves to the added tag when the stylesheet's
-   * onload fires or when the CSS content was injected into frame.
+   *
+   * Shortcut for
+   * {@link Frame.addStyleTag | page.mainFrame().addStyleTag(options)}.
+   *
+   * @returns An element handle to the injected `<link>` or `<style>` element.
    */
-  async addStyleTag(options: {
-    url?: string;
-    path?: string;
-    content?: string;
-  }): Promise<ElementHandle<Node>> {
+  async addStyleTag(
+    options: Omit<FrameAddStyleTagOptions, 'url'>
+  ): Promise<ElementHandle<HTMLStyleElement>>;
+  async addStyleTag(
+    options: FrameAddStyleTagOptions
+  ): Promise<ElementHandle<HTMLLinkElement>>;
+  async addStyleTag(
+    options: FrameAddStyleTagOptions
+  ): Promise<ElementHandle<HTMLStyleElement | HTMLLinkElement>> {
     return this.mainFrame().addStyleTag(options);
   }
 
@@ -3341,54 +3346,36 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * Wait for the `selector` to appear in page. If at the moment of calling the
-   * method the `selector` already exists, the method will return immediately. If
-   * the `selector` doesn't appear after the `timeout` milliseconds of waiting, the
-   * function will throw.
+   * Waits a node matching the given selector to appear (or hide; see
+   * {@link WaitForSelectorOptions.hidden | options.hidden}) on the page.
    *
    * This method works across navigations:
    *
    * ```ts
-   * const puppeteer = require('puppeteer');
+   * import puppeteer from 'puppeteer';
    * (async () => {
    *   const browser = await puppeteer.launch();
    *   const page = await browser.newPage();
-   *   let currentURL;
+   *   const urls = ['https://example.com', 'https://google.com'];
+   *   let url: string;
    *   page
    *     .waitForSelector('img')
-   *     .then(() => console.log('First URL with image: ' + currentURL));
-   *   for (currentURL of [
-   *     'https://example.com',
-   *     'https://google.com',
-   *     'https://bbc.com',
-   *   ]) {
-   *     await page.goto(currentURL);
+   *     .then(() => console.log(`First URL with image: ${url}`));
+   *   for (url of urls) {
+   *     await page.goto(url);
    *   }
    *   await browser.close();
    * })();
    * ```
    *
-   * @param selector - A
+   * @param selector - The
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
-   * of an element to wait for
-   * @param options - Optional waiting parameters
-   * @returns Promise which resolves when element specified by selector string
-   * is added to DOM. Resolves to `null` if waiting for hidden: `true` and
-   * selector is not found in DOM.
-   * @remarks
-   * The optional Parameter in Arguments `options` are :
-   *
-   * - `Visible`: A boolean wait for element to be present in DOM and to be
-   *   visible, i.e. to not have `display: none` or `visibility: hidden` CSS
-   *   properties. Defaults to `false`.
-   *
-   * - `hidden`: Wait for element to not be found in the DOM or to be hidden,
-   *   i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to
-   *   `false`.
-   *
-   * - `timeout`: maximum time to wait for in milliseconds. Defaults to `30000`
-   *   (30 seconds). Pass `0` to disable timeout. The default value can be changed
-   *   by using the {@link Page.setDefaultTimeout} method.
+   * to use for querying an element.
+   * @param options - Options to configure waiting behavior.
+   * @returns An {@link ElementHandle | element handle} to an node matching the
+   * given selector. If {@link WaitForSelectorOptions.hidden | options.hidden}
+   * is `true`, then `null` will be returned once the node is hidden.
+   * @throws An error if waiting {@link WaitForSelectorOptions.timeout | times out}.
    */
   async waitForSelector<Selector extends string>(
     selector: Selector,
