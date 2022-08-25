@@ -398,9 +398,7 @@ export class Frame {
   }
 
   /**
-   * @deprecated Do not use the execution context directly.
-   *
-   * @returns a promise that resolves to the frame's default execution context.
+   * @internal
    */
   executionContext(): Promise<ExecutionContext> {
     return this.worlds[MAIN_WORLD].executionContext();

@@ -28,10 +28,6 @@ Promise&lt;[JSHandle](./puppeteer.jshandle.md)&lt;Prototype\[\]&gt;&gt;
 
 Promise which resolves to a handle to an array of objects with this prototype.
 
-## Remarks
-
-Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)](./puppeteer.executioncontext.queryobjects.md).
-
 ## Example
 
 ```ts
