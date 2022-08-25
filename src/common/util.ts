@@ -18,13 +18,14 @@ import {Protocol} from 'devtools-protocol';
 import type {Readable} from 'stream';
 import {isNode} from '../environment.js';
 import {assert} from '../util/assert.js';
+import {isErrorLike} from '../util/ErrorLike.js';
 import {CDPSession} from './Connection.js';
 import {debug} from './Debug.js';
 import {ElementHandle} from './ElementHandle.js';
-import {isErrorLike} from '../util/ErrorLike.js';
 import {TimeoutError} from './Errors.js';
 import {CommonEventEmitter} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
+import {Frame} from './Frame.js';
 import {JSHandle} from './JSHandle.js';
 
 /**
@@ -218,15 +219,8 @@ export function createJSHandle(
   remoteObject: Protocol.Runtime.RemoteObject
 ): JSHandle | ElementHandle<Node> {
   const frame = context.frame();
-  if (remoteObject.subtype === 'node' && frame) {
-    const frameManager = frame._frameManager;
-    return new ElementHandle(
-      context,
-      remoteObject,
-      frame,
-      frameManager.page(),
-      frameManager
-    );
+  if (remoteObject.subtype === 'node' && frame instanceof Frame) {
+    return new ElementHandle(context, remoteObject, frame);
   }
   return new JSHandle(context, remoteObject);
 }

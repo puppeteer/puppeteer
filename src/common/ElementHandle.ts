@@ -71,8 +71,6 @@ export class ElementHandle<
   ElementType extends Node = Element
 > extends JSHandle<ElementType> {
   #frame: Frame;
-  #page: Page;
-  #frameManager: FrameManager;
 
   /**
    * @internal
@@ -80,14 +78,18 @@ export class ElementHandle<
   constructor(
     context: ExecutionContext,
     remoteObject: Protocol.Runtime.RemoteObject,
-    frame: Frame,
-    page: Page,
-    frameManager: FrameManager
+    frame: Frame
   ) {
     super(context, remoteObject);
     this.#frame = frame;
-    this.#page = page;
-    this.#frameManager = frameManager;
+  }
+
+  get #frameManager(): FrameManager {
+    return this.#frame._frameManager;
+  }
+
+  get #page(): Page {
+    return this.#frame.page();
   }
 
   /**
