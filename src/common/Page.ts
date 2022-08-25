@@ -2600,7 +2600,7 @@ export class CDPPage extends Page {
       targetId: this.#target._targetId,
     });
     let clip = options.clip ? processClip(options.clip) : undefined;
-    const captureBeyondViewport =
+    let captureBeyondViewport =
       typeof options.captureBeyondViewport === 'boolean'
         ? options.captureBeyondViewport
         : true;
@@ -2614,8 +2614,8 @@ export class CDPPage extends Page {
       // Fallback to `contentSize` in case of using Firefox.
       const {width, height} = metrics.cssContentSize || metrics.contentSize;
 
-      // Overwrite clip for full page.
-      clip = {x: 0, y: 0, width, height, scale: 1};
+      // Overwrite clip for full page and full screen.
+      clip = undefined;
 
       if (!captureBeyondViewport) {
         const {
@@ -2635,6 +2635,9 @@ export class CDPPage extends Page {
           screenOrientation,
         });
       }
+    } else if (!clip) {
+      // Override captureBeyondViewport for full screen mode.
+      captureBeyondViewport = false;
     }
     const shouldSetDefaultBackground =
       options.omitBackground && (format === 'png' || format === 'webp');
