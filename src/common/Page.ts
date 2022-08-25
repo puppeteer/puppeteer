@@ -1136,11 +1136,6 @@ export class Page extends EventEmitter {
    * This method iterates the JavaScript heap and finds all objects with the
    * given prototype.
    *
-   * @remarks
-   * Shortcut for
-   * {@link ExecutionContext.queryObjects |
-   * page.mainFrame().executionContext().queryObjects(prototypeHandle)}.
-   *
    * @example
    *
    * ```ts
@@ -1164,7 +1159,16 @@ export class Page extends EventEmitter {
     prototypeHandle: JSHandle<Prototype>
   ): Promise<JSHandle<Prototype[]>> {
     const context = await this.mainFrame().executionContext();
-    return context.queryObjects(prototypeHandle);
+    assert(!prototypeHandle.disposed, 'Prototype JSHandle is disposed!');
+    const remoteObject = prototypeHandle.remoteObject();
+    assert(
+      remoteObject.objectId,
+      'Prototype JSHandle must not be referencing primitive value'
+    );
+    const response = await context._client.send('Runtime.queryObjects', {
+      prototypeObjectId: remoteObject.objectId,
+    });
+    return createJSHandle(context, response.objects) as HandleFor<Prototype[]>;
   }
 
   /**

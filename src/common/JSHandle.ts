@@ -108,7 +108,7 @@ export class JSHandle<T = unknown> {
   }
 
   /**
-   * @returns The execution context the handle belongs to.
+   * @internal
    */
   executionContext(): ExecutionContext {
     return this.#context;

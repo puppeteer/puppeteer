@@ -107,9 +107,7 @@ export class WebWorker extends EventEmitter {
   }
 
   /**
-   * @deprecated Do not use directly.
-   *
-   * @returns The ExecutionContext the web worker runs in.
+   * @internal
    */
   async executionContext(): Promise<ExecutionContext> {
     return this.#executionContext;
