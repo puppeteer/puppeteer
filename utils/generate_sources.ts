@@ -17,25 +17,28 @@ import {job} from './internal/job.js';
     .build();
 
   await job('', async ({name, inputs, outputs}) => {
+    const input = inputs.find(input => {
+      return input.includes('injected.ts');
+    })!;
     const tmp = await mkdtemp(name);
     await esbuild.build({
-      entryPoints: [inputs[0]!],
+      entryPoints: [input],
       bundle: true,
       outdir: tmp,
       format: 'cjs',
       platform: 'browser',
       target: 'ES2019',
     });
-    const baseName = path.basename(inputs[0]!);
+    const baseName = path.basename(input);
     const content = await readFile(
       path.join(tmp, baseName.replace('.ts', '.js')),
       'utf-8'
     );
     const scriptContent = `/** @internal */
-export const source = ${JSON.stringify(content)};
+export const injectedSourceCode = ${JSON.stringify(content)};
 `;
     await writeFile(outputs[0]!, scriptContent);
-    await rimraf.sync(tmp);
+    rimraf.sync(tmp);
   })
     .inputs(['src/injected/**.ts'])
     .outputs(['src/generated/injected.ts'])
