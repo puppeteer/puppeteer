@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.0.0](https://github.com/puppeteer/puppeteer/compare/v16.2.0...v17.0.0) (2022-08-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove `root` from `WaitForSelectorOptions` (#8848)
+* internalize execution context (#8844)
+
+### Bug Fixes
+
+* allow multiple navigations to happen in LifecycleWatcher ([#8826](https://github.com/puppeteer/puppeteer/issues/8826)) ([341b669](https://github.com/puppeteer/puppeteer/commit/341b669a5e45ecbb9ffb0f28c45b520660f27ad2)), closes [#8811](https://github.com/puppeteer/puppeteer/issues/8811)
+* internalize execution context ([#8844](https://github.com/puppeteer/puppeteer/issues/8844)) ([2f33237](https://github.com/puppeteer/puppeteer/commit/2f33237d0443de77d58dca4454b0c9a1d2b57d03))
+* remove `root` from `WaitForSelectorOptions` ([#8848](https://github.com/puppeteer/puppeteer/issues/8848)) ([1155c8e](https://github.com/puppeteer/puppeteer/commit/1155c8eac85b176c3334cc3d98adfe7d943dfbe6))
+* remove deferred promise timeouts ([#8835](https://github.com/puppeteer/puppeteer/issues/8835)) ([202ffce](https://github.com/puppeteer/puppeteer/commit/202ffce0aa4f34dba35fbb8e7d740af16efee35f)), closes [#8832](https://github.com/puppeteer/puppeteer/issues/8832)
+
 ## [16.2.0](https://github.com/puppeteer/puppeteer/compare/v16.1.1...v16.2.0) (2022-08-18)
 
 
