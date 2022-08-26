@@ -3396,7 +3396,7 @@ export class Page extends EventEmitter {
    */
   async waitForSelector<Selector extends string>(
     selector: Selector,
-    options: Exclude<WaitForSelectorOptions, 'root'> = {}
+    options: WaitForSelectorOptions = {}
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
     return await this.mainFrame().waitForSelector(selector, options);
   }

@@ -1,4 +1,5 @@
 import {Protocol} from 'devtools-protocol';
+import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {CDPSession} from './Connection.js';
 import {ElementHandle} from './ElementHandle.js';
@@ -15,6 +16,7 @@ import {
 } from './IsolatedWorld.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {Page} from './Page.js';
+import {getQueryHandlerAndSelector} from './QueryHandler.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 
 /**
@@ -579,18 +581,14 @@ export class Frame {
     selector: Selector,
     options: WaitForSelectorOptions = {}
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    const handle = await this.worlds[PUPPETEER_WORLD].waitForSelector(
-      selector,
+    const {updatedSelector, queryHandler} =
+      getQueryHandlerAndSelector(selector);
+    assert(queryHandler.waitFor, 'Query handler does not support waiting');
+    return (await queryHandler.waitFor(
+      this,
+      updatedSelector,
       options
-    );
-    if (!handle) {
-      return null;
-    }
-    const mainHandle = (await this.worlds[MAIN_WORLD].adoptHandle(
-      handle
-    )) as ElementHandle<NodeFor<Selector>>;
-    await handle.dispose();
-    return mainHandle;
+    )) as ElementHandle<NodeFor<Selector>> | null;
   }
 
   /**

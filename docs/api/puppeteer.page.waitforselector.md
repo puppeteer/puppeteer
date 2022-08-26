@@ -34,17 +34,17 @@ const puppeteer = require('puppeteer');
 class Page {
   waitForSelector<Selector extends string>(
     selector: Selector,
-    options?: Exclude<WaitForSelectorOptions, 'root'>
+    options?: WaitForSelectorOptions
   ): Promise<ElementHandle<NodeFor<Selector>> | null>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                   | Description                                                                                            |
-| --------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| selector  | Selector                                                                               | A [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) of an element to wait for |
-| options   | Exclude&lt;[WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md), 'root'&gt; | <i>(Optional)</i> Optional waiting parameters                                                          |
+| Parameter | Type                                                            | Description                                                                                            |
+| --------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| selector  | Selector                                                        | A [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) of an element to wait for |
+| options   | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) | <i>(Optional)</i> Optional waiting parameters                                                          |
 
 **Returns:**
 
