@@ -14,17 +14,17 @@ Unlike [Frame.waitForSelector()](./puppeteer.frame.waitforselector.md), this met
 class ElementHandle {
   waitForSelector<Selector extends string>(
     selector: Selector,
-    options?: Exclude<WaitForSelectorOptions, 'root'>
+    options?: WaitForSelectorOptions
   ): Promise<ElementHandle<NodeFor<Selector>> | null>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                   | Description                                                 |
-| --------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| selector  | Selector                                                                               | The selector to query and wait for.                         |
-| options   | Exclude&lt;[WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md), 'root'&gt; | <i>(Optional)</i> Options for customizing waiting behavior. |
+| Parameter | Type                                                            | Description                                                 |
+| --------- | --------------------------------------------------------------- | ----------------------------------------------------------- |
+| selector  | Selector                                                        | The selector to query and wait for.                         |
+| options   | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) | <i>(Optional)</i> Options for customizing waiting behavior. |
 
 **Returns:**
 
