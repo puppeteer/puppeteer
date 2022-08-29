@@ -7,8 +7,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES
 
-* remove `root` from `WaitForSelectorOptions` (#8848)
-* internalize execution context (#8844)
+* remove `root` from `WaitForSelectorOptions` ([#8848](https://github.com/puppeteer/puppeteer/pull/8848))
+* internalize execution context ([#8844](https://github.com/puppeteer/puppeteer/pull/8844))
 
 ### Bug Fixes
 
