@@ -20,12 +20,11 @@ import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
-  itFailsFirefox,
-  describeFailsFirefox,
 } from './mocha-utils.js';
 import os from 'os';
 import {ServerResponse} from 'http';
 import {HTTPRequest} from '../../lib/cjs/puppeteer/common/HTTPRequest.js';
+import {it} from './mocha-utils.js';
 
 describe('navigation', function () {
   setupTestBrowserHooks();
@@ -67,7 +66,7 @@ describe('navigation', function () {
       const response = (await page.goto(server.PREFIX + '/historyapi.html'))!;
       expect(response.status()).toBe(200);
     });
-    itFailsFirefox('should work with subframes return 204', async () => {
+    it('should work with subframes return 204', async () => {
       const {page, server} = getTestState();
 
       server.setRoute('/frames/frame.html', (_req, res) => {
@@ -82,7 +81,7 @@ describe('navigation', function () {
         });
       expect(error).toBeUndefined();
     });
-    itFailsFirefox('should fail when server returns 204', async () => {
+    it('should fail when server returns 204', async () => {
       const {page, server, isChrome} = getTestState();
 
       server.setRoute('/empty.html', (_req, res) => {
@@ -124,29 +123,23 @@ describe('navigation', function () {
       const response = await page.goto(server.PREFIX + '/grid.html');
       expect(response!.status()).toBe(200);
     });
-    itFailsFirefox(
-      'should navigate to empty page with networkidle0',
-      async () => {
-        const {page, server} = getTestState();
+    it('should navigate to empty page with networkidle0', async () => {
+      const {page, server} = getTestState();
 
-        const response = await page.goto(server.EMPTY_PAGE, {
-          waitUntil: 'networkidle0',
-        });
-        expect(response!.status()).toBe(200);
-      }
-    );
-    itFailsFirefox(
-      'should navigate to empty page with networkidle2',
-      async () => {
-        const {page, server} = getTestState();
+      const response = await page.goto(server.EMPTY_PAGE, {
+        waitUntil: 'networkidle0',
+      });
+      expect(response!.status()).toBe(200);
+    });
+    it('should navigate to empty page with networkidle2', async () => {
+      const {page, server} = getTestState();
 
-        const response = await page.goto(server.EMPTY_PAGE, {
-          waitUntil: 'networkidle2',
-        });
-        expect(response!.status()).toBe(200);
-      }
-    );
-    itFailsFirefox('should fail when navigating to bad url', async () => {
+      const response = await page.goto(server.EMPTY_PAGE, {
+        waitUntil: 'networkidle2',
+      });
+      expect(response!.status()).toBe(200);
+    });
+    it('should fail when navigating to bad url', async () => {
       const {page, isChrome} = getTestState();
 
       let error!: Error;
@@ -175,7 +168,7 @@ describe('navigation', function () {
         : 'net::ERR_CERT_AUTHORITY_INVALID';
     }
 
-    itFailsFirefox('should fail when navigating to bad SSL', async () => {
+    it('should fail when navigating to bad SSL', async () => {
       const {page, httpsServer, isChrome} = getTestState();
 
       // Make sure that network events do not emit 'undefined'.
@@ -311,7 +304,7 @@ describe('navigation', function () {
       const response = (await page.goto(server.EMPTY_PAGE))!;
       expect(response.ok()).toBe(true);
     });
-    itFailsFirefox('should work when navigating to data url', async () => {
+    it('should work when navigating to data url', async () => {
       const {page} = getTestState();
 
       const response = (await page.goto('data:text/html,hello'))!;
@@ -334,85 +327,79 @@ describe('navigation', function () {
       expect(response.ok()).toBe(true);
       expect(response.url()).toBe(server.EMPTY_PAGE);
     });
-    itFailsFirefox(
-      'should wait for network idle to succeed navigation',
-      async () => {
-        const {page, server} = getTestState();
+    it('should wait for network idle to succeed navigation', async () => {
+      const {page, server} = getTestState();
 
-        let responses: ServerResponse[] = [];
-        // Hold on to a bunch of requests without answering.
-        server.setRoute('/fetch-request-a.js', (_req, res) => {
-          return responses.push(res);
-        });
-        server.setRoute('/fetch-request-b.js', (_req, res) => {
-          return responses.push(res);
-        });
-        server.setRoute('/fetch-request-c.js', (_req, res) => {
-          return responses.push(res);
-        });
-        server.setRoute('/fetch-request-d.js', (_req, res) => {
-          return responses.push(res);
-        });
-        const initialFetchResourcesRequested = Promise.all([
-          server.waitForRequest('/fetch-request-a.js'),
-          server.waitForRequest('/fetch-request-b.js'),
-          server.waitForRequest('/fetch-request-c.js'),
-        ]);
-        const secondFetchResourceRequested = server.waitForRequest(
-          '/fetch-request-d.js'
-        );
+      let responses: ServerResponse[] = [];
+      // Hold on to a bunch of requests without answering.
+      server.setRoute('/fetch-request-a.js', (_req, res) => {
+        return responses.push(res);
+      });
+      server.setRoute('/fetch-request-b.js', (_req, res) => {
+        return responses.push(res);
+      });
+      server.setRoute('/fetch-request-c.js', (_req, res) => {
+        return responses.push(res);
+      });
+      server.setRoute('/fetch-request-d.js', (_req, res) => {
+        return responses.push(res);
+      });
+      const initialFetchResourcesRequested = Promise.all([
+        server.waitForRequest('/fetch-request-a.js'),
+        server.waitForRequest('/fetch-request-b.js'),
+        server.waitForRequest('/fetch-request-c.js'),
+      ]);
+      const secondFetchResourceRequested = server.waitForRequest(
+        '/fetch-request-d.js'
+      );
 
-        // Navigate to a page which loads immediately and then does a bunch of
-        // requests via javascript's fetch method.
-        const navigationPromise = page.goto(
-          server.PREFIX + '/networkidle.html',
-          {
-            waitUntil: 'networkidle0',
-          }
-        );
-        // Track when the navigation gets completed.
-        let navigationFinished = false;
-        navigationPromise.then(() => {
-          return (navigationFinished = true);
-        });
+      // Navigate to a page which loads immediately and then does a bunch of
+      // requests via javascript's fetch method.
+      const navigationPromise = page.goto(server.PREFIX + '/networkidle.html', {
+        waitUntil: 'networkidle0',
+      });
+      // Track when the navigation gets completed.
+      let navigationFinished = false;
+      navigationPromise.then(() => {
+        return (navigationFinished = true);
+      });
 
-        // Wait for the page's 'load' event.
-        await new Promise(fulfill => {
-          return page.once('load', fulfill);
-        });
-        expect(navigationFinished).toBe(false);
+      // Wait for the page's 'load' event.
+      await new Promise(fulfill => {
+        return page.once('load', fulfill);
+      });
+      expect(navigationFinished).toBe(false);
 
-        // Wait for the initial three resources to be requested.
-        await initialFetchResourcesRequested;
+      // Wait for the initial three resources to be requested.
+      await initialFetchResourcesRequested;
 
-        // Expect navigation still to be not finished.
-        expect(navigationFinished).toBe(false);
+      // Expect navigation still to be not finished.
+      expect(navigationFinished).toBe(false);
 
-        // Respond to initial requests.
-        for (const response of responses) {
-          response.statusCode = 404;
-          response.end(`File not found`);
-        }
-
-        // Reset responses array
-        responses = [];
-
-        // Wait for the second round to be requested.
-        await secondFetchResourceRequested;
-        // Expect navigation still to be not finished.
-        expect(navigationFinished).toBe(false);
-
-        // Respond to requests.
-        for (const response of responses) {
-          response.statusCode = 404;
-          response.end(`File not found`);
-        }
-
-        const response = (await navigationPromise)!;
-        // Expect navigation to succeed.
-        expect(response.ok()).toBe(true);
+      // Respond to initial requests.
+      for (const response of responses) {
+        response.statusCode = 404;
+        response.end(`File not found`);
       }
-    );
+
+      // Reset responses array
+      responses = [];
+
+      // Wait for the second round to be requested.
+      await secondFetchResourceRequested;
+      // Expect navigation still to be not finished.
+      expect(navigationFinished).toBe(false);
+
+      // Respond to requests.
+      for (const response of responses) {
+        response.statusCode = 404;
+        response.end(`File not found`);
+      }
+
+      const response = (await navigationPromise)!;
+      // Expect navigation to succeed.
+      expect(response.ok()).toBe(true);
+    });
     it('should not leak listeners during navigation', async () => {
       const {page, server} = getTestState();
 
@@ -461,38 +448,32 @@ describe('navigation', function () {
       process.removeListener('warning', warningHandler);
       expect(warning).toBe(null);
     });
-    itFailsFirefox(
-      'should navigate to dataURL and fire dataURL requests',
-      async () => {
-        const {page} = getTestState();
+    it('should navigate to dataURL and fire dataURL requests', async () => {
+      const {page} = getTestState();
 
-        const requests: HTTPRequest[] = [];
-        page.on('request', request => {
-          return !utils.isFavicon(request) && requests.push(request);
-        });
-        const dataURL = 'data:text/html,<div>yo</div>';
-        const response = (await page.goto(dataURL))!;
-        expect(response.status()).toBe(200);
-        expect(requests.length).toBe(1);
-        expect(requests[0]!.url()).toBe(dataURL);
-      }
-    );
-    itFailsFirefox(
-      'should navigate to URL with hash and fire requests without hash',
-      async () => {
-        const {page, server} = getTestState();
+      const requests: HTTPRequest[] = [];
+      page.on('request', request => {
+        return !utils.isFavicon(request) && requests.push(request);
+      });
+      const dataURL = 'data:text/html,<div>yo</div>';
+      const response = (await page.goto(dataURL))!;
+      expect(response.status()).toBe(200);
+      expect(requests.length).toBe(1);
+      expect(requests[0]!.url()).toBe(dataURL);
+    });
+    it('should navigate to URL with hash and fire requests without hash', async () => {
+      const {page, server} = getTestState();
 
-        const requests: HTTPRequest[] = [];
-        page.on('request', request => {
-          return !utils.isFavicon(request) && requests.push(request);
-        });
-        const response = (await page.goto(server.EMPTY_PAGE + '#hash'))!;
-        expect(response.status()).toBe(200);
-        expect(response.url()).toBe(server.EMPTY_PAGE);
-        expect(requests.length).toBe(1);
-        expect(requests[0]!.url()).toBe(server.EMPTY_PAGE);
-      }
-    );
+      const requests: HTTPRequest[] = [];
+      page.on('request', request => {
+        return !utils.isFavicon(request) && requests.push(request);
+      });
+      const response = (await page.goto(server.EMPTY_PAGE + '#hash'))!;
+      expect(response.status()).toBe(200);
+      expect(response.url()).toBe(server.EMPTY_PAGE);
+      expect(requests.length).toBe(1);
+      expect(requests[0]!.url()).toBe(server.EMPTY_PAGE);
+    });
     it('should work with self requesting page', async () => {
       const {page, server} = getTestState();
 
@@ -512,7 +493,7 @@ describe('navigation', function () {
       }
       expect(error.message).toContain(url);
     });
-    itFailsFirefox('should send referer', async () => {
+    it('should send referer', async () => {
       const {page, server} = getTestState();
 
       const [request1, request2] = await Promise.all([
@@ -582,7 +563,7 @@ describe('navigation', function () {
       expect(response).toBe(null);
       expect(page.url()).toBe(server.EMPTY_PAGE + '#foobar');
     });
-    itFailsFirefox('should work with history.pushState()', async () => {
+    it('should work with history.pushState()', async () => {
       const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
@@ -599,7 +580,7 @@ describe('navigation', function () {
       expect(response).toBe(null);
       expect(page.url()).toBe(server.PREFIX + '/wow.html');
     });
-    itFailsFirefox('should work with history.replaceState()', async () => {
+    it('should work with history.replaceState()', async () => {
       const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
@@ -616,13 +597,11 @@ describe('navigation', function () {
       expect(response).toBe(null);
       expect(page.url()).toBe(server.PREFIX + '/replaced.html');
     });
-    itFailsFirefox(
-      'should work with DOM history.back()/history.forward()',
-      async () => {
-        const {page, server} = getTestState();
+    it('should work with DOM history.back()/history.forward()', async () => {
+      const {page, server} = getTestState();
 
-        await page.goto(server.EMPTY_PAGE);
-        await page.setContent(`
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent(`
         <a id=back onclick='javascript:goBack()'>back</a>
         <a id=forward onclick='javascript:goForward()'>forward</a>
         <script>
@@ -632,46 +611,42 @@ describe('navigation', function () {
           history.pushState({}, '', '/second.html');
         </script>
       `);
-        expect(page.url()).toBe(server.PREFIX + '/second.html');
-        const [backResponse] = await Promise.all([
-          page.waitForNavigation(),
-          page.click('a#back'),
-        ]);
-        expect(backResponse).toBe(null);
-        expect(page.url()).toBe(server.PREFIX + '/first.html');
-        const [forwardResponse] = await Promise.all([
-          page.waitForNavigation(),
-          page.click('a#forward'),
-        ]);
-        expect(forwardResponse).toBe(null);
-        expect(page.url()).toBe(server.PREFIX + '/second.html');
-      }
-    );
-    itFailsFirefox(
-      'should work when subframe issues window.stop()',
-      async () => {
-        const {page, server} = getTestState();
+      expect(page.url()).toBe(server.PREFIX + '/second.html');
+      const [backResponse] = await Promise.all([
+        page.waitForNavigation(),
+        page.click('a#back'),
+      ]);
+      expect(backResponse).toBe(null);
+      expect(page.url()).toBe(server.PREFIX + '/first.html');
+      const [forwardResponse] = await Promise.all([
+        page.waitForNavigation(),
+        page.click('a#forward'),
+      ]);
+      expect(forwardResponse).toBe(null);
+      expect(page.url()).toBe(server.PREFIX + '/second.html');
+    });
+    it('should work when subframe issues window.stop()', async () => {
+      const {page, server} = getTestState();
 
-        server.setRoute('/frames/style.css', () => {});
-        const navigationPromise = page.goto(
-          server.PREFIX + '/frames/one-frame.html'
-        );
-        const frame = await utils.waitEvent(page, 'frameattached');
-        await new Promise<void>(fulfill => {
-          page.on('framenavigated', f => {
-            if (f === frame) {
-              fulfill();
-            }
-          });
+      server.setRoute('/frames/style.css', () => {});
+      const navigationPromise = page.goto(
+        server.PREFIX + '/frames/one-frame.html'
+      );
+      const frame = await utils.waitEvent(page, 'frameattached');
+      await new Promise<void>(fulfill => {
+        page.on('framenavigated', f => {
+          if (f === frame) {
+            fulfill();
+          }
         });
-        await Promise.all([
-          frame.evaluate(() => {
-            return window.stop();
-          }),
-          navigationPromise,
-        ]);
-      }
-    );
+      });
+      await Promise.all([
+        frame.evaluate(() => {
+          return window.stop();
+        }),
+        navigationPromise,
+      ]);
+    });
   });
 
   describe('Page.goBack', function () {
@@ -692,7 +667,7 @@ describe('navigation', function () {
       response = (await page.goForward())!;
       expect(response).toBe(null);
     });
-    itFailsFirefox('should work with HistoryAPI', async () => {
+    it('should work with HistoryAPI', async () => {
       const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
@@ -711,7 +686,7 @@ describe('navigation', function () {
     });
   });
 
-  describeFailsFirefox('Frame.goto', function () {
+  describe('Frame.goto', function () {
     it('should navigate subframes', async () => {
       const {page, server} = getTestState();
 
@@ -776,7 +751,7 @@ describe('navigation', function () {
     });
   });
 
-  describeFailsFirefox('Frame.waitForNavigation', function () {
+  describe('Frame.waitForNavigation', function () {
     it('should work', async () => {
       const {page, server} = getTestState();
 

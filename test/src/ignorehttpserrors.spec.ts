@@ -22,11 +22,8 @@ import {
 } from '../../lib/cjs/puppeteer/common/Browser.js';
 import {Page} from '../../lib/cjs/puppeteer/common/Page.js';
 import {HTTPResponse} from '../../lib/cjs/puppeteer/common/HTTPResponse.js';
-import {
-  getTestState,
-  describeFailsFirefox,
-  itFailsFirefox,
-} from './mocha-utils.js';
+import {getTestState} from './mocha-utils.js';
+import {it} from './mocha-utils.js';
 
 describe('ignoreHTTPSErrors', function () {
   /* Note that this test creates its own browser rather than use
@@ -59,7 +56,7 @@ describe('ignoreHTTPSErrors', function () {
     await context.close();
   });
 
-  describeFailsFirefox('Response.securityDetails', function () {
+  describe('Response.securityDetails', function () {
     it('should work', async () => {
       const {httpsServer} = getTestState();
 
@@ -119,7 +116,7 @@ describe('ignoreHTTPSErrors', function () {
     expect(error).toBeUndefined();
     expect(response.ok()).toBe(true);
   });
-  itFailsFirefox('should work with request interception', async () => {
+  it('should work with request interception', async () => {
     const {httpsServer} = getTestState();
 
     await page.setRequestInterception(true);
@@ -129,7 +126,7 @@ describe('ignoreHTTPSErrors', function () {
     const response = (await page.goto(httpsServer.EMPTY_PAGE))!;
     expect(response.status()).toBe(200);
   });
-  itFailsFirefox('should work with mixed content', async () => {
+  it('should work with mixed content', async () => {
     const {server, httpsServer} = getTestState();
 
     httpsServer.setRoute('/mixedcontent.html', (_req, res) => {

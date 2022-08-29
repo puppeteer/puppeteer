@@ -20,6 +20,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
+import {it} from './mocha-utils.js';
 
 describe('Query handler tests', function () {
   setupTestBrowserHooks();

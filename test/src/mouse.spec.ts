@@ -19,9 +19,9 @@ import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
-  itFailsFirefox,
 } from './mocha-utils.js';
 import {KeyInput} from '../../lib/cjs/puppeteer/common/USKeyboardLayout.js';
+import {it} from './mocha-utils.js';
 
 interface Dimensions {
   x: number;
@@ -115,7 +115,7 @@ describe('Mouse', function () {
       })
     ).toBe(text);
   });
-  itFailsFirefox('should trigger hover state', async () => {
+  it('should trigger hover state', async () => {
     const {page, server} = getTestState();
 
     await page.goto(server.PREFIX + '/input/scrollable.html');
@@ -138,24 +138,21 @@ describe('Mouse', function () {
       })
     ).toBe('button-91');
   });
-  itFailsFirefox(
-    'should trigger hover state with removed window.Node',
-    async () => {
-      const {page, server} = getTestState();
+  it('should trigger hover state with removed window.Node', async () => {
+    const {page, server} = getTestState();
 
-      await page.goto(server.PREFIX + '/input/scrollable.html');
+    await page.goto(server.PREFIX + '/input/scrollable.html');
+    await page.evaluate(() => {
+      // @ts-expect-error Expected.
+      return delete window.Node;
+    });
+    await page.hover('#button-6');
+    expect(
       await page.evaluate(() => {
-        // @ts-expect-error Expected.
-        return delete window.Node;
-      });
-      await page.hover('#button-6');
-      expect(
-        await page.evaluate(() => {
-          return document.querySelector('button:hover')!.id;
-        })
-      ).toBe('button-6');
-    }
-  );
+        return document.querySelector('button:hover')!.id;
+      })
+    ).toBe('button-6');
+  });
   it('should set modifier keys on click', async () => {
     const {page, server, isFirefox} = getTestState();
 
@@ -202,7 +199,7 @@ describe('Mouse', function () {
       }
     }
   });
-  itFailsFirefox('should send mouse wheel events', async () => {
+  it('should send mouse wheel events', async () => {
     const {page, server} = getTestState();
 
     await page.goto(server.PREFIX + '/input/wheel.html');
@@ -225,7 +222,7 @@ describe('Mouse', function () {
       height: 230,
     });
   });
-  itFailsFirefox('should tween mouse movement', async () => {
+  it('should tween mouse movement', async () => {
     const {page} = getTestState();
 
     await page.mouse.move(100, 100);

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import {describeChromeOnly, getTestState} from './mocha-utils'; // eslint-disable-line import/extensions
+import {getTestState} from './mocha-utils'; // eslint-disable-line import/extensions
 import utils from './utils.js';
+import {it} from './mocha-utils.js';
 
 import expect from 'expect';
 
@@ -24,7 +25,7 @@ import {
   BrowserContext,
 } from '../../lib/cjs/puppeteer/common/Browser.js';
 
-describeChromeOnly('TargetManager', () => {
+describe('TargetManager', () => {
   /* We use a special browser for this test as we need the --site-per-process flag */
   let browser: Browser;
   let context: BrowserContext;

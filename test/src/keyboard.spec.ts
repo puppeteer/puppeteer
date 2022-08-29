@@ -21,9 +21,9 @@ import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
-  itFailsFirefox,
 } from './mocha-utils.js';
 import {KeyInput} from '../../lib/cjs/puppeteer/common/USKeyboardLayout.js';
+import {it} from './mocha-utils.js';
 
 describe('Keyboard', function () {
   setupTestBrowserHooks();
@@ -45,7 +45,7 @@ describe('Keyboard', function () {
       })
     ).toBe(text);
   });
-  itFailsFirefox('should press the metaKey', async () => {
+  it('should press the metaKey', async () => {
     const {page, isFirefox} = getTestState();
 
     await page.evaluate(() => {
@@ -120,22 +120,19 @@ describe('Keyboard', function () {
       })
     ).toBe('a');
   });
-  itFailsFirefox(
-    'ElementHandle.press should support |text| option',
-    async () => {
-      const {page, server} = getTestState();
+  it('ElementHandle.press should support |text| option', async () => {
+    const {page, server} = getTestState();
 
-      await page.goto(server.PREFIX + '/input/textarea.html');
-      const textarea = (await page.$('textarea'))!;
-      await textarea.press('a', {text: 'ё'});
-      expect(
-        await page.evaluate(() => {
-          return document.querySelector('textarea')!.value;
-        })
-      ).toBe('ё');
-    }
-  );
-  itFailsFirefox('should send a character with sendCharacter', async () => {
+    await page.goto(server.PREFIX + '/input/textarea.html');
+    const textarea = (await page.$('textarea'))!;
+    await textarea.press('a', {text: 'ё'});
+    expect(
+      await page.evaluate(() => {
+        return document.querySelector('textarea')!.value;
+      })
+    ).toBe('ё');
+  });
+  it('should send a character with sendCharacter', async () => {
     const {page, server} = getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
@@ -162,7 +159,7 @@ describe('Keyboard', function () {
       })
     ).toBe('嗨a');
   });
-  itFailsFirefox('should report shiftKey', async () => {
+  it('should report shiftKey', async () => {
     const {page, server} = getTestState();
 
     await page.goto(server.PREFIX + '/input/keyboard.html');
@@ -353,7 +350,7 @@ describe('Keyboard', function () {
       })
     ).toBe('He Wrd!');
   });
-  itFailsFirefox('should specify repeat property', async () => {
+  it('should specify repeat property', async () => {
     const {page, server} = getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
@@ -401,7 +398,7 @@ describe('Keyboard', function () {
       })
     ).toBe(false);
   });
-  itFailsFirefox('should type all kinds of characters', async () => {
+  it('should type all kinds of characters', async () => {
     const {page, server} = getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
@@ -410,7 +407,7 @@ describe('Keyboard', function () {
     await page.keyboard.type(text);
     expect(await page.evaluate('result')).toBe(text);
   });
-  itFailsFirefox('should specify location', async () => {
+  it('should specify location', async () => {
     const {page, server} = getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
@@ -460,7 +457,7 @@ describe('Keyboard', function () {
     });
     expect(error && error.message).toBe('Unknown key: "😊"');
   });
-  itFailsFirefox('should type emoji', async () => {
+  it('should type emoji', async () => {
     const {page, server} = getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
@@ -471,7 +468,7 @@ describe('Keyboard', function () {
       })
     ).toBe('👹 Tokyo street Japan 🇯🇵');
   });
-  itFailsFirefox('should type emoji into an iframe', async () => {
+  it('should type emoji into an iframe', async () => {
     const {page, server} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
@@ -489,7 +486,7 @@ describe('Keyboard', function () {
       })
     ).toBe('👹 Tokyo street Japan 🇯🇵');
   });
-  itFailsFirefox('should press the meta key', async () => {
+  it('should press the meta key', async () => {
     const {page, isFirefox} = getTestState();
 
     await page.evaluate(() => {

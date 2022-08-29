@@ -173,26 +173,12 @@ jobs:
         run: npm run build:dev
       - name: Test types
         run: npm run test:types
-      # On Linux we run all Chrome tests without retries and Firefox tests with retries.
-      - name: Run all Chrome tests (only on Linux)
+      - name: Run all tests with xvfb
         if: ${{ matrix.spec.name == 'Linux' }}
-        run: xvfb-run --auto-servernum npm run test:chrome
-      - name: Run all Firefox tests (only on Linux)
-        if: ${{ matrix.spec.name == 'Linux' }}
-        uses: nick-invision/retry@v2
-        with:
-          command: xvfb-run --auto-servernum npm run test:firefox
-          timeout_minutes: 20
-          max_attempts: 3
-      # On other platforms we only run chrome:headless tests and continue on Firefox errors.
-      - name: Test Chrome Headless (not on Linux)
-        id: test-chrome
+        run: xvfb-run --auto-servernum npm run test:experimental-runner
+      - name: Run all tests without xvfb
         if: ${{ matrix.spec.name != 'Linux' }}
-        run: npm run test:chrome:headless
-      - name: Run all Firefox tests (not on Linux)
-        if: ${{ matrix.spec.name != 'Linux' }}
-        continue-on-error: true
-        run: npm run test:firefox
+        run: npm run test:experimental-runner
       - name: Test bundling and installation
         if: ${{ matrix.spec.name == 'Linux' }}
         run: |

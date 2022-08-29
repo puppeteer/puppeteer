@@ -17,11 +17,11 @@
 import expect from 'expect';
 import {
   getTestState,
-  itFailsFirefox,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   shortWaitForArrayToHaveAtLeastNElements,
 } from './mocha-utils.js';
+import {it} from './mocha-utils.js';
 
 describe('JSHandle', function () {
   setupTestBrowserHooks();
@@ -159,7 +159,7 @@ describe('JSHandle', function () {
       expect(await bHandle.jsonValue()).toEqual(undefined);
     });
 
-    itFailsFirefox('should not work with dates', async () => {
+    it('should not work with dates', async () => {
       const {page} = getTestState();
 
       const dateHandle = await page.evaluateHandle(() => {
@@ -409,7 +409,7 @@ describe('JSHandle', function () {
   });
 
   describe('JSHandle.click', function () {
-    itFailsFirefox('should work', async () => {
+    it('should work', async () => {
       const {page} = getTestState();
 
       const clicks: Array<[x: number, y: number]> = [];

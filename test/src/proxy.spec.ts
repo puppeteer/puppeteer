@@ -17,15 +17,12 @@
 import expect from 'expect';
 import http from 'http';
 import os from 'os';
-import {
-  getTestState,
-  describeFailsFirefox,
-  itFailsWindows,
-} from './mocha-utils.js';
+import {getTestState} from './mocha-utils.js';
 import type {Server, IncomingMessage, ServerResponse} from 'http';
 import type {Browser} from '../../lib/cjs/puppeteer/common/Browser.js';
 import type {AddressInfo} from 'net';
 import {TestServer} from '../../utils/testserver/lib/index.js';
+import {it} from './mocha-utils.js';
 
 let HOSTNAME = os.hostname();
 
@@ -53,7 +50,7 @@ function getEmptyPageUrl(server: TestServer): string {
   return `http://${HOSTNAME}:${server.PORT}${emptyPagePath}`;
 }
 
-describeFailsFirefox('request proxy', () => {
+describe('request proxy', () => {
   let browser: Browser;
   let proxiedRequestUrls: string[];
   let proxyServer: Server;
@@ -194,28 +191,25 @@ describeFailsFirefox('request proxy', () => {
     /**
      * See issues #7873, #7719, and #7698.
      */
-    itFailsWindows(
-      'should proxy requests when configured at context level',
-      async () => {
-        const {puppeteer, defaultBrowserOptions, server} = getTestState();
-        const emptyPageUrl = getEmptyPageUrl(server);
+    it('should proxy requests when configured at context level', async () => {
+      const {puppeteer, defaultBrowserOptions, server} = getTestState();
+      const emptyPageUrl = getEmptyPageUrl(server);
 
-        browser = await puppeteer.launch({
-          ...defaultBrowserOptions,
-          args: defaultArgs,
-        });
+      browser = await puppeteer.launch({
+        ...defaultBrowserOptions,
+        args: defaultArgs,
+      });
 
-        const context = await browser.createIncognitoBrowserContext({
-          proxyServer: proxyServerUrl,
-        });
-        const page = await context.newPage();
-        const response = (await page.goto(emptyPageUrl))!;
+      const context = await browser.createIncognitoBrowserContext({
+        proxyServer: proxyServerUrl,
+      });
+      const page = await context.newPage();
+      const response = (await page.goto(emptyPageUrl))!;
 
-        expect(response.ok()).toBe(true);
+      expect(response.ok()).toBe(true);
 
-        expect(proxiedRequestUrls).toEqual([emptyPageUrl]);
-      }
-    );
+      expect(proxiedRequestUrls).toEqual([emptyPageUrl]);
+    });
 
     it('should respect proxy bypass list when configured at context level', async () => {
       const {puppeteer, defaultBrowserOptions, server} = getTestState();

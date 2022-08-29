@@ -15,12 +15,9 @@
  */
 
 import expect from 'expect';
-import {
-  getTestState,
-  itFailsFirefox,
-  setupTestBrowserHooks,
-} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
+import {it} from './mocha-utils.js';
 
 describe('BrowserContext', function () {
   setupTestBrowserHooks();
@@ -60,7 +57,7 @@ describe('BrowserContext', function () {
     await context.close();
     expect((await browser.pages()).length).toBe(1);
   });
-  itFailsFirefox('window.open should use parent tab context', async () => {
+  it('window.open should use parent tab context', async () => {
     const {browser, server} = getTestState();
 
     const context = await browser.createIncognitoBrowserContext();
@@ -75,7 +72,7 @@ describe('BrowserContext', function () {
     expect(popupTarget.browserContext()).toBe(context);
     await context.close();
   });
-  itFailsFirefox('should fire target events', async () => {
+  it('should fire target events', async () => {
     const {browser, server} = getTestState();
 
     const context = await browser.createIncognitoBrowserContext();
@@ -99,7 +96,7 @@ describe('BrowserContext', function () {
     ]);
     await context.close();
   });
-  itFailsFirefox('should wait for a target', async () => {
+  it('should wait for a target', async () => {
     const {browser, puppeteer, server} = getTestState();
 
     const context = await browser.createIncognitoBrowserContext();
@@ -156,7 +153,7 @@ describe('BrowserContext', function () {
     await context.close();
   });
 
-  itFailsFirefox('should isolate localStorage and cookies', async () => {
+  it('should isolate localStorage and cookies', async () => {
     const {browser, server} = getTestState();
 
     // Create two incognito contexts.
@@ -216,7 +213,7 @@ describe('BrowserContext', function () {
     expect(browser.browserContexts().length).toBe(1);
   });
 
-  itFailsFirefox('should work across sessions', async () => {
+  it('should work across sessions', async () => {
     const {browser, puppeteer} = getTestState();
 
     expect(browser.browserContexts().length).toBe(1);

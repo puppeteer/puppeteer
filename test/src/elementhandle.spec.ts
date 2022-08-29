@@ -18,12 +18,11 @@ import expect from 'expect';
 import sinon from 'sinon';
 import {ElementHandle} from '../../lib/cjs/puppeteer/common/ElementHandle.js';
 import {
-  describeFailsFirefox,
   getTestState,
-  itFailsFirefox,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
+import {it} from './mocha-utils.js';
 
 import utils from './utils.js';
 
@@ -31,7 +30,7 @@ describe('ElementHandle specs', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
 
-  describeFailsFirefox('ElementHandle.boundingBox', function () {
+  describe('ElementHandle.boundingBox', function () {
     it('should work', async () => {
       const {page, server} = getTestState();
 
@@ -96,7 +95,7 @@ describe('ElementHandle specs', function () {
     });
   });
 
-  describeFailsFirefox('ElementHandle.boxModel', function () {
+  describe('ElementHandle.boxModel', function () {
     it('should work', async () => {
       const {page, server} = getTestState();
 
@@ -162,7 +161,7 @@ describe('ElementHandle specs', function () {
   });
 
   describe('ElementHandle.contentFrame', function () {
-    itFailsFirefox('should work', async () => {
+    it('should work', async () => {
       const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
@@ -175,7 +174,7 @@ describe('ElementHandle specs', function () {
 
   describe('ElementHandle.click', function () {
     // See https://github.com/puppeteer/puppeteer/issues/7175
-    itFailsFirefox('should work', async () => {
+    it('should work', async () => {
       const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/input/button.html');

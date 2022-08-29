@@ -24,11 +24,8 @@ import {
   PuppeteerLaunchOptions,
   PuppeteerNode,
 } from '../../lib/cjs/puppeteer/node/Puppeteer.js';
-import {
-  describeChromeOnly,
-  getTestState,
-  itFailsWindows,
-} from './mocha-utils.js';
+import {getTestState} from './mocha-utils.js';
+import {it} from './mocha-utils.js';
 
 const rmAsync = promisify(rimraf);
 const mkdtempAsync = promisify(fs.mkdtemp);
@@ -44,7 +41,7 @@ const serviceWorkerExtensionPath = path.join(
   'extension'
 );
 
-describeChromeOnly('headful tests', function () {
+describe('headful tests', function () {
   /* These tests fire up an actual browser so let's
    * allow a higher timeout
    */
@@ -214,41 +211,38 @@ describeChromeOnly('headful tests', function () {
       expect(pages).toEqual(['about:blank']);
       await browser.close();
     });
-    itFailsWindows(
-      'headless should be able to read cookies written by headful',
-      async () => {
-        /* Needs investigation into why but this fails consistently on Windows CI. */
-        const {server, puppeteer} = getTestState();
+    it('headless should be able to read cookies written by headful', async () => {
+      /* Needs investigation into why but this fails consistently on Windows CI. */
+      const {server, puppeteer} = getTestState();
 
-        const userDataDir = await mkdtempAsync(TMP_FOLDER);
-        // Write a cookie in headful chrome
-        const headfulBrowser = await launchBrowser(
-          puppeteer,
-          Object.assign({userDataDir}, headfulOptions)
-        );
-        const headfulPage = await headfulBrowser.newPage();
-        await headfulPage.goto(server.EMPTY_PAGE);
-        await headfulPage.evaluate(() => {
-          return (document.cookie =
-            'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT');
-        });
-        await headfulBrowser.close();
-        // Read the cookie from headless chrome
-        const headlessBrowser = await launchBrowser(
-          puppeteer,
-          Object.assign({userDataDir}, headlessOptions)
-        );
-        const headlessPage = await headlessBrowser.newPage();
-        await headlessPage.goto(server.EMPTY_PAGE);
-        const cookie = await headlessPage.evaluate(() => {
-          return document.cookie;
-        });
-        await headlessBrowser.close();
-        // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
-        await rmAsync(userDataDir).catch(() => {});
-        expect(cookie).toBe('foo=true');
-      }
-    );
+      const userDataDir = await mkdtempAsync(TMP_FOLDER);
+      // Write a cookie in headful chrome
+      const headfulBrowser = await launchBrowser(
+        puppeteer,
+        Object.assign({userDataDir}, headfulOptions)
+      );
+      const headfulPage = await headfulBrowser.newPage();
+      await headfulPage.goto(server.EMPTY_PAGE);
+      await headfulPage.evaluate(() => {
+        return (document.cookie =
+          'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT');
+      });
+      await headfulBrowser.close();
+      // Read the cookie from headless chrome
+      const headlessBrowser = await launchBrowser(
+        puppeteer,
+        Object.assign({userDataDir}, headlessOptions)
+      );
+      const headlessPage = await headlessBrowser.newPage();
+      await headlessPage.goto(server.EMPTY_PAGE);
+      const cookie = await headlessPage.evaluate(() => {
+        return document.cookie;
+      });
+      await headlessBrowser.close();
+      // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
+      await rmAsync(userDataDir).catch(() => {});
+      expect(cookie).toBe('foo=true');
+    });
     // TODO: Support OOOPIF. @see https://github.com/puppeteer/puppeteer/issues/2548
     xit('OOPIF: should report google.com frame', async () => {
       const {server, puppeteer} = getTestState();

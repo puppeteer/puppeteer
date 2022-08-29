@@ -19,8 +19,8 @@ import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
-  itFailsFirefox,
 } from './mocha-utils.js';
+import {it} from './mocha-utils.js';
 
 describe('DefaultBrowserContext', function () {
   setupTestBrowserHooks();
@@ -48,7 +48,7 @@ describe('DefaultBrowserContext', function () {
       },
     ]);
   });
-  itFailsFirefox('page.setCookie() should work', async () => {
+  it('page.setCookie() should work', async () => {
     const {page, server} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
@@ -78,7 +78,7 @@ describe('DefaultBrowserContext', function () {
       },
     ]);
   });
-  itFailsFirefox('page.deleteCookie() should work', async () => {
+  it('page.deleteCookie() should work', async () => {
     const {page, server} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);

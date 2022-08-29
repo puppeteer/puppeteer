@@ -22,15 +22,15 @@ import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
-  describeFailsFirefox,
 } from './mocha-utils.js';
 import {HTTPRequest} from '../../lib/cjs/puppeteer/common/HTTPRequest.js';
 import {ConsoleMessage} from '../../lib/cjs/puppeteer/common/ConsoleMessage.js';
+import {it} from './mocha-utils.js';
 
 describe('request interception', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
-  describeFailsFirefox('Page.setRequestInterception', function () {
+  describe('Page.setRequestInterception', function () {
     it('should intercept', async () => {
       const {page, server} = getTestState();
 
@@ -623,7 +623,7 @@ describe('request interception', function () {
     });
   });
 
-  describeFailsFirefox('Request.continue', function () {
+  describe('Request.continue', function () {
     it('should work', async () => {
       const {page, server} = getTestState();
 
@@ -739,7 +739,7 @@ describe('request interception', function () {
     });
   });
 
-  describeFailsFirefox('Request.respond', function () {
+  describe('Request.respond', function () {
     it('should work', async () => {
       const {page, server} = getTestState();
 

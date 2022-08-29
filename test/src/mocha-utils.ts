@@ -17,7 +17,6 @@
 import Protocol from 'devtools-protocol';
 import expect from 'expect';
 import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
 import rimraf from 'rimraf';
 import sinon from 'sinon';
@@ -34,6 +33,7 @@ import {
 import puppeteer from '../../lib/cjs/puppeteer/puppeteer.js';
 import {TestServer} from '../../utils/testserver/lib/index.js';
 import {extendExpectWithToBeGolden} from './utils.js';
+import * as Mocha from 'mocha';
 
 const setupServer = async () => {
   const assetsPath = path.join(__dirname, '../assets');
@@ -63,14 +63,14 @@ export const getTestState = (): PuppeteerTestState => {
 };
 
 const product =
-  process.env['PRODUCT'] || process.env['PUPPETEER_PRODUCT'] || 'Chromium';
+  process.env['PRODUCT'] || process.env['PUPPETEER_PRODUCT'] || 'chrome';
 
 const alternativeInstall = process.env['PUPPETEER_ALT_INSTALL'] || false;
 
 const headless = (process.env['HEADLESS'] || 'true').trim().toLowerCase();
 const isHeadless = headless === 'true' || headless === 'chrome';
 const isFirefox = product === 'firefox';
-const isChrome = product === 'Chromium';
+const isChrome = product === 'chrome';
 
 let extraLaunchOptions = {};
 try {
@@ -125,7 +125,11 @@ declare module 'expect/build/types' {
 }
 
 const setupGoldenAssertions = (): void => {
-  const suffix = product.toLowerCase();
+  let suffix = product.toLowerCase();
+  if (suffix === 'chrome') {
+    // TODO: to avoid moving golden folders.
+    suffix = 'chromium';
+  }
   const GOLDEN_DIR = path.join(__dirname, `../golden-${suffix}`);
   const OUTPUT_DIR = path.join(__dirname, `../output-${suffix}`);
   if (fs.existsSync(OUTPUT_DIR)) {
@@ -152,64 +156,9 @@ interface PuppeteerTestState {
 }
 const state: Partial<PuppeteerTestState> = {};
 
-export const itFailsFirefox = (
-  description: string,
-  body: Mocha.Func
-): Mocha.Test => {
-  if (isFirefox) {
-    return xit(description, body);
-  } else {
-    return it(description, body);
-  }
-};
-
-export const itChromeOnly = (
-  description: string,
-  body: Mocha.Func
-): Mocha.Test => {
-  if (isChrome) {
-    return it(description, body);
-  } else {
-    return xit(description, body);
-  }
-};
-
-export const itHeadlessOnly = (
-  description: string,
-  body: Mocha.Func
-): Mocha.Test => {
-  if (isChrome && isHeadless === true) {
-    return it(description, body);
-  } else {
-    return xit(description, body);
-  }
-};
-
-export const itHeadfulOnly = (
-  description: string,
-  body: Mocha.Func
-): Mocha.Test => {
-  if (isChrome && isHeadless === false) {
-    return it(description, body);
-  } else {
-    return xit(description, body);
-  }
-};
-
-export const itFirefoxOnly = (
-  description: string,
-  body: Mocha.Func
-): Mocha.Test => {
-  if (isFirefox) {
-    return it(description, body);
-  } else {
-    return xit(description, body);
-  }
-};
-
 export const itOnlyRegularInstall = (
   description: string,
-  body: Mocha.Func
+  body: Mocha.AsyncFunc
 ): Mocha.Test => {
   if (alternativeInstall || process.env['BINARY']) {
     return xit(description, body);
@@ -218,50 +167,10 @@ export const itOnlyRegularInstall = (
   }
 };
 
-export const itFailsWindowsUntilDate = (
-  date: Date,
-  description: string,
-  body: Mocha.Func
-): Mocha.Test => {
-  if (os.platform() === 'win32' && Date.now() < date.getTime()) {
-    // we are within the deferred time so skip the test
-    return xit(description, body);
-  }
-
-  return it(description, body);
-};
-
-export const itFailsWindows = (
-  description: string,
-  body: Mocha.Func
-): Mocha.Test => {
-  if (os.platform() === 'win32') {
-    return xit(description, body);
-  }
-  return it(description, body);
-};
-
-export const describeFailsFirefox = (
-  description: string,
-  body: (this: Mocha.Suite) => void
-): void | Mocha.Suite => {
-  if (isFirefox) {
-    return xdescribe(description, body);
-  } else {
-    return describe(description, body);
-  }
-};
-
-export const describeChromeOnly = (
-  description: string,
-  body: (this: Mocha.Suite) => void
-): Mocha.Suite | void => {
-  if (isChrome) {
-    return describe(description, body);
-  }
-};
-
-if (process.env['MOCHA_WORKER_ID'] === '0') {
+if (
+  process.env['MOCHA_WORKER_ID'] === undefined ||
+  process.env['MOCHA_WORKER_ID'] === '0'
+) {
   console.log(
     `Running unit tests with:
   -> product: ${product}
@@ -290,7 +199,7 @@ export const setupTestBrowserHooks = (): void => {
   });
 
   after(async () => {
-    await state.browser!.close();
+    await state.browser?.close();
     state.browser = undefined;
   });
 };
@@ -386,4 +295,53 @@ export const shortWaitForArrayToHaveAtLeastNElements = async (
       return setTimeout(resolve, timeout);
     });
   }
+};
+
+type SyncFn = (this: Mocha.Context) => void;
+type SkippedTest = {
+  fullTitle: string;
+  filename: string;
+};
+
+const skippedTests: SkippedTest[] = process.env['PUPPETEER_SKIPPED_TEST_CONFIG']
+  ? JSON.parse(process.env['PUPPETEER_SKIPPED_TEST_CONFIG'])
+  : [];
+
+const byFile = skippedTests.reduce((acc, test) => {
+  if (!acc.has(test.filename)) {
+    acc.set(test.filename, [test]);
+  } else {
+    acc.get(test.filename)!.push(test);
+  }
+  return acc;
+}, new Map<string, SkippedTest[]>());
+
+function skipTestIfNeeded(test: Mocha.Test): void {
+  const file = getFilename(test.file!);
+  if (
+    byFile.has(file) &&
+    byFile.get(file)?.find(skippedTest => {
+      return test.fullTitle().startsWith(skippedTest.fullTitle);
+    })
+  ) {
+    try {
+      test.skip();
+    } catch {}
+  }
+}
+
+function getFilename(file: string): string {
+  return path.basename(file).replace(path.extname(file), '');
+}
+
+export function it(title: string, fn?: Mocha.AsyncFunc | SyncFn): Mocha.Test {
+  const test = Mocha.it.call(null, title, fn as any);
+  skipTestIfNeeded(test);
+  return test;
+}
+
+it.only = function (title: string, fn?: Mocha.AsyncFunc | SyncFn): Mocha.Test {
+  const test = Mocha.it.only.call(null, title, fn as any);
+  skipTestIfNeeded(test);
+  return test;
 };

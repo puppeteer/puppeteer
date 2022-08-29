@@ -22,14 +22,11 @@ import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
-  itFailsFirefox,
-  describeFailsFirefox,
-  itChromeOnly,
-  itFirefoxOnly,
 } from './mocha-utils.js';
 import {HTTPRequest} from '../../lib/cjs/puppeteer/common/HTTPRequest.js';
 import {HTTPResponse} from '../../lib/cjs/puppeteer/common/HTTPResponse.js';
 import {ServerResponse} from 'http';
+import {it} from './mocha-utils.js';
 
 describe('network', function () {
   setupTestBrowserHooks();
@@ -83,7 +80,7 @@ describe('network', function () {
       expect(requests.length).toBe(1);
       expect(requests[0]!.frame()).toBe(page.mainFrame());
     });
-    itFailsFirefox('should work for subframe navigation request', async () => {
+    it('should work for subframe navigation request', async () => {
       const {page, server} = getTestState();
 
       (await page.goto(server.EMPTY_PAGE))!;
@@ -115,13 +112,13 @@ describe('network', function () {
   });
 
   describe('Request.headers', function () {
-    itChromeOnly('should define Chrome as user agent header', async () => {
+    it('should define Chrome as user agent header', async () => {
       const {page, server} = getTestState();
       const response = (await page.goto(server.EMPTY_PAGE))!;
       expect(response.request().headers()['user-agent']).toContain('Chrome');
     });
 
-    itFirefoxOnly('should define Firefox as user agent header', async () => {
+    it('should define Firefox as user agent header', async () => {
       const {page, server} = getTestState();
 
       const response = (await page.goto(server.EMPTY_PAGE))!;
@@ -142,7 +139,7 @@ describe('network', function () {
     });
   });
 
-  describeFailsFirefox('Request.initiator', () => {
+  describe('Request.initiator', () => {
     it('should return the initiator', async () => {
       const {page, server} = getTestState();
 
@@ -187,7 +184,7 @@ describe('network', function () {
     });
   });
 
-  describeFailsFirefox('Response.fromCache', function () {
+  describe('Response.fromCache', function () {
     it('should return |false| for non-cached content', async () => {
       const {page, server} = getTestState();
 
@@ -218,7 +215,7 @@ describe('network', function () {
     });
   });
 
-  describeFailsFirefox('Response.fromServiceWorker', function () {
+  describe('Response.fromServiceWorker', function () {
     it('should return |false| for non-service-worker content', async () => {
       const {page, server} = getTestState();
 
@@ -253,7 +250,7 @@ describe('network', function () {
     });
   });
 
-  describeFailsFirefox('Request.postData', function () {
+  describe('Request.postData', function () {
     it('should work', async () => {
       const {page, server} = getTestState();
 
@@ -284,7 +281,7 @@ describe('network', function () {
     });
   });
 
-  describeFailsFirefox('Response.text', function () {
+  describe('Response.text', function () {
     it('should work', async () => {
       const {page, server} = getTestState();
 
@@ -367,7 +364,7 @@ describe('network', function () {
     });
   });
 
-  describeFailsFirefox('Response.json', function () {
+  describe('Response.json', function () {
     it('should work', async () => {
       const {page, server} = getTestState();
 
@@ -376,7 +373,7 @@ describe('network', function () {
     });
   });
 
-  describeFailsFirefox('Response.buffer', function () {
+  describe('Response.buffer', function () {
     it('should work', async () => {
       const {page, server} = getTestState();
 
@@ -461,7 +458,7 @@ describe('network', function () {
     });
   });
 
-  describeFailsFirefox('Response.timing', function () {
+  describe('Response.timing', function () {
     it('returns timing information', async () => {
       const {page, server} = getTestState();
       const responses: HTTPResponse[] = [];
@@ -474,7 +471,7 @@ describe('network', function () {
     });
   });
 
-  describeFailsFirefox('Network Events', function () {
+  describe('Network Events', function () {
     it('Page.Events.Request', async () => {
       const {page, server} = getTestState();
 
@@ -624,7 +621,7 @@ describe('network', function () {
   });
 
   describe('Request.isNavigationRequest', () => {
-    itFailsFirefox('should work', async () => {
+    it('should work', async () => {
       const {page, server} = getTestState();
 
       const requests = new Map();
@@ -639,7 +636,7 @@ describe('network', function () {
       expect(requests.get('script.js').isNavigationRequest()).toBe(false);
       expect(requests.get('style.css').isNavigationRequest()).toBe(false);
     });
-    itFailsFirefox('should work with request interception', async () => {
+    it('should work with request interception', async () => {
       const {page, server} = getTestState();
 
       const requests = new Map();
@@ -656,7 +653,7 @@ describe('network', function () {
       expect(requests.get('script.js').isNavigationRequest()).toBe(false);
       expect(requests.get('style.css').isNavigationRequest()).toBe(false);
     });
-    itFailsFirefox('should work when navigating to image', async () => {
+    it('should work when navigating to image', async () => {
       const {page, server} = getTestState();
 
       const requests: HTTPRequest[] = [];
@@ -668,7 +665,7 @@ describe('network', function () {
     });
   });
 
-  describeFailsFirefox('Page.setExtraHTTPHeaders', function () {
+  describe('Page.setExtraHTTPHeaders', function () {
     it('should work', async () => {
       const {page, server} = getTestState();
 
@@ -697,7 +694,7 @@ describe('network', function () {
     });
   });
 
-  describeFailsFirefox('Page.authenticate', function () {
+  describe('Page.authenticate', function () {
     it('should work', async () => {
       const {page, server} = getTestState();
 
@@ -794,7 +791,7 @@ describe('network', function () {
     });
   });
 
-  describeFailsFirefox('raw network headers', async () => {
+  describe('raw network headers', async () => {
     it('Same-origin set-cookie navigation', async () => {
       const {page, server} = getTestState();
 

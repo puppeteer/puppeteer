@@ -20,9 +20,8 @@ import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
-  itFailsFirefox,
-  describeFailsFirefox,
 } from './mocha-utils.js';
+import {it} from './mocha-utils.js';
 
 const bigint = typeof BigInt !== 'undefined';
 
@@ -115,18 +114,15 @@ describe('Evaluation specs', function () {
       await page.goto(server.PREFIX + '/global-var.html');
       expect(await page.evaluate('globalVar')).toBe(123);
     });
-    itFailsFirefox(
-      'should return undefined for objects with symbols',
-      async () => {
-        const {page} = getTestState();
+    it('should return undefined for objects with symbols', async () => {
+      const {page} = getTestState();
 
-        expect(
-          await page.evaluate(() => {
-            return [Symbol('foo4')];
-          })
-        ).toBe(undefined);
-      }
-    );
+      expect(
+        await page.evaluate(() => {
+          return [Symbol('foo4')];
+        })
+      ).toBe(undefined);
+    });
     it('should work with function shorthands', async () => {
       const {page} = getTestState();
 
@@ -155,7 +151,7 @@ describe('Evaluation specs', function () {
       );
       expect(result).toBe(42);
     });
-    itFailsFirefox('should throw when evaluation triggers reload', async () => {
+    it('should throw when evaluation triggers reload', async () => {
       const {page} = getTestState();
 
       let error!: Error;
@@ -189,7 +185,7 @@ describe('Evaluation specs', function () {
       await page.goto(server.EMPTY_PAGE);
       expect(await frameEvaluation).toBe(42);
     });
-    itFailsFirefox('should work from-inside an exposed function', async () => {
+    it('should work from-inside an exposed function', async () => {
       const {page} = getTestState();
 
       // Setup inpage callback, which calls Page.evaluate
@@ -324,19 +320,16 @@ describe('Evaluation specs', function () {
         })
       ).toEqual({});
     });
-    itFailsFirefox(
-      'should return undefined for non-serializable objects',
-      async () => {
-        const {page} = getTestState();
+    it('should return undefined for non-serializable objects', async () => {
+      const {page} = getTestState();
 
-        expect(
-          await page.evaluate(() => {
-            return window;
-          })
-        ).toBe(undefined);
-      }
-    );
-    itFailsFirefox('should fail for circular object', async () => {
+      expect(
+        await page.evaluate(() => {
+          return window;
+        })
+      ).toBe(undefined);
+    });
+    it('should fail for circular object', async () => {
       const {page} = getTestState();
 
       const result = await page.evaluate(() => {
@@ -347,7 +340,7 @@ describe('Evaluation specs', function () {
       });
       expect(result).toBe(undefined);
     });
-    itFailsFirefox('should be able to throw a tricky error', async () => {
+    it('should be able to throw a tricky error', async () => {
       const {page} = getTestState();
 
       const windowHandle = await page.evaluateHandle(() => {
@@ -410,28 +403,25 @@ describe('Evaluation specs', function () {
         });
       expect(error.message).toContain('JSHandle is disposed');
     });
-    itFailsFirefox(
-      'should throw if elementHandles are from other frames',
-      async () => {
-        const {page, server} = getTestState();
+    it('should throw if elementHandles are from other frames', async () => {
+      const {page, server} = getTestState();
 
-        await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
-        const bodyHandle = await page.frames()[1]!.$('body');
-        let error!: Error;
-        await page
-          .evaluate(body => {
-            return body?.innerHTML;
-          }, bodyHandle)
-          .catch(error_ => {
-            return (error = error_);
-          });
-        expect(error).toBeTruthy();
-        expect(error.message).toContain(
-          'JSHandles can be evaluated only in the context they were created'
-        );
-      }
-    );
-    itFailsFirefox('should simulate a user gesture', async () => {
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      const bodyHandle = await page.frames()[1]!.$('body');
+      let error!: Error;
+      await page
+        .evaluate(body => {
+          return body?.innerHTML;
+        }, bodyHandle)
+        .catch(error_ => {
+          return (error = error_);
+        });
+      expect(error).toBeTruthy();
+      expect(error.message).toContain(
+        'JSHandles can be evaluated only in the context they were created'
+      );
+    });
+    it('should simulate a user gesture', async () => {
       const {page} = getTestState();
 
       const result = await page.evaluate(() => {
@@ -441,7 +431,7 @@ describe('Evaluation specs', function () {
       });
       expect(result).toBe(true);
     });
-    itFailsFirefox('should throw a nice error after a navigation', async () => {
+    it('should throw a nice error after a navigation', async () => {
       const {page} = getTestState();
 
       const executionContext = await page.mainFrame().executionContext();
@@ -461,19 +451,16 @@ describe('Evaluation specs', function () {
         });
       expect((error as Error).message).toContain('navigation');
     });
-    itFailsFirefox(
-      'should not throw an error when evaluation does a navigation',
-      async () => {
-        const {page, server} = getTestState();
+    it('should not throw an error when evaluation does a navigation', async () => {
+      const {page, server} = getTestState();
 
-        await page.goto(server.PREFIX + '/one-style.html');
-        const result = await page.evaluate(() => {
-          (window as any).location = '/empty.html';
-          return [42];
-        });
-        expect(result).toEqual([42]);
-      }
-    );
+      await page.goto(server.PREFIX + '/one-style.html');
+      const result = await page.evaluate(() => {
+        (window as any).location = '/empty.html';
+        return [42];
+      });
+      expect(result).toEqual([42]);
+    });
     it('should transfer 100Mb of data from page to node.js', async function () {
       const {page} = getTestState();
 
@@ -499,7 +486,7 @@ describe('Evaluation specs', function () {
     });
   });
 
-  describeFailsFirefox('Page.evaluateOnNewDocument', function () {
+  describe('Page.evaluateOnNewDocument', function () {
     it('should evaluate before anything else on the page', async () => {
       const {page, server} = getTestState();
 

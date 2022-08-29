@@ -20,8 +20,8 @@ import {
   getTestState,
   setupTestPageAndContextHooks,
   setupTestBrowserHooks,
-  itFailsFirefox,
 } from './mocha-utils.js';
+import {it} from './mocha-utils.js';
 
 describe('Page.Events.Dialog', function () {
   setupTestBrowserHooks();
@@ -46,7 +46,7 @@ describe('Page.Events.Dialog', function () {
     expect(dialog.message()).toBe('yo');
   });
 
-  itFailsFirefox('should allow accepting prompts', async () => {
+  it('should allow accepting prompts', async () => {
     const {page} = getTestState();
 
     const onDialog = sinon.stub().callsFake(dialog => {

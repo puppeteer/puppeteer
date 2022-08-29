@@ -18,11 +18,11 @@ import expect from 'expect';
 import {isErrorLike} from '../../lib/cjs/puppeteer/util/ErrorLike.js';
 import {
   getTestState,
-  itFailsFirefox,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
 import {attachFrame, detachFrame} from './utils.js';
+import {it} from './mocha-utils.js';
 
 describe('waittask specs', function () {
   setupTestBrowserHooks();
@@ -188,7 +188,7 @@ describe('waittask specs', function () {
       });
       await watchdog;
     });
-    itFailsFirefox('should work with strict CSP policy', async () => {
+    it('should work with strict CSP policy', async () => {
       const {page, server} = getTestState();
 
       server.setCSP('/empty.html', 'script-src ' + server.PREFIX);
@@ -421,7 +421,7 @@ describe('waittask specs', function () {
       await frame.waitForSelector('div');
     });
 
-    itFailsFirefox('should work with removed MutationObserver', async () => {
+    it('should work with removed MutationObserver', async () => {
       const {page} = getTestState();
 
       await page.evaluate(() => {
@@ -465,23 +465,20 @@ describe('waittask specs', function () {
       await watchdog;
     });
 
-    itFailsFirefox(
-      'Page.waitForSelector is shortcut for main frame',
-      async () => {
-        const {page, server} = getTestState();
+    it('Page.waitForSelector is shortcut for main frame', async () => {
+      const {page, server} = getTestState();
 
-        await page.goto(server.EMPTY_PAGE);
-        await attachFrame(page, 'frame1', server.EMPTY_PAGE);
-        const otherFrame = page.frames()[1]!;
-        const watchdog = page.waitForSelector('div');
-        await otherFrame.evaluate(addElement, 'div');
-        await page.evaluate(addElement, 'div');
-        const eHandle = await watchdog;
-        expect(eHandle?.frame).toBe(page.mainFrame());
-      }
-    );
+      await page.goto(server.EMPTY_PAGE);
+      await attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      const otherFrame = page.frames()[1]!;
+      const watchdog = page.waitForSelector('div');
+      await otherFrame.evaluate(addElement, 'div');
+      await page.evaluate(addElement, 'div');
+      const eHandle = await watchdog;
+      expect(eHandle?.frame).toBe(page.mainFrame());
+    });
 
-    itFailsFirefox('should run in specified frame', async () => {
+    it('should run in specified frame', async () => {
       const {page, server} = getTestState();
 
       await attachFrame(page, 'frame1', server.EMPTY_PAGE);
@@ -495,7 +492,7 @@ describe('waittask specs', function () {
       expect(eHandle?.frame).toBe(frame2);
     });
 
-    itFailsFirefox('should throw when frame is detached', async () => {
+    it('should throw when frame is detached', async () => {
       const {page, server} = getTestState();
 
       await attachFrame(page, 'frame1', server.EMPTY_PAGE);
@@ -738,7 +735,7 @@ describe('waittask specs', function () {
         'waiting for selector `.//div` failed: timeout 10ms exceeded'
       );
     });
-    itFailsFirefox('should run in specified frame', async () => {
+    it('should run in specified frame', async () => {
       const {page, server} = getTestState();
 
       await attachFrame(page, 'frame1', server.EMPTY_PAGE);
@@ -751,7 +748,7 @@ describe('waittask specs', function () {
       const eHandle = await waitForXPathPromise;
       expect(eHandle?.frame).toBe(frame2);
     });
-    itFailsFirefox('should throw when frame is detached', async () => {
+    it('should throw when frame is detached', async () => {
       const {page, server} = getTestState();
 
       await attachFrame(page, 'frame1', server.EMPTY_PAGE);

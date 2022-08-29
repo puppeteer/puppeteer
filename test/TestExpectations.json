@@ -1,0 +1,3920 @@
+[
+  {
+    "fullTitle": "network Request.headers should define Firefox as user agent header",
+    "filename": "network.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "chrome"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Fixtures dumpio option should work with pipe option",
+    "filename": "fixtures.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "chrome"
+      },
+      {
+        "HEADLESS": "false"
+      }
+    ],
+    "expectations": ["FAIL"]
+  },
+  {
+    "fullTitle": "Screenshots Page.screenshot should work in \"fromSurface: false\" mode",
+    "filename": "screenshot.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "chrome"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["FAIL"]
+  },
+  {
+    "fullTitle": "Screenshots Page.screenshot should work in \"fromSurface: false\" mode",
+    "filename": "screenshot.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "chrome"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "request proxy in incognito browser context should proxy requests when configured at context level",
+    "filename": "proxy.spec",
+    "platforms": ["win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "chrome"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "OOPIF \"before all\" hook for \"should keep track of a frames OOP state\"",
+    "filename": "oopif.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "OOPIF \"after all\" hook for \"should keep track of a frames OOP state\"",
+    "filename": "oopif.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "",
+    "filename": "accessibility.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "",
+    "filename": "worker.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "",
+    "filename": "tracing.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "",
+    "filename": "touchscreen.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "",
+    "filename": "TargetManager.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "",
+    "filename": "requestinterception.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "",
+    "filename": "requestinterception-experimental.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "",
+    "filename": "proxy.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "",
+    "filename": "oopif.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "",
+    "filename": "input.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "",
+    "filename": "ignorehttperrors.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "",
+    "filename": "idle_overrides.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "",
+    "filename": "headful.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "",
+    "filename": "drag-and-drop.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "",
+    "filename": "coverage.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "",
+    "filename": "chromiumonly.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "",
+    "filename": "CDPSession.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "",
+    "filename": "ariaqueryhandler.spec",
+    "platforms": ["darwin", "win32", "linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "BrowserContext window.open should use parent tab context",
+    "filename": "browsercontext.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "BrowserContext should fire target events",
+    "filename": "browsercontext.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "BrowserContext should wait for a target",
+    "filename": "browsercontext.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "BrowserContext should isolate localStorage and cookies",
+    "filename": "browsercontext.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "BrowserContext should work across sessions",
+    "filename": "browsercontext.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page.click should click the button if window.Node is removed",
+    "filename": "click.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page.click should click with disabled javascript",
+    "filename": "click.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page.click should click on checkbox label and toggle",
+    "filename": "click.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Cookie specs Page.cookies should get cookies from multiple urls",
+    "filename": "cookies.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Cookie specs Page.setCookie should work",
+    "filename": "cookies.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Cookie specs Page.setCookie should isolate cookies in browser contexts",
+    "filename": "cookies.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Cookie specs Page.setCookie should set multiple cookies",
+    "filename": "cookies.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Cookie specs Page.setCookie should set cookie with reasonable defaults",
+    "filename": "cookies.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Cookie specs Page.setCookie should set a cookie with a path",
+    "filename": "cookies.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Cookie specs Page.setCookie should default to setting secure cookie for HTTPS websites",
+    "filename": "cookies.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Cookie specs Page.setCookie should set a cookie on a different domain",
+    "filename": "cookies.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Cookie specs Page.setCookie should set cookies from a frame",
+    "filename": "cookies.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Cookie specs Page.setCookie should set secure same-site cookies from a frame",
+    "filename": "cookies.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Cookie specs Page.deleteCookie should work",
+    "filename": "cookies.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "DefaultBrowserContext page.setCookie() should work",
+    "filename": "defaultbrowsercontext.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "DefaultBrowserContext page.deleteCookie() should work",
+    "filename": "defaultbrowsercontext.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page.Events.Dialog should allow accepting prompts",
+    "filename": "dialog.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "ElementHandle specs ElementHandle.contentFrame should work",
+    "filename": "elementhandle.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "ElementHandle specs ElementHandle.click should work",
+    "filename": "elementhandle.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Emulation Page.viewport should support landscape emulation",
+    "filename": "emulation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Emulation Page.emulate should support clicking",
+    "filename": "emulation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Emulation Page.emulateMediaType should work",
+    "filename": "emulation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Emulation Page.emulateMediaFeatures should work",
+    "filename": "emulation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Evaluation specs Page.evaluate should return undefined for objects with symbols",
+    "filename": "evaluation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Evaluation specs Page.evaluate should throw when evaluation triggers reload",
+    "filename": "evaluation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Evaluation specs Page.evaluate should work from-inside an exposed function",
+    "filename": "evaluation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Evaluation specs Page.evaluate should return undefined for non-serializable objects",
+    "filename": "evaluation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Evaluation specs Page.evaluate should fail for circular object",
+    "filename": "evaluation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Evaluation specs Page.evaluate should be able to throw a tricky error",
+    "filename": "evaluation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Evaluation specs Page.evaluate should throw if elementHandles are from other frames",
+    "filename": "evaluation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Evaluation specs Page.evaluate should simulate a user gesture",
+    "filename": "evaluation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Evaluation specs Page.evaluate should throw a nice error after a navigation",
+    "filename": "evaluation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Evaluation specs Page.evaluate should not throw an error when evaluation does a navigation",
+    "filename": "evaluation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Frame specs Frame.executionContext should work",
+    "filename": "frame.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Frame specs Frame.evaluate should throw for detached frames",
+    "filename": "frame.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Frame specs Frame Management should handle nested frames",
+    "filename": "frame.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Frame specs Frame Management should send events when frames are manipulated dynamically",
+    "filename": "frame.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Frame specs Frame Management should report frame from-inside shadow DOM",
+    "filename": "frame.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Frame specs Frame Management should report frame.name()",
+    "filename": "frame.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Frame specs Frame Management should report frame.parent()",
+    "filename": "frame.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Frame specs Frame Management should report different frame instance when frame re-attaches",
+    "filename": "frame.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Frame specs Frame Management should support lazy frames",
+    "filename": "frame.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "ignoreHTTPSErrors should work with request interception",
+    "filename": "ignorehttpserrors.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "ignoreHTTPSErrors should work with mixed content",
+    "filename": "ignorehttpserrors.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "JSHandle JSHandleonValue should not work with dates",
+    "filename": "jshandle.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "JSHandle JSHandle.click should work",
+    "filename": "jshandle.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Keyboard should press the metaKey",
+    "filename": "keyboard.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Keyboard ElementHandle.press should support |text| option",
+    "filename": "keyboard.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Keyboard should send a character with sendCharacter",
+    "filename": "keyboard.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Keyboard should report shiftKey",
+    "filename": "keyboard.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Keyboard should specify repeat property",
+    "filename": "keyboard.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Keyboard should type all kinds of characters",
+    "filename": "keyboard.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Keyboard should specify location",
+    "filename": "keyboard.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Keyboard should type emoji",
+    "filename": "keyboard.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Keyboard should type emoji into an iframe",
+    "filename": "keyboard.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Keyboard should press the meta key",
+    "filename": "keyboard.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Launcher specs Puppeteer Puppeteer.launch tmp profile should be cleaned up",
+    "filename": "launcher.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Launcher specs Puppeteer Puppeteer.launch userDataDir argument with non-existent dir",
+    "filename": "launcher.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Launcher specs Puppeteer Puppeteer.launch should filter out ignored default arguments in Chrome",
+    "filename": "launcher.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Launcher specs Puppeteer Puppeteer.launch should have custom URL when launching browser",
+    "filename": "launcher.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Launcher specs Puppeteer Puppeteer.launch should launch Chrome properly with --no-startup-window and waitForInitialPage=false",
+    "filename": "launcher.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Launcher specs Puppeteer Puppeteer.connect should support targetFilter option",
+    "filename": "launcher.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Launcher specs Puppeteer Puppeteer.connect should be able to reconnect to a disconnected browser",
+    "filename": "launcher.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Launcher specs Puppeteer Puppeteer.connect should be able to connect to the same page simultaneously",
+    "filename": "launcher.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Launcher specs Puppeteer Puppeteer.executablePath when the product is chrome, platform is not darwin, and arch is arm64 and the executable exists returns /usr/bin/chromium-browser",
+    "filename": "launcher.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Launcher specs Puppeteer Puppeteer.executablePath when the product is chrome, platform is not darwin, and arch is arm64 and the executable does not exist does not return /usr/bin/chromium-browser",
+    "filename": "launcher.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Launcher specs Browser target events should work",
+    "filename": "launcher.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Launcher specs Browser.Events.disconnected should be emitted when: browser gets closed, disconnected or underlying websocket gets closed",
+    "filename": "launcher.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Mouse should trigger hover state",
+    "filename": "mouse.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Mouse should trigger hover state with removed window.Node",
+    "filename": "mouse.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Mouse should send mouse wheel events",
+    "filename": "mouse.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Mouse should tween mouse movement",
+    "filename": "mouse.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Page.goto should work with subframes return 204",
+    "filename": "navigation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Page.goto should fail when server returns 204",
+    "filename": "navigation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Page.goto should navigate to empty page with networkidle0",
+    "filename": "navigation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Page.goto should navigate to empty page with networkidle2",
+    "filename": "navigation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Page.goto should fail when navigating to bad url",
+    "filename": "navigation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Page.goto should fail when navigating to bad SSL",
+    "filename": "navigation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Page.goto should work when navigating to data url",
+    "filename": "navigation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Page.goto should wait for network idle to succeed navigation",
+    "filename": "navigation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Page.goto should navigate to dataURL and fire dataURL requests",
+    "filename": "navigation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Page.goto should navigate to URL with hash and fire requests without hash",
+    "filename": "navigation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Page.goto should send referer",
+    "filename": "navigation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Page.waitForNavigation should work with history.pushState()",
+    "filename": "navigation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Page.waitForNavigation should work with history.replaceState()",
+    "filename": "navigation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Page.waitForNavigation should work with DOM history.back()/history.forward()",
+    "filename": "navigation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Page.waitForNavigation should work when subframe issues window.stop()",
+    "filename": "navigation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Page.goBack should work with HistoryAPI",
+    "filename": "navigation.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Request.frame should work for subframe navigation request",
+    "filename": "network.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Request.headers should define Chrome as user agent header",
+    "filename": "network.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Request.isNavigationRequest should work",
+    "filename": "network.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Request.isNavigationRequest should work with request interception",
+    "filename": "network.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Request.isNavigationRequest should work when navigating to image",
+    "filename": "network.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.close should run beforeunload if asked for",
+    "filename": "page.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.close should *not* run beforeunload by default",
+    "filename": "page.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.close should terminate network waiters",
+    "filename": "page.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page BrowserContext.overridePermissions should deny permission when not listed",
+    "filename": "page.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page BrowserContext.overridePermissions should grant permission when listed",
+    "filename": "page.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page BrowserContext.overridePermissions should reset permissions",
+    "filename": "page.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page BrowserContext.overridePermissions should trigger permission onchange",
+    "filename": "page.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page BrowserContext.overridePermissions should isolate permissions between browser contexts",
+    "filename": "page.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page BrowserContext.overridePermissions should grant persistent-storage",
+    "filename": "page.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.setGeolocation should work",
+    "filename": "page.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page ExecutionContext.queryObjects should work",
+    "filename": "page.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page ExecutionContext.queryObjects should work for non-blank page",
+    "filename": "page.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.setUserAgent should work with additional userAgentMetdata",
+    "filename": "page.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.addStyleTag should throw when added with content to the CSP page",
+    "filename": "page.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.setCacheEnabled should stay disabled when toggling request interception on/off",
+    "filename": "page.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.select should work when re-defining top-level Event class",
+    "filename": "page.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Close should work with window.close",
+    "filename": "page.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Screenshots Page.screenshot should work",
+    "filename": "screenshot.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Screenshots Page.screenshot should clip rect",
+    "filename": "screenshot.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Screenshots Page.screenshot should get screenshot bigger than the viewport",
+    "filename": "screenshot.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Screenshots Page.screenshot should take fullPage screenshots",
+    "filename": "screenshot.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Screenshots Page.screenshot should allow transparency",
+    "filename": "screenshot.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Screenshots Page.screenshot should render white background on jpeg file",
+    "filename": "screenshot.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Screenshots Page.screenshot should work with webp",
+    "filename": "screenshot.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Screenshots Page.screenshot should return base64",
+    "filename": "screenshot.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Screenshots ElementHandle.screenshot should work with a null viewport",
+    "filename": "screenshot.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Screenshots ElementHandle.screenshot should capture full element when larger than viewport",
+    "filename": "screenshot.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Screenshots ElementHandle.screenshot should work with a rotated element",
+    "filename": "screenshot.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Screenshots ElementHandle.screenshot should fail to screenshot a detached element",
+    "filename": "screenshot.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Screenshots ElementHandle.screenshot should work for an element with an offset",
+    "filename": "screenshot.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Target should be able to use async waitForTarget",
+    "filename": "target.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Target should report when a new page is created and closed",
+    "filename": "target.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Target should report when a service worker is created and destroyed",
+    "filename": "target.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Target should create a worker from a service worker",
+    "filename": "target.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Target should create a worker from a shared worker",
+    "filename": "target.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Target should report when a target url changes",
+    "filename": "target.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Target should not report uninitialized pages",
+    "filename": "target.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Target should not crash while redirecting if original request was missed",
+    "filename": "target.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Target should have an opener",
+    "filename": "target.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Target Browser.waitForTarget should wait for a target",
+    "filename": "target.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "waittask specs Frame.waitForFunction should work with strict CSP policy",
+    "filename": "waittask.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "waittask specs Frame.waitForSelector should work with removed MutationObserver",
+    "filename": "waittask.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "waittask specs Frame.waitForSelector Page.waitForSelector is shortcut for main frame",
+    "filename": "waittask.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "waittask specs Frame.waitForSelector should run in specified frame",
+    "filename": "waittask.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "waittask specs Frame.waitForSelector should throw when frame is detached",
+    "filename": "waittask.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "waittask specs Frame.waitForXPath should run in specified frame",
+    "filename": "waittask.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "waittask specs Frame.waitForXPath should throw when frame is detached",
+    "filename": "waittask.spec",
+    "platforms": ["darwin", "linux", "win32"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "ElementHandle specs ElementHandle.boundingBox should handle nested frames",
+    "filename": "elementhandle.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "ElementHandle specs ElementHandle.boundingBox should return null for invisible elements",
+    "filename": "elementhandle.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "ElementHandle specs ElementHandle.boxModel should return null for invisible elements",
+    "filename": "elementhandle.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Emulation Page.emulateTimezone should work",
+    "filename": "emulation.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Emulation Page.emulateTimezone should throw for invalid timezone IDs",
+    "filename": "emulation.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Emulation Page.emulateVisionDeficiency should work",
+    "filename": "emulation.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Emulation Page.emulateNetworkConditions should change navigator.connection.effectiveType",
+    "filename": "emulation.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Emulation Page.emulateCPUThrottling should change the CPU throttling rate successfully",
+    "filename": "emulation.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Evaluation specs Page.evaluateOnNewDocument should evaluate before anything else on the page",
+    "filename": "evaluation.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Evaluation specs Page.evaluateOnNewDocument should work with CSP",
+    "filename": "evaluation.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Fixtures dumpio option should work with pipe option",
+    "filename": "fixtures.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Emulate idle state changing idle state emulation causes change of the IdleDetector state",
+    "filename": "idle_override.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "ignoreHTTPSErrors Response.securityDetails should work",
+    "filename": "ignorehttpserrors.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "JSHandle JSHandle.jsonValue should not work with dates",
+    "filename": "jshandle.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Frame.goto should navigate subframes",
+    "filename": "navigation.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Frame.goto should reject when frame detaches",
+    "filename": "navigation.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Frame.goto should return matching responses",
+    "filename": "navigation.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Frame.goto should return matching responses",
+    "filename": "navigation.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Frame.waitForNavigation should work",
+    "filename": "navigation.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Frame.waitForNavigation should fail when frame detaches",
+    "filename": "navigation.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Request.initiator should return the initiator",
+    "filename": "network.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Response.fromCache should work",
+    "filename": "network.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Response.fromServiceWorker Response.fromServiceWorker",
+    "filename": "network.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Request.postData should work",
+    "filename": "network.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Response.text should work",
+    "filename": "network.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Response.text should return uncompressed text",
+    "filename": "network.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Response.text should throw when requesting body of redirected response",
+    "filename": "network.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Response.text should wait until response completes",
+    "filename": "network.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network \"after each\" hook for \"should wait until response completes\"",
+    "filename": "network.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.error should throw when page crashes",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Popup should work",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Popup should work with noopener",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Popup should work with clicking target=_blank and without rel=opener",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Popup should work with clicking target=_blank and with rel=opener",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Popup should work with fake-clicking target=_blank and rel=noopener",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Popup should work with clicking target=_blank and rel=noopener",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.setOfflineMode should work",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.setOfflineMode should emulate navigator.onLine",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Console should work",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Console should work for different console API calls",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Console should not fail for window object",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Console should trigger correct Log",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Console should have location when fetch fails",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Console should have location and stack trace for console API calls",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.metrics should get metrics from a page",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.metrics metrics event fired on console.timeStamp",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should work",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should throw exception in page context",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should support throwing \"null\"",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should be callable from-inside evaluateOnNewDocument",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should survive navigation",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should await returned promise",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should work on frames",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should work on frames before navigation",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should not throw when frames detach",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should work with complex objects",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should fallback to default export when passed a module object",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.setBypassCSP should bypass CSP meta tag",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.setBypassCSP should bypass CSP header",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.setBypassCSP should bypass after cross-process navigation",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.setBypassCSP should bypass CSP in iframes as well",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.setJavaScriptEnabled should work",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.setCacheEnabled should enable or disable the cache based on the state passed",
+    "filename": "page.spec",
+    "platforms": ["darwin"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "ElementHandle specs ElementHandle.boundingBox should work",
+    "filename": "elementhandle.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "ElementHandle specs ElementHandle.boundingBox should handle nested frames",
+    "filename": "elementhandle.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "ElementHandle specs ElementHandle.boundingBox should return null for invisible elements",
+    "filename": "elementhandle.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "ElementHandle specs ElementHandle.boxModel should return null for invisible elements",
+    "filename": "elementhandle.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Emulation Page.emulateTimezone should work",
+    "filename": "emulation.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Emulation Page.emulateTimezone should throw for invalid timezone IDs",
+    "filename": "emulation.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Emulation Page.emulateVisionDeficiency should work",
+    "filename": "emulation.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Emulation Page.emulateNetworkConditions should change navigator.connection.effectiveType",
+    "filename": "emulation.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Emulation Page.emulateCPUThrottling should change the CPU throttling rate successfully",
+    "filename": "emulation.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Evaluation specs Page.evaluateOnNewDocument should evaluate before anything else on the page",
+    "filename": "evaluation.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Evaluation specs Page.evaluateOnNewDocument should work with CSP",
+    "filename": "evaluation.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Fixtures dumpio option should work with pipe option",
+    "filename": "fixtures.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Emulate idle state changing idle state emulation causes change of the IdleDetector state",
+    "filename": "idle_override.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "ignoreHTTPSErrors Response.securityDetails should work",
+    "filename": "ignorehttpserrors.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "JSHandle JSHandle.jsonValue should not work with dates",
+    "filename": "jshandle.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Frame.goto should navigate subframes",
+    "filename": "navigation.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Frame.goto should reject when frame detaches",
+    "filename": "navigation.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Frame.goto should return matching responses",
+    "filename": "navigation.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Frame.goto should return matching responses",
+    "filename": "navigation.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Frame.goto should return matching responses",
+    "filename": "navigation.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Frame.goto should return matching responses",
+    "filename": "navigation.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Frame.waitForNavigation should work",
+    "filename": "navigation.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "navigation Frame.waitForNavigation should fail when frame detaches",
+    "filename": "navigation.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Request.initiator should return the initiator",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Response.fromCache should work",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Response.fromServiceWorker Response.fromServiceWorker",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Request.postData should work",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Response.text should work",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Response.text should return uncompressed text",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Response.text should throw when requesting body of redirected response",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Response.text should wait until response completes",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Response.json should work",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Response.buffer should work",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Response.buffer should work with compression",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Response.buffer should throw if the response does not have a body",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Response.timing returns timing information",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Network Events Page.Events.RequestServedFromCache",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Network Events Page.Events.RequestFailed",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Network Events Page.Events.RequestFinished",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Network Events should fire events in proper order",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Network Events should support redirects",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Page.setExtraHTTPHeaders should work",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Page.authenticate should work",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Page.authenticate should fail if wrong credentials",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Page.authenticate should allow disable authentication",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network Page.authenticate should not disable caching",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network raw network headers Same-origin set-cookie subresource",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.error should throw when page crashes",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Popup should work",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Popup should work with noopener",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Popup should work with clicking target=_blank and without rel=opener",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Popup should work with clicking target=_blank and with rel=opener",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Popup should work with fake-clicking target=_blank and rel=noopener",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Popup should work with clicking target=_blank and rel=noopener",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.setOfflineMode should work",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.setOfflineMode should emulate navigator.onLine",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Console should work",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Console should work for different console API calls",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Console should not fail for window object",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Console should trigger correct Log",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Console should have location when fetch fails",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.Events.Console should have location and stack trace for console API calls",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.metrics should get metrics from a page",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.metrics metrics event fired on console.timeStamp",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should work",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should throw exception in page context",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should support throwing \"null\"",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should be callable from-inside evaluateOnNewDocument",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should survive navigation",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should await returned promise",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should work on frames",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should work on frames before navigation",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should not throw when frames detach",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should work with complex objects",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.exposeFunction should fallback to default export when passed a module object",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.setBypassCSP should bypass CSP meta tag",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.setBypassCSP should bypass CSP header",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.setBypassCSP should bypass after cross-process navigation",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.setBypassCSP should bypass CSP in iframes as well",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.setJavaScriptEnabled should work",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "Page Page.setCacheEnabled should enable or disable the cache based on the state passed",
+    "filename": "page.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["SKIP"]
+  },
+  {
+    "fullTitle": "network raw network headers Cross-origin set-cookie",
+    "filename": "network.spec",
+    "platforms": ["linux"],
+    "modifiers": [
+      {
+        "PUPPETEER_PRODUCT": "firefox"
+      },
+      {
+        "HEADLESS": "true"
+      }
+    ],
+    "expectations": ["FAIL", "PASS"]
+  }
+]

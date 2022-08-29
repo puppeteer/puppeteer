@@ -1,0 +1,53 @@
+[
+  {
+    "platforms": ["linux"],
+    "dimensions": [
+      [
+        {
+          "PUPPETEER_PRODUCT": "chrome"
+        }
+      ],
+      [
+        {
+          "HEADLESS": "true"
+        },
+        {
+          "HEADLESS": "false"
+        },
+        {
+          "HEADLESS": "chrome"
+        }
+      ]
+    ]
+  },
+  {
+    "platforms": ["win32", "darwin"],
+    "dimensions": [
+      [
+        {
+          "PUPPETEER_PRODUCT": "chrome"
+        }
+      ],
+      [
+        {
+          "HEADLESS": "true"
+        }
+      ]
+    ]
+  },
+  {
+    "platforms": ["linux"],
+    "dimensions": [
+      [
+        {
+          "PUPPETEER_PRODUCT": "firefox"
+        }
+      ],
+      [
+        {
+          "HEADLESS": "true"
+        }
+      ]
+    ]
+  }
+]
