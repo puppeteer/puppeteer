@@ -6,6 +6,7 @@ function foo() {
     console.log(2);
   let x = 1 > 2 ? 'foo' : 'bar';
   let y = 1 < 2 ? 'foo' : 'bar';
+  let p = {a:1 > 2?function(){console.log('unused');}:function(){console.log('unused');}};
   let z = () => {};
   let q = () => {};
   q();

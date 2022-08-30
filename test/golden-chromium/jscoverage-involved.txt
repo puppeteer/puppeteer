@@ -16,13 +16,21 @@
       },
       {
         "start": 148,
-        "end": 160
+        "end": 168
       },
       {
-        "start": 168,
-        "end": 207
+        "start": 203,
+        "end": 204
+      },
+      {
+        "start": 238,
+        "end": 251
+      },
+      {
+        "start": 259,
+        "end": 298
       }
     ],
-    "text": "\nfunction foo() {\n  if (1 > 2)\n    console.log(1);\n  if (1 < 2)\n    console.log(2);\n  let x = 1 > 2 ? 'foo' : 'bar';\n  let y = 1 < 2 ? 'foo' : 'bar';\n  let z = () => {};\n  let q = () => {};\n  q();\n}\n\nfoo();\n"
+    "text": "\nfunction foo() {\n  if (1 > 2)\n    console.log(1);\n  if (1 < 2)\n    console.log(2);\n  let x = 1 > 2 ? 'foo' : 'bar';\n  let y = 1 < 2 ? 'foo' : 'bar';\n  let p = {a:1 > 2?function(){console.log('unused');}:function(){console.log('unused');}};\n  let z = () => {};\n  let q = () => {};\n  q();\n}\n\nfoo();\n"
   }
 ]
