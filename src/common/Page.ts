@@ -69,7 +69,7 @@ import {
 } from './util.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {
-  createDeferredPromiseWithTimer,
+  createDeferredPromise,
   DeferredPromise,
 } from '../util/DeferredPromise.js';
 import {WebWorker} from './WebWorker.js';
@@ -769,9 +769,10 @@ export class Page extends EventEmitter {
     }
 
     const {timeout = this.#timeoutSettings.timeout()} = options;
-    const promise = createDeferredPromiseWithTimer<FileChooser>(
-      `Waiting for \`FileChooser\` failed: ${timeout}ms exceeded`
-    );
+    const promise = createDeferredPromise<FileChooser>({
+      message: `Waiting for \`FileChooser\` failed: ${timeout}ms exceeded`,
+      timeout,
+    });
     this.#fileChooserPromises.add(promise);
     return promise.catch(error => {
       this.#fileChooserPromises.delete(promise);
