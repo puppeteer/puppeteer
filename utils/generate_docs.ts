@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {readFile, writeFile} from 'fs/promises';
-import rimraf from 'rimraf';
+import {readFile, rm, writeFile} from 'fs/promises';
 import semver from 'semver';
 import {generateDocs} from './internal/custom_markdown_action.js';
 import {job} from './internal/job.js';
+import {spawnAndLog} from './internal/util.js';
 
 function getOffsetAndLimit(
   sectionName: string,
@@ -46,7 +46,7 @@ function spliceIntoSection(
 }
 
 (async () => {
-  job('', async ({inputs, outputs}) => {
+  const job1 = job('', async ({inputs, outputs}) => {
     const content = await readFile(inputs[0]!, 'utf-8');
     const sectionContent = `
 ---
@@ -60,8 +60,8 @@ sidebar_position: 1
     .build();
 
   // Chrome Versions
-  job('', async ({inputs, outputs}) => {
-    let content = await readFile(outputs[0]!, {encoding: 'utf8'});
+  const job2 = job('', async ({inputs, outputs}) => {
+    let content = await readFile(inputs[2]!, {encoding: 'utf8'});
     const {versionsPerRelease} = await import(inputs[0]!);
     const versionsArchived = JSON.parse(await readFile(inputs[1]!, 'utf8'));
 
@@ -95,14 +95,21 @@ sidebar_position: 1
 
     await writeFile(outputs[0]!, content);
   })
-    .inputs(['versions.js', 'website/versionsArchived.json'])
+    .inputs([
+      'versions.js',
+      'website/versionsArchived.json',
+      'docs/chromium-support.md',
+    ])
     .outputs(['docs/chromium-support.md'])
     .build();
 
+  await Promise.all([job1, job2]);
+
   // Generate documentation
   job('', async ({inputs, outputs}) => {
-    rimraf.sync(outputs[0]!);
+    await rm(outputs[0]!, {recursive: true, force: true});
     generateDocs(inputs[0]!, outputs[0]!);
+    spawnAndLog('prettier', '--ignore-path', 'none', '--write', 'docs');
   })
     .inputs(['docs/puppeteer.api.json'])
     .outputs(['docs/api'])
