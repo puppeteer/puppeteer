@@ -276,11 +276,11 @@ export class JSHandle<T = unknown> {
  */
 export interface Offset {
   /**
-   * x-offset for the clickable point relative to the top-left corder of the border box.
+   * x-offset for the clickable point relative to the top-left corner of the border box.
    */
   x: number;
   /**
-   * y-offset for the clickable point relative to the top-left corder of the border box.
+   * y-offset for the clickable point relative to the top-left corner of the border box.
    */
   y: number;
 }
@@ -304,7 +304,7 @@ export interface ClickOptions {
    */
   clickCount?: number;
   /**
-   * Offset for the clickable point relative to the top-left corder of the border box.
+   * Offset for the clickable point relative to the top-left corner of the border box.
    */
   offset?: Offset;
 }
