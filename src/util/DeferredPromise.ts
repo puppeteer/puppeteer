@@ -31,10 +31,13 @@ export function createDeferredPromiseWithTimer<T>(
     resolver = resolve;
     rejector = reject;
   });
-  const timeoutId = setTimeout(() => {
-    isRejected = true;
-    rejector(new TimeoutError(timeoutMessage));
-  }, timeout);
+  const timeoutId =
+    timeout > 0
+      ? setTimeout(() => {
+          isRejected = true;
+          rejector(new TimeoutError(timeoutMessage));
+        }, timeout)
+      : undefined;
   return Object.assign(taskPromise, {
     resolved: () => {
       return isResolved;
