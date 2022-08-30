@@ -20,7 +20,7 @@ import {CDPSession} from './Connection.js';
 import {ElementHandle} from './ElementHandle.js';
 import {Frame} from './Frame.js';
 import {MAIN_WORLD, PageBinding, PUPPETEER_WORLD} from './IsolatedWorld.js';
-import {InternalQueryHandler} from './QueryHandler.js';
+import {getFrameAndElement, InternalQueryHandler} from './QueryHandler.js';
 
 async function queryAXTree(
   client: CDPSession,
@@ -99,13 +99,33 @@ const queryOne: InternalQueryHandler['queryOne'] = async (
   element,
   selector
 ) => {
-  const id = await queryOneId(element, selector);
+  const [frame, handle] = await getFrameAndElement(element);
+  const id = await queryOneId(handle, selector);
+  handle.dispose();
   if (!id) {
     return null;
   }
-  return (await element.frame.worlds[MAIN_WORLD].adoptBackendNode(
+  return (await frame.worlds[MAIN_WORLD].adoptBackendNode(
     id
   )) as ElementHandle<Node>;
+};
+
+const queryAll: InternalQueryHandler['queryAll'] = async (
+  element,
+  selector
+) => {
+  const [frame, handle] = await getFrameAndElement(element);
+  const {name, role} = parseAriaSelector(selector);
+  const res = await queryAXTree(frame._client(), handle, name, role);
+  handle.dispose();
+  const world = frame.worlds[MAIN_WORLD];
+  return Promise.all(
+    res.map(axNode => {
+      return world.adoptBackendNode(axNode.backendDOMNodeId) as Promise<
+        ElementHandle<Node>
+      >;
+    })
+  );
 };
 
 const waitFor: InternalQueryHandler['waitFor'] = async (
@@ -160,23 +180,6 @@ const waitFor: InternalQueryHandler['waitFor'] = async (
     return null;
   }
   return result.frame.worlds[MAIN_WORLD].transferHandle(result);
-};
-
-const queryAll: InternalQueryHandler['queryAll'] = async (
-  element,
-  selector
-) => {
-  const exeCtx = element.executionContext();
-  const {name, role} = parseAriaSelector(selector);
-  const res = await queryAXTree(exeCtx._client, element, name, role);
-  const world = exeCtx._world!;
-  return Promise.all(
-    res.map(axNode => {
-      return world.adoptBackendNode(axNode.backendDOMNodeId) as Promise<
-        ElementHandle<Node>
-      >;
-    })
-  );
 };
 
 /**

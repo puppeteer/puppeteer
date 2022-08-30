@@ -442,10 +442,10 @@ export class FrameManager extends EventEmitter {
     }
   }
 
-  #onExecutionContextCreated(
+  async #onExecutionContextCreated(
     contextPayload: Protocol.Runtime.ExecutionContextDescription,
     session: CDPSession
-  ): void {
+  ): Promise<void> {
     const auxData = contextPayload.auxData as {frameId?: string} | undefined;
     const frameId = auxData && auxData.frameId;
     const frame =
@@ -475,7 +475,7 @@ export class FrameManager extends EventEmitter {
       world
     );
     if (world) {
-      world.setContext(context);
+      await world.setContext(context);
     }
     const key = `${session.id()}:${contextPayload.id}`;
     this.#contextIdToContext.set(key, context);

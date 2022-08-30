@@ -71,6 +71,32 @@ export interface InternalQueryHandler {
   ) => Promise<ElementHandle<Node> | null>;
 }
 
+/**
+ * Gets the frame and element handle from the provided argument.
+ *
+ * @returns The frame and **adopted** element handle (if provided).
+ *
+ * @internal
+ */
+export async function getFrameAndElement(
+  elementOrFrame: ElementHandle<Node>
+): Promise<[frame: Frame, handle: ElementHandle<Node>]>;
+export async function getFrameAndElement(
+  elementOrFrame: ElementHandle<Node> | Frame
+): Promise<[frame: Frame, handle?: ElementHandle<Node>]>;
+export async function getFrameAndElement(
+  elementOrFrame: ElementHandle<Node> | Frame
+): Promise<[frame: Frame, handle?: ElementHandle<Node>]> {
+  if (elementOrFrame instanceof Frame) {
+    return [elementOrFrame];
+  } else {
+    elementOrFrame = await elementOrFrame.frame.worlds[
+      PUPPETEER_WORLD
+    ].adoptHandle(elementOrFrame);
+    return [elementOrFrame.frame, elementOrFrame];
+  }
+}
+
 function internalizeCustomQueryHandler(
   handler: CustomQueryHandler
 ): InternalQueryHandler {
@@ -78,40 +104,31 @@ function internalizeCustomQueryHandler(
 
   if (handler.queryOne) {
     const queryOne = handler.queryOne;
-    internalHandler.queryOne = async (element, selector) => {
-      const jsHandle = await element.evaluateHandle(queryOne, selector);
-      const elementHandle = jsHandle.asElement();
-      if (elementHandle) {
-        return elementHandle;
+    internalHandler.queryOne = async (elementOrFrame, selector) => {
+      const [frame, element] = await getFrameAndElement(elementOrFrame);
+      const result = await frame.worlds[PUPPETEER_WORLD].evaluateHandle(
+        queryOne,
+        element,
+        selector
+      );
+      await element.dispose();
+      if (!(result instanceof ElementHandle)) {
+        await result.dispose();
+        return null;
       }
-      await jsHandle.dispose();
-      return null;
+      return frame.worlds[MAIN_WORLD].transferHandle(result);
     };
     internalHandler.waitFor = async (elementOrFrame, selector, options) => {
-      let frame: Frame;
-      let element: ElementHandle<Node> | undefined;
-      if (elementOrFrame instanceof Frame) {
-        frame = elementOrFrame;
-      } else {
-        frame = elementOrFrame.frame;
-        element = await frame.worlds[PUPPETEER_WORLD].adoptHandle(
-          elementOrFrame
-        );
-      }
+      const [frame, element] = await getFrameAndElement(elementOrFrame);
       const result = await frame.worlds[PUPPETEER_WORLD]._waitForSelectorInPage(
         queryOne,
         element,
         selector,
         options
       );
-      if (element) {
-        await element.dispose();
-      }
-      if (!result) {
-        return null;
-      }
+      await element?.dispose();
       if (!(result instanceof ElementHandle)) {
-        await result.dispose();
+        await result?.dispose();
         return null;
       }
       return frame.worlds[MAIN_WORLD].transferHandle(result);
@@ -120,18 +137,18 @@ function internalizeCustomQueryHandler(
 
   if (handler.queryAll) {
     const queryAll = handler.queryAll;
-    internalHandler.queryAll = async (element, selector) => {
-      const jsHandle = await element.evaluateHandle(queryAll, selector);
-      const properties = await jsHandle.getProperties();
-      await jsHandle.dispose();
-      const result = [];
-      for (const property of properties.values()) {
-        const elementHandle = property.asElement();
-        if (elementHandle) {
-          result.push(elementHandle);
-        }
-      }
-      return result;
+    internalHandler.queryAll = async (elementOrFrame, selector) => {
+      const [frame, element] = await getFrameAndElement(elementOrFrame);
+      let result = await frame.worlds[PUPPETEER_WORLD].evaluateHandle(
+        queryAll,
+        element,
+        selector
+      );
+      await element.dispose();
+      result = await frame.worlds[MAIN_WORLD].transferHandle(result);
+      const properties = await result.getProperties();
+      await result.dispose();
+      return [...properties.values()] as Array<ElementHandle<Node>>;
     };
   }
 
