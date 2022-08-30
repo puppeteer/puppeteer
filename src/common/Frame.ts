@@ -214,7 +214,7 @@ export class Frame {
     this.#client = client;
     this.worlds = {
       [MAIN_WORLD]: new IsolatedWorld(this),
-      [PUPPETEER_WORLD]: new IsolatedWorld(this),
+      [PUPPETEER_WORLD]: new IsolatedWorld(this, true),
     };
   }
 

@@ -59,8 +59,8 @@ class JobBuilder {
       );
 
       if (
-        outputStats.reduce(reduceMaxTime, 0) >=
-        inputStats.reduce(reduceMinTime, Infinity)
+        outputStats.reduce(reduceMinTime, Infinity) >
+        inputStats.reduce(reduceMaxTime, 0)
       ) {
         shouldRun = false;
       }

@@ -15,11 +15,9 @@
  */
 
 import {Protocol} from 'devtools-protocol';
+import {source as injectedSource} from '../generated/injected.js';
 import {assert} from '../util/assert.js';
-import {
-  createDeferredPromise,
-  DeferredPromise,
-} from '../util/DeferredPromise.js';
+import {createDeferredPromise} from '../util/DeferredPromise.js';
 import {CDPSession} from './Connection.js';
 import {ElementHandle} from './ElementHandle.js';
 import {TimeoutError} from './Errors.js';
@@ -117,8 +115,9 @@ export interface IsolatedWorldChart {
  */
 export class IsolatedWorld {
   #frame: Frame;
+  #injected: boolean;
   #document?: ElementHandle<Document>;
-  #contextPromise: DeferredPromise<ExecutionContext> = createDeferredPromise();
+  #contextPromise = createDeferredPromise<ExecutionContext>();
   #detached = false;
 
   // Set of bindings that have been registered in the current context.
@@ -140,10 +139,11 @@ export class IsolatedWorld {
     return `${name}_${contextId}`;
   };
 
-  constructor(frame: Frame) {
+  constructor(frame: Frame, injected = false) {
     // Keep own reference to client because it might differ from the FrameManager's
     // client for OOP iframes.
     this.#frame = frame;
+    this.#injected = injected;
     this.#client.on('Runtime.bindingCalled', this.#onBindingCalled);
   }
 
@@ -169,10 +169,9 @@ export class IsolatedWorld {
   }
 
   setContext(context: ExecutionContext): void {
-    assert(
-      this.#contextPromise,
-      `ExecutionContext ${context._contextId} has already been set.`
-    );
+    if (this.#injected) {
+      context.evaluate(injectedSource).catch(debugError);
+    }
     this.#ctxBindings.clear();
     this.#contextPromise.resolve(context);
     for (const waitTask of this._waitTasks) {

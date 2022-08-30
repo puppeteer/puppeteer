@@ -853,7 +853,11 @@ describe('network', function () {
         await page.goto(httpsServer.PREFIX + '/setcookie.html');
 
         const response = await new Promise<HTTPResponse>(resolve => {
-          page.on('response', resolve);
+          page.on('response', async response => {
+            if ((await response.text()) === '') {
+              resolve(response);
+            }
+          });
           const url = httpsServer.CROSS_PROCESS_PREFIX + '/setcookie.html';
           page.evaluate(src => {
             const xhr = new XMLHttpRequest();
@@ -861,6 +865,7 @@ describe('network', function () {
             xhr.send();
           }, url);
         });
+        console.log(response.headers());
         expect(response.headers()['set-cookie']).toBe(setCookieString);
       } finally {
         await page.close();

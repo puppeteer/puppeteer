@@ -1,0 +1,9 @@
+import * as Poller from '../injected/Poller.js';
+import * as util from '../injected/util.js';
+
+declare global {
+  const InjectedUtil: Readonly<typeof Poller & typeof util>;
+}
+
+/** @internal */
+export const source = SOURCE_CODE;
