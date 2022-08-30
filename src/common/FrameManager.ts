@@ -17,7 +17,7 @@
 import {Protocol} from 'devtools-protocol';
 import {assert} from '../util/assert.js';
 import {
-  createDebuggableDeferredPromise,
+  createDeferredPromise,
   DeferredPromise,
 } from '../util/DeferredPromise.js';
 import {isErrorLike} from '../util/ErrorLike.js';
@@ -150,9 +150,9 @@ export class FrameManager extends EventEmitter {
       if (!this.#framesPendingTargetInit.has(targetId)) {
         this.#framesPendingTargetInit.set(
           targetId,
-          createDebuggableDeferredPromise(
-            `Waiting for target frame ${targetId} failed`
-          )
+          createDeferredPromise({
+            message: `Waiting for target frame ${targetId} failed`,
+          })
         );
       }
       const result = await Promise.all([
@@ -318,9 +318,9 @@ export class FrameManager extends EventEmitter {
       if (!this.#framesPendingAttachment.has(frameId)) {
         this.#framesPendingAttachment.set(
           frameId,
-          createDebuggableDeferredPromise(
-            `Waiting for frame ${frameId} to attach failed`
-          )
+          createDeferredPromise({
+            message: `Waiting for frame ${frameId} to attach failed`,
+          })
         );
       }
       frame.then(() => {

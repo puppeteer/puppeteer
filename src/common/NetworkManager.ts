@@ -24,7 +24,7 @@ import {HTTPResponse} from './HTTPResponse.js';
 import {FetchRequestId, NetworkEventManager} from './NetworkEventManager.js';
 import {debugError, isString} from './util.js';
 import {
-  createDebuggableDeferredPromise,
+  createDeferredPromise,
   DeferredPromise,
 } from '../util/DeferredPromise.js';
 
@@ -144,9 +144,9 @@ export class NetworkManager extends EventEmitter {
     if (this.#deferredInitPromise) {
       return this.#deferredInitPromise;
     }
-    this.#deferredInitPromise = createDebuggableDeferredPromise<void>(
-      'NetworkManager initialization timed out'
-    );
+    this.#deferredInitPromise = createDeferredPromise<void>({
+      message: 'NetworkManager initialization timed out',
+    });
     const init = Promise.all([
       this.#ignoreHTTPSErrors
         ? this.#client.send('Security.setIgnoreCertificateErrors', {
