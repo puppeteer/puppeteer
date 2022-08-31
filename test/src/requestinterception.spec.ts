@@ -615,10 +615,11 @@ describe('request interception', function () {
         return request.continue();
       });
 
-      await page.goto(server.PREFIX + '/cached/one-style-font.html');
-      await page.waitForResponse(r => {
+      const responsePromise = page.waitForResponse(r => {
         return r.url().endsWith('/one-style.woff');
       });
+      await page.goto(server.PREFIX + '/cached/one-style-font.html');
+      await responsePromise;
     });
   });
 
