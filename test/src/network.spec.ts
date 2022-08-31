@@ -851,10 +851,13 @@ describe('network', function () {
           res.end();
         });
         await page.goto(httpsServer.PREFIX + '/setcookie.html');
-
+        const url = httpsServer.CROSS_PROCESS_PREFIX + '/setcookie.html';
         const response = await new Promise<HTTPResponse>(resolve => {
-          page.on('response', resolve);
-          const url = httpsServer.CROSS_PROCESS_PREFIX + '/setcookie.html';
+          page.on('response', response => {
+            if (response.url() === url) {
+              resolve(response);
+            }
+          });
           page.evaluate(src => {
             const xhr = new XMLHttpRequest();
             xhr.open('GET', src);

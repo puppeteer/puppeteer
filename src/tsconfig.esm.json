@@ -8,5 +8,6 @@
   "references": [
     {"path": "../vendor/tsconfig.esm.json"},
     {"path": "../compat/esm/tsconfig.json"}
-  ]
+  ],
+  "exclude": ["injected/injected.ts"]
 }
