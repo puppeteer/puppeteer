@@ -77,20 +77,21 @@ const INCLUDED_FOLDERS = ['common', 'node', 'generated', 'util'];
     .outputs(['src/types.ts'])
     .build();
 
-  job('', async ({inputs, outputs}) => {
-    const version = JSON.parse(await readFile(inputs[0]!, 'utf8')).version;
-    await writeFile(
-      outputs[0]!,
-      (
-        await readFile(outputs[0]!, {
-          encoding: 'utf-8',
-        })
-      ).replace("'NEXT'", `v${version}`)
-    );
-  })
-    .inputs(['package.json'])
-    .outputs(['versions.js'])
-    .build();
+  if (process.env['PUBLISH']) {
+    job('', async ({inputs}) => {
+      const version = JSON.parse(await readFile(inputs[0]!, 'utf8')).version;
+      await writeFile(
+        inputs[1]!,
+        (
+          await readFile(inputs[1]!, {
+            encoding: 'utf-8',
+          })
+        ).replace("'NEXT'", `'v${version}'`)
+      );
+    })
+      .inputs(['package.json', 'versions.js'])
+      .build();
+  }
 
   job('', async ({inputs, outputs}) => {
     const version = JSON.parse(await readFile(inputs[0]!, 'utf8')).version;
