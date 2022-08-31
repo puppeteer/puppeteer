@@ -687,7 +687,7 @@ describeChromeOnly('AriaQueryHandler', () => {
       const {page} = getTestState();
       const found = await page.$$('aria/title');
       const ids = await getIds(found);
-      expect(ids).toEqual(['shown', 'hidden']);
+      expect(ids).toEqual(['shown']);
     });
   });
 });
