@@ -88,9 +88,6 @@ export class ElementHandle<
     return this.#frame.page();
   }
 
-  /**
-   * @internal
-   */
   get frame(): Frame {
     return this.#frame;
   }
