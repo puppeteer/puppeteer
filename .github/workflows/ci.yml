@@ -170,7 +170,7 @@ jobs:
         if: ${{ matrix.spec.name == 'Linux' }}
         run: sudo apt-get install xvfb
       - name: Build
-        run: npm run build:ci
+        run: npm run build:dev
       - name: Test types
         run: npm run test:types
       # On Linux we run all Chrome tests without retries and Firefox tests with retries.
@@ -220,7 +220,7 @@ jobs:
           ls .local-chromium
       - name: Build
         run: |
-          npm run build:ci
+          npm run build:dev
           docker/pack.sh
       - name: Build docker image
         working-directory: ./docker
