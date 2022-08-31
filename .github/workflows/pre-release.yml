@@ -19,8 +19,9 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Build
+        env:
+          PUBLISH: 1
         run: |
-          npm run generate:sources
           npm run docs
       - name: Version docs
         working-directory: ./website
