@@ -23,6 +23,6 @@ import {spawnAndLog} from './internal/util.js';
     );
   })
     .inputs(['lib/esm/puppeteer/types.d.ts'])
-    .outputs(['lib/types.d.ts', 'puppeteer.api.json'])
+    .outputs(['lib/types.d.ts', 'docs/puppeteer.api.json'])
     .build();
 })();
