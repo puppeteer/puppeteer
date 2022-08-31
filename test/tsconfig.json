@@ -9,7 +9,7 @@
   },
   "include": ["src"],
   "references": [
-    {"path": "../src/tsconfig.cjs.json"},
+    {"path": "../tsconfig.lib.json"},
     {"path": "../utils/testserver/tsconfig.json"}
   ]
 }
