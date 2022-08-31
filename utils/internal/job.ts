@@ -1,7 +1,13 @@
-import {Stats} from 'fs';
-import {stat} from 'fs/promises';
+import {createHash} from 'crypto';
+import {existsSync, Stats} from 'fs';
+import {mkdir, readFile, stat, writeFile} from 'fs/promises';
 import {glob} from 'glob';
-import path from 'path';
+import {tmpdir} from 'os';
+import {dirname, join, resolve} from 'path';
+import {chdir} from 'process';
+
+const packageRoot = resolve(join(__dirname, '..', '..'));
+chdir(packageRoot);
 
 interface JobContext {
   name: string;
@@ -14,61 +20,120 @@ class JobBuilder {
   #outputs: string[] = [];
   #callback: (ctx: JobContext) => Promise<void>;
   #name: string;
+  #value = '';
+  #force = false;
 
   constructor(name: string, callback: (ctx: JobContext) => Promise<void>) {
     this.#name = name;
     this.#callback = callback;
   }
 
+  get jobHash(): string {
+    return createHash('sha256').update(this.#name).digest('hex');
+  }
+
+  force() {
+    this.#force = true;
+    return this;
+  }
+
+  value(value: string) {
+    this.#value = value;
+    return this;
+  }
+
   inputs(inputs: string[]): JobBuilder {
     this.#inputs = inputs.flatMap(value => {
-      value = path.resolve(__dirname, '..', '..', value);
-      const paths = glob.sync(value);
-      return paths.length ? paths : [value];
+      if (glob.hasMagic(value)) {
+        return glob.sync(value).map(value => {
+          // Glob doesn't support `\` on Windows, so we join here.
+          return join(packageRoot, value);
+        });
+      }
+      return join(packageRoot, value);
     });
     return this;
   }
 
   outputs(outputs: string[]): JobBuilder {
     if (!this.#name) {
-      this.#name = outputs[0]!;
+      this.#name = outputs.join(' and ');
     }
 
     this.#outputs = outputs.map(value => {
-      return path.resolve(__dirname, '..', '..', value);
+      return join(packageRoot, value);
     });
     return this;
   }
 
   async build(): Promise<void> {
     console.log(`Running job ${this.#name}...`);
+    // For debugging.
+    if (this.#force) {
+      return this.#run();
+    }
+    // In case we deleted an output file on purpose.
+    if (!this.getOutputStats()) {
+      return this.#run();
+    }
+    // Run if the job has a value, but it changes.
+    if (this.#value) {
+      if (!(await this.isValueDifferent())) {
+        return;
+      }
+      return this.#run();
+    }
+    // Always run when there is no output.
+    if (!this.#outputs.length) {
+      return this.#run();
+    }
+    // Make-like comparator.
+    if (!(await this.areInputsNewer())) {
+      return;
+    }
+    return this.#run();
+  }
 
-    let shouldRun = true;
+  async isValueDifferent(): Promise<boolean> {
+    const file = join(tmpdir(), `puppeteer/${this.jobHash}.txt`);
+    await mkdir(dirname(file), {recursive: true});
+    if (!existsSync(file)) {
+      await writeFile(file, this.#value);
+      return true;
+    }
+    return this.#value !== (await readFile(file, 'utf8'));
+  }
 
+  #outputStats?: Stats[];
+  async getOutputStats(): Promise<Stats[] | undefined> {
+    if (this.#outputStats) {
+      return this.#outputStats;
+    }
+    try {
+      this.#outputStats = await Promise.all(
+        this.#outputs.map(output => {
+          return stat(output);
+        })
+      );
+    } catch {}
+    return this.#outputStats;
+  }
+
+  async areInputsNewer(): Promise<boolean> {
     const inputStats = await Promise.all(
       this.#inputs.map(input => {
         return stat(input);
       })
     );
-    let outputStats: Stats[];
-    try {
-      outputStats = await Promise.all(
-        this.#outputs.map(output => {
-          return stat(output);
-        })
-      );
-
-      if (
-        outputStats.reduce(reduceMinTime, Infinity) >
+    const outputStats = await this.getOutputStats();
+    if (
+      outputStats &&
+      outputStats.reduce(reduceMinTime, Infinity) >
         inputStats.reduce(reduceMaxTime, 0)
-      ) {
-        shouldRun = false;
-      }
-    } catch {}
-
-    if (shouldRun) {
-      this.#run();
+    ) {
+      return false;
     }
+    return true;
   }
 
   #run(): Promise<void> {
