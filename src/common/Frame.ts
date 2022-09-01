@@ -18,6 +18,7 @@ import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {Page} from './Page.js';
 import {getQueryHandlerAndSelector} from './QueryHandler.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
+import {importFS} from './util.js';
 
 /**
  * @public
@@ -751,7 +752,7 @@ export class Frame {
     const {path} = options;
     if (+!!options.url + +!!path + +!!content !== 1) {
       throw new Error(
-        'Exactly one of `url`, `path`, or `content` may be specified.'
+        'Exactly one of `url`, `path`, or `content` must be specified.'
       );
     }
 
@@ -795,7 +796,11 @@ export class Frame {
             script.addEventListener(
               'error',
               event => {
-                rej(event.message ?? 'Could not load script');
+                let message = 'Could not load script';
+                if (event instanceof ErrorEvent) {
+                  message = event.message ?? message;
+                }
+                rej(message);
               },
               {once: true}
             );
@@ -813,18 +818,87 @@ export class Frame {
   }
 
   /**
-   * Adds a `<link rel="stylesheet">` tag into the page with the desired url or
+   * Adds a `<link rel="stylesheet">` tag into the page with the desired URL or
    * a `<style type="text/css">` tag with the content.
    *
-   * @param options - Options for the style link.
-   * @returns a promise that resolves to the added tag when the stylesheets's
-   * `onload` event fires or when the CSS content was injected into the
-   * frame.
+   * @returns An {@link ElementHandle | element handle} to the loaded `<link>`
+   * or `<style>` element.
    */
+  async addStyleTag(
+    options: Omit<FrameAddStyleTagOptions, 'url'>
+  ): Promise<ElementHandle<HTMLStyleElement>>;
+  async addStyleTag(
+    options: FrameAddStyleTagOptions
+  ): Promise<ElementHandle<HTMLLinkElement>>;
   async addStyleTag(
     options: FrameAddStyleTagOptions
   ): Promise<ElementHandle<HTMLStyleElement | HTMLLinkElement>> {
-    return this.worlds[MAIN_WORLD].addStyleTag(options);
+    let {content = ''} = options;
+    const {path} = options;
+    if (+!!options.url + +!!path + +!!content !== 1) {
+      throw new Error(
+        'Exactly one of `url`, `path`, or `content` must be specified.'
+      );
+    }
+
+    if (path) {
+      let fs: typeof import('fs').promises;
+      try {
+        fs = (await importFS()).promises;
+      } catch (error) {
+        if (error instanceof TypeError) {
+          throw new Error(
+            'Can only pass a file path in a Node-like environment.'
+          );
+        }
+        throw error;
+      }
+
+      content = await fs.readFile(path, 'utf8');
+      content += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
+      options.content = content;
+    }
+
+    return this.worlds[MAIN_WORLD].transferHandle(
+      await this.worlds[PUPPETEER_WORLD].evaluateHandle(
+        async ({url, content}) => {
+          if (!url) {
+            const style = document.createElement('style');
+            style.appendChild(document.createTextNode(content!));
+            const promise = new Promise((res, rej) => {
+              style.addEventListener('load', res, {once: true});
+              style.addEventListener(
+                'error',
+                event => {
+                  rej(event.message ?? 'Could not load style');
+                },
+                {once: true}
+              );
+            });
+            document.head.appendChild(style);
+            await promise;
+            return style;
+          }
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = url;
+          const promise = new Promise((res, rej) => {
+            link.addEventListener('load', res, {once: true});
+            link.addEventListener(
+              'error',
+              event => {
+                rej(event.message ?? 'Could not load style');
+              },
+              {once: true}
+            );
+          });
+          document.head.appendChild(link);
+          await promise;
+          return link;
+        },
+        options
+      )
+    );
   }
 
   /**

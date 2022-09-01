@@ -32,7 +32,6 @@ import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {
   createJSHandle,
   debugError,
-  importFS,
   isNumber,
   isString,
   makePredicateString,
@@ -331,92 +330,6 @@ export class IsolatedWorld {
     watcher.dispose();
     if (error) {
       throw error;
-    }
-  }
-
-  /**
-   * Adds a style tag into the current context.
-   *
-   * @remarks
-   * You can pass a URL, filepath or string of contents. Note that when running Puppeteer
-   * in a browser environment you cannot pass a filepath and should use either
-   * `url` or `content`.
-   */
-  async addStyleTag(options: {
-    url?: string;
-    path?: string;
-    content?: string;
-  }): Promise<ElementHandle<HTMLStyleElement | HTMLLinkElement>> {
-    const {url = null, path = null, content = null} = options;
-    if (url !== null) {
-      try {
-        const context = await this.executionContext();
-        return (await context.evaluateHandle(
-          addStyleUrl,
-          url
-        )) as ElementHandle<HTMLLinkElement>;
-      } catch (error) {
-        throw new Error(`Loading style from ${url} failed`);
-      }
-    }
-
-    if (path !== null) {
-      let fs: typeof import('fs').promises;
-      try {
-        fs = (await importFS()).promises;
-      } catch (error) {
-        if (error instanceof TypeError) {
-          throw new Error(
-            'Cannot pass a filepath to addStyleTag in the browser environment.'
-          );
-        }
-        throw error;
-      }
-
-      let contents = await fs.readFile(path, 'utf8');
-      contents += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
-      const context = await this.executionContext();
-      return (await context.evaluateHandle(
-        addStyleContent,
-        contents
-      )) as ElementHandle<HTMLStyleElement>;
-    }
-
-    if (content !== null) {
-      const context = await this.executionContext();
-      return (await context.evaluateHandle(
-        addStyleContent,
-        content
-      )) as ElementHandle<HTMLStyleElement>;
-    }
-
-    throw new Error(
-      'Provide an object with a `url`, `path` or `content` property'
-    );
-
-    async function addStyleUrl(url: string): Promise<HTMLElement> {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = url;
-      const promise = new Promise((res, rej) => {
-        link.onload = res;
-        link.onerror = rej;
-      });
-      document.head.appendChild(link);
-      await promise;
-      return link;
-    }
-
-    async function addStyleContent(content: string): Promise<HTMLElement> {
-      const style = document.createElement('style');
-      style.appendChild(document.createTextNode(content));
-      const promise = new Promise((res, rej) => {
-        style.onload = res;
-        style.onerror = rej;
-      });
-      document.head.appendChild(style);
-      await promise;
-      return style;
     }
   }
 
