@@ -117,7 +117,7 @@ export class IsolatedWorld {
   #frame: Frame;
   #injected: boolean;
   #document?: ElementHandle<Document>;
-  #contextPromise = createDeferredPromise<ExecutionContext>();
+  #context = createDeferredPromise<ExecutionContext>();
   #detached = false;
 
   // Set of bindings that have been registered in the current context.
@@ -165,7 +165,7 @@ export class IsolatedWorld {
 
   clearContext(): void {
     this.#document = undefined;
-    this.#contextPromise = createDeferredPromise();
+    this.#context = createDeferredPromise();
   }
 
   setContext(context: ExecutionContext): void {
@@ -173,14 +173,14 @@ export class IsolatedWorld {
       context.evaluate(injectedSource).catch(debugError);
     }
     this.#ctxBindings.clear();
-    this.#contextPromise.resolve(context);
+    this.#context.resolve(context);
     for (const waitTask of this._waitTasks) {
       waitTask.rerun();
     }
   }
 
   hasContext(): boolean {
-    return this.#contextPromise.resolved();
+    return this.#context.resolved();
   }
 
   _detach(): void {
@@ -199,10 +199,10 @@ export class IsolatedWorld {
         `Execution context is not available in detached frame "${this.#frame.url()}" (are you trying to evaluate?)`
       );
     }
-    if (this.#contextPromise === null) {
+    if (this.#context === null) {
       throw new Error(`Execution content promise is missing`);
     }
-    return this.#contextPromise;
+    return this.#context;
   }
 
   async evaluateHandle<
@@ -331,105 +331,6 @@ export class IsolatedWorld {
     watcher.dispose();
     if (error) {
       throw error;
-    }
-  }
-
-  /**
-   * Adds a script tag into the current context.
-   *
-   * @remarks
-   * You can pass a URL, filepath or string of contents. Note that when running Puppeteer
-   * in a browser environment you cannot pass a filepath and should use either
-   * `url` or `content`.
-   */
-  async addScriptTag(options: {
-    url?: string;
-    path?: string;
-    content?: string;
-    id?: string;
-    type?: string;
-  }): Promise<ElementHandle<HTMLScriptElement>> {
-    const {
-      url = null,
-      path = null,
-      content = null,
-      id = '',
-      type = '',
-    } = options;
-    if (url !== null) {
-      try {
-        const context = await this.executionContext();
-        return await context.evaluateHandle(addScriptUrl, url, id, type);
-      } catch (error) {
-        throw new Error(`Loading script from ${url} failed`);
-      }
-    }
-
-    if (path !== null) {
-      let fs;
-      try {
-        fs = (await import('fs')).promises;
-      } catch (error) {
-        if (error instanceof TypeError) {
-          throw new Error(
-            'Can only pass a filepath to addScriptTag in a Node-like environment.'
-          );
-        }
-        throw error;
-      }
-      let contents = await fs.readFile(path, 'utf8');
-      contents += '//# sourceURL=' + path.replace(/\n/g, '');
-      const context = await this.executionContext();
-      return await context.evaluateHandle(addScriptContent, contents, id, type);
-    }
-
-    if (content !== null) {
-      const context = await this.executionContext();
-      return await context.evaluateHandle(addScriptContent, content, id, type);
-    }
-
-    throw new Error(
-      'Provide an object with a `url`, `path` or `content` property'
-    );
-
-    async function addScriptUrl(url: string, id: string, type: string) {
-      const script = document.createElement('script');
-      script.src = url;
-      if (id) {
-        script.id = id;
-      }
-      if (type) {
-        script.type = type;
-      }
-      const promise = new Promise((res, rej) => {
-        script.onload = res;
-        script.onerror = rej;
-      });
-      document.head.appendChild(script);
-      await promise;
-      return script;
-    }
-
-    function addScriptContent(
-      content: string,
-      id: string,
-      type = 'text/javascript'
-    ) {
-      const script = document.createElement('script');
-      script.type = type;
-      script.text = content;
-      if (id) {
-        script.id = id;
-      }
-      let error = null;
-      script.onerror = e => {
-        return (error = e);
-      };
-      document.head.appendChild(script);
-      if (error) {
-        throw error;
-      }
-      return script;
     }
   }
 

@@ -26,4 +26,4 @@ class Frame {
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLScriptElement&gt;&gt;
 
-a promise that resolves to the added tag when the script's `onload` event fires or when the script content was injected into the frame.
+An [element handle](./puppeteer.elementhandle.md) to the injected `<script>` element.

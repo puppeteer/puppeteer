@@ -16,23 +16,28 @@
 
 import {Protocol} from 'devtools-protocol';
 import type {Readable} from 'stream';
-import {Accessibility} from './Accessibility.js';
 import {assert} from '../util/assert.js';
+import {
+  createDeferredPromise,
+  DeferredPromise,
+} from '../util/DeferredPromise.js';
+import {isErrorLike} from '../util/ErrorLike.js';
+import {Accessibility} from './Accessibility.js';
 import {Browser, BrowserContext} from './Browser.js';
 import {CDPSession, CDPSessionEmittedEvents} from './Connection.js';
 import {ConsoleMessage, ConsoleMessageType} from './ConsoleMessage.js';
 import {Coverage} from './Coverage.js';
 import {Dialog} from './Dialog.js';
-import {MAIN_WORLD, WaitForSelectorOptions} from './IsolatedWorld.js';
 import {ElementHandle} from './ElementHandle.js';
 import {EmulationManager} from './EmulationManager.js';
 import {EventEmitter, Handler} from './EventEmitter.js';
 import {FileChooser} from './FileChooser.js';
+import {Frame, FrameAddScriptTagOptions} from './Frame.js';
 import {FrameManager, FrameManagerEmittedEvents} from './FrameManager.js';
-import {Frame} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {Keyboard, Mouse, MouseButton, Touchscreen} from './Input.js';
+import {MAIN_WORLD, WaitForSelectorOptions} from './IsolatedWorld.js';
 import {JSHandle} from './JSHandle.js';
 import {PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {
@@ -53,9 +58,9 @@ import {
   debugError,
   evaluationString,
   getExceptionMessage,
-  importFS,
   getReadableAsBuffer,
   getReadableFromProtocolStream,
+  importFS,
   isNumber,
   isString,
   pageBindingDeliverErrorString,
@@ -67,11 +72,6 @@ import {
   waitForEvent,
   waitWithTimeout,
 } from './util.js';
-import {isErrorLike} from '../util/ErrorLike.js';
-import {
-  createDeferredPromise,
-  DeferredPromise,
-} from '../util/DeferredPromise.js';
 import {WebWorker} from './WebWorker.js';
 
 /**
@@ -1412,16 +1412,13 @@ export class Page extends EventEmitter {
    * Shortcut for
    * {@link Frame.addScriptTag | page.mainFrame().addScriptTag(options)}.
    *
-   * @returns Promise which resolves to the added tag when the script's onload
-   * fires or when the script content was injected into frame.
+   * @param options - Options for the script.
+   * @returns An {@link ElementHandle | element handle} to the injected
+   * `<script>` element.
    */
-  async addScriptTag(options: {
-    url?: string;
-    path?: string;
-    content?: string;
-    type?: string;
-    id?: string;
-  }): Promise<ElementHandle<HTMLScriptElement>> {
+  async addScriptTag(
+    options: FrameAddScriptTagOptions
+  ): Promise<ElementHandle<HTMLScriptElement>> {
     return this.mainFrame().addScriptTag(options);
   }
 

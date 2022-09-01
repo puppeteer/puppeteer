@@ -10,27 +10,23 @@ Adds a `<script>` tag into the page with the desired URL or content.
 
 ```typescript
 class Page {
-  addScriptTag(options: {
-    url?: string;
-    path?: string;
-    content?: string;
-    type?: string;
-    id?: string;
-  }): Promise<ElementHandle<HTMLScriptElement>>;
+  addScriptTag(
+    options: FrameAddScriptTagOptions
+  ): Promise<ElementHandle<HTMLScriptElement>>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                           | Description |
-| --------- | ------------------------------------------------------------------------------ | ----------- |
-| options   | { url?: string; path?: string; content?: string; type?: string; id?: string; } |             |
+| Parameter | Type                                                                | Description             |
+| --------- | ------------------------------------------------------------------- | ----------------------- |
+| options   | [FrameAddScriptTagOptions](./puppeteer.frameaddscripttagoptions.md) | Options for the script. |
 
 **Returns:**
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLScriptElement&gt;&gt;
 
-Promise which resolves to the added tag when the script's onload fires or when the script content was injected into frame.
+An [element handle](./puppeteer.elementhandle.md) to the injected `<script>` element.
 
 ## Remarks
 

@@ -49,24 +49,29 @@ export interface FrameWaitForFunctionOptions {
  */
 export interface FrameAddScriptTagOptions {
   /**
-   * the URL of the script to be added.
+   * URL of the script to be added.
    */
   url?: string;
   /**
-   * The path to a JavaScript file to be injected into the frame.
+   * Path to a JavaScript file to be injected into the frame.
+   *
    * @remarks
    * If `path` is a relative path, it is resolved relative to the current
    * working directory (`process.cwd()` in Node.js).
    */
   path?: string;
   /**
-   * Raw JavaScript content to be injected into the frame.
+   * JavaScript to be injected into the frame.
    */
   content?: string;
   /**
-   * Set the script's `type`. Use `module` in order to load an ES2015 module.
+   * Sets the `type` of the script. Use `module` in order to load an ES2015 module.
    */
   type?: string;
+  /**
+   * Sets the `id` of the script.
+   */
+  id?: string;
 }
 
 /**
@@ -736,14 +741,75 @@ export class Frame {
    * Adds a `<script>` tag into the page with the desired url or content.
    *
    * @param options - Options for the script.
-   * @returns a promise that resolves to the added tag when the script's
-   * `onload` event fires or when the script content was injected into the
-   * frame.
+   * @returns An {@link ElementHandle | element handle} to the injected
+   * `<script>` element.
    */
   async addScriptTag(
     options: FrameAddScriptTagOptions
   ): Promise<ElementHandle<HTMLScriptElement>> {
-    return this.worlds[MAIN_WORLD].addScriptTag(options);
+    let {content = '', type} = options;
+    const {path} = options;
+    if (+!!options.url + +!!path + +!!content !== 1) {
+      throw new Error(
+        'Exactly one of `url`, `path`, or `content` may be specified.'
+      );
+    }
+
+    if (path) {
+      let fs;
+      try {
+        fs = (await import('fs')).promises;
+      } catch (error) {
+        if (error instanceof TypeError) {
+          throw new Error(
+            'Can only pass a file path in a Node-like environment.'
+          );
+        }
+        throw error;
+      }
+      content = await fs.readFile(path, 'utf8');
+      content += `//# sourceURL=${path.replace(/\n/g, '')}`;
+    }
+
+    type = type ?? 'text/javascript';
+
+    return this.worlds[MAIN_WORLD].transferHandle(
+      await this.worlds[PUPPETEER_WORLD].evaluateHandle(
+        async ({url, id, type, content}) => {
+          const script = document.createElement('script');
+          script.type = type;
+          script.text = content;
+          if (url) {
+            script.src = url;
+          }
+          if (id) {
+            script.id = id;
+          }
+          let resolve: undefined | ((value?: unknown) => void);
+          const promise = new Promise((res, rej) => {
+            if (url) {
+              script.addEventListener('load', res, {once: true});
+            } else {
+              resolve = res;
+            }
+            script.addEventListener(
+              'error',
+              event => {
+                rej(event.message ?? 'Could not load script');
+              },
+              {once: true}
+            );
+          });
+          document.head.appendChild(script);
+          if (resolve) {
+            resolve();
+          }
+          await promise;
+          return script;
+        },
+        {...options, type, content}
+      )
+    );
   }
 
   /**
