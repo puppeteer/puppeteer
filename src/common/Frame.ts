@@ -749,11 +749,12 @@ export class Frame {
   ): Promise<ElementHandle<HTMLScriptElement>> {
     let {content} = options;
     const {path} = options;
-    if (options.url && path && content) {
+    if (+!!options.url + +!!path + +!!content > 1) {
       throw new Error(
         'Exactly one of `url`, `path`, or `content` may be specified.'
       );
     }
+
     if (path) {
       let fs;
       try {
@@ -761,7 +762,7 @@ export class Frame {
       } catch (error) {
         if (error instanceof TypeError) {
           throw new Error(
-            'Can only pass a filepath to addScriptTag in a Node-like environment.'
+            'Can only pass a file path in a Node-like environment.'
           );
         }
         throw error;
@@ -771,30 +772,38 @@ export class Frame {
       options.content = content;
     }
 
-    return this.worlds[PUPPETEER_WORLD].evaluateHandle(
-      async ({url, id, type, content}) => {
-        const script = document.createElement('script');
-        if (url) {
-          script.src = url;
-        }
-        if (id) {
-          script.id = id;
-        }
-        if (type) {
-          script.type = type;
-        }
-        if (content) {
-          script.text = content;
-        }
-        const promise = new Promise((res, rej) => {
-          script.onload = res;
-          script.onerror = rej;
-        });
-        document.head.appendChild(script);
-        await promise;
-        return script;
-      },
-      options
+    return this.worlds[MAIN_WORLD].transferHandle(
+      await this.worlds[PUPPETEER_WORLD].evaluateHandle(
+        async ({url, id, type, content}) => {
+          const script = document.createElement('script');
+          if (url) {
+            script.src = url;
+          }
+          if (id) {
+            script.id = id;
+          }
+          if (type) {
+            script.type = type;
+          }
+          if (content) {
+            script.text = content;
+          }
+          const promise = new Promise((res, rej) => {
+            script.addEventListener('load', res, {once: true});
+            script.addEventListener(
+              'error',
+              event => {
+                rej(event.message ?? 'Could not load script');
+              },
+              {once: true}
+            );
+          });
+          document.head.appendChild(script);
+          await promise;
+          return script;
+        },
+        options
+      )
     );
   }
 

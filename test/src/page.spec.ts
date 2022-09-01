@@ -1702,7 +1702,7 @@ describe('Page', function () {
       } catch (error_) {
         error = error_ as Error;
       }
-      expect(error.message).toBe('Loading script from /nonexistfile.js failed');
+      expect(error.message).toContain('Could not load script');
     });
 
     it('should work with a path', async () => {
@@ -1850,7 +1850,7 @@ describe('Page', function () {
         path: path.join(__dirname, '../assets/injectedstyle.css'),
       });
       const styleHandle = (await page.$('style'))!;
-      const styleContent = await page.evaluate((style: HTMLStyleElement) => {
+      const styleContent = await page.evaluate(style => {
         return style.innerHTML;
       }, styleHandle);
       expect(styleContent).toContain(path.join('assets', 'injectedstyle.css'));
