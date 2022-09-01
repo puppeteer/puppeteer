@@ -747,9 +747,9 @@ export class Frame {
   async addScriptTag(
     options: FrameAddScriptTagOptions
   ): Promise<ElementHandle<HTMLScriptElement>> {
-    let {content} = options;
+    let {content = '', type} = options;
     const {path} = options;
-    if (+!!options.url + +!!path + +!!content > 1) {
+    if (+!!options.url + +!!path + +!!content !== 1) {
       throw new Error(
         'Exactly one of `url`, `path`, or `content` may be specified.'
       );
@@ -769,27 +769,29 @@ export class Frame {
       }
       content = await fs.readFile(path, 'utf8');
       content += `//# sourceURL=${path.replace(/\n/g, '')}`;
-      options.content = content;
     }
+
+    type = type ?? 'text/javascript';
 
     return this.worlds[MAIN_WORLD].transferHandle(
       await this.worlds[PUPPETEER_WORLD].evaluateHandle(
         async ({url, id, type, content}) => {
           const script = document.createElement('script');
+          script.type = type;
+          script.text = content;
           if (url) {
             script.src = url;
           }
           if (id) {
             script.id = id;
           }
-          if (type) {
-            script.type = type;
-          }
-          if (content) {
-            script.text = content;
-          }
+          let resolve: undefined | ((value?: unknown) => void);
           const promise = new Promise((res, rej) => {
-            script.addEventListener('load', res, {once: true});
+            if (url) {
+              script.addEventListener('load', res, {once: true});
+            } else {
+              resolve = res;
+            }
             script.addEventListener(
               'error',
               event => {
@@ -799,10 +801,13 @@ export class Frame {
             );
           });
           document.head.appendChild(script);
+          if (resolve) {
+            resolve();
+          }
           await promise;
           return script;
         },
-        options
+        {...options, type, content}
       )
     );
   }
