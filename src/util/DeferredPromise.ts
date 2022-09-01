@@ -18,7 +18,7 @@ interface DeferredPromiseOptions {
 }
 
 /**
- * Creates an returns a promise along with the resolve/reject functions.
+ * Creates and returns a promise along with the resolve/reject functions.
  *
  * If the promise has not been resolved/rejected within the `timeout` period,
  * the promise gets rejected with a timeout error.
