@@ -772,12 +772,7 @@ export class Frame {
     }
 
     return this.worlds[PUPPETEER_WORLD].evaluateHandle(
-      async ({
-        url,
-        id,
-        type,
-        content,
-      }: Omit<FrameAddScriptTagOptions, 'path'>) => {
+      async ({url, id, type, content}) => {
         const script = document.createElement('script');
         if (url) {
           script.src = url;
