@@ -1631,7 +1631,7 @@ describe('Page', function () {
         error = error_ as Error;
       }
       expect(error.message).toBe(
-        'Exactly one of `url`, `path`, or `content` may be specified.'
+        'Exactly one of `url`, `path`, or `content` must be specified.'
       );
     });
 
@@ -1797,7 +1797,7 @@ describe('Page', function () {
         error = error_ as Error;
       }
       expect(error.message).toBe(
-        'Provide an object with a `url`, `path` or `content` property'
+        'Exactly one of `url`, `path`, or `content` must be specified.'
       );
     });
 

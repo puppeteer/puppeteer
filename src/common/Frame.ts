@@ -752,7 +752,7 @@ export class Frame {
     const {path} = options;
     if (+!!options.url + +!!path + +!!content !== 1) {
       throw new Error(
-        'Exactly one of `url`, `path`, or `content` may be specified.'
+        'Exactly one of `url`, `path`, or `content` must be specified.'
       );
     }
 
@@ -772,31 +772,12 @@ export class Frame {
       content += `//# sourceURL=${path.replace(/\n/g, '')}`;
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 2563c0600e (chore: fix tests)
     type = type ?? 'text/javascript';
 
     return this.worlds[MAIN_WORLD].transferHandle(
       await this.worlds[PUPPETEER_WORLD].evaluateHandle(
         async ({url, id, type, content}) => {
           const script = document.createElement('script');
-<<<<<<< HEAD
-=======
-    return this.worlds[PUPPETEER_WORLD].evaluateHandle(
-      async ({url, id, type, content}) => {
-        const script = document.createElement('script');
-        if (url) {
-          script.src = url;
-        }
-        if (id) {
-          script.id = id;
-        }
-        if (type) {
->>>>>>> 571c30c3e5 (chore: remove unnecessary type signature)
-=======
->>>>>>> 2563c0600e (chore: fix tests)
           script.type = type;
           script.text = content;
           if (url) {
@@ -881,33 +862,39 @@ export class Frame {
     return this.worlds[MAIN_WORLD].transferHandle(
       await this.worlds[PUPPETEER_WORLD].evaluateHandle(
         async ({url, content}) => {
-          let element: HTMLLinkElement | HTMLStyleElement;
-          if (url) {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = url;
-            element = link;
-          } else {
-            element = document.createElement('style');
-            element.appendChild(document.createTextNode(content!));
+          if (!url) {
+            const style = document.createElement('style');
+            style.appendChild(document.createTextNode(content!));
+            const promise = new Promise((res, rej) => {
+              style.addEventListener('load', res, {once: true});
+              style.addEventListener(
+                'error',
+                event => {
+                  rej(event.message ?? 'Could not load style');
+                },
+                {once: true}
+              );
+            });
+            document.head.appendChild(style);
+            await promise;
+            return style;
           }
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = url;
           const promise = new Promise((res, rej) => {
-            element.addEventListener('load', res, {once: true});
-            element.addEventListener(
+            link.addEventListener('load', res, {once: true});
+            link.addEventListener(
               'error',
               event => {
-                let message = 'Could not load style';
-                if (event instanceof ErrorEvent) {
-                  message = event.message ?? message;
-                }
-                rej(message);
+                rej(event.message ?? 'Could not load style');
               },
               {once: true}
             );
           });
-          document.head.appendChild(element);
+          document.head.appendChild(link);
           await promise;
-          return element;
+          return link;
         },
         options
       )
