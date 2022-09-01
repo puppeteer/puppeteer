@@ -741,9 +741,8 @@ export class Frame {
    * Adds a `<script>` tag into the page with the desired url or content.
    *
    * @param options - Options for the script.
-   * @returns a promise that resolves to the added tag when the script's
-   * `onload` event fires or when the script content was injected into the
-   * frame.
+   * @returns An {@link ElementHandle | element handle} to the injected
+   * `<script>` element.
    */
   async addScriptTag(
     options: FrameAddScriptTagOptions

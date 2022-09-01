@@ -1412,8 +1412,9 @@ export class Page extends EventEmitter {
    * Shortcut for
    * {@link Frame.addScriptTag | page.mainFrame().addScriptTag(options)}.
    *
-   * @returns Promise which resolves to the added tag when the script's onload
-   * fires or when the script content was injected into frame.
+   * @param options - Options for the script.
+   * @returns An {@link ElementHandle | element handle} to the injected
+   * `<script>` element.
    */
   async addScriptTag(
     options: FrameAddScriptTagOptions
