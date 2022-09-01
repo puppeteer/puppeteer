@@ -1,5 +1,6 @@
 import {Protocol} from 'devtools-protocol';
 import {assert} from '../util/assert.js';
+import {createDeferredPromise} from '../util/DeferredPromise.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {CDPSession} from './Connection.js';
 import {ElementHandle} from './ElementHandle.js';
@@ -789,20 +790,19 @@ export class Frame {
           if (content) {
             script.text = content;
           }
-          const promise = new Promise((res, rej) => {
-            script.addEventListener('load', res, {once: true});
-            script.addEventListener(
-              'error',
-              event => {
-                let message = 'Could not load script';
-                if (event instanceof ErrorEvent) {
-                  message = event.message ?? message;
-                }
-                rej(message);
-              },
-              {once: true}
-            );
-          });
+          const promise = createDeferredPromise();
+          script.addEventListener('load', promise.resolve, {once: true});
+          script.addEventListener(
+            'error',
+            event => {
+              let message = 'Could not load script';
+              if (event instanceof ErrorEvent) {
+                message = event.message ?? message;
+              }
+              promise.reject(new Error(message));
+            },
+            {once: true}
+          );
           document.head.appendChild(script);
           await promise;
           return script;
@@ -867,20 +867,19 @@ export class Frame {
             element = document.createElement('style');
             element.appendChild(document.createTextNode(content!));
           }
-          const promise = new Promise((res, rej) => {
-            element.addEventListener('load', res, {once: true});
-            element.addEventListener(
-              'error',
-              event => {
-                let message = 'Could not load style';
-                if (event instanceof ErrorEvent) {
-                  message = event.message ?? message;
-                }
-                rej(message);
-              },
-              {once: true}
-            );
-          });
+          const promise = createDeferredPromise();
+          element.addEventListener('load', promise.resolve, {once: true});
+          element.addEventListener(
+            'error',
+            event => {
+              let message = 'Could not load style';
+              if (event instanceof ErrorEvent) {
+                message = event.message ?? message;
+              }
+              promise.reject(new Error(message));
+            },
+            {once: true}
+          );
           document.head.appendChild(element);
           await promise;
           return element;
