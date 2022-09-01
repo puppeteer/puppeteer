@@ -117,7 +117,7 @@ export class IsolatedWorld {
   #frame: Frame;
   #injected: boolean;
   #document?: ElementHandle<Document>;
-  #contextPromise = createDeferredPromise<ExecutionContext>();
+  #context = createDeferredPromise<ExecutionContext>();
   #detached = false;
 
   // Set of bindings that have been registered in the current context.
@@ -165,7 +165,7 @@ export class IsolatedWorld {
 
   clearContext(): void {
     this.#document = undefined;
-    this.#contextPromise = createDeferredPromise();
+    this.#context = createDeferredPromise();
   }
 
   setContext(context: ExecutionContext): void {
@@ -173,14 +173,14 @@ export class IsolatedWorld {
       context.evaluate(injectedSource).catch(debugError);
     }
     this.#ctxBindings.clear();
-    this.#contextPromise.resolve(context);
+    this.#context.resolve(context);
     for (const waitTask of this._waitTasks) {
       waitTask.rerun();
     }
   }
 
   hasContext(): boolean {
-    return this.#contextPromise.resolved();
+    return this.#context.resolved();
   }
 
   _detach(): void {
@@ -199,10 +199,10 @@ export class IsolatedWorld {
         `Execution context is not available in detached frame "${this.#frame.url()}" (are you trying to evaluate?)`
       );
     }
-    if (this.#contextPromise === null) {
+    if (this.#context === null) {
       throw new Error(`Execution content promise is missing`);
     }
-    return this.#contextPromise;
+    return this.#context;
   }
 
   async evaluateHandle<
