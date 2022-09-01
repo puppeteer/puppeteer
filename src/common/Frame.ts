@@ -772,12 +772,16 @@ export class Frame {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 2563c0600e (chore: fix tests)
     type = type ?? 'text/javascript';
 
     return this.worlds[MAIN_WORLD].transferHandle(
       await this.worlds[PUPPETEER_WORLD].evaluateHandle(
         async ({url, id, type, content}) => {
           const script = document.createElement('script');
+<<<<<<< HEAD
 =======
     return this.worlds[PUPPETEER_WORLD].evaluateHandle(
       async ({url, id, type, content}) => {
@@ -790,6 +794,8 @@ export class Frame {
         }
         if (type) {
 >>>>>>> 571c30c3e5 (chore: remove unnecessary type signature)
+=======
+>>>>>>> 2563c0600e (chore: fix tests)
           script.type = type;
           script.text = content;
           if (url) {
