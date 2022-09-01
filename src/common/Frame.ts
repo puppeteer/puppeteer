@@ -771,12 +771,25 @@ export class Frame {
       content += `//# sourceURL=${path.replace(/\n/g, '')}`;
     }
 
+<<<<<<< HEAD
     type = type ?? 'text/javascript';
 
     return this.worlds[MAIN_WORLD].transferHandle(
       await this.worlds[PUPPETEER_WORLD].evaluateHandle(
         async ({url, id, type, content}) => {
           const script = document.createElement('script');
+=======
+    return this.worlds[PUPPETEER_WORLD].evaluateHandle(
+      async ({url, id, type, content}) => {
+        const script = document.createElement('script');
+        if (url) {
+          script.src = url;
+        }
+        if (id) {
+          script.id = id;
+        }
+        if (type) {
+>>>>>>> 571c30c3e5 (chore: remove unnecessary type signature)
           script.type = type;
           script.text = content;
           if (url) {
