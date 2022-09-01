@@ -1,19 +1,30 @@
-export type TestDimensionValue = object;
+import {z} from 'zod';
 
-export type TestDimension = TestDimensionValue[];
+export const zPlatform = z.enum(['win32', 'linux', 'darwin']);
 
-export type TestSuite = {
-  platforms: NodeJS.Platform[];
-  dimensions: TestDimension[];
-};
+export type Platform = z.infer<typeof zPlatform>;
+
+export const zTestSuite = z.object({
+  id: z.string(),
+  platforms: z.array(zPlatform),
+  parameters: z.array(z.string()),
+});
+
+export type TestSuite = z.infer<typeof zTestSuite>;
+
+export const zTestSuiteFile = z.object({
+  testSuites: z.array(zTestSuite),
+  parameterDefinitons: z.record(z.any()),
+});
+
+export type TestSuiteFile = z.infer<typeof zTestSuiteFile>;
 
 export type TestResult = 'PASS' | 'FAIL' | 'TIMEOUT' | 'SKIP';
 
 export type TestExpectation = {
-  fullTitle: string;
-  filename: string;
+  testIdPattern: string;
   platforms: NodeJS.Platform[];
-  modifiers: TestDimensionValue[];
+  parameters: string[];
   expectations: TestResult[];
 };
 

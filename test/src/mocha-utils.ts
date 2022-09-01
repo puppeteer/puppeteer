@@ -34,6 +34,7 @@ import puppeteer from '../../lib/cjs/puppeteer/puppeteer.js';
 import {TestServer} from '../../utils/testserver/lib/index.js';
 import {extendExpectWithToBeGolden} from './utils.js';
 import * as Mocha from 'mocha';
+import {getTestId} from '../../utils/mochaRunner/lib/utils.js';
 
 const setupServer = async () => {
   const assetsPath = path.join(__dirname, '../assets');
@@ -298,40 +299,22 @@ export const shortWaitForArrayToHaveAtLeastNElements = async (
 };
 
 type SyncFn = (this: Mocha.Context) => void;
-type SkippedTest = {
-  fullTitle: string;
-  filename: string;
-};
 
-const skippedTests: SkippedTest[] = process.env['PUPPETEER_SKIPPED_TEST_CONFIG']
+const skippedTests: string[] = process.env['PUPPETEER_SKIPPED_TEST_CONFIG']
   ? JSON.parse(process.env['PUPPETEER_SKIPPED_TEST_CONFIG'])
   : [];
 
-const byFile = skippedTests.reduce((acc, test) => {
-  if (!acc.has(test.filename)) {
-    acc.set(test.filename, [test]);
-  } else {
-    acc.get(test.filename)!.push(test);
-  }
-  return acc;
-}, new Map<string, SkippedTest[]>());
-
 function skipTestIfNeeded(test: Mocha.Test): void {
-  const file = getFilename(test.file!);
+  const testId = getTestId(test.file!, test.fullTitle());
   if (
-    byFile.has(file) &&
-    byFile.get(file)?.find(skippedTest => {
-      return test.fullTitle().startsWith(skippedTest.fullTitle);
+    skippedTests.find(skippedTest => {
+      return testId.startsWith(skippedTest);
     })
   ) {
     try {
       test.skip();
     } catch {}
   }
-}
-
-function getFilename(file: string): string {
-  return path.basename(file).replace(path.extname(file), '');
 }
 
 export function it(title: string, fn?: Mocha.AsyncFunc | SyncFn): Mocha.Test {

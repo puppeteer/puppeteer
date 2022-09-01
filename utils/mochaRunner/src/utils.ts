@@ -1,25 +1,14 @@
+import {
+  MochaTestResult,
+  TestExpectation,
+  MochaResults,
+  TestResult,
+} from './types.js';
 import path from 'path';
 import fs from 'fs';
-import {TestDimensionValue} from './types.js';
 
-export function* traverseMatrix(
-  combination: TestDimensionValue[],
-  dimensions: TestDimensionValue[][]
-): Generator<TestDimensionValue[]> {
-  if (dimensions.length === 0) {
-    yield combination;
-    return;
-  }
-  const nextDimension = dimensions.shift() as TestDimensionValue[];
-  for (const dimensionValue of nextDimension) {
-    yield* traverseMatrix([...combination, dimensionValue], [...dimensions]);
-  }
-}
-
-export function extendProcessEnv(
-  combination: TestDimensionValue[]
-): NodeJS.ProcessEnv {
-  return combination.reduce(
+export function extendProcessEnv(envs: object[]): NodeJS.ProcessEnv {
+  return envs.reduce(
     (acc: object, item: object) => {
       Object.assign(acc, item);
       return acc;
@@ -32,27 +21,6 @@ export function extendProcessEnv(
 
 export function getFilename(file: string): string {
   return path.basename(file).replace(path.extname(file), '');
-}
-
-export function isEqualObject(
-  a: {[key: string]: unknown},
-  b: {[key: string]: unknown}
-): boolean {
-  if (Object.keys(a).length !== Object.keys(b).length) {
-    return false;
-  }
-  for (const key of Object.keys(a)) {
-    if (a[key] !== b[key]) {
-      return false;
-    }
-  }
-  return true;
-}
-
-export function validatePlatfrom(platform: NodeJS.Platform): void {
-  if (!['linux', 'darwin', 'win32'].includes(platform)) {
-    throw new Error('Unsupported platform');
-  }
 }
 
 export function readJSON(path: string): unknown {
@@ -70,4 +38,116 @@ export function filterByPlatform<T extends {platforms: NodeJS.Platform[]}>(
 
 export function prettyPrintJSON(json: unknown): void {
   console.log(JSON.stringify(json, null, 2));
+}
+
+export function filterByParameters(
+  expecations: TestExpectation[],
+  parameters: string[]
+): TestExpectation[] {
+  const querySet = new Set(parameters);
+  return expecations.filter(ex => {
+    return ex.parameters.every(param => {
+      return querySet.has(param);
+    });
+  });
+}
+
+/**
+ * The last expectation that matches the startsWith filter wins.
+ */
+export function findEffectiveExpecationForTest(
+  expectations: TestExpectation[],
+  result: MochaTestResult
+): TestExpectation | undefined {
+  return expectations
+    .filter(expecation => {
+      if (
+        getTestId(result.file, result.fullTitle).startsWith(
+          expecation.testIdPattern
+        )
+      ) {
+        return true;
+      }
+      return false;
+    })
+    .pop();
+}
+
+type RecommendedExpecation = {
+  expectation: TestExpectation;
+  test: MochaTestResult;
+  action: 'remove' | 'add' | 'update';
+};
+
+export function getExpectationUpdates(
+  results: MochaResults,
+  expecations: TestExpectation[],
+  context: {
+    platforms: NodeJS.Platform[];
+    parameters: string[];
+  }
+): RecommendedExpecation[] {
+  const output: RecommendedExpecation[] = [];
+
+  for (const pass of results.passes) {
+    const expectation = findEffectiveExpecationForTest(expecations, pass);
+    if (expectation && !expectation.expectations.includes('PASS')) {
+      output.push({
+        expectation,
+        test: pass,
+        action: 'remove',
+      });
+    }
+  }
+
+  for (const failure of results.failures) {
+    const expectation = findEffectiveExpecationForTest(expecations, failure);
+    if (expectation) {
+      if (
+        !expectation.expectations.includes(getTestResultForFailure(failure))
+      ) {
+        output.push({
+          expectation: {
+            ...expectation,
+            expectations: [
+              ...expectation.expectations,
+              getTestResultForFailure(failure),
+            ],
+          },
+          test: failure,
+          action: 'update',
+        });
+      }
+    } else {
+      output.push({
+        expectation: {
+          testIdPattern: getTestId(failure.file, failure.fullTitle),
+          platforms: context.platforms,
+          parameters: context.parameters,
+          expectations: [getTestResultForFailure(failure)],
+        },
+        test: failure,
+        action: 'add',
+      });
+    }
+  }
+  return output;
+}
+
+export function getTestResultForFailure(
+  test: Pick<MochaTestResult, 'err'>
+): TestResult {
+  return test.err?.code === 'ERR_MOCHA_TIMEOUT' ? 'TIMEOUT' : 'FAIL';
+}
+
+export function getSkippedTests(
+  expectations: TestExpectation[]
+): TestExpectation[] {
+  return expectations.filter(ex => {
+    return ex.expectations.includes('SKIP');
+  });
+}
+
+export function getTestId(file: string, fullTitle: string): string {
+  return `[${getFilename(file)}] ${fullTitle}`;
 }

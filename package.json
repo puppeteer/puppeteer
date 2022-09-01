@@ -35,7 +35,7 @@
     "test:chrome:headless": "cross-env HEADLESS=true PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 mocha",
     "test:chrome:headless-chrome": "cross-env HEADLESS=chrome PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 mocha",
     "test:chrome:headful": "cross-env HEADLESS=false PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 mocha",
-    "test:experimental-runner": "cross-env MOZ_WEBRENDER=0 PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 c8 --check-coverage --lines 93 node utils/mochaRunner/lib/cli.js",
+    "test:experimental-runner": "cross-env MOZ_WEBRENDER=0 PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 c8 --check-coverage --lines 93 node utils/mochaRunner/lib/main.js",
     "prepublishOnly": "npm run build",
     "prepare": "node typescript-if-required.js && husky install",
     "lint": "run-s lint:prettier lint:eslint",
@@ -140,6 +140,7 @@
     "text-diff": "1.0.1",
     "tsd": "0.22.0",
     "tsx": "3.8.2",
-    "typescript": "4.7.4"
+    "typescript": "4.7.4",
+    "zod": "3.18.0"
   }
 }

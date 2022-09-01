@@ -1,53 +1,41 @@
-[
-  {
-    "platforms": ["linux"],
-    "dimensions": [
-      [
-        {
-          "PUPPETEER_PRODUCT": "chrome"
-        }
-      ],
-      [
-        {
-          "HEADLESS": "true"
-        },
-        {
-          "HEADLESS": "false"
-        },
-        {
-          "HEADLESS": "chrome"
-        }
-      ]
-    ]
-  },
-  {
-    "platforms": ["win32", "darwin"],
-    "dimensions": [
-      [
-        {
-          "PUPPETEER_PRODUCT": "chrome"
-        }
-      ],
-      [
-        {
-          "HEADLESS": "true"
-        }
-      ]
-    ]
-  },
-  {
-    "platforms": ["linux"],
-    "dimensions": [
-      [
-        {
-          "PUPPETEER_PRODUCT": "firefox"
-        }
-      ],
-      [
-        {
-          "HEADLESS": "true"
-        }
-      ]
-    ]
+{
+  "testSuites": [
+    {
+      "id": "chrome-headless",
+      "platforms": ["linux", "win32", "darwin"],
+      "parameters": ["chrome", "headless"]
+    },
+    {
+      "id": "chrome-headful",
+      "platforms": ["linux"],
+      "parameters": ["chrome", "headful"]
+    },
+    {
+      "id": "chrome-new-headless",
+      "platforms": ["linux"],
+      "parameters": ["chrome", "chrome-headless"]
+    },
+    {
+      "id": "firefox-headless",
+      "platforms": ["linux"],
+      "parameters": ["firefox", "headless"]
+    }
+  ],
+  "parameterDefinitons": {
+    "chrome": {
+      "PUPPETEER_PRODUCT": "chrome"
+    },
+    "firefox": {
+      "PUPPETEER_PRODUCT": "firefox"
+    },
+    "headless": {
+      "HEADLESS": "true"
+    },
+    "headful": {
+      "HEADLESS": "false"
+    },
+    "chrome-headless": {
+      "HEADLESS": "chrome"
+    }
   }
-]
+}
