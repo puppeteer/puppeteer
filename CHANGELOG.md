@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.1.0](https://github.com/puppeteer/puppeteer/compare/v17.0.0...v17.1.0) (2022-09-01)
+
+
+### Features
+
+* **chromium:** roll to Chromium 106.0.5249.0 (r1036745) ([#8869](https://github.com/puppeteer/puppeteer/issues/8869)) ([6e9a47a](https://github.com/puppeteer/puppeteer/commit/6e9a47a6faa06d241dec0bcf7bcdf49370517008))
+
+
+### Bug Fixes
+
+* allow getting a frame from an elementhandle ([#8875](https://github.com/puppeteer/puppeteer/issues/8875)) ([3732757](https://github.com/puppeteer/puppeteer/commit/3732757450b4363041ccbacc3b236289a156abb0))
+* typos in documentation ([#8858](https://github.com/puppeteer/puppeteer/issues/8858)) ([8d95a9b](https://github.com/puppeteer/puppeteer/commit/8d95a9bc920b98820aa655ad4eb2d8fd9b2b893a))
+* use the timeout setting in waitForFileChooser ([#8856](https://github.com/puppeteer/puppeteer/issues/8856)) ([f477b46](https://github.com/puppeteer/puppeteer/commit/f477b46f212da9206102da695697760eea539f05))
+
 ## [17.0.0](https://github.com/puppeteer/puppeteer/compare/v16.2.0...v17.0.0) (2022-08-26)
 
 
