@@ -815,7 +815,11 @@ export class Frame {
             script.addEventListener(
               'error',
               event => {
-                rej(event.message ?? 'Could not load script');
+                let message = 'Could not load script';
+                if (event instanceof ErrorEvent) {
+                  message = event.message ?? message;
+                }
+                rej(message);
               },
               {once: true}
             );
@@ -849,30 +853,11 @@ export class Frame {
     options: FrameAddStyleTagOptions
   ): Promise<ElementHandle<HTMLStyleElement | HTMLLinkElement>> {
     let {content = ''} = options;
-    const {path, url} = options;
-    if (+!!url + +!!path + +!!content > 1) {
+    const {path} = options;
+    if (+!!options.url + +!!path + +!!content !== 1) {
       throw new Error(
-        'Exactly one of `url`, `path`, or `content` may be specified.'
+        'Exactly one of `url`, `path`, or `content` must be specified.'
       );
-    }
-
-    if (url) {
-      try {
-        return this.worlds[PUPPETEER_WORLD].evaluateHandle(async url => {
-          const link = document.createElement('link');
-          link.rel = 'stylesheet';
-          link.href = url;
-          const promise = new Promise((res, rej) => {
-            link.onload = res;
-            link.onerror = rej;
-          });
-          document.head.appendChild(link);
-          await promise;
-          return link;
-        }, url);
-      } catch (error) {
-        throw new Error(`Loading style from ${url} failed`);
-      }
     }
 
     if (path) {
@@ -882,7 +867,7 @@ export class Frame {
       } catch (error) {
         if (error instanceof TypeError) {
           throw new Error(
-            'Cannot pass a filepath to addStyleTag in the browser environment.'
+            'Can only pass a file path in a Node-like environment.'
           );
         }
         throw error;
@@ -890,19 +875,43 @@ export class Frame {
 
       content = await fs.readFile(path, 'utf8');
       content += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
+      options.content = content;
     }
 
-    return this.worlds[PUPPETEER_WORLD].evaluateHandle(async content => {
-      const style = document.createElement('style');
-      style.appendChild(document.createTextNode(content));
-      const promise = new Promise((res, rej) => {
-        style.onload = res;
-        style.onerror = rej;
-      });
-      document.head.appendChild(style);
-      await promise;
-      return style;
-    }, content);
+    return this.worlds[MAIN_WORLD].transferHandle(
+      await this.worlds[PUPPETEER_WORLD].evaluateHandle(
+        async ({url, content}) => {
+          let element: HTMLLinkElement | HTMLStyleElement;
+          if (url) {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = url;
+            element = link;
+          } else {
+            element = document.createElement('style');
+            element.appendChild(document.createTextNode(content!));
+          }
+          const promise = new Promise((res, rej) => {
+            element.addEventListener('load', res, {once: true});
+            element.addEventListener(
+              'error',
+              event => {
+                let message = 'Could not load style';
+                if (event instanceof ErrorEvent) {
+                  message = event.message ?? message;
+                }
+                rej(message);
+              },
+              {once: true}
+            );
+          });
+          document.head.appendChild(element);
+          await promise;
+          return element;
+        },
+        options
+      )
+    );
   }
 
   /**

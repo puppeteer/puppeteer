@@ -1824,7 +1824,7 @@ describe('Page', function () {
       } catch (error_) {
         error = error_ as Error;
       }
-      expect(error.message).toBe('Loading style from /nonexistfile.js failed');
+      expect(error.message).toContain('Could not load style');
     });
 
     it('should work with a path', async () => {
