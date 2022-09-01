@@ -49,24 +49,29 @@ export interface FrameWaitForFunctionOptions {
  */
 export interface FrameAddScriptTagOptions {
   /**
-   * the URL of the script to be added.
+   * URL of the script to be added.
    */
   url?: string;
   /**
-   * The path to a JavaScript file to be injected into the frame.
+   * Path to a JavaScript file to be injected into the frame.
+   *
    * @remarks
    * If `path` is a relative path, it is resolved relative to the current
    * working directory (`process.cwd()` in Node.js).
    */
   path?: string;
   /**
-   * Raw JavaScript content to be injected into the frame.
+   * JavaScript to be injected into the frame.
    */
   content?: string;
   /**
-   * Set the script's `type`. Use `module` in order to load an ES2015 module.
+   * Sets the `type` of thescript. Use `module` in order to load an ES2015 module.
    */
   type?: string;
+  /**
+   * Sets the `id` of the script.
+   */
+  id?: string;
 }
 
 /**
@@ -743,7 +748,60 @@ export class Frame {
   async addScriptTag(
     options: FrameAddScriptTagOptions
   ): Promise<ElementHandle<HTMLScriptElement>> {
-    return this.worlds[MAIN_WORLD].addScriptTag(options);
+    let {content} = options;
+    const {path} = options;
+    if (options.url && path && content) {
+      throw new Error(
+        'Exactly one of `url`, `path`, or `content` may be specified.'
+      );
+    }
+    if (path) {
+      let fs;
+      try {
+        fs = (await import('fs')).promises;
+      } catch (error) {
+        if (error instanceof TypeError) {
+          throw new Error(
+            'Can only pass a filepath to addScriptTag in a Node-like environment.'
+          );
+        }
+        throw error;
+      }
+      content = await fs.readFile(path, 'utf8');
+      content += `//# sourceURL=${path.replace(/\n/g, '')}`;
+      options.content = content;
+    }
+
+    return this.worlds[PUPPETEER_WORLD].evaluateHandle(
+      async ({
+        url,
+        id,
+        type,
+        content,
+      }: Omit<FrameAddScriptTagOptions, 'path'>) => {
+        const script = document.createElement('script');
+        if (url) {
+          script.src = url;
+        }
+        if (id) {
+          script.id = id;
+        }
+        if (type) {
+          script.type = type;
+        }
+        if (content) {
+          script.text = content;
+        }
+        const promise = new Promise((res, rej) => {
+          script.onload = res;
+          script.onerror = rej;
+        });
+        document.head.appendChild(script);
+        await promise;
+        return script;
+      },
+      options
+    );
   }
 
   /**
