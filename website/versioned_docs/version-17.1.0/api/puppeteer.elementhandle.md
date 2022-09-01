@@ -39,6 +39,12 @@ If you're using TypeScript, ElementHandle takes a generic argument that denotes 
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ElementHandle` class.
 
+## Properties
+
+| Property                                    | Modifiers             | Type                          | Description |
+| ------------------------------------------- | --------------------- | ----------------------------- | ----------- |
+| [frame](./puppeteer.elementhandle.frame.md) | <code>readonly</code> | [Frame](./puppeteer.frame.md) |             |
+
 ## Methods
 
 | Method                                                                                       | Modifiers | Description                                                                                                                                                                                                                                                                                                                   |

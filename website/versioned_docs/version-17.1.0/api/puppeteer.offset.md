@@ -14,5 +14,5 @@ export interface Offset
 
 | Property                     | Modifiers | Type   | Description                                                                         |
 | ---------------------------- | --------- | ------ | ----------------------------------------------------------------------------------- |
-| [x](./puppeteer.offset.x.md) |           | number | x-offset for the clickable point relative to the top-left corder of the border box. |
-| [y](./puppeteer.offset.y.md) |           | number | y-offset for the clickable point relative to the top-left corder of the border box. |
+| [x](./puppeteer.offset.x.md) |           | number | x-offset for the clickable point relative to the top-left corner of the border box. |
+| [y](./puppeteer.offset.y.md) |           | number | y-offset for the clickable point relative to the top-left corner of the border box. |
