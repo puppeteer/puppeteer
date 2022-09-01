@@ -777,38 +777,35 @@ export class Frame {
     return this.worlds[MAIN_WORLD].transferHandle(
       await this.worlds[PUPPETEER_WORLD].evaluateHandle(
         async ({url, id, type, content}) => {
+          const promise = InjectedUtil.createDeferredPromise<void>();
           const script = document.createElement('script');
           script.type = type;
           script.text = content;
           if (url) {
             script.src = url;
+            script.addEventListener(
+              'load',
+              () => {
+                return promise.resolve();
+              },
+              {once: true}
+            );
+            script.addEventListener(
+              'error',
+              event => {
+                promise.reject(
+                  new Error(event.message ?? 'Could not load script')
+                );
+              },
+              {once: true}
+            );
+          } else {
+            promise.resolve();
           }
           if (id) {
             script.id = id;
           }
-          let resolve: undefined | ((value?: unknown) => void);
-          const promise = new Promise((res, rej) => {
-            if (url) {
-              script.addEventListener('load', res, {once: true});
-            } else {
-              resolve = res;
-            }
-            script.addEventListener(
-              'error',
-              event => {
-                let message = 'Could not load script';
-                if (event instanceof ErrorEvent) {
-                  message = event.message ?? message;
-                }
-                rej(message);
-              },
-              {once: true}
-            );
-          });
           document.head.appendChild(script);
-          if (resolve) {
-            resolve();
-          }
           await promise;
           return script;
         },
@@ -862,39 +859,38 @@ export class Frame {
     return this.worlds[MAIN_WORLD].transferHandle(
       await this.worlds[PUPPETEER_WORLD].evaluateHandle(
         async ({url, content}) => {
+          const promise = InjectedUtil.createDeferredPromise<void>();
+          let element: HTMLStyleElement | HTMLLinkElement;
           if (!url) {
-            const style = document.createElement('style');
-            style.appendChild(document.createTextNode(content!));
-            const promise = new Promise((res, rej) => {
-              style.addEventListener('load', res, {once: true});
-              style.addEventListener(
-                'error',
-                event => {
-                  rej(event.message ?? 'Could not load style');
-                },
-                {once: true}
-              );
-            });
-            document.head.appendChild(style);
-            await promise;
-            return style;
+            element = document.createElement('style');
+            element.appendChild(document.createTextNode(content!));
+          } else {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = url;
+            element = link;
           }
-          const link = document.createElement('link');
-          link.rel = 'stylesheet';
-          link.href = url;
-          const promise = new Promise((res, rej) => {
-            link.addEventListener('load', res, {once: true});
-            link.addEventListener(
-              'error',
-              event => {
-                rej(event.message ?? 'Could not load style');
-              },
-              {once: true}
-            );
-          });
-          document.head.appendChild(link);
+          element.addEventListener(
+            'load',
+            () => {
+              promise.resolve();
+            },
+            {once: true}
+          );
+          element.addEventListener(
+            'error',
+            event => {
+              promise.reject(
+                new Error(
+                  (event as ErrorEvent).message ?? 'Could not load style'
+                )
+              );
+            },
+            {once: true}
+          );
+          document.head.appendChild(element);
           await promise;
-          return link;
+          return element;
         },
         options
       )

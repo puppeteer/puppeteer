@@ -1,3 +1,4 @@
+import {createDeferredPromise} from '../util/DeferredPromise.js';
 import * as Poller from './Poller.js';
 import * as util from './util.js';
 
@@ -7,6 +8,7 @@ Object.assign(
     InjectedUtil: {
       ...Poller,
       ...util,
+      createDeferredPromise,
     },
   })
 );
