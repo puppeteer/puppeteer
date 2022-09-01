@@ -18,6 +18,7 @@ import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {Page} from './Page.js';
 import {getQueryHandlerAndSelector} from './QueryHandler.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
+import {importFS} from './util.js';
 
 /**
  * @public
@@ -808,18 +809,76 @@ export class Frame {
   }
 
   /**
-   * Adds a `<link rel="stylesheet">` tag into the page with the desired url or
+   * Adds a `<link rel="stylesheet">` tag into the page with the desired URL or
    * a `<style type="text/css">` tag with the content.
    *
-   * @param options - Options for the style link.
-   * @returns a promise that resolves to the added tag when the stylesheets's
-   * `onload` event fires or when the CSS content was injected into the
-   * frame.
+   * @returns An {@link ElementHandle | element handle} to the loaded `<link>`
+   * or `<style>` element.
    */
+  async addStyleTag(
+    options: Omit<FrameAddStyleTagOptions, 'url'>
+  ): Promise<ElementHandle<HTMLStyleElement>>;
+  async addStyleTag(
+    options: FrameAddStyleTagOptions
+  ): Promise<ElementHandle<HTMLLinkElement>>;
   async addStyleTag(
     options: FrameAddStyleTagOptions
   ): Promise<ElementHandle<HTMLStyleElement | HTMLLinkElement>> {
-    return this.worlds[MAIN_WORLD].addStyleTag(options);
+    let {content = ''} = options;
+    const {path, url} = options;
+    if (+!!url + +!!path + +!!content > 1) {
+      throw new Error(
+        'Exactly one of `url`, `path`, or `content` may be specified.'
+      );
+    }
+
+    if (url) {
+      try {
+        return this.worlds[PUPPETEER_WORLD].evaluateHandle(async url => {
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = url;
+          const promise = new Promise((res, rej) => {
+            link.onload = res;
+            link.onerror = rej;
+          });
+          document.head.appendChild(link);
+          await promise;
+          return link;
+        }, url);
+      } catch (error) {
+        throw new Error(`Loading style from ${url} failed`);
+      }
+    }
+
+    if (path) {
+      let fs: typeof import('fs').promises;
+      try {
+        fs = (await importFS()).promises;
+      } catch (error) {
+        if (error instanceof TypeError) {
+          throw new Error(
+            'Cannot pass a filepath to addStyleTag in the browser environment.'
+          );
+        }
+        throw error;
+      }
+
+      content = await fs.readFile(path, 'utf8');
+      content += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
+    }
+
+    return this.worlds[PUPPETEER_WORLD].evaluateHandle(async content => {
+      const style = document.createElement('style');
+      style.appendChild(document.createTextNode(content));
+      const promise = new Promise((res, rej) => {
+        style.onload = res;
+        style.onerror = rej;
+      });
+      document.head.appendChild(style);
+      await promise;
+      return style;
+    }, content);
   }
 
   /**

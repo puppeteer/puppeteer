@@ -32,7 +32,11 @@ import {ElementHandle} from './ElementHandle.js';
 import {EmulationManager} from './EmulationManager.js';
 import {EventEmitter, Handler} from './EventEmitter.js';
 import {FileChooser} from './FileChooser.js';
-import {Frame, FrameAddScriptTagOptions} from './Frame.js';
+import {
+  Frame,
+  FrameAddScriptTagOptions,
+  FrameAddStyleTagOptions,
+} from './Frame.js';
 import {FrameManager, FrameManagerEmittedEvents} from './FrameManager.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
@@ -1423,16 +1427,24 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * Adds a `<link rel="stylesheet">` tag into the page with the desired URL or a
-   * `<style type="text/css">` tag with the content.
-   * @returns Promise which resolves to the added tag when the stylesheet's
-   * onload fires or when the CSS content was injected into frame.
+   * Adds a `<link rel="stylesheet">` tag into the page with the desired URL or
+   * a `<style type="text/css">` tag with the content.
+   *
+   * Shortcut for
+   * {@link Frame.addStyleTag | page.mainFrame().addStyleTag(options)}.
+   *
+   * @returns An {@link ElementHandle | element handle} to the injected `<link>`
+   * or `<style>` element.
    */
-  async addStyleTag(options: {
-    url?: string;
-    path?: string;
-    content?: string;
-  }): Promise<ElementHandle<Node>> {
+  async addStyleTag(
+    options: Omit<FrameAddStyleTagOptions, 'url'>
+  ): Promise<ElementHandle<HTMLStyleElement>>;
+  async addStyleTag(
+    options: FrameAddStyleTagOptions
+  ): Promise<ElementHandle<HTMLLinkElement>>;
+  async addStyleTag(
+    options: FrameAddStyleTagOptions
+  ): Promise<ElementHandle<HTMLStyleElement | HTMLLinkElement>> {
     return this.mainFrame().addStyleTag(options);
   }
 

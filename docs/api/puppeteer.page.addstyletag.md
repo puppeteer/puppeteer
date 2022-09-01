@@ -6,26 +6,26 @@ sidebar_label: Page.addStyleTag
 
 Adds a `<link rel="stylesheet">` tag into the page with the desired URL or a `<style type="text/css">` tag with the content.
 
+Shortcut for .
+
 **Signature:**
 
 ```typescript
 class Page {
-  addStyleTag(options: {
-    url?: string;
-    path?: string;
-    content?: string;
-  }): Promise<ElementHandle<Node>>;
+  addStyleTag(
+    options: Omit<FrameAddStyleTagOptions, 'url'>
+  ): Promise<ElementHandle<HTMLStyleElement>>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                               | Description |
-| --------- | -------------------------------------------------- | ----------- |
-| options   | { url?: string; path?: string; content?: string; } |             |
+| Parameter | Type                                                                                 | Description |
+| --------- | ------------------------------------------------------------------------------------ | ----------- |
+| options   | Omit&lt;[FrameAddStyleTagOptions](./puppeteer.frameaddstyletagoptions.md), 'url'&gt; |             |
 
 **Returns:**
 
-Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;Node&gt;&gt;
+Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLStyleElement&gt;&gt;
 
-Promise which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame.
+An [element handle](./puppeteer.elementhandle.md) to the injected `<link>` or `<style>` element.
