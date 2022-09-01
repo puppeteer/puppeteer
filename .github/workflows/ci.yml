@@ -196,6 +196,9 @@ jobs:
       - name: Test bundling and installation
         if: ${{ matrix.spec.name == 'Linux' }}
         run: |
+          # Test prod build instead of dev.
+          npm run clean
+          npm run build
           # Note: this modifies package.json to test puppeteer-core, so we test this last.
           npm run test:install
 
@@ -220,7 +223,7 @@ jobs:
           ls .local-chromium
       - name: Build
         run: |
-          npm run build:dev
+          npm run build
           docker/pack.sh
       - name: Build docker image
         working-directory: ./docker
