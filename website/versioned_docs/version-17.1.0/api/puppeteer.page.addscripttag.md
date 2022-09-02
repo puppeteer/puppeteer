@@ -1,15 +1,15 @@
 ---
-sidebar_label: Frame.addScriptTag
+sidebar_label: Page.addScriptTag
 ---
 
-# Frame.addScriptTag() method
+# Page.addScriptTag() method
 
-Adds a `<script>` tag into the page with the desired url or content.
+Adds a `<script>` tag into the page with the desired URL or content.
 
 **Signature:**
 
 ```typescript
-class Frame {
+class Page {
   addScriptTag(
     options: FrameAddScriptTagOptions
   ): Promise<ElementHandle<HTMLScriptElement>>;
@@ -26,4 +26,8 @@ class Frame {
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLScriptElement&gt;&gt;
 
-a promise that resolves to the added tag when the script's `onload` event fires or when the script content was injected into the frame.
+An [element handle](./puppeteer.elementhandle.md) to the injected `<script>` element.
+
+## Remarks
+
+Shortcut for [page.mainFrame().addScriptTag(options)](./puppeteer.frame.addscripttag.md).

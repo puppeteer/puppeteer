@@ -4,7 +4,7 @@ sidebar_label: FrameAddScriptTagOptions.path
 
 # FrameAddScriptTagOptions.path property
 
-The path to a JavaScript file to be injected into the frame.
+Path to a JavaScript file to be injected into the frame.
 
 **Signature:**
 
