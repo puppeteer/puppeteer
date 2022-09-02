@@ -36,12 +36,26 @@ npm install
 PUPPETEER_PRODUCT=firefox npm install
 ```
 
-3. Build and run Puppeteer tests locally. For more information about tests, read
-   [Running & Writing Tests](#running--writing-tests).
+## Building Puppeteer
+
+Puppeteer has two configurations for building:
+
+- `npm run build` (or `npm run build:prod`) - Builds Puppeteer and artifacts
+  used in production.
+- `npm run build:dev` - Builds Puppeteer, tests, and artifacts used in
+  production.
+
+## Testing Puppeteer
+
+For browser testing, you can run
 
 ```bash
-npm run build && npm run test
+npm run build:dev && npm run test
 ```
+
+We also have other tests such as `test:types` that tests types and
+`test:install` which tests installation. See the `package.json` for more tests
+(all prefixed with `tests`).
 
 ## Code reviews
 
