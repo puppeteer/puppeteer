@@ -4,7 +4,7 @@ sidebar_label: FrameAddScriptTagOptions.url
 
 # FrameAddScriptTagOptions.url property
 
-the URL of the script to be added.
+URL of the script to be added.
 
 **Signature:**
 
