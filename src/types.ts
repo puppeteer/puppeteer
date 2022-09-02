@@ -68,6 +68,7 @@ export * from './node/util.js';
 export * from './puppeteer.js';
 export * from './revisions.js';
 export * from './util/assert.js';
+export * from './util/DebuggableDeferredPromise.js';
 export * from './util/DeferredPromise.js';
 export * from './util/ErrorLike.js';
 export * from './util/getPackageDirectory.js';
