@@ -1693,7 +1693,7 @@ describe('Page', function () {
     });
 
     it('should throw an error if loading from url fail', async () => {
-      const {page, server} = getTestState();
+      const {page, server, isFirefox} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       let error!: Error;
@@ -1702,7 +1702,11 @@ describe('Page', function () {
       } catch (error_) {
         error = error_ as Error;
       }
-      expect(error.message).toContain('Could not load script');
+      if (isFirefox) {
+        expect(error.message).toBeTruthy();
+      } else {
+        expect(error.message).toContain('Could not load script');
+      }
     });
 
     it('should work with a path', async () => {
@@ -1815,7 +1819,7 @@ describe('Page', function () {
     });
 
     it('should throw an error if loading from url fail', async () => {
-      const {page, server} = getTestState();
+      const {page, server, isFirefox} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       let error!: Error;
@@ -1824,7 +1828,11 @@ describe('Page', function () {
       } catch (error_) {
         error = error_ as Error;
       }
-      expect(error.message).toContain('Could not load style');
+      if (isFirefox) {
+        expect(error.message).toBeTruthy();
+      } else {
+        expect(error.message).toContain('Could not load style');
+      }
     });
 
     it('should work with a path', async () => {
