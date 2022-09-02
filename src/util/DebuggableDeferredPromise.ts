@@ -16,5 +16,5 @@ export function createDebuggableDeferredPromise<T>(
       timeout: DEFERRED_PROMISE_DEBUG_TIMEOUT,
     });
   }
-  return createDeferredPromise({message});
+  return createDeferredPromise();
 }

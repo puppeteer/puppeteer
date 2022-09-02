@@ -14,22 +14,22 @@ export interface DeferredPromise<T> extends Promise<T> {
  * @internal
  */
 export interface DeferredPromiseOptions {
-  message?: string;
-  timeout?: number;
+  message: string;
+  timeout: number;
 }
 
 /**
  * Creates and returns a promise along with the resolve/reject functions.
  *
  * If the promise has not been resolved/rejected within the `timeout` period,
- * the promise gets rejected with a timeout error.
+ * the promise gets rejected with a timeout error. `timeout` has to be greater than 0 or
+ * it is ignored.
  *
  * @internal
  */
-export function createDeferredPromise<T>({
-  message,
-  timeout = 5000,
-}: DeferredPromiseOptions = {}): DeferredPromise<T> {
+export function createDeferredPromise<T>(
+  opts?: DeferredPromiseOptions
+): DeferredPromise<T> {
   let isResolved = false;
   let isRejected = false;
   let resolver = (_: T): void => {};
@@ -39,11 +39,11 @@ export function createDeferredPromise<T>({
     rejector = reject;
   });
   const timeoutId =
-    timeout > 0
+    opts && opts.timeout > 0
       ? setTimeout(() => {
           isRejected = true;
-          rejector(new TimeoutError(message));
-        }, timeout)
+          rejector(new TimeoutError(opts.message));
+        }, opts.timeout)
       : undefined;
   return Object.assign(taskPromise, {
     resolved: () => {
