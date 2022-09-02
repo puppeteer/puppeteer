@@ -1,9 +1,7 @@
-import * as Poller from '../injected/Poller.js';
-import * as util from '../injected/util.js';
 import {createDeferredPromise} from '../util/DeferredPromise.js';
 
 declare global {
-  const InjectedUtil: Readonly<typeof Poller & typeof util> & {
+  const InjectedUtil: {
     createDeferredPromise: typeof createDeferredPromise;
   };
 }
