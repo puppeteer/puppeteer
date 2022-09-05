@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.1.1](https://github.com/puppeteer/puppeteer/compare/v17.1.0...v17.1.1) (2022-09-05)
+
+
+### Bug Fixes
+
+* restore deferred promise debugging ([#8895](https://github.com/puppeteer/puppeteer/issues/8895)) ([7b42250](https://github.com/puppeteer/puppeteer/commit/7b42250c7bb91ac873307acda493726ffc4c54a8))
+
 ## [17.1.0](https://github.com/puppeteer/puppeteer/compare/v17.0.0...v17.1.0) (2022-09-02)
 
 
