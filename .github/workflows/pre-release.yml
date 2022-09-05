@@ -29,6 +29,11 @@ jobs:
           npm install
           npm run docusaurus docs:version $(jq -r .version ../package.json)
           npm run archive
+      - name: Re-build docs after versioning
+        env:
+          PUBLISH: 1
+        run: |
+          npm run docs
       - name: Format
         run: npm run format
       - name: Commit
