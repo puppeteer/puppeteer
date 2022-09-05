@@ -1,5 +1,4 @@
 import {TimeoutError} from '../common/Errors.js';
-import {DEFERRED_PROMISE_DEBUG_TIMEOUT} from '../environment.js';
 
 /**
  * @internal
@@ -11,27 +10,26 @@ export interface DeferredPromise<T> extends Promise<T> {
   reject: (_: Error) => void;
 }
 
-interface DeferredPromiseOptions {
-  message?: string;
-  timeout?: number;
-  isDebug?: boolean;
+/**
+ * @internal
+ */
+export interface DeferredPromiseOptions {
+  message: string;
+  timeout: number;
 }
 
 /**
- * Creates an returns a promise along with the resolve/reject functions.
+ * Creates and returns a promise along with the resolve/reject functions.
  *
  * If the promise has not been resolved/rejected within the `timeout` period,
- * the promise gets rejected with a timeout error.
+ * the promise gets rejected with a timeout error. `timeout` has to be greater than 0 or
+ * it is ignored.
  *
  * @internal
  */
-export function createDeferredPromise<T>({
-  message,
-  timeout = 5000,
-}: DeferredPromiseOptions = {}): DeferredPromise<T> {
-  if (DEFERRED_PROMISE_DEBUG_TIMEOUT > 0 && !timeout) {
-    timeout = DEFERRED_PROMISE_DEBUG_TIMEOUT;
-  }
+export function createDeferredPromise<T>(
+  opts?: DeferredPromiseOptions
+): DeferredPromise<T> {
   let isResolved = false;
   let isRejected = false;
   let resolver = (_: T): void => {};
@@ -40,12 +38,13 @@ export function createDeferredPromise<T>({
     resolver = resolve;
     rejector = reject;
   });
-  const timeoutId = message
-    ? setTimeout(() => {
-        isRejected = true;
-        rejector(new TimeoutError(message));
-      }, timeout)
-    : undefined;
+  const timeoutId =
+    opts && opts.timeout > 0
+      ? setTimeout(() => {
+          isRejected = true;
+          rejector(new TimeoutError(opts.message));
+        }, opts.timeout)
+      : undefined;
   return Object.assign(taskPromise, {
     resolved: () => {
       return isResolved;
