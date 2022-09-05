@@ -1043,6 +1043,13 @@ export class Page extends EventEmitter {
   }
 
   /**
+   * @returns Maximum time in milliseconds.
+   */
+  getDefaultTimeout(): number {
+    return this.#timeoutSettings.timeout();
+  }
+
+  /**
    * Runs `document.querySelector` within the page. If no element matches the
    * selector, the return value resolves to `null`.
    *
