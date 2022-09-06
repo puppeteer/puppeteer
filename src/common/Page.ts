@@ -763,25 +763,28 @@ export class Page extends EventEmitter {
    * await fileChooser.accept(['/tmp/myfile.pdf']);
    * ```
    */
-  async waitForFileChooser(
-    options: WaitTimeoutOptions = {}
-  ): Promise<FileChooser> {
-    if (!this.#fileChooserPromises.size) {
-      await this.#client.send('Page.setInterceptFileChooserDialog', {
-        enabled: true,
-      });
-    }
-
+  waitForFileChooser(options: WaitTimeoutOptions = {}): Promise<FileChooser> {
+    const needsEnable = this.#fileChooserPromises.size === 0;
     const {timeout = this.#timeoutSettings.timeout()} = options;
     const promise = createDeferredPromise<FileChooser>({
       message: `Waiting for \`FileChooser\` failed: ${timeout}ms exceeded`,
       timeout,
     });
     this.#fileChooserPromises.add(promise);
-    return promise.catch(error => {
-      this.#fileChooserPromises.delete(promise);
-      throw error;
-    });
+    let enablePromise: Promise<void> | undefined;
+    if (needsEnable) {
+      enablePromise = this.#client.send('Page.setInterceptFileChooserDialog', {
+        enabled: true,
+      });
+    }
+    return Promise.all([promise, enablePromise])
+      .then(([result]) => {
+        return result;
+      })
+      .catch(error => {
+        this.#fileChooserPromises.delete(promise);
+        throw error;
+      });
   }
 
   /**
