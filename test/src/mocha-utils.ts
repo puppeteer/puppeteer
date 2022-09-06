@@ -20,10 +20,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import rimraf from 'rimraf';
 import sinon from 'sinon';
-import {
-  Browser,
-  BrowserContext,
-} from '../../lib/cjs/puppeteer/common/Browser.js';
+import {Browser, BrowserContext} from '../../lib/cjs/puppeteer/api/Browser.js';
 import {Page} from '../../lib/cjs/puppeteer/common/Page.js';
 import {isErrorLike} from '../../lib/cjs/puppeteer/util/ErrorLike.js';
 import {
@@ -71,6 +68,7 @@ const headless = (process.env['HEADLESS'] || 'true').trim().toLowerCase();
 const isHeadless = headless === 'true' || headless === 'chrome';
 const isFirefox = product === 'firefox';
 const isChrome = product === 'chrome';
+const protocol = process.env['PUPPETEER_PROTOCOL'] || 'cdp';
 
 let extraLaunchOptions = {};
 try {
@@ -91,6 +89,7 @@ const defaultBrowserOptions = Object.assign(
     executablePath: process.env['BINARY'],
     headless: headless === 'chrome' ? ('chrome' as const) : isHeadless,
     dumpio: !!process.env['DUMPIO'],
+    protocol: protocol as 'cdp' | 'webDriverBiDi',
   },
   extraLaunchOptions
 );

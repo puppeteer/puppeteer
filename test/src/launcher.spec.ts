@@ -203,6 +203,11 @@ describe('Launcher specs', function () {
       });
     });
     describe('Puppeteer.launch', function () {
+      it('can launch and close the browser', async () => {
+        const {defaultBrowserOptions, puppeteer} = getTestState();
+        const browser = await puppeteer.launch(defaultBrowserOptions);
+        await browser.close();
+      });
       it('should reject all promises when browser is closed', async () => {
         const {defaultBrowserOptions, puppeteer} = getTestState();
         const browser = await puppeteer.launch(defaultBrowserOptions);

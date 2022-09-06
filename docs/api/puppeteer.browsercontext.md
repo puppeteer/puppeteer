@@ -22,8 +22,6 @@ If a page opens another page, e.g. with a `window.open` call, the popup will bel
 
 Puppeteer allows creation of "incognito" browser contexts with [Browser.createIncognitoBrowserContext](./puppeteer.browser.createincognitobrowsercontext.md) method. "Incognito" browser contexts don't write any browsing data to disk.
 
-The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `BrowserContext` class.
-
 ## Example
 
 ```ts

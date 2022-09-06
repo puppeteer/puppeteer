@@ -2,7 +2,9 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import {assert} from '../util/assert.js';
-import {Browser} from '../common/Browser.js';
+import {Browser} from '../api/Browser.js';
+import {CDPBrowser} from '../common/Browser.js';
+import {Browser as BiDiBrowser} from '../common/bidi/Browser.js';
 import {Product} from '../common/Product.js';
 import {BrowserFetcher} from './BrowserFetcher.js';
 import {BrowserRunner} from './BrowserRunner.js';
@@ -58,6 +60,7 @@ export class FirefoxLauncher implements ProductLauncher {
       extraPrefsFirefox = {},
       waitForInitialPage = true,
       debuggingPort = null,
+      protocol = 'cdp',
     } = options;
 
     const firefoxArguments = [];
@@ -145,6 +148,27 @@ export class FirefoxLauncher implements ProductLauncher {
       pipe,
     });
 
+    if (protocol === 'webDriverBiDi') {
+      let browser;
+      try {
+        const connection = await runner.setupWebDriverBiDiConnection({
+          timeout,
+          slowMo,
+          preferredRevision: this._preferredRevision,
+        });
+        browser = await BiDiBrowser.create({
+          connection,
+          closeCallback: runner.close.bind(runner),
+          process: runner.proc,
+        });
+      } catch (error) {
+        runner.kill();
+        throw error;
+      }
+
+      return browser;
+    }
+
     let browser;
     try {
       const connection = await runner.setupConnection({
@@ -153,7 +177,7 @@ export class FirefoxLauncher implements ProductLauncher {
         slowMo,
         preferredRevision: this._preferredRevision,
       });
-      browser = await Browser._create(
+      browser = await CDPBrowser._create(
         this.product,
         connection,
         [],

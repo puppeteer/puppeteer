@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import {assert} from '../util/assert.js';
-import {Browser} from '../common/Browser.js';
+import {CDPBrowser} from '../common/Browser.js';
 import {Product} from '../common/Product.js';
 import {BrowserRunner} from './BrowserRunner.js';
 import {
@@ -43,7 +43,7 @@ export class ChromeLauncher implements ProductLauncher {
     this._isPuppeteerCore = isPuppeteerCore;
   }
 
-  async launch(options: PuppeteerNodeLaunchOptions = {}): Promise<Browser> {
+  async launch(options: PuppeteerNodeLaunchOptions = {}): Promise<CDPBrowser> {
     const {
       ignoreDefaultArgs = false,
       args = [],
@@ -154,7 +154,7 @@ export class ChromeLauncher implements ProductLauncher {
         slowMo,
         preferredRevision: this._preferredRevision,
       });
-      browser = await Browser._create(
+      browser = await CDPBrowser._create(
         this.product,
         connection,
         [],

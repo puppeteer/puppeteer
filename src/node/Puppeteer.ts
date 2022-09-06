@@ -22,7 +22,7 @@ import {
 import {BrowserFetcher, BrowserFetcherOptions} from './BrowserFetcher.js';
 import {LaunchOptions, BrowserLaunchArgumentOptions} from './LaunchOptions.js';
 import {BrowserConnectOptions} from '../common/BrowserConnector.js';
-import {Browser} from '../common/Browser.js';
+import {Browser} from '../api/Browser.js';
 import {createLauncher, ProductLauncher} from './ProductLauncher.js';
 import {PUPPETEER_REVISIONS} from '../revisions.js';
 import {Product} from '../common/Product.js';

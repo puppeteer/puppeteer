@@ -23,7 +23,7 @@ import {
 } from '../util/DeferredPromise.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {Accessibility} from './Accessibility.js';
-import {Browser, BrowserContext} from './Browser.js';
+import type {Browser, BrowserContext} from '../api/Browser.js';
 import {CDPSession, CDPSessionEmittedEvents} from './Connection.js';
 import {ConsoleMessage, ConsoleMessageType} from './ConsoleMessage.js';
 import {Coverage} from './Coverage.js';

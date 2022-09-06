@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Browser} from './Browser.js';
+import {Browser} from '../api/Browser.js';
 import {BrowserConnectOptions, _connectToBrowser} from './BrowserConnector.js';
 import {ConnectionTransport} from './ConnectionTransport.js';
 import {devices} from './DeviceDescriptors.js';

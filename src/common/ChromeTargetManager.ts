@@ -20,7 +20,7 @@ import {CDPSession, Connection} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
 import {Target} from './Target.js';
 import {debugError} from './util.js';
-import {TargetFilterCallback} from './Browser.js';
+import {TargetFilterCallback} from '../api/Browser.js';
 import {
   TargetInterceptor,
   TargetFactory,
