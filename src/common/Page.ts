@@ -163,6 +163,10 @@ export interface ScreenshotClip {
   y: number;
   width: number;
   height: number;
+  /**
+   * @defaultValue 1
+   */
+  scale?: number;
 }
 
 /**
@@ -3012,7 +3016,12 @@ export class Page extends EventEmitter {
     const result = await this.#client.send('Page.captureScreenshot', {
       format,
       quality: options.quality,
-      clip,
+      clip: clip
+        ? {
+            ...clip,
+            scale: clip.scale === undefined ? 1 : clip.scale,
+          }
+        : undefined,
       captureBeyondViewport,
       fromSurface,
     });
@@ -3044,14 +3053,12 @@ export class Page extends EventEmitter {
     }
     return buffer;
 
-    function processClip(
-      clip: ScreenshotClip
-    ): ScreenshotClip & {scale: number} {
+    function processClip(clip: ScreenshotClip): ScreenshotClip {
       const x = Math.round(clip.x);
       const y = Math.round(clip.y);
       const width = Math.round(clip.width + clip.x - x);
       const height = Math.round(clip.height + clip.y - y);
-      return {x, y, width, height, scale: 1};
+      return {x, y, width, height, scale: clip.scale};
     }
   }
 
