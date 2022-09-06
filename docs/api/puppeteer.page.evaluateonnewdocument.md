@@ -43,13 +43,13 @@ An example of overriding the navigator.languages property before the page loads:
 
 // overwrite the `languages` property to use a custom getter
 Object.defineProperty(navigator, 'languages', {
-get: function () {
-return ['en-US', 'en', 'bn'];
-},
+  get: function () {
+    return ['en-US', 'en', 'bn'];
+  },
 });
 
 // In your puppeteer script, assuming the preload.js file is
-in same folder of our script
+// in same folder of our script.
 const preloadFile = fs.readFileSync('./preload.js', 'utf8');
 await page.evaluateOnNewDocument(preloadFile);
 ```
