@@ -57,6 +57,8 @@ async function main() {
     applicableSuites = [testSuite];
   }
 
+  console.log('Planning to run the following test suites', applicableSuites);
+
   let fail = false;
   const recommendations = [];
   try {
@@ -83,14 +85,14 @@ async function main() {
         },
       ]);
 
-      const tmpdir = fs.mkdtempSync(
+      const tmpDir = fs.mkdtempSync(
         path.join(os.tmpdir(), 'puppeteer-test-runner-')
       );
-      const tmpfilename = path.join(tmpdir, 'output.json');
-      console.log('Running', JSON.stringify(parameters), tmpfilename);
+      const tmpFilename = path.join(tmpDir, 'output.json');
+      console.log('Running', JSON.stringify(parameters), tmpFilename);
       const handle = spawn(
         'npx mocha',
-        ['--reporter=json', '--reporter-option', 'output=' + tmpfilename],
+        ['--reporter=json', '--reporter-option', 'output=' + tmpFilename],
         {
           shell: true,
           cwd: process.cwd(),
@@ -108,7 +110,7 @@ async function main() {
       });
       console.log('Finished', JSON.stringify(parameters));
       try {
-        const results = readJSON(tmpfilename) as MochaResults;
+        const results = readJSON(tmpFilename) as MochaResults;
         console.log('Results from mocha');
         console.log('Stats', JSON.stringify(results.stats));
         results.pending.length > 0 && console.log('# Pending tests');
@@ -134,14 +136,13 @@ async function main() {
           console.log('Test run matches expecations');
           continue;
         }
-        console.log('\n================\n');
       } catch (err) {
         fail = true;
         console.error(err);
       }
     }
   } catch (err) {
-    console.log(err);
+    console.error(err);
   } finally {
     const toAdd = recommendations.filter(item => {
       return item.action === 'add';

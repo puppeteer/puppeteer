@@ -1,9 +1,6 @@
 import assert from 'assert/strict';
 import test from 'node:test';
-import {
-  filterByParameters as filterByParameters,
-  getTestResultForFailure,
-} from './utils.js';
+import {filterByParameters, getTestResultForFailure} from './utils.js';
 import {TestExpectation} from './types.js';
 import {getFilename, extendProcessEnv} from './utils.js';
 

@@ -175,10 +175,10 @@ jobs:
         run: npm run test:types
       - name: Run all tests with xvfb
         if: ${{ matrix.spec.name == 'Linux' }}
-        run: xvfb-run --auto-servernum npm run test:experimental-runner
+        run: xvfb-run --auto-servernum npm run test
       - name: Run all tests without xvfb
         if: ${{ matrix.spec.name != 'Linux' }}
-        run: npm run test:experimental-runner
+        run: npm run test
       - name: Test bundling and installation
         if: ${{ matrix.spec.name == 'Linux' }}
         run: |

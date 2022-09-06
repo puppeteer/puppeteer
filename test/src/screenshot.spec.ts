@@ -50,7 +50,7 @@ describe('Screenshots', function () {
       });
       expect(screenshot).toBeGolden('screenshot-clip-rect.png');
     });
-    itFailsFirefox('should use scale for clip', async () => {
+    it('should use scale for clip', async () => {
       const {page, server} = getTestState();
 
       await page.setViewport({width: 500, height: 500});
