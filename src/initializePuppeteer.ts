@@ -25,7 +25,6 @@ import {getPackageDirectory} from './util/getPackageDirectory.js';
  */
 export const initializePuppeteer = (packageName: string): PuppeteerNode => {
   const isPuppeteerCore = packageName === 'puppeteer-core';
-  const puppeteerRootDirectory = getPackageDirectory(rootDirname);
   let preferredRevision = PUPPETEER_REVISIONS.chromium;
   // puppeteer-core ignores environment variables
   const productName = !isPuppeteerCore
@@ -39,7 +38,7 @@ export const initializePuppeteer = (packageName: string): PuppeteerNode => {
   }
 
   return new PuppeteerNode({
-    projectRoot: puppeteerRootDirectory,
+    projectRoot: isPuppeteerCore ? undefined : getPackageDirectory(rootDirname),
     preferredRevision,
     isPuppeteerCore,
     productName,
