@@ -22,7 +22,8 @@ import {
   Browser,
   IsPageTargetCallback,
   TargetFilterCallback,
-} from './Browser.js';
+} from '../api/Browser.js';
+import {CDPBrowser as CDPBrowser} from './Browser.js';
 import {Connection} from './Connection.js';
 import {ConnectionTransport} from './ConnectionTransport.js';
 import {getFetch} from './fetch.js';
@@ -55,6 +56,11 @@ export interface BrowserConnectOptions {
    * @internal
    */
   _isPageTarget?: IsPageTargetCallback;
+  /**
+   * @defaultValue 'cdp'
+   * @internal
+   */
+  protocol?: 'cdp' | 'webDriverBiDi';
 }
 
 const getWebSocketTransportClass = async () => {
@@ -118,7 +124,7 @@ export async function _connectToBrowser(
   const {browserContextIds} = await connection.send(
     'Target.getBrowserContexts'
   );
-  const browser = await Browser._create(
+  const browser = await CDPBrowser._create(
     product || 'chrome',
     connection,
     browserContextIds,

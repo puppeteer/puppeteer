@@ -19,6 +19,11 @@
       "id": "firefox-headless",
       "platforms": ["linux"],
       "parameters": ["firefox", "headless"]
+    },
+    {
+      "id": "firefox-bidi",
+      "platforms": ["linux"],
+      "parameters": ["firefox", "headless", "webDriverBiDi"]
     }
   ],
   "parameterDefinitons": {
@@ -36,6 +41,9 @@
     },
     "chrome-headless": {
       "HEADLESS": "chrome"
+    },
+    "webDriverBiDi": {
+      "PUPPETEER_PROTOCOL": "webDriverBiDi"
     }
   }
 }

@@ -6,7 +6,7 @@ import {sync as glob} from 'glob';
 import path from 'path';
 import {job} from './internal/job.js';
 
-const INCLUDED_FOLDERS = ['common', 'node', 'generated', 'util'];
+const INCLUDED_FOLDERS = ['common', 'node', 'generated', 'util', 'api'];
 
 (async () => {
   await job('', async ({outputs}) => {

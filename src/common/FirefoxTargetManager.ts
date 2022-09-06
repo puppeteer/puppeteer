@@ -18,7 +18,7 @@ import Protocol from 'devtools-protocol';
 import {assert} from '../util/assert.js';
 import {CDPSession, Connection} from './Connection.js';
 import {Target} from './Target.js';
-import {TargetFilterCallback} from './Browser.js';
+import {TargetFilterCallback} from '../api/Browser.js';
 import {
   TargetFactory,
   TargetInterceptor,

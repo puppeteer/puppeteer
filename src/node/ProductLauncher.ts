@@ -15,7 +15,7 @@
  */
 import os from 'os';
 
-import {Browser} from '../common/Browser.js';
+import {Browser} from '../api/Browser.js';
 import {BrowserFetcher} from './BrowserFetcher.js';
 
 import {
