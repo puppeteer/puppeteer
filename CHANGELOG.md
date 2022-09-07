@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.1.2](https://github.com/puppeteer/puppeteer/compare/v17.1.1...v17.1.2) (2022-09-07)
+
+
+### Bug Fixes
+
+* add missing code coverage ranges that span only a single character ([#8911](https://github.com/puppeteer/puppeteer/issues/8911)) ([0c577b9](https://github.com/puppeteer/puppeteer/commit/0c577b9bf8855dc0ccb6098cd43a25c528f6d7f5))
+* add Page.getDefaultTimeout getter ([#8903](https://github.com/puppeteer/puppeteer/issues/8903)) ([3240095](https://github.com/puppeteer/puppeteer/commit/32400954c50cbddc48468ad118c3f8a47653b9d3)), closes [#8901](https://github.com/puppeteer/puppeteer/issues/8901)
+* don't detect project root for puppeteer-core ([#8907](https://github.com/puppeteer/puppeteer/issues/8907)) ([b4f5ea1](https://github.com/puppeteer/puppeteer/commit/b4f5ea1167a60c870194c70d22f5372ada5b7c4c)), closes [#8896](https://github.com/puppeteer/puppeteer/issues/8896)
+* support scale for screenshot clips ([#8908](https://github.com/puppeteer/puppeteer/issues/8908)) ([260e428](https://github.com/puppeteer/puppeteer/commit/260e4282275ab1d05c86e5643e2a02c01f269a9c)), closes [#5329](https://github.com/puppeteer/puppeteer/issues/5329)
+* work around a race in waitForFileChooser ([#8905](https://github.com/puppeteer/puppeteer/issues/8905)) ([053d960](https://github.com/puppeteer/puppeteer/commit/053d960fb593e514e7914d7da9af436afc39a12f)), closes [#6040](https://github.com/puppeteer/puppeteer/issues/6040)
+
 ## [17.1.1](https://github.com/puppeteer/puppeteer/compare/v17.1.0...v17.1.1) (2022-09-05)
 
 
