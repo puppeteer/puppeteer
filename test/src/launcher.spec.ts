@@ -376,9 +376,7 @@ describe('Launcher specs', function () {
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(() => {});
       });
-      // This mysteriously fails on Windows on AppVeyor. See
-      // https://github.com/puppeteer/puppeteer/issues/4111
-      xit('userDataDir option should restore cookies', async () => {
+      it('userDataDir option should restore cookies', async () => {
         const {server, puppeteer, defaultBrowserOptions} = getTestState();
 
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
