@@ -104,9 +104,11 @@ describe('Coverage specs', function () {
       const coverage = await page.coverage.stopJSCoverage();
       expect(coverage.length).toBe(1);
       const entry = coverage[0]!;
-      expect(entry.ranges.length).toBe(1);
-      const range = entry.ranges[0]!;
-      expect(entry.text.substring(range.start, range.end)).toBe(
+      expect(entry.ranges.length).toBe(2);
+      const range1 = entry.ranges[0]!;
+      expect(entry.text.substring(range1.start, range1.end)).toBe('\n');
+      const range2 = entry.ranges[1]!;
+      expect(entry.text.substring(range2.start, range2.end)).toBe(
         `console.log('used!');`
       );
     });
