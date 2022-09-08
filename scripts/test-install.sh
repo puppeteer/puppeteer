@@ -130,8 +130,8 @@ node --input-type="module" --eval="import 'puppeteer-core/lib/esm/puppeteer/revi
 
 echo "Testing... Puppeteer Core launch with executablePath"
 TMPDIR="$(mktemp -d)"
-cd $TMPDIR
-echo '{"type":"module"}' >>$TMPDIR/package.json
+cd "$TMPDIR"
+echo '{"type":"module"}' >> "$TMPDIR/package.json"
 npm install --loglevel silent "${tarball}"
 # The test tries to launch the node process because
 # real browsers are not downloaded by puppeteer-core.
