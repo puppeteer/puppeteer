@@ -336,7 +336,7 @@ export class BrowserFetcher {
     }
 
     // Use system Chromium builds on Linux ARM devices
-    if (os.platform() !== 'darwin' && os.arch() === 'arm64') {
+    if (os.platform() === 'linux' && os.arch() === 'arm64') {
       handleArm64();
       return;
     }
