@@ -113,7 +113,9 @@ export class FirefoxLauncher implements ProductLauncher {
       firefoxArguments.push(userDataDir);
     }
 
-    await this._updateRevision();
+    if (!this._isPuppeteerCore) {
+      await this._updateRevision();
+    }
     let firefoxExecutable = executablePath;
     if (!executablePath) {
       const {missingText, executablePath} = resolveExecutablePath(this);
