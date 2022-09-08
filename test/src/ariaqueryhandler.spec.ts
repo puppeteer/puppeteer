@@ -19,14 +19,14 @@ import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
-  describeChromeOnly,
 } from './mocha-utils.js';
 
 import {ElementHandle} from '../../lib/cjs/puppeteer/common/ElementHandle.js';
 import utils from './utils.js';
 import assert from 'assert';
+import {it} from './mocha-utils.js';
 
-describeChromeOnly('AriaQueryHandler', () => {
+describe('AriaQueryHandler', () => {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
 

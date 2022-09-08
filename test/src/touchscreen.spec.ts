@@ -19,10 +19,10 @@ import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
-  describeFailsFirefox,
 } from './mocha-utils.js';
+import {it} from './mocha-utils.js';
 
-describeFailsFirefox('Touchscreen', function () {
+describe('Touchscreen', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
 

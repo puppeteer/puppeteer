@@ -9,7 +9,8 @@
   },
   "include": ["src"],
   "references": [
-    {"path": "../tsconfig.lib.json"},
-    {"path": "../utils/testserver/tsconfig.json"}
+    {"path": "../src/tsconfig.cjs.json"},
+    {"path": "../utils/testserver/tsconfig.json"},
+    {"path": "../utils/mochaRunner/tsconfig.json"}
   ]
 }

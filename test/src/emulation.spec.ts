@@ -20,9 +20,8 @@ import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
-  itFailsFirefox,
-  describeFailsFirefox,
 } from './mocha-utils.js';
+import {it} from './mocha-utils.js';
 
 describe('Emulation', () => {
   setupTestBrowserHooks();
@@ -132,7 +131,7 @@ describe('Emulation', () => {
         })
       ).toBe(true);
     });
-    itFailsFirefox('should support landscape emulation', async () => {
+    it('should support landscape emulation', async () => {
       const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/mobile.html');
@@ -173,7 +172,7 @@ describe('Emulation', () => {
         })
       ).toContain('iPhone');
     });
-    itFailsFirefox('should support clicking', async () => {
+    it('should support clicking', async () => {
       const {page, server} = getTestState();
 
       await page.emulate(iPhone);
@@ -192,7 +191,7 @@ describe('Emulation', () => {
   });
 
   describe('Page.emulateMediaType', function () {
-    itFailsFirefox('should work', async () => {
+    it('should work', async () => {
       const {page} = getTestState();
 
       expect(
@@ -240,7 +239,7 @@ describe('Emulation', () => {
   });
 
   describe('Page.emulateMediaFeatures', function () {
-    itFailsFirefox('should work', async () => {
+    it('should work', async () => {
       const {page} = getTestState();
 
       await page.emulateMediaFeatures([
@@ -370,7 +369,7 @@ describe('Emulation', () => {
     });
   });
 
-  describeFailsFirefox('Page.emulateTimezone', function () {
+  describe('Page.emulateTimezone', function () {
     it('should work', async () => {
       const {page} = getTestState();
 
@@ -425,7 +424,7 @@ describe('Emulation', () => {
     });
   });
 
-  describeFailsFirefox('Page.emulateVisionDeficiency', function () {
+  describe('Page.emulateVisionDeficiency', function () {
     it('should work', async () => {
       const {page, server} = getTestState();
 
@@ -489,7 +488,7 @@ describe('Emulation', () => {
     });
   });
 
-  describeFailsFirefox('Page.emulateNetworkConditions', function () {
+  describe('Page.emulateNetworkConditions', function () {
     it('should change navigator.connection.effectiveType', async () => {
       const {page, puppeteer} = getTestState();
 
@@ -511,7 +510,7 @@ describe('Emulation', () => {
     });
   });
 
-  describeFailsFirefox('Page.emulateCPUThrottling', function () {
+  describe('Page.emulateCPUThrottling', function () {
     it('should change the CPU throttling rate successfully', async () => {
       const {page} = getTestState();
 

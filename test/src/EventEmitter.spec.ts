@@ -17,6 +17,7 @@
 import {EventEmitter} from '../../lib/cjs/puppeteer/common/EventEmitter.js';
 import sinon from 'sinon';
 import expect from 'expect';
+import {it} from './mocha-utils.js';
 
 describe('EventEmitter', () => {
   let emitter: EventEmitter;

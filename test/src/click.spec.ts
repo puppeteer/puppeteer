@@ -19,9 +19,9 @@ import {
   getTestState,
   setupTestPageAndContextHooks,
   setupTestBrowserHooks,
-  itFailsFirefox,
 } from './mocha-utils.js';
 import utils from './utils.js';
+import {it} from './mocha-utils.js';
 
 describe('Page.click', function () {
   setupTestBrowserHooks();
@@ -52,24 +52,21 @@ describe('Page.click', function () {
       })
     ).toBe(42);
   });
-  itFailsFirefox(
-    'should click the button if window.Node is removed',
-    async () => {
-      const {page, server} = getTestState();
+  it('should click the button if window.Node is removed', async () => {
+    const {page, server} = getTestState();
 
-      await page.goto(server.PREFIX + '/input/button.html');
+    await page.goto(server.PREFIX + '/input/button.html');
+    await page.evaluate(() => {
+      // @ts-expect-error Expected.
+      return delete window.Node;
+    });
+    await page.click('button');
+    expect(
       await page.evaluate(() => {
-        // @ts-expect-error Expected.
-        return delete window.Node;
-      });
-      await page.click('button');
-      expect(
-        await page.evaluate(() => {
-          return (globalThis as any).result;
-        })
-      ).toBe('Clicked');
-    }
-  );
+        return (globalThis as any).result;
+      })
+    ).toBe('Clicked');
+  });
   // @see https://github.com/puppeteer/puppeteer/issues/4281
   it('should click on a span with an inline element inside', async () => {
     const {page} = getTestState();
@@ -110,7 +107,7 @@ describe('Page.click', function () {
       })
     ).toBe('Clicked');
   });
-  itFailsFirefox('should click with disabled javascript', async () => {
+  it('should click with disabled javascript', async () => {
     const {page, server} = getTestState();
 
     await page.setJavaScriptEnabled(false);
@@ -240,7 +237,7 @@ describe('Page.click', function () {
     ).toBe(false);
   });
 
-  itFailsFirefox('should click on checkbox label and toggle', async () => {
+  it('should click on checkbox label and toggle', async () => {
     const {page, server} = getTestState();
 
     await page.goto(server.PREFIX + '/input/checkbox.html');

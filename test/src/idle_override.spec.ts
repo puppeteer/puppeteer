@@ -20,10 +20,10 @@ import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
-  describeFailsFirefox,
 } from './mocha-utils.js';
+import {it} from './mocha-utils.js';
 
-describeFailsFirefox('Emulate idle state', () => {
+describe('Emulate idle state', () => {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
 

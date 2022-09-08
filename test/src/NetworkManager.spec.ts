@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import {describeChromeOnly} from './mocha-utils.js';
-
 import expect from 'expect';
 import {
   NetworkManager,
@@ -25,12 +23,13 @@ import {HTTPRequest} from '../../lib/cjs/puppeteer/common/HTTPRequest.js';
 import {EventEmitter} from '../../lib/cjs/puppeteer/common/EventEmitter.js';
 import {Frame} from '../../lib/cjs/puppeteer/common/Frame.js';
 import {HTTPResponse} from '../../lib/cjs/puppeteer/common/HTTPResponse.js';
+import {it} from './mocha-utils.js';
 
 class MockCDPSession extends EventEmitter {
   async send(): Promise<any> {}
 }
 
-describeChromeOnly('NetworkManager', () => {
+describe('NetworkManager', () => {
   it('should process extra info on multiple redirects', async () => {
     const mockCDPSession = new MockCDPSession();
     new NetworkManager(mockCDPSession, true, {

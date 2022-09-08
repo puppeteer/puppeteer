@@ -19,11 +19,11 @@ import {
   getTestState,
   setupTestPageAndContextHooks,
   setupTestBrowserHooks,
-  describeChromeOnly,
 } from './mocha-utils.js';
+import {it} from './mocha-utils.js';
 
 describe('Coverage specs', function () {
-  describeChromeOnly('JSCoverage', function () {
+  describe('JSCoverage', function () {
     setupTestBrowserHooks();
     setupTestPageAndContextHooks();
 
@@ -202,7 +202,7 @@ describe('Coverage specs', function () {
     });
   });
 
-  describeChromeOnly('CSSCoverage', function () {
+  describe('CSSCoverage', function () {
     setupTestBrowserHooks();
     setupTestPageAndContextHooks();
 

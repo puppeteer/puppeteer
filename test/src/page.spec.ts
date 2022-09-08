@@ -22,13 +22,12 @@ import {CDPSession} from '../../lib/cjs/puppeteer/common/Connection.js';
 import {ConsoleMessage} from '../../lib/cjs/puppeteer/common/ConsoleMessage.js';
 import {Metrics, Page} from '../../lib/cjs/puppeteer/common/Page.js';
 import {
-  describeFailsFirefox,
   getTestState,
-  itFailsFirefox,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
 import utils, {attachFrame, waitEvent} from './utils.js';
+import {it} from './mocha-utils.js';
 
 describe('Page', function () {
   setupTestBrowserHooks();
@@ -59,7 +58,7 @@ describe('Page', function () {
       await newPage.close();
       expect(await browser.pages()).not.toContain(newPage);
     });
-    itFailsFirefox('should run beforeunload if asked for', async () => {
+    it('should run beforeunload if asked for', async () => {
       const {context, server, isChrome} = getTestState();
 
       const newPage = await context.newPage();
@@ -79,7 +78,7 @@ describe('Page', function () {
       await dialog.accept();
       await pageClosingPromise;
     });
-    itFailsFirefox('should *not* run beforeunload by default', async () => {
+    it('should *not* run beforeunload by default', async () => {
       const {context, server} = getTestState();
 
       const newPage = await context.newPage();
@@ -97,7 +96,7 @@ describe('Page', function () {
       await newPage.close();
       expect(newPage.isClosed()).toBe(true);
     });
-    itFailsFirefox('should terminate network waiters', async () => {
+    it('should terminate network waiters', async () => {
       const {context, server} = getTestState();
 
       const newPage = await context.newPage();
@@ -182,7 +181,7 @@ describe('Page', function () {
     });
   });
 
-  describeFailsFirefox('Page.Events.error', function () {
+  describe('Page.Events.error', function () {
     it('should throw when page crashes', async () => {
       const {page} = getTestState();
 
@@ -196,7 +195,7 @@ describe('Page', function () {
     });
   });
 
-  describeFailsFirefox('Page.Events.Popup', function () {
+  describe('Page.Events.Popup', function () {
     it('should work', async () => {
       const {page} = getTestState();
 
@@ -354,7 +353,7 @@ describe('Page', function () {
       await page.goto(server.EMPTY_PAGE);
       expect(await getPermission(page, 'geolocation')).toBe('prompt');
     });
-    itFailsFirefox('should deny permission when not listed', async () => {
+    it('should deny permission when not listed', async () => {
       const {page, server, context} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
@@ -374,14 +373,14 @@ describe('Page', function () {
         });
       expect(error.message).toBe('Unknown permission: foo');
     });
-    itFailsFirefox('should grant permission when listed', async () => {
+    it('should grant permission when listed', async () => {
       const {page, server, context} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       await context.overridePermissions(server.EMPTY_PAGE, ['geolocation']);
       expect(await getPermission(page, 'geolocation')).toBe('granted');
     });
-    itFailsFirefox('should reset permissions', async () => {
+    it('should reset permissions', async () => {
       const {page, server, context} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
@@ -390,7 +389,7 @@ describe('Page', function () {
       await context.clearPermissionOverrides();
       expect(await getPermission(page, 'geolocation')).toBe('prompt');
     });
-    itFailsFirefox('should trigger permission onchange', async () => {
+    it('should trigger permission onchange', async () => {
       const {page, server, context, isHeadless} = getTestState();
 
       // TODO: re-enable this test in headful once crbug.com/1324480 rolls out.
@@ -434,33 +433,30 @@ describe('Page', function () {
         })
       ).toEqual(['prompt', 'denied', 'granted', 'prompt']);
     });
-    itFailsFirefox(
-      'should isolate permissions between browser contexts',
-      async () => {
-        const {page, server, context, browser} = getTestState();
+    it('should isolate permissions between browser contexts', async () => {
+      const {page, server, context, browser} = getTestState();
 
-        await page.goto(server.EMPTY_PAGE);
-        const otherContext = await browser.createIncognitoBrowserContext();
-        const otherPage = await otherContext.newPage();
-        await otherPage.goto(server.EMPTY_PAGE);
-        expect(await getPermission(page, 'geolocation')).toBe('prompt');
-        expect(await getPermission(otherPage, 'geolocation')).toBe('prompt');
+      await page.goto(server.EMPTY_PAGE);
+      const otherContext = await browser.createIncognitoBrowserContext();
+      const otherPage = await otherContext.newPage();
+      await otherPage.goto(server.EMPTY_PAGE);
+      expect(await getPermission(page, 'geolocation')).toBe('prompt');
+      expect(await getPermission(otherPage, 'geolocation')).toBe('prompt');
 
-        await context.overridePermissions(server.EMPTY_PAGE, []);
-        await otherContext.overridePermissions(server.EMPTY_PAGE, [
-          'geolocation',
-        ]);
-        expect(await getPermission(page, 'geolocation')).toBe('denied');
-        expect(await getPermission(otherPage, 'geolocation')).toBe('granted');
+      await context.overridePermissions(server.EMPTY_PAGE, []);
+      await otherContext.overridePermissions(server.EMPTY_PAGE, [
+        'geolocation',
+      ]);
+      expect(await getPermission(page, 'geolocation')).toBe('denied');
+      expect(await getPermission(otherPage, 'geolocation')).toBe('granted');
 
-        await context.clearPermissionOverrides();
-        expect(await getPermission(page, 'geolocation')).toBe('prompt');
-        expect(await getPermission(otherPage, 'geolocation')).toBe('granted');
+      await context.clearPermissionOverrides();
+      expect(await getPermission(page, 'geolocation')).toBe('prompt');
+      expect(await getPermission(otherPage, 'geolocation')).toBe('granted');
 
-        await otherContext.close();
-      }
-    );
-    itFailsFirefox('should grant persistent-storage', async () => {
+      await otherContext.close();
+    });
+    it('should grant persistent-storage', async () => {
       const {page, server, context} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
@@ -475,7 +471,7 @@ describe('Page', function () {
   });
 
   describe('Page.setGeolocation', function () {
-    itFailsFirefox('should work', async () => {
+    it('should work', async () => {
       const {page, server, context} = getTestState();
 
       await context.overridePermissions(server.PREFIX, ['geolocation']);
@@ -509,7 +505,7 @@ describe('Page', function () {
     });
   });
 
-  describeFailsFirefox('Page.setOfflineMode', function () {
+  describe('Page.setOfflineMode', function () {
     it('should work', async () => {
       const {page, server} = getTestState();
 
@@ -547,7 +543,7 @@ describe('Page', function () {
   });
 
   describe('ExecutionContext.queryObjects', function () {
-    itFailsFirefox('should work', async () => {
+    it('should work', async () => {
       const {page} = getTestState();
 
       // Instantiate an object
@@ -567,7 +563,7 @@ describe('Page', function () {
       }, objectsHandle);
       expect(values).toEqual(['hello', 'world']);
     });
-    itFailsFirefox('should work for non-blank page', async () => {
+    it('should work for non-blank page', async () => {
       const {page, server} = getTestState();
 
       // Instantiate an object
@@ -613,7 +609,7 @@ describe('Page', function () {
     });
   });
 
-  describeFailsFirefox('Page.Events.Console', function () {
+  describe('Page.Events.Console', function () {
     it('should work', async () => {
       const {page} = getTestState();
 
@@ -802,7 +798,7 @@ describe('Page', function () {
     });
   });
 
-  describeFailsFirefox('Page.metrics', function () {
+  describe('Page.metrics', function () {
     it('should get metrics from a page', async () => {
       const {page} = getTestState();
 
@@ -1108,7 +1104,7 @@ describe('Page', function () {
     });
   });
 
-  describeFailsFirefox('Page.exposeFunction', function () {
+  describe('Page.exposeFunction', function () {
     it('should work', async () => {
       const {page} = getTestState();
 
@@ -1266,7 +1262,7 @@ describe('Page', function () {
     });
   });
 
-  describeFailsFirefox('Page.Events.PageError', function () {
+  describe('Page.Events.PageError', function () {
     it('should fire', async () => {
       const {page, server} = getTestState();
 
@@ -1329,7 +1325,7 @@ describe('Page', function () {
         })
       ).toContain('iPhone');
     });
-    itFailsFirefox('should work with additional userAgentMetdata', async () => {
+    it('should work with additional userAgentMetdata', async () => {
       const {page, server} = getTestState();
 
       await page.setUserAgent('MockBrowser', {
@@ -1496,7 +1492,7 @@ describe('Page', function () {
     });
   });
 
-  describeFailsFirefox('Page.setBypassCSP', function () {
+  describe('Page.setBypassCSP', function () {
     it('should bypass CSP meta tag', async () => {
       const {page, server} = getTestState();
 
@@ -1879,21 +1875,18 @@ describe('Page', function () {
       ).toBe('rgb(0, 128, 0)');
     });
 
-    itFailsFirefox(
-      'should throw when added with content to the CSP page',
-      async () => {
-        const {page, server} = getTestState();
+    it('should throw when added with content to the CSP page', async () => {
+      const {page, server} = getTestState();
 
-        await page.goto(server.PREFIX + '/csp.html');
-        let error!: Error;
-        await page
-          .addStyleTag({content: 'body { background-color: green; }'})
-          .catch(error_ => {
-            return (error = error_);
-          });
-        expect(error).toBeTruthy();
-      }
-    );
+      await page.goto(server.PREFIX + '/csp.html');
+      let error!: Error;
+      await page
+        .addStyleTag({content: 'body { background-color: green; }'})
+        .catch(error_ => {
+          return (error = error_);
+        });
+      expect(error).toBeTruthy();
+    });
 
     it('should throw when added with URL to the CSP page', async () => {
       const {page, server} = getTestState();
@@ -1921,7 +1914,7 @@ describe('Page', function () {
     });
   });
 
-  describeFailsFirefox('Page.setJavaScriptEnabled', function () {
+  describe('Page.setJavaScriptEnabled', function () {
     it('should work', async () => {
       const {page} = getTestState();
 
@@ -1962,23 +1955,20 @@ describe('Page', function () {
       ]);
       expect(nonCachedRequest.headers['if-modified-since']).toBe(undefined);
     });
-    itFailsFirefox(
-      'should stay disabled when toggling request interception on/off',
-      async () => {
-        const {page, server} = getTestState();
+    it('should stay disabled when toggling request interception on/off', async () => {
+      const {page, server} = getTestState();
 
-        await page.setCacheEnabled(false);
-        await page.setRequestInterception(true);
-        await page.setRequestInterception(false);
+      await page.setCacheEnabled(false);
+      await page.setRequestInterception(true);
+      await page.setRequestInterception(false);
 
-        await page.goto(server.PREFIX + '/cached/one-style.html');
-        const [nonCachedRequest] = await Promise.all([
-          server.waitForRequest('/cached/one-style.html'),
-          page.reload(),
-        ]);
-        expect(nonCachedRequest.headers['if-modified-since']).toBe(undefined);
-      }
-    );
+      await page.goto(server.PREFIX + '/cached/one-style.html');
+      const [nonCachedRequest] = await Promise.all([
+        server.waitForRequest('/cached/one-style.html'),
+        page.reload(),
+      ]);
+      expect(nonCachedRequest.headers['if-modified-since']).toBe(undefined);
+    });
   });
 
   describe('printing to PDF', function () {
@@ -2220,33 +2210,30 @@ describe('Page', function () {
       expect(error.message).toContain('Values must be strings');
     });
     // @see https://github.com/puppeteer/puppeteer/issues/3327
-    itFailsFirefox(
-      'should work when re-defining top-level Event class',
-      async () => {
-        const {page, server} = getTestState();
+    it('should work when re-defining top-level Event class', async () => {
+      const {page, server} = getTestState();
 
-        await page.goto(server.PREFIX + '/input/select.html');
+      await page.goto(server.PREFIX + '/input/select.html');
+      await page.evaluate(() => {
+        // @ts-expect-error Expected.
+        return (window.Event = undefined);
+      });
+      await page.select('select', 'blue');
+      expect(
         await page.evaluate(() => {
-          // @ts-expect-error Expected.
-          return (window.Event = undefined);
-        });
-        await page.select('select', 'blue');
-        expect(
-          await page.evaluate(() => {
-            return (globalThis as any).result.onInput;
-          })
-        ).toEqual(['blue']);
-        expect(
-          await page.evaluate(() => {
-            return (globalThis as any).result.onChange;
-          })
-        ).toEqual(['blue']);
-      }
-    );
+          return (globalThis as any).result.onInput;
+        })
+      ).toEqual(['blue']);
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).result.onChange;
+        })
+      ).toEqual(['blue']);
+    });
   });
 
   describe('Page.Events.Close', function () {
-    itFailsFirefox('should work with window.close', async () => {
+    it('should work with window.close', async () => {
       const {page, context} = getTestState();
 
       const newPagePromise = new Promise<Page>(fulfill => {
