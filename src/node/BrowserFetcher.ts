@@ -237,9 +237,10 @@ export class BrowserFetcher {
           this.#platform = 'linux';
           break;
         case 'win32':
-          this.#platform = os.arch() === 'x64' || os.arch() === 'arm64'
-            ? 'win64'
-            : 'win32';
+          this.#platform = 
+            (os.arch() === 'x64' || os.arch() === 'arm64')
+              ? 'win64'
+              : 'win32';
           return;
         default:
           assert(false, 'Unsupported platform: ' + platform);
