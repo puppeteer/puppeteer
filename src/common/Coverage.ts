@@ -142,7 +142,8 @@ export class Coverage {
    * Anonymous scripts are ones that don't have an associated url. These are
    * scripts that are dynamically created on the page using `eval` or
    * `new Function`. If `reportAnonymousScripts` is set to `true`, anonymous
-   * scripts will have `pptr://__puppeteer_evaluation_script__` as their URL.
+   * scripts URL will start with `debugger://VM` (unless a magic //# sourceURL
+   * comment is present, in which case that will the be URL).
    */
   async startJSCoverage(options: JSCoverageOptions = {}): Promise<void> {
     return await this.#jsCoverage.start(options);
