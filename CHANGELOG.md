@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.1.3](https://github.com/puppeteer/puppeteer/compare/v17.1.2...v17.1.3) (2022-09-08)
+
+
+### Bug Fixes
+
+* FirefoxLauncher should not use BrowserFetcher in puppeteer-core ([#8920](https://github.com/puppeteer/puppeteer/issues/8920)) ([f2e8de7](https://github.com/puppeteer/puppeteer/commit/f2e8de777fc5d547778fdc6cac658add84ed4082)), closes [#8919](https://github.com/puppeteer/puppeteer/issues/8919)
+* linux arm64 check on windows arm ([#8917](https://github.com/puppeteer/puppeteer/issues/8917)) ([f02b926](https://github.com/puppeteer/puppeteer/commit/f02b926245e28b5671087c051dbdbb3165696f08)), closes [#8915](https://github.com/puppeteer/puppeteer/issues/8915)
+
 ## [17.1.2](https://github.com/puppeteer/puppeteer/compare/v17.1.1...v17.1.2) (2022-09-07)
 
 
