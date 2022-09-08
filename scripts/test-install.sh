@@ -127,3 +127,31 @@ echo '{"type":"module"}' >>$TMPDIR/package.json
 npm install --loglevel silent "${tarball}"
 node --input-type="module" --eval="import puppeteer from 'puppeteer-core'"
 node --input-type="module" --eval="import 'puppeteer-core/lib/esm/puppeteer/revisions.js';"
+
+echo "Testing... Puppeteer Core launch with executablePath"
+TMPDIR="$(mktemp -d)"
+cd "$TMPDIR"
+echo '{"type":"module"}' >> "$TMPDIR/package.json"
+npm install --loglevel silent "${tarball}"
+# The test tries to launch the node process because
+# real browsers are not downloaded by puppeteer-core.
+# The expected error is "Failed to launch the browser process"
+# so the test verifies that it does not fail for other reasons.
+node --input-type="module" --eval="
+import puppeteer from 'puppeteer-core';
+(async () => {
+  puppeteer.launch({
+    product: 'firefox',
+    executablePath: 'node'
+  }).catch(error => error.message.includes('Failed to launch the browser process') ? process.exit(0) : process.exit(1));
+})();
+"
+node --input-type="module" --eval="
+import puppeteer from 'puppeteer-core';
+(async () => {
+  puppeteer.launch({
+    product: 'chrome',
+    executablePath: 'node'
+  }).catch(error => error.message.includes('Failed to launch the browser process') ? process.exit(0) : process.exit(1));
+})();
+"
