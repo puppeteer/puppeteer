@@ -212,7 +212,7 @@ export const setupTestPageAndContextHooks = (): void => {
   });
 
   afterEach(async () => {
-    await state.context!.close();
+    await state.context?.close();
     state.context = undefined;
     state.page = undefined;
   });

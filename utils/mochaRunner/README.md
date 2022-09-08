@@ -42,3 +42,6 @@ An expectation looks like this:
 
 `testIdPattern` defines a string that will be used to prefix-match tests. `platforms` defines the platforms the expectation is for (`or`-logic).
 `parameters` defines the parameters that the test has to match (`and`-logic). `expectations` is the list of test results that are considered to be acceptable.
+
+Currently, expectations are updated manually. The test runner outputs the suggested changes to the expectation file if the test run does not match
+expectations.

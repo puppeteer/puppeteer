@@ -1170,6 +1170,12 @@
     "expectations": ["PASS", "FAIL"]
   },
   {
+    "testIdPattern": "[oopif.spec] OOPIF should wait for inner OOPIFs",
+    "platforms": ["linux"],
+    "parameters": ["chrome", "headless"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to connect to a browser with no page targets",
     "platforms": ["linux", "darwin", "win32"],
     "parameters": ["chrome", "chrome-headless"],

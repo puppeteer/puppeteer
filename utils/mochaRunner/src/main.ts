@@ -4,6 +4,8 @@ import {
   zTestSuiteFile,
   zPlatform,
   TestSuite,
+  TestSuiteFile,
+  Platform,
 } from './types.js';
 
 import path from 'path';
@@ -20,19 +22,11 @@ import {
   getSkippedTests,
 } from './utils.js';
 
-async function main() {
+function getApplicableTestSuites(
+  parsedSuitesFile: TestSuiteFile,
+  platform: Platform
+): TestSuite[] {
   const testSuiteArgIdx = process.argv.indexOf('--test-suite');
-
-  const platform = zPlatform.parse(os.platform());
-
-  const expectations = readJSON(
-    path.join(process.cwd(), 'test', 'TestExpectations.json')
-  ) as TestExpectation[];
-
-  const parsedSuitesFile = zTestSuiteFile.parse(
-    readJSON(path.join(process.cwd(), 'test', 'TestSuites.json'))
-  );
-
   let applicableSuites: TestSuite[] = [];
 
   if (testSuiteArgIdx === -1) {
@@ -56,6 +50,22 @@ async function main() {
 
     applicableSuites = [testSuite];
   }
+
+  return applicableSuites;
+}
+
+async function main() {
+  const platform = zPlatform.parse(os.platform());
+
+  const expectations = readJSON(
+    path.join(process.cwd(), 'test', 'TestExpectations.json')
+  ) as TestExpectation[];
+
+  const parsedSuitesFile = zTestSuiteFile.parse(
+    readJSON(path.join(process.cwd(), 'test', 'TestSuites.json'))
+  );
+
+  const applicableSuites = getApplicableTestSuites(parsedSuitesFile, platform);
 
   console.log('Planning to run the following test suites', applicableSuites);
 
@@ -142,6 +152,7 @@ async function main() {
       }
     }
   } catch (err) {
+    fail = true;
     console.error(err);
   } finally {
     const toAdd = recommendations.filter(item => {
@@ -187,4 +198,7 @@ async function main() {
   }
 }
 
-main();
+main().catch(error => {
+  console.error(error);
+  process.exit(1);
+});
