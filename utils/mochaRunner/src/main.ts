@@ -121,8 +121,9 @@ async function main() {
         [
           '-u',
           path.join(__dirname, 'interface.js'),
-          '--reporter=json',
-          '--reporter-option',
+          '-R',
+          path.join(__dirname, 'reporter.js'),
+          '-O',
           'output=' + tmpFilename,
         ],
         {
@@ -143,16 +144,6 @@ async function main() {
       console.log('Finished', JSON.stringify(parameters));
       try {
         const results = readJSON(tmpFilename) as MochaResults;
-        console.log('Results from mocha');
-        console.log('Stats', JSON.stringify(results.stats));
-        results.pending.length > 0 && console.log('# Pending tests');
-        for (const test of results.pending) {
-          console.log(`\t? ${test.fullTitle} ${test.file}`);
-        }
-        results.failures.length > 0 && console.log('# Failed tests');
-        for (const test of results.failures) {
-          console.log(`\tF ${test.fullTitle} ${test.file}`, test.err);
-        }
         const recommendation = getExpectationUpdates(
           results,
           applicableExpectations,
