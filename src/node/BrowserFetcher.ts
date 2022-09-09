@@ -21,7 +21,6 @@ import * as util from 'util';
 import * as childProcess from 'child_process';
 import * as https from 'https';
 import * as http from 'http';
-import * as semver from 'semver';
 
 import {Product} from '../common/Product.js';
 import extractZip from 'extract-zip';
@@ -241,7 +240,7 @@ export class BrowserFetcher {
           this.#platform =
             os.arch() === 'x64' ||
             // Windows 11 for ARM supports x64 emulation
-            (os.arch() === 'arm64' && semver.gte(os.release(), '10.0.22000'))
+            (os.arch() === 'arm64' && _isWindows11(os.release()))
               ? 'win64'
               : 'win32';
           return;
@@ -501,6 +500,25 @@ function parseFolderPath(
     return;
   }
   return {product, platform, revision};
+}
+
+/**
+ * Windows 11 is identified by 10.0.22000 or greater
+ * @internal
+ */
+function _isWindows11(version: string): boolean {
+  const parts = version.split('.');
+  if (parts.length > 2) {
+    const major = parseInt(parts[0] as string, 10);
+    const minor = parseInt(parts[1] as string, 10);
+    const patch = parseInt(parts[2] as string, 10);
+    return (
+      major > 10 ||
+      (major === 10 && minor > 0) ||
+      (major === 10 && minor === 0 && patch >= 22000)
+    );
+  }
+  return false;
 }
 
 /**
