@@ -23,7 +23,6 @@ import {
 import {Page} from '../../lib/cjs/puppeteer/common/Page.js';
 import {HTTPResponse} from '../../lib/cjs/puppeteer/common/HTTPResponse.js';
 import {getTestState} from './mocha-utils.js';
-import {it} from './mocha-utils.js';
 
 describe('ignoreHTTPSErrors', function () {
   /* Note that this test creates its own browser rather than use

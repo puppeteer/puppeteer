@@ -26,7 +26,6 @@ import {
 import {HTTPRequest} from '../../lib/cjs/puppeteer/common/HTTPRequest.js';
 import {HTTPResponse} from '../../lib/cjs/puppeteer/common/HTTPResponse.js';
 import {ServerResponse} from 'http';
-import {it} from './mocha-utils.js';
 
 describe('network', function () {
   setupTestBrowserHooks();

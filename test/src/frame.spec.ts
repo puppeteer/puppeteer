@@ -23,7 +23,6 @@ import {
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
 import utils, {dumpFrames} from './utils.js';
-import {it} from './mocha-utils.js';
 
 describe('Frame specs', function () {
   setupTestBrowserHooks();

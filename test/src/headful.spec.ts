@@ -25,7 +25,6 @@ import {
   PuppeteerNode,
 } from '../../lib/cjs/puppeteer/node/Puppeteer.js';
 import {getTestState} from './mocha-utils.js';
-import {it} from './mocha-utils.js';
 
 const rmAsync = promisify(rimraf);
 const mkdtempAsync = promisify(fs.mkdtemp);
@@ -244,7 +243,7 @@ describe('headful tests', function () {
       expect(cookie).toBe('foo=true');
     });
     // TODO: Support OOOPIF. @see https://github.com/puppeteer/puppeteer/issues/2548
-    xit('OOPIF: should report google.com frame', async () => {
+    it.skip('OOPIF: should report google.com frame', async () => {
       const {server, puppeteer} = getTestState();
 
       // https://google.com is isolated by default in Chromium embedder.

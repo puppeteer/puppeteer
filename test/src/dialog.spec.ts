@@ -21,7 +21,6 @@ import {
   setupTestPageAndContextHooks,
   setupTestBrowserHooks,
 } from './mocha-utils.js';
-import {it} from './mocha-utils.js';
 
 describe('Page.Events.Dialog', function () {
   setupTestBrowserHooks();

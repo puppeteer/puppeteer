@@ -34,7 +34,6 @@ import puppeteer from '../../lib/cjs/puppeteer/puppeteer.js';
 import {TestServer} from '../../utils/testserver/lib/index.js';
 import {extendExpectWithToBeGolden} from './utils.js';
 import * as Mocha from 'mocha';
-import {getTestId} from '../../utils/mochaRunner/lib/utils.js';
 
 const setupServer = async () => {
   const assetsPath = path.join(__dirname, '../assets');
@@ -162,7 +161,7 @@ export const itOnlyRegularInstall = (
   body: Mocha.AsyncFunc
 ): Mocha.Test => {
   if (alternativeInstall || process.env['BINARY']) {
-    return xit(description, body);
+    return it.skip(description, body);
   } else {
     return it(description, body);
   }
@@ -296,35 +295,4 @@ export const shortWaitForArrayToHaveAtLeastNElements = async (
       return setTimeout(resolve, timeout);
     });
   }
-};
-
-type SyncFn = (this: Mocha.Context) => void;
-
-const skippedTests: string[] = process.env['PUPPETEER_SKIPPED_TEST_CONFIG']
-  ? JSON.parse(process.env['PUPPETEER_SKIPPED_TEST_CONFIG'])
-  : [];
-
-function skipTestIfNeeded(test: Mocha.Test): void {
-  const testId = getTestId(test.file!, test.fullTitle());
-  if (
-    skippedTests.find(skippedTest => {
-      return testId.startsWith(skippedTest);
-    })
-  ) {
-    try {
-      test.skip();
-    } catch {}
-  }
-}
-
-export function it(title: string, fn?: Mocha.AsyncFunc | SyncFn): Mocha.Test {
-  const test = Mocha.it.call(null, title, fn as any);
-  skipTestIfNeeded(test);
-  return test;
-}
-
-it.only = function (title: string, fn?: Mocha.AsyncFunc | SyncFn): Mocha.Test {
-  const test = Mocha.it.only.call(null, title, fn as any);
-  skipTestIfNeeded(test);
-  return test;
 };

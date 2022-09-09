@@ -22,7 +22,6 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import {it} from './mocha-utils.js';
 
 describe('Accessibility', function () {
   setupTestBrowserHooks();

@@ -16,7 +16,6 @@
 
 import {getTestState} from './mocha-utils'; // eslint-disable-line import/extensions
 import utils from './utils.js';
-import {it} from './mocha-utils.js';
 
 import expect from 'expect';
 

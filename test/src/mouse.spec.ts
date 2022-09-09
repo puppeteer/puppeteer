@@ -21,7 +21,6 @@ import {
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
 import {KeyInput} from '../../lib/cjs/puppeteer/common/USKeyboardLayout.js';
-import {it} from './mocha-utils.js';
 
 interface Dimensions {
   x: number;

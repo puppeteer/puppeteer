@@ -22,7 +22,6 @@ import type {Server, IncomingMessage, ServerResponse} from 'http';
 import type {Browser} from '../../lib/cjs/puppeteer/common/Browser.js';
 import type {AddressInfo} from 'net';
 import {TestServer} from '../../utils/testserver/lib/index.js';
-import {it} from './mocha-utils.js';
 
 let HOSTNAME = os.hostname();
 

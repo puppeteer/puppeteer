@@ -26,7 +26,6 @@ import {Page} from '../../lib/cjs/puppeteer/common/Page.js';
 import {Product} from '../../lib/cjs/puppeteer/common/Product.js';
 import {getTestState, itOnlyRegularInstall} from './mocha-utils.js';
 import utils from './utils.js';
-import {it} from './mocha-utils.js';
 
 const mkdtempAsync = promisify(fs.mkdtemp);
 const readFileAsync = promisify(fs.readFile);

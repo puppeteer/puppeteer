@@ -24,7 +24,6 @@ import {
 import os from 'os';
 import {ServerResponse} from 'http';
 import {HTTPRequest} from '../../lib/cjs/puppeteer/common/HTTPRequest.js';
-import {it} from './mocha-utils.js';
 
 describe('navigation', function () {
   setupTestBrowserHooks();

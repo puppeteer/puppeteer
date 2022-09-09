@@ -20,7 +20,6 @@ import {
   setupTestPageAndContextHooks,
   setupTestBrowserHooks,
 } from './mocha-utils.js';
-import {it} from './mocha-utils.js';
 
 describe('Input.drag', function () {
   setupTestBrowserHooks();

@@ -22,7 +22,6 @@ import {
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
 import {attachFrame, detachFrame} from './utils.js';
-import {it} from './mocha-utils.js';
 
 describe('waittask specs', function () {
   setupTestBrowserHooks();
