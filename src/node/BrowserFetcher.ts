@@ -21,6 +21,7 @@ import * as util from 'util';
 import * as childProcess from 'child_process';
 import * as https from 'https';
 import * as http from 'http';
+import * as semver from 'semver';
 
 import {Product} from '../common/Product.js';
 import extractZip from 'extract-zip';
@@ -238,7 +239,11 @@ export class BrowserFetcher {
           break;
         case 'win32':
           this.#platform =
-            os.arch() === 'x64' || os.arch() === 'arm64' ? 'win64' : 'win32';
+            os.arch() === 'x64' ||
+            // Windows 11 for ARM supports x64 emulation
+            (os.arch() === 'arm64' && semver.gte(os.release(), '10.0.22000'))
+              ? 'win64'
+              : 'win32';
           return;
         default:
           assert(false, 'Unsupported platform: ' + platform);
