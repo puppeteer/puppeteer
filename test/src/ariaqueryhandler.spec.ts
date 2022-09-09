@@ -24,7 +24,6 @@ import {
 import {ElementHandle} from '../../lib/cjs/puppeteer/common/ElementHandle.js';
 import utils from './utils.js';
 import assert from 'assert';
-import {it} from './mocha-utils.js';
 
 describe('AriaQueryHandler', () => {
   setupTestBrowserHooks();

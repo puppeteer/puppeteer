@@ -24,7 +24,6 @@ import {
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
 import utils from './utils.js';
-import {it} from './mocha-utils.js';
 
 const {waitEvent} = utils;
 

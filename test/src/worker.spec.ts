@@ -23,7 +23,6 @@ import {
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
 import {waitEvent} from './utils.js';
-import {it} from './mocha-utils.js';
 
 describe('Workers', function () {
   setupTestBrowserHooks();

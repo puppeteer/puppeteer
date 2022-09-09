@@ -27,7 +27,6 @@ import {
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
 import utils, {attachFrame, waitEvent} from './utils.js';
-import {it} from './mocha-utils.js';
 
 describe('Page', function () {
   setupTestBrowserHooks();
@@ -1758,7 +1757,7 @@ describe('Page', function () {
     });
 
     // @see https://github.com/puppeteer/puppeteer/issues/4840
-    xit('should throw when added with content to the CSP page', async () => {
+    it.skip('should throw when added with content to the CSP page', async () => {
       const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/csp.html');

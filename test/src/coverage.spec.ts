@@ -20,7 +20,6 @@ import {
   setupTestPageAndContextHooks,
   setupTestBrowserHooks,
 } from './mocha-utils.js';
-import {it} from './mocha-utils.js';
 
 describe('Coverage specs', function () {
   describe('JSCoverage', function () {
@@ -134,7 +133,7 @@ describe('Coverage specs', function () {
       ).toBeGolden('jscoverage-involved.txt');
     });
     // @see https://crbug.com/990945
-    xit('should not hang when there is a debugger statement', async () => {
+    it.skip('should not hang when there is a debugger statement', async () => {
       const {page, server} = getTestState();
 
       await page.coverage.startJSCoverage();
@@ -190,7 +189,7 @@ describe('Coverage specs', function () {
       });
     });
     // @see https://crbug.com/990945
-    xit('should not hang when there is a debugger statement', async () => {
+    it.skip('should not hang when there is a debugger statement', async () => {
       const {page, server} = getTestState();
 
       await page.coverage.startJSCoverage();

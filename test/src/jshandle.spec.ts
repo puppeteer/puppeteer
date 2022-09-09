@@ -21,7 +21,6 @@ import {
   setupTestPageAndContextHooks,
   shortWaitForArrayToHaveAtLeastNElements,
 } from './mocha-utils.js';
-import {it} from './mocha-utils.js';
 
 describe('JSHandle', function () {
   setupTestBrowserHooks();

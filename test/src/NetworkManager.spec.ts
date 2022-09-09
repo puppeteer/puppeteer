@@ -23,7 +23,6 @@ import {HTTPRequest} from '../../lib/cjs/puppeteer/common/HTTPRequest.js';
 import {EventEmitter} from '../../lib/cjs/puppeteer/common/EventEmitter.js';
 import {Frame} from '../../lib/cjs/puppeteer/common/Frame.js';
 import {HTTPResponse} from '../../lib/cjs/puppeteer/common/HTTPResponse.js';
-import {it} from './mocha-utils.js';
 
 class MockCDPSession extends EventEmitter {
   async send(): Promise<any> {}

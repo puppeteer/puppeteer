@@ -21,7 +21,6 @@ import {
   setupTestBrowserHooks,
 } from './mocha-utils.js';
 import utils from './utils.js';
-import {it} from './mocha-utils.js';
 
 describe('Page.click', function () {
   setupTestBrowserHooks();
@@ -419,7 +418,7 @@ describe('Page.click', function () {
     ).toBe('Clicked');
   });
   // @see https://github.com/puppeteer/puppeteer/issues/4110
-  xit('should click the button with fixed position inside an iframe', async () => {
+  it.skip('should click the button with fixed position inside an iframe', async () => {
     const {page, server} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);

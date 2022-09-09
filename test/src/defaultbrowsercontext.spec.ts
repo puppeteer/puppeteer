@@ -20,7 +20,6 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import {it} from './mocha-utils.js';
 
 describe('DefaultBrowserContext', function () {
   setupTestBrowserHooks();

@@ -29,7 +29,6 @@ import {
   HTTPRequest,
   InterceptResolutionAction,
 } from '../../lib/cjs/puppeteer/common/HTTPRequest.js';
-import {it} from './mocha-utils.js';
 
 describe('request interception', function () {
   setupTestBrowserHooks();
