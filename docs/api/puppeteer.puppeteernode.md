@@ -44,10 +44,9 @@ Once you have created a `page` you have access to a large API to interact with t
 
 ## Properties
 
-| Property                                                               | Modifiers             | Type   | Description                                                                                                            |
-| ---------------------------------------------------------------------- | --------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------- |
-| [\_preferredRevision](./puppeteer.puppeteernode._preferredrevision.md) |                       | string |                                                                                                                        |
-| [product](./puppeteer.puppeteernode.product.md)                        | <code>readonly</code> | string | The name of the browser that is under automation (<code>&quot;chrome&quot;</code> or <code>&quot;firefox&quot;</code>) |
+| Property                                        | Modifiers             | Type   | Description                                                                                                            |
+| ----------------------------------------------- | --------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------- |
+| [product](./puppeteer.puppeteernode.product.md) | <code>readonly</code> | string | The name of the browser that is under automation (<code>&quot;chrome&quot;</code> or <code>&quot;firefox&quot;</code>) |
 
 ## Methods
 

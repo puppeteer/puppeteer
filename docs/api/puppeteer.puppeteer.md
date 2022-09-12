@@ -20,13 +20,11 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Properties
 
-| Property                                                        | Modifiers              | Type                                                         | Description |
-| --------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------ | ----------- |
-| [\_changedProduct](./puppeteer.puppeteer._changedproduct.md)    | <code>protected</code> | boolean                                                      |             |
-| [\_isPuppeteerCore](./puppeteer.puppeteer._ispuppeteercore.md)  | <code>protected</code> | boolean                                                      |             |
-| [devices](./puppeteer.puppeteer.devices.md)                     | <code>readonly</code>  | typeof devices                                               |             |
-| [errors](./puppeteer.puppeteer.errors.md)                       | <code>readonly</code>  | typeof [errors](./puppeteer.errors.md)                       |             |
-| [networkConditions](./puppeteer.puppeteer.networkconditions.md) | <code>readonly</code>  | typeof [networkConditions](./puppeteer.networkconditions.md) |             |
+| Property                                                        | Modifiers             | Type                                                         | Description |
+| --------------------------------------------------------------- | --------------------- | ------------------------------------------------------------ | ----------- |
+| [devices](./puppeteer.puppeteer.devices.md)                     | <code>readonly</code> | typeof devices                                               |             |
+| [errors](./puppeteer.puppeteer.errors.md)                       | <code>readonly</code> | typeof [errors](./puppeteer.errors.md)                       |             |
+| [networkConditions](./puppeteer.puppeteer.networkconditions.md) | <code>readonly</code> | typeof [networkConditions](./puppeteer.networkconditions.md) |             |
 
 ## Methods
 

@@ -54,7 +54,13 @@ export interface ConnectOptions extends BrowserConnectOptions {
  * @public
  */
 export class Puppeteer {
+  /**
+   * @internal
+   */
   protected _isPuppeteerCore: boolean;
+  /**
+   * @internal
+   */
   protected _changedProduct = false;
 
   /**

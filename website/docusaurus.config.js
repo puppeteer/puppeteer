@@ -51,58 +51,103 @@ const config = {
           async sidebarItemsGenerator({defaultSidebarItemsGenerator, ...args}) {
             const sidebarItems = await defaultSidebarItemsGenerator(args);
             const apiCategoryItem = sidebarItems.find(value => {
-              return value.type === 'category';
+              return value.type === 'category' && value.label === 'API';
             });
-            if (
-              apiCategoryItem &&
-              apiCategoryItem.type === 'category' &&
-              apiCategoryItem.label === 'API'
-            ) {
+            if (apiCategoryItem) {
               /** @type {typeof sidebarItems} */
               const newItems = [];
-              for (const item of apiCategoryItem.items.sort((a, b) => {
-                if ('label' in a && 'label' in b) {
-                  return (a.label ?? '') < (b.label ?? '') ? -1 : 1;
-                }
-                return -1;
-              })) {
-                if ('id' in item) {
-                  // @ts-ignore
-                  const [namespace, object] = item.label.split('.');
-                  const currentItem = newItems[newItems.length - 1];
-                  if (
-                    !currentItem ||
-                    !('label' in currentItem) ||
-                    currentItem.label !== namespace
-                  ) {
-                    if (object) {
-                      newItems.push({
-                        type: 'category',
-                        // @ts-ignore
-                        label: namespace,
-                        items: [item],
-                      });
-                    } else {
-                      newItems.push({
-                        type: 'category',
-                        // @ts-ignore
-                        label: item.label,
-                        items: [],
-                        link: {type: 'doc', id: item.id},
-                      });
-                    }
-                  } else {
-                    if (object) {
-                      // @ts-ignore
-                      currentItem.items.push(item);
-                    } else {
-                      // @ts-ignore
-                      currentItem.link = {type: 'doc', id: item.id};
-                    }
-                  }
+              const categories = new Map();
+              for (const item of apiCategoryItem.items) {
+                const [namespace] = item.label.split('.');
+                if (!categories.has(namespace)) {
+                  categories.set(namespace, [item]);
+                } else {
+                  categories.get(namespace).push(item);
                 }
               }
+
+              const order = [
+                // PuppeteerNode and Puppeteer go first as the entrypoints into
+                // the Puppeteer API.
+                'PuppeteerNode',
+                'Puppeteer',
+                'BrowserFetcher',
+                'Browser',
+                'BrowserContext',
+                'Page',
+                'WebWorker',
+                'Accessibility',
+                'Keyboard',
+                'Mouse',
+                'Touchscreen',
+                'Tracing',
+                'FileChooser',
+                'Dialog',
+                'ConsoleMessage',
+                'Frame',
+                'JSHandle',
+                'ElementHandle',
+                'HTTPRequest',
+                'HTTPResponse',
+                'SecurityDetails',
+                'Target',
+                'CDPSession',
+                'Coverage',
+                'TimeoutError',
+                'EventEmitter',
+              ];
+
+              function addNamespace(namespace, target) {
+                let items = categories.get(namespace);
+                if (!items) {
+                  throw new Error(`Namespace ${namespace} not found`);
+                }
+                items.sort((a, b) => {
+                  return a.label.localeCompare(b.label);
+                });
+                const main = items.find(item => {
+                  return item.label === namespace;
+                });
+                items = items.filter(item => {
+                  return item !== main;
+                });
+                target.push({
+                  type: 'category',
+                  label: namespace,
+                  items,
+                  link: main
+                    ? {
+                        type: 'doc',
+                        id: main.id,
+                      }
+                    : undefined,
+                });
+                categories.delete(namespace);
+              }
+              for (const namespace of order) {
+                addNamespace(namespace, newItems);
+              }
+              const otherItems = [];
+              newItems.push({
+                type: 'category',
+                label: 'Other',
+                items: otherItems,
+              });
+              const remaining = Array.from(categories.keys());
+              remaining.sort((a, b) => {
+                return a.localeCompare(b);
+              });
+              for (const namespace of remaining) {
+                addNamespace(namespace, otherItems);
+              }
               apiCategoryItem.items = newItems;
+              apiCategoryItem.collapsed = false;
+            }
+            const guidesCategory = sidebarItems.find(value => {
+              return value.type === 'category' && value.label === 'Guides';
+            });
+            if (guidesCategory) {
+              guidesCategory.collapsed = false;
             }
             return sidebarItems;
           },
