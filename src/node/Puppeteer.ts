@@ -78,6 +78,9 @@ export class PuppeteerNode extends Puppeteer {
   #projectRoot?: string;
   #productName?: Product;
 
+  /**
+   * @internal
+   */
   _preferredRevision: string;
 
   /**
