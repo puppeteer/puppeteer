@@ -25,7 +25,8 @@
     "react-dom": "17.0.2"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "2.0.1"
+    "@docusaurus/module-type-aliases": "2.0.1",
+    "swc-loader": "0.2.3"
   },
   "browserslist": {
     "production": [
