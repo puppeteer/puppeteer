@@ -277,8 +277,8 @@ export class Browser extends EventEmitter {
    */
   createIncognitoBrowserContext(
     options?: BrowserContextOptions
-  ): Promise<BrowserContext> {
-    options;
+  ): Promise<BrowserContext>;
+  createIncognitoBrowserContext(): Promise<BrowserContext> {
     throw new Error('Not implemented');
   }
 
@@ -300,7 +300,8 @@ export class Browser extends EventEmitter {
   /**
    * @internal
    */
-  _disposeContext(contextId?: string): Promise<void> {
+  _disposeContext(contextId?: string): Promise<void>;
+  _disposeContext(): Promise<void> {
     throw new Error('Not implemented');
   }
 
@@ -336,7 +337,8 @@ export class Browser extends EventEmitter {
   /**
    * @internal
    */
-  _createPageInContext(contextId?: string): Promise<Page> {
+  _createPageInContext(contextId?: string): Promise<Page>;
+  _createPageInContext(): Promise<Page> {
     throw new Error('Not implemented');
   }
 
@@ -375,7 +377,8 @@ export class Browser extends EventEmitter {
   waitForTarget(
     predicate: (x: Target) => boolean | Promise<boolean>,
     options?: WaitForTargetOptions
-  ): Promise<Target> {
+  ): Promise<Target>;
+  waitForTarget(): Promise<Target> {
     throw new Error('Not implemented');
   }
 
@@ -536,7 +539,8 @@ export class BrowserContext extends EventEmitter {
   waitForTarget(
     predicate: (x: Target) => boolean | Promise<boolean>,
     options?: {timeout?: number}
-  ): Promise<Target> {
+  ): Promise<Target>;
+  waitForTarget(): Promise<Target> {
     throw new Error('Not implemented');
   }
 
@@ -576,10 +580,8 @@ export class BrowserContext extends EventEmitter {
    * @param permissions - An array of permissions to grant.
    * All permissions that are not listed here will be automatically denied.
    */
-  overridePermissions(
-    origin: string,
-    permissions: Permission[]
-  ): Promise<void> {
+  overridePermissions(origin: string, permissions: Permission[]): Promise<void>;
+  overridePermissions(): Promise<void> {
     throw new Error('Not implemented');
   }
 

@@ -26,12 +26,24 @@ import {TaskQueue} from './TaskQueue.js';
 import {TargetManager, TargetManagerEmittedEvents} from './TargetManager.js';
 import {ChromeTargetManager} from './ChromeTargetManager.js';
 import {FirefoxTargetManager} from './FirefoxTargetManager.js';
-import * as BrowserApi from '../api/Browser.js';
+import {
+  Browser,
+  BrowserContext,
+  BrowserCloseCallback,
+  TargetFilterCallback,
+  IsPageTargetCallback,
+  BrowserEmittedEvents,
+  BrowserContextEmittedEvents,
+  BrowserContextOptions,
+  WEB_PERMISSION_TO_PROTOCOL_PERMISSION,
+  WaitForTargetOptions,
+  Permission,
+} from '../api/Browser.js';
 
 /**
  * @internal
  */
-export class CDPBrowser extends BrowserApi.Browser {
+export class CDPBrowser extends Browser {
   /**
    * @internal
    */
@@ -42,9 +54,9 @@ export class CDPBrowser extends BrowserApi.Browser {
     ignoreHTTPSErrors: boolean,
     defaultViewport?: Viewport | null,
     process?: ChildProcess,
-    closeCallback?: BrowserApi.BrowserCloseCallback,
-    targetFilterCallback?: BrowserApi.TargetFilterCallback,
-    isPageTargetCallback?: BrowserApi.IsPageTargetCallback
+    closeCallback?: BrowserCloseCallback,
+    targetFilterCallback?: TargetFilterCallback,
+    isPageTargetCallback?: IsPageTargetCallback
   ): Promise<CDPBrowser> {
     const browser = new CDPBrowser(
       product,
@@ -64,9 +76,9 @@ export class CDPBrowser extends BrowserApi.Browser {
   #defaultViewport?: Viewport | null;
   #process?: ChildProcess;
   #connection: Connection;
-  #closeCallback: BrowserApi.BrowserCloseCallback;
-  #targetFilterCallback: BrowserApi.TargetFilterCallback;
-  #isPageTargetCallback!: BrowserApi.IsPageTargetCallback;
+  #closeCallback: BrowserCloseCallback;
+  #targetFilterCallback: TargetFilterCallback;
+  #isPageTargetCallback!: IsPageTargetCallback;
   #defaultContext: CDPBrowserContext;
   #contexts: Map<string, CDPBrowserContext>;
   #screenshotTaskQueue: TaskQueue;
@@ -89,9 +101,9 @@ export class CDPBrowser extends BrowserApi.Browser {
     ignoreHTTPSErrors: boolean,
     defaultViewport?: Viewport | null,
     process?: ChildProcess,
-    closeCallback?: BrowserApi.BrowserCloseCallback,
-    targetFilterCallback?: BrowserApi.TargetFilterCallback,
-    isPageTargetCallback?: BrowserApi.IsPageTargetCallback
+    closeCallback?: BrowserCloseCallback,
+    targetFilterCallback?: TargetFilterCallback,
+    isPageTargetCallback?: IsPageTargetCallback
   ) {
     super();
     product = product || 'chrome';
@@ -131,7 +143,7 @@ export class CDPBrowser extends BrowserApi.Browser {
   }
 
   #emitDisconnected = () => {
-    this.emit(BrowserApi.BrowserEmittedEvents.Disconnected);
+    this.emit(BrowserEmittedEvents.Disconnected);
   };
 
   /**
@@ -202,9 +214,7 @@ export class CDPBrowser extends BrowserApi.Browser {
     return this.#targetManager;
   }
 
-  #setIsPageTargetCallback(
-    isPageTargetCallback?: BrowserApi.IsPageTargetCallback
-  ): void {
+  #setIsPageTargetCallback(isPageTargetCallback?: IsPageTargetCallback): void {
     this.#isPageTargetCallback =
       isPageTargetCallback ||
       ((target: Protocol.Target.TargetInfo): boolean => {
@@ -219,9 +229,7 @@ export class CDPBrowser extends BrowserApi.Browser {
   /**
    * @internal
    */
-  override _getIsPageTargetCallback():
-    | BrowserApi.IsPageTargetCallback
-    | undefined {
+  override _getIsPageTargetCallback(): IsPageTargetCallback | undefined {
     return this.#isPageTargetCallback;
   }
 
@@ -244,7 +252,7 @@ export class CDPBrowser extends BrowserApi.Browser {
    * ```
    */
   override async createIncognitoBrowserContext(
-    options: BrowserApi.BrowserContextOptions = {}
+    options: BrowserContextOptions = {}
   ): Promise<CDPBrowserContext> {
     const {proxyServer, proxyBypassList} = options;
 
@@ -326,10 +334,10 @@ export class CDPBrowser extends BrowserApi.Browser {
 
   #onAttachedToTarget = async (target: Target) => {
     if (await target._initializedPromise) {
-      this.emit(BrowserApi.BrowserEmittedEvents.TargetCreated, target);
+      this.emit(BrowserEmittedEvents.TargetCreated, target);
       target
         .browserContext()
-        .emit(BrowserApi.BrowserContextEmittedEvents.TargetCreated, target);
+        .emit(BrowserContextEmittedEvents.TargetCreated, target);
     }
   };
 
@@ -337,10 +345,10 @@ export class CDPBrowser extends BrowserApi.Browser {
     target._initializedCallback(false);
     target._closedCallback();
     if (await target._initializedPromise) {
-      this.emit(BrowserApi.BrowserEmittedEvents.TargetDestroyed, target);
+      this.emit(BrowserEmittedEvents.TargetDestroyed, target);
       target
         .browserContext()
-        .emit(BrowserApi.BrowserContextEmittedEvents.TargetDestroyed, target);
+        .emit(BrowserContextEmittedEvents.TargetDestroyed, target);
     }
   };
 
@@ -355,10 +363,10 @@ export class CDPBrowser extends BrowserApi.Browser {
     const wasInitialized = target._isInitialized;
     target._targetInfoChanged(targetInfo);
     if (wasInitialized && previousURL !== target.url()) {
-      this.emit(BrowserApi.BrowserEmittedEvents.TargetChanged, target);
+      this.emit(BrowserEmittedEvents.TargetChanged, target);
       target
         .browserContext()
-        .emit(BrowserApi.BrowserContextEmittedEvents.TargetChanged, target);
+        .emit(BrowserContextEmittedEvents.TargetChanged, target);
     }
   };
 
@@ -464,7 +472,7 @@ export class CDPBrowser extends BrowserApi.Browser {
    */
   override async waitForTarget(
     predicate: (x: Target) => boolean | Promise<boolean>,
-    options: BrowserApi.WaitForTargetOptions = {}
+    options: WaitForTargetOptions = {}
   ): Promise<Target> {
     const {timeout = 30000} = options;
     let resolve: (value: Target | PromiseLike<Target>) => void;
@@ -472,8 +480,8 @@ export class CDPBrowser extends BrowserApi.Browser {
     const targetPromise = new Promise<Target>(x => {
       return (resolve = x);
     });
-    this.on(BrowserApi.BrowserEmittedEvents.TargetCreated, check);
-    this.on(BrowserApi.BrowserEmittedEvents.TargetChanged, check);
+    this.on(BrowserEmittedEvents.TargetCreated, check);
+    this.on(BrowserEmittedEvents.TargetChanged, check);
     try {
       this.targets().forEach(check);
       if (!timeout) {
@@ -481,8 +489,8 @@ export class CDPBrowser extends BrowserApi.Browser {
       }
       return await waitWithTimeout(targetPromise, 'target', timeout);
     } finally {
-      this.off(BrowserApi.BrowserEmittedEvents.TargetCreated, check);
-      this.off(BrowserApi.BrowserEmittedEvents.TargetChanged, check);
+      this.off(BrowserEmittedEvents.TargetCreated, check);
+      this.off(BrowserEmittedEvents.TargetChanged, check);
     }
 
     async function check(target: Target): Promise<void> {
@@ -572,7 +580,7 @@ export class CDPBrowser extends BrowserApi.Browser {
 /**
  * @internal
  */
-export class CDPBrowserContext extends BrowserApi.BrowserContext {
+export class CDPBrowserContext extends BrowserContext {
   #connection: Connection;
   #browser: CDPBrowser;
   #id?: string;
@@ -680,11 +688,11 @@ export class CDPBrowserContext extends BrowserApi.BrowserContext {
    */
   override async overridePermissions(
     origin: string,
-    permissions: BrowserApi.Permission[]
+    permissions: Permission[]
   ): Promise<void> {
     const protocolPermissions = permissions.map(permission => {
       const protocolPermission =
-        BrowserApi.WEB_PERMISSION_TO_PROTOCOL_PERMISSION.get(permission);
+        WEB_PERMISSION_TO_PROTOCOL_PERMISSION.get(permission);
       if (!protocolPermission) {
         throw new Error('Unknown permission: ' + permission);
       }
