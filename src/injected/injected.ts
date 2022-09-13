@@ -1,14 +1,11 @@
 import {createDeferredPromise} from '../util/DeferredPromise.js';
-import * as Poller from './Poller.js';
 import * as util from './util.js';
 
-Object.assign(
-  self,
-  Object.freeze({
-    InjectedUtil: {
-      ...Poller,
-      ...util,
-      createDeferredPromise,
-    },
-  })
-);
+const PuppeteerUtil = Object.freeze({
+  ...util,
+  createDeferredPromise,
+});
+
+type PuppeteerUtil = typeof PuppeteerUtil;
+
+export default PuppeteerUtil;

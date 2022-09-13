@@ -220,7 +220,7 @@ export class Frame {
     this.#client = client;
     this.worlds = {
       [MAIN_WORLD]: new IsolatedWorld(this),
-      [PUPPETEER_WORLD]: new IsolatedWorld(this, true),
+      [PUPPETEER_WORLD]: new IsolatedWorld(this),
     };
   }
 
@@ -776,8 +776,8 @@ export class Frame {
 
     return this.worlds[MAIN_WORLD].transferHandle(
       await this.worlds[PUPPETEER_WORLD].evaluateHandle(
-        async ({url, id, type, content}) => {
-          const promise = InjectedUtil.createDeferredPromise<void>();
+        async ({createDeferredPromise}, {url, id, type, content}) => {
+          const promise = createDeferredPromise<void>();
           const script = document.createElement('script');
           script.type = type;
           script.text = content;
@@ -809,6 +809,7 @@ export class Frame {
           await promise;
           return script;
         },
+        await this.worlds[PUPPETEER_WORLD].puppeteerUtil,
         {...options, type, content}
       )
     );
@@ -858,8 +859,8 @@ export class Frame {
 
     return this.worlds[MAIN_WORLD].transferHandle(
       await this.worlds[PUPPETEER_WORLD].evaluateHandle(
-        async ({url, content}) => {
-          const promise = InjectedUtil.createDeferredPromise<void>();
+        async ({createDeferredPromise}, {url, content}) => {
+          const promise = createDeferredPromise<void>();
           let element: HTMLStyleElement | HTMLLinkElement;
           if (!url) {
             element = document.createElement('style');
@@ -892,6 +893,7 @@ export class Frame {
           await promise;
           return element;
         },
+        await this.worlds[PUPPETEER_WORLD].puppeteerUtil,
         options
       )
     );

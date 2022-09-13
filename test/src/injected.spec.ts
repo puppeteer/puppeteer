@@ -23,18 +23,35 @@ import {
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
 
-describe('InjectedUtil tests', function () {
+describe('PuppeteerUtil tests', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
 
   it('should work', async () => {
     const {page} = getTestState();
 
-    const handle = await page
-      .mainFrame()
-      .worlds[PUPPETEER_WORLD].evaluate(() => {
-        return typeof InjectedUtil === 'object';
-      });
-    expect(handle).toBeTruthy();
+    const world = page.mainFrame().worlds[PUPPETEER_WORLD];
+    const value = await world.evaluate(PuppeteerUtil => {
+      return typeof PuppeteerUtil === 'object';
+    }, world.puppeteerUtil);
+    expect(value).toBeTruthy();
+  });
+
+  describe('createFunction tests', function () {
+    it('should work', async () => {
+      const {page} = getTestState();
+
+      const world = page.mainFrame().worlds[PUPPETEER_WORLD];
+      const value = await world.evaluate(
+        ({createFunction}, fnString) => {
+          return createFunction(fnString)(4);
+        },
+        await world.puppeteerUtil,
+        (() => {
+          return 4;
+        }).toString()
+      );
+      expect(value).toBe(4);
+    });
   });
 });
