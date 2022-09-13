@@ -8,6 +8,5 @@
   "references": [
     {"path": "../vendor/tsconfig.cjs.json"},
     {"path": "../compat/cjs/tsconfig.json"}
-  ],
-  "exclude": ["injected/injected.ts"]
+  ]
 }

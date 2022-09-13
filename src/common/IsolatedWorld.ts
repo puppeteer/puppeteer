@@ -16,6 +16,7 @@
 
 import {Protocol} from 'devtools-protocol';
 import {source as injectedSource} from '../generated/injected.js';
+import type PuppeteerUtil from '../injected/injected.js';
 import {assert} from '../util/assert.js';
 import {createDeferredPromise} from '../util/DeferredPromise.js';
 import {CDPSession} from './Connection.js';
@@ -114,7 +115,6 @@ export interface IsolatedWorldChart {
  */
 export class IsolatedWorld {
   #frame: Frame;
-  #injected: boolean;
   #document?: ElementHandle<Document>;
   #context = createDeferredPromise<ExecutionContext>();
   #detached = false;
@@ -125,6 +125,11 @@ export class IsolatedWorld {
   // Contains mapping from functions that should be bound to Puppeteer functions.
   #boundFunctions = new Map<string, Function>();
   #waitTasks = new Set<WaitTask>();
+  #puppeteerUtil = createDeferredPromise<JSHandle<PuppeteerUtil>>();
+
+  get puppeteerUtil(): Promise<JSHandle<PuppeteerUtil>> {
+    return this.#puppeteerUtil;
+  }
 
   get _waitTasks(): Set<WaitTask> {
     return this.#waitTasks;
@@ -138,11 +143,10 @@ export class IsolatedWorld {
     return `${name}_${contextId}`;
   };
 
-  constructor(frame: Frame, injected = false) {
+  constructor(frame: Frame) {
     // Keep own reference to client because it might differ from the FrameManager's
     // client for OOP iframes.
     this.#frame = frame;
-    this.#injected = injected;
     this.#client.on('Runtime.bindingCalled', this.#onBindingCalled);
   }
 
@@ -164,17 +168,32 @@ export class IsolatedWorld {
 
   clearContext(): void {
     this.#document = undefined;
+    this.#puppeteerUtil = createDeferredPromise();
     this.#context = createDeferredPromise();
   }
 
   setContext(context: ExecutionContext): void {
-    if (this.#injected) {
-      context.evaluate(injectedSource).catch(debugError);
-    }
+    this.#injectPuppeteerUtil(context);
     this.#ctxBindings.clear();
     this.#context.resolve(context);
     for (const waitTask of this._waitTasks) {
       waitTask.rerun();
+    }
+  }
+
+  async #injectPuppeteerUtil(context: ExecutionContext): Promise<void> {
+    try {
+      this.#puppeteerUtil.resolve(
+        (await context.evaluateHandle(
+          `(() => {
+            const module = {};
+            ${injectedSource}
+            return module.exports.default;
+          })()`
+        )) as JSHandle<PuppeteerUtil>
+      );
+    } catch (error: unknown) {
+      debugError(error);
     }
   }
 
