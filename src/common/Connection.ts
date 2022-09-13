@@ -445,3 +445,13 @@ function rewriteError(
   error.originalMessage = originalMessage ?? error.originalMessage;
   return error;
 }
+
+/**
+ * @internal
+ */
+export function isTargetClosedError(err: Error): boolean {
+  return (
+    err.message.includes('Target closed') ||
+    err.message.includes('Session closed')
+  );
+}
