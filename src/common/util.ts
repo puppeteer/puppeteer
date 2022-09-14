@@ -249,28 +249,26 @@ export function evaluationString(
  * @internal
  */
 export function pageBindingInitString(type: string, name: string): string {
-  function addPageBinding(type: string, bindingName: string): void {
-    /* Cast window to any here as we're about to add properties to it
-     * via win[bindingName] which TypeScript doesn't like.
-     */
-    const win = window as any;
-    const binding = win[bindingName];
+  function addPageBinding(type: string, name: string): void {
+    // This is the CDP binding.
+    // @ts-expect-error: In a different context.
+    const callCDP = self[name];
 
-    win[bindingName] = (...args: unknown[]): Promise<unknown> => {
-      const me = (window as any)[bindingName];
-      let callbacks = me.callbacks;
-      if (!callbacks) {
-        callbacks = new Map();
-        me.callbacks = callbacks;
-      }
-      const seq = (me.lastSeq || 0) + 1;
-      me.lastSeq = seq;
-      const promise = new Promise((resolve, reject) => {
-        return callbacks.set(seq, {resolve, reject});
-      });
-      binding(JSON.stringify({type, name: bindingName, seq, args}));
-      return promise;
-    };
+    // We replace the CDP binding with a Puppeteer binding.
+    Object.assign(self, {
+      [name](...args: unknown[]): Promise<unknown> {
+        // This is the Puppeteer binding.
+        // @ts-expect-error: In a different context.
+        const callPuppeteer = self[name];
+        callPuppeteer.callbacks ??= new Map();
+        const seq = (callPuppeteer.lastSeq ?? 0) + 1;
+        callPuppeteer.lastSeq = seq;
+        callCDP(JSON.stringify({type, name, seq, args}));
+        return new Promise((resolve, reject) => {
+          callPuppeteer.callbacks.set(seq, {resolve, reject});
+        });
+      },
+    });
   }
   return evaluationString(addPageBinding, type, name);
 }
@@ -326,50 +324,6 @@ export function pageBindingDeliverErrorValueString(
     (window as any)[name].callbacks.delete(seq);
   }
   return evaluationString(deliverErrorValue, name, seq, value);
-}
-
-/**
- * @internal
- */
-export function makePredicateString(
-  predicate: Function,
-  predicateQueryHandler: Function
-): string {
-  function checkWaitForOptions(
-    node: Node | null,
-    waitForVisible: boolean,
-    waitForHidden: boolean
-  ): Node | null | boolean {
-    if (!node) {
-      return waitForHidden;
-    }
-    if (!waitForVisible && !waitForHidden) {
-      return node;
-    }
-    const element =
-      node.nodeType === Node.TEXT_NODE
-        ? (node.parentElement as Element)
-        : (node as Element);
-
-    const style = window.getComputedStyle(element);
-    const isVisible =
-      style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
-    const success =
-      waitForVisible === isVisible || waitForHidden === !isVisible;
-    return success ? node : null;
-
-    function hasVisibleBoundingBox(): boolean {
-      const rect = element.getBoundingClientRect();
-      return !!(rect.top || rect.bottom || rect.width || rect.height);
-    }
-  }
-
-  return `
-    (() => {
-      const predicateQueryHandler = ${predicateQueryHandler};
-      const checkWaitForOptions = ${checkWaitForOptions};
-      return (${predicate})(...args)
-    })() `;
 }
 
 /**

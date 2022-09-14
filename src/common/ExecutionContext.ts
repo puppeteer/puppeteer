@@ -18,6 +18,7 @@ import {Protocol} from 'devtools-protocol';
 import {CDPSession} from './Connection.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {JSHandle} from './JSHandle.js';
+import {LazyArg} from './LazyArg.js';
 import {EvaluateFunc, HandleFor} from './types.js';
 import {
   createJSHandle,
@@ -273,7 +274,7 @@ export class ExecutionContext {
       callFunctionOnPromise = this._client.send('Runtime.callFunctionOn', {
         functionDeclaration: functionText + '\n' + suffix + '\n',
         executionContextId: this._contextId,
-        arguments: args.map(convertArgument.bind(this)),
+        arguments: await Promise.all(args.map(convertArgument.bind(this))),
         returnByValue,
         awaitPromise: true,
         userGesture: true,
@@ -298,10 +299,13 @@ export class ExecutionContext {
       ? valueFromRemoteObject(remoteObject)
       : createJSHandle(this, remoteObject);
 
-    function convertArgument(
+    async function convertArgument(
       this: ExecutionContext,
       arg: unknown
-    ): Protocol.Runtime.CallArgument {
+    ): Promise<Protocol.Runtime.CallArgument> {
+      if (arg instanceof LazyArg) {
+        arg = await arg.get();
+      }
       if (typeof arg === 'bigint') {
         // eslint-disable-line valid-typeof
         return {unserializableValue: `${arg.toString()}n`};
