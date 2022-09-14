@@ -19,7 +19,7 @@ import {assert} from '../util/assert.js';
 import {createDebuggableDeferredPromise} from '../util/DebuggableDeferredPromise.js';
 import {DeferredPromise} from '../util/DeferredPromise.js';
 import {isErrorLike} from '../util/ErrorLike.js';
-import {CDPSession} from './Connection.js';
+import {CDPSession, isTargetClosedError} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
 import {EVALUATION_SCRIPT_URL, ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
@@ -172,11 +172,7 @@ export class FrameManager extends EventEmitter {
       ]);
     } catch (error) {
       // The target might have been closed before the initialization finished.
-      if (
-        isErrorLike(error) &&
-        (error.message.includes('Target closed') ||
-          error.message.includes('Session closed'))
-      ) {
+      if (isErrorLike(error) && isTargetClosedError(error)) {
         return;
       }
 

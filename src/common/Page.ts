@@ -24,7 +24,11 @@ import {
 import {isErrorLike} from '../util/ErrorLike.js';
 import {Accessibility} from './Accessibility.js';
 import {Browser, BrowserContext} from './Browser.js';
-import {CDPSession, CDPSessionEmittedEvents} from './Connection.js';
+import {
+  CDPSession,
+  CDPSessionEmittedEvents,
+  isTargetClosedError,
+} from './Connection.js';
 import {ConsoleMessage, ConsoleMessageType} from './ConsoleMessage.js';
 import {Coverage} from './Coverage.js';
 import {Dialog} from './Dialog.js';
@@ -470,7 +474,15 @@ export class Page extends EventEmitter {
     );
     await page.#initialize();
     if (defaultViewport) {
-      await page.setViewport(defaultViewport);
+      try {
+        await page.setViewport(defaultViewport);
+      } catch (err) {
+        if (isErrorLike(err) && isTargetClosedError(err)) {
+          debugError(err);
+        } else {
+          throw err;
+        }
+      }
     }
     return page;
   }
@@ -645,11 +657,19 @@ export class Page extends EventEmitter {
   };
 
   async #initialize(): Promise<void> {
-    await Promise.all([
-      this.#frameManager.initialize(this.#target._targetId),
-      this.#client.send('Performance.enable'),
-      this.#client.send('Log.enable'),
-    ]);
+    try {
+      await Promise.all([
+        this.#frameManager.initialize(this.#target._targetId),
+        this.#client.send('Performance.enable'),
+        this.#client.send('Log.enable'),
+      ]);
+    } catch (err) {
+      if (isErrorLike(err) && isTargetClosedError(err)) {
+        debugError(err);
+      } else {
+        throw err;
+      }
+    }
   }
 
   async #onFileChooser(

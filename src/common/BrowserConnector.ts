@@ -131,7 +131,6 @@ export async function _connectToBrowser(
     targetFilter,
     isPageTarget
   );
-  await browser.pages();
   return browser;
 }
 
