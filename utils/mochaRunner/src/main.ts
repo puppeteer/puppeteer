@@ -27,7 +27,7 @@ import {
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
-import {spawn} from 'node:child_process';
+import {spawn, SpawnOptions} from 'node:child_process';
 import {
   extendProcessEnv,
   filterByPlatform,
@@ -126,8 +126,14 @@ async function main() {
         '-O',
         'output=' + tmpFilename,
       ];
+      const spawnArgs: SpawnOptions = {
+        shell: true,
+        cwd: process.cwd(),
+        stdio: 'inherit',
+        env,
+      };
       const handle = noCoverage
-        ? spawn('npx', ['mocha', ...args])
+        ? spawn('npx', ['mocha', ...args], spawnArgs)
         : spawn(
             'npx',
             [
@@ -138,12 +144,7 @@ async function main() {
               'npx mocha',
               ...args,
             ],
-            {
-              shell: true,
-              cwd: process.cwd(),
-              stdio: 'inherit',
-              env,
-            }
+            spawnArgs
           );
       await new Promise<void>((resolve, reject) => {
         handle.on('error', err => {

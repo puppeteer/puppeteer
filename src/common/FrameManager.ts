@@ -16,13 +16,12 @@
 
 import {Protocol} from 'devtools-protocol';
 import {assert} from '../util/assert.js';
-import {createDebuggableDeferredPromise} from '../util/DebuggableDeferredPromise.js';
-import {DeferredPromise} from '../util/DeferredPromise.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {CDPSession, isTargetClosedError} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
 import {EVALUATION_SCRIPT_URL, ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
+import {FrameTree} from './FrameTree.js';
 import {IsolatedWorld, MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorld.js';
 import {NetworkManager} from './NetworkManager.js';
 import {Page} from './Page.js';
@@ -60,20 +59,13 @@ export class FrameManager extends EventEmitter {
   #page: Page;
   #networkManager: NetworkManager;
   #timeoutSettings: TimeoutSettings;
-  #frames = new Map<string, Frame>();
   #contextIdToContext = new Map<string, ExecutionContext>();
   #isolatedWorlds = new Set<string>();
-  #mainFrame?: Frame;
   #client: CDPSession;
   /**
-   * Keeps track of OOPIF targets/frames (target ID == frame ID for OOPIFs)
-   * that are being initialized.
+   * @internal
    */
-  #framesPendingTargetInit = new Map<string, DeferredPromise<void>>();
-  /**
-   * Keeps track of frames that are in the process of being attached in #onFrameAttached.
-   */
-  #framesPendingAttachment = new Map<string, DeferredPromise<void>>();
+  _frameTree = new FrameTree();
 
   get timeoutSettings(): TimeoutSettings {
     return this.#timeoutSettings;
@@ -140,19 +132,8 @@ export class FrameManager extends EventEmitter {
     });
   }
 
-  async initialize(
-    targetId: string,
-    client: CDPSession = this.#client
-  ): Promise<void> {
+  async initialize(client: CDPSession = this.#client): Promise<void> {
     try {
-      if (!this.#framesPendingTargetInit.has(targetId)) {
-        this.#framesPendingTargetInit.set(
-          targetId,
-          createDebuggableDeferredPromise(
-            `Waiting for target frame ${targetId} failed`
-          )
-        );
-      }
       const result = await Promise.all([
         client.send('Page.enable'),
         client.send('Page.getFrameTree'),
@@ -177,9 +158,6 @@ export class FrameManager extends EventEmitter {
       }
 
       throw error;
-    } finally {
-      this.#framesPendingTargetInit.get(targetId)?.resolve();
-      this.#framesPendingTargetInit.delete(targetId);
     }
   }
 
@@ -198,16 +176,17 @@ export class FrameManager extends EventEmitter {
   }
 
   mainFrame(): Frame {
-    assert(this.#mainFrame, 'Requesting main frame too early!');
-    return this.#mainFrame;
+    const mainFrame = this._frameTree.getMainFrame();
+    assert(mainFrame, 'Requesting main frame too early!');
+    return mainFrame;
   }
 
   frames(): Frame[] {
-    return Array.from(this.#frames.values());
+    return Array.from(this._frameTree.frames());
   }
 
   frame(frameId: string): Frame | null {
-    return this.#frames.get(frameId) || null;
+    return this._frameTree.getById(frameId) || null;
   }
 
   onAttachedToTarget(target: Target): void {
@@ -215,16 +194,16 @@ export class FrameManager extends EventEmitter {
       return;
     }
 
-    const frame = this.#frames.get(target._getTargetInfo().targetId);
+    const frame = this.frame(target._getTargetInfo().targetId);
     if (frame) {
       frame.updateClient(target._session()!);
     }
     this.setupEventListeners(target._session()!);
-    this.initialize(target._getTargetInfo().targetId, target._session());
+    this.initialize(target._session());
   }
 
   onDetachedFromTarget(target: Target): void {
-    const frame = this.#frames.get(target._targetId);
+    const frame = this.frame(target._targetId);
     if (frame && frame.isOOPFrame()) {
       // When an OOP iframe is removed from the page, it
       // will only get a Target.detachedFromTarget event.
@@ -233,7 +212,7 @@ export class FrameManager extends EventEmitter {
   }
 
   #onLifecycleEvent(event: Protocol.Page.LifecycleEventEvent): void {
-    const frame = this.#frames.get(event.frameId);
+    const frame = this.frame(event.frameId);
     if (!frame) {
       return;
     }
@@ -242,7 +221,7 @@ export class FrameManager extends EventEmitter {
   }
 
   #onFrameStartedLoading(frameId: string): void {
-    const frame = this.#frames.get(frameId);
+    const frame = this.frame(frameId);
     if (!frame) {
       return;
     }
@@ -250,7 +229,7 @@ export class FrameManager extends EventEmitter {
   }
 
   #onFrameStoppedLoading(frameId: string): void {
-    const frame = this.#frames.get(frameId);
+    const frame = this.frame(frameId);
     if (!frame) {
       return;
     }
@@ -284,8 +263,8 @@ export class FrameManager extends EventEmitter {
     frameId: string,
     parentFrameId: string
   ): void {
-    if (this.#frames.has(frameId)) {
-      const frame = this.#frames.get(frameId)!;
+    let frame = this.frame(frameId);
+    if (frame) {
       if (session && frame.isOOPFrame()) {
         // If an OOP iframes becomes a normal iframe again
         // it is first attached to the parent page before
@@ -294,86 +273,41 @@ export class FrameManager extends EventEmitter {
       }
       return;
     }
-    const parentFrame = this.#frames.get(parentFrameId);
 
-    const complete = (parentFrame: Frame) => {
-      assert(parentFrame, `Parent frame ${parentFrameId} not found`);
-      const frame = new Frame(this, parentFrame, frameId, session);
-      this.#frames.set(frame._id, frame);
-      this.emit(FrameManagerEmittedEvents.FrameAttached, frame);
-    };
-
-    if (parentFrame) {
-      return complete(parentFrame);
-    }
-
-    const frame = this.#framesPendingTargetInit.get(parentFrameId);
-    if (frame) {
-      if (!this.#framesPendingAttachment.has(frameId)) {
-        this.#framesPendingAttachment.set(
-          frameId,
-          createDebuggableDeferredPromise(
-            `Waiting for frame ${frameId} to attach failed`
-          )
-        );
-      }
-      frame.then(() => {
-        complete(this.#frames.get(parentFrameId)!);
-        this.#framesPendingAttachment.get(frameId)?.resolve();
-        this.#framesPendingAttachment.delete(frameId);
-      });
-      return;
-    }
-
-    throw new Error(`Parent frame ${parentFrameId} not found`);
+    frame = new Frame(this, frameId, parentFrameId, session);
+    this._frameTree.addFrame(frame);
+    this.emit(FrameManagerEmittedEvents.FrameAttached, frame);
   }
 
-  #onFrameNavigated(framePayload: Protocol.Page.Frame): void {
+  async #onFrameNavigated(framePayload: Protocol.Page.Frame): Promise<void> {
     const frameId = framePayload.id;
     const isMainFrame = !framePayload.parentId;
-    const frame = isMainFrame ? this.#mainFrame : this.#frames.get(frameId);
 
-    const complete = (frame?: Frame) => {
-      assert(
-        isMainFrame || frame,
-        `Missing frame isMainFrame=${isMainFrame}, frameId=${frameId}`
-      );
+    let frame = this._frameTree.getById(frameId);
 
-      // Detach all child frames first.
-      if (frame) {
-        for (const child of frame.childFrames()) {
-          this.#removeFramesRecursively(child);
-        }
+    // Detach all child frames first.
+    if (frame) {
+      for (const child of frame.childFrames()) {
+        this.#removeFramesRecursively(child);
       }
-
-      // Update or create main frame.
-      if (isMainFrame) {
-        if (frame) {
-          // Update frame id to retain frame identity on cross-process navigation.
-          this.#frames.delete(frame._id);
-          frame._id = frameId;
-        } else {
-          // Initial main frame navigation.
-          frame = new Frame(this, null, frameId, this.#client);
-        }
-        this.#frames.set(frameId, frame);
-        this.#mainFrame = frame;
-      }
-
-      // Update frame payload.
-      assert(frame);
-      frame._navigated(framePayload);
-
-      this.emit(FrameManagerEmittedEvents.FrameNavigated, frame);
-    };
-    const pendingFrame = this.#framesPendingAttachment.get(frameId);
-    if (pendingFrame) {
-      pendingFrame.then(() => {
-        complete(isMainFrame ? this.#mainFrame : this.#frames.get(frameId));
-      });
-    } else {
-      complete(frame);
     }
+
+    // Update or create main frame.
+    if (isMainFrame) {
+      if (frame) {
+        // Update frame id to retain frame identity on cross-process navigation.
+        this._frameTree.removeFrame(frame);
+        frame._id = frameId;
+      } else {
+        // Initial main frame navigation.
+        frame = new Frame(this, frameId, undefined, this.#client);
+      }
+      this._frameTree.addFrame(frame);
+    }
+
+    frame = await this._frameTree.waitForFrame(frameId);
+    frame._navigated(framePayload);
+    this.emit(FrameManagerEmittedEvents.FrameNavigated, frame);
   }
 
   async #createIsolatedWorld(session: CDPSession, name: string): Promise<void> {
@@ -410,7 +344,7 @@ export class FrameManager extends EventEmitter {
   }
 
   #onFrameNavigatedWithinDocument(frameId: string, url: string): void {
-    const frame = this.#frames.get(frameId);
+    const frame = this.frame(frameId);
     if (!frame) {
       return;
     }
@@ -423,7 +357,7 @@ export class FrameManager extends EventEmitter {
     frameId: string,
     reason: Protocol.Page.FrameDetachedEventReason
   ): void {
-    const frame = this.#frames.get(frameId);
+    const frame = this.frame(frameId);
     if (reason === 'remove') {
       // Only remove the frame if the reason for the detached event is
       // an actual removement of the frame.
@@ -442,8 +376,7 @@ export class FrameManager extends EventEmitter {
   ): void {
     const auxData = contextPayload.auxData as {frameId?: string} | undefined;
     const frameId = auxData && auxData.frameId;
-    const frame =
-      typeof frameId === 'string' ? this.#frames.get(frameId) : undefined;
+    const frame = typeof frameId === 'string' ? this.frame(frameId) : undefined;
     let world: IsolatedWorld | undefined;
     if (frame) {
       // Only care about execution contexts created for the current session.
@@ -509,7 +442,7 @@ export class FrameManager extends EventEmitter {
       this.#removeFramesRecursively(child);
     }
     frame._detach();
-    this.#frames.delete(frame._id);
+    this._frameTree.removeFrame(frame);
     this.emit(FrameManagerEmittedEvents.FrameDetached, frame);
   }
 }

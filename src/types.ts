@@ -24,6 +24,7 @@ export * from './common/FileChooser.js';
 export * from './common/FirefoxTargetManager.js';
 export * from './common/Frame.js';
 export * from './common/FrameManager.js';
+export * from './common/FrameTree.js';
 export * from './common/HTTPRequest.js';
 export * from './common/HTTPResponse.js';
 export * from './common/Input.js';
