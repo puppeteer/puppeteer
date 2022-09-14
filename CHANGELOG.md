@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [17.1.4](https://github.com/puppeteer/puppeteer/compare/v17.1.3...v17.1.4) (2022-09-14)
+
+
+### Bug Fixes
+
+* supress init errors if the target is closed ([#8947](https://github.com/puppeteer/puppeteer/issues/8947)) ([a4ec7de](https://github.com/puppeteer/puppeteer/commit/a4ec7deb5a527b041965a41e3ccd469fd72e9298))
+
 ## [17.1.3](https://github.com/puppeteer/puppeteer/compare/v17.1.2...v17.1.3) (2022-09-08)
 
 
