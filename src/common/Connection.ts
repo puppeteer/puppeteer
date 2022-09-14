@@ -56,7 +56,7 @@ export class Connection extends EventEmitter {
   #transport: ConnectionTransport;
   #delay: number;
   #lastId = 0;
-  #sessions: Map<string, CDPSession> = new Map();
+  #sessions: Map<string, CDPSessionImpl> = new Map();
   #closed = false;
   #callbacks: Map<number, ConnectionCallback> = new Map();
   #manuallyAttached = new Set<string>();
@@ -147,7 +147,7 @@ export class Connection extends EventEmitter {
     const object = JSON.parse(message);
     if (object.method === 'Target.attachedToTarget') {
       const sessionId = object.params.sessionId;
-      const session = new CDPSession(
+      const session = new CDPSessionImpl(
         this,
         object.params.targetInfo.type,
         sessionId
@@ -310,6 +310,47 @@ export const CDPSessionEmittedEvents = {
  * @public
  */
 export class CDPSession extends EventEmitter {
+  /**
+   * @internal
+   */
+  constructor() {
+    super();
+  }
+
+  connection(): Connection | undefined {
+    throw new Error('Not implemented');
+  }
+
+  send<T extends keyof ProtocolMapping.Commands>(
+    method: T,
+    ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
+  ): Promise<ProtocolMapping.Commands[T]['returnType']>;
+  send<T extends keyof ProtocolMapping.Commands>(): Promise<
+    ProtocolMapping.Commands[T]['returnType']
+  > {
+    throw new Error('Not implemented');
+  }
+
+  /**
+   * Detaches the cdpSession from the target. Once detached, the cdpSession object
+   * won't emit any events and can't be used to send messages.
+   */
+  async detach(): Promise<void> {
+    throw new Error('Not implemented');
+  }
+
+  /**
+   * Returns the session's id.
+   */
+  id(): string {
+    throw new Error('Not implemented');
+  }
+}
+
+/**
+ * @internal
+ */
+export class CDPSessionImpl extends CDPSession {
   #sessionId: string;
   #targetType: string;
   #callbacks: Map<number, ConnectionCallback> = new Map();
@@ -325,11 +366,11 @@ export class CDPSession extends EventEmitter {
     this.#sessionId = sessionId;
   }
 
-  connection(): Connection | undefined {
+  override connection(): Connection | undefined {
     return this.#connection;
   }
 
-  send<T extends keyof ProtocolMapping.Commands>(
+  override send<T extends keyof ProtocolMapping.Commands>(
     method: T,
     ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
@@ -386,7 +427,7 @@ export class CDPSession extends EventEmitter {
    * Detaches the cdpSession from the target. Once detached, the cdpSession object
    * won't emit any events and can't be used to send messages.
    */
-  async detach(): Promise<void> {
+  override async detach(): Promise<void> {
     if (!this.#connection) {
       throw new Error(
         `Session already detached. Most likely the ${
@@ -419,7 +460,7 @@ export class CDPSession extends EventEmitter {
   /**
    * Returns the session's id.
    */
-  id(): string {
+  override id(): string {
     return this.#sessionId;
   }
 }
