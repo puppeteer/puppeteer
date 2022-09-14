@@ -18,11 +18,8 @@ import {debugError} from './util.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {isNode} from '../environment.js';
 import {assert} from '../util/assert.js';
-import {
-  Browser,
-  IsPageTargetCallback,
-  TargetFilterCallback,
-} from './Browser.js';
+import {IsPageTargetCallback, TargetFilterCallback} from '../api/Browser.js';
+import {CDPBrowser} from './Browser.js';
 import {Connection} from './Connection.js';
 import {ConnectionTransport} from './ConnectionTransport.js';
 import {getFetch} from './fetch.js';
@@ -55,6 +52,11 @@ export interface BrowserConnectOptions {
    * @internal
    */
   _isPageTarget?: IsPageTargetCallback;
+  /**
+   * @defaultValue 'cdp'
+   * @internal
+   */
+  protocol?: 'cdp' | 'webDriverBiDi';
 }
 
 const getWebSocketTransportClass = async () => {
@@ -70,13 +72,13 @@ const getWebSocketTransportClass = async () => {
  *
  * @internal
  */
-export async function _connectToBrowser(
+export async function _connectToCDPBrowser(
   options: BrowserConnectOptions & {
     browserWSEndpoint?: string;
     browserURL?: string;
     transport?: ConnectionTransport;
   }
-): Promise<Browser> {
+): Promise<CDPBrowser> {
   const {
     browserWSEndpoint,
     browserURL,
@@ -118,7 +120,7 @@ export async function _connectToBrowser(
   const {browserContextIds} = await connection.send(
     'Target.getBrowserContexts'
   );
-  const browser = await Browser._create(
+  const browser = await CDPBrowser._create(
     product || 'chrome',
     connection,
     browserContextIds,

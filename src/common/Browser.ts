@@ -18,7 +18,6 @@ import {ChildProcess} from 'child_process';
 import {Protocol} from 'devtools-protocol';
 import {assert} from '../util/assert.js';
 import {CDPSession, Connection, ConnectionEmittedEvents} from './Connection.js';
-import {EventEmitter} from './EventEmitter.js';
 import {waitWithTimeout} from './util.js';
 import {Page} from './Page.js';
 import {Viewport} from './PuppeteerViewport.js';
@@ -27,196 +26,24 @@ import {TaskQueue} from './TaskQueue.js';
 import {TargetManager, TargetManagerEmittedEvents} from './TargetManager.js';
 import {ChromeTargetManager} from './ChromeTargetManager.js';
 import {FirefoxTargetManager} from './FirefoxTargetManager.js';
-
-/**
- * BrowserContext options.
- *
- * @public
- */
-export interface BrowserContextOptions {
-  /**
-   * Proxy server with optional port to use for all requests.
-   * Username and password can be set in `Page.authenticate`.
-   */
-  proxyServer?: string;
-  /**
-   * Bypass the proxy for the given semi-colon-separated list of hosts.
-   */
-  proxyBypassList?: string[];
-}
-
-/**
- * @internal
- */
-export type BrowserCloseCallback = () => Promise<void> | void;
-
-/**
- * @public
- */
-export type TargetFilterCallback = (
-  target: Protocol.Target.TargetInfo
-) => boolean;
-
-/**
- * @internal
- */
-export type IsPageTargetCallback = (
-  target: Protocol.Target.TargetInfo
-) => boolean;
-
-const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map<
+import {
+  Browser as BrowserBase,
+  BrowserContext,
+  BrowserCloseCallback,
+  TargetFilterCallback,
+  IsPageTargetCallback,
+  BrowserEmittedEvents,
+  BrowserContextEmittedEvents,
+  BrowserContextOptions,
+  WEB_PERMISSION_TO_PROTOCOL_PERMISSION,
+  WaitForTargetOptions,
   Permission,
-  Protocol.Browser.PermissionType
->([
-  ['geolocation', 'geolocation'],
-  ['midi', 'midi'],
-  ['notifications', 'notifications'],
-  // TODO: push isn't a valid type?
-  // ['push', 'push'],
-  ['camera', 'videoCapture'],
-  ['microphone', 'audioCapture'],
-  ['background-sync', 'backgroundSync'],
-  ['ambient-light-sensor', 'sensors'],
-  ['accelerometer', 'sensors'],
-  ['gyroscope', 'sensors'],
-  ['magnetometer', 'sensors'],
-  ['accessibility-events', 'accessibilityEvents'],
-  ['clipboard-read', 'clipboardReadWrite'],
-  ['clipboard-write', 'clipboardReadWrite'],
-  ['payment-handler', 'paymentHandler'],
-  ['persistent-storage', 'durableStorage'],
-  ['idle-detection', 'idleDetection'],
-  // chrome-specific permissions we have.
-  ['midi-sysex', 'midiSysex'],
-]);
+} from '../api/Browser.js';
 
 /**
- * @public
+ * @internal
  */
-export type Permission =
-  | 'geolocation'
-  | 'midi'
-  | 'notifications'
-  | 'camera'
-  | 'microphone'
-  | 'background-sync'
-  | 'ambient-light-sensor'
-  | 'accelerometer'
-  | 'gyroscope'
-  | 'magnetometer'
-  | 'accessibility-events'
-  | 'clipboard-read'
-  | 'clipboard-write'
-  | 'payment-handler'
-  | 'persistent-storage'
-  | 'idle-detection'
-  | 'midi-sysex';
-
-/**
- * @public
- */
-export interface WaitForTargetOptions {
-  /**
-   * Maximum wait time in milliseconds. Pass `0` to disable the timeout.
-   * @defaultValue 30 seconds.
-   */
-  timeout?: number;
-}
-
-/**
- * All the events a {@link Browser | browser instance} may emit.
- *
- * @public
- */
-export const enum BrowserEmittedEvents {
-  /**
-   * Emitted when Puppeteer gets disconnected from the Chromium instance. This
-   * might happen because of one of the following:
-   *
-   * - Chromium is closed or crashed
-   *
-   * - The {@link Browser.disconnect | browser.disconnect } method was called.
-   */
-  Disconnected = 'disconnected',
-
-  /**
-   * Emitted when the url of a target changes. Contains a {@link Target} instance.
-   *
-   * @remarks
-   *
-   * Note that this includes target changes in incognito browser contexts.
-   */
-  TargetChanged = 'targetchanged',
-
-  /**
-   * Emitted when a target is created, for example when a new page is opened by
-   * {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/open | window.open}
-   * or by {@link Browser.newPage | browser.newPage}
-   *
-   * Contains a {@link Target} instance.
-   *
-   * @remarks
-   *
-   * Note that this includes target creations in incognito browser contexts.
-   */
-  TargetCreated = 'targetcreated',
-  /**
-   * Emitted when a target is destroyed, for example when a page is closed.
-   * Contains a {@link Target} instance.
-   *
-   * @remarks
-   *
-   * Note that this includes target destructions in incognito browser contexts.
-   */
-  TargetDestroyed = 'targetdestroyed',
-}
-
-/**
- * A Browser is created when Puppeteer connects to a Chromium instance, either through
- * {@link PuppeteerNode.launch} or {@link Puppeteer.connect}.
- *
- * @remarks
- *
- * The Browser class extends from Puppeteer's {@link EventEmitter} class and will
- * emit various events which are documented in the {@link BrowserEmittedEvents} enum.
- *
- * @example
- * An example of using a {@link Browser} to create a {@link Page}:
- *
- * ```ts
- * const puppeteer = require('puppeteer');
- *
- * (async () => {
- *   const browser = await puppeteer.launch();
- *   const page = await browser.newPage();
- *   await page.goto('https://example.com');
- *   await browser.close();
- * })();
- * ```
- *
- * @example
- * An example of disconnecting from and reconnecting to a {@link Browser}:
- *
- * ```ts
- * const puppeteer = require('puppeteer');
- *
- * (async () => {
- *   const browser = await puppeteer.launch();
- *   // Store the endpoint to be able to reconnect to Chromium
- *   const browserWSEndpoint = browser.wsEndpoint();
- *   // Disconnect puppeteer from Chromium
- *   browser.disconnect();
- *
- *   // Use the endpoint to reestablish a connection
- *   const browser2 = await puppeteer.connect({browserWSEndpoint});
- *   // Close Chromium
- *   await browser2.close();
- * })();
- * ```
- *
- * @public
- */
-export class Browser extends EventEmitter {
+export class CDPBrowser extends BrowserBase {
   /**
    * @internal
    */
@@ -230,8 +57,8 @@ export class Browser extends EventEmitter {
     closeCallback?: BrowserCloseCallback,
     targetFilterCallback?: TargetFilterCallback,
     isPageTargetCallback?: IsPageTargetCallback
-  ): Promise<Browser> {
-    const browser = new Browser(
+  ): Promise<CDPBrowser> {
+    const browser = new CDPBrowser(
       product,
       connection,
       contextIds,
@@ -252,15 +79,15 @@ export class Browser extends EventEmitter {
   #closeCallback: BrowserCloseCallback;
   #targetFilterCallback: TargetFilterCallback;
   #isPageTargetCallback!: IsPageTargetCallback;
-  #defaultContext: BrowserContext;
-  #contexts: Map<string, BrowserContext>;
+  #defaultContext: CDPBrowserContext;
+  #contexts: Map<string, CDPBrowserContext>;
   #screenshotTaskQueue: TaskQueue;
   #targetManager: TargetManager;
 
   /**
    * @internal
    */
-  get _targets(): Map<string, Target> {
+  override get _targets(): Map<string, Target> {
     return this.#targetManager.getAvailableTargets();
   }
 
@@ -305,12 +132,12 @@ export class Browser extends EventEmitter {
         this.#targetFilterCallback
       );
     }
-    this.#defaultContext = new BrowserContext(this.#connection, this);
+    this.#defaultContext = new CDPBrowserContext(this.#connection, this);
     this.#contexts = new Map();
     for (const contextId of contextIds) {
       this.#contexts.set(
         contextId,
-        new BrowserContext(this.#connection, this, contextId)
+        new CDPBrowserContext(this.#connection, this, contextId)
       );
     }
   }
@@ -322,7 +149,7 @@ export class Browser extends EventEmitter {
   /**
    * @internal
    */
-  async _attach(): Promise<void> {
+  override async _attach(): Promise<void> {
     this.#connection.on(
       ConnectionEmittedEvents.Disconnected,
       this.#emitDisconnected
@@ -349,7 +176,7 @@ export class Browser extends EventEmitter {
   /**
    * @internal
    */
-  _detach(): void {
+  override _detach(): void {
     this.#connection.off(
       ConnectionEmittedEvents.Disconnected,
       this.#emitDisconnected
@@ -376,7 +203,7 @@ export class Browser extends EventEmitter {
    * The spawned browser process. Returns `null` if the browser instance was created with
    * {@link Puppeteer.connect}.
    */
-  process(): ChildProcess | null {
+  override process(): ChildProcess | null {
     return this.#process ?? null;
   }
 
@@ -402,7 +229,7 @@ export class Browser extends EventEmitter {
   /**
    * @internal
    */
-  _getIsPageTargetCallback(): IsPageTargetCallback | undefined {
+  override _getIsPageTargetCallback(): IsPageTargetCallback | undefined {
     return this.#isPageTargetCallback;
   }
 
@@ -424,9 +251,9 @@ export class Browser extends EventEmitter {
    * })();
    * ```
    */
-  async createIncognitoBrowserContext(
+  override async createIncognitoBrowserContext(
     options: BrowserContextOptions = {}
-  ): Promise<BrowserContext> {
+  ): Promise<CDPBrowserContext> {
     const {proxyServer, proxyBypassList} = options;
 
     const {browserContextId} = await this.#connection.send(
@@ -436,7 +263,7 @@ export class Browser extends EventEmitter {
         proxyBypassList: proxyBypassList && proxyBypassList.join(','),
       }
     );
-    const context = new BrowserContext(
+    const context = new CDPBrowserContext(
       this.#connection,
       this,
       browserContextId
@@ -449,21 +276,21 @@ export class Browser extends EventEmitter {
    * Returns an array of all open browser contexts. In a newly created browser, this will
    * return a single instance of {@link BrowserContext}.
    */
-  browserContexts(): BrowserContext[] {
+  override browserContexts(): CDPBrowserContext[] {
     return [this.#defaultContext, ...Array.from(this.#contexts.values())];
   }
 
   /**
    * Returns the default browser context. The default browser context cannot be closed.
    */
-  defaultBrowserContext(): BrowserContext {
+  override defaultBrowserContext(): CDPBrowserContext {
     return this.#defaultContext;
   }
 
   /**
    * @internal
    */
-  async _disposeContext(contextId?: string): Promise<void> {
+  override async _disposeContext(contextId?: string): Promise<void> {
     if (!contextId) {
       return;
     }
@@ -564,7 +391,7 @@ export class Browser extends EventEmitter {
    * https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target
    * | browser endpoint}.
    */
-  wsEndpoint(): string {
+  override wsEndpoint(): string {
     return this.#connection.url();
   }
 
@@ -572,14 +399,14 @@ export class Browser extends EventEmitter {
    * Promise which resolves to a new {@link Page} object. The Page is created in
    * a default browser context.
    */
-  async newPage(): Promise<Page> {
+  override async newPage(): Promise<Page> {
     return this.#defaultContext.newPage();
   }
 
   /**
    * @internal
    */
-  async _createPageInContext(contextId?: string): Promise<Page> {
+  override async _createPageInContext(contextId?: string): Promise<Page> {
     const {targetId} = await this.#connection.send('Target.createTarget', {
       url: 'about:blank',
       browserContextId: contextId || undefined,
@@ -605,7 +432,7 @@ export class Browser extends EventEmitter {
    * All active targets inside the Browser. In case of multiple browser contexts, returns
    * an array with all the targets in all browser contexts.
    */
-  targets(): Target[] {
+  override targets(): Target[] {
     return Array.from(
       this.#targetManager.getAvailableTargets().values()
     ).filter(target => {
@@ -616,7 +443,7 @@ export class Browser extends EventEmitter {
   /**
    * The target associated with the browser.
    */
-  target(): Target {
+  override target(): Target {
     const browserTarget = this.targets().find(target => {
       return target.type() === 'browser';
     });
@@ -643,7 +470,7 @@ export class Browser extends EventEmitter {
    * );
    * ```
    */
-  async waitForTarget(
+  override async waitForTarget(
     predicate: (x: Target) => boolean | Promise<boolean>,
     options: WaitForTargetOptions = {}
   ): Promise<Target> {
@@ -683,7 +510,7 @@ export class Browser extends EventEmitter {
    * browser contexts. Non-visible pages, such as `"background_page"`, will not be listed
    * here. You can find them using {@link Target.page}.
    */
-  async pages(): Promise<Page[]> {
+  override async pages(): Promise<Page[]> {
     const contextPages = await Promise.all(
       this.browserContexts().map(context => {
         return context.pages();
@@ -705,7 +532,7 @@ export class Browser extends EventEmitter {
    *
    * The format of browser.version() might change with future releases of Chromium.
    */
-  async version(): Promise<string> {
+  override async version(): Promise<string> {
     const version = await this.#getVersion();
     return version.product;
   }
@@ -714,26 +541,27 @@ export class Browser extends EventEmitter {
    * The browser's original user agent. Pages can override the browser user agent with
    * {@link Page.setUserAgent}.
    */
-  async userAgent(): Promise<string> {
+  override async userAgent(): Promise<string> {
     const version = await this.#getVersion();
     return version.userAgent;
   }
 
   /**
-   * Closes Chromium and all of its pages (if any were opened). The {@link Browser} object
-   * itself is considered to be disposed and cannot be used anymore.
+   * Closes Chromium and all of its pages (if any were opened). The
+   * {@link CDPBrowser} object itself is considered to be disposed and cannot be
+   * used anymore.
    */
-  async close(): Promise<void> {
+  override async close(): Promise<void> {
     await this.#closeCallback.call(null);
     this.disconnect();
   }
 
   /**
    * Disconnects Puppeteer from the browser, but leaves the Chromium process running.
-   * After calling `disconnect`, the {@link Browser} object is considered disposed and
+   * After calling `disconnect`, the {@link CDPBrowser} object is considered disposed and
    * cannot be used anymore.
    */
-  disconnect(): void {
+  override disconnect(): void {
     this.#targetManager.dispose();
     this.#connection.dispose();
   }
@@ -741,7 +569,7 @@ export class Browser extends EventEmitter {
   /**
    * Indicates that the browser is connected.
    */
-  isConnected(): boolean {
+  override isConnected(): boolean {
     return !this.#connection._closed;
   }
 
@@ -749,75 +577,19 @@ export class Browser extends EventEmitter {
     return this.#connection.send('Browser.getVersion');
   }
 }
-/**
- * @public
- */
-export const enum BrowserContextEmittedEvents {
-  /**
-   * Emitted when the url of a target inside the browser context changes.
-   * Contains a {@link Target} instance.
-   */
-  TargetChanged = 'targetchanged',
-
-  /**
-   * Emitted when a target is created within the browser context, for example
-   * when a new page is opened by
-   * {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/open | window.open}
-   * or by {@link BrowserContext.newPage | browserContext.newPage}
-   *
-   * Contains a {@link Target} instance.
-   */
-  TargetCreated = 'targetcreated',
-  /**
-   * Emitted when a target is destroyed within the browser context, for example
-   * when a page is closed. Contains a {@link Target} instance.
-   */
-  TargetDestroyed = 'targetdestroyed',
-}
 
 /**
- * BrowserContexts provide a way to operate multiple independent browser
- * sessions. When a browser is launched, it has a single BrowserContext used by
- * default. The method {@link Browser.newPage | Browser.newPage} creates a page
- * in the default browser context.
- *
- * @remarks
- *
- * The Browser class extends from Puppeteer's {@link EventEmitter} class and
- * will emit various events which are documented in the
- * {@link BrowserContextEmittedEvents} enum.
- *
- * If a page opens another page, e.g. with a `window.open` call, the popup will
- * belong to the parent page's browser context.
- *
- * Puppeteer allows creation of "incognito" browser contexts with
- * {@link Browser.createIncognitoBrowserContext | Browser.createIncognitoBrowserContext}
- * method. "Incognito" browser contexts don't write any browsing data to disk.
- *
- * @example
- *
- * ```ts
- * // Create a new incognito browser context
- * const context = await browser.createIncognitoBrowserContext();
- * // Create a new page inside context.
- * const page = await context.newPage();
- * // ... do stuff with page ...
- * await page.goto('https://example.com');
- * // Dispose context once it's no longer needed.
- * await context.close();
- * ```
- *
- * @public
+ * @internal
  */
-export class BrowserContext extends EventEmitter {
+export class CDPBrowserContext extends BrowserContext {
   #connection: Connection;
-  #browser: Browser;
+  #browser: CDPBrowser;
   #id?: string;
 
   /**
    * @internal
    */
-  constructor(connection: Connection, browser: Browser, contextId?: string) {
+  constructor(connection: Connection, browser: CDPBrowser, contextId?: string) {
     super();
     this.#connection = connection;
     this.#browser = browser;
@@ -827,7 +599,7 @@ export class BrowserContext extends EventEmitter {
   /**
    * An array of all active targets inside the browser context.
    */
-  targets(): Target[] {
+  override targets(): Target[] {
     return this.#browser.targets().filter(target => {
       return target.browserContext() === this;
     });
@@ -853,7 +625,7 @@ export class BrowserContext extends EventEmitter {
    * @returns Promise which resolves to the first target found
    * that matches the `predicate` function.
    */
-  waitForTarget(
+  override waitForTarget(
     predicate: (x: Target) => boolean | Promise<boolean>,
     options: {timeout?: number} = {}
   ): Promise<Target> {
@@ -869,7 +641,7 @@ export class BrowserContext extends EventEmitter {
    * Non visible pages, such as `"background_page"`, will not be listed here.
    * You can find them using {@link Target.page | the target page}.
    */
-  async pages(): Promise<Page[]> {
+  override async pages(): Promise<Page[]> {
     const pages = await Promise.all(
       this.targets()
         .filter(target => {
@@ -897,7 +669,7 @@ export class BrowserContext extends EventEmitter {
    * @remarks
    * The default browser context cannot be closed.
    */
-  isIncognito(): boolean {
+  override isIncognito(): boolean {
     return !!this.#id;
   }
 
@@ -915,7 +687,7 @@ export class BrowserContext extends EventEmitter {
    * @param permissions - An array of permissions to grant.
    * All permissions that are not listed here will be automatically denied.
    */
-  async overridePermissions(
+  override async overridePermissions(
     origin: string,
     permissions: Permission[]
   ): Promise<void> {
@@ -946,7 +718,7 @@ export class BrowserContext extends EventEmitter {
    * context.clearPermissionOverrides();
    * ```
    */
-  async clearPermissionOverrides(): Promise<void> {
+  override async clearPermissionOverrides(): Promise<void> {
     await this.#connection.send('Browser.resetPermissions', {
       browserContextId: this.#id || undefined,
     });
@@ -955,14 +727,14 @@ export class BrowserContext extends EventEmitter {
   /**
    * Creates a new page in the browser context.
    */
-  newPage(): Promise<Page> {
+  override newPage(): Promise<Page> {
     return this.#browser._createPageInContext(this.#id);
   }
 
   /**
    * The browser this browser context belongs to.
    */
-  browser(): Browser {
+  override browser(): CDPBrowser {
     return this.#browser;
   }
 
@@ -973,7 +745,7 @@ export class BrowserContext extends EventEmitter {
    * @remarks
    * Only incognito browser contexts can be closed.
    */
-  async close(): Promise<void> {
+  override async close(): Promise<void> {
     assert(this.#id, 'Non-incognito profiles cannot be closed!');
     await this.#browser._disposeContext(this.#id);
   }

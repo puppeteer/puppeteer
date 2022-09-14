@@ -1942,5 +1942,23 @@
     "platforms": ["darwin", "win32", "linux"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "",
+    "platforms": ["darwin", "win32", "linux"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch can launch and close the browser",
+    "platforms": ["darwin", "win32", "linux"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[Connection.spec] WebDriver BiDi",
+    "platforms": ["darwin", "win32", "linux"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
   }
 ]

@@ -22,6 +22,7 @@ import removeFolder from 'rimraf';
 import {promisify} from 'util';
 import {assert} from '../util/assert.js';
 import {Connection} from '../common/Connection.js';
+import {Connection as BiDiConnection} from '../common/bidi/Connection.js';
 import {debug} from '../common/Debug.js';
 import {TimeoutError} from '../common/Errors.js';
 import {
@@ -245,6 +246,25 @@ export class BrowserRunner {
     removeEventListeners(this.#listeners);
   }
 
+  async setupWebDriverBiDiConnection(options: {
+    timeout: number;
+    slowMo: number;
+    preferredRevision: string;
+  }): Promise<BiDiConnection> {
+    assert(this.proc, 'BrowserRunner not started.');
+
+    const {timeout, slowMo, preferredRevision} = options;
+    let browserWSEndpoint = await waitForWSEndpoint(
+      this.proc,
+      timeout,
+      preferredRevision,
+      /^WebDriver BiDi listening on (ws:\/\/.*)$/
+    );
+    browserWSEndpoint += '/session';
+    const transport = await WebSocketTransport.create(browserWSEndpoint);
+    return new BiDiConnection(transport, slowMo);
+  }
+
   async setupConnection(options: {
     usePipe?: boolean;
     timeout: number;
@@ -279,7 +299,8 @@ export class BrowserRunner {
 function waitForWSEndpoint(
   browserProcess: childProcess.ChildProcess,
   timeout: number,
-  preferredRevision: string
+  preferredRevision: string,
+  regex = /^DevTools listening on (ws:\/\/.*)$/
 ): Promise<string> {
   assert(browserProcess.stderr, '`browserProcess` does not have stderr.');
   const rl = readline.createInterface(browserProcess.stderr);
@@ -327,7 +348,7 @@ function waitForWSEndpoint(
 
     function onLine(line: string): void {
       stderr += line + '\n';
-      const match = line.match(/^DevTools listening on (ws:\/\/.*)$/);
+      const match = line.match(regex);
       if (!match) {
         return;
       }
