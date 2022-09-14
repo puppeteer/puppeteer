@@ -27,7 +27,7 @@
     "node": ">=14.1.0"
   },
   "scripts": {
-    "test": "cross-env MOZ_WEBRENDER=0 PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 c8 --check-coverage --lines 93 node utils/mochaRunner/lib/main.js",
+    "test": "cross-env MOZ_WEBRENDER=0 PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 node utils/mochaRunner/lib/main.js",
     "test:types": "tsd",
     "test:install": "scripts/test-install.sh",
     "test:firefox": "npm run test -- --test-suite firefox-headless",

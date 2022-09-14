@@ -70,6 +70,8 @@ function getApplicableTestSuites(
 }
 
 async function main() {
+  const noCoverage = process.argv.indexOf('--no-coverage') !== -1;
+
   const platform = zPlatform.parse(os.platform());
 
   const expectations = readJSON(
@@ -116,23 +118,33 @@ async function main() {
       );
       const tmpFilename = path.join(tmpDir, 'output.json');
       console.log('Running', JSON.stringify(parameters), tmpFilename);
-      const handle = spawn(
-        'npx mocha',
-        [
-          '-u',
-          path.join(__dirname, 'interface.js'),
-          '-R',
-          path.join(__dirname, 'reporter.js'),
-          '-O',
-          'output=' + tmpFilename,
-        ],
-        {
-          shell: true,
-          cwd: process.cwd(),
-          stdio: 'inherit',
-          env,
-        }
-      );
+      const args = [
+        '-u',
+        path.join(__dirname, 'interface.js'),
+        '-R',
+        path.join(__dirname, 'reporter.js'),
+        '-O',
+        'output=' + tmpFilename,
+      ];
+      const handle = noCoverage
+        ? spawn('npx', ['mocha', ...args])
+        : spawn(
+            'npx',
+            [
+              'c8',
+              '--check-coverage',
+              '--lines',
+              String(suite.expectedLineCoverage),
+              'npx mocha',
+              ...args,
+            ],
+            {
+              shell: true,
+              cwd: process.cwd(),
+              stdio: 'inherit',
+              env,
+            }
+          );
       await new Promise<void>((resolve, reject) => {
         handle.on('error', err => {
           reject(err);

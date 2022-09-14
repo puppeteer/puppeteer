@@ -3,27 +3,32 @@
     {
       "id": "chrome-headless",
       "platforms": ["linux", "win32", "darwin"],
-      "parameters": ["chrome", "headless"]
+      "parameters": ["chrome", "headless"],
+      "expectedLineCoverage": 93
     },
     {
       "id": "chrome-headful",
       "platforms": ["linux"],
-      "parameters": ["chrome", "headful"]
+      "parameters": ["chrome", "headful"],
+      "expectedLineCoverage": 93
     },
     {
       "id": "chrome-new-headless",
       "platforms": ["linux"],
-      "parameters": ["chrome", "chrome-headless"]
+      "parameters": ["chrome", "chrome-headless"],
+      "expectedLineCoverage": 93
     },
     {
       "id": "firefox-headless",
       "platforms": ["linux"],
-      "parameters": ["firefox", "headless"]
+      "parameters": ["firefox", "headless"],
+      "expectedLineCoverage": 80
     },
     {
       "id": "firefox-bidi",
       "platforms": ["linux"],
-      "parameters": ["firefox", "headless", "webDriverBiDi"]
+      "parameters": ["firefox", "headless", "webDriverBiDi"],
+      "expectedLineCoverage": 56
     }
   ],
   "parameterDefinitons": {

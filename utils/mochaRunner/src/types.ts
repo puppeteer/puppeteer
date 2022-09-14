@@ -24,6 +24,7 @@ export const zTestSuite = z.object({
   id: z.string(),
   platforms: z.array(zPlatform),
   parameters: z.array(z.string()),
+  expectedLineCoverage: z.number(),
 });
 
 export type TestSuite = z.infer<typeof zTestSuite>;
