@@ -1,11 +1,14 @@
-import * as BrowserApi from '../../api/Browser.js';
+import {
+  Browser as BrowserBase,
+  BrowserCloseCallback,
+} from '../../api/Browser.js';
 import {Connection} from './Connection.js';
 import {ChildProcess} from 'child_process';
 
 /**
  * @internal
  */
-export class Browser extends BrowserApi.Browser {
+export class Browser extends BrowserBase {
   /**
    * @internal
    */
@@ -15,7 +18,7 @@ export class Browser extends BrowserApi.Browser {
   }
 
   #process?: ChildProcess;
-  #closeCallback?: BrowserApi.BrowserCloseCallback;
+  #closeCallback?: BrowserCloseCallback;
   #connection: Connection;
 
   /**
@@ -44,6 +47,6 @@ export class Browser extends BrowserApi.Browser {
 
 interface Options {
   process?: ChildProcess;
-  closeCallback?: BrowserApi.BrowserCloseCallback;
+  closeCallback?: BrowserCloseCallback;
   connection: Connection;
 }

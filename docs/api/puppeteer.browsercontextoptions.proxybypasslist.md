@@ -4,7 +4,7 @@ sidebar_label: BrowserContextOptions.proxyBypassList
 
 # BrowserContextOptions.proxyBypassList property
 
-Bypass the proxy for the given semi-colon-separated list of hosts.
+Bypass the proxy for the given list of hosts.
 
 **Signature:**
 

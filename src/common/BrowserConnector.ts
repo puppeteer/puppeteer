@@ -18,12 +18,8 @@ import {debugError} from './util.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {isNode} from '../environment.js';
 import {assert} from '../util/assert.js';
-import {
-  Browser,
-  IsPageTargetCallback,
-  TargetFilterCallback,
-} from '../api/Browser.js';
-import {CDPBrowser as CDPBrowser} from './Browser.js';
+import {IsPageTargetCallback, TargetFilterCallback} from '../api/Browser.js';
+import {CDPBrowser} from './Browser.js';
 import {Connection} from './Connection.js';
 import {ConnectionTransport} from './ConnectionTransport.js';
 import {getFetch} from './fetch.js';
@@ -76,13 +72,13 @@ const getWebSocketTransportClass = async () => {
  *
  * @internal
  */
-export async function _connectToBrowser(
+export async function _connectToCDPBrowser(
   options: BrowserConnectOptions & {
     browserWSEndpoint?: string;
     browserURL?: string;
     transport?: ConnectionTransport;
   }
-): Promise<Browser> {
+): Promise<CDPBrowser> {
   const {
     browserWSEndpoint,
     browserURL,

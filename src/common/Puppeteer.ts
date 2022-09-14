@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 import {Browser} from '../api/Browser.js';
-import {BrowserConnectOptions, _connectToBrowser} from './BrowserConnector.js';
+import {
+  BrowserConnectOptions,
+  _connectToCDPBrowser,
+} from './BrowserConnector.js';
 import {ConnectionTransport} from './ConnectionTransport.js';
 import {devices} from './DeviceDescriptors.js';
 import {errors} from './Errors.js';
@@ -81,7 +84,7 @@ export class Puppeteer {
    * @returns Promise which resolves to browser instance.
    */
   connect(options: ConnectOptions): Promise<Browser> {
-    return _connectToBrowser(options);
+    return _connectToCDPBrowser(options);
   }
 
   /**

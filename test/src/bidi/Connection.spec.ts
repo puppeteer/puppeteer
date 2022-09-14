@@ -35,7 +35,7 @@ describe('WebDriver BiDi', () => {
 
     it('should work', async () => {
       const transport = new TestConnectionTransport();
-      const connection = new Connection('ws://localhost', transport);
+      const connection = new Connection(transport);
       const responsePromise = connection.send('session.status', {
         context: 'context',
       });

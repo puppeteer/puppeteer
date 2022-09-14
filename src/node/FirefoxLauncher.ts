@@ -3,7 +3,7 @@ import os from 'os';
 import path from 'path';
 import {assert} from '../util/assert.js';
 import {Browser} from '../api/Browser.js';
-import {CDPBrowser} from '../common/Browser.js';
+import {CDPBrowser as CDPBrowser} from '../common/Browser.js';
 import {Browser as BiDiBrowser} from '../common/bidi/Browser.js';
 import {Product} from '../common/Product.js';
 import {BrowserFetcher} from './BrowserFetcher.js';

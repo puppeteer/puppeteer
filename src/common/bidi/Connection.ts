@@ -50,16 +50,14 @@ interface Event {
  * @internal
  */
 export class Connection extends EventEmitter {
-  #url: string;
   #transport: ConnectionTransport;
   #delay: number;
   #lastId = 0;
   #closed = false;
   #callbacks: Map<number, ConnectionCallback> = new Map();
 
-  constructor(url: string, transport: ConnectionTransport, delay = 0) {
+  constructor(transport: ConnectionTransport, delay = 0) {
     super();
-    this.#url = url;
     this.#delay = delay;
 
     this.#transport = transport;
@@ -69,10 +67,6 @@ export class Connection extends EventEmitter {
 
   get closed(): boolean {
     return this.#closed;
-  }
-
-  url(): string {
-    return this.#url;
   }
 
   send(method: string, params: object): Promise<any> {

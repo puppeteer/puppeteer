@@ -262,7 +262,7 @@ export class BrowserRunner {
     );
     browserWSEndpoint += '/session';
     const transport = await WebSocketTransport.create(browserWSEndpoint);
-    return new BiDiConnection(browserWSEndpoint, transport, slowMo);
+    return new BiDiConnection(transport, slowMo);
   }
 
   async setupConnection(options: {

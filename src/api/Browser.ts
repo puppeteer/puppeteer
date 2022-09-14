@@ -34,7 +34,7 @@ export interface BrowserContextOptions {
    */
   proxyServer?: string;
   /**
-   * Bypass the proxy for the given semi-colon-separated list of hosts.
+   * Bypass the proxy for the given list of hosts.
    */
   proxyBypassList?: string[];
 }

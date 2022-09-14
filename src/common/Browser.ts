@@ -27,7 +27,7 @@ import {TargetManager, TargetManagerEmittedEvents} from './TargetManager.js';
 import {ChromeTargetManager} from './ChromeTargetManager.js';
 import {FirefoxTargetManager} from './FirefoxTargetManager.js';
 import {
-  Browser,
+  Browser as BrowserBase,
   BrowserContext,
   BrowserCloseCallback,
   TargetFilterCallback,
@@ -43,7 +43,7 @@ import {
 /**
  * @internal
  */
-export class CDPBrowser extends Browser {
+export class CDPBrowser extends BrowserBase {
   /**
    * @internal
    */
@@ -547,8 +547,9 @@ export class CDPBrowser extends Browser {
   }
 
   /**
-   * Closes Chromium and all of its pages (if any were opened). The {@link Browser} object
-   * itself is considered to be disposed and cannot be used anymore.
+   * Closes Chromium and all of its pages (if any were opened). The
+   * {@link CDPBrowser} object itself is considered to be disposed and cannot be
+   * used anymore.
    */
   override async close(): Promise<void> {
     await this.#closeCallback.call(null);
@@ -557,7 +558,7 @@ export class CDPBrowser extends Browser {
 
   /**
    * Disconnects Puppeteer from the browser, but leaves the Chromium process running.
-   * After calling `disconnect`, the {@link Browser} object is considered disposed and
+   * After calling `disconnect`, the {@link CDPBrowser} object is considered disposed and
    * cannot be used anymore.
    */
   override disconnect(): void {
