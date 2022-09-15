@@ -159,7 +159,6 @@ export class IsolatedWorld {
     this.#injectPuppeteerUtil(context);
     this.#ctxBindings.clear();
     this.#context.resolve(context);
-    this.#taskManager.rerunAll();
   }
 
   async #injectPuppeteerUtil(context: ExecutionContext): Promise<void> {
@@ -173,6 +172,7 @@ export class IsolatedWorld {
             })()`
         )) as JSHandle<PuppeteerUtil>
       );
+      this.#taskManager.rerunAll();
     } catch (error: unknown) {
       debugError(error);
     }
