@@ -27,8 +27,10 @@ const UNSUITABLE_NODE_NAMES = new Set(['SCRIPT', 'STYLE']);
 
 /**
  * Determines whether a given node is suitable for text matching.
+ *
+ * @internal
  */
-const isSuitableNodeForTextMatching = (node: Node): boolean => {
+export const isSuitableNodeForTextMatching = (node: Node): boolean => {
   return (
     !UNSUITABLE_NODE_NAMES.has(node.nodeName) && !document.head?.contains(node)
   );
@@ -47,7 +49,27 @@ export type TextContent = {
 /**
  * Maps {@link Node}s to their computed {@link TextContent}.
  */
-const textContentCache = new Map<Node, TextContent>();
+const textContentCache = new WeakMap<Node, TextContent>();
+const eraseFromCache = (node: Node | null) => {
+  while (node) {
+    textContentCache.delete(node);
+    if (node instanceof ShadowRoot) {
+      node = node.host;
+    } else {
+      node = node.parentNode;
+    }
+  }
+};
+
+/**
+ * Erases the cache when the tree has mutated text.
+ */
+const observedNodes = new WeakSet<Node>();
+const textChangeObserver = new MutationObserver(mutations => {
+  for (const mutation of mutations) {
+    eraseFromCache(mutation.target);
+  }
+});
 
 /**
  * Builds the text content of a node using some custom logic.
@@ -67,10 +89,19 @@ export const createTextContent = (root: Node): TextContent => {
   if (!isSuitableNodeForTextMatching(root)) {
     return value;
   }
+
   let currentImmediate = '';
   if (isNonTrivialValueNode(root)) {
     value.full = root.value;
     value.immediate.push(root.value);
+
+    root.addEventListener(
+      'input',
+      event => {
+        eraseFromCache(event.target as HTMLInputElement);
+      },
+      {once: true, capture: true}
+    );
   } else {
     for (let child = root.firstChild; child; child = child.nextSibling) {
       if (child.nodeType === Node.TEXT_NODE) {
@@ -91,6 +122,14 @@ export const createTextContent = (root: Node): TextContent => {
     }
     if (root instanceof Element && root.shadowRoot) {
       value.full += createTextContent(root.shadowRoot).full;
+    }
+
+    if (!observedNodes.has(root)) {
+      textChangeObserver.observe(root, {
+        childList: true,
+        characterData: true,
+      });
+      observedNodes.add(root);
     }
   }
   textContentCache.set(root, value);

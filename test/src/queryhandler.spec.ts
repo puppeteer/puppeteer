@@ -197,6 +197,73 @@ describe('Query handler tests', function () {
           })
         ).toBe('a b');
       });
+      it('should clear caches', async () => {
+        const {page} = getTestState();
+
+        await page.setContent(
+          '<div id=target1>text</div><input id=target2 value=text><div id=target3>text</div>'
+        );
+        const div = (await page.$('#target1')) as ElementHandle<HTMLDivElement>;
+        const input = (await page.$(
+          '#target2'
+        )) as ElementHandle<HTMLInputElement>;
+
+        await div.evaluate(div => {
+          div.textContent = 'text';
+        });
+        expect(
+          await page.$eval(`text/text`, e => {
+            return e.id;
+          })
+        ).toBe('target1');
+        await div.evaluate(div => {
+          div.textContent = 'foo';
+        });
+        expect(
+          await page.$eval(`text/text`, e => {
+            return e.id;
+          })
+        ).toBe('target2');
+        await input.evaluate(input => {
+          input.value = '';
+        });
+        await input.type('foo');
+        expect(
+          await page.$eval(`text/text`, e => {
+            return e.id;
+          })
+        ).toBe('target3');
+
+        await div.evaluate(div => {
+          div.textContent = 'text';
+        });
+        await input.evaluate(input => {
+          input.value = '';
+        });
+        await input.type('text');
+        expect(
+          await page.$$eval(`text/text`, es => {
+            return es.length;
+          })
+        ).toBe(3);
+        await div.evaluate(div => {
+          div.textContent = 'foo';
+        });
+        expect(
+          await page.$$eval(`text/text`, es => {
+            return es.length;
+          })
+        ).toBe(2);
+        await input.evaluate(input => {
+          input.value = '';
+        });
+        await input.type('foo');
+        expect(
+          await page.$$eval(`text/text`, es => {
+            return es.length;
+          })
+        ).toBe(1);
+      });
     });
     describe('in ElementHandles', function () {
       it('should query existing element', async () => {

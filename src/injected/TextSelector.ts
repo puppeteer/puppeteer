@@ -1,4 +1,7 @@
-import {createTextContent} from './TextContent.js';
+import {
+  createTextContent,
+  isSuitableNodeForTextMatching,
+} from './TextContent.js';
 
 /**
  * Queries the given node for a node matching the given text selector.
@@ -10,7 +13,7 @@ export const textQuerySelector = (
   root: Node
 ): Element | null => {
   for (const node of root.childNodes) {
-    if (node instanceof Element) {
+    if (node instanceof Element && isSuitableNodeForTextMatching(node)) {
       let matchedNode: Element | null;
       if (node.shadowRoot) {
         matchedNode = textQuerySelector(selector, node.shadowRoot);
