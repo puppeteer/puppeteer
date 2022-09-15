@@ -36,7 +36,7 @@ const INCLUDED_FOLDERS = ['common', 'node', 'generated', 'util', 'api'];
       outdir: tmp,
       format: 'cjs',
       platform: 'browser',
-      target: 'ES2019',
+      target: 'ES2022',
     });
     const baseName = path.basename(input);
     const content = await readFile(
