@@ -26,6 +26,13 @@ import {HTTPResponse} from '../../lib/cjs/puppeteer/common/HTTPResponse.js';
 
 class MockCDPSession extends EventEmitter {
   async send(): Promise<any> {}
+  connection() {
+    return undefined;
+  }
+  async detach() {}
+  id() {
+    return '1';
+  }
 }
 
 describe('NetworkManager', () => {

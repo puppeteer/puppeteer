@@ -15,7 +15,6 @@
  */
 
 import {Protocol} from 'devtools-protocol';
-import {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 import {assert} from '../util/assert.js';
 import {EventEmitter} from './EventEmitter.js';
 import {Frame} from './Frame.js';
@@ -25,6 +24,7 @@ import {FetchRequestId, NetworkEventManager} from './NetworkEventManager.js';
 import {debugError, isString} from './util.js';
 import {DeferredPromise} from '../util/DeferredPromise.js';
 import {createDebuggableDeferredPromise} from '../util/DebuggableDeferredPromise.js';
+import {CDPSession} from './Connection.js';
 
 /**
  * @public
@@ -65,13 +65,6 @@ export const NetworkManagerEmittedEvents = {
   RequestFailed: Symbol('NetworkManager.RequestFailed'),
   RequestFinished: Symbol('NetworkManager.RequestFinished'),
 } as const;
-
-interface CDPSession extends EventEmitter {
-  send<T extends keyof ProtocolMapping.Commands>(
-    method: T,
-    ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
-  ): Promise<ProtocolMapping.Commands[T]['returnType']>;
-}
 
 interface FrameManager {
   frame(frameId: string): Frame | null;
