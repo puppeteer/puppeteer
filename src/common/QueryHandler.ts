@@ -40,7 +40,7 @@ export interface CustomQueryHandler {
 /**
  * @internal
  */
-export interface InternalQueryHandler {
+export interface PuppeteerQueryHandler {
   /**
    * Queries for a single node given a selector and {@link ElementHandle}.
    *
@@ -71,10 +71,10 @@ export interface InternalQueryHandler {
   ) => Promise<ElementHandle<Node> | null>;
 }
 
-function internalizeCustomQueryHandler(
+function createPuppeteerQueryHandler(
   handler: CustomQueryHandler
-): InternalQueryHandler {
-  const internalHandler: InternalQueryHandler = {};
+): PuppeteerQueryHandler {
+  const internalHandler: PuppeteerQueryHandler = {};
 
   if (handler.queryOne) {
     const queryOne = handler.queryOne;
@@ -138,7 +138,7 @@ function internalizeCustomQueryHandler(
   return internalHandler;
 }
 
-const defaultHandler = internalizeCustomQueryHandler({
+const defaultHandler = createPuppeteerQueryHandler({
   queryOne: (element, selector) => {
     if (!('querySelector' in element)) {
       throw new Error(
@@ -165,7 +165,7 @@ const defaultHandler = internalizeCustomQueryHandler({
   },
 });
 
-const pierceHandler = internalizeCustomQueryHandler({
+const pierceHandler = createPuppeteerQueryHandler({
   queryOne: (element, selector) => {
     let found: Node | null = null;
     const search = (root: Node) => {
@@ -215,7 +215,7 @@ const pierceHandler = internalizeCustomQueryHandler({
   },
 });
 
-const xpathHandler = internalizeCustomQueryHandler({
+const xpathHandler = createPuppeteerQueryHandler({
   queryOne: (element, selector) => {
     const doc = element.ownerDocument || document;
     const result = doc.evaluate(
@@ -245,7 +245,7 @@ const xpathHandler = internalizeCustomQueryHandler({
 });
 
 interface RegisteredQueryHandler {
-  handler: InternalQueryHandler;
+  handler: PuppeteerQueryHandler;
   transformSelector?: (selector: string) => string;
 }
 
@@ -294,7 +294,7 @@ export function registerCustomQueryHandler(
     throw new Error(`Custom query handler names may only contain [a-zA-Z]`);
   }
 
-  QUERY_HANDLERS.set(name, {handler: internalizeCustomQueryHandler(handler)});
+  QUERY_HANDLERS.set(name, {handler: createPuppeteerQueryHandler(handler)});
 }
 
 /**
@@ -331,7 +331,7 @@ const CUSTOM_QUERY_SEPARATORS = ['=', '/'];
  */
 export function getQueryHandlerAndSelector(selector: string): {
   updatedSelector: string;
-  queryHandler: InternalQueryHandler;
+  queryHandler: PuppeteerQueryHandler;
 } {
   for (const handlerMap of [QUERY_HANDLERS, INTERNAL_QUERY_HANDLERS]) {
     for (const [
