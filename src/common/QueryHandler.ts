@@ -276,55 +276,12 @@ const xpathHandler = createPuppeteerQueryHandler({
 });
 
 const textQueryHandler = createPuppeteerQueryHandler({
-  queryOne: (element, selector, {createTextContent}) => {
-    const search = (root: Node): Node | null => {
-      for (const node of root.childNodes) {
-        if (node instanceof Element) {
-          let matchedNode: Node | null;
-          if (node.shadowRoot) {
-            matchedNode = search(node.shadowRoot);
-          } else {
-            matchedNode = search(node);
-          }
-          if (matchedNode) {
-            return matchedNode;
-          }
-        }
-      }
-      const textContent = createTextContent(root);
-      if (textContent.full.includes(selector)) {
-        return root;
-      }
-      return null;
-    };
-    return search(element);
+  queryOne: (element, selector, {textQuerySelector}) => {
+    return textQuerySelector(selector, element);
   },
 
-  queryAll: (element, selector, {createTextContent}) => {
-    const search = (root: Node): Node[] => {
-      let results: Node[] = [];
-      for (const node of root.childNodes) {
-        if (node instanceof Element) {
-          let matchedNodes: Node[];
-          if (node.shadowRoot) {
-            matchedNodes = search(node.shadowRoot);
-          } else {
-            matchedNodes = search(node);
-          }
-          results = results.concat(matchedNodes);
-        }
-      }
-      if (results.length > 0) {
-        return results;
-      }
-
-      const textContent = createTextContent(root);
-      if (textContent.full.includes(selector)) {
-        return [root];
-      }
-      return [];
-    };
-    return search(element);
+  queryAll: (element, selector, {textQuerySelectorAll}) => {
+    return textQuerySelectorAll(selector, element);
   },
 });
 

@@ -37,7 +37,6 @@ export class MutationPoller<T> implements Poller<T> {
     }
 
     this.#observer = new MutationObserver(async () => {
-      console.log(1);
       const result = await this.#fn();
       if (!result) {
         return;
