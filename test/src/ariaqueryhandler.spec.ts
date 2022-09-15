@@ -446,7 +446,7 @@ describe('AriaQueryHandler', () => {
 
       let divHidden = false;
       await page.setContent(
-        `<div role='button' style='display: block;'></div>`
+        `<div role='button' style='display: block;'>text</div>`
       );
       const waitForSelector = page
         .waitForSelector('aria/[role="button"]', {hidden: true})
@@ -468,7 +468,9 @@ describe('AriaQueryHandler', () => {
       const {page} = getTestState();
 
       let divHidden = false;
-      await page.setContent(`<div role='main' style='display: block;'></div>`);
+      await page.setContent(
+        `<div role='main' style='display: block;'>text</div>`
+      );
       const waitForSelector = page
         .waitForSelector('aria/[role="main"]', {hidden: true})
         .then(() => {
@@ -488,7 +490,7 @@ describe('AriaQueryHandler', () => {
     it('hidden should wait for removal', async () => {
       const {page} = getTestState();
 
-      await page.setContent(`<div role='main'></div>`);
+      await page.setContent(`<div role='main'>text</div>`);
       let divRemoved = false;
       const waitForSelector = page
         .waitForSelector('aria/[role="main"]', {hidden: true})
@@ -516,13 +518,13 @@ describe('AriaQueryHandler', () => {
     it('should respect timeout', async () => {
       const {page, puppeteer} = getTestState();
 
-      let error!: Error;
-      await page
-        .waitForSelector('aria/[role="button"]', {timeout: 10})
-        .catch(error_ => {
-          return (error = error_);
+      const error = await page
+        .waitForSelector('aria/[role="button"]', {
+          timeout: 10,
+        })
+        .catch(error => {
+          return error;
         });
-      expect(error).toBeTruthy();
       expect(error.message).toContain(
         'Waiting for selector `[role="button"]` failed: Waiting failed: 10ms exceeded'
       );
@@ -532,17 +534,15 @@ describe('AriaQueryHandler', () => {
     it('should have an error message specifically for awaiting an element to be hidden', async () => {
       const {page} = getTestState();
 
-      await page.setContent(`<div role='main'></div>`);
-      let error!: Error;
-      await page
-        .waitForSelector('aria/[role="main"]', {hidden: true, timeout: 10})
-        .catch(error_ => {
-          return (error = error_);
-        });
-      expect(error).toBeTruthy();
-      expect(error.message).toContain(
-        'Waiting for selector `[role="main"]` failed: Waiting failed: 10ms exceeded'
-      );
+      await page.setContent(`<div role='main'>text</div>`);
+      const promise = page.waitForSelector('aria/[role="main"]', {
+        hidden: true,
+        timeout: 10,
+      });
+      await expect(promise).rejects.toMatchObject({
+        message:
+          'Waiting for selector `[role="main"]` failed: Waiting failed: 10ms exceeded',
+      });
     });
 
     it('should respond to node attribute mutation', async () => {

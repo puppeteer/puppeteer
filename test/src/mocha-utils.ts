@@ -295,3 +295,14 @@ export const shortWaitForArrayToHaveAtLeastNElements = async (
     });
   }
 };
+
+export const createTimeout = <T>(
+  n: number,
+  value?: T
+): Promise<T | undefined> => {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      return resolve(value);
+    }, n);
+  });
+};
