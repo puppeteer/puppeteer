@@ -122,27 +122,88 @@ jobs:
           user_email: 55107282+release-please[bot]@users.noreply.github.com
 
   tests:
-    name: ${{ matrix.spec.name }} tests (${{ matrix.spec.node }})
+    name: ${{ matrix.spec.name }} tests on ${{ matrix.spec.machine }}(${{ matrix.spec.node }})
     runs-on: ${{ matrix.spec.machine }}
     continue-on-error: true
     strategy:
       matrix:
         spec:
-          - name: Linux
+          - name: chrome-headless
             machine: ubuntu-latest
+            xvfb: true
             node: 14
-          - name: Linux
+            suite: chrome-headless
+          - name: chrome-headless
             machine: ubuntu-latest
+            xvfb: true
             node: 16
-          - name: Linux
+            suite: chrome-headless
+          - name: chrome-headless
             machine: ubuntu-latest
+            xvfb: true
             node: 18
-          - name: macOS
-            machine: macos-latest
-            node: 14
-          - name: Windows
+            suite: chrome-headless
+          - name: chrome-headless
             machine: windows-latest
+            xvfb: false
+            node: 18
+            suite: chrome-headless
+          - name: chrome-headless
+            machine: macos-latest
+            xvfb: false
+            node: 18
+            suite: chrome-headless
+          - name: chrome-headful
+            machine: ubuntu-latest
+            xvfb: true
             node: 14
+            suite: chrome-headful
+          - name: chrome-headful
+            machine: ubuntu-latest
+            xvfb: true
+            node: 16
+            suite: chrome-headful
+          - name: chrome-headful
+            machine: ubuntu-latest
+            xvfb: true
+            node: 18
+            suite: chrome-headful
+          - name: chrome-new-headless
+            machine: ubuntu-latest
+            xvfb: true
+            node: 14
+            suite: chrome-new-headless
+          - name: chrome-new-headless
+            machine: ubuntu-latest
+            xvfb: true
+            node: 16
+            suite: chrome-new-headless
+          - name: chrome-new-headless
+            machine: ubuntu-latest
+            xvfb: true
+            node: 18
+            suite: chrome-new-headless
+          - name: firefox-headless
+            machine: ubuntu-latest
+            xvfb: true
+            node: 14
+            suite: firefox-headless
+          - name: firefox-headless
+            machine: ubuntu-latest
+            xvfb: true
+            node: 16
+            suite: firefox-headless
+          - name: firefox-headless
+            machine: ubuntu-latest
+            xvfb: true
+            node: 18
+            suite: firefox-headless
+          - name: firefox-bidi
+            machine: ubuntu-latest
+            xvfb: true
+            node: 18
+            suite: firefox-bidi
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -167,20 +228,20 @@ jobs:
           PUPPETEER_PRODUCT: firefox
         run: npm install
       - name: Install linux dependencies.
-        if: ${{ matrix.spec.name == 'Linux' }}
+        if: ${{ matrix.spec.xvfb }}
         run: sudo apt-get install xvfb
       - name: Build
         run: npm run build:dev
       - name: Test types
         run: npm run test:types
       - name: Run all tests with xvfb
-        if: ${{ matrix.spec.name == 'Linux' }}
-        run: xvfb-run --auto-servernum npm run test
+        if: ${{ matrix.spec.xvfb }}
+        run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.spec.suite }}
       - name: Run all tests without xvfb
-        if: ${{ matrix.spec.name != 'Linux' }}
-        run: npm run test
+        if: ${{ !matrix.spec.xvfb }}
+        run: npm run test -- --test-suite ${{ matrix.spec.suite }}
       - name: Test bundling and installation
-        if: ${{ matrix.spec.name == 'Linux' }}
+        if: ${{ matrix.spec.machine == 'ubuntu-latest' }}
         run: |
           # Test prod build instead of dev.
           npm run clean
