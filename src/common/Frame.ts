@@ -36,7 +36,7 @@ export interface FrameWaitForFunctionOptions {
    *
    * - `mutation` - to execute `pageFunction` on every DOM mutation.
    */
-  polling?: string | number;
+  polling?: 'raf' | 'mutation' | number;
   /**
    * Maximum time to wait in milliseconds. Defaults to `30000` (30 seconds).
    * Pass `0` to disable the timeout. Puppeteer's default timeout can be changed
@@ -664,7 +664,6 @@ export class Frame {
     options: FrameWaitForFunctionOptions = {},
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    // TODO: Fix when NodeHandle has been added.
     return this.worlds[MAIN_WORLD].waitForFunction(
       pageFunction,
       options,

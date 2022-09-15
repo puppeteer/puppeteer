@@ -40,6 +40,7 @@ import {
   Frame,
   FrameAddScriptTagOptions,
   FrameAddStyleTagOptions,
+  FrameWaitForFunctionOptions,
 } from './Frame.js';
 import {FrameManager, FrameManagerEmittedEvents} from './FrameManager.js';
 import {HTTPRequest} from './HTTPRequest.js';
@@ -3564,32 +3565,14 @@ export class Page extends EventEmitter {
    * ```
    *
    * @param pageFunction - Function to be evaluated in browser context
-   * @param options - Optional waiting parameters
-   *
-   * - `polling` - An interval at which the `pageFunction` is executed, defaults
-   *   to `raf`. If `polling` is a number, then it is treated as an interval in
-   *   milliseconds at which the function would be executed. If polling is a
-   *   string, then it can be one of the following values:
-   *   - `raf` - to constantly execute `pageFunction` in
-   *     `requestAnimationFrame` callback. This is the tightest polling mode
-   *     which is suitable to observe styling changes.
-   *   - `mutation`- to execute pageFunction on every DOM mutation.
-   * - `timeout` - maximum time to wait for in milliseconds. Defaults to `30000`
-   *   (30 seconds). Pass `0` to disable timeout. The default value can be
-   *   changed by using the {@link Page.setDefaultTimeout} method.
-   *   @param args - Arguments to pass to `pageFunction`
-   *   @returns A `Promise` which resolves to a JSHandle/ElementHandle of the the
-   *   `pageFunction`'s return value.
+   * @param options - Options for configuring waiting behavior.
    */
   waitForFunction<
     Params extends unknown[],
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
   >(
     pageFunction: Func | string,
-    options: {
-      timeout?: number;
-      polling?: string | number;
-    } = {},
+    options: FrameWaitForFunctionOptions = {},
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     return this.mainFrame().waitForFunction(pageFunction, options, ...args);

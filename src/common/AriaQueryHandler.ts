@@ -19,7 +19,7 @@ import {assert} from '../util/assert.js';
 import {CDPSession} from './Connection.js';
 import {ElementHandle} from './ElementHandle.js';
 import {Frame} from './Frame.js';
-import {MAIN_WORLD, PageBinding, PUPPETEER_WORLD} from './IsolatedWorld.js';
+import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorld.js';
 import {InternalQueryHandler} from './QueryHandler.js';
 
 async function queryAXTree(
@@ -121,21 +121,20 @@ const waitFor: InternalQueryHandler['waitFor'] = async (
     frame = elementOrFrame.frame;
     element = await frame.worlds[PUPPETEER_WORLD].adoptHandle(elementOrFrame);
   }
-  const binding: PageBinding = {
-    name: 'ariaQuerySelector',
-    pptrFunction: async (selector: string) => {
-      const id = await queryOneId(
-        element || (await frame.worlds[PUPPETEER_WORLD].document()),
-        selector
-      );
-      if (!id) {
-        return null;
-      }
-      return (await frame.worlds[PUPPETEER_WORLD].adoptBackendNode(
-        id
-      )) as ElementHandle<Node>;
-    },
+
+  const ariaQuerySelector = async (selector: string) => {
+    const id = await queryOneId(
+      element || (await frame.worlds[PUPPETEER_WORLD].document()),
+      selector
+    );
+    if (!id) {
+      return null;
+    }
+    return (await frame.worlds[PUPPETEER_WORLD].adoptBackendNode(
+      id
+    )) as ElementHandle<Node>;
   };
+
   const result = await frame.worlds[PUPPETEER_WORLD]._waitForSelectorInPage(
     (_: Element, selector: string) => {
       return (
@@ -147,16 +146,13 @@ const waitFor: InternalQueryHandler['waitFor'] = async (
     element,
     selector,
     options,
-    binding
+    new Set([ariaQuerySelector])
   );
   if (element) {
     await element.dispose();
   }
-  if (!result) {
-    return null;
-  }
   if (!(result instanceof ElementHandle)) {
-    await result.dispose();
+    await result?.dispose();
     return null;
   }
   return result.frame.worlds[MAIN_WORLD].transferHandle(result);

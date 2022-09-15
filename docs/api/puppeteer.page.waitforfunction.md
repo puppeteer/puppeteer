@@ -15,10 +15,7 @@ class Page {
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
   >(
     pageFunction: Func | string,
-    options?: {
-      timeout?: number;
-      polling?: string | number;
-    },
+    options?: FrameWaitForFunctionOptions,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
 }
@@ -26,17 +23,15 @@ class Page {
 
 ## Parameters
 
-| Parameter    | Type                                              | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| ------------ | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| pageFunction | Func \| string                                    | Function to be evaluated in browser context                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| options      | { timeout?: number; polling?: string \| number; } | <p><i>(Optional)</i> Optional waiting parameters</p><p>- <code>polling</code> - An interval at which the <code>pageFunction</code> is executed, defaults to <code>raf</code>. If <code>polling</code> is a number, then it is treated as an interval in milliseconds at which the function would be executed. If polling is a string, then it can be one of the following values: - <code>raf</code> - to constantly execute <code>pageFunction</code> in <code>requestAnimationFrame</code> callback. This is the tightest polling mode which is suitable to observe styling changes. - <code>mutation</code>- to execute pageFunction on every DOM mutation. - <code>timeout</code> - maximum time to wait for in milliseconds. Defaults to <code>30000</code> (30 seconds). Pass <code>0</code> to disable timeout. The default value can be changed by using the [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) method.</p> |
-| args         | Params                                            | Arguments to pass to <code>pageFunction</code>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Parameter    | Type                                                                      | Description                                                 |
+| ------------ | ------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| pageFunction | Func \| string                                                            | Function to be evaluated in browser context                 |
+| options      | [FrameWaitForFunctionOptions](./puppeteer.framewaitforfunctionoptions.md) | <i>(Optional)</i> Options for configuring waiting behavior. |
+| args         | Params                                                                    |                                                             |
 
 **Returns:**
 
 Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;&gt;
-
-A `Promise` which resolves to a JSHandle/ElementHandle of the the `pageFunction`'s return value.
 
 ## Example 1
 

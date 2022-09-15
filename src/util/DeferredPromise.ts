@@ -6,8 +6,8 @@ import {TimeoutError} from '../common/Errors.js';
 export interface DeferredPromise<T> extends Promise<T> {
   finished: () => boolean;
   resolved: () => boolean;
-  resolve: (_: T) => void;
-  reject: (_: Error) => void;
+  resolve: (value: T) => void;
+  reject: (reason?: unknown) => void;
 }
 
 /**
@@ -32,8 +32,8 @@ export function createDeferredPromise<T>(
 ): DeferredPromise<T> {
   let isResolved = false;
   let isRejected = false;
-  let resolver = (_: T): void => {};
-  let rejector = (_: Error) => {};
+  let resolver: (value: T) => void;
+  let rejector: (reason?: unknown) => void;
   const taskPromise = new Promise<T>((resolve, reject) => {
     resolver = resolve;
     rejector = reject;
@@ -59,7 +59,7 @@ export function createDeferredPromise<T>(
       isResolved = true;
       resolver(value);
     },
-    reject: (err: Error) => {
+    reject: (err?: unknown) => {
       clearTimeout(timeoutId);
       isRejected = true;
       rejector(err);
