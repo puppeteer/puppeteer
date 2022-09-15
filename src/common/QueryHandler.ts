@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import PuppeteerUtil from '../injected/injected.js';
 import {ariaHandler} from './AriaQueryHandler.js';
 import {ElementHandle} from './ElementHandle.js';
 import {Frame} from './Frame.js';
@@ -35,6 +36,28 @@ export interface CustomQueryHandler {
    * @returns Some {@link Node}s matching the given `selector` from {@link node}.
    */
   queryAll?: (node: Node, selector: string) => Node[];
+}
+
+/**
+ * @internal
+ */
+export interface InternalQueryHandler {
+  /**
+   * @returns A {@link Node} matching the given `selector` from {@link node}.
+   */
+  queryOne?: (
+    node: Node,
+    selector: string,
+    PuppeteerUtil: PuppeteerUtil
+  ) => Node | null;
+  /**
+   * @returns Some {@link Node}s matching the given `selector` from {@link node}.
+   */
+  queryAll?: (
+    node: Node,
+    selector: string,
+    PuppeteerUtil: PuppeteerUtil
+  ) => Node[];
 }
 
 /**
@@ -72,14 +95,18 @@ export interface PuppeteerQueryHandler {
 }
 
 function createPuppeteerQueryHandler(
-  handler: CustomQueryHandler
+  handler: InternalQueryHandler
 ): PuppeteerQueryHandler {
   const internalHandler: PuppeteerQueryHandler = {};
 
   if (handler.queryOne) {
     const queryOne = handler.queryOne;
     internalHandler.queryOne = async (element, selector) => {
-      const jsHandle = await element.evaluateHandle(queryOne, selector);
+      const jsHandle = await element.evaluateHandle(
+        queryOne,
+        selector,
+        await element.executionContext()._world!.puppeteerUtil
+      );
       const elementHandle = jsHandle.asElement();
       if (elementHandle) {
         return elementHandle;
@@ -121,7 +148,11 @@ function createPuppeteerQueryHandler(
   if (handler.queryAll) {
     const queryAll = handler.queryAll;
     internalHandler.queryAll = async (element, selector) => {
-      const jsHandle = await element.evaluateHandle(queryAll, selector);
+      const jsHandle = await element.evaluateHandle(
+        queryAll,
+        selector,
+        await element.executionContext()._world!.puppeteerUtil
+      );
       const properties = await jsHandle.getProperties();
       await jsHandle.dispose();
       const result = [];
@@ -244,6 +275,59 @@ const xpathHandler = createPuppeteerQueryHandler({
   },
 });
 
+const textQueryHandler = createPuppeteerQueryHandler({
+  queryOne: (element, selector, {createTextContent}) => {
+    const search = (root: Node): Node | null => {
+      for (const node of root.childNodes) {
+        if (node instanceof Element) {
+          let matchedNode: Node | null;
+          if (node.shadowRoot) {
+            matchedNode = search(node.shadowRoot);
+          } else {
+            matchedNode = search(node);
+          }
+          if (matchedNode) {
+            return matchedNode;
+          }
+        }
+      }
+      const textContent = createTextContent(root);
+      if (textContent.full.includes(selector)) {
+        return root;
+      }
+      return null;
+    };
+    return search(element);
+  },
+
+  queryAll: (element, selector, {createTextContent}) => {
+    const search = (root: Node): Node[] => {
+      let results: Node[] = [];
+      for (const node of root.childNodes) {
+        if (node instanceof Element) {
+          let matchedNodes: Node[];
+          if (node.shadowRoot) {
+            matchedNodes = search(node.shadowRoot);
+          } else {
+            matchedNodes = search(node);
+          }
+          results = results.concat(matchedNodes);
+        }
+      }
+      if (results.length > 0) {
+        return results;
+      }
+
+      const textContent = createTextContent(root);
+      if (textContent.full.includes(selector)) {
+        return [root];
+      }
+      return [];
+    };
+    return search(element);
+  },
+});
+
 interface RegisteredQueryHandler {
   handler: PuppeteerQueryHandler;
   transformSelector?: (selector: string) => string;
@@ -253,6 +337,7 @@ const INTERNAL_QUERY_HANDLERS = new Map<string, RegisteredQueryHandler>([
   ['aria', {handler: ariaHandler}],
   ['pierce', {handler: pierceHandler}],
   ['xpath', {handler: xpathHandler}],
+  ['text', {handler: textQueryHandler}],
 ]);
 const QUERY_HANDLERS = new Map<string, RegisteredQueryHandler>();
 

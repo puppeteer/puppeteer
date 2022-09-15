@@ -545,39 +545,69 @@ describe('Page', function () {
     it('should work', async () => {
       const {page} = getTestState();
 
-      // Instantiate an object
-      await page.evaluate(() => {
-        return ((globalThis as any).set = new Set(['hello', 'world']));
+      // Create a custom class
+      const classHandle = await page.evaluateHandle(() => {
+        return class CustomClass {};
       });
-      const prototypeHandle = await page.evaluateHandle(() => {
-        return Set.prototype;
-      });
-      const objectsHandle = await page.queryObjects(prototypeHandle);
-      const count = await page.evaluate(objects => {
-        return objects.length;
-      }, objectsHandle);
-      expect(count).toBe(1);
-      const values = await page.evaluate(objects => {
-        return Array.from(objects[0]!.values());
-      }, objectsHandle);
-      expect(values).toEqual(['hello', 'world']);
-    });
-    it('should work for non-blank page', async () => {
-      const {page, server} = getTestState();
 
-      // Instantiate an object
-      await page.goto(server.EMPTY_PAGE);
-      await page.evaluate(() => {
-        return ((globalThis as any).set = new Set(['hello', 'world']));
-      });
-      const prototypeHandle = await page.evaluateHandle(() => {
-        return Set.prototype;
-      });
+      // Create an instance.
+      await page.evaluate(CustomClass => {
+        // @ts-expect-error: Different context.
+        self.customClass = new CustomClass();
+      }, classHandle);
+
+      // Validate only one has been added.
+      const prototypeHandle = await page.evaluateHandle(CustomClass => {
+        return CustomClass.prototype;
+      }, classHandle);
       const objectsHandle = await page.queryObjects(prototypeHandle);
-      const count = await page.evaluate(objects => {
-        return objects.length;
-      }, objectsHandle);
-      expect(count).toBe(1);
+      await expect(
+        page.evaluate(objects => {
+          return objects.length;
+        }, objectsHandle)
+      ).resolves.toBe(1);
+
+      // Check that instances.
+      await expect(
+        page.evaluate(objects => {
+          // @ts-expect-error: Different context.
+          return objects[0] === self.customClass;
+        }, objectsHandle)
+      ).resolves.toBeTruthy();
+    });
+    it('should work for non-trivial page', async () => {
+      const {page, server} = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+
+      // Create a custom class
+      const classHandle = await page.evaluateHandle(() => {
+        return class CustomClass {};
+      });
+
+      // Create an instance.
+      await page.evaluate(CustomClass => {
+        // @ts-expect-error: Different context.
+        self.customClass = new CustomClass();
+      }, classHandle);
+
+      // Validate only one has been added.
+      const prototypeHandle = await page.evaluateHandle(CustomClass => {
+        return CustomClass.prototype;
+      }, classHandle);
+      const objectsHandle = await page.queryObjects(prototypeHandle);
+      await expect(
+        page.evaluate(objects => {
+          return objects.length;
+        }, objectsHandle)
+      ).resolves.toBe(1);
+
+      // Check that instances.
+      await expect(
+        page.evaluate(objects => {
+          // @ts-expect-error: Different context.
+          return objects[0] === self.customClass;
+        }, objectsHandle)
+      ).resolves.toBeTruthy();
     });
     it('should fail for disposed handles', async () => {
       const {page} = getTestState();

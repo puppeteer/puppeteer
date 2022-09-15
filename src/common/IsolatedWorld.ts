@@ -518,7 +518,8 @@ export class IsolatedWorld {
           }
           const node = (await PuppeteerUtil.createFunction(query)(
             root || document,
-            selector
+            selector,
+            PuppeteerUtil
           )) as Node | null;
           return PuppeteerUtil.checkVisibility(node, visible);
         },
