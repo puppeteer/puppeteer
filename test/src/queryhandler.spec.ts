@@ -94,6 +94,133 @@ describe('Query handler tests', function () {
     });
   });
 
+  describe('Text selectors', function () {
+    describe('in Page', function () {
+      it('should query existing element', async () => {
+        const {page} = getTestState();
+
+        await page.setContent('<section>test</section>');
+
+        expect(await page.$('text/test')).toBeTruthy();
+        expect((await page.$$('text/test')).length).toBe(1);
+      });
+      it('should return empty array for non-existing element', async () => {
+        const {page} = getTestState();
+
+        expect(await page.$('text/test')).toBeFalsy();
+        expect((await page.$$('text/test')).length).toBe(0);
+      });
+      it('should return first element', async () => {
+        const {page} = getTestState();
+
+        await page.setContent('<div id="1">a</div><div>a</div>');
+
+        const element = await page.$('text/a');
+        expect(
+          await element?.evaluate(e => {
+            return e.id;
+          })
+        ).toBe('1');
+      });
+      it('should return multiple elements', async () => {
+        const {page} = getTestState();
+
+        await page.setContent('<div>a</div><div>a</div>');
+
+        const elements = await page.$$('text/a');
+        expect(elements.length).toBe(2);
+      });
+      it('should pierce shadow DOM', async () => {
+        const {page} = getTestState();
+
+        await page.evaluate(() => {
+          const div = document.createElement('div');
+          const shadow = div.attachShadow({mode: 'open'});
+          const diva = document.createElement('div');
+          shadow.append(diva);
+          const divb = document.createElement('div');
+          shadow.append(divb);
+          diva.innerHTML = 'a';
+          divb.innerHTML = 'b';
+          document.body.append(div);
+        });
+
+        const element = await page.$('text/a');
+        expect(
+          await element?.evaluate(e => {
+            return e.textContent;
+          })
+        ).toBe('a');
+      });
+      it('should query deeply nested text', async () => {
+        const {page} = getTestState();
+
+        await page.setContent('<div><div>a</div><div>b</div></div>');
+
+        const element = await page.$('text/a');
+        expect(
+          await element?.evaluate(e => {
+            return e.textContent;
+          })
+        ).toBe('a');
+      });
+      it('should query inputs', async () => {
+        const {page} = getTestState();
+
+        await page.setContent('<input value="a">');
+
+        const element = (await page.$(
+          'text/a'
+        )) as ElementHandle<HTMLInputElement>;
+        expect(
+          await element?.evaluate(e => {
+            return e.value;
+          })
+        ).toBe('a');
+      });
+      it('should not query radio', async () => {
+        const {page} = getTestState();
+
+        await page.setContent('<radio value="a">');
+
+        expect(await page.$('text/a')).toBeNull();
+      });
+      it('should query text spanning multiple elements', async () => {
+        const {page} = getTestState();
+
+        await page.setContent('<div><span>a</span> <span>b</span><div>');
+
+        const element = await page.$('text/a b');
+        expect(
+          await element?.evaluate(e => {
+            return e.textContent;
+          })
+        ).toBe('a b');
+      });
+    });
+    describe('in ElementHandles', function () {
+      it('should query existing element', async () => {
+        const {page} = getTestState();
+
+        await page.setContent('<div class="a"><span>a</span></div>');
+
+        const elementHandle = (await page.$('div'))!;
+        expect(await elementHandle.$(`text/a`)).toBeTruthy();
+        expect((await elementHandle.$$(`text/a`)).length).toBe(1);
+      });
+
+      it('should return null for non-existing element', async () => {
+        const {page} = getTestState();
+
+        await page.setContent('<div class="a"></div>');
+
+        const elementHandle = (await page.$('div'))!;
+        expect(await elementHandle.$(`text/a`)).toBeFalsy();
+        expect((await elementHandle.$$(`text/a`)).length).toBe(0);
+      });
+    });
+  });
+
   describe('XPath selectors', function () {
     describe('in Page', function () {
       it('should query existing element', async () => {
