@@ -1,3 +1,19 @@
+/**
+ * Copyright 2017 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import {Protocol} from 'devtools-protocol';
 import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
@@ -150,7 +166,6 @@ export interface FrameAddStyleTagOptions {
  * @public
  */
 export class Frame {
-  #parentFrame: Frame | null;
   #url = '';
   #detached = false;
   #client!: CDPSession;
@@ -186,29 +201,24 @@ export class Frame {
   /**
    * @internal
    */
-  _childFrames: Set<Frame>;
+  _parentId?: string;
 
   /**
    * @internal
    */
   constructor(
     frameManager: FrameManager,
-    parentFrame: Frame | null,
     frameId: string,
+    parentFrameId: string | undefined,
     client: CDPSession
   ) {
     this._frameManager = frameManager;
-    this.#parentFrame = parentFrame ?? null;
     this.#url = '';
     this._id = frameId;
+    this._parentId = parentFrameId;
     this.#detached = false;
 
     this._loaderId = '';
-
-    this._childFrames = new Set();
-    if (this.#parentFrame) {
-      this.#parentFrame._childFrames.add(this);
-    }
 
     this.updateClient(client);
   }
@@ -720,14 +730,14 @@ export class Frame {
    * @returns The parent frame, if any. Detached and main frames return `null`.
    */
   parentFrame(): Frame | null {
-    return this.#parentFrame;
+    return this._frameManager._frameTree.parentFrame(this._id) || null;
   }
 
   /**
    * @returns An array of child frames.
    */
   childFrames(): Frame[] {
-    return Array.from(this._childFrames);
+    return this._frameManager._frameTree.childFrames(this._id);
   }
 
   /**
@@ -1090,9 +1100,5 @@ export class Frame {
     this.#detached = true;
     this.worlds[MAIN_WORLD]._detach();
     this.worlds[PUPPETEER_WORLD]._detach();
-    if (this.#parentFrame) {
-      this.#parentFrame._childFrames.delete(this);
-    }
-    this.#parentFrame = null;
   }
 }
