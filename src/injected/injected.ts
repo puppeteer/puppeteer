@@ -15,23 +15,35 @@
  */
 
 import {createDeferredPromise} from '../util/DeferredPromise.js';
-import * as Poller from './Poller.js';
-import * as TextContent from './TextContent.js';
+import {RAFPoller, MutationPoller, IntervalPoller} from './Poller.js';
+import {
+  isSuitableNodeForTextMatching,
+  createTextContent,
+} from './TextContent.js';
 import * as TextQuerySelector from './TextQuerySelector.js';
 import * as XPathQuerySelector from './XPathQuerySelector.js';
 import * as PierceQuerySelector from './PierceQuerySelector.js';
 import * as util from './util.js';
 
+/**
+ * @internal
+ */
 const PuppeteerUtil = Object.freeze({
   ...util,
-  ...Poller,
-  ...TextContent,
   ...TextQuerySelector,
   ...XPathQuerySelector,
   ...PierceQuerySelector,
   createDeferredPromise,
+  createTextContent,
+  IntervalPoller,
+  isSuitableNodeForTextMatching,
+  MutationPoller,
+  RAFPoller,
 });
 
+/**
+ * @internal
+ */
 type PuppeteerUtil = typeof PuppeteerUtil;
 
 /**
