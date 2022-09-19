@@ -197,91 +197,29 @@ const defaultHandler = createPuppeteerQueryHandler({
 });
 
 const pierceHandler = createPuppeteerQueryHandler({
-  queryOne: (element, selector) => {
-    let found: Node | null = null;
-    const search = (root: Node) => {
-      const iter = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
-      do {
-        const currentNode = iter.currentNode as HTMLElement;
-        if (currentNode.shadowRoot) {
-          search(currentNode.shadowRoot);
-        }
-        if (currentNode instanceof ShadowRoot) {
-          continue;
-        }
-        if (currentNode !== root && !found && currentNode.matches(selector)) {
-          found = currentNode;
-        }
-      } while (!found && iter.nextNode());
-    };
-    if (element instanceof Document) {
-      element = element.documentElement;
-    }
-    search(element);
-    return found;
+  queryOne: (element, selector, {pierceQuerySelector}) => {
+    return pierceQuerySelector(element, selector);
   },
-
-  queryAll: (element, selector) => {
-    const result: Node[] = [];
-    const collect = (root: Node) => {
-      const iter = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
-      do {
-        const currentNode = iter.currentNode as HTMLElement;
-        if (currentNode.shadowRoot) {
-          collect(currentNode.shadowRoot);
-        }
-        if (currentNode instanceof ShadowRoot) {
-          continue;
-        }
-        if (currentNode !== root && currentNode.matches(selector)) {
-          result.push(currentNode);
-        }
-      } while (iter.nextNode());
-    };
-    if (element instanceof Document) {
-      element = element.documentElement;
-    }
-    collect(element);
-    return result;
+  queryAll: (element, selector, {pierceQuerySelectorAll}) => {
+    return pierceQuerySelectorAll(element, selector);
   },
 });
 
 const xpathHandler = createPuppeteerQueryHandler({
-  queryOne: (element, selector) => {
-    const doc = element.ownerDocument || document;
-    const result = doc.evaluate(
-      selector,
-      element,
-      null,
-      XPathResult.FIRST_ORDERED_NODE_TYPE
-    );
-    return result.singleNodeValue;
+  queryOne: (element, selector, {xpathQuerySelector}) => {
+    return xpathQuerySelector(element, selector);
   },
-
-  queryAll: (element, selector) => {
-    const doc = element.ownerDocument || document;
-    const iterator = doc.evaluate(
-      selector,
-      element,
-      null,
-      XPathResult.ORDERED_NODE_ITERATOR_TYPE
-    );
-    const array: Node[] = [];
-    let item;
-    while ((item = iterator.iterateNext())) {
-      array.push(item);
-    }
-    return array;
+  queryAll: (element, selector, {xpathQuerySelectorAll}) => {
+    return xpathQuerySelectorAll(element, selector);
   },
 });
 
 const textQueryHandler = createPuppeteerQueryHandler({
   queryOne: (element, selector, {textQuerySelector}) => {
-    return textQuerySelector(selector, element);
+    return textQuerySelector(element, selector);
   },
-
   queryAll: (element, selector, {textQuerySelectorAll}) => {
-    return textQuerySelectorAll(selector, element);
+    return textQuerySelectorAll(element, selector);
   },
 });
 
