@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/**
+ * @internal
+ */
 export const pierceQuerySelector = (
   root: Node,
   selector: string
@@ -39,6 +42,9 @@ export const pierceQuerySelector = (
   return found;
 };
 
+/**
+ * @internal
+ */
 export const pierceQuerySelectorAll = (
   element: Node,
   selector: string
