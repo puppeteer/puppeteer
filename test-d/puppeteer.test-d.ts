@@ -6,7 +6,7 @@ import {
   executablePath,
   launch,
   default as puppeteer,
-} from '../lib/esm/puppeteer/puppeteer.js';
+} from '..';
 
 expectType<typeof launch>(puppeteer.launch);
 expectType<typeof connect>(puppeteer.connect);
