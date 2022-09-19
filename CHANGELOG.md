@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [18.0.0](https://github.com/puppeteer/puppeteer/compare/v17.1.3...v18.0.0) (2022-09-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* fix bounding box visibility conditions (#8954)
+
+### Features
+
+* add text query handler ([#8956](https://github.com/puppeteer/puppeteer/issues/8956)) ([633e7cf](https://github.com/puppeteer/puppeteer/commit/633e7cfdf99d42f420d0af381394bd1f6ac7bcd1))
+
+
+### Bug Fixes
+
+* fix bounding box visibility conditions ([#8954](https://github.com/puppeteer/puppeteer/issues/8954)) ([ac9929d](https://github.com/puppeteer/puppeteer/commit/ac9929d80f6f7d4905a39183ae235500e29b4f53))
+* suppress init errors if the target is closed ([#8947](https://github.com/puppeteer/puppeteer/issues/8947)) ([cfaaa5e](https://github.com/puppeteer/puppeteer/commit/cfaaa5e2c07e5f98baeb7de99e303aa840a351e8))
+* use win64 version of chromium when on arm64 windows ([#8927](https://github.com/puppeteer/puppeteer/issues/8927)) ([64843b8](https://github.com/puppeteer/puppeteer/commit/64843b88853210314677ab1b434729513ce615a7))
+
 ## [17.1.3](https://github.com/puppeteer/puppeteer/compare/v17.1.2...v17.1.3) (2022-09-08)
 
 
