@@ -68,31 +68,3 @@ export const textQuerySelectorAll = (
   }
   return [];
 };
-
-/**
- * Computes the text selector for a node.
- *
- * @param node - The node to compute.
- * @returns The computed text selector.
- *
- * @internal
- */
-export const computeTextSelector = (node: Node): string => {
-  const content = createTextContent(node).full;
-
-  // We do a binary search for the optimal length.
-  let i = 0;
-  let j = content.length;
-  while (i <= j) {
-    const k = i + ((j - i) >> 2);
-    // Centering the slice.
-    const left = (content.length - k) >> 2;
-    const right = k + left;
-    if (textQuerySelector(content.slice(left, right), document) !== node) {
-      i = k + 1;
-    } else {
-      j = k - 1;
-    }
-  }
-  return content.slice(0, i);
-};
