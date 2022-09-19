@@ -16,5 +16,5 @@ export interface BrowserContextOptions
 
 | Property                                                                 | Modifiers | Type       | Description                                                                                                                                    |
 | ------------------------------------------------------------------------ | --------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| [proxyBypassList?](./puppeteer.browsercontextoptions.proxybypasslist.md) |           | string\[\] | <i>(Optional)</i> Bypass the proxy for the given semi-colon-separated list of hosts.                                                           |
+| [proxyBypassList?](./puppeteer.browsercontextoptions.proxybypasslist.md) |           | string\[\] | <i>(Optional)</i> Bypass the proxy for the given list of hosts.                                                                                |
 | [proxyServer?](./puppeteer.browsercontextoptions.proxyserver.md)         |           | string     | <i>(Optional)</i> Proxy server with optional port to use for all requests. Username and password can be set in <code>Page.authenticate</code>. |
