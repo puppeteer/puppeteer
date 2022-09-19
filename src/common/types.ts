@@ -44,10 +44,17 @@ export type FlattenHandle<T> = T extends HandleOr<infer U> ? U : never;
 export type FlattenLazyArg<T> = T extends LazyArg<infer U> ? U : T;
 
 /**
+ * @internal
+ */
+export type InnerLazyParams<T extends unknown[]> = {
+  [K in keyof T]: FlattenLazyArg<T[K]>;
+};
+
+/**
  * @public
  */
 export type InnerParams<T extends unknown[]> = {
-  [K in keyof T]: FlattenHandle<FlattenLazyArg<FlattenHandle<T[K]>>>;
+  [K in keyof T]: FlattenHandle<T[K]>;
 };
 
 /**
