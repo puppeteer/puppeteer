@@ -25,16 +25,16 @@ import {
  * @internal
  */
 export const textQuerySelector = (
-  selector: string,
-  root: Node
+  root: Node,
+  selector: string
 ): Element | null => {
   for (const node of root.childNodes) {
     if (node instanceof Element && isSuitableNodeForTextMatching(node)) {
       let matchedNode: Element | null;
       if (node.shadowRoot) {
-        matchedNode = textQuerySelector(selector, node.shadowRoot);
+        matchedNode = textQuerySelector(node.shadowRoot, selector);
       } else {
-        matchedNode = textQuerySelector(selector, node);
+        matchedNode = textQuerySelector(node, selector);
       }
       if (matchedNode) {
         return matchedNode;
@@ -57,17 +57,17 @@ export const textQuerySelector = (
  * @internal
  */
 export const textQuerySelectorAll = (
-  selector: string,
-  root: Node
+  root: Node,
+  selector: string
 ): Element[] => {
   let results: Element[] = [];
   for (const node of root.childNodes) {
     if (node instanceof Element) {
       let matchedNodes: Element[];
       if (node.shadowRoot) {
-        matchedNodes = textQuerySelectorAll(selector, node.shadowRoot);
+        matchedNodes = textQuerySelectorAll(node.shadowRoot, selector);
       } else {
-        matchedNodes = textQuerySelectorAll(selector, node);
+        matchedNodes = textQuerySelectorAll(node, selector);
       }
       results = results.concat(matchedNodes);
     }
