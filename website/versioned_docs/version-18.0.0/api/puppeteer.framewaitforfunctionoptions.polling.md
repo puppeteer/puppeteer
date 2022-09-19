@@ -14,6 +14,6 @@ An interval at which the `pageFunction` is executed, defaults to `raf`. If `poll
 
 ```typescript
 interface FrameWaitForFunctionOptions {
-  polling?: string | number;
+  polling?: 'raf' | 'mutation' | number;
 }
 ```

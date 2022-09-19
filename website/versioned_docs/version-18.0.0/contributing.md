@@ -55,7 +55,11 @@ npm run build:dev && npm run test
 
 We also have other tests such as `test:types` that tests types and
 `test:install` which tests installation. See the `package.json` for more tests
-(all prefixed with `tests`).
+(all prefixed with `test`).
+
+Puppeteer is using a custom test runner on top of Mocha that consults
+the [TestExpectations.json](https://github.com/puppeteer/puppeteer/blob/main/test/TestExpectations.json)
+to see if a given test result is expected or not. See more info about the test runner in [`utils/mochaRunner`](https://github.com/puppeteer/puppeteer/tree/main/utils/mochaRunner).
 
 ## Code reviews
 
@@ -94,6 +98,7 @@ The following is a description of the primary folders in Puppeteer:
 - `test/src` - contains the source code for Puppeteer tests.
 - `utils`/`scripts` - contains various scripts.
 - `utils/testserver` - contains the source code for our test servers in testing.
+- `utils/mochaRunner` - contains the source code for our test runner.
 - `compat` - contains code separated by module import type. See [`compat/README.md`](https://github.com/puppeteer/puppeteer/blob/main/compat/README.md) for details.
 - `test-d` contains type tests using [`tsd`](https://github.com/SamVerschueren/tsd).
 - `vendor` contains all dependencies that we vendor into the final build. See the [`vendor/README.md`](https://github.com/puppeteer/puppeteer/blob/main/vendor/README.md) for details.
@@ -190,7 +195,7 @@ There are additional considerations for dependencies that are environment agonis
 
 Puppeteer tests are located in [the `test` directory](https://github.com/puppeteer/puppeteer/blob/main/test/) and are written using Mocha. See [`test/README.md`](https://github.com/puppeteer/puppeteer/blob/main/test/README.md) for more details.
 
-Despite being named 'unit', these are integration tests, making sure public API methods and events work as expected.
+The tests are making sure public API methods and events work as expected.
 
 - To run all tests:
 
@@ -208,12 +213,12 @@ npm run test
   });
 ```
 
-- To disable a specific test, substitute the `it` with `xit` (mnemonic rule: '_cross it_'):
+- To disable a specific test, substitute the `it` with `it.skip`:
 
 ```ts
   ...
-  // Using "xit" to skip specific test
-  xit('should work', async function({server, page}) {
+  // Using "it.skip" to skip specific test
+  it.skip('should work', async function({server, page}) {
     const response = await page.goto(server.EMPTY_PAGE);
     expect(response.ok).toBe(true);
   });
@@ -222,7 +227,7 @@ npm run test
 - To run Chrome tests in non-headless mode:
 
 ```bash
-HEADLESS=false npm run test:chrome:headless
+npm run test:chrome:headful
 ```
 
 - To run Firefox tests, firstly ensure you have Firefox installed locally (you only need to do this once, not on every test run) and then you can run the tests:
@@ -244,6 +249,9 @@ PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM=1 npm run test:chrome:headless
 ```bash
 BINARY=<path-to-executable> npm run test:chrome:headless # Or npm run test:firefox
 ```
+
+If a test is expected to fail on certain configurations or became flaky, update [TestExpectations.json](https://github.com/puppeteer/puppeteer/blob/main/test/TestExpectations.json)
+to reflect that. See more info about TestExpectations.json in [`utils/mochaRunner`](https://github.com/puppeteer/puppeteer/tree/main/utils/mochaRunner).
 
 ## API Coverage
 
