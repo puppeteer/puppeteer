@@ -84,6 +84,9 @@ export class MutationPoller<T> implements Poller<T> {
   }
 }
 
+/**
+ * @internal
+ */
 export class RAFPoller<T> implements Poller<T> {
   #fn: () => Promise<T>;
   #promise?: DeferredPromise<T>;
@@ -126,6 +129,10 @@ export class RAFPoller<T> implements Poller<T> {
     return this.#promise;
   }
 }
+
+/**
+ * @internal
+ */
 
 export class IntervalPoller<T> implements Poller<T> {
   #fn: () => Promise<T>;

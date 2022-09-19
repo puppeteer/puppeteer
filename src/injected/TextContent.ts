@@ -22,6 +22,8 @@ const TRIVIAL_VALUE_INPUT_TYPES = new Set(['checkbox', 'image', 'radio']);
 
 /**
  * Determines if the node has a non-trivial value property.
+ *
+ * @internal
  */
 const isNonTrivialValueNode = (node: Node): node is NonTrivialValueNode => {
   if (node instanceof HTMLSelectElement) {

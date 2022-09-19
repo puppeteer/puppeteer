@@ -34,4 +34,7 @@ const PuppeteerUtil = Object.freeze({
 
 type PuppeteerUtil = typeof PuppeteerUtil;
 
+/**
+ * @internal
+ */
 export default PuppeteerUtil;

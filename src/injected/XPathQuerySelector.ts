@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * @internal
+ */
 export const xpathQuerySelector = (
   root: Node,
   selector: string
@@ -28,6 +31,9 @@ export const xpathQuerySelector = (
   return result.singleNodeValue;
 };
 
+/**
+ * @internal
+ */
 export const xpathQuerySelectorAll = (root: Node, selector: string): Node[] => {
   const doc = root.ownerDocument || document;
   const iterator = doc.evaluate(
