@@ -19,7 +19,7 @@ import path from 'path';
 import expect from 'expect';
 import {getTestState} from './mocha-utils.js';
 import {Browser} from '../../lib/cjs/puppeteer/api/Browser.js';
-import {Page} from '../../lib/cjs/puppeteer/common/Page.js';
+import {Page} from '../../lib/cjs/puppeteer/api/Page.js';
 
 describe('Tracing', function () {
   let outputFile!: string;

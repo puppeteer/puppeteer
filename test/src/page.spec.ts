@@ -20,13 +20,14 @@ import path from 'path';
 import sinon from 'sinon';
 import {CDPSession} from '../../lib/cjs/puppeteer/common/Connection.js';
 import {ConsoleMessage} from '../../lib/cjs/puppeteer/common/ConsoleMessage.js';
-import {Metrics, Page} from '../../lib/cjs/puppeteer/common/Page.js';
+import {Metrics, Page} from '../../lib/cjs/puppeteer/api/Page.js';
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
 import utils, {attachFrame, waitEvent} from './utils.js';
+import {CDPPage} from '../../lib/cjs/puppeteer/common/Page.js';
 
 describe('Page', function () {
   setupTestBrowserHooks();
@@ -2317,7 +2318,7 @@ describe('Page', function () {
   describe('Page.client', function () {
     it('should return the client instance', async () => {
       const {page} = getTestState();
-      expect(page._client()).toBeInstanceOf(CDPSession);
+      expect((page as CDPPage)._client()).toBeInstanceOf(CDPSession);
     });
   });
 });

@@ -22,7 +22,7 @@ import rimraf from 'rimraf';
 import sinon from 'sinon';
 import {TLSSocket} from 'tls';
 import {promisify} from 'util';
-import {Page} from '../../lib/cjs/puppeteer/common/Page.js';
+import {Page} from '../../lib/cjs/puppeteer/api/Page.js';
 import {Product} from '../../lib/cjs/puppeteer/common/Product.js';
 import {getTestState, itOnlyRegularInstall} from './mocha-utils.js';
 import utils from './utils.js';

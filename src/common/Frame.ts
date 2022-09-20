@@ -31,7 +31,7 @@ import {
   WaitForSelectorOptions,
 } from './IsolatedWorld.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
-import {Page} from './Page.js';
+import {Page} from '../api/Page.js';
 import {getQueryHandlerAndSelector} from './QueryHandler.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {importFS} from './util.js';

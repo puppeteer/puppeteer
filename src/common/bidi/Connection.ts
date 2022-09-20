@@ -69,7 +69,7 @@ export class Connection extends EventEmitter {
     return this.#closed;
   }
 
-  send(method: string, params: object): Promise<any> {
+  send(method: string, params: object): Promise<CommandResponse['result']> {
     const id = ++this.#lastId;
     const stringifiedMessage = JSON.stringify({
       id,

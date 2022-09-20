@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Page, PageEmittedEvents} from './Page.js';
+import {Page, PageEmittedEvents} from '../api/Page.js';
 import {WebWorker} from './WebWorker.js';
 import {CDPSession} from './Connection.js';
 import type {
@@ -26,6 +26,7 @@ import {Viewport} from './PuppeteerViewport.js';
 import {Protocol} from 'devtools-protocol';
 import {TaskQueue} from './TaskQueue.js';
 import {TargetManager} from './TargetManager.js';
+import {CDPPage} from './Page.js';
 
 /**
  * @public
@@ -163,7 +164,7 @@ export class Target {
           ? Promise.resolve(this.#session)
           : this.#sessionFactory(true)
       ).then(client => {
-        return Page._create(
+        return CDPPage._create(
           client,
           this,
           this.#ignoreHTTPSErrors,

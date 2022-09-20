@@ -17,7 +17,7 @@
 import expect from 'expect';
 import path from 'path';
 import {Frame} from '../../lib/cjs/puppeteer/common/Frame.js';
-import {Page} from '../../lib/cjs/puppeteer/common/Page.js';
+import {Page} from '../../lib/cjs/puppeteer/api/Page.js';
 import {EventEmitter} from '../../lib/cjs/puppeteer/common/EventEmitter.js';
 import {compare} from './golden-utils.js';
 

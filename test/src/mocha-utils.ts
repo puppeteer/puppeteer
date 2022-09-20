@@ -21,7 +21,7 @@ import * as path from 'path';
 import rimraf from 'rimraf';
 import sinon from 'sinon';
 import {Browser, BrowserContext} from '../../lib/cjs/puppeteer/api/Browser.js';
-import {Page} from '../../lib/cjs/puppeteer/common/Page.js';
+import {Page} from '../../lib/cjs/puppeteer/api/Page.js';
 import {isErrorLike} from '../../lib/cjs/puppeteer/util/ErrorLike.js';
 import {
   PuppeteerLaunchOptions,
