@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [18.0.3](https://github.com/puppeteer/puppeteer/compare/v18.0.2...v18.0.3) (2022-09-20)
+
+
+### Bug Fixes
+
+* change injected.ts imports ([#8987](https://github.com/puppeteer/puppeteer/issues/8987)) ([10a114d](https://github.com/puppeteer/puppeteer/commit/10a114d36f2add90860950f61b3f8b93258edb5c))
+
 ## [18.0.2](https://github.com/puppeteer/puppeteer/compare/v18.0.1...v18.0.2) (2022-09-19)
 
 
