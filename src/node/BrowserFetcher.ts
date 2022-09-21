@@ -38,7 +38,9 @@ import {assert} from '../util/assert.js';
 import tar from 'tar-fs';
 import bzip from 'unbzip2-stream';
 
-const {PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM} = process.env;
+const experimentalChromiumMacArm =
+  process.env['PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM'] ||
+  process.env['npm_config_puppeteer_experimental_chromium_mac_arm'];
 
 const debugFetcher = debug('puppeteer:fetcher');
 
@@ -224,7 +226,7 @@ export class BrowserFetcher {
           switch (this.#product) {
             case 'chrome':
               this.#platform =
-                os.arch() === 'arm64' && PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM
+                os.arch() === 'arm64' && experimentalChromiumMacArm
                   ? 'mac_arm'
                   : 'mac';
               break;
