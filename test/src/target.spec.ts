@@ -16,7 +16,7 @@
 
 import expect from 'expect';
 import {ServerResponse} from 'http';
-import {Page} from '../../lib/cjs/puppeteer/common/Page.js';
+import {Page} from '../../lib/cjs/puppeteer/api/Page.js';
 import {Target} from '../../lib/cjs/puppeteer/common/Target.js';
 import {
   getTestState,

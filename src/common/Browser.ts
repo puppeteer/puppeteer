@@ -19,7 +19,7 @@ import {Protocol} from 'devtools-protocol';
 import {assert} from '../util/assert.js';
 import {CDPSession, Connection, ConnectionEmittedEvents} from './Connection.js';
 import {waitWithTimeout} from './util.js';
-import {Page} from './Page.js';
+import {Page} from '../api/Page.js';
 import {Viewport} from './PuppeteerViewport.js';
 import {Target} from './Target.js';
 import {TaskQueue} from './TaskQueue.js';

@@ -29,11 +29,12 @@ import {
   Point,
   PressOptions,
 } from './JSHandle.js';
-import {Page, ScreenshotOptions} from './Page.js';
+import {Page, ScreenshotOptions} from '../api/Page.js';
 import {getQueryHandlerAndSelector} from './QueryHandler.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {KeyInput} from './USKeyboardLayout.js';
 import {debugError, isString} from './util.js';
+import {CDPPage} from './Page.js';
 
 const applyOffsetsToQuad = (
   quad: Point[],
@@ -510,7 +511,7 @@ export class ElementHandle<
           objectId: this.remoteObject().objectId,
         })
         .catch(debugError),
-      this.#page._client().send('Page.getLayoutMetrics'),
+      (this.#page as CDPPage)._client().send('Page.getLayoutMetrics'),
     ]);
     if (!result || !result.quads.length) {
       throw new Error('Node is either not clickable or not an HTMLElement');

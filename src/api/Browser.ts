@@ -19,7 +19,7 @@
 import {ChildProcess} from 'child_process';
 import {Protocol} from 'devtools-protocol';
 import {EventEmitter} from '../common/EventEmitter.js';
-import type {Page} from '../common/Page.js'; // TODO: move to ./api
+import type {Page} from './Page.js'; // TODO: move to ./api
 import type {Target} from '../common/Target.js'; // TODO: move to ./api
 
 /**

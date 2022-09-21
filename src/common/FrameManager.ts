@@ -24,7 +24,7 @@ import {Frame} from './Frame.js';
 import {FrameTree} from './FrameTree.js';
 import {IsolatedWorld, MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorld.js';
 import {NetworkManager} from './NetworkManager.js';
-import {Page} from './Page.js';
+import {Page} from '../api/Page.js';
 import {Target} from './Target.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {debugError} from './util.js';
