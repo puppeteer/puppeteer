@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [18.0.4](https://github.com/puppeteer/puppeteer/compare/v18.0.3...v18.0.4) (2022-09-21)
+
+
+### Bug Fixes
+
+* hardcode binding names ([#8993](https://github.com/puppeteer/puppeteer/issues/8993)) ([7e20554](https://github.com/puppeteer/puppeteer/commit/7e2055433e79ef20f6dcdf02f92e1d64564b7d33))
+
 ## [18.0.3](https://github.com/puppeteer/puppeteer/compare/v18.0.2...v18.0.3) (2022-09-20)
 
 
