@@ -146,7 +146,7 @@ const waitFor: PuppeteerQueryHandler['waitFor'] = async (
     element,
     selector,
     options,
-    new Set([ariaQuerySelector])
+    new Map([['ariaQuerySelector', ariaQuerySelector]])
   );
   if (element) {
     await element.dispose();

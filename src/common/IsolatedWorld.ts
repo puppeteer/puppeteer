@@ -502,7 +502,7 @@ export class IsolatedWorld {
     root: ElementHandle<Node> | undefined,
     selector: string,
     options: WaitForSelectorOptions,
-    bindings = new Set<(...args: never[]) => unknown>()
+    bindings = new Map<string, (...args: never[]) => unknown>()
   ): Promise<JSHandle<unknown> | null> {
     const {
       visible: waitForVisible = false,
@@ -568,7 +568,7 @@ export class IsolatedWorld {
       polling?: 'raf' | 'mutation' | number;
       timeout?: number;
       root?: ElementHandle<Node>;
-      bindings?: Set<(...args: never[]) => unknown>;
+      bindings?: Map<string, (...args: never[]) => unknown>;
     } = {},
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {

@@ -26,7 +26,7 @@ import {HandleFor} from './types.js';
  * @internal
  */
 export interface WaitTaskOptions {
-  bindings?: Set<(...args: never[]) => unknown>;
+  bindings?: Map<string, (...args: never[]) => unknown>;
   polling: 'raf' | 'mutation' | number;
   root?: ElementHandle<Node>;
   timeout: number;
@@ -37,7 +37,7 @@ export interface WaitTaskOptions {
  */
 export class WaitTask<T = unknown> {
   #world: IsolatedWorld;
-  #bindings: Set<(...args: never[]) => unknown>;
+  #bindings: Map<string, (...args: never[]) => unknown>;
   #polling: 'raf' | 'mutation' | number;
   #root?: ElementHandle<Node>;
 
@@ -57,7 +57,7 @@ export class WaitTask<T = unknown> {
     ...args: unknown[]
   ) {
     this.#world = world;
-    this.#bindings = options.bindings ?? new Set();
+    this.#bindings = options.bindings ?? new Map();
     this.#polling = options.polling;
     this.#root = options.root;
 
@@ -82,8 +82,8 @@ export class WaitTask<T = unknown> {
     }
 
     if (this.#bindings.size !== 0) {
-      for (const fn of this.#bindings) {
-        this.#world._boundFunctions.set(fn.name, fn);
+      for (const [name, fn] of this.#bindings) {
+        this.#world._boundFunctions.set(name, fn);
       }
     }
 
@@ -99,7 +99,7 @@ export class WaitTask<T = unknown> {
       if (this.#bindings.size !== 0) {
         const context = await this.#world.executionContext();
         await Promise.all(
-          [...this.#bindings].map(async ({name}) => {
+          [...this.#bindings].map(async ([name]) => {
             return await this.#world._addBindingToContext(context, name);
           })
         );
