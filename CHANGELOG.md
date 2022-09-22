@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [18.0.5](https://github.com/puppeteer/puppeteer/compare/v18.0.4...v18.0.5) (2022-09-22)
+
+
+### Bug Fixes
+
+* add missing npm config environment variable ([#8996](https://github.com/puppeteer/puppeteer/issues/8996)) ([7c1be20](https://github.com/puppeteer/puppeteer/commit/7c1be20aef46aaf5029732a580ec65aa8008aa9c))
+
 ## [18.0.4](https://github.com/puppeteer/puppeteer/compare/v18.0.3...v18.0.4) (2022-09-21)
 
 
