@@ -120,7 +120,6 @@ jobs:
   tests:
     name: ${{ matrix.spec.name }} tests on ${{ matrix.spec.machine }}(${{ matrix.spec.node }})
     runs-on: ${{ matrix.spec.machine }}
-    continue-on-error: true
     strategy:
       matrix:
         spec:
