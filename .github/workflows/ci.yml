@@ -210,11 +210,6 @@ jobs:
             node: 18
             suite: firefox-bidi
           - name: firefox-headless
-            machine: windows-latest
-            xvfb: false
-            node: 18
-            suite: firefox-headless
-          - name: firefox-headless
             machine: macos-latest
             xvfb: false
             node: 18

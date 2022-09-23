@@ -20,7 +20,7 @@
     },
     {
       "id": "firefox-headless",
-      "platforms": ["linux", "darwin", "win32"],
+      "platforms": ["linux", "darwin"],
       "parameters": ["firefox", "headless"],
       "expectedLineCoverage": 80
     },
