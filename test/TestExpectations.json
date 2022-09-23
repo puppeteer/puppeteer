@@ -1,13 +1,13 @@
 [
   {
     "testIdPattern": "[accessibility.spec]",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[ariaqueryhandler.spec]",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -43,13 +43,13 @@
   },
   {
     "testIdPattern": "[CDPSession.spec]",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[chromiumonly.spec]",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -139,7 +139,7 @@
   },
   {
     "testIdPattern": "[coverage.spec]",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -163,49 +163,49 @@
   },
   {
     "testIdPattern": "[drag-and-drop.spec]",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox should handle nested frames",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox should handle nested frames",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox should return null for invisible elements",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox should return null for invisible elements",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox should work",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boxModel should return null for invisible elements",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boxModel should return null for invisible elements",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -229,13 +229,13 @@
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateCPUThrottling should change the CPU throttling rate successfully",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateCPUThrottling should change the CPU throttling rate successfully",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -253,49 +253,49 @@
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateNetworkConditions should change navigator.connection.effectiveType",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateNetworkConditions should change navigator.connection.effectiveType",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateTimezone should throw for invalid timezone IDs",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateTimezone should throw for invalid timezone IDs",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateTimezone should work",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateTimezone should work",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateVisionDeficiency should work",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateVisionDeficiency should work",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -367,25 +367,25 @@
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument should evaluate before anything else on the page",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument should evaluate before anything else on the page",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument should work with CSP",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument should work with CSP",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -397,13 +397,13 @@
   },
   {
     "testIdPattern": "[fixtures.spec] Fixtures dumpio option should work with pipe option",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[fixtures.spec] Fixtures dumpio option should work with pipe option",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -463,43 +463,43 @@
   },
   {
     "testIdPattern": "[headful.spec]",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[idle_override.spec] Emulate idle state changing idle state emulation causes change of the IdleDetector state",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[idle_override.spec] Emulate idle state changing idle state emulation causes change of the IdleDetector state",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[idle_overrides.spec]",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[ignorehttperrors.spec]",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[ignorehttpserrors.spec] ignoreHTTPSErrors Response.securityDetails should work",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[ignorehttpserrors.spec] ignoreHTTPSErrors Response.securityDetails should work",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -517,13 +517,13 @@
   },
   {
     "testIdPattern": "[ignorehttpserrors.spec] ignoreHTTPSErrors Response.securityDetails Network redirects should report SecurityDetails",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["PASS", "FAIL"]
   },
   {
     "testIdPattern": "[input.spec]",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -535,13 +535,13 @@
   },
   {
     "testIdPattern": "[jshandle.spec] JSHandle JSHandle.jsonValue should not work with dates",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[jshandle.spec] JSHandle JSHandle.jsonValue should not work with dates",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -715,85 +715,85 @@
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.goto should navigate subframes",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.goto should navigate subframes",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.goto should reject when frame detaches",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.goto should reject when frame detaches",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.goto should return matching responses",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.goto should return matching responses",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.goto should return matching responses",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.goto should return matching responses",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.goto should return matching responses",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.goto should return matching responses",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.waitForNavigation should fail when frame detaches",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.waitForNavigation should fail when frame detaches",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.waitForNavigation should work",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.waitForNavigation should work",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -895,91 +895,91 @@
   },
   {
     "testIdPattern": "[network.spec] network \"after each\" hook for \"should wait until response completes\"",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Network Events Page.Events.Request",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["PASS", "FAIL"]
   },
   {
     "testIdPattern": "[network.spec] network Network Events Page.Events.Response",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["PASS", "FAIL"]
   },
   {
     "testIdPattern": "[network.spec] network Network Events Page.Events.RequestFailed",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Network Events Page.Events.RequestFinished",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Network Events Page.Events.RequestServedFromCache",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Network Events should fire events in proper order",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Network Events should support redirects",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Page.authenticate should allow disable authentication",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Page.authenticate should fail if wrong credentials",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Page.authenticate should not disable caching",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Page.authenticate should work",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Page.setExtraHTTPHeaders should work",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network raw network headers Cross-origin set-cookie",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[network.spec] network raw network headers Same-origin set-cookie subresource",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -997,19 +997,19 @@
   },
   {
     "testIdPattern": "[network.spec] network Request.headers should define Firefox as user agent header",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Request.initiator should return the initiator",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Request.initiator should return the initiator",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -1033,133 +1033,133 @@
   },
   {
     "testIdPattern": "[network.spec] network Request.postData should work",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Request.postData should work",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Response.buffer should throw if the response does not have a body",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Response.buffer should work",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Response.buffer should work with compression",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Response.fromCache should work",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Response.fromCache should work",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Response.fromServiceWorker Response.fromServiceWorker",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Response.fromServiceWorker Response.fromServiceWorker",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Response.json should work",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Response.text should return uncompressed text",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Response.text should return uncompressed text",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Response.text should throw when requesting body of redirected response",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Response.text should throw when requesting body of redirected response",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Response.text should wait until response completes",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Response.text should wait until response completes",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Response.text should work",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Response.text should work",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Response.timing returns timing information",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[oopif.spec]",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[oopif.spec] OOPIF \"after all\" hook for \"should keep track of a frames OOP state\"",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[oopif.spec] OOPIF \"before all\" hook for \"should keep track of a frames OOP state\"",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -1273,313 +1273,313 @@
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should have location and stack trace for console API calls",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should have location and stack trace for console API calls",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should have location when fetch fails",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should have location when fetch fails",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should not fail for window object",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should not fail for window object",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should trigger correct Log",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should trigger correct Log",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should work",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should work",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should work for different console API calls",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should work for different console API calls",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.error should throw when page crashes",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.error should throw when page crashes",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Popup should work",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Popup should work",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Popup should work with clicking target=_blank and rel=noopener",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Popup should work with clicking target=_blank and rel=noopener",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Popup should work with clicking target=_blank and with rel=opener",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Popup should work with clicking target=_blank and with rel=opener",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Popup should work with clicking target=_blank and without rel=opener",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Popup should work with clicking target=_blank and without rel=opener",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Popup should work with fake-clicking target=_blank and rel=noopener",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Popup should work with fake-clicking target=_blank and rel=noopener",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Popup should work with noopener",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Popup should work with noopener",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should await returned promise",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should await returned promise",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should be callable from-inside evaluateOnNewDocument",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should be callable from-inside evaluateOnNewDocument",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should fallback to default export when passed a module object",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should fallback to default export when passed a module object",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should not throw when frames detach",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should not throw when frames detach",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should support throwing \"null\"",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should support throwing \"null\"",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should survive navigation",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should survive navigation",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should throw exception in page context",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should throw exception in page context",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should work",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should work",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should work on frames",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should work on frames",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should work on frames before navigation",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should work on frames before navigation",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should work with complex objects",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should work with complex objects",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.metrics metrics event fired on console.timeStamp",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.metrics metrics event fired on console.timeStamp",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.metrics should get metrics from a page",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.metrics should get metrics from a page",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -1591,61 +1591,61 @@
   },
   {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass after cross-process navigation",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass after cross-process navigation",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP header",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP header",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP in iframes as well",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP in iframes as well",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP meta tag",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP meta tag",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setCacheEnabled should enable or disable the cache based on the state passed",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setCacheEnabled should enable or disable the cache based on the state passed",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -1663,37 +1663,37 @@
   },
   {
     "testIdPattern": "[page.spec] Page Page.setJavaScriptEnabled should work",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setJavaScriptEnabled should work",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setOfflineMode should emulate navigator.onLine",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setOfflineMode should emulate navigator.onLine",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setOfflineMode should work",
-    "platforms": ["darwin"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setOfflineMode should work",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -1705,7 +1705,7 @@
   },
   {
     "testIdPattern": "[proxy.spec]",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -1717,13 +1717,13 @@
   },
   {
     "testIdPattern": "[requestinterception-experimental.spec]",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[requestinterception.spec]",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -1807,13 +1807,13 @@
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work in \"fromSurface: false\" mode",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "headless"],
     "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work in \"fromSurface: false\" mode",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "headless"],
     "expectations": ["SKIP"]
   },
@@ -1885,19 +1885,19 @@
   },
   {
     "testIdPattern": "[TargetManager.spec]",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[touchscreen.spec]",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[tracing.spec]",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -1945,55 +1945,55 @@
   },
   {
     "testIdPattern": "[worker.spec]",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch can launch and close the browser",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[Connection.spec] WebDriver BiDi",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work with function shorthands",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work with unicode chars",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work right after framenavigated",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work from-inside an exposed function",
-    "platforms": ["darwin", "win32", "linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"]
   }
