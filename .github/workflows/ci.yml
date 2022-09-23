@@ -193,6 +193,16 @@ jobs:
             xvfb: true
             node: 18
             suite: firefox-headless
+          - name: firefox-headful
+            machine: ubuntu-latest
+            xvfb: true
+            node: 16
+            suite: firefox-headful
+          - name: firefox-headful
+            machine: ubuntu-latest
+            xvfb: true
+            node: 18
+            suite: firefox-headful
           - name: firefox-bidi
             machine: ubuntu-latest
             xvfb: true

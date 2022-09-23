@@ -25,6 +25,12 @@
       "expectedLineCoverage": 80
     },
     {
+      "id": "firefox-headful",
+      "platforms": ["linux"],
+      "parameters": ["firefox", "headful"],
+      "expectedLineCoverage": 80
+    },
+    {
       "id": "firefox-bidi",
       "platforms": ["linux"],
       "parameters": ["firefox", "headless", "webDriverBiDi"],
