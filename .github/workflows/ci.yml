@@ -121,6 +121,7 @@ jobs:
     name: ${{ matrix.spec.name }} tests on ${{ matrix.spec.machine }}(${{ matrix.spec.node }})
     runs-on: ${{ matrix.spec.machine }}
     strategy:
+      fail-fast: false
       matrix:
         spec:
           - name: chrome-headless
