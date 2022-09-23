@@ -426,49 +426,50 @@ describe('Emulation', () => {
   describe('Page.emulateVisionDeficiency', function () {
     it('should work', async () => {
       const {page, server} = getTestState();
+      const full_page_options = {captureBeyondViewport: false};
 
       await page.setViewport({width: 500, height: 500});
       await page.goto(server.PREFIX + '/grid.html');
 
       {
         await page.emulateVisionDeficiency('none');
-        const screenshot = await page.screenshot();
+        const screenshot = await page.screenshot(full_page_options);
         expect(screenshot).toBeGolden('screenshot-sanity.png');
       }
 
       {
         await page.emulateVisionDeficiency('achromatopsia');
-        const screenshot = await page.screenshot();
+        const screenshot = await page.screenshot(full_page_options);
         expect(screenshot).toBeGolden('vision-deficiency-achromatopsia.png');
       }
 
       {
         await page.emulateVisionDeficiency('blurredVision');
-        const screenshot = await page.screenshot();
+        const screenshot = await page.screenshot(full_page_options);
         expect(screenshot).toBeGolden('vision-deficiency-blurredVision.png');
       }
 
       {
         await page.emulateVisionDeficiency('deuteranopia');
-        const screenshot = await page.screenshot();
+        const screenshot = await page.screenshot(full_page_options);
         expect(screenshot).toBeGolden('vision-deficiency-deuteranopia.png');
       }
 
       {
         await page.emulateVisionDeficiency('protanopia');
-        const screenshot = await page.screenshot();
+        const screenshot = await page.screenshot(full_page_options);
         expect(screenshot).toBeGolden('vision-deficiency-protanopia.png');
       }
 
       {
         await page.emulateVisionDeficiency('tritanopia');
-        const screenshot = await page.screenshot();
+        const screenshot = await page.screenshot(full_page_options);
         expect(screenshot).toBeGolden('vision-deficiency-tritanopia.png');
       }
 
       {
         await page.emulateVisionDeficiency('none');
-        const screenshot = await page.screenshot();
+        const screenshot = await page.screenshot(full_page_options);
         expect(screenshot).toBeGolden('screenshot-sanity.png');
       }
     });

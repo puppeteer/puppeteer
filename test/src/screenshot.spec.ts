@@ -31,7 +31,9 @@ describe('Screenshots', function () {
 
       await page.setViewport({width: 500, height: 500});
       await page.goto(server.PREFIX + '/grid.html');
-      const screenshot = await page.screenshot();
+      const screenshot = await page.screenshot({
+        captureBeyondViewport: false,
+      });
       expect(screenshot).toBeGolden('screenshot-sanity.png');
     });
     it('should clip rect', async () => {
@@ -191,6 +193,7 @@ describe('Screenshots', function () {
       await page.goto(server.PREFIX + '/grid.html');
       const screenshot = await page.screenshot({
         encoding: 'base64',
+        captureBeyondViewport: false,
       });
       // TODO (@jackfranklin): improve the screenshot types.
       // - if we pass encoding: 'base64', it returns a string
