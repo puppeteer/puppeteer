@@ -2338,7 +2338,7 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @deprecated Use `new Promise(r => setTimeout(r, milliseconds));`.
+   * @deprecated Replace with `new Promise(r => setTimeout(r, milliseconds));`.
    *
    * Causes your script to wait for the given number of milliseconds.
    *
