@@ -616,7 +616,7 @@ export class Frame {
    *
    * Example: `await frame.waitForSelector('xpath/' + xpathExpression)`
    *
-   * The method evaluates the XPath expression relative to the elementHandle.
+   * The method evaluates the XPath expression relative to the Frame.
    * If `xpath` starts with `//` instead of `.//`, the dot will be appended
    * automatically.
    *
