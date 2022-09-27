@@ -1478,21 +1478,15 @@ export class Page extends EventEmitter {
   /**
    * @param urlOrPredicate - A URL or predicate to wait for
    * @param options - Optional waiting parameters
-   * @returns Promise which resolves to the matched response
+   * @returns Promise which resolves to the matched request
    * @example
    *
    * ```ts
-   * const firstResponse = await page.waitForResponse(
+   * const firstRequest = await page.waitForRequest(
    *   'https://example.com/resource'
    * );
-   * const finalResponse = await page.waitForResponse(
-   *   response =>
-   *     response.url() === 'https://example.com' && response.status() === 200
-   * );
-   * const finalResponse = await page.waitForResponse(async response => {
-   *   return (await response.text()).includes('<html>');
-   * });
-   * return finalResponse.ok();
+   * const finalRequest = await page.waitForRequest(request => request.url() === 'https://example.com');
+   * return finalRequest.response()?.ok();
    * ```
    *
    * @remarks
