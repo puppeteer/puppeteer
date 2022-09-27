@@ -6,7 +6,7 @@ sidebar_label: Page.waitForTimeout
 
 > Warning: This API is now obsolete.
 >
-> Use `new Promise(r => setTimeout(r, milliseconds));`.
+> Replace with `new Promise(r => setTimeout(r, milliseconds));`.
 >
 > Causes your script to wait for the given number of milliseconds.
 
