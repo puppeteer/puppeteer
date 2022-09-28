@@ -7,6 +7,6 @@
   },
   "references": [
     {"path": "../compat/esm/tsconfig.json"},
-    {"path": "../vendor/tsconfig.cjs.json"}
+    {"path": "../third_party/tsconfig.cjs.json"}
   ]
 }
