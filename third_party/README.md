@@ -1,4 +1,4 @@
-# `vendor`
+# `third_party`
 
 This folder contains code that interacts with third party node modules that will
 be vendored with puppeteer during publishing.

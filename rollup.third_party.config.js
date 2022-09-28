@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import path from 'path';
+import glob from 'glob';
 import dts from 'rollup-plugin-dts';
 import resolve from 'rollup-plugin-node-resolve';
-import glob from 'glob';
 
 export default ['cjs', 'esm'].flatMap(outputType => {
   const configs = [];
-  const vendorPath = path.resolve(__dirname, `lib/${outputType}/vendor`);
-  for (const jsFile of glob.sync(path.join(vendorPath, '**/*.js'))) {
+  // Note we don't use path.join here. We cannot since `glob` does not support
+  // the backslash path separator.
+  const thirdPartyPath = `lib/${outputType}/third_party`;
+  for (const jsFile of glob.sync(`${thirdPartyPath}/**/*.js`)) {
     configs.push({
       input: jsFile,
       output: {file: jsFile, exports: 'auto', format: outputType},
       plugins: [resolve()],
     });
   }
-  for (const typesFile of glob.sync(path.join(vendorPath, '**/*.d.ts'))) {
+  for (const typesFile of glob.sync(`${thirdPartyPath}/**/*.d.ts`)) {
     configs.push({
       input: typesFile,
       output: {file: typesFile, format: outputType},

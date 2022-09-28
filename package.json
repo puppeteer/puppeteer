@@ -57,11 +57,11 @@
     "check:protocol-revision": "tsx scripts/ensure-correct-devtools-protocol-package",
     "check:pinned-deps": "tsx scripts/ensure-pinned-deps",
     "build": "npm run build:prod",
-    "build:dev": "run-s generate:sources build:tsc:dev && run-p bundle:vendor generate:artifacts",
-    "build:prod": "run-s generate:sources build:tsc:prod && run-p bundle:vendor generate:artifacts",
+    "build:dev": "run-s generate:sources build:tsc:dev && run-p bundle:third_party generate:artifacts",
+    "build:prod": "run-s generate:sources build:tsc:prod && run-p bundle:third_party generate:artifacts",
     "build:tsc:dev": "tsc -b test",
     "build:tsc:prod": "tsc -b tsconfig.lib.json",
-    "bundle:vendor": "rollup --config rollup.vendor.config.js"
+    "bundle:third_party": "rollup --config rollup.third_party.config.js"
   },
   "files": [
     "lib",
