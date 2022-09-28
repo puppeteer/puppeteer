@@ -103,7 +103,7 @@ module.exports = {
           {
             name: 'mitt',
             message:
-              'Import Mitt from the vendored location: vendor/mitt/src/index.js',
+              'Import Mitt from the vendored location: vendor/mitt/index.js',
           },
         ],
       },

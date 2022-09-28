@@ -42,6 +42,5 @@ CHANGELOG.md
 package-lock.json
 package.json
 test/assets/
-vendor/
 docs/
 versioned_*/
