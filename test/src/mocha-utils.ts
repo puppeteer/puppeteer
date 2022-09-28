@@ -28,7 +28,7 @@ import {
   PuppeteerNode,
 } from '../../lib/cjs/puppeteer/node/Puppeteer.js';
 import puppeteer from '../../lib/cjs/puppeteer/puppeteer.js';
-import {TestServer} from '../../utils/testserver/lib/index.js';
+import {TestServer} from '@pptr/testserver';
 import {extendExpectWithToBeGolden} from './utils.js';
 import * as Mocha from 'mocha';
 

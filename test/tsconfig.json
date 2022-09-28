@@ -10,7 +10,7 @@
   "include": ["src"],
   "references": [
     {"path": "../src/tsconfig.cjs.json"},
-    {"path": "../utils/testserver/tsconfig.json"},
+    {"path": "../packages/testserver/tsconfig.json"},
     {"path": "../utils/mochaRunner/tsconfig.json"}
   ]
 }
