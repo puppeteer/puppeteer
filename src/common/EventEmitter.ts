@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import mitt, {
-  Emitter,
-  EventType,
-  Handler,
-} from '../../vendor/mitt/src/index.js';
+import mitt, {Emitter, EventType, Handler} from '../../vendor/mitt/index.js';
 
 /**
  * @public
