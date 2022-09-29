@@ -39,4 +39,4 @@ yarn-error.log*
 
 # ESLint ignores.
 assets/
-vendor/
+third_party/

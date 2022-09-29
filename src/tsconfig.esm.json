@@ -6,7 +6,7 @@
     "module": "esnext"
   },
   "references": [
-    {"path": "../vendor/tsconfig.esm.json"},
-    {"path": "../compat/esm/tsconfig.json"}
+    {"path": "../compat/esm/tsconfig.json"},
+    {"path": "../third_party/tsconfig.cjs.json"}
   ]
 }

@@ -21,7 +21,7 @@ import {getTestState} from './mocha-utils.js';
 import type {Server, IncomingMessage, ServerResponse} from 'http';
 import type {Browser} from '../../lib/cjs/puppeteer/api/Browser.js';
 import type {AddressInfo} from 'net';
-import {TestServer} from '../../utils/testserver/lib/index.js';
+import {TestServer} from '@pptr/testserver';
 
 let HOSTNAME = os.hostname();
 

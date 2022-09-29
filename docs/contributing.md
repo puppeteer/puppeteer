@@ -101,7 +101,7 @@ The following is a description of the primary folders in Puppeteer:
 - `utils/mochaRunner` - contains the source code for our test runner.
 - `compat` - contains code separated by module import type. See [`compat/README.md`](https://github.com/puppeteer/puppeteer/blob/main/compat/README.md) for details.
 - `test-d` contains type tests using [`tsd`](https://github.com/SamVerschueren/tsd).
-- `vendor` contains all dependencies that we vendor into the final build. See the [`vendor/README.md`](https://github.com/puppeteer/puppeteer/blob/main/vendor/README.md) for details.
+- `third_party` contains all dependencies that we vendor into the final build. See the [`third_party/README.md`](https://github.com/puppeteer/puppeteer/blob/main/third_party/README.md) for details.
 
 ### Shipping CJS and ESM bundles
 
@@ -113,10 +113,10 @@ We compile into the `lib` directory which is what we publish on the npm reposito
 lib
 - cjs
   - puppeteer <== the output of compiling `src/tsconfig.cjs.json`
-  - vendor <== the output of compiling `vendor/tsconfig.cjs.json`
+  - third_party <== the output of compiling `third_party/tsconfig.cjs.json`
 - esm
   - puppeteer <== the output of compiling `src/tsconfig.esm.json`
-  - vendor <== the output of compiling `vendor/tsconfig.esm.json`
+  - third_party <== the output of compiling `third_party/tsconfig.json`
 ```
 
 ### `tsconfig.json` for the tests
@@ -184,7 +184,7 @@ A barrier for introducing new installation dependencies is especially high:
 
 - **Do not add** installation dependency unless it's critical to project success.
 
-There are additional considerations for dependencies that are environment agonistic. See the [`vendor/README.md`](https://github.com/puppeteer/puppeteer/blob/main/vendor/README.md) for details.
+There are additional considerations for dependencies that are environment agonistic. See the [`third_party/README.md`](https://github.com/puppeteer/puppeteer/blob/main/third_party/README.md) for details.
 
 ## Running & Writing Tests
 
