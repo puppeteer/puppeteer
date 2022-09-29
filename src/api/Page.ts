@@ -1485,7 +1485,9 @@ export class Page extends EventEmitter {
    * const firstRequest = await page.waitForRequest(
    *   'https://example.com/resource'
    * );
-   * const finalRequest = await page.waitForRequest(request => request.url() === 'https://example.com');
+   * const finalRequest = await page.waitForRequest(
+   *   request => request.url() === 'https://example.com'
+   * );
    * return finalRequest.response()?.ok();
    * ```
    *
