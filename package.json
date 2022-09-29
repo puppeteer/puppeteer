@@ -90,6 +90,7 @@
     "@microsoft/api-documenter": "7.19.14",
     "@microsoft/api-extractor": "7.31.2",
     "@microsoft/api-extractor-model": "7.24.2",
+    "@pptr/testserver": "*",
     "@types/debug": "4.1.7",
     "@types/diff": "5.0.2",
     "@types/glob": "8.0.0",
@@ -128,6 +129,7 @@
     "gts": "4.0.0",
     "husky": "8.0.1",
     "jpeg-js": "0.4.4",
+    "lerna": "5.5.2",
     "mime": "3.0.0",
     "minimist": "1.2.6",
     "mitt": "2.1.0",
@@ -148,5 +150,8 @@
     "tsx": "3.9.0",
     "typescript": "4.8.3",
     "zod": "3.19.1"
-  }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }
