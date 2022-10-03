@@ -3,7 +3,7 @@
   "compilerOptions": {
     "composite": true,
     "declarationMap": false,
-    "outDir": "../lib/cjs/vendor",
+    "outDir": "../lib/cjs/third_party",
     "sourceMap": false
   }
 }

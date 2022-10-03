@@ -57,11 +57,11 @@
     "check:protocol-revision": "tsx scripts/ensure-correct-devtools-protocol-package",
     "check:pinned-deps": "tsx scripts/ensure-pinned-deps",
     "build": "npm run build:prod",
-    "build:dev": "run-s generate:sources build:tsc:dev && run-p bundle:vendor generate:artifacts",
-    "build:prod": "run-s generate:sources build:tsc:prod && run-p bundle:vendor generate:artifacts",
+    "build:dev": "run-s generate:sources build:tsc:dev && run-p bundle:third_party generate:artifacts",
+    "build:prod": "run-s generate:sources build:tsc:prod && run-p bundle:third_party generate:artifacts",
     "build:tsc:dev": "tsc -b test",
     "build:tsc:prod": "tsc -b tsconfig.lib.json",
-    "bundle:vendor": "rollup --config rollup.vendor.config.js"
+    "bundle:third_party": "rollup --config rollup.third_party.config.js"
   },
   "files": [
     "lib",
@@ -90,6 +90,7 @@
     "@microsoft/api-documenter": "7.19.14",
     "@microsoft/api-extractor": "7.31.2",
     "@microsoft/api-extractor-model": "7.24.2",
+    "@pptr/testserver": "*",
     "@types/debug": "4.1.7",
     "@types/diff": "5.0.2",
     "@types/glob": "8.0.0",
@@ -128,6 +129,7 @@
     "gts": "4.0.0",
     "husky": "8.0.1",
     "jpeg-js": "0.4.4",
+    "lerna": "5.5.2",
     "mime": "3.0.0",
     "minimist": "1.2.6",
     "mitt": "2.1.0",
@@ -148,5 +150,8 @@
     "tsx": "3.9.0",
     "typescript": "4.8.3",
     "zod": "3.19.1"
-  }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }
