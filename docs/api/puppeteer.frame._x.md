@@ -8,7 +8,9 @@ sidebar_label: Frame.$x
 >
 > Use [Frame.$$()](./puppeteer.frame.__.md) with the `xpath` prefix.
 >
-> This method evaluates the given XPath expression and returns the results.
+> Example: `await frame.$$('xpath/' + xpathExpression)`
+>
+> This method evaluates the given XPath expression and returns the results. If `xpath` starts with `//` instead of `.//`, the dot will be appended automatically.
 
 **Signature:**
 
