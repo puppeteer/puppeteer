@@ -1182,12 +1182,6 @@
     "expectations": ["PASS", "FAIL"]
   },
   {
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to connect to a browser with no page targets",
-    "platforms": ["linux", "darwin", "win32"],
-    "parameters": ["chrome", "chrome-headless"],
-    "expectations": ["PASS", "FAIL"]
-  },
-  {
     "testIdPattern": "[page.spec] Page \"before each\" hook for \"should return the page title\"",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],

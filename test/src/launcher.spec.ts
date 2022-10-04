@@ -702,13 +702,11 @@ describe('Launcher specs', function () {
             return page.close();
           })
         );
+        const eventPromise = utils.waitEvent(originalBrowser, 'disconnected');
         const remoteBrowser = await puppeteer.connect({
           browserWSEndpoint: originalBrowser.wsEndpoint(),
         });
-        await Promise.all([
-          utils.waitEvent(originalBrowser, 'disconnected'),
-          remoteBrowser.close(),
-        ]);
+        await Promise.all([eventPromise, remoteBrowser.close()]);
       });
       it('should support ignoreHTTPSErrors option', async () => {
         const {httpsServer, puppeteer, defaultBrowserOptions} = getTestState();
