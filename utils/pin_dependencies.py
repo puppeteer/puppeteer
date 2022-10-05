@@ -22,14 +22,15 @@ from tempfile import mktemp
 
 
 def main():
-  for package_json_path in glob("**/package.json"):
+  for package_json_path in glob("packages/*/package.json") + ["website/package.json"]:
+    print(package_json_path)
     tmp_file_path = mktemp()
     with open(tmp_file_path, 'w') as tmp_file:
       with open(package_json_path, "r") as package_json_file:
         start_replace = False
         for line in package_json_file.readlines():
           if not start_replace:
-            if line.startswith("devDependencies") or line.startswith("dependencies"):
+            if "devDependencies" in line or "dependencies" in line:
               start_replace = True
           else:
             line = line.replace('^', '')
