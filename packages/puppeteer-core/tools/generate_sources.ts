@@ -4,7 +4,7 @@ import {mkdir, mkdtemp, readFile, rm, writeFile} from 'fs/promises';
 import {sync as glob} from 'glob';
 import path, {join, resolve} from 'path';
 import {chdir} from 'process';
-import {job} from '../../../utils/internal/job.js';
+import {job} from '../../../tools/internal/job.js';
 
 const packageRoot = resolve(join(__dirname, '..'));
 chdir(packageRoot);

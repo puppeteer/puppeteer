@@ -5,7 +5,7 @@ Mocha Runner is a test runner on top of mocha. It uses `/test/TestSuites.json` a
 ## Running tests for Mocha Runner itself.
 
 ```
-npm run build:test && npx c8 node utils/mochaRunner/lib/test.js
+npm run build:test && npx c8 node tools/mochaRunner/lib/test.js
 ```
 
 ## Running tests using Mocha Runner

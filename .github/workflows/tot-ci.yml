@@ -39,7 +39,7 @@ jobs:
           PUPPETEER_PRODUCT=firefox npm install
           npm install
           ls .local-chromium .local-firefox
-          REV=$(node utils/check_availability.js -p linux)
+          REV=$(node tools/check_availability.js -p linux)
           echo "Installing revision $REV"
           cat src/revisions.ts | sed "s/[0-9]\{6,\}/$REV/" > src/revisions.ts.replaced
           mv src/revisions.ts.replaced src/revisions.ts
@@ -77,7 +77,7 @@ jobs:
           PUPPETEER_PRODUCT=firefox npm install
           npm install
           ls .local-chromium .local-firefox
-          REV=$(node utils/check_availability.js -p linux)
+          REV=$(node tools/check_availability.js -p linux)
           echo "Installing revision $REV"
           cat src/revisions.ts | sed "s/[0-9]\{6,\}/$REV/" > src/revisions.ts.replaced
           mv src/revisions.ts.replaced src/revisions.ts
@@ -115,7 +115,7 @@ jobs:
           PUPPETEER_PRODUCT=firefox npm install
           npm install
           ls .local-chromium .local-firefox
-          REV=$(node utils/check_availability.js -p linux)
+          REV=$(node tools/check_availability.js -p linux)
           echo "Installing revision $REV"
           cat src/revisions.ts | sed "s/[0-9]\{6,\}/$REV/" > src/revisions.ts.replaced
           mv src/revisions.ts.replaced src/revisions.ts

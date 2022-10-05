@@ -8,7 +8,7 @@
   "scripts": {
     "build:test": "wireit",
     "build": "npm run build --workspaces --if-present",
-    "check:pinned-deps": "tsx scripts/ensure-pinned-deps",
+    "check:pinned-deps": "tsx tools/ensure-pinned-deps",
     "check": "npm run check --workspaces --if-present && run-p check:*",
     "clean": "npm run clean --workspaces --if-present && rimraf **/.wireit",
     "commitlint": "commitlint --from=HEAD~1",
@@ -17,7 +17,7 @@
     "format:eslint": "eslint --ext js --ext ts --fix .",
     "format:prettier": "prettier --write .",
     "format": "run-s format:*",
-    "generate:markdown": "tsx utils/generate_docs.ts",
+    "generate:markdown": "tsx tools/generate_docs.ts",
     "lint:eslint": "([ \"$CI\" = true ] && eslint --ext js --ext ts --quiet -f codeframe . || eslint --ext js --ext ts .)",
     "lint:prettier": "prettier --check .",
     "lint": "run-s lint:prettier lint:eslint",
@@ -32,7 +32,7 @@
     "test:firefox": "run-s test:firefox:*",
     "test:install": "test/test-install.sh",
     "test:types": "tsd -t packages/puppeteer",
-    "test": "cross-env PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 node utils/mochaRunner/lib/main.js"
+    "test": "cross-env PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 node tools/mochaRunner/lib/main.js"
   },
   "wireit": {
     "build:test": {
