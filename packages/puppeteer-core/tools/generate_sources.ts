@@ -98,7 +98,7 @@ const INCLUDED_FOLDERS = ['common', 'generated', 'node', 'util', 'api'];
         ).replace("'NEXT'", `'v${version}'`)
       );
     })
-      .inputs(['package.json', 'versions.js'])
+      .inputs(['package.json', '../../versions.js'])
       .build();
   }
 })();
