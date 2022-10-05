@@ -7,7 +7,7 @@ on:
 
 jobs:
   pre-release:
-    if: "startsWith(github.event.head_commit.message, 'chore(main): release')"
+    if: "startsWith(github.event.head_commit.message, 'chore: release main')"
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -16,6 +16,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Pin dependencies
+        run: utils/pin_dependencies.py
       - name: Install dependencies
         run: npm install
       - name: Build
