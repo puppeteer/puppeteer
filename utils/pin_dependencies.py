@@ -32,7 +32,8 @@ def main():
             if line.startswith("devDependencies") or line.startswith("dependencies"):
               start_replace = True
           else:
-            tmp_file.write(line.replace('^', ''))
+            line = line.replace('^', '')
+          tmp_file.write(line)
     rename(tmp_file_path, package_json_path)
 
 if __name__ == "__main__":
