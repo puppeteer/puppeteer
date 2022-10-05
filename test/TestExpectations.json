@@ -1184,7 +1184,7 @@
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to connect to a browser with no page targets",
     "platforms": ["linux", "darwin", "win32"],
-    "parameters": ["chrome", "chrome-headless"],
+    "parameters": ["chrome"],
     "expectations": ["PASS", "FAIL"]
   },
   {
