@@ -1,16 +1,11 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "declaration": false,
-    "declarationMap": false,
     "module": "CommonJS",
+    "moduleResolution": "NodeNext",
     "outDir": "build",
     "rootDir": "src"
   },
   "include": ["src"],
-  "references": [
-    {"path": "../src/tsconfig.cjs.json"},
-    {"path": "../packages/testserver/tsconfig.json"},
-    {"path": "../utils/mochaRunner/tsconfig.json"}
-  ]
+  "references": [{"path": "../utils/mochaRunner/tsconfig.json"}]
 }

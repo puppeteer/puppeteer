@@ -21,7 +21,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import {isErrorLike} from '../../lib/cjs/puppeteer/util/ErrorLike.js';
+import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 
 describe('Target.createCDPSession', function () {
   setupTestBrowserHooks();

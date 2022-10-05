@@ -16,9 +16,9 @@
 
 import expect from 'expect';
 import path from 'path';
-import {Frame} from '../../lib/cjs/puppeteer/common/Frame.js';
-import {Page} from '../../lib/cjs/puppeteer/api/Page.js';
-import {EventEmitter} from '../../lib/cjs/puppeteer/common/EventEmitter.js';
+import {Frame} from 'puppeteer-core/internal/common/Frame.js';
+import {Page} from 'puppeteer-core/internal/api/Page.js';
+import {EventEmitter} from 'puppeteer-core/internal/common/EventEmitter.js';
 import {compare} from './golden-utils.js';
 
 const PROJECT_ROOT = path.join(__dirname, '..', '..');

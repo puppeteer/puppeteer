@@ -60,7 +60,7 @@ jobs:
       - name: Setup cache for Chromium binary
         uses: actions/cache@v3
         with:
-          path: .local-chromium
+          path: packages/puppeteer-core/.local-chromium
           key: ${{ runner.os }}-chromium-${{ hashFiles('src/revisions.ts') }}
       - name: Install dependencies
         run: npm ci
@@ -226,23 +226,25 @@ jobs:
       - name: Setup cache for Firefox binary
         uses: actions/cache@v3
         with:
-          path: .local-firefox
+          path: packages/puppeteer-core/.local-firefox
           key: ${{ runner.os }}-firefox-${{ hashFiles('src/revisions.ts') }}
       - name: Set up Node.js
         uses: actions/setup-node@v3.4.1
         with:
           node-version: ${{ matrix.spec.node }}
+      - name: Update NPM
+        run: npm install -g npm@latest
       - name: Install dependencies with Chromium
-        run: npm install
+        run: npm ci
       - name: Install Firefox
         env:
           PUPPETEER_PRODUCT: firefox
-        run: npm install
+        run: npm ci
       - name: Install linux dependencies.
         if: ${{ matrix.spec.xvfb }}
         run: sudo apt-get install xvfb
       - name: Build
-        run: npm run build:dev
+        run: npm run build:test
       - name: Test types
         run: npm run test:types
       - name: Run all tests with xvfb
@@ -278,7 +280,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm install
-          ls .local-chromium
+          ls packages/puppeteer-core/.local-chromium
       - name: Build
         run: |
           npm run build

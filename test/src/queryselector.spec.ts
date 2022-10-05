@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import expect from 'expect';
-import {CustomQueryHandler} from '../../lib/cjs/puppeteer/common/QueryHandler.js';
+import {CustomQueryHandler} from 'puppeteer-core/internal/common/QueryHandler.js';
 import {
   getTestState,
   setupTestBrowserHooks,

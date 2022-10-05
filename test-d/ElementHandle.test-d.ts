@@ -1,5 +1,5 @@
+import {ElementHandle} from 'puppeteer';
 import {expectNotType, expectType} from 'tsd';
-import {ElementHandle} from '../lib/esm/puppeteer/common/ElementHandle.js';
 
 declare const handle: ElementHandle;
 

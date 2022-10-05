@@ -17,8 +17,8 @@
 import utils from './utils.js';
 import expect from 'expect';
 import {getTestState} from './mocha-utils.js';
-import {Browser, BrowserContext} from '../../lib/cjs/puppeteer/api/Browser.js';
-import {Page} from '../../lib/cjs/puppeteer/api/Page.js';
+import {Browser, BrowserContext} from 'puppeteer-core/internal/api/Browser.js';
+import {Page} from 'puppeteer-core/internal/api/Page.js';
 
 describe('OOPIF', function () {
   /* We use a special browser for this test as we need the --site-per-process flag */

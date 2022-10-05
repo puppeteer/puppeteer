@@ -15,8 +15,8 @@
  */
 
 import expect from 'expect';
-import {Connection} from '../../../lib/cjs/puppeteer/common/bidi/Connection.js';
-import {ConnectionTransport} from '../../../lib/cjs/puppeteer/common/ConnectionTransport.js';
+import {Connection} from 'puppeteer-core/internal/common/bidi/Connection.js';
+import {ConnectionTransport} from 'puppeteer-core/internal/common/ConnectionTransport.js';
 
 describe('WebDriver BiDi', () => {
   describe('Connection', () => {

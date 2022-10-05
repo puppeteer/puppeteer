@@ -5,20 +5,20 @@ Mocha Runner is a test runner on top of mocha. It uses `/test/TestSuites.json` a
 ## Running tests for Mocha Runner itself.
 
 ```
-npm run build:dev && npx c8 node utils/mochaRunner/lib/test.js
+npm run build:test && npx c8 node utils/mochaRunner/lib/test.js
 ```
 
 ## Running tests using Mocha Runner
 
 ```
-npm run build:dev && npm run test
+npm run build:test && npm run test
 ```
 
 By default, the runner runs all test suites applicable to the current platform.
 To pick a test suite, provide the `--test-suite` arguments. For example,
 
 ```
-npm run build:dev && npm run test -- --test-suite chrome-headless
+npm run build:test && npm run test -- --test-suite chrome-headless
 ```
 
 ## TestSuites.json

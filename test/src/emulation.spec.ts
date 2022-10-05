@@ -15,7 +15,7 @@
  */
 
 import expect from 'expect';
-import {Device} from '../../lib/cjs/puppeteer/common/DeviceDescriptors.js';
+import {Device} from 'puppeteer-core/internal/common/DeviceDescriptors.js';
 import {
   getTestState,
   setupTestBrowserHooks,

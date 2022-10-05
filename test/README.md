@@ -46,7 +46,7 @@ npm test
 - **Important**: don't forget to first build the code if you're testing local changes:
 
 ```bash
-npm run build:dev && npm test
+npm run build:test && npm test
 ```
 
 - To run a specific test, substitute the `it` with `it.only`:

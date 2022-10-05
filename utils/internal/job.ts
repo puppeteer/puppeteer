@@ -3,11 +3,7 @@ import {existsSync, Stats} from 'fs';
 import {mkdir, readFile, stat, writeFile} from 'fs/promises';
 import {glob} from 'glob';
 import {tmpdir} from 'os';
-import {dirname, join, resolve} from 'path';
-import {chdir} from 'process';
-
-const packageRoot = resolve(join(__dirname, '..', '..'));
-chdir(packageRoot);
+import {dirname, join} from 'path';
 
 interface JobContext {
   name: string;
@@ -45,12 +41,9 @@ class JobBuilder {
   inputs(inputs: string[]): JobBuilder {
     this.#inputs = inputs.flatMap(value => {
       if (glob.hasMagic(value)) {
-        return glob.sync(value).map(value => {
-          // Glob doesn't support `\` on Windows, so we join here.
-          return join(packageRoot, value);
-        });
+        return glob.sync(value);
       }
-      return join(packageRoot, value);
+      return value;
     });
     return this;
   }
@@ -60,9 +53,7 @@ class JobBuilder {
       this.#name = outputs.join(' and ');
     }
 
-    this.#outputs = outputs.map(value => {
-      return join(packageRoot, value);
-    });
+    this.#outputs = outputs;
     return this;
   }
 

@@ -19,7 +19,7 @@ import http from 'http';
 import os from 'os';
 import {getTestState} from './mocha-utils.js';
 import type {Server, IncomingMessage, ServerResponse} from 'http';
-import type {Browser} from '../../lib/cjs/puppeteer/api/Browser.js';
+import type {Browser} from 'puppeteer-core/internal/api/Browser.js';
 import type {AddressInfo} from 'net';
 import {TestServer} from '@pptr/testserver';
 

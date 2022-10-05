@@ -27,7 +27,7 @@ jobs:
         working-directory: ./website
         run: |
           npm install
-          npm run docusaurus docs:version $(jq -r .version ../package.json)
+          npm run docusaurus docs:version $(jq -r .version ../packages/puppeteer/package.json)
           npm run archive
       - name: Re-build docs after versioning
         env:
