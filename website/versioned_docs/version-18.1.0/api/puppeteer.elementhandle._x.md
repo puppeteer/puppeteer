@@ -8,7 +8,11 @@ sidebar_label: ElementHandle.$x
 >
 > Use [ElementHandle.$$()](./puppeteer.elementhandle.__.md) with the `xpath` prefix.
 >
-> The method evaluates the XPath expression relative to the elementHandle. If there are no such elements, the method will resolve to an empty array.
+> Example: `await elementHandle.$$('xpath/' + xpathExpression)`
+>
+> The method evaluates the XPath expression relative to the elementHandle. If `xpath` starts with `//` instead of `.//`, the dot will be appended automatically.
+>
+> If there are no such elements, the method will resolve to an empty array.
 
 **Signature:**
 

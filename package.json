@@ -1,6 +1,6 @@
 {
   "name": "puppeteer",
-  "version": "18.0.5",
+  "version": "18.1.0",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "keywords": [
     "puppeteer",

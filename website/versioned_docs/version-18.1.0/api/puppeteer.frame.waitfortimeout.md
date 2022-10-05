@@ -1,19 +1,19 @@
 ---
-sidebar_label: Page.waitForTimeout
+sidebar_label: Frame.waitForTimeout
 ---
 
-# Page.waitForTimeout() method
+# Frame.waitForTimeout() method
 
 > Warning: This API is now obsolete.
 >
-> Use `new Promise(r => setTimeout(r, milliseconds));`.
+> Replace with `new Promise(r => setTimeout(r, milliseconds));`.
 >
 > Causes your script to wait for the given number of milliseconds.
 
 **Signature:**
 
 ```typescript
-class Page {
+class Frame {
   waitForTimeout(milliseconds: number): Promise<void>;
 }
 ```
@@ -37,5 +37,5 @@ It's generally recommended to not wait for a number of seconds, but instead use 
 Wait for 1 second:
 
 ```ts
-await page.waitForTimeout(1000);
+await frame.waitForTimeout(1000);
 ```

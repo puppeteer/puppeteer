@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [18.1.0](https://github.com/puppeteer/puppeteer/compare/v18.0.5...v18.1.0) (2022-10-05)
+
+
+### Features
+
+* **chromium:** roll to Chromium 107.0.5296.0 (r1045629) ([#9039](https://github.com/puppeteer/puppeteer/issues/9039)) ([022fbde](https://github.com/puppeteer/puppeteer/commit/022fbde85e067e8c419cf42dd571f9a1187c343c))
+
 ## [18.0.5](https://github.com/puppeteer/puppeteer/compare/v18.0.4...v18.0.5) (2022-09-22)
 
 

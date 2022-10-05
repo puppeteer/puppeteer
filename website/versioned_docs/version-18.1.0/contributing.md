@@ -42,7 +42,7 @@ Puppeteer has two configurations for building:
 
 - `npm run build` (or `npm run build:prod`) - Builds Puppeteer and artifacts
   used in production.
-- `npm run build:dev` - Builds Puppeteer, tests, and artifacts used in
+- `npm run build:dev` - Builds Puppeteer, test runner, tests, and artifacts used in
   production.
 
 ## Testing Puppeteer
@@ -101,7 +101,7 @@ The following is a description of the primary folders in Puppeteer:
 - `utils/mochaRunner` - contains the source code for our test runner.
 - `compat` - contains code separated by module import type. See [`compat/README.md`](https://github.com/puppeteer/puppeteer/blob/main/compat/README.md) for details.
 - `test-d` contains type tests using [`tsd`](https://github.com/SamVerschueren/tsd).
-- `vendor` contains all dependencies that we vendor into the final build. See the [`vendor/README.md`](https://github.com/puppeteer/puppeteer/blob/main/vendor/README.md) for details.
+- `third_party` contains all dependencies that we vendor into the final build. See the [`third_party/README.md`](https://github.com/puppeteer/puppeteer/blob/main/third_party/README.md) for details.
 
 ### Shipping CJS and ESM bundles
 
@@ -113,10 +113,10 @@ We compile into the `lib` directory which is what we publish on the npm reposito
 lib
 - cjs
   - puppeteer <== the output of compiling `src/tsconfig.cjs.json`
-  - vendor <== the output of compiling `vendor/tsconfig.cjs.json`
+  - third_party <== the output of compiling `third_party/tsconfig.cjs.json`
 - esm
   - puppeteer <== the output of compiling `src/tsconfig.esm.json`
-  - vendor <== the output of compiling `vendor/tsconfig.esm.json`
+  - third_party <== the output of compiling `third_party/tsconfig.json`
 ```
 
 ### `tsconfig.json` for the tests
@@ -184,7 +184,7 @@ A barrier for introducing new installation dependencies is especially high:
 
 - **Do not add** installation dependency unless it's critical to project success.
 
-There are additional considerations for dependencies that are environment agonistic. See the [`vendor/README.md`](https://github.com/puppeteer/puppeteer/blob/main/vendor/README.md) for details.
+There are additional considerations for dependencies that are environment agonistic. See the [`third_party/README.md`](https://github.com/puppeteer/puppeteer/blob/main/third_party/README.md) for details.
 
 ## Running & Writing Tests
 
@@ -274,7 +274,7 @@ The following steps are needed to update the Chromium version.
 1. Update `versions.js` with the new Chromium-to-Puppeteer version mapping and update `lastMaintainedChromiumVersion` with the latest stable Chrome version.
 1. Run `npm run check:protocol-revision`.
    If it fails, update `package.json` with the expected `devtools-protocol` version.
-1. Run `npm run build` and `npm install`.
+1. Run `npm run build && npm run build:dev` and `npm install`.
 1. Run `npm test` and ensure that all tests pass. If a test fails, [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and either update the test expectations accordingly (if it was an intended change) or work around the changes in Puppeteer (if it’s not desirable to change Puppeteer’s observable behavior).
 1. Commit and push your changes and open a pull request.
    The commit message must contain the version in `Chromium <version> (<revision>)` format to ensure that [pptr.dev](https://pptr.dev/) can parse it correctly, e.g. `'feat(chromium): roll to Chromium 90.0.4427.0 (r856583)'`.

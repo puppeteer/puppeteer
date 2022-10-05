@@ -28,7 +28,7 @@ class Page {
 
 Promise&lt;[HTTPRequest](./puppeteer.httprequest.md)&gt;
 
-Promise which resolves to the matched response
+Promise which resolves to the matched request
 
 ## Remarks
 
@@ -39,15 +39,9 @@ Optional Waiting Parameters have:
 ## Example
 
 ```ts
-const firstResponse = await page.waitForResponse(
-  'https://example.com/resource'
+const firstRequest = await page.waitForRequest('https://example.com/resource');
+const finalRequest = await page.waitForRequest(
+  request => request.url() === 'https://example.com'
 );
-const finalResponse = await page.waitForResponse(
-  response =>
-    response.url() === 'https://example.com' && response.status() === 200
-);
-const finalResponse = await page.waitForResponse(async response => {
-  return (await response.text()).includes('<html>');
-});
-return finalResponse.ok();
+return finalRequest.response()?.ok();
 ```

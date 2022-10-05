@@ -8,11 +8,15 @@ sidebar_label: ElementHandle.waitForXPath
 >
 > Use [ElementHandle.waitForSelector()](./puppeteer.elementhandle.waitforselector.md) with the `xpath` prefix.
 >
+> Example: `await elementHandle.waitForSelector('xpath/' + xpathExpression)`
+>
+> The method evaluates the XPath expression relative to the elementHandle.
+>
 > Wait for the `xpath` within the element. If at the moment of calling the method the `xpath` already exists, the method will return immediately. If the `xpath` doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
 >
 > If `xpath` starts with `//` instead of `.//`, the dot will be appended automatically.
 >
-> This method works across navigation
+> This method works across navigation.
 >
 > ```ts
 > const puppeteer = require('puppeteer');
