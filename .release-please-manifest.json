@@ -1,5 +1,5 @@
 {
-  "packages/puppeteer": "18.1.0",
-  "packages/puppeteer-core": "18.1.0",
-  "packages/testserver": "0.5.0"
+  "packages/puppeteer": "18.2.0",
+  "packages/puppeteer-core": "18.2.0",
+  "packages/testserver": "0.6.0"
 }
