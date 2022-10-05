@@ -42,7 +42,7 @@ Puppeteer has two configurations for building:
 
 - `npm run build` (or `npm run build:prod`) - Builds Puppeteer and artifacts
   used in production.
-- `npm run build:dev` - Builds Puppeteer, test runner, tests, and artifacts used in
+- `npm run build:test` - Builds Puppeteer, test runner, tests, and artifacts used in
   production.
 
 ## Testing Puppeteer
@@ -50,7 +50,7 @@ Puppeteer has two configurations for building:
 For browser testing, you can run
 
 ```bash
-npm run build:dev && npm run test
+npm run build:test && npm run test
 ```
 
 We also have other tests such as `test:types` that tests types and
@@ -274,7 +274,7 @@ The following steps are needed to update the Chromium version.
 1. Update `versions.js` with the new Chromium-to-Puppeteer version mapping and update `lastMaintainedChromiumVersion` with the latest stable Chrome version.
 1. Run `npm run check:protocol-revision`.
    If it fails, update `package.json` with the expected `devtools-protocol` version.
-1. Run `npm run build && npm run build:dev` and `npm install`.
+1. Run `npm run build && npm run build:test` and `npm install`.
 1. Run `npm test` and ensure that all tests pass. If a test fails, [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and either update the test expectations accordingly (if it was an intended change) or work around the changes in Puppeteer (if it’s not desirable to change Puppeteer’s observable behavior).
 1. Commit and push your changes and open a pull request.
    The commit message must contain the version in `Chromium <version> (<revision>)` format to ensure that [pptr.dev](https://pptr.dev/) can parse it correctly, e.g. `'feat(chromium): roll to Chromium 90.0.4427.0 (r856583)'`.
