@@ -18,16 +18,16 @@ import fs from 'fs';
 import {ServerResponse} from 'http';
 import path from 'path';
 import sinon from 'sinon';
-import {CDPSession} from '../../lib/cjs/puppeteer/common/Connection.js';
-import {ConsoleMessage} from '../../lib/cjs/puppeteer/common/ConsoleMessage.js';
-import {Metrics, Page} from '../../lib/cjs/puppeteer/api/Page.js';
+import {CDPSession} from 'puppeteer-core/internal/common/Connection.js';
+import {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
+import {Metrics, Page} from 'puppeteer-core/internal/api/Page.js';
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
 import utils, {attachFrame, waitEvent} from './utils.js';
-import {CDPPage} from '../../lib/cjs/puppeteer/common/Page.js';
+import {CDPPage} from 'puppeteer-core/internal/common/Page.js';
 
 describe('Page', function () {
   setupTestBrowserHooks();

@@ -1,0 +1,154 @@
+{
+  "name": "puppeteer-core",
+  "version": "18.1.0",
+  "description": "A high-level API to control headless Chrome over the DevTools Protocol",
+  "keywords": [
+    "puppeteer",
+    "chrome",
+    "headless",
+    "automation"
+  ],
+  "type": "commonjs",
+  "main": "./lib/cjs/puppeteer/puppeteer-core.js",
+  "types": "./lib/types.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types.d.ts",
+      "import": "./lib/esm/puppeteer/puppeteer-core.js",
+      "require": "./lib/cjs/puppeteer/puppeteer-core.js"
+    },
+    "./internal/*": {
+      "import": "./lib/esm/puppeteer/*",
+      "require": "./lib/cjs/puppeteer/*"
+    },
+    "./*": {
+      "import": "./*",
+      "require": "./*"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/puppeteer/puppeteer/tree/main/packages/puppeteer-core"
+  },
+  "engines": {
+    "node": ">=14.1.0"
+  },
+  "scripts": {
+    "build:third_party": "wireit",
+    "build:tsc": "wireit",
+    "build:types": "wireit",
+    "build": "wireit",
+    "check": "tsx tools/ensure-correct-devtools-protocol-package",
+    "clean": "tsc -b --clean && rimraf lib src/generated",
+    "format:types": "wireit",
+    "generate:package-json": "wireit",
+    "generate:sources": "wireit"
+  },
+  "wireit": {
+    "build": {
+      "dependencies": [
+        "build:third_party",
+        "format:types",
+        "generate:package-json"
+      ]
+    },
+    "generate:sources": {
+      "command": "tsx tools/generate_sources.ts",
+      "files": [
+        "tools/generate_sources.ts",
+        "src/templates/**"
+      ],
+      "output": [
+        "src/generated/**",
+        "src/types.ts"
+      ]
+    },
+    "build:third_party": {
+      "command": "rollup --config rollup.third_party.config.js",
+      "dependencies": [
+        "build:tsc"
+      ],
+      "clean": false,
+      "files": [
+        "lib/esm/third_party/**",
+        "lib/cjs/third_party/**"
+      ],
+      "output": [
+        "lib/esm/third_party/**",
+        "lib/cjs/third_party/**"
+      ]
+    },
+    "generate:package-json": {
+      "command": "echo '{\"type\": \"module\"}' > lib/esm/package.json",
+      "clean": "if-file-deleted",
+      "dependencies": [
+        "build:tsc"
+      ],
+      "output": [
+        "lib/esm/package.json"
+      ]
+    },
+    "build:types": {
+      "command": "api-extractor run --local",
+      "dependencies": [
+        "build:tsc"
+      ],
+      "files": [
+        "tsconfig.json",
+        "api-extractor.json",
+        "lib/esm/puppeteer/types.d.ts"
+      ],
+      "output": [
+        "lib/types.d.ts"
+      ]
+    },
+    "format:types": {
+      "command": "eslint --cache-location .eslintcache --cache --ext=ts --no-ignore --no-eslintrc -c=../../.eslintrc.types.cjs --fix lib/types.d.ts",
+      "dependencies": [
+        "build:types"
+      ],
+      "clean": false,
+      "files": [
+        "lib/types.d.ts",
+        "../../.eslintrc.types.cjs"
+      ],
+      "output": [
+        "lib/types.d.ts"
+      ]
+    },
+    "build:tsc": {
+      "command": "tsc -b",
+      "clean": "if-file-deleted",
+      "dependencies": [
+        "generate:sources"
+      ],
+      "files": [
+        "src/**",
+        "compat/**",
+        "**/tsconfig.*.json"
+      ],
+      "output": [
+        "lib/esm/**",
+        "lib/cjs/**"
+      ]
+    }
+  },
+  "files": [
+    "lib",
+    "!*.tsbuildinfo"
+  ],
+  "author": "The Chromium Authors",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "cross-fetch": "3.1.5",
+    "debug": "4.3.4",
+    "devtools-protocol": "0.0.1045489",
+    "extract-zip": "2.0.1",
+    "https-proxy-agent": "5.0.1",
+    "proxy-from-env": "1.1.0",
+    "rimraf": "3.0.2",
+    "tar-fs": "2.1.1",
+    "unbzip2-stream": "1.4.3",
+    "ws": "8.9.0"
+  }
+}

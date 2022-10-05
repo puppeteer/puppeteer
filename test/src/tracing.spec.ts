@@ -18,8 +18,8 @@ import fs from 'fs';
 import path from 'path';
 import expect from 'expect';
 import {getTestState} from './mocha-utils.js';
-import {Browser} from '../../lib/cjs/puppeteer/api/Browser.js';
-import {Page} from '../../lib/cjs/puppeteer/api/Page.js';
+import {Browser} from 'puppeteer-core/internal/api/Browser.js';
+import {Page} from 'puppeteer-core/internal/api/Page.js';
 
 describe('Tracing', function () {
   let outputFile!: string;

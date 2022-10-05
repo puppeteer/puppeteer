@@ -23,7 +23,7 @@ import {
 } from './mocha-utils.js';
 import os from 'os';
 import {ServerResponse} from 'http';
-import {HTTPRequest} from '../../lib/cjs/puppeteer/common/HTTPRequest.js';
+import {HTTPRequest} from 'puppeteer-core/internal/common/HTTPRequest.js';
 
 describe('navigation', function () {
   setupTestBrowserHooks();

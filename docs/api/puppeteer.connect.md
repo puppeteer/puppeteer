@@ -7,6 +7,6 @@ sidebar_label: connect
 **Signature:**
 
 ```typescript
-connect: (options: import('./types.js').ConnectOptions) =>
-  Promise<import('./types.js').Browser>;
+connect: (options: import('./types').ConnectOptions) =>
+  Promise<import('./types').Browser>;
 ```

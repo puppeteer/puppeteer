@@ -15,8 +15,7 @@
  */
 
 import expect from 'expect';
-import '../../lib/cjs/puppeteer/generated/injected.js';
-import {PUPPETEER_WORLD} from '../../lib/cjs/puppeteer/common/IsolatedWorld.js';
+import {PUPPETEER_WORLD} from 'puppeteer-core/internal/common/IsolatedWorld.js';
 import {
   getTestState,
   setupTestBrowserHooks,

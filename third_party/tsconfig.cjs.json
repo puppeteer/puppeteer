@@ -1,9 +1,0 @@
-{
-  "extends": "../tsconfig.base.json",
-  "compilerOptions": {
-    "composite": true,
-    "declarationMap": false,
-    "outDir": "../lib/cjs/third_party",
-    "sourceMap": false
-  }
-}

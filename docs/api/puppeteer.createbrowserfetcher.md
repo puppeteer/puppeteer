@@ -7,6 +7,7 @@ sidebar_label: createBrowserFetcher
 **Signature:**
 
 ```typescript
-createBrowserFetcher: (options: import('./types.js').BrowserFetcherOptions) =>
-  import('./types.js').BrowserFetcher;
+createBrowserFetcher: (
+  options: import('puppeteer-core/internal/node/BrowserFetcher.js').BrowserFetcherOptions
+) => import('puppeteer-core/internal/node/BrowserFetcher.js').BrowserFetcher;
 ```

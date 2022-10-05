@@ -23,8 +23,8 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import {HTTPRequest} from '../../lib/cjs/puppeteer/common/HTTPRequest.js';
-import {ConsoleMessage} from '../../lib/cjs/puppeteer/common/ConsoleMessage.js';
+import {HTTPRequest} from 'puppeteer-core/internal/common/HTTPRequest.js';
+import {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 describe('request interception', function () {
   setupTestBrowserHooks();

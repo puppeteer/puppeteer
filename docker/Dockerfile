@@ -15,10 +15,11 @@ RUN apt-get update \
 WORKDIR /home/pptruser
 
 COPY puppeteer-latest.tgz /home/pptruser/puppeteer-latest.tgz
+COPY puppeteer-core-latest.tgz /home/pptruser/puppeteer-core-latest.tgz
 
-# Install puppeteer into /home/pptruser/node_modules.
-RUN npm i ./puppeteer-latest.tgz \
-    && rm puppeteer-latest.tgz \
+# Install puppeteer and puppeteer-core into /home/pptruser/node_modules.
+RUN npm i ./puppeteer-core-latest.tgz ./puppeteer-latest.tgz \
+    && rm ./puppeteer-core-latest.tgz ./puppeteer-latest.tgz \
     # Add user so we don't need --no-sandbox.
     # same layer as npm install to keep re-chowned files from using up several hundred MBs more space
     && groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \

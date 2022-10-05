@@ -15,7 +15,7 @@
  */
 
 import expect from 'expect';
-import {ElementHandle} from '../../lib/cjs/puppeteer/common/ElementHandle.js';
+import {ElementHandle} from 'puppeteer-core/internal/common/ElementHandle.js';
 import {
   getTestState,
   setupTestBrowserHooks,

@@ -22,7 +22,7 @@ import expect from 'expect';
 import {
   CDPBrowser,
   CDPBrowserContext,
-} from '../../lib/cjs/puppeteer/common/Browser.js';
+} from 'puppeteer-core/internal/common/Browser.js';
 
 describe('TargetManager', () => {
   /* We use a special browser for this test as we need the --site-per-process flag */

@@ -15,7 +15,7 @@
  */
 
 import expect from 'expect';
-import {isErrorLike} from '../../lib/cjs/puppeteer/util/ErrorLike.js';
+import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 import {
   createTimeout,
   getTestState,

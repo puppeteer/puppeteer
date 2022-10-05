@@ -7,8 +7,8 @@ lib/
 
 # Generated files
 **/*.tsbuildinfo
-puppeteer.api.json
-puppeteer*.tgz
+*.api.json
+*.tgz
 yarn.lock
 .docusaurus/
 .cache-loader
@@ -17,7 +17,9 @@ yarn.lock
 test/output-*/
 .dev_profile*
 coverage/
-src/generated
+generated/
+.eslintcache
+/.cache/
 
 # IDE Artifacts
 .vscode
@@ -33,3 +35,6 @@ src/generated
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Wireit
+.wireit

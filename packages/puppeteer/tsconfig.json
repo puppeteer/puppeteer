@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "files": [],
+  "compilerOptions": {
+    // API extractor doesn't work well with NodeNext module resolution, so we
+    // just stick with ol'fashion path resolution.
+    "baseUrl": ".",
+    "paths": {
+      "puppeteer-core/internal/*": ["../puppeteer-core/lib/esm/puppeteer/*"]
+    }
+  },
+  "references": [
+    {"path": "src/tsconfig.esm.json"},
+    {"path": "src/tsconfig.cjs.json"}
+  ]
+}

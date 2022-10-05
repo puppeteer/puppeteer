@@ -4,12 +4,17 @@
   "description": "testing server",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc -b",
+    "clean": "tsc -b --clean && rimraf lib"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/puppeteer/puppeteer/tree/main/packages/testserver"
   },
   "author": "The Chromium Authors",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "dependencies": {
+    "mime": "3.0.0",
+    "ws": "8.9.0"
+  }
 }

@@ -20,14 +20,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import rimraf from 'rimraf';
 import sinon from 'sinon';
-import {Browser, BrowserContext} from '../../lib/cjs/puppeteer/api/Browser.js';
-import {Page} from '../../lib/cjs/puppeteer/api/Page.js';
-import {isErrorLike} from '../../lib/cjs/puppeteer/util/ErrorLike.js';
+import {Browser, BrowserContext} from 'puppeteer-core/internal/api/Browser.js';
+import {Page} from 'puppeteer-core/internal/api/Page.js';
+import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 import {
   PuppeteerLaunchOptions,
   PuppeteerNode,
-} from '../../lib/cjs/puppeteer/node/Puppeteer.js';
-import puppeteer from '../../lib/cjs/puppeteer/puppeteer.js';
+} from 'puppeteer-core/internal/node/PuppeteerNode.js';
+import puppeteer from 'puppeteer/lib/cjs/puppeteer/puppeteer.js';
 import {TestServer} from '@pptr/testserver';
 import {extendExpectWithToBeGolden} from './utils.js';
 import * as Mocha from 'mocha';
@@ -229,7 +229,9 @@ export const mochaHooks = {
       state.isChrome = isChrome;
       state.isHeadless = isHeadless;
       state.headless = headless;
-      state.puppeteerPath = path.resolve(path.join(__dirname, '../..'));
+      state.puppeteerPath = path.resolve(
+        path.join(__dirname, '..', '..', 'packages', 'puppeteer')
+      );
     },
   ],
 

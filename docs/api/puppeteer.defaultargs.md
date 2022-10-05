@@ -7,5 +7,5 @@ sidebar_label: defaultArgs
 **Signature:**
 
 ```typescript
-defaultArgs: (options?: import("./types.js").BrowserLaunchArgumentOptions) => string[]
+defaultArgs: (options?: import("puppeteer-core/internal/node/LaunchOptions.js").BrowserLaunchArgumentOptions | undefined) => string[]
 ```

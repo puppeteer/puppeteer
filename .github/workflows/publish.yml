@@ -16,24 +16,12 @@ jobs:
         uses: actions/checkout@v3
       - name: Install dependencies
         run: npm install
-      - name: Build puppeteer
+      - name: Build packages
         run: npm run build
-      - name: Publish puppeteer
+      - name: Publish packages
         env:
-          NPM_TOKEN: ${{secrets.NPM_TOKEN_PUPPETEER}}
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN_RELEASE}}
         run: |
           npm config set registry 'https://wombat-dressing-room.appspot.com/'
-          npm config set '//wombat-dressing-room.appspot.com/:_authToken' '${NPM_TOKEN}'
-          echo "Publishing puppeteer"
-          npm publish
-          # DEPRECATED_RANGE=$(node utils/get_deprecated_version_range.js)
-          # echo "Deprecating old puppeteer versions: $DEPRECATED_RANGE"
-          # npm deprecate puppeteer@$DEPRECATED_RANGE "Version no longer supported. Upgrade to @latest"
-      - name: Publish puppeteer-core
-        env:
-          NPM_TOKEN: ${{secrets.NPM_TOKEN_PUPPETEER_CORE}}
-        run: |
-          utils/prepare_puppeteer_core.js
-          npm config set registry 'https://wombat-dressing-room.appspot.com/'
-          npm config set '//wombat-dressing-room.appspot.com/:_authToken' '${NPM_TOKEN}'
-          npm publish
+          npm config set '//wombat-dressing-room.appspot.com/:_authToken' $NODE_AUTH_TOKEN
+          npm publish --workspaces

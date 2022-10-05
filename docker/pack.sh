@@ -4,10 +4,13 @@
 # Expected cwd: project root directory.
 
 set -e
-set +x
 
-FILENAME=$(npm pack)
+cd docker
 
-echo $FILENAME
+npm pack --workspace puppeteer --workspace puppeteer-core --pack-destination .
 
-mv $FILENAME docker/puppeteer-latest.tgz
+rm -f puppeteer-core-latest.tgz
+rm -f puppeteer-latest.tgz
+
+mv puppeteer-core-*.tgz puppeteer-core-latest.tgz
+mv puppeteer-[0-9]*.tgz puppeteer-latest.tgz

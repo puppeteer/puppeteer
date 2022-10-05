@@ -16,18 +16,19 @@
 
 import {readdirSync, readFileSync} from 'fs';
 import {join} from 'path';
-import packageJson from '../package.json';
+import {devDependencies} from '../package.json';
 
-const LOCAL_PACKAGE_NAMES = [];
+const LOCAL_PACKAGE_NAMES: string[] = [];
+
 const packagesDir = join(__dirname, '..', 'packages');
-for (const package of readdirSync(packagesDir)) {
+for (const packageName of readdirSync(packagesDir)) {
   const {name} = JSON.parse(
-    readFileSync(join(packagesDir, package, 'package.json'), 'utf8')
+    readFileSync(join(packagesDir, packageName, 'package.json'), 'utf8')
   );
   LOCAL_PACKAGE_NAMES.push(name);
 }
 
-const allDeps = {...packageJson.dependencies, ...packageJson.devDependencies};
+const allDeps = {...devDependencies};
 
 const invalidDeps = new Map<string, string>();
 

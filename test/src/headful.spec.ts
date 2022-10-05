@@ -23,7 +23,7 @@ import {promisify} from 'util';
 import {
   PuppeteerLaunchOptions,
   PuppeteerNode,
-} from '../../lib/cjs/puppeteer/node/Puppeteer.js';
+} from 'puppeteer-core/internal/node/PuppeteerNode.js';
 import {getTestState} from './mocha-utils.js';
 
 const rmAsync = promisify(rimraf);

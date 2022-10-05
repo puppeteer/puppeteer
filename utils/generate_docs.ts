@@ -15,10 +15,14 @@
  */
 
 import {readFile, rm, writeFile} from 'fs/promises';
+import {join, resolve} from 'path';
+import {chdir} from 'process';
 import semver from 'semver';
 import {generateDocs} from './internal/custom_markdown_action.js';
 import {job} from './internal/job.js';
 import {spawnAndLog} from './internal/util.js';
+
+chdir(resolve(join(__dirname, '..')));
 
 function getOffsetAndLimit(
   sectionName: string,
@@ -62,7 +66,8 @@ sidebar_position: 1
   // Chrome Versions
   const job2 = job('', async ({inputs, outputs}) => {
     let content = await readFile(inputs[2]!, {encoding: 'utf8'});
-    const {versionsPerRelease} = await import(inputs[0]!);
+    const versionModulePath = join('..', inputs[0]!);
+    const {versionsPerRelease} = await import(versionModulePath);
     const versionsArchived = JSON.parse(await readFile(inputs[1]!, 'utf8'));
 
     // Generate versions

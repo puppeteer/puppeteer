@@ -1,88 +1,56 @@
 {
-  "name": "puppeteer",
-  "version": "18.1.0",
-  "description": "A high-level API to control headless Chrome over the DevTools Protocol",
-  "keywords": [
-    "puppeteer",
-    "chrome",
-    "headless",
-    "automation"
-  ],
-  "type": "commonjs",
-  "main": "./lib/cjs/puppeteer/puppeteer.js",
-  "exports": {
-    ".": {
-      "types": "./lib/types.d.ts",
-      "import": "./lib/esm/puppeteer/puppeteer.js",
-      "require": "./lib/cjs/puppeteer/puppeteer.js"
-    },
-    "./*": {
-      "import": "./*",
-      "require": "./*"
-    }
-  },
-  "types": "lib/types.d.ts",
-  "repository": "github:puppeteer/puppeteer",
-  "engines": {
-    "node": ">=14.1.0"
+  "name": "puppeteer-repo",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/puppeteer/puppeteer"
   },
   "scripts": {
-    "test": "cross-env PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 node utils/mochaRunner/lib/main.js",
-    "test:types": "tsd",
-    "test:install": "scripts/test-install.sh",
-    "test:firefox": "run-s test:firefox:*",
-    "test:firefox:headless": "npm run test -- --test-suite firefox-headless",
-    "test:firefox:headful": "npm run test -- --test-suite firefox-headful",
-    "test:chrome": "run-s test:chrome:*",
-    "test:chrome:headless": "npm run test -- --test-suite chrome-headless",
-    "test:chrome:headless-chrome": "npm run test -- --test-suite chrome-new-headless",
-    "test:chrome:headful": "npm run test -- --test-suite chrome-headful",
-    "prepublishOnly": "npm run build",
-    "prepare": "node typescript-if-required.js && husky install",
-    "lint": "run-s lint:prettier lint:eslint",
-    "lint:prettier": "prettier --check .",
-    "lint:eslint": "([ \"$CI\" = true ] && eslint --ext js --ext ts --quiet -f codeframe . || eslint --ext js --ext ts .)",
-    "install": "node install.js",
-    "generate:sources": "tsx utils/generate_sources.ts",
-    "generate:artifacts": "tsx utils/generate_artifacts.ts",
-    "generate:markdown": "tsx utils/generate_docs.ts",
-    "format": "run-s format:*",
-    "format:prettier": "prettier --write .",
-    "format:eslint": "eslint --ext js --ext ts --fix .",
-    "docs": "run-s build generate:markdown",
-    "debug": "npm run build:dev && mocha --inspect-brk",
-    "commitlint": "commitlint --from=HEAD~1",
-    "clean": "rimraf lib && rimraf test/build",
-    "check": "run-p check:*",
-    "check:protocol-revision": "tsx scripts/ensure-correct-devtools-protocol-package",
+    "build:test": "wireit",
+    "build": "npm run build --workspaces --if-present",
     "check:pinned-deps": "tsx scripts/ensure-pinned-deps",
-    "build": "npm run build:prod",
-    "build:dev": "run-s generate:sources build:tsc:dev && run-p bundle:third_party generate:artifacts",
-    "build:prod": "run-s generate:sources build:tsc:prod && run-p bundle:third_party generate:artifacts",
-    "build:tsc:dev": "tsc -b test",
-    "build:tsc:prod": "tsc -b tsconfig.lib.json",
-    "bundle:third_party": "rollup --config rollup.third_party.config.js"
+    "check": "npm run check --workspaces --if-present && run-p check:*",
+    "clean": "npm run clean --workspaces --if-present && rimraf **/.wireit",
+    "commitlint": "commitlint --from=HEAD~1",
+    "debug": "npm run build:test && mocha --inspect-brk",
+    "docs": "run-s build generate:markdown",
+    "format:eslint": "eslint --ext js --ext ts --fix .",
+    "format:prettier": "prettier --write .",
+    "format": "run-s format:*",
+    "generate:markdown": "tsx utils/generate_docs.ts",
+    "lint:eslint": "([ \"$CI\" = true ] && eslint --ext js --ext ts --quiet -f codeframe . || eslint --ext js --ext ts .)",
+    "lint:prettier": "prettier --check .",
+    "lint": "run-s lint:prettier lint:eslint",
+    "postinstall": "npm run postinstall --workspaces --if-present",
+    "prepare": "husky install",
+    "test:chrome:headful": "npm run test -- --test-suite chrome-headful",
+    "test:chrome:headless-chrome": "npm run test -- --test-suite chrome-new-headless",
+    "test:chrome:headless": "npm run test -- --test-suite chrome-headless",
+    "test:chrome": "run-s test:chrome:*",
+    "test:firefox:headful": "npm run test -- --test-suite firefox-headful",
+    "test:firefox:headless": "npm run test -- --test-suite firefox-headless",
+    "test:firefox": "run-s test:firefox:*",
+    "test:install": "test/test-install.sh",
+    "test:types": "tsd -t packages/puppeteer",
+    "test": "cross-env PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 node utils/mochaRunner/lib/main.js"
   },
-  "files": [
-    "lib",
-    "install.js",
-    "typescript-if-required.js",
-    "!**/*.tsbuildinfo"
-  ],
-  "author": "The Chromium Authors",
-  "license": "Apache-2.0",
-  "dependencies": {
-    "cross-fetch": "3.1.5",
-    "debug": "4.3.4",
-    "devtools-protocol": "0.0.1045489",
-    "extract-zip": "2.0.1",
-    "https-proxy-agent": "5.0.1",
-    "progress": "2.0.3",
-    "proxy-from-env": "1.1.0",
-    "rimraf": "3.0.2",
-    "tar-fs": "2.1.1",
-    "unbzip2-stream": "1.4.3",
-    "ws": "8.9.0"
+  "wireit": {
+    "build:test": {
+      "command": "tsc -b test",
+      "clean": "if-file-deleted",
+      "dependencies": [
+        "./packages/puppeteer:build",
+        "./packages/puppeteer-core:build",
+        "./packages/testserver:build"
+      ],
+      "files": [
+        "test/src/**"
+      ],
+      "output": [
+        "test/build/**",
+        "test/tsconfig.tsbuildinfo"
+      ]
+    }
   },
   "devDependencies": {
     "@commitlint/cli": "17.1.2",
@@ -90,7 +58,7 @@
     "@microsoft/api-documenter": "7.19.14",
     "@microsoft/api-extractor": "7.31.2",
     "@microsoft/api-extractor-model": "7.24.2",
-    "@pptr/testserver": "*",
+    "@pptr/testserver": "0.5.0",
     "@types/debug": "4.1.7",
     "@types/diff": "5.0.2",
     "@types/glob": "8.0.0",
@@ -129,7 +97,6 @@
     "gts": "4.0.0",
     "husky": "8.0.1",
     "jpeg-js": "0.4.4",
-    "lerna": "5.5.2",
     "mime": "3.0.0",
     "minimist": "1.2.6",
     "mitt": "2.1.0",
@@ -139,6 +106,7 @@
     "pixelmatch": "5.3.0",
     "pngjs": "6.0.0",
     "prettier": "2.7.1",
+    "puppeteer": "18.1.0",
     "rollup": "2.79.1",
     "rollup-plugin-dts": "4.2.2",
     "rollup-plugin-node-resolve": "5.2.0",
@@ -149,6 +117,7 @@
     "tsd": "0.24.1",
     "tsx": "3.9.0",
     "typescript": "4.8.3",
+    "wireit": "0.7.2",
     "zod": "3.19.1"
   },
   "workspaces": [

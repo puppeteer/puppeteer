@@ -1,8 +1,12 @@
 {
   "packages": {
-    ".": {
-      "releaseType": "node",
-      "include-component-in-tag": false
+    "puppeteer": {},
+    "puppeteer-core": {},
+    "testserver": {}
+  },
+  "plugins": [
+    {
+      "type": "node-workspace"
     }
-  }
+  ]
 }

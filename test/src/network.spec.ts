@@ -23,8 +23,8 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import {HTTPRequest} from '../../lib/cjs/puppeteer/common/HTTPRequest.js';
-import {HTTPResponse} from '../../lib/cjs/puppeteer/common/HTTPResponse.js';
+import {HTTPRequest} from 'puppeteer-core/internal/common/HTTPRequest.js';
+import {HTTPResponse} from 'puppeteer-core/internal/common/HTTPResponse.js';
 import {ServerResponse} from 'http';
 
 describe('network', function () {
