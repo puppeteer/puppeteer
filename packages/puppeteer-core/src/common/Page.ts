@@ -1668,12 +1668,12 @@ export class CDPPage extends Page {
     return waitForEvent(
       this.#frameManager.networkManager,
       NetworkManagerEmittedEvents.Request,
-      request => {
+      async request => {
         if (isString(urlOrPredicate)) {
           return urlOrPredicate === request.url();
         }
         if (typeof urlOrPredicate === 'function') {
-          return !!urlOrPredicate(request);
+          return !!(await urlOrPredicate(request));
         }
         return false;
       },
