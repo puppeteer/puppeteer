@@ -1,8 +1,8 @@
 {
   "packages": {
-    "puppeteer": {},
-    "puppeteer-core": {},
-    "testserver": {}
+    "packages/puppeteer": {},
+    "packages/puppeteer-core": {},
+    "packages/testserver": {}
   },
   "plugins": [
     {
