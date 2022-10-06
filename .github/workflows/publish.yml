@@ -22,14 +22,14 @@ jobs:
       - name: Set npm registry
         run: npm config set registry 'https://wombat-dressing-room.appspot.com/'
       - name: Publish Puppeteer
-        if: ${{ startsWith(github.ref_name, "v") }}
+        if: ${{ startsWith(github.ref_name, 'v') }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN_PUPPETEER}}
         run: |
           npm config set '//wombat-dressing-room.appspot.com/:_authToken' $NODE_AUTH_TOKEN
           npm publish --workspace packages/puppeteer
       - name: Publish packages
-        if: ${{ !startsWith(github.ref_name, "v") }}
+        if: ${{ !startsWith(github.ref_name, 'v') }}
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN_RELEASE}}
         run: |
@@ -38,7 +38,7 @@ jobs:
   docker-publish:
     name: Publish Docker image
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.ref_name, "v") }}
+    if: ${{ startsWith(github.ref_name, 'v') }}
     permissions:
       contents: read
       packages: write
