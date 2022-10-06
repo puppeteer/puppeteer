@@ -20,10 +20,9 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Properties
 
-| Property                                                        | Modifiers             | Type                                                         | Description |
-| --------------------------------------------------------------- | --------------------- | ------------------------------------------------------------ | ----------- |
-| [devices](./puppeteer.puppeteer.devices.md)                     | <code>readonly</code> | typeof [devices](./puppeteer.devices.md)                     |             |
-| [networkConditions](./puppeteer.puppeteer.networkconditions.md) | <code>readonly</code> | typeof [networkConditions](./puppeteer.networkconditions.md) |             |
+| Property                                    | Modifiers             | Type                                     | Description |
+| ------------------------------------------- | --------------------- | ---------------------------------------- | ----------- |
+| [devices](./puppeteer.puppeteer.devices.md) | <code>readonly</code> | typeof [devices](./puppeteer.devices.md) |             |
 
 ## Methods
 
