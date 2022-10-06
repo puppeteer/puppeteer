@@ -4,7 +4,9 @@ sidebar_label: registerCustomQueryHandler
 
 # registerCustomQueryHandler() function
 
-Registers a [custom query handler](./puppeteer.customqueryhandler.md).
+> Warning: This API is now obsolete.
+>
+> Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppeteer.registerCustomQueryHandler()](./puppeteer.puppeteer.registercustomqueryhandler.md)
 
 **Signature:**
 
@@ -17,22 +19,11 @@ export declare function registerCustomQueryHandler(
 
 ## Parameters
 
-| Parameter | Type                                                    | Description                                                      |
-| --------- | ------------------------------------------------------- | ---------------------------------------------------------------- |
-| name      | string                                                  | The name that the custom query handler will be registered under. |
-| handler   | [CustomQueryHandler](./puppeteer.customqueryhandler.md) |                                                                  |
+| Parameter | Type                                                    | Description |
+| --------- | ------------------------------------------------------- | ----------- |
+| name      | string                                                  |             |
+| handler   | [CustomQueryHandler](./puppeteer.customqueryhandler.md) |             |
 
 **Returns:**
 
 void
-
-## Remarks
-
-After registration, the handler can be used everywhere where a selector is expected by prepending the selection string with `<name>/`. The name is only allowed to consist of lower- and upper case latin letters.
-
-## Example
-
-```
-puppeteer.registerCustomQueryHandler('text', { … });
-const aHandle = await page.$('text/…');
-```

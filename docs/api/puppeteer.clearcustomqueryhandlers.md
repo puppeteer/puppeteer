@@ -4,7 +4,9 @@ sidebar_label: clearCustomQueryHandlers
 
 # clearCustomQueryHandlers() function
 
-Clears all registered handlers.
+> Warning: This API is now obsolete.
+>
+> Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppeteer.clearCustomQueryHandlers()](./puppeteer.puppeteer.clearcustomqueryhandlers.md)
 
 **Signature:**
 
