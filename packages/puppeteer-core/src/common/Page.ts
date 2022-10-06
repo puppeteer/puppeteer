@@ -2599,23 +2599,21 @@ export class CDPPage extends Page {
     await this.#client.send('Target.activateTarget', {
       targetId: this.#target._targetId,
     });
-    let clip = options.clip ? processClip(options.clip) : undefined;
-    const captureBeyondViewport =
-      typeof options.captureBeyondViewport === 'boolean'
-        ? options.captureBeyondViewport
-        : true;
+
+    let captureBeyondViewport = options.captureBeyondViewport ?? true;
     const fromSurface =
       typeof options.fromSurface === 'boolean'
         ? options.fromSurface
         : undefined;
 
+    let clip: ScreenshotClip | undefined;
     if (options.fullPage) {
+      // Overwrite clip for full page.
+      clip = undefined;
+
       const metrics = await this.#client.send('Page.getLayoutMetrics');
       // Fallback to `contentSize` in case of using Firefox.
       const {width, height} = metrics.cssContentSize || metrics.contentSize;
-
-      // Overwrite clip for full page.
-      clip = {x: 0, y: 0, width, height, scale: 1};
 
       if (!captureBeyondViewport) {
         const {
@@ -2635,7 +2633,13 @@ export class CDPPage extends Page {
           screenOrientation,
         });
       }
+    } else if (!options.clip) {
+      // Override captureBeyondViewport for full screen mode.
+      captureBeyondViewport = false;
+    } else {
+      clip = processClip(options.clip);
     }
+
     const shouldSetDefaultBackground =
       options.omitBackground && (format === 'png' || format === 'webp');
     if (shouldSetDefaultBackground) {
