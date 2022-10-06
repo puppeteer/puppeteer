@@ -589,40 +589,10 @@ export class CDPPage extends Page {
     return this.#client.send('Input.setInterceptDrags', {enabled});
   }
 
-  /**
-   * @param enabled - When `true`, enables offline mode for the page.
-   * @remarks
-   * NOTE: while this method sets the network connection to offline, it does
-   * not change the parameters used in [page.emulateNetworkConditions(networkConditions)]
-   * (#pageemulatenetworkconditionsnetworkconditions)
-   */
   override setOfflineMode(enabled: boolean): Promise<void> {
     return this.#frameManager.networkManager.setOfflineMode(enabled);
   }
 
-  /**
-   * @param networkConditions - Passing `null` disables network condition emulation.
-   * @example
-   *
-   * ```ts
-   * const puppeteer = require('puppeteer');
-   * const slow3G = puppeteer.networkConditions['Slow 3G'];
-   *
-   * (async () => {
-   *   const browser = await puppeteer.launch();
-   *   const page = await browser.newPage();
-   *   await page.emulateNetworkConditions(slow3G);
-   *   await page.goto('https://www.google.com');
-   *   // other actions...
-   *   await browser.close();
-   * })();
-   * ```
-   *
-   * @remarks
-   * NOTE: This does not affect WebSockets and WebRTC PeerConnections (see
-   * https://crbug.com/563644). To set the page offline, you can use
-   * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled).
-   */
   override emulateNetworkConditions(
     networkConditions: NetworkConditions | null
   ): Promise<void> {
