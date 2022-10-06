@@ -16,7 +16,7 @@ export declare class ProtocolError extends CustomError
 
 ## Properties
 
-| Property                                                        | Modifiers | Type   | Description       |
-| --------------------------------------------------------------- | --------- | ------ | ----------------- |
-| [code?](./puppeteer.protocolerror.code.md)                      |           | number | <i>(Optional)</i> |
-| [originalMessage](./puppeteer.protocolerror.originalmessage.md) |           | string |                   |
+| Property                                                        | Modifiers | Type                | Description |
+| --------------------------------------------------------------- | --------- | ------------------- | ----------- |
+| [code](./puppeteer.protocolerror.code.md)                       |           | number \| undefined |             |
+| [originalMessage](./puppeteer.protocolerror.originalmessage.md) |           | string              |             |

@@ -8,6 +8,6 @@ sidebar_label: ProtocolError.code
 
 ```typescript
 class ProtocolError {
-  code?: number;
+  set code(code: number | undefined);
 }
 ```

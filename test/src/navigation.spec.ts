@@ -24,6 +24,7 @@ import {
 import os from 'os';
 import {ServerResponse} from 'http';
 import {HTTPRequest} from 'puppeteer-core/internal/common/HTTPRequest.js';
+import {TimeoutError} from 'puppeteer';
 
 describe('navigation', function () {
   setupTestBrowserHooks();
@@ -228,7 +229,7 @@ describe('navigation', function () {
       }
     });
     it('should fail when exceeding maximum navigation timeout', async () => {
-      const {page, server, puppeteer} = getTestState();
+      const {page, server} = getTestState();
 
       // Hang for request to the empty.html
       server.setRoute('/empty.html', () => {});
@@ -239,10 +240,10 @@ describe('navigation', function () {
           return (error = error_);
         });
       expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
-      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+      expect(error).toBeInstanceOf(TimeoutError);
     });
     it('should fail when exceeding default maximum navigation timeout', async () => {
-      const {page, server, puppeteer} = getTestState();
+      const {page, server} = getTestState();
 
       // Hang for request to the empty.html
       server.setRoute('/empty.html', () => {});
@@ -252,10 +253,10 @@ describe('navigation', function () {
         return (error = error_);
       });
       expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
-      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+      expect(error).toBeInstanceOf(TimeoutError);
     });
     it('should fail when exceeding default maximum timeout', async () => {
-      const {page, server, puppeteer} = getTestState();
+      const {page, server} = getTestState();
 
       // Hang for request to the empty.html
       server.setRoute('/empty.html', () => {});
@@ -265,10 +266,10 @@ describe('navigation', function () {
         return (error = error_);
       });
       expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
-      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+      expect(error).toBeInstanceOf(TimeoutError);
     });
     it('should prioritize default navigation timeout over default timeout', async () => {
-      const {page, server, puppeteer} = getTestState();
+      const {page, server} = getTestState();
 
       // Hang for request to the empty.html
       server.setRoute('/empty.html', () => {});
@@ -279,7 +280,7 @@ describe('navigation', function () {
         return (error = error_);
       });
       expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
-      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+      expect(error).toBeInstanceOf(TimeoutError);
     });
     it('should disable timeout when its set to 0', async () => {
       const {page, server} = getTestState();
