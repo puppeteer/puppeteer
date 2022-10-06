@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 set -e
 
 # All tests are headed by a echo 'Test'.
@@ -7,8 +7,15 @@ set -e
 # 2. The install script works and correctly exits without errors
 # 3. Requiring/importing Puppeteer from Node works.
 
+# MacOS doesn't support realpath
+realpath() {
+    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
+
 ROOTDIR="$(pwd)"
-npm pack --workspaces
+if [[ -z $(realpath puppeteer-[0-9]*.tgz) ]]; then
+  npm pack --workspaces
+fi
 puppeteer_tarball=$(realpath puppeteer-[0-9]*.tgz)
 puppeteer_core_tarball=$(realpath puppeteer-core-*.tgz)
 
