@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [18.3.0](https://github.com/puppeteer/puppeteer/compare/v18.2.0...v18.3.0) (2022-10-06)
+
+
+### Features
+
+* separate puppeteer and puppeteer-core ([#9023](https://github.com/puppeteer/puppeteer/issues/9023)) ([f42336c](https://github.com/puppeteer/puppeteer/commit/f42336cf83982332829ca7e14ee48d8676e11545))
+
+
+### Bug Fixes
+
+* add README to package during prepack ([#9057](https://github.com/puppeteer/puppeteer/issues/9057)) ([9374e23](https://github.com/puppeteer/puppeteer/commit/9374e23d3da5e40378461ed08db24649730a445a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 18.2.0 to ^18.2.1
+
 ## [18.2.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v18.1.0...puppeteer-v18.2.0) (2022-10-05)
 
 
@@ -924,4 +943,3 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **common:** fix generic type of `_isClosedPromise` ([#6579](https://github.com/puppeteer/puppeteer/issues/6579)) ([122f074](https://github.com/puppeteer/puppeteer/commit/122f074f92f47a7b9aa08091851e51a07632d23b))
 * **domworld:** fix missing binding for waittasks ([#6562](https://github.com/puppeteer/puppeteer/issues/6562)) ([67da1cf](https://github.com/puppeteer/puppeteer/commit/67da1cf866703f5f581c9cce4923697ac38129ef))
-
