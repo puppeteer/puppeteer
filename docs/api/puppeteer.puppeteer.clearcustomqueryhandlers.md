@@ -4,24 +4,16 @@ sidebar_label: Puppeteer.clearCustomQueryHandlers
 
 # Puppeteer.clearCustomQueryHandlers() method
 
-> Warning: This API is now obsolete.
->
-> Import directly puppeteer.
+Unregisters all custom query handlers.
 
 **Signature:**
 
 ```typescript
 class Puppeteer {
-  clearCustomQueryHandlers(): void;
+  static clearCustomQueryHandlers(): void;
 }
 ```
 
 **Returns:**
 
 void
-
-## Example
-
-```ts
-import {clearCustomQueryHandlers} from 'puppeteer';
-```

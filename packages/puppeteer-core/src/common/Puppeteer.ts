@@ -55,6 +55,56 @@ export interface ConnectOptions extends BrowserConnectOptions {
  */
 export class Puppeteer {
   /**
+   * Registers a {@link CustomQueryHandler | custom query handler}.
+   *
+   * @remarks
+   * After registration, the handler can be used everywhere where a selector is
+   * expected by prepending the selection string with `<name>/`. The name is only
+   * allowed to consist of lower- and upper case latin letters.
+   *
+   * @example
+   *
+   * ```
+   * puppeteer.registerCustomQueryHandler('text', { … });
+   * const aHandle = await page.$('text/…');
+   * ```
+   *
+   * @param name - The name that the custom query handler will be registered
+   * under.
+   * @param queryHandler - The {@link CustomQueryHandler | custom query handler}
+   * to register.
+   *
+   * @public
+   */
+  static registerCustomQueryHandler(
+    name: string,
+    queryHandler: CustomQueryHandler
+  ): void {
+    return registerCustomQueryHandler(name, queryHandler);
+  }
+
+  /**
+   * Unregisters a custom query handler for a given name.
+   */
+  static unregisterCustomQueryHandler(name: string): void {
+    return unregisterCustomQueryHandler(name);
+  }
+
+  /**
+   * Gets the names of all custom query handlers.
+   */
+  static customQueryHandlerNames(): string[] {
+    return customQueryHandlerNames();
+  }
+
+  /**
+   * Unregisters all custom query handlers.
+   */
+  static clearCustomQueryHandlers(): void {
+    return clearCustomQueryHandlers();
+  }
+
+  /**
    * @internal
    */
   protected _isPuppeteerCore: boolean;
@@ -82,56 +132,5 @@ export class Puppeteer {
    */
   connect(options: ConnectOptions): Promise<Browser> {
     return _connectToCDPBrowser(options);
-  }
-
-  /**
-   * @deprecated Import directly puppeteer.
-   * @example
-   *
-   * ```ts
-   * import {registerCustomQueryHandler} from 'puppeteer';
-   * ```
-   */
-  registerCustomQueryHandler(
-    name: string,
-    queryHandler: CustomQueryHandler
-  ): void {
-    return registerCustomQueryHandler(name, queryHandler);
-  }
-
-  /**
-   * @deprecated Import directly puppeteer.
-   * @example
-   *
-   * ```ts
-   * import {unregisterCustomQueryHandler} from 'puppeteer';
-   * ```
-   */
-  unregisterCustomQueryHandler(name: string): void {
-    return unregisterCustomQueryHandler(name);
-  }
-
-  /**
-   * @deprecated Import directly puppeteer.
-   * @example
-   *
-   * ```ts
-   * import {customQueryHandlerNames} from 'puppeteer';
-   * ```
-   */
-  customQueryHandlerNames(): string[] {
-    return customQueryHandlerNames();
-  }
-
-  /**
-   * @deprecated Import directly puppeteer.
-   * @example
-   *
-   * ```ts
-   * import {clearCustomQueryHandlers} from 'puppeteer';
-   * ```
-   */
-  clearCustomQueryHandlers(): void {
-    return clearCustomQueryHandlers();
   }
 }

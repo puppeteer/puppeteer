@@ -15,14 +15,15 @@
  */
 
 import expect from 'expect';
-import sinon from 'sinon';
 import {ElementHandle} from 'puppeteer-core/internal/common/ElementHandle.js';
+import sinon from 'sinon';
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
 
+import {Puppeteer} from 'puppeteer';
 import utils from './utils.js';
 
 describe('ElementHandle specs', function () {
@@ -390,16 +391,15 @@ describe('ElementHandle specs', function () {
   });
 
   describe('Custom queries', function () {
-    this.afterEach(() => {
-      const {puppeteer} = getTestState();
-      puppeteer.clearCustomQueryHandlers();
+    afterEach(() => {
+      Puppeteer.clearCustomQueryHandlers();
     });
     it('should register and unregister', async () => {
-      const {page, puppeteer} = getTestState();
+      const {page} = getTestState();
       await page.setContent('<div id="not-foo"></div><div id="foo"></div>');
 
       // Register.
-      puppeteer.registerCustomQueryHandler('getById', {
+      Puppeteer.registerCustomQueryHandler('getById', {
         queryOne: (_element, selector) => {
           return document.querySelector(`[id="${selector}"]`);
         },
@@ -412,11 +412,11 @@ describe('ElementHandle specs', function () {
           return element.id;
         }, element)
       ).toBe('foo');
-      const handlerNamesAfterRegistering = puppeteer.customQueryHandlerNames();
+      const handlerNamesAfterRegistering = Puppeteer.customQueryHandlerNames();
       expect(handlerNamesAfterRegistering.includes('getById')).toBeTruthy();
 
       // Unregister.
-      puppeteer.unregisterCustomQueryHandler('getById');
+      Puppeteer.unregisterCustomQueryHandler('getById');
       try {
         await page.$('getById/foo');
         throw new Error('Custom query handler name not set - throw expected');
@@ -426,13 +426,12 @@ describe('ElementHandle specs', function () {
         );
       }
       const handlerNamesAfterUnregistering =
-        puppeteer.customQueryHandlerNames();
+        Puppeteer.customQueryHandlerNames();
       expect(handlerNamesAfterUnregistering.includes('getById')).toBeFalsy();
     });
     it('should throw with invalid query names', () => {
       try {
-        const {puppeteer} = getTestState();
-        puppeteer.registerCustomQueryHandler('1/2/3', {
+        Puppeteer.registerCustomQueryHandler('1/2/3', {
           queryOne: () => {
             return document.querySelector('foo');
           },
@@ -447,11 +446,11 @@ describe('ElementHandle specs', function () {
       }
     });
     it('should work for multiple elements', async () => {
-      const {page, puppeteer} = getTestState();
+      const {page} = getTestState();
       await page.setContent(
         '<div id="not-foo"></div><div class="foo">Foo1</div><div class="foo baz">Foo2</div>'
       );
-      puppeteer.registerCustomQueryHandler('getByClass', {
+      Puppeteer.registerCustomQueryHandler('getByClass', {
         queryAll: (_element, selector) => {
           return [...document.querySelectorAll(`.${selector}`)];
         },
@@ -470,11 +469,11 @@ describe('ElementHandle specs', function () {
       expect(classNames).toStrictEqual(['foo', 'foo baz']);
     });
     it('should eval correctly', async () => {
-      const {page, puppeteer} = getTestState();
+      const {page} = getTestState();
       await page.setContent(
         '<div id="not-foo"></div><div class="foo">Foo1</div><div class="foo baz">Foo2</div>'
       );
-      puppeteer.registerCustomQueryHandler('getByClass', {
+      Puppeteer.registerCustomQueryHandler('getByClass', {
         queryAll: (_element, selector) => {
           return [...document.querySelectorAll(`.${selector}`)];
         },
@@ -486,8 +485,8 @@ describe('ElementHandle specs', function () {
       expect(elements).toBe(2);
     });
     it('should wait correctly with waitForSelector', async () => {
-      const {page, puppeteer} = getTestState();
-      puppeteer.registerCustomQueryHandler('getByClass', {
+      const {page} = getTestState();
+      Puppeteer.registerCustomQueryHandler('getByClass', {
         queryOne: (element, selector) => {
           return (element as Element).querySelector(`.${selector}`);
         },
@@ -504,8 +503,8 @@ describe('ElementHandle specs', function () {
     });
 
     it('should wait correctly with waitForSelector on an element', async () => {
-      const {page, puppeteer} = getTestState();
-      puppeteer.registerCustomQueryHandler('getByClass', {
+      const {page} = getTestState();
+      Puppeteer.registerCustomQueryHandler('getByClass', {
         queryOne: (element, selector) => {
           return (element as Element).querySelector(`.${selector}`);
         },
@@ -541,8 +540,8 @@ describe('ElementHandle specs', function () {
     it('should wait correctly with waitFor', async () => {
       /* page.waitFor is deprecated so we silence the warning to avoid test noise */
       sinon.stub(console, 'warn').callsFake(() => {});
-      const {page, puppeteer} = getTestState();
-      puppeteer.registerCustomQueryHandler('getByClass', {
+      const {page} = getTestState();
+      Puppeteer.registerCustomQueryHandler('getByClass', {
         queryOne: (element, selector) => {
           return (element as Element).querySelector(`.${selector}`);
         },
@@ -558,11 +557,11 @@ describe('ElementHandle specs', function () {
       expect(element).toBeDefined();
     });
     it('should work when both queryOne and queryAll are registered', async () => {
-      const {page, puppeteer} = getTestState();
+      const {page} = getTestState();
       await page.setContent(
         '<div id="not-foo"></div><div class="foo"><div id="nested-foo" class="foo"/></div><div class="foo baz">Foo2</div>'
       );
-      puppeteer.registerCustomQueryHandler('getByClass', {
+      Puppeteer.registerCustomQueryHandler('getByClass', {
         queryOne: (element, selector) => {
           return (element as Element).querySelector(`.${selector}`);
         },
@@ -578,11 +577,11 @@ describe('ElementHandle specs', function () {
       expect(elements.length).toBe(3);
     });
     it('should eval when both queryOne and queryAll are registered', async () => {
-      const {page, puppeteer} = getTestState();
+      const {page} = getTestState();
       await page.setContent(
         '<div id="not-foo"></div><div class="foo">text</div><div class="foo baz">content</div>'
       );
-      puppeteer.registerCustomQueryHandler('getByClass', {
+      Puppeteer.registerCustomQueryHandler('getByClass', {
         queryOne: (element, selector) => {
           return (element as Element).querySelector(`.${selector}`);
         },

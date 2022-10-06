@@ -4,15 +4,13 @@ sidebar_label: Puppeteer.unregisterCustomQueryHandler
 
 # Puppeteer.unregisterCustomQueryHandler() method
 
-> Warning: This API is now obsolete.
->
-> Import directly puppeteer.
+Unregisters a custom query handler for a given name.
 
 **Signature:**
 
 ```typescript
 class Puppeteer {
-  unregisterCustomQueryHandler(name: string): void;
+  static unregisterCustomQueryHandler(name: string): void;
 }
 ```
 
@@ -25,9 +23,3 @@ class Puppeteer {
 **Returns:**
 
 void
-
-## Example
-
-```ts
-import {unregisterCustomQueryHandler} from 'puppeteer';
-```
