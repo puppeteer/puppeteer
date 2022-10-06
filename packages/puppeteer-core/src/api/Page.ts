@@ -691,6 +691,9 @@ export class Page extends EventEmitter {
    * https://crbug.com/563644). To set the page offline, you can use
    * {@link Page.setOfflineMode}.
    *
+   * A list of predefined network conditions can be used by importing
+   * {@link PredefinedNetworkConditions}.
+   *
    * @example
    *
    * ```ts
