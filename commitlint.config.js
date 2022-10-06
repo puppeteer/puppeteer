@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// See https://github.com/conventional-changelog/commitlint/blob/master/docs/reference-rules.md
 module.exports = {
   extends: ['@commitlint/config-conventional'],
   rules: {
-    'body-max-line-length': [0, 'always', 100],
-    'footer-max-line-length': [0, 'always', 100],
-    'subject-case': [0, 'never'],
+    // Override. The subject may be the name of a class.
+    'subject-case': [0],
+    // Override. Most UIs wrap the body.
+    'body-max-line-length': [0],
+    // Override. Most UIs wrap the footer.
+    'footer-max-line-length': [0],
   },
 };
