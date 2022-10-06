@@ -23,7 +23,6 @@ The constructor for this class is marked as internal. Third-party code should no
 | Property                                                        | Modifiers             | Type                                                         | Description |
 | --------------------------------------------------------------- | --------------------- | ------------------------------------------------------------ | ----------- |
 | [devices](./puppeteer.puppeteer.devices.md)                     | <code>readonly</code> | typeof [devices](./puppeteer.devices.md)                     |             |
-| [errors](./puppeteer.puppeteer.errors.md)                       | <code>readonly</code> | typeof [errors](./puppeteer.errors.md)                       |             |
 | [networkConditions](./puppeteer.puppeteer.networkconditions.md) | <code>readonly</code> | typeof [networkConditions](./puppeteer.networkconditions.md) |             |
 
 ## Methods

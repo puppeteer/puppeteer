@@ -16,6 +16,7 @@
 
 import expect from 'expect';
 import {ServerResponse} from 'http';
+import {TimeoutError} from 'puppeteer';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
 import {Target} from 'puppeteer-core/internal/common/Target.js';
 import {
@@ -310,7 +311,7 @@ describe('Target', function () {
 
   describe('Browser.waitForTarget', () => {
     it('should wait for a target', async () => {
-      const {browser, puppeteer, server} = getTestState();
+      const {browser, server} = getTestState();
 
       let resolved = false;
       const targetPromise = browser.waitForTarget(target => {
@@ -322,7 +323,7 @@ describe('Target', function () {
         })
         .catch(error => {
           resolved = true;
-          if (error instanceof puppeteer.errors.TimeoutError) {
+          if (error instanceof TimeoutError) {
             console.error(error);
           } else {
             throw error;
@@ -335,7 +336,7 @@ describe('Target', function () {
         const target = await targetPromise;
         expect(await target.page()).toBe(page);
       } catch (error) {
-        if (error instanceof puppeteer.errors.TimeoutError) {
+        if (error instanceof TimeoutError) {
           console.error(error);
         } else {
           throw error;
@@ -344,7 +345,7 @@ describe('Target', function () {
       await page.close();
     });
     it('should timeout waiting for a non-existent target', async () => {
-      const {browser, server, puppeteer} = getTestState();
+      const {browser, server} = getTestState();
 
       let error!: Error;
       await browser
@@ -359,7 +360,7 @@ describe('Target', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+      expect(error).toBeInstanceOf(TimeoutError);
     });
   });
 });

@@ -15,6 +15,7 @@
  */
 
 import expect from 'expect';
+import {TimeoutError} from 'puppeteer';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 import {
   createTimeout,
@@ -240,7 +241,7 @@ describe('waittask specs', function () {
       await waitForFunction;
     });
     it('should respect timeout', async () => {
-      const {page, puppeteer} = getTestState();
+      const {page} = getTestState();
 
       let error!: Error;
       await page
@@ -254,11 +255,11 @@ describe('waittask specs', function () {
           return (error = error_);
         });
 
-      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+      expect(error).toBeInstanceOf(TimeoutError);
       expect(error?.message).toContain('Waiting failed: 10ms exceeded');
     });
     it('should respect default timeout', async () => {
-      const {page, puppeteer} = getTestState();
+      const {page} = getTestState();
 
       page.setDefaultTimeout(1);
       let error!: Error;
@@ -269,7 +270,7 @@ describe('waittask specs', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+      expect(error).toBeInstanceOf(TimeoutError);
       expect(error?.message).toContain('Waiting failed: 1ms exceeded');
     });
     it('should disable timeout when its set to 0', async () => {
@@ -669,13 +670,13 @@ describe('waittask specs', function () {
       expect(handle).toBe(null);
     });
     it('should respect timeout', async () => {
-      const {page, puppeteer} = getTestState();
+      const {page} = getTestState();
 
       let error!: Error;
       await page.waitForSelector('div', {timeout: 10}).catch(error_ => {
         return (error = error_);
       });
-      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+      expect(error).toBeInstanceOf(TimeoutError);
       expect(error?.message).toContain(
         'Waiting for selector `div` failed: Waiting failed: 10ms exceeded'
       );
@@ -755,13 +756,13 @@ describe('waittask specs', function () {
       ).toBe('hello  world  ');
     });
     it('should respect timeout', async () => {
-      const {page, puppeteer} = getTestState();
+      const {page} = getTestState();
 
       let error!: Error;
       await page.waitForXPath('//div', {timeout: 10}).catch(error_ => {
         return (error = error_);
       });
-      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+      expect(error).toBeInstanceOf(TimeoutError);
       expect(error?.message).toContain('Waiting failed: 10ms exceeded');
     });
     it('should run in specified frame', async () => {

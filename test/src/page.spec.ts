@@ -28,6 +28,7 @@ import {
 } from './mocha-utils.js';
 import utils, {attachFrame, waitEvent} from './utils.js';
 import {CDPPage} from 'puppeteer-core/internal/common/Page.js';
+import {TimeoutError} from 'puppeteer';
 
 describe('Page', function () {
   setupTestBrowserHooks();
@@ -924,7 +925,7 @@ describe('Page', function () {
       expect(request.url()).toBe(server.PREFIX + '/digits/2.png');
     });
     it('should respect timeout', async () => {
-      const {page, puppeteer} = getTestState();
+      const {page} = getTestState();
 
       let error!: Error;
       await page
@@ -937,10 +938,10 @@ describe('Page', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+      expect(error).toBeInstanceOf(TimeoutError);
     });
     it('should respect default timeout', async () => {
-      const {page, puppeteer} = getTestState();
+      const {page} = getTestState();
 
       let error!: Error;
       page.setDefaultTimeout(1);
@@ -951,7 +952,7 @@ describe('Page', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+      expect(error).toBeInstanceOf(TimeoutError);
     });
     it('should work with no timeout', async () => {
       const {page, server} = getTestState();
@@ -987,7 +988,7 @@ describe('Page', function () {
       expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
     });
     it('should respect timeout', async () => {
-      const {page, puppeteer} = getTestState();
+      const {page} = getTestState();
 
       let error!: Error;
       await page
@@ -1000,10 +1001,10 @@ describe('Page', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+      expect(error).toBeInstanceOf(TimeoutError);
     });
     it('should respect default timeout', async () => {
-      const {page, puppeteer} = getTestState();
+      const {page} = getTestState();
 
       let error!: Error;
       page.setDefaultTimeout(1);
@@ -1014,7 +1015,7 @@ describe('Page', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+      expect(error).toBeInstanceOf(TimeoutError);
     });
     it('should work with predicate', async () => {
       const {page, server} = getTestState();
@@ -1101,12 +1102,12 @@ describe('Page', function () {
       expect(t1 - t2).toBeGreaterThanOrEqual(400);
     });
     it('should respect timeout', async () => {
-      const {page, puppeteer} = getTestState();
+      const {page} = getTestState();
       let error!: Error;
       await page.waitForNetworkIdle({timeout: 1}).catch(error_ => {
         return (error = error_);
       });
-      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+      expect(error).toBeInstanceOf(TimeoutError);
     });
     it('should respect idleTime', async () => {
       const {page, server} = getTestState();
@@ -1440,7 +1441,7 @@ describe('Page', function () {
       expect(result).toBe(`${doctype}${expectedOutput}`);
     });
     it('should respect timeout', async () => {
-      const {page, server, puppeteer} = getTestState();
+      const {page, server} = getTestState();
 
       const imgPath = '/img.png';
       // stall for image
@@ -1453,10 +1454,10 @@ describe('Page', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+      expect(error).toBeInstanceOf(TimeoutError);
     });
     it('should respect default navigation timeout', async () => {
-      const {page, server, puppeteer} = getTestState();
+      const {page, server} = getTestState();
 
       page.setDefaultNavigationTimeout(1);
       const imgPath = '/img.png';
@@ -1468,7 +1469,7 @@ describe('Page', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+      expect(error).toBeInstanceOf(TimeoutError);
     });
     it('should await resources to load', async () => {
       const {page, server} = getTestState();
@@ -2053,7 +2054,7 @@ describe('Page', function () {
     });
 
     it('should respect timeout', async () => {
-      const {isHeadless, page, server, puppeteer} = getTestState();
+      const {isHeadless, page, server} = getTestState();
       if (!isHeadless) {
         return;
       }
@@ -2064,7 +2065,7 @@ describe('Page', function () {
       await page.pdf({timeout: 1}).catch(_error => {
         return (error = _error);
       });
-      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+      expect(error).toBeInstanceOf(TimeoutError);
     });
   });
 

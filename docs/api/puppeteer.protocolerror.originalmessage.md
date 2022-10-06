@@ -8,6 +8,6 @@ sidebar_label: ProtocolError.originalMessage
 
 ```typescript
 class ProtocolError {
-  originalMessage: string;
+  set originalMessage(originalMessage: string);
 }
 ```

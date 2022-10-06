@@ -4,6 +4,10 @@ sidebar_label: PuppeteerErrors
 
 # PuppeteerErrors interface
 
+> Warning: This API is now obsolete.
+>
+> Do not use.
+
 **Signature:**
 
 ```typescript
