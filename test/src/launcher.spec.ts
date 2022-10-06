@@ -26,6 +26,7 @@ import {Page} from 'puppeteer-core/internal/api/Page.js';
 import {Product} from 'puppeteer-core/internal/common/Product.js';
 import {getTestState, itOnlyRegularInstall} from './mocha-utils.js';
 import utils from './utils.js';
+import {TimeoutError} from 'puppeteer';
 
 const mkdtempAsync = promisify(fs.mkdtemp);
 const readFileAsync = promisify(fs.readFile);
@@ -529,7 +530,7 @@ describe('Launcher specs', function () {
         await puppeteer.launch(options).catch(error_ => {
           return (error = error_);
         });
-        expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+        expect(error).toBeInstanceOf(TimeoutError);
       });
       it('should work with timeout = 0', async () => {
         const {puppeteer, defaultBrowserOptions} = getTestState();

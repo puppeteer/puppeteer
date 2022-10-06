@@ -20,7 +20,6 @@ import {
 } from './BrowserConnector.js';
 import {ConnectionTransport} from './ConnectionTransport.js';
 import {devices} from './DeviceDescriptors.js';
-import {errors} from './Errors.js';
 import {networkConditions} from './NetworkConditions.js';
 import {
   clearCustomQueryHandlers,
@@ -97,18 +96,6 @@ export class Puppeteer {
    */
   get devices(): typeof devices {
     return devices;
-  }
-
-  /**
-   * @deprecated Import directly puppeteer.
-   * @example
-   *
-   * ```ts
-   * import {errors} from 'puppeteer';
-   * ```
-   */
-  get errors(): typeof errors {
-    return errors;
   }
 
   /**
