@@ -74,6 +74,12 @@ export interface JSCoverageOptions {
    * Whether the result includes raw V8 script coverage entries.
    */
   includeRawScriptCoverage?: boolean;
+  /**
+   * Whether to collect coverage information at the block level.
+   * If true, coverage will be collected at the block level (this is the default).
+   * If false, coverage will be collected at the function level.
+   */
+  useBlockCoverage?: boolean;
 }
 
 /**
@@ -135,7 +141,8 @@ export class Coverage {
 
   /**
    * @param options - Set of configurable options for coverage defaults to
-   * `resetOnNavigation : true, reportAnonymousScripts : false`
+   * `resetOnNavigation : true, reportAnonymousScripts : false,`
+   * `includeRawScriptCoverage : false, useBlockCoverage : true`
    * @returns Promise that resolves when coverage is started.
    *
    * @remarks
@@ -204,6 +211,7 @@ export class JSCoverage {
       resetOnNavigation?: boolean;
       reportAnonymousScripts?: boolean;
       includeRawScriptCoverage?: boolean;
+      useBlockCoverage?: boolean;
     } = {}
   ): Promise<void> {
     assert(!this.#enabled, 'JSCoverage is already enabled');
@@ -211,6 +219,7 @@ export class JSCoverage {
       resetOnNavigation = true,
       reportAnonymousScripts = false,
       includeRawScriptCoverage = false,
+      useBlockCoverage = true,
     } = options;
     this.#resetOnNavigation = resetOnNavigation;
     this.#reportAnonymousScripts = reportAnonymousScripts;
@@ -234,7 +243,7 @@ export class JSCoverage {
       this.#client.send('Profiler.enable'),
       this.#client.send('Profiler.startPreciseCoverage', {
         callCount: this.#includeRawScriptCoverage,
-        detailed: true,
+        detailed: useBlockCoverage,
       }),
       this.#client.send('Debugger.enable'),
       this.#client.send('Debugger.setSkipAllPauses', {skip: true}),

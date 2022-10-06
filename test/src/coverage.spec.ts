@@ -108,7 +108,27 @@ describe('Coverage specs', function () {
       expect(entry.text.substring(range1.start, range1.end)).toBe('\n');
       const range2 = entry.ranges[1]!;
       expect(entry.text.substring(range2.start, range2.end)).toBe(
-        `console.log('used!');`
+        `console.log('used!');if(true===false)`
+      );
+    });
+    it('should report right ranges for "per function" scope', async () => {
+      const {page, server} = getTestState();
+
+      const coverageOptions = {
+        useBlockCoverage: false,
+      };
+
+      await page.coverage.startJSCoverage(coverageOptions);
+      await page.goto(server.PREFIX + '/jscoverage/ranges.html');
+      const coverage = await page.coverage.stopJSCoverage();
+      expect(coverage.length).toBe(1);
+      const entry = coverage[0]!;
+      expect(entry.ranges.length).toBe(2);
+      const range1 = entry.ranges[0]!;
+      expect(entry.text.substring(range1.start, range1.end)).toBe('\n');
+      const range2 = entry.ranges[1]!;
+      expect(entry.text.substring(range2.start, range2.end)).toBe(
+        `console.log('used!');if(true===false)console.log('unused!');`
       );
     });
     it('should report scripts that have no coverage', async () => {
