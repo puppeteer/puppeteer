@@ -1,6 +1,8 @@
 {
   "packages": {
-    "packages/puppeteer": {},
+    "packages/puppeteer": {
+      "include-component-in-tag": false
+    },
     "packages/puppeteer-core": {},
     "packages/testserver": {}
   },
