@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [18.2.2](https://github.com/puppeteer/puppeteer/compare/v18.2.1...v18.2.2) (2022-10-06)
+
+
+### Bug Fixes
+
+* add README to package during prepack ([#9057](https://github.com/puppeteer/puppeteer/issues/9057)) ([9374e23](https://github.com/puppeteer/puppeteer/commit/9374e23d3da5e40378461ed08db24649730a445a))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 18.2.1 to ^18.2.2
+
 ## [18.2.1](https://github.com/puppeteer/puppeteer/compare/v18.2.0...v18.2.1) (2022-10-06)
 
 
