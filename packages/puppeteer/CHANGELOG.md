@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.0.0](https://github.com/puppeteer/puppeteer/compare/v18.2.1...v19.0.0) (2022-10-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* deprecate indirect network condition imports (#9074)
+
+### Bug Fixes
+
+* deprecate indirect network condition imports ([#9074](https://github.com/puppeteer/puppeteer/issues/9074)) ([41d0122](https://github.com/puppeteer/puppeteer/commit/41d0122b94f41b308536c48ced345dec8c272a49))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 18.2.1 to ^19.0.0
+
 ## [18.2.1](https://github.com/puppeteer/puppeteer/compare/v18.2.0...v18.2.1) (2022-10-06)
 
 

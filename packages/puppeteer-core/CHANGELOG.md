@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v18.2.1...puppeteer-core-v19.0.0) (2022-10-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* deprecate indirect network condition imports (#9074)
+* deprecate indirect error imports (#9072)
+
+### Features
+
+* add ability to collect JS code coverage at the function level ([#9027](https://github.com/puppeteer/puppeteer/issues/9027)) ([a032583](https://github.com/puppeteer/puppeteer/commit/a032583b6c9b469bda699bca200b180206d61247))
+
+
+### Bug Fixes
+
+* deprecate indirect error imports ([#9072](https://github.com/puppeteer/puppeteer/issues/9072)) ([9f4f43a](https://github.com/puppeteer/puppeteer/commit/9f4f43a28b06787a1cf97efe904ccfe7237dffdd))
+* deprecate indirect network condition imports ([#9074](https://github.com/puppeteer/puppeteer/issues/9074)) ([41d0122](https://github.com/puppeteer/puppeteer/commit/41d0122b94f41b308536c48ced345dec8c272a49))
+
 ## [18.2.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v18.2.0...puppeteer-core-v18.2.1) (2022-10-06)
 
 
