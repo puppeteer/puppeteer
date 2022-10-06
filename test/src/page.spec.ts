@@ -28,7 +28,7 @@ import {
 } from './mocha-utils.js';
 import utils, {attachFrame, waitEvent} from './utils.js';
 import {CDPPage} from 'puppeteer-core/internal/common/Page.js';
-import {TimeoutError} from 'puppeteer';
+import {KnownDevices, TimeoutError} from 'puppeteer';
 
 describe('Page', function () {
   setupTestBrowserHooks();
@@ -1357,7 +1357,7 @@ describe('Page', function () {
       expect(request.headers['user-agent']).toBe('foobar');
     });
     it('should emulate device user-agent', async () => {
-      const {page, server, puppeteer} = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/mobile.html');
       expect(
@@ -1365,7 +1365,7 @@ describe('Page', function () {
           return navigator.userAgent;
         })
       ).not.toContain('iPhone');
-      await page.setUserAgent(puppeteer.devices['iPhone 6']!.userAgent);
+      await page.setUserAgent(KnownDevices['iPhone 6'].userAgent);
       expect(
         await page.evaluate(() => {
           return navigator.userAgent;

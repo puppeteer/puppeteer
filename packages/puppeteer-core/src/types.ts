@@ -13,7 +13,7 @@ export * from './common/ConnectionTransport.js';
 export * from './common/ConsoleMessage.js';
 export * from './common/Coverage.js';
 export * from './common/Debug.js';
-export * from './common/DeviceDescriptors.js';
+export * from './common/Device.js';
 export * from './common/Dialog.js';
 export * from './common/ElementHandle.js';
 export * from './common/EmulationManager.js';

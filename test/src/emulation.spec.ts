@@ -15,25 +15,19 @@
  */
 
 import expect from 'expect';
-import {PredefinedNetworkConditions} from 'puppeteer';
-import {Device} from 'puppeteer-core/internal/common/DeviceDescriptors.js';
+import {KnownDevices, PredefinedNetworkConditions} from 'puppeteer';
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
 
+const iPhone = KnownDevices['iPhone 6'];
+const iPhoneLandscape = KnownDevices['iPhone 6 landscape'];
+
 describe('Emulation', () => {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
-  let iPhone!: Device;
-  let iPhoneLandscape!: Device;
-
-  before(() => {
-    const {puppeteer} = getTestState();
-    iPhone = puppeteer.devices['iPhone 6']!;
-    iPhoneLandscape = puppeteer.devices['iPhone 6 landscape']!;
-  });
 
   describe('Page.viewport', function () {
     it('should get the proper viewport size', async () => {

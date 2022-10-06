@@ -15,10 +15,11 @@
  */
 
 import expect from 'expect';
+import {KnownDevices} from 'puppeteer';
 import {
   getTestState,
-  setupTestPageAndContextHooks,
   setupTestBrowserHooks,
+  setupTestPageAndContextHooks,
 } from './mocha-utils.js';
 import utils from './utils.js';
 
@@ -278,9 +279,9 @@ describe('Page.click', function () {
   });
   // @see https://github.com/puppeteer/puppeteer/issues/161
   it('should not hang with touch-enabled viewports', async () => {
-    const {page, puppeteer} = getTestState();
+    const {page} = getTestState();
 
-    await page.setViewport(puppeteer.devices['iPhone 6']!.viewport);
+    await page.setViewport(KnownDevices['iPhone 6'].viewport);
     await page.mouse.down();
     await page.mouse.move(100, 10);
     await page.mouse.up();

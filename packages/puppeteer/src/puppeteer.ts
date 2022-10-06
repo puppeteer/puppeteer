@@ -15,7 +15,7 @@
  */
 
 export {Protocol} from 'devtools-protocol';
-export * from 'puppeteer-core/internal/common/DeviceDescriptors.js';
+export * from 'puppeteer-core/internal/common/Device.js';
 export * from 'puppeteer-core/internal/common/Errors.js';
 export * from 'puppeteer-core/internal/common/PredefinedNetworkConditions.js';
 export * from 'puppeteer-core/internal/common/QueryHandler.js';

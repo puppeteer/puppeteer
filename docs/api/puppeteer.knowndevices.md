@@ -1,17 +1,15 @@
 ---
-sidebar_label: devices
+sidebar_label: KnownDevices
 ---
 
-# devices variable
+# KnownDevices variable
 
-> Warning: This API is now obsolete.
->
-> Import [KnownDevices](./puppeteer.knowndevices.md)
+A list of devices to be used with [Page.emulate()](./puppeteer.page.emulate.md).
 
 **Signature:**
 
 ```typescript
-devices: Readonly<
+KnownDevices: Readonly<
   Record<
     | 'Blackberry PlayBook'
     | 'Blackberry PlayBook landscape'
@@ -131,4 +129,20 @@ devices: Readonly<
     Device
   >
 >;
+```
+
+## Example
+
+```ts
+import {KnownDevices} from 'puppeteer';
+const iPhone = KnownDevices['iPhone 6'];
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.emulate(iPhone);
+  await page.goto('https://www.google.com');
+  // other actions...
+  await browser.close();
+})();
 ```
