@@ -42,7 +42,8 @@
     "clean": "tsc -b --clean && rimraf lib src/generated",
     "format:types": "wireit",
     "generate:package-json": "wireit",
-    "generate:sources": "wireit"
+    "generate:sources": "wireit",
+    "prepack": "cp ../../README.md ./README.md"
   },
   "wireit": {
     "build": {
