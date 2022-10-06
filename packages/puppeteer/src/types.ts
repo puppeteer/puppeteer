@@ -13,7 +13,7 @@ export * from 'puppeteer-core/internal/common/ConnectionTransport.js';
 export * from 'puppeteer-core/internal/common/ConsoleMessage.js';
 export * from 'puppeteer-core/internal/common/Coverage.js';
 export * from 'puppeteer-core/internal/common/Debug.js';
-export * from 'puppeteer-core/internal/common/DeviceDescriptors.js';
+export * from 'puppeteer-core/internal/common/Device.js';
 export * from 'puppeteer-core/internal/common/Dialog.js';
 export * from 'puppeteer-core/internal/common/ElementHandle.js';
 export * from 'puppeteer-core/internal/common/EmulationManager.js';

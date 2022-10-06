@@ -18,12 +18,6 @@ export declare class Puppeteer
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Puppeteer` class.
 
-## Properties
-
-| Property                                    | Modifiers             | Type                                     | Description |
-| ------------------------------------------- | --------------------- | ---------------------------------------- | ----------- |
-| [devices](./puppeteer.puppeteer.devices.md) | <code>readonly</code> | typeof [devices](./puppeteer.devices.md) |             |
-
 ## Methods
 
 | Method                                                                                                | Modifiers | Description                                                     |

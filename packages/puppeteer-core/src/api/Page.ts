@@ -17,9 +17,9 @@
 import {Protocol} from 'devtools-protocol';
 import type {Readable} from 'stream';
 import type {Accessibility} from '../common/Accessibility.js';
-import type {Browser, BrowserContext} from './Browser.js';
 import type {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {Coverage} from '../common/Coverage.js';
+import {Device} from '../common/Device.js';
 import type {Dialog} from '../common/Dialog.js';
 import type {ElementHandle} from '../common/ElementHandle.js';
 import {EventEmitter, Handler} from '../common/EventEmitter.js';
@@ -48,6 +48,7 @@ import type {Target} from '../common/Target.js';
 import type {Tracing} from '../common/Tracing.js';
 import type {EvaluateFunc, HandleFor, NodeFor} from '../common/types.js';
 import type {WebWorker} from '../common/WebWorker.js';
+import type {Browser, BrowserContext} from './Browser.js';
 
 /**
  * @public
@@ -1656,20 +1657,25 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * Emulates given device metrics and user agent.
+   * Emulates a given device's metrics and user agent.
+   *
+   * To aid emulation, Puppeteer provides a list of known devices that can be
+   * via {@link KnownDevices}.
    *
    * @remarks
    * This method is a shortcut for calling two methods:
-   * {@link Page.setUserAgent} and {@link Page.setViewport} To aid emulation,
-   * Puppeteer provides a list of device descriptors that can be obtained via
-   * {@link devices}. `page.emulate` will resize the page. A lot of websites
-   * don't expect phones to change size, so you should emulate before navigating
-   * to the page.
+   * {@link Page.setUserAgent} and {@link Page.setViewport}.
+   *
+   * @remarks
+   * This method will resize the page. A lot of websites don't expect phones to
+   * change size, so you should emulate before navigating to the page.
+   *
    * @example
    *
    * ```ts
-   * const puppeteer = require('puppeteer');
-   * const iPhone = puppeteer.devices['iPhone 6'];
+   * import {KnownDevices} from 'puppeteer';
+   * const iPhone = KnownDevices['iPhone 6'];
+   *
    * (async () => {
    *   const browser = await puppeteer.launch();
    *   const page = await browser.newPage();
@@ -1679,21 +1685,16 @@ export class Page extends EventEmitter {
    *   await browser.close();
    * })();
    * ```
-   *
-   * @remarks List of all available devices is available in the source code:
-   * {@link https://github.com/puppeteer/puppeteer/blob/main/src/common/DeviceDescriptors.ts | src/common/DeviceDescriptors.ts}.
    */
-  async emulate(options: {
-    viewport: Viewport;
-    userAgent: string;
-  }): Promise<void>;
-  async emulate(): Promise<void> {
-    throw new Error('Not implemented');
+  async emulate(device: Device): Promise<void> {
+    await Promise.all([
+      this.setUserAgent(device.userAgent),
+      this.setViewport(device.viewport),
+    ]);
   }
 
   /**
    * @param enabled - Whether or not to enable JavaScript on the page.
-   * @returns
    * @remarks
    * NOTE: changing this value won't affect scripts that have already been run.
    * It will take full effect on the next navigation.

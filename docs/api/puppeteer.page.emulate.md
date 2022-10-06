@@ -4,21 +4,23 @@ sidebar_label: Page.emulate
 
 # Page.emulate() method
 
-Emulates given device metrics and user agent.
+Emulates a given device's metrics and user agent.
+
+To aid emulation, Puppeteer provides a list of known devices that can be via [KnownDevices](./puppeteer.knowndevices.md).
 
 **Signature:**
 
 ```typescript
 class Page {
-  emulate(options: {viewport: Viewport; userAgent: string}): Promise<void>;
+  emulate(device: Device): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                  | Description |
-| --------- | --------------------------------------------------------------------- | ----------- |
-| options   | { viewport: [Viewport](./puppeteer.viewport.md); userAgent: string; } |             |
+| Parameter | Type                            | Description |
+| --------- | ------------------------------- | ----------- |
+| device    | [Device](./puppeteer.device.md) |             |
 
 **Returns:**
 
@@ -26,13 +28,14 @@ Promise&lt;void&gt;
 
 ## Remarks
 
-List of all available devices is available in the source code: [src/common/DeviceDescriptors.ts](https://github.com/puppeteer/puppeteer/blob/main/src/common/DeviceDescriptors.ts).
+This method will resize the page. A lot of websites don't expect phones to change size, so you should emulate before navigating to the page.
 
 ## Example
 
 ```ts
-const puppeteer = require('puppeteer');
-const iPhone = puppeteer.devices['iPhone 6'];
+import {KnownDevices} from 'puppeteer';
+const iPhone = KnownDevices['iPhone 6'];
+
 (async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();

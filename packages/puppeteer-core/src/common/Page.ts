@@ -16,6 +16,18 @@
 
 import {Protocol} from 'devtools-protocol';
 import type {Readable} from 'stream';
+import type {Browser, BrowserContext} from '../api/Browser.js';
+import {
+  GeolocationOptions,
+  MediaFeature,
+  Metrics,
+  Page,
+  PageEmittedEvents,
+  ScreenshotClip,
+  ScreenshotOptions,
+  WaitForOptions,
+  WaitTimeoutOptions,
+} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {
   createDeferredPromise,
@@ -23,7 +35,6 @@ import {
 } from '../util/DeferredPromise.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {Accessibility} from './Accessibility.js';
-import type {Browser, BrowserContext} from '../api/Browser.js';
 import {
   CDPSession,
   CDPSessionEmittedEvents,
@@ -80,17 +91,6 @@ import {
   waitWithTimeout,
 } from './util.js';
 import {WebWorker} from './WebWorker.js';
-import {
-  Page,
-  PageEmittedEvents,
-  WaitForOptions,
-  Metrics,
-  ScreenshotClip,
-  ScreenshotOptions,
-  WaitTimeoutOptions,
-  GeolocationOptions,
-  MediaFeature,
-} from '../api/Page.js';
 
 /**
  * @internal
@@ -1930,44 +1930,6 @@ export class CDPPage extends Page {
    */
   override async bringToFront(): Promise<void> {
     await this.#client.send('Page.bringToFront');
-  }
-
-  /**
-   * Emulates given device metrics and user agent.
-   *
-   * @remarks
-   * This method is a shortcut for calling two methods:
-   * {@link Page.setUserAgent} and {@link Page.setViewport} To aid emulation,
-   * Puppeteer provides a list of device descriptors that can be obtained via
-   * {@link devices}. `page.emulate` will resize the page. A lot of websites
-   * don't expect phones to change size, so you should emulate before navigating
-   * to the page.
-   * @example
-   *
-   * ```ts
-   * const puppeteer = require('puppeteer');
-   * const iPhone = puppeteer.devices['iPhone 6'];
-   * (async () => {
-   *   const browser = await puppeteer.launch();
-   *   const page = await browser.newPage();
-   *   await page.emulate(iPhone);
-   *   await page.goto('https://www.google.com');
-   *   // other actions...
-   *   await browser.close();
-   * })();
-   * ```
-   *
-   * @remarks List of all available devices is available in the source code:
-   * {@link https://github.com/puppeteer/puppeteer/blob/main/src/common/DeviceDescriptors.ts | src/common/DeviceDescriptors.ts}.
-   */
-  override async emulate(options: {
-    viewport: Viewport;
-    userAgent: string;
-  }): Promise<void> {
-    await Promise.all([
-      this.setViewport(options.viewport),
-      this.setUserAgent(options.userAgent),
-    ]);
   }
 
   /**

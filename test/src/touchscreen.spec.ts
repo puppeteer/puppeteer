@@ -15,6 +15,7 @@
  */
 
 import expect from 'expect';
+import {KnownDevices} from 'puppeteer';
 import {
   getTestState,
   setupTestBrowserHooks,
@@ -26,8 +27,8 @@ describe('Touchscreen', function () {
   setupTestPageAndContextHooks();
 
   it('should tap the button', async () => {
-    const {puppeteer, page, server} = getTestState();
-    const iPhone = puppeteer.devices['iPhone 6']!;
+    const {page, server} = getTestState();
+    const iPhone = KnownDevices['iPhone 6']!;
     await page.emulate(iPhone);
     await page.goto(server.PREFIX + '/input/button.html');
     await page.tap('button');
@@ -38,8 +39,8 @@ describe('Touchscreen', function () {
     ).toBe('Clicked');
   });
   it('should report touches', async () => {
-    const {puppeteer, page, server} = getTestState();
-    const iPhone = puppeteer.devices['iPhone 6']!;
+    const {page, server} = getTestState();
+    const iPhone = KnownDevices['iPhone 6']!;
     await page.emulate(iPhone);
     await page.goto(server.PREFIX + '/input/touches.html');
     const button = (await page.$('button'))!;
