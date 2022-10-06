@@ -59,7 +59,7 @@ We also have other tests such as `test:types` that tests types and
 
 Puppeteer is using a custom test runner on top of Mocha that consults
 the [TestExpectations.json](https://github.com/puppeteer/puppeteer/blob/main/test/TestExpectations.json)
-to see if a given test result is expected or not. See more info about the test runner in [`utils/mochaRunner`](https://github.com/puppeteer/puppeteer/tree/main/utils/mochaRunner).
+to see if a given test result is expected or not. See more info about the test runner in [`tools/mochaRunner`](https://github.com/puppeteer/puppeteer/tree/main/tools/mochaRunner).
 
 ## Code reviews
 
@@ -97,8 +97,8 @@ The following is a description of the primary folders in Puppeteer:
 - `src` - contains the source code for Puppeteer.
 - `test/src` - contains the source code for Puppeteer tests.
 - `utils`/`scripts` - contains various scripts.
-- `utils/testserver` - contains the source code for our test servers in testing.
-- `utils/mochaRunner` - contains the source code for our test runner.
+- `tools/testserver` - contains the source code for our test servers in testing.
+- `tools/mochaRunner` - contains the source code for our test runner.
 - `compat` - contains code separated by module import type. See [`compat/README.md`](https://github.com/puppeteer/puppeteer/blob/main/compat/README.md) for details.
 - `test-d` contains type tests using [`tsd`](https://github.com/SamVerschueren/tsd).
 - `third_party` contains all dependencies that we vendor into the final build. See the [`third_party/README.md`](https://github.com/puppeteer/puppeteer/blob/main/third_party/README.md) for details.
@@ -251,7 +251,7 @@ BINARY=<path-to-executable> npm run test:chrome:headless # Or npm run test:firef
 ```
 
 If a test is expected to fail on certain configurations or became flaky, update [TestExpectations.json](https://github.com/puppeteer/puppeteer/blob/main/test/TestExpectations.json)
-to reflect that. See more info about TestExpectations.json in [`utils/mochaRunner`](https://github.com/puppeteer/puppeteer/tree/main/utils/mochaRunner).
+to reflect that. See more info about TestExpectations.json in [`tools/mochaRunner`](https://github.com/puppeteer/puppeteer/tree/main/tools/mochaRunner).
 
 ## API Coverage
 
@@ -269,7 +269,7 @@ The following steps are needed to update the Chromium version.
 
 1. Find a suitable Chromium revision
    Not all revisions have builds for all platforms, so we need to find one that does.
-   To do so, run `utils/check_availability.js -rd` to find the latest suitable `dev` Chromium revision (see `utils/check_availability.js -help` for more options).
+   To do so, run `tools/check_availability.js -rd` to find the latest suitable `dev` Chromium revision (see `tools/check_availability.js -help` for more options).
 1. Update `src/revisions.ts` with the found revision number.
 1. Update `versions.js` with the new Chromium-to-Puppeteer version mapping and update `lastMaintainedChromiumVersion` with the latest stable Chrome version.
 1. Run `npm run check:protocol-revision`.
@@ -281,11 +281,11 @@ The following steps are needed to update the Chromium version.
 
 ### Bisecting upstream changes
 
-Sometimes, performing a Chromium roll causes tests to fail. To figure out the cause, you need to bisect Chromium revisions to figure out the earliest possible revision that changed the behavior. The script in `utils/bisect.js` can be helpful here. Given a pattern for one or more unit tests, it will automatically bisect the current range:
+Sometimes, performing a Chromium roll causes tests to fail. To figure out the cause, you need to bisect Chromium revisions to figure out the earliest possible revision that changed the behavior. The script in `tools/bisect.js` can be helpful here. Given a pattern for one or more unit tests, it will automatically bisect the current range:
 
 ```sh
-node utils/bisect.js --good 686378 --bad 706915 script.js
-node utils/bisect.js --unit-test Response.fromCache
+node tools/bisect.js --good 686378 --bad 706915 script.js
+node tools/bisect.js --unit-test Response.fromCache
 ```
 
 By default, it will use the Chromium revision in `src/revisions.ts` from the `main` branch and from the working tree to determine the range to bisect.

@@ -17,7 +17,7 @@ jobs:
         with:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Pin dependencies
-        run: utils/pin_dependencies.py
+        run: tools/pin_dependencies.py
       - name: Install dependencies
         run: npm install
       - name: Build

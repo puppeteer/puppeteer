@@ -42,9 +42,9 @@ Parameters:
   --script     path to a script that returns non-zero code for BAD revisions and 0 for good
 
 Example:
-  node utils/bisect.js --unit-test test
-  node utils/bisect.js --good 577361 --bad 599821 --script simple.js
-  node utils/bisect.js --good 577361 --bad 599821 --unit-test test
+  node tools/bisect.js --unit-test test
+  node tools/bisect.js --good 577361 --bad 599821 --script simple.js
+  node tools/bisect.js --good 577361 --bad 599821 --unit-test test
 `;
 
 if (argv.h || argv.help) {
