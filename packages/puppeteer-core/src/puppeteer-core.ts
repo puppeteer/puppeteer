@@ -17,7 +17,7 @@
 export {Protocol} from 'devtools-protocol';
 export * from './common/DeviceDescriptors.js';
 export * from './common/Errors.js';
-export * from './common/NetworkConditions.js';
+export * from './common/PredefinedNetworkConditions.js';
 export * from './common/QueryHandler.js';
 
 import {rootDirname} from './constants.js';

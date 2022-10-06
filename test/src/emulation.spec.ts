@@ -15,6 +15,7 @@
  */
 
 import expect from 'expect';
+import {PredefinedNetworkConditions} from 'puppeteer';
 import {Device} from 'puppeteer-core/internal/common/DeviceDescriptors.js';
 import {
   getTestState,
@@ -478,7 +479,7 @@ describe('Emulation', () => {
 
       let error!: Error;
       await page
-        // @ts-expect-error deliberately passign invalid deficiency
+        // @ts-expect-error deliberately passing invalid deficiency
         .emulateVisionDeficiency('invalid')
         .catch(error_ => {
           return (error = error_);
@@ -489,10 +490,10 @@ describe('Emulation', () => {
 
   describe('Page.emulateNetworkConditions', function () {
     it('should change navigator.connection.effectiveType', async () => {
-      const {page, puppeteer} = getTestState();
+      const {page} = getTestState();
 
-      const slow3G = puppeteer.networkConditions['Slow 3G']!;
-      const fast3G = puppeteer.networkConditions['Fast 3G']!;
+      const slow3G = PredefinedNetworkConditions['Slow 3G']!;
+      const fast3G = PredefinedNetworkConditions['Fast 3G']!;
 
       expect(
         await page.evaluate('window.navigator.connection.effectiveType')

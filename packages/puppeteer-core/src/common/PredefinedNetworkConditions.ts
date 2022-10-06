@@ -18,15 +18,13 @@ import {NetworkConditions} from './NetworkManager.js';
 
 /**
  * A list of network conditions to be used with
- * `page.emulateNetworkConditions(networkConditions)`. Actual list of predefined
- * conditions can be found in
- * {@link https://github.com/puppeteer/puppeteer/blob/main/src/common/NetworkConditions.ts | src/common/NetworkConditions.ts}.
+ * {@link Page.emulateNetworkConditions}.
  *
  * @example
  *
  * ```ts
- * const puppeteer = require('puppeteer');
- * const slow3G = puppeteer.networkConditions['Slow 3G'];
+ * import {PredefinedNetworkConditions} from 'puppeteer';
+ * const slow3G = PredefinedNetworkConditions['Slow 3G'];
  *
  * (async () => {
  *   const browser = await puppeteer.launch();
@@ -40,18 +38,22 @@ import {NetworkConditions} from './NetworkManager.js';
  *
  * @public
  */
-export const networkConditions: Readonly<{
-  'Slow 3G': NetworkConditions;
-  'Fast 3G': NetworkConditions;
-}> = Object.freeze({
+export const PredefinedNetworkConditions = Object.freeze({
   'Slow 3G': {
     download: ((500 * 1000) / 8) * 0.8,
     upload: ((500 * 1000) / 8) * 0.8,
     latency: 400 * 5,
-  },
+  } as NetworkConditions,
   'Fast 3G': {
     download: ((1.6 * 1000 * 1000) / 8) * 0.9,
     upload: ((750 * 1000) / 8) * 0.9,
     latency: 150 * 3.75,
-  },
+  } as NetworkConditions,
 });
+
+/**
+ * @deprecated Import {@link PredefinedNetworkConditions}.
+ *
+ * @public
+ */
+export const networkConditions = PredefinedNetworkConditions;

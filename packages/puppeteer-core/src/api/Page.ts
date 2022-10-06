@@ -675,11 +675,11 @@ export class Page extends EventEmitter {
   }
 
   /**
+   * Sets the network connection to offline.
+   *
+   * It does not change the parameters used in {@link Page.emulateNetworkConditions}
+   *
    * @param enabled - When `true`, enables offline mode for the page.
-   * @remarks
-   * NOTE: while this method sets the network connection to offline, it does
-   * not change the parameters used in [page.emulateNetworkConditions(networkConditions)]
-   * (#pageemulatenetworkconditionsnetworkconditions)
    */
   setOfflineMode(enabled: boolean): Promise<void>;
   setOfflineMode(): Promise<void> {
@@ -687,12 +687,18 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @param networkConditions - Passing `null` disables network condition emulation.
+   * This does not affect WebSockets and WebRTC PeerConnections (see
+   * https://crbug.com/563644). To set the page offline, you can use
+   * {@link Page.setOfflineMode}.
+   *
+   * A list of predefined network conditions can be used by importing
+   * {@link PredefinedNetworkConditions}.
+   *
    * @example
    *
    * ```ts
-   * const puppeteer = require('puppeteer');
-   * const slow3G = puppeteer.networkConditions['Slow 3G'];
+   * import {PredefinedNetworkConditions} from 'puppeteer';
+   * const slow3G = PredefinedNetworkConditions['Slow 3G'];
    *
    * (async () => {
    *   const browser = await puppeteer.launch();
@@ -704,10 +710,8 @@ export class Page extends EventEmitter {
    * })();
    * ```
    *
-   * @remarks
-   * NOTE: This does not affect WebSockets and WebRTC PeerConnections (see
-   * https://crbug.com/563644). To set the page offline, you can use
-   * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled).
+   * @param networkConditions - Passing `null` disables network condition
+   * emulation.
    */
   emulateNetworkConditions(
     networkConditions: NetworkConditions | null
