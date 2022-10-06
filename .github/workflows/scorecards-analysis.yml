@@ -24,8 +24,8 @@ jobs:
       id-token: write
 
     steps:
-      - name: 'Checkout code'
-        uses: actions/checkout@v3 # v2.4.0
+      - name: Check out repository
+        uses: actions/checkout@v3.0.2
         with:
           persist-credentials: false
 

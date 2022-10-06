@@ -20,8 +20,8 @@ jobs:
     name: Inspect code
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Check out repository
+        uses: actions/checkout@v3.0.2
         with:
           fetch-depth: 2
       - name: Set up Node.js
@@ -49,8 +49,8 @@ jobs:
     outputs:
       needs_deploying: ${{ steps.needs_deploying.outputs.value }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Check out repository
+        uses: actions/checkout@v3.0.2
         with:
           fetch-depth: 2
       - name: Set up Node.js
@@ -95,8 +95,8 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Check out repository
+        uses: actions/checkout@v3.0.2
       - name: Set up Node.js
         uses: actions/setup-node@v3.4.1
         with:
@@ -216,8 +216,8 @@ jobs:
             suite: firefox-headless
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Check out repository
+        uses: actions/checkout@v3.0.2
       - name: Setup cache for Chromium binary
         uses: actions/cache@v3
         with:
@@ -269,8 +269,8 @@ jobs:
         os: [ubuntu-latest]
         node: [16]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Check out repository
+        uses: actions/checkout@v3.0.2
         with:
           fetch-depth: 2
       - name: Set up Node.js

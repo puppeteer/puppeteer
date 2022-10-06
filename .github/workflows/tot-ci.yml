@@ -22,8 +22,8 @@ jobs:
       matrix:
         node: [16]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Check out repository
+        uses: actions/checkout@v3.0.2
         with:
           fetch-depth: 2
 
@@ -60,8 +60,8 @@ jobs:
       matrix:
         node: [16]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Check out repository
+        uses: actions/checkout@v3.0.2
         with:
           fetch-depth: 2
 
@@ -98,8 +98,8 @@ jobs:
       matrix:
         node: [16]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Check out repository
+        uses: actions/checkout@v3.0.2
         with:
           fetch-depth: 2
 

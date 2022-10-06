@@ -12,8 +12,8 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Check out repository
+        uses: actions/checkout@v3.0.2
         with:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Pin dependencies
