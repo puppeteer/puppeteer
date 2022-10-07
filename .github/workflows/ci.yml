@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 2
       - name: Set up Node.js
@@ -46,7 +46,7 @@ jobs:
       needs_deploying: ${{ steps.needs_deploying.outputs.value }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 2
       - name: Set up Node.js
@@ -88,7 +88,7 @@ jobs:
       contents: write
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.1.0
       - name: Set up Node.js
         uses: actions/setup-node@v3.4.1
         with:
@@ -126,7 +126,7 @@ jobs:
           - chrome-new-headless
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.1.0
       - name: Set up Node.js
         uses: actions/setup-node@v3.4.1
         with:
@@ -169,7 +169,7 @@ jobs:
           - firefox-headless
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.1.0
       - name: Set up Node.js
         uses: actions/setup-node@v3.4.1
         with:
@@ -202,7 +202,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.1.0
       - name: Set up Node.js
         uses: actions/setup-node@v3.4.1
         with:
@@ -236,7 +236,7 @@ jobs:
           - 18
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.1.0
       - name: Set up Node.js
         uses: actions/setup-node@v3.4.1
         with:
@@ -254,7 +254,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 2
       - name: Set up Node.js

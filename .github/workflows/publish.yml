@@ -14,7 +14,7 @@ jobs:
       contents: read
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.1.0
       - name: Install dependencies
         run: npm ci --ignore-scripts
       - name: Build packages
@@ -47,7 +47,7 @@ jobs:
       IMAGE_NAME: ${{ github.repository }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.1.0
       - name: Install dependencies
         run: npm ci --ignore-scripts
       - name: Build packages

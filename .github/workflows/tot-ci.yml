@@ -23,7 +23,7 @@ jobs:
         node: [16]
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 2
 
@@ -61,7 +61,7 @@ jobs:
         node: [16]
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 2
 
@@ -99,7 +99,7 @@ jobs:
         node: [16]
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 2
 
