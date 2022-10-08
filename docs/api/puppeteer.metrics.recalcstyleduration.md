@@ -2,7 +2,7 @@
 sidebar_label: Metrics.RecalcStyleDuration
 ---
 
-# Metrics.RecalcStyleDuration property
+# `Metrics.RecalcStyleDuration` property
 
 **Signature:**
 

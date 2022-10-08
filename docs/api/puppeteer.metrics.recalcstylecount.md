@@ -2,7 +2,7 @@
 sidebar_label: Metrics.RecalcStyleCount
 ---
 
-# Metrics.RecalcStyleCount property
+# `Metrics.RecalcStyleCount` property
 
 **Signature:**
 
