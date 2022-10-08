@@ -32,7 +32,7 @@ class Frame {
 | Parameter | Type                                                            | Description                                                                                                 |
 | --------- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | xpath     | string                                                          | the XPath expression to wait for.                                                                           |
-| options   | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) | <i>(Optional)</i> options to configure the visiblity of the element and how long to wait before timing out. |
+| options   | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) | <i>(Optional)</i> options to configure the visibility of the element and how long to wait before timing out. |
 
 **Returns:**
 
