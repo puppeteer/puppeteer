@@ -2,7 +2,7 @@
 sidebar_label: PageEventObject.workerdestroyed
 ---
 
-# PageEventObject.workerdestroyed property
+# `PageEventObject.workerdestroyed` property
 
 **Signature:**
 
