@@ -1,8 +1,9 @@
 ---
+#cspell:ignore frameattached
 sidebar_label: PageEventObject.frameattached
 ---
 
-# PageEventObject.frameattached property
+# `PageEventObject.frameattached` property
 
 **Signature:**
 

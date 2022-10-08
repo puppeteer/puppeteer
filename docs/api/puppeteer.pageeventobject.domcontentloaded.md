@@ -1,8 +1,9 @@
 ---
+#cspell:ignore domcontentloaded
 sidebar_label: PageEventObject.domcontentloaded
 ---
 
-# PageEventObject.domcontentloaded property
+# `PageEventObject.domcontentloaded` property
 
 **Signature:**
 
