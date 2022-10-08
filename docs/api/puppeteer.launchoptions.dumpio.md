@@ -1,8 +1,9 @@
 ---
+#cspell:ignore dumpio
 sidebar_label: LaunchOptions.dumpio
 ---
 
-# LaunchOptions.dumpio property
+# `LaunchOptions.dumpio` property
 
 If true, pipes the browser process stdout and stderr to `process.stdout` and `process.stderr`.
 
