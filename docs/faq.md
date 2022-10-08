@@ -25,7 +25,7 @@ The goals of the project are:
 - Provide a slim, canonical library that highlights the capabilities of the [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
 - Provide a reference implementation for similar testing libraries. Eventually, these other frameworks could adopt Puppeteer as their foundational layer.
 - Grow the adoption of headless/automated browser testing.
-- Help dogfood new DevTools Protocol features...and catch bugs!
+- Help dog-food new DevTools Protocol features...and catch bugs!
 - Learn more about the pain points of automated browser testing and help fill those gaps.
 
 We adapt [Chromium principles](https://www.chromium.org/developers/core-principles) to help us drive product decisions:
