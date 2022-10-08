@@ -55,9 +55,9 @@ We see Puppeteer as an **indivisible entity** with Chromium. Each version of Pup
 
 This is not an artificial constraint: A lot of work on Puppeteer is actually taking place in the Chromium repository. Here’s a typical story:
 
-- A Puppeteer bug is reported: https://github.com/puppeteer/puppeteer/issues/2709
-- It turned out this is an issue with the DevTools protocol, so we’re fixing it in Chromium: https://chromium-review.googlesource.com/c/chromium/src/+/1102154
-- Once the upstream fix is landed, we roll updated Chromium into Puppeteer: https://github.com/puppeteer/puppeteer/pull/2769
+- A Puppeteer bug is reported: <https://github.com/puppeteer/puppeteer/issues/2709>
+- It turned out this is an issue with the DevTools protocol, so we’re fixing it in Chromium: <https://chromium-review.googlesource.com/c/chromium/src/+/1102154>
+- Once the upstream fix is landed, we roll updated Chromium into Puppeteer: <https://github.com/puppeteer/puppeteer/pull/2769>
 
 However, oftentimes it is desirable to use Puppeteer with the official Google Chrome rather than Chromium. For this to work, you should install a `puppeteer-core` version that corresponds to the Chrome version.
 
@@ -148,7 +148,7 @@ npm ci
 
 There are many ways to get help on Puppeteer:
 
-- [bugtracker](https://github.com/puppeteer/puppeteer/issues)
+- [bug tracker](https://github.com/puppeteer/puppeteer/issues)
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/puppeteer)
 
 Make sure to search these channels before posting your question.
