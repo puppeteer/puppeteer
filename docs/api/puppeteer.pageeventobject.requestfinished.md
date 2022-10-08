@@ -1,8 +1,9 @@
 ---
+#cspell:ignore requestfinished
 sidebar_label: PageEventObject.requestfinished
 ---
 
-# PageEventObject.requestfinished property
+# `PageEventObject.requestfinished` property
 
 **Signature:**
 

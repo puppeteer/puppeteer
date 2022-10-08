@@ -1,8 +1,9 @@
 ---
+#cspell:ignore pageerror
 sidebar_label: PageEventObject.pageerror
 ---
 
-# PageEventObject.pageerror property
+# `PageEventObject.pageerror` property
 
 **Signature:**
 

@@ -1,4 +1,5 @@
 ---
+#cspell:ignore workercreated
 sidebar_label: PageEventObject.workercreated
 ---
 

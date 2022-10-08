@@ -1,8 +1,9 @@
 ---
+#cspell:ignore requestservedfromcache
 sidebar_label: PageEventObject.requestservedfromcache
 ---
 
-# PageEventObject.requestservedfromcache property
+# `PageEventObject.requestservedfromcache` property
 
 **Signature:**
 
