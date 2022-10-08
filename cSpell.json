@@ -2,10 +2,17 @@
   "version": "0.2",
   "language": "en",
   "words": [
+    "Geolocation",
     "keydown",
     "keyup",
+    "mousedown",
+    "mouseup",
+    "navigations",
     "pdfs",
-    "Prefs"
+    "Prefs",
+    "targetchanged",
+    "targetcreated",
+    "targetdestroyed"
   ],
   "ignoreWords": [],
   "patterns": [
