@@ -2,7 +2,7 @@
 sidebar_label: PageEventObject.workercreated
 ---
 
-# PageEventObject.workercreated property
+# `PageEventObject.workercreated` property
 
 **Signature:**
 
