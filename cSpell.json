@@ -11,6 +11,9 @@
     "pdfs",
     "Prefs",
     "Referer",
+    "SIGHUP",
+    "SIGINT",
+    "SIGTERM",
     "targetchanged",
     "targetcreated",
     "targetdestroyed"
