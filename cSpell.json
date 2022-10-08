@@ -58,6 +58,11 @@
       "name": "HTML Tags",
       "pattern": "<[^>]*>",
       "description": "Reference: https://stackoverflow.com/questions/11229831/regular-expression-to-remove-html-tags-from-a-string"
+    },
+    {
+      "name": "Code Tags",
+      "pattern": "<code>(.*)</code>",
+      "description": ""
     }
   ],
   "ignoreRegExpList": [
@@ -68,7 +73,8 @@
     "Snippet references",
     "Snippet references 2",
     "Multi-line code blocks",
-    "HTML Tags"
+    "HTML Tags",
+    "Code Tags"
   ],
   "ignorePaths": []
 }
