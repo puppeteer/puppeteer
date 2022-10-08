@@ -1,0 +1,28 @@
+name: Documentation Check
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/**/*"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "docs/**/*"
+jobs:
+  spellcheck:
+    name: "Docs: Spellcheck"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        name: Check out the code
+      - uses: actions/setup-node@v1
+        name: Setup node
+        with:
+          node-version: "16"
+      - run: npm install -g cspell
+        name: Install cSpell
+      - run: cspell --config ./cSpell.json "docs/**/*.md" --no-progress
+        name: Run cSpell
