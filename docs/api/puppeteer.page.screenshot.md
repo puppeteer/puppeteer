@@ -42,7 +42,7 @@ Options object which might have the following properties:
 
 - `encoding` : The encoding of the image, can be either base64 or binary. Defaults to `binary`.
 
-- `captureBeyondViewport` : When true, captures screenshot [beyond the viewport](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot). When false, falls back to old behaviour, and cuts the screenshot by the viewport size. Defaults to `true`.
+- `captureBeyondViewport` : When true, captures screenshot [beyond the viewport](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot). When false, falls back to old behavior, and cuts the screenshot by the viewport size. Defaults to `true`.
 
 - `fromSurface` : When true, captures screenshot [from the surface rather than the view](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot). When false, works only in headful mode and ignores page viewport (but not browser window's bounds). Defaults to `true`.
 
