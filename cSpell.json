@@ -2,9 +2,12 @@
   "version": "0.2",
   "language": "en",
   "words": [
+    "keydown",
+    "keyup",
+    "pdfs",
+    "Prefs"
   ],
-  "ignoreWords": [
-  ],
+  "ignoreWords": [],
   "patterns": [
     {
       "name": "Markdown links",
@@ -56,6 +59,5 @@
     "Multi-line code blocks",
     "HTML Tags"
   ],
-  "ignorePaths": [
-  ]
+  "ignorePaths": []
 }
