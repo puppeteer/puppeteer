@@ -1,4 +1,5 @@
 ---
+#cspell:ignore workerdestroyed
 sidebar_label: PageEventObject.workerdestroyed
 ---
 
