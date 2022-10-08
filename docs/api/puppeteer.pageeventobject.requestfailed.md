@@ -1,8 +1,9 @@
 ---
+#cspell:ignore requestfailed
 sidebar_label: PageEventObject.requestfailed
 ---
 
-# PageEventObject.requestfailed property
+# `PageEventObject.requestfailed` property
 
 **Signature:**
 

@@ -1,8 +1,9 @@
 ---
+#cspell:ignore framenavigated
 sidebar_label: PageEventObject.framenavigated
 ---
 
-# PageEventObject.framenavigated property
+# `PageEventObject.framenavigated` property
 
 **Signature:**
 
