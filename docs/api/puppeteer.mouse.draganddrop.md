@@ -4,7 +4,7 @@ sidebar_label: Mouse.dragAndDrop
 
 # Mouse.dragAndDrop() method
 
-Performs a drag, dragenter, dragover, and drop in sequence.
+Performs a drag, <code>dragenter</code>, <code>dragover</code>, and <code>drop</code> in sequence.
 
 **Signature:**
 
