@@ -8,7 +8,7 @@ Listen to page events.
 
 :::note
 
-This method exists to define event typings and handle proper wireup of cooperative request interception. Actual event listening and dispatching is delegated to [EventEmitter](./puppeteer.eventemitter.md).
+This method exists to define event typings and handle proper wire-up of cooperative request interception. Actual event listening and dispatching is delegated to [EventEmitter](./puppeteer.eventemitter.md).
 
 :::
 
