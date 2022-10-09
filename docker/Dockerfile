@@ -25,6 +25,8 @@ RUN npm i ./puppeteer-core-latest.tgz ./puppeteer-latest.tgz \
     && groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
     && mkdir -p /home/pptruser/Downloads \
     && chown -R pptruser:pptruser /home/pptruser \
+    && mkdir /home/.npm \
+    && chown -R pptruser:pptruser "/home/.npm" \
     && (node -e "require('child_process').execSync(require('puppeteer').executablePath() + ' --credits', {stdio: 'inherit'})" > THIRD_PARTY_NOTICES)
 
 USER pptruser
