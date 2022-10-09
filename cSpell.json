@@ -4,20 +4,13 @@
   "words": [
     "Geolocation",
     "iframes",
-    "keydown",
-    "keyup",
-    "mousedown",
-    "mouseup",
     "navigations",
     "pdfs",
     "Prefs",
     "Referer",
     "SIGHUP",
     "SIGINT",
-    "SIGTERM",
-    "targetchanged",
-    "targetcreated",
-    "targetdestroyed"
+    "SIGTERM"
   ],
   "ignoreWords": [],
   "patterns": [
