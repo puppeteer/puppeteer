@@ -4,7 +4,7 @@ sidebar_label: ElementHandle.drag
 
 # ElementHandle.drag() method
 
-This method creates and captures a dragevent from the element.
+This method creates and captures a `dragevent` from the element.
 
 **Signature:**
 

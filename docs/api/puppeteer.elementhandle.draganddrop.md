@@ -4,7 +4,7 @@ sidebar_label: ElementHandle.dragAndDrop
 
 # ElementHandle.dragAndDrop() method
 
-This method triggers a dragenter, dragover, and drop on the element.
+This method triggers a `dragenter`, `dragover`, and `drop` on the element.
 
 **Signature:**
 
