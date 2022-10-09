@@ -4,7 +4,7 @@ sidebar_label: Keyboard
 
 # Keyboard class
 
-Keyboard provides an api for managing a virtual keyboard. The high level api is [Keyboard.type()](./puppeteer.keyboard.type.md), which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
+Keyboard provides an api for managing a virtual keyboard. The high level api is [Keyboard.type()](./puppeteer.keyboard.type.md), which takes raw characters and generates proper `keydown`, `keypress`/`input`, and `keyup` events on your page.
 
 **Signature:**
 

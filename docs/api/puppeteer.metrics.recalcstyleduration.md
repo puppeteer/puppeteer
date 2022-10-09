@@ -1,4 +1,5 @@
 ---
+#cspell:ignore RecalcStyleDuration
 sidebar_label: Metrics.RecalcStyleDuration
 ---
 

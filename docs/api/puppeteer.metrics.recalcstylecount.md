@@ -1,4 +1,5 @@
 ---
+#cspell:ignore RecalcStyleCount
 sidebar_label: Metrics.RecalcStyleCount
 ---
 
