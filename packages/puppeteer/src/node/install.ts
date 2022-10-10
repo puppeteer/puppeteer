@@ -59,7 +59,7 @@ export async function downloadBrowser(): Promise<void> {
     process.env['PUPPETEER_DOWNLOAD_PATH'] ||
     process.env['npm_config_puppeteer_download_path'] ||
     process.env['npm_package_config_puppeteer_download_path'];
-  const browserFetcher = (puppeteer as PuppeteerNode).createBrowserFetcher({
+  const browserFetcher = puppeteer.createBrowserFetcher({
     product,
     host: downloadHost,
     path: downloadPath,
