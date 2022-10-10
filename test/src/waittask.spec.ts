@@ -537,37 +537,7 @@ describe('waittask specs', function () {
         Promise.race([promise, createTimeout(40)])
       ).resolves.toBeFalsy();
       await element.evaluate(e => {
-        e.style.setProperty('position', 'absolute');
-        e.style.setProperty('right', '100vw');
         e.style.removeProperty('height');
-      });
-      await expect(
-        Promise.race([promise, createTimeout(40)])
-      ).resolves.toBeFalsy();
-      await element.evaluate(e => {
-        e.style.setProperty('left', '100vw');
-        e.style.removeProperty('right');
-      });
-      await expect(
-        Promise.race([promise, createTimeout(40)])
-      ).resolves.toBeFalsy();
-      await element.evaluate(e => {
-        e.style.setProperty('top', '100vh');
-        e.style.removeProperty('left');
-      });
-      await expect(
-        Promise.race([promise, createTimeout(40)])
-      ).resolves.toBeFalsy();
-      await element.evaluate(e => {
-        e.style.setProperty('bottom', '100vh');
-        e.style.removeProperty('top');
-      });
-      await expect(
-        Promise.race([promise, createTimeout(40)])
-      ).resolves.toBeFalsy();
-      await element.evaluate(e => {
-        // Just peeking
-        e.style.setProperty('bottom', '99vh');
       });
       await expect(promise).resolves.toBeTruthy();
     });
