@@ -19,6 +19,7 @@ export * from './common/Device.js';
 export * from './common/Errors.js';
 export * from './common/PredefinedNetworkConditions.js';
 export * from './common/Puppeteer.js';
+export * from './node/BrowserFetcher.js';
 
 /**
  * @deprecated Use the query handler API defined on {@link Puppeteer}
@@ -39,6 +40,7 @@ const puppeteer = new PuppeteerNode({
 
 export const {
   connect,
+  /** @deprecated Import {@link BrowserFetcher} directly and use the constructor. */
   createBrowserFetcher,
   defaultArgs,
   executablePath,

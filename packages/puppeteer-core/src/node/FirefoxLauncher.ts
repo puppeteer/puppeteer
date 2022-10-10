@@ -221,7 +221,8 @@ export class FirefoxLauncher implements ProductLauncher {
           '_projectRoot is undefined. Unable to create a BrowserFetcher.'
         );
       }
-      const browserFetcher = new BrowserFetcher(this._projectRoot, {
+      const browserFetcher = new BrowserFetcher({
+        projectRoot: this._projectRoot,
         product: this.product,
       });
       const localRevisions = await browserFetcher.localRevisions();

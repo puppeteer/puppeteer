@@ -4,6 +4,10 @@ sidebar_label: createBrowserFetcher
 
 # createBrowserFetcher variable
 
+> Warning: This API is now obsolete.
+>
+> Import [BrowserFetcher](./puppeteer.browserfetcher.md) directly and use the constructor.
+
 **Signature:**
 
 ```typescript

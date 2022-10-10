@@ -19,11 +19,11 @@ export * from 'puppeteer-core/internal/common/Device.js';
 export * from 'puppeteer-core/internal/common/Errors.js';
 export * from 'puppeteer-core/internal/common/PredefinedNetworkConditions.js';
 export * from 'puppeteer-core/internal/common/Puppeteer.js';
+export * from 'puppeteer-core/internal/node/BrowserFetcher.js';
 /**
  * @deprecated Use the query handler API defined on {@link Puppeteer}
  */
 export * from 'puppeteer-core/internal/common/QueryHandler.js';
-export {BrowserFetcher} from 'puppeteer-core/internal/node/BrowserFetcher.js';
 export {LaunchOptions} from 'puppeteer-core/internal/node/LaunchOptions.js';
 
 import {Product} from 'puppeteer-core';
@@ -57,6 +57,7 @@ const puppeteer = new PuppeteerNode({
 
 export const {
   connect,
+  /** @deprecated Import {@link BrowserFetcher} directly and use the constructor. */
   createBrowserFetcher,
   defaultArgs,
   executablePath,

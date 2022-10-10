@@ -234,16 +234,13 @@ export class PuppeteerNode extends Puppeteer {
   }
 
   /**
+   * @deprecated Import {@link BrowserFetcher} directly and use the constructor.
+   *
    * @param options - Set of configurable options to specify the settings of the
    * BrowserFetcher.
    * @returns A new BrowserFetcher instance.
    */
   createBrowserFetcher(options: BrowserFetcherOptions): BrowserFetcher {
-    if (!this.#projectRoot) {
-      throw new Error(
-        '_projectRoot is undefined. Unable to create a BrowserFetcher.'
-      );
-    }
-    return new BrowserFetcher(this.#projectRoot, options);
+    return new BrowserFetcher({...options, projectRoot: this.#projectRoot});
   }
 }

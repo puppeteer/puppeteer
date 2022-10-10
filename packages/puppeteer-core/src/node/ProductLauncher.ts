@@ -160,7 +160,8 @@ export function resolveExecutablePath(
       '_projectRoot is undefined. Unable to create a BrowserFetcher.'
     );
   }
-  const browserFetcher = new BrowserFetcher(_projectRoot, {
+  const browserFetcher = new BrowserFetcher({
+    projectRoot: _projectRoot,
     product: product,
     path: downloadPath,
   });
