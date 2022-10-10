@@ -8,13 +8,6 @@ sidebar_label: Device.viewport
 
 ```typescript
 interface Device {
-  viewport: {
-    width: number;
-    height: number;
-    deviceScaleFactor: number;
-    isMobile: boolean;
-    hasTouch: boolean;
-    isLandscape: boolean;
-  };
+  viewport: Viewport;
 }
 ```

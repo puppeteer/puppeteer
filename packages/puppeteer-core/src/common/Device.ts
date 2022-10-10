@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 
+import {Viewport} from './PuppeteerViewport.js';
+
 /**
  * @public
  */
 export interface Device {
-  name: string;
   userAgent: string;
-  viewport: {
-    width: number;
-    height: number;
-    deviceScaleFactor: number;
-    isMobile: boolean;
-    hasTouch: boolean;
-    isLandscape: boolean;
-  };
+  viewport: Viewport;
 }
 
-const deviceArray: Device[] = [
+const knownDevices = [
   {
     name: 'Blackberry PlayBook',
     userAgent:
@@ -1526,23 +1520,25 @@ const deviceArray: Device[] = [
       isLandscape: true,
     },
   },
-];
+] as const;
+
+const knownDevicesByName = {} as Record<
+  typeof knownDevices[number]['name'],
+  Device
+>;
+
+for (const device of knownDevices) {
+  knownDevicesByName[device.name] = device;
+}
 
 /**
- * @public
- */
-export type DevicesMap = {
-  [name: string]: Device;
-};
-
-/**
- * A list of devices to be used with `page.emulate(options)`. Actual list of devices can be found in {@link https://github.com/puppeteer/puppeteer/blob/main/src/common/DeviceDescriptors.ts | src/common/DeviceDescriptors.ts}.
+ * A list of devices to be used with {@link Page.emulate}.
  *
  * @example
  *
  * ```ts
- * const puppeteer = require('puppeteer');
- * const iPhone = puppeteer.devices['iPhone 6'];
+ * import {KnownDevices} from 'puppeteer';
+ * const iPhone = KnownDevices['iPhone 6'];
  *
  * (async () => {
  *   const browser = await puppeteer.launch();
@@ -1556,10 +1552,11 @@ export type DevicesMap = {
  *
  * @public
  */
-const devices: DevicesMap = {};
+export const KnownDevices = Object.freeze(knownDevicesByName);
 
-for (const device of deviceArray) {
-  devices[device.name] = device;
-}
-
-export {devices};
+/**
+ * @deprecated Import {@link KnownDevices}
+ *
+ * @public
+ */
+export const devices = KnownDevices;

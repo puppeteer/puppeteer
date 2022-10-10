@@ -19,7 +19,6 @@ import {
   _connectToCDPBrowser,
 } from './BrowserConnector.js';
 import {ConnectionTransport} from './ConnectionTransport.js';
-import {devices} from './DeviceDescriptors.js';
 import {
   clearCustomQueryHandlers,
   CustomQueryHandler,
@@ -83,18 +82,6 @@ export class Puppeteer {
    */
   connect(options: ConnectOptions): Promise<Browser> {
     return _connectToCDPBrowser(options);
-  }
-
-  /**
-   * @deprecated Import directly puppeteer.
-   * @example
-   *
-   * ```ts
-   * import {devices} from 'puppeteer';
-   * ```
-   */
-  get devices(): typeof devices {
-    return devices;
   }
 
   /**
