@@ -391,15 +391,15 @@
   },
   {
     "testIdPattern": "[fixtures.spec] Fixtures dumpio option should work with pipe option",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "headful"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS", "FAIL"]
   },
   {
     "testIdPattern": "[fixtures.spec] Fixtures dumpio option should work with pipe option",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "parameters": ["chrome", "chrome-headless"],
+    "expectations": ["PASS", "FAIL"]
   },
   {
     "testIdPattern": "[fixtures.spec] Fixtures dumpio option should work with pipe option",
@@ -936,6 +936,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[network.spec] network Network Events should fire events in proper order",
+    "platforms": ["win32"],
+    "parameters": ["chrome", "headful"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
     "testIdPattern": "[network.spec] network Network Events should support redirects",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -1166,19 +1172,25 @@
   {
     "testIdPattern": "[oopif.spec] OOPIF should support OOP iframes becoming normal iframes again",
     "platforms": ["darwin"],
-    "parameters": ["chrome", "headless"],
+    "parameters": ["chrome"],
     "expectations": ["PASS", "FAIL"]
   },
   {
     "testIdPattern": "[oopif.spec] OOPIF should keep track of a frames OOP state",
-    "platforms": ["darwin"],
-    "parameters": ["chrome", "headless"],
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
     "expectations": ["PASS", "FAIL"]
   },
   {
     "testIdPattern": "[oopif.spec] OOPIF should wait for inner OOPIFs",
-    "platforms": ["linux"],
-    "parameters": ["chrome", "headless"],
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["PASS", "FAIL", "TIMEOUT"]
+  },
+  {
+    "testIdPattern": "[oopif.spec] OOPIF should track navigations within OOP iframes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
     "expectations": ["PASS", "FAIL"]
   },
   {
@@ -1712,7 +1724,7 @@
   {
     "testIdPattern": "[proxy.spec] request proxy in incognito browser context should proxy requests when configured at context level",
     "platforms": ["win32"],
-    "parameters": ["chrome", "headless"],
+    "parameters": ["chrome"],
     "expectations": ["SKIP"]
   },
   {
@@ -1809,12 +1821,12 @@
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work in \"fromSurface: false\" mode",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "headless"],
-    "expectations": ["FAIL"]
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work in \"fromSurface: false\" mode",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "headless"],
+    "parameters": ["chrome", "chrome-headless"],
     "expectations": ["SKIP"]
   },
   {
@@ -2008,5 +2020,71 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[headful.spec] headful tests HEADFUL target.page() should return a background_page",
+    "platforms": ["win32"],
+    "parameters": ["chrome"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[mouse.spec] Mouse should select the text with mouse",
+    "platforms": ["win32"],
+    "parameters": ["chrome"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should fail when navigating to bad SSL",
+    "platforms": ["darwin"],
+    "parameters": ["chrome", "headful"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should fail when navigating to bad SSL after redirects",
+    "platforms": ["darwin"],
+    "parameters": ["chrome", "headful"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[click.spec] Page.click should click on checkbox input and toggle",
+    "platforms": ["linux"],
+    "parameters": ["firefox", "headful"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[network.spec] network raw network headers Same-origin set-cookie subresource",
+    "platforms": ["win32"],
+    "parameters": ["chrome"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception \"after each\" hook in \"request interception\"",
+    "platforms": ["win32"],
+    "parameters": ["chrome"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should navigate to URL with hash and fire requests without hash",
+    "platforms": ["win32"],
+    "parameters": ["chrome"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Network Events Page.Events.Request",
+    "platforms": ["win32"],
+    "parameters": ["chrome"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Network Events should support redirects",
+    "platforms": ["win32"],
+    "parameters": ["chrome"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[oopif.spec]",
+    "platforms": ["win32"],
+    "parameters": ["chrome"],
+    "expectations": ["PASS", "FAIL"]
   }
 ]
