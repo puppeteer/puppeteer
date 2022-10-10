@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import expect from 'expect';
+import {Puppeteer} from 'puppeteer';
 import {CustomQueryHandler} from 'puppeteer-core/internal/common/QueryHandler.js';
 import {
   getTestState,
@@ -397,14 +398,12 @@ describe('querySelector', function () {
       },
     };
     before(() => {
-      const {puppeteer} = getTestState();
-      puppeteer.registerCustomQueryHandler('allArray', handler);
+      Puppeteer.registerCustomQueryHandler('allArray', handler);
     });
 
     it('should have registered handler', async () => {
-      const {puppeteer} = getTestState();
       expect(
-        puppeteer.customQueryHandlerNames().includes('allArray')
+        Puppeteer.customQueryHandlerNames().includes('allArray')
       ).toBeTruthy();
     });
     it('$$ should query existing elements', async () => {

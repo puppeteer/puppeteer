@@ -4,24 +4,16 @@ sidebar_label: Puppeteer.customQueryHandlerNames
 
 # Puppeteer.customQueryHandlerNames() method
 
-> Warning: This API is now obsolete.
->
-> Import directly puppeteer.
+Gets the names of all custom query handlers.
 
 **Signature:**
 
 ```typescript
 class Puppeteer {
-  customQueryHandlerNames(): string[];
+  static customQueryHandlerNames(): string[];
 }
 ```
 
 **Returns:**
 
 string\[\]
-
-## Example
-
-```ts
-import {customQueryHandlerNames} from 'puppeteer';
-```

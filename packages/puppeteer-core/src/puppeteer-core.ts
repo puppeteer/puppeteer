@@ -18,6 +18,11 @@ export {Protocol} from 'devtools-protocol';
 export * from './common/Device.js';
 export * from './common/Errors.js';
 export * from './common/PredefinedNetworkConditions.js';
+export * from './common/Puppeteer.js';
+
+/**
+ * @deprecated Use the query handler API defined on {@link Puppeteer}
+ */
 export * from './common/QueryHandler.js';
 
 import {rootDirname} from './constants.js';

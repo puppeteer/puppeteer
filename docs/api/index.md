@@ -51,12 +51,12 @@ sidebar_label: API
 
 ## Functions
 
-| Function                                                                               | Description                                                            |
-| -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| [clearCustomQueryHandlers()](./puppeteer.clearcustomqueryhandlers.md)                  | Clears all registered handlers.                                        |
-| [customQueryHandlerNames()](./puppeteer.customqueryhandlernames.md)                    |                                                                        |
-| [registerCustomQueryHandler(name, handler)](./puppeteer.registercustomqueryhandler.md) | Registers a [custom query handler](./puppeteer.customqueryhandler.md). |
-| [unregisterCustomQueryHandler(name)](./puppeteer.unregistercustomqueryhandler.md)      |                                                                        |
+| Function                                                                               | Description |
+| -------------------------------------------------------------------------------------- | ----------- |
+| [clearCustomQueryHandlers()](./puppeteer.clearcustomqueryhandlers.md)                  |             |
+| [customQueryHandlerNames()](./puppeteer.customqueryhandlernames.md)                    |             |
+| [registerCustomQueryHandler(name, handler)](./puppeteer.registercustomqueryhandler.md) |             |
+| [unregisterCustomQueryHandler(name)](./puppeteer.unregistercustomqueryhandler.md)      |             |
 
 ## Interfaces
 
