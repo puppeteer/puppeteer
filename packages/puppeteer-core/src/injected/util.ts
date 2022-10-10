@@ -64,12 +64,5 @@ export const checkVisibility = (
 
 function isBoundingBoxVisible(element: Element): boolean {
   const rect = element.getBoundingClientRect();
-  return (
-    rect.width > 0 &&
-    rect.height > 0 &&
-    rect.right > 0 &&
-    rect.bottom > 0 &&
-    rect.left < self.innerWidth &&
-    rect.top < self.innerHeight
-  );
+  return rect.width > 0 && rect.height > 0 && rect.right > 0 && rect.bottom > 0;
 }
