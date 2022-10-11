@@ -71,7 +71,7 @@ TMPDIR="$(mktemp -d)"
 cd $TMPDIR
 npm install --loglevel silent $puppeteer_core_tarball $puppeteer_tarball
 node --eval="require('puppeteer')"
-ls $TMPDIR/node_modules/puppeteer-core/.local-chromium/
+ls ~/.cache/puppeteer/chrome
 
 echo "Testing... Chrome ES Modules"
 TMPDIR="$(mktemp -d)"
@@ -133,7 +133,7 @@ import puppeteer from 'puppeteer';
 })();
 " >>$TMPDIR/index.js
 npx webpack
-cp -r node_modules/puppeteer-core/.local-chromium .
+cp -r ~/.cache/puppeteer/chrome .
 rm -rf node_modules
 node dist/bundle.cjs
 
@@ -142,7 +142,7 @@ TMPDIR="$(mktemp -d)"
 cd $TMPDIR
 PUPPETEER_PRODUCT=firefox npm install --loglevel silent $puppeteer_core_tarball $puppeteer_tarball
 node --eval="require('puppeteer')"
-ls $TMPDIR/node_modules/puppeteer-core/.local-firefox
+ls ~/.cache/puppeteer/firefox
 
 echo "Testing... Firefox ES Modules"
 TMPDIR="$(mktemp -d)"
@@ -150,4 +150,4 @@ cd $TMPDIR
 echo '{"type":"module"}' >>$TMPDIR/package.json
 PUPPETEER_PRODUCT=firefox npm install --loglevel silent $puppeteer_core_tarball $puppeteer_tarball
 node --input-type="module" --eval="import puppeteer from 'puppeteer'"
-ls $TMPDIR/node_modules/puppeteer-core/.local-firefox
+ls ~/.cache/puppeteer/firefox

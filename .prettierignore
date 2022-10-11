@@ -13,8 +13,6 @@ lib/
 yarn.lock
 .docusaurus/
 .cache-loader
-.local-chromium/
-.local-firefox/
 test/output-*/
 .dev_profile*
 coverage/

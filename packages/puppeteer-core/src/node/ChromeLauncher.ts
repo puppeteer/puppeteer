@@ -23,22 +23,13 @@ export class ChromeLauncher implements ProductLauncher {
   /**
    * @internal
    */
-  _projectRoot: string | undefined;
-  /**
-   * @internal
-   */
   _preferredRevision: string;
   /**
    * @internal
    */
   _isPuppeteerCore: boolean;
 
-  constructor(
-    projectRoot: string | undefined,
-    preferredRevision: string,
-    isPuppeteerCore: boolean
-  ) {
-    this._projectRoot = projectRoot;
+  constructor(preferredRevision: string, isPuppeteerCore: boolean) {
     this._preferredRevision = preferredRevision;
     this._isPuppeteerCore = isPuppeteerCore;
   }

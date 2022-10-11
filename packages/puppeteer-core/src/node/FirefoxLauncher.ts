@@ -22,22 +22,13 @@ export class FirefoxLauncher implements ProductLauncher {
   /**
    * @internal
    */
-  _projectRoot: string | undefined;
-  /**
-   * @internal
-   */
   _preferredRevision: string;
   /**
    * @internal
    */
   _isPuppeteerCore: boolean;
 
-  constructor(
-    projectRoot: string | undefined,
-    preferredRevision: string,
-    isPuppeteerCore: boolean
-  ) {
-    this._projectRoot = projectRoot;
+  constructor(preferredRevision: string, isPuppeteerCore: boolean) {
     this._preferredRevision = preferredRevision;
     this._isPuppeteerCore = isPuppeteerCore;
   }
@@ -216,13 +207,7 @@ export class FirefoxLauncher implements ProductLauncher {
   async _updateRevision(): Promise<void> {
     // replace 'latest' placeholder with actual downloaded revision
     if (this._preferredRevision === 'latest') {
-      if (!this._projectRoot) {
-        throw new Error(
-          '_projectRoot is undefined. Unable to create a BrowserFetcher.'
-        );
-      }
       const browserFetcher = new BrowserFetcher({
-        projectRoot: this._projectRoot,
         product: this.product,
       });
       const localRevisions = await browserFetcher.localRevisions();

@@ -125,8 +125,7 @@ export function resolveExecutablePath(
   executablePath: string;
   missingText?: string;
 } {
-  const {product, _isPuppeteerCore, _projectRoot, _preferredRevision} =
-    launcher;
+  const {product, _isPuppeteerCore, _preferredRevision} = launcher;
   let downloadPath: string | undefined;
   // puppeteer-core doesn't take into account PUPPETEER_* env variables.
   if (!_isPuppeteerCore) {
@@ -155,13 +154,7 @@ export function resolveExecutablePath(
       process.env['npm_config_puppeteer_download_path'] ||
       process.env['npm_package_config_puppeteer_download_path'];
   }
-  if (!_projectRoot) {
-    throw new Error(
-      '_projectRoot is undefined. Unable to create a BrowserFetcher.'
-    );
-  }
   const browserFetcher = new BrowserFetcher({
-    projectRoot: _projectRoot,
     product: product,
     path: downloadPath,
   });
@@ -193,23 +186,14 @@ export function resolveExecutablePath(
  * @internal
  */
 export function createLauncher(
-  projectRoot: string | undefined,
   preferredRevision: string,
   isPuppeteerCore: boolean,
   product: Product = 'chrome'
 ): ProductLauncher {
   switch (product) {
     case 'firefox':
-      return new FirefoxLauncher(
-        projectRoot,
-        preferredRevision,
-        isPuppeteerCore
-      );
+      return new FirefoxLauncher(preferredRevision, isPuppeteerCore);
     case 'chrome':
-      return new ChromeLauncher(
-        projectRoot,
-        preferredRevision,
-        isPuppeteerCore
-      );
+      return new ChromeLauncher(preferredRevision, isPuppeteerCore);
   }
 }

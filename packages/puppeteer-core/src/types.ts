@@ -54,7 +54,6 @@ export * from './common/USKeyboardLayout.js';
 export * from './common/util.js';
 export * from './common/WaitTask.js';
 export * from './common/WebWorker.js';
-export * from './compat.d.js';
 export * from './constants.js';
 export * from './environment.js';
 export * from './generated/injected.js';

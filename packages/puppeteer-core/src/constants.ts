@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import {dirname} from 'path';
-import {puppeteerDirname} from './compat.js';
+import {homedir} from 'os';
+import {join} from 'path';
 
 /**
  * @internal
  */
-export const rootDirname = dirname(dirname(dirname(puppeteerDirname)));
+export const PUPPETEER_CACHE_DIR =
+  process.env['PUPPETEER_CACHE_DIR'] ?? join(homedir(), '.cache', 'puppeteer');
