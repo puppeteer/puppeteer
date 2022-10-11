@@ -2086,5 +2086,35 @@
     "platforms": ["win32"],
     "parameters": ["chrome"],
     "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[network.spec] network \"after each\" hook for \"Same-origin set-cookie subresource\"",
+    "platforms": ["win32"],
+    "parameters": ["chrome", "chrome-headless"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[network.spec] network \"after each\" hook for \"Same-origin set-cookie subresource\"",
+    "platforms": ["win32"],
+    "parameters": ["chrome", "chrome-headless"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with redirects",
+    "platforms": ["win32"],
+    "parameters": ["chrome", "headful"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should return base64",
+    "platforms": ["linux"],
+    "parameters": ["chrome", "chrome-headless"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[headful.spec] headful tests HEADFUL OOPIF: should expose events within OOPIFs",
+    "platforms": ["linux"],
+    "parameters": ["chrome"],
+    "expectations": ["PASS", "FAIL"]
   }
 ]
