@@ -54,7 +54,6 @@ export * from 'puppeteer-core/internal/common/USKeyboardLayout.js';
 export * from 'puppeteer-core/internal/common/util.js';
 export * from 'puppeteer-core/internal/common/WaitTask.js';
 export * from 'puppeteer-core/internal/common/WebWorker.js';
-export * from 'puppeteer-core/internal/compat.d.js';
 export * from 'puppeteer-core/internal/constants.js';
 export * from 'puppeteer-core/internal/environment.js';
 export * from 'puppeteer-core/internal/generated/injected.js';

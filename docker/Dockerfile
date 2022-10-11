@@ -10,23 +10,18 @@ RUN apt-get update \
     && apt-get update \
     && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-khmeros fonts-kacst fonts-freefont-ttf libxss1 \
       --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd -r pptruser && useradd -rm -g pptruser -G audio,video pptruser
+
+USER pptruser
 
 WORKDIR /home/pptruser
 
-COPY puppeteer-latest.tgz /home/pptruser/puppeteer-latest.tgz
-COPY puppeteer-core-latest.tgz /home/pptruser/puppeteer-core-latest.tgz
+COPY puppeteer-latest.tgz puppeteer-core-latest.tgz ./
 
 # Install puppeteer and puppeteer-core into /home/pptruser/node_modules.
 RUN npm i ./puppeteer-core-latest.tgz ./puppeteer-latest.tgz \
     && rm ./puppeteer-core-latest.tgz ./puppeteer-latest.tgz \
-    # Add user so we don't need --no-sandbox.
-    # same layer as npm install to keep re-chowned files from using up several hundred MBs more space
-    && groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
-    && mkdir -p /home/pptruser/Downloads \
-    && chown -R pptruser:pptruser /home/pptruser \
     && (node -e "require('child_process').execSync(require('puppeteer').executablePath() + ' --credits', {stdio: 'inherit'})" > THIRD_PARTY_NOTICES)
-
-USER pptruser
 
 CMD ["google-chrome-stable"]

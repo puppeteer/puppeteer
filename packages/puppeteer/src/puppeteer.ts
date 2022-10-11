@@ -27,9 +27,7 @@ export * from 'puppeteer-core/internal/common/QueryHandler.js';
 export {LaunchOptions} from 'puppeteer-core/internal/node/LaunchOptions.js';
 
 import {Product} from 'puppeteer-core';
-import {rootDirname} from 'puppeteer-core/internal/constants.js';
 import {PuppeteerNode} from 'puppeteer-core/internal/node/PuppeteerNode.js';
-import {getPackageDirectory} from 'puppeteer-core/internal/node/util.js';
 import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
 
 const productName = (process.env['PUPPETEER_PRODUCT'] ||
@@ -49,7 +47,6 @@ switch (productName) {
  * @public
  */
 const puppeteer = new PuppeteerNode({
-  projectRoot: getPackageDirectory(rootDirname),
   preferredRevision,
   isPuppeteerCore: false,
   productName,

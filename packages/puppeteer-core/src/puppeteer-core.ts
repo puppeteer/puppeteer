@@ -19,22 +19,18 @@ export * from './common/Device.js';
 export * from './common/Errors.js';
 export * from './common/PredefinedNetworkConditions.js';
 export * from './common/Puppeteer.js';
-export * from './node/BrowserFetcher.js';
-
 /**
  * @deprecated Use the query handler API defined on {@link Puppeteer}
  */
 export * from './common/QueryHandler.js';
+export * from './node/BrowserFetcher.js';
 
-import {rootDirname} from './constants.js';
 import {PuppeteerNode} from './node/PuppeteerNode.js';
-import {getPackageDirectory} from './node/util.js';
 
 /**
  * @public
  */
 const puppeteer = new PuppeteerNode({
-  projectRoot: getPackageDirectory(rootDirname),
   isPuppeteerCore: true,
 });
 

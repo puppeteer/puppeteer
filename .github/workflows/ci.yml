@@ -141,7 +141,7 @@ jobs:
       - name: Setup cache for Chromium binary
         uses: actions/cache@v3
         with:
-          path: packages/puppeteer-core/.local-chromium
+          path: ~/.cache/puppeteer/chrome
           key: ${{ runner.os }}-chromium-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}
       - name: Install Chromium
         run: npm run postinstall
@@ -184,7 +184,7 @@ jobs:
       - name: Setup cache for Firefox binary
         uses: actions/cache@v3
         with:
-          path: packages/puppeteer-core/.local-firefox
+          path: ~/.cache/puppeteer/firefox
           key: ${{ runner.os }}-firefox-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}
       - name: Install Firefox
         env:

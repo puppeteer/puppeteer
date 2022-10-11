@@ -35,6 +35,7 @@ import * as util from 'util';
 import {promisify} from 'util';
 import {debug} from '../common/Debug.js';
 import {Product} from '../common/Product.js';
+import {PUPPETEER_CACHE_DIR} from '../constants.js';
 import {assert} from '../util/assert.js';
 
 const experimentalChromiumMacArm =
@@ -62,11 +63,9 @@ const downloadURLs: Record<Product, Partial<Record<Platform, string>>> = {
 const browserConfig = {
   chrome: {
     host: 'https://storage.googleapis.com',
-    destination: '.local-chromium',
   },
   firefox: {
     host: 'https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central',
-    destination: '.local-firefox',
   },
 } as const;
 
@@ -159,10 +158,6 @@ export interface BrowserFetcherOptions {
    * Determines the host that will be used for downloading.
    */
   host?: string;
-  /**
-   * @internal
-   */
-  projectRoot?: string;
 }
 
 /**
@@ -213,7 +208,7 @@ export interface BrowserFetcherRevisionInfo {
 
 export class BrowserFetcher {
   #product: Product;
-  #downloadsFolder: string;
+  #downloadFolder: string;
   #downloadHost: string;
   #platform: Platform;
 
@@ -227,9 +222,8 @@ export class BrowserFetcher {
       `Unknown product: "${options.product}"`
     );
 
-    this.#downloadsFolder =
-      options.path ||
-      path.join(options.projectRoot!, browserConfig[this.#product].destination);
+    this.#downloadFolder =
+      options.path || path.join(PUPPETEER_CACHE_DIR, this.#product);
     this.#downloadHost = options.host || browserConfig[this.#product].host;
 
     if (options.platform) {
@@ -348,13 +342,13 @@ export class BrowserFetcher {
     );
     const fileName = url.split('/').pop();
     assert(fileName, `A malformed download URL was found: ${url}.`);
-    const archivePath = path.join(this.#downloadsFolder, fileName);
+    const archivePath = path.join(this.#downloadFolder, fileName);
     const outputPath = this.#getFolderPath(revision);
     if (existsSync(outputPath)) {
       return this.revisionInfo(revision);
     }
-    if (!existsSync(this.#downloadsFolder)) {
-      await mkdir(this.#downloadsFolder);
+    if (!existsSync(this.#downloadFolder)) {
+      await mkdir(this.#downloadFolder, {recursive: true});
     }
 
     // Use system Chromium builds on Linux ARM devices
@@ -384,10 +378,10 @@ export class BrowserFetcher {
    * available locally on disk.
    */
   async localRevisions(): Promise<string[]> {
-    if (!existsSync(this.#downloadsFolder)) {
+    if (!existsSync(this.#downloadFolder)) {
       return [];
     }
-    const fileNames = await readdir(this.#downloadsFolder);
+    const fileNames = await readdir(this.#downloadFolder);
     return fileNames
       .map(fileName => {
         return parseFolderPath(this.#product, fileName);
@@ -508,7 +502,7 @@ export class BrowserFetcher {
   }
 
   #getFolderPath(revision: string): string {
-    return path.resolve(this.#downloadsFolder, `${this.#platform}-${revision}`);
+    return path.resolve(this.#downloadFolder, `${this.#platform}-${revision}`);
   }
 }
 

@@ -75,7 +75,6 @@ export interface PuppeteerLaunchOptions
  */
 export class PuppeteerNode extends Puppeteer {
   #launcher?: ProductLauncher;
-  #projectRoot?: string;
   #productName?: Product;
 
   /**
@@ -88,15 +87,12 @@ export class PuppeteerNode extends Puppeteer {
    */
   constructor(
     settings: {
-      projectRoot?: string;
       preferredRevision?: string;
       productName?: Product;
     } & CommonPuppeteerSettings
   ) {
-    const {projectRoot, preferredRevision, productName, ...commonSettings} =
-      settings;
+    const {preferredRevision, productName, ...commonSettings} = settings;
     super(commonSettings);
-    this.#projectRoot = projectRoot;
     this.#productName = productName;
     if (preferredRevision) {
       this._preferredRevision = preferredRevision;
@@ -203,7 +199,6 @@ export class PuppeteerNode extends Puppeteer {
       }
       this._changedProduct = false;
       this.#launcher = createLauncher(
-        this.#projectRoot,
         this._preferredRevision,
         this._isPuppeteerCore,
         this._productName
@@ -241,6 +236,6 @@ export class PuppeteerNode extends Puppeteer {
    * @returns A new BrowserFetcher instance.
    */
   createBrowserFetcher(options: BrowserFetcherOptions): BrowserFetcher {
-    return new BrowserFetcher({...options, projectRoot: this.#projectRoot});
+    return new BrowserFetcher(options);
   }
 }

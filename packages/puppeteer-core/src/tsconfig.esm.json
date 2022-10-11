@@ -3,8 +3,5 @@
   "compilerOptions": {
     "outDir": "../lib/esm/puppeteer"
   },
-  "references": [
-    {"path": "../third_party/tsconfig.json"},
-    {"path": "../compat/esm/tsconfig.json"}
-  ]
+  "references": [{"path": "../third_party/tsconfig.json"}]
 }

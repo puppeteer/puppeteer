@@ -18,15 +18,15 @@ import expect from 'expect';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+import {BrowserFetcher, TimeoutError} from 'puppeteer';
+import {Page} from 'puppeteer-core/internal/api/Page.js';
+import {Product} from 'puppeteer-core/internal/common/Product.js';
 import rimraf from 'rimraf';
 import sinon from 'sinon';
 import {TLSSocket} from 'tls';
 import {promisify} from 'util';
-import {Page} from 'puppeteer-core/internal/api/Page.js';
-import {Product} from 'puppeteer-core/internal/common/Product.js';
 import {getTestState, itOnlyRegularInstall} from './mocha-utils.js';
 import utils from './utils.js';
-import {TimeoutError} from 'puppeteer';
 
 const mkdtempAsync = promisify(fs.mkdtemp);
 const readFileAsync = promisify(fs.readFile);
@@ -45,10 +45,10 @@ describe('Launcher specs', function () {
   describe('Puppeteer', function () {
     describe('BrowserFetcher', function () {
       it('should download and extract chrome linux binary', async () => {
-        const {server, puppeteer} = getTestState();
+        const {server} = getTestState();
 
         const downloadsFolder = await mkdtempAsync(TMP_FOLDER);
-        const browserFetcher = puppeteer.createBrowserFetcher({
+        const browserFetcher = new BrowserFetcher({
           platform: 'linux',
           path: downloadsFolder,
           host: server.PREFIX,
@@ -86,10 +86,10 @@ describe('Launcher specs', function () {
         await rmAsync(downloadsFolder);
       });
       it('should download and extract firefox linux binary', async () => {
-        const {server, puppeteer} = getTestState();
+        const {server} = getTestState();
 
         const downloadsFolder = await mkdtempAsync(TMP_FOLDER);
-        const browserFetcher = puppeteer.createBrowserFetcher({
+        const browserFetcher = new BrowserFetcher({
           platform: 'linux',
           path: downloadsFolder,
           host: server.PREFIX,
