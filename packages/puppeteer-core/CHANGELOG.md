@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v18.2.1...puppeteer-core-v19.0.0) (2022-10-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* use `~/.cache/puppeteer` for browser downloads (#9095)
+* deprecate `createBrowserFetcher` in favor of `BrowserFetcher` (#9079)
+* refactor custom query handler API (#9078)
+* remove `puppeteer.devices` in favor of `KnownDevices` (#9075)
+* deprecate indirect network condition imports (#9074)
+* deprecate indirect error imports (#9072)
+
+### Features
+
+* add ability to collect JS code coverage at the function level ([#9027](https://github.com/puppeteer/puppeteer/issues/9027)) ([a032583](https://github.com/puppeteer/puppeteer/commit/a032583b6c9b469bda699bca200b180206d61247))
+* deprecate `createBrowserFetcher` in favor of `BrowserFetcher` ([#9079](https://github.com/puppeteer/puppeteer/issues/9079)) ([7294dfe](https://github.com/puppeteer/puppeteer/commit/7294dfe9c6c3b224f95ba6d59b5ef33d379fd09a)), closes [#8999](https://github.com/puppeteer/puppeteer/issues/8999)
+* use `~/.cache/puppeteer` for browser downloads ([#9095](https://github.com/puppeteer/puppeteer/issues/9095)) ([3df375b](https://github.com/puppeteer/puppeteer/commit/3df375baedad64b8773bb1e1e6f81b604ed18989))
+
+
+### Bug Fixes
+
+* deprecate indirect error imports ([#9072](https://github.com/puppeteer/puppeteer/issues/9072)) ([9f4f43a](https://github.com/puppeteer/puppeteer/commit/9f4f43a28b06787a1cf97efe904ccfe7237dffdd))
+* deprecate indirect network condition imports ([#9074](https://github.com/puppeteer/puppeteer/issues/9074)) ([41d0122](https://github.com/puppeteer/puppeteer/commit/41d0122b94f41b308536c48ced345dec8c272a49))
+* refactor custom query handler API ([#9078](https://github.com/puppeteer/puppeteer/issues/9078)) ([1847704](https://github.com/puppeteer/puppeteer/commit/1847704789e2888c755de8c739d567364b8ad645))
+* remove `puppeteer.devices` in favor of `KnownDevices` ([#9075](https://github.com/puppeteer/puppeteer/issues/9075)) ([87c08fd](https://github.com/puppeteer/puppeteer/commit/87c08fd86a79b63308ad8d46c5f7acd1927505f8))
+* remove viewport conditions in `waitForSelector` ([#9087](https://github.com/puppeteer/puppeteer/issues/9087)) ([acbc599](https://github.com/puppeteer/puppeteer/commit/acbc59999bf800eeac75c4045b75a32b4357c79e))
+
 ## [18.2.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v18.2.0...puppeteer-core-v18.2.1) (2022-10-06)
 
 
