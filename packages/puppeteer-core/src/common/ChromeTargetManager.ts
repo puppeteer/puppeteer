@@ -231,13 +231,6 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
       const target = this.#targetFactory(event.targetInfo, undefined);
       this.#attachedTargetsByTargetId.set(event.targetInfo.targetId, target);
     }
-
-    if (event.targetInfo.type === 'shared_worker') {
-      // Special case (https://crbug.com/1338156): currently, shared_workers
-      // don't get auto-attached. This should be removed once the auto-attach
-      // works.
-      await this.#connection._createSession(event.targetInfo, true);
-    }
   };
 
   #onTargetDestroyed = (event: Protocol.Target.TargetDestroyedEvent) => {
