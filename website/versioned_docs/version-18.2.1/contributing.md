@@ -53,8 +53,8 @@ For browser testing, you can run
 npm run build:test && npm run test
 ```
 
-We also have other tests such as `test:types` that tests types and
-`test:install` which tests installation. See the `package.json` for more tests
+We also have other tests such as `test-types` that tests types and
+`test-install` which tests installation. See the `package.json` for more tests
 (all prefixed with `test`).
 
 Puppeteer is using a custom test runner on top of Mocha that consults

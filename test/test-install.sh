@@ -7,7 +7,7 @@ set -e
 # 2. The install script works and correctly exits without errors
 # 3. Requiring/importing Puppeteer from Node works.
 
-# MacOS doesn't support realpath
+# macOS doesn't support realpath
 realpath() {
     [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
 }

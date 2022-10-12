@@ -6,13 +6,13 @@
     "url": "https://github.com/puppeteer/puppeteer"
   },
   "scripts": {
-    "build:test": "wireit",
+    "bisect": "tsx tools/bisect.ts",
     "build": "npm run build --workspaces --if-present",
     "check:pinned-deps": "tsx tools/ensure-pinned-deps",
     "check": "npm run check --workspaces --if-present && run-p check:*",
     "clean": "npm run clean --workspaces --if-present && rimraf **/.wireit",
     "commitlint": "commitlint --from=HEAD~1",
-    "debug": "npm run build:test && mocha --inspect-brk",
+    "debug": "mocha --inspect-brk",
     "docs": "run-s build generate:markdown",
     "format:eslint": "eslint --ext js --ext ts --fix .",
     "format:prettier": "prettier --write .",
@@ -23,34 +23,16 @@
     "lint": "run-s lint:prettier lint:eslint",
     "postinstall": "npm run postinstall --workspaces --if-present",
     "prepare": "husky install",
-    "test:chrome:headful": "npm run test -- --test-suite chrome-headful",
-    "test:chrome:headless-chrome": "npm run test -- --test-suite chrome-new-headless",
-    "test:chrome:headless": "npm run test -- --test-suite chrome-headless",
+    "test-install": "test/test-install.sh",
+    "test-types": "tsd -t packages/puppeteer",
+    "test:chrome:headful": "npm test -- --test-suite chrome-headful",
+    "test:chrome:headless-chrome": "npm test -- --test-suite chrome-new-headless",
+    "test:chrome:headless": "npm test -- --test-suite chrome-headless",
     "test:chrome": "run-s test:chrome:*",
-    "test:firefox:headful": "npm run test -- --test-suite firefox-headful",
-    "test:firefox:headless": "npm run test -- --test-suite firefox-headless",
+    "test:firefox:headful": "npm test -- --test-suite firefox-headful",
+    "test:firefox:headless": "npm test -- --test-suite firefox-headless",
     "test:firefox": "run-s test:firefox:*",
-    "test:install": "test/test-install.sh",
-    "test:types": "tsd -t packages/puppeteer",
     "test": "cross-env PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 node tools/mochaRunner/lib/main.js"
-  },
-  "wireit": {
-    "build:test": {
-      "command": "tsc -b test",
-      "clean": "if-file-deleted",
-      "dependencies": [
-        "./packages/puppeteer:build",
-        "./packages/puppeteer-core:build",
-        "./packages/testserver:build"
-      ],
-      "files": [
-        "test/src/**"
-      ],
-      "output": [
-        "test/build/**",
-        "test/tsconfig.tsbuildinfo"
-      ]
-    }
   },
   "devDependencies": {
     "@commitlint/cli": "17.1.2",
@@ -121,6 +103,7 @@
     "zod": "3.19.1"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "test"
   ]
 }

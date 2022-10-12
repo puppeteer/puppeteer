@@ -43,7 +43,7 @@ jobs:
           echo "Installing revision $REV"
           cat src/revisions.ts | sed "s/[0-9]\{6,\}/$REV/" > src/revisions.ts.replaced
           mv src/revisions.ts.replaced src/revisions.ts
-          npm run build:test
+          npm run build
           npm install
 
       - name: Run unit tests in headless
@@ -81,7 +81,7 @@ jobs:
           echo "Installing revision $REV"
           cat src/revisions.ts | sed "s/[0-9]\{6,\}/$REV/" > src/revisions.ts.replaced
           mv src/revisions.ts.replaced src/revisions.ts
-          npm run build:test
+          npm run build
           npm install
 
       - name: Run unit tests in headful
@@ -119,7 +119,7 @@ jobs:
           echo "Installing revision $REV"
           cat src/revisions.ts | sed "s/[0-9]\{6,\}/$REV/" > src/revisions.ts.replaced
           mv src/revisions.ts.replaced src/revisions.ts
-          npm run build:test
+          npm run build
           npm install
 
       - name: Run unit tests in chrome headless
