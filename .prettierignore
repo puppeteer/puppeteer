@@ -44,5 +44,5 @@ assets/
 CHANGELOG.md
 package-lock.json
 test/assets/
-docs/
+docs/api
 versioned_*/

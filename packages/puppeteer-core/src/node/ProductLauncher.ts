@@ -159,8 +159,11 @@ export function resolveExecutablePath(
     path: downloadPath,
   });
 
-  if (!_isPuppeteerCore && product === 'chrome') {
-    const revision = process.env['PUPPETEER_CHROMIUM_REVISION'];
+  if (!_isPuppeteerCore) {
+    let revision = process.env['PUPPETEER_BROWSER_REVISION'];
+    if (product === 'chrome') {
+      revision ??= process.env['PUPPETEER_CHROMIUM_REVISION'];
+    }
     if (revision) {
       const revisionInfo = browserFetcher.revisionInfo(revision);
       const missingText = !revisionInfo.local
