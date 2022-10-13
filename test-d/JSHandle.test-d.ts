@@ -22,7 +22,7 @@ declare const handle: JSHandle;
   );
   expectType<string>(
     await handle.evaluate((value, str) => {
-      expectNotAssignable<never>(value);
+      expectNoargvkb:ma"Nm"ANM atAssignable<never>(value);
       expectType<string>(str);
       return '';
     }, '')
