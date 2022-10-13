@@ -46,7 +46,7 @@ again.
    npm test
    ```
 
-### macOS arm and custom executables.
+### macOS ARM and custom executables.
 
 - To run experimental Chromium macOS ARM tests, firstly ensure you have correct Chromium version installed locally (you only need to do this once, not on every test run) and then you can run the tests:
 
