@@ -1,0 +1,27 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "wireit",
+    "clean": "tsc -b --clean && rimraf build"
+  },
+  "wireit": {
+    "build": {
+      "command": "tsc -b",
+      "clean": "if-file-deleted",
+      "dependencies": [
+        "../packages/puppeteer:build",
+        "../packages/testserver:build"
+      ],
+      "files": [
+        "src/**"
+      ],
+      "output": [
+        "build/**",
+        "tsconfig.tsbuildinfo"
+      ]
+    }
+  },
+  "dependencies": {
+    "puppeteer": "file:../packages/puppeteer"
+  }
+}

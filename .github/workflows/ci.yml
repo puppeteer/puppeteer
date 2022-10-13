@@ -134,10 +134,8 @@ jobs:
           node-version: latest
       - name: Install dependencies
         run: npm ci --ignore-scripts
-      - name: Build libraries
+      - name: Build packages
         run: npm run build
-      - name: Build tests
-        run: npm run build:test
       - name: Setup cache for Chromium binary
         uses: actions/cache@v3
         with:
@@ -149,7 +147,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: sudo apt-get install xvfb
       - name: Tests types
-        run: npm run test:types
+        run: npm run test-types
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
         run: npm run test -- --test-suite ${{ matrix.suite }}
@@ -177,10 +175,8 @@ jobs:
           node-version: latest
       - name: Install dependencies
         run: npm ci --ignore-scripts
-      - name: Build libraries
+      - name: Build packages
         run: npm run build
-      - name: Build tests
-        run: npm run build:test
       - name: Setup cache for Firefox binary
         uses: actions/cache@v3
         with:
@@ -193,7 +189,7 @@ jobs:
       - name: Install linux dependencies.
         run: sudo apt-get install xvfb
       - name: Tests types
-        run: npm run test:types
+        run: npm run test-types
       - name: Run all tests
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
 
@@ -247,7 +243,7 @@ jobs:
         with:
           name: packages
       - name: Test bundling and installation
-        run: npm run test:install
+        run: npm run test-install
 
   docker-tests:
     name: Test Docker image

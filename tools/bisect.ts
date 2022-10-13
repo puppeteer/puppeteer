@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-const URL = require('url');
-const debug = require('debug');
-const pptr = require('..');
-const browserFetcher = pptr.createBrowserFetcher();
-const path = require('path');
-const fs = require('fs');
-const {fork, spawn, execSync} = require('child_process');
+import {execSync, fork, spawn} from 'child_process';
+import debug from 'debug';
+import fs from 'fs';
+import minimist from 'minimist';
+import path from 'path';
+import {BrowserFetcher, BrowserFetcherRevisionInfo} from 'puppeteer';
+import URL from 'url';
+
+import ProgressBar from 'progress';
 
 const COLOR_RESET = '\x1b[0m';
 const COLOR_RED = '\x1b[31m';
 const COLOR_GREEN = '\x1b[32m';
 const COLOR_YELLOW = '\x1b[33m';
 
-const argv = require('minimist')(process.argv.slice(2), {});
+const argv = minimist(process.argv.slice(2), {});
 
 const help = `
 Usage:
@@ -88,9 +90,8 @@ if (!argv.script && !argv['unit-test']) {
   process.exit(1);
 }
 
-const scriptPath = argv.script ? path.resolve(argv.script) : null;
-
-if (argv.script && !fs.existsSync(scriptPath)) {
+const scriptPath = argv.script && path.resolve(argv.script);
+if (scriptPath && !fs.existsSync(scriptPath)) {
   console.log(
     COLOR_RED +
       'ERROR: Expected to be given a path to a script to run' +
@@ -99,6 +100,8 @@ if (argv.script && !fs.existsSync(scriptPath)) {
   console.log(help);
   process.exit(1);
 }
+
+const browserFetcher = new BrowserFetcher();
 
 (async (scriptPath, good, bad, pattern, noCache) => {
   const span = Math.abs(good - bad);
@@ -114,7 +117,8 @@ if (argv.script && !fs.existsSync(scriptPath)) {
     if (!revision || revision === good || revision === bad) {
       break;
     }
-    let info = browserFetcher.revisionInfo(revision);
+    let info: BrowserFetcherRevisionInfo | undefined =
+      browserFetcher.revisionInfo(revision);
     const shouldRemove = noCache && !info.local;
     info = await downloadRevision(revision);
     const exitCode = await (pattern
@@ -201,13 +205,12 @@ function runUnitTest(pattern, revisionInfo) {
 async function downloadRevision(revision) {
   const log = debug('bisect:download');
   log(`Downloading ${revision}`);
-  let progressBar = null;
+  let progressBar: ProgressBar | undefined;
   let lastDownloadedBytes = 0;
   return await browserFetcher.download(
     revision,
     (downloadedBytes, totalBytes) => {
       if (!progressBar) {
-        const ProgressBar = require('progress');
         progressBar = new ProgressBar(
           `- downloading Chromium r${revision} - ${toMegabytes(
             totalBytes
@@ -269,15 +272,18 @@ async function revisionToSha(revision) {
   return json.git_sha;
 }
 
-function fetchJSON(url) {
+async function fetchJSON(url: string): Promise<{git_sha: string}> {
+  const agent = url.startsWith('https://')
+    ? await import('https')
+    : await import('http');
+
   return new Promise((resolve, reject) => {
-    const agent = url.startsWith('https://')
-      ? require('https')
-      : require('http');
-    const options = URL.parse(url);
-    options.method = 'GET';
-    options.headers = {
-      'Content-Type': 'application/json',
+    const options = {
+      ...URL.parse(url),
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     };
     const req = agent.request(options, function (res) {
       let result = '';
@@ -296,14 +302,13 @@ function fetchJSON(url) {
   });
 }
 
-function getChromiumRevision(gitRevision = null) {
-  const fileName = 'src/revisions.ts';
+function getChromiumRevision(gitRevision?: string) {
+  const fileName = 'packages/puppeteer-core/src/revisions.ts';
   const command = gitRevision
     ? `git show ${gitRevision}:${fileName}`
     : `cat ${fileName}`;
   const result = execSync(command, {
     encoding: 'utf8',
-    shell: true,
   });
 
   const m = result.match(/chromium: '(\d+)'/);
