@@ -66,7 +66,7 @@ again.
 To build a single package, you can run
 
 ```sh
-npm run build --workspace <path-to-package> # e.g. packages/puppeteer
+npm run build --workspace <package> # e.g. puppeteer
 ```
 
 This will build all dependent packages automatically, so specifying a single packages is sufficient. This is all possible due to [wireit](https://github.com/google/wireit) which behaves similar to [GNU Make](https://www.gnu.org/software/make/).
@@ -76,7 +76,7 @@ This will build all dependent packages automatically, so specifying a single pac
 It's possible some generated artifacts (such as `packages/puppeteer-core/src/types.ts`) can become stale since these artifacts rely on complex conditions (such as names of distinct files) that cannot be captured by the build system. To clean artifacts, you can run
 
 ```sh
-npm run clean # or npm run clean --workspace <path-to-package>
+npm run clean # or npm run clean --workspace <package>
 ```
 
 ## Comprehensive testing
