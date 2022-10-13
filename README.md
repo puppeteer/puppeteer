@@ -1,32 +1,23 @@
 # Puppeteer
 
-<!-- [START badges] -->
-
 [![Build status](https://github.com/puppeteer/puppeteer/workflows/CI/badge.svg)](https://github.com/puppeteer/puppeteer/actions?query=workflow%3ACI) [![npm puppeteer package](https://img.shields.io/npm/v/puppeteer.svg)](https://npmjs.org/package/puppeteer)
-
-<!-- [END badges] -->
 
 <img src="https://user-images.githubusercontent.com/10379601/29446482-04f7036a-841f-11e7-9872-91d1fc2ea683.png" height="200" align="right"/>
 
-###### [API](https://pptr.dev/api) | [FAQ](https://pptr.dev/faq) | [Contributing](https://pptr.dev/contributing) | [Troubleshooting](https://pptr.dev/troubleshooting)
+#### [API](https://pptr.dev/api) | [FAQ](https://pptr.dev/faq) | [Contributing](https://pptr.dev/contributing) | [Troubleshooting](https://pptr.dev/troubleshooting)
 
-> Puppeteer is a Node library which provides a high-level API to control Chrome or Chromium over the [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/). Puppeteer runs [headless](https://developers.google.com/web/updates/2017/04/headless-chrome) by default, but can be configured to run full (non-headless) Chrome or Chromium.
+> Puppeteer is a Node.js library which provides a high-level API to control Chrome/Chromium over the [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/). Puppeteer runs in [headless](https://developers.google.com/web/updates/2017/04/headless-chrome) mode by default, but can be configured to run in full (non-headless) Chrome/Chromium.
 
-<!-- [START usecases] -->
-
-##### What can I do?
+#### What can I do?
 
 Most things that you can do manually in the browser can be done using Puppeteer! Here are a few examples to get you started:
 
 - Generate screenshots and PDFs of pages.
 - Crawl a SPA (Single-Page Application) and generate pre-rendered content (i.e. "SSR" (Server-Side Rendering)).
 - Automate form submission, UI testing, keyboard input, etc.
-- Create an up-to-date, automated testing environment. Run your tests directly in the latest version of Chrome using the latest JavaScript and browser features.
+- Create an automated testing environment using the latest JavaScript and browser features.
 - Capture a [timeline trace](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/reference) of your site to help diagnose performance issues.
 - Test Chrome Extensions.
-<!-- [END usecases] -->
-
-<!-- [START getstarted] -->
 
 ## Getting Started
 
@@ -36,39 +27,31 @@ To use Puppeteer in your project, run:
 
 ```bash
 npm i puppeteer
-# or "yarn add puppeteer"
+# or `yarn add puppeteer`
+# or `pnpm i puppeteer`
 ```
 
-When you install Puppeteer, it downloads a recent version of Chromium (~170MB Mac, ~282MB Linux, ~280MB Win) that is guaranteed to work with the API (customizable through [Environment Variables](#environment-variables)). For a version of Puppeteer purely for connection, see [`puppeteer-core`](#puppeteer-core).
+When you install Puppeteer, it automatically downloads a recent version of Chromium (~170MB macOS, ~282MB Linux, ~280MB Windows) that is [guaranteed to work](https://pptr.dev/faq#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with Puppeteer. For a version of Puppeteer without installation, see [`puppeteer-core`](#puppeteer-core).
 
 #### Environment Variables
 
-Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wiki/Environment_variable) to aid its operations.
+Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wiki/Environment_variable) for customizing behavior.
 If Puppeteer doesn't find them in the environment during the installation step, a lowercased variant of these variables will be used from the [npm config](https://docs.npmjs.com/cli/config).
 
 - `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are used to download and run the browser.
+- `PUPPETEER_CACHE_DIR` - defines the directory to be used by Puppeteer for caching. Defaults to [`os.homedir()/.cache/puppeteer`](https://nodejs.org/api/os.html#os_os_homedir).
 - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step.
 - `PUPPETEER_TMP_DIR` - defines the directory to be used by Puppeteer for creating temporary files. Defaults to [`os.tmpdir()`](https://nodejs.org/api/os.html#os_os_tmpdir).
-- `PUPPETEER_DOWNLOAD_HOST` - overwrite URL prefix that is used to download Chromium. Note: this includes protocol and might even include path prefix. Defaults to `https://storage.googleapis.com`.
-- `PUPPETEER_DOWNLOAD_PATH` - overwrite the path for the downloads folder. Defaults to `<root>/.local-chromium`, where `<root>` is Puppeteer's package root.
-- `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of Chromium you'd like Puppeteer to use. See [`puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch) on how executable path is inferred.
-- `PUPPETEER_EXECUTABLE_PATH` - specify an executable path to be used in [`puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch).
-- `PUPPETEER_PRODUCT` - specify which browser you'd like Puppeteer to use. Must be one of `chrome` or `firefox`. This can also be used during installation to fetch the recommended browser binary. Setting `product` programmatically in [`puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch) supersedes this environment variable. The product is exposed in [`puppeteer.product`](https://pptr.dev/api/puppeteer.product)
+- `PUPPETEER_DOWNLOAD_HOST` - specifies the URL prefix that is used to download Chromium. Note: this includes protocol and might even include path prefix. Defaults to `https://storage.googleapis.com`.
+- `PUPPETEER_DOWNLOAD_PATH` - specifies the path for the downloads folder. Defaults to `<cache>/chromium`, where `<cache>` is Puppeteer's cache directory.
+- `PUPPETEER_BROWSER_REVISION` - specifies a certain version of the browser you'd like Puppeteer to use. See [`puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch) on how executable path is inferred.
+- `PUPPETEER_EXECUTABLE_PATH` - specifies an executable path to be used in [`puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch).
+- `PUPPETEER_PRODUCT` - specifies which browser you'd like Puppeteer to use. Must be either `chrome` or `firefox`. This can also be used during installation to fetch the recommended browser binary. Setting `product` programmatically in [`puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch) supersedes this environment variable.
 - `PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM` — specify Puppeteer download Chromium for Apple M1. On Apple M1 devices Puppeteer by default downloads the version for Intel's processor which runs via Rosetta. It works without any problems, however, with this option, you should get more efficient resource usage (CPU and RAM) that could lead to a faster execution time.
 
-:::danger
+Environment variables except for `PUPPETEER_CACHE_DIR` are not used for [`puppeteer-core`](#puppeteer-core) since core does not automatically handle browser downloading.
 
-Puppeteer is only [guaranteed to work](https://pptr.dev/faq#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
-
-:::
-
-:::caution
-
-`PUPPETEER_*` env variables are not accounted for in [`puppeteer-core`](#puppeteer-core).
-
-:::
-
-#### puppeteer-core
+#### `puppeteer-core`
 
 Every release since v1.7.0 we publish two packages:
 
@@ -78,198 +61,69 @@ Every release since v1.7.0 we publish two packages:
 `puppeteer` is a _product_ for browser automation. When installed, it downloads a version of
 Chromium, which it then drives using `puppeteer-core`. Being an end-user product, `puppeteer` supports a bunch of convenient `PUPPETEER_*` env variables to tweak its behavior.
 
-`puppeteer-core` is a _library_ to help drive anything that supports DevTools protocol. `puppeteer-core` doesn't download Chromium when installed. Being a library, `puppeteer-core` is fully driven
-through its programmatic interface and disregards all the `PUPPETEER_*` env variables.
+`puppeteer-core` is a _library_ to help drive anything that supports DevTools protocol. `puppeteer-core` doesn't download Chromium when installed. Being a library, `puppeteer-core` is fully driven through its programmatic interface.
 
-To sum up, the only differences between `puppeteer-core` and `puppeteer` are:
+You should only use `puppeteer-core` if you are [connecting to a remote browser](https://pptr.dev/api/puppeteer.puppeteer.connect) or [managing browsers yourself](https://pptr.dev/api/puppeteer.browserfetcher). If you are managing browsers yourself, you will need to call [`puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch) with an explicit [`executablePath`](https://pptr.dev/api/puppeteer.launchoptions.executablepath) or [`channel`](https://pptr.dev/api/puppeteer.launchoptions.channel).
 
-- `puppeteer-core` doesn't automatically download Chromium when installed.
-- `puppeteer-core` ignores all `PUPPETEER_*` env variables.
-
-In most cases, you'll be fine using the `puppeteer` package.
-
-However, you should use `puppeteer-core` if:
-
-- you're building another end-user product or library atop of DevTools protocol. For example, one might build a PDF generator using `puppeteer-core` and write a custom `install.js` script that downloads [`headless_shell`](https://chromium.googlesource.com/chromium/src/+/lkgr/headless/README.md) instead of Chromium to save disk space.
-- you're bundling Puppeteer to use in Chrome Extension / browser with the DevTools protocol where downloading an additional Chromium binary is unnecessary.
-- you're building a set of tools where `puppeteer-core` is one of the ingredients and you want to postpone `install.js` script execution until Chromium is about to be used.
-
-When using `puppeteer-core`, remember to change the _include_ line:
+When using `puppeteer-core`, remember to change the import:
 
 ```ts
-const puppeteer = require('puppeteer-core');
+import puppeteer from 'puppeteer-core';
 ```
-
-You will then need to call [`puppeteer.connect`](https://pptr.dev/api/puppeteer.puppeteer.connect) or [`puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch) with an explicit `executablePath` or `channel` option.
 
 ### Usage
 
 Puppeteer follows the latest [maintenance LTS](https://github.com/nodejs/Release#release-schedule) version of Node.
 
-Puppeteer will be familiar to people using other browser testing frameworks. You create an instance
-of `Browser`, open pages, and then manipulate them with [Puppeteer's API](https://pptr.dev/api).
+Puppeteer will be familiar to people using other browser testing frameworks. You [launch](https://pptr.dev/api/puppeteer.puppeteernode.launch)/[connect](https://pptr.dev/api/puppeteer.puppeteernode.connect) a [browser](https://pptr.dev/api/puppeteer.browser), [create](https://pptr.dev/api/puppeteer.browser.newpage) some [pages](https://pptr.dev/api/puppeteer.page), and then manipulate them with [Puppeteer's API](https://pptr.dev/api).
 
-**Example** - navigating to https://example.com and saving a screenshot as _example.png_:
+For more in-depth usage, check our [guides](https://pptr.dev/guides) and [examples](https://github.com/puppeteer/puppeteer/tree/main/examples).
 
-Save file as **example.js**
+#### Example
+
+The following example searches [developers.google.com/web](https://developers.google.com/web) for articles tagged "Headless Chrome" and scrape results from the results page.
 
 ```ts
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 
 (async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  await page.goto('https://example.com');
-  await page.screenshot({path: 'example.png'});
+
+  await page.goto('https://developers.google.com/web/');
+
+  // Type into search box.
+  await page.type('.devsite-search-field', 'Headless Chrome');
+
+  // Wait for suggest overlay to appear and click "show all results".
+  const allResultsSelector = '.devsite-suggest-all-results';
+  await page.waitForSelector(allResultsSelector);
+  await page.click(allResultsSelector);
+
+  // Wait for the results page to load and display the results.
+  const resultsSelector = '.gsc-results .gs-title';
+  await page.waitForSelector(resultsSelector);
+
+  // Extract the results from the page.
+  const links = await page.evaluate(resultsSelector => {
+    return [...document.querySelectorAll(resultsSelector)].map(anchor => {
+      const title = anchor.textContent.split('|')[0].trim();
+      return `${title} - ${anchor.href}`;
+    });
+  }, resultsSelector);
+
+  // Print all the files.
+  console.log(links.join('\n'));
 
   await browser.close();
 })();
 ```
 
-Execute script on the command line
-
-```bash
-node example.js
-```
-
-Puppeteer sets an initial page size to 800×600px, which defines the screenshot size. The page size can be customized with [`Page.setViewport()`](https://pptr.dev/api/puppeteer.page.setviewport).
-
-**Example** - create a PDF.
-
-Save file as **hn.js**
-
-```ts
-const puppeteer = require('puppeteer');
-
-(async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.goto('https://news.ycombinator.com', {
-    waitUntil: 'networkidle2',
-  });
-  await page.pdf({path: 'hn.pdf', format: 'a4'});
-
-  await browser.close();
-})();
-```
-
-Execute script on the command line
-
-```bash
-node hn.js
-```
-
-See [`Page.pdf`](https://pptr.dev/api/puppeteer.page.pdf) for more information about creating pdfs.
-
-**Example** - evaluate script in the context of the page
-
-Save file as **get-dimensions.js**
-
-```ts
-const puppeteer = require('puppeteer');
-
-(async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.goto('https://example.com');
-
-  // Get the "viewport" of the page, as reported by the page.
-  const dimensions = await page.evaluate(() => {
-    return {
-      width: document.documentElement.clientWidth,
-      height: document.documentElement.clientHeight,
-      deviceScaleFactor: window.devicePixelRatio,
-    };
-  });
-
-  console.log('Dimensions:', dimensions);
-
-  await browser.close();
-})();
-```
-
-Execute script on the command line
-
-```bash
-node get-dimensions.js
-```
-
-See [`Page.evaluate`](https://pptr.dev/api/puppeteer.page.evaluate) and related methods like [`Page.evaluateOnNewDocument`](https://pptr.dev/api/puppeteer.page.evaluateOnNewDocument) and [`Page.exposeFunction`](https://pptr.dev/api/puppeteer.page.exposeFunction).
-
-<!-- [END getstarted] -->
-
-### Running in Docker
-
-Puppeteer offers a Docker image that includes Chromium along with the required dependencies and a pre-installed Puppeteer version. The image is available via the [GitHub Container Registry](https://github.com/puppeteer/puppeteer/pkgs/container/puppeteer). The latest image is tagged as `latest` and other tags match Puppeteer versions. For example,
-
-```sh
-docker pull ghcr.io/puppeteer/puppeteer:latest # pulls the latest
-docker pull ghcr.io/puppeteer/puppeteer:16.1.0 # pulls the image that contains Puppeteer v16.1.0
-```
-
-The image is meant for running the browser in the sandbox mode and therefore, running the image requires the `SYS_ADMIN` capability. For example,
-
-```sh
-docker run -i --init --cap-add=SYS_ADMIN --rm ghcr.io/puppeteer/puppeteer:latest node -e "`cat docker/test/smoke-test.js`"
-```
-
-Replace the path to [`smoke-test.js`](https://raw.githubusercontent.com/puppeteer/puppeteer/main/docker/test/smoke-test.js) with a path to your script.
-The script can import or require the `puppeteer` module because it's pre-installed inside the image.
-
-Currently, the image includes the LTS version of Node.js. If you need to build an image based on a different base image, you can use our [`Dockerfile`](https://github.com/puppeteer/puppeteer/blob/main/docker/Dockerfile) as the starting point.
-
-### Working with Chrome Extensions
-
-Puppeteer can be used for testing Chrome Extensions.
-
-:::caution
-
-Extensions in Chrome / Chromium currently only work in non-headless mode and experimental Chrome headless mode.
-
-:::
-
-The following is code for getting a handle to the [background page](https://developer.chrome.com/extensions/background_pages) of an extension whose source is located in `./my-extension`:
-
-```ts
-const puppeteer = require('puppeteer');
-
-(async () => {
-  const pathToExtension = require('path').join(__dirname, 'my-extension');
-  const browser = await puppeteer.launch({
-    headless: 'chrome',
-    args: [
-      `--disable-extensions-except=${pathToExtension}`,
-      `--load-extension=${pathToExtension}`,
-    ],
-  });
-  const backgroundPageTarget = await browser.waitForTarget(
-    target => target.type() === 'background_page'
-  );
-  const backgroundPage = await backgroundPageTarget.page();
-  // Test the background page as you would any other page.
-  await browser.close();
-})();
-```
-
-:::note
-
-Chrome Manifest V3 extensions have a background ServiceWorker of type 'service_worker', instead of a page of type 'background_page'.
-
-:::
-
-:::note
-
-It is not yet possible to test extension popups or content scripts.
-
-:::
-
-<!-- [START runtimesettings] -->
-
-## Default runtime settings
+### Default runtime settings
 
 **1. Uses Headless mode**
 
-Puppeteer launches Chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). To launch a full version of Chromium, set the [`headless` option](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions.headless) when launching a browser:
+Puppeteer launches Chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). To launch a full version of Chromium, set the [`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions.headless) option when launching a browser:
 
 ```ts
 const browser = await puppeteer.launch({headless: false}); // default is true
@@ -293,118 +147,20 @@ See [`this article`](https://www.howtogeek.com/202825/what%E2%80%99s-the-differe
 
 Puppeteer creates its own browser user profile which it **cleans up on every run**.
 
-<!-- [END runtimesettings] -->
+#### Using Docker
+
+See our [guide on using Docker](https://pptr.dev/guides/docker).
+
+#### Using Chrome Extensions
+
+See our [guide on using Chrome extensions](https://pptr.dev/guides/chrome-extensions).
 
 ## Resources
 
 - [API Documentation](https://pptr.dev/api)
+- [Guides](https://pptr.dev/guides)
 - [Examples](https://github.com/puppeteer/puppeteer/tree/main/examples)
 - [Community list of Puppeteer resources](https://github.com/transitive-bullshit/awesome-puppeteer)
-
-<!-- [START debugging] -->
-
-## Debugging tips
-
-1.  Turn off headless mode - sometimes it's useful to see what the browser is
-    displaying. Instead of launching in headless mode, launch a full version of
-    the browser using `headless: false`:
-
-    ```ts
-    const browser = await puppeteer.launch({headless: false});
-    ```
-
-2.  Slow it down - the `slowMo` option slows down Puppeteer operations by the
-    specified amount of milliseconds. It's another way to help see what's going on.
-
-    ```ts
-    const browser = await puppeteer.launch({
-      headless: false,
-      slowMo: 250, // slow down by 250ms
-    });
-    ```
-
-3.  Capture console output - You can listen for the `console` event.
-    This is also handy when debugging code in `page.evaluate()`:
-
-    ```ts
-    page.on('console', msg => console.log('PAGE LOG:', msg.text()));
-
-    await page.evaluate(() => console.log(`url is ${location.href}`));
-    ```
-
-4.  Use debugger in application code browser
-
-    There are two execution context: node.js that is running test code, and the browser
-    running application code being tested. This lets you debug code in the
-    application code browser; ie code inside `evaluate()`.
-
-    - Use `{devtools: true}` when launching Puppeteer:
-
-      ```ts
-      const browser = await puppeteer.launch({devtools: true});
-      ```
-
-    - Change default test timeout:
-
-      jest: `jest.setTimeout(100000);`
-
-      jasmine: `jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;`
-
-      mocha: `this.timeout(100000);` (don't forget to change test to use [function and not '=>'](https://stackoverflow.com/a/23492442))
-
-    - Add an evaluate statement with `debugger` inside / add `debugger` to an existing evaluate statement:
-
-      ```ts
-      await page.evaluate(() => {
-        debugger;
-      });
-      ```
-
-      The test will now stop executing in the above evaluate statement, and chromium will stop in debug mode.
-
-5.  Use debugger in node.js
-
-    This will let you debug test code. For example, you can step over `await page.click()` in the node.js script and see the click happen in the application code browser.
-
-    Note that you won't be able to run `await page.click()` in
-    DevTools console due to this [Chromium bug](https://bugs.chromium.org/p/chromium/issues/detail?id=833928). So if
-    you want to try something out, you have to add it to your test file.
-
-    - Add `debugger;` to your test, eg:
-
-      ```ts
-      debugger;
-      await page.click('a[target=_blank]');
-      ```
-
-    - Set `headless` to `false`
-    - Run `node --inspect-brk`, eg `node --inspect-brk node_modules/.bin/jest tests`
-    - In Chrome open `chrome://inspect/#devices` and click `inspect`
-    - In the newly opened test browser, type `F8` to resume test execution
-    - Now your `debugger` will be hit and you can debug in the test browser
-
-6.  Enable verbose logging - internal DevTools protocol traffic
-    will be logged via the [`debug`](https://github.com/visionmedia/debug) module under the `puppeteer` namespace.
-
-         # Basic verbose logging
-         env DEBUG="puppeteer:*" node script.js
-
-         # Protocol traffic can be rather noisy. This example filters out all Network domain messages
-         env DEBUG="puppeteer:*" env DEBUG_COLORS=true node script.js 2>&1 | grep -v '"Network'
-
-7.  Debug your Puppeteer (node) code easily, using [ndb](https://github.com/GoogleChromeLabs/ndb)
-
-- `npm install -g ndb` (or even better, use [npx](https://github.com/zkat/npx)!)
-
-- add a `debugger` to your Puppeteer (node) code
-
-- add `ndb` (or `npx ndb`) before your test command. For example:
-
-  `ndb jest` or `ndb mocha` (or `npx ndb jest` / `npx ndb mocha`)
-
-- debug your test inside chromium like a boss!
-
-<!-- [END debugging] -->
 
 ## Contributing
 
