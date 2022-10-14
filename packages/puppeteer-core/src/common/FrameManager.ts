@@ -404,8 +404,11 @@ export class FrameManager extends EventEmitter {
     if (world) {
       world.setContext(context);
     }
-    const key = `${session.id()}:${contextPayload.id}`;
-    this.#contextIdToContext.set(key, context);
+      
+    this.#contextIdToContext.set(
+      `${session.id()}:${contextPayload.id}`, 
+      context
+    );
   }
 
   #onExecutionContextDestroyed(
