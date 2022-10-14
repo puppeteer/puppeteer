@@ -384,7 +384,7 @@ export class FrameManager extends EventEmitter {
         return;
       }
 
-      if (contextPayload.auxData && !!contextPayload.auxData['isDefault']) {
+      if (auxData && !!auxData['isDefault']) {
         world = frame.worlds[MAIN_WORLD];
       } else if (
         contextPayload.name === UTILITY_WORLD_NAME &&
