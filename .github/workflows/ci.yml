@@ -247,6 +247,9 @@ jobs:
           node-version: ${{ matrix.node }}
       - name: Set up ${{ matrix.pkg_manager }}
         run: npm install -g ${{ matrix.pkg_manager }}@latest
+      - name: Set yarn version
+        if: ${{ matrix.pkg_manager == 'yarn' }}
+        run: yarn set version stable
       - name: Install dependencies
         run: ${{ matrix.pkg_manager }} install
       - name: Test
