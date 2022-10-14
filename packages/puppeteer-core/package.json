@@ -1,6 +1,6 @@
 {
   "name": "puppeteer-core",
-  "version": "18.2.1",
+  "version": "19.0.0",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "keywords": [
     "puppeteer",
@@ -43,9 +43,18 @@
     "format:types": "wireit",
     "generate:package-json": "wireit",
     "generate:sources": "wireit",
-    "prepack": "cp ../../README.md ./README.md"
+    "prepack": "wireit"
   },
   "wireit": {
+    "prepack": {
+      "command": "cp ../../README.md README.md",
+      "files": [
+        "../../README.md"
+      ],
+      "output": [
+        "README.md"
+      ]
+    },
     "build": {
       "dependencies": [
         "build:third_party",

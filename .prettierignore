@@ -40,7 +40,6 @@ yarn-error.log*
 ## [END] Keep in sync with .gitignore
 
 # Prettier-only ignores.
-assets/
 CHANGELOG.md
 package-lock.json
 test/assets/
