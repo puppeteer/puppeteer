@@ -138,6 +138,6 @@
     "https-proxy-agent": "5.0.1",
     "progress": "2.0.3",
     "proxy-from-env": "1.1.0",
-    "puppeteer-core": "^19.0.0"
+    "puppeteer-core": "19.0.0"
   }
 }
