@@ -42,9 +42,18 @@
     "generate:package-json": "wireit",
     "generate:sources": "wireit",
     "postinstall": "node install.js",
-    "prepack": "cp ../../README.md ./README.md"
+    "prepack": "wireit"
   },
   "wireit": {
+    "prepack": {
+      "command": "cp ../../README.md README.md",
+      "files": [
+        "../../README.md"
+      ],
+      "output": [
+        "README.md"
+      ]
+    },
     "build": {
       "dependencies": [
         "format:types",

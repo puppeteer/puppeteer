@@ -1,0 +1,50 @@
+{
+  "name": "@puppeteer-test/installation",
+  "version": "latest",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "wireit",
+    "build:packages": "wireit",
+    "clean": "tsc -b --clean && rimraf build",
+    "test": "mocha"
+  },
+  "wireit": {
+    "build": {
+      "command": "tsc -b",
+      "clean": "if-file-deleted",
+      "dependencies": [
+        "build:packages"
+      ],
+      "files": [
+        "tsconfig.json",
+        "src/**"
+      ],
+      "output": [
+        "build/**",
+        "tsconfig.tsbuildinfo"
+      ]
+    },
+    "build:packages": {
+      "command": "npm pack --workspace puppeteer --workspace puppeteer-core",
+      "dependencies": [
+        "../../packages/puppeteer:build",
+        "../../packages/puppeteer-core:build"
+      ],
+      "files": [],
+      "output": [
+        "puppeteer-*.tgz"
+      ]
+    }
+  },
+  "files": [
+    ".mocharc.cjs",
+    "puppeteer-*.tgz",
+    "build",
+    "assets"
+  ],
+  "dependencies": {
+    "glob": "8.0.3",
+    "mocha": "10.0.0"
+  }
+}

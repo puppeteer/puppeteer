@@ -43,9 +43,18 @@
     "format:types": "wireit",
     "generate:package-json": "wireit",
     "generate:sources": "wireit",
-    "prepack": "cp ../../README.md ./README.md"
+    "prepack": "wireit"
   },
   "wireit": {
+    "prepack": {
+      "command": "cp ../../README.md README.md",
+      "files": [
+        "../../README.md"
+      ],
+      "output": [
+        "README.md"
+      ]
+    },
     "build": {
       "dependencies": [
         "build:third_party",

@@ -193,8 +193,8 @@ jobs:
       - name: Run all tests
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
 
-  pack-packages:
-    name: Pack packages
+  installation-test-build:
+    name: Build installation test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -206,19 +206,19 @@ jobs:
           node-version: latest
       - name: Install dependencies
         run: npm ci --ignore-scripts
-      - name: Build libraries
-        run: npm run build
-      - name: Pack libraries
-        run: npm pack --workspaces
-      - name: Upload packages
+      - name: Build installation test
+        run: npm run build --workspace @puppeteer-test/installation
+      - name: Pack installation test
+        run: npm pack --workspace @puppeteer-test/installation
+      - name: Upload installation test
         uses: actions/upload-artifact@v3
         with:
-          name: packages
-          path: ./*.tgz
+          name: installation-test
+          path: puppeteer-test-installation-latest.tgz
 
-  install-tests:
-    name: Test installation on ${{ matrix.os }} (${{ matrix.node }})
-    needs: pack-packages
+  installation-test:
+    name: Test ${{ matrix.pkg_manager }} installation on ${{ matrix.os }} (${{ matrix.node }})
+    needs: installation-test-build
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -226,24 +226,33 @@ jobs:
         os:
           - ubuntu-latest
           - macos-latest
+          - windows-latest
         node:
           - 14
           - 16
           - 18
+        pkg_manager:
+          - npm
+          - yarn
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Download installation test
+        uses: actions/download-artifact@v3
+        with:
+          name: installation-test
+      - name: Unpack installation test
+        run: tar -xf puppeteer-test-installation-latest.tgz --strip-components 1 -C .
       - name: Set up Node.js
         uses: actions/setup-node@v3.4.1
         with:
-          cache: npm
           node-version: ${{ matrix.node }}
-      - name: Download packages
-        uses: actions/download-artifact@v3
-        with:
-          name: packages
-      - name: Test bundling and installation
-        run: npm run test-install
+      - name: Set up ${{ matrix.pkg_manager }}
+        run: npm install -g ${{ matrix.pkg_manager }}@latest
+      - name: Install dependencies
+        run: ${{ matrix.pkg_manager }} install
+      - name: Test
+        env:
+          PKG_MANAGER: ${{ matrix.pkg_manager }}
+        run: ${{ matrix.pkg_manager }} test
 
   docker-tests:
     name: Test Docker image

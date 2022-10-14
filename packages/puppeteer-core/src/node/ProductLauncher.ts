@@ -198,5 +198,7 @@ export function createLauncher(
       return new FirefoxLauncher(preferredRevision, isPuppeteerCore);
     case 'chrome':
       return new ChromeLauncher(preferredRevision, isPuppeteerCore);
+    default:
+      throw new Error(`Unknown product: ${product}`);
   }
 }

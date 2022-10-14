@@ -1,4 +1,6 @@
 {
+  "name": "@puppeteer-test/test",
+  "version": "latest",
   "private": true,
   "scripts": {
     "build": "wireit",
