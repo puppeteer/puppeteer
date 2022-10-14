@@ -24,7 +24,7 @@ import {
 } from './constants.js';
 import {execFile} from './util.js';
 
-const PKG_MANAGER = process.env['PKG_MANAGER'] || 'npm';
+const PKG_MANAGER = process.env['PKG_MANAGER'] ?? 'npm';
 
 let ADD_PKG_SUBCOMMAND = 'install';
 if (PKG_MANAGER !== 'npm') {
@@ -102,22 +102,22 @@ export const describeInstallation = (
 
     it(`should install ${title}`, async () => {
       if (dependencies.length > 0) {
-        await execFile(PKG_MANAGER, [ADD_PKG_SUBCOMMAND, ...dependencies], {
-          cwd: sandbox,
-          env,
-          shell: true,
-        });
-      }
-      if (devDependencies.length > 0) {
-        await execFile(
-          PKG_MANAGER,
-          [ADD_PKG_SUBCOMMAND, '-D', ...devDependencies],
-          {
+        for (const dependency of dependencies) {
+          await execFile(PKG_MANAGER, [ADD_PKG_SUBCOMMAND, dependency], {
             cwd: sandbox,
             env,
             shell: true,
-          }
-        );
+          });
+        }
+      }
+      if (devDependencies.length > 0) {
+        for (const dependency of devDependencies) {
+          await execFile(PKG_MANAGER, [ADD_PKG_SUBCOMMAND, '-D', dependency], {
+            cwd: sandbox,
+            env,
+            shell: true,
+          });
+        }
       }
     });
 
