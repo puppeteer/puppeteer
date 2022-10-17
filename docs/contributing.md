@@ -4,8 +4,8 @@ sidebar_position: 4
 
 # Contributing
 
-First of all, thank you for your interest in Puppeteer!
-We'd love to accept your patches and contributions!
+First of all, thank you for your interest in Puppeteer! We'd love to accept your
+patches and contributions!
 
 ## Contributor License Agreement
 
@@ -48,7 +48,9 @@ again.
 
 ### macOS ARM and custom executables.
 
-- To run experimental Chromium macOS ARM tests, firstly ensure you have correct Chromium version installed locally (you only need to do this once, not on every test run) and then you can run the tests:
+- To run experimental Chromium macOS ARM tests, firstly ensure you have correct
+  Chromium version installed locally (you only need to do this once, not on
+  every test run) and then you can run the tests:
 
   ```bash
   PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM=1 npm install
@@ -69,11 +71,17 @@ To build a single package, you can run
 npm run build --workspace <package> # e.g. puppeteer
 ```
 
-This will build all dependent packages automatically, so specifying a single packages is sufficient. This is all possible due to [wireit](https://github.com/google/wireit) which behaves similar to [GNU Make](https://www.gnu.org/software/make/).
+This will build all dependent packages automatically, so specifying a single
+packages is sufficient. This is all possible due to
+[wireit](https://github.com/google/wireit) which behaves similar to
+[GNU Make](https://www.gnu.org/software/make/).
 
 ## Removing stale artifacts
 
-It's possible some generated artifacts (such as `packages/puppeteer-core/src/types.ts`) can become stale since these artifacts rely on complex conditions (such as names of distinct files) that cannot be captured by the build system. To clean artifacts, you can run
+It's possible some generated artifacts (such as
+`packages/puppeteer-core/src/types.ts`) can become stale since these artifacts
+rely on complex conditions (such as names of distinct files) that cannot be
+captured by the build system. To clean artifacts, you can run
 
 ```sh
 npm run clean # or npm run clean --workspace <package>
@@ -81,18 +89,25 @@ npm run clean # or npm run clean --workspace <package>
 
 ## Comprehensive testing
 
-Outside of `npm test`, there are several other [`npm` scripts](https://docs.npmjs.com/cli/v8/using-npm/scripts) that are usually check through CI:
+Outside of `npm test`, there are several other
+[`npm` scripts](https://docs.npmjs.com/cli/v8/using-npm/scripts) that are
+usually check through CI:
 
-- `test-install` - Tests whether `puppeteer` and `puppeteer-core` install properly and are functional.
-- `test-types` - Tests the TypeScript types in `puppeteer` using [`tsd`](https://github.com/SamVerschueren/tsd).
+- `test-install` - Tests whether `puppeteer` and `puppeteer-core` install
+  properly and are functional.
+- `test-types` - Tests the TypeScript types in `puppeteer` using
+  [`tsd`](https://github.com/SamVerschueren/tsd).
 - `test:chrome:**` - Tests `puppeteer` on Chromium.
 - `test:firefox:**` - Tests `puppeteer` on Firefox.
 
-The default `npm test` runs `test:{chrome,firefox}:headless` which is generally sufficient.
+The default `npm test` runs `test:{chrome,firefox}:headless` which is generally
+sufficient.
 
-Puppeteer uses a custom test runner on top of Mocha that consults
-the [TestExpectations.json](https://github.com/puppeteer/puppeteer/blob/main/test/TestExpectations.json)
-to see if a given test result is expected or not. See more info about the test runner in [`tools/mochaRunner`](https://github.com/puppeteer/puppeteer/tree/main/tools/mochaRunner).
+Puppeteer uses a custom test runner on top of Mocha that consults the
+[TestExpectations.json](https://github.com/puppeteer/puppeteer/blob/main/test/TestExpectations.json)
+to see if a given test result is expected or not. See more info about the test
+runner in
+[`tools/mochaRunner`](https://github.com/puppeteer/puppeteer/tree/main/tools/mochaRunner).
 
 ## Code reviews
 
@@ -129,7 +144,8 @@ The following is a description of the primary folders in Puppeteer:
 
 - `packages` contains all public source code.
 - `test` contains all test source code.
-- `test-d` contains type tests using [`tsd`](https://github.com/SamVerschueren/tsd).
+- `test-d` contains type tests using
+  [`tsd`](https://github.com/SamVerschueren/tsd).
 - `tools` contains miscellaneous scripts that are used in building and etc.
 - `tools/mochaRunner` - contains the source code for our test runner.
 
@@ -137,17 +153,23 @@ The following is a description of the primary folders in Puppeteer:
 
 When authoring new API methods, consider the following:
 
-- Expose as little information as needed. When in doubt, don’t expose new information.
+- Expose as little information as needed. When in doubt, don’t expose new
+  information.
 - Methods are used in favor of getters/setters.
   - The only exception is namespaces, e.g. `page.keyboard` and `page.coverage`
-- All string literals must be small case. This includes event names and option values.
-- Avoid adding "sugar" API (API that is trivially implementable in user-space) unless they're **extremely** demanded.
+- All string literals must be small case. This includes event names and option
+  values.
+- Avoid adding "sugar" API (API that is trivially implementable in user-space)
+  unless they're **extremely** demanded.
 
 ## Commit messages
 
-Commit messages should follow [the Conventional Commits format](https://www.conventionalcommits.org/en/v1.0.0/#summary). This is enforced via `npm run commitlint`.
+Commit messages should follow
+[the Conventional Commits format](https://www.conventionalcommits.org/en/v1.0.0/#summary).
+This is enforced via `npm run commitlint`.
 
-In particular, breaking changes should clearly be noted as “BREAKING CHANGE:” in the commit message footer. Example:
+In particular, breaking changes should clearly be noted as “BREAKING CHANGE:” in
+the commit message footer. Example:
 
 ```
 fix(page): fix page.pizza method
@@ -163,19 +185,28 @@ To deliver to a different location, use the "deliver" option:
 
 ## Writing documentation
 
-Documentation is generated via `npm run docs`. It is automatically published to our documentation site on merge and gets versioned on release.
+Documentation is generated via `npm run docs`. It is automatically published to
+our documentation site on merge and gets versioned on release.
 
 ## Writing TSDoc comments
 
-Each change to Puppeteer should be thoroughly documented using TSDoc comments. Refer to the [API Extractor documentation](https://api-extractor.com/pages/tsdoc/doc_comment_syntax/) for information on the exact syntax.
+Each change to Puppeteer should be thoroughly documented using TSDoc comments.
+Refer to the
+[API Extractor documentation](https://api-extractor.com/pages/tsdoc/doc_comment_syntax/)
+for information on the exact syntax.
 
-- Every new method needs to have either `@public` or `@internal` added as a tag depending on if it is part of the public API.
-- Keep each line in a comment to no more than 90 characters (ESLint will warn you if you go over this). If you're a VSCode user the [Rewrap plugin](https://marketplace.visualstudio.com/items?itemName=stkb.rewrap) is highly recommended!
+- Every new method needs to have either `@public` or `@internal` added as a tag
+  depending on if it is part of the public API.
+- Keep each line in a comment to no more than 90 characters (ESLint will warn
+  you if you go over this). If you're a VSCode user the
+  [Rewrap plugin](https://marketplace.visualstudio.com/items?itemName=stkb.rewrap)
+  is highly recommended!
 
 ## Running the documentation site locally
 
 1. At root, install all dependencies with `npm i --ignore-scripts`.
-2. run `npm run docs` which will generate all the `.md` files on `puppeteer/docs/api`.
+2. run `npm run docs` which will generate all the `.md` files on
+   `puppeteer/docs/api`.
 3. run `npm i` in `puppeteer/website`.
 4. run `npm start` in `puppeteer/website`.
 
@@ -183,32 +214,43 @@ Each change to Puppeteer should be thoroughly documented using TSDoc comments. R
 
 For all dependencies (both installation and development):
 
-- **Do not add** a dependency if the desired functionality is easily implementable.
+- **Do not add** a dependency if the desired functionality is easily
+  implementable.
 - If adding a dependency, it should be well-maintained and trustworthy.
 
 A barrier for introducing new installation dependencies is especially high:
 
-- **Do not add** installation dependency unless it's critical to project success.
+- **Do not add** installation dependency unless it's critical to project
+  success.
 
-There are additional considerations for dependencies that are environment agonistic. See the [`third_party/README.md`](https://github.com/puppeteer/puppeteer/blob/main/third_party/README.md) for details.
+There are additional considerations for dependencies that are environment
+agonistic. See the
+[`third_party/README.md`](https://github.com/puppeteer/puppeteer/blob/main/third_party/README.md)
+for details.
 
 ## Testing tips
 
 - Every feature should be accompanied by a test.
 - Every public api event/method should be accompanied by a test.
 - Tests should not depend on external services.
-- Tests should work on all three platforms: Mac, Linux and Win. This is especially important for screenshot tests.
+- Tests should work on all three platforms: Mac, Linux and Win. This is
+  especially important for screenshot tests.
 
-If a test is expected to fail on certain configurations or became flaky, update [TestExpectations.json](https://github.com/puppeteer/puppeteer/blob/main/test/TestExpectations.json)
-to reflect that. See more info about TestExpectations.json in [`tools/mochaRunner`](https://github.com/puppeteer/puppeteer/tree/main/tools/mochaRunner).
+If a test is expected to fail on certain configurations or became flaky, update
+[TestExpectations.json](https://github.com/puppeteer/puppeteer/blob/main/test/TestExpectations.json)
+to reflect that. See more info about TestExpectations.json in
+[`tools/mochaRunner`](https://github.com/puppeteer/puppeteer/tree/main/tools/mochaRunner).
 
 ## API Coverage
 
-Every public API method or event should be called at least once in tests. To ensure this, the main `test` command runs coverage during testing.
+Every public API method or event should be called at least once in tests. To
+ensure this, the main `test` command runs coverage during testing.
 
 ## Debugging Puppeteer
 
-See [Debugging Tips](https://github.com/puppeteer/puppeteer/blob/main/README.md#debugging-tips) in the readme.
+See
+[Debugging Tips](https://github.com/puppeteer/puppeteer/blob/main/README.md#debugging-tips)
+in the readme.
 
 # For Project Maintainers
 
@@ -216,26 +258,46 @@ See [Debugging Tips](https://github.com/puppeteer/puppeteer/blob/main/README.md#
 
 The following steps are needed to update the Chromium version.
 
-1. Find a suitable Chromium revision. Not all revisions have builds for all platforms, so we need to find one that does. The easiest way is to run `tools/check_availability.js -rd` to find the latest suitable `dev` Chromium revision (see `tools/check_availability.js -help` for more options).
-2. Update `packages/puppeteer-core/src/revisions.ts` with the found revision number.
-3. Update `versions.js` with the new Chromium-to-Puppeteer version mapping and update `lastMaintainedChromiumVersion` with the latest stable Chrome version.
-4. Run `npm run check:protocol-revision`. If it fails, update `package.json` with the expected `devtools-protocol` version.
+1. Find a suitable Chromium revision. Not all revisions have builds for all
+   platforms, so we need to find one that does. The easiest way is to run
+   `tools/check_availability.js -rd` to find the latest suitable `dev` Chromium
+   revision (see `tools/check_availability.js -help` for more options).
+2. Update `packages/puppeteer-core/src/revisions.ts` with the found revision
+   number.
+3. Update `versions.js` with the new Chromium-to-Puppeteer version mapping and
+   update `lastMaintainedChromiumVersion` with the latest stable Chrome version.
+4. Run `npm run check:protocol-revision`. If it fails, update `package.json`
+   with the expected `devtools-protocol` version.
 5. Run `npm run build` and `npm install`.
-6. Run `npm test` and ensure that all tests pass. If a test fails, [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and either update the test expectations accordingly (if it was an intended change) or work around the changes in Puppeteer (if it’s not desirable to change Puppeteer’s observable behavior).
-7. Commit and push your changes and open a pull request.
-   The commit message must contain the version in `Chromium <version> (<revision>)` format to ensure that [pptr.dev](https://pptr.dev/) can parse it correctly, e.g. `'feat(chromium): roll to Chromium 90.0.4427.0 (r856583)'`.
+6. Run `npm test` and ensure that all tests pass. If a test fails,
+   [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and
+   either update the test expectations accordingly (if it was an intended
+   change) or work around the changes in Puppeteer (if it’s not desirable to
+   change Puppeteer’s observable behavior).
+7. Commit and push your changes and open a pull request. The commit message must
+   contain the version in `Chromium <version> (<revision>)` format to ensure
+   that [pptr.dev](https://pptr.dev/) can parse it correctly, e.g.
+   `'feat(chromium): roll to Chromium 90.0.4427.0 (r856583)'`.
 
 ### Bisecting upstream changes
 
-Sometimes, performing a Chromium roll causes tests to fail. To figure out the cause, you need to bisect Chromium revisions to figure out the earliest possible revision that changed the behavior. The `bisect` script can be helpful here. Given a pattern for one or more unit tests, it will automatically bisect the current range:
+Sometimes, performing a Chromium roll causes tests to fail. To figure out the
+cause, you need to bisect Chromium revisions to figure out the earliest possible
+revision that changed the behavior. The `bisect` script can be helpful here.
+Given a pattern for one or more unit tests, it will automatically bisect the
+current range:
 
 ```sh
 npm run bisect -- --good 686378 --bad 706915 script.js
 npm run bisect -- --unit-test Response.fromCache
 ```
 
-By default, it will use the Chromium revision in `packages/puppeteer-core/src/revisions.ts` from the `main` branch and from the working tree to determine the range to bisect.
+By default, it will use the Chromium revision in
+`packages/puppeteer-core/src/revisions.ts` from the `main` branch and from the
+working tree to determine the range to bisect.
 
 ## Releasing to npm
 
-We use [release-please](https://github.com/googleapis/release-please) to automate releases. When a release should be done, check for the release PR in our [pull requests](https://github.com/puppeteer/puppeteer/pulls) and merge it.
+We use [release-please](https://github.com/googleapis/release-please) to
+automate releases. When a release should be done, check for the release PR in
+our [pull requests](https://github.com/puppeteer/puppeteer/pulls) and merge it.
