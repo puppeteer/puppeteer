@@ -18,7 +18,7 @@
 const assert = require('assert');
 const https = require('https');
 const BrowserFetcher =
-  require('../lib/cjs/puppeteer/node/BrowserFetcher.js').BrowserFetcher;
+  require('puppeteer-core/internal/node/BrowserFetcher.js').BrowserFetcher;
 
 const SUPPORTED_PLATFORMS = ['linux', 'mac', 'mac_arm', 'win32', 'win64'];
 
@@ -213,7 +213,8 @@ async function checkRollCandidate(channel) {
     10
   );
   const currentRevision = parseInt(
-    require('../lib/cjs/puppeteer/revisions.js').PUPPETEER_REVISIONS.chromium,
+    require('puppeteer-core/internal/revisions.js').PUPPETEER_REVISIONS
+      .chromium,
     10
   );
 

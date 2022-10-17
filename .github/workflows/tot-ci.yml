@@ -15,116 +15,38 @@ on:
 # Currently, the install step is duplicated but should be the same for all jobs.
 
 jobs:
-  linux-headless:
-    # https://github.com/actions/virtual-environments#available-environments
+  ci:
+    name: ${{ matrix.suite }} tests
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        node: [16]
+        suite:
+          - chrome-headless
+          - chrome-headful
+          - chrome-new-headless
     steps:
       - name: Check out repository
         uses: actions/checkout@v3.0.2
-        with:
-          fetch-depth: 2
-
       - name: Set up Node.js
         uses: actions/setup-node@v3.4.1
         with:
-          node-version: ${{ matrix.node }}
-
-      - name: Install dependencies and build
+          cache: npm
+          node-version: latest
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Install linux dependencies.
+        run: sudo apt-get install xvfb
+      - name: Build packages
+        run: npm run build
+      - name: Get latest revision
         run: |
-          sudo apt-get install xvfb
-          # Ensure both a Chromium and a Firefox binary are available.
-          PUPPETEER_PRODUCT=firefox npm install
-          npm install
-          ls ~/.cache/puppeteer
           REV=$(node tools/check_availability.js -p linux)
-          echo "Installing revision $REV"
-          cat src/revisions.ts | sed "s/[0-9]\{6,\}/$REV/" > src/revisions.ts.replaced
-          mv src/revisions.ts.replaced src/revisions.ts
-          npm run build
-          npm install
-
-      - name: Run unit tests in headless
-        uses: nick-invision/retry@v2
-        with:
-          command: xvfb-run --auto-servernum npm run test:chrome:headless
-          timeout_minutes: 10
-          max_attempts: 3
-
-  linux-headful:
-    # https://github.com/actions/virtual-environments#available-environments
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: [16]
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v3.0.2
-        with:
-          fetch-depth: 2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3.4.1
-        with:
-          node-version: ${{ matrix.node }}
-
-      - name: Install dependencies and build
-        run: |
-          sudo apt-get install xvfb
-          # Ensure both a Chromium and a Firefox binary are available.
-          PUPPETEER_PRODUCT=firefox npm install
-          npm install
-          ls ~/.cache/puppeteer
-          REV=$(node tools/check_availability.js -p linux)
-          echo "Installing revision $REV"
-          cat src/revisions.ts | sed "s/[0-9]\{6,\}/$REV/" > src/revisions.ts.replaced
-          mv src/revisions.ts.replaced src/revisions.ts
-          npm run build
-          npm install
-
-      - name: Run unit tests in headful
-        uses: nick-invision/retry@v2
-        with:
-          command: xvfb-run --auto-servernum npm run test:chrome:headful
-          timeout_minutes: 10
-          max_attempts: 3
-
-  linux-chrome-headless:
-    # https://github.com/actions/virtual-environments#available-environments
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: [16]
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v3.0.2
-        with:
-          fetch-depth: 2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3.4.1
-        with:
-          node-version: ${{ matrix.node }}
-
-      - name: Install dependencies and build
-        run: |
-          sudo apt-get install xvfb
-          # Ensure both a Chromium and a Firefox binary are available.
-          PUPPETEER_PRODUCT=firefox npm install
-          npm install
-          ls ~/.cache/puppeteer
-          REV=$(node tools/check_availability.js -p linux)
-          echo "Installing revision $REV"
-          cat src/revisions.ts | sed "s/[0-9]\{6,\}/$REV/" > src/revisions.ts.replaced
-          mv src/revisions.ts.replaced src/revisions.ts
-          npm run build
-          npm install
-
-      - name: Run unit tests in chrome headless
-        uses: nick-invision/retry@v2
-        with:
-          command: xvfb-run --auto-servernum npm run test:chrome:headless-chrome
-          timeout_minutes: 10
-          max_attempts: 3
+          cat packages/puppeteer-core/src/revisions.ts | sed "s/[0-9]\{6,\}/$REV/" > packages/puppeteer-core/src/revisions.ts.replaced
+          mv packages/puppeteer-core/src/revisions.ts.replaced packages/puppeteer-core/src/revisions.ts
+      - name: Rebuild `puppeteer-core`
+        run: npm run build --workspace puppeteer-core
+      - name: Install Chrome
+        run: npm run postinstall --workspace puppeteer
+      - name: Run tests
+        run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
