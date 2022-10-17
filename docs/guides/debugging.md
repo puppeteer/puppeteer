@@ -1,18 +1,36 @@
 # Debugging
 
-Debugging with Puppeteer can be an arduous task. There is no _single_ method for debugging all possible issues since Puppeteer touches many distinct components of a browser such as network requests and Web APIs. On a high note, Puppeteer provides _several_ methods for debugging which hopefully does cover all possible issues.
+Debugging with Puppeteer can be an arduous task. There is no _single_ method for
+debugging all possible issues since Puppeteer touches many distinct components
+of a browser such as network requests and Web APIs. On a high note, Puppeteer
+provides _several_ methods for debugging which hopefully does cover all possible
+issues.
 
 ## Background
 
-In general, there are two possible sources of an issue: Code running on Node.js (which we call _server code_), and [code running in the browser](<[`Page.evaluate()`](https://pptr.dev/api/puppeteer.page.evaluate)>) (which we call _client code_). There is also a third possible source being the browser itself (which we call _internal code_), but if you suspect this is the source **after attempting the methods below**, we suggest [searching existing issues](https://github.com/puppeteer/puppeteer/issues) before [filing an issue](https://github.com/puppeteer/puppeteer/issues/new/choose).
+In general, there are two possible sources of an issue: Code running on Node.js
+(which we call _server code_), and
+[code running in the browser](<[`Page.evaluate()`](https://pptr.dev/api/puppeteer.page.evaluate)>)
+(which we call _client code_). There is also a third possible source being the
+browser itself (which we call _internal code_), but if you suspect this is the
+source **after attempting the methods below**, we suggest
+[searching existing issues](https://github.com/puppeteer/puppeteer/issues)
+before
+[filing an issue](https://github.com/puppeteer/puppeteer/issues/new/choose).
 
 ## Debugging methods for all situations
 
-These methods can be used to debug any situation. These should be used as a quick sanity check before diving into more complex methods.
+These methods can be used to debug any situation. These should be used as a
+quick sanity check before diving into more complex methods.
 
 ### Turn off [`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions.headless)
 
-Sometimes it's useful to see what the browser is displaying. Instead of launching in [`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions.headless) mode, launch a full version of the browser with [`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions.headless) set to `false`:
+Sometimes it's useful to see what the browser is displaying. Instead of
+launching in
+[`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions.headless)
+mode, launch a full version of the browser with
+[`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions.headless)
+set to `false`:
 
 ```ts
 const browser = await puppeteer.launch({headless: false});
@@ -20,7 +38,9 @@ const browser = await puppeteer.launch({headless: false});
 
 ### Puppeteer "slow-mo"
 
-The [`slowMo`](https://pptr.dev/api/puppeteer.browserconnectoptions.slowmo) option slows down Puppeteer operations by a specified amount of milliseconds. It's another way to help see what's going on.
+The [`slowMo`](https://pptr.dev/api/puppeteer.browserconnectoptions.slowmo)
+option slows down Puppeteer operations by a specified amount of milliseconds.
+It's another way to help see what's going on.
 
 ```ts
 const browser = await puppeteer.launch({
@@ -33,7 +53,11 @@ const browser = await puppeteer.launch({
 
 ### Capture `console.*` output
 
-Since client code runs in the browser, doing `console.*` in client code will not directly log to Node.js. However, you can [listen](https://pptr.dev/api/puppeteer.page.on) for the [`console`](https://pptr.dev/api/puppeteer.pageeventobject.console) event which returns a payload with the logged text.
+Since client code runs in the browser, doing `console.*` in client code will not
+directly log to Node.js. However, you can
+[listen](https://pptr.dev/api/puppeteer.page.on) for the
+[`console`](https://pptr.dev/api/puppeteer.pageeventobject.console) event which
+returns a payload with the logged text.
 
 ```ts
 page.on('console', msg => console.log('PAGE LOG:', msg.text()));
@@ -43,7 +67,9 @@ await page.evaluate(() => console.log(`url is ${location.href}`));
 
 ### Use the debugger in the browser
 
-1. Set [`devtools`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions.devtools) to `true` when launching Puppeteer:
+1. Set
+   [`devtools`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions.devtools)
+   to `true` when launching Puppeteer:
 
    ```ts
    const browser = await puppeteer.launch({devtools: true});
@@ -57,18 +83,26 @@ await page.evaluate(() => console.log(`url is ${location.href}`));
    });
    ```
 
-   The Browser will now stop in the location the `debugger` word is found in debug mode.
+   The Browser will now stop in the location the `debugger` word is found in
+   debug mode.
 
 ## Debugging methods for server code
 
 ### Use the debugger in Node.js (Chrome/Chromium-only)
 
-Since server code intermingles with client code, this method of debugging is closely tied with the browser. For example, you can step over `await page.click()` in the server script and see the click happen in the browser.
+Since server code intermingles with client code, this method of debugging is
+closely tied with the browser. For example, you can step over
+`await page.click()` in the server script and see the click happen in the
+browser.
 
-Note that you won't be able to run `await page.click()` in DevTools console due to this [Chromium bug](https://bugs.chromium.org/p/chromium/issues/detail?id=833928), so if
-you want to try something out, you have to add it to your test file.
+Note that you won't be able to run `await page.click()` in DevTools console due
+to this
+[Chromium bug](https://bugs.chromium.org/p/chromium/issues/detail?id=833928), so
+if you want to try something out, you have to add it to your test file.
 
-1. Set [`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions.headless) to `false`.
+1. Set
+   [`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions.headless)
+   to `false`.
 2. Add `debugger` to any server code you want debugged. For example,
 
    ```ts
@@ -82,9 +116,11 @@ you want to try something out, you have to add it to your test file.
    node --inspect-brk path/to/script.js
    ```
 
-4. In the opened Chrome/Chromium browser, open `chrome://inspect/#devices` and click `inspect`.
+4. In the opened Chrome/Chromium browser, open `chrome://inspect/#devices` and
+   click `inspect`.
 5. In the newly opened test browser, press `F8` to resume test execution.
-6. Now your `debugger` statement will be hit and you can debug in the test browser.
+6. Now your `debugger` statement will be hit and you can debug in the test
+   browser.
 
 ### Use [ndb](https://github.com/GoogleChromeLabs/ndb)
 
@@ -111,7 +147,10 @@ you want to try something out, you have to add it to your test file.
 
 ### Log DevTools protocol traffic
 
-If all else fails, it's possible there may be an issue between Puppeteer and the DevTools protocol. You can debug this by setting the `DEBUG` environment variable before running your script. This will log internal traffic via [`debug`](https://github.com/visionmedia/debug) under the `puppeteer` namespace.
+If all else fails, it's possible there may be an issue between Puppeteer and the
+DevTools protocol. You can debug this by setting the `DEBUG` environment
+variable before running your script. This will log internal traffic via
+[`debug`](https://github.com/visionmedia/debug) under the `puppeteer` namespace.
 
 ```sh
 # Basic verbose logging
