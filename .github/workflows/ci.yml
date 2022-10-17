@@ -25,7 +25,7 @@ jobs:
         with:
           fetch-depth: 2
       - name: Set up Node.js
-        uses: actions/setup-node@v3.4.1
+        uses: actions/setup-node@v3.5.1
         with:
           cache: npm
           node-version: latest
@@ -50,7 +50,7 @@ jobs:
         with:
           fetch-depth: 2
       - name: Set up Node.js
-        uses: actions/setup-node@v3.4.1
+        uses: actions/setup-node@v3.5.1
         with:
           cache: npm
           node-version: latest
@@ -90,7 +90,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3.0.2
       - name: Set up Node.js
-        uses: actions/setup-node@v3.4.1
+        uses: actions/setup-node@v3.5.1
         with:
           cache: npm
           node-version: latest
@@ -128,7 +128,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3.0.2
       - name: Set up Node.js
-        uses: actions/setup-node@v3.4.1
+        uses: actions/setup-node@v3.5.1
         with:
           cache: npm
           node-version: latest
@@ -169,7 +169,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Set up Node.js
-        uses: actions/setup-node@v3.4.1
+        uses: actions/setup-node@v3.5.1
         with:
           cache: npm
           node-version: latest
@@ -200,7 +200,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Set up Node.js
-        uses: actions/setup-node@v3.4.1
+        uses: actions/setup-node@v3.5.1
         with:
           cache: npm
           node-version: latest
@@ -242,7 +242,7 @@ jobs:
       - name: Unpack installation test
         run: tar -xf puppeteer-test-installation-latest.tgz --strip-components 1 -C .
       - name: Set up Node.js
-        uses: actions/setup-node@v3.4.1
+        uses: actions/setup-node@v3.5.1
         with:
           node-version: ${{ matrix.node }}
       - name: Set up ${{ matrix.pkg_manager }}
@@ -263,7 +263,7 @@ jobs:
         with:
           fetch-depth: 2
       - name: Set up Node.js
-        uses: actions/setup-node@v3.4.1
+        uses: actions/setup-node@v3.5.1
         with:
           cache: npm
           node-version: ${{ matrix.node }}
