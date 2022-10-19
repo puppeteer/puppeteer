@@ -156,11 +156,14 @@ jobs:
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
 
   firefox-tests:
-    name: ${{ matrix.suite }} tests on ubuntu-latest
-    runs-on: ubuntu-latest
+    name: ${{ matrix.suite }} tests on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
         suite:
           - firefox-bidi
           - firefox-headful
@@ -187,10 +190,15 @@ jobs:
           PUPPETEER_PRODUCT: firefox
         run: npm run postinstall
       - name: Install linux dependencies.
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: sudo apt-get install xvfb
       - name: Tests types
         run: npm run test-types
-      - name: Run all tests
+      - name: Run all tests (for non-Linux)
+        if: ${{ matrix.os != 'ubuntu-latest' }}
+        run: npm run test -- --test-suite ${{ matrix.suite }}
+      - name: Run all tests (for Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
 
   installation-test-build:
