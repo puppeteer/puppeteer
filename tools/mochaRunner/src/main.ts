@@ -72,6 +72,12 @@ function getApplicableTestSuites(
 async function main() {
   const noCoverage = process.argv.indexOf('--no-coverage') !== -1;
 
+  const statsFilenameIdx = process.argv.indexOf('--save-stats-to');
+  let statsFilename = '';
+  if (statsFilenameIdx !== -1) {
+    statsFilename = process.argv[statsFilenameIdx + 1] as string;
+  }
+
   const platform = zPlatform.parse(os.platform());
 
   const expectations = readJSON(
@@ -85,6 +91,9 @@ async function main() {
   const applicableSuites = getApplicableTestSuites(parsedSuitesFile, platform);
 
   console.log('Planning to run the following test suites', applicableSuites);
+  if (statsFilename) {
+    console.log('Test stats will be saved to', statsFilename);
+  }
 
   let fail = false;
   const recommendations = [];
@@ -116,7 +125,9 @@ async function main() {
       const tmpDir = fs.mkdtempSync(
         path.join(os.tmpdir(), 'puppeteer-test-runner-')
       );
-      const tmpFilename = path.join(tmpDir, 'output.json');
+      const tmpFilename = statsFilename
+        ? statsFilename
+        : path.join(tmpDir, 'output.json');
       console.log('Running', JSON.stringify(parameters), tmpFilename);
       const args = [
         '-u',
