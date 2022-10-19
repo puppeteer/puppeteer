@@ -7,5 +7,9 @@ sidebar_label: executablePath
 **Signature:**
 
 ```typescript
-executablePath: (channel?: string | undefined) => string;
+executablePath: (
+  channel?:
+    | import('puppeteer-core/internal/node/LaunchOptions.js').ChromeReleaseChannel
+    | undefined
+) => string;
 ```

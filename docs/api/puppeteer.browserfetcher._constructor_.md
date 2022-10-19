@@ -10,12 +10,12 @@ Constructs a browser fetcher for the given options.
 
 ```typescript
 class BrowserFetcher {
-  constructor(options?: BrowserFetcherOptions);
+  constructor(options: BrowserFetcherOptions);
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                          | Description       |
-| --------- | ------------------------------------------------------------- | ----------------- |
-| options   | [BrowserFetcherOptions](./puppeteer.browserfetcheroptions.md) | <i>(Optional)</i> |
+| Parameter | Type                                                          | Description |
+| --------- | ------------------------------------------------------------- | ----------- |
+| options   | [BrowserFetcherOptions](./puppeteer.browserfetcheroptions.md) |             |

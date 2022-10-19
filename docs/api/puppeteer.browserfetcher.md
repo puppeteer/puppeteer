@@ -21,7 +21,7 @@ BrowserFetcher is not designed to work concurrently with other instances of Brow
 An example of using BrowserFetcher to download a specific version of Chromium and running Puppeteer against it:
 
 ```ts
-const browserFetcher = new BrowserFetcher();
+const browserFetcher = new BrowserFetcher({path: 'path/to/download/folder'});
 const revisionInfo = await browserFetcher.download('533271');
 const browser = await puppeteer.launch({
   executablePath: revisionInfo.executablePath,

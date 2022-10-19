@@ -2,26 +2,30 @@
 sidebar_label: ProductLauncher
 ---
 
-# ProductLauncher interface
+# ProductLauncher class
 
 Describes a launcher - a class that is able to create and launch a browser instance.
 
 **Signature:**
 
 ```typescript
-export interface ProductLauncher
+export declare class ProductLauncher
 ```
+
+## Remarks
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ProductLauncher` class.
 
 ## Properties
 
-| Property                                                        | Modifiers | Type                              | Description |
-| --------------------------------------------------------------- | --------- | --------------------------------- | ----------- |
-| [executablePath](./puppeteer.productlauncher.executablepath.md) |           | (path?: any) =&gt; string         |             |
-| [product](./puppeteer.productlauncher.product.md)               |           | [Product](./puppeteer.product.md) |             |
+| Property                                          | Modifiers             | Type                              | Description |
+| ------------------------------------------------- | --------------------- | --------------------------------- | ----------- |
+| [product](./puppeteer.productlauncher.product.md) | <code>readonly</code> | [Product](./puppeteer.product.md) |             |
 
 ## Methods
 
-| Method                                                            | Description |
-| ----------------------------------------------------------------- | ----------- |
-| [defaultArgs(object)](./puppeteer.productlauncher.defaultargs.md) |             |
-| [launch(object)](./puppeteer.productlauncher.launch.md)           |             |
+| Method                                                                   | Modifiers | Description |
+| ------------------------------------------------------------------------ | --------- | ----------- |
+| [defaultArgs(object)](./puppeteer.productlauncher.defaultargs.md)        |           |             |
+| [executablePath(channel)](./puppeteer.productlauncher.executablepath.md) |           |             |
+| [launch(object)](./puppeteer.productlauncher.launch.md)                  |           |             |

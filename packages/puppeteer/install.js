@@ -28,69 +28,13 @@ const path = require('path');
 const fs = require('fs');
 const {execSync} = require('child_process');
 
-async function download() {
-  if (!fs.existsSync(path.join(__dirname, 'lib'))) {
-    console.log('It seems we are installing from the git repo.');
-    console.log('Building install tools from scratch...');
-    execSync('npm run build');
-  }
-
-  // need to ensure TS is compiled before loading the installer
-  const {
-    downloadBrowser,
-    logPolitely,
-  } = require('puppeteer/lib/cjs/puppeteer/node/install.js');
-
-  if (process.env.PUPPETEER_SKIP_DOWNLOAD) {
-    logPolitely(
-      '**INFO** Skipping browser download. "PUPPETEER_SKIP_DOWNLOAD" environment variable was found.'
-    );
-    return;
-  }
-  if (
-    process.env.NPM_CONFIG_PUPPETEER_SKIP_DOWNLOAD ||
-    process.env.npm_config_puppeteer_skip_download
-  ) {
-    logPolitely(
-      '**INFO** Skipping browser download. "PUPPETEER_SKIP_DOWNLOAD" was set in npm config.'
-    );
-    return;
-  }
-  if (
-    process.env.NPM_PACKAGE_CONFIG_PUPPETEER_SKIP_DOWNLOAD ||
-    process.env.npm_package_config_puppeteer_skip_download
-  ) {
-    logPolitely(
-      '**INFO** Skipping browser download. "PUPPETEER_SKIP_DOWNLOAD" was set in project config.'
-    );
-    return;
-  }
-  if (process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD) {
-    logPolitely(
-      '**INFO** Skipping browser download. "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" environment variable was found.'
-    );
-    return;
-  }
-  if (
-    process.env.NPM_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD ||
-    process.env.npm_config_puppeteer_skip_chromium_download
-  ) {
-    logPolitely(
-      '**INFO** Skipping browser download. "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" was set in npm config.'
-    );
-    return;
-  }
-  if (
-    process.env.NPM_PACKAGE_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD ||
-    process.env.npm_package_config_puppeteer_skip_chromium_download
-  ) {
-    logPolitely(
-      '**INFO** Skipping browser download. "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" was set in project config.'
-    );
-    return;
-  }
-
-  downloadBrowser();
+// Need to ensure TS is compiled before loading the installer
+if (!fs.existsSync(path.join(__dirname, 'lib'))) {
+  console.log('It seems we are installing from the git repo.');
+  console.log('Building install tools from scratch...');
+  execSync('npm run build --workspace puppeteer');
 }
 
-download();
+const {downloadBrowser} = require('puppeteer/internal/node/install.js');
+
+downloadBrowser();

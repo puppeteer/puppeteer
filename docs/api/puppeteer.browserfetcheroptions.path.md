@@ -10,6 +10,6 @@ Determines the path to download browsers to.
 
 ```typescript
 interface BrowserFetcherOptions {
-  path?: string;
+  path: string;
 }
 ```

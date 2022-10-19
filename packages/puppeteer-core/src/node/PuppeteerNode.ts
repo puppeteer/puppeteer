@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import {join} from 'path';
 import {Browser} from '../api/Browser.js';
 import {BrowserConnectOptions} from '../common/BrowserConnector.js';
 import {Product} from '../common/Product.js';
@@ -22,10 +23,17 @@ import {
   ConnectOptions,
   Puppeteer,
 } from '../common/Puppeteer.js';
+import {Configuration} from '../common/Configuration.js';
 import {PUPPETEER_REVISIONS} from '../revisions.js';
 import {BrowserFetcher, BrowserFetcherOptions} from './BrowserFetcher.js';
-import {BrowserLaunchArgumentOptions, LaunchOptions} from './LaunchOptions.js';
-import {createLauncher, ProductLauncher} from './ProductLauncher.js';
+import {ChromeLauncher} from './ChromeLauncher.js';
+import {FirefoxLauncher} from './FirefoxLauncher.js';
+import {
+  BrowserLaunchArgumentOptions,
+  ChromeReleaseChannel,
+  LaunchOptions,
+} from './LaunchOptions.js';
+import {ProductLauncher} from './ProductLauncher.js';
 
 /**
  * @public
@@ -74,28 +82,40 @@ export interface PuppeteerLaunchOptions
  * @public
  */
 export class PuppeteerNode extends Puppeteer {
-  #launcher?: ProductLauncher;
-  #productName?: Product;
+  #_launcher?: ProductLauncher;
+  #lastLaunchedProduct?: Product;
 
   /**
    * @internal
    */
-  _preferredRevision = PUPPETEER_REVISIONS.chromium;
+  defaultBrowserRevision: string;
+
+  /**
+   * @internal
+   */
+  configuration: Configuration = {};
 
   /**
    * @internal
    */
   constructor(
     settings: {
-      preferredRevision?: string;
-      productName?: Product;
+      configuration?: Configuration;
     } & CommonPuppeteerSettings
   ) {
-    const {preferredRevision, productName, ...commonSettings} = settings;
+    const {configuration, ...commonSettings} = settings;
     super(commonSettings);
-    this.#productName = productName;
-    if (preferredRevision) {
-      this._preferredRevision = preferredRevision;
+    if (configuration) {
+      this.configuration = configuration;
+    }
+    switch (this.configuration.defaultProduct) {
+      case 'firefox':
+        this.defaultBrowserRevision = PUPPETEER_REVISIONS.firefox;
+        break;
+      default:
+        this.configuration.defaultProduct = 'chrome';
+        this.defaultBrowserRevision = PUPPETEER_REVISIONS.chromium;
+        break;
     }
 
     this.connect = this.connect.bind(this);
@@ -116,21 +136,8 @@ export class PuppeteerNode extends Puppeteer {
   }
 
   /**
-   * @internal
-   */
-  get _productName(): Product | undefined {
-    return this.#productName;
-  }
-  set _productName(name: Product | undefined) {
-    if (this.#productName !== name) {
-      this._changedProduct = true;
-    }
-    this.#productName = name;
-  }
-
-  /**
-   * Launches puppeteer and launches a browser instance with given arguments and
-   * options when specified.
+   * Launches a browser instance with given arguments and options when
+   * specified.
    *
    * @example
    * You can use `ignoreDefaultArgs` to filter out `--mute-audio` from default arguments:
@@ -142,90 +149,118 @@ export class PuppeteerNode extends Puppeteer {
    * ```
    *
    * @remarks
-   * **NOTE** Puppeteer can also be used to control the Chrome browser, but it
-   * works best with the version of Chromium it is bundled with. There is no
-   * guarantee it will work with any other version. Use `executablePath` option
-   * with extreme caution. If Google Chrome (rather than Chromium) is preferred,
-   * a {@link https://www.google.com/chrome/browser/canary.html | Chrome Canary}
+   * Puppeteer can also be used to control the Chrome browser, but it works best
+   * with the version of Chromium it is bundled with. There is no guarantee it
+   * will work with any other version. Use `executablePath` option with extreme
+   * caution. If Google Chrome (rather than Chromium) is preferred, a
+   * {@link https://www.google.com/chrome/browser/canary.html | Chrome Canary}
    * or
    * {@link https://www.chromium.org/getting-involved/dev-channel | Dev Channel}
-   * build is suggested. In `puppeteer.launch([options])`, any mention of
-   * Chromium also applies to Chrome. See
+   * build is suggested. In {@link Puppeteer.launch}, any mention of Chromium
+   * also applies to Chrome. See
    * {@link https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/ | this article}
    * for a description of the differences between Chromium and Chrome.
    * {@link https://chromium.googlesource.com/chromium/src/+/lkgr/docs/chromium_browser_vs_google_chrome.md | This article}
    * describes some differences for Linux users.
    *
-   * @param options - Set of configurable options to set on the browser.
-   * @returns Promise which resolves to browser instance.
+   * @param options - Options to configure launching behavior.
    */
   launch(options: PuppeteerLaunchOptions = {}): Promise<Browser> {
-    if (options.product) {
-      this._productName = options.product;
-    }
-    return this._launcher.launch(options);
-  }
-
-  /**
-   * @remarks
-   * **NOTE** `puppeteer.executablePath()` is affected by the
-   * `PUPPETEER_EXECUTABLE_PATH` and `PUPPETEER_CHROMIUM_REVISION` environment
-   * variables.
-   *
-   * @returns A path where Puppeteer expects to find the bundled browser. The
-   * browser binary might not be there if the download was skipped with the
-   * `PUPPETEER_SKIP_DOWNLOAD` environment variable.
-   */
-  executablePath(channel?: string): string {
-    return this._launcher.executablePath(channel);
+    const {product = this.defaultProduct} = options;
+    this.#lastLaunchedProduct = product;
+    return this.#launcher.launch(options);
   }
 
   /**
    * @internal
    */
-  get _launcher(): ProductLauncher {
+  get #launcher(): ProductLauncher {
     if (
-      !this.#launcher ||
-      this.#launcher.product !== this._productName ||
-      this._changedProduct
+      this.#_launcher &&
+      this.#_launcher.product === this.lastLaunchedProduct
     ) {
-      switch (this._productName) {
-        case 'firefox':
-          this._preferredRevision = PUPPETEER_REVISIONS.firefox;
-          break;
-        case 'chrome':
-        default:
-          this._preferredRevision = PUPPETEER_REVISIONS.chromium;
-      }
-      this._changedProduct = false;
-      this.#launcher = createLauncher(
-        this._preferredRevision,
-        this._isPuppeteerCore,
-        this._productName
-      );
+      return this.#_launcher;
     }
-    return this.#launcher;
+    switch (this.lastLaunchedProduct) {
+      case 'chrome':
+        this.defaultBrowserRevision = PUPPETEER_REVISIONS.chromium;
+        this.#_launcher = new ChromeLauncher(this);
+        break;
+      case 'firefox':
+        this.defaultBrowserRevision = PUPPETEER_REVISIONS.firefox;
+        this.#_launcher = new FirefoxLauncher(this);
+        break;
+      default:
+        throw new Error(`Unknown product: ${this.#lastLaunchedProduct}`);
+    }
+    return this.#_launcher;
   }
 
   /**
-   * The name of the browser that is under automation (`"chrome"` or
-   * `"firefox"`)
+   * @returns The executable path.
+   */
+  executablePath(channel?: ChromeReleaseChannel): string {
+    return this.#launcher.executablePath(channel);
+  }
+
+  /**
+   * @internal
+   */
+  get browserRevision(): string {
+    return this.configuration.browserRevision ?? this.defaultBrowserRevision!;
+  }
+
+  /**
+   * @returns The default download path for puppeteer. For puppeteer-core, this
+   * code should never be called as it is never defined.
    *
-   * @remarks
-   * The product is set by the `PUPPETEER_PRODUCT` environment variable or the
-   * `product` option in `puppeteer.launch([options])` and defaults to `chrome`.
-   * Firefox support is experimental.
+   * @internal
+   */
+  get defaultDownloadPath(): string | undefined {
+    return (
+      this.configuration.downloadPath ??
+      join(this.configuration.cacheDirectory!, this.product)
+    );
+  }
+
+  /**
+   * @returns The name of the browser that was last launched.
+   *
+   * @public
+   */
+  get lastLaunchedProduct(): Product {
+    return this.#lastLaunchedProduct ?? this.defaultProduct;
+  }
+
+  /**
+   * @returns The name of the browser that will be launched by default. For
+   * `puppeteer`, this is influenced by your configuration. Otherwise, it's
+   * `chrome`.
+   *
+   * @public
+   */
+  get defaultProduct(): Product {
+    return this.configuration.defaultProduct ?? 'chrome';
+  }
+
+  /**
+   * @deprecated Do not use as this field as it does not take into account
+   * multiple browsers of different types. Use {@link defaultProduct} or
+   * {@link lastLaunchedProduct}.
+   *
+   * @returns The name of the browser that is under automation.
    */
   get product(): string {
-    return this._launcher.product;
+    return this.#launcher.product;
   }
 
   /**
    * @param options - Set of configurable options to set on the browser.
+   *
    * @returns The default flags that Chromium will be launched with.
    */
   defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
-    return this._launcher.defaultArgs(options);
+    return this.#launcher.defaultArgs(options);
   }
 
   /**
@@ -237,7 +272,22 @@ export class PuppeteerNode extends Puppeteer {
    *
    * @returns A new BrowserFetcher instance.
    */
-  createBrowserFetcher(options: BrowserFetcherOptions): BrowserFetcher {
-    return new BrowserFetcher(options);
+  createBrowserFetcher(
+    options: Partial<BrowserFetcherOptions>
+  ): BrowserFetcher {
+    const downloadPath = this.defaultDownloadPath;
+    if (downloadPath) {
+      options.path = downloadPath;
+    }
+    if (!options.path) {
+      throw new Error('A `path` must be specified for `puppeteer-core`.');
+    }
+    if (this.configuration.experiments?.macArmChromiumEnabled) {
+      options.useMacOSARMBinary = true;
+    }
+    if (this.configuration.downloadHost) {
+      options.host = this.configuration.downloadHost;
+    }
+    return new BrowserFetcher(options as BrowserFetcherOptions);
   }
 }

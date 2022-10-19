@@ -107,7 +107,7 @@ export class Puppeteer {
   /**
    * @internal
    */
-  protected _isPuppeteerCore: boolean;
+  _isPuppeteerCore: boolean;
   /**
    * @internal
    */

@@ -16,13 +16,13 @@
 
 import https, {RequestOptions} from 'https';
 import createHttpsProxyAgent, {HttpsProxyAgentOptions} from 'https-proxy-agent';
+import {join} from 'path';
 import ProgressBar from 'progress';
 import {getProxyForUrl} from 'proxy-from-env';
 import {BrowserFetcher} from 'puppeteer-core';
-import {PuppeteerNode} from 'puppeteer-core/internal/node/PuppeteerNode.js';
 import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
 import URL from 'url';
-import puppeteer from '../puppeteer.js';
+import {getConfiguration} from '../getConfiguration.js';
 
 /**
  * @internal
@@ -35,57 +35,36 @@ const supportedProducts = {
 /**
  * @internal
  */
-function getProduct(input: string): 'chrome' | 'firefox' {
-  if (input !== 'chrome' && input !== 'firefox') {
-    throw new Error(`Unsupported product ${input}`);
-  }
-  return input;
-}
-
-/**
- * @internal
- */
 export async function downloadBrowser(): Promise<void> {
-  const downloadHost =
-    process.env['PUPPETEER_DOWNLOAD_HOST'] ||
-    process.env['npm_config_puppeteer_download_host'] ||
-    process.env['npm_package_config_puppeteer_download_host'];
-  const product = getProduct(
-    process.env['PUPPETEER_PRODUCT'] ||
-      process.env['npm_config_puppeteer_product'] ||
-      process.env['npm_package_config_puppeteer_product'] ||
-      'chrome'
-  );
-  const downloadPath =
-    process.env['PUPPETEER_DOWNLOAD_PATH'] ||
-    process.env['npm_config_puppeteer_download_path'] ||
-    process.env['npm_package_config_puppeteer_download_path'];
+  const configuration = getConfiguration();
+  if (configuration.skipDownload) {
+    logPolitely('**INFO** Skipping browser download as instructed.');
+  }
+
+  const product = configuration.defaultProduct!;
   const browserFetcher = new BrowserFetcher({
     product,
-    host: downloadHost,
-    path: downloadPath,
+    host: configuration.downloadHost,
+    path:
+      configuration.downloadPath ??
+      join(configuration.cacheDirectory!, product),
   });
-  const revision = await getRevision();
-  await fetchBinary(revision);
 
-  async function getRevision(): Promise<string> {
-    if (product === 'chrome') {
-      return (
-        process.env['PUPPETEER_CHROMIUM_REVISION'] ||
-        process.env['npm_config_puppeteer_chromium_revision'] ||
-        PUPPETEER_REVISIONS.chromium
-      );
-    } else if (product === 'firefox') {
-      (puppeteer as PuppeteerNode)._preferredRevision =
-        PUPPETEER_REVISIONS.firefox;
-      return getFirefoxNightlyVersion().catch(error => {
-        console.error(error);
-        process.exit(1);
-      });
-    } else {
-      throw new Error(`Unsupported product ${product}`);
+  let revision = configuration.browserRevision;
+
+  if (!revision) {
+    switch (product) {
+      case 'chrome':
+        revision = PUPPETEER_REVISIONS.chromium;
+        break;
+      case 'firefox':
+        revision = PUPPETEER_REVISIONS.firefox;
+        revision = await getFirefoxNightlyVersion();
+        break;
     }
   }
+
+  await fetchBinary(revision);
 
   function fetchBinary(revision: string) {
     const revisionInfo = browserFetcher.revisionInfo(revision);
@@ -222,7 +201,7 @@ export async function downloadBrowser(): Promise<void> {
 /**
  * @internal
  */
-export function logPolitely(toBeLogged: unknown): void {
+function logPolitely(toBeLogged: unknown): void {
   const logLevel = process.env['npm_config_loglevel'] || '';
   const logLevelDisplay = ['silent', 'error', 'warn'].indexOf(logLevel) > -1;
 

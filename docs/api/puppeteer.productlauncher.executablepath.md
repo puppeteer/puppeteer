@@ -2,12 +2,22 @@
 sidebar_label: ProductLauncher.executablePath
 ---
 
-# ProductLauncher.executablePath property
+# ProductLauncher.executablePath() method
 
 **Signature:**
 
 ```typescript
-interface ProductLauncher {
-  executablePath: (path?: any) => string;
+class ProductLauncher {
+  executablePath(channel?: ChromeReleaseChannel): string;
 }
 ```
+
+## Parameters
+
+| Parameter | Type                                                        | Description       |
+| --------- | ----------------------------------------------------------- | ----------------- |
+| channel   | [ChromeReleaseChannel](./puppeteer.chromereleasechannel.md) | <i>(Optional)</i> |
+
+**Returns:**
+
+string

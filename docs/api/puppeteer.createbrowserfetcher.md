@@ -8,6 +8,8 @@ sidebar_label: createBrowserFetcher
 
 ```typescript
 createBrowserFetcher: (
-  options: import('puppeteer-core/internal/node/BrowserFetcher.js').BrowserFetcherOptions
+  options: Partial<
+    import('puppeteer-core/internal/node/BrowserFetcher.js').BrowserFetcherOptions
+  >
 ) => import('puppeteer-core/internal/node/BrowserFetcher.js').BrowserFetcher;
 ```
