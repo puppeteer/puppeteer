@@ -16,7 +16,8 @@
 
 import {Protocol} from 'devtools-protocol';
 import type {Readable} from 'stream';
-import type {Browser, BrowserContext} from '../api/Browser.js';
+import type {Browser} from '../api/Browser.js';
+import type {BrowserContext} from '../api/BrowserContext.js';
 import {
   GeolocationOptions,
   MediaFeature,

@@ -17,7 +17,8 @@
 import utils from './utils.js';
 import expect from 'expect';
 import {getTestState} from './mocha-utils.js';
-import {Browser, BrowserContext} from 'puppeteer-core/internal/api/Browser.js';
+import {Browser} from 'puppeteer-core/internal/api/Browser.js';
+import {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
 
 describe('OOPIF', function () {

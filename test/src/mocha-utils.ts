@@ -20,7 +20,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import rimraf from 'rimraf';
 import sinon from 'sinon';
-import {Browser, BrowserContext} from 'puppeteer-core/internal/api/Browser.js';
+import {Browser} from 'puppeteer-core/internal/api/Browser.js';
+import {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 import {

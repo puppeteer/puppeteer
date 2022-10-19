@@ -17,11 +17,8 @@
 import {Page, PageEmittedEvents} from '../api/Page.js';
 import {WebWorker} from './WebWorker.js';
 import {CDPSession} from './Connection.js';
-import type {
-  Browser,
-  BrowserContext,
-  IsPageTargetCallback,
-} from '../api/Browser.js';
+import type {Browser, IsPageTargetCallback} from '../api/Browser.js';
+import type {BrowserContext} from '../api/BrowserContext.js';
 import {Viewport} from './PuppeteerViewport.js';
 import {Protocol} from 'devtools-protocol';
 import {TaskQueue} from './TaskQueue.js';
