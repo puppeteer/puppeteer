@@ -28,7 +28,6 @@ import {ChromeTargetManager} from './ChromeTargetManager.js';
 import {FirefoxTargetManager} from './FirefoxTargetManager.js';
 import {
   Browser as BrowserBase,
-  BrowserContext,
   BrowserCloseCallback,
   TargetFilterCallback,
   IsPageTargetCallback,
@@ -39,6 +38,7 @@ import {
   WaitForTargetOptions,
   Permission,
 } from '../api/Browser.js';
+import {BrowserContext} from '../api/BrowserContext.js';
 
 /**
  * @internal

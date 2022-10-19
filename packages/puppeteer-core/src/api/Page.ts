@@ -48,7 +48,8 @@ import type {Target} from '../common/Target.js';
 import type {Tracing} from '../common/Tracing.js';
 import type {EvaluateFunc, HandleFor, NodeFor} from '../common/types.js';
 import type {WebWorker} from '../common/WebWorker.js';
-import type {Browser, BrowserContext} from './Browser.js';
+import type {Browser} from './Browser.js';
+import type {BrowserContext} from './BrowserContext.js';
 
 /**
  * @public

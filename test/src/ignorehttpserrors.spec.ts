@@ -16,7 +16,8 @@
 
 import expect from 'expect';
 import {TLSSocket} from 'tls';
-import {Browser, BrowserContext} from 'puppeteer-core/internal/api/Browser.js';
+import {Browser} from 'puppeteer-core/internal/api/Browser.js';
+import {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
 import {HTTPResponse} from 'puppeteer-core/internal/common/HTTPResponse.js';
 import {getTestState} from './mocha-utils.js';
