@@ -596,6 +596,10 @@ export class CDPBrowserContext extends BrowserContext {
     this.#id = contextId;
   }
 
+  override get id(): string | undefined {
+    return this.#id;
+  }
+
   /**
    * An array of all active targets inside the browser context.
    */
