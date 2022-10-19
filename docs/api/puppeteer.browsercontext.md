@@ -37,6 +37,12 @@ await page.goto('https://example.com');
 await context.close();
 ```
 
+## Properties
+
+| Property                               | Modifiers             | Type                | Description |
+| -------------------------------------- | --------------------- | ------------------- | ----------- |
+| [id](./puppeteer.browsercontext.id.md) | <code>readonly</code> | string \| undefined |             |
+
 ## Methods
 
 | Method                                                                                        | Modifiers | Description                                                                                                         |

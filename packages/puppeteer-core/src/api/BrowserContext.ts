@@ -178,4 +178,8 @@ export class BrowserContext extends EventEmitter {
   close(): Promise<void> {
     throw new Error('Not implemented');
   }
+
+  get id(): string | undefined {
+    return undefined;
+  }
 }
