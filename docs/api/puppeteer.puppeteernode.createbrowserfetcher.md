@@ -6,7 +6,7 @@ sidebar_label: PuppeteerNode.createBrowserFetcher
 
 > Warning: This API is now obsolete.
 >
-> Import [BrowserFetcher](./puppeteer.browserfetcher.md) directly and use the constructor.
+> If you are using `puppeteer-core`, do not use this method. Just construct [BrowserFetcher](./puppeteer.browserfetcher.md) manually.
 
 **Signature:**
 
