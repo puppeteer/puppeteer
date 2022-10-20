@@ -229,10 +229,12 @@ export class PuppeteerNode extends Puppeteer {
   }
 
   /**
-   * @deprecated Import {@link BrowserFetcher} directly and use the constructor.
+   * @deprecated If you are using `puppeteer-core`, do not use this method. Just
+   * construct {@link BrowserFetcher} manually.
    *
    * @param options - Set of configurable options to specify the settings of the
    * BrowserFetcher.
+   *
    * @returns A new BrowserFetcher instance.
    */
   createBrowserFetcher(options: BrowserFetcherOptions): BrowserFetcher {

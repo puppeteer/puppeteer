@@ -36,7 +36,9 @@ const puppeteer = new PuppeteerNode({
 
 export const {
   connect,
-  /** @deprecated Import {@link BrowserFetcher} directly and use the constructor. */
+  /**
+   * @deprecated Construct {@link BrowserFetcher} manually.
+   */
   createBrowserFetcher,
   defaultArgs,
   executablePath,
