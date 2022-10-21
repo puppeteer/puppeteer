@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.1.0](https://github.com/puppeteer/puppeteer/compare/v19.0.0...v19.1.0) (2022-10-21)
+
+
+### Features
+
+* use configuration files ([#9140](https://github.com/puppeteer/puppeteer/issues/9140)) ([ec20174](https://github.com/puppeteer/puppeteer/commit/ec201744f077987b288e3dff52c0906fe700f6fb)), closes [#9128](https://github.com/puppeteer/puppeteer/issues/9128)
+
+
+### Bug Fixes
+
+* update `BrowserFetcher` deprecation message ([#9141](https://github.com/puppeteer/puppeteer/issues/9141)) ([efcbc97](https://github.com/puppeteer/puppeteer/commit/efcbc97c60e4cfd49a9ed25a900f6133d06b290b))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 19.0.0 to ^19.1.0
+
 ## [19.0.0](https://github.com/puppeteer/puppeteer/compare/v18.2.1...v19.0.0) (2022-10-14)
 
 
