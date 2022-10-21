@@ -44,16 +44,18 @@ Once you have created a `page` you have access to a large API to interact with t
 
 ## Properties
 
-| Property                                        | Modifiers             | Type   | Description                                                                                                            |
-| ----------------------------------------------- | --------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------- |
-| [product](./puppeteer.puppeteernode.product.md) | <code>readonly</code> | string | The name of the browser that is under automation (<code>&quot;chrome&quot;</code> or <code>&quot;firefox&quot;</code>) |
+| Property                                                                | Modifiers             | Type                              | Description |
+| ----------------------------------------------------------------------- | --------------------- | --------------------------------- | ----------- |
+| [defaultProduct](./puppeteer.puppeteernode.defaultproduct.md)           | <code>readonly</code> | [Product](./puppeteer.product.md) |             |
+| [lastLaunchedProduct](./puppeteer.puppeteernode.lastlaunchedproduct.md) | <code>readonly</code> | [Product](./puppeteer.product.md) |             |
+| [product](./puppeteer.puppeteernode.product.md)                         | <code>readonly</code> | string                            |             |
 
 ## Methods
 
-| Method                                                                             | Modifiers | Description                                                                                         |
-| ---------------------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------- |
-| [connect(options)](./puppeteer.puppeteernode.connect.md)                           |           | This method attaches Puppeteer to an existing browser instance.                                     |
-| [createBrowserFetcher(options)](./puppeteer.puppeteernode.createbrowserfetcher.md) |           |                                                                                                     |
-| [defaultArgs(options)](./puppeteer.puppeteernode.defaultargs.md)                   |           |                                                                                                     |
-| [executablePath(channel)](./puppeteer.puppeteernode.executablepath.md)             |           |                                                                                                     |
-| [launch(options)](./puppeteer.puppeteernode.launch.md)                             |           | Launches puppeteer and launches a browser instance with given arguments and options when specified. |
+| Method                                                                             | Modifiers | Description                                                                  |
+| ---------------------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------- |
+| [connect(options)](./puppeteer.puppeteernode.connect.md)                           |           | This method attaches Puppeteer to an existing browser instance.              |
+| [createBrowserFetcher(options)](./puppeteer.puppeteernode.createbrowserfetcher.md) |           |                                                                              |
+| [defaultArgs(options)](./puppeteer.puppeteernode.defaultargs.md)                   |           |                                                                              |
+| [executablePath(channel)](./puppeteer.puppeteernode.executablepath.md)             |           |                                                                              |
+| [launch(options)](./puppeteer.puppeteernode.launch.md)                             |           | Launches a browser instance with given arguments and options when specified. |

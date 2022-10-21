@@ -4,7 +4,9 @@ sidebar_label: PuppeteerNode.product
 
 # PuppeteerNode.product property
 
-The name of the browser that is under automation (`"chrome"` or `"firefox"`)
+> Warning: This API is now obsolete.
+>
+> Do not use as this field as it does not take into account multiple browsers of different types. Use or .
 
 **Signature:**
 
@@ -13,7 +15,3 @@ class PuppeteerNode {
   get product(): string;
 }
 ```
-
-## Remarks
-
-The product is set by the `PUPPETEER_PRODUCT` environment variable or the `product` option in `puppeteer.launch([options])` and defaults to `chrome`. Firefox support is experimental.

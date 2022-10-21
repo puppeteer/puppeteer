@@ -51,6 +51,7 @@ export interface DescribeInstallationOptions {
    * This should be idempotent.
    */
   env?: ((cwd: string) => NodeJS.ProcessEnv) | NodeJS.ProcessEnv;
+  before?: (cwd: string) => Promise<void>;
 }
 
 export interface DescribeInstallationContext {
@@ -92,6 +93,10 @@ export const describeInstallation = (
         };
       }
       env = {...process.env, ...getEnv(sandbox)};
+
+      if (options.before) {
+        await options.before(sandbox);
+      }
     });
 
     after(async () => {

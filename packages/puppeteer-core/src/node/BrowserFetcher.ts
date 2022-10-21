@@ -16,7 +16,7 @@
 
 import {exec as execChildProcess} from 'child_process';
 import extractZip from 'extract-zip';
-import {createReadStream, createWriteStream, existsSync} from 'fs';
+import {createReadStream, createWriteStream, existsSync, readdirSync} from 'fs';
 import {chmod, mkdir, readdir, unlink} from 'fs/promises';
 import * as http from 'http';
 import * as https from 'https';
@@ -35,12 +35,7 @@ import * as util from 'util';
 import {promisify} from 'util';
 import {debug} from '../common/Debug.js';
 import {Product} from '../common/Product.js';
-import {PUPPETEER_CACHE_DIR} from '../constants.js';
 import {assert} from '../util/assert.js';
-
-const experimentalChromiumMacArm =
-  process.env['PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM'] ||
-  process.env['npm_config_puppeteer_experimental_chromium_mac_arm'];
 
 const debugFetcher = debug('puppeteer:fetcher');
 
@@ -141,23 +136,38 @@ function handleArm64(): void {
  */
 export interface BrowserFetcherOptions {
   /**
+   * Determines the path to download browsers to.
+   */
+  path: string;
+  /**
    * Determines which platform the browser will be suited for.
+   *
+   * @defaultValue Auto-detected.
    */
   platform?: Platform;
   /**
    * Determines which product the {@link BrowserFetcher} is for.
    *
-   * @defaultValue `"chrome"`
+   * @defaultValue `"chrome"`.
    */
   product?: 'chrome' | 'firefox';
   /**
-   * Determines the path to download browsers to.
-   */
-  path?: string;
-  /**
    * Determines the host that will be used for downloading.
+   *
+   * @defaultValue Either
+   *
+   * - https://storage.googleapis.com or
+   * - https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central
+   *
    */
   host?: string;
+
+  /**
+   * Enables the use of the Chromium binary for macOS ARM.
+   *
+   * @experimental
+   */
+  useMacOSARMBinary?: boolean;
 }
 
 /**
@@ -196,7 +206,7 @@ export interface BrowserFetcherRevisionInfo {
  * and running Puppeteer against it:
  *
  * ```ts
- * const browserFetcher = new BrowserFetcher();
+ * const browserFetcher = new BrowserFetcher({path: 'path/to/download/folder'});
  * const revisionInfo = await browserFetcher.download('533271');
  * const browser = await puppeteer.launch({
  *   executablePath: revisionInfo.executablePath,
@@ -208,23 +218,17 @@ export interface BrowserFetcherRevisionInfo {
 
 export class BrowserFetcher {
   #product: Product;
-  #downloadFolder: string;
+  #downloadPath: string;
   #downloadHost: string;
   #platform: Platform;
 
   /**
    * Constructs a browser fetcher for the given options.
    */
-  constructor(options: BrowserFetcherOptions = {}) {
-    this.#product = (options.product || 'chrome').toLowerCase() as Product;
-    assert(
-      this.#product === 'chrome' || this.#product === 'firefox',
-      `Unknown product: "${options.product}"`
-    );
-
-    this.#downloadFolder =
-      options.path || path.join(PUPPETEER_CACHE_DIR, this.#product);
-    this.#downloadHost = options.host || browserConfig[this.#product].host;
+  constructor(options: BrowserFetcherOptions) {
+    this.#product = options.product ?? 'chrome';
+    this.#downloadPath = options.path;
+    this.#downloadHost = options.host ?? browserConfig[this.#product].host;
 
     if (options.platform) {
       this.#platform = options.platform;
@@ -235,7 +239,7 @@ export class BrowserFetcher {
           switch (this.#product) {
             case 'chrome':
               this.#platform =
-                os.arch() === 'arm64' && experimentalChromiumMacArm
+                os.arch() === 'arm64' && options.useMacOSARMBinary
                   ? 'mac_arm'
                   : 'mac';
               break;
@@ -342,13 +346,13 @@ export class BrowserFetcher {
     );
     const fileName = url.split('/').pop();
     assert(fileName, `A malformed download URL was found: ${url}.`);
-    const archivePath = path.join(this.#downloadFolder, fileName);
+    const archivePath = path.join(this.#downloadPath, fileName);
     const outputPath = this.#getFolderPath(revision);
     if (existsSync(outputPath)) {
       return this.revisionInfo(revision);
     }
-    if (!existsSync(this.#downloadFolder)) {
-      await mkdir(this.#downloadFolder, {recursive: true});
+    if (!existsSync(this.#downloadPath)) {
+      await mkdir(this.#downloadPath, {recursive: true});
     }
 
     // Use system Chromium builds on Linux ARM devices
@@ -374,25 +378,21 @@ export class BrowserFetcher {
   /**
    * @remarks
    * This method is affected by the current `product`.
-   * @returns A promise with a list of all revision strings (for the current `product`)
+   * @returns A list of all revision strings (for the current `product`)
    * available locally on disk.
    */
-  async localRevisions(): Promise<string[]> {
-    if (!existsSync(this.#downloadFolder)) {
+  localRevisions(): string[] {
+    if (!existsSync(this.#downloadPath)) {
       return [];
     }
-    const fileNames = await readdir(this.#downloadFolder);
+    const fileNames = readdirSync(this.#downloadPath);
     return fileNames
       .map(fileName => {
         return parseFolderPath(this.#product, fileName);
       })
-      .filter(
-        (
-          entry
-        ): entry is {product: string; platform: string; revision: string} => {
-          return (entry && entry.platform === this.#platform) ?? false;
-        }
-      )
+      .filter((entry): entry is Exclude<typeof entry, undefined> => {
+        return (entry && entry.platform === this.#platform) ?? false;
+      })
       .map(entry => {
         return entry.revision;
       });
@@ -502,7 +502,7 @@ export class BrowserFetcher {
   }
 
   #getFolderPath(revision: string): string {
-    return path.resolve(this.#downloadFolder, `${this.#platform}-${revision}`);
+    return path.resolve(this.#downloadPath, `${this.#platform}-${revision}`);
   }
 }
 

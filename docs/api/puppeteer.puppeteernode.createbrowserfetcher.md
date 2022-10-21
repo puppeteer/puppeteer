@@ -12,15 +12,15 @@ sidebar_label: PuppeteerNode.createBrowserFetcher
 
 ```typescript
 class PuppeteerNode {
-  createBrowserFetcher(options: BrowserFetcherOptions): BrowserFetcher;
+  createBrowserFetcher(options: Partial<BrowserFetcherOptions>): BrowserFetcher;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                          | Description                                                                |
-| --------- | ------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| options   | [BrowserFetcherOptions](./puppeteer.browserfetcheroptions.md) | Set of configurable options to specify the settings of the BrowserFetcher. |
+| Parameter | Type                                                                         | Description                                                                |
+| --------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| options   | Partial&lt;[BrowserFetcherOptions](./puppeteer.browserfetcheroptions.md)&gt; | Set of configurable options to specify the settings of the BrowserFetcher. |
 
 **Returns:**
 

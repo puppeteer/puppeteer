@@ -13,192 +13,118 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {accessSync, existsSync} from 'fs';
-import os from 'os';
+import {existsSync} from 'fs';
+import os, {tmpdir} from 'os';
+import {join} from 'path';
 import {Browser} from '../api/Browser.js';
 import {Product} from '../common/Product.js';
 import {BrowserFetcher} from './BrowserFetcher.js';
-import {ChromeLauncher} from './ChromeLauncher.js';
-import {FirefoxLauncher} from './FirefoxLauncher.js';
 import {
   BrowserLaunchArgumentOptions,
   ChromeReleaseChannel,
   PuppeteerNodeLaunchOptions,
 } from './LaunchOptions.js';
+import {PuppeteerNode} from './PuppeteerNode.js';
 
 /**
  * Describes a launcher - a class that is able to create and launch a browser instance.
+ *
  * @public
  */
-export interface ProductLauncher {
+export class ProductLauncher {
+  #product: Product;
+
+  /**
+   * @internal
+   */
+  puppeteer: PuppeteerNode;
+
+  /**
+   * @internal
+   */
+  constructor(puppeteer: PuppeteerNode, product: Product) {
+    this.puppeteer = puppeteer;
+    this.#product = product;
+  }
+
+  get product(): Product {
+    return this.#product;
+  }
+
   launch(object: PuppeteerNodeLaunchOptions): Promise<Browser>;
-  executablePath: (path?: any) => string;
+  launch(): Promise<Browser> {
+    throw new Error('Not implemented');
+  }
+
+  executablePath(channel?: ChromeReleaseChannel): string;
+  executablePath(): string {
+    throw new Error('Not implemented');
+  }
+
   defaultArgs(object: BrowserLaunchArgumentOptions): string[];
-  product: Product;
-}
-
-/**
- * @internal
- */
-export function executablePathForChannel(
-  channel: ChromeReleaseChannel
-): string {
-  const platform = os.platform();
-
-  let chromePath: string | undefined;
-  switch (platform) {
-    case 'win32':
-      switch (channel) {
-        case 'chrome':
-          chromePath = `${process.env['PROGRAMFILES']}\\Google\\Chrome\\Application\\chrome.exe`;
-          break;
-        case 'chrome-beta':
-          chromePath = `${process.env['PROGRAMFILES']}\\Google\\Chrome Beta\\Application\\chrome.exe`;
-          break;
-        case 'chrome-canary':
-          chromePath = `${process.env['PROGRAMFILES']}\\Google\\Chrome SxS\\Application\\chrome.exe`;
-          break;
-        case 'chrome-dev':
-          chromePath = `${process.env['PROGRAMFILES']}\\Google\\Chrome Dev\\Application\\chrome.exe`;
-          break;
-      }
-      break;
-    case 'darwin':
-      switch (channel) {
-        case 'chrome':
-          chromePath =
-            '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-          break;
-        case 'chrome-beta':
-          chromePath =
-            '/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta';
-          break;
-        case 'chrome-canary':
-          chromePath =
-            '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary';
-          break;
-        case 'chrome-dev':
-          chromePath =
-            '/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev';
-          break;
-      }
-      break;
-    case 'linux':
-      switch (channel) {
-        case 'chrome':
-          chromePath = '/opt/google/chrome/chrome';
-          break;
-        case 'chrome-beta':
-          chromePath = '/opt/google/chrome-beta/chrome';
-          break;
-        case 'chrome-dev':
-          chromePath = '/opt/google/chrome-unstable/chrome';
-          break;
-      }
-      break;
+  defaultArgs(): string[] {
+    throw new Error('Not implemented');
   }
 
-  if (!chromePath) {
-    throw new Error(
-      `Unable to detect browser executable path for '${channel}' on ${platform}.`
+  /**
+   * @internal
+   */
+  protected getProfilePath(): string {
+    return join(
+      this.puppeteer.configuration.temporaryDirectory ?? tmpdir(),
+      `puppeteer_dev_${this.product}_profile-`
     );
   }
 
-  // Check if Chrome exists and is accessible.
-  try {
-    accessSync(chromePath);
-  } catch (error) {
-    throw new Error(
-      `Could not find Google Chrome executable for channel '${channel}' at '${chromePath}'.`
-    );
-  }
-
-  return chromePath;
-}
-
-/**
- * @internal
- */
-export function resolveExecutablePath(
-  launcher: ChromeLauncher | FirefoxLauncher
-): {
-  executablePath: string;
-  missingText?: string;
-} {
-  const {product, _isPuppeteerCore, _preferredRevision} = launcher;
-  let downloadPath: string | undefined;
-  // puppeteer-core doesn't take into account PUPPETEER_* env variables.
-  if (!_isPuppeteerCore) {
-    const executablePath =
-      process.env['PUPPETEER_EXECUTABLE_PATH'] ||
-      process.env['npm_config_puppeteer_executable_path'] ||
-      process.env['npm_package_config_puppeteer_executable_path'];
+  /**
+   * @internal
+   */
+  protected resolveExecutablePath(): string {
+    const executablePath = this.puppeteer.configuration.executablePath;
     if (executablePath) {
-      const missingText = !existsSync(executablePath)
-        ? 'Tried to use PUPPETEER_EXECUTABLE_PATH env variable to launch browser but did not find any executable at: ' +
-          executablePath
-        : undefined;
-      return {executablePath, missingText};
+      if (!existsSync(executablePath)) {
+        throw new Error(
+          `Tried to find the browser at the configured path (${executablePath}), but no executable was found.`
+        );
+      }
+      return executablePath;
     }
+
     const ubuntuChromiumPath = '/usr/bin/chromium-browser';
     if (
-      product === 'chrome' &&
+      this.product === 'chrome' &&
       os.platform() !== 'darwin' &&
       os.arch() === 'arm64' &&
       existsSync(ubuntuChromiumPath)
     ) {
-      return {executablePath: ubuntuChromiumPath, missingText: undefined};
+      return ubuntuChromiumPath;
     }
-    downloadPath =
-      process.env['PUPPETEER_DOWNLOAD_PATH'] ||
-      process.env['npm_config_puppeteer_download_path'] ||
-      process.env['npm_package_config_puppeteer_download_path'];
-  }
-  const browserFetcher = new BrowserFetcher({
-    product: product,
-    path: downloadPath,
-  });
 
-  if (!_isPuppeteerCore) {
-    let revision = process.env['PUPPETEER_BROWSER_REVISION'];
-    if (product === 'chrome') {
-      revision ??= process.env['PUPPETEER_CHROMIUM_REVISION'];
+    const browserFetcher = new BrowserFetcher({
+      product: this.product,
+      path: this.puppeteer.defaultDownloadPath!,
+    });
+
+    const revisionInfo = browserFetcher.revisionInfo(
+      this.puppeteer.browserRevision
+    );
+    if (!revisionInfo.local) {
+      if (this.puppeteer.configuration.browserRevision) {
+        throw new Error(
+          `Tried to find the browser at the configured path (${revisionInfo.executablePath}) for revision ${this.puppeteer.browserRevision}, but no executable was found.`
+        );
+      }
+      switch (this.product) {
+        case 'chrome':
+          throw new Error(
+            `Run \`npm install\` to download the correct Chromium revision (${this.puppeteer.browserRevision}).`
+          );
+        case 'firefox':
+          throw new Error(
+            `Run \`PUPPETEER_PRODUCT=firefox npm install\` to download a supported Firefox browser binary.`
+          );
+      }
     }
-    if (revision) {
-      const revisionInfo = browserFetcher.revisionInfo(revision);
-      const missingText = !revisionInfo.local
-        ? 'Tried to use PUPPETEER_CHROMIUM_REVISION env variable to launch browser but did not find executable at: ' +
-          revisionInfo.executablePath
-        : undefined;
-      return {executablePath: revisionInfo.executablePath, missingText};
-    }
-  }
-  const revisionInfo = browserFetcher.revisionInfo(_preferredRevision);
-
-  const firefoxHelp = `Run \`PUPPETEER_PRODUCT=firefox npm install\` to download a supported Firefox browser binary.`;
-  const chromeHelp = `Run \`npm install\` to download the correct Chromium revision (${launcher._preferredRevision}).`;
-  const missingText = !revisionInfo.local
-    ? `Could not find expected browser (${product}) locally. ${
-        product === 'chrome' ? chromeHelp : firefoxHelp
-      }`
-    : undefined;
-  return {executablePath: revisionInfo.executablePath, missingText};
-}
-
-/**
- * @internal
- */
-export function createLauncher(
-  preferredRevision: string,
-  isPuppeteerCore: boolean,
-  product: Product = 'chrome'
-): ProductLauncher {
-  switch (product) {
-    case 'firefox':
-      return new FirefoxLauncher(preferredRevision, isPuppeteerCore);
-    case 'chrome':
-      return new ChromeLauncher(preferredRevision, isPuppeteerCore);
-    default:
-      throw new Error(`Unknown product: ${product}`);
+    return revisionInfo.executablePath;
   }
 }

@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 
-import {homedir} from 'os';
-import {join} from 'path';
+import {Product} from './Product.js';
 
 /**
- * @internal
+ * @public
  */
-export const PUPPETEER_CACHE_DIR =
-  process.env['PUPPETEER_CACHE_DIR'] ?? join(homedir(), '.cache', 'puppeteer');
+export interface Configuration {
+  browserRevision?: string;
+  cacheDirectory?: string;
+  downloadHost?: string;
+  downloadPath?: string;
+  executablePath?: string;
+  defaultProduct?: Product;
+  temporaryDirectory?: string;
+  skipDownload?: boolean;
+  logLevel?: 'silent' | 'error' | 'warn';
+  experiments?: {
+    macArmChromiumEnabled?: boolean;
+  };
+}

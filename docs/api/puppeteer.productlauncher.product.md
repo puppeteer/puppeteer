@@ -7,7 +7,7 @@ sidebar_label: ProductLauncher.product
 **Signature:**
 
 ```typescript
-interface ProductLauncher {
-  product: Product;
+class ProductLauncher {
+  get product(): Product;
 }
 ```

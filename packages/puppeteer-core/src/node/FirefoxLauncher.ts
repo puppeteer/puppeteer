@@ -4,7 +4,6 @@ import path from 'path';
 import {Browser} from '../api/Browser.js';
 import {Browser as BiDiBrowser} from '../common/bidi/Browser.js';
 import {CDPBrowser} from '../common/Browser.js';
-import {Product} from '../common/Product.js';
 import {assert} from '../util/assert.js';
 import {BrowserFetcher} from './BrowserFetcher.js';
 import {BrowserRunner} from './BrowserRunner.js';
@@ -12,33 +11,25 @@ import {
   BrowserLaunchArgumentOptions,
   PuppeteerNodeLaunchOptions,
 } from './LaunchOptions.js';
-import {ProductLauncher, resolveExecutablePath} from './ProductLauncher.js';
-import {tmpdir} from './util.js';
+import {ProductLauncher} from './ProductLauncher.js';
+import {PuppeteerNode} from './PuppeteerNode.js';
 
 /**
  * @internal
  */
-export class FirefoxLauncher implements ProductLauncher {
-  /**
-   * @internal
-   */
-  _preferredRevision: string;
-  /**
-   * @internal
-   */
-  _isPuppeteerCore: boolean;
-
-  constructor(preferredRevision: string, isPuppeteerCore: boolean) {
-    this._preferredRevision = preferredRevision;
-    this._isPuppeteerCore = isPuppeteerCore;
+export class FirefoxLauncher extends ProductLauncher {
+  constructor(puppeteer: PuppeteerNode) {
+    super(puppeteer, 'firefox');
   }
 
-  async launch(options: PuppeteerNodeLaunchOptions = {}): Promise<Browser> {
+  override async launch(
+    options: PuppeteerNodeLaunchOptions = {}
+  ): Promise<Browser> {
     const {
       ignoreDefaultArgs = false,
       args = [],
       dumpio = false,
-      executablePath = null,
+      executablePath,
       pipe = false,
       env = process.env,
       handleSIGINT = true,
@@ -107,20 +98,15 @@ export class FirefoxLauncher implements ProductLauncher {
       firefoxArguments.push(userDataDir);
     }
 
-    if (!this._isPuppeteerCore) {
-      await this._updateRevision();
-    }
-    let firefoxExecutable = executablePath;
-    if (!executablePath) {
-      const {missingText, executablePath} = resolveExecutablePath(this);
-      if (missingText) {
-        throw new Error(missingText);
-      }
+    let firefoxExecutable: string;
+    if (this.puppeteer._isPuppeteerCore || executablePath) {
+      assert(
+        executablePath,
+        `An \`executablePath\` must be specified for \`puppeteer-core\``
+      );
       firefoxExecutable = executablePath;
-    }
-
-    if (!firefoxExecutable) {
-      throw new Error('firefoxExecutable is not found.');
+    } else {
+      firefoxExecutable = this.executablePath();
     }
 
     const runner = new BrowserRunner(
@@ -145,7 +131,7 @@ export class FirefoxLauncher implements ProductLauncher {
         const connection = await runner.setupWebDriverBiDiConnection({
           timeout,
           slowMo,
-          preferredRevision: this._preferredRevision,
+          preferredRevision: this.puppeteer.browserRevision,
         });
         browser = await BiDiBrowser.create({
           connection,
@@ -166,7 +152,7 @@ export class FirefoxLauncher implements ProductLauncher {
         usePipe: pipe,
         timeout,
         slowMo,
-        preferredRevision: this._preferredRevision,
+        preferredRevision: this.puppeteer.browserRevision,
       });
       browser = await CDPBrowser._create(
         this.product,
@@ -200,28 +186,22 @@ export class FirefoxLauncher implements ProductLauncher {
     return browser;
   }
 
-  executablePath(): string {
-    return resolveExecutablePath(this).executablePath;
-  }
-
-  async _updateRevision(): Promise<void> {
+  override executablePath(): string {
     // replace 'latest' placeholder with actual downloaded revision
-    if (this._preferredRevision === 'latest') {
+    if (this.puppeteer.browserRevision === 'latest') {
       const browserFetcher = new BrowserFetcher({
         product: this.product,
+        path: this.puppeteer.defaultDownloadPath!,
       });
-      const localRevisions = await browserFetcher.localRevisions();
+      const localRevisions = browserFetcher.localRevisions();
       if (localRevisions[0]) {
-        this._preferredRevision = localRevisions[0];
+        this.puppeteer.configuration.browserRevision = localRevisions[0];
       }
     }
+    return this.resolveExecutablePath();
   }
 
-  get product(): Product {
-    return 'firefox';
-  }
-
-  defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
+  override defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
     const {
       devtools = false,
       headless = !devtools,
@@ -503,7 +483,7 @@ export class FirefoxLauncher implements ProductLauncher {
 
   async _createProfile(extraPrefs: {[x: string]: unknown}): Promise<string> {
     const temporaryProfilePath = await fs.promises.mkdtemp(
-      path.join(tmpdir(), 'puppeteer_dev_firefox_profile-')
+      this.getProfilePath()
     );
 
     const prefs = this.defaultPreferences(extraPrefs);

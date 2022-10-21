@@ -11,5 +11,5 @@ launch: (
   options?:
     | import('puppeteer-core/internal/node/PuppeteerNode.js').PuppeteerLaunchOptions
     | undefined
-) => Promise<import('./types').Browser>;
+) => Promise<import('./types.js').Browser>;
 ```

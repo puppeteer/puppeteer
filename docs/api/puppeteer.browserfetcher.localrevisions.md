@@ -8,15 +8,15 @@ sidebar_label: BrowserFetcher.localRevisions
 
 ```typescript
 class BrowserFetcher {
-  localRevisions(): Promise<string[]>;
+  localRevisions(): string[];
 }
 ```
 
 **Returns:**
 
-Promise&lt;string\[\]&gt;
+string\[\]
 
-A promise with a list of all revision strings (for the current `product`) available locally on disk.
+A list of all revision strings (for the current `product`) available locally on disk.
 
 ## Remarks
 
