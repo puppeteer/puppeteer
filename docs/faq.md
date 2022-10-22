@@ -117,7 +117,7 @@ npm install puppeteer-core@chrome-71
 Find the version using one of the following ways:
 
 - Look for the `chromium` entry in
-  [revisions.ts](https://github.com/puppeteer/puppeteer/blob/main/src/revisions.ts).
+  [revisions.ts](https://github.com/puppeteer/puppeteer/blob/main/packages/puppeteer-core/src/revisions.ts).
   To find the corresponding Chromium commit and version number, search for the
   revision prefixed by an `r` in [OmahaProxy](https://omahaproxy.appspot.com/)'s
   "Find Releases" section.
@@ -132,7 +132,7 @@ Since Firefox support is experimental, Puppeteer downloads the latest
 [Firefox Nightly](https://wiki.mozilla.org/Nightly) when the `PUPPETEER_PRODUCT`
 environment variable is set to `firefox`. That's also why the value of `firefox`
 in
-[revisions.ts](https://github.com/puppeteer/puppeteer/blob/main/src/revisions.ts)
+[revisions.ts](https://github.com/puppeteer/puppeteer/blob/main/packages/puppeteer-core/src/revisions.ts)
 is `latest` -- Puppeteer isn't tied to a particular Firefox version.
 
 To fetch Firefox Nightly as part of Puppeteer installation:
