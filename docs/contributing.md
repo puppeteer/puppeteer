@@ -266,9 +266,9 @@ The following steps are needed to update the Chromium version.
    number.
 3. Update `versions.js` with the new Chromium-to-Puppeteer version mapping and
    update `lastMaintainedChromiumVersion` with the latest stable Chrome version.
-4. Run `npm run check:protocol-revision`. If it fails, update `package.json`
+4. Run `npm run check`. If it fails, update `packages/puppeteer-core/package.json` and `packages/puppeteer/package.json`
    with the expected `devtools-protocol` version.
-5. Run `npm run build` and `npm install`.
+5. Run `npm run clean`, `npm run build` and `npm install`.
 6. Run `npm test` and ensure that all tests pass. If a test fails,
    [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and
    either update the test expectations accordingly (if it was an intended

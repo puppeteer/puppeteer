@@ -278,7 +278,7 @@ describe('Accessibility', function () {
             children: [
               {
                 role: 'text leaf',
-                name: 'Edit this image: ',
+                name: 'Edit this image:',
               },
               {
                 role: 'StaticText',
@@ -293,7 +293,7 @@ describe('Accessibility', function () {
             children: [
               {
                 role: 'StaticText',
-                name: 'Edit this image:',
+                name: 'Edit this image: ',
               },
               {
                 role: 'img',
@@ -334,7 +334,7 @@ describe('Accessibility', function () {
             children: [
               {
                 role: 'StaticText',
-                name: 'Edit this image:',
+                name: 'Edit this image: ',
               },
             ],
           };

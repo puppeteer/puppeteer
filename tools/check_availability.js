@@ -248,7 +248,7 @@ async function checkRangeAvailability({
   }
 
   const fetchers = platforms.map(platform => {
-    return new BrowserFetcher('', {platform});
+    return new BrowserFetcher({platform});
   });
 
   const inc = fromRevision < toRevision ? 1 : -1;
