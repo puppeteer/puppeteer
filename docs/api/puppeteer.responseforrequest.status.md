@@ -4,7 +4,7 @@ sidebar_label: ResponseForRequest.status
 
 # ResponseForRequest.status property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ResponseForRequest {

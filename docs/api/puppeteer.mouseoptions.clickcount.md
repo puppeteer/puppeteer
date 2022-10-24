@@ -4,7 +4,7 @@ sidebar_label: MouseOptions.clickCount
 
 # MouseOptions.clickCount property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface MouseOptions {

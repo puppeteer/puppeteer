@@ -6,7 +6,7 @@ sidebar_label: JSCoverageEntry
 
 The CoverageEntry class for JavaScript
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export interface JSCoverageEntry extends CoverageEntry
@@ -16,6 +16,6 @@ export interface JSCoverageEntry extends CoverageEntry
 
 ## Properties
 
-| Property                                                               | Modifiers | Type                             | Description                                     |
-| ---------------------------------------------------------------------- | --------- | -------------------------------- | ----------------------------------------------- |
-| [rawScriptCoverage?](./puppeteer.jscoverageentry.rawscriptcoverage.md) |           | Protocol.Profiler.ScriptCoverage | <i>(Optional)</i> Raw V8 script coverage entry. |
+| Property                                                               | Modifiers | Type                             | Description                                     | Default |
+| ---------------------------------------------------------------------- | --------- | -------------------------------- | ----------------------------------------------- | ------- |
+| [rawScriptCoverage?](./puppeteer.jscoverageentry.rawscriptcoverage.md) |           | Protocol.Profiler.ScriptCoverage | <i>(Optional)</i> Raw V8 script coverage entry. |         |

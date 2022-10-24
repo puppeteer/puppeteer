@@ -6,7 +6,7 @@ sidebar_label: Page.emulateVisionDeficiency
 
 Simulates the given vision deficiency on the page.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

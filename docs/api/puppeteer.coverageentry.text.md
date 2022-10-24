@@ -6,7 +6,7 @@ sidebar_label: CoverageEntry.text
 
 The content of the style sheet or script.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface CoverageEntry {

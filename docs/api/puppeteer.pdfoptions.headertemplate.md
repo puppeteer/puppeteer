@@ -16,7 +16,7 @@ HTML template for the print header. Should be valid HTML with the following clas
 
 - `totalPages` total pages in the document
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PDFOptions {

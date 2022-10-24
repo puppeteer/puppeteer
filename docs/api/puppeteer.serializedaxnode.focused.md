@@ -4,7 +4,7 @@ sidebar_label: SerializedAXNode.focused
 
 # SerializedAXNode.focused property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface SerializedAXNode {

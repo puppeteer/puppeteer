@@ -4,7 +4,7 @@ sidebar_label: Point.y
 
 # Point.y property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface Point {

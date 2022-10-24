@@ -4,7 +4,7 @@ sidebar_label: JSCoverage.stop
 
 # JSCoverage.stop() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class JSCoverage {

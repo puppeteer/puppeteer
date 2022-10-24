@@ -4,7 +4,7 @@ sidebar_label: Page.emulateTimezone
 
 # Page.emulateTimezone() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

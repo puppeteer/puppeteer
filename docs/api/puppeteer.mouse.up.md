@@ -6,7 +6,7 @@ sidebar_label: Mouse.up
 
 Dispatches a `mouseup` event.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Mouse {

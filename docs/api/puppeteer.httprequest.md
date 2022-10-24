@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest
 
 Represents an HTTP request sent by a page.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare class HTTPRequest

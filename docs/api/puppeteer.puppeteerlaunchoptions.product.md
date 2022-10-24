@@ -4,7 +4,7 @@ sidebar_label: PuppeteerLaunchOptions.product
 
 # PuppeteerLaunchOptions.product property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PuppeteerLaunchOptions {

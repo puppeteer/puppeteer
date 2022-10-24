@@ -6,7 +6,7 @@ sidebar_label: JSHandle.dispose
 
 Releases the object referenced by the handle for garbage collection.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class JSHandle {

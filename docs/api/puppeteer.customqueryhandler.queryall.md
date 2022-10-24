@@ -4,7 +4,7 @@ sidebar_label: CustomQueryHandler.queryAll
 
 # CustomQueryHandler.queryAll property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface CustomQueryHandler {

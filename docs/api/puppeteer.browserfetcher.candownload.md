@@ -6,7 +6,7 @@ sidebar_label: BrowserFetcher.canDownload
 
 Initiates a HEAD request to check if the revision is available.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class BrowserFetcher {

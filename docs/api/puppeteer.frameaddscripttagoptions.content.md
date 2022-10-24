@@ -6,7 +6,7 @@ sidebar_label: FrameAddScriptTagOptions.content
 
 JavaScript to be injected into the frame.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface FrameAddScriptTagOptions {

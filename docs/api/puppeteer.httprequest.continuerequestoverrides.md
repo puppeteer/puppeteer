@@ -4,7 +4,7 @@ sidebar_label: HTTPRequest.continueRequestOverrides
 
 # HTTPRequest.continueRequestOverrides() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class HTTPRequest {

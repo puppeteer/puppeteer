@@ -4,7 +4,7 @@ sidebar_label: CDPSession.connection
 
 # CDPSession.connection() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class CDPSession {

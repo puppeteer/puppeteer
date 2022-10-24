@@ -6,10 +6,14 @@ sidebar_label: ScreenshotOptions.encoding
 
 Encoding of the image.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ScreenshotOptions {
   encoding?: 'base64' | 'binary';
 }
 ```
+
+#### Default value:
+
+`binary`

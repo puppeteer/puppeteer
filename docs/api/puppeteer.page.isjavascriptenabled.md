@@ -4,7 +4,7 @@ sidebar_label: Page.isJavaScriptEnabled
 
 # Page.isJavaScriptEnabled() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

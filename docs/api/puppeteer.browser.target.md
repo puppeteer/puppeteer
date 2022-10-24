@@ -6,7 +6,7 @@ sidebar_label: Browser.target
 
 The target associated with the browser.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Browser {

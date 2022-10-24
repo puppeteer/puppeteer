@@ -8,7 +8,7 @@ The main Puppeteer class.
 
 IMPORTANT: if you are using Puppeteer in a Node environment, you will get an instance of [PuppeteerNode](./puppeteer.puppeteernode.md) when you import or require `puppeteer`. That class extends `Puppeteer`, so has all the methods documented below as well as all that are defined on [PuppeteerNode](./puppeteer.puppeteernode.md).
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare class Puppeteer

@@ -6,7 +6,7 @@ sidebar_label: ElementHandle.drop
 
 This method triggers a drop on the element.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ElementHandle {

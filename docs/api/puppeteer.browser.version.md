@@ -6,7 +6,7 @@ sidebar_label: Browser.version
 
 A string representing the browser name and version.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Browser {

@@ -4,7 +4,7 @@ sidebar_label: EventType
 
 # EventType type
 
-**Signature:**
+#### Signature:
 
 ```typescript
 declare type EventType = string | symbol;

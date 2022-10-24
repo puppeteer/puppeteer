@@ -4,7 +4,7 @@ sidebar_label: Frame.page
 
 # Frame.page() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Frame {

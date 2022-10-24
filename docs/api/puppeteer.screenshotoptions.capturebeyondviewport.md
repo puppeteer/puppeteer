@@ -6,10 +6,14 @@ sidebar_label: ScreenshotOptions.captureBeyondViewport
 
 Capture the screenshot beyond the viewport.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ScreenshotOptions {
   captureBeyondViewport?: boolean;
 }
 ```
+
+#### Default value:
+
+`true`

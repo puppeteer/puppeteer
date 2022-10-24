@@ -4,7 +4,7 @@ sidebar_label: PageEventObject.frameattached
 
 # PageEventObject.frameattached property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PageEventObject {

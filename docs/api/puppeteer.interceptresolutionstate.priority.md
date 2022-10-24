@@ -4,7 +4,7 @@ sidebar_label: InterceptResolutionState.priority
 
 # InterceptResolutionState.priority property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface InterceptResolutionState {

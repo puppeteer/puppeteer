@@ -12,7 +12,7 @@ Enabling request interception disables page caching.
 
 See the [Request interception guide](https://pptr.dev/next/guides/request-interception) for more details.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

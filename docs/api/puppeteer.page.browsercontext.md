@@ -6,7 +6,7 @@ sidebar_label: Page.browserContext
 
 Get the browser context that the page belongs to.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

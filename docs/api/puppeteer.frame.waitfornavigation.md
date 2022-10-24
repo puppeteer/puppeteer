@@ -8,7 +8,7 @@ Waits for the frame to navigate. It is useful for when you run code which will i
 
 Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Frame {

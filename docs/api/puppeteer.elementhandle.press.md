@@ -6,7 +6,7 @@ sidebar_label: ElementHandle.press
 
 Focuses the element, and then uses [Keyboard.down()](./puppeteer.keyboard.down.md) and [Keyboard.up()](./puppeteer.keyboard.up.md).
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ElementHandle {

@@ -8,7 +8,7 @@ Adds a `<link rel="stylesheet">` tag into the page with the desired URL or a `<s
 
 Shortcut for .
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

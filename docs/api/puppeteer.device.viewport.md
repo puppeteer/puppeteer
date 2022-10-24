@@ -4,7 +4,7 @@ sidebar_label: Device.viewport
 
 # Device.viewport property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface Device {

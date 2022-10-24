@@ -4,7 +4,7 @@ sidebar_label: FlattenHandle
 
 # FlattenHandle type
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare type FlattenHandle<T> = T extends HandleOr<infer U> ? U : never;

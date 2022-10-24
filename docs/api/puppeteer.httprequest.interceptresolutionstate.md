@@ -4,7 +4,7 @@ sidebar_label: HTTPRequest.interceptResolutionState
 
 # HTTPRequest.interceptResolutionState() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class HTTPRequest {

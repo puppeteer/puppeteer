@@ -6,7 +6,7 @@ sidebar_label: Page.setBypassCSP
 
 Toggles bypassing page's Content-Security-Policy.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

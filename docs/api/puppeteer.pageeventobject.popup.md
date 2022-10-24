@@ -4,7 +4,7 @@ sidebar_label: PageEventObject.popup
 
 # PageEventObject.popup property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PageEventObject {

@@ -4,7 +4,7 @@ sidebar_label: CommonEventEmitter.listenerCount
 
 # CommonEventEmitter.listenerCount() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface CommonEventEmitter {

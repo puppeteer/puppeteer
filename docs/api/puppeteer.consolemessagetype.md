@@ -6,7 +6,7 @@ sidebar_label: ConsoleMessageType
 
 The supported types for console messages.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare type ConsoleMessageType =

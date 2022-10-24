@@ -6,7 +6,7 @@ sidebar_label: ResponseForRequest.headers
 
 Optional response headers. All values are converted to strings.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ResponseForRequest {

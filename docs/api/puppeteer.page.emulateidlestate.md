@@ -6,7 +6,7 @@ sidebar_label: Page.emulateIdleState
 
 Emulates the idle state. If no arguments set, clears idle state emulation.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

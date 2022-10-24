@@ -4,7 +4,7 @@ sidebar_label: createBrowserFetcher
 
 # createBrowserFetcher variable
 
-**Signature:**
+#### Signature:
 
 ```typescript
 createBrowserFetcher: (

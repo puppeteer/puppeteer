@@ -4,7 +4,7 @@ sidebar_label: Page.setDefaultTimeout
 
 # Page.setDefaultTimeout() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

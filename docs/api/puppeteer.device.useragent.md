@@ -4,7 +4,7 @@ sidebar_label: Device.userAgent
 
 # Device.userAgent property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface Device {

@@ -4,7 +4,7 @@ sidebar_label: Page.goto
 
 # Page.goto() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

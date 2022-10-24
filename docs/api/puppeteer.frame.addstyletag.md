@@ -6,7 +6,7 @@ sidebar_label: Frame.addStyleTag
 
 Adds a `<link rel="stylesheet">` tag into the page with the desired URL or a `<style type="text/css">` tag with the content.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Frame {

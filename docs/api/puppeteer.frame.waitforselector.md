@@ -8,7 +8,7 @@ Waits for an element matching the given selector to appear in the frame.
 
 This method works across navigations.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Frame {

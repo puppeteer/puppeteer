@@ -6,7 +6,7 @@ sidebar_label: SerializedAXNode.invalid
 
 Whether and in what way this node's value is invalid.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface SerializedAXNode {

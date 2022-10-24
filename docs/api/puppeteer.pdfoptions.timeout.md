@@ -6,10 +6,14 @@ sidebar_label: PDFOptions.timeout
 
 Timeout in milliseconds
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PDFOptions {
   timeout?: number;
 }
 ```
+
+#### Default value:
+
+30000

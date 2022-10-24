@@ -6,7 +6,7 @@ sidebar_label: CoverageEntry.ranges
 
 The covered range as start and end positions.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface CoverageEntry {

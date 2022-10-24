@@ -12,7 +12,7 @@ One Browser instance might have multiple Page instances.
 
 :::
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare class Page extends EventEmitter

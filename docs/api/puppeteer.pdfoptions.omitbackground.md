@@ -6,10 +6,14 @@ sidebar_label: PDFOptions.omitBackground
 
 Hides default white background and allows generating pdfs with transparency.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PDFOptions {
   omitBackground?: boolean;
 }
 ```
+
+#### Default value:
+
+false

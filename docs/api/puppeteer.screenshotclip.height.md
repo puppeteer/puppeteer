@@ -4,7 +4,7 @@ sidebar_label: ScreenshotClip.height
 
 # ScreenshotClip.height property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ScreenshotClip {

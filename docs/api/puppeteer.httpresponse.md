@@ -6,7 +6,7 @@ sidebar_label: HTTPResponse
 
 The HTTPResponse class represents responses which are received by the [Page](./puppeteer.page.md) class.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare class HTTPResponse

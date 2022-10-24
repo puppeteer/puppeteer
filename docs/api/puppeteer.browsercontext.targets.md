@@ -6,7 +6,7 @@ sidebar_label: BrowserContext.targets
 
 An array of all active targets inside the browser context.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class BrowserContext {

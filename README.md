@@ -5,7 +5,7 @@
 
 <img src="https://user-images.githubusercontent.com/10379601/29446482-04f7036a-841f-11e7-9872-91d1fc2ea683.png" height="200" align="right"/>
 
-#### [API](https://pptr.dev/api) | [FAQ](https://pptr.dev/faq) | [Contributing](https://pptr.dev/contributing) | [Troubleshooting](https://pptr.dev/troubleshooting)
+#### [Guides](https://pptr.dev/guides) | [API](https://pptr.dev/api) | [FAQ](https://pptr.dev/faq) | [Contributing](https://pptr.dev/contributing) | [Troubleshooting](https://pptr.dev/troubleshooting)
 
 > Puppeteer is a Node.js library which provides a high-level API to control
 > Chrome/Chromium over the
@@ -49,51 +49,32 @@ Chromium (~170MB macOS, ~282MB Linux, ~280MB Windows) that is
 with Puppeteer. For a version of Puppeteer without installation, see
 [`puppeteer-core`](#puppeteer-core).
 
-#### Environment Variables
+#### Configuring Puppeteer
 
-Puppeteer looks for certain
-[environment variables](https://en.wikipedia.org/wiki/Environment_variable) for
-customizing behavior. If Puppeteer doesn't find them in the environment during
-the installation step, a lowercased variant of these variables will be used from
-the [npm config](https://docs.npmjs.com/cli/config).
+Puppeteer uses several defaults that can be customized through configuration
+files.
 
-- `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are
-  used to download and run the browser.
-- `PUPPETEER_CACHE_DIR` - defines the directory to be used by Puppeteer for
-  caching. Defaults to
-  [`os.homedir()/.cache/puppeteer`](https://nodejs.org/api/os.html#os_os_homedir).
-- `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during
-  installation step.
-- `PUPPETEER_TMP_DIR` - defines the directory to be used by Puppeteer for
-  creating temporary files. Defaults to
-  [`os.tmpdir()`](https://nodejs.org/api/os.html#os_os_tmpdir).
-- `PUPPETEER_DOWNLOAD_HOST` - specifies the URL prefix that is used to download
-  Chromium. Note: this includes protocol and might even include path prefix.
-  Defaults to `https://storage.googleapis.com`.
-- `PUPPETEER_DOWNLOAD_PATH` - specifies the path for the downloads folder.
-  Defaults to `<cache>/chromium`, where `<cache>` is Puppeteer's cache
-  directory.
-- `PUPPETEER_BROWSER_REVISION` - specifies a certain version of the browser
-  you'd like Puppeteer to use. See
-  [`puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch) on
-  how executable path is inferred.
-- `PUPPETEER_EXECUTABLE_PATH` - specifies an executable path to be used in
-  [`puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch).
-- `PUPPETEER_PRODUCT` - specifies which browser you'd like Puppeteer to use.
-  Must be either `chrome` or `firefox`. This can also be used during
-  installation to fetch the recommended browser binary. Setting `product`
-  programmatically in
-  [`puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch)
-  supersedes this environment variable.
-- `PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM` — specify Puppeteer download
-  Chromium for Apple M1. On Apple M1 devices Puppeteer by default downloads the
-  version for Intel's processor which runs via Rosetta. It works without any
-  problems, however, with this option, you should get more efficient resource
-  usage (CPU and RAM) that could lead to a faster execution time.
+For example, to change the default cache directory Puppeteer uses to install
+browsers, you can add a `.puppeteerrc.cjs` (or `puppeteer.config.cjs`) at the
+root of your application with the contents
 
-Environment variables except for `PUPPETEER_CACHE_DIR` are not used for
-[`puppeteer-core`](#puppeteer-core) since core does not automatically handle
-browser downloading.
+```js
+const {join} = require('path');
+
+/**
+ * @type {import("puppeteer").Configuration}
+ */
+module.exports = {
+  // Changes the cache location for Puppeteer.
+  cacheDirectory: join(__dirname, '.cache', 'puppeteer'),
+};
+```
+
+After adding the configuration file, you will need to remove and reinstall
+`puppeteer` for it to take effect.
+
+See [Configuring
+Puppeteer](https://pptr.dev/guides/configuring-puppeteer) for more information.
 
 #### `puppeteer-core`
 
@@ -104,21 +85,21 @@ Every release since v1.7.0 we publish two packages:
 
 `puppeteer` is a _product_ for browser automation. When installed, it downloads
 a version of Chromium, which it then drives using `puppeteer-core`. Being an
-end-user product, `puppeteer` supports a bunch of convenient `PUPPETEER_*` env
-variables to tweak its behavior.
+end-user product, `puppeteer` automates several workflows using reasonable defaults [that can be customized](https://pptr.dev/guides/configuring-puppeteer).
 
 `puppeteer-core` is a _library_ to help drive anything that supports DevTools
-protocol. `puppeteer-core` doesn't download Chromium when installed. Being a
-library, `puppeteer-core` is fully driven through its programmatic interface.
+protocol. Being a library, `puppeteer-core` is fully driven through its
+programmatic interface implying no defaults are assumed and `puppeteer-core`
+will not download Chromium when installed.
 
-You should only use `puppeteer-core` if you are
-[connecting to a remote browser](https://pptr.dev/api/puppeteer.puppeteer.connect)
-or [managing browsers yourself](https://pptr.dev/api/puppeteer.browserfetcher).
-If you are managing browsers yourself, you will need to call
+You should use `puppeteer-core` if you are [connecting to a remote
+browser](https://pptr.dev/api/puppeteer.puppeteer.connect) or [managing browsers
+yourself](https://pptr.dev/api/puppeteer.browserfetcher). If you are managing
+browsers yourself, you will need to call
 [`puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch) with
-an explicit
+an an explicit
 [`executablePath`](https://pptr.dev/api/puppeteer.launchoptions.executablepath)
-or [`channel`](https://pptr.dev/api/puppeteer.launchoptions.channel).
+(or [`channel`](https://pptr.dev/api/puppeteer.launchoptions.channel) if it's installed in a standard location).
 
 When using `puppeteer-core`, remember to change the import:
 

@@ -6,7 +6,7 @@ sidebar_label: Browser.wsEndpoint
 
 The browser websocket endpoint which can be used as an argument to [Puppeteer.connect()](./puppeteer.puppeteer.connect.md).
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Browser {

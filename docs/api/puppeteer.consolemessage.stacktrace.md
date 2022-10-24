@@ -4,7 +4,7 @@ sidebar_label: ConsoleMessage.stackTrace
 
 # ConsoleMessage.stackTrace() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ConsoleMessage {

@@ -6,7 +6,7 @@ sidebar_label: ResourceType
 
 Resource types for HTTPRequests as perceived by the rendering engine.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare type ResourceType = Lowercase<Protocol.Network.ResourceType>;

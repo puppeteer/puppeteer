@@ -6,7 +6,7 @@ sidebar_label: BrowserConnectOptions.slowMo
 
 Slows down Puppeteer operations by the specified amount of milliseconds to aid debugging.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BrowserConnectOptions {

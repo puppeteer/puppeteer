@@ -8,7 +8,7 @@ Runs the given function on the first element matching the given selector in the 
 
 If the given function returns a promise, then this method will wait till the promise resolves.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ElementHandle {

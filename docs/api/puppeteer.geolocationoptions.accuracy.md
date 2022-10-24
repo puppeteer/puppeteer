@@ -6,7 +6,7 @@ sidebar_label: GeolocationOptions.accuracy
 
 Optional non-negative accuracy value.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface GeolocationOptions {

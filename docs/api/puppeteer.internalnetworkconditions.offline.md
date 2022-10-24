@@ -4,7 +4,7 @@ sidebar_label: InternalNetworkConditions.offline
 
 # InternalNetworkConditions.offline property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface InternalNetworkConditions {

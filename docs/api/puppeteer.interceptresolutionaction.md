@@ -4,7 +4,7 @@ sidebar_label: InterceptResolutionAction
 
 # InterceptResolutionAction enum
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare enum InterceptResolutionAction

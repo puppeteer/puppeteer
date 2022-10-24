@@ -4,7 +4,7 @@ sidebar_label: ConnectOptions
 
 # ConnectOptions interface
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export interface ConnectOptions extends BrowserConnectOptions
@@ -14,8 +14,8 @@ export interface ConnectOptions extends BrowserConnectOptions
 
 ## Properties
 
-| Property                                                              | Modifiers | Type                                                      | Description       |
-| --------------------------------------------------------------------- | --------- | --------------------------------------------------------- | ----------------- |
-| [browserURL?](./puppeteer.connectoptions.browserurl.md)               |           | string                                                    | <i>(Optional)</i> |
-| [browserWSEndpoint?](./puppeteer.connectoptions.browserwsendpoint.md) |           | string                                                    | <i>(Optional)</i> |
-| [transport?](./puppeteer.connectoptions.transport.md)                 |           | [ConnectionTransport](./puppeteer.connectiontransport.md) | <i>(Optional)</i> |
+| Property                                                              | Modifiers | Type                                                      | Description       | Default |
+| --------------------------------------------------------------------- | --------- | --------------------------------------------------------- | ----------------- | ------- |
+| [browserURL?](./puppeteer.connectoptions.browserurl.md)               |           | string                                                    | <i>(Optional)</i> |         |
+| [browserWSEndpoint?](./puppeteer.connectoptions.browserwsendpoint.md) |           | string                                                    | <i>(Optional)</i> |         |
+| [transport?](./puppeteer.connectoptions.transport.md)                 |           | [ConnectionTransport](./puppeteer.connectiontransport.md) | <i>(Optional)</i> |         |

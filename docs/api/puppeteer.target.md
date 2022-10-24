@@ -4,7 +4,7 @@ sidebar_label: Target
 
 # Target class
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare class Target

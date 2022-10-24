@@ -4,12 +4,12 @@ sidebar_label: Configuration.experiments
 
 # Configuration.experiments property
 
-**Signature:**
+Defines experimental options for Puppeteer.
+
+#### Signature:
 
 ```typescript
 interface Configuration {
-  experiments?: {
-    macArmChromiumEnabled?: boolean;
-  };
+  experiments?: ExperimentsConfiguration;
 }
 ```

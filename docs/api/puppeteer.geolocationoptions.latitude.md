@@ -6,7 +6,7 @@ sidebar_label: GeolocationOptions.latitude
 
 Longitude between `-180` and `180`.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface GeolocationOptions {

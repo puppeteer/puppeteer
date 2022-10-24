@@ -6,7 +6,7 @@ sidebar_label: Page.authenticate
 
 Provide credentials for `HTTP authentication`.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

@@ -6,10 +6,14 @@ sidebar_label: PDFOptions.preferCSSPageSize
 
 Give any CSS `@page` size declared in the page priority over what is declared in the `width` or `height` or `format` option.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PDFOptions {
   preferCSSPageSize?: boolean;
 }
 ```
+
+#### Default value:
+
+`false`, which will scale the content to fit the paper size.

@@ -4,7 +4,7 @@ sidebar_label: Page.touchscreen
 
 # Page.touchscreen property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

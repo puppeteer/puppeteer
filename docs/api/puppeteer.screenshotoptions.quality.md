@@ -6,7 +6,7 @@ sidebar_label: ScreenshotOptions.quality
 
 Quality of the image, between 0-100. Not applicable to `png` images.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ScreenshotOptions {

@@ -6,10 +6,14 @@ sidebar_label: ScreenshotOptions.fromSurface
 
 Capture the screenshot from the surface, rather than the view.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ScreenshotOptions {
   fromSurface?: boolean;
 }
 ```
+
+#### Default value:
+
+`true`

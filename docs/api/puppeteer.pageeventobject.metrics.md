@@ -4,7 +4,7 @@ sidebar_label: PageEventObject.metrics
 
 # PageEventObject.metrics property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PageEventObject {

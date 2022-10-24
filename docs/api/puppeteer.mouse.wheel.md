@@ -6,7 +6,7 @@ sidebar_label: Mouse.wheel
 
 Dispatches a `mousewheel` event.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Mouse {

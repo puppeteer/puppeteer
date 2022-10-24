@@ -4,7 +4,7 @@ sidebar_label: HTTPResponse.securityDetails
 
 # HTTPResponse.securityDetails() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class HTTPResponse {

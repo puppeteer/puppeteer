@@ -4,7 +4,7 @@ sidebar_label: BrowserLaunchArgumentOptions.debuggingPort
 
 # BrowserLaunchArgumentOptions.debuggingPort property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BrowserLaunchArgumentOptions {

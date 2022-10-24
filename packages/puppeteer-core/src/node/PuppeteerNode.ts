@@ -130,6 +130,8 @@ export class PuppeteerNode extends Puppeteer {
    *
    * @param options - Set of configurable options to set on the browser.
    * @returns Promise which resolves to browser instance.
+   *
+   * @public
    */
   override connect(options: ConnectOptions): Promise<Browser> {
     return super.connect(options);
@@ -139,8 +141,13 @@ export class PuppeteerNode extends Puppeteer {
    * Launches a browser instance with given arguments and options when
    * specified.
    *
+   * When using with `puppeteer-core`,
+   * {@link LaunchOptions.executablePath | options.executablePath} or
+   * {@link LaunchOptions.channel | options.channel} must be provided.
+   *
    * @example
-   * You can use `ignoreDefaultArgs` to filter out `--mute-audio` from default arguments:
+   * You can use {@link LaunchOptions.ignoreDefaultArgs | options.ignoreDefaultArgs}
+   * to filter out `--mute-audio` from default arguments:
    *
    * ```ts
    * const browser = await puppeteer.launch({
@@ -150,20 +157,21 @@ export class PuppeteerNode extends Puppeteer {
    *
    * @remarks
    * Puppeteer can also be used to control the Chrome browser, but it works best
-   * with the version of Chromium it is bundled with. There is no guarantee it
-   * will work with any other version. Use `executablePath` option with extreme
-   * caution. If Google Chrome (rather than Chromium) is preferred, a
+   * with the version of Chromium downloaded by default by Puppeteer. There is
+   * no guarantee it will work with any other version. If Google Chrome (rather
+   * than Chromium) is preferred, a
    * {@link https://www.google.com/chrome/browser/canary.html | Chrome Canary}
    * or
    * {@link https://www.chromium.org/getting-involved/dev-channel | Dev Channel}
-   * build is suggested. In {@link Puppeteer.launch}, any mention of Chromium
-   * also applies to Chrome. See
+   * build is suggested. See
    * {@link https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/ | this article}
    * for a description of the differences between Chromium and Chrome.
    * {@link https://chromium.googlesource.com/chromium/src/+/lkgr/docs/chromium_browser_vs_google_chrome.md | This article}
    * describes some differences for Linux users.
    *
    * @param options - Options to configure launching behavior.
+   *
+   * @public
    */
   launch(options: PuppeteerLaunchOptions = {}): Promise<Browser> {
     const {product = this.defaultProduct} = options;
@@ -197,7 +205,9 @@ export class PuppeteerNode extends Puppeteer {
   }
 
   /**
-   * @returns The executable path.
+   * @returns The default executable path.
+   *
+   * @public
    */
   executablePath(channel?: ChromeReleaseChannel): string {
     return this.#launcher.executablePath(channel);
@@ -245,10 +255,13 @@ export class PuppeteerNode extends Puppeteer {
 
   /**
    * @deprecated Do not use as this field as it does not take into account
-   * multiple browsers of different types. Use {@link defaultProduct} or
-   * {@link lastLaunchedProduct}.
+   * multiple browsers of different types. Use
+   * {@link PuppeteerNode.defaultProduct | defaultProduct} or
+   * {@link PuppeteerNode.lastLaunchedProduct | lastLaunchedProduct}.
    *
    * @returns The name of the browser that is under automation.
+   *
+   * @public
    */
   get product(): string {
     return this.#launcher.product;
@@ -258,6 +271,8 @@ export class PuppeteerNode extends Puppeteer {
    * @param options - Set of configurable options to set on the browser.
    *
    * @returns The default flags that Chromium will be launched with.
+   *
+   * @public
    */
   defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
     return this.#launcher.defaultArgs(options);

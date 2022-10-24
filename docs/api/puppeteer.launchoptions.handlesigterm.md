@@ -6,10 +6,14 @@ sidebar_label: LaunchOptions.handleSIGTERM
 
 Close the browser process on `SIGTERM`.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface LaunchOptions {
   handleSIGTERM?: boolean;
 }
 ```
+
+#### Default value:
+
+`true`

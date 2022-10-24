@@ -6,7 +6,7 @@ sidebar_label: Browser.process
 
 The spawned browser process. Returns `null` if the browser instance was created with [Puppeteer.connect()](./puppeteer.puppeteer.connect.md).
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Browser {

@@ -8,7 +8,7 @@ sidebar_label: devices
 >
 > Import [KnownDevices](./puppeteer.knowndevices.md)
 
-**Signature:**
+#### Signature:
 
 ```typescript
 devices: Readonly<

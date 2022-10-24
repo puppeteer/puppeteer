@@ -8,7 +8,7 @@ sidebar_label: Page.setViewport
 
 In the case of multiple pages in a single browser, each page can have its own viewport size.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

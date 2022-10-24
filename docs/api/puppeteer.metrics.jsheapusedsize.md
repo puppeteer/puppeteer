@@ -4,7 +4,7 @@ sidebar_label: Metrics.JSHeapUsedSize
 
 # Metrics.JSHeapUsedSize property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface Metrics {

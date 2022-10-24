@@ -6,7 +6,7 @@ sidebar_label: JSHandle.remoteObject
 
 Provides access to the \[Protocol.Runtime.RemoteObject\](https://chromedevtools.github.io/devtools-protocol/tot/Runtime/\#type-RemoteObject) backing this handle.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class JSHandle {

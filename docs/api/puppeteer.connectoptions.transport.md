@@ -4,7 +4,7 @@ sidebar_label: ConnectOptions.transport
 
 # ConnectOptions.transport property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ConnectOptions {

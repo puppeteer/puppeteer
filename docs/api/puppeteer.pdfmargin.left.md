@@ -4,7 +4,7 @@ sidebar_label: PDFMargin.left
 
 # PDFMargin.left property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PDFMargin {

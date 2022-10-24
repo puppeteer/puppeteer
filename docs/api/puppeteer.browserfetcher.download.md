@@ -6,7 +6,7 @@ sidebar_label: BrowserFetcher.download
 
 Initiates a GET request to download the revision from the host.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class BrowserFetcher {

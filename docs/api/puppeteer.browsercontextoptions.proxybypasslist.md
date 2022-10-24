@@ -6,7 +6,7 @@ sidebar_label: BrowserContextOptions.proxyBypassList
 
 Bypass the proxy for the given list of hosts.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BrowserContextOptions {

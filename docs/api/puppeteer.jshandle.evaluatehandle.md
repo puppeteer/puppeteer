@@ -6,7 +6,7 @@ sidebar_label: JSHandle.evaluateHandle
 
 Evaluates the given function with the current handle as its first argument.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class JSHandle {

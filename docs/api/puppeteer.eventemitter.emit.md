@@ -6,7 +6,7 @@ sidebar_label: EventEmitter.emit
 
 Emit an event and call any associated listeners.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class EventEmitter {

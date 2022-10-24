@@ -4,7 +4,7 @@ sidebar_label: ConnectionTransport.onclose
 
 # ConnectionTransport.onclose property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ConnectionTransport {

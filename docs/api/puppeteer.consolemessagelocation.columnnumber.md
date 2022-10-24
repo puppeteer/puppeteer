@@ -6,7 +6,7 @@ sidebar_label: ConsoleMessageLocation.columnNumber
 
 0-based column number in the resource if known or `undefined` otherwise.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ConsoleMessageLocation {

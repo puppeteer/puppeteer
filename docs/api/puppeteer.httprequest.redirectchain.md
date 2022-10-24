@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.redirectChain
 
 A `redirectChain` is a chain of requests initiated to fetch a resource.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class HTTPRequest {

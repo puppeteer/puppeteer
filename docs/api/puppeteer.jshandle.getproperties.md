@@ -6,7 +6,7 @@ sidebar_label: JSHandle.getProperties
 
 Gets a map of handles representing the properties of the current handle.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class JSHandle {

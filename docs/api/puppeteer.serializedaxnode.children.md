@@ -6,7 +6,7 @@ sidebar_label: SerializedAXNode.children
 
 Children of this node, if there are any.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface SerializedAXNode {

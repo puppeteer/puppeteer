@@ -4,7 +4,7 @@ sidebar_label: ProductLauncher.launch
 
 # ProductLauncher.launch() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ProductLauncher {

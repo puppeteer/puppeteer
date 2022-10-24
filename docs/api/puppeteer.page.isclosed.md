@@ -6,7 +6,7 @@ sidebar_label: Page.isClosed
 
 Indicates that the page has been closed.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

@@ -6,7 +6,7 @@ sidebar_label: PaperFormat
 
 All the valid paper format types when printing a PDF.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare type PaperFormat =

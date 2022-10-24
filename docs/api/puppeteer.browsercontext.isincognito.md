@@ -6,7 +6,7 @@ sidebar_label: BrowserContext.isIncognito
 
 Returns whether BrowserContext is incognito. The default browser context is the only non-incognito browser context.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class BrowserContext {

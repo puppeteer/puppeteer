@@ -4,7 +4,7 @@ sidebar_label: BrowserFetcherRevisionInfo.executablePath
 
 # BrowserFetcherRevisionInfo.executablePath property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BrowserFetcherRevisionInfo {

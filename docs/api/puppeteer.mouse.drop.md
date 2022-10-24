@@ -6,7 +6,7 @@ sidebar_label: Mouse.drop
 
 Performs a dragenter, dragover, and drop in sequence.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Mouse {

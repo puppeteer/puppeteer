@@ -6,7 +6,7 @@ sidebar_label: ElementHandle.dragAndDrop
 
 This method triggers a dragenter, dragover, and drop on the element.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ElementHandle {

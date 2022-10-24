@@ -4,7 +4,7 @@ sidebar_label: SecurityDetails.protocol
 
 # SecurityDetails.protocol() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class SecurityDetails {

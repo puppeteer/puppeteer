@@ -6,10 +6,14 @@ sidebar_label: WaitForSelectorOptions.visible
 
 Wait for the selected element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface WaitForSelectorOptions {
   visible?: boolean;
 }
 ```
+
+#### Default value:
+
+`false`

@@ -6,7 +6,7 @@ sidebar_label: Target.page
 
 If the target is not of type `"page"` or `"background_page"`, returns `null`.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Target {

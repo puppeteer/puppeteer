@@ -6,7 +6,7 @@ sidebar_label: Mouse.down
 
 Dispatches a `mousedown` event.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Mouse {

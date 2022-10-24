@@ -6,7 +6,7 @@ sidebar_label: LaunchOptions.executablePath
 
 Path to a browser executable to use instead of the bundled Chromium. Note that Puppeteer is only guaranteed to work with the bundled Chromium, so use this setting at your own risk.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface LaunchOptions {

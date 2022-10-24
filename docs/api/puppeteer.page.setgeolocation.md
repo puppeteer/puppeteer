@@ -6,7 +6,7 @@ sidebar_label: Page.setGeolocation
 
 Sets the page's geolocation.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

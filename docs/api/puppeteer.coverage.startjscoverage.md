@@ -4,7 +4,7 @@ sidebar_label: Coverage.startJSCoverage
 
 # Coverage.startJSCoverage() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Coverage {

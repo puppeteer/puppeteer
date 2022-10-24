@@ -6,7 +6,7 @@ sidebar_label: Keyboard.down
 
 Dispatches a `keydown` event.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Keyboard {

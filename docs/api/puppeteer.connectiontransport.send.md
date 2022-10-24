@@ -4,7 +4,7 @@ sidebar_label: ConnectionTransport.send
 
 # ConnectionTransport.send() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ConnectionTransport {

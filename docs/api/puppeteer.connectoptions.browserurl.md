@@ -4,7 +4,7 @@ sidebar_label: ConnectOptions.browserURL
 
 # ConnectOptions.browserURL property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ConnectOptions {

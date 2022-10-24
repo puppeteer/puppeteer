@@ -6,7 +6,7 @@ sidebar_label: ClickOptions.offset
 
 Offset for the clickable point relative to the top-left corner of the border box.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ClickOptions {

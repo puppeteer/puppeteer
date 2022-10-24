@@ -6,7 +6,7 @@ sidebar_label: Page.createPDFStream
 
 Generates a PDF of the page with the `print` CSS media type.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

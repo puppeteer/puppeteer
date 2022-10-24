@@ -4,7 +4,7 @@ sidebar_label: Page.setUserAgent
 
 # Page.setUserAgent() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

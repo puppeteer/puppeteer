@@ -12,7 +12,7 @@ This method exists to define event typings and handle proper wireup of cooperati
 
 :::
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

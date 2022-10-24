@@ -4,7 +4,7 @@ sidebar_label: SerializedAXNode.haspopup
 
 # SerializedAXNode.haspopup property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface SerializedAXNode {

@@ -6,7 +6,7 @@ sidebar_label: JSCoverageEntry.rawScriptCoverage
 
 Raw V8 script coverage entry.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface JSCoverageEntry {

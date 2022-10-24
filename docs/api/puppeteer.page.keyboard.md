@@ -4,7 +4,7 @@ sidebar_label: Page.keyboard
 
 # Page.keyboard property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

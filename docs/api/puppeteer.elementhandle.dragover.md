@@ -6,7 +6,7 @@ sidebar_label: ElementHandle.dragOver
 
 This method creates a `dragover` event on the element.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ElementHandle {

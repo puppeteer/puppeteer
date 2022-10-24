@@ -6,7 +6,7 @@ sidebar_label: FileChooser.accept
 
 Accept the file chooser request with given paths.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class FileChooser {

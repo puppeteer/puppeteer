@@ -6,7 +6,7 @@ sidebar_label: PressOptions.text
 
 If specified, generates an input event with this text.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PressOptions {

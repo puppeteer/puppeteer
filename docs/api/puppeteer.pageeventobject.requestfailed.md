@@ -4,7 +4,7 @@ sidebar_label: PageEventObject.requestfailed
 
 # PageEventObject.requestfailed property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PageEventObject {

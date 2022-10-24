@@ -4,7 +4,7 @@ sidebar_label: Metrics.TaskDuration
 
 # Metrics.TaskDuration property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface Metrics {

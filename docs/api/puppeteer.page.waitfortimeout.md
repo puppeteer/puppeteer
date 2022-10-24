@@ -10,7 +10,7 @@ sidebar_label: Page.waitForTimeout
 >
 > Causes your script to wait for the given number of milliseconds.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

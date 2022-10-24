@@ -4,7 +4,7 @@ sidebar_label: Connection.send
 
 # Connection.send() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Connection {

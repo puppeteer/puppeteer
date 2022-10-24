@@ -6,7 +6,7 @@ sidebar_label: BrowserLaunchArgumentOptions.args
 
 Additional command line arguments to pass to the browser instance.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BrowserLaunchArgumentOptions {

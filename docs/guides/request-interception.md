@@ -1,4 +1,4 @@
-# Request interception
+# Request Interception
 
 Once request interception is enabled, every request will stall unless it's
 continued, responded or aborted.

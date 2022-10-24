@@ -6,7 +6,7 @@ sidebar_label: Keyboard.up
 
 Dispatches a `keyup` event.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Keyboard {

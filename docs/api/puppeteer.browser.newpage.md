@@ -6,7 +6,7 @@ sidebar_label: Browser.newPage
 
 Promise which resolves to a new [Page](./puppeteer.page.md) object. The Page is created in a default browser context.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Browser {

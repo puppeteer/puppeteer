@@ -4,7 +4,7 @@ sidebar_label: Credentials.username
 
 # Credentials.username property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface Credentials {

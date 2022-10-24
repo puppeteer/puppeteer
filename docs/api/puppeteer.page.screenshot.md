@@ -4,7 +4,7 @@ sidebar_label: Page.screenshot
 
 # Page.screenshot() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

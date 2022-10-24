@@ -4,7 +4,7 @@ sidebar_label: ResponseForRequest.contentType
 
 # ResponseForRequest.contentType property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ResponseForRequest {

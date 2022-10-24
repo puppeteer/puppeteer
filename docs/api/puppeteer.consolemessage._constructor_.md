@@ -6,7 +6,7 @@ sidebar_label: ConsoleMessage.(constructor)
 
 Constructs a new instance of the `ConsoleMessage` class
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ConsoleMessage {

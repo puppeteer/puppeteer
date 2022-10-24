@@ -6,7 +6,7 @@ sidebar_label: ElementHandle.clickablePoint
 
 Returns the middle point within an element unless a specific offset is provided.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ElementHandle {

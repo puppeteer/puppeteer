@@ -6,10 +6,14 @@ sidebar_label: LaunchOptions.handleSIGHUP
 
 Close the browser process on `SIGHUP`.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface LaunchOptions {
   handleSIGHUP?: boolean;
 }
 ```
+
+#### Default value:
+
+`true`

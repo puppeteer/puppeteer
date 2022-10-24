@@ -14,7 +14,7 @@ sidebar_label: ElementHandle.$x
 >
 > If there are no such elements, the method will resolve to an empty array.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ElementHandle {

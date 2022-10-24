@@ -4,7 +4,7 @@ sidebar_label: SerializedAXNode.autocomplete
 
 # SerializedAXNode.autocomplete property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface SerializedAXNode {

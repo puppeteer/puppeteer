@@ -4,7 +4,7 @@ sidebar_label: Metrics.JSHeapTotalSize
 
 # Metrics.JSHeapTotalSize property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface Metrics {

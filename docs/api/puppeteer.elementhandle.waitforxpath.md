@@ -38,7 +38,7 @@ sidebar_label: ElementHandle.waitForXPath
 > })();
 > ```
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ElementHandle {

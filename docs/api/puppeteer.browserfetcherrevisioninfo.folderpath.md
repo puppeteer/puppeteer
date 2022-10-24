@@ -4,7 +4,7 @@ sidebar_label: BrowserFetcherRevisionInfo.folderPath
 
 # BrowserFetcherRevisionInfo.folderPath property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BrowserFetcherRevisionInfo {

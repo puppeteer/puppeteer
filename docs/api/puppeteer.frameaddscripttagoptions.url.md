@@ -6,7 +6,7 @@ sidebar_label: FrameAddScriptTagOptions.url
 
 URL of the script to be added.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface FrameAddScriptTagOptions {

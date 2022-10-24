@@ -6,7 +6,7 @@ sidebar_label: BrowserConnectOptions.targetFilter
 
 Callback to decide if Puppeteer should connect to a given target or not.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BrowserConnectOptions {

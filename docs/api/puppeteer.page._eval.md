@@ -6,7 +6,7 @@ sidebar_label: Page.$eval
 
 This method runs `document.querySelector` within the page and passes the result as the first argument to the `pageFunction`.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

@@ -6,7 +6,7 @@ sidebar_label: Page.addScriptTag
 
 Adds a `<script>` tag into the page with the desired URL or content.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

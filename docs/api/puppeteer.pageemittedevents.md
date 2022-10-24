@@ -6,7 +6,7 @@ sidebar_label: PageEmittedEvents
 
 All the events that a page instance may emit.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare const enum PageEmittedEvents

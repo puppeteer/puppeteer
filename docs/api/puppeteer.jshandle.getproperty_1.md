@@ -4,7 +4,7 @@ sidebar_label: JSHandle.getProperty_1
 
 # JSHandle.getProperty() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class JSHandle {

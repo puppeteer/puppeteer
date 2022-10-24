@@ -6,7 +6,7 @@ sidebar_label: Mouse.dragAndDrop
 
 Performs a drag, dragenter, dragover, and drop in sequence.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Mouse {

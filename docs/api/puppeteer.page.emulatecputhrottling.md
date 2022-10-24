@@ -6,7 +6,7 @@ sidebar_label: Page.emulateCPUThrottling
 
 Enables CPU throttling to emulate slow CPUs.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

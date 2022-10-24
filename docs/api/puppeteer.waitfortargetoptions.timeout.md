@@ -6,10 +6,14 @@ sidebar_label: WaitForTargetOptions.timeout
 
 Maximum wait time in milliseconds. Pass `0` to disable the timeout.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface WaitForTargetOptions {
   timeout?: number;
 }
 ```
+
+#### Default value:
+
+30 seconds.

@@ -8,7 +8,7 @@ Extends the main [Puppeteer](./puppeteer.puppeteer.md) class with Node specific 
 
 If you're using Puppeteer in a Node environment, this is the class you'll get when you run `require('puppeteer')` (or the equivalent ES `import`).
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare class PuppeteerNode extends Puppeteer
@@ -52,10 +52,10 @@ Once you have created a `page` you have access to a large API to interact with t
 
 ## Methods
 
-| Method                                                                             | Modifiers | Description                                                                  |
-| ---------------------------------------------------------------------------------- | --------- | ---------------------------------------------------------------------------- |
-| [connect(options)](./puppeteer.puppeteernode.connect.md)                           |           | This method attaches Puppeteer to an existing browser instance.              |
-| [createBrowserFetcher(options)](./puppeteer.puppeteernode.createbrowserfetcher.md) |           |                                                                              |
-| [defaultArgs(options)](./puppeteer.puppeteernode.defaultargs.md)                   |           |                                                                              |
-| [executablePath(channel)](./puppeteer.puppeteernode.executablepath.md)             |           |                                                                              |
-| [launch(options)](./puppeteer.puppeteernode.launch.md)                             |           | Launches a browser instance with given arguments and options when specified. |
+| Method                                                                             | Modifiers | Description                                                                                                                                                                                                                                                                               |
+| ---------------------------------------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [connect(options)](./puppeteer.puppeteernode.connect.md)                           |           | This method attaches Puppeteer to an existing browser instance.                                                                                                                                                                                                                           |
+| [createBrowserFetcher(options)](./puppeteer.puppeteernode.createbrowserfetcher.md) |           |                                                                                                                                                                                                                                                                                           |
+| [defaultArgs(options)](./puppeteer.puppeteernode.defaultargs.md)                   |           |                                                                                                                                                                                                                                                                                           |
+| [executablePath(channel)](./puppeteer.puppeteernode.executablepath.md)             |           |                                                                                                                                                                                                                                                                                           |
+| [launch(options)](./puppeteer.puppeteernode.launch.md)                             |           | <p>Launches a browser instance with given arguments and options when specified.</p><p>When using with <code>puppeteer-core</code>, [options.executablePath](./puppeteer.launchoptions.executablepath.md) or [options.channel](./puppeteer.launchoptions.channel.md) must be provided.</p> |

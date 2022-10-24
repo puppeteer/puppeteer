@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.finalizeInterceptions
 
 Awaits pending interception handlers and then decides how to fulfill the request interception.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class HTTPRequest {

@@ -4,7 +4,7 @@ sidebar_label: HTTPResponse.timing
 
 # HTTPResponse.timing() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class HTTPResponse {

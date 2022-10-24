@@ -6,7 +6,7 @@ sidebar_label: FrameAddStyleTagOptions.content
 
 Raw CSS content to be injected into the frame.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface FrameAddStyleTagOptions {

@@ -6,7 +6,7 @@ sidebar_label: Browser.pages
 
 An array of all open pages inside the Browser.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Browser {

@@ -4,7 +4,7 @@ sidebar_label: TracingOptions
 
 # TracingOptions interface
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export interface TracingOptions
@@ -12,8 +12,8 @@ export interface TracingOptions
 
 ## Properties
 
-| Property                                                  | Modifiers | Type       | Description       |
-| --------------------------------------------------------- | --------- | ---------- | ----------------- |
-| [categories?](./puppeteer.tracingoptions.categories.md)   |           | string\[\] | <i>(Optional)</i> |
-| [path?](./puppeteer.tracingoptions.path.md)               |           | string     | <i>(Optional)</i> |
-| [screenshots?](./puppeteer.tracingoptions.screenshots.md) |           | boolean    | <i>(Optional)</i> |
+| Property                                                  | Modifiers | Type       | Description       | Default |
+| --------------------------------------------------------- | --------- | ---------- | ----------------- | ------- |
+| [categories?](./puppeteer.tracingoptions.categories.md)   |           | string\[\] | <i>(Optional)</i> |         |
+| [path?](./puppeteer.tracingoptions.path.md)               |           | string     | <i>(Optional)</i> |         |
+| [screenshots?](./puppeteer.tracingoptions.screenshots.md) |           | boolean    | <i>(Optional)</i> |         |

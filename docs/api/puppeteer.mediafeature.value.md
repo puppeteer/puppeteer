@@ -4,7 +4,7 @@ sidebar_label: MediaFeature.value
 
 # MediaFeature.value property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface MediaFeature {

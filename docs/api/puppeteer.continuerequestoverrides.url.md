@@ -6,7 +6,7 @@ sidebar_label: ContinueRequestOverrides.url
 
 If set, the request URL will change. This is not a redirect.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ContinueRequestOverrides {

@@ -4,7 +4,7 @@ sidebar_label: InnerParams
 
 # InnerParams type
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare type InnerParams<T extends unknown[]> = {

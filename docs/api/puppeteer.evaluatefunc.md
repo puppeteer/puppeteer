@@ -4,7 +4,7 @@ sidebar_label: EvaluateFunc
 
 # EvaluateFunc type
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare type EvaluateFunc<T extends unknown[]> = (

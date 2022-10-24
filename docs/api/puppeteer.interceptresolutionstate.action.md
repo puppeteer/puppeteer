@@ -4,7 +4,7 @@ sidebar_label: InterceptResolutionState.action
 
 # InterceptResolutionState.action property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface InterceptResolutionState {

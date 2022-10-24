@@ -6,10 +6,14 @@ sidebar_label: LaunchOptions.handleSIGINT
 
 Close the browser process on `Ctrl+C`.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface LaunchOptions {
   handleSIGINT?: boolean;
 }
 ```
+
+#### Default value:
+
+`true`

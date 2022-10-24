@@ -6,7 +6,7 @@ sidebar_label: Tracing.start
 
 Starts a trace for the current page.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Tracing {

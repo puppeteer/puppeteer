@@ -10,7 +10,7 @@ issues.
 
 In general, there are two possible sources of an issue: Code running on Node.js
 (which we call _server code_), and
-[code running in the browser](<[`Page.evaluate()`](https://pptr.dev/api/puppeteer.page.evaluate)>)
+[code running in the browser](<[`Page.evaluate()`](../api/puppeteer.page.evaluate)>)
 (which we call _client code_). There is also a third possible source being the
 browser itself (which we call _internal code_), but if you suspect this is the
 source **after attempting the methods below**, we suggest
@@ -23,13 +23,13 @@ before
 These methods can be used to debug any situation. These should be used as a
 quick sanity check before diving into more complex methods.
 
-### Turn off [`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions.headless)
+### Turn off [`headless`](../api/puppeteer.browserlaunchargumentoptions.headless)
 
 Sometimes it's useful to see what the browser is displaying. Instead of
 launching in
-[`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions.headless)
+[`headless`](../api/puppeteer.browserlaunchargumentoptions.headless)
 mode, launch a full version of the browser with
-[`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions.headless)
+[`headless`](../api/puppeteer.browserlaunchargumentoptions.headless)
 set to `false`:
 
 ```ts
@@ -38,7 +38,7 @@ const browser = await puppeteer.launch({headless: false});
 
 ### Puppeteer "slow-mo"
 
-The [`slowMo`](https://pptr.dev/api/puppeteer.browserconnectoptions.slowmo)
+The [`slowMo`](../api/puppeteer.browserconnectoptions.slowmo)
 option slows down Puppeteer operations by a specified amount of milliseconds.
 It's another way to help see what's going on.
 
@@ -55,8 +55,8 @@ const browser = await puppeteer.launch({
 
 Since client code runs in the browser, doing `console.*` in client code will not
 directly log to Node.js. However, you can
-[listen](https://pptr.dev/api/puppeteer.page.on) for the
-[`console`](https://pptr.dev/api/puppeteer.pageeventobject.console) event which
+[listen](../api/puppeteer.page.on) for the
+[`console`](../api/puppeteer.pageeventobject.console) event which
 returns a payload with the logged text.
 
 ```ts
@@ -68,7 +68,7 @@ await page.evaluate(() => console.log(`url is ${location.href}`));
 ### Use the debugger in the browser
 
 1. Set
-   [`devtools`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions.devtools)
+   [`devtools`](../api/puppeteer.browserlaunchargumentoptions.devtools)
    to `true` when launching Puppeteer:
 
    ```ts
@@ -101,7 +101,7 @@ to this
 if you want to try something out, you have to add it to your test file.
 
 1. Set
-   [`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions.headless)
+   [`headless`](../api/puppeteer.browserlaunchargumentoptions.headless)
    to `false`.
 2. Add `debugger` to any server code you want debugged. For example,
 

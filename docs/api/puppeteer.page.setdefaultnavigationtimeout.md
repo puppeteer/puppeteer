@@ -18,7 +18,7 @@ This setting will change the default maximum navigation time for the following m
 
 - [page.waitForNavigation(options)](./puppeteer.page.waitfornavigation.md)
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

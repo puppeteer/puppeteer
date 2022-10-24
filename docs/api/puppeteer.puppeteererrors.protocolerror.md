@@ -4,7 +4,7 @@ sidebar_label: PuppeteerErrors.ProtocolError
 
 # PuppeteerErrors.ProtocolError property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PuppeteerErrors {

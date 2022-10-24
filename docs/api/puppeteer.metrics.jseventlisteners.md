@@ -4,7 +4,7 @@ sidebar_label: Metrics.JSEventListeners
 
 # Metrics.JSEventListeners property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface Metrics {

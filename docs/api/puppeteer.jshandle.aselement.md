@@ -4,7 +4,7 @@ sidebar_label: JSHandle.asElement
 
 # JSHandle.asElement() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class JSHandle {

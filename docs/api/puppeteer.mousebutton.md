@@ -4,7 +4,7 @@ sidebar_label: MouseButton
 
 # MouseButton type
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare type MouseButton =

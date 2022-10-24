@@ -6,7 +6,7 @@ sidebar_label: SerializedAXNode.keyshortcuts
 
 Any keyboard shortcuts associated with this node.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface SerializedAXNode {

@@ -6,7 +6,7 @@ sidebar_label: ElementHandle.drag
 
 This method creates and captures a dragevent from the element.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ElementHandle {

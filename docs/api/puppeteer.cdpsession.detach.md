@@ -6,7 +6,7 @@ sidebar_label: CDPSession.detach
 
 Detaches the cdpSession from the target. Once detached, the cdpSession object won't emit any events and can't be used to send messages.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class CDPSession {

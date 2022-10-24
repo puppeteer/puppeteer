@@ -4,7 +4,7 @@ sidebar_label: CDPSession.send
 
 # CDPSession.send() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class CDPSession {

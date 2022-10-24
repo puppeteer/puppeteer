@@ -4,7 +4,7 @@ sidebar_label: Coverage.stopCSSCoverage
 
 # Coverage.stopCSSCoverage() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Coverage {

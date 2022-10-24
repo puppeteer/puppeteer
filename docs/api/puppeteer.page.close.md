@@ -4,7 +4,7 @@ sidebar_label: Page.close
 
 # Page.close() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

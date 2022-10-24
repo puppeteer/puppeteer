@@ -4,7 +4,7 @@ sidebar_label: Page.accessibility
 
 # Page.accessibility property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

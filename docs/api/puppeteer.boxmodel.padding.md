@@ -4,7 +4,7 @@ sidebar_label: BoxModel.padding
 
 # BoxModel.padding property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BoxModel {

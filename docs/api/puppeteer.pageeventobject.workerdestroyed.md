@@ -4,7 +4,7 @@ sidebar_label: PageEventObject.workerdestroyed
 
 # PageEventObject.workerdestroyed property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PageEventObject {

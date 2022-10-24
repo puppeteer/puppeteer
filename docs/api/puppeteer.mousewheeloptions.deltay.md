@@ -4,7 +4,7 @@ sidebar_label: MouseWheelOptions.deltaY
 
 # MouseWheelOptions.deltaY property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface MouseWheelOptions {

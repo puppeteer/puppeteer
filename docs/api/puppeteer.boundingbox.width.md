@@ -6,7 +6,7 @@ sidebar_label: BoundingBox.width
 
 the width of the element in pixels.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BoundingBox {

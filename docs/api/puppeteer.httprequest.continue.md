@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.continue
 
 Continues request with optional request overrides.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class HTTPRequest {

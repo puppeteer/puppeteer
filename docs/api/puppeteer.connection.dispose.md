@@ -4,7 +4,7 @@ sidebar_label: Connection.dispose
 
 # Connection.dispose() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Connection {

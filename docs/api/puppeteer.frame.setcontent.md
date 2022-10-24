@@ -6,7 +6,7 @@ sidebar_label: Frame.setContent
 
 Set the content of the frame.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Frame {

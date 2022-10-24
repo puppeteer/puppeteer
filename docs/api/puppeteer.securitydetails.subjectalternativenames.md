@@ -4,7 +4,7 @@ sidebar_label: SecurityDetails.subjectAlternativeNames
 
 # SecurityDetails.subjectAlternativeNames() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class SecurityDetails {

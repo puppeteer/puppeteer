@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.client
 
 Warning! Using this client can break Puppeteer. Use with caution.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class HTTPRequest {

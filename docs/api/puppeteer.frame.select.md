@@ -6,7 +6,7 @@ sidebar_label: Frame.select
 
 Selects a set of value on the first `<select>` element that matches the `selector`.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Frame {

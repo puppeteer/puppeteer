@@ -4,7 +4,7 @@ sidebar_label: Page.setCookie
 
 # Page.setCookie() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

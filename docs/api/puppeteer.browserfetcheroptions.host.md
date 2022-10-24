@@ -6,10 +6,16 @@ sidebar_label: BrowserFetcherOptions.host
 
 Determines the host that will be used for downloading.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BrowserFetcherOptions {
   host?: string;
 }
 ```
+
+#### Default value:
+
+Either
+
+- https://storage.googleapis.com or - https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central

@@ -4,7 +4,7 @@ sidebar_label: Page.waitForResponse
 
 # Page.waitForResponse() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

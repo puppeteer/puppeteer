@@ -4,7 +4,7 @@ sidebar_label: BrowserFetcher.remove
 
 # BrowserFetcher.remove() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class BrowserFetcher {

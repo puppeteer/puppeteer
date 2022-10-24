@@ -6,7 +6,7 @@ sidebar_label: Viewport.width
 
 The page width in pixels.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface Viewport {

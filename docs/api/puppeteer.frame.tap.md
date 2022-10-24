@@ -6,7 +6,7 @@ sidebar_label: Frame.tap
 
 Taps the first element that matches the `selector`.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Frame {

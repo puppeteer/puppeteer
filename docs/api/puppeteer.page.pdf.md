@@ -4,7 +4,7 @@ sidebar_label: Page.pdf
 
 # Page.pdf() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

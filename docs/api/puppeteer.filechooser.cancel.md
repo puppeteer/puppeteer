@@ -6,7 +6,7 @@ sidebar_label: FileChooser.cancel
 
 Closes the file chooser without selecting any files.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class FileChooser {

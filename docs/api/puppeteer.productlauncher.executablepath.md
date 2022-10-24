@@ -4,7 +4,7 @@ sidebar_label: ProductLauncher.executablePath
 
 # ProductLauncher.executablePath() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ProductLauncher {

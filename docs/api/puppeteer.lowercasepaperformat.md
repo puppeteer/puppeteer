@@ -4,7 +4,7 @@ sidebar_label: LowerCasePaperFormat
 
 # LowerCasePaperFormat type
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare type LowerCasePaperFormat =

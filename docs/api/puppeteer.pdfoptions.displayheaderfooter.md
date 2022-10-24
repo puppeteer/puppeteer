@@ -6,10 +6,14 @@ sidebar_label: PDFOptions.displayHeaderFooter
 
 Whether to show the header and footer.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PDFOptions {
   displayHeaderFooter?: boolean;
 }
 ```
+
+#### Default value:
+
+false

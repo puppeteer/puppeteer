@@ -6,7 +6,7 @@ sidebar_label: ElementHandle.uploadFile
 
 This method expects `elementHandle` to point to an [input element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input).
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ElementHandle {

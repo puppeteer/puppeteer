@@ -6,7 +6,7 @@ sidebar_label: EventEmitter.off
 
 Remove an event listener from firing.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class EventEmitter {

@@ -6,7 +6,7 @@ sidebar_label: ElementHandle.dragEnter
 
 This method creates a `dragenter` event on the element.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ElementHandle {

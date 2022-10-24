@@ -4,7 +4,7 @@ sidebar_label: Page.content
 
 # Page.content() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

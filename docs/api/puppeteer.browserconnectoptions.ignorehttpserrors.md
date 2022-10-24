@@ -6,10 +6,14 @@ sidebar_label: BrowserConnectOptions.ignoreHTTPSErrors
 
 Whether to ignore HTTPS errors during navigation.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BrowserConnectOptions {
   ignoreHTTPSErrors?: boolean;
 }
 ```
+
+#### Default value:
+
+false

@@ -6,7 +6,7 @@ sidebar_label: DEFAULT_INTERCEPT_RESOLUTION_PRIORITY
 
 The default cooperative request interception resolution priority
 
-**Signature:**
+#### Signature:
 
 ```typescript
 DEFAULT_INTERCEPT_RESOLUTION_PRIORITY = 0;

@@ -6,7 +6,7 @@ sidebar_label: Target.worker
 
 If the target is not of type `"service_worker"` or `"shared_worker"`, returns `null`.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Target {

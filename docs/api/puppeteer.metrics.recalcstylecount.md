@@ -4,7 +4,7 @@ sidebar_label: Metrics.RecalcStyleCount
 
 # Metrics.RecalcStyleCount property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface Metrics {

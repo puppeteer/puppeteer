@@ -4,7 +4,7 @@ sidebar_label: Page.emulateMediaType
 
 # Page.emulateMediaType() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

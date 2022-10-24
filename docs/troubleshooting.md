@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 # Troubleshooting
@@ -29,6 +29,24 @@ For example,
 PUPPETEER_CACHE_DIR=$(pwd) npm install puppeteer
 PUPPETEER_CACHE_DIR=$(pwd) node <script-path>
 ```
+
+You can also create a configuration file named `.puppeteerrc.cjs` (or
+`puppeteer.config.cjs`) at the root of your application with the contents
+
+```js
+const {join} = require('path');
+
+/**
+ * @type {import("puppeteer").Configuration}
+ */
+module.exports = {
+  cacheDirectory: join(__dirname, '.cache', 'puppeteer'),
+};
+```
+
+You will need to reinstall `puppeteer` in order for the configuration to take
+effect. See [Configuring
+Puppeteer](./guides/configuring-puppeteer) for more information.
 
 ## Chrome headless doesn't launch on Windows
 

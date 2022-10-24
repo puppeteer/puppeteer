@@ -4,13 +4,17 @@ sidebar_label: PDFOptions.format
 
 # PDFOptions.format property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PDFOptions {
   format?: PaperFormat;
 }
 ```
+
+#### Default value:
+
+`letter`.
 
 ## Remarks
 

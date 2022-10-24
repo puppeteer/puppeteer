@@ -4,7 +4,7 @@ sidebar_label: MediaFeature
 
 # MediaFeature interface
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export interface MediaFeature
@@ -12,7 +12,7 @@ export interface MediaFeature
 
 ## Properties
 
-| Property                                   | Modifiers | Type   | Description |
-| ------------------------------------------ | --------- | ------ | ----------- |
-| [name](./puppeteer.mediafeature.name.md)   |           | string |             |
-| [value](./puppeteer.mediafeature.value.md) |           | string |             |
+| Property                                   | Modifiers | Type   | Description | Default |
+| ------------------------------------------ | --------- | ------ | ----------- | ------- |
+| [name](./puppeteer.mediafeature.name.md)   |           | string |             |         |
+| [value](./puppeteer.mediafeature.value.md) |           | string |             |         |

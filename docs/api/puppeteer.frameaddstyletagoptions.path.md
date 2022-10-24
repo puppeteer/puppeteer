@@ -6,7 +6,7 @@ sidebar_label: FrameAddStyleTagOptions.path
 
 The path to a CSS file to be injected into the frame.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface FrameAddStyleTagOptions {

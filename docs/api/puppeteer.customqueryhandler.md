@@ -4,7 +4,7 @@ sidebar_label: CustomQueryHandler
 
 # CustomQueryHandler interface
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export interface CustomQueryHandler
@@ -12,7 +12,7 @@ export interface CustomQueryHandler
 
 ## Properties
 
-| Property                                                | Modifiers | Type                                              | Description       |
-| ------------------------------------------------------- | --------- | ------------------------------------------------- | ----------------- |
-| [queryAll?](./puppeteer.customqueryhandler.queryall.md) |           | (node: Node, selector: string) =&gt; Node\[\]     | <i>(Optional)</i> |
-| [queryOne?](./puppeteer.customqueryhandler.queryone.md) |           | (node: Node, selector: string) =&gt; Node \| null | <i>(Optional)</i> |
+| Property                                                | Modifiers | Type                                              | Description       | Default |
+| ------------------------------------------------------- | --------- | ------------------------------------------------- | ----------------- | ------- |
+| [queryAll?](./puppeteer.customqueryhandler.queryall.md) |           | (node: Node, selector: string) =&gt; Node\[\]     | <i>(Optional)</i> |         |
+| [queryOne?](./puppeteer.customqueryhandler.queryone.md) |           | (node: Node, selector: string) =&gt; Node \| null | <i>(Optional)</i> |         |

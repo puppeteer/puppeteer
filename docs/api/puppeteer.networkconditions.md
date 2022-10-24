@@ -8,7 +8,7 @@ sidebar_label: networkConditions
 >
 > Import [PredefinedNetworkConditions](./puppeteer.predefinednetworkconditions.md).
 
-**Signature:**
+#### Signature:
 
 ```typescript
 networkConditions: Readonly<{

@@ -4,7 +4,7 @@ sidebar_label: PageEventObject.requestservedfromcache
 
 # PageEventObject.requestservedfromcache property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PageEventObject {

@@ -6,7 +6,7 @@ sidebar_label: SerializedAXNode.description
 
 An additional human readable description of the node.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface SerializedAXNode {

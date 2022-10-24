@@ -4,7 +4,7 @@ sidebar_label: HTTPResponse.fromServiceWorker
 
 # HTTPResponse.fromServiceWorker() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class HTTPResponse {

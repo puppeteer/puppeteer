@@ -6,7 +6,7 @@ sidebar_label: JSHandle.[__JSHandleSymbol]
 
 Used for nominally typing [JSHandle](./puppeteer.jshandle.md).
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class JSHandle {

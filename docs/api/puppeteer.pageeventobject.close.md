@@ -4,7 +4,7 @@ sidebar_label: PageEventObject.close
 
 # PageEventObject.close property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PageEventObject {

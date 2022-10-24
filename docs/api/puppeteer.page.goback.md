@@ -6,7 +6,7 @@ sidebar_label: Page.goBack
 
 This method navigate to the previous page in history.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

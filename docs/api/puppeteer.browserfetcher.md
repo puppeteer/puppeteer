@@ -6,7 +6,7 @@ sidebar_label: BrowserFetcher
 
 BrowserFetcher can download and manage different versions of Chromium and Firefox.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare class BrowserFetcher

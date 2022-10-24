@@ -6,7 +6,7 @@ sidebar_label: LaunchOptions.extraPrefsFirefox
 
 [Additional preferences](https://searchfox.org/mozilla-release/source/modules/libpref/init/all.js) that can be passed when launching with Firefox.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface LaunchOptions {

@@ -4,7 +4,7 @@ sidebar_label: Frame.waitForFunction
 
 # Frame.waitForFunction() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Frame {

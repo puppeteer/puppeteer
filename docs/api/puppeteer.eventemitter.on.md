@@ -6,7 +6,7 @@ sidebar_label: EventEmitter.on
 
 Bind an event listener to fire when an event occurs.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class EventEmitter {

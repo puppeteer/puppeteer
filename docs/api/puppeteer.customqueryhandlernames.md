@@ -8,7 +8,7 @@ sidebar_label: customQueryHandlerNames
 >
 > Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppeteer.customQueryHandlerNames()](./puppeteer.puppeteer.customqueryhandlernames.md)
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare function customQueryHandlerNames(): string[];

@@ -28,7 +28,7 @@ const puppeteer = require('puppeteer');
 })();
 ```
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

@@ -6,7 +6,7 @@ sidebar_label: Page.$
 
 Runs `document.querySelector` within the page. If no element matches the selector, the return value resolves to `null`.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

@@ -4,7 +4,7 @@ sidebar_label: ConsoleMessage.args
 
 # ConsoleMessage.args() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ConsoleMessage {

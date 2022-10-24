@@ -4,7 +4,7 @@ sidebar_label: PageEventObject.framenavigated
 
 # PageEventObject.framenavigated property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PageEventObject {

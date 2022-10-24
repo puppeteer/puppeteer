@@ -8,7 +8,7 @@ This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.co
 
 A list of predefined network conditions can be used by importing [PredefinedNetworkConditions](./puppeteer.predefinednetworkconditions.md).
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

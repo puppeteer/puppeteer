@@ -4,7 +4,7 @@ sidebar_label: ScreenshotClip.x
 
 # ScreenshotClip.x property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ScreenshotClip {
