@@ -10,7 +10,7 @@ Handles prevent the referenced JavaScript object from being garbage-collected un
 
 Handles can be used as arguments for any evaluation function such as [Page.$eval()](./puppeteer.page._eval.md), [Page.evaluate()](./puppeteer.page.evaluate.md), and [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md). They are resolved to their referenced object.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare class JSHandle<T = unknown>

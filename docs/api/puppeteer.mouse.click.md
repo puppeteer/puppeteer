@@ -6,7 +6,7 @@ sidebar_label: Mouse.click
 
 Shortcut for `mouse.move`, `mouse.down` and `mouse.up`.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Mouse {

@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.resourceType
 
 Contains the request's resource type as it was perceived by the rendering engine.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class HTTPRequest {

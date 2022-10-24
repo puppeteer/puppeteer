@@ -116,7 +116,10 @@ sidebar_position: 1
     generateDocs(inputs[0]!, outputs[0]!);
     spawnAndLog('prettier', '--ignore-path', 'none', '--write', 'docs');
   })
-    .inputs(['docs/puppeteer.api.json'])
+    .inputs([
+      'docs/puppeteer.api.json',
+      'tools/internal/custom_markdown_documenter.ts',
+    ])
     .outputs(['docs/api'])
     .build();
 })();

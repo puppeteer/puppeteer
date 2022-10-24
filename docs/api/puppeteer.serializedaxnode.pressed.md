@@ -6,7 +6,7 @@ sidebar_label: SerializedAXNode.pressed
 
 Whether the node is checked or in a mixed state.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface SerializedAXNode {

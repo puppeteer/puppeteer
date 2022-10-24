@@ -6,7 +6,7 @@ sidebar_label: ElementHandle.isIntersectingViewport
 
 Resolves to true if the element is visible in the current viewport.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ElementHandle {

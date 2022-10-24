@@ -4,7 +4,7 @@ sidebar_label: Metrics.Frames
 
 # Metrics.Frames property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface Metrics {

@@ -12,7 +12,7 @@ sidebar_label: Frame.$x
 >
 > This method evaluates the given XPath expression and returns the results. If `xpath` starts with `//` instead of `.//`, the dot will be appended automatically.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Frame {

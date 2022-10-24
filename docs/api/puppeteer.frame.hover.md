@@ -6,7 +6,7 @@ sidebar_label: Frame.hover
 
 Hovers the pointer over the center of the first element that matches the `selector`.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Frame {

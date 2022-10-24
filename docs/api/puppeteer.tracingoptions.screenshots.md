@@ -4,7 +4,7 @@ sidebar_label: TracingOptions.screenshots
 
 # TracingOptions.screenshots property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface TracingOptions {

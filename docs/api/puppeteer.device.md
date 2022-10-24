@@ -4,7 +4,7 @@ sidebar_label: Device
 
 # Device interface
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export interface Device
@@ -12,7 +12,7 @@ export interface Device
 
 ## Properties
 
-| Property                                     | Modifiers | Type                                | Description |
-| -------------------------------------------- | --------- | ----------------------------------- | ----------- |
-| [userAgent](./puppeteer.device.useragent.md) |           | string                              |             |
-| [viewport](./puppeteer.device.viewport.md)   |           | [Viewport](./puppeteer.viewport.md) |             |
+| Property                                     | Modifiers | Type                                | Description | Default |
+| -------------------------------------------- | --------- | ----------------------------------- | ----------- | ------- |
+| [userAgent](./puppeteer.device.useragent.md) |           | string                              |             |         |
+| [viewport](./puppeteer.device.viewport.md)   |           | [Viewport](./puppeteer.viewport.md) |             |         |

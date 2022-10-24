@@ -4,7 +4,7 @@ sidebar_label: Frame.isOOPFrame
 
 # Frame.isOOPFrame() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Frame {

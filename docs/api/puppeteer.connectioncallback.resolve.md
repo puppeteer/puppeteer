@@ -4,7 +4,7 @@ sidebar_label: ConnectionCallback.resolve
 
 # ConnectionCallback.resolve() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ConnectionCallback {

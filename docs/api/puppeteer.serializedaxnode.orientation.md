@@ -4,7 +4,7 @@ sidebar_label: SerializedAXNode.orientation
 
 # SerializedAXNode.orientation property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface SerializedAXNode {

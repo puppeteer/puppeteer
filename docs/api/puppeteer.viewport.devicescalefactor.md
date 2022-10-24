@@ -6,10 +6,14 @@ sidebar_label: Viewport.deviceScaleFactor
 
 Specify device scale factor. See [devicePixelRatio](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio) for more info.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface Viewport {
   deviceScaleFactor?: number;
 }
 ```
+
+#### Default value:
+
+1

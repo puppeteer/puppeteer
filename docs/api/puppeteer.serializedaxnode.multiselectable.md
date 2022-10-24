@@ -6,7 +6,7 @@ sidebar_label: SerializedAXNode.multiselectable
 
 Whether more than one child can be selected.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface SerializedAXNode {

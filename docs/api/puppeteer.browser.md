@@ -6,7 +6,7 @@ sidebar_label: Browser
 
 A Browser is created when Puppeteer connects to a Chromium instance, either through [PuppeteerNode.launch()](./puppeteer.puppeteernode.launch.md) or [Puppeteer.connect()](./puppeteer.puppeteer.connect.md).
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare class Browser extends EventEmitter

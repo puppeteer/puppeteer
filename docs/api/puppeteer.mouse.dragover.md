@@ -6,7 +6,7 @@ sidebar_label: Mouse.dragOver
 
 Dispatches a `dragover` event.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Mouse {

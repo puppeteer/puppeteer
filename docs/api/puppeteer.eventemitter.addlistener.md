@@ -10,7 +10,7 @@ sidebar_label: EventEmitter.addListener
 
 Add an event listener.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class EventEmitter {

@@ -6,7 +6,7 @@ sidebar_label: BoundingBox.height
 
 the height of the element in pixels.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BoundingBox {

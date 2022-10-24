@@ -4,7 +4,7 @@ sidebar_label: CDPSessionOnMessageObject.params
 
 # CDPSessionOnMessageObject.params property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface CDPSessionOnMessageObject {

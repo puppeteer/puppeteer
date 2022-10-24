@@ -4,7 +4,7 @@ sidebar_label: Page.off
 
 # Page.off() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

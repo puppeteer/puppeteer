@@ -6,7 +6,7 @@ sidebar_label: JSCoverageOptions.includeRawScriptCoverage
 
 Whether the result includes raw V8 script coverage entries.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface JSCoverageOptions {

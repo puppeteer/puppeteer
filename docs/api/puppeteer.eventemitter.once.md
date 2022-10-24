@@ -6,7 +6,7 @@ sidebar_label: EventEmitter.once
 
 Like `on` but the listener will only be fired once and then it will be removed.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class EventEmitter {

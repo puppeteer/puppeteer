@@ -6,7 +6,7 @@ sidebar_label: EventEmitter.removeAllListeners
 
 Removes all listeners. If given an event argument, it will remove only listeners for that event.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class EventEmitter {

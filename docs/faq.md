@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 # FAQ
@@ -18,7 +18,7 @@ developers expect cross-browser coverage. The Puppeteer team needs input from
 users to stabilize Firefox support and to bring missing APIs to our attention.
 
 From Puppeteer v2.1.0 onwards you can specify
-[`puppeteer.launch({product: 'firefox'})`](https://pptr.dev/api/puppeteer.puppeteernode.launch)
+[`puppeteer.launch({product: 'firefox'})`](./api/puppeteer.puppeteernode.launch)
 to run your Puppeteer scripts in Firefox Nightly, without any additional custom
 patches. While
 [an older experiment](https://www.npmjs.com/package/puppeteer-firefox) required
@@ -117,7 +117,7 @@ npm install puppeteer-core@chrome-71
 Find the version using one of the following ways:
 
 - Look for the `chromium` entry in
-  [revisions.ts](https://github.com/puppeteer/puppeteer/blob/main/src/revisions.ts).
+  [revisions.ts](https://github.com/puppeteer/puppeteer/blob/main/packages/puppeteer-core/src/revisions.ts).
   To find the corresponding Chromium commit and version number, search for the
   revision prefixed by an `r` in [OmahaProxy](https://omahaproxy.appspot.com/)'s
   "Find Releases" section.
@@ -132,7 +132,7 @@ Since Firefox support is experimental, Puppeteer downloads the latest
 [Firefox Nightly](https://wiki.mozilla.org/Nightly) when the `PUPPETEER_PRODUCT`
 environment variable is set to `firefox`. That's also why the value of `firefox`
 in
-[revisions.ts](https://github.com/puppeteer/puppeteer/blob/main/src/revisions.ts)
+[revisions.ts](https://github.com/puppeteer/puppeteer/blob/main/packages/puppeteer-core/src/revisions.ts)
 is `latest` -- Puppeteer isn't tied to a particular Firefox version.
 
 To fetch Firefox Nightly as part of Puppeteer installation:
@@ -197,7 +197,7 @@ There are two reasons for this:
   This means that Puppeteer does not support licensed formats such as AAC or
   H.264. (However, it is possible to force Puppeteer to use a
   separately-installed version Chrome instead of Chromium via the
-  [`executablePath` option to `puppeteer.launch`](https://pptr.dev/api/puppeteer.launchoptions.executablepath).
+  [`executablePath` option to `puppeteer.launch`](./api/puppeteer.launchoptions.executablepath).
   You should only use this configuration if you need an official release of
   Chrome that supports these media formats.)
 - Since Puppeteer (in all configurations) controls a desktop version of

@@ -4,7 +4,7 @@ sidebar_label: ConnectionCallback.method
 
 # ConnectionCallback.method property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ConnectionCallback {

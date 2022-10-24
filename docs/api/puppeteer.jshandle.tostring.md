@@ -6,7 +6,7 @@ sidebar_label: JSHandle.toString
 
 Returns a string representation of the JSHandle.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class JSHandle {

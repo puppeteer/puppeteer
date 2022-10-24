@@ -38,6 +38,8 @@ export const {
   connect,
   /**
    * @deprecated Construct {@link BrowserFetcher} manually.
+   *
+   * @public
    */
   createBrowserFetcher,
   defaultArgs,

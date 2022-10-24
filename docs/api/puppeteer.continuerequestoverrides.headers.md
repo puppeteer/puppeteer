@@ -4,7 +4,7 @@ sidebar_label: ContinueRequestOverrides.headers
 
 # ContinueRequestOverrides.headers property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ContinueRequestOverrides {

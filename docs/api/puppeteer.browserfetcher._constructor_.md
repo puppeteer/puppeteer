@@ -6,7 +6,7 @@ sidebar_label: BrowserFetcher.(constructor)
 
 Constructs a browser fetcher for the given options.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class BrowserFetcher {

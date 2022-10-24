@@ -4,7 +4,7 @@ sidebar_label: PuppeteerNode.defaultProduct
 
 # PuppeteerNode.defaultProduct property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class PuppeteerNode {

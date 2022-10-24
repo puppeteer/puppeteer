@@ -4,7 +4,7 @@ sidebar_label: PageEventObject.framedetached
 
 # PageEventObject.framedetached property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PageEventObject {

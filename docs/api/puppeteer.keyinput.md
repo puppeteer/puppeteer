@@ -6,7 +6,7 @@ sidebar_label: KeyInput
 
 All the valid keys that can be passed to functions that take user input, such as [keyboard.press](./puppeteer.keyboard.press.md)
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare type KeyInput =

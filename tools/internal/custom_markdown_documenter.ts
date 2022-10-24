@@ -261,11 +261,7 @@ export class MarkdownDocumenter {
     if (apiItem instanceof ApiDeclaredItem) {
       if (apiItem.excerpt.text.length > 0) {
         output.appendNode(
-          new DocParagraph({configuration}, [
-            new DocEmphasisSpan({configuration, bold: true}, [
-              new DocPlainText({configuration, text: 'Signature:'}),
-            ]),
-          ])
+          new DocHeading({configuration, title: 'Signature:', level: 4})
         );
 
         let code: string;
@@ -297,11 +293,7 @@ export class MarkdownDocumenter {
 
     if (decoratorBlocks.length > 0) {
       output.appendNode(
-        new DocParagraph({configuration}, [
-          new DocEmphasisSpan({configuration, bold: true}, [
-            new DocPlainText({configuration, text: 'Decorators:'}),
-          ]),
-        ])
+        new DocHeading({configuration, title: 'Decorators:', level: 4})
       );
       for (const decoratorBlock of decoratorBlocks) {
         output.appendNodes(decoratorBlock.content.nodes);
@@ -356,6 +348,8 @@ export class MarkdownDocumenter {
       default:
         throw new Error('Unsupported API item kind: ' + apiItem.kind);
     }
+
+    this._writeDefaultValueSection(output, apiItem);
 
     if (appendRemarks) {
       this._writeRemarksSection(output, apiItem);
@@ -514,6 +508,27 @@ export class MarkdownDocumenter {
           needsComma = true;
         }
         output.appendNode(referencesParagraph);
+      }
+    }
+  }
+
+  private _writeDefaultValueSection(output: DocSection, apiItem: ApiItem) {
+    if (apiItem instanceof ApiDocumentedItem) {
+      const block = apiItem.tsdocComment?.customBlocks.find(block => {
+        return (
+          block.blockTag.tagNameWithUpperCase ===
+          StandardTags.defaultValue.tagNameWithUpperCase
+        );
+      });
+      if (block) {
+        output.appendNode(
+          new DocHeading({
+            configuration: this._tsdocConfiguration,
+            title: 'Default value:',
+            level: 4,
+          })
+        );
+        this._appendSection(output, block.content);
       }
     }
   }
@@ -968,7 +983,7 @@ export class MarkdownDocumenter {
 
     const propertiesTable: DocTable = new DocTable({
       configuration,
-      headerTitles: ['Property', 'Modifiers', 'Type', 'Description'],
+      headerTitles: ['Property', 'Modifiers', 'Type', 'Description', 'Default'],
     });
 
     const methodsTable: DocTable = new DocTable({
@@ -1007,6 +1022,7 @@ export class MarkdownDocumenter {
                 this._createModifiersCell(apiMember),
                 this._createPropertyTypeCell(apiMember),
                 this._createDescriptionCell(apiMember),
+                this._createDefaultCell(apiMember),
               ])
             );
           }
@@ -1182,7 +1198,7 @@ export class MarkdownDocumenter {
         docNodeContainer.appendNode(
           new DocLinkTag({
             configuration,
-            tagName: '@link',
+            tagName: StandardTags.link.tagName,
             linkText: unwrappedTokenText,
             urlDestination: this._getLinkFilenameForApiItem(
               apiItemResult.resolvedApiItem
@@ -1263,6 +1279,24 @@ export class MarkdownDocumenter {
     }
 
     return new DocTableCell({configuration}, section.nodes);
+  }
+
+  private _createDefaultCell(apiItem: ApiItem): DocTableCell {
+    const configuration: TSDocConfiguration = this._tsdocConfiguration;
+
+    if (apiItem instanceof ApiDocumentedItem) {
+      const block = apiItem.tsdocComment?.customBlocks.find(block => {
+        return (
+          block.blockTag.tagNameWithUpperCase ===
+          StandardTags.defaultValue.tagNameWithUpperCase
+        );
+      });
+      if (block !== undefined) {
+        return new DocTableCell({configuration}, block.content.getChildNodes());
+      }
+    }
+
+    return new DocTableCell({configuration}, []);
   }
 
   private _createModifiersCell(apiItem: ApiItem): DocTableCell {

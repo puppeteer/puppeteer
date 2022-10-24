@@ -4,7 +4,7 @@ sidebar_label: BrowserFetcherRevisionInfo.product
 
 # BrowserFetcherRevisionInfo.product property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BrowserFetcherRevisionInfo {

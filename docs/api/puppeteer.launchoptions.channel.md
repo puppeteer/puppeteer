@@ -6,7 +6,7 @@ sidebar_label: LaunchOptions.channel
 
 Chrome Release Channel
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface LaunchOptions {

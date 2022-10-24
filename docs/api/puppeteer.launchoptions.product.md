@@ -6,10 +6,14 @@ sidebar_label: LaunchOptions.product
 
 Which browser to launch.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface LaunchOptions {
   product?: Product;
 }
 ```
+
+#### Default value:
+
+`chrome`

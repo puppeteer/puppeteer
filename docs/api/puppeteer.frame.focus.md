@@ -6,7 +6,7 @@ sidebar_label: Frame.focus
 
 Focuses the first element that matches the `selector`.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Frame {

@@ -4,7 +4,7 @@ sidebar_label: HTTPRequest.initiator
 
 # HTTPRequest.initiator() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class HTTPRequest {

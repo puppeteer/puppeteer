@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.failure
 
 Access information about the request's failure.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class HTTPRequest {

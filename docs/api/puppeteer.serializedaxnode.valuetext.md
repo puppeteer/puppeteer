@@ -6,7 +6,7 @@ sidebar_label: SerializedAXNode.valuetext
 
 A description of the current value.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface SerializedAXNode {

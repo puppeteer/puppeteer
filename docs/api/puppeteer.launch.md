@@ -4,7 +4,7 @@ sidebar_label: launch
 
 # launch variable
 
-**Signature:**
+#### Signature:
 
 ```typescript
 launch: (

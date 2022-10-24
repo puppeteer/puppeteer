@@ -4,7 +4,7 @@ sidebar_label: Metrics.ScriptDuration
 
 # Metrics.ScriptDuration property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface Metrics {

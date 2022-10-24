@@ -6,10 +6,14 @@ sidebar_label: PDFOptions.landscape
 
 Whether to print in landscape orientation.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PDFOptions {
   landscape?: boolean;
 }
 ```
+
+#### Default value:
+
+= false

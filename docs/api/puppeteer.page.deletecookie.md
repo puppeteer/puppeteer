@@ -4,7 +4,7 @@ sidebar_label: Page.deleteCookie
 
 # Page.deleteCookie() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

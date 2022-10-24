@@ -4,7 +4,7 @@ sidebar_label: Frame.isDetached
 
 # Frame.isDetached() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Frame {

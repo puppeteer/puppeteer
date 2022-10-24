@@ -6,13 +6,17 @@ sidebar_label: PDFOptions.path
 
 The path to save the file to.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PDFOptions {
   path?: string;
 }
 ```
+
+#### Default value:
+
+the empty string, which means the PDF will not be written to disk.
 
 ## Remarks
 

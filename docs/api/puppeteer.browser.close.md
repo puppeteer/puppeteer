@@ -6,7 +6,7 @@ sidebar_label: Browser.close
 
 Closes Chromium and all of its pages (if any were opened). The [Browser](./puppeteer.browser.md) object itself is considered to be disposed and cannot be used anymore.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Browser {

@@ -6,7 +6,7 @@ sidebar_label: BrowserContext.newPage
 
 Creates a new page in the browser context.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class BrowserContext {

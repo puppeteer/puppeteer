@@ -6,7 +6,7 @@ sidebar_label: BrowserFetcherOptions.useMacOSARMBinary
 
 Enables the use of the Chromium binary for macOS ARM.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BrowserFetcherOptions {

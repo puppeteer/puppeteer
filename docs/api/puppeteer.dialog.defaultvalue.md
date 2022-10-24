@@ -4,7 +4,7 @@ sidebar_label: Dialog.defaultValue
 
 # Dialog.defaultValue() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Dialog {

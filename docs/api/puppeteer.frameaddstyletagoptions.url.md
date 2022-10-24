@@ -6,7 +6,7 @@ sidebar_label: FrameAddStyleTagOptions.url
 
 the URL of the CSS file to be added.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface FrameAddStyleTagOptions {

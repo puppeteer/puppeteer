@@ -6,7 +6,7 @@ sidebar_label: PredefinedNetworkConditions
 
 A list of network conditions to be used with [Page.emulateNetworkConditions()](./puppeteer.page.emulatenetworkconditions.md).
 
-**Signature:**
+#### Signature:
 
 ```typescript
 PredefinedNetworkConditions: Readonly<{

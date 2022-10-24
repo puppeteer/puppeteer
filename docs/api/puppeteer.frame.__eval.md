@@ -8,7 +8,7 @@ Runs the given function on an array of elements matching the given selector in t
 
 If the given function returns a promise, then this method will wait till the promise resolves.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Frame {

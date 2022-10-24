@@ -6,7 +6,7 @@ sidebar_label: BrowserContext.browser
 
 The browser this browser context belongs to.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class BrowserContext {

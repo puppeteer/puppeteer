@@ -6,7 +6,7 @@ sidebar_label: Browser.defaultBrowserContext
 
 Returns the default browser context. The default browser context cannot be closed.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Browser {

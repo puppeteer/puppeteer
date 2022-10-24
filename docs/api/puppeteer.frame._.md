@@ -6,7 +6,7 @@ sidebar_label: Frame.$
 
 Queries the frame for an element matching the given selector.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Frame {

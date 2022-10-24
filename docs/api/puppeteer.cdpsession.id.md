@@ -6,7 +6,7 @@ sidebar_label: CDPSession.id
 
 Returns the session's id.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class CDPSession {

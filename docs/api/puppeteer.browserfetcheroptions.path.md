@@ -6,7 +6,7 @@ sidebar_label: BrowserFetcherOptions.path
 
 Determines the path to download browsers to.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BrowserFetcherOptions {

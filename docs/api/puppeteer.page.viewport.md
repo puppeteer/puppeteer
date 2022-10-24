@@ -4,7 +4,7 @@ sidebar_label: Page.viewport
 
 # Page.viewport() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

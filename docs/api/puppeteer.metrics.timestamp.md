@@ -4,7 +4,7 @@ sidebar_label: Metrics.Timestamp
 
 # Metrics.Timestamp property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface Metrics {

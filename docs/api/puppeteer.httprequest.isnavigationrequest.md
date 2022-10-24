@@ -4,7 +4,7 @@ sidebar_label: HTTPRequest.isNavigationRequest
 
 # HTTPRequest.isNavigationRequest() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class HTTPRequest {

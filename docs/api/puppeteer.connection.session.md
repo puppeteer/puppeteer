@@ -4,7 +4,7 @@ sidebar_label: Connection.session
 
 # Connection.session() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Connection {

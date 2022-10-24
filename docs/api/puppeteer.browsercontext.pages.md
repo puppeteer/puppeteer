@@ -6,7 +6,7 @@ sidebar_label: BrowserContext.pages
 
 An array of all pages inside the browser context.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class BrowserContext {

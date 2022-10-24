@@ -4,7 +4,7 @@ sidebar_label: SerializedAXNode.modal
 
 # SerializedAXNode.modal property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface SerializedAXNode {

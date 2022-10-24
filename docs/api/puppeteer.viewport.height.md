@@ -6,7 +6,7 @@ sidebar_label: Viewport.height
 
 The page height in pixels.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface Viewport {

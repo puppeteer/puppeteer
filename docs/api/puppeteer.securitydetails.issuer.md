@@ -4,7 +4,7 @@ sidebar_label: SecurityDetails.issuer
 
 # SecurityDetails.issuer() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class SecurityDetails {

@@ -4,7 +4,7 @@ sidebar_label: SerializedAXNode.disabled
 
 # SerializedAXNode.disabled property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface SerializedAXNode {

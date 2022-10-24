@@ -4,7 +4,7 @@ sidebar_label: BrowserFetcher.host
 
 # BrowserFetcher.host() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class BrowserFetcher {

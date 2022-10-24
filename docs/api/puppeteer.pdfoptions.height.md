@@ -6,7 +6,7 @@ sidebar_label: PDFOptions.height
 
 Sets the height of paper. You can pass in a number or a string with a unit.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PDFOptions {

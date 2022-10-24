@@ -6,7 +6,7 @@ sidebar_label: Target.browserContext
 
 Get the browser context the target belongs to.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Target {

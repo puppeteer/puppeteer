@@ -4,7 +4,7 @@ sidebar_label: BrowserContextEmittedEvents
 
 # BrowserContextEmittedEvents enum
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare const enum BrowserContextEmittedEvents

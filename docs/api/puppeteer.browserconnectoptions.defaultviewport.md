@@ -6,7 +6,7 @@ sidebar_label: BrowserConnectOptions.defaultViewport
 
 Sets the viewport for each page.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BrowserConnectOptions {

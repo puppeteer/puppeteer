@@ -4,7 +4,7 @@ sidebar_label: PuppeteerErrors.TimeoutError
 
 # PuppeteerErrors.TimeoutError property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PuppeteerErrors {

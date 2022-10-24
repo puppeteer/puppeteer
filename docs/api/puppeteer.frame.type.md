@@ -6,7 +6,7 @@ sidebar_label: Frame.type
 
 Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Frame {

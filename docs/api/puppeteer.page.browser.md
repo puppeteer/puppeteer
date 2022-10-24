@@ -6,7 +6,7 @@ sidebar_label: Page.browser
 
 Get the browser the page belongs to.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

@@ -6,10 +6,14 @@ sidebar_label: PDFOptions.scale
 
 Scales the rendering of the web page. Amount must be between `0.1` and `2`.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PDFOptions {
   scale?: number;
 }
 ```
+
+#### Default value:
+
+1

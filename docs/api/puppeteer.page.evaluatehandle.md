@@ -4,7 +4,7 @@ sidebar_label: Page.evaluateHandle
 
 # Page.evaluateHandle() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

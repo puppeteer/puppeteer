@@ -6,7 +6,7 @@ sidebar_label: Puppeteer.customQueryHandlerNames
 
 Gets the names of all custom query handlers.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Puppeteer {

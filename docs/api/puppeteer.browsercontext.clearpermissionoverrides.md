@@ -6,7 +6,7 @@ sidebar_label: BrowserContext.clearPermissionOverrides
 
 Clears all permission overrides for the browser context.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class BrowserContext {

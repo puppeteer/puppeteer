@@ -4,7 +4,7 @@ sidebar_label: ErrorCode
 
 # ErrorCode type
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare type ErrorCode =

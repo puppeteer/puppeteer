@@ -4,7 +4,7 @@ sidebar_label: Metrics.LayoutCount
 
 # Metrics.LayoutCount property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface Metrics {

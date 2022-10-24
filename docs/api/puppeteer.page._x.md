@@ -6,7 +6,7 @@ sidebar_label: Page.$x
 
 The method evaluates the XPath expression relative to the page document as its context node. If there are no such elements, the method resolves to an empty array.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

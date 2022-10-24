@@ -8,7 +8,7 @@ sidebar_label: InterceptResolutionStrategy
 >
 > please use [InterceptResolutionAction](./puppeteer.interceptresolutionaction.md) instead.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare type InterceptResolutionStrategy = InterceptResolutionAction;

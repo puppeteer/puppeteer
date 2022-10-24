@@ -4,7 +4,7 @@ sidebar_label: SerializedAXNode.valuemin
 
 # SerializedAXNode.valuemin property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface SerializedAXNode {

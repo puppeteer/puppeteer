@@ -6,7 +6,7 @@ sidebar_label: FrameAddScriptTagOptions.path
 
 Path to a JavaScript file to be injected into the frame.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface FrameAddScriptTagOptions {

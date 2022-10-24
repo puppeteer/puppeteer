@@ -4,7 +4,7 @@ sidebar_label: TracingOptions.categories
 
 # TracingOptions.categories property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface TracingOptions {

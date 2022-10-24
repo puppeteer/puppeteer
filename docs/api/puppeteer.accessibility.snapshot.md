@@ -6,7 +6,7 @@ sidebar_label: Accessibility.snapshot
 
 Captures the current state of the accessibility tree. The returned object represents the root accessible node of the page.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Accessibility {

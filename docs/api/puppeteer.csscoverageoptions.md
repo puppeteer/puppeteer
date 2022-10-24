@@ -6,7 +6,7 @@ sidebar_label: CSSCoverageOptions
 
 Set of configurable options for CSS coverage.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export interface CSSCoverageOptions
@@ -14,6 +14,6 @@ export interface CSSCoverageOptions
 
 ## Properties
 
-| Property                                                                  | Modifiers | Type    | Description                                                      |
-| ------------------------------------------------------------------------- | --------- | ------- | ---------------------------------------------------------------- |
-| [resetOnNavigation?](./puppeteer.csscoverageoptions.resetonnavigation.md) |           | boolean | <i>(Optional)</i> Whether to reset coverage on every navigation. |
+| Property                                                                  | Modifiers | Type    | Description                                                      | Default |
+| ------------------------------------------------------------------------- | --------- | ------- | ---------------------------------------------------------------- | ------- |
+| [resetOnNavigation?](./puppeteer.csscoverageoptions.resetonnavigation.md) |           | boolean | <i>(Optional)</i> Whether to reset coverage on every navigation. |         |

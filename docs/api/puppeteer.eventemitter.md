@@ -6,7 +6,7 @@ sidebar_label: EventEmitter
 
 The EventEmitter class that many Puppeteer classes extend.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare class EventEmitter implements CommonEventEmitter

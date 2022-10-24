@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.respond
 
 Fulfills a request with the given response.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class HTTPRequest {

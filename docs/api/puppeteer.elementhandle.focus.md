@@ -6,7 +6,7 @@ sidebar_label: ElementHandle.focus
 
 Calls [focus](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus) on the element.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ElementHandle {

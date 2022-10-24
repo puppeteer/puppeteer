@@ -6,7 +6,7 @@ sidebar_label: Browser.waitForTarget
 
 Searches for a target in all browser contexts.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Browser {

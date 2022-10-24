@@ -6,7 +6,7 @@ sidebar_label: JSCoverage.(constructor)
 
 Constructs a new instance of the `JSCoverage` class
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class JSCoverage {

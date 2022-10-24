@@ -4,7 +4,7 @@ sidebar_label: Handler
 
 # Handler type
 
-**Signature:**
+#### Signature:
 
 ```typescript
 declare type Handler<T = any> = (event?: T) => void;

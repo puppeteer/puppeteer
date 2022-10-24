@@ -4,7 +4,7 @@ sidebar_label: BrowserContext.overridePermissions
 
 # BrowserContext.overridePermissions() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class BrowserContext {

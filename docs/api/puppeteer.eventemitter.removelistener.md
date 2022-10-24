@@ -10,7 +10,7 @@ sidebar_label: EventEmitter.removeListener
 
 Remove an event listener.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class EventEmitter {

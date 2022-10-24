@@ -12,7 +12,7 @@ This must be called before the file chooser is launched. It will not return a cu
 
 :::
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

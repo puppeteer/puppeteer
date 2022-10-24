@@ -6,7 +6,7 @@ sidebar_label: SerializedAXNode.level
 
 The level of a heading.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface SerializedAXNode {

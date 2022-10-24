@@ -6,7 +6,7 @@ sidebar_label: ElementHandle.contentFrame
 
 Resolves to the content frame for element handles referencing iframe nodes, or null otherwise
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ElementHandle {

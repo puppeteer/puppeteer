@@ -6,7 +6,7 @@ sidebar_label: TimeoutError
 
 TimeoutError is emitted whenever certain operations are terminated due to timeout.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare class TimeoutError extends CustomError

@@ -6,10 +6,14 @@ sidebar_label: LaunchOptions.env
 
 Specify environment variables that will be visible to the browser.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface LaunchOptions {
   env?: Record<string, string | undefined>;
 }
 ```
+
+#### Default value:
+
+The contents of `process.env`.

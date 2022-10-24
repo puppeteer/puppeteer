@@ -4,7 +4,7 @@ sidebar_label: CSSCoverage
 
 # CSSCoverage class
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare class CSSCoverage

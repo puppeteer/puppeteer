@@ -4,7 +4,7 @@ sidebar_label: Page.reload
 
 # Page.reload() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

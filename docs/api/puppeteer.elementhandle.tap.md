@@ -6,7 +6,7 @@ sidebar_label: ElementHandle.tap
 
 This method scrolls element into view if needed, and then uses [Touchscreen.tap()](./puppeteer.touchscreen.tap.md) to tap in the center of the element. If the element is detached from DOM, the method throws an error.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ElementHandle {

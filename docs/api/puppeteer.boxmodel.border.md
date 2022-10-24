@@ -4,7 +4,7 @@ sidebar_label: BoxModel.border
 
 # BoxModel.border property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BoxModel {

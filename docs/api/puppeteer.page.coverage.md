@@ -4,7 +4,7 @@ sidebar_label: Page.coverage
 
 # Page.coverage property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

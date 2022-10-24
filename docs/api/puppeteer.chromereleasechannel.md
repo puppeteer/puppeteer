@@ -4,7 +4,7 @@ sidebar_label: ChromeReleaseChannel
 
 # ChromeReleaseChannel type
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare type ChromeReleaseChannel =

@@ -6,7 +6,7 @@ sidebar_label: WebWorker
 
 This class represents a [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare class WebWorker extends EventEmitter

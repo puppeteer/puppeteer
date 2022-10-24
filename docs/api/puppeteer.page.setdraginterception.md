@@ -4,7 +4,7 @@ sidebar_label: Page.setDragInterception
 
 # Page.setDragInterception() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

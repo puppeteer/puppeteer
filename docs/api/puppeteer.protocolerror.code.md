@@ -4,7 +4,7 @@ sidebar_label: ProtocolError.code
 
 # ProtocolError.code property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ProtocolError {

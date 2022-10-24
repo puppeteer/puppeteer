@@ -6,7 +6,7 @@ sidebar_label: ProtocolError
 
 ProtocolError is emitted whenever there is an error from the protocol.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare class ProtocolError extends CustomError

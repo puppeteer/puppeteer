@@ -6,7 +6,7 @@ sidebar_label: Keyboard.press
 
 Shortcut for [Keyboard.down()](./puppeteer.keyboard.down.md) and [Keyboard.up()](./puppeteer.keyboard.up.md).
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Keyboard {

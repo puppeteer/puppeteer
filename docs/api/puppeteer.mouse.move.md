@@ -6,7 +6,7 @@ sidebar_label: Mouse.move
 
 Dispatches a `mousemove` event.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Mouse {

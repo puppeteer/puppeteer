@@ -4,7 +4,7 @@ sidebar_label: WaitForOptions.waitUntil
 
 # WaitForOptions.waitUntil property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface WaitForOptions {

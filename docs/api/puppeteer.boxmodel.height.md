@@ -4,7 +4,7 @@ sidebar_label: BoxModel.height
 
 # BoxModel.height property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BoxModel {

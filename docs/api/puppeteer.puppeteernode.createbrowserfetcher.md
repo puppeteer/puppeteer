@@ -8,7 +8,7 @@ sidebar_label: PuppeteerNode.createBrowserFetcher
 >
 > If you are using `puppeteer-core`, do not use this method. Just construct [BrowserFetcher](./puppeteer.browserfetcher.md) manually.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class PuppeteerNode {

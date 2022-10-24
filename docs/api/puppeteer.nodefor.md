@@ -4,7 +4,7 @@ sidebar_label: NodeFor
 
 # NodeFor type
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare type NodeFor<Selector extends string> =

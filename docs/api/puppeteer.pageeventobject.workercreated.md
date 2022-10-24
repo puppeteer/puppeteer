@@ -4,7 +4,7 @@ sidebar_label: PageEventObject.workercreated
 
 # PageEventObject.workercreated property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PageEventObject {

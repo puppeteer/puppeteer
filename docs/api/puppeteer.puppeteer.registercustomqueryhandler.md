@@ -6,7 +6,7 @@ sidebar_label: Puppeteer.registerCustomQueryHandler
 
 Registers a [custom query handler](./puppeteer.customqueryhandler.md).
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Puppeteer {

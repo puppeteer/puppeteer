@@ -6,7 +6,7 @@ sidebar_label: Browser.createIncognitoBrowserContext
 
 Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Browser {

@@ -4,7 +4,7 @@ sidebar_label: Page.mouse
 
 # Page.mouse property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

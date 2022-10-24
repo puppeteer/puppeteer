@@ -6,7 +6,7 @@ sidebar_label: Page.setCacheEnabled
 
 Toggles ignoring cache for each request based on the enabled state. By default, caching is enabled.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {
@@ -23,3 +23,7 @@ class Page {
 **Returns:**
 
 Promise&lt;void&gt;
+
+#### Default value:
+
+true

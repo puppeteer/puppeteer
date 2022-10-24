@@ -8,7 +8,7 @@ sidebar_label: CustomError
 >
 > Do not use.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare class CustomError extends Error

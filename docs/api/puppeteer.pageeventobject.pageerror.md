@@ -4,7 +4,7 @@ sidebar_label: PageEventObject.pageerror
 
 # PageEventObject.pageerror property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PageEventObject {

@@ -4,7 +4,7 @@ sidebar_label: NetworkConditions.download
 
 # NetworkConditions.download property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface NetworkConditions {

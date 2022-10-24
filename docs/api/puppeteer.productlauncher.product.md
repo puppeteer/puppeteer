@@ -4,7 +4,7 @@ sidebar_label: ProductLauncher.product
 
 # ProductLauncher.product property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ProductLauncher {

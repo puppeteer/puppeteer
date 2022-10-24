@@ -6,10 +6,14 @@ sidebar_label: SnapshotOptions.root
 
 Root node to get the accessibility tree for
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface SnapshotOptions {
   root?: ElementHandle<Node>;
 }
 ```
+
+#### Default value:
+
+The root node of the entire page.

@@ -4,7 +4,7 @@ sidebar_label: Page.waitForNetworkIdle
 
 # Page.waitForNetworkIdle() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

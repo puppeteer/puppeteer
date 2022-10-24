@@ -6,10 +6,14 @@ sidebar_label: ClickOptions.delay
 
 Time to wait between `mousedown` and `mouseup` in milliseconds.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ClickOptions {
   delay?: number;
 }
 ```
+
+#### Default value:
+
+0

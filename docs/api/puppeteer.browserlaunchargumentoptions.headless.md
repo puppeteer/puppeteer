@@ -6,10 +6,14 @@ sidebar_label: BrowserLaunchArgumentOptions.headless
 
 Whether to run the browser in headless mode.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BrowserLaunchArgumentOptions {
   headless?: boolean | 'chrome';
 }
 ```
+
+#### Default value:
+
+true

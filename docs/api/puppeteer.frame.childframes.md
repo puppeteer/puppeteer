@@ -4,7 +4,7 @@ sidebar_label: Frame.childFrames
 
 # Frame.childFrames() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Frame {

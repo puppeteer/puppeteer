@@ -6,7 +6,7 @@ sidebar_label: Tracing.stop
 
 Stops a trace started with the `start` method.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Tracing {

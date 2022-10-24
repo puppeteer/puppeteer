@@ -4,7 +4,7 @@ sidebar_label: BrowserFetcher.localRevisions
 
 # BrowserFetcher.localRevisions() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class BrowserFetcher {

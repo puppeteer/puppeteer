@@ -8,7 +8,7 @@ sidebar_label: unregisterCustomQueryHandler
 >
 > Import [Puppeteer](./puppeteer.puppeteer.md) and use the static method [Puppeteer.unregisterCustomQueryHandler()](./puppeteer.puppeteer.unregistercustomqueryhandler.md)
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare function unregisterCustomQueryHandler(name: string): void;

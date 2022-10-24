@@ -6,10 +6,14 @@ sidebar_label: Viewport.isMobile
 
 Whether the `meta viewport` tag is taken into account.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface Viewport {
   isMobile?: boolean;
 }
 ```
+
+#### Default value:
+
+false

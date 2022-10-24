@@ -16,7 +16,7 @@ sidebar_label: Frame.waitForXPath
 >
 > For a code example, see the example for [Frame.waitForSelector()](./puppeteer.frame.waitforselector.md). That function behaves identically other than taking a CSS selector rather than an XPath.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Frame {

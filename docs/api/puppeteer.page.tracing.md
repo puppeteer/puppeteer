@@ -4,7 +4,7 @@ sidebar_label: Page.tracing
 
 # Page.tracing property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

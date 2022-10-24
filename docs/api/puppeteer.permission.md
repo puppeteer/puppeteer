@@ -4,7 +4,7 @@ sidebar_label: Permission
 
 # Permission type
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare type Permission =

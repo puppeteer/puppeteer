@@ -18,7 +18,7 @@ page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing
 
 :::
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

@@ -6,10 +6,14 @@ sidebar_label: ScreenshotOptions.fullPage
 
 When `true`, takes a screenshot of the full page.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ScreenshotOptions {
   fullPage?: boolean;
 }
 ```
+
+#### Default value:
+
+`false`

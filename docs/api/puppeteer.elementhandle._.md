@@ -6,7 +6,7 @@ sidebar_label: ElementHandle.$
 
 Queries the current element for an element matching the given selector.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ElementHandle {

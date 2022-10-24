@@ -6,7 +6,7 @@ sidebar_label: ElementHandle
 
 ElementHandle represents an in-page DOM element.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare class ElementHandle<ElementType extends Node = Element> extends JSHandle<ElementType>

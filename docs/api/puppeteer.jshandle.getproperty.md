@@ -6,7 +6,7 @@ sidebar_label: JSHandle.getProperty
 
 Fetches a single property from the referenced object.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class JSHandle {

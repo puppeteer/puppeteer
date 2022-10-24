@@ -4,7 +4,7 @@ sidebar_label: JSHandle.jsonValue
 
 # JSHandle.jsonValue() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class JSHandle {

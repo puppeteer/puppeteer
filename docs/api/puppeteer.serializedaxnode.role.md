@@ -6,7 +6,7 @@ sidebar_label: SerializedAXNode.role
 
 The [role](https://www.w3.org/TR/wai-aria/#usage_intro) of the node.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface SerializedAXNode {

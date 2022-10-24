@@ -4,7 +4,7 @@ sidebar_label: HandleOr
 
 # HandleOr type
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare type HandleOr<T> = HandleFor<T> | JSHandle<T> | T;

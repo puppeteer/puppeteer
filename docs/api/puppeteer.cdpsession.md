@@ -6,7 +6,7 @@ sidebar_label: CDPSession
 
 The `CDPSession` instances are used to talk raw Chrome Devtools Protocol.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare class CDPSession extends EventEmitter

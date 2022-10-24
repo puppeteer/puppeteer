@@ -6,7 +6,7 @@ sidebar_label: Tracing
 
 The Tracing class exposes the tracing audit interface.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare class Tracing

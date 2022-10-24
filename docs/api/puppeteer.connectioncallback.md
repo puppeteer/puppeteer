@@ -4,7 +4,7 @@ sidebar_label: ConnectionCallback
 
 # ConnectionCallback interface
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export interface ConnectionCallback
@@ -12,10 +12,10 @@ export interface ConnectionCallback
 
 ## Properties
 
-| Property                                           | Modifiers | Type                                          | Description |
-| -------------------------------------------------- | --------- | --------------------------------------------- | ----------- |
-| [error](./puppeteer.connectioncallback.error.md)   |           | [ProtocolError](./puppeteer.protocolerror.md) |             |
-| [method](./puppeteer.connectioncallback.method.md) |           | string                                        |             |
+| Property                                           | Modifiers | Type                                          | Description | Default |
+| -------------------------------------------------- | --------- | --------------------------------------------- | ----------- | ------- |
+| [error](./puppeteer.connectioncallback.error.md)   |           | [ProtocolError](./puppeteer.protocolerror.md) |             |         |
+| [method](./puppeteer.connectioncallback.method.md) |           | string                                        |             |         |
 
 ## Methods
 

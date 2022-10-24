@@ -4,7 +4,7 @@ sidebar_label: Target.url
 
 # Target.url() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Target {

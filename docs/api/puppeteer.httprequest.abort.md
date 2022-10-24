@@ -6,7 +6,7 @@ sidebar_label: HTTPRequest.abort
 
 Aborts a request.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class HTTPRequest {

@@ -4,7 +4,7 @@ sidebar_label: Page.metrics
 
 # Page.metrics() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

@@ -6,7 +6,7 @@ sidebar_label: FrameAddScriptTagOptions.id
 
 Sets the `id` of the script.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface FrameAddScriptTagOptions {

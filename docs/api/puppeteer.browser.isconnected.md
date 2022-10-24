@@ -6,7 +6,7 @@ sidebar_label: Browser.isConnected
 
 Indicates that the browser is connected.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Browser {

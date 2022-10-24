@@ -4,7 +4,7 @@ sidebar_label: Page.waitForFrame
 
 # Page.waitForFrame() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

@@ -4,7 +4,7 @@ sidebar_label: NetworkConditions.upload
 
 # NetworkConditions.upload property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface NetworkConditions {

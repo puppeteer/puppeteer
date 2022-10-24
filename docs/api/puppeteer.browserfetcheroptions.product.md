@@ -6,10 +6,14 @@ sidebar_label: BrowserFetcherOptions.product
 
 Determines which product the [BrowserFetcher](./puppeteer.browserfetcher.md) is for.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BrowserFetcherOptions {
   product?: 'chrome' | 'firefox';
 }
 ```
+
+#### Default value:
+
+`"chrome"`.

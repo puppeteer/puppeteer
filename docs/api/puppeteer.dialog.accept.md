@@ -4,7 +4,7 @@ sidebar_label: Dialog.accept
 
 # Dialog.accept() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Dialog {

@@ -4,10 +4,14 @@ sidebar_label: ClickOptions.clickCount
 
 # ClickOptions.clickCount property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ClickOptions {
   clickCount?: number;
 }
 ```
+
+#### Default value:
+
+1

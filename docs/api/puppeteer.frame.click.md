@@ -6,7 +6,7 @@ sidebar_label: Frame.click
 
 Clicks the first element found that matches `selector`.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Frame {

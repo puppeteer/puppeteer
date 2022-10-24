@@ -4,7 +4,7 @@ sidebar_label: PageEventObject.dialog
 
 # PageEventObject.dialog property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PageEventObject {

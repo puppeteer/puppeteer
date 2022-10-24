@@ -4,7 +4,7 @@ sidebar_label: MouseOptions.button
 
 # MouseOptions.button property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface MouseOptions {

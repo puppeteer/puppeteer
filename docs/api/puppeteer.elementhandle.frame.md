@@ -4,7 +4,7 @@ sidebar_label: ElementHandle.frame
 
 # ElementHandle.frame property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ElementHandle {

@@ -4,7 +4,7 @@ sidebar_label: HTTPResponse.fromCache
 
 # HTTPResponse.fromCache() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class HTTPResponse {

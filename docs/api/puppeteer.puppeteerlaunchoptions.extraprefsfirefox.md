@@ -4,7 +4,7 @@ sidebar_label: PuppeteerLaunchOptions.extraPrefsFirefox
 
 # PuppeteerLaunchOptions.extraPrefsFirefox property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PuppeteerLaunchOptions {

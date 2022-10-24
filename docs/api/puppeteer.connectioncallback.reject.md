@@ -4,7 +4,7 @@ sidebar_label: ConnectionCallback.reject
 
 # ConnectionCallback.reject() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ConnectionCallback {

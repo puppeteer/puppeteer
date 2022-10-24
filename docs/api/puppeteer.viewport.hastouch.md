@@ -6,10 +6,14 @@ sidebar_label: Viewport.hasTouch
 
 Specify if the viewport supports touch events.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface Viewport {
   hasTouch?: boolean;
 }
 ```
+
+#### Default value:
+
+false

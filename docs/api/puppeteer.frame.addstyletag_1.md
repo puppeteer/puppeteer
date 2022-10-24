@@ -4,7 +4,7 @@ sidebar_label: Frame.addStyleTag_1
 
 # Frame.addStyleTag() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Frame {

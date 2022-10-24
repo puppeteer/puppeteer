@@ -12,7 +12,7 @@ sidebar_label: errors
 >
 > For certain types of errors Puppeteer uses specific error classes. These classes are available via `puppeteer.errors`.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 errors: PuppeteerErrors;

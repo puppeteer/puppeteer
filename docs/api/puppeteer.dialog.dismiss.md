@@ -4,7 +4,7 @@ sidebar_label: Dialog.dismiss
 
 # Dialog.dismiss() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Dialog {

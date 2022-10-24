@@ -6,7 +6,7 @@ sidebar_label: Target.browser
 
 Get the browser the target belongs to.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Target {

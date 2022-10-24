@@ -4,7 +4,7 @@ sidebar_label: BoxModel.content
 
 # BoxModel.content property
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BoxModel {

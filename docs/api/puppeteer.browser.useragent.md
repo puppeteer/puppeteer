@@ -6,7 +6,7 @@ sidebar_label: Browser.userAgent
 
 The browser's original user agent. Pages can override the browser user agent with [Page.setUserAgent()](./puppeteer.page.setuseragent.md).
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Browser {

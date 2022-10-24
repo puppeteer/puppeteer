@@ -6,10 +6,14 @@ sidebar_label: PDFOptions.margin
 
 Set the PDF margins.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface PDFOptions {
   margin?: PDFMargin;
 }
 ```
+
+#### Default value:
+
+no margins are set.

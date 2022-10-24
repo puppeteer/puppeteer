@@ -6,7 +6,7 @@ sidebar_label: Target.createCDPSession
 
 Creates a Chrome Devtools Protocol session attached to the target.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Target {

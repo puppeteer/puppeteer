@@ -6,7 +6,7 @@ sidebar_label: Target.type
 
 Identifies what kind of target this is.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Target {

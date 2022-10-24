@@ -6,7 +6,7 @@ sidebar_label: Keyboard.sendCharacter
 
 Dispatches a `keypress` and `input` event. This does not send a `keydown` or `keyup` event.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Keyboard {

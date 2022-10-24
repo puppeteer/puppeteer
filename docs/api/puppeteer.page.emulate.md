@@ -8,7 +8,7 @@ Emulates a given device's metrics and user agent.
 
 To aid emulation, Puppeteer provides a list of known devices that can be via [KnownDevices](./puppeteer.knowndevices.md).
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

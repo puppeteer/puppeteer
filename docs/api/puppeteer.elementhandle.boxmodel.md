@@ -6,7 +6,7 @@ sidebar_label: ElementHandle.boxModel
 
 This method returns boxes of the element, or `null` if the element is not visible.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ElementHandle {

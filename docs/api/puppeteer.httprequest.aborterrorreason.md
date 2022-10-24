@@ -4,7 +4,7 @@ sidebar_label: HTTPRequest.abortErrorReason
 
 # HTTPRequest.abortErrorReason() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class HTTPRequest {

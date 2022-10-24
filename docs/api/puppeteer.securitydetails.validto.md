@@ -4,7 +4,7 @@ sidebar_label: SecurityDetails.validTo
 
 # SecurityDetails.validTo() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class SecurityDetails {

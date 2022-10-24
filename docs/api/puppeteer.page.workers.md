@@ -4,7 +4,7 @@ sidebar_label: Page.workers
 
 # Page.workers() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

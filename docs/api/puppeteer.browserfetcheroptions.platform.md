@@ -6,10 +6,14 @@ sidebar_label: BrowserFetcherOptions.platform
 
 Determines which platform the browser will be suited for.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface BrowserFetcherOptions {
   platform?: Platform;
 }
 ```
+
+#### Default value:
+
+Auto-detected.

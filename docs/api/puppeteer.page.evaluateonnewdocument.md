@@ -12,7 +12,7 @@ Adds a function which would be invoked in one of the following scenarios:
 
 The function is invoked after the document was created but before any of its scripts were run. This is useful to amend the JavaScript environment, e.g. to seed `Math.random`.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

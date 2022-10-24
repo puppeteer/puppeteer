@@ -6,7 +6,7 @@ sidebar_label: ScreenshotOptions.clip
 
 An object which specifies the clipping region of the page.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface ScreenshotOptions {

@@ -4,7 +4,7 @@ sidebar_label: HTTPRequest.isInterceptResolutionHandled
 
 # HTTPRequest.isInterceptResolutionHandled() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class HTTPRequest {

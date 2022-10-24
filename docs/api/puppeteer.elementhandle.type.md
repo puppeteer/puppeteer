@@ -8,7 +8,7 @@ Focuses the element, and then sends a `keydown`, `keypress`/`input`, and `keyup`
 
 To press a special key, like `Control` or `ArrowDown`, use [ElementHandle.press()](./puppeteer.elementhandle.press.md).
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class ElementHandle {

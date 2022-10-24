@@ -6,7 +6,7 @@ sidebar_label: CSSCoverageOptions.resetOnNavigation
 
 Whether to reset coverage on every navigation.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface CSSCoverageOptions {

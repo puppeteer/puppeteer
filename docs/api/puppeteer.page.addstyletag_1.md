@@ -4,7 +4,7 @@ sidebar_label: Page.addStyleTag_1
 
 # Page.addStyleTag() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

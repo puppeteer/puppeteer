@@ -6,7 +6,7 @@ sidebar_label: Page.bringToFront
 
 Brings page to front (activates tab).
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class Page {

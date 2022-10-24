@@ -4,7 +4,7 @@ sidebar_label: CommonEventEmitter.off
 
 # CommonEventEmitter.off() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface CommonEventEmitter {

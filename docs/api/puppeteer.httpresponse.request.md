@@ -4,7 +4,7 @@ sidebar_label: HTTPResponse.request
 
 # HTTPResponse.request() method
 
-**Signature:**
+#### Signature:
 
 ```typescript
 class HTTPResponse {

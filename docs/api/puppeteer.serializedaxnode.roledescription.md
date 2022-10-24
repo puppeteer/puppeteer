@@ -6,7 +6,7 @@ sidebar_label: SerializedAXNode.roledescription
 
 A human readable alternative to the role.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface SerializedAXNode {

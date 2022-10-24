@@ -10,7 +10,7 @@ An interval at which the `pageFunction` is executed, defaults to `raf`. If `poll
 
 - `mutation` - to execute `pageFunction` on every DOM mutation.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface FrameWaitForFunctionOptions {

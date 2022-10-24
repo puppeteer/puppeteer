@@ -6,10 +6,14 @@ sidebar_label: LaunchOptions.pipe
 
 Connect to a browser over a pipe instead of a WebSocket.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface LaunchOptions {
   pipe?: boolean;
 }
 ```
+
+#### Default value:
+
+false

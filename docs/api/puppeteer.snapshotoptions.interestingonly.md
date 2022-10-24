@@ -6,10 +6,14 @@ sidebar_label: SnapshotOptions.interestingOnly
 
 Prune uninteresting nodes from the tree.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 interface SnapshotOptions {
   interestingOnly?: boolean;
 }
 ```
+
+#### Default value:
+
+true

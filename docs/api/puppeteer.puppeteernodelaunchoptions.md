@@ -6,7 +6,7 @@ sidebar_label: PuppeteerNodeLaunchOptions
 
 Utility type exposed to enable users to define options that can be passed to `puppeteer.launch` without having to list the set of all types.
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare type PuppeteerNodeLaunchOptions = BrowserLaunchArgumentOptions &

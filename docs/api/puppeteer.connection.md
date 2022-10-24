@@ -4,7 +4,7 @@ sidebar_label: Connection
 
 # Connection class
 
-**Signature:**
+#### Signature:
 
 ```typescript
 export declare class Connection extends EventEmitter
