@@ -152,7 +152,7 @@
   "dependencies": {
     "cross-fetch": "3.1.5",
     "debug": "4.3.4",
-    "devtools-protocol": "0.0.1045489",
+    "devtools-protocol": "0.0.1056733",
     "extract-zip": "2.0.1",
     "https-proxy-agent": "5.0.1",
     "proxy-from-env": "1.1.0",
