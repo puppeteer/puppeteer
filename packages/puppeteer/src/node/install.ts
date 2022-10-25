@@ -39,6 +39,7 @@ export async function downloadBrowser(): Promise<void> {
   const configuration = getConfiguration();
   if (configuration.skipDownload) {
     logPolitely('**INFO** Skipping browser download as instructed.');
+    return;
   }
 
   const product = configuration.defaultProduct!;
