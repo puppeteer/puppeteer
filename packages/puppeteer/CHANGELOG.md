@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.1.1](https://github.com/puppeteer/puppeteer/compare/v19.1.0...v19.1.1) (2022-10-21)
+
+
 ### Dependencies
 
 * The following workspace dependencies were updated
