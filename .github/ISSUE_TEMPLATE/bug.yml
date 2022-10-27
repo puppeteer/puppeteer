@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         #### Thanks for taking the time to fill out this bug report!
-        If you haven't done so you can also check our [Troubleshooting](https://pptr.dev/troubleshooting) page for common issues.
+        If you haven't done so, you can also check our [Troubleshooting](https://pptr.dev/troubleshooting) page for common issues.
   - type: textarea
     id: summary
     attributes:
