@@ -39,3 +39,19 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+/* CSS block to adding GitHubIcon to Navigation */
+.navbar__link--github:hover {
+  opacity: 0.6;
+}
+
+.navbar__link--github > svg {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  color: black;
+}
+
+html[data-theme='dark'] .navbar__link--github > svg {
+  color: white;
+}
