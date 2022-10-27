@@ -1,7 +1,3 @@
----
-sidebar_position: 3
----
-
 # FAQ
 
 ## Q: Who maintains Puppeteer?

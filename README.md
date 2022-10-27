@@ -5,7 +5,7 @@
 
 <img src="https://user-images.githubusercontent.com/10379601/29446482-04f7036a-841f-11e7-9872-91d1fc2ea683.png" height="200" align="right"/>
 
-#### [Guides](https://pptr.dev/guides) | [API](https://pptr.dev/api) | [FAQ](https://pptr.dev/faq) | [Contributing](https://pptr.dev/contributing) | [Troubleshooting](https://pptr.dev/troubleshooting)
+#### [Guides](https://pptr.dev/category/guides) | [API](https://pptr.dev/api) | [FAQ](https://pptr.dev/faq) | [Contributing](https://pptr.dev/contributing) | [Troubleshooting](https://pptr.dev/troubleshooting)
 
 > Puppeteer is a Node.js library which provides a high-level API to control
 > Chrome/Chromium over the
@@ -49,7 +49,7 @@ Chromium (~170MB macOS, ~282MB Linux, ~280MB Windows) that is
 with Puppeteer. For a version of Puppeteer without installation, see
 [`puppeteer-core`](#puppeteer-core).
 
-#### Configuring Puppeteer
+#### Configuration
 
 Puppeteer uses several defaults that can be customized through configuration
 files.
@@ -73,8 +73,8 @@ module.exports = {
 After adding the configuration file, you will need to remove and reinstall
 `puppeteer` for it to take effect.
 
-See [Configuring
-Puppeteer](https://pptr.dev/guides/configuring-puppeteer) for more information.
+See the [configuration guide](https://pptr.dev/guides/configuration) for more
+information.
 
 #### `puppeteer-core`
 
@@ -85,21 +85,23 @@ Every release since v1.7.0 we publish two packages:
 
 `puppeteer` is a _product_ for browser automation. When installed, it downloads
 a version of Chromium, which it then drives using `puppeteer-core`. Being an
-end-user product, `puppeteer` automates several workflows using reasonable defaults [that can be customized](https://pptr.dev/guides/configuring-puppeteer).
+end-user product, `puppeteer` automates several workflows using reasonable
+defaults [that can be customized](https://pptr.dev/guides/configuration).
 
 `puppeteer-core` is a _library_ to help drive anything that supports DevTools
 protocol. Being a library, `puppeteer-core` is fully driven through its
 programmatic interface implying no defaults are assumed and `puppeteer-core`
 will not download Chromium when installed.
 
-You should use `puppeteer-core` if you are [connecting to a remote
-browser](https://pptr.dev/api/puppeteer.puppeteer.connect) or [managing browsers
-yourself](https://pptr.dev/api/puppeteer.browserfetcher). If you are managing
-browsers yourself, you will need to call
+You should use `puppeteer-core` if you are
+[connecting to a remote browser](https://pptr.dev/api/puppeteer.puppeteer.connect)
+or [managing browsers yourself](https://pptr.dev/api/puppeteer.browserfetcher).
+If you are managing browsers yourself, you will need to call
 [`puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch) with
 an an explicit
 [`executablePath`](https://pptr.dev/api/puppeteer.launchoptions.executablepath)
-(or [`channel`](https://pptr.dev/api/puppeteer.launchoptions.channel) if it's installed in a standard location).
+(or [`channel`](https://pptr.dev/api/puppeteer.launchoptions.channel) if it's
+installed in a standard location).
 
 When using `puppeteer-core`, remember to change the import:
 
@@ -120,8 +122,8 @@ a [browser](https://pptr.dev/api/puppeteer.browser),
 [pages](https://pptr.dev/api/puppeteer.page), and then manipulate them with
 [Puppeteer's API](https://pptr.dev/api).
 
-For more in-depth usage, check our [guides](https://pptr.dev/guides) and
-[examples](https://github.com/puppeteer/puppeteer/tree/main/examples).
+For more in-depth usage, check our [guides](https://pptr.dev/category/guides)
+and [examples](https://github.com/puppeteer/puppeteer/tree/main/examples).
 
 #### Example
 
@@ -207,17 +209,16 @@ run**.
 
 #### Using Docker
 
-See our [guide on using Docker](https://pptr.dev/guides/docker).
+See our [Docker guide](https://pptr.dev/guides/docker).
 
 #### Using Chrome Extensions
 
-See our
-[guide on using Chrome extensions](https://pptr.dev/guides/chrome-extensions).
+See our [Chrome extensions guide](https://pptr.dev/guides/chrome-extensions).
 
 ## Resources
 
 - [API Documentation](https://pptr.dev/api)
-- [Guides](https://pptr.dev/guides)
+- [Guides](https://pptr.dev/category/guides)
 - [Examples](https://github.com/puppeteer/puppeteer/tree/main/examples)
 - [Community list of Puppeteer resources](https://github.com/transitive-bullshit/awesome-puppeteer)
 

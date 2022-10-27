@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {readFile, rm, writeFile} from 'fs/promises';
+import {copyFile, readFile, rm, writeFile} from 'fs/promises';
 import {join, resolve} from 'path';
 import {chdir} from 'process';
 import semver from 'semver';
@@ -51,13 +51,7 @@ function spliceIntoSection(
 
 (async () => {
   const job1 = job('', async ({inputs, outputs}) => {
-    const content = await readFile(inputs[0]!, 'utf-8');
-    const sectionContent = `
----
-sidebar_position: 1
----
-`;
-    await writeFile(outputs[0]!, sectionContent + content);
+    await copyFile(inputs[0]!, outputs[0]!);
   })
     .inputs(['README.md'])
     .outputs(['docs/index.md'])

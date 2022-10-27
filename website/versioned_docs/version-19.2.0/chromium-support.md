@@ -1,7 +1,3 @@
----
-sidebar_position: 6
----
-
 # Chromium Support
 
 The following versions of Chromium are supported, mapped to Puppeteer version:
