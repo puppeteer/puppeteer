@@ -168,6 +168,11 @@ export class LifecycleWatcher {
         NetworkManagerEmittedEvents.Response,
         this.#onResponse.bind(this)
       ),
+      addEventListener(
+        this.#frameManager.networkManager,
+        NetworkManagerEmittedEvents.RequestFailed,
+        this.#onRequestFailed.bind(this)
+      ),
     ];
 
     this.#timeoutPromise = this.#createTimeoutPromise();
@@ -187,6 +192,13 @@ export class LifecycleWatcher {
     if (request.response() !== null) {
       this.#navigationResponseReceived?.resolve();
     }
+  }
+
+  #onRequestFailed(request: HTTPRequest): void {
+    if (this.#navigationRequest?._requestId !== request._requestId) {
+      return;
+    }
+    this.#navigationResponseReceived?.resolve();
   }
 
   #onResponse(response: HTTPResponse): void {
