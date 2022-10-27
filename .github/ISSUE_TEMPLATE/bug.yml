@@ -6,7 +6,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report!
+        #### Thanks for taking the time to fill out this bug report!
+        If you haven't done so, you can also check our [Troubleshooting](https://pptr.dev/troubleshooting) page for common issues.
   - type: textarea
     id: summary
     attributes:
@@ -51,8 +52,18 @@ body:
     validations:
       required: true
   - type: textarea
+    id: config
+    attributes:
+      label: Configuration file
+      description: |
+        Please copy and paste your configuration file [[Docs](https://pptr.dev/guides/configuring-puppeteer/)]. 
+        *No need for backticks — this automatically gets formatted into code.*
+      render: JavaScript
+  - type: textarea
     id: logs
     attributes:
       label: Relevant log output
-      description: Please copy and paste any relevant log output. No need for backticks — this automatically gets formatted into code.
-      render: shell
+      description: |
+        Please copy and paste any relevant log output. 
+        *No need for backticks — this automatically gets formatted into code.*
+      render: Shell

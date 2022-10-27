@@ -2,7 +2,7 @@
 closeComment: >
   We are closing this issue. If the issue still persists in the latest version of
   Puppeteer, please reopen the issue and update the description. We will try our
-  best to accomodate it!
+  best to accommodate it!
 # Number of days of inactivity before an issue becomes stale
 daysUntilStale: 60
 # Number of days of inactivity before a stale issue is closed

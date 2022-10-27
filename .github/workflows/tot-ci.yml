@@ -11,7 +11,7 @@ on:
     # Supposed to be every day at 8 am (UTC).
     - cron: '0 8 * * *'
 
-# TODO: how to make install & build steps re-usable accross jobs.
+# TODO: how to make install & build steps re-usable across jobs.
 # Currently, the install step is duplicated but should be the same for all jobs.
 
 jobs:
