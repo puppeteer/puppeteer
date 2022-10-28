@@ -27,10 +27,10 @@ quick sanity check before diving into more complex methods.
 
 Sometimes it's useful to see what the browser is displaying. Instead of
 launching in
-[`headless`](../api/puppeteer.browserlaunchargumentoptions.headless)
-mode, launch a full version of the browser with
-[`headless`](../api/puppeteer.browserlaunchargumentoptions.headless)
-set to `false`:
+[`headless`](../api/puppeteer.browserlaunchargumentoptions.headless) mode,
+launch a full version of the browser with
+[`headless`](../api/puppeteer.browserlaunchargumentoptions.headless) set to
+`false`:
 
 ```ts
 const browser = await puppeteer.launch({headless: false});
@@ -38,9 +38,9 @@ const browser = await puppeteer.launch({headless: false});
 
 ### Puppeteer "slow-mo"
 
-The [`slowMo`](../api/puppeteer.browserconnectoptions.slowmo)
-option slows down Puppeteer operations by a specified amount of milliseconds.
-It's another way to help see what's going on.
+The [`slowMo`](../api/puppeteer.browserconnectoptions.slowmo) option slows down
+Puppeteer operations by a specified amount of milliseconds. It's another way to
+help see what's going on.
 
 ```ts
 const browser = await puppeteer.launch({
@@ -54,10 +54,9 @@ const browser = await puppeteer.launch({
 ### Capture `console.*` output
 
 Since client code runs in the browser, doing `console.*` in client code will not
-directly log to Node.js. However, you can
-[listen](../api/puppeteer.page.on) for the
-[`console`](../api/puppeteer.pageeventobject.console) event which
-returns a payload with the logged text.
+directly log to Node.js. However, you can [listen](../api/puppeteer.page.on) for
+the [`console`](../api/puppeteer.pageeventobject.console) event which returns a
+payload with the logged text.
 
 ```ts
 page.on('console', msg => console.log('PAGE LOG:', msg.text()));
@@ -67,9 +66,8 @@ await page.evaluate(() => console.log(`url is ${location.href}`));
 
 ### Use the debugger in the browser
 
-1. Set
-   [`devtools`](../api/puppeteer.browserlaunchargumentoptions.devtools)
-   to `true` when launching Puppeteer:
+1. Set [`devtools`](../api/puppeteer.browserlaunchargumentoptions.devtools) to
+   `true` when launching Puppeteer:
 
    ```ts
    const browser = await puppeteer.launch({devtools: true});
@@ -100,9 +98,8 @@ to this
 [Chromium bug](https://bugs.chromium.org/p/chromium/issues/detail?id=833928), so
 if you want to try something out, you have to add it to your test file.
 
-1. Set
-   [`headless`](../api/puppeteer.browserlaunchargumentoptions.headless)
-   to `false`.
+1. Set [`headless`](../api/puppeteer.browserlaunchargumentoptions.headless) to
+   `false`.
 2. Add `debugger` to any server code you want debugged. For example,
 
    ```ts

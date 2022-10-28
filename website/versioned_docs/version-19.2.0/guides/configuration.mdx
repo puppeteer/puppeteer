@@ -1,4 +1,4 @@
-# Configuring Puppeteer
+# Configuration
 
 ```mdx-code-block
 import Tabs from '@theme/Tabs';
@@ -12,7 +12,8 @@ All defaults in Puppeteer can be customized in two ways:
 
 :::caution
 
-Note that some options are only customizable through environment variables (such as `HTTPS_PROXY`).
+Note that some options are only customizable through environment variables (such
+as `HTTPS_PROXY`).
 
 :::
 
@@ -32,8 +33,8 @@ Puppeteer will look up the file tree for any of the following formats:
 Puppeteer will also read a `puppeteer` key from your application's
 `package.json`.
 
-See the [`Configuration`](../api/puppeteer.configuration)
-interface for possible options.
+See the [`Configuration`](../api/puppeteer.configuration) interface for possible
+options.
 
 :::caution
 
@@ -116,10 +117,10 @@ experiments:
 
 ## Environment variables
 
-Along with configuration files, Puppeteer looks for certain [environment
-variables](https://en.wikipedia.org/wiki/Environment_variable) for customizing
-behavior. Environment variables will always override configuration file
-options when applicable.
+Along with configuration files, Puppeteer looks for certain
+[environment variables](https://en.wikipedia.org/wiki/Environment_variable) for
+customizing behavior. Environment variables will always override configuration
+file options when applicable.
 
 The following options are _environment-only_ options
 

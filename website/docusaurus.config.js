@@ -21,6 +21,7 @@ const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 const archivedVersions = require('./versionsArchived.json');
+const assert = require('assert');
 
 const DOC_ROUTE_BASE_PATH = '/';
 const DOC_PATH = '../docs';
@@ -59,6 +60,20 @@ const config = {
       };
     },
   },
+  plugins: [
+    [
+      'client-redirects',
+      /** @type {import('@docusaurus/plugin-client-redirects').Options} */
+      ({
+        redirects: [
+          {
+            from: '/guides',
+            to: '/category/guides',
+          },
+        ],
+      }),
+    ],
+  ],
   presets: [
     [
       'classic',
@@ -69,110 +84,107 @@ const config = {
         docs: {
           async sidebarItemsGenerator({defaultSidebarItemsGenerator, ...args}) {
             const sidebarItems = await defaultSidebarItemsGenerator(args);
-            const apiCategoryItem = sidebarItems.find(value => {
-              return value.type === 'category' && value.label === 'API';
+            const apiItem = sidebarItems.find(value => {
+              return value.type === 'doc' && value.label === 'API';
             });
-            if (apiCategoryItem) {
-              /** @type {typeof sidebarItems} */
-              const newItems = [];
-              const categories = new Map();
-              for (const item of apiCategoryItem.items) {
-                const [namespace] = item.label.split('.');
-                if (!categories.has(namespace)) {
-                  categories.set(namespace, [item]);
-                } else {
-                  categories.get(namespace).push(item);
-                }
-              }
+            if (!apiItem) {
+              return sidebarItems;
+            }
 
-              const order = [
-                // PuppeteerNode and Puppeteer go first as the entrypoints into
-                // the Puppeteer API.
-                'PuppeteerNode',
-                'Puppeteer',
-                'BrowserFetcher',
-                'Browser',
-                'BrowserContext',
-                'Page',
-                'WebWorker',
-                'Accessibility',
-                'Keyboard',
-                'Mouse',
-                'Touchscreen',
-                'Tracing',
-                'FileChooser',
-                'Dialog',
-                'ConsoleMessage',
-                'Frame',
-                'JSHandle',
-                'ElementHandle',
-                'HTTPRequest',
-                'HTTPResponse',
-                'SecurityDetails',
-                'Target',
-                'CDPSession',
-                'Coverage',
-                'TimeoutError',
-                'EventEmitter',
-              ];
+            /** @type {typeof sidebarItems} */
+            const apiSidebarItems = [];
+            const categories = new Map();
+            for (const item of sidebarItems) {
+              assert(item.type === 'doc' && item.label);
+              const [namespace] = item.label.split('.');
+              if (!categories.has(namespace)) {
+                categories.set(namespace, [item]);
+              } else {
+                categories.get(namespace).push(item);
+              }
+            }
 
-              function addNamespace(namespace, target) {
-                let items = categories.get(namespace);
-                if (!items) {
-                  throw new Error(`Namespace ${namespace} not found`);
-                }
-                items.sort((a, b) => {
-                  return a.label.localeCompare(b.label);
-                });
-                const main = items.find(item => {
-                  return item.label === namespace;
-                });
-                items = items.filter(item => {
-                  return item !== main;
-                });
-                target.push({
-                  type: 'category',
-                  label: namespace,
-                  items,
-                  link: main
-                    ? {
-                        type: 'doc',
-                        id: main.id,
-                      }
-                    : undefined,
-                });
-                categories.delete(namespace);
+            const order = [
+              // PuppeteerNode and Puppeteer go first as the entrypoints into
+              // the Puppeteer API.
+              'PuppeteerNode',
+              'Puppeteer',
+              'BrowserFetcher',
+              'Browser',
+              'BrowserContext',
+              'Page',
+              'WebWorker',
+              'Accessibility',
+              'Keyboard',
+              'Mouse',
+              'Touchscreen',
+              'Tracing',
+              'FileChooser',
+              'Dialog',
+              'ConsoleMessage',
+              'Frame',
+              'JSHandle',
+              'ElementHandle',
+              'HTTPRequest',
+              'HTTPResponse',
+              'SecurityDetails',
+              'Target',
+              'CDPSession',
+              'Coverage',
+              'TimeoutError',
+              'EventEmitter',
+            ];
+
+            function addNamespace(namespace, target) {
+              let items = categories.get(namespace);
+              if (!items) {
+                throw new Error(`Namespace ${namespace} not found`);
               }
-              for (const namespace of order) {
-                addNamespace(namespace, newItems);
-              }
-              const otherItems = [];
-              newItems.push({
+              items.sort((a, b) => {
+                return a.label.localeCompare(b.label);
+              });
+              const main = items.find(item => {
+                return item.label === namespace;
+              });
+              items = items.filter(item => {
+                return item !== main;
+              });
+              target.push({
                 type: 'category',
-                label: 'Other',
-                items: otherItems,
+                label: namespace,
+                items,
+                link: main
+                  ? {
+                      type: 'doc',
+                      id: main.id,
+                    }
+                  : undefined,
               });
-              const remaining = Array.from(categories.keys());
-              remaining.sort((a, b) => {
-                return a.localeCompare(b);
-              });
-              for (const namespace of remaining) {
-                addNamespace(namespace, otherItems);
-              }
-              apiCategoryItem.items = newItems;
-              apiCategoryItem.collapsed = false;
+              categories.delete(namespace);
             }
-            const guidesCategory = sidebarItems.find(value => {
-              return value.type === 'category' && value.label === 'Guides';
+
+            for (const namespace of order) {
+              addNamespace(namespace, apiSidebarItems);
+            }
+            const otherItems = [];
+            apiSidebarItems.push({
+              type: 'category',
+              label: 'Other',
+              items: otherItems,
+              collapsed: true,
             });
-            if (guidesCategory) {
-              guidesCategory.collapsed = false;
+            const remaining = Array.from(categories.keys());
+            remaining.sort((a, b) => {
+              return a.localeCompare(b);
+            });
+            for (const namespace of remaining) {
+              addNamespace(namespace, otherItems);
             }
-            return sidebarItems;
+            return apiSidebarItems;
           },
           path: DOC_PATH,
           routeBasePath: DOC_ROUTE_BASE_PATH,
-          sidebarPath: require.resolve('./sidebars.json'),
+          sidebarPath: require.resolve('./sidebars.js'),
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -182,7 +194,7 @@ const config = {
   ],
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
-    ({
+    {
       navbar: {
         title: 'Puppeteer',
         logo: {
@@ -190,32 +202,53 @@ const config = {
           src: 'https://user-images.githubusercontent.com/10379601/29446482-04f7036a-841f-11e7-9872-91d1fc2ea683.png',
         },
         items: [
-          {
-            type: 'docsVersionDropdown',
-            position: 'right',
-            dropdownActiveClassDisabled: true,
-            dropdownItemsAfter: [
-              {
-                type: 'html',
-                value: '<hr class="dropdown-separator">',
-              },
-              {
-                type: 'html',
-                className: 'dropdown-archived-versions',
-                value: '<b>Archived versions</b>',
-              },
-              ...archivedVersions.map(version => {
-                return {
-                  label: version,
-                  href: `https://github.com/puppeteer/puppeteer/blob/v${version}/docs/api/index.md`,
-                };
-              }),
-            ],
-          },
-          {
-            type: 'search',
-            position: 'right',
-          },
+          ...[
+            {
+              type: 'doc',
+              docId: 'index',
+              label: 'Docs',
+            },
+            {
+              type: 'docSidebar',
+              sidebarId: 'api',
+              label: 'API',
+            },
+          ].map(item => {
+            return Object.assign(item, {position: 'left'});
+          }),
+          ...[
+            {
+              type: 'docsVersionDropdown',
+              dropdownActiveClassDisabled: true,
+              dropdownItemsAfter: [
+                {
+                  type: 'html',
+                  value: '<hr class="dropdown-separator">',
+                },
+                {
+                  type: 'html',
+                  className: 'dropdown-archived-versions',
+                  value: '<b>Archived versions</b>',
+                },
+                ...archivedVersions.map(version => {
+                  return {
+                    label: version,
+                    href: `https://github.com/puppeteer/puppeteer/blob/v${version}/docs/api/index.md`,
+                  };
+                }),
+              ],
+            },
+            {
+              type: 'search',
+            },
+            {
+              href: 'https://github.com/puppeteer/puppeteer',
+              className: 'header-github-link',
+              'aria-label': 'GitHub repository',
+            },
+          ].map(item => {
+            return Object.assign(item, {position: 'right'});
+          }),
         ],
       },
       footer: {
@@ -245,7 +278,7 @@ const config = {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
       },
-    }),
+    },
   themes: [
     // ... Your other themes.
     [

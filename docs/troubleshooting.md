@@ -1,7 +1,3 @@
----
-sidebar_position: 4
----
-
 # Troubleshooting
 
 ## `Cannot find module 'puppeteer-core/internal/...'`
@@ -45,8 +41,8 @@ module.exports = {
 ```
 
 You will need to reinstall `puppeteer` in order for the configuration to take
-effect. See [Configuring
-Puppeteer](./guides/configuring-puppeteer) for more information.
+effect. See [Configuring Puppeteer](./guides/configuration) for more
+information.
 
 ## Chrome headless doesn't launch on Windows
 
