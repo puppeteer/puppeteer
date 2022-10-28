@@ -204,6 +204,7 @@ jobs:
   installation-test-build:
     name: Build installation test
     runs-on: ubuntu-latest
+    if: "!startsWith(github.ref_name, 'release-please')"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
