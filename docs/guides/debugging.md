@@ -119,29 +119,6 @@ if you want to try something out, you have to add it to your test file.
 6. Now your `debugger` statement will be hit and you can debug in the test
    browser.
 
-### Use [ndb](https://github.com/GoogleChromeLabs/ndb)
-
-1. Install `ndb`:
-
-   ```sh
-   npm install -g ndb
-   ```
-
-2. Add `debugger` to any server code you want debugged. For example,
-
-   ```ts
-   debugger;
-   await page.click('a[target=_blank]');
-   ```
-
-3. Add `ndb` before your test command. For example,
-
-   ```sh
-   ndb node path/to/script.js
-   ```
-
-4. Debug your test inside chromium like a boss!
-
 ### Log DevTools protocol traffic
 
 If all else fails, it's possible there may be an issue between Puppeteer and the
