@@ -56,7 +56,7 @@ body:
     attributes:
       label: Configuration file
       description: |
-        Please copy and paste your configuration file [[Docs](https://pptr.dev/guides/configuring-puppeteer/)]. 
+        Please copy and paste your configuration file [[Docs](https://pptr.dev/guides/configuration/)]. 
         *No need for backticks — this automatically gets formatted into code.*
       render: JavaScript
   - type: textarea
