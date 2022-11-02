@@ -7,7 +7,7 @@ on:
 
 jobs:
   pre-release:
-    if: "startsWith(github.event.head_commit.message, 'chore: release main')"
+    if: "github.event_name == 'pull_request' && startsWith(github.event.head_commit.message, 'chore: release main')"
     runs-on: ubuntu-latest
     permissions:
       contents: write
