@@ -98,7 +98,7 @@ You should use `puppeteer-core` if you are
 or [managing browsers yourself](https://pptr.dev/api/puppeteer.browserfetcher).
 If you are managing browsers yourself, you will need to call
 [`puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch) with
-an an explicit
+an explicit
 [`executablePath`](https://pptr.dev/api/puppeteer.launchoptions.executablepath)
 (or [`channel`](https://pptr.dev/api/puppeteer.launchoptions.channel) if it's
 installed in a standard location).
