@@ -244,9 +244,6 @@ const config = {
               ],
             },
             {
-              type: 'search',
-            },
-            {
               href: 'https://github.com/puppeteer/puppeteer',
               className: 'header-github-link',
               'aria-label': 'GitHub repository',
