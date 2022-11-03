@@ -117,11 +117,17 @@ export class ProductLauncher {
       switch (this.product) {
         case 'chrome':
           throw new Error(
-            `Run \`npm install\` to download the correct Chromium revision (${this.puppeteer.browserRevision}).`
+            `Could not find Chromium (rev. ${this.puppeteer.browserRevision}). This can occur if either\n` +
+              ' 1. you did not perform an installation before running the script (e.g. `npm install`) or\n' +
+              ` 2. your cache path is incorrectly configured (which is: ${this.puppeteer.configuration.cacheDirectory}).\n` +
+              'For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.'
           );
         case 'firefox':
           throw new Error(
-            `Run \`PUPPETEER_PRODUCT=firefox npm install\` to download a supported Firefox browser binary.`
+            `Could not find Firefox (rev. ${this.puppeteer.browserRevision}). This can occur if either\n` +
+              ' 1. you did not perform an installation for Firefox before running the script (e.g. `PUPPETEER_PRODUCT=firefox npm install`) or\n' +
+              ` 2. your cache path is incorrectly configured (which is: ${this.puppeteer.configuration.cacheDirectory}).\n` +
+              'For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.'
           );
       }
     }
