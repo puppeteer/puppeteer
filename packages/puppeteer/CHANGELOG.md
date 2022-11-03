@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 19.2.1 to ^19.2.2
+
 ## [19.2.1](https://github.com/puppeteer/puppeteer/compare/v19.2.0...v19.2.1) (2022-10-28)
 
 ### Dependencies
