@@ -195,6 +195,11 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     {
+      algolia: {
+        appId: 'DVKY664LG7',
+        apiKey: '4dac1ae64b623f1d33ae0b4ce0ff16a4',
+        indexName: 'pptr',
+      },
       navbar: {
         title: 'Puppeteer',
         logo: {
@@ -279,17 +284,6 @@ const config = {
         darkTheme: darkCodeTheme,
       },
     },
-  themes: [
-    // ... Your other themes.
-    [
-      require.resolve('@easyops-cn/docusaurus-search-local'),
-      {
-        docsDir: DOC_PATH,
-        docsRouteBasePath: DOC_ROUTE_BASE_PATH,
-        hashed: true,
-      },
-    ],
-  ],
 };
 
 module.exports = config;
