@@ -7,62 +7,6 @@ object-assign
 /* NProgress, (c) 2013, 2014 Rico Sta. Cruz - http://ricostacruz.com/nprogress
  * @license MIT */
 
-/*!
- * lunr.Builder
- * Copyright (C) 2020 Oliver Nightingale
- */
-
-/*!
- * lunr.Index
- * Copyright (C) 2020 Oliver Nightingale
- */
-
-/*!
- * lunr.Pipeline
- * Copyright (C) 2020 Oliver Nightingale
- */
-
-/*!
- * lunr.Set
- * Copyright (C) 2020 Oliver Nightingale
- */
-
-/*!
- * lunr.TokenSet
- * Copyright (C) 2020 Oliver Nightingale
- */
-
-/*!
- * lunr.Vector
- * Copyright (C) 2020 Oliver Nightingale
- */
-
-/*!
- * lunr.stemmer
- * Copyright (C) 2020 Oliver Nightingale
- * Includes code from - http://tartarus.org/~martin/PorterStemmer/js.txt
- */
-
-/*!
- * lunr.stopWordFilter
- * Copyright (C) 2020 Oliver Nightingale
- */
-
-/*!
- * lunr.tokenizer
- * Copyright (C) 2020 Oliver Nightingale
- */
-
-/*!
- * lunr.trimmer
- * Copyright (C) 2020 Oliver Nightingale
- */
-
-/*!
- * lunr.utils
- * Copyright (C) 2020 Oliver Nightingale
- */
-
 /**
  * Prism: Lightweight, robust, elegant syntax highlighting
  *
@@ -70,12 +14,6 @@ object-assign
  * @author Lea Verou <https://lea.verou.me>
  * @namespace
  * @public
- */
-
-/**
- * lunr - http://lunrjs.com - A bit like Solr, but much smaller and not as bright - 2.3.9
- * Copyright (C) 2020 Oliver Nightingale
- * @license MIT
  */
 
 /** @license React v0.20.2
