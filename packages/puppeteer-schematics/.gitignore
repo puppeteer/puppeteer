@@ -4,6 +4,9 @@ src/**/*.js
 src/**/*.js.map
 src/**/*.d.ts
 
+# Keep files that serve as template
+!src/**/files/**/*
+
 # IDEs
 .idea/
 jsconfig.json

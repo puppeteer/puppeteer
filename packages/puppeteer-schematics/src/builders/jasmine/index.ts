@@ -28,7 +28,7 @@ export default createBuilder(
       }
     } catch (error) {
       output.success = false;
-      output.error = error?.messages ?? error;
+      output.error = (error as Error)?.message ?? error;
     }
 
     return output;

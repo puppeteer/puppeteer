@@ -134,11 +134,11 @@ export function updateAngularFile(
 
   return of(angularConfig).pipe(
     map((config: Record<string, any>) => {
-      const projects = Object.keys(config.projects);
+      const projects = Object.keys(config['projects']);
 
       projects.forEach(name => {
-        config.projects[name].architect = {
-          ...config.projects[name].architect,
+        config['projects'][name].architect = {
+          ...config['projects'][name].architect,
           ...e2eCommand,
         };
       });
@@ -160,7 +160,7 @@ function getE2eCommand(framework: TestingFramework): {
     case TestingFramework.Jasmine:
       return {
         e2e: {
-          builder: 'puppeteer-angular:jasmine',
+          builder: 'puppeteer-schematics:jasmine',
           options: {
             config: 'e2e/support/jasmine.json',
           },

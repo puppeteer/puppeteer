@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "description": "Puppeteer Angular schematics",
   "scripts": {
-    "dev": "tsc -p tsconfig.json --watch",
-    "build": "tsc -p tsconfig.json",
-    "clean": "rm -rf ./src/**/**/*.d.ts ./src/**/**/*.js ./src/**/**/*.map"
+    "copy": "node copySchemaFiles.js",
+    "dev": "npm run copy && tsc -p tsconfig.json --watch",
+    "build": "npm run copy && tsc -p tsconfig.json"
   },
   "keywords": [
     "angular",
@@ -24,7 +24,9 @@
     "typescript": "~4.7.2"
   },
   "devDependencies": {
-    "@types/node": "^14.15.0"
+    "@types/node": "^14.15.0",
+    "@types/jasmine": "^4.3.0",
+    "jasmine": "^4.5.0"
   },
   "ng-add": {
     "save": "devDependencies"
