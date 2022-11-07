@@ -1,0 +1,34 @@
+{
+  "name": "puppeteer-schematics",
+  "version": "0.0.0",
+  "description": "Puppeteer Angular schematics",
+  "scripts": {
+    "dev": "tsc -p tsconfig.json --watch",
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf ./src/**/**/*.d.ts ./src/**/**/*.js ./src/**/**/*.map"
+  },
+  "keywords": [
+    "angular",
+    "puppeteer",
+    "schematics"
+  ],
+  "author": "The Chromium Authors",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=14.1.0"
+  },
+  "dependencies": {
+    "@angular-devkit/architect": "0.1402.7",
+    "@angular-devkit/core": "^14.2.6",
+    "@angular-devkit/schematics": "^14.2.6",
+    "typescript": "~4.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^14.15.0"
+  },
+  "ng-add": {
+    "save": "devDependencies"
+  },
+  "schematics": "./src/schematics/collection.json",
+  "builders": "./src/builders/builders.json"
+}

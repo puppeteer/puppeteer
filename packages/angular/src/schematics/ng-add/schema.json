@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "Puppeteer",
+  "title": "Puppeteer Install Schema",
+  "type": "object",
+  "properties": {
+    "exportConfig": {
+      "description": "",
+      "type": "boolean",
+      "default": false,
+      "x-prompt": "Do you wish to export default Puppeteer config file?"
+    },
+    "testingFramework": {
+      "description": "",
+      "type": "string",
+      "enum": ["jasmine"],
+      "default": "jasmine",
+      "x-prompt": {
+        "message": "With what Testing Library do you wish to integrate?",
+        "type": "list",
+        "items": [
+          {
+            "value": "jasmine",
+            "label": "Use Jasmine [https://jasmine.github.io/]"
+          }
+        ]
+      }
+    }
+  },
+  "required": []
+}

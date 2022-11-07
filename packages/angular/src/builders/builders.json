@@ -1,0 +1,10 @@
+{
+  "$schema": "../../../../node_modules/@angular-devkit/architect/src/builders-schema.json",
+  "builders": {
+    "jasmine": {
+      "implementation": "./jasmine",
+      "schema": "./jasmine/schema.json",
+      "description": "Run test with Puppeteer + Jasmine"
+    }
+  }
+}
