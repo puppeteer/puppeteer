@@ -1,0 +1,48 @@
+version: 0.1
+cli:
+  version: 1.0.1
+plugins:
+  sources:
+    - id: trunk
+      ref: v0.0.6
+      uri: https://github.com/trunk-io/plugins
+lint:
+  disabled:
+    - black
+    - flake8
+  enabled:
+    - shellcheck@0.8.0
+    - shfmt@3.5.0
+    - hadolint@2.10.0
+    - git-diff-check
+    - isort@5.10.1
+    - gitleaks@8.15.0
+    - prettier@2.7.1
+    - eslint@8.27.0
+    - yapf@0.32.0
+    - markdownlint@0.32.2
+    - actionlint@1.6.22
+    - svgo@3.0.0
+  ignore:
+    - linters: [eslint]
+      paths:
+        - '**/assets'
+        - '**/third_party'
+        - '.*'
+    - linters: [markdownlint]
+      paths:
+        - docs/api
+    - linters: [ALL]
+      paths:
+        - '**/CHANGELOG.md'
+runtimes:
+  enabled:
+    - go@1.18.3
+    - node@16.14.2
+    - python@3.10.3
+actions:
+  enabled:
+    - trunk-announce
+    - trunk-check-pre-push
+    - trunk-fmt-pre-commit
+    - trunk-upgrade-available

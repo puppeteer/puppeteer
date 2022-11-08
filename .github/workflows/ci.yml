@@ -34,7 +34,7 @@ jobs:
       - name: Check code
         run: npm run check
       - name: Lint code
-        run: npm run lint
+        uses: trunk-io/trunk-action@v1
       - name: Lint commits
         run: npm run commitlint
         if: github.event_name != 'pull_request'
