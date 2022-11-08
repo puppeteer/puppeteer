@@ -6,7 +6,8 @@
     "copy": "node copySchemaFiles.js",
     "dev": "npm run copy && tsc -p tsconfig.json --watch",
     "clean": "tsc -b --clean && rimraf lib",
-    "build": "npm run copy && tsc -p tsconfig.json"
+    "build": "npm run copy && tsc -p tsconfig.json",
+    "test": "tsc -p tsconfig.spec.json && mocha tests/build/**/*.spec.js"
   },
   "keywords": [
     "angular",
@@ -22,6 +23,7 @@
     "@angular-devkit/architect": "0.1402.7",
     "@angular-devkit/core": "^14.2.6",
     "@angular-devkit/schematics": "^14.2.6",
+    "@schematics/angular": "^14.2.8",
     "typescript": "~4.7.2"
   },
   "devDependencies": {
