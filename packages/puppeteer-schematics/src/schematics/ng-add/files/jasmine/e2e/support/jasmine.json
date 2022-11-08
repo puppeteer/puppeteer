@@ -1,7 +1,7 @@
 {
   "spec_dir": "e2e",
   "spec_files": ["**/*[eE]2[eE].ts"],
-  "helpers": ["../e2e/helpers/babel.js", "../e2e/helpers/**/*.{js|ts}"],
+  "helpers": ["helpers/babel.js", "helpers/**/*.{js|ts}"],
   "env": {
     "stopSpecOnExpectationFailure": false,
     "random": true

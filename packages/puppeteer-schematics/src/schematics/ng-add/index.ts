@@ -6,7 +6,7 @@ import {of} from 'rxjs';
 import {
   addBaseFiles,
   addFrameworkFiles,
-  updateAngularFile,
+  getScriptFromOptions,
 } from '../utils/files.js';
 import {
   addPackageJsonDependencies,
@@ -28,7 +28,7 @@ export function ngAdd(options: SchematicsOptions): Rule {
       addDependencies(options),
       addPuppeteerFiles(options),
       addOtherFiles(options),
-      updateAngularConfig(options),
+      updateScripts(options),
     ])(tree, context);
   };
 }
@@ -56,16 +56,16 @@ function addDependencies(options: SchematicsOptions): Rule {
   };
 }
 
-function updateAngularConfig(options: SchematicsOptions): Rule {
-  return (tree: Tree, context: SchematicContext): Tree => {
-    addPackageJsonScripts(tree, [
+function updateScripts(options: SchematicsOptions): Rule {
+  return (tree: Tree, _context: SchematicContext): Tree => {
+    const script = getScriptFromOptions(options);
+
+    return addPackageJsonScripts(tree, [
       {
         name: 'e2e',
-        script: 'ng e2e',
+        script,
       },
     ]);
-
-    return updateAngularFile(tree, context, options);
   };
 }
 

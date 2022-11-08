@@ -10,7 +10,8 @@
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "sourceMap": true,
-    "types": ["node"]
+    "types": ["node"],
+    "target": "ES6"
   },
   "include": ["src/**/*"],
   "exclude": ["src/**/files/**/*"]

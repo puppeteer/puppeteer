@@ -5,6 +5,7 @@
   "scripts": {
     "copy": "node copySchemaFiles.js",
     "dev": "npm run copy && tsc -p tsconfig.json --watch",
+    "clean": "tsc -b --clean && rimraf lib",
     "build": "npm run copy && tsc -p tsconfig.json"
   },
   "keywords": [
@@ -24,13 +25,10 @@
     "typescript": "~4.7.2"
   },
   "devDependencies": {
-    "@types/node": "^14.15.0",
-    "@types/jasmine": "^4.3.0",
-    "jasmine": "^4.5.0"
+    "@types/node": "^14.15.0"
   },
   "ng-add": {
     "save": "devDependencies"
   },
-  "schematics": "./src/schematics/collection.json",
-  "builders": "./src/builders/builders.json"
+  "schematics": "./lib/schematics/collection.json"
 }

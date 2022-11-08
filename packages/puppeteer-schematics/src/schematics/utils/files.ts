@@ -12,10 +12,7 @@ import {
   url,
 } from '@angular-devkit/schematics';
 import {relative, resolve} from 'path';
-import {map} from 'rxjs/operators';
-import {of} from 'rxjs';
 import {SchematicsOptions, TestingFramework} from './types.js';
-import {getAngularConfig, getObjectAsJson} from './json.js';
 
 export interface FilesOptions {
   projects: any;
@@ -124,49 +121,11 @@ export function addFrameworkFiles(
   return addFiles(tree, context, options);
 }
 
-export function updateAngularFile(
-  tree: Tree,
-  _context: SchematicContext,
-  options: SchematicsOptions
-): any {
-  const angularConfig = getAngularConfig(tree);
-  const e2eCommand = getE2eCommand(options.testingFramework);
-
-  return of(angularConfig).pipe(
-    map((config: Record<string, any>) => {
-      const projects = Object.keys(config['projects']);
-
-      projects.forEach(name => {
-        config['projects'][name].architect = {
-          ...config['projects'][name].architect,
-          ...e2eCommand,
-        };
-      });
-
-      return config;
-    }),
-    map(angular => {
-      tree.overwrite('./angular.json', getObjectAsJson(angular));
-
-      return tree;
-    })
-  );
-}
-
-function getE2eCommand(framework: TestingFramework): {
-  e2e: {builder: string; options?: Record<string, any>};
-} {
-  switch (framework) {
+export function getScriptFromOptions(options: SchematicsOptions): string {
+  switch (options.testingFramework) {
     case TestingFramework.Jasmine:
-      return {
-        e2e: {
-          builder: 'puppeteer-schematics:jasmine',
-          options: {
-            config: 'e2e/support/jasmine.json',
-          },
-        },
-      };
+      return 'jasmine --config=./e2e/support/jasmine.json';
     default:
-      throw new SchematicsException(`Testing Framework not supported.`);
+      throw new SchematicsException('Testing framework not supported.');
   }
 }
