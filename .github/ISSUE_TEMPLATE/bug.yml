@@ -6,8 +6,9 @@ body:
   - type: markdown
     attributes:
       value: |
-        #### Thanks for taking the time to fill out this bug report!
-        If you haven't done so, you can also check our [Troubleshooting](https://pptr.dev/troubleshooting) page for common issues.
+        ### Thanks for taking the time to fill out this bug report!
+        **Before filling out this report**, please check our [Troubleshooting](https://pptr.dev/troubleshooting) guide for solutions to common issues.
+        Also, verify the problem is *related to packages maintained by Puppeteer* (this does not include `puppeteer-extra`, `expect-puppeteer`, etc.).
   - type: textarea
     id: summary
     attributes:
