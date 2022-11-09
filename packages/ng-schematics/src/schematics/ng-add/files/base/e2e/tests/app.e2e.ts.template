@@ -1,0 +1,29 @@
+import * as puppeteer from 'puppeteer';
+
+describe('App test', function () {
+  let browser: puppeteer.Browser;
+  let page: puppeteer.Page;
+
+  beforeAll(async () => {
+    browser = await puppeteer.launch();
+  });
+
+  beforeEach(async () => {
+    page = await browser.newPage();
+    await page.goto('<%= baseUrl %>');
+  });
+
+  afterEach(async () => {
+    await page.close();
+  });
+
+  it('is running', async function () {
+    const element = await page.waitForSelector(
+      'text/<%= project %> app is running!'
+    );
+
+    <% if(testingFramework == 'jasmine') { %>
+    expect(element).not.toBeNull();
+    <% } %>
+  });
+});
