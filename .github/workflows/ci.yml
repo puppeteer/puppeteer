@@ -290,3 +290,19 @@ jobs:
         working-directory: ./docker
         run: |
           docker run -i --init --cap-add=SYS_ADMIN --rm puppeteer-test-image node -e "`cat test/smoke-test.js`"
+
+  ng-schematics-tests:
+    name: Test Angular Schematics
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3.5.1
+        with:
+          cache: npm
+          node-version: latest
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Run tests
+        run: npm run test --workspace @puppeteer/ng-schematics
