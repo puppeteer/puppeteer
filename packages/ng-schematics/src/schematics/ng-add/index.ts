@@ -35,6 +35,7 @@ export function ngAdd(options: SchematicsOptions): Rule {
 
 function addDependencies(options: SchematicsOptions): Rule {
   return (tree: Tree, context: SchematicContext) => {
+    context.logger.debug('Adding dependencies to "package.json"');
     const dependencies = getDependenciesFromOptions(options);
 
     return of(...dependencies).pipe(
@@ -57,7 +58,8 @@ function addDependencies(options: SchematicsOptions): Rule {
 }
 
 function updateScripts(options: SchematicsOptions): Rule {
-  return (tree: Tree, _context: SchematicContext): Tree => {
+  return (tree: Tree, context: SchematicContext): Tree => {
+    context.logger.debug('Updating "package.json" scripts');
     const script = getScriptFromOptions(options);
 
     return addPackageJsonScripts(tree, [
@@ -71,7 +73,7 @@ function updateScripts(options: SchematicsOptions): Rule {
 
 function addPuppeteerFiles(options: SchematicsOptions): Rule {
   return (tree: Tree, context: SchematicContext) => {
-    context.logger.debug('Adding Puppeteer files');
+    context.logger.debug('Adding Puppeteer base files');
     const {projects} = getAngularConfig(tree);
 
     return addBaseFiles(tree, context, {
@@ -83,7 +85,7 @@ function addPuppeteerFiles(options: SchematicsOptions): Rule {
 
 function addOtherFiles(options: SchematicsOptions): Rule {
   return (tree: Tree, context: SchematicContext) => {
-    context.logger.debug('Adding Puppeteer files');
+    context.logger.debug('Adding Puppeteer additional files');
     const {projects} = getAngularConfig(tree);
 
     return addFrameworkFiles(tree, context, {

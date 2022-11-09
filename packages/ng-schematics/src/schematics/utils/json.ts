@@ -4,23 +4,12 @@ export function getJsonFileAsObject(
   tree: Tree,
   path: string
 ): Record<string, any> {
-  const buffer = tree.read(path);
-
-  if (buffer === null) {
-    throw new SchematicsException(`Could not read ${path}.`);
-  }
-
-  const content = buffer.toString();
-  if (!content) {
-    throw new SchematicsException(`Could not read ${content}.`);
-  }
-
   try {
-    const json = JSON.parse(content);
-
-    return json;
+    const buffer = tree.read(path) as Buffer;
+    const content = buffer.toString();
+    return JSON.parse(content);
   } catch {
-    throw new SchematicsException(`Invalid ${path}. Was expecting an object`);
+    throw new SchematicsException(`Unable to retrieve file at ${path}.`);
   }
 }
 
