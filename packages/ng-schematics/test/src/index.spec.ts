@@ -74,7 +74,15 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
   // Stop outgoing Request for version fetching
   before(() => {
     const httpsGetStub = sinon.stub(https, 'get');
-    httpsGetStub.yields({headers: {'content-type': 400}});
+    httpsGetStub.returns({
+      on: (_: any, callback: () => void) => {
+        callback();
+      },
+    } as any);
+  });
+
+  after(() => {
+    sinon.restore();
   });
 
   it('should create base files and update to "package.json"', async () => {

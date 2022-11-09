@@ -52,22 +52,19 @@ async function copySchemaFiles() {
     return {from: file, to};
   });
 
-  let promises = [];
-
-  moves.forEach(({to}) => {
-    const dir = path.dirname(to);
-    promises.push(fs.mkdir(dir, {recursive: true}));
-  });
-
-  await Promise.all(promises);
-
-  promises = [];
-
-  moves.forEach(({from, to}) => {
-    promises.push(fs.copyFile(from, to));
-  });
-
-  await Promise.all(promises);
+  // Because fs.cp is Experimental (recursive support)
+  // We need to create directories first and copy the files
+  await Promise.all(
+    moves.map(({to}) => {
+      const dir = path.dirname(to);
+      return fs.mkdir(dir, {recursive: true});
+    })
+  );
+  await Promise.all(
+    moves.map(({from, to}) => {
+      return fs.copyFile(from, to);
+    })
+  );
 }
 
 copySchemaFiles();

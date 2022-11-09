@@ -22,7 +22,7 @@ from tempfile import mktemp
 
 
 def main():
-  for package_json_path in glob("packages/*/package.json") + ["website/package.json"]:
+  for package_json_path in ["packages/puppeteer-core/package.json","packages/puppeteer/package.json","website/package.json"]:
     print(package_json_path)
     tmp_file_path = mktemp()
     with open(tmp_file_path, 'w') as tmp_file:

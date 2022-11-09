@@ -18,6 +18,7 @@ export enum TestingFramework {
   Jasmine = 'jasmine',
   Jest = 'jest',
   Mocha = 'mocha',
+  Node = 'node',
 }
 
 export interface SchematicsOptions {
