@@ -15,15 +15,17 @@
  */
 
 export {Protocol} from 'devtools-protocol';
-export * from './common/Device.js';
-export * from './common/Errors.js';
-export * from './common/PredefinedNetworkConditions.js';
-export * from './common/Puppeteer.js';
+
+export * from './api/api.js';
+export * from './common/common.js';
+export * from './node/node.js';
+export * from './revisions.js';
+export * from './util/util.js';
+
 /**
  * @deprecated Use the query handler API defined on {@link Puppeteer}
  */
 export * from './common/QueryHandler.js';
-export * from './node/BrowserFetcher.js';
 
 import {PuppeteerNode} from './node/PuppeteerNode.js';
 
@@ -36,11 +38,6 @@ const puppeteer = new PuppeteerNode({
 
 export const {
   connect,
-  /**
-   * @deprecated Construct {@link BrowserFetcher} manually.
-   *
-   * @public
-   */
   createBrowserFetcher,
   defaultArgs,
   executablePath,

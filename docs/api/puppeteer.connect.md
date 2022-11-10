@@ -8,6 +8,6 @@ sidebar_label: connect
 
 ```typescript
 connect: (
-  options: import('puppeteer-core/internal/common/Puppeteer.js').ConnectOptions
-) => Promise<import('./types.js').Browser>;
+  options: import('puppeteer-core/internal/puppeteer-core.js').ConnectOptions
+) => Promise<import('puppeteer-core/internal/puppeteer-core.js').Browser>;
 ```

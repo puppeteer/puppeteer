@@ -69,8 +69,7 @@
         "src/templates/**"
       ],
       "output": [
-        "src/generated/**",
-        "src/types.ts"
+        "src/generated/**"
       ]
     },
     "build:third_party": {

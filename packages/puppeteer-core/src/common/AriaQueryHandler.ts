@@ -15,12 +15,14 @@
  */
 
 import {Protocol} from 'devtools-protocol';
+
 import {assert} from '../util/assert.js';
 import {CDPSession} from './Connection.js';
-import {ElementHandle} from './ElementHandle.js';
-import {Frame} from './Frame.js';
-import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorld.js';
-import {PuppeteerQueryHandler} from './QueryHandler.js';
+import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
+
+import type {ElementHandle} from './ElementHandle.js';
+import type {PuppeteerQueryHandler} from './QueryHandler.js';
+import type {Frame} from './Frame.js';
 
 async function queryAXTree(
   client: CDPSession,
@@ -115,7 +117,7 @@ const waitFor: PuppeteerQueryHandler['waitFor'] = async (
 ) => {
   let frame: Frame;
   let element: ElementHandle<Node> | undefined;
-  if (elementOrFrame instanceof Frame) {
+  if ('isOOPFrame' in elementOrFrame) {
     frame = elementOrFrame;
   } else {
     frame = elementOrFrame.frame;
@@ -151,11 +153,13 @@ const waitFor: PuppeteerQueryHandler['waitFor'] = async (
   if (element) {
     await element.dispose();
   }
-  if (!(result instanceof ElementHandle)) {
+
+  const handle = result?.asElement();
+  if (!handle) {
     await result?.dispose();
     return null;
   }
-  return result.frame.worlds[MAIN_WORLD].transferHandle(result);
+  return handle.frame.worlds[MAIN_WORLD].transferHandle(handle);
 };
 
 const queryAll: PuppeteerQueryHandler['queryAll'] = async (

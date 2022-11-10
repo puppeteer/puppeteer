@@ -15,7 +15,7 @@
  */
 
 import expect from 'expect';
-import {PUPPETEER_WORLD} from 'puppeteer-core/internal/common/IsolatedWorld.js';
+import {PUPPETEER_WORLD} from 'puppeteer-core/internal/common/IsolatedWorlds.js';
 import {
   getTestState,
   setupTestBrowserHooks,
