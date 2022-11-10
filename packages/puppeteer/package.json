@@ -60,18 +60,6 @@
         "generate:package-json"
       ]
     },
-    "generate:sources": {
-      "command": "tsx tools/generate_sources.ts",
-      "dependencies": [
-        "../puppeteer-core:build"
-      ],
-      "files": [
-        "tools/generate_sources.ts"
-      ],
-      "output": [
-        "src/types.ts"
-      ]
-    },
     "generate:package-json": {
       "command": "echo '{\"type\": \"module\"}' > lib/esm/package.json",
       "clean": "if-file-deleted",
@@ -114,8 +102,7 @@
       "command": "tsc -b",
       "clean": "if-file-deleted",
       "dependencies": [
-        "../puppeteer-core:build",
-        "generate:sources"
+        "../puppeteer-core:build"
       ],
       "files": [
         "src/**",

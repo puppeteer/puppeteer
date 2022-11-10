@@ -16,12 +16,10 @@
 
 import {Protocol} from 'devtools-protocol';
 import {source as injectedSource} from '../generated/injected.js';
-import type PuppeteerUtil from '../injected/injected.js';
 import {assert} from '../util/assert.js';
 import {createDeferredPromise} from '../util/DeferredPromise.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {CDPSession} from './Connection.js';
-import {ElementHandle} from './ElementHandle.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
@@ -33,6 +31,10 @@ import {TimeoutSettings} from './TimeoutSettings.js';
 import {EvaluateFunc, HandleFor, InnerLazyParams, NodeFor} from './types.js';
 import {createJSHandle, debugError, pageBindingInitString} from './util.js';
 import {TaskManager, WaitTask} from './WaitTask.js';
+import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
+
+import type PuppeteerUtil from '../injected/injected.js';
+import type {ElementHandle} from './ElementHandle.js';
 
 /**
  * @public
@@ -70,20 +72,6 @@ export interface PageBinding {
   pptrFunction: Function;
 }
 
-/**
- * A unique key for {@link IsolatedWorldChart} to denote the default world.
- * Execution contexts are automatically created in the default world.
- *
- * @internal
- */
-export const MAIN_WORLD = Symbol('mainWorld');
-/**
- * A unique key for {@link IsolatedWorldChart} to denote the puppeteer world.
- * This world contains all puppeteer-internal bindings/code.
- *
- * @internal
- */
-export const PUPPETEER_WORLD = Symbol('puppeteerWorld');
 /**
  * @internal
  */

@@ -18,11 +18,8 @@ import PuppeteerUtil from '../injected/injected.js';
 import {ariaHandler} from './AriaQueryHandler.js';
 import {ElementHandle} from './ElementHandle.js';
 import {Frame} from './Frame.js';
-import {
-  MAIN_WORLD,
-  PUPPETEER_WORLD,
-  WaitForSelectorOptions,
-} from './IsolatedWorld.js';
+import {WaitForSelectorOptions} from './IsolatedWorld.js';
+import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 
 /**
  * @public
