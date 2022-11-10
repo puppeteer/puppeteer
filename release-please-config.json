@@ -5,7 +5,10 @@
       "include-component-in-tag": false
     },
     "packages/puppeteer-core": {},
-    "packages/testserver": {}
+    "packages/testserver": {},
+    "packages/ng-schematics": {
+      "initial-version": "0.1.0"
+    }
   },
   "plugins": [
     {
