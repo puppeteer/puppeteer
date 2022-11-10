@@ -20,7 +20,7 @@ import {CDPSession} from './Connection.js';
 import {ElementHandle} from './ElementHandle.js';
 import {Frame} from './Frame.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorld.js';
-import {PuppeteerQueryHandler} from './QueryHandler.js';
+import type {PuppeteerQueryHandler} from './QueryHandler.js';
 
 async function queryAXTree(
   client: CDPSession,

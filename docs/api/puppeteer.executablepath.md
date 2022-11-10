@@ -9,7 +9,7 @@ sidebar_label: executablePath
 ```typescript
 executablePath: (
   channel?:
-    | import('puppeteer-core/internal/node/LaunchOptions.js').ChromeReleaseChannel
+    | import('puppeteer-core/internal/node/node.js').ChromeReleaseChannel
     | undefined
 ) => string;
 ```

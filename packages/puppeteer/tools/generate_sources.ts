@@ -27,7 +27,7 @@ const puppeteerCoreTypes = join(
   '..',
   'puppeteer-core',
   'src',
-  'types.ts'
+  'puppeteer-core.ts'
 );
 
 (async () => {
