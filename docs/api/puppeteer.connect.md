@@ -9,5 +9,5 @@ sidebar_label: connect
 ```typescript
 connect: (
   options: import('puppeteer-core/internal/common/Puppeteer.js').ConnectOptions
-) => Promise<import('./types.js').Browser>;
+) => Promise<import('puppeteer-core/internal/api/Browser.js').Browser>;
 ```

@@ -40,7 +40,6 @@
     "clean": "tsc -b --clean && rimraf lib",
     "format:types": "wireit",
     "generate:package-json": "wireit",
-    "generate:sources": "wireit",
     "postinstall": "node install.js",
     "prepack": "wireit"
   },
@@ -58,18 +57,6 @@
       "dependencies": [
         "format:types",
         "generate:package-json"
-      ]
-    },
-    "generate:sources": {
-      "command": "tsx tools/generate_sources.ts",
-      "dependencies": [
-        "../puppeteer-core:build"
-      ],
-      "files": [
-        "tools/generate_sources.ts"
-      ],
-      "output": [
-        "src/types.ts"
       ]
     },
     "generate:package-json": {
@@ -114,8 +101,7 @@
       "command": "tsc -b",
       "clean": "if-file-deleted",
       "dependencies": [
-        "../puppeteer-core:build",
-        "generate:sources"
+        "../puppeteer-core:build"
       ],
       "files": [
         "src/**",
