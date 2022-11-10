@@ -298,3 +298,27 @@ working tree to determine the range to bisect.
 We use [release-please](https://github.com/googleapis/release-please) to
 automate releases. When a release should be done, check for the release PR in
 our [pull requests](https://github.com/puppeteer/puppeteer/pulls) and merge it.
+
+### In case Release Please fails
+
+<!-- TODO: Remove once release-please is fixed -->
+
+In the event release-please fails, the following needs to be done:
+
+1. Update anything missing in the CHANGELOG of every package that was supposed
+   to be published. For example, if the header is missing, you may need to add
+
+   - For puppeteer:
+
+     ```md
+     ## [{NEW_VERSION}](https://github.com/puppeteer/puppeteer/compare/v{PREVIOUS_VERSION}...v{NEW_VERSION}) ({CURRENT_DATE})`
+     ```
+
+   - For other packages:
+
+     ```md
+     ## [{NEW_VERSION}](https://github.com/puppeteer/puppeteer/compare/{PACKAGE_FOLDER_NAME}-v{PREVIOUS_VERSION}...{PACKAGE_FOLDER_NAME}-v{NEW_VERSION}) ({CURRENT_DATE})
+     ```
+
+2. Create a GitHub release for each package, following the practice of previous
+   releases.
