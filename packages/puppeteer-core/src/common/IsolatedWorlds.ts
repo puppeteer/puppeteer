@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 Google Inc. All rights reserved.
+ * Copyright 2022 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,17 @@
  * limitations under the License.
  */
 
-export {Protocol} from 'devtools-protocol';
-
-export * from 'puppeteer-core/internal/puppeteer-core.js';
-
-import {PuppeteerNode} from 'puppeteer-core/internal/node/PuppeteerNode.js';
-import {getConfiguration} from './getConfiguration.js';
-
-const configuration = getConfiguration();
-
 /**
- * @public
+ * A unique key for {@link IsolatedWorldChart} to denote the default world.
+ * Execution contexts are automatically created in the default world.
+ *
+ * @internal
  */
-const puppeteer = new PuppeteerNode({
-  isPuppeteerCore: false,
-  configuration,
-});
-
-export const {
-  connect,
-  createBrowserFetcher,
-  defaultArgs,
-  executablePath,
-  launch,
-} = puppeteer;
-
-export default puppeteer;
+export const MAIN_WORLD = Symbol('mainWorld');
+/**
+ * A unique key for {@link IsolatedWorldChart} to denote the puppeteer world.
+ * This world contains all puppeteer-internal bindings/code.
+ *
+ * @internal
+ */
+export const PUPPETEER_WORLD = Symbol('puppeteerWorld');

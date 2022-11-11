@@ -26,10 +26,9 @@ import {MouseButton} from './Input.js';
 import {
   IsolatedWorld,
   IsolatedWorldChart,
-  MAIN_WORLD,
-  PUPPETEER_WORLD,
   WaitForSelectorOptions,
 } from './IsolatedWorld.js';
+import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {Page} from '../api/Page.js';
 import {getQueryHandlerAndSelector} from './QueryHandler.js';

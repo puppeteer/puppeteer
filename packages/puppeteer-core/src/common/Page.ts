@@ -57,7 +57,8 @@ import {FrameManager, FrameManagerEmittedEvents} from './FrameManager.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {Keyboard, Mouse, MouseButton, Touchscreen} from './Input.js';
-import {MAIN_WORLD, WaitForSelectorOptions} from './IsolatedWorld.js';
+import {WaitForSelectorOptions} from './IsolatedWorld.js';
+import {MAIN_WORLD} from './IsolatedWorlds.js';
 import {JSHandle} from './JSHandle.js';
 import {
   Credentials,
