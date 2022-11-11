@@ -136,6 +136,7 @@ sidebar_label: API
 | [launch](./puppeteer.launch.md)                                                               |                                                                                                                               |
 | [networkConditions](./puppeteer.networkconditions.md)                                         |                                                                                                                               |
 | [PredefinedNetworkConditions](./puppeteer.predefinednetworkconditions.md)                     | A list of network conditions to be used with [Page.emulateNetworkConditions()](./puppeteer.page.emulatenetworkconditions.md). |
+| [puppeteer](./puppeteer.puppeteer.md)                                                         |                                                                                                                               |
 
 ## Type Aliases
 
