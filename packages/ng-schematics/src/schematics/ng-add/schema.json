@@ -13,7 +13,7 @@
     "testingFramework": {
       "description": "",
       "type": "string",
-      "enum": ["jasmine"],
+      "enum": ["jasmine", "jest"],
       "default": "jasmine",
       "x-prompt": {
         "message": "With what Testing Library do you wish to integrate?",
@@ -22,6 +22,10 @@
           {
             "value": "jasmine",
             "label": "Use Jasmine [https://jasmine.github.io/]"
+          },
+          {
+            "value": "jest",
+            "label": "Use Jest [https://jestjs.io/]"
           }
         ]
       }

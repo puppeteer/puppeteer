@@ -124,4 +124,17 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     expect(devDependencies).toContain('@babel/register');
     expect(devDependencies).toContain('@babel/register');
   });
+
+  it('should create Jest files and update "package.json"', async () => {
+    const tree = await buildTestingTree({
+      testingFramework: 'jest',
+    });
+    const {scripts, devDependencies} = getPackageJson(tree);
+
+    expect(tree.files).toContain(getProjectFile('e2e/jest.config.js'));
+    expect(scripts['e2e']).toBe('jest -c e2e/jest.config.js');
+    expect(devDependencies).toContain('jest');
+    expect(devDependencies).toContain('@types/jest');
+    expect(devDependencies).toContain('ts-jest');
+  });
 });

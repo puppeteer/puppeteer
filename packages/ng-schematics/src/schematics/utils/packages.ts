@@ -118,6 +118,9 @@ export function getDependenciesFromOptions(
         '@babel/preset-typescript'
       );
       break;
+    case TestingFramework.Jest:
+      dependencies.push('jest', '@types/jest', 'ts-jest');
+      break;
     default:
       throw new SchematicsException(`Testing framework not supported.`);
   }
