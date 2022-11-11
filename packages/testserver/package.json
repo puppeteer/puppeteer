@@ -1,6 +1,6 @@
 {
   "name": "@pptr/testserver",
-  "version": "0.6.0",
+  "version": "19.3.0",
   "description": "testing server",
   "main": "lib/index.js",
   "scripts": {

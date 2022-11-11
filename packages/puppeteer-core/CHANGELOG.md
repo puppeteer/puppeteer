@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.3.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.2.2...puppeteer-core-v19.3.0) (2022-11-11)
+
+
+### Features
+
+* **puppeteer-core:** update Chrome launcher flags ([#9239](https://github.com/puppeteer/puppeteer/issues/9239)) ([ae87bfc](https://github.com/puppeteer/puppeteer/commit/ae87bfc2b4361556e3660a1de2c6db348ce663ae))
+
+
+### Miscellaneous Chores
+
+* release 19.3.0 ([e36144d](https://github.com/puppeteer/puppeteer/commit/e36144d368e2d911ce0875ddafc579033661c94b))
+
 ## [19.2.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.2.1...puppeteer-core-v19.2.2) (2022-11-03)
 
 
