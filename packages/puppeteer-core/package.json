@@ -157,7 +157,6 @@
     "proxy-from-env": "1.1.0",
     "rimraf": "3.0.2",
     "tar-fs": "2.1.1",
-    "type-fest": "3.2.0",
     "unbzip2-stream": "1.4.3",
     "ws": "8.10.0"
   }

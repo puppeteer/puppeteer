@@ -17,7 +17,6 @@
 import {JSHandle} from './JSHandle.js';
 import {ElementHandle} from './ElementHandle.js';
 import {LazyArg} from './LazyArg.js';
-import type {Split} from 'type-fest';
 
 /**
  * @public
@@ -146,3 +145,10 @@ type FlatmapSplitWithDelemiters<
       : never
     : never
   : [];
+
+type Split<
+  Input extends string,
+  Delemiter extends string
+> = Input extends `${infer Prefix}${Delemiter}${infer Suffix}`
+  ? [Prefix, ...Split<Suffix, Delemiter>]
+  : [Input];
