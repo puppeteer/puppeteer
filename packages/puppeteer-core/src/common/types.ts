@@ -17,6 +17,7 @@
 import {JSHandle} from './JSHandle.js';
 import {ElementHandle} from './ElementHandle.js';
 import {LazyArg} from './LazyArg.js';
+import type {LastArrayElement, Split} from 'type-fest';
 
 /**
  * @public
@@ -67,9 +68,72 @@ export type EvaluateFunc<T extends unknown[]> = (
 /**
  * @public
  */
-export type NodeFor<Selector extends string> =
-  Selector extends keyof HTMLElementTagNameMap
-    ? HTMLElementTagNameMap[Selector]
-    : Selector extends keyof SVGElementTagNameMap
-    ? SVGElementTagNameMap[Selector]
-    : Element;
+export type NodeFor<ComplexSelector extends string> =
+  TypeSelectorOfCamplexSelector<ComplexSelector> extends infer TypeSelector
+    ? TypeSelector extends keyof HTMLElementTagNameMap
+      ? HTMLElementTagNameMap[TypeSelector]
+      : TypeSelector extends keyof SVGElementTagNameMap
+      ? SVGElementTagNameMap[TypeSelector]
+      : Element
+    : never;
+
+type TypeSelectorOfCamplexSelector<ComplexSelector extends string> =
+  TypeSelectorOfCompoundSelector<
+    LastArrayElement<CompondSelectorsOfComplexSelector<ComplexSelector>>
+  >;
+
+type TypeSelectorOfCompoundSelector<CompoundSelector extends string> =
+  SplitWithDelemiters<
+    CompoundSelector,
+    BeginSubclassSelectorTokens
+  > extends infer CompoundSelectorTokens
+    ? // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      CompoundSelectorTokens extends [infer TypeSelector, ...infer _]
+      ? TypeSelector extends ''
+        ? void
+        : TypeSelector
+      : never
+    : never;
+
+type CompondSelectorsOfComplexSelector<ComplexSelector extends string> = Drop<
+  SplitWithDelemiters<ComplexSelector, CombinatorTokens>,
+  ''
+>;
+
+type SplitWithDelemiters<
+  Input extends string,
+  Delemiters extends readonly string[]
+> = Delemiters extends [infer FirstDelemiter, ...infer RestDelemiters]
+  ? FirstDelemiter extends string
+    ? RestDelemiters extends readonly string[]
+      ? FlatmapSplitWithDelemiters<Split<Input, FirstDelemiter>, RestDelemiters>
+      : never
+    : never
+  : [Input];
+
+type BeginSubclassSelectorTokens = ['.', '#', '[', ':'];
+
+type CombinatorTokens = [' ', '>', '+', '~', '|', '|'];
+
+type Drop<Arr extends readonly unknown[], Remove> = Arr extends [
+  infer Head,
+  ...infer Tail
+]
+  ? Head extends Remove
+    ? Drop<Tail, Remove>
+    : [Head, ...Drop<Tail, Remove>]
+  : [];
+
+type FlatmapSplitWithDelemiters<
+  Inputs extends readonly string[],
+  Delemiters extends readonly string[]
+> = Inputs extends [infer FirstInput, ...infer RestInputs]
+  ? FirstInput extends string
+    ? RestInputs extends readonly string[]
+      ? [
+          ...SplitWithDelemiters<FirstInput, Delemiters>,
+          ...FlatmapSplitWithDelemiters<RestInputs, Delemiters>
+        ]
+      : never
+    : never
+  : [];
