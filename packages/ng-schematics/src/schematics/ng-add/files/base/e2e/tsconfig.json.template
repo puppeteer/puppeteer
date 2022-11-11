@@ -2,6 +2,9 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    <% if(testingFramework == 'jest') { %>
+    "esModuleInterop": true,
+    <% } %>
     "types": ["<%= testingFramework %>"]
   },
   "include": ["tests/**/*.e2e.ts"]

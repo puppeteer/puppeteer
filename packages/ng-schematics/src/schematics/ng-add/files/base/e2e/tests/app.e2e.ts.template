@@ -17,12 +17,18 @@ describe('App test', function () {
     await page.close();
   });
 
+  <% if(testingFramework == 'jest') { %>
+  afterAll(async () => {
+    await browser.close();
+  });
+  <% } %>
+
   it('is running', async function () {
     const element = await page.waitForSelector(
       'text/<%= project %> app is running!'
     );
 
-    <% if(testingFramework == 'jasmine') { %>
+    <% if(testingFramework == 'jasmine' || testingFramework == 'jest') { %>
     expect(element).not.toBeNull();
     <% } %>
   });
