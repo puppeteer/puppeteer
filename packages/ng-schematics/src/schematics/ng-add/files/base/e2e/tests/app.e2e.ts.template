@@ -1,12 +1,21 @@
 import * as puppeteer from 'puppeteer';
+<% if(testingFramework == 'mocha') { %>
+import * as assert from 'assert';
+<% } %>
 
 describe('App test', function () {
   let browser: puppeteer.Browser;
   let page: puppeteer.Page;
 
+<% if(testingFramework == 'jasmine' || testingFramework == 'jest') { %>
   beforeAll(async () => {
     browser = await puppeteer.launch();
   });
+<% } %><% if(testingFramework == 'mocha') { %>
+  before(async () => {
+    browser = await puppeteer.launch();
+  });
+<% } %>
 
   beforeEach(async () => {
     page = await browser.newPage();
@@ -17,19 +26,25 @@ describe('App test', function () {
     await page.close();
   });
 
-  <% if(testingFramework == 'jest') { %>
+<% if(testingFramework == 'jest') { %>
   afterAll(async () => {
     await browser.close();
   });
-  <% } %>
+<% } %><% if(testingFramework == 'mocha') { %>
+  after(async () => {
+    await browser.close();
+  });
+<% } %>
 
   it('is running', async function () {
     const element = await page.waitForSelector(
       'text/<%= project %> app is running!'
     );
 
-    <% if(testingFramework == 'jasmine' || testingFramework == 'jest') { %>
+<% if(testingFramework == 'jasmine' || testingFramework == 'jest') { %>
     expect(element).not.toBeNull();
-    <% } %>
+<% } %><% if(testingFramework == 'mocha') { %>
+    assert.ok(element);
+<% } %>
   });
 });

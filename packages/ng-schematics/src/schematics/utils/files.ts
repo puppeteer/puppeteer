@@ -127,6 +127,8 @@ export function getScriptFromOptions(options: SchematicsOptions): string {
       return 'jasmine --config=./e2e/support/jasmine.json';
     case TestingFramework.Jest:
       return 'jest -c e2e/jest.config.js';
+    case TestingFramework.Mocha:
+      return 'mocha --config=./e2e/.mocharc.js';
     default:
       throw new SchematicsException('Testing framework not supported.');
   }

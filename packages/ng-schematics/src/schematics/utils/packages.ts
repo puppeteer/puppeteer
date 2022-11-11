@@ -108,18 +108,22 @@ export function getDependenciesFromOptions(
   options: SchematicsOptions
 ): string[] {
   const dependencies = ['puppeteer'];
+  const babelPackages = [
+    '@babel/core',
+    '@babel/register',
+    '@babel/preset-env',
+    '@babel/preset-typescript',
+  ];
+
   switch (options.testingFramework) {
     case TestingFramework.Jasmine:
-      dependencies.push(
-        'jasmine',
-        '@babel/core',
-        '@babel/register',
-        '@babel/preset-env',
-        '@babel/preset-typescript'
-      );
+      dependencies.push('jasmine', ...babelPackages);
       break;
     case TestingFramework.Jest:
       dependencies.push('jest', '@types/jest', 'ts-jest');
+      break;
+    case TestingFramework.Mocha:
+      dependencies.push('mocha', '@types/mocha', ...babelPackages);
       break;
     default:
       throw new SchematicsException(`Testing framework not supported.`);
