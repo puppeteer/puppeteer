@@ -17,7 +17,7 @@
 import {JSHandle} from './JSHandle.js';
 import {ElementHandle} from './ElementHandle.js';
 import {LazyArg} from './LazyArg.js';
-import type {LastArrayElement, Split} from 'type-fest';
+import type {Split} from 'type-fest';
 
 /**
  * @public
@@ -92,8 +92,17 @@ type TypeSelectorOfCompoundSelector<CompoundSelector extends string> =
       ? TypeSelector extends ''
         ? void
         : TypeSelector
-      : never
+      : void
     : never;
+
+type LastArrayElement<Arr extends readonly unknown[]> = Arr extends [
+  infer Head,
+  ...infer Tail
+]
+  ? Tail extends []
+    ? Head
+    : LastArrayElement<Tail>
+  : void;
 
 type CompondSelectorsOfComplexSelector<ComplexSelector extends string> = Drop<
   SplitWithDelemiters<ComplexSelector, CombinatorTokens>,
