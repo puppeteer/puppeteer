@@ -77,9 +77,15 @@ export type NodeFor<ComplexSelector extends string> =
     : never;
 
 type TypeSelectorOfCamplexSelector<ComplexSelector extends string> =
-  TypeSelectorOfCompoundSelector<
-    LastArrayElement<CompondSelectorsOfComplexSelector<ComplexSelector>>
-  >;
+  CompoundSelectorsOfComplexSelector<ComplexSelector> extends infer CompoundSelectors
+    ? CompoundSelectors extends readonly string[]
+      ? LastArrayElement<CompoundSelectors> extends infer LastCompoundSelector
+        ? LastCompoundSelector extends string
+          ? TypeSelectorOfCompoundSelector<LastCompoundSelector>
+          : void
+        : never
+      : void
+    : never;
 
 type TypeSelectorOfCompoundSelector<CompoundSelector extends string> =
   SplitWithDelemiters<
@@ -103,10 +109,15 @@ type LastArrayElement<Arr extends readonly unknown[]> = Arr extends [
     : LastArrayElement<Tail>
   : void;
 
-type CompondSelectorsOfComplexSelector<ComplexSelector extends string> = Drop<
-  SplitWithDelemiters<ComplexSelector, CombinatorTokens>,
-  ''
->;
+type CompoundSelectorsOfComplexSelector<ComplexSelector extends string> =
+  SplitWithDelemiters<
+    ComplexSelector,
+    CombinatorTokens
+  > extends infer IntermediateTokens
+    ? IntermediateTokens extends readonly string[]
+      ? Drop<IntermediateTokens, ''>
+      : void
+    : never;
 
 type SplitWithDelemiters<
   Input extends string,
