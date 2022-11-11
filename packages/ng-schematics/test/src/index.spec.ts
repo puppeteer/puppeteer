@@ -122,7 +122,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     expect(devDependencies).toContain('jasmine');
     expect(devDependencies).toContain('@babel/core');
     expect(devDependencies).toContain('@babel/register');
-    expect(devDependencies).toContain('@babel/register');
+    expect(devDependencies).toContain('@babel/preset-typescript');
   });
 
   it('should create Jest files and update "package.json"', async () => {
@@ -136,5 +136,21 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     expect(devDependencies).toContain('jest');
     expect(devDependencies).toContain('@types/jest');
     expect(devDependencies).toContain('ts-jest');
+  });
+
+  it('should create Jasmine files and update "package.json"', async () => {
+    const tree = await buildTestingTree({
+      testingFramework: 'mocha',
+    });
+    const {scripts, devDependencies} = getPackageJson(tree);
+
+    expect(tree.files).toContain(getProjectFile('e2e/.mocharc.js'));
+    expect(tree.files).toContain(getProjectFile('e2e/babel.js'));
+    expect(scripts['e2e']).toBe('mocha --config=./e2e/.mocharc.js');
+    expect(devDependencies).toContain('mocha');
+    expect(devDependencies).toContain('@types/mocha');
+    expect(devDependencies).toContain('@babel/core');
+    expect(devDependencies).toContain('@babel/register');
+    expect(devDependencies).toContain('@babel/preset-typescript');
   });
 });
