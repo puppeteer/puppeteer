@@ -7,10 +7,12 @@ sidebar_label: NodeFor
 #### Signature:
 
 ```typescript
-export declare type NodeFor<Selector extends string> =
-  Selector extends keyof HTMLElementTagNameMap
-    ? HTMLElementTagNameMap[Selector]
-    : Selector extends keyof SVGElementTagNameMap
-    ? SVGElementTagNameMap[Selector]
-    : Element;
+export declare type NodeFor<ComplexSelector extends string> =
+  TypeSelectorOfCamplexSelector<ComplexSelector> extends infer TypeSelector
+    ? TypeSelector extends keyof HTMLElementTagNameMap
+      ? HTMLElementTagNameMap[TypeSelector]
+      : TypeSelector extends keyof SVGElementTagNameMap
+      ? SVGElementTagNameMap[TypeSelector]
+      : Element
+    : never;
 ```
