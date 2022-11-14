@@ -153,4 +153,16 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     expect(devDependencies).toContain('@babel/register');
     expect(devDependencies).toContain('@babel/preset-typescript');
   });
+
+  it('should create Node files"', async () => {
+    const tree = await buildTestingTree({
+      testingFramework: 'node',
+    });
+    const {scripts} = getPackageJson(tree);
+
+    expect(tree.files).toContain(getProjectFile('e2e/.gitignore'));
+    expect(scripts['e2e']).toBe(
+      'tsc -p e2e/tsconfig.json && node --test e2e/out-tsc/**.js'
+    );
+  });
 });

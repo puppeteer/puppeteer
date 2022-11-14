@@ -125,6 +125,9 @@ export function getDependenciesFromOptions(
     case TestingFramework.Mocha:
       dependencies.push('mocha', '@types/mocha', ...babelPackages);
       break;
+    case TestingFramework.Node:
+      dependencies.push('@types/node');
+      break;
     default:
       throw new SchematicsException(`Testing framework not supported.`);
   }

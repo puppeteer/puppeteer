@@ -129,6 +129,8 @@ export function getScriptFromOptions(options: SchematicsOptions): string {
       return 'jest -c e2e/jest.config.js';
     case TestingFramework.Mocha:
       return 'mocha --config=./e2e/.mocharc.js';
+    case TestingFramework.Node:
+      return 'tsc -p e2e/tsconfig.json && node --test e2e/out-tsc/**.js';
     default:
       throw new SchematicsException('Testing framework not supported.');
   }
