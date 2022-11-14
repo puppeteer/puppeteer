@@ -1,6 +1,6 @@
 # Puppeteer Schematics Angular
 
-An easy way to add testing with Puppeteer for your Angular project.
+Adds Puppeteer-based e2e tests to your Angular project.
 
 ## Usage
 
@@ -11,9 +11,9 @@ _Note this will add the schematic as a dependency to your project._
 ng add @puppeteer/ng-schematics
 ```
 
-Or you can use the same command followed by the options bellow.
+Or you can use the same command followed by the [options](#options) bellow.
 
-Currently it support set-up with:
+Currently, this schematic supports the following test frameworks:
 
 - **Jasmine** [https://jasmine.github.io/]
 - **Jest** [https://jestjs.io/]
@@ -27,9 +27,9 @@ npm run e2e
 # or yarn e2e
 ```
 
-##### Options
+## Options
 
-When adding WebdriverIO Schematics to your project you can invoke the following options:
+When adding schematics to your project you can to provide following options:
 
 | Option               | Description                                                                                                             | Value                                      | Required |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | -------- |
