@@ -2,9 +2,12 @@
   "last-release-sha": "2e3719cd7fbab551e99625bfb6198183aa23e7f5",
   "packages": {
     "packages/puppeteer": {
-      "include-component-in-tag": false
+      "include-component-in-tag": false,
+      "component": "puppeteer"
     },
-    "packages/puppeteer-core": {},
+    "packages/puppeteer-core": {
+      "component": "puppeteer-core"
+    },
     "packages/testserver": {},
     "packages/ng-schematics": {
       "initial-version": "0.1.0"
@@ -12,7 +15,13 @@
   },
   "plugins": [
     {
-      "type": "node-workspace"
+      "type": "node-workspace",
+      "merge": false
+    },
+    {
+      "type": "linked-versions",
+      "group-name": "puppeteer",
+      "components": ["puppeteer", "puppeteer-core"]
     }
   ]
 }

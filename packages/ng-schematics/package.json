@@ -5,11 +5,11 @@
   "scripts": {
     "copy": "node copySchemaFiles.js",
     "clean": "tsc -b --clean && rimraf lib",
-    "dev": "npm run copy && tsc -p tsconfig.json --watch",
+    "dev": "run-s clean copy && tsc -p tsconfig.json --watch",
     "build": "run-s build:*",
     "build:schematics": "npm run copy && tsc -p tsconfig.json",
     "build:test": "tsc -p tsconfig.spec.json",
-    "test": "run-s build && mocha"
+    "test": "run-s clean build && mocha"
   },
   "keywords": [
     "angular",
@@ -33,6 +33,10 @@
     "@types/node": "^14.15.0",
     "@schematics/angular": "^14.2.8"
   },
+  "files": [
+    "lib",
+    "!*.tsbuildinfo"
+  ],
   "ng-add": {
     "save": "devDependencies"
   },
