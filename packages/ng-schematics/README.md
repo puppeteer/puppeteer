@@ -8,7 +8,7 @@ Run the command in an Angular CLI app directory.
 _Note this will add the schematic as a dependency to your project._
 
 ```bash
-ng add puppetter-schematics
+ng add puppeteer-schematics
 ```
 
 With the schematics installed, you can run E2E tests with your chose:
