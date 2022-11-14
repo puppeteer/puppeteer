@@ -16,6 +16,10 @@
     "puppeteer",
     "schematics"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/puppeteer/puppeteer/tree/main/packages/ng-schematics"
+  },
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "engines": {
