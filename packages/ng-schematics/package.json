@@ -26,7 +26,7 @@
     "node": ">=14.1.0"
   },
   "dependencies": {
-    "@angular-devkit/core": "^14.2.6",
+    "@angular-devkit/core": "^14.2.9",
     "@angular-devkit/schematics": "^14.2.6"
   },
   "devDependencies": {
