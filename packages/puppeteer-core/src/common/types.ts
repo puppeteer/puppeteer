@@ -84,7 +84,7 @@ type TypeSelectorOfCamplexSelector<ComplexSelector extends string> =
           ? TypeSelectorOfCompoundSelector<LastCompoundSelector>
           : never
         : never
-      : void
+      : unknown
     : never;
 
 type TypeSelectorOfCompoundSelector<CompoundSelector extends string> =
@@ -94,7 +94,7 @@ type TypeSelectorOfCompoundSelector<CompoundSelector extends string> =
   > extends infer CompoundSelectorTokens
     ? CompoundSelectorTokens extends [infer TypeSelector, ...any[]]
       ? TypeSelector extends ''
-        ? void
+        ? unknown
         : TypeSelector
       : never
     : never;
