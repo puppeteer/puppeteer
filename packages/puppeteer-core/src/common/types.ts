@@ -79,7 +79,7 @@ export type NodeFor<ComplexSelector extends string> =
 type TypeSelectorOfCamplexSelector<ComplexSelector extends string> =
   CompoundSelectorsOfComplexSelector<ComplexSelector> extends infer CompoundSelectors
     ? CompoundSelectors extends NonEmptyReadonlyArray<string>
-      ? LastArrayElement<CompoundSelectors> extends infer LastCompoundSelector
+      ? Last<CompoundSelectors> extends infer LastCompoundSelector
         ? LastCompoundSelector extends string
           ? TypeSelectorOfCompoundSelector<LastCompoundSelector>
           : void
@@ -100,12 +100,12 @@ type TypeSelectorOfCompoundSelector<CompoundSelector extends string> =
       : void
     : never;
 
-type LastArrayElement<Arr extends NonEmptyReadonlyArray<unknown>> = Arr extends [
+type Last<Arr extends NonEmptyReadonlyArray<unknown>> = Arr extends [
   infer Head,
   ...infer Tail
 ]
   ? Tail extends NonEmptyReadonlyArray<unknown>
-    ? LastArrayElement<Tail>
+    ? Last<Tail>
     : Head
   : never;
 
