@@ -92,8 +92,7 @@ type TypeSelectorOfCompoundSelector<CompoundSelector extends string> =
     CompoundSelector,
     BeginSubclassSelectorTokens
   > extends infer CompoundSelectorTokens
-    ? // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      CompoundSelectorTokens extends [infer TypeSelector, ...infer _]
+    ? CompoundSelectorTokens extends [infer TypeSelector, ...any[]]
       ? TypeSelector extends ''
         ? void
         : TypeSelector
