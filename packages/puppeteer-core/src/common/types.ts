@@ -68,7 +68,7 @@ export type EvaluateFunc<T extends unknown[]> = (
  * @public
  */
 export type NodeFor<ComplexSelector extends string> =
-  TypeSelectorOfCamplexSelector<ComplexSelector> extends infer TypeSelector
+  TypeSelectorOfComplexSelector<ComplexSelector> extends infer TypeSelector
     ? TypeSelector extends keyof HTMLElementTagNameMap
       ? HTMLElementTagNameMap[TypeSelector]
       : TypeSelector extends keyof SVGElementTagNameMap
@@ -76,7 +76,7 @@ export type NodeFor<ComplexSelector extends string> =
       : Element
     : never;
 
-type TypeSelectorOfCamplexSelector<ComplexSelector extends string> =
+type TypeSelectorOfComplexSelector<ComplexSelector extends string> =
   CompoundSelectorsOfComplexSelector<ComplexSelector> extends infer CompoundSelectors
     ? CompoundSelectors extends NonEmptyReadonlyArray<string>
       ? Last<CompoundSelectors> extends infer LastCompoundSelector
