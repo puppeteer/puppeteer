@@ -78,7 +78,7 @@ export type NodeFor<ComplexSelector extends string> =
 
 type TypeSelectorOfCamplexSelector<ComplexSelector extends string> =
   CompoundSelectorsOfComplexSelector<ComplexSelector> extends infer CompoundSelectors
-    ? CompoundSelectors extends readonly string[]
+    ? CompoundSelectors extends NonEmptyReadonlyArray<string>
       ? LastArrayElement<CompoundSelectors> extends infer LastCompoundSelector
         ? LastCompoundSelector extends string
           ? TypeSelectorOfCompoundSelector<LastCompoundSelector>
@@ -100,14 +100,16 @@ type TypeSelectorOfCompoundSelector<CompoundSelector extends string> =
       : void
     : never;
 
-type LastArrayElement<Arr extends readonly unknown[]> = Arr extends [
+type LastArrayElement<Arr extends NonEmptyReadonlyArray<unknown>> = Arr extends [
   infer Head,
   ...infer Tail
 ]
-  ? Tail extends []
-    ? Head
-    : LastArrayElement<Tail>
-  : void;
+  ? Tail extends NonEmptyReadonlyArray<unknown>
+    ? LastArrayElement<Tail>
+    : Head
+  : never;
+
+type NonEmptyReadonlyArray<T> = [T, ...(readonly T[])];
 
 type CompoundSelectorsOfComplexSelector<ComplexSelector extends string> =
   SplitWithDelemiters<
