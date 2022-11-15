@@ -82,7 +82,7 @@ type TypeSelectorOfCamplexSelector<ComplexSelector extends string> =
       ? Last<CompoundSelectors> extends infer LastCompoundSelector
         ? LastCompoundSelector extends string
           ? TypeSelectorOfCompoundSelector<LastCompoundSelector>
-          : void
+          : never
         : never
       : void
     : never;
@@ -96,7 +96,7 @@ type TypeSelectorOfCompoundSelector<CompoundSelector extends string> =
       ? TypeSelector extends ''
         ? void
         : TypeSelector
-      : void
+      : never
     : never;
 
 type Last<Arr extends NonEmptyReadonlyArray<unknown>> = Arr extends [
@@ -117,7 +117,7 @@ type CompoundSelectorsOfComplexSelector<ComplexSelector extends string> =
   > extends infer IntermediateTokens
     ? IntermediateTokens extends readonly string[]
       ? Drop<IntermediateTokens, ''>
-      : void
+      : never
     : never;
 
 type SplitWithDelemiters<
