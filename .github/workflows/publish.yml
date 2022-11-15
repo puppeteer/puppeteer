@@ -35,6 +35,11 @@ jobs:
         run: |
           npm config set '//wombat-dressing-room.appspot.com/:_authToken' $NODE_AUTH_TOKEN
           npm publish --workspace packages/${GITHUB_REF_NAME%-v*}
+      - name: Deprecate old versions
+        run: |
+          version_range=$(node tools/get_deprecated_version_range.js)
+          npm deprecate puppeteer@"$version_range" "$version_range is no longer supported"
+          npm deprecate puppeteer-core@"$version_range" "$version_range is no longer supported"
   docker-publish:
     name: Publish Docker image
     runs-on: ubuntu-latest
