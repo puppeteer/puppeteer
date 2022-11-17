@@ -34,7 +34,7 @@ const firefoxOptions = {
   await page.goto('https://news.ycombinator.com/');
 
   // Extract articles from the page.
-  const resultsSelector = '.titlelink';
+  const resultsSelector = '.titleline > a';
   const links = await page.evaluate(resultsSelector => {
     const anchors = Array.from(document.querySelectorAll(resultsSelector));
     return anchors.map(anchor => {
