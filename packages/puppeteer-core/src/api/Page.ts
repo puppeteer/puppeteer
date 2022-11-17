@@ -1948,7 +1948,7 @@ export class Page extends EventEmitter {
    *
    * - `height`: page's height in pixels
    *
-   * - `deviceScalarFactor`: Specify device scale factor (can be though of as
+   * - `deviceScaleFactor`: Specify device scale factor (can be though of as
    *   dpr). Defaults to `1`.
    *
    * - `isMobile`: Whether the meta viewport tag is taken into account. Defaults
