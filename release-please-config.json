@@ -21,6 +21,7 @@
     {
       "type": "linked-versions",
       "group-name": "puppeteer",
+      "groupName": "puppeteer",
       "components": ["puppeteer", "puppeteer-core"]
     }
   ]
