@@ -8,7 +8,7 @@ sidebar_label: NodeFor
 
 ```typescript
 export declare type NodeFor<ComplexSelector extends string> =
-  TypeSelectorOfCamplexSelector<ComplexSelector> extends infer TypeSelector
+  TypeSelectorOfComplexSelector<ComplexSelector> extends infer TypeSelector
     ? TypeSelector extends keyof HTMLElementTagNameMap
       ? HTMLElementTagNameMap[TypeSelector]
       : TypeSelector extends keyof SVGElementTagNameMap
