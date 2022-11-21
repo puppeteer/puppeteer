@@ -43,6 +43,10 @@ import {
 } from './Connection.js';
 import {ConsoleMessage, ConsoleMessageType} from './ConsoleMessage.js';
 import {Coverage} from './Coverage.js';
+import {
+  DeviceRequestPrompt,
+  DeviceRequestPromptManager,
+} from './DeviceRequestPrompt.js';
 import {Dialog} from './Dialog.js';
 import {ElementHandle} from '../api/ElementHandle.js';
 import {EmulationManager} from './EmulationManager.js';
@@ -147,6 +151,7 @@ export class CDPPage extends Page {
   #screenshotTaskQueue: TaskQueue;
   #workers = new Map<string, WebWorker>();
   #fileChooserPromises = new Set<DeferredPromise<FileChooser>>();
+  #deviceRequestPromptManager: DeviceRequestPromptManager;
 
   #disconnectPromise?: Promise<Error>;
   #userDragInterceptionEnabled = false;
@@ -178,6 +183,10 @@ export class CDPPage extends Page {
     this.#coverage = new Coverage(client);
     this.#screenshotTaskQueue = screenshotTaskQueue;
     this.#viewport = null;
+    this.#deviceRequestPromptManager = new DeviceRequestPromptManager(
+      client,
+      this.#timeoutSettings
+    );
 
     this.#target
       ._targetManager()
@@ -1647,6 +1656,35 @@ export class CDPPage extends Page {
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     return this.mainFrame().waitForFunction(pageFunction, options, ...args);
+  }
+
+  /**
+   * This method is typically coupled with an action that triggers a device
+   * request from an api such as WebBluetooth.
+   *
+   * :::caution
+   *
+   * This must be called before the device request is made. It will not return a
+   * currently active device prompt.
+   *
+   * :::
+   *
+   * @example
+   *
+   * ```ts
+   * const [deviceRequest] = Promise.all([
+   *   page.waitForDevicePrompt(),
+   *   page.click('#connect-bluetooth'),
+   * ]);
+   * await devicePrompt.select(
+   *   await devicePrompt.waitForDevice(({name}) => name.includes('My Device'))
+   * );
+   * ```
+   */
+  override waitForDevicePrompt(
+    options: WaitTimeoutOptions = {}
+  ): Promise<DeviceRequestPrompt> {
+    return this.#deviceRequestPromptManager.waitForDevicePrompt(options);
   }
 }
 
