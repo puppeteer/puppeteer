@@ -20,12 +20,13 @@ Currently, this schematic supports the following test frameworks:
 - **Mocha** [https://mochajs.org/]
 - **Node Test Runner** _(Experimental)_ [https://nodejs.org/api/test.html]
 
-With the schematics installed, you can run E2E tests:
+With the schematics installed, yo you can run E2E tests:
 
 ```bash
-npm run e2e
-# or yarn e2e
+ng e2e
 ```
+
+> Note: Server must be running before executing the command.
 
 ## Options
 
