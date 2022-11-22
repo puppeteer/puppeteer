@@ -7,7 +7,7 @@
 <% } %><% if(testingFramework == 'node') { %>
     "module": "CommonJS",
     "rootDir": "tests/",
-    "outDir": "out-tsc/",
+    "outDir": "test/",
 <% } %>
     "types": ["<%= testingFramework %>"]
   },

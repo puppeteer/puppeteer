@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import {SchematicsException, Tree} from '@angular-devkit/schematics';
+import {Tree} from '@angular-devkit/schematics';
 import {get} from 'https';
 import {SchematicsOptions, TestingFramework} from './types.js';
-import {getJsonFileAsObject, getObjectAsJson} from './json.js';
+import {
+  getAngularConfig,
+  getJsonFileAsObject,
+  getObjectAsJson,
+} from './json.js';
 export interface NodePackage {
   name: string;
   version: string;
@@ -68,7 +72,7 @@ export function getPackageLatestNpmVersion(name: string): Promise<NodePackage> {
 function updateJsonValues(
   json: Record<string, any>,
   target: string,
-  updates: Array<{name: string; value: string}>,
+  updates: Array<{name: string; value: any}>,
   overwrite = false
 ) {
   updates.forEach(({name, value}) => {
@@ -128,8 +132,6 @@ export function getDependenciesFromOptions(
     case TestingFramework.Node:
       dependencies.push('@types/node');
       break;
-    default:
-      throw new SchematicsException(`Testing framework not supported.`);
   }
 
   return dependencies;
@@ -153,6 +155,39 @@ export function addPackageJsonScripts(
   );
 
   tree.overwrite(fileLocation, getObjectAsJson(packageJson));
+
+  return tree;
+}
+
+export function updateAngularJsonScripts(
+  tree: Tree,
+  commands: string[] | string[][],
+  overwrite = true
+): Tree {
+  const angularJson = getAngularConfig(tree);
+
+  const e2eScript = [
+    {
+      name: 'e2e',
+      value: {
+        builder: '@puppeteer/ng-schematics:puppeteer',
+        options: {
+          commands,
+        },
+      },
+    },
+  ];
+
+  Object.keys(angularJson['projects']).forEach(project => {
+    updateJsonValues(
+      angularJson['projects'][project],
+      'architect',
+      e2eScript,
+      overwrite
+    );
+  });
+
+  tree.overwrite('./angular.json', getObjectAsJson(angularJson));
 
   return tree;
 }
