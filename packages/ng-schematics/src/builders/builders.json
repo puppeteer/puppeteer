@@ -1,0 +1,10 @@
+{
+  "$schema": "../../../../node_modules/@angular-devkit/architect/src/builders-schema.json",
+  "builders": {
+    "puppeteer": {
+      "implementation": "./puppeteer",
+      "schema": "./puppeteer/schema.json",
+      "description": "Run e2e test with Puppeteer"
+    }
+  }
+}
