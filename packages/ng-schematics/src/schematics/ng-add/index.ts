@@ -31,6 +31,7 @@ import {
   getPackageLatestNpmVersion,
   DependencyType,
   type NodePackage,
+  updateAngularJsonScripts,
 } from '../utils/packages.js';
 
 import {type SchematicsOptions} from '../utils/types.js';
@@ -45,6 +46,7 @@ export function ngAdd(options: SchematicsOptions): Rule {
       addPuppeteerFiles(options),
       addOtherFiles(options),
       updateScripts(options),
+      updateAngularConfig(options),
     ])(tree, context);
   };
 }
@@ -73,15 +75,14 @@ function addDependencies(options: SchematicsOptions): Rule {
   };
 }
 
-function updateScripts(options: SchematicsOptions): Rule {
+function updateScripts(_options: SchematicsOptions): Rule {
   return (tree: Tree, context: SchematicContext): Tree => {
     context.logger.debug('Updating "package.json" scripts');
-    const script = getScriptFromOptions(options);
 
     return addPackageJsonScripts(tree, [
       {
         name: 'e2e',
-        script,
+        script: 'ng e2e',
       },
     ]);
   };
@@ -89,7 +90,7 @@ function updateScripts(options: SchematicsOptions): Rule {
 
 function addPuppeteerFiles(options: SchematicsOptions): Rule {
   return (tree: Tree, context: SchematicContext) => {
-    context.logger.debug('Adding Puppeteer base files');
+    context.logger.debug('Adding Puppeteer base files.');
     const {projects} = getAngularConfig(tree);
 
     return addBaseFiles(tree, context, {
@@ -101,12 +102,21 @@ function addPuppeteerFiles(options: SchematicsOptions): Rule {
 
 function addOtherFiles(options: SchematicsOptions): Rule {
   return (tree: Tree, context: SchematicContext) => {
-    context.logger.debug('Adding Puppeteer additional files');
+    context.logger.debug('Adding Puppeteer additional files.');
     const {projects} = getAngularConfig(tree);
 
     return addFrameworkFiles(tree, context, {
       projects,
       options,
     });
+  };
+}
+
+function updateAngularConfig(options: SchematicsOptions): Rule {
+  return (tree: Tree, context: SchematicContext): Tree => {
+    context.logger.debug('Updating "angular.json".');
+    const script = getScriptFromOptions(options);
+
+    return updateAngularJsonScripts(tree, script);
   };
 }
