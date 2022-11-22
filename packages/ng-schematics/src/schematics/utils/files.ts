@@ -136,9 +136,7 @@ export function addFrameworkFiles(
   return addFiles(tree, context, options);
 }
 
-export function getScriptFromOptions(
-  options: SchematicsOptions
-): string[] | string[][] {
+export function getScriptFromOptions(options: SchematicsOptions): string[][] {
   switch (options.testingFramework) {
     case TestingFramework.Jasmine:
       return [[`jasmine`, '--config=./e2e/support/jasmine.json']];

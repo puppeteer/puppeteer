@@ -11,7 +11,7 @@
           "type": "string"
         }
       },
-      "description": "Commands to execute in the repo. <PATH_TO_BIN> replaced with resolution of `node_modules/bin`"
+      "description": "Commands to execute in the repo. Commands prefixed with `./node_modules/bin` (Exception: 'node')."
     }
   },
   "additionalProperties": true

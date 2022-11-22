@@ -161,7 +161,7 @@ export function addPackageJsonScripts(
 
 export function updateAngularJsonScripts(
   tree: Tree,
-  commands: string[] | string[][],
+  commands: string[][],
   overwrite = true
 ): Tree {
   const angularJson = getAngularConfig(tree);

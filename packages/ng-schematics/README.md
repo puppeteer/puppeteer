@@ -20,7 +20,7 @@ Currently, this schematic supports the following test frameworks:
 - **Mocha** [https://mochajs.org/]
 - **Node Test Runner** _(Experimental)_ [https://nodejs.org/api/test.html]
 
-With the schematics installed, yo you can run E2E tests:
+With the schematics installed you can run E2E tests:
 
 ```bash
 ng e2e
