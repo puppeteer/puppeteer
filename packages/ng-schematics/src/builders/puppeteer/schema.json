@@ -12,6 +12,10 @@
         }
       },
       "description": "Commands to execute in the repo. Commands prefixed with `./node_modules/bin` (Exception: 'node')."
+    },
+    "devServerTarget": {
+      "type": "string",
+      "description": "Commands to execute in the repo. Commands prefixed with `./node_modules/bin` (Exception: 'node')."
     }
   },
   "additionalProperties": true

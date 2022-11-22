@@ -22,6 +22,7 @@ export enum TestingFramework {
 }
 
 export interface SchematicsOptions {
+  isDefaultTester: boolean;
+  exportConfig: boolean;
   testingFramework: TestingFramework;
-  exportConfig?: boolean;
 }

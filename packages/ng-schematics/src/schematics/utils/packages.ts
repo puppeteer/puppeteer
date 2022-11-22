@@ -22,6 +22,7 @@ import {
   getJsonFileAsObject,
   getObjectAsJson,
 } from './json.js';
+import {getNgCommandName, getScriptFromOptions} from './files.js';
 export interface NodePackage {
   name: string;
   version: string;
@@ -161,24 +162,32 @@ export function addPackageJsonScripts(
 
 export function updateAngularJsonScripts(
   tree: Tree,
-  commands: string[][],
+  options: SchematicsOptions,
   overwrite = true
 ): Tree {
   const angularJson = getAngularConfig(tree);
-
-  const e2eScript = [
-    {
-      name: 'e2e',
-      value: {
-        builder: '@puppeteer/ng-schematics:puppeteer',
-        options: {
-          commands,
-        },
-      },
-    },
-  ];
+  const commands = getScriptFromOptions(options);
+  const name = getNgCommandName(options);
 
   Object.keys(angularJson['projects']).forEach(project => {
+    const e2eScript = [
+      {
+        name,
+        value: {
+          builder: '@puppeteer/ng-schematics:puppeteer',
+          options: {
+            commands,
+            devServerTarget: `${project}:serve`,
+          },
+          configurations: {
+            production: {
+              devServerTarget: `${project}:serve:production`,
+            },
+          },
+        },
+      },
+    ];
+
     updateJsonValues(
       angularJson['projects'][project],
       'architect',
