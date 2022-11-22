@@ -22,6 +22,11 @@ function getProjectFile(file: string): string {
   return `/${WORKSPACE_OPTIONS.newProjectRoot}/${APPLICATION_OPTIONS.name}/${file}`;
 }
 
+function getAngularJsonScripts(tree: UnitTestTree): Record<string, any> {
+  const angularJson = tree.readJson('angular.json') as any;
+  return angularJson['projects']?.[APPLICATION_OPTIONS.name]?.['architect'];
+}
+
 function getPackageJson(tree: UnitTestTree): {
   scripts: Record<string, string>;
   devDependencies: string[];
@@ -87,11 +92,14 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
 
   it('should create base files and update to "package.json"', async () => {
     const tree = await buildTestingTree();
-    const {devDependencies} = getPackageJson(tree);
+    const {devDependencies, scripts} = getPackageJson(tree);
+    const {e2e} = getAngularJsonScripts(tree);
 
     expect(tree.files).toContain(getProjectFile('e2e/tsconfig.json'));
     expect(tree.files).toContain(getProjectFile('e2e/tests/app.e2e.ts'));
     expect(devDependencies).toContain('puppeteer');
+    expect(scripts['e2e']).toBe('ng e2e');
+    expect(e2e.builder).toBe('@puppeteer/ng-schematics:puppeteer');
   });
 
   it('should create Puppeteer config', async () => {
@@ -114,55 +122,65 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     const tree = await buildTestingTree({
       testingFramework: 'jasmine',
     });
-    const {scripts, devDependencies} = getPackageJson(tree);
+    const {devDependencies} = getPackageJson(tree);
+    const {e2e} = getAngularJsonScripts(tree);
 
     expect(tree.files).toContain(getProjectFile('e2e/support/jasmine.json'));
     expect(tree.files).toContain(getProjectFile('e2e/helpers/babel.js'));
-    expect(scripts['e2e']).toBe('jasmine --config=./e2e/support/jasmine.json');
     expect(devDependencies).toContain('jasmine');
     expect(devDependencies).toContain('@babel/core');
     expect(devDependencies).toContain('@babel/register');
     expect(devDependencies).toContain('@babel/preset-typescript');
+    expect(e2e.options.commands).toEqual([
+      [`jasmine`, '--config=./e2e/support/jasmine.json'],
+    ]);
   });
 
   it('should create Jest files and update "package.json"', async () => {
     const tree = await buildTestingTree({
       testingFramework: 'jest',
     });
-    const {scripts, devDependencies} = getPackageJson(tree);
+    const {devDependencies} = getPackageJson(tree);
+    const {e2e} = getAngularJsonScripts(tree);
 
     expect(tree.files).toContain(getProjectFile('e2e/jest.config.js'));
-    expect(scripts['e2e']).toBe('jest -c e2e/jest.config.js');
     expect(devDependencies).toContain('jest');
     expect(devDependencies).toContain('@types/jest');
     expect(devDependencies).toContain('ts-jest');
+    expect(e2e.options.commands).toEqual([
+      [`jest`, '-c', 'e2e/jest.config.js'],
+    ]);
   });
 
-  it('should create Jasmine files and update "package.json"', async () => {
+  it('should create Mocha files and update "package.json"', async () => {
     const tree = await buildTestingTree({
       testingFramework: 'mocha',
     });
-    const {scripts, devDependencies} = getPackageJson(tree);
+    const {devDependencies} = getPackageJson(tree);
+    const {e2e} = getAngularJsonScripts(tree);
 
     expect(tree.files).toContain(getProjectFile('e2e/.mocharc.js'));
     expect(tree.files).toContain(getProjectFile('e2e/babel.js'));
-    expect(scripts['e2e']).toBe('mocha --config=./e2e/.mocharc.js');
     expect(devDependencies).toContain('mocha');
     expect(devDependencies).toContain('@types/mocha');
     expect(devDependencies).toContain('@babel/core');
     expect(devDependencies).toContain('@babel/register');
     expect(devDependencies).toContain('@babel/preset-typescript');
+    expect(e2e.options.commands).toEqual([
+      [`mocha`, '--config=./e2e/.mocharc.js'],
+    ]);
   });
 
   it('should create Node files"', async () => {
     const tree = await buildTestingTree({
       testingFramework: 'node',
     });
-    const {scripts} = getPackageJson(tree);
+    const {e2e} = getAngularJsonScripts(tree);
 
     expect(tree.files).toContain(getProjectFile('e2e/.gitignore'));
-    expect(scripts['e2e']).toBe(
-      'tsc -p e2e/tsconfig.json && node --test e2e/out-tsc/**.js'
-    );
+    expect(e2e.options.commands).toEqual([
+      [`tsc`, '-p', 'e2e/tsconfig.json'],
+      ['node', '--test', 'e2e/'],
+    ]);
   });
 });
