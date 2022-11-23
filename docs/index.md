@@ -73,7 +73,7 @@ module.exports = {
 After adding the configuration file, you will need to remove and reinstall
 `puppeteer` for it to take effect.
 
-See [Configuring Puppeteer](https://pptr.dev/guides/configuration) for more
+See the [configuration guide](https://pptr.dev/guides/configuration) for more
 information.
 
 #### `puppeteer-core`
@@ -209,12 +209,11 @@ run**.
 
 #### Using Docker
 
-See our [guide on using Docker](https://pptr.dev/guides/docker).
+See our [Docker guide](https://pptr.dev/guides/docker).
 
 #### Using Chrome Extensions
 
-See our
-[guide on using Chrome extensions](https://pptr.dev/guides/chrome-extensions).
+See our [Chrome extensions guide](https://pptr.dev/guides/chrome-extensions).
 
 ## Resources
 
