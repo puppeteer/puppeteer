@@ -15,7 +15,7 @@
     },
     "devServerTarget": {
       "type": "string",
-      "description": "Commands to execute in the repo. Commands prefixed with `./node_modules/bin` (Exception: 'node')."
+      "description": "Angular target that spawn the server."
     }
   },
   "additionalProperties": true
