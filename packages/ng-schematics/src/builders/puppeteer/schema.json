@@ -15,7 +15,7 @@
     },
     "devServerTarget": {
       "type": "string",
-      "description": "Angular target that spawn the server."
+      "description": "Angular target that spawns the server."
     }
   },
   "additionalProperties": true
