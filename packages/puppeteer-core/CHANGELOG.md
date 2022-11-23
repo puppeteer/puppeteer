@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.3.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.2.2...puppeteer-core-v19.3.0) (2022-11-23)
+
+
+### Features
+
+* **puppeteer-core:** Infer element type from complex selector ([#9253](https://github.com/puppeteer/puppeteer/issues/9253)) ([bef1061](https://github.com/puppeteer/puppeteer/commit/bef1061c064e5135d86a48fffd7278f3e7f4a29e))
+* **puppeteer-core:** update Chrome launcher flags ([#9239](https://github.com/puppeteer/puppeteer/issues/9239)) ([ae87bfc](https://github.com/puppeteer/puppeteer/commit/ae87bfc2b4361556e3660a1de2c6db348ce663ae))
+
+
+### Bug Fixes
+
+* remove boundary conditions for visibility ([#9249](https://github.com/puppeteer/puppeteer/issues/9249)) ([e003513](https://github.com/puppeteer/puppeteer/commit/e003513c0c049aad38e374a16dc96c3e54ab0de5))
+
 ## [19.2.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.2.1...puppeteer-core-v19.2.2) (2022-11-03)
 
 
