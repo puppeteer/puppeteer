@@ -331,7 +331,7 @@ In the event release-please fails, the following needs to be done:
 2. If the issue does not have a clear repro or you cannot repro, ask for the repro and set the `needs-feedback` label.
 3. Follow-up on the issues you previously asked for a feedback on (you should get a notification on GitHub when the user responds).
 4. If the user does not provide feedback, the issue will be closed by the stale bot eventually.
-5. If you are able to reproduce the issue, add the label "confirmed".
+5. If you are able to reproduce the issue, add the label `confirmed`.
 6. If the bug is on the Chromium side, create a corresponding crbug.com issue and label the Github issue with the "upstream" label and post a link to crbug.com in the comments.
 7. If the issue is not related to either Puppeteer or Chromium, close the issue.
 8. If the issue is about missing/incorrect documentation, label it as `documentation`.
