@@ -67,9 +67,100 @@ export type EvaluateFunc<T extends unknown[]> = (
 /**
  * @public
  */
-export type NodeFor<Selector extends string> =
-  Selector extends keyof HTMLElementTagNameMap
-    ? HTMLElementTagNameMap[Selector]
-    : Selector extends keyof SVGElementTagNameMap
-    ? SVGElementTagNameMap[Selector]
-    : Element;
+export type NodeFor<ComplexSelector extends string> =
+  TypeSelectorOfComplexSelector<ComplexSelector> extends infer TypeSelector
+    ? TypeSelector extends keyof HTMLElementTagNameMap
+      ? HTMLElementTagNameMap[TypeSelector]
+      : TypeSelector extends keyof SVGElementTagNameMap
+      ? SVGElementTagNameMap[TypeSelector]
+      : Element
+    : never;
+
+type TypeSelectorOfComplexSelector<ComplexSelector extends string> =
+  CompoundSelectorsOfComplexSelector<ComplexSelector> extends infer CompoundSelectors
+    ? CompoundSelectors extends NonEmptyReadonlyArray<string>
+      ? Last<CompoundSelectors> extends infer LastCompoundSelector
+        ? LastCompoundSelector extends string
+          ? TypeSelectorOfCompoundSelector<LastCompoundSelector>
+          : never
+        : never
+      : unknown
+    : never;
+
+type TypeSelectorOfCompoundSelector<CompoundSelector extends string> =
+  SplitWithDelemiters<
+    CompoundSelector,
+    BeginSubclassSelectorTokens
+  > extends infer CompoundSelectorTokens
+    ? CompoundSelectorTokens extends [infer TypeSelector, ...any[]]
+      ? TypeSelector extends ''
+        ? unknown
+        : TypeSelector
+      : never
+    : never;
+
+type Last<Arr extends NonEmptyReadonlyArray<unknown>> = Arr extends [
+  infer Head,
+  ...infer Tail
+]
+  ? Tail extends NonEmptyReadonlyArray<unknown>
+    ? Last<Tail>
+    : Head
+  : never;
+
+type NonEmptyReadonlyArray<T> = [T, ...(readonly T[])];
+
+type CompoundSelectorsOfComplexSelector<ComplexSelector extends string> =
+  SplitWithDelemiters<
+    ComplexSelector,
+    CombinatorTokens
+  > extends infer IntermediateTokens
+    ? IntermediateTokens extends readonly string[]
+      ? Drop<IntermediateTokens, ''>
+      : never
+    : never;
+
+type SplitWithDelemiters<
+  Input extends string,
+  Delemiters extends readonly string[]
+> = Delemiters extends [infer FirstDelemiter, ...infer RestDelemiters]
+  ? FirstDelemiter extends string
+    ? RestDelemiters extends readonly string[]
+      ? FlatmapSplitWithDelemiters<Split<Input, FirstDelemiter>, RestDelemiters>
+      : never
+    : never
+  : [Input];
+
+type BeginSubclassSelectorTokens = ['.', '#', '[', ':'];
+
+type CombinatorTokens = [' ', '>', '+', '~', '|', '|'];
+
+type Drop<Arr extends readonly unknown[], Remove> = Arr extends [
+  infer Head,
+  ...infer Tail
+]
+  ? Head extends Remove
+    ? Drop<Tail, Remove>
+    : [Head, ...Drop<Tail, Remove>]
+  : [];
+
+type FlatmapSplitWithDelemiters<
+  Inputs extends readonly string[],
+  Delemiters extends readonly string[]
+> = Inputs extends [infer FirstInput, ...infer RestInputs]
+  ? FirstInput extends string
+    ? RestInputs extends readonly string[]
+      ? [
+          ...SplitWithDelemiters<FirstInput, Delemiters>,
+          ...FlatmapSplitWithDelemiters<RestInputs, Delemiters>
+        ]
+      : never
+    : never
+  : [];
+
+type Split<
+  Input extends string,
+  Delemiter extends string
+> = Input extends `${infer Prefix}${Delemiter}${infer Suffix}`
+  ? [Prefix, ...Split<Suffix, Delemiter>]
+  : [Input];

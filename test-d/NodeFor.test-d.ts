@@ -1,0 +1,144 @@
+import type {NodeFor} from 'puppeteer';
+import {expectType, expectNotType} from 'tsd';
+
+declare const nodeFor: <Selector extends string>(
+  selector: Selector
+) => NodeFor<Selector>;
+
+{
+  {
+    expectType<HTMLAnchorElement>(nodeFor('a'));
+    expectNotType<Element>(nodeFor('a'));
+  }
+  {
+    expectType<HTMLAnchorElement>(nodeFor('a#ignored'));
+    expectNotType<Element>(nodeFor('a#ignored'));
+  }
+  {
+    expectType<HTMLAnchorElement>(nodeFor('a.ignored'));
+    expectNotType<Element>(nodeFor('a.ignored'));
+  }
+  {
+    expectType<HTMLAnchorElement>(nodeFor('a[ignored'));
+    expectNotType<Element>(nodeFor('a[ignored'));
+  }
+  {
+    expectType<HTMLAnchorElement>(nodeFor('a:ignored'));
+    expectNotType<Element>(nodeFor('a:ignored'));
+  }
+  {
+    expectType<HTMLAnchorElement>(nodeFor('ignored a'));
+    expectNotType<Element>(nodeFor('ignored a'));
+  }
+  {
+    expectType<HTMLAnchorElement>(nodeFor('ignored a#ignored'));
+    expectNotType<Element>(nodeFor('ignored a#ignored'));
+  }
+  {
+    expectType<HTMLAnchorElement>(nodeFor('ignored a.ignored'));
+    expectNotType<Element>(nodeFor('ignored a.ignored'));
+  }
+  {
+    expectType<HTMLAnchorElement>(nodeFor('ignored a[ignored'));
+    expectNotType<Element>(nodeFor('ignored a[ignored'));
+  }
+  {
+    expectType<HTMLAnchorElement>(nodeFor('ignored a:ignored'));
+    expectNotType<Element>(nodeFor('ignored a:ignored'));
+  }
+  {
+    expectType<HTMLAnchorElement>(nodeFor('ignored > a'));
+    expectNotType<Element>(nodeFor('ignored > a'));
+  }
+  {
+    expectType<HTMLAnchorElement>(nodeFor('ignored > a#ignored'));
+    expectNotType<Element>(nodeFor('ignored > a#ignored'));
+  }
+  {
+    expectType<HTMLAnchorElement>(nodeFor('ignored > a.ignored'));
+    expectNotType<Element>(nodeFor('ignored > a.ignored'));
+  }
+  {
+    expectType<HTMLAnchorElement>(nodeFor('ignored > a[ignored'));
+    expectNotType<Element>(nodeFor('ignored > a[ignored'));
+  }
+  {
+    expectType<HTMLAnchorElement>(nodeFor('ignored > a:ignored'));
+    expectNotType<Element>(nodeFor('ignored > a:ignored'));
+  }
+  {
+    expectType<HTMLAnchorElement>(nodeFor('ignored + a'));
+    expectNotType<Element>(nodeFor('ignored + a'));
+  }
+  {
+    expectType<HTMLAnchorElement>(nodeFor('ignored ~ a'));
+    expectNotType<Element>(nodeFor('ignored ~ a'));
+  }
+  {
+    expectType<HTMLAnchorElement>(nodeFor('ignored | a'));
+    expectNotType<Element>(nodeFor('ignored | a'));
+  }
+  {
+    expectType<HTMLAnchorElement>(
+      nodeFor('ignored ignored > ignored + ignored | a#ignore')
+    );
+    expectNotType<Element>(
+      nodeFor('ignored ignored > ignored + ignored | a#ignore')
+    );
+  }
+}
+{
+  {
+    expectType<Element>(nodeFor(''));
+  }
+  {
+    expectType<Element>(nodeFor('#ignored'));
+  }
+  {
+    expectType<Element>(nodeFor('.ignored'));
+  }
+  {
+    expectType<Element>(nodeFor('[ignored'));
+  }
+  {
+    expectType<Element>(nodeFor(':ignored'));
+  }
+  {
+    expectType<Element>(nodeFor('ignored #ignored'));
+  }
+  {
+    expectType<Element>(nodeFor('ignored .ignored'));
+  }
+  {
+    expectType<Element>(nodeFor('ignored [ignored'));
+  }
+  {
+    expectType<Element>(nodeFor('ignored :ignored'));
+  }
+  {
+    expectType<Element>(nodeFor('ignored > #ignored'));
+  }
+  {
+    expectType<Element>(nodeFor('ignored > .ignored'));
+  }
+  {
+    expectType<Element>(nodeFor('ignored > [ignored'));
+  }
+  {
+    expectType<Element>(nodeFor('ignored > :ignored'));
+  }
+  {
+    expectType<Element>(nodeFor('ignored + #ignored'));
+  }
+  {
+    expectType<Element>(nodeFor('ignored ~ #ignored'));
+  }
+  {
+    expectType<Element>(nodeFor('ignored | #ignored'));
+  }
+  {
+    expectType<Element>(
+      nodeFor('ignored ignored > ignored ~ ignored + ignored | #ignored')
+    );
+  }
+}
