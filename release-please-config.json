@@ -2,7 +2,6 @@
   "last-release-sha": "2e3719cd7fbab551e99625bfb6198183aa23e7f5",
   "packages": {
     "packages/puppeteer": {
-      "include-component-in-tag": false,
       "component": "puppeteer"
     },
     "packages/puppeteer-core": {
