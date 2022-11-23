@@ -327,7 +327,7 @@ In the event release-please fails, the following needs to be done:
 
 [Check incoming bug reports](https://github.com/puppeteer/puppeteer/issues) that do not have a `confirmed` or `needs-feedback` label:
 
-1. Make sure the issue labeled as either `bug` or `feature`.
+1. Make sure the issue is labeled as either `bug` or `feature`.
 2. If the issue does not have a clear repro or you cannot repro, ask for the repro and set the `needs-feedback` label.
 3. Follow-up on the issues you previously asked for a feedback on (you should get a notification on GitHub when the user responds).
 4. If the user does not provide feedback, the issue will be closed by the stale bot eventually.
