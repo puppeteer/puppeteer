@@ -26,6 +26,7 @@
     "node": ">=14.1.0"
   },
   "dependencies": {
+    "@angular-devkit/architect": "^0.1402.10",
     "@angular-devkit/core": "^14.2.6",
     "@angular-devkit/schematics": "^14.2.6"
   },
@@ -40,5 +41,6 @@
   "ng-add": {
     "save": "devDependencies"
   },
-  "schematics": "./lib/schematics/collection.json"
+  "schematics": "./lib/schematics/collection.json",
+  "builders": "./lib/builders/builders.json"
 }

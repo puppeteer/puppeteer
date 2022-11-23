@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": "tsconfig",
-    "lib": ["es2018", "dom"],
+    "lib": ["ES2018"],
     "module": "CommonJS",
     "noEmitOnError": true,
     "rootDir": "src/",
