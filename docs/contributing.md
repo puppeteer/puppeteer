@@ -339,4 +339,4 @@ In the event release-please fails, the following needs to be done:
 Issues with PDFs:
 
 1. If the issue reproduces using the regular print dialog and/or headful, [file a crbug.com against the `Blink>Layout` component](https://bugs.chromium.org/p/chromium/issues/entry?components=Blink%3ELayout).
-2. If the issue is specific to the headless headless, file an issue on crbug.com against the headless component.
+2. If the issue is specific to Headless mode, [file an issue on crbug.com against the `Internals>Headless` component](https://bugs.chromium.org/p/chromium/issues/entry?components=Internals%3EHeadless).
