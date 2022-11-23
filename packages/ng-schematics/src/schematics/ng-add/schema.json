@@ -4,11 +4,17 @@
   "title": "Puppeteer Install Schema",
   "type": "object",
   "properties": {
+    "isDefaultTester": {
+      "description": "",
+      "type": "boolean",
+      "default": true,
+      "x-prompt": "Use Puppeteer as default `ng e2e` command?"
+    },
     "exportConfig": {
       "description": "",
       "type": "boolean",
       "default": false,
-      "x-prompt": "Do you wish to export default Puppeteer config file?"
+      "x-prompt": "Export default Puppeteer config file?"
     },
     "testingFramework": {
       "description": "",

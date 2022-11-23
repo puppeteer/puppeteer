@@ -151,3 +151,10 @@ export function getScriptFromOptions(options: SchematicsOptions): string[][] {
       ];
   }
 }
+
+export function getNgCommandName(options: SchematicsOptions): string {
+  if (options.isDefaultTester) {
+    return 'e2e';
+  }
+  return 'puppeteer';
+}

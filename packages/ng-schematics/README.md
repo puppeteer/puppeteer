@@ -26,7 +26,7 @@ With the schematics installed you can run E2E tests:
 ng e2e
 ```
 
-> Note: Server must be running before executing the command.
+> Note: Command spawns it's own server on the same port `ng serve` does.
 
 ## Options
 
@@ -34,8 +34,13 @@ When adding schematics to your project you can to provide following options:
 
 | Option               | Description                                                                                                             | Value                                      | Required |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | -------- |
+| `--isDefaultTester`  | When true, replaces default `ng e2e` command.                                                                           | `boolean`                                  | `true`   |
 | `--exportConfig`     | When true, creates an empty [Puppeteer configuration](https://pptr.dev/guides/configuration) file. (`.puppeteerrc.cjs`) | `boolean`                                  | `true`   |
 | `--testingFramework` | The testing framework to install along side Puppeteer.                                                                  | `"jasmine"`, `"jest"`, `"mocha"`, `"node"` | `true`   |
+
+## Contributing
+
+Check out our [contributing guide](https://pptr.dev/contributing) to get an overview of what you need to develop in the Puppeteer repo.
 
 ### Unit Testing
 

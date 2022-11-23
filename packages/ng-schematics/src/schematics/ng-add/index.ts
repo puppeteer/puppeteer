@@ -22,7 +22,7 @@ import {of} from 'rxjs';
 import {
   addBaseFiles,
   addFrameworkFiles,
-  getScriptFromOptions,
+  getNgCommandName,
 } from '../utils/files.js';
 import {
   addPackageJsonDependencies,
@@ -75,16 +75,23 @@ function addDependencies(options: SchematicsOptions): Rule {
   };
 }
 
-function updateScripts(_options: SchematicsOptions): Rule {
+function updateScripts(options: SchematicsOptions): Rule {
   return (tree: Tree, context: SchematicContext): Tree => {
     context.logger.debug('Updating "package.json" scripts');
+    const angularJson = getAngularConfig(tree);
+    const projects = Object.keys(angularJson['projects']);
 
-    return addPackageJsonScripts(tree, [
-      {
-        name: 'e2e',
-        script: 'ng e2e',
-      },
-    ]);
+    if (projects.length === 1) {
+      const name = getNgCommandName(options);
+      const prefix = options.isDefaultTester ? '' : `run ${projects[0]}:`;
+      return addPackageJsonScripts(tree, [
+        {
+          name,
+          script: `ng ${prefix}${name}`,
+        },
+      ]);
+    }
+    return tree;
   };
 }
 
@@ -115,8 +122,7 @@ function addOtherFiles(options: SchematicsOptions): Rule {
 function updateAngularConfig(options: SchematicsOptions): Rule {
   return (tree: Tree, context: SchematicContext): Tree => {
     context.logger.debug('Updating "angular.json".');
-    const script = getScriptFromOptions(options);
 
-    return updateAngularJsonScripts(tree, script);
+    return updateAngularJsonScripts(tree, options);
   };
 }
