@@ -2116,5 +2116,11 @@
     "platforms": ["linux"],
     "parameters": ["chrome"],
     "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should survive cross-process navigation",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "headful"],
+    "expectations": ["PASS", "FAIL"]
   }
 ]
