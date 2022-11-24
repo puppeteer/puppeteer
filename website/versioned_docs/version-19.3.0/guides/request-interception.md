@@ -175,7 +175,7 @@ Intercept Mode:
 - In the event of a tie, `abort` > `respond` > `continue`.
 
 For standardization, when specifying a Cooperative Intercept Mode priority use
-`0` or `DEFAULT_INTERCEPT_RESOLUTION_PRIORITY` (exported from `HTTPRequest`)
+`0` or `DEFAULT_INTERCEPT_RESOLUTION_PRIORITY` (`import {DEFAULT_INTERCEPT_RESOLUTION_PRIORITY} from 'puppeteer'`)
 unless you have a clear reason to use a higher priority. This gracefully prefers
 `respond` over `continue` and `abort` over `respond` and allows other handlers
 to work cooperatively. If you do intentionally want to use a different priority,
