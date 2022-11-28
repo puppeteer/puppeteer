@@ -122,7 +122,7 @@
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "dependencies": {
-    "cosmiconfig": "7.0.1",
+    "cosmiconfig": "8.0.0",
     "devtools-protocol": "0.0.1056733",
     "https-proxy-agent": "5.0.1",
     "progress": "2.0.3",
