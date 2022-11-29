@@ -17,6 +17,7 @@
 import mitt, {
   Emitter,
   EventType,
+  EventHandlerMap,
   Handler,
 } from '../../third_party/mitt/index.js';
 
@@ -57,8 +58,8 @@ export interface CommonEventEmitter {
  * @public
  */
 export class EventEmitter implements CommonEventEmitter {
-  private emitter: Emitter;
-  private eventsMap = new Map<EventType, Handler[]>();
+  private emitter: Emitter<Record<string | symbol, any>>;
+  private eventsMap: EventHandlerMap<Record<string | symbol, any>> = new Map();
 
   /**
    * @internal
@@ -73,7 +74,7 @@ export class EventEmitter implements CommonEventEmitter {
    * @param handler - the function to be called when the event occurs.
    * @returns `this` to enable you to chain method calls.
    */
-  on(event: EventType, handler: Handler): EventEmitter {
+  on(event: EventType, handler: Handler<any>): EventEmitter {
     this.emitter.on(event, handler);
     return this;
   }
@@ -84,7 +85,7 @@ export class EventEmitter implements CommonEventEmitter {
    * @param handler - the function that should be removed.
    * @returns `this` to enable you to chain method calls.
    */
-  off(event: EventType, handler: Handler): EventEmitter {
+  off(event: EventType, handler: Handler<any>): EventEmitter {
     this.emitter.off(event, handler);
     return this;
   }
@@ -93,7 +94,7 @@ export class EventEmitter implements CommonEventEmitter {
    * Remove an event listener.
    * @deprecated please use {@link EventEmitter.off} instead.
    */
-  removeListener(event: EventType, handler: Handler): EventEmitter {
+  removeListener(event: EventType, handler: Handler<any>): EventEmitter {
     this.off(event, handler);
     return this;
   }
@@ -102,7 +103,7 @@ export class EventEmitter implements CommonEventEmitter {
    * Add an event listener.
    * @deprecated please use {@link EventEmitter.on} instead.
    */
-  addListener(event: EventType, handler: Handler): EventEmitter {
+  addListener(event: EventType, handler: Handler<any>): EventEmitter {
     this.on(event, handler);
     return this;
   }
@@ -125,8 +126,8 @@ export class EventEmitter implements CommonEventEmitter {
    * @param handler - the handler function to run when the event occurs
    * @returns `this` to enable you to chain method calls.
    */
-  once(event: EventType, handler: Handler): EventEmitter {
-    const onceHandler: Handler = eventData => {
+  once(event: EventType, handler: Handler<any>): EventEmitter {
+    const onceHandler: Handler<any> = eventData => {
       handler(eventData);
       this.off(event, onceHandler);
     };

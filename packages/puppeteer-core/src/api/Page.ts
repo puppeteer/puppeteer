@@ -425,7 +425,7 @@ export interface PageEventObject {
  * @public
  */
 export class Page extends EventEmitter {
-  #handlerMap = new WeakMap<Handler, Handler>();
+  #handlerMap = new WeakMap<Handler<any>, Handler<any>>();
 
   /**
    * @internal

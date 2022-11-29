@@ -64,7 +64,10 @@ describe('Target.createCDPSession', function () {
     client.on('Network.requestWillBeSent', event => {
       return events.push(event);
     });
-    await page.goto(server.EMPTY_PAGE);
+    await Promise.all([
+      waitEvent(client, 'Network.requestWillBeSent'),
+      page.goto(server.EMPTY_PAGE),
+    ]);
     expect(events.length).toBe(1);
   });
   it('should enable and disable domains independently', async () => {
