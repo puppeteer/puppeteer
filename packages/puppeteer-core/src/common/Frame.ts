@@ -16,7 +16,7 @@
 
 import {Protocol} from 'devtools-protocol';
 import {ElementHandle} from '../api/ElementHandle.js';
-import {Page} from '../api/Page.js';
+import {Page, WaitTimeoutOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {CDPSession} from './Connection.js';
@@ -35,6 +35,10 @@ import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {getQueryHandlerAndSelector} from './QueryHandler.js';
 import {EvaluateFunc, EvaluateFuncWith, HandleFor, NodeFor} from './types.js';
 import {importFS} from './util.js';
+import {
+  DeviceRequestPrompt,
+  DeviceRequestPromptManager,
+} from './DeviceRequestPrompt.js';
 
 /**
  * @public
@@ -169,6 +173,7 @@ export class Frame {
   #url = '';
   #detached = false;
   #client!: CDPSession;
+  #deviceRequestPromptManager: DeviceRequestPromptManager;
 
   /**
    * @internal
@@ -217,6 +222,10 @@ export class Frame {
     this._id = frameId;
     this._parentId = parentFrameId;
     this.#detached = false;
+    this.#deviceRequestPromptManager = new DeviceRequestPromptManager(
+      client,
+      this._frameManager.timeoutSettings
+    );
 
     this._loaderId = '';
 
@@ -1081,6 +1090,35 @@ export class Frame {
    */
   async title(): Promise<string> {
     return this.worlds[PUPPETEER_WORLD].title();
+  }
+
+  /**
+   * This method is typically coupled with an action that triggers a device
+   * request from an api such as WebBluetooth.
+   *
+   * :::caution
+   *
+   * This must be called before the device request is made. It will not return a
+   * currently active device prompt.
+   *
+   * :::
+   *
+   * @example
+   *
+   * ```ts
+   * const [deviceRequest] = Promise.all([
+   *   frame.waitForDevicePrompt(),
+   *   frame.click('#connect-bluetooth'),
+   * ]);
+   * await devicePrompt.select(
+   *   await devicePrompt.waitForDevice(({name}) => name.includes('My Device'))
+   * );
+   * ```
+   */
+  waitForDevicePrompt(
+    options: WaitTimeoutOptions = {}
+  ): Promise<DeviceRequestPrompt> {
+    return this.#deviceRequestPromptManager.waitForDevicePrompt(options);
   }
 
   /**

@@ -43,10 +43,7 @@ import {
 } from './Connection.js';
 import {ConsoleMessage, ConsoleMessageType} from './ConsoleMessage.js';
 import {Coverage} from './Coverage.js';
-import {
-  DeviceRequestPrompt,
-  DeviceRequestPromptManager,
-} from './DeviceRequestPrompt.js';
+import {DeviceRequestPrompt} from './DeviceRequestPrompt.js';
 import {Dialog} from './Dialog.js';
 import {ElementHandle} from '../api/ElementHandle.js';
 import {EmulationManager} from './EmulationManager.js';
@@ -151,7 +148,6 @@ export class CDPPage extends Page {
   #screenshotTaskQueue: TaskQueue;
   #workers = new Map<string, WebWorker>();
   #fileChooserPromises = new Set<DeferredPromise<FileChooser>>();
-  #deviceRequestPromptManager: DeviceRequestPromptManager;
 
   #disconnectPromise?: Promise<Error>;
   #userDragInterceptionEnabled = false;
@@ -183,10 +179,6 @@ export class CDPPage extends Page {
     this.#coverage = new Coverage(client);
     this.#screenshotTaskQueue = screenshotTaskQueue;
     this.#viewport = null;
-    this.#deviceRequestPromptManager = new DeviceRequestPromptManager(
-      client,
-      this.#timeoutSettings
-    );
 
     this.#target
       ._targetManager()
@@ -1684,7 +1676,7 @@ export class CDPPage extends Page {
   override waitForDevicePrompt(
     options: WaitTimeoutOptions = {}
   ): Promise<DeviceRequestPrompt> {
-    return this.#deviceRequestPromptManager.waitForDevicePrompt(options);
+    return this.mainFrame().waitForDevicePrompt(options);
   }
 }
 
