@@ -1106,7 +1106,7 @@ export class Frame {
    * @example
    *
    * ```ts
-   * const [deviceRequest] = Promise.all([
+   * const [devicePrompt] = Promise.all([
    *   frame.waitForDevicePrompt(),
    *   frame.click('#connect-bluetooth'),
    * ]);
