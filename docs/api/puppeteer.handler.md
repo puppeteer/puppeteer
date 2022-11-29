@@ -7,5 +7,5 @@ sidebar_label: Handler
 #### Signature:
 
 ```typescript
-declare type Handler<T = any> = (event?: T) => void;
+declare type Handler<T = unknown> = (event: T) => void;
 ```

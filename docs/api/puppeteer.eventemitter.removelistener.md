@@ -14,16 +14,16 @@ Remove an event listener.
 
 ```typescript
 class EventEmitter {
-  removeListener(event: EventType, handler: Handler): EventEmitter;
+  removeListener(event: EventType, handler: Handler<any>): EventEmitter;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                  | Description |
-| --------- | ------------------------------------- | ----------- |
-| event     | [EventType](./puppeteer.eventtype.md) |             |
-| handler   | [Handler](./puppeteer.handler.md)     |             |
+| Parameter | Type                                         | Description |
+| --------- | -------------------------------------------- | ----------- |
+| event     | [EventType](./puppeteer.eventtype.md)        |             |
+| handler   | [Handler](./puppeteer.handler.md)&lt;any&gt; |             |
 
 **Returns:**
 
