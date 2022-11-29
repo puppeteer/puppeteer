@@ -2,7 +2,6 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import {Browser} from '../api/Browser.js';
-import {Browser as BiDiBrowser} from '../common/bidi/Browser.js';
 import {CDPBrowser} from '../common/Browser.js';
 import {assert} from '../util/assert.js';
 import {BrowserFetcher} from './BrowserFetcher.js';
@@ -133,7 +132,8 @@ export class FirefoxLauncher extends ProductLauncher {
           slowMo,
           preferredRevision: this.puppeteer.browserRevision,
         });
-        browser = await BiDiBrowser.create({
+        const BiDi = await import('../common/bidi/bidi.js');
+        browser = await BiDi.Browser.create({
           connection,
           closeCallback: runner.close.bind(runner),
           process: runner.proc,
