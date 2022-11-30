@@ -134,6 +134,7 @@
       "files": [
         "src/**",
         "compat/**",
+        "third_party/**",
         "**/tsconfig.*.json"
       ],
       "output": [
