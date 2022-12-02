@@ -14,5 +14,6 @@
     "target": "ES6"
   },
   "include": ["src/**/*"],
-  "exclude": ["src/**/files/**/*"]
+  "exclude": ["src/**/files/**/*"],
+  "references": [{"path": "./tsconfig.spec.json"}]
 }

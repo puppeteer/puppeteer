@@ -20,7 +20,8 @@ generated/
 /.cache/
 
 # IDE Artifacts
-.vscode
+.vscode/*
+!.vscode/extensions.json
 .devcontainer
 
 # Misc

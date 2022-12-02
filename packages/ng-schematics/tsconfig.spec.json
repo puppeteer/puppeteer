@@ -5,6 +5,6 @@
     "outDir": "test/build/",
     "types": ["node", "mocha"]
   },
-  "include": ["test/**/*"],
+  "include": ["test/src/**/*"],
   "exclude": ["test/build/**/*"]
 }
