@@ -132,6 +132,7 @@ jobs:
           - chrome-headless
           - chrome-headful
           - chrome-new-headless
+          - chrome-bidi
     steps:
       - name: Check out repository
         uses: actions/checkout@v3.0.2

@@ -33,7 +33,9 @@ export class Browser extends BrowserBase {
    */
   static async create(opts: Options): Promise<Browser> {
     // TODO: await until the connection is established.
-    (await opts.connection.send('session.new', {})) as {sessionId: string};
+    try {
+      (await opts.connection.send('session.new', {})) as {sessionId: string};
+    } catch {}
     return new Browser(opts);
   }
 
@@ -52,8 +54,8 @@ export class Browser extends BrowserBase {
   }
 
   override async close(): Promise<void> {
-    await this.#closeCallback?.call(null);
     this.#connection.dispose();
+    await this.#closeCallback?.call(null);
   }
 
   override isConnected(): boolean {
