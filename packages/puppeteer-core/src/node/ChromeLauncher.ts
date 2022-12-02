@@ -204,7 +204,7 @@ export class ChromeLauncher extends ProductLauncher {
     }
     if (headless) {
       chromeArguments.push(
-        headless === 'chrome' ? '--headless=chrome' : '--headless',
+        headless === 'new' ? '--headless=new' : '--headless',
         '--hide-scrollbars',
         '--mute-audio'
       );
