@@ -104,11 +104,16 @@ export class Keyboard {
    * See {@link KeyInput} for a list of all key names.
    *
    * @param options - An object of options. Accepts text which, if specified,
-   * generates an input event with this text.
+   * generates an input event with this text. Accepts commands which, if specified,
+   * is the commands of keyboard shortcuts,
+   * see {@link https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h | Chromium Source Code} for valid command names.
    */
   async down(
     key: KeyInput,
-    options: {text?: string} = {text: undefined}
+    options: {text?: string; commands?: string[]} = {
+      text: undefined,
+      commands: [],
+    }
   ): Promise<void> {
     const description = this.#keyDescriptionForString(key);
 
@@ -128,6 +133,7 @@ export class Keyboard {
       autoRepeat,
       location: description.location,
       isKeypad: description.location === 3,
+      commands: options.commands,
     });
   }
 
@@ -304,11 +310,13 @@ export class Keyboard {
    * @param options - An object of options. Accepts text which, if specified,
    * generates an input event with this text. Accepts delay which,
    * if specified, is the time to wait between `keydown` and `keyup` in milliseconds.
-   * Defaults to 0.
+   * Defaults to 0. Accepts commands which, if specified,
+   * is the commands of keyboard shortcuts,
+   * see {@link https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h | Chromium Source Code} for valid command names.
    */
   async press(
     key: KeyInput,
-    options: {delay?: number; text?: string} = {}
+    options: {delay?: number; text?: string; commands?: string[]} = {}
   ): Promise<void> {
     const {delay = null} = options;
     await this.down(key, options);
