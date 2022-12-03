@@ -628,8 +628,6 @@ export class Page extends EventEmitter {
    * Once request interception is enabled, every request will stall unless it's
    * continued, responded or aborted; or completed using the browser cache.
    *
-   * Enabling request interception disables page caching.
-   *
    * See the
    * {@link https://pptr.dev/next/guides/request-interception|Request interception guide}
    * for more details.
