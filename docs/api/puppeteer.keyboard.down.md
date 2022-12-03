@@ -14,6 +14,7 @@ class Keyboard {
     key: KeyInput,
     options?: {
       text?: string;
+      commands?: string[];
     }
   ): Promise<void>;
 }
@@ -21,10 +22,10 @@ class Keyboard {
 
 ## Parameters
 
-| Parameter | Type                                | Description                                                                                                                |
-| --------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| key       | [KeyInput](./puppeteer.keyinput.md) | Name of key to press, such as <code>ArrowLeft</code>. See [KeyInput](./puppeteer.keyinput.md) for a list of all key names. |
-| options   | { text?: string; }                  | <i>(Optional)</i> An object of options. Accepts text which, if specified, generates an input event with this text.         |
+| Parameter | Type                                      | Description                                                                                                                                                                                                                                                                                                                                                                           |
+| --------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| key       | [KeyInput](./puppeteer.keyinput.md)       | Name of key to press, such as <code>ArrowLeft</code>. See [KeyInput](./puppeteer.keyinput.md) for a list of all key names.                                                                                                                                                                                                                                                            |
+| options   | { text?: string; commands?: string\[\]; } | <i>(Optional)</i> An object of options. Accepts text which, if specified, generates an input event with this text. Accepts commands which, if specified, is the commands of keyboard shortcuts, see [Chromium Source Code](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h) for valid command names. |
 
 **Returns:**
 

@@ -570,6 +570,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[keyboard.spec] Keyboard should trigger commands of keyboard shortcuts",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[keyboard.spec] Keyboard should report shiftKey",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
