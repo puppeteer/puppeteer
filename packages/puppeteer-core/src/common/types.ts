@@ -135,32 +135,36 @@ type BeginSubclassSelectorTokens = ['.', '#', '[', ':'];
 
 type CombinatorTokens = [' ', '>', '+', '~', '|', '|'];
 
-type Drop<Arr extends readonly unknown[], Remove> = Arr extends [
-  infer Head,
-  ...infer Tail
-]
+type Drop<
+  Arr extends readonly unknown[],
+  Remove,
+  Acc extends unknown[] = []
+> = Arr extends [infer Head, ...infer Tail]
   ? Head extends Remove
     ? Drop<Tail, Remove>
-    : [Head, ...Drop<Tail, Remove>]
-  : [];
+    : Drop<Tail, Remove, [...Acc, Head]>
+  : Acc;
 
 type FlatmapSplitWithDelemiters<
   Inputs extends readonly string[],
-  Delemiters extends readonly string[]
+  Delemiters extends readonly string[],
+  Acc extends string[] = []
 > = Inputs extends [infer FirstInput, ...infer RestInputs]
   ? FirstInput extends string
     ? RestInputs extends readonly string[]
-      ? [
-          ...SplitWithDelemiters<FirstInput, Delemiters>,
-          ...FlatmapSplitWithDelemiters<RestInputs, Delemiters>
-        ]
-      : never
-    : never
-  : [];
+      ? FlatmapSplitWithDelemiters<
+          RestInputs,
+          Delemiters,
+          [...Acc, ...SplitWithDelemiters<FirstInput, Delemiters>]
+        >
+      : Acc
+    : Acc
+  : Acc;
 
 type Split<
   Input extends string,
-  Delemiter extends string
+  Delemiter extends string,
+  Acc extends string[] = []
 > = Input extends `${infer Prefix}${Delemiter}${infer Suffix}`
-  ? [Prefix, ...Split<Suffix, Delemiter>]
-  : [Input];
+  ? Split<Suffix, Delemiter, [...Acc, Prefix]>
+  : [...Acc, Input];

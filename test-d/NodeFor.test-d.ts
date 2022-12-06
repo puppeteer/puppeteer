@@ -7,6 +7,18 @@ declare const nodeFor: <Selector extends string>(
 
 {
   {
+    expectType<HTMLTableRowElement>(
+      nodeFor(
+        '[data-testid="my-component"] div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div tbody tr'
+      )
+    );
+    expectNotType<Element>(
+      nodeFor(
+        '[data-testid="my-component"] div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div div tbody tr'
+      )
+    );
+  }
+  {
     expectType<HTMLAnchorElement>(nodeFor('a'));
     expectNotType<Element>(nodeFor('a'));
   }
