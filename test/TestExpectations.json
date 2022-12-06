@@ -2124,13 +2124,19 @@
     "expectations": ["PASS", "FAIL"]
   },
   {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should survive cross-process navigation",
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should survive cross-process navigation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["PASS", "FAIL"]
   },
   {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should survive cross-process navigation",
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work when resolved right before execution context disposal",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should survive cross-process navigation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["PASS", "FAIL"]
