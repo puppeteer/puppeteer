@@ -48,6 +48,7 @@ describe('waittask specs', function () {
       await page.waitForFunction(() => {
         if (!(globalThis as any).__RELOADED) {
           window.location.reload();
+          return false;
         }
         return true;
       });
