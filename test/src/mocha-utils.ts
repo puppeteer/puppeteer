@@ -65,8 +65,11 @@ const product =
 
 const alternativeInstall = process.env['PUPPETEER_ALT_INSTALL'] || false;
 
-const headless = (process.env['HEADLESS'] || 'true').trim().toLowerCase();
-const isHeadless = headless === 'true' || headless === 'chrome';
+const headless = (process.env['HEADLESS'] || 'true').trim().toLowerCase() as
+  | 'true'
+  | 'false'
+  | 'new';
+const isHeadless = headless === 'true' || headless === 'new';
 const isFirefox = product === 'firefox';
 const isChrome = product === 'chrome';
 const protocol = process.env['PUPPETEER_PROTOCOL'] || 'cdp';
@@ -88,7 +91,7 @@ const defaultBrowserOptions = Object.assign(
   {
     handleSIGINT: true,
     executablePath: process.env['BINARY'],
-    headless: headless === 'chrome' ? ('chrome' as const) : isHeadless,
+    headless: headless === 'new' ? ('new' as const) : isHeadless,
     dumpio: !!process.env['DUMPIO'],
     protocol: protocol as 'cdp' | 'webDriverBiDi',
   },
@@ -143,7 +146,7 @@ interface PuppeteerTestState {
   isFirefox: boolean;
   isChrome: boolean;
   isHeadless: boolean;
-  headless: string;
+  headless: 'true' | 'false' | 'new';
   puppeteerPath: string;
 }
 const state: Partial<PuppeteerTestState> = {};
@@ -172,8 +175,8 @@ if (
   }
   -> mode: ${
     isHeadless
-      ? headless === 'chrome'
-        ? '--headless=chrome'
+      ? headless === 'new'
+        ? '--headless=new'
         : '--headless'
       : 'headful'
   }`

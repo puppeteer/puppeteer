@@ -180,7 +180,7 @@ async function main() {
           fail = true;
           recommendations.push(...recommendation);
         } else {
-          console.log('Test run matches expecations');
+          console.log('Test run matches expectations');
           continue;
         }
       } catch (err) {
@@ -197,7 +197,7 @@ async function main() {
     });
     if (toAdd.length) {
       console.log(
-        'Add the following to TestExpecations.json to ignore the error:'
+        'Add the following to TestExpectations.json to ignore the error:'
       );
       prettyPrintJSON(
         toAdd.map(item => {
@@ -210,7 +210,7 @@ async function main() {
     });
     if (toRemove.length) {
       console.log(
-        'Remove the following from the TestExpecations.json to ignore the error:'
+        'Remove the following from the TestExpectations.json to ignore the error:'
       );
       prettyPrintJSON(
         toRemove.map(item => {

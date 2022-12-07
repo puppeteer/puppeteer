@@ -2040,18 +2040,6 @@
     "expectations": ["PASS", "FAIL"]
   },
   {
-    "testIdPattern": "[navigation.spec] navigation Page.goto should fail when navigating to bad SSL",
-    "platforms": ["darwin"],
-    "parameters": ["chrome", "headful"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Page.goto should fail when navigating to bad SSL after redirects",
-    "platforms": ["darwin"],
-    "parameters": ["chrome", "headful"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[click.spec] Page.click should click on checkbox input and toggle",
     "platforms": ["linux"],
     "parameters": ["firefox", "headful"],

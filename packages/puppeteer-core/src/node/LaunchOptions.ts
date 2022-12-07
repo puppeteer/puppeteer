@@ -27,7 +27,7 @@ export interface BrowserLaunchArgumentOptions {
    * Whether to run the browser in headless mode.
    * @defaultValue true
    */
-  headless?: boolean | 'chrome';
+  headless?: boolean | 'new';
   /**
    * Path to a user data directory.
    * {@link https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/user_data_dir.md | see the Chromium docs}

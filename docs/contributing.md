@@ -244,9 +244,7 @@ ensure this, the main `test` command runs coverage during testing.
 
 ## Debugging Puppeteer
 
-See
-[Debugging Tips](https://github.com/puppeteer/puppeteer/blob/main/README.md#debugging-tips)
-in the readme.
+See [Debugging Tips](https://pptr.dev/guides/debugging).
 
 # For Project Maintainers
 
@@ -262,6 +260,8 @@ The following steps are needed to update the Chromium version.
    number.
 3. Update `versions.js` with the new Chromium-to-Puppeteer version mapping and
    update `lastMaintainedChromiumVersion` with the latest stable Chrome version.
+   You can find the corresponding version by going to [omahaproxy.appspot.com](https://omahaproxy.appspot.com/) then
+   searching in `Find Releases` for `r<revision>`.
 4. Run `npm run check`. If it fails, update
    `packages/puppeteer-core/package.json` and `packages/puppeteer/package.json`
    with the expected `devtools-protocol` version.
@@ -272,7 +272,7 @@ The following steps are needed to update the Chromium version.
    change) or work around the changes in Puppeteer (if it’s not desirable to
    change Puppeteer’s observable behavior).
 7. Commit and push your changes and open a pull request. The commit message must
-   contain the version in `Chromium <version> (<revision>)` format to ensure
+   contain the version in `Chromium <version> (r<revision>)` format to ensure
    that [pptr.dev](https://pptr.dev/) can parse it correctly, e.g.
    `'feat(chromium): roll to Chromium 90.0.4427.0 (r856583)'`.
 

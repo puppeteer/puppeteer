@@ -51,7 +51,7 @@
       "HEADLESS": "false"
     },
     "chrome-headless": {
-      "HEADLESS": "chrome"
+      "HEADLESS": "new"
     },
     "webDriverBiDi": {
       "PUPPETEER_PROTOCOL": "webDriverBiDi"
