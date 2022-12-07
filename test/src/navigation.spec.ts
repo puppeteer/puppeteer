@@ -163,7 +163,7 @@ describe('navigation', function () {
        * locally.
        * In chrome-headless, the message is also different.
        */
-      return os.platform() === 'darwin' && headless !== 'chrome'
+      return os.platform() === 'darwin' && headless !== 'new'
         ? 'net::ERR_CERT_INVALID'
         : 'net::ERR_CERT_AUTHORITY_INVALID';
     }
