@@ -21,7 +21,6 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import os from 'os';
 import {ServerResponse} from 'http';
 import {HTTPRequest} from 'puppeteer-core/internal/common/HTTPRequest.js';
 import {TimeoutError} from 'puppeteer';
@@ -153,20 +152,8 @@ describe('navigation', function () {
       }
     });
 
-    function getExpectedSSLCertMessage(): string {
-      const {headless} = getTestState();
-      /**
-       * If you are running this on pre-Catalina versions of macOS this will fail
-       * locally. Mac OSX Catalina outputs a different message than other
-       * platforms. See https://support.google.com/chrome/thread/18125056?hl=en
-       * for details. If you're running pre-Catalina Mac OSX this test will fail
-       * locally.
-       * In chrome-headless, the message is also different.
-       */
-      return os.platform() === 'darwin' && headless !== 'new'
-        ? 'net::ERR_CERT_INVALID'
-        : 'net::ERR_CERT_AUTHORITY_INVALID';
-    }
+    const EXPECTED_SSL_CERT_MESSAGE_REGEX =
+      /net::ERR_CERT_INVALID|net::ERR_CERT_AUTHORITY_INVALID/;
 
     it('should fail when navigating to bad SSL', async () => {
       const {page, httpsServer, isChrome} = getTestState();
@@ -189,7 +176,7 @@ describe('navigation', function () {
         return (error = error_);
       });
       if (isChrome) {
-        expect(error.message).toContain(getExpectedSSLCertMessage());
+        expect(error.message).toMatch(EXPECTED_SSL_CERT_MESSAGE_REGEX);
       } else {
         expect(error.message).toContain('SSL_ERROR_UNKNOWN');
       }
@@ -208,7 +195,7 @@ describe('navigation', function () {
         return (error = error_);
       });
       if (isChrome) {
-        expect(error.message).toContain(getExpectedSSLCertMessage());
+        expect(error.message).toContain(EXPECTED_SSL_CERT_MESSAGE_REGEX);
       } else {
         expect(error.message).toContain('SSL_ERROR_UNKNOWN');
       }
