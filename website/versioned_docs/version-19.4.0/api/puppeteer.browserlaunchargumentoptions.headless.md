@@ -10,7 +10,7 @@ Whether to run the browser in headless mode.
 
 ```typescript
 interface BrowserLaunchArgumentOptions {
-  headless?: boolean | 'chrome';
+  headless?: boolean | 'new';
 }
 ```
 

@@ -8,8 +8,6 @@ Activating request interception enables [HTTPRequest.abort()](./puppeteer.httpre
 
 Once request interception is enabled, every request will stall unless it's continued, responded or aborted; or completed using the browser cache.
 
-Enabling request interception disables page caching.
-
 See the [Request interception guide](https://pptr.dev/next/guides/request-interception) for more details.
 
 #### Signature:

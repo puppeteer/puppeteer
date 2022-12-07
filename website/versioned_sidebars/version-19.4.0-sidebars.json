@@ -13,11 +13,12 @@
       },
       "collapsed": false,
       "items": [
-        "guides/chrome-extensions",
         "guides/configuration",
-        "guides/debugging",
+        "guides/query-selectors",
         "guides/docker",
-        "guides/request-interception"
+        "guides/request-interception",
+        "guides/chrome-extensions",
+        "guides/debugging"
       ]
     },
     "chromium-support",
