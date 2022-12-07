@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.4.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.3.0...puppeteer-core-v19.4.0) (2022-12-07)
+
+
+### Features
+
+* ability to send headers via ws connection to browser in node.js environment ([#9314](https://github.com/puppeteer/puppeteer/issues/9314)) ([937fffa](https://github.com/puppeteer/puppeteer/commit/937fffaedc340ea12d5f6636d3ba6598cb22e397)), closes [#7218](https://github.com/puppeteer/puppeteer/issues/7218)
+* **chromium:** roll to Chromium 109.0.5412.0 (r1069273) ([#9364](https://github.com/puppeteer/puppeteer/issues/9364)) ([1875da6](https://github.com/puppeteer/puppeteer/commit/1875da61916df1fbcf98047858c01075bd9af189)), closes [#9233](https://github.com/puppeteer/puppeteer/issues/9233)
+* **puppeteer-core:** keydown supports commands ([#9357](https://github.com/puppeteer/puppeteer/issues/9357)) ([b7ebc5d](https://github.com/puppeteer/puppeteer/commit/b7ebc5d9bb9b9940ffdf470e51d007f709587d40))
+
+
+### Bug Fixes
+
+* **puppeteer-core:** avoid type instantiation errors ([#9370](https://github.com/puppeteer/puppeteer/issues/9370)) ([17f31a9](https://github.com/puppeteer/puppeteer/commit/17f31a9ee408ca5a08fe6dbceb8915e710156bd3)), closes [#9369](https://github.com/puppeteer/puppeteer/issues/9369)
+
 ## [19.3.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.2.2...puppeteer-core-v19.3.0) (2022-11-23)
 
 
