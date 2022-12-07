@@ -195,7 +195,7 @@ describe('navigation', function () {
         return (error = error_);
       });
       if (isChrome) {
-        expect(error.message).toContain(EXPECTED_SSL_CERT_MESSAGE_REGEX);
+        expect(error.message).toMatch(EXPECTED_SSL_CERT_MESSAGE_REGEX);
       } else {
         expect(error.message).toContain('SSL_ERROR_UNKNOWN');
       }
