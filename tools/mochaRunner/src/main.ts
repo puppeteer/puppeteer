@@ -161,7 +161,10 @@ async function main() {
         handle.on('error', err => {
           reject(err);
         });
-        handle.on('close', () => {
+        handle.on('close', code => {
+          if (code !== 0) {
+            return reject(new Error(`Test exited with the code ${code}`));
+          }
           resolve();
         });
       });
