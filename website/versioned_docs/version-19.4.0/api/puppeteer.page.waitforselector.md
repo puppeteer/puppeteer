@@ -54,9 +54,9 @@ Promise which resolves when element specified by selector string is added to DOM
 
 ## Remarks
 
-The optional Parameter in Arguments `options` are :
+The optional Parameter in Arguments `options` are:
 
-- `Visible`: A boolean wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+- `visible`: A boolean wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
 
 - `hidden`: Wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
 

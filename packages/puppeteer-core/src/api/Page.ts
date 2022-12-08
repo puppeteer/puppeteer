@@ -2398,9 +2398,9 @@ export class Page extends EventEmitter {
    * is added to DOM. Resolves to `null` if waiting for hidden: `true` and
    * selector is not found in DOM.
    * @remarks
-   * The optional Parameter in Arguments `options` are :
+   * The optional Parameter in Arguments `options` are:
    *
-   * - `Visible`: A boolean wait for element to be present in DOM and to be
+   * - `visible`: A boolean wait for element to be present in DOM and to be
    *   visible, i.e. to not have `display: none` or `visibility: hidden` CSS
    *   properties. Defaults to `false`.
    *
