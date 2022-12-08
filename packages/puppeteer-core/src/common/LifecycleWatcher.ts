@@ -31,6 +31,10 @@ import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {NetworkManagerEmittedEvents} from './NetworkManager.js';
 import {CDPSessionEmittedEvents} from './Connection.js';
+import {debug} from './Debug.js';
+
+const log = debug('puppeteer:lifecyleWatcher ');
+
 /**
  * @public
  */
@@ -109,6 +113,7 @@ export class LifecycleWatcher {
     waitUntil: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[],
     timeout: number
   ) {
+    log('LifeCycleWacher created for frame ', frame._id);
     if (Array.isArray(waitUntil)) {
       waitUntil = waitUntil.slice();
     } else if (typeof waitUntil === 'string') {
@@ -281,6 +286,7 @@ export class LifecycleWatcher {
   }
 
   #checkLifecycleComplete(): void {
+    log('LifeCycleWacher checkLifecycleComplete', this.#frame._lifecycleEvents, this.#expectedLifecycle, this.#swapped);
     // We expect navigation to commit.
     if (!checkLifecycle(this.#frame, this.#expectedLifecycle)) {
       return;

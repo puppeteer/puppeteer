@@ -262,9 +262,6 @@ export class CDPPage extends Page {
 
   #onDetachedFromTarget = (target: Target) => {
     const sessionId = target._session()?.id();
-
-    this.#frameManager.onDetachedFromTarget(target);
-
     const worker = this.#workers.get(sessionId!);
     if (!worker) {
       return;

@@ -72,6 +72,8 @@ export class FrameManager extends EventEmitter {
    */
   _frameTree = new FrameTree();
 
+  #frameNavigatedReceived = new Set<string>();
+
   get timeoutSettings(): TimeoutSettings {
     return this.#timeoutSettings;
   }
@@ -103,6 +105,7 @@ export class FrameManager extends EventEmitter {
       this.#onFrameAttached(session, event.frameId, event.parentFrameId);
     });
     session.on('Page.frameNavigated', event => {
+      this.#frameNavigatedReceived.add(event.frame.id);
       this.#onFrameNavigated(event.frame);
     });
     session.on('Page.navigatedWithinDocument', event => {
@@ -142,15 +145,15 @@ export class FrameManager extends EventEmitter {
       const result = await Promise.all([
         client.send('Page.enable'),
         client.send('Page.getFrameTree'),
+        client.send('Page.setLifecycleEventsEnabled', {enabled: true}),
+        client.send('Runtime.enable').then(() => {
+          return this.#createIsolatedWorld(client, UTILITY_WORLD_NAME);
+        })
       ]);
 
       const {frameTree} = result[1];
       this.#handleFrameTree(client, frameTree);
       await Promise.all([
-        client.send('Page.setLifecycleEventsEnabled', {enabled: true}),
-        client.send('Runtime.enable').then(() => {
-          return this.#createIsolatedWorld(client, UTILITY_WORLD_NAME);
-        }),
         // TODO: Network manager is not aware of OOP iframes yet.
         client === this.#client
           ? this.#networkManager.initialize()
@@ -210,15 +213,6 @@ export class FrameManager extends EventEmitter {
     this.initialize(target._session());
   }
 
-  onDetachedFromTarget(target: Target): void {
-    const frame = this.frame(target._targetId);
-    if (frame && frame.isOOPFrame()) {
-      // When an OOP iframe is removed from the page, it
-      // will only get a Target.detachedFromTarget event.
-      this.#removeFramesRecursively(frame);
-    }
-  }
-
   #onLifecycleEvent(event: Protocol.Page.LifecycleEventEvent): void {
     const frame = this.frame(event.frameId);
     if (!frame) {
@@ -249,15 +243,13 @@ export class FrameManager extends EventEmitter {
     session: CDPSession,
     frameTree: Protocol.Page.FrameTree
   ): void {
-    log('Handling frame tree', frameTree.frame.id);
-    if (frameTree.frame.parentId) {
-      this.#onFrameAttached(
-        session,
-        frameTree.frame.id,
-        frameTree.frame.parentId
-      );
+    log('Handling frame tree', frameTree.frame.id, frameTree.frame.url);
+    if (!this.#frameNavigatedReceived.has(frameTree.frame.id)) {
+      this.#onFrameNavigated(frameTree.frame);
+    } else {
+      this.#frameNavigatedReceived.delete(frameTree.frame.id);
     }
-    this.#onFrameNavigated(frameTree.frame);
+
     if (!frameTree.childFrames) {
       log('Finished handling frame tree, no child', frameTree.frame.id);
       return;
@@ -281,6 +273,7 @@ export class FrameManager extends EventEmitter {
         // If an OOP iframes becomes a normal iframe again
         // it is first attached to the parent page before
         // the target is removed.
+        log('Updating client in #onFrameAttached')
         frame.updateClient(session);
       }
       return;
@@ -293,7 +286,7 @@ export class FrameManager extends EventEmitter {
 
   async #onFrameNavigated(framePayload: Protocol.Page.Frame): Promise<void> {
     const frameId = framePayload.id;
-    log('#onFrameNavigated', frameId);
+    log('#onFrameNavigated', frameId, framePayload.url);
     const isMainFrame = !framePayload.parentId;
 
     let frame = this._frameTree.getById(frameId);

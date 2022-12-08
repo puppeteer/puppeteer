@@ -114,23 +114,23 @@ export const debug = (prefix: string): ((...args: unknown[]) => void) => {
 /**
  * @internal
  */
- let capturedLogs: string[] = [];
- /**
-  * @internal
-  */
- let captureLogs = false;
- 
- /**
-  * @internal
-  */
- export function setLogCapture(value: boolean): void {
-   capturedLogs = [];
-   captureLogs = value;
- }
- 
- /**
-  * @internal
-  */
- export function getCapturedLogs(): string[] {
-   return capturedLogs;
- }
+let capturedLogs: string[] = [];
+/**
+ * @internal
+ */
+let captureLogs = false;
+
+/**
+ * @internal
+ */
+export function setLogCapture(value: boolean): void {
+  capturedLogs = [];
+  captureLogs = value;
+}
+
+/**
+ * @internal
+ */
+export function getCapturedLogs(): string[] {
+  return capturedLogs;
+}

@@ -300,6 +300,7 @@ export const describeWithDebugLogs = (
     setLogCapture(false);
   });
 
+  // eslint-disable-next-line mocha/no-exclusive-tests
   return describe.only(description, body);
 };
 
