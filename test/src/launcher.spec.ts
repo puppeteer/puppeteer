@@ -797,9 +797,6 @@ describe('Launcher specs', function () {
         const restoredPage = pages.find(page => {
           return page.url() === server.PREFIX + '/frames/nested-frames.html';
         })!;
-        await new Promise(resolve => {
-          return setTimeout(resolve, 1000);
-        });
         expect(utils.dumpFrames(restoredPage.mainFrame())).toEqual([
           'http://localhost:<PORT>/frames/nested-frames.html',
           '    http://localhost:<PORT>/frames/two-frames.html (2frames)',

@@ -282,6 +282,11 @@ export const expectCookieEquals = (
   }
 };
 
+/**
+ * Use it if you want to capture debug logs for a specitic test suite in CI.
+ * This describe function enables capturing of debug logs and would print them
+ * only if a test fails to reduce the amount of output.
+ */
 export const describeWithDebugLogs = (
   description: string,
   body: (this: Mocha.Suite) => void

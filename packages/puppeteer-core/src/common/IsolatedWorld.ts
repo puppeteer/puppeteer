@@ -296,7 +296,6 @@ export class IsolatedWorld {
       waitUntil = ['load'],
       timeout = this.#timeoutSettings.navigationTimeout(),
     } = options;
-
     // We rely upon the fact that document.open() will reset frame lifecycle with "init"
     // lifecycle event. @see https://crrev.com/608658
     await this.evaluate(html => {

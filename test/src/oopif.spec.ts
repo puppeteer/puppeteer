@@ -20,9 +20,6 @@ import {describeWithDebugLogs, getTestState} from './mocha-utils.js';
 import {Browser} from 'puppeteer-core/internal/api/Browser.js';
 import {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
-import {debug} from 'puppeteer-core/internal/common/Debug.js';
-
-const log = debug('puppeteer:test');
 
 describeWithDebugLogs('OOPIF', function () {
   /* We use a special browser for this test as we need the --site-per-process flag */
@@ -49,11 +46,11 @@ describeWithDebugLogs('OOPIF', function () {
   });
 
   afterEach(async () => {
-    await context?.close();
+    await context.close();
   });
 
   after(async () => {
-    await browser?.close();
+    await browser.close();
   });
 
   it('should treat OOP iframes and normal iframes the same', async () => {
@@ -132,13 +129,11 @@ describeWithDebugLogs('OOPIF', function () {
 
     const [frame1, frame2] = await Promise.all([frame1Promise, frame2Promise]);
 
-    log('FRAMES RESOLVED');
     expect(
       await frame1.evaluate(() => {
         return document.location.href;
       })
     ).toMatch(/one-frame\.html$/);
-    log('AFTER EVALUATE1');
     expect(
       await frame2.evaluate(() => {
         return document.location.href;
@@ -176,7 +171,6 @@ describeWithDebugLogs('OOPIF', function () {
     await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
 
     const frame = await framePromise;
-    log('FRAME FOUND');
     expect(frame.isOOPFrame()).toBe(false);
     const nav = frame.waitForNavigation();
     await utils.navigateFrame(
@@ -184,12 +178,9 @@ describeWithDebugLogs('OOPIF', function () {
       'frame1',
       server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
-    log('WAITING FOR NAV TO CROSS_PROCESS_PREFIX ');
     await nav;
-    log('NAVIGATED TO CROSS_PROCESS_PREFIX ');
     expect(frame.isOOPFrame()).toBe(true);
     await utils.detachFrame(page, 'frame1');
-    log('NAVIGATED DETACHED');
     expect(page.frames()).toHaveLength(1);
   });
 
@@ -223,21 +214,17 @@ describeWithDebugLogs('OOPIF', function () {
       'frame1',
       server.CROSS_PROCESS_PREFIX + '/empty.html'
     );
-    log('AFTER ATTACH');
     const frame = await framePromise;
-    log('BEFORE EVALUATE1');
     await frame.evaluate(() => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       _test = 'Test 123!';
     });
-    log('BEFORE EVALUATE2');
     const result = await frame.evaluate(() => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       return window._test;
     });
-    log('AFTER EVALUATE2');
     expect(result).toBe('Test 123!');
   });
   it('should provide access to elements', async () => {
@@ -300,13 +287,10 @@ describeWithDebugLogs('OOPIF', function () {
 
   it('should wait for inner OOPIFs', async () => {
     const {server} = getTestState();
-    log('BEFORE NAV');
     await page.goto(`http://mainframe:${server.PORT}/main-frame.html`);
-    log('AFTER NAV');
     const frame2 = await page.waitForFrame(frame => {
       return frame.url().endsWith('inner-frame2.html');
     });
-    log('AFTER WAIT');
     expect(oopifs(context).length).toBe(2);
     expect(
       page.frames().filter(frame => {

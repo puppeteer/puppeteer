@@ -37,7 +37,7 @@ import {importFS} from './util.js';
 
 import {debug} from './Debug.js';
 
-const log = debug('puppeteer:frame ');
+const log = debug('puppeteer:Frame');
 
 /**
  * @public

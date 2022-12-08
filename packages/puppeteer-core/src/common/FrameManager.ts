@@ -32,7 +32,7 @@ import {debugError} from './util.js';
 
 import {debug} from './Debug.js';
 
-const log = debug('puppeteer:frameManager ');
+const log = debug('puppeteer:FrameManager');
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 

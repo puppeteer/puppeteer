@@ -3,7 +3,7 @@
     "testIdPattern": "[accessibility.spec]",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["SKIP", "TIMEOUT"]
   },
   {
     "testIdPattern": "[ariaqueryhandler.spec]",
