@@ -286,22 +286,23 @@ export const describeWithDebugLogs = (
   description: string,
   body: (this: Mocha.Suite) => void
 ): Mocha.Suite | void => {
-  beforeEach(() => {
-    setLogCapture(true);
-  });
+  describe(description + '-debug', () => {
+    beforeEach(() => {
+      setLogCapture(true);
+    });
 
-  afterEach(function () {
-    if (this.currentTest?.state === 'failed') {
-      console.log(
-        `\n"${this.currentTest.fullTitle()}" failed. Here is a debug log:`
-      );
-      console.log(getCapturedLogs().join('\n') + '\n');
-    }
-    setLogCapture(false);
-  });
+    afterEach(function () {
+      if (this.currentTest?.state === 'failed') {
+        console.log(
+          `\n"${this.currentTest.fullTitle()}" failed. Here is a debug log:`
+        );
+        console.log(getCapturedLogs().join('\n') + '\n');
+      }
+      setLogCapture(false);
+    });
 
-  // eslint-disable-next-line mocha/no-exclusive-tests
-  return describe.only(description, body);
+    describe(description, body);
+  });
 };
 
 export const shortWaitForArrayToHaveAtLeastNElements = async (

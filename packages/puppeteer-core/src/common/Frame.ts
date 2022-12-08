@@ -396,7 +396,6 @@ export class Frame {
       waitUntil,
       timeout
     );
-    const navResponse = watcher.navigationResponse();
     const error = await Promise.race([
       watcher.timeoutOrTerminationPromise(),
       watcher.sameDocumentNavigationPromise(),
@@ -408,7 +407,7 @@ export class Frame {
         throw error;
       }
       log('LIFECYCLE WATCHER wait for navigationResponse');
-      return await navResponse;
+      return await watcher.navigationResponse();
     } finally {
       log('LIFECYCLE WATCHER DISPOSED');
       watcher.dispose();

@@ -286,7 +286,12 @@ export class LifecycleWatcher {
   }
 
   #checkLifecycleComplete(): void {
-    log('LifeCycleWacher checkLifecycleComplete', this.#frame._lifecycleEvents, this.#expectedLifecycle, this.#swapped);
+    log(
+      'LifeCycleWacher checkLifecycleComplete',
+      Array.from(this.#frame._lifecycleEvents),
+      this.#expectedLifecycle,
+      this.#swapped
+    );
     // We expect navigation to commit.
     if (!checkLifecycle(this.#frame, this.#expectedLifecycle)) {
       return;

@@ -145,15 +145,15 @@ export class FrameManager extends EventEmitter {
       const result = await Promise.all([
         client.send('Page.enable'),
         client.send('Page.getFrameTree'),
-        client.send('Page.setLifecycleEventsEnabled', {enabled: true}),
-        client.send('Runtime.enable').then(() => {
-          return this.#createIsolatedWorld(client, UTILITY_WORLD_NAME);
-        })
       ]);
 
       const {frameTree} = result[1];
       this.#handleFrameTree(client, frameTree);
       await Promise.all([
+        client.send('Page.setLifecycleEventsEnabled', {enabled: true}),
+        client.send('Runtime.enable').then(() => {
+          return this.#createIsolatedWorld(client, UTILITY_WORLD_NAME);
+        }),
         // TODO: Network manager is not aware of OOP iframes yet.
         client === this.#client
           ? this.#networkManager.initialize()
@@ -243,7 +243,20 @@ export class FrameManager extends EventEmitter {
     session: CDPSession,
     frameTree: Protocol.Page.FrameTree
   ): void {
-    log('Handling frame tree', frameTree.frame.id, frameTree.frame.url);
+    log(
+      'Handling frame tree',
+      frameTree.frame.id,
+      frameTree.frame.url,
+      'this.#frameNavigatedReceived',
+      Array.from(this.#frameNavigatedReceived)
+    );
+    if (frameTree.frame.parentId) {
+      this.#onFrameAttached(
+        session,
+        frameTree.frame.id,
+        frameTree.frame.parentId
+      );
+    }
     if (!this.#frameNavigatedReceived.has(frameTree.frame.id)) {
       this.#onFrameNavigated(frameTree.frame);
     } else {
@@ -273,7 +286,7 @@ export class FrameManager extends EventEmitter {
         // If an OOP iframes becomes a normal iframe again
         // it is first attached to the parent page before
         // the target is removed.
-        log('Updating client in #onFrameAttached')
+        log('Updating client in #onFrameAttached');
         frame.updateClient(session);
       }
       return;
@@ -386,15 +399,20 @@ export class FrameManager extends EventEmitter {
   ): void {
     const auxData = contextPayload.auxData as {frameId?: string} | undefined;
     const frameId = auxData && auxData.frameId;
+    log('#onExecutionContextCreated', frameId);
     const frame = typeof frameId === 'string' ? this.frame(frameId) : undefined;
     let world: IsolatedWorld | undefined;
+    log('HAS FRAME', !!frame);
     if (frame) {
       // Only care about execution contexts created for the current session.
       if (frame._client() !== session) {
         return;
       }
-
-      if (contextPayload.auxData && !!contextPayload.auxData['isDefault']) {
+      log(
+        "contextPayload.auxData && contextPayload.auxData['isDefault']",
+        contextPayload.auxData && contextPayload.auxData['isDefault']
+      );
+      if (contextPayload.auxData && contextPayload.auxData['isDefault']) {
         world = frame.worlds[MAIN_WORLD];
       } else if (
         contextPayload.name === UTILITY_WORLD_NAME &&
@@ -411,6 +429,7 @@ export class FrameManager extends EventEmitter {
       contextPayload,
       world
     );
+    log('HAS WORLD', !!world);
     if (world) {
       world.setContext(context);
     }
