@@ -16,12 +16,15 @@
 
 import utils from './utils.js';
 import expect from 'expect';
-import {getTestState} from './mocha-utils.js';
+import {describeWithDebugLogs, getTestState} from './mocha-utils.js';
 import {Browser} from 'puppeteer-core/internal/api/Browser.js';
 import {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
+import {debug} from 'puppeteer-core/internal/common/Debug.js';
 
-describe('OOPIF', function () {
+const log = debug('puppeteer:test');
+
+describeWithDebugLogs('OOPIF', function () {
   /* We use a special browser for this test as we need the --site-per-process flag */
   let browser: Browser;
   let context: BrowserContext;
@@ -287,10 +290,13 @@ describe('OOPIF', function () {
 
   it('should wait for inner OOPIFs', async () => {
     const {server} = getTestState();
+    log('BEFORE NAV');
     await page.goto(`http://mainframe:${server.PORT}/main-frame.html`);
+    log('AFTER NAV');
     const frame2 = await page.waitForFrame(frame => {
       return frame.url().endsWith('inner-frame2.html');
     });
+    log('AFTER WAIT');
     expect(oopifs(context).length).toBe(2);
     expect(
       page.frames().filter(frame => {
