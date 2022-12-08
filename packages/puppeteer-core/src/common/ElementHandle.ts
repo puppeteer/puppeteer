@@ -1001,6 +1001,9 @@ export class ElementHandle<
    * {@link Page.screenshot} to take a screenshot of the element.
    * If the element is detached from DOM, the method throws an error.
    */
+  screenshot(options: ScreenshotOptions & { encoding: 'base64' }): Promise<string>
+  screenshot(options?: ScreenshotOptions & { encoding?: 'binary' }): Promise<Buffer>
+  screenshot(options?: ScreenshotOptions): Promise<string | Buffer>
   async screenshot(
     this: ElementHandle<Element>,
     options: ScreenshotOptions = {}

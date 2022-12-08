@@ -2123,6 +2123,8 @@ export class Page extends EventEmitter {
    * @returns Promise which resolves to buffer or a base64 string (depending on
    * the value of `encoding`) with captured screenshot.
    */
+  screenshot(options: ScreenshotOptions & { encoding: 'base64' }): Promise<string>
+  screenshot(options?: ScreenshotOptions & { encoding?: 'binary' }): Promise<Buffer>
   async screenshot(options?: ScreenshotOptions): Promise<Buffer | string>;
   async screenshot(): Promise<Buffer | string> {
     throw new Error('Not implemented');
