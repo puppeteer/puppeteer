@@ -67,7 +67,7 @@
   },
   "dependencies": {
     "@angular-devkit/architect": "^0.1402.10",
-    "@angular-devkit/core": "^15.0.1",
+    "@angular-devkit/core": "^15.0.3",
     "@angular-devkit/schematics": "^14.2.6"
   },
   "devDependencies": {
