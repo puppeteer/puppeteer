@@ -46,7 +46,7 @@ jobs:
       needs_deploying: ${{ steps.needs_deploying.outputs.value }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 2
       - name: Set up Node.js
@@ -77,7 +77,7 @@ jobs:
           else
             needs_deploying=false
           fi
-          echo "::set-output name=value::$needs_deploying"
+          echo "value=$needs_deploying" >> $GITHUB_OUTPUT
 
   deploy-docs:
     needs: check-docs
