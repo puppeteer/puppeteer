@@ -1,7 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: npm
-    directory: /packages/puppeteer-core/
+    directory: '/packages/puppeteer-core'
     schedule:
       interval: daily
       time: '00:00'
@@ -10,7 +10,7 @@ updates:
     allow:
       - dependency-type: 'production'
   - package-ecosystem: npm
-    directory: /packages/puppeteer/
+    directory: '/packages/puppeteer'
     schedule:
       interval: daily
       time: '00:00'
