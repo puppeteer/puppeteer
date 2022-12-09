@@ -29,7 +29,7 @@ The constructor for this class is marked as internal. Third-party code should no
 This example creates a page, navigates it to a URL, and then saves a screenshot:
 
 ```ts
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 
 (async () => {
   const browser = await puppeteer.launch();
@@ -157,7 +157,7 @@ page.off('request', logRequest);
 | [waitForSelector(selector, options)](./puppeteer.page.waitforselector.md)                   |           | <p>Wait for the <code>selector</code> to appear in page. If at the moment of calling the method the <code>selector</code> already exists, the method will return immediately. If the <code>selector</code> doesn't appear after the <code>timeout</code> milliseconds of waiting, the function will throw.</p><p>This method works across navigations:</p>                                                                                                                                                                                                                                              |
 
 ```ts
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 (async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
@@ -181,7 +181,7 @@ const puppeteer = require('puppeteer');
 | [waitForXPath(xpath, options)](./puppeteer.page.waitforxpath.md) | | <p>Wait for the <code>xpath</code> to appear in page. If at the moment of calling the method the <code>xpath</code> already exists, the method will return immediately. If the <code>xpath</code> doesn't appear after the <code>timeout</code> milliseconds of waiting, the function will throw.</p><p>This method works across navigation</p>
 
 ```ts
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 (async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();

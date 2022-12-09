@@ -1,5 +1,12 @@
 # Troubleshooting
 
+:::caution
+
+Chromium currently does not provide arm64 binaries for Linux. There are only binaries
+for [Mac ARM with experimental support from Puppeteer](https://pptr.dev/contributing#macos-arm-and-custom-executables).
+
+:::
+
 ## `Cannot find module 'puppeteer-core/internal/...'`
 
 This can occur is your Node.js version is lower than 14 or you are using a
@@ -75,7 +82,6 @@ missing. The common ones are provided below.
 ```
 ca-certificates
 fonts-liberation
-libappindicator3-1
 libasound2
 libatk-bridge2.0-0
 libatk1.0-0
@@ -274,6 +280,19 @@ services: xvfb
 script:
   - npm test
 ```
+
+## Running Puppeteer on WSL (Windows subsystem for Linux)
+
+See [this thread](https://github.com/puppeteer/puppeteer/issues/1837) with some tips specific to WSL. In a nutshell, you need to install missing dependencies by either:
+
+1. [Installing Chrome on WSL to install all dependencies](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps#install-google-chrome-for-linux)
+2. Installing required dependencies manually: `sudo apt install libgtk-3-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2`.
+
+:::caution
+
+The list of required dependencies might get outdated and depend on what you already have installed.
+
+:::
 
 ## Running Puppeteer on CircleCI
 

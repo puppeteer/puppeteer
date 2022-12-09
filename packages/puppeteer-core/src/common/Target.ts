@@ -26,6 +26,11 @@ import {TargetManager} from './TargetManager.js';
 import {CDPPage} from './Page.js';
 
 /**
+ * Target represents a
+ * {@link https://chromedevtools.github.io/devtools-protocol/tot/Target/ | CDP target}.
+ * In CDP a target is something that can be debugged such a frame, a page or a
+ * worker.
+ *
  * @public
  */
 export class Target {

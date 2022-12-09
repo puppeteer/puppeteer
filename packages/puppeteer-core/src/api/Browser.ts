@@ -182,7 +182,7 @@ export const enum BrowserEmittedEvents {
  * An example of using a {@link Browser} to create a {@link Page}:
  *
  * ```ts
- * const puppeteer = require('puppeteer');
+ * import puppeteer from 'puppeteer';
  *
  * (async () => {
  *   const browser = await puppeteer.launch();
@@ -196,7 +196,7 @@ export const enum BrowserEmittedEvents {
  * An example of disconnecting from and reconnecting to a {@link Browser}:
  *
  * ```ts
- * const puppeteer = require('puppeteer');
+ * import puppeteer from 'puppeteer';
  *
  * (async () => {
  *   const browser = await puppeteer.launch();

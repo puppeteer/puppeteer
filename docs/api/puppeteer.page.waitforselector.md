@@ -9,7 +9,7 @@ Wait for the `selector` to appear in page. If at the moment of calling the metho
 This method works across navigations:
 
 ```ts
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 (async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();

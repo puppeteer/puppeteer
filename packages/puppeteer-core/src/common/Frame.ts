@@ -127,7 +127,7 @@ export interface FrameAddStyleTagOptions {
  * An example of dumping frame tree:
  *
  * ```ts
- * const puppeteer = require('puppeteer');
+ * import puppeteer from 'puppeteer';
  *
  * (async () => {
  *   const browser = await puppeteer.launch();
@@ -569,7 +569,7 @@ export class Frame {
    * @example
    *
    * ```ts
-   * const puppeteer = require('puppeteer');
+   * import puppeteer from 'puppeteer';
    *
    * (async () => {
    *   const browser = await puppeteer.launch();
@@ -647,7 +647,7 @@ export class Frame {
    * The `waitForFunction` can be used to observe viewport size change:
    *
    * ```ts
-   * const puppeteer = require('puppeteer');
+   * import puppeteer from 'puppeteer';
    *
    * (async () => {
    * .  const browser = await puppeteer.launch();

@@ -390,7 +390,7 @@ export interface PageEventObject {
  * This example creates a page, navigates it to a URL, and then saves a screenshot:
  *
  * ```ts
- * const puppeteer = require('puppeteer');
+ * import puppeteer from 'puppeteer';
  *
  * (async () => {
  *   const browser = await puppeteer.launch();
@@ -636,7 +636,7 @@ export class Page extends EventEmitter {
    * An example of a naïve request interceptor that aborts all image requests:
    *
    * ```ts
-   * const puppeteer = require('puppeteer');
+   * import puppeteer from 'puppeteer';
    * (async () => {
    *   const browser = await puppeteer.launch();
    *   const page = await browser.newPage();
@@ -1161,8 +1161,8 @@ export class Page extends EventEmitter {
    * An example of adding an `md5` function into the page:
    *
    * ```ts
-   * const puppeteer = require('puppeteer');
-   * const crypto = require('crypto');
+   * import puppeteer from 'puppeteer';
+   * import crypto from 'crypto';
    *
    * (async () => {
    *   const browser = await puppeteer.launch();
@@ -1185,8 +1185,8 @@ export class Page extends EventEmitter {
    * An example of adding a `window.readfile` function into the page:
    *
    * ```ts
-   * const puppeteer = require('puppeteer');
-   * const fs = require('fs');
+   * import puppeteer from 'puppeteer';
+   * import fs from 'fs';
    *
    * (async () => {
    *   const browser = await puppeteer.launch();
@@ -1865,7 +1865,7 @@ export class Page extends EventEmitter {
    * @example
    *
    * ```ts
-   * const puppeteer = require('puppeteer');
+   * import puppeteer from 'puppeteer';
    *
    * (async () => {
    *   const browser = await puppeteer.launch();
@@ -2371,7 +2371,7 @@ export class Page extends EventEmitter {
    * This method works across navigations:
    *
    * ```ts
-   * const puppeteer = require('puppeteer');
+   * import puppeteer from 'puppeteer';
    * (async () => {
    *   const browser = await puppeteer.launch();
    *   const page = await browser.newPage();
@@ -2431,7 +2431,7 @@ export class Page extends EventEmitter {
    * This method works across navigation
    *
    * ```ts
-   * const puppeteer = require('puppeteer');
+   * import puppeteer from 'puppeteer';
    * (async () => {
    *   const browser = await puppeteer.launch();
    *   const page = await browser.newPage();
@@ -2491,7 +2491,7 @@ export class Page extends EventEmitter {
    * The {@link Page.waitForFunction} can be used to observe viewport size change:
    *
    * ```ts
-   * const puppeteer = require('puppeteer');
+   * import puppeteer from 'puppeteer';
    * (async () => {
    *   const browser = await puppeteer.launch();
    *   const page = await browser.newPage();

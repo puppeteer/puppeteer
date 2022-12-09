@@ -6,7 +6,7 @@ continued, responded or aborted.
 An example of a naïve request interceptor that aborts all image requests:
 
 ```js
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 
 (async () => {
   const browser = await puppeteer.launch();

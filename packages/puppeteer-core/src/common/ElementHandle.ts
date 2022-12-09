@@ -53,7 +53,7 @@ const applyOffsetsToQuad = (
  * ElementHandles can be created with the {@link Page.$} method.
  *
  * ```ts
- * const puppeteer = require('puppeteer');
+ * import puppeteer from 'puppeteer';
  *
  * (async () => {
  *   const browser = await puppeteer.launch();
@@ -296,7 +296,7 @@ export class ElementHandle<
    * @example
    *
    * ```ts
-   * const puppeteer = require('puppeteer');
+   * import puppeteer from 'puppeteer';
    *
    * (async () => {
    *   const browser = await puppeteer.launch();
@@ -356,7 +356,7 @@ export class ElementHandle<
    * This method works across navigation.
    *
    * ```ts
-   * const puppeteer = require('puppeteer');
+   * import puppeteer from 'puppeteer';
    * (async () => {
    *   const browser = await puppeteer.launch();
    *   const page = await browser.newPage();
