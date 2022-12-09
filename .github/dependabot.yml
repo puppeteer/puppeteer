@@ -1,14 +1,20 @@
 version: 2
 updates:
   - package-ecosystem: npm
-    directory: /
+    directory: /packages/puppeteer-core/
     schedule:
       interval: daily
-    open-pull-requests-limit: 3
+      time: '00:00'
+      timezone: 'Europe/Berlin'
+    open-pull-requests-limit: 1
     allow:
       - dependency-type: 'production'
-  - package-ecosystem: github-actions
-    directory: '/'
+  - package-ecosystem: npm
+    directory: /packages/puppeteer/
     schedule:
       interval: daily
-    open-pull-requests-limit: 2
+      time: '00:00'
+      timezone: 'Europe/Berlin'
+    open-pull-requests-limit: 1
+    allow:
+      - dependency-type: 'production'
