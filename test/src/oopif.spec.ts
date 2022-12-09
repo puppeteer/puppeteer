@@ -16,12 +16,12 @@
 
 import utils from './utils.js';
 import expect from 'expect';
-import {getTestState} from './mocha-utils.js';
+import {describeWithDebugLogs, getTestState} from './mocha-utils.js';
 import {Browser} from 'puppeteer-core/internal/api/Browser.js';
 import {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
 
-describe('OOPIF', function () {
+describeWithDebugLogs('OOPIF', function () {
   /* We use a special browser for this test as we need the --site-per-process flag */
   let browser: Browser;
   let context: BrowserContext;

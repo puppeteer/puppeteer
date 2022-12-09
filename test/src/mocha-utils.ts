@@ -32,6 +32,10 @@ import puppeteer from 'puppeteer/lib/cjs/puppeteer/puppeteer.js';
 import {TestServer} from '@pptr/testserver';
 import {extendExpectWithToBeGolden} from './utils.js';
 import * as Mocha from 'mocha';
+import {
+  setLogCapture,
+  getCapturedLogs,
+} from 'puppeteer-core/internal/common/Debug.js';
 
 const setupServer = async () => {
   const assetsPath = path.join(__dirname, '../assets');
@@ -276,6 +280,34 @@ export const expectCookieEquals = (
   for (let i = 0; i < cookies.length; i++) {
     expect(cookies[i]).toMatchObject(expectedCookies[i]!);
   }
+};
+
+/**
+ * Use it if you want to capture debug logs for a specitic test suite in CI.
+ * This describe function enables capturing of debug logs and would print them
+ * only if a test fails to reduce the amount of output.
+ */
+export const describeWithDebugLogs = (
+  description: string,
+  body: (this: Mocha.Suite) => void
+): Mocha.Suite | void => {
+  describe(description + '-debug', () => {
+    beforeEach(() => {
+      setLogCapture(true);
+    });
+
+    afterEach(function () {
+      if (this.currentTest?.state === 'failed') {
+        console.log(
+          `\n"${this.currentTest.fullTitle()}" failed. Here is a debug log:`
+        );
+        console.log(getCapturedLogs().join('\n') + '\n');
+      }
+      setLogCapture(false);
+    });
+
+    describe(description, body);
+  });
 };
 
 export const shortWaitForArrayToHaveAtLeastNElements = async (
