@@ -13,7 +13,7 @@ body:
     id: summary
     attributes:
       label: Bug description
-      description: What did you do? What did you expect to happen? What actually happened instead?
+      description: What did you do? What did you expect to happen? What actually happened instead? Provide a [minimal reproducible example](https://stackoverflow.com/help/minimal-reproducible-example).
       value: |
         Steps to reproduce the problem:
 
