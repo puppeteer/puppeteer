@@ -176,6 +176,9 @@ export class PuppeteerNode extends Puppeteer {
   launch(options: PuppeteerLaunchOptions = {}): Promise<Browser> {
     const {product = this.defaultProduct} = options;
     this.#lastLaunchedProduct = product;
+    if (options.pipe === undefined && product === 'chrome') {
+      options.pipe = true;
+    }
     return this.#launcher.launch(options);
   }
 

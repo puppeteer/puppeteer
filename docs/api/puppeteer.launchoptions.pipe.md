@@ -16,4 +16,4 @@ interface LaunchOptions {
 
 #### Default value:
 
-false
+true for Chrome and false for Firefox.

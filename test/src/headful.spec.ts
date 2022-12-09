@@ -117,10 +117,10 @@ describe('headful tests', function () {
   describe('HEADFUL', function () {
     it('background_page target type should be available', async () => {
       const {puppeteer} = getTestState();
-      const browserWithExtension = await launchBrowser(
-        puppeteer,
-        extensionOptions
-      );
+      const browserWithExtension = await launchBrowser(puppeteer, {
+        ...extensionOptions,
+        pipe: false,
+      });
       const page = await browserWithExtension.newPage();
       const backgroundPageTarget = await browserWithExtension.waitForTarget(
         target => {
@@ -153,10 +153,10 @@ describe('headful tests', function () {
     });
     it('target.page() should return a background_page', async function () {
       const {puppeteer} = getTestState();
-      const browserWithExtension = await launchBrowser(
-        puppeteer,
-        extensionOptions
-      );
+      const browserWithExtension = await launchBrowser(puppeteer, {
+        ...extensionOptions,
+        pipe: false,
+      });
       const backgroundPageTarget = await browserWithExtension.waitForTarget(
         target => {
           return target.type() === 'background_page';
@@ -177,7 +177,10 @@ describe('headful tests', function () {
     });
     it('target.page() should return a DevTools page if custom isPageTarget is provided', async function () {
       const {puppeteer} = getTestState();
-      const originalBrowser = await launchBrowser(puppeteer, devtoolsOptions);
+      const originalBrowser = await launchBrowser(puppeteer, {
+        ...devtoolsOptions,
+        pipe: false,
+      });
 
       const browserWSEndpoint = originalBrowser.wsEndpoint();
 

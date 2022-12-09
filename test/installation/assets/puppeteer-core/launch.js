@@ -21,6 +21,7 @@ import puppeteer from 'puppeteer-core';
     await puppeteer.launch({
       product: '${product}',
       executablePath: 'node',
+      pipe: false,
     });
   } catch (error) {
     if (error.message.includes('Failed to launch the browser process')) {

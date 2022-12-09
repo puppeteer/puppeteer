@@ -135,7 +135,10 @@ describe('Launcher specs', function () {
       it('should reject navigation when browser closes', async () => {
         const {server, puppeteer, defaultBrowserOptions} = getTestState();
         server.setRoute('/one-style.css', () => {});
-        const browser = await puppeteer.launch(defaultBrowserOptions);
+        const browser = await puppeteer.launch({
+          ...defaultBrowserOptions,
+          pipe: false,
+        });
         const remote = await puppeteer.connect({
           browserWSEndpoint: browser.wsEndpoint(),
         });
@@ -160,7 +163,10 @@ describe('Launcher specs', function () {
         const {server, puppeteer, defaultBrowserOptions} = getTestState();
 
         server.setRoute('/empty.html', () => {});
-        const browser = await puppeteer.launch(defaultBrowserOptions);
+        const browser = await puppeteer.launch({
+          ...defaultBrowserOptions,
+          pipe: false,
+        });
         const remote = await puppeteer.connect({
           browserWSEndpoint: browser.wsEndpoint(),
         });
@@ -180,7 +186,10 @@ describe('Launcher specs', function () {
       it('should terminate network waiters', async () => {
         const {server, puppeteer, defaultBrowserOptions} = getTestState();
 
-        const browser = await puppeteer.launch(defaultBrowserOptions);
+        const browser = await puppeteer.launch({
+          ...defaultBrowserOptions,
+          pipe: false,
+        });
         const remote = await puppeteer.connect({
           browserWSEndpoint: browser.wsEndpoint(),
         });
@@ -230,6 +239,7 @@ describe('Launcher specs', function () {
         let waitError!: Error;
         const options = Object.assign({}, defaultBrowserOptions, {
           executablePath: 'random-invalid-path',
+          pipe: false,
         });
         await puppeteer.launch(options).catch(error => {
           return (waitError = error);
@@ -526,6 +536,7 @@ describe('Launcher specs', function () {
         const {puppeteer, defaultBrowserOptions} = getTestState();
         const options = Object.assign({}, defaultBrowserOptions, {
           timeout: 1,
+          pipe: false,
         });
         let error!: Error;
         await puppeteer.launch(options).catch(error_ => {
@@ -586,6 +597,7 @@ describe('Launcher specs', function () {
         const options = Object.assign({}, defaultBrowserOptions, {
           defaultViewport: null,
           debuggingPort: 9999,
+          pipe: false,
         });
         const browser = await puppeteer.launch(options);
         const url = new URL(browser.wsEndpoint());
@@ -647,7 +659,10 @@ describe('Launcher specs', function () {
       it('should be able to connect multiple times to the same browser', async () => {
         const {puppeteer, defaultBrowserOptions} = getTestState();
 
-        const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+        const originalBrowser = await puppeteer.launch({
+          ...defaultBrowserOptions,
+          pipe: false,
+        });
         const otherBrowser = await puppeteer.connect({
           browserWSEndpoint: originalBrowser.wsEndpoint(),
         });
@@ -670,7 +685,10 @@ describe('Launcher specs', function () {
       it('should be able to close remote browser', async () => {
         const {defaultBrowserOptions, puppeteer} = getTestState();
 
-        const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+        const originalBrowser = await puppeteer.launch({
+          ...defaultBrowserOptions,
+          pipe: false,
+        });
         const remoteBrowser = await puppeteer.connect({
           browserWSEndpoint: originalBrowser.wsEndpoint(),
         });
@@ -682,7 +700,10 @@ describe('Launcher specs', function () {
       it('should be able to connect to a browser with no page targets', async () => {
         const {defaultBrowserOptions, puppeteer} = getTestState();
 
-        const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+        const originalBrowser = await puppeteer.launch({
+          ...defaultBrowserOptions,
+          pipe: false,
+        });
         const pages = await originalBrowser.pages();
         await Promise.all(
           pages.map(page => {
@@ -700,7 +721,10 @@ describe('Launcher specs', function () {
       it('should support ignoreHTTPSErrors option', async () => {
         const {httpsServer, puppeteer, defaultBrowserOptions} = getTestState();
 
-        const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+        const originalBrowser = await puppeteer.launch({
+          ...defaultBrowserOptions,
+          pipe: false,
+        });
         const browserWSEndpoint = originalBrowser.wsEndpoint();
 
         const browser = await puppeteer.connect({
@@ -752,7 +776,10 @@ describe('Launcher specs', function () {
       it('should support targetFilter option', async () => {
         const {server, puppeteer, defaultBrowserOptions} = getTestState();
 
-        const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+        const originalBrowser = await puppeteer.launch({
+          ...defaultBrowserOptions,
+          pipe: false,
+        });
         const browserWSEndpoint = originalBrowser.wsEndpoint();
 
         const page1 = await originalBrowser.newPage();
@@ -786,7 +813,10 @@ describe('Launcher specs', function () {
       it('should be able to reconnect to a disconnected browser', async () => {
         const {server, puppeteer, defaultBrowserOptions} = getTestState();
 
-        const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+        const originalBrowser = await puppeteer.launch({
+          ...defaultBrowserOptions,
+          pipe: false,
+        });
         const browserWSEndpoint = originalBrowser.wsEndpoint();
         const page = await originalBrowser.newPage();
         await page.goto(server.PREFIX + '/frames/nested-frames.html');
@@ -815,7 +845,10 @@ describe('Launcher specs', function () {
       it('should be able to connect to the same page simultaneously', async () => {
         const {puppeteer, defaultBrowserOptions} = getTestState();
 
-        const browserOne = await puppeteer.launch(defaultBrowserOptions);
+        const browserOne = await puppeteer.launch({
+          ...defaultBrowserOptions,
+          pipe: false,
+        });
         const browserTwo = await puppeteer.connect({
           browserWSEndpoint: browserOne.wsEndpoint(),
         });
@@ -841,7 +874,10 @@ describe('Launcher specs', function () {
       });
       it('should be able to reconnect', async () => {
         const {puppeteer, server, defaultBrowserOptions} = getTestState();
-        const browserOne = await puppeteer.launch(defaultBrowserOptions);
+        const browserOne = await puppeteer.launch({
+          ...defaultBrowserOptions,
+          pipe: false,
+        });
         const browserWSEndpoint = browserOne.wsEndpoint();
         const pageOne = await browserOne.newPage();
         await pageOne.goto(server.EMPTY_PAGE);
@@ -992,7 +1028,10 @@ describe('Launcher specs', function () {
   describe('Browser.Events.disconnected', function () {
     it('should be emitted when: browser gets closed, disconnected or underlying websocket gets closed', async () => {
       const {puppeteer, defaultBrowserOptions} = getTestState();
-      const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+      const originalBrowser = await puppeteer.launch({
+        ...defaultBrowserOptions,
+        pipe: false,
+      });
       const browserWSEndpoint = originalBrowser.wsEndpoint();
       const remoteBrowser1 = await puppeteer.connect({
         browserWSEndpoint,

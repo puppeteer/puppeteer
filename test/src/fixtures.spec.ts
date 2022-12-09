@@ -53,7 +53,10 @@ describe('Fixtures', function () {
 
     let dumpioData = '';
     const {spawn} = await import('child_process');
-    const options = Object.assign({}, defaultBrowserOptions, {dumpio: true});
+    const options = Object.assign({}, defaultBrowserOptions, {
+      dumpio: true,
+      pipe: false,
+    });
     const res = spawn('node', [
       path.join(__dirname, '../fixtures', 'dumpio.js'),
       puppeteerPath,
@@ -74,6 +77,7 @@ describe('Fixtures', function () {
     const options = Object.assign({}, defaultBrowserOptions, {
       // Disable DUMPIO to cleanly read stdout.
       dumpio: false,
+      pipe: false,
     });
     const res = spawn('node', [
       path.join(__dirname, '../fixtures', 'closeme.js'),

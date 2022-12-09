@@ -114,7 +114,7 @@ export interface LaunchOptions {
   env?: Record<string, string | undefined>;
   /**
    * Connect to a browser over a pipe instead of a WebSocket.
-   * @defaultValue false
+   * @defaultValue true for Chrome and false for Firefox.
    */
   pipe?: boolean;
   /**

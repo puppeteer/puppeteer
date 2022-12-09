@@ -191,9 +191,14 @@ process.on('unhandledRejection', reason => {
   throw reason;
 });
 
-export const setupTestBrowserHooks = (): void => {
+export const setupTestBrowserHooks = (
+  testOptions?: PuppeteerLaunchOptions
+): void => {
   before(async () => {
-    const browser = await puppeteer.launch(defaultBrowserOptions);
+    const browser = await puppeteer.launch({
+      ...defaultBrowserOptions,
+      ...testOptions,
+    });
     state.browser = browser;
   });
 

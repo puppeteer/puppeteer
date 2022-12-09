@@ -213,6 +213,22 @@ describe('BrowserContext', function () {
     expect(browser.browserContexts().length).toBe(1);
   });
 
+  it('should provide a context id', async () => {
+    const {browser} = getTestState();
+
+    expect(browser.browserContexts().length).toBe(1);
+    expect(browser.browserContexts()[0]!.id).toBeUndefined();
+
+    const context = await browser.createIncognitoBrowserContext();
+    expect(browser.browserContexts().length).toBe(2);
+    expect(browser.browserContexts()[1]!.id).toBeDefined();
+    await context.close();
+  });
+});
+
+describe('BrowserContext remote', () => {
+  setupTestBrowserHooks({pipe: false});
+
   it('should work across sessions', async () => {
     const {browser, puppeteer} = getTestState();
 
@@ -225,18 +241,6 @@ describe('BrowserContext', function () {
     const contexts = remoteBrowser.browserContexts();
     expect(contexts.length).toBe(2);
     remoteBrowser.disconnect();
-    await context.close();
-  });
-
-  it('should provide a context id', async () => {
-    const {browser} = getTestState();
-
-    expect(browser.browserContexts().length).toBe(1);
-    expect(browser.browserContexts()[0]!.id).toBeUndefined();
-
-    const context = await browser.createIncognitoBrowserContext();
-    expect(browser.browserContexts().length).toBe(2);
-    expect(browser.browserContexts()[1]!.id).toBeDefined();
     await context.close();
   });
 });
