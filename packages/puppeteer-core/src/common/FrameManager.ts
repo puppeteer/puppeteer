@@ -30,10 +30,6 @@ import {Target} from './Target.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {debugError} from './util.js';
 
-import {debug} from './Debug.js';
-
-const log = debug('puppeteer:FrameManager');
-
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
 /**
@@ -72,6 +68,11 @@ export class FrameManager extends EventEmitter {
    */
   _frameTree = new FrameTree();
 
+  /**
+   * Set of frame IDs stored to indicate if a frame has received a
+   * frameNavigated event so that frame tree responses could be ignored as the
+   * frameNavigated event usually contains the latest information.
+   */
   #frameNavigatedReceived = new Set<string>();
 
   get timeoutSettings(): TimeoutSettings {
@@ -202,14 +203,11 @@ export class FrameManager extends EventEmitter {
       return;
     }
 
-    log('Attached to frame target', target._getTargetInfo().targetId);
     const frame = this.frame(target._getTargetInfo().targetId);
     if (frame) {
-      log('updating client', target._getTargetInfo().targetId);
       frame.updateClient(target._session()!);
     }
     this.setupEventListeners(target._session()!);
-    log('started session init', target._getTargetInfo().targetId);
     this.initialize(target._session());
   }
 
@@ -243,13 +241,6 @@ export class FrameManager extends EventEmitter {
     session: CDPSession,
     frameTree: Protocol.Page.FrameTree
   ): void {
-    log(
-      'Handling frame tree',
-      frameTree.frame.id,
-      frameTree.frame.url,
-      'this.#frameNavigatedReceived',
-      Array.from(this.#frameNavigatedReceived)
-    );
     if (frameTree.frame.parentId) {
       this.#onFrameAttached(
         session,
@@ -264,14 +255,12 @@ export class FrameManager extends EventEmitter {
     }
 
     if (!frameTree.childFrames) {
-      log('Finished handling frame tree, no child', frameTree.frame.id);
       return;
     }
 
     for (const child of frameTree.childFrames) {
       this.#handleFrameTree(session, child);
     }
-    log('Finished handling frame tree, with children', frameTree.frame.id);
   }
 
   #onFrameAttached(
@@ -279,14 +268,12 @@ export class FrameManager extends EventEmitter {
     frameId: string,
     parentFrameId: string
   ): void {
-    log('FrameAttached', frameId, 'exists', !!this.frame(frameId));
     let frame = this.frame(frameId);
     if (frame) {
       if (session && frame.isOOPFrame()) {
         // If an OOP iframes becomes a normal iframe again
         // it is first attached to the parent page before
         // the target is removed.
-        log('Updating client in #onFrameAttached');
         frame.updateClient(session);
       }
       return;
@@ -299,7 +286,6 @@ export class FrameManager extends EventEmitter {
 
   async #onFrameNavigated(framePayload: Protocol.Page.Frame): Promise<void> {
     const frameId = framePayload.id;
-    log('#onFrameNavigated', frameId, framePayload.url);
     const isMainFrame = !framePayload.parentId;
 
     let frame = this._frameTree.getById(frameId);
@@ -327,10 +313,6 @@ export class FrameManager extends EventEmitter {
     frame = await this._frameTree.waitForFrame(frameId);
     frame._navigated(framePayload);
     this.emit(FrameManagerEmittedEvents.FrameNavigated, frame);
-    log('#onFrameNavigated done', frameId);
-    for (const frame of this._frameTree.frames()) {
-      log('frame ', frame._id, ' ', frame.url());
-    }
   }
 
   async #createIsolatedWorld(session: CDPSession, name: string): Promise<void> {
@@ -399,19 +381,13 @@ export class FrameManager extends EventEmitter {
   ): void {
     const auxData = contextPayload.auxData as {frameId?: string} | undefined;
     const frameId = auxData && auxData.frameId;
-    log('#onExecutionContextCreated', frameId);
     const frame = typeof frameId === 'string' ? this.frame(frameId) : undefined;
     let world: IsolatedWorld | undefined;
-    log('HAS FRAME', !!frame);
     if (frame) {
       // Only care about execution contexts created for the current session.
       if (frame._client() !== session) {
         return;
       }
-      log(
-        "contextPayload.auxData && contextPayload.auxData['isDefault']",
-        contextPayload.auxData && contextPayload.auxData['isDefault']
-      );
       if (contextPayload.auxData && contextPayload.auxData['isDefault']) {
         world = frame.worlds[MAIN_WORLD];
       } else if (
@@ -429,7 +405,6 @@ export class FrameManager extends EventEmitter {
       contextPayload,
       world
     );
-    log('HAS WORLD', !!world);
     if (world) {
       world.setContext(context);
     }
@@ -467,13 +442,11 @@ export class FrameManager extends EventEmitter {
   }
 
   #removeFramesRecursively(frame: Frame): void {
-    log('#removeFramesRecursively', frame._id);
     for (const child of frame.childFrames()) {
       this.#removeFramesRecursively(child);
     }
     frame._detach();
     this._frameTree.removeFrame(frame);
     this.emit(FrameManagerEmittedEvents.FrameDetached, frame);
-    log('#removeFramesRecursively done', frame._id);
   }
 }

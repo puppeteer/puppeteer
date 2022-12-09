@@ -35,10 +35,6 @@ import {getQueryHandlerAndSelector} from './QueryHandler.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {importFS} from './util.js';
 
-import {debug} from './Debug.js';
-
-const log = debug('puppeteer:Frame');
-
 /**
  * @public
  */
@@ -401,15 +397,12 @@ export class Frame {
       watcher.sameDocumentNavigationPromise(),
       watcher.newDocumentNavigationPromise(),
     ]);
-    log('LIFECYCLE WATCHER RESOLVED');
     try {
       if (error) {
         throw error;
       }
-      log('LIFECYCLE WATCHER wait for navigationResponse');
       return await watcher.navigationResponse();
     } finally {
-      log('LIFECYCLE WATCHER DISPOSED');
       watcher.dispose();
     }
   }
