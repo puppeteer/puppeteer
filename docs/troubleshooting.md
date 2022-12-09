@@ -82,7 +82,6 @@ missing. The common ones are provided below.
 ```
 ca-certificates
 fonts-liberation
-libappindicator3-1
 libasound2
 libatk-bridge2.0-0
 libatk1.0-0
