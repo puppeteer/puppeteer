@@ -9,7 +9,7 @@ Wait for the `xpath` to appear in page. If at the moment of calling the method t
 This method works across navigation
 
 ```ts
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 (async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();

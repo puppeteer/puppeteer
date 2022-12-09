@@ -38,7 +38,7 @@ the promise which resolve when the `pageFunction` returns a truthy value.
 The `waitForFunction` can be used to observe viewport size change:
 
 ```ts
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 
 (async () => {
 .  const browser = await puppeteer.launch();

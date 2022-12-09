@@ -29,7 +29,7 @@ The constructor for this class is marked as internal. Third-party code should no
 The following is a typical example of using Puppeteer to drive automation:
 
 ```ts
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 
 (async () => {
   const browser = await puppeteer.launch();
