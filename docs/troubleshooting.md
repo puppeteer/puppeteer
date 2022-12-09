@@ -1,5 +1,12 @@
 # Troubleshooting
 
+:::caution
+
+Chromium currently does not provide arm64 binaries for Linux. There are only binaries
+for [Mac ARM with experimental support from Puppeteer](https://pptr.dev/contributing#macos-arm-and-custom-executables).
+
+:::
+
 ## `Cannot find module 'puppeteer-core/internal/...'`
 
 This can occur is your Node.js version is lower than 14 or you are using a
