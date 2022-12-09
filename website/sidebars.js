@@ -14,6 +14,7 @@ module.exports = {
       items: [
         'guides/configuration',
         'guides/query-selectors',
+        'guides/evaluate-javascript',
         'guides/docker',
         'guides/request-interception',
         'guides/chrome-extensions',
