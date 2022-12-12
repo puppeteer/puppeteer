@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export {Protocol} from 'devtools-protocol';
+export {Protocol} from 'puppeteer-core';
 
 export * from 'puppeteer-core/internal/puppeteer-core.js';
 
