@@ -167,7 +167,7 @@ export interface PDFOptions {
    */
   omitBackground?: boolean;
   /**
-   * Timeout in milliseconds
+   * Timeout in milliseconds. Pass `0` to disable timeout.
    * @defaultValue 30000
    */
   timeout?: number;
