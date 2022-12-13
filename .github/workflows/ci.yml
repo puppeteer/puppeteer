@@ -242,7 +242,6 @@ jobs:
           - 18
         pkg_manager:
           - npm
-          - yarn
     steps:
       - name: Download installation test
         uses: actions/download-artifact@v3
