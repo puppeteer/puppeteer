@@ -163,6 +163,51 @@ describe('Accessibility', function () {
       )
     ).toEqual(golden);
   });
+  it('get snapshots while the tree is re-calculated', async () => {
+    // see https://github.com/puppeteer/puppeteer/issues/9404
+    const {page} = getTestState();
+
+    await page.setContent(
+      `<!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Accessible name + aria-expanded puppeteer bug</title>
+        <style>
+          [aria-expanded="false"] + * {
+            display: none;
+          }
+        </style>
+      </head>
+      <body>
+        <button hidden>Show</button>
+        <p>Some content</p>
+        <script>
+          const button = document.querySelector('button');
+          button.removeAttribute('hidden')
+          button.setAttribute('aria-expanded', 'false');
+          button.addEventListener('click', function() {
+            button.setAttribute('aria-expanded', button.getAttribute('aria-expanded') !== 'true')
+            if (button.getAttribute('aria-expanded') == 'true') {
+              button.textContent = 'Hide'
+            } else {
+              button.textContent = 'Show'
+            }
+          })
+        </script>
+      </body>
+      </html>`
+    );
+    async function getAccessibleName(page: any, element: any) {
+      return (await page.accessibility.snapshot({root: element})).name;
+    }
+    const button = await page.$('button');
+    expect(await getAccessibleName(page, button)).toEqual('Show');
+    await button?.click();
+    await page.waitForSelector('aria/Hide');
+  });
   it('roledescription', async () => {
     const {page} = getTestState();
 
