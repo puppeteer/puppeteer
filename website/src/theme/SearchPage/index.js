@@ -20,6 +20,8 @@ import {useAllDocsData} from '@docusaurus/plugin-content-docs/client';
 import Translate, {translate} from '@docusaurus/Translate';
 import Layout from '@theme/Layout';
 import styles from './styles.module.css';
+// eslint-disable-next-line import/extensions
+import {tagToCounter} from '../SearchMetadata';
 // Very simple pluralization: probably good enough for now
 function useDocumentsFoundPlural() {
   const {selectMessage} = usePluralForm();
@@ -263,11 +265,17 @@ function SearchPageContent() {
   const makeSearch = useEvent((page = 0) => {
     algoliaHelper.addDisjunctiveFacetRefinement(
       'counter',
-      document
-        .querySelector('meta[name="docsearch:counter"]')
-        .getAttribute('content')
+      tagToCounter.get('default')
     );
     algoliaHelper.addDisjunctiveFacetRefinement('language', currentLocale);
+    Object.entries(docsSearchVersionsHelpers.searchVersions).forEach(
+      ([pluginId, searchVersion]) => {
+        algoliaHelper.addDisjunctiveFacetRefinement(
+          'counter',
+          tagToCounter.get(`docs-${pluginId}-${searchVersion}`)
+        );
+      }
+    );
     algoliaHelper.setQuery(searchQuery).setPage(page).search();
   });
   useEffect(() => {
