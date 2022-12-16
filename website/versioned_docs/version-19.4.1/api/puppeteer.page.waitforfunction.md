@@ -38,7 +38,7 @@ Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;Awaited&lt;ReturnType&lt;Fun
 The [Page.waitForFunction()](./puppeteer.page.waitforfunction.md) can be used to observe viewport size change:
 
 ```ts
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 (async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();

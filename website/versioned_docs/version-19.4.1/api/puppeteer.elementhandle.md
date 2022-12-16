@@ -19,7 +19,7 @@ export declare class ElementHandle<ElementType extends Node = Element> extends J
 ElementHandles can be created with the [Page.$()](./puppeteer.page._.md) method.
 
 ```ts
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 
 (async () => {
   const browser = await puppeteer.launch();

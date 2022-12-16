@@ -1,17 +1,17 @@
 ---
-sidebar_label: Frame.waitForSelector
+sidebar_label: ElementHandle.waitForSelector
 ---
 
-# Frame.waitForSelector() method
+# ElementHandle.waitForSelector() method
 
-Waits for an element matching the given selector to appear in the frame.
+Wait for an element matching the given selector to appear in the current element.
 
-This method works across navigations.
+Unlike [Frame.waitForSelector()](./puppeteer.frame.waitforselector.md), this method does not work across navigations or if the element is detached from DOM.
 
 #### Signature:
 
 ```typescript
-class Frame {
+class ElementHandle {
   waitForSelector<Selector extends string>(
     selector: Selector,
     options?: WaitForSelectorOptions
@@ -39,7 +39,7 @@ Throws if an element matching the given selector doesn't appear.
 ## Example
 
 ```ts
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 
 (async () => {
   const browser = await puppeteer.launch();

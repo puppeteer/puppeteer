@@ -33,7 +33,7 @@ Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;Awaited&lt;ReturnType&lt;Fun
 
 The only difference between [page.evaluate](./puppeteer.page.evaluate.md) and `page.evaluateHandle` is that `evaluateHandle` will return the value wrapped in an in-page object.
 
-If the function passed to `page.evaluteHandle` returns a Promise, the function will wait for the promise to resolve and return its value.
+If the function passed to `page.evaluateHandle` returns a Promise, the function will wait for the promise to resolve and return its value.
 
 You can pass a string instead of a function (although functions are recommended as they are easier to debug and use with TypeScript):
 
