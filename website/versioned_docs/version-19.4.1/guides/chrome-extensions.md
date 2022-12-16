@@ -14,10 +14,11 @@ The following is code for getting a handle to the
 an extension whose source is located in `./my-extension`:
 
 ```ts
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
+import path from 'path';
 
 (async () => {
-  const pathToExtension = require('path').join(__dirname, 'my-extension');
+  const pathToExtension = path.join(process.cwd(), 'my-extension');
   const browser = await puppeteer.launch({
     headless: 'chrome',
     args: [

@@ -25,7 +25,7 @@ The constructor for this class is marked as internal. Third-party code should no
 An example of using a [Browser](./puppeteer.browser.md) to create a [Page](./puppeteer.page.md):
 
 ```ts
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 
 (async () => {
   const browser = await puppeteer.launch();
@@ -40,7 +40,7 @@ const puppeteer = require('puppeteer');
 An example of disconnecting from and reconnecting to a [Browser](./puppeteer.browser.md):
 
 ```ts
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 
 (async () => {
   const browser = await puppeteer.launch();

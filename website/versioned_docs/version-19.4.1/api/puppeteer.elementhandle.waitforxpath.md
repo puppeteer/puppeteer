@@ -19,7 +19,7 @@ sidebar_label: ElementHandle.waitForXPath
 > This method works across navigation.
 >
 > ```ts
-> const puppeteer = require('puppeteer');
+> import puppeteer from 'puppeteer';
 > (async () => {
 >   const browser = await puppeteer.launch();
 >   const page = await browser.newPage();

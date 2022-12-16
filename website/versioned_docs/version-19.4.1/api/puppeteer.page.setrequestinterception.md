@@ -33,7 +33,7 @@ Promise&lt;void&gt;
 An example of a naïve request interceptor that aborts all image requests:
 
 ```ts
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 (async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();

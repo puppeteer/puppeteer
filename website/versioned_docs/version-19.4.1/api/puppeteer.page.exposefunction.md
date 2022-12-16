@@ -45,8 +45,8 @@ Promise&lt;void&gt;
 An example of adding an `md5` function into the page:
 
 ```ts
-const puppeteer = require('puppeteer');
-const crypto = require('crypto');
+import puppeteer from 'puppeteer';
+import crypto from 'crypto';
 
 (async () => {
   const browser = await puppeteer.launch();
@@ -70,8 +70,8 @@ const crypto = require('crypto');
 An example of adding a `window.readfile` function into the page:
 
 ```ts
-const puppeteer = require('puppeteer');
-const fs = require('fs');
+import puppeteer from 'puppeteer';
+import fs from 'fs';
 
 (async () => {
   const browser = await puppeteer.launch();
