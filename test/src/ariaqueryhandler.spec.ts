@@ -229,7 +229,7 @@ describe('AriaQueryHandler', () => {
       await page.waitForSelector('aria/[role="button"]');
     });
 
-    it('should work for ElementHandler.waitForSelector', async () => {
+    it('should work for ElementHandle.waitForSelector', async () => {
       const {page, server} = getTestState();
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {

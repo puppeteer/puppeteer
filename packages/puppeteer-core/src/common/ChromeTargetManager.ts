@@ -353,7 +353,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
         // present in #attachedTargetsBySessionId.
         assert(this.#attachedTargetsBySessionId.has(parentSession.id()));
       }
-      await interceptor(
+      interceptor(
         target,
         parentSession instanceof Connection
           ? null
