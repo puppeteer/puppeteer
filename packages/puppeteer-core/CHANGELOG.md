@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.4.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.4.0...puppeteer-core-v19.4.1) (2022-12-16)
+
+
+### Bug Fixes
+
+* improve a11y snapshot handling if the tree is not correct ([#9405](https://github.com/puppeteer/puppeteer/issues/9405)) ([02fe501](https://github.com/puppeteer/puppeteer/commit/02fe50194e60bd14c3a82539473a0313ab88c766)), closes [#9404](https://github.com/puppeteer/puppeteer/issues/9404)
+* remove oopif expectations and fix oopif flakiness ([#9375](https://github.com/puppeteer/puppeteer/issues/9375)) ([810e0cd](https://github.com/puppeteer/puppeteer/commit/810e0cd74ecef353cfa43746c18bd5f580a3233d))
+
 ## [19.4.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.3.0...puppeteer-core-v19.4.0) (2022-12-07)
 
 
