@@ -109,6 +109,14 @@ jobs:
           publish_dir: ./website/build
           user_name: release-please[bot]
           user_email: 55107282+release-please[bot]@users.noreply.github.com
+      - name: Trigger Algolia reindexing
+        env:
+          CRAWLER_USER_ID: ${{secrets.ALGOLIA_CRAWLER_USER_ID}}
+          CRAWLER_API_KEY: ${{secrets.ALGOLIA_CRAWLER_API_KEY}}
+          CRAWLER_ID: ${{secrets.ALGOLIA_CRAWLER_ID}}
+        run: |
+          curl -H "Content-Type: application/json" -X POST --user "$CRAWLER_USER_ID:$CRAWLER_API_KEY" \
+            "https://crawler.algolia.com/api/1/crawlers/$CRAWLER_ID/reindex"
 
   chrome-tests:
     name: ${{ matrix.suite }} tests on ${{ matrix.os }}
