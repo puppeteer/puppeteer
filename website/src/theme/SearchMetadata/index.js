@@ -4,18 +4,29 @@ import Head from '@docusaurus/Head';
 // Tracks the global package version as a local, monotonic counter. This
 // prevents Algolia from deleting based on differing package versions and
 // instead delete based on the number of versions we intend to keep documented.
-let globalCounter = -1;
-const versionToCounter = new Map();
 
-export default function SearchMetadata({locale, version}) {
+class MonotonicCountMap {
+  #counter = -1;
+  #map = new Map();
+
+  get(key) {
+    console.log(key);
+    let counter = this.#map.get(key);
+    if (!counter) {
+      counter = ++this.#counter;
+      this.#map.set(key, counter);
+    }
+    return counter;
+  }
+}
+
+export const tagToCounter = new MonotonicCountMap();
+
+export default function SearchMetadata({locale, tag}) {
   const language = locale;
   let counter;
-  if (version) {
-    counter = versionToCounter.get(version);
-    if (!counter) {
-      counter = ++globalCounter;
-      versionToCounter.set(version, counter);
-    }
+  if (tag) {
+    counter = tagToCounter.get(tag);
   }
   return (
     <Head>
