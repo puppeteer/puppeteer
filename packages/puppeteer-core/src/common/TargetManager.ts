@@ -33,7 +33,7 @@ export type TargetFactory = (
 export type TargetInterceptor = (
   createdTarget: Target,
   parentTarget: Target | null
-) => Promise<void>;
+) => void;
 
 /**
  * TargetManager encapsulates all interactions with CDP targets and is

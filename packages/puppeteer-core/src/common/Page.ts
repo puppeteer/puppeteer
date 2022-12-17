@@ -270,7 +270,7 @@ export class CDPPage extends Page {
     this.emit(PageEmittedEvents.WorkerDestroyed, worker);
   };
 
-  #onAttachedToTarget = async (createdTarget: Target) => {
+  #onAttachedToTarget = (createdTarget: Target) => {
     this.#frameManager.onAttachedToTarget(createdTarget);
     if (createdTarget._getTargetInfo().type === 'worker') {
       const session = createdTarget._session();
