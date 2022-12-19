@@ -61,7 +61,7 @@
       ]
     },
     "generate:package-json": {
-      "command": "echo '{\"type\": \"module\"}' > lib/esm/package.json",
+      "command": "tsx ../../tools/generate_module_package_json.ts lib/esm/package.json",
       "clean": "if-file-deleted",
       "dependencies": [
         "build:tsc"
