@@ -605,4 +605,14 @@ describe('ElementHandle specs', function () {
       expect(txtContents).toBe('textcontent');
     });
   });
+
+  describe('Element.toElement', () => {
+    it('should work', async () => {
+      const {page} = getTestState();
+      await page.setContent('<div class="foo">Foo1</div>');
+      const element = await page.$('.foo');
+      const div = await element?.toElement('div');
+      expect(div).toBeDefined();
+    });
+  });
 });
