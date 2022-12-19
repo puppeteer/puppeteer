@@ -7,10 +7,5 @@ sidebar_label: MouseButton
 #### Signature:
 
 ```typescript
-export declare type MouseButton =
-  | 'left'
-  | 'right'
-  | 'middle'
-  | 'back'
-  | 'forward';
+export type MouseButton = 'left' | 'right' | 'middle' | 'back' | 'forward';
 ```

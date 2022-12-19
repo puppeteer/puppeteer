@@ -7,7 +7,7 @@ sidebar_label: HandleOr
 #### Signature:
 
 ```typescript
-export declare type HandleOr<T> = HandleFor<T> | JSHandle<T> | T;
+export type HandleOr<T> = HandleFor<T> | JSHandle<T> | T;
 ```
 
 **References:** [HandleFor](./puppeteer.handlefor.md), [JSHandle](./puppeteer.jshandle.md)

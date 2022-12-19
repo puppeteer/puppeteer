@@ -7,7 +7,7 @@ sidebar_label: ErrorCode
 #### Signature:
 
 ```typescript
-export declare type ErrorCode =
+export type ErrorCode =
   | 'aborted'
   | 'accessdenied'
   | 'addressunreachable'

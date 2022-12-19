@@ -7,7 +7,7 @@ sidebar_label: ElementFor
 #### Signature:
 
 ```typescript
-export declare type ElementFor<
+export type ElementFor<
   TagName extends keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap
 > = TagName extends keyof HTMLElementTagNameMap
   ? HTMLElementTagNameMap[TagName]

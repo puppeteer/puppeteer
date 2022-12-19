@@ -7,7 +7,7 @@ sidebar_label: TargetFilterCallback
 #### Signature:
 
 ```typescript
-export declare type TargetFilterCallback = (
+export type TargetFilterCallback = (
   target: Protocol.Target.TargetInfo
 ) => boolean;
 ```

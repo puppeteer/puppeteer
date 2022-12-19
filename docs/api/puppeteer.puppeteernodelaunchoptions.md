@@ -9,7 +9,7 @@ Utility type exposed to enable users to define options that can be passed to `pu
 #### Signature:
 
 ```typescript
-export declare type PuppeteerNodeLaunchOptions = BrowserLaunchArgumentOptions &
+export type PuppeteerNodeLaunchOptions = BrowserLaunchArgumentOptions &
   LaunchOptions &
   BrowserConnectOptions;
 ```
