@@ -15,7 +15,8 @@
  */
 import glob from 'glob';
 import dts from 'rollup-plugin-dts';
-import resolve from 'rollup-plugin-node-resolve';
+import {nodeResolve} from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 
 export default ['cjs', 'esm'].flatMap(outputType => {
   const configs = [];
@@ -26,7 +27,7 @@ export default ['cjs', 'esm'].flatMap(outputType => {
     configs.push({
       input: jsFile,
       output: {file: jsFile, format: outputType},
-      plugins: [resolve()],
+      plugins: [commonjs(), nodeResolve()],
     });
   }
   for (const typesFile of glob.sync(`${thirdPartyPath}/**/*.d.ts`)) {
