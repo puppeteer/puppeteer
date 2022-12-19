@@ -31,7 +31,7 @@ import {
 } from './JSHandle.js';
 import {Page, ScreenshotOptions} from '../api/Page.js';
 import {getQueryHandlerAndSelector} from './QueryHandler.js';
-import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
+import {ElementFor, EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {KeyInput} from './USKeyboardLayout.js';
 import {debugError, isString} from './util.js';
 import {CDPPage} from './Page.js';
@@ -410,6 +410,37 @@ export class ElementHandle<
       xpath = `.${xpath}`;
     }
     return this.waitForSelector(`xpath/${xpath}`, options);
+  }
+
+  /**
+   * Converts the current handle to the given element type.
+   *
+   * @example
+   *
+   * ```ts
+   * const element: ElementHandle<Element> = await page.$(
+   *   '.class-name-of-anchor'
+   * );
+   * // DO NOT DISPOSE `element`, this will be always be the same handle.
+   * const anchor: ElementHandle<HTMLAnchorElement> = await element.toElement(
+   *   'a'
+   * );
+   * ```
+   *
+   * @param tagName - The tag name of the desired element type.
+   * @throws An error if the handle does not match. **The handle will not be
+   * automatically disposed.**
+   */
+  async toElement<
+    K extends keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap
+  >(tagName: K): Promise<HandleFor<ElementFor<K>>> {
+    const isMatchingTagName = await this.evaluate((node, tagName) => {
+      return node.nodeName === tagName.toUpperCase();
+    }, tagName);
+    if (!isMatchingTagName) {
+      throw new Error(`Element is not a(n) \`${tagName}\` element`);
+    }
+    return this as unknown as HandleFor<ElementFor<K>>;
   }
 
   override asElement(): ElementHandle<ElementType> | null {

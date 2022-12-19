@@ -60,6 +60,17 @@ export type InnerParams<T extends unknown[]> = {
 /**
  * @public
  */
+export type ElementFor<
+  TagName extends keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap
+> = TagName extends keyof HTMLElementTagNameMap
+  ? HTMLElementTagNameMap[TagName]
+  : TagName extends keyof SVGElementTagNameMap
+  ? SVGElementTagNameMap[TagName]
+  : never;
+
+/**
+ * @public
+ */
 export type EvaluateFunc<T extends unknown[]> = (
   ...params: InnerParams<T>
 ) => Awaitable<unknown>;
@@ -69,10 +80,10 @@ export type EvaluateFunc<T extends unknown[]> = (
  */
 export type NodeFor<ComplexSelector extends string> =
   TypeSelectorOfComplexSelector<ComplexSelector> extends infer TypeSelector
-    ? TypeSelector extends keyof HTMLElementTagNameMap
-      ? HTMLElementTagNameMap[TypeSelector]
-      : TypeSelector extends keyof SVGElementTagNameMap
-      ? SVGElementTagNameMap[TypeSelector]
+    ? TypeSelector extends
+        | keyof HTMLElementTagNameMap
+        | keyof SVGElementTagNameMap
+      ? ElementFor<TypeSelector>
       : Element
     : never;
 
