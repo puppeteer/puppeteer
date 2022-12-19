@@ -7,7 +7,7 @@ sidebar_label: ProtocolLifeCycleEvent
 #### Signature:
 
 ```typescript
-export declare type ProtocolLifeCycleEvent =
+export type ProtocolLifeCycleEvent =
   | 'load'
   | 'DOMContentLoaded'
   | 'networkIdle'

@@ -11,7 +11,7 @@ sidebar_label: InterceptResolutionStrategy
 #### Signature:
 
 ```typescript
-export declare type InterceptResolutionStrategy = InterceptResolutionAction;
+export type InterceptResolutionStrategy = InterceptResolutionAction;
 ```
 
 **References:** [InterceptResolutionAction](./puppeteer.interceptresolutionaction.md)

@@ -7,7 +7,7 @@ sidebar_label: PuppeteerLifeCycleEvent
 #### Signature:
 
 ```typescript
-export declare type PuppeteerLifeCycleEvent =
+export type PuppeteerLifeCycleEvent =
   | 'load'
   | 'domcontentloaded'
   | 'networkidle0'

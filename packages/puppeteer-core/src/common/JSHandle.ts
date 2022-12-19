@@ -167,7 +167,7 @@ export class JSHandle<T = unknown> {
     propertyName: HandleOr<K>
   ): Promise<HandleFor<T[K]>> {
     return this.evaluateHandle((object, propertyName) => {
-      return object[propertyName];
+      return object[propertyName as K];
     }, propertyName);
   }
 

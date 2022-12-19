@@ -9,5 +9,5 @@ Supported products.
 #### Signature:
 
 ```typescript
-export declare type Product = 'chrome' | 'firefox';
+export type Product = 'chrome' | 'firefox';
 ```

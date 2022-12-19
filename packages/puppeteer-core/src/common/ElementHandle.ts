@@ -237,8 +237,8 @@ export class ElementHandle<
     Selector extends string,
     Params extends unknown[],
     Func extends EvaluateFunc<
-      [Array<NodeFor<Selector>>, ...Params]
-    > = EvaluateFunc<[Array<NodeFor<Selector>>, ...Params]>
+      [HandleFor<Array<NodeFor<Selector>>>, ...Params]
+    > = EvaluateFunc<[HandleFor<Array<NodeFor<Selector>>>, ...Params]>
   >(
     selector: Selector,
     pageFunction: Func | string,
@@ -254,9 +254,9 @@ export class ElementHandle<
       this,
       updatedSelector
     )) as Array<HandleFor<NodeFor<Selector>>>;
-    const elements = await this.evaluateHandle((_, ...elements) => {
+    const elements = (await this.evaluateHandle((_, ...elements) => {
       return elements;
-    }, ...handles);
+    }, ...handles)) as JSHandle<Array<NodeFor<Selector>>>;
     const [result] = await Promise.all([
       elements.evaluate(pageFunction, ...args),
       ...handles.map(handle => {

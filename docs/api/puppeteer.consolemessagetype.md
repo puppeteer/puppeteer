@@ -9,7 +9,7 @@ The supported types for console messages.
 #### Signature:
 
 ```typescript
-export declare type ConsoleMessageType =
+export type ConsoleMessageType =
   | 'log'
   | 'debug'
   | 'info'
