@@ -7,5 +7,5 @@ sidebar_label: Handler
 #### Signature:
 
 ```typescript
-export declare type Handler<T = unknown> = (event: T) => void;
+export type Handler<T = unknown> = (event: T) => void;
 ```
