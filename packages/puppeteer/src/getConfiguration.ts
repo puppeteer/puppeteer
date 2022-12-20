@@ -23,6 +23,18 @@ export const getConfiguration = (): Configuration => {
   const result = cosmiconfigSync('puppeteer').search();
   const configuration: Configuration = result ? result.config : {};
 
+  // Support the CHROME_BIN/FIREFOX_BIN convention found elsewhere. All of
+  // these, are lowest precedent and maintain current behaviors
+  if (process.env['CHROME_BIN']) {
+    configuration.defaultProduct = 'chrome' as Product;
+    configuration.executablePath = process.env['CHROME_BIN'];
+    configuration.skipDownload = true;
+  } else if (process.env['FIREFOX_BIN']) {
+    configuration.defaultProduct = 'firefox' as Product;
+    configuration.executablePath = process.env['FIREFOX_BIN'];
+    configuration.skipDownload = true;
+  }
+
   // Merging environment variables.
   configuration.defaultProduct = (process.env['PUPPETEER_PRODUCT'] ??
     process.env['npm_config_puppeteer_product'] ??
