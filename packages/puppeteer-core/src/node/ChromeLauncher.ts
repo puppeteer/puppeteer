@@ -2,9 +2,10 @@ import {accessSync} from 'fs';
 import {mkdtemp} from 'fs/promises';
 import os from 'os';
 import path from 'path';
-import {CDPBrowser} from '../common/Browser.js';
+import {Browser} from '../api/Browser.js';
 import {assert} from '../util/assert.js';
 import {BrowserRunner} from './BrowserRunner.js';
+import {CDPBrowser} from '../common/Browser.js';
 import {
   BrowserLaunchArgumentOptions,
   ChromeReleaseChannel,
@@ -23,7 +24,7 @@ export class ChromeLauncher extends ProductLauncher {
 
   override async launch(
     options: PuppeteerNodeLaunchOptions = {}
-  ): Promise<CDPBrowser> {
+  ): Promise<Browser> {
     const {
       ignoreDefaultArgs = false,
       args = [],
@@ -41,6 +42,7 @@ export class ChromeLauncher extends ProductLauncher {
       timeout = 30000,
       waitForInitialPage = true,
       debuggingPort,
+      protocol,
     } = options;
 
     const chromeArguments = [];
@@ -124,6 +126,24 @@ export class ChromeLauncher extends ProductLauncher {
         slowMo,
         preferredRevision: this.puppeteer.browserRevision,
       });
+
+      if (protocol === 'webDriverBiDi') {
+        try {
+          const BiDi = await import('../common/bidi/bidi.js');
+          const bidiConnection = await BiDi.connectBidiOverCDP(connection);
+          browser = await BiDi.Browser.create({
+            connection: bidiConnection,
+            closeCallback: runner.close.bind(runner),
+            process: runner.proc,
+          });
+        } catch (error) {
+          runner.kill();
+          throw error;
+        }
+
+        return browser;
+      }
+
       browser = await CDPBrowser._create(
         this.product,
         connection,

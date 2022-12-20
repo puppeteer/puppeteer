@@ -2066,49 +2066,49 @@
   {
     "testIdPattern": "",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
+    "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP", "TIMEOUT"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch can launch and close the browser",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
+    "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[Connection.spec] WebDriver BiDi",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
+    "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
+    "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work with function shorthands",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
+    "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work with unicode chars",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
+    "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work right after framenavigated",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
+    "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work from-inside an exposed function",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
+    "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"]
   }
 ]

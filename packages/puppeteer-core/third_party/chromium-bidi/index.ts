@@ -14,8 +14,5 @@
  * limitations under the License.
  */
 
-export * from './Browser.js';
-export * from './BrowserContext.js';
-export * from './Page.js';
-export * from './Connection.js';
-export * from './BidiOverCDP.js';
+export * as BidiMapper from 'chromium-bidi/lib/cjs/bidiMapper/bidiMapper.js';
+export * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';

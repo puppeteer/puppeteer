@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import mitt, {
-  Emitter,
-  EventType,
-  EventHandlerMap,
-  Handler,
-} from '../../third_party/mitt/index.js';
+import mitt, {Emitter, EventHandlerMap} from '../../third_party/mitt/index.js';
 
 /**
  * @public
  */
-export {EventType, Handler};
+export type EventType = string | symbol;
+/**
+ * @public
+ */
+export type Handler<T = unknown> = (event: T) => void;
 
 /**
  * @public
