@@ -131,7 +131,7 @@ class CDPClientAdapter<
 
 /**
  * This transport is given to the BiDi server instance and allows Puppeteer
- * to send an receive commands to the BiDiServer.
+ * to send and receive commands to the BiDiServer.
  * @internal
  */
 class NoOpTransport

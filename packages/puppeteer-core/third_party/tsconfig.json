@@ -3,7 +3,6 @@
   "compilerOptions": {
     "declarationMap": false,
     "outDir": "../lib/esm/third_party",
-    "sourceMap": false,
-    "skipLibCheck": true
+    "sourceMap": false
   }
 }
