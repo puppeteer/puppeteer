@@ -30,6 +30,28 @@ export const getConfiguration = (): Configuration => {
     configuration.defaultProduct ??
     'chrome') as Product;
 
+  // Support the CHROME_BIN/FIREFOX_BIN convention found elsewhere. All of
+  // these, are lowest precedent and maintain current behaviors
+  // Do not source from CHROME_BIN if the product is set to Firefox
+  // Do not source from FIREFOX_BIN if the product is set to Chrome
+  if (
+    (configuration.defaultProduct === ('chrome' as Product) ||
+      configuration.defaultProduct === undefined) &&
+    process.env['CHROME_BIN']
+  ) {
+    configuration.defaultProduct = 'chrome' as Product;
+    configuration.executablePath = process.env['CHROME_BIN'];
+    configuration.skipDownload = true;
+  } else if (
+    (configuration.defaultProduct === ('firefox' as Product) ||
+      configuration.defaultProduct === undefined) &&
+    process.env['FIREFOX_BIN']
+  ) {
+    configuration.defaultProduct = 'firefox' as Product;
+    configuration.executablePath = process.env['FIREFOX_BIN'];
+    configuration.skipDownload = true;
+  }
+
   configuration.executablePath =
     process.env['PUPPETEER_EXECUTABLE_PATH'] ??
     process.env['npm_config_puppeteer_executable_path'] ??
