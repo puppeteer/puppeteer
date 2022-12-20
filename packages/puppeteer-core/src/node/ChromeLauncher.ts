@@ -5,9 +5,7 @@ import path from 'path';
 import {Browser} from '../api/Browser.js';
 import {assert} from '../util/assert.js';
 import {BrowserRunner} from './BrowserRunner.js';
-import {Browser as BiDiBrowser} from '../common/bidi/Browser.js';
 import {CDPBrowser} from '../common/Browser.js';
-import {connectBiDiOverCDP} from '../common/bidi/BiDiOverCDP.js';
 import {
   BrowserLaunchArgumentOptions,
   ChromeReleaseChannel,
@@ -131,8 +129,9 @@ export class ChromeLauncher extends ProductLauncher {
 
       if (protocol === 'webDriverBiDi') {
         try {
-          const bidiConnection = await connectBiDiOverCDP(connection);
-          browser = await BiDiBrowser.create({
+          const BiDi = await import('../common/bidi/bidi.js');
+          const bidiConnection = await BiDi.connectBidiOverCDP(connection);
+          browser = await BiDi.Browser.create({
             connection: bidiConnection,
             closeCallback: runner.close.bind(runner),
             process: runner.proc,
