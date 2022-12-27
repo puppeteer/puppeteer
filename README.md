@@ -21,7 +21,7 @@ Most things that you can do manually in the browser can be done using Puppeteer!
 Here are a few examples to get you started:
 
 - Generate screenshots and PDFs of pages.
-- Crawl a SPA (Single-Page Application) and generate pre-rendered content (i.e.
+- Crawl an SPA (Single-Page Application) and generate pre-rendered content (i.e.
   "SSR" (Server-Side Rendering)).
 - Automate form submission, UI testing, keyboard input, etc.
 - Create an automated testing environment using the latest JavaScript and
@@ -129,7 +129,7 @@ and [examples](https://github.com/puppeteer/puppeteer/tree/main/examples).
 
 The following example searches
 [developers.google.com/web](https://developers.google.com/web) for articles
-tagged "Headless Chrome" and scrape results from the results page.
+tagged "Headless Chrome" and scrapes results from the results page.
 
 ```ts
 import puppeteer from 'puppeteer';
