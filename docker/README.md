@@ -20,4 +20,4 @@ docker run -i --init --rm --cap-add=SYS_ADMIN --name puppeteer-chrome puppeteer-
 
 ## GitHub Actions
 
-The image is automatically built, tested, and published by the [publish-docker.yml](https://github.com/puppeteer/puppeteer/blob/main/.github/workflows/publish-docker.yml) workflow.
+The image is automatically built, tested, and published by the [publish.yml](https://github.com/puppeteer/puppeteer/blob/main/.github/workflows/publish.yml) workflow.
