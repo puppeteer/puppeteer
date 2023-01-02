@@ -1377,14 +1377,13 @@ export class CDPPage extends Page {
     const fromSurface = options.fromSurface;
 
     if (options.fullPage) {
-      const metrics = await this.#client.send('Page.getLayoutMetrics');
-      // Fallback to `contentSize` in case of using Firefox.
-      const {width, height} = metrics.cssContentSize || metrics.contentSize;
-
       // Overwrite clip for full page.
       clip = undefined;
 
       if (!captureBeyondViewport) {
+        const metrics = await this.#client.send('Page.getLayoutMetrics');
+        // Fallback to `contentSize` in case of using Firefox.
+        const {width, height} = metrics.cssContentSize || metrics.contentSize;
         const {
           isMobile = false,
           deviceScaleFactor = 1,
