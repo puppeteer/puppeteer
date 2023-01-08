@@ -11,7 +11,7 @@ const cleanupBlockComment = value => {
         if (value.startsWith(' ')) {
           value = value.slice(1);
         }
-      }
+      };
       return value.trimEnd();
     })
     .join('\n')
@@ -77,7 +77,7 @@ const rule = {
                   comment,
                   buildBlockComment(formattedValue, offset).trimStart()
                 );
-              },
+              };
             });
           }
           break;
