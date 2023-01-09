@@ -32,10 +32,10 @@ skippedTests.reverse();
 function shouldSkipTest(test: Mocha.Test): boolean {
   const testId = getTestId(test.file!, test.fullTitle());
   // TODO: more efficient lookup.
-  const defintion = skippedTests.find(skippedTest => {
+  const definition = skippedTests.find(skippedTest => {
     return testId.startsWith(skippedTest.testIdPattern);
   });
-  if (defintion && defintion.skip) {
+  if (definition && definition.skip) {
     return true;
   }
   return false;

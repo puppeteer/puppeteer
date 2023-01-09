@@ -83,7 +83,7 @@ export class BrowserContext extends EventEmitter {
    * ```
    *
    * @param predicate - A function to be run for every target
-   * @param options - An object of options. Accepts a timout,
+   * @param options - An object of options. Accepts a timeout,
    * which is the maximum wait time in milliseconds.
    * Pass `0` to disable the timeout. Defaults to 30 seconds.
    * @returns Promise which resolves to the first target found
