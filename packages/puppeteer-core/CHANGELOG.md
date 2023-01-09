@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.5.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.4.1...puppeteer-core-v19.5.0) (2023-01-05)
+
+
+### Features
+
+* add element validation ([#9352](https://github.com/puppeteer/puppeteer/issues/9352)) ([c7a063a](https://github.com/puppeteer/puppeteer/commit/c7a063a15274856184356e15f2ae4be41191d309))
+
+
+### Bug Fixes
+
+* **puppeteer-core:** target interceptor is not async ([#9430](https://github.com/puppeteer/puppeteer/issues/9430)) ([e3e9cc6](https://github.com/puppeteer/puppeteer/commit/e3e9cc622ac32f2067b6e74b5e8706c63169a157))
+
 ## [19.4.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.4.0...puppeteer-core-v19.4.1) (2022-12-16)
 
 
