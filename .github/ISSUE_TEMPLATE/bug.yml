@@ -5,66 +5,111 @@ labels: [bug]
 body:
   - type: markdown
     attributes:
-      value: |
+      value: >
         ### Thanks for taking the time to fill out this bug report!
-        **Before filling out this report**, please check our [Troubleshooting](https://pptr.dev/troubleshooting) guide for solutions to common issues.
-        Also, verify the problem is *related to packages maintained by Puppeteer* (this does not include `puppeteer-extra`, `expect-puppeteer`, etc.).
-  - type: textarea
-    id: summary
-    attributes:
-      label: Bug description
-      description: What did you do? What did you expect to happen? What actually happened instead? Provide a [minimal reproducible example](https://stackoverflow.com/help/minimal-reproducible-example).
-      value: |
-        Steps to reproduce the problem:
 
-        1. …
+        **Before filling out this report**, please check our
+        [Troubleshooting](https://pptr.dev/troubleshooting) guide for solutions
+        to common issues.
+  - id: summary
+    type: textarea
+    attributes:
+      label: Bug expectation
+      description: What do you expect to happen? What actually happened instead?
+      placeholder: |
+        I expected ...
+
+        What happened instead was ...
     validations:
       required: true
-  - type: input
-    id: puppeteer-version
+  - id: behavior
+    type: checkboxes
+    attributes:
+      label: Bug behavior
+      description: >
+        How does the bug behave? Does it happen very rarely (flaky)? Is there a
+        lack of error (no error)? If there is a PDF problem, make sure the
+        script writes the PDF somewhere in the current working directory. *Note:
+        PDF implies no error.*
+      options:
+        - label: Flaky
+        - label: No error
+        - label: PDF
+  - id: mvce
+    type: textarea
+    attributes:
+      label: Minimal, reproducible example
+      description: >
+        Provide a [minimal, reproducible
+        example](https://stackoverflow.com/help/minimal-reproducible-example).
+        *No need for backticks — this automatically gets formatted into code.*
+      render: TypeScript
+    validations:
+      required: true
+  - id: error
+    type: input
+    attributes:
+      label: Error string
+      description: >
+        Provide the bug's error. For example, `throw new Error('test')` would
+        have the error `test`. *Do not include the entire error log.*
+    validations:
+      required: true
+  - id: puppeteer-configuration
+    type: textarea
+    attributes:
+      label: Puppeteer configuration
+      description: >
+        Copy and paste your [configuration
+        file](https://pptr.dev/guides/configuration/) (if applicable). *No need
+        for backticks — this automatically gets formatted into code.*
+      render: TypeScript
+  - id: puppeteer-version
+    type: input
     attributes:
       label: Puppeteer version
-      description: What version of Puppeteer are you running?
+      description: |
+        What version of Puppeteer are you running? *This must be a valid semver
+        tag.*
     validations:
       required: true
-  - type: input
-    id: node-version
+  - id: node-version
+    type: input
     attributes:
-      label: Node.js version
-      description: What version of Node.js are you running?
+      label: Node version
+      description: |
+        What supported version of Node.js are you running? *This must be a valid
+        semver tag.*
     validations:
       required: true
-  - type: input
-    id: npm-version
+  - id: pkg-mgr
+    type: dropdown
     attributes:
-      label: npm version
-      description: What version of npm are you running?
-    validations:
-      required: true
-  - type: dropdown
-    id: operating-system
-    attributes:
-      label: What operating system are you seeing the problem on?
-      multiple: true
+      label: Package manager
+      description: What package manager are you running?
       options:
-        - Linux
-        - macOS
-        - Windows
+        - npm
+        - yarn
+        - pnpm
     validations:
       required: true
-  - type: textarea
-    id: config
+  - id: pkg-mgr-version
+    type: input
     attributes:
-      label: Configuration file
+      label: Package manager version
       description: |
-        Please copy and paste your configuration file [[Docs](https://pptr.dev/guides/configuration/)]. 
-        *No need for backticks — this automatically gets formatted into code.*
-      render: JavaScript
-  - type: textarea
-    id: logs
+        What version of the package manager are you running? *This must be a
+        valid semver tag.*
+    validations:
+      required: true
+  - id: operating-system
+    type: dropdown
     attributes:
-      label: Relevant log output
-      description: |
-        Please copy and paste any relevant log output. 
-        *No need for backticks — this automatically gets formatted into code.*
-      render: Shell
+      label: Operating system
+      description: What supported operating system are you running?
+      options:
+        - Windows
+        - macOS
+        - Linux
+    validations:
+      required: true
