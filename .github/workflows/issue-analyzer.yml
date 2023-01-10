@@ -1,0 +1,203 @@
+name: Issue Analyzer
+
+permissions: read-all
+
+on:
+  issues:
+    types: [opened, reopened, edited]
+
+concurrency:
+  group: ${{ format('issue-{0}', github.event.issue.number) }}
+  cancel-in-progress: true
+
+jobs:
+  analyze-issue:
+    name: Analyze Issues
+    runs-on: ubuntu-latest
+    if: ${{ contains(github.event.issue.labels.*.name, 'bug') }}
+    env:
+      ISSUE_BODY: ${{ toJson(github.event.issue.body) }}
+    outputs:
+      runsOn: ${{ steps.issue-analysis.outputs.runsOn }}
+      nodeVersion: ${{ steps.issue-analysis.outputs.nodeVersion }}
+      packageManager: ${{ steps.issue-analysis.outputs.packageManager }}
+      errorMessage: ${{ steps.issue-analysis.outputs.errorMessage }}
+    permissions:
+      issues: write
+    steps:
+      - name: Remove labels
+        uses: actions/github-script@v6
+        with:
+          script: |
+            if (${{ contains(github.event.issue.labels.*.name, 'confirmed') }}) {
+              github.rest.issues.removeLabel({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: ["confirmed"]
+              })
+            }
+            if (${{ contains(github.event.issue.labels.*.name, 'not-reproducible') }}) {
+              github.rest.issues.removeLabel({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: ["not-reproducible"]
+              })
+            }
+            if (${{ contains(github.event.issue.labels.*.name, 'needs-feedback') }}) {
+              github.rest.issues.removeLabel({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: ["needs-feedback"]
+              })
+            }
+            if (${{ contains(github.event.issue.labels.*.name, 'invalid') }}) {
+              github.rest.issues.removeLabel({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: ["invalid"]
+              })
+            }
+      - name: Check out repository
+        uses: actions/checkout@v3.0.2
+      - name: Set up Node.js
+        uses: actions/setup-node@v3.5.1
+        with:
+          node-version: latest
+      - name: Install dependencies
+        run: npm install
+      - name: Analyze issue
+        id: issue-analysis
+        run: echo $ISSUE_BODY | ./analyze_issue.mjs >> $GITHUB_OUTPUT
+      - uses: actions/upload-artifact@v3
+        with:
+          name: issue-files
+          path: out/
+
+  verify-issue:
+    name: Verify Issue
+    needs: analyze-issue
+    runs-on: ${{ needs.analyze-issue.outputs.runsOn }}
+    permissions:
+      issues: write
+    env:
+      PACKAGE_MANAGER: ${{ needs.analyze-issue.outputs.packageManager }}
+      NODE_VERSION: ${{ needs.analyze-issue.outputs.nodeVersion }}
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: issue-files
+          path: '.'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3.5.1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Enable corepack
+        run: corepack enable
+      - name: Install dependencies
+        run: ${{ env.PACKAGE_MANAGER }} install
+      - name: Verify issue
+        timeout-minutes: 10
+        run: ${{ env.PACKAGE_MANAGER }} run verify
+      - uses: actions/upload-artifact@v3
+        if: success() || failure()
+        with:
+          name: runtime-output
+          path: |
+            *.log
+            **/*.pdf
+          if-no-files-found: error
+
+  label-verified-issue:
+    needs: [verify-issue]
+    if: success()
+    name: Label verified issue
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Add labels
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["confirmed"]
+            })
+
+  label-invalid-issue:
+    needs: [analyze-issue]
+    if: failure() && needs.analyze-issue.outputs.errorMessage != ''
+    name: Label invalid issue
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Add labels
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["invalid"]
+            })
+      - name: Add comment
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: ${{ needs.analyze-issue.outputs.errorMessage }}
+
+  label-unverifiable-issue:
+    needs: [analyze-issue, verify-issue]
+    if: failure() && needs.analyze-issue.outputs.errorMessage == ''
+    name: Label unverifiable issue
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Add labels
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["not-reproducible", "needs-feedback"]
+            })
+      - name: Add comment
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            This issue was not reproducible. Please check that your example runs locally and the following:
+
+             - Ensure the script does not rely on dependencies outside of `puppeteer` and `puppeteer-core`.
+             - Ensure the error string is just the error message.
+               - Bad:
+
+                 ```ts
+                 Error: something went wrong
+                   at Object.<anonymous> (/Users/username/repository/script.js:2:1)
+                   at Module._compile (node:internal/modules/cjs/loader:1159:14)
+                   at Module._extensions..js (node:internal/modules/cjs/loader:1213:10)
+                   at Module.load (node:internal/modules/cjs/loader:1037:32)
+                   at Module._load (node:internal/modules/cjs/loader:878:12)
+                   at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:81:12)
+                   at node:internal/main/run_main_module:23:47
+                 ```
+
+               - Good: `Error: something went wrong`.
+             - Ensure your configuration file (if applicable) is valid.
+             - If the issue is flaky (does not reproduce all the time), make sure 'Flaky' is checked.
+             - If the issue is not expected to error, make sure to write 'no error'.
+
+            Once the above checks are satisfied, please edit your issue with the changes and we will 
+            try to reproduce the bug again.
