@@ -35,6 +35,7 @@
     "test": "cross-env PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 node tools/mochaRunner/lib/main.js"
   },
   "devDependencies": {
+    "@actions/core": "1.10.0",
     "@commitlint/cli": "17.3.0",
     "@commitlint/config-conventional": "17.3.0",
     "@microsoft/api-documenter": "7.19.26",
