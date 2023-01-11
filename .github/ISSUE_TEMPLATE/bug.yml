@@ -27,13 +27,11 @@ body:
     attributes:
       label: Bug behavior
       description: >
-        How does the bug behave? Does it happen very rarely (flaky)? Is there a
-        lack of error (no error)? If there is a PDF problem, make sure the
-        script writes the PDF somewhere in the current working directory. *Note:
-        PDF implies no error.*
+        How does the bug behave? Does it happen very rarely (flaky)? If there is
+        a PDF problem, make sure the script writes the PDF somewhere in the
+        current working directory. *Note: PDF implies no error.*
       options:
         - label: Flaky
-        - label: No error
         - label: PDF
   - id: mvce
     type: textarea
@@ -44,6 +42,16 @@ body:
         example](https://stackoverflow.com/help/minimal-reproducible-example).
         *No need for backticks — this automatically gets formatted into code.*
       render: TypeScript
+      placeholder: |
+        import puppeteer from 'puppeteer'; // TS/ESM are all supported.
+
+        (async () => {
+          const browser = await puppeteer.launch();
+          const page = await browser.newPage();
+          await page.goto('https://news.google.com/news/');
+          await page.screenshot({path: 'news.png', fullPage: true});
+          await browser.close();
+        })();
     validations:
       required: true
   - id: error
@@ -51,8 +59,10 @@ body:
     attributes:
       label: Error string
       description: >
-        Provide the bug's error. For example, `throw new Error('test')` would
-        have the error `test`. *Do not include the entire error log.*
+        Provide the bug's error. For example, `throw new Error('Something went
+        wrong')` would have the error `Something went wrong`. **If the script
+        does not throw**, write `no error` (case insensitive).
+      placeholder: Something went wrong
     validations:
       required: true
   - id: puppeteer-configuration
