@@ -71,7 +71,7 @@ jobs:
         run: npm install
       - name: Analyze issue
         id: issue-analysis
-        run: echo $ISSUE_BODY | ./analyze_issue.mjs >> $GITHUB_OUTPUT
+        run: echo $ISSUE_BODY | ./tools/analyze_issue.mjs >> $GITHUB_OUTPUT
       - uses: actions/upload-artifact@v3
         with:
           name: issue-files
