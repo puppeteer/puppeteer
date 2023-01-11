@@ -12,6 +12,7 @@ import {
   lastMaintainedChromiumVersion,
 } from '../versions.js';
 import core from '@actions/core';
+import packageJson from '../packages/puppeteer/package.json' assert {type: 'json'};
 
 const LAST_SUPPORTED_PUPPETEER_VERSION = versionsPerRelease.get(
   lastMaintainedChromiumVersion
@@ -19,7 +20,7 @@ const LAST_SUPPORTED_PUPPETEER_VERSION = versionsPerRelease.get(
 if (!LAST_SUPPORTED_PUPPETEER_VERSION) {
   core.setFailed('No maintained version found.');
 }
-const LAST_SUPPORTED_NODE_VERSION = '14.19.0';
+const LAST_SUPPORTED_NODE_VERSION = packageJson.engines.node.slice(2).trim();
 
 const SUPPORTED_OSES = ['windows', 'macos', 'linux'];
 const SUPPORTED_PACKAGE_MANAGERS = ['yarn', 'npm', 'pnpm'];
