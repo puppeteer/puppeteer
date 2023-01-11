@@ -289,7 +289,7 @@ export class PuppeteerNode extends Puppeteer {
    * @returns A new BrowserFetcher instance.
    */
   createBrowserFetcher(
-    options: Partial<BrowserFetcherOptions>
+    options: Partial<BrowserFetcherOptions> = {}
   ): BrowserFetcher {
     const downloadPath = this.defaultDownloadPath;
     if (downloadPath) {
@@ -303,6 +303,9 @@ export class PuppeteerNode extends Puppeteer {
     }
     if (this.configuration.downloadHost) {
       options.host = this.configuration.downloadHost;
+    }
+    if (this.configuration.defaultProduct) {
+      options.product = this.configuration.defaultProduct;
     }
     return new BrowserFetcher(options as BrowserFetcherOptions);
   }
