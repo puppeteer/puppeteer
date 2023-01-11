@@ -18,7 +18,6 @@ import os, {tmpdir} from 'os';
 import {join} from 'path';
 import {Browser} from '../api/Browser.js';
 import {Product} from '../common/Product.js';
-import {BrowserFetcher} from './BrowserFetcher.js';
 import {
   BrowserLaunchArgumentOptions,
   ChromeReleaseChannel,
@@ -100,7 +99,7 @@ export class ProductLauncher {
       return ubuntuChromiumPath;
     }
 
-    const browserFetcher = new BrowserFetcher({
+    const browserFetcher = this.puppeteer.createBrowserFetcher({
       product: this.product,
       path: this.puppeteer.defaultDownloadPath!,
     });

@@ -4,7 +4,6 @@ import path from 'path';
 import {Browser} from '../api/Browser.js';
 import {CDPBrowser} from '../common/Browser.js';
 import {assert} from '../util/assert.js';
-import {BrowserFetcher} from './BrowserFetcher.js';
 import {BrowserRunner} from './BrowserRunner.js';
 import {
   BrowserLaunchArgumentOptions,
@@ -189,7 +188,7 @@ export class FirefoxLauncher extends ProductLauncher {
   override executablePath(): string {
     // replace 'latest' placeholder with actual downloaded revision
     if (this.puppeteer.browserRevision === 'latest') {
-      const browserFetcher = new BrowserFetcher({
+      const browserFetcher = this.puppeteer.createBrowserFetcher({
         product: this.product,
         path: this.puppeteer.defaultDownloadPath!,
       });
