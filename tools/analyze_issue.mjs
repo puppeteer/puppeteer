@@ -14,17 +14,6 @@ import {
 import core from '@actions/core';
 import packageJson from '../packages/puppeteer/package.json' assert {type: 'json'};
 
-const LAST_SUPPORTED_PUPPETEER_VERSION = versionsPerRelease.get(
-  lastMaintainedChromiumVersion
-);
-if (!LAST_SUPPORTED_PUPPETEER_VERSION) {
-  core.setFailed('No maintained version found.');
-}
-const LAST_SUPPORTED_NODE_VERSION = packageJson.engines.node.slice(2).trim();
-
-const SUPPORTED_OSES = ['windows', 'macos', 'linux'];
-const SUPPORTED_PACKAGE_MANAGERS = ['yarn', 'npm', 'pnpm'];
-
 const codifyAndJoinValues = values => {
   return values
     .map(value => {
@@ -38,6 +27,19 @@ const formatMessage = value => {
 const removeVersionPrefix = value => {
   return value.startsWith('v') ? value.slice(1) : value;
 };
+
+const LAST_SUPPORTED_PUPPETEER_VERSION = removeVersionPrefix(
+  versionsPerRelease.get(lastMaintainedChromiumVersion) ?? ''
+);
+if (!LAST_SUPPORTED_PUPPETEER_VERSION) {
+  core.setFailed('No maintained version found.');
+}
+const LAST_SUPPORTED_NODE_VERSION = removeVersionPrefix(
+  packageJson.engines.node.slice(2).trim()
+);
+
+const SUPPORTED_OSES = ['windows', 'macos', 'linux'];
+const SUPPORTED_PACKAGE_MANAGERS = ['yarn', 'npm', 'pnpm'];
 
 const ERROR_MESSAGES = {
   unsupportedOs(value) {
