@@ -16,10 +16,9 @@
 
 import https, {RequestOptions} from 'https';
 import createHttpsProxyAgent, {HttpsProxyAgentOptions} from 'https-proxy-agent';
-import {join} from 'path';
 import ProgressBar from 'progress';
 import {getProxyForUrl} from 'proxy-from-env';
-import {BrowserFetcher} from 'puppeteer-core';
+import {PuppeteerNode} from 'puppeteer-core/internal/node/PuppeteerNode.js';
 import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
 import URL from 'url';
 import {getConfiguration} from '../getConfiguration.js';
@@ -42,14 +41,10 @@ export async function downloadBrowser(): Promise<void> {
     return;
   }
 
+  const puppeteer = new PuppeteerNode({configuration, isPuppeteerCore: false});
+
   const product = configuration.defaultProduct!;
-  const browserFetcher = new BrowserFetcher({
-    product,
-    host: configuration.downloadHost,
-    path:
-      configuration.downloadPath ??
-      join(configuration.cacheDirectory!, product),
-  });
+  const browserFetcher = puppeteer.createBrowserFetcher();
 
   let revision = configuration.browserRevision;
 
