@@ -41,6 +41,13 @@ const config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
+  scripts: [
+    {
+      src: '/fix-location.js',
+      async: false,
+      defer: false,
+    },
+  ],
   webpack: {
     jsLoader: isServer => {
       return {
