@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.5.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.5.1...puppeteer-core-v19.5.2) (2023-01-11)
+
+
+### Bug Fixes
+
+* make sure browser fetcher in launchers uses configuration ([#9493](https://github.com/puppeteer/puppeteer/issues/9493)) ([df55439](https://github.com/puppeteer/puppeteer/commit/df554397b51e97aea2765b325f9a887b50b9263a)), closes [#9470](https://github.com/puppeteer/puppeteer/issues/9470)
+
 ## [19.5.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.5.0...puppeteer-core-v19.5.1) (2023-01-11)
 
 
