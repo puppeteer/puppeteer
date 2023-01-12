@@ -1,5 +1,11 @@
 [
   {
+    "testIdPattern": "[page.spec] Page BrowserContext.overridePermissions should trigger permission onchange",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[accessibility.spec]",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
