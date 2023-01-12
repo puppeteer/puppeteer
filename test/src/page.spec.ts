@@ -391,12 +391,7 @@ describe('Page', function () {
       expect(await getPermission(page, 'geolocation')).toBe('prompt');
     });
     it('should trigger permission onchange', async () => {
-      const {page, server, context, isHeadless} = getTestState();
-
-      // TODO: re-enable this test in headful once crbug.com/1324480 rolls out.
-      if (!isHeadless) {
-        return;
-      }
+      const {page, server, context} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
