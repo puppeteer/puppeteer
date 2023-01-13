@@ -41,6 +41,11 @@ export class ProductLauncher {
   /**
    * @internal
    */
+  protected actualBrowserRevision?: string;
+
+  /**
+   * @internal
+   */
   constructor(puppeteer: PuppeteerNode, product: Product) {
     this.puppeteer = puppeteer;
     this.#product = product;
@@ -63,6 +68,15 @@ export class ProductLauncher {
   defaultArgs(object: BrowserLaunchArgumentOptions): string[];
   defaultArgs(): string[] {
     throw new Error('Not implemented');
+  }
+
+  /**
+   * Set only for Firefox, after the launcher resolves the `latest` revision to
+   * the actual revision.
+   * @internal
+   */
+  getActualBrowserRevision(): string | undefined {
+    return this.actualBrowserRevision;
   }
 
   /**

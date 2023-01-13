@@ -30,10 +30,16 @@ const skippedTests: Array<{testIdPattern: string; skip: true}> = process.env[
 skippedTests.reverse();
 
 function shouldSkipTest(test: Mocha.Test): boolean {
-  const testId = getTestId(test.file!, test.fullTitle());
+  const testIdForFileName = getTestId(test.file!);
+  const testIdForTestName = getTestId(test.file!, test.fullTitle());
   // TODO: more efficient lookup.
-  const definition = skippedTests.find(skippedTest => {
-    return testId.startsWith(skippedTest.testIdPattern);
+
+  const defintion = skippedTests.find(skippedTest => {
+    return (
+      '' === skippedTest.testIdPattern ||
+      testIdForFileName === skippedTest.testIdPattern ||
+      testIdForTestName === skippedTest.testIdPattern
+    );
   });
   if (definition && definition.skip) {
     return true;
