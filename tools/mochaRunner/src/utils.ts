@@ -69,8 +69,8 @@ export function filterByParameters(
 }
 
 /**
- * The last expectation that matches the name of the file or
- * the whole name of the test the filter wins.
+ * The last expectation that matches an empty string as all tests pattern
+ * or the name of the file or the whole name of the test the filter wins.
  */
 export function findEffectiveExpectationForTest(
   expectations: TestExpectation[],
