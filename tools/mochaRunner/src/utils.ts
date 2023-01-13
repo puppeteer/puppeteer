@@ -79,6 +79,7 @@ export function findEffectiveExpectationForTest(
   return expectations
     .filter(expectation => {
       return (
+        '' === expectation.testIdPattern ||
         getTestId(result.file) === expectation.testIdPattern ||
         getTestId(result.file, result.fullTitle) === expectation.testIdPattern
       );

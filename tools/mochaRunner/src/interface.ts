@@ -35,6 +35,7 @@ function shouldSkipTest(test: Mocha.Test): boolean {
   // TODO: more efficient lookup.
   const defintion = skippedTests.find(skippedTest => {
     return (
+      '' === skippedTest.testIdPattern ||
       testIdForFileName === skippedTest.testIdPattern ||
       testIdForTestName === skippedTest.testIdPattern
     );
