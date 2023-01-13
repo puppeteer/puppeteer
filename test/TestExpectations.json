@@ -1236,10 +1236,10 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[page.spec] Page ExecutionContext.queryObjects should work for non-blank page",
+    "testIdPattern": "[page.spec] Page ExecutionContext.queryObjects should work for non-trivial page",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.addStyleTag should throw when added with content to the CSP page",

@@ -57,11 +57,11 @@ export function prettyPrintJSON(json: unknown): void {
 }
 
 export function filterByParameters(
-  expecations: TestExpectation[],
+  expectations: TestExpectation[],
   parameters: string[]
 ): TestExpectation[] {
   const querySet = new Set(parameters);
-  return expecations.filter(ex => {
+  return expectations.filter(ex => {
     return ex.parameters.every(param => {
       return querySet.has(param);
     });
@@ -69,22 +69,20 @@ export function filterByParameters(
 }
 
 /**
- * The last expectation that matches the startsWith filter wins.
+ * The last expectation that matches an empty string as all tests pattern
+ * or the name of the file or the whole name of the test the filter wins.
  */
-export function findEffectiveExpecationForTest(
+export function findEffectiveExpectationForTest(
   expectations: TestExpectation[],
   result: MochaTestResult
 ): TestExpectation | undefined {
   return expectations
-    .filter(expecation => {
-      if (
-        getTestId(result.file, result.fullTitle).startsWith(
-          expecation.testIdPattern
-        )
-      ) {
-        return true;
-      }
-      return false;
+    .filter(expectation => {
+      return (
+        '' === expectation.testIdPattern ||
+        getTestId(result.file) === expectation.testIdPattern ||
+        getTestId(result.file, result.fullTitle) === expectation.testIdPattern
+      );
     })
     .pop();
 }
@@ -106,7 +104,7 @@ export function getExpectationUpdates(
   const output: RecommendedExpecation[] = [];
 
   for (const pass of results.passes) {
-    const expectation = findEffectiveExpecationForTest(expecations, pass);
+    const expectation = findEffectiveExpectationForTest(expecations, pass);
     if (expectation && !expectation.expectations.includes('PASS')) {
       output.push({
         expectation,
@@ -117,7 +115,7 @@ export function getExpectationUpdates(
   }
 
   for (const failure of results.failures) {
-    const expectation = findEffectiveExpecationForTest(expecations, failure);
+    const expectation = findEffectiveExpectationForTest(expecations, failure);
     if (expectation) {
       if (
         !expectation.expectations.includes(getTestResultForFailure(failure))
@@ -156,6 +154,8 @@ export function getTestResultForFailure(
   return test.err?.code === 'ERR_MOCHA_TIMEOUT' ? 'TIMEOUT' : 'FAIL';
 }
 
-export function getTestId(file: string, fullTitle: string): string {
-  return `[${getFilename(file)}] ${fullTitle}`;
+export function getTestId(file: string, fullTitle?: string): string {
+  return fullTitle
+    ? `[${getFilename(file)}] ${fullTitle}`
+    : `[${getFilename(file)}]`;
 }
