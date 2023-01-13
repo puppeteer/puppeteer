@@ -217,7 +217,11 @@ export class PuppeteerNode extends Puppeteer {
    * @internal
    */
   get browserRevision(): string {
-    return this.configuration.browserRevision ?? this.defaultBrowserRevision!;
+    return (
+      this.#_launcher?.getActualBrowserRevision() ??
+      this.configuration.browserRevision ??
+      this.defaultBrowserRevision!
+    );
   }
 
   /**
@@ -292,19 +296,22 @@ export class PuppeteerNode extends Puppeteer {
     options: Partial<BrowserFetcherOptions> = {}
   ): BrowserFetcher {
     const downloadPath = this.defaultDownloadPath;
-    if (downloadPath) {
+    if (!options.path && downloadPath) {
       options.path = downloadPath;
     }
     if (!options.path) {
       throw new Error('A `path` must be specified for `puppeteer-core`.');
     }
-    if (this.configuration.experiments?.macArmChromiumEnabled) {
+    if (
+      !('useMacOSARMBinary' in options) &&
+      this.configuration.experiments?.macArmChromiumEnabled
+    ) {
       options.useMacOSARMBinary = true;
     }
-    if (this.configuration.downloadHost) {
+    if (!('host' in options) && this.configuration.downloadHost) {
       options.host = this.configuration.downloadHost;
     }
-    if (this.configuration.defaultProduct) {
+    if (!('product' in options) && this.configuration.defaultProduct) {
       options.product = this.configuration.defaultProduct;
     }
     return new BrowserFetcher(options as BrowserFetcherOptions);

@@ -194,7 +194,7 @@ export class FirefoxLauncher extends ProductLauncher {
       });
       const localRevisions = browserFetcher.localRevisions();
       if (localRevisions[0]) {
-        this.puppeteer.configuration.browserRevision = localRevisions[0];
+        this.actualBrowserRevision = localRevisions[0];
       }
     }
     return this.resolveExecutablePath();
