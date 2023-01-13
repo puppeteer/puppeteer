@@ -21,10 +21,10 @@ class BrowserContext {
 
 ## Parameters
 
-| Parameter | Type                                                                         | Description                                                                                                                                                                   |
-| --------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| predicate | (x: [Target](./puppeteer.target.md)) =&gt; boolean \| Promise&lt;boolean&gt; | A function to be run for every target                                                                                                                                         |
-| options   | { timeout?: number; }                                                        | <i>(Optional)</i> An object of options. Accepts a timout, which is the maximum wait time in milliseconds. Pass <code>0</code> to disable the timeout. Defaults to 30 seconds. |
+| Parameter | Type                                                                         | Description                                                                                                                                                                    |
+| --------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| predicate | (x: [Target](./puppeteer.target.md)) =&gt; boolean \| Promise&lt;boolean&gt; | A function to be run for every target                                                                                                                                          |
+| options   | { timeout?: number; }                                                        | <i>(Optional)</i> An object of options. Accepts a timeout, which is the maximum wait time in milliseconds. Pass <code>0</code> to disable the timeout. Defaults to 30 seconds. |
 
 **Returns:**
 

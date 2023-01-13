@@ -4,14 +4,14 @@ Adds Puppeteer-based e2e tests to your Angular project.
 
 ## Usage
 
-Run the command bellow in an Angular CLI app directory and follow the prompts.
+Run the command below in an Angular CLI app directory and follow the prompts.
 _Note this will add the schematic as a dependency to your project._
 
 ```bash
 ng add @puppeteer/ng-schematics
 ```
 
-Or you can use the same command followed by the [options](#options) bellow.
+Or you can use the same command followed by the [options](#options) below.
 
 Currently, this schematic supports the following test frameworks:
 
