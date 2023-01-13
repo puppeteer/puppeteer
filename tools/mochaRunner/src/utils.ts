@@ -69,7 +69,8 @@ export function filterByParameters(
 }
 
 /**
- * The last expectation that matches the filter wins.
+ * The last expectation that matches the name of the file or
+ * the whole name of the test the filter wins.
  */
 export function findEffectiveExpectationForTest(
   expectations: TestExpectation[],
@@ -78,6 +79,7 @@ export function findEffectiveExpectationForTest(
   return expectations
     .filter(expectation => {
       return (
+        getTestId(result.file) === expectation.testIdPattern ||
         getTestId(result.file, result.fullTitle) === expectation.testIdPattern
       );
     })
@@ -151,6 +153,8 @@ export function getTestResultForFailure(
   return test.err?.code === 'ERR_MOCHA_TIMEOUT' ? 'TIMEOUT' : 'FAIL';
 }
 
-export function getTestId(file: string, fullTitle: string): string {
-  return `[${getFilename(file)}] ${fullTitle}`;
+export function getTestId(file: string, fullTitle?: string): string {
+  return fullTitle
+    ? `[${getFilename(file)}] ${fullTitle}`
+    : `[${getFilename(file)}]`;
 }
