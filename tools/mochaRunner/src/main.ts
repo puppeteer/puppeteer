@@ -129,14 +129,31 @@ async function main() {
         ? statsFilename
         : path.join(tmpDir, 'output.json');
       console.log('Running', JSON.stringify(parameters), tmpFilename);
+      const reporterArgumentIndex = process.argv.indexOf('--reporter');
       const args = [
         '-u',
         path.join(__dirname, 'interface.js'),
         '-R',
-        path.join(__dirname, 'reporter.js'),
+        reporterArgumentIndex === -1
+          ? path.join(__dirname, 'reporter.js')
+          : process.argv[reporterArgumentIndex + 1] || '',
         '-O',
         'output=' + tmpFilename,
       ];
+      const retriesArgumentIndex = process.argv.indexOf('--retries');
+      const timeoutArgumentIndex = process.argv.indexOf('--timeout');
+      if (retriesArgumentIndex > -1) {
+        args.push('--retries', process.argv[retriesArgumentIndex + 1] || '');
+      }
+      if (timeoutArgumentIndex > -1) {
+        args.push('--timeout', process.argv[timeoutArgumentIndex + 1] || '');
+      }
+      if (process.argv.indexOf('--no-parallel')) {
+        args.push('--no-parallel');
+      }
+      if (process.argv.indexOf('--fullTrace')) {
+        args.push('--fullTrace');
+      }
       const spawnArgs: SpawnOptions = {
         shell: true,
         cwd: process.cwd(),
