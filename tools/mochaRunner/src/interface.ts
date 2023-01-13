@@ -33,14 +33,14 @@ function shouldSkipTest(test: Mocha.Test): boolean {
   const testIdForFileName = getTestId(test.file!);
   const testIdForTestName = getTestId(test.file!, test.fullTitle());
   // TODO: more efficient lookup.
-  const defintion = skippedTests.find(skippedTest => {
+  const definition = skippedTests.find(skippedTest => {
     return (
       '' === skippedTest.testIdPattern ||
       testIdForFileName === skippedTest.testIdPattern ||
       testIdForTestName === skippedTest.testIdPattern
     );
   });
-  if (defintion && defintion.skip) {
+  if (definition && definition.skip) {
     return true;
   }
   return false;

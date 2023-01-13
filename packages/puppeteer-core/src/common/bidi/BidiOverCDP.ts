@@ -26,7 +26,7 @@ export async function connectBidiOverCDP(
       cdpConnectionAdapter.close();
     },
     onmessage(_message: string): void {
-      // The method is overriden by the Connection.
+      // The method is overridden by the Connection.
     },
   };
   transportBiDi.on('bidiResponse', (message: object) => {
@@ -63,7 +63,7 @@ class CDPConnectionAdapter {
   getCdpClient(id: string) {
     const session = this.#cdp.session(id);
     if (!session) {
-      throw new Error('Unknonw CDP session with id' + id);
+      throw new Error('Unknown CDP session with id' + id);
     }
     if (!this.#adapters.has(session)) {
       const adapter = new CDPClientAdapter(session);
@@ -82,7 +82,7 @@ class CDPConnectionAdapter {
 }
 
 /**
- * Wrapper on top of CDPSession/CDPConnection to satisify CDP interface that
+ * Wrapper on top of CDPSession/CDPConnection to satisfy CDP interface that
  * BidiServer needs.
  *
  * @internal

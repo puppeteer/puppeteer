@@ -629,7 +629,7 @@ export class Frame {
    * an XPath.
    *
    * @param xpath - the XPath expression to wait for.
-   * @param options - options to configure the visiblity of the element and how
+   * @param options - options to configure the visibility of the element and how
    * long to wait before timing out.
    */
   async waitForXPath(

@@ -474,7 +474,7 @@ export class IsolatedWorld {
       );
     } catch (error) {
       // The WaitTask may already have been resolved by timing out, or the
-      // exection context may have been destroyed.
+      // execution context may have been destroyed.
       // In both caes, the promises above are rejected with a protocol error.
       // We can safely ignores these, as the WaitTask is re-installed in
       // the next execution context if needed.

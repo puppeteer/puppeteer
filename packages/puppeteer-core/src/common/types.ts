@@ -174,8 +174,8 @@ type FlatmapSplitWithDelemiters<
 
 type Split<
   Input extends string,
-  Delemiter extends string,
+  Delimiter extends string,
   Acc extends string[] = []
-> = Input extends `${infer Prefix}${Delemiter}${infer Suffix}`
-  ? Split<Suffix, Delemiter, [...Acc, Prefix]>
+> = Input extends `${infer Prefix}${Delimiter}${infer Suffix}`
+  ? Split<Suffix, Delimiter, [...Acc, Prefix]>
   : [...Acc, Input];

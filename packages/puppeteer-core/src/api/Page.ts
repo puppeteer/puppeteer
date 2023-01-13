@@ -263,7 +263,7 @@ export const enum PageEmittedEvents {
    * Contains an object with two properties:
    *
    * - `title`: the title passed to `console.timeStamp`
-   * - `metrics`: objec containing metrics as key/value pairs. The values will
+   * - `metrics`: object containing metrics as key/value pairs. The values will
    *   be `number`s.
    */
   Metrics = 'metrics',
