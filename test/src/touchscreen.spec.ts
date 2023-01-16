@@ -54,7 +54,7 @@ describe('Touchscreen', function () {
     ).toEqual(['Touchstart: 0', 'Touchend: 0']);
   });
 
-  it.only('should report press', async () => {
+  it('should report press', async () => {
     const { page, server } = getTestState();
     const iPhone = KnownDevices['iPhone 6']!;
     await page.emulate(iPhone);
@@ -67,7 +67,7 @@ describe('Touchscreen', function () {
     ).toEqual(['Touchstart: 0', 'Touchend: 0']);
   });
 
-  it.only('should report drag', async () => {
+  it('should report drag', async () => {
     const { page, server } = getTestState();
     const iPhone = KnownDevices['iPhone 6']!;
     await page.emulate(iPhone);
