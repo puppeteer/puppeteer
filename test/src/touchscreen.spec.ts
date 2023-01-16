@@ -39,6 +39,7 @@ describe('Touchscreen', function () {
       })
     ).toBe('Clicked');
   });
+
   it('should report touches', async () => {
     const { page, server } = getTestState();
     const iPhone = KnownDevices['iPhone 6']!;
@@ -46,6 +47,19 @@ describe('Touchscreen', function () {
     await page.goto(server.PREFIX + '/input/touches.html');
     const button = (await page.$('button'))!;
     await button.tap();
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).getResult();
+      })
+    ).toEqual(['Touchstart: 0', 'Touchend: 0']);
+  });
+
+  it.only('should report press', async () => {
+    const { page, server } = getTestState();
+    const iPhone = KnownDevices['iPhone 6']!;
+    await page.emulate(iPhone);
+    await page.goto(server.PREFIX + '/input/touches.html');
+    await page.touchscreen.press(0, 0, 5);
     expect(
       await page.evaluate(() => {
         return (globalThis as any).getResult();
