@@ -683,18 +683,16 @@ export class Touchscreen {
     });
   }
 
-  async press(x: number, y: number, delay: number) {
-    const touchPoints = [{ x: Math.round(x), y: Math.round(y) }];
+  async press(x: number, y: number, delay: number): Promise<void> {
+    const pressPoints = [{ x: Math.round(x), y: Math.round(y) }];
     await this.#client.send('Input.dispatchTouchEvent', {
       type: 'touchStart',
-      touchPoints,
+      touchPoints: pressPoints,
       modifiers: this.#keyboard._modifiers,
     });
-    if (delay) {
-      await new Promise(resolve => {
-        return setTimeout(resolve, delay * 1000);
-      });
-    }
+    await new Promise(f => {
+      return setTimeout(f, delay);
+    });
     await this.#client.send('Input.dispatchTouchEvent', {
       type: 'touchEnd',
       touchPoints: [],
@@ -702,18 +700,23 @@ export class Touchscreen {
     });
   }
 
-  async drag(start: Point, target: Point) {
+  async drag(start: Point, target: Point): Promise<void> {
     const touchPoints = [{ x: Math.round(start.x), y: Math.round(start.y) }];
     const touchEnd = [{ x: Math.round(target.x), y: Math.round(target.y) }];
     await this.#client.send('Input.dispatchTouchEvent', {
       type: 'touchStart',
       touchPoints: touchPoints,
-      modifiers:  this.#keyboard._modifiers,
+      modifiers: this.#keyboard._modifiers,
+    });
+    await this.#client.send('Input.dispatchTouchEvent', {
+      type: 'touchMove',
+      touchPoints: touchEnd,
+      modifiers: this.#keyboard._modifiers,
     });
     await this.#client.send('Input.dispatchTouchEvent', {
       type: 'touchEnd',
       touchPoints: touchEnd,
-      modifiers:  this.#keyboard._modifiers,
+      modifiers: this.#keyboard._modifiers,
     });
   }
 }
