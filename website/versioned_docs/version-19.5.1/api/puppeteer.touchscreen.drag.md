@@ -1,5 +1,5 @@
 ---
-sidebar_label: Mouse.drag
+sidebar_label: Touchscreen.drag
 ---
 
 # Touchscreen.drag() method
