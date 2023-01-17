@@ -79,7 +79,7 @@
     "eslint-plugin-unused-imports": "2.0.0",
     "esprima": "4.0.1",
     "expect": "25.2.7",
-    "glob": "8.0.3",
+    "glob": "8.1.0",
     "gts": "4.0.0",
     "husky": "8.0.2",
     "jpeg-js": "0.4.4",
