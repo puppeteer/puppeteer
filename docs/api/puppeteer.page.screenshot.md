@@ -8,19 +8,23 @@ sidebar_label: Page.screenshot
 
 ```typescript
 class Page {
-  screenshot(options?: ScreenshotOptions): Promise<Buffer | string>;
+  screenshot(
+    options: ScreenshotOptions & {
+      encoding: 'base64';
+    }
+  ): Promise<string>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                  | Description       |
-| --------- | ----------------------------------------------------- | ----------------- |
-| options   | [ScreenshotOptions](./puppeteer.screenshotoptions.md) | <i>(Optional)</i> |
+| Parameter | Type                                                                                | Description |
+| --------- | ----------------------------------------------------------------------------------- | ----------- |
+| options   | [ScreenshotOptions](./puppeteer.screenshotoptions.md) &amp; { encoding: 'base64'; } |             |
 
 **Returns:**
 
-Promise&lt;Buffer \| string&gt;
+Promise&lt;string&gt;
 
 Promise which resolves to buffer or a base64 string (depending on the value of `encoding`) with captured screenshot.
 
