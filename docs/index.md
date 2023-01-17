@@ -127,9 +127,7 @@ and [examples](https://github.com/puppeteer/puppeteer/tree/main/examples).
 
 #### Example
 
-The following example searches
-[developers.google.com/web](https://developers.google.com/web) for articles
-tagged "Headless Chrome" and scrape results from the results page.
+The following example searches [developer.chrome.com](https://developer.chrome.com/) for blog posts with text "automate beyond recorder", click on the first result and print the full title of the blog post.
 
 ```ts
 import puppeteer from 'puppeteer';
@@ -138,30 +136,27 @@ import puppeteer from 'puppeteer';
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
-  await page.goto('https://developers.google.com/web/');
+  await page.goto('https://developer.chrome.com/');
 
-  // Type into search box.
-  await page.type('.devsite-search-field', 'Headless Chrome');
+  // Set screen size
+  await page.setViewport({width: 1080, height: 1024});
 
-  // Wait for suggest overlay to appear and click "show all results".
-  const allResultsSelector = '.devsite-suggest-all-results';
-  await page.waitForSelector(allResultsSelector);
-  await page.click(allResultsSelector);
+  // Type into search box
+  await page.type('.search-box__input', 'automate beyond recorder');
 
-  // Wait for the results page to load and display the results.
-  const resultsSelector = '.gsc-results .gs-title';
-  await page.waitForSelector(resultsSelector);
+  // Wait and click on first result
+  const searchResultSelector = '.search-box__link';
+  await page.waitForSelector(searchResultSelector);
+  await page.click(searchResultSelector);
 
-  // Extract the results from the page.
-  const links = await page.evaluate(resultsSelector => {
-    return [...document.querySelectorAll(resultsSelector)].map(anchor => {
-      const title = anchor.textContent.split('|')[0].trim();
-      return `${title} - ${anchor.href}`;
-    });
-  }, resultsSelector);
+  // Localte the full title with a unique string
+  const textSelector = await page.waitForSelector(
+    'text/Customize and automate'
+  );
+  const fullTitle = await textSelector.evaluate(el => el.textContent);
 
-  // Print all the files.
-  console.log(links.join('\n'));
+  // Print the full title
+  console.log('The title of this blog post is "%s".', fullTitle);
 
   await browser.close();
 })();
