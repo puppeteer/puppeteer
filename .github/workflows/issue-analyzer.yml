@@ -14,7 +14,7 @@ jobs:
   analyze-issue:
     name: Analyze Issues
     runs-on: ubuntu-latest
-    if: ${{ contains(github.event.issue.labels.*.name, 'bug') && github.event.issue.number > 9481 }}
+    if: ${{ contains(github.event.issue.labels.*.name, 'bug') && !contains(github.event.issue.labels.*.name, 'confirmed') && github.event.issue.number > 9481 }}
     env:
       ISSUE_BODY: ${{ toJson(github.event.issue.body) }}
     outputs:
@@ -29,14 +29,6 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            if (${{ contains(github.event.issue.labels.*.name, 'confirmed') }}) {
-              github.rest.issues.removeLabel({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: ["confirmed"]
-              })
-            }
             if (${{ contains(github.event.issue.labels.*.name, 'not-reproducible') }}) {
               github.rest.issues.removeLabel({
                 issue_number: context.issue.number,
