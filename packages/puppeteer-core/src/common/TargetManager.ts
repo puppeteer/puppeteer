@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Protocol from 'devtools-protocol';
+import {Protocol} from 'devtools-protocol';
 import {CDPSession} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
 import {Target} from './Target.js';
