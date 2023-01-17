@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Protocol from 'devtools-protocol';
+import {Protocol} from 'devtools-protocol';
 import expect from 'expect';
 import fs from 'fs';
 import os from 'os';
