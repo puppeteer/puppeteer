@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Protocol from 'devtools-protocol';
+import {Protocol} from 'devtools-protocol';
 import expect from 'expect';
 import * as fs from 'fs';
 import * as path from 'path';
