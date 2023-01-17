@@ -2,14 +2,14 @@
 sidebar_label: Mouse.drag
 ---
 
-# Mouse.drag() method
+# Touchscreen.drag() method
 
 Dispatches a `drag` event.
 
 #### Signature:
 
 ```typescript
-class Mouse {
+class Touchscreen {
   drag(start: Point, target: Point): Promise<Protocol.Input.DragData>;
 }
 ```
