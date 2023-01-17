@@ -23,4 +23,4 @@ class Touchscreen {
 
 **Returns:**
 
-Promise&lt;Protocol.Input.DragData&gt;
+Promise&lt;void&gt;
