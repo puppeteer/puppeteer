@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { assert } from '../util/assert.js';
-import { CDPSession } from './Connection.js';
-import { _keyDefinitions, KeyDefinition, KeyInput } from './USKeyboardLayout.js';
-import { Protocol } from 'devtools-protocol';
-import { Point } from './JSHandle.js';
+import {assert} from '../util/assert.js';
+import {CDPSession} from './Connection.js';
+import {_keyDefinitions, KeyDefinition, KeyInput} from './USKeyboardLayout.js';
+import {Protocol} from 'devtools-protocol';
+import {Point} from './JSHandle.js';
 
 type KeyDescription = Required<
   Pick<KeyDefinition, 'keyCode' | 'key' | 'text' | 'code' | 'location'>
@@ -110,7 +110,7 @@ export class Keyboard {
    */
   async down(
     key: KeyInput,
-    options: { text?: string; commands?: string[] } = {
+    options: {text?: string; commands?: string[]} = {
       text: undefined,
       commands: [],
     }
@@ -246,7 +246,7 @@ export class Keyboard {
    * @param char - Character to send into the page.
    */
   async sendCharacter(char: string): Promise<void> {
-    await this.#client.send('Input.insertText', { text: char });
+    await this.#client.send('Input.insertText', {text: char});
   }
 
   private charIsKey(char: string): char is KeyInput {
@@ -276,11 +276,11 @@ export class Keyboard {
    * if specified, is the time to wait between `keydown` and `keyup` in milliseconds.
    * Defaults to 0.
    */
-  async type(text: string, options: { delay?: number } = {}): Promise<void> {
+  async type(text: string, options: {delay?: number} = {}): Promise<void> {
     const delay = options.delay || undefined;
     for (const char of text) {
       if (this.charIsKey(char)) {
-        await this.press(char, { delay });
+        await this.press(char, {delay});
       } else {
         if (delay) {
           await new Promise(f => {
@@ -316,9 +316,9 @@ export class Keyboard {
    */
   async press(
     key: KeyInput,
-    options: { delay?: number; text?: string; commands?: string[] } = {}
+    options: {delay?: number; text?: string; commands?: string[]} = {}
   ): Promise<void> {
-    const { delay = null } = options;
+    const {delay = null} = options;
     await this.down(key, options);
     if (delay) {
       await new Promise(f => {
@@ -446,9 +446,9 @@ export class Mouse {
   async move(
     x: number,
     y: number,
-    options: { steps?: number } = {}
+    options: {steps?: number} = {}
   ): Promise<void> {
-    const { steps = 1 } = options;
+    const {steps = 1} = options;
     const fromX = this.#x,
       fromY = this.#y;
     this.#x = x;
@@ -473,9 +473,9 @@ export class Mouse {
   async click(
     x: number,
     y: number,
-    options: MouseOptions & { delay?: number } = {}
+    options: MouseOptions & {delay?: number} = {}
   ): Promise<void> {
-    const { delay = null } = options;
+    const {delay = null} = options;
     if (delay !== null) {
       await this.move(x, y);
       await this.down(options);
@@ -495,7 +495,7 @@ export class Mouse {
    * @param options - Optional `MouseOptions`.
    */
   async down(options: MouseOptions = {}): Promise<void> {
-    const { button = 'left', clickCount = 1 } = options;
+    const {button = 'left', clickCount = 1} = options;
     this.#button = button;
     await this.#client.send('Input.dispatchMouseEvent', {
       type: 'mousePressed',
@@ -512,7 +512,7 @@ export class Mouse {
    * @param options - Optional `MouseOptions`.
    */
   async up(options: MouseOptions = {}): Promise<void> {
-    const { button = 'left', clickCount = 1 } = options;
+    const {button = 'left', clickCount = 1} = options;
     this.#button = 'none';
     await this.#client.send('Input.dispatchMouseEvent', {
       type: 'mouseReleased',
@@ -547,7 +547,7 @@ export class Mouse {
    * ```
    */
   async wheel(options: MouseWheelOptions = {}): Promise<void> {
-    const { deltaX = 0, deltaY = 0 } = options;
+    const {deltaX = 0, deltaY = 0} = options;
     await this.#client.send('Input.dispatchMouseEvent', {
       type: 'mouseWheel',
       x: this.#x,
@@ -632,9 +632,9 @@ export class Mouse {
   async dragAndDrop(
     start: Point,
     target: Point,
-    options: { delay?: number } = {}
+    options: {delay?: number} = {}
   ): Promise<void> {
-    const { delay = null } = options;
+    const {delay = null} = options;
     const data = await this.drag(start, target);
     await this.dragEnter(target, data);
     await this.dragOver(target, data);
@@ -670,7 +670,7 @@ export class Touchscreen {
    * @param y - Vertical position of the tap.
    */
   async tap(x: number, y: number): Promise<void> {
-    const touchPoints = [{ x: Math.round(x), y: Math.round(y) }];
+    const touchPoints = [{x: Math.round(x), y: Math.round(y)}];
     await this.#client.send('Input.dispatchTouchEvent', {
       type: 'touchStart',
       touchPoints,
@@ -684,7 +684,7 @@ export class Touchscreen {
   }
 
   async press(x: number, y: number, delay: number): Promise<void> {
-    const pressPoints = [{ x: Math.round(x), y: Math.round(y) }];
+    const pressPoints = [{x: Math.round(x), y: Math.round(y)}];
     await this.#client.send('Input.dispatchTouchEvent', {
       type: 'touchStart',
       touchPoints: pressPoints,
@@ -701,8 +701,8 @@ export class Touchscreen {
   }
 
   async drag(start: Point, target: Point): Promise<void> {
-    const touchPoints = [{ x: Math.round(start.x), y: Math.round(start.y) }];
-    const touchEnd = [{ x: Math.round(target.x), y: Math.round(target.y) }];
+    const touchPoints = [{x: Math.round(start.x), y: Math.round(start.y)}];
+    const touchEnd = [{x: Math.round(target.x), y: Math.round(target.y)}];
     await this.#client.send('Input.dispatchTouchEvent', {
       type: 'touchStart',
       touchPoints: touchPoints,
