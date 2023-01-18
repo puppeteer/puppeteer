@@ -1270,6 +1270,12 @@ export class CDPPage extends Page {
     await this.#frameManager.networkManager.setCacheEnabled(enabled);
   }
 
+  override screenshot(
+    options: ScreenshotOptions & {encoding: 'base64'}
+  ): Promise<string>;
+  override screenshot(
+    options?: ScreenshotOptions & {encoding?: 'binary'}
+  ): Promise<Buffer>;
   override async screenshot(
     options: ScreenshotOptions = {}
   ): Promise<Buffer | string> {
