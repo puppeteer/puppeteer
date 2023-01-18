@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Touch test</title>
+  </head>
+  <body id="body"  style="width: 100%; height: 100%;" >
+    <canvas id="canvas" oncontextmenu="event.preventDefault()" style="width: 100%; height: auto;">
+    <script>
+      window.result = [];
+      window.timer = 0;
+      var canvas = document.getElementById("canvas");
+      // const button = document.querySelector('button');
+      // button.style.height = '200px';
+      // button.style.width = '200px';
+      // button.focus();
+      // var counter = 0;
+      canvas.addEventListener('touchstart', event => {
+        console.log("timer : " + window.timer);
+        counter = setInterval(setTime, 1000);
+      });
+      canvas.addEventListener('touchend', event => {
+        console.log("timer : " + window.timer);
+        clearInterval(counter);
+      });
+      function log(...args) {
+        console.log.apply(console, args);
+        result.push(args.join(" "));
+      }
+      function getResult() {
+        let temp = result;
+        result = [];
+        return temp;
+      }
+      function setTime() {
+        window.timer = parseInt((window.timer + 1));
+        console.log("result : " + window.timer);
+      }
+    </script>
+    </canvas>
+  </body>
+</html>
