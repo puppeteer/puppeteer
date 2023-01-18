@@ -9,7 +9,6 @@
     "automation"
   ],
   "type": "commonjs",
-  "main": "./lib/cjs/puppeteer/puppeteer.js",
   "types": "./lib/types.d.ts",
   "exports": {
     ".": {
