@@ -40,11 +40,10 @@ jobs:
         if: github.event_name != 'pull_request'
 
   check-changes:
-    name: Check documentation
+    name: Check which packaged changed
     runs-on: ubuntu-latest
     outputs:
       changes: ${{ steps.changes.outputs.changes }}
-      needs_deploying: ${{ steps.changes.outputs.website }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v3.1.0
@@ -59,7 +58,7 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Build
         run: npm run docs
-      - name: Paths Changes Filter
+      - name: Detect changed packages
         uses: dorny/paths-filter@v2.11.1
         id: changes
         with:
@@ -127,11 +126,17 @@ jobs:
           curl -H "Content-Type: application/json" -X POST --user "$CRAWLER_USER_ID:$CRAWLER_API_KEY" \
             "https://crawler.algolia.com/api/1/crawlers/$CRAWLER_ID/reindex"
 
+  chrome-tests-required:
+    name: Chrome tests required job
+    needs: check-changes
+    runs-on: ubuntu-latest
+    if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+
   chrome-tests:
     name: ${{ matrix.suite }} tests on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    needs: check-changes
-    if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+    needs: chrome-tests-required
+
     strategy:
       fail-fast: false
       matrix:
@@ -178,11 +183,16 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
 
+  firefox-tests-required:
+    name: Firefox tests required job
+    needs: check-changes
+    runs-on: ubuntu-latest
+    if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+
   firefox-tests:
     name: ${{ matrix.suite }} tests on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    needs: check-changes
-    if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+    needs: firefox-tests-required
     strategy:
       fail-fast: false
       matrix:
@@ -253,8 +263,8 @@ jobs:
 
   installation-test:
     name: Test ${{ matrix.pkg_manager }} installation on ${{ matrix.os }} (${{ matrix.node }})
-    needs: [installation-test-build, check-changes]
-    if: ${{ !startsWith(github.ref_name, 'release-please') && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+    needs: installation-test-build
+    if: ${{ !startsWith(github.ref_name, 'release-please') }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
