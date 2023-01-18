@@ -33,7 +33,6 @@
     const drop = document.getElementById('drop');
     drag.addEventListener('touchstart', function (event) {
       console.log("touchstart")
-      // event.dataTransfer.setData('id', event.target.id);
       window.didDragStart = true;
     });
     drag.addEventListener('touchmove', function (event) {
