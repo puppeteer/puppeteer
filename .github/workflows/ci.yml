@@ -129,19 +129,11 @@ jobs:
           curl -H "Content-Type: application/json" -X POST --user "$CRAWLER_USER_ID:$CRAWLER_API_KEY" \
             "https://crawler.algolia.com/api/1/crawlers/$CRAWLER_ID/reindex"
 
-  chrome-tests-required:
-    name: Chrome tests required job
-    needs: check-changes
-    runs-on: ubuntu-latest
-    if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
-    steps:
-      - run: 'echo "Running required Chrome tests"'
-
   chrome-tests:
     name: ${{ matrix.suite }} tests on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    needs: chrome-tests-required
-
+    needs: check-changes
+    if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
     strategy:
       fail-fast: false
       matrix:
@@ -188,18 +180,19 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
 
-  firefox-tests-required:
-    name: Firefox tests required job
-    needs: check-changes
+  chrome-tests-required:
+    name: Chrome tests required job
+    needs: [check-changes, chrome-tests]
     runs-on: ubuntu-latest
-    if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+    if: ${{ success() || !contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
     steps:
-      - run: 'echo "Running required Firefox tests"'
+      - run: 'echo "Running required Chrome tests"'
 
   firefox-tests:
     name: ${{ matrix.suite }} tests on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    needs: firefox-tests-required
+    needs: check-changes
+    if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
     strategy:
       fail-fast: false
       matrix:
@@ -242,6 +235,14 @@ jobs:
       - name: Run all tests (for Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
+
+  firefox-tests-required:
+    name: Firefox tests required job
+    needs: [check-changes, firefox-tests]
+    runs-on: ubuntu-latest
+    if: ${{ success() || !contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+    steps:
+      - run: 'echo "Running required Firefox tests"'
 
   installation-test-build:
     name: Build installation test
@@ -310,6 +311,14 @@ jobs:
         env:
           PKG_MANAGER: ${{ matrix.pkg_manager }}
         run: ${{ matrix.pkg_manager }} test
+
+  installation-test-required:
+    name: Installation tests required job
+    needs: [check-changes, installation-test]
+    runs-on: ubuntu-latest
+    if: ${{ success() || !contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+    steps:
+      - run: 'echo "Running required Chrome tests"'
 
   docker-tests:
     name: Test Docker image
