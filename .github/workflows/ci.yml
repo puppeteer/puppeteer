@@ -184,9 +184,11 @@ jobs:
     name: Chrome tests required job
     needs: [check-changes, chrome-tests]
     runs-on: ubuntu-latest
-    if: ${{ success() || !contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+    if: ${{ always() }}
     steps:
-      - run: 'echo "Running required Chrome tests"'
+      - if: ${{ needs.chrome-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+        run: 'exit 1'
+      - run: 'exit 0'
 
   firefox-tests:
     name: ${{ matrix.suite }} tests on ${{ matrix.os }}
@@ -240,9 +242,11 @@ jobs:
     name: Firefox tests required job
     needs: [check-changes, firefox-tests]
     runs-on: ubuntu-latest
-    if: ${{ success() || !contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+    if: ${{ always() }}
     steps:
-      - run: 'echo "Running required Firefox tests"'
+      - if: ${{ needs.firefox-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+        run: 'exit 1'
+      - run: 'exit 0'
 
   installation-test-build:
     name: Build installation test
@@ -316,9 +320,11 @@ jobs:
     name: Installation tests required job
     needs: [check-changes, installation-test]
     runs-on: ubuntu-latest
-    if: ${{ success() || !contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+    if: ${{ always() }}
     steps:
-      - run: 'echo "Running required Chrome tests"'
+      - if: ${{ needs.installation-test.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+        run: 'exit 1'
+      - run: 'exit 0'
 
   docker-tests:
     name: Test Docker image
