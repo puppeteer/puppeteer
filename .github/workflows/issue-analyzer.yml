@@ -140,9 +140,16 @@ jobs:
               repo: context.repo.repo,
               labels: ["invalid"]
             })
-      - name: Add comment
+      - name: Find Comment Id
+        uses: peter-evans/find-comment@v2
+        id: find-comment-id
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          comment-author: 'github-actions[bot]'
+      - name: Upsert comment
         uses: peter-evans/create-or-update-comment@v2
         with:
+          comment-id: ${{ steps.find-comment-id.outputs.comment-id }}
           issue-number: ${{ github.event.issue.number }}
           body: ${{ needs.analyze-issue.outputs.errorMessage }}
 
@@ -164,9 +171,16 @@ jobs:
               repo: context.repo.repo,
               labels: ["not-reproducible", "needs-feedback"]
             })
-      - name: Add comment
+      - name: Find Comment Id
+        uses: peter-evans/find-comment@v2
+        id: find-comment-id
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          comment-author: 'github-actions[bot]'
+      - name: Upsert comment
         uses: peter-evans/create-or-update-comment@v2
         with:
+          comment-id: ${{ steps.find-comment-id.outputs.comment-id }}
           issue-number: ${{ github.event.issue.number }}
           body: |
             This issue was not reproducible. Please check that your example runs locally and the following:
