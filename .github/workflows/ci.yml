@@ -131,6 +131,8 @@ jobs:
     needs: check-changes
     runs-on: ubuntu-latest
     if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+    steps:
+      - run: 'echo "Running required Chrome tests"'
 
   chrome-tests:
     name: ${{ matrix.suite }} tests on ${{ matrix.os }}
@@ -188,6 +190,8 @@ jobs:
     needs: check-changes
     runs-on: ubuntu-latest
     if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+    steps:
+      - run: 'echo "Running required Firefox tests"'
 
   firefox-tests:
     name: ${{ matrix.suite }} tests on ${{ matrix.os }}
