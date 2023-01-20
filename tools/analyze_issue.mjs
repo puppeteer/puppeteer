@@ -7,10 +7,6 @@ import {writeFile, mkdir, copyFile} from 'fs/promises';
 import {dirname, join} from 'path';
 import semver from 'semver';
 import {fileURLToPath} from 'url';
-import {
-  versionsPerRelease,
-  lastMaintainedChromiumVersion,
-} from '../versions.js';
 import core from '@actions/core';
 import packageJson from '../packages/puppeteer/package.json' assert {type: 'json'};
 
@@ -28,10 +24,8 @@ const removeVersionPrefix = value => {
   return value.startsWith('v') ? value.slice(1) : value;
 };
 
-const LAST_SUPPORTED_PUPPETEER_VERSION = removeVersionPrefix(
-  versionsPerRelease.get(lastMaintainedChromiumVersion) ?? ''
-);
-if (!LAST_SUPPORTED_PUPPETEER_VERSION) {
+const LAST_PUPPETEER_VERSION = packageJson.version;
+if (!LAST_PUPPETEER_VERSION) {
   core.setFailed('No maintained version found.');
 }
 const LAST_SUPPORTED_NODE_VERSION = removeVersionPrefix(
@@ -73,7 +67,7 @@ This issue has an invalid Node.js version: \`${value}\`. Versions must follow [S
   },
   unsupportedPuppeteerVersion(value) {
     return formatMessage(`
-This issue has an unsupported Puppeteer version: \`${value}\`. Only versions above \`v${LAST_SUPPORTED_PUPPETEER_VERSION}\` are supported. Please verify the issue on a supported version of Puppeteer and update the form.
+This issue has an outdated Puppeteer version: \`${value}\`. Please verify your issue on the latest \`${LAST_PUPPETEER_VERSION}\` version. Then update the form accordingly.
 `);
   },
   invalidPuppeteerVersion(value) {
@@ -226,8 +220,8 @@ This issue has an invalid Puppeteer version: \`${value}\`. Versions must follow 
     core.setFailed(`Invalid puppeteer version: ${puppeteerVersion}`);
   }
   if (
-    !LAST_SUPPORTED_PUPPETEER_VERSION ||
-    semver.lt(puppeteerVersion, LAST_SUPPORTED_PUPPETEER_VERSION)
+    !LAST_PUPPETEER_VERSION ||
+    semver.lt(puppeteerVersion, LAST_PUPPETEER_VERSION)
   ) {
     core.setOutput(
       'errorMessage',
