@@ -174,7 +174,7 @@ jobs:
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
 
   chrome-tests-required:
-    name: '[Required] Chrome tests required job'
+    name: '[Required] Chrome tests'
     needs: [check-changes, chrome-tests]
     runs-on: ubuntu-latest
     if: ${{ always() }}
@@ -232,7 +232,7 @@ jobs:
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
 
   firefox-tests-required:
-    name: '[Required] Firefox tests required job'
+    name: '[Required] Firefox tests'
     needs: [check-changes, firefox-tests]
     runs-on: ubuntu-latest
     if: ${{ always() }}
@@ -310,7 +310,7 @@ jobs:
         run: ${{ matrix.pkg_manager }} test
 
   installation-test-required:
-    name: '[Required] Installation tests required job'
+    name: '[Required] Installation tests'
     needs: [check-changes, installation-test]
     runs-on: ubuntu-latest
     if: ${{ always() }}
