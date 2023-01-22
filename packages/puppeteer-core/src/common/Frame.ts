@@ -289,12 +289,16 @@ export class Frame {
     url: string,
     options: {
       referer?: string;
+      referrerPolicy?: string;
       timeout?: number;
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
     } = {}
   ): Promise<HTTPResponse | null> {
     const {
       referer = this._frameManager.networkManager.extraHTTPHeaders()['referer'],
+      referrerPolicy = this._frameManager.networkManager.extraHTTPHeaders()[
+        'referer-policy'
+      ],
       waitUntil = ['load'],
       timeout = this._frameManager.timeoutSettings.navigationTimeout(),
     } = options;
@@ -307,7 +311,13 @@ export class Frame {
       timeout
     );
     let error = await Promise.race([
-      navigate(this.#client, url, referer, this._id),
+      navigate(
+        this.#client,
+        url,
+        referer,
+        referrerPolicy as Protocol.Page.ReferrerPolicy,
+        this._id
+      ),
       watcher.timeoutOrTerminationPromise(),
     ]);
     if (!error) {
@@ -332,6 +342,7 @@ export class Frame {
       client: CDPSession,
       url: string,
       referrer: string | undefined,
+      referrerPolicy: Protocol.Page.ReferrerPolicy | undefined,
       frameId: string
     ): Promise<Error | null> {
       try {
@@ -339,6 +350,7 @@ export class Frame {
           url,
           referrer,
           frameId,
+          referrerPolicy,
         });
         ensureNewDocumentNavigation = !!response.loaderId;
         return response.errorText

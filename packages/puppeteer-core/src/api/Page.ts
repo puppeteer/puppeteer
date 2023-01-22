@@ -1381,6 +1381,9 @@ export class Page extends EventEmitter {
    *
    * - `referer` : Referer header value. If provided it will take preference
    *   over the referer header value set by
+   *   {@link Page.setExtraHTTPHeaders |page.setExtraHTTPHeaders()}.<br/>
+   * - `referrerPolicy` : ReferrerPolicy. If provided it will take preference
+   *   over the referer-policy header value set by
    *   {@link Page.setExtraHTTPHeaders |page.setExtraHTTPHeaders()}.
    *
    * `page.goto` will throw an error if:
@@ -1408,7 +1411,7 @@ export class Page extends EventEmitter {
    */
   async goto(
     url: string,
-    options?: WaitForOptions & {referer?: string}
+    options?: WaitForOptions & {referer?: string; referrerPolicy?: string}
   ): Promise<HTTPResponse | null>;
   async goto(): Promise<HTTPResponse | null> {
     throw new Error('Not implemented');
