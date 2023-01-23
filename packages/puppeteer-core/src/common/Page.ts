@@ -893,7 +893,7 @@ export class CDPPage extends Page {
 
   override async goto(
     url: string,
-    options: WaitForOptions & {referer?: string} = {}
+    options: WaitForOptions & {referer?: string; referrerPolicy?: string} = {}
   ): Promise<HTTPResponse | null> {
     return await this.#frameManager.mainFrame().goto(url, options);
   }
