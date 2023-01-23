@@ -28,6 +28,7 @@
     "test:chrome:headful": "npm test -- --test-suite chrome-headful",
     "test:chrome:headless-chrome": "npm test -- --test-suite chrome-new-headless",
     "test:chrome:headless": "npm test -- --test-suite chrome-headless",
+    "test:chrome:bidi": "npm test -- --test-suite chrome-bidi",
     "test:chrome": "run-s test:chrome:*",
     "test:firefox:bidi": "npm test -- --test-suite firefox-bidi",
     "test:firefox:headful": "npm test -- --test-suite firefox-headful",
