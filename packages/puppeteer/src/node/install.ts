@@ -94,13 +94,18 @@ export async function downloadBrowser(): Promise<void> {
       logPolitely(
         `${supportedProducts[product]} (${revisionInfo.revision}) downloaded to ${revisionInfo.folderPath}`
       );
-      localRevisions = localRevisions.filter(revision => {
+      const otherRevisions = localRevisions.filter(revision => {
         return revision !== revisionInfo.revision;
       });
-      const cleanupOldVersions = localRevisions.map(revision => {
-        return browserFetcher.remove(revision);
-      });
-      Promise.all([...cleanupOldVersions]);
+      if (otherRevisions.length) {
+        logPolitely(
+          `Other installed ${
+            supportedProducts[product]
+          } browsers in ${browserFetcher.getDownloadPath()} include: ${otherRevisions.join(
+            ', '
+          )}. Remove old revisions from ${browserFetcher.getDownloadPath()} if you don't need them.`
+        );
+      }
     }
 
     function onError(error: Error) {
