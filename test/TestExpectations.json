@@ -354,6 +354,12 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[evaluation.spec] Evaluation specs \"after each\" hook for \"should transfer 100Mb of data from page to node.js\"",
+    "platforms": ["darwin"],
+    "parameters": ["firefox"],
+    "expectations": ["TIMEOUT", "PASS"]
+  },
+  {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should be able to throw a tricky error",
     "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
@@ -493,7 +499,7 @@
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should handle nested frames",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -517,13 +523,13 @@
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should report frame.name()",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should report frame.parent()",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -559,7 +565,7 @@
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame.executionContext should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -691,9 +697,15 @@
   },
   {
     "testIdPattern": "[keyboard.spec] Keyboard should trigger commands of keyboard shortcuts",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should trigger commands of keyboard shortcuts",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[keyboard.spec] Keyboard should report shiftKey",
@@ -817,13 +829,13 @@
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to reconnect to a disconnected browser",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -859,7 +871,7 @@
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should have custom URL when launching browser",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -1051,7 +1063,7 @@
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should navigate to URL with hash and fire requests without hash",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -1087,7 +1099,7 @@
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work with subframes return 204",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -1392,12 +1404,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[network.spec] network Response.text should return uncompressed text",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
     "testIdPattern": "[network.spec] network Response.text should throw when requesting body of redirected response",
     "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
@@ -1459,6 +1465,24 @@
   },
   {
     "testIdPattern": "[page.spec] Page \"before each\" hook for \"should return the page title\"",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page \"before each\" hook for \"should throw an error if loading from url fail\"",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page \"before each\" hook for \"should include sourcemap when path is provided\"",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page \"after all\" hook in \"Page\"",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["PASS", "FAIL"]
@@ -2935,9 +2959,21 @@
   },
   {
     "testIdPattern": "[touchscreen.spec]",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[touchscreen.spec] Touchscreen should tap the button",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[touchscreen.spec] Touchscreen should report touches",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[tracing.spec]",
