@@ -151,6 +151,7 @@ jobs:
         with:
           comment-id: ${{ steps.find-comment-id.outputs.comment-id }}
           issue-number: ${{ github.event.issue.number }}
+          edit-mode: replace
           body: ${{ needs.analyze-issue.outputs.errorMessage }}
 
   label-unverifiable-issue:
@@ -182,6 +183,7 @@ jobs:
         with:
           comment-id: ${{ steps.find-comment-id.outputs.comment-id }}
           issue-number: ${{ github.event.issue.number }}
+          edit-mode: replace
           body: |
             This issue was not reproducible. Please check that your example runs locally and the following:
 
