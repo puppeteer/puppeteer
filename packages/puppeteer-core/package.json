@@ -161,7 +161,7 @@
     "extract-zip": "2.0.1",
     "https-proxy-agent": "5.0.1",
     "proxy-from-env": "1.1.0",
-    "rimraf": "3.0.2",
+    "rimraf": "4.1.2",
     "tar-fs": "2.1.1",
     "unbzip2-stream": "1.4.3",
     "ws": "8.11.0"
