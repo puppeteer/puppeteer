@@ -12,6 +12,7 @@ class Page {
     url: string,
     options?: WaitForOptions & {
       referer?: string;
+      referrerPolicy?: string;
     }
   ): Promise<HTTPResponse | null>;
 }
@@ -19,10 +20,10 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                                                        | Description                                                                        |
-| --------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| url       | string                                                                      | URL to navigate page to. The URL should include scheme, e.g. <code>https://</code> |
-| options   | [WaitForOptions](./puppeteer.waitforoptions.md) &amp; { referer?: string; } | <i>(Optional)</i> Navigation Parameter                                             |
+| Parameter | Type                                                                                                 | Description                                                                        |
+| --------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| url       | string                                                                                               | URL to navigate page to. The URL should include scheme, e.g. <code>https://</code> |
+| options   | [WaitForOptions](./puppeteer.waitforoptions.md) &amp; { referer?: string; referrerPolicy?: string; } | <i>(Optional)</i> Navigation Parameter                                             |
 
 **Returns:**
 
@@ -38,7 +39,7 @@ The argument `options` might have the following properties:
 
 - `waitUntil`:When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:<br/> - `load` : consider navigation to be finished when the load event is fired.<br/> - `domcontentloaded` : consider navigation to be finished when the DOMContentLoaded event is fired.<br/> - `networkidle0` : consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.<br/> - `networkidle2` : consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
 
-- `referer` : Referer header value. If provided it will take preference over the referer header value set by [page.setExtraHTTPHeaders()](./puppeteer.page.setextrahttpheaders.md).
+- `referer` : Referer header value. If provided it will take preference over the referer header value set by [page.setExtraHTTPHeaders()](./puppeteer.page.setextrahttpheaders.md).<br/> - `referrerPolicy` : ReferrerPolicy. If provided it will take preference over the referer-policy header value set by [page.setExtraHTTPHeaders()](./puppeteer.page.setextrahttpheaders.md).
 
 `page.goto` will throw an error if:
 

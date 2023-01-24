@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.6.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v19.5.2...puppeteer-v19.6.0) (2023-01-23)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 19.5.2 to 19.6.0
+
 ## [19.5.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-v19.5.1...puppeteer-v19.5.2) (2023-01-11)
 
 

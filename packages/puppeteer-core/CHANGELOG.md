@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.6.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.5.2...puppeteer-core-v19.6.0) (2023-01-23)
+
+
+### Features
+
+* **chromium:** roll to Chromium 110.0.5479.0 (r1083080) ([#9500](https://github.com/puppeteer/puppeteer/issues/9500)) ([06e816b](https://github.com/puppeteer/puppeteer/commit/06e816bbfa7b9ca84284929f654de7288c51169d)), closes [#9470](https://github.com/puppeteer/puppeteer/issues/9470)
+* **page:** Adding support for referrerPolicy in `page.goto` ([#9561](https://github.com/puppeteer/puppeteer/issues/9561)) ([e3d69ec](https://github.com/puppeteer/puppeteer/commit/e3d69ec554beeac37bd206a21921d2fed3cb968c))
+
+
+### Bug Fixes
+
+* firefox revision resolution should not update chrome revision ([#9507](https://github.com/puppeteer/puppeteer/issues/9507)) ([f59bbf4](https://github.com/puppeteer/puppeteer/commit/f59bbf4014644dec6f395713e8403939aebe06ea)), closes [#9461](https://github.com/puppeteer/puppeteer/issues/9461)
+* improve screenshot method types ([#9529](https://github.com/puppeteer/puppeteer/issues/9529)) ([6847f88](https://github.com/puppeteer/puppeteer/commit/6847f8835f28e97edba6fce76a4cbf85561482b9))
+
 ## [19.5.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.5.1...puppeteer-core-v19.5.2) (2023-01-11)
 
 
