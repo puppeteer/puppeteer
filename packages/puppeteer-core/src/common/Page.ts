@@ -1631,11 +1631,15 @@ export class CDPPage extends Page {
 
   override waitForXPath(
     xpath: string,
-    options: {
-      visible?: boolean;
-      hidden?: boolean;
-      timeout?: number;
-    } = {}
+    options: WaitForSelectorOptions & {hidden: true}
+  ): Promise<null>;
+  override waitForXPath(
+    xpath: string,
+    options: WaitForSelectorOptions & {hidden: false}
+  ): Promise<ElementHandle<Node>>;
+  override waitForXPath(
+    xpath: string,
+    options: WaitForSelectorOptions = {}
   ): Promise<ElementHandle<Node> | null> {
     return this.mainFrame().waitForXPath(xpath, options);
   }
