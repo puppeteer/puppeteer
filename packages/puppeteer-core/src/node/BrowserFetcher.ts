@@ -504,6 +504,13 @@ export class BrowserFetcher {
   #getFolderPath(revision: string): string {
     return path.resolve(this.#downloadPath, `${this.#platform}-${revision}`);
   }
+
+  /**
+   * @internal
+   */
+  getDownloadPath(): string {
+    return this.#downloadPath;
+  }
 }
 
 function parseFolderPath(
