@@ -226,3 +226,9 @@ overview of Puppeteer development.
 
 Our [FAQ](https://pptr.dev/faq) has migrated to
 [our site](https://pptr.dev/faq).
+
+## Thanks to all the contributors ❤️
+<a href = "https://github.com/puppeteer/puppeteer/contributors">
+  <img src = "https://contrib.rocks/image?repo=puppeteer/puppeteer"/>
+</a>
+
