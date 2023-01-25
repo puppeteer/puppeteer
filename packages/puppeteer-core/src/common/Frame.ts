@@ -353,9 +353,7 @@ export class Frame {
           referrerPolicy,
         });
         ensureNewDocumentNavigation = !!response.loaderId;
-        return response.errorText
-          ? new Error(`${response.errorText} at ${url}`)
-          : null;
+        return null;
       } catch (error) {
         if (isErrorLike(error)) {
           return error;
