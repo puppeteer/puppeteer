@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.6.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.6.0...puppeteer-core-v19.6.1) (2023-01-26)
+
+
+### Bug Fixes
+
+* don't clean up previous browser versions ([#9568](https://github.com/puppeteer/puppeteer/issues/9568)) ([344bc2a](https://github.com/puppeteer/puppeteer/commit/344bc2af62e4068fe2cb8162d4b6c8242aac843b)), closes [#9533](https://github.com/puppeteer/puppeteer/issues/9533)
+* mimic rejection for PuppeteerUtil on early call ([#9589](https://github.com/puppeteer/puppeteer/issues/9589)) ([1980de9](https://github.com/puppeteer/puppeteer/commit/1980de91a161523c7098a79919b20e6d8d2e5d81))
+* **revert:** use LazyArg for puppeteer utilities ([#9590](https://github.com/puppeteer/puppeteer/issues/9590)) ([6edd996](https://github.com/puppeteer/puppeteer/commit/6edd99676827de2c83f7a858e4f903b1c34e7d35))
+* use LazyArg for puppeteer utilities ([#9575](https://github.com/puppeteer/puppeteer/issues/9575)) ([496658f](https://github.com/puppeteer/puppeteer/commit/496658f02945b53096483f36cb3d64556cff045e))
+
 ## [19.6.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.5.2...puppeteer-core-v19.6.0) (2023-01-23)
 
 
