@@ -28,7 +28,7 @@ import {JSHandle} from './JSHandle.js';
 import {LazyArg} from './LazyArg.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
-import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
+import {EvaluateFunc, HandleFor, InnerLazyParams, NodeFor} from './types.js';
 import {createJSHandle, debugError, pageBindingInitString} from './util.js';
 import {TaskManager, WaitTask} from './WaitTask.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
@@ -138,11 +138,8 @@ export class IsolatedWorld {
   }
 
   clearContext(): void {
-    // Only create a new promise if the old one was resolved.
-    if (this.#puppeteerUtil.resolved()) {
-      this.#puppeteerUtil = createDeferredPromise();
-    }
     this.#document = undefined;
+    this.#puppeteerUtil = createDeferredPromise();
     this.#context = createDeferredPromise();
   }
 
@@ -520,8 +517,13 @@ export class IsolatedWorld {
           root,
           timeout,
         },
-        LazyArg.create(() => {
-          return this.puppeteerUtil;
+        new LazyArg(async () => {
+          try {
+            // In case CDP fails.
+            return await this.puppeteerUtil;
+          } catch {
+            return undefined;
+          }
         }),
         queryOne.toString(),
         selector,
@@ -545,7 +547,9 @@ export class IsolatedWorld {
 
   waitForFunction<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<InnerLazyParams<Params>> = EvaluateFunc<
+      InnerLazyParams<Params>
+    >
   >(
     pageFunction: Func | string,
     options: {

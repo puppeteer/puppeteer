@@ -20,7 +20,6 @@ import {ElementHandle} from './ElementHandle.js';
 import {TimeoutError} from './Errors.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {JSHandle} from './JSHandle.js';
-import {LazyArg} from './LazyArg.js';
 import {HandleFor} from './types.js';
 
 /**
@@ -115,9 +114,7 @@ export class WaitTask<T = unknown> {
                 return fun(...args) as Promise<T>;
               });
             },
-            LazyArg.create(() => {
-              return this.#world.puppeteerUtil;
-            }),
+            await this.#world.puppeteerUtil,
             this.#fn,
             ...this.#args
           );
@@ -130,9 +127,7 @@ export class WaitTask<T = unknown> {
                 return fun(...args) as Promise<T>;
               }, root || document);
             },
-            LazyArg.create(() => {
-              return this.#world.puppeteerUtil;
-            }),
+            await this.#world.puppeteerUtil,
             this.#root,
             this.#fn,
             ...this.#args
@@ -146,9 +141,7 @@ export class WaitTask<T = unknown> {
                 return fun(...args) as Promise<T>;
               }, ms);
             },
-            LazyArg.create(() => {
-              return this.#world.puppeteerUtil;
-            }),
+            await this.#world.puppeteerUtil,
             this.#polling,
             this.#fn,
             ...this.#args

@@ -15,13 +15,11 @@
  */
 
 import PuppeteerUtil from '../injected/injected.js';
-import {assert} from '../util/assert.js';
 import {ariaHandler} from './AriaQueryHandler.js';
 import {ElementHandle} from './ElementHandle.js';
 import {Frame} from './Frame.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
-import {LazyArg} from './LazyArg.js';
 
 /**
  * @public
@@ -104,11 +102,7 @@ function createPuppeteerQueryHandler(
       const jsHandle = await element.evaluateHandle(
         queryOne,
         selector,
-        LazyArg.create(() => {
-          const world = element.executionContext()._world;
-          assert(world);
-          return world.puppeteerUtil;
-        })
+        await element.executionContext()._world!.puppeteerUtil
       );
       const elementHandle = jsHandle.asElement();
       if (elementHandle) {
@@ -154,11 +148,7 @@ function createPuppeteerQueryHandler(
       const jsHandle = await element.evaluateHandle(
         queryAll,
         selector,
-        LazyArg.create(() => {
-          const world = element.executionContext()._world;
-          assert(world);
-          return world.puppeteerUtil;
-        })
+        await element.executionContext()._world!.puppeteerUtil
       );
       const properties = await jsHandle.getProperties();
       await jsHandle.dispose();
