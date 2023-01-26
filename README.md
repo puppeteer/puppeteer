@@ -2,6 +2,7 @@
 
 [![Build status](https://github.com/puppeteer/puppeteer/workflows/CI/badge.svg)](https://github.com/puppeteer/puppeteer/actions?query=workflow%3ACI)
 [![npm puppeteer package](https://img.shields.io/npm/v/puppeteer.svg)](https://npmjs.org/package/puppeteer)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=90796663&machine=basicLinux32gb&devcontainer_path=.devcontainer%2Fdevcontainer.json)
 
 <img src="https://user-images.githubusercontent.com/10379601/29446482-04f7036a-841f-11e7-9872-91d1fc2ea683.png" height="200" align="right"/>
 
