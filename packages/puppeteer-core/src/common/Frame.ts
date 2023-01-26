@@ -34,6 +34,7 @@ import {Page} from '../api/Page.js';
 import {getQueryHandlerAndSelector} from './QueryHandler.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {importFS} from './util.js';
+import {LazyArg} from './LazyArg.js';
 
 /**
  * @public
@@ -804,8 +805,9 @@ export class Frame {
 
     type = type ?? 'text/javascript';
 
+    const puppeteerWorld = this.worlds[PUPPETEER_WORLD];
     return this.worlds[MAIN_WORLD].transferHandle(
-      await this.worlds[PUPPETEER_WORLD].evaluateHandle(
+      await puppeteerWorld.evaluateHandle(
         async ({createDeferredPromise}, {url, id, type, content}) => {
           const promise = createDeferredPromise<void>();
           const script = document.createElement('script');
@@ -839,7 +841,9 @@ export class Frame {
           await promise;
           return script;
         },
-        await this.worlds[PUPPETEER_WORLD].puppeteerUtil,
+        LazyArg.create(() => {
+          return puppeteerWorld.puppeteerUtil;
+        }),
         {...options, type, content}
       )
     );
@@ -887,8 +891,9 @@ export class Frame {
       options.content = content;
     }
 
+    const puppeteerWorld = this.worlds[PUPPETEER_WORLD];
     return this.worlds[MAIN_WORLD].transferHandle(
-      await this.worlds[PUPPETEER_WORLD].evaluateHandle(
+      await puppeteerWorld.evaluateHandle(
         async ({createDeferredPromise}, {url, content}) => {
           const promise = createDeferredPromise<void>();
           let element: HTMLStyleElement | HTMLLinkElement;
@@ -923,7 +928,9 @@ export class Frame {
           await promise;
           return element;
         },
-        await this.worlds[PUPPETEER_WORLD].puppeteerUtil,
+        LazyArg.create(() => {
+          return puppeteerWorld.puppeteerUtil;
+        }),
         options
       )
     );

@@ -16,7 +16,6 @@
 
 import {JSHandle} from './JSHandle.js';
 import {ElementHandle} from './ElementHandle.js';
-import {LazyArg} from './LazyArg.js';
 
 /**
  * @public
@@ -37,18 +36,6 @@ export type HandleOr<T> = HandleFor<T> | JSHandle<T> | T;
  * @public
  */
 export type FlattenHandle<T> = T extends HandleOr<infer U> ? U : never;
-
-/**
- * @internal
- */
-export type FlattenLazyArg<T> = T extends LazyArg<infer U> ? U : T;
-
-/**
- * @internal
- */
-export type InnerLazyParams<T extends unknown[]> = {
-  [K in keyof T]: FlattenLazyArg<T[K]>;
-};
 
 /**
  * @public
