@@ -25,7 +25,6 @@ import {Frame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {MouseButton} from './Input.js';
 import {JSHandle} from './JSHandle.js';
-import {LazyArg} from './LazyArg.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {EvaluateFunc, HandleFor, InnerLazyParams, NodeFor} from './types.js';
@@ -35,6 +34,7 @@ import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 
 import type PuppeteerUtil from '../injected/injected.js';
 import type {ElementHandle} from './ElementHandle.js';
+import {LazyArg} from './LazyArg.js';
 
 /**
  * @public
@@ -96,10 +96,20 @@ export class IsolatedWorld {
   // Contains mapping from functions that should be bound to Puppeteer functions.
   #boundFunctions = new Map<string, Function>();
   #taskManager = new TaskManager();
-  #puppeteerUtil = createDeferredPromise<JSHandle<PuppeteerUtil>>();
+  #puppeteerUtil?: Promise<JSHandle<PuppeteerUtil> | undefined>;
 
   get puppeteerUtil(): Promise<JSHandle<PuppeteerUtil>> {
-    return this.#puppeteerUtil;
+    /**
+     * This is supposed to mimic what happens when evaluating Puppeteer utilities
+     * break due to navigation.
+     */
+    return (async () => {
+      const util = await this.#puppeteerUtil;
+      if (util) {
+        return util;
+      }
+      throw new Error('Execution context was destroyed!');
+    })();
   }
 
   get taskManager(): TaskManager {
@@ -151,15 +161,19 @@ export class IsolatedWorld {
 
   async #injectPuppeteerUtil(context: ExecutionContext): Promise<void> {
     try {
-      this.#puppeteerUtil.resolve(
-        (await context.evaluateHandle(
-          `(() => {
-              const module = {};
-              ${injectedSource}
-              return module.exports.default;
-            })()`
-        )) as JSHandle<PuppeteerUtil>
-      );
+      this.#puppeteerUtil = (async () => {
+        try {
+          return (await context.evaluateHandle(
+            `(() => {
+            const module = {};
+            ${injectedSource}
+            return module.exports.default;
+          })()`
+          )) as JSHandle<PuppeteerUtil>;
+        } catch {
+          return undefined;
+        }
+      })();
       this.#taskManager.rerunAll();
     } catch (error: unknown) {
       debugError(error);
