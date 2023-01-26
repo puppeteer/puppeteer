@@ -16,7 +16,6 @@
 
 import expect from 'expect';
 import {PUPPETEER_WORLD} from 'puppeteer-core/internal/common/IsolatedWorlds.js';
-import {LazyArg} from 'puppeteer-core/internal/common/LazyArg.js';
 import {
   getTestState,
   setupTestBrowserHooks,
@@ -46,9 +45,7 @@ describe('PuppeteerUtil tests', function () {
         ({createFunction}, fnString) => {
           return createFunction(fnString)(4);
         },
-        LazyArg.create(() => {
-          return world.puppeteerUtil;
-        }),
+        await world.puppeteerUtil,
         (() => {
           return 4;
         }).toString()
