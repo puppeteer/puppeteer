@@ -2,8 +2,9 @@
 
 :::caution
 
-Chromium currently does not provide arm64 binaries for Linux. There are only binaries
-for [Mac ARM with experimental support from Puppeteer](https://pptr.dev/contributing#macos-arm-and-custom-executables).
+Chromium currently does not provide arm64 binaries for Linux. There are only
+binaries for
+[Mac ARM with experimental support from Puppeteer](https://pptr.dev/contributing#macos-arm-and-custom-executables).
 
 :::
 
@@ -283,14 +284,18 @@ script:
 
 ## Running Puppeteer on WSL (Windows subsystem for Linux)
 
-See [this thread](https://github.com/puppeteer/puppeteer/issues/1837) with some tips specific to WSL. In a nutshell, you need to install missing dependencies by either:
+See [this thread](https://github.com/puppeteer/puppeteer/issues/1837) with some
+tips specific to WSL. In a nutshell, you need to install missing dependencies by
+either:
 
 1. [Installing Chrome on WSL to install all dependencies](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps#install-google-chrome-for-linux)
-2. Installing required dependencies manually: `sudo apt install libgtk-3-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2`.
+2. Installing required dependencies manually:
+   `sudo apt install libgtk-3-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2`.
 
 :::caution
 
-The list of required dependencies might get outdated and depend on what you already have installed.
+The list of required dependencies might get outdated and depend on what you
+already have installed.
 
 :::
 
@@ -530,13 +535,15 @@ To use `puppeteer`, simply list the module as a dependency in your
 
 ### Running Puppeteer on Google Cloud Functions
 
-The Node.js 10 runtime of
-[Google Cloud Functions](https://cloud.google.com/functions/docs/) comes with
-all system packages needed to run Headless Chrome.
+You can try running Puppeteer on
+[Google Cloud Functions](https://cloud.google.com/functions/docs/) but we have
+been getting reports that newest runtimes don't have all dependencies to run
+Chromium.
 
-To use `puppeteer`, simply list the module as a dependency in your
-`package.json` and deploy your function to Google Cloud Functions using the
-`nodejs10` runtime.
+If you encounter problems due to missing Chromium dependencies, consider using
+Google Cloud Run instead where you can provide a custom Dockerfile with all
+dependencies. Also, see our
+[official Docker image](https://github.com/puppeteer/puppeteer/pkgs/container/puppeteer).
 
 ### Running Puppeteer on Google Cloud Run
 

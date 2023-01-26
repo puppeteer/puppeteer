@@ -170,11 +170,10 @@ export class WaitTask<T = unknown> {
   async terminate(error?: unknown): Promise<void> {
     this.#world.taskManager.delete(this);
 
-    if (this.#timeout) {
-      clearTimeout(this.#timeout);
-    }
-
     if (error && !this.#result.finished()) {
+      if (this.#timeout) {
+        clearTimeout(this.#timeout);
+      }
       this.#result.reject(error);
     }
 
