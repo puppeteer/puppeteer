@@ -344,7 +344,7 @@ export class Frame {
       referrer: string | undefined,
       referrerPolicy: Protocol.Page.ReferrerPolicy | undefined,
       frameId: string
-    ): Promise<Error | null> {
+    ): Promise<void> {
       try {
         const response = await client.send('Page.navigate', {
           url,
@@ -353,14 +353,11 @@ export class Frame {
           referrerPolicy,
         });
         ensureNewDocumentNavigation = !!response.loaderId;
-        return response.errorText
-          ? new Error(`${response.errorText} at ${url}`)
-          : null;
+        return;
       } catch (error) {
-        if (isErrorLike(error)) {
-          return error;
+        if (!isErrorLike(error)) {
+          throw error;
         }
-        throw error;
       }
     }
   }
