@@ -18,8 +18,14 @@
  * @internal
  */
 export class LazyArg<T> {
+  static create = <T>(callback: () => Promise<T>): T => {
+    // We do type coercion here because we don't want to introduce LazyArgs to
+    // the type system.
+    return new LazyArg(callback) as unknown as T;
+  };
+
   #get: () => Promise<T>;
-  constructor(get: () => Promise<T>) {
+  private constructor(get: () => Promise<T>) {
     this.#get = get;
   }
 
