@@ -40,7 +40,6 @@
     "clean": "tsc -b --clean && rimraf lib",
     "format:types": "wireit",
     "generate:package-json": "wireit",
-    "generate:sources": "wireit",
     "postinstall": "node install.js",
     "prepack": "wireit"
   },
@@ -56,7 +55,7 @@
     },
     "build": {
       "dependencies": [
-        "format:types",
+        "build:tsc",
         "generate:package-json"
       ]
     },

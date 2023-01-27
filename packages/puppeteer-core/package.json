@@ -58,8 +58,8 @@
     },
     "build": {
       "dependencies": [
+        "build:tsc",
         "build:third_party",
-        "format:types",
         "generate:package-json"
       ]
     },
@@ -83,8 +83,8 @@
       ],
       "clean": false,
       "files": [
-        "lib/esm/third_party/**",
-        "lib/cjs/third_party/**"
+        "third_party/**",
+        "third_party/**"
       ],
       "output": [
         "lib/esm/third_party/**",

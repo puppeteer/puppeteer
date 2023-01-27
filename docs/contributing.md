@@ -27,7 +27,9 @@ again.
 2. Install the dependencies
 
    ```sh
-   npm install # or PUPPETEER_PRODUCT=firefox npm install
+   npm install
+   # Or to download Firefox
+   PUPPETEER_PRODUCT=firefox npm install
    ```
 
 3. Build all packages
@@ -61,7 +63,7 @@ again.
 
 ## Building a single package
 
-To build a single package, you can run
+To build a single package, you can run:
 
 ```sh
 npm run build --workspace <package> # e.g. puppeteer
@@ -71,6 +73,18 @@ This will build all dependent packages automatically, so specifying a single
 packages is sufficient. This is all possible due to
 [wireit](https://github.com/google/wireit) which behaves similar to
 [GNU Make](https://www.gnu.org/software/make/).
+
+### Watch mode
+
+To continuously build a package, you can run:
+
+```sh
+npm run build --watch --workspace <package> # e.g. puppeteer
+```
+
+You have to only specify a single package to watch else things will not work as expected
+As stated above because of [wireit](https://github.com/google/wireit) when a change happens
+all dependencies will be build or rebuild (if needed).
 
 ## Removing stale artifacts
 
