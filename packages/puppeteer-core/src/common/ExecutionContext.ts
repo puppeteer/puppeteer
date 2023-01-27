@@ -15,6 +15,8 @@
  */
 
 import {Protocol} from 'devtools-protocol';
+import {source as injectedSource} from '../generated/injected.js';
+import type PuppeteerUtil from '../injected/injected.js';
 import {CDPSession} from './Connection.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {JSHandle} from './JSHandle.js';
@@ -85,6 +87,20 @@ export class ExecutionContext {
     this._world = world;
     this._contextId = contextPayload.id;
     this._contextName = contextPayload.name;
+  }
+
+  #puppeteerUtil?: Promise<JSHandle<PuppeteerUtil>>;
+  get puppeteerUtil(): Promise<JSHandle<PuppeteerUtil>> {
+    if (!this.#puppeteerUtil) {
+      this.#puppeteerUtil = this.evaluateHandle(
+        `(() => {
+            const module = {};
+            ${injectedSource}
+            return module.exports.default;
+          })()`
+      ) as Promise<JSHandle<PuppeteerUtil>>;
+    }
+    return this.#puppeteerUtil;
   }
 
   /**
@@ -304,7 +320,7 @@ export class ExecutionContext {
       arg: unknown
     ): Promise<Protocol.Runtime.CallArgument> {
       if (arg instanceof LazyArg) {
-        arg = await arg.get();
+        arg = await arg.get(this);
       }
       if (typeof arg === 'bigint') {
         // eslint-disable-line valid-typeof
