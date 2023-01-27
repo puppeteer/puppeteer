@@ -21,6 +21,7 @@ import {ElementHandle} from './ElementHandle.js';
 import {Frame} from './Frame.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
+import {LazyArg} from './LazyArg.js';
 
 /**
  * @public
@@ -105,7 +106,9 @@ function createPuppeteerQueryHandler(
       const jsHandle = await element.evaluateHandle(
         queryOne,
         selector,
-        await world.puppeteerUtil
+        LazyArg.create(context => {
+          return context.puppeteerUtil;
+        })
       );
       const elementHandle = jsHandle.asElement();
       if (elementHandle) {
@@ -153,7 +156,9 @@ function createPuppeteerQueryHandler(
       const jsHandle = await element.evaluateHandle(
         queryAll,
         selector,
-        await element.executionContext()._world!.puppeteerUtil
+        LazyArg.create(context => {
+          return context.puppeteerUtil;
+        })
       );
       const properties = await jsHandle.getProperties();
       await jsHandle.dispose();

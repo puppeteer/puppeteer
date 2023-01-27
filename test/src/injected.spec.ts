@@ -16,6 +16,7 @@
 
 import expect from 'expect';
 import {PUPPETEER_WORLD} from 'puppeteer-core/internal/common/IsolatedWorlds.js';
+import {LazyArg} from 'puppeteer-core/internal/common/LazyArg.js';
 import {
   getTestState,
   setupTestBrowserHooks,
@@ -30,9 +31,14 @@ describe('PuppeteerUtil tests', function () {
     const {page} = getTestState();
 
     const world = page.mainFrame().worlds[PUPPETEER_WORLD];
-    const value = await world.evaluate(PuppeteerUtil => {
-      return typeof PuppeteerUtil === 'object';
-    }, world.puppeteerUtil);
+    const value = await world.evaluate(
+      PuppeteerUtil => {
+        return typeof PuppeteerUtil === 'object';
+      },
+      LazyArg.create(context => {
+        return context.puppeteerUtil;
+      })
+    );
     expect(value).toBeTruthy();
   });
 
@@ -45,7 +51,9 @@ describe('PuppeteerUtil tests', function () {
         ({createFunction}, fnString) => {
           return createFunction(fnString)(4);
         },
-        await world.puppeteerUtil,
+        LazyArg.create(context => {
+          return context.puppeteerUtil;
+        }),
         (() => {
           return 4;
         }).toString()

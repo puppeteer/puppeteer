@@ -3013,7 +3013,7 @@
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should work with removed MutationObserver",
-    "platforms": ["darwin", "win32"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
