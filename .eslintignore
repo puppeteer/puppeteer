@@ -22,6 +22,8 @@ generated/
 
 # IDE Artifacts
 .vscode
+!.vscode/extensions.json
+!.vscode/launch.json
 .devcontainer
 
 # Misc
