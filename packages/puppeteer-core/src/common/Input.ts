@@ -683,6 +683,12 @@ export class Touchscreen {
     });
   }
 
+  /**
+   * Dispatches a `touchstart` and `setTimeout` and `touchend` event.
+   * @param x - Horizontal position of the tap.
+   * @param y - Vertical position of the tap.
+   * @param delay - When the touch will wait
+   */
   async press(x: number, y: number, delay: number): Promise<void> {
     const pressPoints = [{x: Math.round(x), y: Math.round(y)}];
     await this.#client.send('Input.dispatchTouchEvent', {
@@ -699,6 +705,12 @@ export class Touchscreen {
       modifiers: this.#keyboard._modifiers,
     });
   }
+
+  /**
+   * Dispatches a `touchstart`and `touchMove` and `touchend` event.
+   * @param start - Start position of the tap.
+   * @param target - End position of the tap.
+   */
 
   async drag(start: Point, target: Point): Promise<void> {
     const touchPoints = [{x: Math.round(start.x), y: Math.round(start.y)}];
