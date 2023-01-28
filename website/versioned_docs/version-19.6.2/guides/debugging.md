@@ -130,6 +130,9 @@ variable before running your script. This will log internal traffic via
 # Basic verbose logging
 env DEBUG="puppeteer:*" node script.js
 
+# Prevent truncating of long messages
+env DEBUG="puppeteer:*" env DEBUG_MAX_STRING_LENGTH=null node script.js
+
 # Protocol traffic can be rather noisy. This example filters out all Network domain messages
 env DEBUG="puppeteer:*" env DEBUG_COLORS=true node script.js 2>&1 | grep -v '"Network'
 ```

@@ -1,6 +1,6 @@
 {
   "name": "puppeteer-core",
-  "version": "19.5.2",
+  "version": "19.6.2",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "keywords": [
     "puppeteer",
@@ -39,11 +39,12 @@
     "build:types": "wireit",
     "build": "wireit",
     "check": "tsx tools/ensure-correct-devtools-protocol-package",
-    "clean": "tsc -b --clean && rimraf lib src/generated",
     "format:types": "wireit",
     "generate:package-json": "wireit",
     "generate:sources": "wireit",
-    "prepack": "wireit"
+    "prepack": "wireit",
+    "clean": "tsc -b --clean && rimraf lib src/generated",
+    "clean:third_party": "wireit"
   },
   "wireit": {
     "prepack": {
@@ -71,6 +72,9 @@
       "output": [
         "src/generated/**"
       ]
+    },
+    "clean:third_party": {
+      "command": "rimraf lib/esm/third_party lib/cjs/third_party"
     },
     "build:third_party": {
       "command": "rollup --config rollup.third_party.config.js",
@@ -129,6 +133,7 @@
       "command": "tsc -b",
       "clean": "if-file-deleted",
       "dependencies": [
+        "clean:third_party",
         "generate:sources"
       ],
       "files": [

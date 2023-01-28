@@ -20,6 +20,7 @@ import {ElementHandle} from './ElementHandle.js';
 import {TimeoutError} from './Errors.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {JSHandle} from './JSHandle.js';
+import {LazyArg} from './LazyArg.js';
 import {HandleFor} from './types.js';
 
 /**
@@ -114,7 +115,9 @@ export class WaitTask<T = unknown> {
                 return fun(...args) as Promise<T>;
               });
             },
-            await this.#world.puppeteerUtil,
+            LazyArg.create(context => {
+              return context.puppeteerUtil;
+            }),
             this.#fn,
             ...this.#args
           );
@@ -127,7 +130,9 @@ export class WaitTask<T = unknown> {
                 return fun(...args) as Promise<T>;
               }, root || document);
             },
-            await this.#world.puppeteerUtil,
+            LazyArg.create(context => {
+              return context.puppeteerUtil;
+            }),
             this.#root,
             this.#fn,
             ...this.#args
@@ -141,7 +146,9 @@ export class WaitTask<T = unknown> {
                 return fun(...args) as Promise<T>;
               }, ms);
             },
-            await this.#world.puppeteerUtil,
+            LazyArg.create(context => {
+              return context.puppeteerUtil;
+            }),
             this.#polling,
             this.#fn,
             ...this.#args
@@ -170,11 +177,10 @@ export class WaitTask<T = unknown> {
   async terminate(error?: unknown): Promise<void> {
     this.#world.taskManager.delete(this);
 
-    if (this.#timeout) {
-      clearTimeout(this.#timeout);
-    }
-
     if (error && !this.#result.finished()) {
+      if (this.#timeout) {
+        clearTimeout(this.#timeout);
+      }
       this.#result.reject(error);
     }
 

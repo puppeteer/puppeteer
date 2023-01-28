@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.6.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.6.1...puppeteer-core-v19.6.2) (2023-01-27)
+
+
+### Bug Fixes
+
+* atomically get Puppeteer utilities ([#9597](https://github.com/puppeteer/puppeteer/issues/9597)) ([050a7b0](https://github.com/puppeteer/puppeteer/commit/050a7b062415ebaf10bcb71c405143eacc4e5d4b))
+
+## [19.6.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.6.0...puppeteer-core-v19.6.1) (2023-01-26)
+
+
+### Bug Fixes
+
+* don't clean up previous browser versions ([#9568](https://github.com/puppeteer/puppeteer/issues/9568)) ([344bc2a](https://github.com/puppeteer/puppeteer/commit/344bc2af62e4068fe2cb8162d4b6c8242aac843b)), closes [#9533](https://github.com/puppeteer/puppeteer/issues/9533)
+* mimic rejection for PuppeteerUtil on early call ([#9589](https://github.com/puppeteer/puppeteer/issues/9589)) ([1980de9](https://github.com/puppeteer/puppeteer/commit/1980de91a161523c7098a79919b20e6d8d2e5d81))
+* **revert:** use LazyArg for puppeteer utilities ([#9590](https://github.com/puppeteer/puppeteer/issues/9590)) ([6edd996](https://github.com/puppeteer/puppeteer/commit/6edd99676827de2c83f7a858e4f903b1c34e7d35))
+* use LazyArg for puppeteer utilities ([#9575](https://github.com/puppeteer/puppeteer/issues/9575)) ([496658f](https://github.com/puppeteer/puppeteer/commit/496658f02945b53096483f36cb3d64556cff045e))
+
+## [19.6.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.5.2...puppeteer-core-v19.6.0) (2023-01-23)
+
+
+### Features
+
+* **chromium:** roll to Chromium 110.0.5479.0 (r1083080) ([#9500](https://github.com/puppeteer/puppeteer/issues/9500)) ([06e816b](https://github.com/puppeteer/puppeteer/commit/06e816bbfa7b9ca84284929f654de7288c51169d)), closes [#9470](https://github.com/puppeteer/puppeteer/issues/9470)
+* **page:** Adding support for referrerPolicy in `page.goto` ([#9561](https://github.com/puppeteer/puppeteer/issues/9561)) ([e3d69ec](https://github.com/puppeteer/puppeteer/commit/e3d69ec554beeac37bd206a21921d2fed3cb968c))
+
+
+### Bug Fixes
+
+* firefox revision resolution should not update chrome revision ([#9507](https://github.com/puppeteer/puppeteer/issues/9507)) ([f59bbf4](https://github.com/puppeteer/puppeteer/commit/f59bbf4014644dec6f395713e8403939aebe06ea)), closes [#9461](https://github.com/puppeteer/puppeteer/issues/9461)
+* improve screenshot method types ([#9529](https://github.com/puppeteer/puppeteer/issues/9529)) ([6847f88](https://github.com/puppeteer/puppeteer/commit/6847f8835f28e97edba6fce76a4cbf85561482b9))
+
 ## [19.5.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.5.1...puppeteer-core-v19.5.2) (2023-01-11)
 
 

@@ -19,15 +19,27 @@
   },
   {
     "testIdPattern": "[browsercontext.spec] BrowserContext should fire target events",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[browsercontext.spec] BrowserContext should fire target events",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[browsercontext.spec] BrowserContext should isolate localStorage and cookies",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[browsercontext.spec] BrowserContext should isolate localStorage and cookies",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[browsercontext.spec] BrowserContext should wait for a target",
@@ -37,15 +49,33 @@
   },
   {
     "testIdPattern": "[browsercontext.spec] BrowserContext should work across sessions",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[browsercontext.spec] BrowserContext should work across sessions",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[browsercontext.spec] BrowserContext window.open should use parent tab context",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[browsercontext.spec] BrowserContext window.open should use parent tab context",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[browsercontext.spec] BrowserContext should provide a context id",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[CDPSession.spec]",
@@ -63,23 +93,29 @@
     "testIdPattern": "[click.spec] Page.click should click on checkbox label and toggle",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
+    "expectations": ["FAIL", "PASS"]
+  },
+  {
+    "testIdPattern": "[click.spec] Page.click should click the button with fixed position inside an iframe",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[click.spec] Page.click should click the button if window.Node is removed",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[click.spec] Page.click should click with disabled javascript",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.cookies should get cookies from multiple urls",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -87,11 +123,11 @@
     "testIdPattern": "[cookies.spec] Cookie specs Page.deleteCookie should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should default to setting secure cookie for HTTPS websites",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -99,41 +135,41 @@
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should isolate cookies in browser contexts",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set a cookie on a different domain",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set a cookie with a path",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set cookie with reasonable defaults",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set cookies from a frame",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set multiple cookies",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should set secure same-site cookies from a frame",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -141,7 +177,7 @@
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[coverage.spec]",
@@ -153,19 +189,19 @@
     "testIdPattern": "[defaultbrowsercontext.spec] DefaultBrowserContext page.deleteCookie() should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[defaultbrowsercontext.spec] DefaultBrowserContext page.setCookie() should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[dialog.spec] Page.Events.Dialog should allow accepting prompts",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[drag-and-drop.spec]",
@@ -175,55 +211,61 @@
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox should handle nested frames",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox should handle nested frames",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox should return null for invisible elements",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox should return null for invisible elements",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox should return null for invisible elements",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox should work",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox", "headless"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boxModel should return null for invisible elements",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boxModel should return null for invisible elements",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boxModel should return null for invisible elements",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.click should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.contentFrame should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -231,131 +273,167 @@
     "testIdPattern": "[emulation.spec] Emulation Page.emulate should support clicking",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["PASS", "FAIL"]
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateCPUThrottling should change the CPU throttling rate successfully",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateCPUThrottling should change the CPU throttling rate successfully",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateMediaFeatures should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateMediaType should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateNetworkConditions should change navigator.connection.effectiveType",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateNetworkConditions should change navigator.connection.effectiveType",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[emulation.spec] Emulation Page.emulateTimezone should throw for invalid timezone IDs",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateTimezone should throw for invalid timezone IDs",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[emulation.spec] Emulation Page.emulateTimezone should throw for invalid timezone IDs",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[emulation.spec] Emulation Page.emulateTimezone should work",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateTimezone should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[emulation.spec] Emulation Page.emulateTimezone should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[emulation.spec] Emulation Page.emulateVisionDeficiency should work",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateVisionDeficiency should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[emulation.spec] Emulation Page.emulateVisionDeficiency should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.viewport should support landscape emulation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[evaluation.spec] Evaluation specs \"after each\" hook for \"should transfer 100Mb of data from page to node.js\"",
+    "platforms": ["darwin"],
+    "parameters": ["firefox"],
+    "expectations": ["TIMEOUT", "PASS"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should be able to throw a tricky error",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should fail for circular object",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should fail for circular object",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should not throw an error when evaluation does a navigation",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should return undefined for non-serializable objects",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should return undefined for non-serializable objects",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should return undefined for objects with symbols",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should return undefined for objects with symbols",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should simulate a user gesture",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should simulate a user gesture",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw a nice error after a navigation",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw a nice error after a navigation",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw if elementHandles are from other frames",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -367,33 +445,39 @@
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work from-inside an exposed function",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work from-inside an exposed function",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument should evaluate before anything else on the page",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument should evaluate before anything else on the page",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument should evaluate before anything else on the page",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument should work with CSP",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument should work with CSP",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument should work with CSP",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[fixtures.spec] Fixtures dumpio option should work with pipe option",
@@ -415,45 +499,63 @@
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should handle nested frames",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should report different frame instance when frame re-attaches",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[frame.spec] Frame specs Frame Management should report different frame instance when frame re-attaches",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should report frame from-inside shadow DOM",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should report frame.name()",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should report frame.parent()",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should send events when frames are manipulated dynamically",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[frame.spec] Frame specs Frame Management should send events when frames are manipulated dynamically",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[frame.spec] Frame specs Frame Management should support lazy frames",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should support lazy frames",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame.evaluate should throw for detached frames",
@@ -463,7 +565,7 @@
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame.executionContext should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -475,51 +577,51 @@
   },
   {
     "testIdPattern": "[idle_override.spec] Emulate idle state changing idle state emulation causes change of the IdleDetector state",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[idle_override.spec] Emulate idle state changing idle state emulation causes change of the IdleDetector state",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[idle_overrides.spec]",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[ignorehttperrors.spec]",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[ignorehttpserrors.spec]",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[ignorehttpserrors.spec] ignoreHTTPSErrors Response.securityDetails should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[ignorehttpserrors.spec] ignoreHTTPSErrors Response.securityDetails should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[ignorehttpserrors.spec] ignoreHTTPSErrors should work with mixed content",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[ignorehttpserrors.spec] ignoreHTTPSErrors should work with request interception",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[ignorehttpserrors.spec] ignoreHTTPSErrors should work with request interception",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[ignorehttpserrors.spec] ignoreHTTPSErrors Response.securityDetails Network redirects should report SecurityDetails",
@@ -535,103 +637,175 @@
   },
   {
     "testIdPattern": "[jshandle.spec] JSHandle JSHandle.click should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[jshandle.spec] JSHandle JSHandle.click should work",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[jshandle.spec] JSHandle JSHandle.jsonValue should not work with dates",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[jshandle.spec] JSHandle JSHandle.jsonValue should not work with dates",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[jshandle.spec] JSHandle JSHandle.jsonValue should not work with dates",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[jshandle.spec] JSHandle JSHandleonValue should not work with dates",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[keyboard.spec] Keyboard ElementHandle.press should support |text| option",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[keyboard.spec] Keyboard ElementHandle.press should support |text| option",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should press the meta key",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[keyboard.spec] Keyboard should press the meta key",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should press the metaKey",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[keyboard.spec] Keyboard should press the metaKey",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should trigger commands of keyboard shortcuts",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[keyboard.spec] Keyboard should trigger commands of keyboard shortcuts",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should report shiftKey",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[keyboard.spec] Keyboard should report shiftKey",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should send a character with sendCharacter",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[keyboard.spec] Keyboard should send a character with sendCharacter",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should specify location",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[keyboard.spec] Keyboard should specify location",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should specify repeat property",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[keyboard.spec] Keyboard should specify repeat property",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should type all kinds of characters",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[keyboard.spec] Keyboard should type all kinds of characters",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should type emoji",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[keyboard.spec] Keyboard should type emoji",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should type emoji into an iframe",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[keyboard.spec] Keyboard should type emoji into an iframe",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Browser target events should work",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Browser target events should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Browser.Events.disconnected should be emitted when: browser gets closed, disconnected or underlying websocket gets closed",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -642,14 +816,26 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to reconnect to a disconnected browser",
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.executablePath should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.executablePath returns executablePath for channel",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL", "PASS"]
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should be able to reconnect to a disconnected browser",
+    "platforms": ["darwin", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -666,6 +852,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should work with no default arguments",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL", "PASS"]
+  },
+  {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should filter out ignored default arguments in Chrome",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -679,7 +871,7 @@
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should have custom URL when launching browser",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -688,6 +880,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should be able to launch Firefox",
+    "platforms": ["linux"],
+    "parameters": ["firefox", "headless"],
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch tmp profile should be cleaned up",
@@ -703,39 +901,63 @@
   },
   {
     "testIdPattern": "[mouse.spec] Mouse should send mouse wheel events",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[mouse.spec] Mouse should send mouse wheel events",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[mouse.spec] Mouse should trigger hover state",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[mouse.spec] Mouse should trigger hover state",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[mouse.spec] Mouse should trigger hover state with removed window.Node",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[mouse.spec] Mouse should trigger hover state with removed window.Node",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[mouse.spec] Mouse should tween mouse movement",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[mouse.spec] Mouse should tween mouse movement",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[navigation.spec] navigation Frame.goto should navigate subframes",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.goto should navigate subframes",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Frame.goto should navigate subframes",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.goto should reject when frame detaches",
@@ -744,52 +966,16 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[navigation.spec] navigation Frame.goto should reject when frame detaches",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[navigation.spec] navigation Frame.goto should return matching responses",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.goto should return matching responses",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Frame.goto should return matching responses",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Frame.goto should return matching responses",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Frame.goto should return matching responses",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Frame.goto should return matching responses",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Frame.goto should return matching responses",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Frame.waitForNavigation should fail when frame detaches",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.waitForNavigation should fail when frame detaches",
@@ -799,33 +985,51 @@
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.waitForNavigation should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.waitForNavigation should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[navigation.spec] navigation Page.goBack should work with HistoryAPI",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goBack should work with HistoryAPI",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should fail when navigating to bad SSL",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should fail when navigating to bad SSL",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should fail when navigating to bad url",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should fail when navigating to bad url",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should fail when server returns 204",
@@ -835,9 +1039,15 @@
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should navigate to dataURL and fire dataURL requests",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should navigate to dataURL and fire dataURL requests",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should navigate to empty page with networkidle0",
@@ -853,15 +1063,21 @@
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should navigate to URL with hash and fire requests without hash",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should send referer",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should send referer",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should wait for network idle to succeed navigation",
@@ -871,13 +1087,19 @@
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work when navigating to data url",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should work when navigating to data url",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work with subframes return 204",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -906,6 +1128,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[network.spec] network \"after all\" hook in \"network\"",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[network.spec] network \"after each\" hook for \"should wait until response completes\"",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -925,27 +1153,51 @@
   },
   {
     "testIdPattern": "[network.spec] network Network Events Page.Events.RequestFailed",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Network Events Page.Events.RequestFailed",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Network Events Page.Events.RequestFinished",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Network Events Page.Events.RequestFinished",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Network Events Page.Events.RequestServedFromCache",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Network Events Page.Events.RequestServedFromCache",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Network Events should fire events in proper order",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Network Events should fire events in proper order",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[network.spec] network Network Events should fire events in proper order",
@@ -955,27 +1207,51 @@
   },
   {
     "testIdPattern": "[network.spec] network Network Events should support redirects",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Network Events should support redirects",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Page.authenticate should allow disable authentication",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Page.authenticate should allow disable authentication",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Page.authenticate should fail if wrong credentials",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Page.authenticate should fail if wrong credentials",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Page.authenticate should not disable caching",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Page.authenticate should not disable caching",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[network.spec] network Page.authenticate should work",
@@ -985,9 +1261,15 @@
   },
   {
     "testIdPattern": "[network.spec] network Page.setExtraHTTPHeaders should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Page.setExtraHTTPHeaders should work",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[network.spec] network raw network headers Cross-origin set-cookie",
@@ -999,11 +1281,11 @@
     "testIdPattern": "[network.spec] network raw network headers Same-origin set-cookie subresource",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[network.spec] network Request.frame should work for subframe navigation request",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -1021,21 +1303,27 @@
   },
   {
     "testIdPattern": "[network.spec] network Request.initiator should return the initiator",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Request.initiator should return the initiator",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Request.isNavigationRequest should work",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Request.isNavigationRequest should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[network.spec] network Request.isNavigationRequest should work when navigating to image",
@@ -1045,21 +1333,27 @@
   },
   {
     "testIdPattern": "[network.spec] network Request.isNavigationRequest should work with request interception",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Request.isNavigationRequest should work with request interception",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Request.postData should work",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Request.postData should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[network.spec] network Request.postData should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[network.spec] network Response.buffer should throw if the response does not have a body",
@@ -1081,21 +1375,15 @@
   },
   {
     "testIdPattern": "[network.spec] network Response.fromCache should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Response.fromCache should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[network.spec] network Response.fromServiceWorker Response.fromServiceWorker",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[network.spec] network Response.fromServiceWorker Response.fromServiceWorker",
@@ -1116,37 +1404,19 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[network.spec] network Response.text should return uncompressed text",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[network.spec] network Response.text should throw when requesting body of redirected response",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[network.spec] network Response.text should throw when requesting body of redirected response",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[network.spec] network Response.text should throw when requesting body of redirected response",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[network.spec] network Response.text should wait until response completes",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[network.spec] network Response.text should wait until response completes",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[network.spec] network Response.text should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
@@ -1159,9 +1429,15 @@
   },
   {
     "testIdPattern": "[network.spec] network Response.timing returns timing information",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Response.timing returns timing information",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[oopif.spec]",
@@ -1194,46 +1470,106 @@
     "expectations": ["PASS", "FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page BrowserContext.overridePermissions should deny permission when not listed",
+    "testIdPattern": "[page.spec] Page \"before each\" hook for \"should throw an error if loading from url fail\"",
     "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page \"before each\" hook for \"should include sourcemap when path is provided\"",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page \"after all\" hook in \"Page\"",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page BrowserContext.overridePermissions should deny permission when not listed",
+    "platforms": ["darwin", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page BrowserContext.overridePermissions should deny permission when not listed",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page BrowserContext.overridePermissions should grant permission when listed",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page BrowserContext.overridePermissions should grant permission when listed",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page BrowserContext.overridePermissions should grant persistent-storage",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page BrowserContext.overridePermissions should grant persistent-storage",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page BrowserContext.overridePermissions should isolate permissions between browser contexts",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page BrowserContext.overridePermissions should isolate permissions between browser contexts",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page BrowserContext.overridePermissions should reset permissions",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page BrowserContext.overridePermissions should reset permissions",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page BrowserContext.overridePermissions should trigger permission onchange",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page BrowserContext.overridePermissions should trigger permission onchange",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page ExecutionContext.queryObjects should work",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page ExecutionContext.queryObjects should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[page.spec] Page ExecutionContext.queryObjects should work for non-trivial page",
@@ -1255,9 +1591,15 @@
   },
   {
     "testIdPattern": "[page.spec] Page Page.close should run beforeunload if asked for",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.close should run beforeunload if asked for",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.close should terminate network waiters",
@@ -1273,81 +1615,75 @@
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should have location and stack trace for console API calls",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should have location and stack trace for console API calls",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.Events.Console should have location when fetch fails",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should have location when fetch fails",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.Events.Console should have location when fetch fails",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.Events.Console should not fail for window object",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should not fail for window object",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.Events.Console should not fail for window object",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.Events.Console should trigger correct Log",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should trigger correct Log",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.Events.Console should trigger correct Log",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.Events.Console should work",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.Events.Console should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.Events.Console should work for different console API calls",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Console should work for different console API calls",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Console should work for different console API calls",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.error should throw when page crashes",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.error should throw when page crashes",
@@ -1357,30 +1693,18 @@
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Popup should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Popup should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Popup should work with clicking target=_blank and rel=noopener",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Popup should work with clicking target=_blank and rel=noopener",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Popup should work with clicking target=_blank and with rel=opener",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
@@ -1398,18 +1722,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.Events.Popup should work with clicking target=_blank and without rel=opener",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Popup should work with fake-clicking target=_blank and rel=noopener",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
     "testIdPattern": "[page.spec] Page Page.Events.Popup should work with fake-clicking target=_blank and rel=noopener",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -1422,148 +1734,136 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.Events.Popup should work with noopener",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.exposeFunction should await returned promise",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should await returned promise",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.exposeFunction should await returned promise",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.exposeFunction should be callable from-inside evaluateOnNewDocument",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should be callable from-inside evaluateOnNewDocument",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.exposeFunction should be callable from-inside evaluateOnNewDocument",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.exposeFunction should fallback to default export when passed a module object",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should fallback to default export when passed a module object",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.exposeFunction should fallback to default export when passed a module object",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.exposeFunction should not throw when frames detach",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should not throw when frames detach",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.exposeFunction should not throw when frames detach",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.exposeFunction should support throwing \"null\"",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should support throwing \"null\"",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.exposeFunction should support throwing \"null\"",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.exposeFunction should survive navigation",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should survive navigation",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.exposeFunction should survive navigation",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.exposeFunction should throw exception in page context",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should throw exception in page context",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.exposeFunction should throw exception in page context",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.exposeFunction should work",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.exposeFunction should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.exposeFunction should work on frames",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should work on frames",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.exposeFunction should work on frames",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.exposeFunction should work on frames before navigation",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should work on frames before navigation",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.exposeFunction should work on frames before navigation",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.exposeFunction should work with complex objects",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should work with complex objects",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.exposeFunction should work with complex objects",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.metrics metrics event fired on console.timeStamp",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.metrics metrics event fired on console.timeStamp",
@@ -1573,135 +1873,171 @@
   },
   {
     "testIdPattern": "[page.spec] Page Page.metrics should get metrics from a page",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.metrics should get metrics from a page",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.select should work when re-defining top-level Event class",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.select should work when re-defining top-level Event class",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass after cross-process navigation",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass after cross-process navigation",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass after cross-process navigation",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP header",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP header",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP header",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP in iframes as well",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP in iframes as well",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP in iframes as well",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP meta tag",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.addScriptTag should throw when added with content to the CSP page",
+    "platforms": ["linux", "darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP meta tag",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.setBypassCSP should bypass CSP meta tag",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.setCacheEnabled should enable or disable the cache based on the state passed",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setCacheEnabled should enable or disable the cache based on the state passed",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.setCacheEnabled should enable or disable the cache based on the state passed",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.setCacheEnabled should stay disabled when toggling request interception on/off",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setCacheEnabled should stay disabled when toggling request interception on/off",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page printing to PDF should respect timeout",
+    "platforms": ["linux"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setGeolocation should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.setGeolocation should work",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.setJavaScriptEnabled should work",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setJavaScriptEnabled should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.setJavaScriptEnabled should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.setOfflineMode should emulate navigator.onLine",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setOfflineMode should emulate navigator.onLine",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.setOfflineMode should emulate navigator.onLine",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.setOfflineMode should work",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setOfflineMode should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.setOfflineMode should work",
-    "platforms": ["darwin", "linux", "win32"],
+    "testIdPattern": "[page.spec] Page Page.setUserAgent should work with additional userAgentMetdata",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setUserAgent should work with additional userAgentMetdata",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[proxy.spec]",
@@ -1717,39 +2053,711 @@
   },
   {
     "testIdPattern": "[requestinterception-experimental.spec]",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should cooperatively respond by priority",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should cooperatively continue by priority",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should cooperatively abort by priority",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should intercept",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should work when POST is redirected with 302",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should work when header manipulation headers with redirect",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should be able to remove headers",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should contain referer header",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should properly return navigation response when URL has cookies",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should stop intercepting",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should show custom HTTP headers",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should work with redirect inside sync XHR",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should work with custom referer headers",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should be abortable",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should be able to access the error reason",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should be abortable with custom error codes",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should send referer",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should fail navigation when aborting main resource",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should work with redirects",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should work with redirects for subresources",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should be able to abort redirects",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should work with equal requests",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should navigate to dataURL and fire dataURL requests",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should be able to fetch dataURL and fire dataURL requests",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should navigate to URL with hash and fire requests without hash",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should work with encoded server",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should work with badly encoded server",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should work with encoded server - 2",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should not throw \"Invalid Interception Id\" if the request was cancelled",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should work with file URLs",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should not cache if cache disabled",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should cache if cache enabled",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should load fonts if cache enabled",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Request.continue should work",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Request.continue should amend HTTP headers",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Request.continue should redirect in a way non-observable to page",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Request.continue should amend method",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Request.continue should amend post data",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Request.continue should amend both post data and method on navigation",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Request.respond should work",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Request.respond should be able to access the response",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Request.respond should work with status code 422",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Request.respond should redirect",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Request.respond should allow mocking binary responses",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Request.respond should stringify intercepted request response headers",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Request.respond should indicate already-handled if an intercept has been handled",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should intercept",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should work when POST is redirected with 302",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should work when header manipulation headers with redirect",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should be able to remove headers",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should contain referer header",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should properly return navigation response when URL has cookies",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should stop intercepting",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should show custom HTTP headers",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should work with redirect inside sync XHR",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should work with custom referer headers",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should be abortable",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should be abortable with custom error codes",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should send referer",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should fail navigation when aborting main resource",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should work with redirects",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should work with redirects for subresources",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should be able to abort redirects",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should work with equal requests",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec.js] request interception Page.setRequestInterception should navigate to dataURL and fire dataURL requests",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should be able to fetch dataURL and fire dataURL requests",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should navigate to URL with hash and fire requests without hash",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with encoded server",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with badly encoded server",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with encoded server - 2",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] equest interception Page.setRequestInterception should not throw \"Invalid Interception Id\" if the request was cancelled",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with file URLs",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should not cache if cache disabled",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should cache if cache enabled",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should load fonts if cache enabled",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.continue should work",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.continue should amend HTTP headers",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.continue should redirect in a way non-observable to page",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.continue should amend method",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.continue should amend post data",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.continue should amend both post data and method on navigation",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.continue should fail if the header value is invalid",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.respond should work",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.respond should work with status code 422",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.respond should redirect",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.respond should allow mocking multiple headers with same key",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.respond should allow mocking binary responses",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.respond should stringify intercepted request response headers",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Request.respond should fail if the header value is invalid",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should intercept",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work when POST is redirected with 302",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work when header manipulation headers with redirect",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should be able to remove headers",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should contain referer header",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should properly return navigation response when URL has cookies",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should stop intercepting",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should show custom HTTP headers",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with redirect inside sync XHR",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with custom referer headers",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should be abortable",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should be abortable with custom error codes",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should send referer",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should fail navigation when aborting main resource",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with redirects",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with redirects for subresources",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should be able to abort redirects",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with equal requests",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should navigate to dataURL and fire dataURL requests",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should not throw \"Invalid Interception Id\" if the request was cancelled",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[requestinterception.spec]",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should capture full element when larger than viewport",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should use scale for clip",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should use scale for clip",
+    "platforms": ["linux"],
+    "parameters": ["firefox", "headless"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should fail to screenshot a detached element",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should fail to screenshot a detached element",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should work for an element with an offset",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should work for an element with an offset",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should work with a null viewport",
@@ -1759,51 +2767,93 @@
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should work with a rotated element",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots ElementHandle.screenshot should work with a rotated element",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should allow transparency",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should allow transparency",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should clip rect",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should clip rect",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "platforms": ["linux"],
+    "parameters": ["firefox", "headless"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should get screenshot bigger than the viewport",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should render white background on jpeg file",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should render white background on jpeg file",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should return base64",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should return base64",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox", "headless"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should take fullPage screenshots",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "platforms": ["linux"],
+    "parameters": ["firefox", "headless"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work in \"fromSurface: false\" mode",
@@ -1819,7 +2869,7 @@
   },
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work with webp",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -1855,21 +2905,39 @@
   },
   {
     "testIdPattern": "[target.spec] Target should not crash while redirecting if original request was missed",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[target.spec] Target should not crash while redirecting if original request was missed",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[target.spec] Target should not report uninitialized pages",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[target.spec] Target should not report uninitialized pages",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[target.spec] Target should report when a new page is created and closed",
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[target.spec] Target should report when a new page is created and closed",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["linux"],
     "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[target.spec] Target should report when a service worker is created and destroyed",
@@ -1891,9 +2959,21 @@
   },
   {
     "testIdPattern": "[touchscreen.spec]",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[touchscreen.spec] Touchscreen should tap the button",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[touchscreen.spec] Touchscreen should report touches",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[tracing.spec]",
@@ -1903,19 +2983,25 @@
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work with strict CSP policy",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work with strict CSP policy",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector Page.waitForSelector is shortcut for main frame",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should run in specified frame",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -1933,7 +3019,7 @@
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForXPath should run in specified frame",
-    "platforms": ["darwin", "linux", "win32"],
+    "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
@@ -1959,7 +3045,7 @@
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should be able to launch Chrome",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["FAIL"]
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[headful.spec] headful tests HEADFUL target.page() should return a background_page",
@@ -2082,7 +3168,7 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[Connection.spec] WebDriver BiDi",
+    "testIdPattern": "[Connection.spec] WebDriver BiDi Connection should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
@@ -2092,29 +3178,5 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work with function shorthands",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work with unicode chars",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work right after framenavigated",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work from-inside an exposed function",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
   }
 ]

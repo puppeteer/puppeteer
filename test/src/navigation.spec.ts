@@ -494,6 +494,20 @@ describe('navigation', function () {
       // Make sure subresources do not inherit referer.
       expect(request2.headers['referer']).toBe(server.PREFIX + '/grid.html');
     });
+
+    it('should send referer policy', async () => {
+      const {page, server} = getTestState();
+
+      const [request1, request2] = await Promise.all([
+        server.waitForRequest('/grid.html'),
+        server.waitForRequest('/digits/1.png'),
+        page.goto(server.PREFIX + '/grid.html', {
+          referrerPolicy: 'no-referer',
+        }),
+      ]);
+      expect(request1.headers['referer']).toBeUndefined();
+      expect(request2.headers['referer']).toBe(server.PREFIX + '/grid.html');
+    });
   });
 
   describe('Page.waitForNavigation', function () {

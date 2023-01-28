@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.6.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-v19.6.1...puppeteer-v19.6.2) (2023-01-27)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 19.6.1 to 19.6.2
+
+## [19.6.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v19.6.0...puppeteer-v19.6.1) (2023-01-26)
+
+
+### Bug Fixes
+
+* don't clean up previous browser versions ([#9568](https://github.com/puppeteer/puppeteer/issues/9568)) ([344bc2a](https://github.com/puppeteer/puppeteer/commit/344bc2af62e4068fe2cb8162d4b6c8242aac843b)), closes [#9533](https://github.com/puppeteer/puppeteer/issues/9533)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 19.6.0 to 19.6.1
+
+## [19.6.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v19.5.2...puppeteer-v19.6.0) (2023-01-23)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 19.5.2 to 19.6.0
+
 ## [19.5.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-v19.5.1...puppeteer-v19.5.2) (2023-01-11)
 
 

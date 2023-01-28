@@ -15,11 +15,13 @@
  */
 
 import PuppeteerUtil from '../injected/injected.js';
+import {assert} from '../util/assert.js';
 import {ariaHandler} from './AriaQueryHandler.js';
 import {ElementHandle} from './ElementHandle.js';
 import {Frame} from './Frame.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
+import {LazyArg} from './LazyArg.js';
 
 /**
  * @public
@@ -99,10 +101,14 @@ function createPuppeteerQueryHandler(
   if (handler.queryOne) {
     const queryOne = handler.queryOne;
     internalHandler.queryOne = async (element, selector) => {
+      const world = element.executionContext()._world;
+      assert(world);
       const jsHandle = await element.evaluateHandle(
         queryOne,
         selector,
-        await element.executionContext()._world!.puppeteerUtil
+        LazyArg.create(context => {
+          return context.puppeteerUtil;
+        })
       );
       const elementHandle = jsHandle.asElement();
       if (elementHandle) {
@@ -145,10 +151,14 @@ function createPuppeteerQueryHandler(
   if (handler.queryAll) {
     const queryAll = handler.queryAll;
     internalHandler.queryAll = async (element, selector) => {
+      const world = element.executionContext()._world;
+      assert(world);
       const jsHandle = await element.evaluateHandle(
         queryAll,
         selector,
-        await element.executionContext()._world!.puppeteerUtil
+        LazyArg.create(context => {
+          return context.puppeteerUtil;
+        })
       );
       const properties = await jsHandle.getProperties();
       await jsHandle.dispose();
