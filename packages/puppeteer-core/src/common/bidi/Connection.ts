@@ -29,9 +29,24 @@ interface Command {
   params: object;
 }
 
-interface CommandResponse {
+interface SuccessCommandResponse {
   id: number;
-  result: object;
+  result: {
+    type: 'success';
+    result: object;
+    sessionId?: any;
+    context?: any;
+  };
+}
+
+interface ErrorCommandResponse {
+  id: number;
+  result: {
+    type: 'exception';
+    exceptionDetails: {
+      text: string;
+    };
+  };
 }
 
 interface ErrorResponse {
@@ -69,7 +84,10 @@ export class Connection extends EventEmitter {
     return this.#closed;
   }
 
-  send(method: string, params: object): Promise<CommandResponse['result']> {
+  send(
+    method: string,
+    params: object
+  ): Promise<SuccessCommandResponse['result']> {
     const id = ++this.#lastId;
     const stringifiedMessage = JSON.stringify({
       id,
@@ -101,7 +119,8 @@ export class Connection extends EventEmitter {
     const object = JSON.parse(message) as
       | Event
       | ErrorResponse
-      | CommandResponse;
+      | SuccessCommandResponse
+      | ErrorCommandResponse;
     if ('id' in object) {
       const callback = this.#callbacks.get(object.id);
       // Callbacks could be all rejected if someone has called `.dispose()`.
@@ -110,6 +129,18 @@ export class Connection extends EventEmitter {
         if ('error' in object) {
           callback.reject(
             createProtocolError(callback.error, callback.method, object)
+          );
+        } else if (
+          'result' in object &&
+          'type' in object.result &&
+          object.result.type === 'exception'
+        ) {
+          callback.reject(
+            createCommandProtocolError(
+              callback.error,
+              callback.method,
+              object as unknown as ErrorCommandResponse
+            )
           );
         } else {
           callback.resolve(object.result);
@@ -164,4 +195,13 @@ function createProtocolError(
     message += ` ${object.stacktrace}`;
   }
   return rewriteError(error, message, object.message);
+}
+
+function createCommandProtocolError(
+  error: ProtocolError,
+  method: string,
+  object: ErrorCommandResponse
+): Error {
+  const message = `Protocol error (${method}): ${object.result.exceptionDetails.text}`;
+  return rewriteError(error, message, object.result.exceptionDetails.text);
 }

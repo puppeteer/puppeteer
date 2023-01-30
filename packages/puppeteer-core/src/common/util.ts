@@ -26,6 +26,7 @@ import {TimeoutError} from './Errors.js';
 import {CommonEventEmitter} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {JSHandle} from './JSHandle.js';
+import {EvaluateFunc} from './types.js';
 
 /**
  * @internal
@@ -157,6 +158,13 @@ export const isString = (obj: unknown): obj is string => {
  */
 export const isNumber = (obj: unknown): obj is number => {
   return typeof obj === 'number' || obj instanceof Number;
+};
+
+/**
+ * @internal
+ */
+export const isPlainObject = (obj: unknown): obj is Record<any, unknown> => {
+  return typeof obj === 'object' && obj?.constructor === Object;
 };
 
 /**
@@ -439,4 +447,33 @@ export async function getReadableFromProtocolStream(
       }
     },
   });
+}
+
+/**
+ * @internal
+ */
+export function stringifyFunction<
+  Params extends unknown[],
+  Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+>(expression: Func): string {
+  let functionText = expression.toString();
+  try {
+    new Function('(' + functionText + ')');
+  } catch (error) {
+    // This means we might have a function shorthand. Try another
+    // time prefixing 'function '.
+    if (functionText.startsWith('async ')) {
+      functionText =
+        'async function ' + functionText.substring('async '.length);
+    } else {
+      functionText = 'function ' + functionText;
+    }
+    try {
+      new Function('(' + functionText + ')');
+    } catch (error) {
+      // We tried hard to serialize, but there's a weird beast here.
+      throw new Error('Passed function is not well-serializable!');
+    }
+  }
+  return functionText;
 }

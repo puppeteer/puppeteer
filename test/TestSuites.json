@@ -15,7 +15,7 @@
     {
       "id": "chrome-new-headless",
       "platforms": ["linux"],
-      "parameters": ["chrome", "chrome-headless"],
+      "parameters": ["chrome", "new-headless"],
       "expectedLineCoverage": 93
     },
     {
@@ -56,7 +56,7 @@
     "headful": {
       "HEADLESS": "false"
     },
-    "chrome-headless": {
+    "new-headless": {
       "HEADLESS": "new"
     },
     "webDriverBiDi": {
