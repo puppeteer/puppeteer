@@ -37,6 +37,7 @@
     "build:third_party": "wireit",
     "build:tsc": "wireit",
     "build:types": "wireit",
+    "build:docs": "wireit",
     "build": "wireit",
     "check": "tsx tools/ensure-correct-devtools-protocol-package",
     "format:types": "wireit",
@@ -60,6 +61,7 @@
       "dependencies": [
         "build:tsc",
         "build:third_party",
+        "format:types",
         "generate:package-json"
       ]
     },
@@ -103,6 +105,20 @@
     },
     "build:types": {
       "command": "api-extractor run --local",
+      "dependencies": [
+        "build:tsc"
+      ],
+      "files": [
+        "tsconfig.json",
+        "api-extractor.json",
+        "lib/esm/puppeteer/types.d.ts"
+      ],
+      "output": [
+        "lib/types.d.ts"
+      ]
+    },
+    "build:docs": {
+      "command": "api-extractor run --local --config \"./api-extractor.docs.json\"",
       "dependencies": [
         "build:tsc"
       ],

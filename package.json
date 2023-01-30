@@ -8,7 +8,7 @@
   "scripts": {
     "bisect": "tsx tools/bisect.ts",
     "build": "npm run build --workspaces --if-present",
-    "build:types": "npm run format:types --workspaces --if-present",
+    "build:types": "npm run build:docs --workspace puppeteer --if-present",
     "check:pinned-deps": "tsx tools/ensure-pinned-deps",
     "check": "npm run check --workspaces --if-present && run-p check:*",
     "clean": "npm run clean --workspaces --if-present && rimraf **/.wireit",
