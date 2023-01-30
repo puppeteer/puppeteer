@@ -26,12 +26,12 @@
       "request": "launch",
       "name": "Launch Tests",
       "skipFiles": ["<node_internals>/**"],
-      "program": "tools/mochaRunner/lib/main.js",
+      "runtimeExecutable": "npm",
       "cwd": "${workspaceFolder}",
-      "env": {
-        "PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT": "20000"
-      },
-      "args": [
+      "runtimeArgs": [
+        "run-script",
+        "test",
+        "--",
         "--test-suite",
         "${input:suit}",
         "--no-coverage",
