@@ -89,14 +89,6 @@
       "command": "api-extractor run --local --config \"./api-extractor.docs.json\"",
       "dependencies": [
         "build:tsc"
-      ],
-      "files": [
-        "tsconfig.json",
-        "api-extractor.docs.json",
-        "lib/esm/puppeteer/types.d.ts"
-      ],
-      "output": [
-        "lib/types.d.ts"
       ]
     },
     "format:types": {
