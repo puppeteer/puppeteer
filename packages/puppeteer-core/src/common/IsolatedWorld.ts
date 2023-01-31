@@ -15,7 +15,6 @@
  */
 
 import {Protocol} from 'devtools-protocol';
-import {source as injectedSource} from '../generated/injected.js';
 import {assert} from '../util/assert.js';
 import {createDeferredPromise} from '../util/DeferredPromise.js';
 import {isErrorLike} from '../util/ErrorLike.js';
@@ -24,15 +23,14 @@ import {ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {MouseButton} from './Input.js';
+import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {JSHandle} from './JSHandle.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {EvaluateFunc, HandleFor, InnerLazyParams, NodeFor} from './types.js';
 import {createJSHandle, debugError, pageBindingInitString} from './util.js';
 import {TaskManager, WaitTask} from './WaitTask.js';
-import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 
-import type PuppeteerUtil from '../injected/injected.js';
 import type {ElementHandle} from './ElementHandle.js';
 import {LazyArg} from './LazyArg.js';
 
@@ -96,21 +94,6 @@ export class IsolatedWorld {
   // Contains mapping from functions that should be bound to Puppeteer functions.
   #boundFunctions = new Map<string, Function>();
   #taskManager = new TaskManager();
-  #puppeteerUtil?: Promise<JSHandle<PuppeteerUtil> | undefined>;
-
-  get puppeteerUtil(): Promise<JSHandle<PuppeteerUtil>> {
-    /**
-     * This is supposed to mimic what happens when evaluating Puppeteer utilities
-     * break due to navigation.
-     */
-    return (async () => {
-      const util = await this.#puppeteerUtil;
-      if (util) {
-        return util;
-      }
-      throw new Error('Execution context was destroyed!');
-    })();
-  }
 
   get taskManager(): TaskManager {
     return this.#taskManager;
@@ -149,35 +132,13 @@ export class IsolatedWorld {
 
   clearContext(): void {
     this.#document = undefined;
-    this.#puppeteerUtil = createDeferredPromise();
     this.#context = createDeferredPromise();
   }
 
   setContext(context: ExecutionContext): void {
-    this.#injectPuppeteerUtil(context);
     this.#ctxBindings.clear();
     this.#context.resolve(context);
-  }
-
-  async #injectPuppeteerUtil(context: ExecutionContext): Promise<void> {
-    try {
-      this.#puppeteerUtil = (async () => {
-        try {
-          return (await context.evaluateHandle(
-            `(() => {
-            const module = {};
-            ${injectedSource}
-            return module.exports.default;
-          })()`
-          )) as JSHandle<PuppeteerUtil>;
-        } catch {
-          return undefined;
-        }
-      })();
-      this.#taskManager.rerunAll();
-    } catch (error: unknown) {
-      debugError(error);
-    }
+    this.#taskManager.rerunAll();
   }
 
   hasContext(): boolean {
@@ -531,13 +492,8 @@ export class IsolatedWorld {
           root,
           timeout,
         },
-        new LazyArg(async () => {
-          try {
-            // In case CDP fails.
-            return await this.puppeteerUtil;
-          } catch {
-            return undefined;
-          }
+        LazyArg.create(context => {
+          return context.puppeteerUtil;
         }),
         queryOne.toString(),
         selector,

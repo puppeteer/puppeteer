@@ -149,7 +149,7 @@ import puppeteer from 'puppeteer';
   await page.waitForSelector(searchResultSelector);
   await page.click(searchResultSelector);
 
-  // Localte the full title with a unique string
+  // Locate the full title with a unique string
   const textSelector = await page.waitForSelector(
     'text/Customize and automate'
   );

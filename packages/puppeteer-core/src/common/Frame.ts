@@ -34,6 +34,7 @@ import {Page} from '../api/Page.js';
 import {getQueryHandlerAndSelector} from './QueryHandler.js';
 import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {importFS} from './util.js';
+import {LazyArg} from './LazyArg.js';
 
 /**
  * @public
@@ -842,7 +843,9 @@ export class Frame {
           await promise;
           return script;
         },
-        await this.worlds[PUPPETEER_WORLD].puppeteerUtil,
+        LazyArg.create(context => {
+          return context.puppeteerUtil;
+        }),
         {...options, type, content}
       )
     );
@@ -926,7 +929,9 @@ export class Frame {
           await promise;
           return element;
         },
-        await this.worlds[PUPPETEER_WORLD].puppeteerUtil,
+        LazyArg.create(context => {
+          return context.puppeteerUtil;
+        }),
         options
       )
     );

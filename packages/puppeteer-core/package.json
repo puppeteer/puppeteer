@@ -1,6 +1,6 @@
 {
   "name": "puppeteer-core",
-  "version": "19.6.1",
+  "version": "19.6.2",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "keywords": [
     "puppeteer",
@@ -37,6 +37,7 @@
     "build:third_party": "wireit",
     "build:tsc": "wireit",
     "build:types": "wireit",
+    "build:docs": "wireit",
     "build": "wireit",
     "check": "tsx tools/ensure-correct-devtools-protocol-package",
     "format:types": "wireit",
@@ -58,6 +59,7 @@
     },
     "build": {
       "dependencies": [
+        "build:tsc",
         "build:third_party",
         "format:types",
         "generate:package-json"
@@ -83,8 +85,7 @@
       ],
       "clean": false,
       "files": [
-        "lib/esm/third_party/**",
-        "lib/cjs/third_party/**"
+        "third_party/**"
       ],
       "output": [
         "lib/esm/third_party/**",
@@ -113,6 +114,12 @@
       ],
       "output": [
         "lib/types.d.ts"
+      ]
+    },
+    "build:docs": {
+      "command": "api-extractor run --local --config \"./api-extractor.docs.json\"",
+      "dependencies": [
+        "build:tsc"
       ]
     },
     "format:types": {

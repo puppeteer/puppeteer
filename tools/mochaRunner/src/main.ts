@@ -71,6 +71,7 @@ function getApplicableTestSuites(
 
 async function main() {
   const noCoverage = process.argv.indexOf('--no-coverage') !== -1;
+  const noSuggestions = process.argv.indexOf('--no-suggestions') !== -1;
 
   const statsFilenameIdx = process.argv.indexOf('--save-stats-to');
   let statsFilename = '';
@@ -209,44 +210,46 @@ async function main() {
     fail = true;
     console.error(err);
   } finally {
-    const toAdd = recommendations.filter(item => {
-      return item.action === 'add';
-    });
-    if (toAdd.length) {
-      console.log(
-        'Add the following to TestExpectations.json to ignore the error:'
-      );
-      prettyPrintJSON(
-        toAdd.map(item => {
-          return item.expectation;
-        })
-      );
-    }
-    const toRemove = recommendations.filter(item => {
-      return item.action === 'remove';
-    });
-    if (toRemove.length) {
-      console.log(
-        'Remove the following from the TestExpectations.json to ignore the error:'
-      );
-      prettyPrintJSON(
-        toRemove.map(item => {
-          return item.expectation;
-        })
-      );
-    }
-    const toUpdate = recommendations.filter(item => {
-      return item.action === 'update';
-    });
-    if (toUpdate.length) {
-      console.log(
-        'Update the following expectations in the TestExpecations.json to ignore the error:'
-      );
-      prettyPrintJSON(
-        toUpdate.map(item => {
-          return item.expectation;
-        })
-      );
+    if (!noSuggestions) {
+      const toAdd = recommendations.filter(item => {
+        return item.action === 'add';
+      });
+      if (toAdd.length) {
+        console.log(
+          'Add the following to TestExpectations.json to ignore the error:'
+        );
+        prettyPrintJSON(
+          toAdd.map(item => {
+            return item.expectation;
+          })
+        );
+      }
+      const toRemove = recommendations.filter(item => {
+        return item.action === 'remove';
+      });
+      if (toRemove.length) {
+        console.log(
+          'Remove the following from the TestExpectations.json to ignore the error:'
+        );
+        prettyPrintJSON(
+          toRemove.map(item => {
+            return item.expectation;
+          })
+        );
+      }
+      const toUpdate = recommendations.filter(item => {
+        return item.action === 'update';
+      });
+      if (toUpdate.length) {
+        console.log(
+          'Update the following expectations in the TestExpecations.json to ignore the error:'
+        );
+        prettyPrintJSON(
+          toUpdate.map(item => {
+            return item.expectation;
+          })
+        );
+      }
     }
     process.exit(fail ? 1 : 0);
   }

@@ -1,6 +1,6 @@
 {
   "name": "puppeteer",
-  "version": "19.6.1",
+  "version": "19.6.2",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "keywords": [
     "puppeteer",
@@ -36,11 +36,11 @@
   "scripts": {
     "build:tsc": "wireit",
     "build:types": "wireit",
+    "build:docs": "wireit",
     "build": "wireit",
     "clean": "tsc -b --clean && rimraf lib",
     "format:types": "wireit",
     "generate:package-json": "wireit",
-    "generate:sources": "wireit",
     "postinstall": "node install.js",
     "prepack": "wireit"
   },
@@ -56,6 +56,7 @@
     },
     "build": {
       "dependencies": [
+        "build:tsc",
         "format:types",
         "generate:package-json"
       ]
@@ -82,6 +83,12 @@
       ],
       "output": [
         "lib/types.d.ts"
+      ]
+    },
+    "build:docs": {
+      "command": "api-extractor run --local --config \"./api-extractor.docs.json\"",
+      "dependencies": [
+        "build:tsc"
       ]
     },
     "format:types": {
@@ -126,6 +133,6 @@
     "https-proxy-agent": "5.0.1",
     "progress": "2.0.3",
     "proxy-from-env": "1.1.0",
-    "puppeteer-core": "19.6.1"
+    "puppeteer-core": "19.6.2"
   }
 }

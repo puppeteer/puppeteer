@@ -174,10 +174,16 @@ export class FrameManager extends EventEmitter {
     contextId: number,
     session: CDPSession = this.#client
   ): ExecutionContext {
-    const key = `${session.id()}:${contextId}`;
-    const context = this.#contextIdToContext.get(key);
+    const context = this.getExecutionContextById(contextId, session);
     assert(context, 'INTERNAL ERROR: missing context with id = ' + contextId);
     return context;
+  }
+
+  getExecutionContextById(
+    contextId: number,
+    session: CDPSession = this.#client
+  ): ExecutionContext | undefined {
+    return this.#contextIdToContext.get(`${session.id()}:${contextId}`);
   }
 
   page(): Page {

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
+  "mainEntryPointFilePath": "<projectFolder>/lib/esm/puppeteer/puppeteer-core.d.ts",
+
+  "extends": "./api-extractor.json",
+
+  "dtsRollup": {
+    "enabled": false
+  },
+
+  "docModel": {
+    "enabled": true,
+    "apiJsonFilePath": "<projectFolder>/../../docs/<unscopedPackageName>.api.json"
+  }
+}
