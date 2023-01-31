@@ -2483,14 +2483,6 @@ export class Page extends EventEmitter {
    */
   waitForXPath(
     xpath: string,
-    options: WaitForSelectorOptions & {hidden: true}
-  ): Promise<null>;
-  waitForXPath(
-    xpath: string,
-    options?: WaitForSelectorOptions & {hidden: false}
-  ): Promise<ElementHandle<Node>>;
-  waitForXPath(
-    xpath: string,
     options?: WaitForSelectorOptions
   ): Promise<ElementHandle<Node> | null>;
   waitForXPath(): Promise<ElementHandle<Node> | null> {
