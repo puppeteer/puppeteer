@@ -2840,7 +2840,7 @@
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work in \"fromSurface: false\" mode",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "new-headless"],
+    "parameters": ["chrome", "chrome-headless"],
     "expectations": ["SKIP"]
   },
   {
@@ -3150,7 +3150,7 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work",
+    "testIdPattern": "[evaluation.spec]",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
@@ -3217,6 +3217,42 @@
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should not throw an error when evaluation does a navigation",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should not throw an error when evaluation does a navigation",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument should evaluate before anything else on the page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument should work with CSP",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[evaluation.spec] Evaluation specs Frame.evaluate should have different execution contexts",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[evaluation.spec] Evaluation specs Frame.evaluate should have correct execution contexts",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[evaluation.spec] Evaluation specs Frame.evaluate should execute after cross-site navigation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"]

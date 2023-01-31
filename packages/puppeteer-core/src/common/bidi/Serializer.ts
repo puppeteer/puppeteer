@@ -76,7 +76,7 @@ export class BidiSerializer {
           };
         } else if (Array.isArray(arg)) {
           const parsedArray = arg.map(subArg => {
-            return BidiSerializer.serializePrimitive(subArg);
+            return BidiSerializer.serializeRemoveValue(subArg);
           });
 
           return {
@@ -189,7 +189,9 @@ export class BidiSerializer {
         return BidiSerializer.deserializePrimitives(result);
     }
 
-    throw new Error(`Deserialization of type ${result.type} not supported.`);
+    throw new UnserializableError(
+      `Deserialization of type ${result.type} not supported.`
+    );
   }
 
   static deserializeTuple([serializedKey, serializedValue]: [
