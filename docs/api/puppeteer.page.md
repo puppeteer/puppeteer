@@ -203,6 +203,4 @@ import puppeteer from 'puppeteer';
 ```
 
 |
-| [waitForXPath(xpath, options)](./puppeteer.page.waitforxpath_1.md) | | |
-| [waitForXPath(xpath, options)](./puppeteer.page.waitforxpath_2.md) | | |
 | [workers()](./puppeteer.page.workers.md) | | |
