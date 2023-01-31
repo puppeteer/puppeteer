@@ -787,6 +787,13 @@ describe('waittask specs', function () {
       expect(await waitForXPath).toBe(true);
       expect(divHidden).toBe(true);
     });
+    it('hidden should return null if the element is not found', async () => {
+      const {page} = getTestState();
+
+      const waitForXPath = await page.waitForXPath('//div', {hidden: true});
+
+      expect(waitForXPath).toBe(null);
+    });
     it('should return the element handle', async () => {
       const {page} = getTestState();
 
