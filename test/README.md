@@ -38,8 +38,24 @@ npm test
 - **Important**: don't forget to first build the code if you're testing local changes:
 
 ```bash
-npm run build && npm test
+npm run build --workspace=@puppeteer-test/test && npm test
 ```
+
+### CLI options
+
+| Description                                                       | Option           | Type    |
+| ----------------------------------------------------------------- | ---------------- | ------- |
+| Do not generate coverage report                                   | --no-coverage    | boolean |
+| Do not generate suggestion for updating TestExpectation.json file | --no-suggestions | boolean |
+| Specify a file to which to save run data                          | --save-stats-to  | string  |
+| Specify a file with a custom Mocha reporter                       | --reporter       | string  |
+| Number of times to retry failed tests.                            | --retries        | number  |
+| Timeout threshold value.                                          | --timeout        | number  |
+| Tell Mocha to not run test files in parallel                      | --no-parallel    | boolean |
+| Generate full stacktrace upon failure                             | --fullTrace      | boolean |
+| Name of the Test suit defined in TestSuites.json                  | --test-suite     | string  |
+
+### Helpful information
 
 - To run a specific test, substitute the `it` with `it.only`:
 

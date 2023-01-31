@@ -747,10 +747,20 @@ export class CDPPage extends Page {
       // @see https://github.com/puppeteer/puppeteer/issues/3865
       return;
     }
-    const context = this.#frameManager.executionContextById(
+    const context = this.#frameManager.getExecutionContextById(
       event.executionContextId,
       this.#client
     );
+    if (!context) {
+      debugError(
+        new Error(
+          `ExecutionContext not found for a console message: ${JSON.stringify(
+            event
+          )}`
+        )
+      );
+      return;
+    }
     const values = event.args.map(arg => {
       return createJSHandle(context, arg);
     });

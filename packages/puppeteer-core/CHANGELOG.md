@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.6.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.6.1...puppeteer-core-v19.6.2) (2023-01-27)
+
+
+### Bug Fixes
+
+* atomically get Puppeteer utilities ([#9597](https://github.com/puppeteer/puppeteer/issues/9597)) ([050a7b0](https://github.com/puppeteer/puppeteer/commit/050a7b062415ebaf10bcb71c405143eacc4e5d4b))
+
 ## [19.6.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.6.0...puppeteer-core-v19.6.1) (2023-01-26)
 
 
