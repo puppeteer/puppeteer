@@ -3132,7 +3132,7 @@
     "expectations": ["PASS", "FAIL"]
   },
   {
-    "testIdPattern": "Block",
+    "testIdPattern": "",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP", "TIMEOUT"]

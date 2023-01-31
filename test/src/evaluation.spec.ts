@@ -66,7 +66,7 @@ describe('Evaluation specs', function () {
 
       const result = await page.evaluate((a: number) => {
         return a;
-      }, +Infinity);
+      }, Infinity);
       expect(Object.is(result, Infinity)).toBe(true);
     });
     it('should transfer -Infinity', async () => {
