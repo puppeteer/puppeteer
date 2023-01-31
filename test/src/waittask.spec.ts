@@ -15,7 +15,7 @@
  */
 
 import expect from 'expect';
-import {TimeoutError} from 'puppeteer';
+import {TimeoutError, ElementHandle} from 'puppeteer';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 import {
   createTimeout,
@@ -793,6 +793,15 @@ describe('waittask specs', function () {
       const waitForXPath = await page.waitForXPath('//div', {hidden: true});
 
       expect(waitForXPath).toBe(null);
+    });
+    it('hidden should return an empty element handle if the element is found', async () => {
+      const {page} = getTestState();
+
+      await page.setContent(`<div style='display: none;'>text</div>`);
+
+      const waitForXPath = await page.waitForXPath('//div', {hidden: true});
+
+      expect(waitForXPath).toBeInstanceOf(ElementHandle);
     });
     it('should return the element handle', async () => {
       const {page} = getTestState();
