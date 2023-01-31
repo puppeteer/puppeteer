@@ -48,7 +48,7 @@ describe('Evaluation specs', function () {
     it('should transfer NaN', async () => {
       const {page} = getTestState();
 
-      const result = await page.evaluate((a: number) => {
+      const result = await page.evaluate(a => {
         return a;
       }, NaN);
       expect(Object.is(result, NaN)).toBe(true);
@@ -56,7 +56,7 @@ describe('Evaluation specs', function () {
     it('should transfer -0', async () => {
       const {page} = getTestState();
 
-      const result = await page.evaluate((a: number) => {
+      const result = await page.evaluate(a => {
         return a;
       }, -0);
       expect(Object.is(result, -0)).toBe(true);
@@ -64,7 +64,7 @@ describe('Evaluation specs', function () {
     it('should transfer Infinity', async () => {
       const {page} = getTestState();
 
-      const result = await page.evaluate((a: number) => {
+      const result = await page.evaluate(a => {
         return a;
       }, Infinity);
       expect(Object.is(result, Infinity)).toBe(true);
@@ -72,7 +72,7 @@ describe('Evaluation specs', function () {
     it('should transfer -Infinity', async () => {
       const {page} = getTestState();
 
-      const result = await page.evaluate((a: number) => {
+      const result = await page.evaluate(a => {
         return a;
       }, -Infinity);
       expect(Object.is(result, -Infinity)).toBe(true);
@@ -81,7 +81,7 @@ describe('Evaluation specs', function () {
       const {page} = getTestState();
 
       const result = await page.evaluate(
-        (a: unknown[]) => {
+        a => {
           return a;
         },
         [1, 2, 3]
@@ -92,7 +92,7 @@ describe('Evaluation specs', function () {
       const {page} = getTestState();
 
       const result = await page.evaluate(
-        (a: unknown[]) => {
+        a => {
           return Array.isArray(a);
         },
         [1, 2, 3]
@@ -141,7 +141,7 @@ describe('Evaluation specs', function () {
       const {page} = getTestState();
 
       const result = await page.evaluate(
-        (a: Record<string, unknown>) => {
+        a => {
           return a['中文字符'];
         },
         {
@@ -159,7 +159,7 @@ describe('Evaluation specs', function () {
           location.reload();
           return new Promise(() => {});
         })
-        .catch((error_: any) => {
+        .catch(error_ => {
           return (error = error_);
         });
       expect(error.message).toContain('Protocol error');
@@ -176,7 +176,7 @@ describe('Evaluation specs', function () {
       const {page, server} = getTestState();
 
       let frameEvaluation = null;
-      page.on('framenavigated', async (frame: any) => {
+      page.on('framenavigated', async frame => {
         frameEvaluation = frame.evaluate(() => {
           return 6 * 7;
         });
@@ -214,10 +214,9 @@ describe('Evaluation specs', function () {
           // @ts-expect-error we know the object doesn't exist
           return notExistingObject.property;
         })
-        .catch((error_: any) => {
+        .catch(error_ => {
           return (error = error_);
         });
-
       expect(error).toBeTruthy();
       expect(error.message).toContain('notExistingObject');
     });
@@ -229,7 +228,7 @@ describe('Evaluation specs', function () {
         .evaluate(() => {
           throw 'qwerty';
         })
-        .catch((error_: any) => {
+        .catch(error_ => {
           return (error = error_);
         });
       expect(error).toBeTruthy();
@@ -243,7 +242,7 @@ describe('Evaluation specs', function () {
         .evaluate(() => {
           throw 100500;
         })
-        .catch((error_: any) => {
+        .catch(error_ => {
           return (error = error_);
         });
       expect(error).toBeTruthy();
@@ -253,7 +252,7 @@ describe('Evaluation specs', function () {
       const {page} = getTestState();
 
       const object = {foo: 'bar!'};
-      const result = await page.evaluate((a: object) => {
+      const result = await page.evaluate(a => {
         return a;
       }, object);
       expect(result).not.toBe(object);
@@ -303,7 +302,7 @@ describe('Evaluation specs', function () {
       const {page} = getTestState();
 
       const result = await page.evaluate(
-        (a: null, b: string) => {
+        (a, b) => {
           return Object.is(a, null) && Object.is(b, 'foo');
         },
         null,
@@ -360,14 +359,14 @@ describe('Evaluation specs', function () {
       const windowHandle = await page.evaluateHandle(() => {
         return window;
       });
-      const errorText = await windowHandle.jsonValue().catch((error_: any) => {
+      const errorText = await windowHandle.jsonValue().catch(error_ => {
         return error_.message;
       });
       const error = await page
-        .evaluate((errorText: any) => {
+        .evaluate(errorText => {
           throw new Error(errorText);
         }, errorText)
-        .catch((error_: any) => {
+        .catch(error_ => {
           return error_;
         });
       expect(error.message).toContain(errorText);
@@ -395,7 +394,7 @@ describe('Evaluation specs', function () {
 
       await page.setContent('<section>42</section>');
       const element = (await page.$('section'))!;
-      const text = await page.evaluate((e: any) => {
+      const text = await page.evaluate(e => {
         return e.textContent;
       }, element);
       expect(text).toBe('42');
@@ -412,7 +411,7 @@ describe('Evaluation specs', function () {
         .evaluate((e: HTMLElement) => {
           return e.textContent;
         }, element)
-        .catch((error_: any) => {
+        .catch(error_ => {
           return (error = error_);
         });
       expect(error.message).toContain('JSHandle is disposed');
@@ -424,10 +423,10 @@ describe('Evaluation specs', function () {
       const bodyHandle = await page.frames()[1]!.$('body');
       let error!: Error;
       await page
-        .evaluate((body: any) => {
+        .evaluate(body => {
           return body?.innerHTML;
         }, bodyHandle)
-        .catch((error_: any) => {
+        .catch(error_ => {
           return (error = error_);
         });
       expect(error).toBeTruthy();
@@ -460,7 +459,7 @@ describe('Evaluation specs', function () {
         .evaluate(() => {
           return null;
         })
-        .catch((error_: any) => {
+        .catch(error_ => {
           return error_;
         });
       expect((error as Error).message).toContain('navigation');
@@ -493,7 +492,7 @@ describe('Evaluation specs', function () {
             throw new Error('Error in promise');
           });
         })
-        .catch((error_: any) => {
+        .catch(error_ => {
           return (error = error_);
         });
       expect(error.message).toContain('Error in promise');
@@ -529,11 +528,9 @@ describe('Evaluation specs', function () {
       ).toBe(123);
 
       // Make sure CSP works.
-      await page
-        .addScriptTag({content: 'window.e = 10;'})
-        .catch((error: any) => {
-          return void error;
-        });
+      await page.addScriptTag({content: 'window.e = 10;'}).catch(error => {
+        return void error;
+      });
       expect(
         await page.evaluate(() => {
           return (window as any).e;
