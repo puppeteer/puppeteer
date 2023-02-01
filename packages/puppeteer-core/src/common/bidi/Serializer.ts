@@ -7,59 +7,59 @@ class UnserializableError extends Error {}
  * @internal
  */
 export class BidiSerializer {
-  static serializePrimitive(
-    arg: unknown
-  ): Bidi.CommonDataTypes.PrimitiveProtocolValue {
-    const type = typeof arg as Exclude<
-      Bidi.CommonDataTypes.PrimitiveProtocolValue['type'],
-      'null'
-    >;
-
-    switch (type) {
-      case 'undefined':
-        return {
-          type: 'undefined',
-        };
-      case 'number': {
-        let value!: Bidi.CommonDataTypes.SpecialNumber | number;
-        if (Object.is(arg, -0)) {
-          value = '-0';
-        } else if (Object.is(arg, Infinity)) {
-          value = 'Infinity';
-        } else if (Object.is(arg, -Infinity)) {
-          value = '-Infinity';
-        } else if (Object.is(arg, NaN)) {
-          value = 'NaN';
-        } else {
-          value = arg as number;
-        }
-        return {
-          type,
-          value,
-        };
-      }
-      case 'bigint':
-        return {
-          type,
-          value: (arg as bigint).toString(),
-        };
-      case 'string': {
-        return {
-          type,
-          value: arg as string,
-        };
-      }
-      case 'boolean':
-        return {
-          type,
-          value: arg as boolean,
-        };
-
-      default:
-        throw new Error(
-          `Primitive data of type ${typeof arg} and value ${arg} not supported for BiDi serialization`
-        );
+  static serializeNumber(arg: number): Bidi.CommonDataTypes.LocalOrRemoteValue {
+    let value: Bidi.CommonDataTypes.SpecialNumber | number;
+    if (Object.is(arg, -0)) {
+      value = '-0';
+    } else if (Object.is(arg, Infinity)) {
+      value = 'Infinity';
+    } else if (Object.is(arg, -Infinity)) {
+      value = '-Infinity';
+    } else if (Object.is(arg, NaN)) {
+      value = 'NaN';
+    } else {
+      value = arg;
     }
+    return {
+      type: 'number',
+      value,
+    };
+  }
+
+  static serializeObject(
+    arg: object | null
+  ): Bidi.CommonDataTypes.LocalOrRemoteValue {
+    if (arg === null) {
+      return {
+        type: 'null',
+      };
+    } else if (Array.isArray(arg)) {
+      const parsedArray = arg.map(subArg => {
+        return BidiSerializer.serializeRemoveValue(subArg);
+      });
+
+      return {
+        type: 'array',
+        value: parsedArray,
+      };
+    } else if (isPlainObject(arg)) {
+      const parsedObject: Bidi.CommonDataTypes.MappingLocalValue = [];
+      for (const key in arg) {
+        parsedObject.push([
+          BidiSerializer.serializeRemoveValue(key),
+          BidiSerializer.serializeRemoveValue(arg[key]),
+        ]);
+      }
+
+      return {
+        type: 'object',
+        value: parsedObject,
+      };
+    }
+
+    throw new UnserializableError(
+      'Custom object sterilization not possible. Use plain objects instead.'
+    );
   }
 
   static serializeRemoveValue(
@@ -68,46 +68,31 @@ export class BidiSerializer {
     switch (typeof arg) {
       case 'symbol':
       case 'function':
-        throw new UnserializableError('Unable to serializable input.');
+        throw new UnserializableError(`Unable to serializable ${typeof arg}`);
       case 'object':
-        if (arg === null) {
-          return {
-            type: 'null',
-          };
-        } else if (Array.isArray(arg)) {
-          const parsedArray = arg.map(subArg => {
-            return BidiSerializer.serializeRemoveValue(subArg);
-          });
-
-          return {
-            type: 'array',
-            value: parsedArray,
-          };
-        } else if (isPlainObject(arg)) {
-          const parsedObject: Bidi.CommonDataTypes.MappingLocalValue = [];
-          for (const key in arg) {
-            parsedObject.push([
-              BidiSerializer.serializePrimitive(key),
-              BidiSerializer.serializeRemoveValue(arg[key]),
-            ]);
-          }
-
-          return {
-            type: 'object',
-            value: parsedObject,
-          };
-        }
-
-        throw new UnserializableError(
-          'Custom object sterilization not possible. Use plain objects instead.'
-        );
+        return BidiSerializer.serializeObject(arg);
 
       case 'undefined':
+        return {
+          type: 'undefined',
+        };
       case 'number':
+        return BidiSerializer.serializeNumber(arg);
       case 'bigint':
+        return {
+          type: 'bigint',
+          value: arg.toString(),
+        };
       case 'string':
+        return {
+          type: 'string',
+          value: arg,
+        };
       case 'boolean':
-        return BidiSerializer.serializePrimitive(arg);
+        return {
+          type: 'boolean',
+          value: arg,
+        };
     }
   }
 
@@ -116,35 +101,21 @@ export class BidiSerializer {
     return BidiSerializer.serializeRemoveValue(arg);
   }
 
-  static deserializePrimitives(
-    result: Bidi.CommonDataTypes.PrimitiveProtocolValue
-  ): number | bigint | boolean | string | undefined | null {
-    switch (result.type) {
-      case 'undefined':
-        return undefined;
-      case 'null':
-        return null;
-      case 'number': {
-        switch (result.value) {
-          case '-0':
-            return -0;
-          case 'NaN':
-            return NaN;
-          case 'Infinity':
-          case '+Infinity':
-            return Infinity;
-          case '-Infinity':
-            return -Infinity;
-          default:
-            return result.value;
-        }
-      }
-      case 'bigint':
-        return BigInt(result.value);
-      case 'boolean':
-        return Boolean(result.value);
-      case 'string':
-        return result.value;
+  static deserializeNumber(
+    value: Bidi.CommonDataTypes.SpecialNumber | number
+  ): number {
+    switch (value) {
+      case '-0':
+        return -0;
+      case 'NaN':
+        return NaN;
+      case 'Infinity':
+      case '+Infinity':
+        return Infinity;
+      case '-Infinity':
+        return -Infinity;
+      default:
+        return value;
     }
   }
 
@@ -159,7 +130,7 @@ export class BidiSerializer {
         });
       case 'set':
         // TODO: Check expected output when value is undefined
-        return result.value?.reduce((acc: Set<unknown>, value: unknown) => {
+        return result.value.reduce((acc: Set<unknown>, value: unknown) => {
           return acc.add(value);
         }, new Set());
       case 'object':
@@ -178,15 +149,18 @@ export class BidiSerializer {
         }, new Map());
       case 'promise':
         return {};
-
-      // Used for better TypeScript support
       case 'undefined':
+        return undefined;
       case 'null':
+        return null;
       case 'number':
+        return BidiSerializer.deserializeNumber(result.value);
       case 'bigint':
+        return BigInt(result.value);
       case 'boolean':
+        return Boolean(result.value);
       case 'string':
-        return BidiSerializer.deserializePrimitives(result);
+        return result.value;
     }
 
     throw new UnserializableError(
