@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.6.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.6.2...puppeteer-core-v19.6.3) (2023-02-01)
+
+
+### Bug Fixes
+
+* ignore not found contexts for console messages ([#9595](https://github.com/puppeteer/puppeteer/issues/9595)) ([390685b](https://github.com/puppeteer/puppeteer/commit/390685bbe52c22b686fc0e3119b4ac7b1073c581))
+* restore WaitTask terminate  condition ([#9612](https://github.com/puppeteer/puppeteer/issues/9612)) ([e16cbc6](https://github.com/puppeteer/puppeteer/commit/e16cbc6626cffd40d0caa30801620e7293455006))
+
 ## [19.6.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.6.1...puppeteer-core-v19.6.2) (2023-01-27)
 
 
