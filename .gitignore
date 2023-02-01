@@ -22,7 +22,7 @@ generated/
 # IDE Artifacts
 .vscode/*
 !.vscode/extensions.json
-!.vscode/launch.json
+!.vscode/*.template.json
 .devcontainer
 
 # Misc
