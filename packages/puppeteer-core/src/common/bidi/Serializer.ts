@@ -1,6 +1,9 @@
 import {Bidi} from '../../../third_party/chromium-bidi/index.js';
 import {debugError, isPlainObject} from '../util.js';
 
+/**
+ * @internal
+ */
 class UnserializableError extends Error {}
 
 /**

@@ -1,6 +1,6 @@
 import {CDPSession, Connection as CDPPPtrConnection} from '../Connection.js';
 import {Connection as BidiPPtrConnection} from './Connection.js';
-import {Bidi, BidiMapper} from '../../../third_party/chromium-bidi/index.js';
+import {BidiMapper, Bidi} from '../../../third_party/chromium-bidi/index.js';
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 import {Handler} from '../EventEmitter.js';
 

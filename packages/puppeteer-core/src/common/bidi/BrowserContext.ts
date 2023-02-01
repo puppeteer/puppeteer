@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import {Bidi} from '../../../third_party/chromium-bidi/index.js';
 import {BrowserContext as BrowserContextBase} from '../../api/BrowserContext.js';
 import {Page as PageBase} from '../../api/Page.js';
 import {Connection} from './Connection.js';
@@ -32,14 +31,10 @@ export class BrowserContext extends BrowserContextBase {
   }
 
   override async newPage(): Promise<PageBase> {
-    const {result} =
-      await this.#connection.send<Bidi.BrowsingContext.CreateResult>(
-        'browsingContext.create',
-        {
-          type: 'tab',
-        }
-      );
-    return new Page(this.#connection, result.context);
+    const result = await this.#connection.send('browsingContext.create', {
+      type: 'tab',
+    });
+    return new Page(this.#connection, result.result.context);
   }
 
   override async close(): Promise<void> {}

@@ -27,6 +27,31 @@ import {Bidi} from '../../../third_party/chromium-bidi/index.js';
 /**
  * @internal
  */
+interface Commands {
+  'script.evaluate': {
+    params: Bidi.Script.EvaluateParameters;
+    returnType: Bidi.Script.EvaluateResult;
+  };
+  'script.callFunction': {
+    params: Bidi.Script.CallFunctionParameters;
+    returnType: Bidi.Script.CallFunctionResult;
+  };
+  'browsingContext.create': {
+    params: Bidi.BrowsingContext.CreateParameters;
+    returnType: Bidi.BrowsingContext.CreateResult;
+  };
+  'browsingContext.close': {
+    params: Bidi.BrowsingContext.CloseParameters;
+    returnType: Bidi.BrowsingContext.CloseResult;
+  };
+  'session.status': {
+    params: Bidi.BrowsingContext.CloseParameters; // TODO: Update Types in chromium bidi
+    returnType: Bidi.Session.StatusResult;
+  };
+}
+/**
+ * @internal
+ */
 export class Connection extends EventEmitter {
   #transport: ConnectionTransport;
   #delay: number;
@@ -47,10 +72,10 @@ export class Connection extends EventEmitter {
     return this.#closed;
   }
 
-  send<T extends Bidi.Message.CommandResponseResult>(
-    method: Bidi.Message.CommandRequest['method'],
-    params: Bidi.Message.CommandRequest['params']
-  ): Promise<T> {
+  send<T extends keyof Commands>(
+    method: T,
+    params: Commands[T]['params']
+  ): Promise<Commands[T]['returnType']> {
     const id = ++this.#lastId;
     const stringifiedMessage = JSON.stringify({
       id,
@@ -91,21 +116,8 @@ export class Connection extends EventEmitter {
           callback.reject(
             createProtocolError(callback.error, callback.method, object)
           );
-        } else if (
-          'result' in object &&
-          'type' in object.result &&
-          object.result.type === 'exception'
-        ) {
-          object.result;
-          callback.reject(
-            createCommandProtocolError(
-              callback.error,
-              callback.method,
-              object.result
-            )
-          );
         } else {
-          callback.resolve(object.result);
+          callback.resolve(object);
         }
       }
     } else {
@@ -147,6 +159,9 @@ function rewriteError(
   return error;
 }
 
+/**
+ * @internal
+ */
 function createProtocolError(
   error: ProtocolError,
   method: string,
@@ -157,13 +172,4 @@ function createProtocolError(
     message += ` ${object.stacktrace}`;
   }
   return rewriteError(error, message, object.message);
-}
-
-function createCommandProtocolError(
-  error: ProtocolError,
-  method: string,
-  object: Bidi.Script.ScriptResultException
-): Error {
-  const message = `Protocol error (${method}): ${object.exceptionDetails.text}`;
-  return rewriteError(error, message, object.exceptionDetails.text);
 }
