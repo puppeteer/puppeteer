@@ -50,7 +50,7 @@ export class Connection extends EventEmitter {
   send(
     method: string,
     params: object
-  ): Promise<Bidi.Script.ScriptResultSuccess['result']> {
+  ): Promise<Bidi.Script.ScriptResultSuccess> {
     const id = ++this.#lastId;
     const stringifiedMessage = JSON.stringify({
       id,

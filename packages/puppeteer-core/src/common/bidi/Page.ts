@@ -18,7 +18,6 @@ import {Page as PageBase} from '../../api/Page.js';
 import {Connection} from './Connection.js';
 import type {EvaluateFunc} from '../types.js';
 import {isString, stringifyFunction} from '../util.js';
-import {Bidi} from '../../../third_party/chromium-bidi/index.js';
 import {BidiSerializer} from './Serializer.js';
 /**
  * @internal
@@ -47,22 +46,22 @@ export class Page extends PageBase {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     if (isString(pageFunction)) {
-      const response = (await this.#connection.send('script.evaluate', {
+      const response = await this.#connection.send('script.evaluate', {
         expression: pageFunction,
         target: {context: this.#contextId},
         awaitPromise: true,
-      })) as {result: Bidi.CommonDataTypes.RemoteValue};
+      });
 
       return BidiSerializer.deserialize(response.result) as any;
     }
 
     const textFunction = stringifyFunction(pageFunction as any);
-    const response = (await this.#connection.send('script.callFunction', {
+    const response = await this.#connection.send('script.callFunction', {
       functionDeclaration: textFunction,
       arguments: await Promise.all(args.map(BidiSerializer.serialize)),
       target: {context: this.#contextId},
       awaitPromise: true,
-    })) as {result: Bidi.CommonDataTypes.RemoteValue};
+    });
 
     return BidiSerializer.deserialize(response.result) as any;
   }
