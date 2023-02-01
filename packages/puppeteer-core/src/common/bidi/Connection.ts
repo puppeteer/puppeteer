@@ -47,10 +47,10 @@ export class Connection extends EventEmitter {
     return this.#closed;
   }
 
-  send(
-    method: string,
-    params: object
-  ): Promise<Bidi.Script.ScriptResultSuccess> {
+  send<T extends Bidi.Message.CommandResponseResult>(
+    method: Bidi.Message.CommandRequest['method'],
+    params: Bidi.Message.CommandRequest['params']
+  ): Promise<T> {
     const id = ++this.#lastId;
     const stringifiedMessage = JSON.stringify({
       id,
