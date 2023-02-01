@@ -26,7 +26,6 @@ import {TimeoutError} from './Errors.js';
 import {CommonEventEmitter} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {JSHandle} from './JSHandle.js';
-import {EvaluateFunc} from './types.js';
 
 /**
  * @internal
@@ -452,10 +451,7 @@ export async function getReadableFromProtocolStream(
 /**
  * @internal
  */
-export function stringifyFunction<
-  Params extends unknown[],
-  Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
->(expression: Func): string {
+export function stringifyFunction(expression: Function): string {
   let functionText = expression.toString();
   try {
     new Function('(' + functionText + ')');

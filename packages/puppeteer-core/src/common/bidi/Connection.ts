@@ -22,44 +22,7 @@ import {ConnectionTransport} from '../ConnectionTransport.js';
 import {EventEmitter} from '../EventEmitter.js';
 import {ProtocolError} from '../Errors.js';
 import {ConnectionCallback} from '../Connection.js';
-
-interface Command {
-  id: number;
-  method: string;
-  params: object;
-}
-
-interface SuccessCommandResponse {
-  id: number;
-  result: {
-    type: 'success';
-    result: object;
-    sessionId?: any;
-    context?: any;
-  };
-}
-
-interface ErrorCommandResponse {
-  id: number;
-  result: {
-    type: 'exception';
-    exceptionDetails: {
-      text: string;
-    };
-  };
-}
-
-interface ErrorResponse {
-  id: number;
-  error: string;
-  message: string;
-  stacktrace?: string;
-}
-
-interface Event {
-  method: string;
-  params: object;
-}
+import {Bidi} from '../../../third_party/chromium-bidi/index.js';
 
 /**
  * @internal
@@ -87,13 +50,13 @@ export class Connection extends EventEmitter {
   send(
     method: string,
     params: object
-  ): Promise<SuccessCommandResponse['result']> {
+  ): Promise<Bidi.Script.ScriptResultSuccess['result']> {
     const id = ++this.#lastId;
     const stringifiedMessage = JSON.stringify({
       id,
       method,
       params,
-    } as Command);
+    } as Bidi.Message.CommandRequest);
     debugProtocolSend(stringifiedMessage);
     this.#transport.send(stringifiedMessage);
     return new Promise((resolve, reject) => {
@@ -117,10 +80,8 @@ export class Connection extends EventEmitter {
     }
     debugProtocolReceive(message);
     const object = JSON.parse(message) as
-      | Event
-      | ErrorResponse
-      | SuccessCommandResponse
-      | ErrorCommandResponse;
+      | Bidi.Message.CommandResponse
+      | Bidi.EventResponse<string, unknown>;
     if ('id' in object) {
       const callback = this.#callbacks.get(object.id);
       // Callbacks could be all rejected if someone has called `.dispose()`.
@@ -135,11 +96,12 @@ export class Connection extends EventEmitter {
           'type' in object.result &&
           object.result.type === 'exception'
         ) {
+          object.result;
           callback.reject(
             createCommandProtocolError(
               callback.error,
               callback.method,
-              object as unknown as ErrorCommandResponse
+              object.result
             )
           );
         } else {
@@ -188,7 +150,7 @@ function rewriteError(
 function createProtocolError(
   error: ProtocolError,
   method: string,
-  object: ErrorResponse
+  object: Bidi.Message.ErrorResult
 ): Error {
   let message = `Protocol error (${method}): ${object.error} ${object.message}`;
   if (object.stacktrace) {
@@ -200,8 +162,8 @@ function createProtocolError(
 function createCommandProtocolError(
   error: ProtocolError,
   method: string,
-  object: ErrorCommandResponse
+  object: Bidi.Script.ScriptResultException
 ): Error {
-  const message = `Protocol error (${method}): ${object.result.exceptionDetails.text}`;
-  return rewriteError(error, message, object.result.exceptionDetails.text);
+  const message = `Protocol error (${method}): ${object.exceptionDetails.text}`;
+  return rewriteError(error, message, object.exceptionDetails.text);
 }

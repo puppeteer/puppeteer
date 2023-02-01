@@ -267,7 +267,7 @@ export class ExecutionContext {
         : createJSHandle(this, remoteObject);
     }
 
-    const functionText = stringifyFunction(pageFunction as any);
+    const functionText = stringifyFunction(pageFunction);
     let callFunctionOnPromise;
     try {
       callFunctionOnPromise = this._client.send('Runtime.callFunctionOn', {
