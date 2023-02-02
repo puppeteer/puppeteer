@@ -22,7 +22,7 @@ import {ConnectionTransport} from '../ConnectionTransport.js';
 import {EventEmitter} from '../EventEmitter.js';
 import {ProtocolError} from '../Errors.js';
 import {ConnectionCallback} from '../Connection.js';
-import {Bidi} from '../../../third_party/chromium-bidi/index.js';
+import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 /**
  * @internal

@@ -1,4 +1,4 @@
-import {Bidi} from '../../../third_party/chromium-bidi/index.js';
+import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {debugError, isPlainObject} from '../util.js';
 
 /**
