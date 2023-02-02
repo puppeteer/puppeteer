@@ -51,7 +51,7 @@ describe('WebDriver BiDi', () => {
         JSON.stringify(rawResponse)
       );
       const response = await responsePromise;
-      expect(response).toEqual(rawResponse.result);
+      expect(response).toEqual(rawResponse);
       connection.dispose();
       expect(transport.closed).toBeTruthy();
     });
