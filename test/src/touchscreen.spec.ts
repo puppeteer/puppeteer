@@ -15,6 +15,7 @@
  */
 
 import expect from 'expect';
+import {BoundingBox} from 'puppeteer';
 import {KnownDevices} from 'puppeteer';
 import {
   getTestState,
@@ -38,6 +39,7 @@ describe('Touchscreen', function () {
       })
     ).toBe('Clicked');
   });
+
   it('should report touches', async () => {
     const {page, server} = getTestState();
     const iPhone = KnownDevices['iPhone 6']!;
@@ -50,5 +52,69 @@ describe('Touchscreen', function () {
         return (globalThis as any).getResult();
       })
     ).toEqual(['Touchstart: 0', 'Touchend: 0']);
+  });
+
+  it('should report press', async () => {
+    const {page, server} = getTestState();
+    const iPhone = KnownDevices['iPhone 6']!;
+    await page.setViewport({
+      width: KnownDevices['iPhone 6'].viewport.width,
+      height: KnownDevices['iPhone 6'].viewport.height,
+      isMobile: true,
+      hasTouch: true,
+    });
+    await page.emulate(iPhone);
+    await page.goto(server.PREFIX + '/input/touches-press.html');
+    await page.touchscreen.press(100, 100, 1000);
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).timer;
+      })
+    ).toBe(1);
+  });
+
+  it('should report drag', async () => {
+    const {page, server} = getTestState();
+    const iPhone = KnownDevices['iPhone 6']!;
+    await page.emulate(iPhone);
+    await page.goto(server.PREFIX + '/input/touches-drag-and-drop.html');
+    await page.setViewport({
+      width: KnownDevices['iPhone 6'].viewport.width,
+      height: KnownDevices['iPhone 6'].viewport.height,
+      isMobile: true,
+      hasTouch: true,
+    });
+    const draggable = (await page.$('#drag'))!;
+    const dropzone = (await page.$('#drop'))!;
+    const dragObj = (await draggable.boundingBox()) as BoundingBox;
+    const dropObj = (await dropzone.boundingBox()) as BoundingBox;
+    const dragPosx = dragObj.x + dragObj.width / 2;
+    const dragPosy = dragObj.y + dragObj.height / 2;
+    const dropPosx = dropObj.x + dropObj.width / 2;
+    const dropPosy = dropObj.y + dropObj.height / 2;
+    await page.touchscreen.drag(
+      {x: dragPosx, y: dragPosy},
+      {x: dropPosx, y: dropPosy}
+    );
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).didDragStart;
+      })
+    ).toBe(true);
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).didDragEnter;
+      })
+    ).toBe(true);
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).didDragOver;
+      })
+    ).toBe(true);
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).didDrop;
+      })
+    ).toBe(true);
   });
 });

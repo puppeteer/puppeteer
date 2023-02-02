@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Drag-and-drop test</title>
+  <style>
+    #drop {
+      width: 5em;
+      height: 5em;
+      border: 1px solid black;
+      position: absolute;
+      top: 30px;
+      left: 0px;
+    }
+
+    #drag {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="drag" draggable="true">drag me</div>
+  <div id="drop"></div>
+  <script>
+    window.didDragStart = false;
+    window.didDragEnter = false;
+    window.didDragOver = false;
+    window.didDrop = false;
+    const drag = document.getElementById('drag');
+    const drop = document.getElementById('drop');
+    drag.addEventListener('touchstart', function (event) {
+      console.log("touchstart")
+      window.didDragStart = true;
+    });
+    drag.addEventListener('touchmove', function (event) {
+      event.preventDefault();
+      console.log("touchmove")
+      var touchLocation = event.targetTouches[0];
+      var moveLoction = event.changedTouches[0];
+      drag.style.left = touchLocation.pageX + 'px';
+      drag.style.top = touchLocation.pageY + 'px';
+
+
+      let pageX = touchLocation.pageX;;
+      let pageY = touchLocation.pageY;
+      let x = drop.getBoundingClientRect().x;
+      let y = drop.getBoundingClientRect().y;
+      let width = drop.getBoundingClientRect().width;
+      let height = drop.getBoundingClientRect().height;
+      if (x < pageX && pageX < (x + width) && y < pageY && pageY < (y + height)) {
+        window.didDragEnter = true
+        console.log("in the box")
+      }else{
+        width.didDragEnter = false;
+      }
+    });
+    drag.addEventListener('touchend', function (event) {
+      console.log("touch end")
+      event.preventDefault();
+      window.didDragOver = true;
+      let pageX = event.changedTouches[0].pageX;
+      let pageY = event.changedTouches[0].pageY;
+      let x = drop.getBoundingClientRect().x;
+      let y = drop.getBoundingClientRect().y;
+      let width = drop.getBoundingClientRect().width;
+      let height = drop.getBoundingClientRect().height;
+      if (x < pageX && pageX < (x + width) && y < pageY && pageY < (y + height)) {
+        drop.appendChild(drag);
+        drag.style.left = 0;
+        drag.style.top = 0;
+        window.didDrop = true;
+      }
+    });
+  </script>
+</body>
+
+</html>

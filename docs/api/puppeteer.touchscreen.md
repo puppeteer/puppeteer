@@ -18,6 +18,8 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Methods
 
-| Method                                      | Modifiers | Description                                                           |
-| ------------------------------------------- | --------- | --------------------------------------------------------------------- |
-| [tap(x, y)](./puppeteer.touchscreen.tap.md) |           | Dispatches a <code>touchstart</code> and <code>touchend</code> event. |
+| Method                                                 | Modifiers | Description                                                                                       |
+| ------------------------------------------------------ | --------- | ------------------------------------------------------------------------------------------------- |
+| [drag(start, target)](./puppeteer.touchscreen.drag.md) |           | Dispatches a <code>touchstart</code>and <code>touchMove</code> and <code>touchend</code> event.   |
+| [press(x, y, delay)](./puppeteer.touchscreen.press.md) |           | Dispatches a <code>touchstart</code> and <code>setTimeout</code> and <code>touchend</code> event. |
+| [tap(x, y)](./puppeteer.touchscreen.tap.md)            |           | Dispatches a <code>touchstart</code> and <code>touchend</code> event.                             |
