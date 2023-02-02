@@ -15,4 +15,6 @@
  */
 
 export * as BidiMapper from 'chromium-bidi/lib/cjs/bidiMapper/bidiMapper.js';
-export * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+
+export {Bidi};
