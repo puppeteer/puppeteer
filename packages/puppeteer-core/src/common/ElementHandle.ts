@@ -381,7 +381,7 @@ export class ElementHandle<
    * @param options - Optional waiting parameters
    * @returns Promise which resolves when element specified by xpath string is
    * added to DOM. Resolves to `null` if waiting for `hidden: true` and xpath is
-   * not found in DOM.
+   * not found in DOM, otherwise resolves to `ElementHandle`.
    * @remarks
    * The optional Argument `options` have properties:
    *

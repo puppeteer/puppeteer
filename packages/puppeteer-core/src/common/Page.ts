@@ -1631,11 +1631,7 @@ export class CDPPage extends Page {
 
   override waitForXPath(
     xpath: string,
-    options: {
-      visible?: boolean;
-      hidden?: boolean;
-      timeout?: number;
-    } = {}
+    options: WaitForSelectorOptions = {}
   ): Promise<ElementHandle<Node> | null> {
     return this.mainFrame().waitForXPath(xpath, options);
   }
