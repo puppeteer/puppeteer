@@ -53,9 +53,8 @@ export class Page extends PageBase {
         awaitPromise: true,
       });
     } else {
-      const textFunction = stringifyFunction(pageFunction);
       responsePromise = this.#connection.send('script.callFunction', {
-        functionDeclaration: textFunction,
+        functionDeclaration: stringifyFunction(pageFunction),
         arguments: await Promise.all(args.map(BidiSerializer.serialize)),
         target: {context: this.#contextId},
         awaitPromise: true,

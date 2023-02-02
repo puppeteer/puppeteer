@@ -45,10 +45,11 @@ interface Commands {
     returnType: Bidi.BrowsingContext.CloseResult;
   };
   'session.status': {
-    params: Bidi.BrowsingContext.CloseParameters; // TODO: Update Types in chromium bidi
+    params: {context: string}; // TODO: Update Types in chromium bidi
     returnType: Bidi.Session.StatusResult;
   };
 }
+
 /**
  * @internal
  */
