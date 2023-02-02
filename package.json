@@ -66,7 +66,6 @@
     "@typescript-eslint/eslint-plugin": "5.46.1",
     "@typescript-eslint/parser": "5.46.1",
     "c8": "7.12.0",
-    "chromium-bidi": "0.4.3",
     "commonmark": "0.30.0",
     "cross-env": "7.0.3",
     "diff": "5.1.0",
