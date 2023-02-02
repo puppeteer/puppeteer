@@ -169,6 +169,20 @@ export const isPlainObject = (obj: unknown): obj is Record<any, unknown> => {
 /**
  * @internal
  */
+export const isRegExp = (obj: unknown): obj is RegExp => {
+  return typeof obj === 'object' && obj?.constructor === RegExp;
+};
+
+/**
+ * @internal
+ */
+export const isDate = (obj: unknown): obj is Date => {
+  return typeof obj === 'object' && obj?.constructor === Date;
+};
+
+/**
+ * @internal
+ */
 export async function waitForEvent<T>(
   emitter: CommonEventEmitter,
   eventName: string | symbol,
