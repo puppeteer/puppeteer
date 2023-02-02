@@ -29,12 +29,5 @@ export default ['cjs', 'esm'].flatMap(outputType => {
       plugins: [commonjs(), nodeResolve()],
     });
   }
-  // for (const typesFile of glob.sync(`${thirdPartyPath}/**/*.d.ts`)) {
-  //   configs.push({
-  //     input: typesFile,
-  //     output: {file: typesFile, format: outputType, dynamicImportInCjs: false},
-  //     plugins: [dts({respectExternal: true})],
-  //   });
-  // }
   return configs;
 });
