@@ -488,7 +488,7 @@
   {
     "testIdPattern": "[fixtures.spec] Fixtures dumpio option should work with pipe option",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "chrome-headless"],
+    "parameters": ["chrome", "new-headless"],
     "expectations": ["PASS", "FAIL"]
   },
   {
@@ -2864,7 +2864,7 @@
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work in \"fromSurface: false\" mode",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "chrome-headless"],
+    "parameters": ["chrome", "new-headless"],
     "expectations": ["SKIP"]
   },
   {
@@ -3104,13 +3104,13 @@
   {
     "testIdPattern": "[network.spec] network \"after each\" hook for \"Same-origin set-cookie subresource\"",
     "platforms": ["win32"],
-    "parameters": ["chrome", "chrome-headless"],
+    "parameters": ["chrome", "new-headless"],
     "expectations": ["PASS", "FAIL"]
   },
   {
     "testIdPattern": "[network.spec] network \"after each\" hook for \"Same-origin set-cookie subresource\"",
     "platforms": ["win32"],
-    "parameters": ["chrome", "chrome-headless"],
+    "parameters": ["chrome", "new-headless"],
     "expectations": ["PASS", "FAIL"]
   },
   {
@@ -3122,7 +3122,7 @@
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should return base64",
     "platforms": ["linux"],
-    "parameters": ["chrome", "chrome-headless"],
+    "parameters": ["chrome", "new-headless"],
     "expectations": ["PASS", "FAIL"]
   },
   {
@@ -3146,7 +3146,7 @@
   {
     "testIdPattern": "[screenshot.spec] Screenshots Page.screenshot should work",
     "platforms": ["linux"],
-    "parameters": ["chrome", "chrome-headless"],
+    "parameters": ["chrome", "new-headless"],
     "expectations": ["PASS", "FAIL"]
   },
   {
