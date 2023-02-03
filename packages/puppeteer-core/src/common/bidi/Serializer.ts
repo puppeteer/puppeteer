@@ -1,5 +1,5 @@
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
-import {debugError, isPlainObject} from '../util.js';
+import {debugError, isDate, isPlainObject, isRegExp} from '../util.js';
 
 /**
  * @internal
@@ -57,6 +57,19 @@ export class BidiSerializer {
       return {
         type: 'object',
         value: parsedObject,
+      };
+    } else if (isRegExp(arg)) {
+      return {
+        type: 'regexp',
+        value: {
+          pattern: arg.source,
+          flags: arg.flags,
+        },
+      };
+    } else if (isDate(arg)) {
+      return {
+        type: 'date',
+        value: arg.toISOString(),
       };
     }
 
@@ -152,6 +165,11 @@ export class BidiSerializer {
         }, new Map());
       case 'promise':
         return {};
+      case 'regexp':
+        return new RegExp(result.value.pattern, result.value.flags);
+      case 'date':
+        return new Date(result.value);
+
       case 'undefined':
         return undefined;
       case 'null':
