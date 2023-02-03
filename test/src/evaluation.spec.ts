@@ -328,6 +328,20 @@ describe('Evaluation specs', function () {
         })
       ).toBe(undefined);
     });
+    it('should return promise as empty object', async () => {
+      const {page} = getTestState();
+
+      const result = await page.evaluate(() => {
+        return {
+          promise: new Promise(resolve => {
+            setTimeout(resolve, 1000);
+          }),
+        };
+      });
+      expect(result).toEqual({
+        promise: {},
+      });
+    });
     it('should fail for circular object', async () => {
       const {page} = getTestState();
 

@@ -26,6 +26,7 @@ import {
   createJSHandle,
   getExceptionMessage,
   isString,
+  stringifyFunction,
   valueFromRemoteObject,
 } from './util.js';
 
@@ -266,29 +267,11 @@ export class ExecutionContext {
         : createJSHandle(this, remoteObject);
     }
 
-    let functionText = pageFunction.toString();
-    try {
-      new Function('(' + functionText + ')');
-    } catch (error) {
-      // This means we might have a function shorthand. Try another
-      // time prefixing 'function '.
-      if (functionText.startsWith('async ')) {
-        functionText =
-          'async function ' + functionText.substring('async '.length);
-      } else {
-        functionText = 'function ' + functionText;
-      }
-      try {
-        new Function('(' + functionText + ')');
-      } catch (error) {
-        // We tried hard to serialize, but there's a weird beast here.
-        throw new Error('Passed function is not well-serializable!');
-      }
-    }
     let callFunctionOnPromise;
     try {
       callFunctionOnPromise = this._client.send('Runtime.callFunctionOn', {
-        functionDeclaration: functionText + '\n' + suffix + '\n',
+        functionDeclaration:
+          stringifyFunction(pageFunction) + '\n' + suffix + '\n',
         executionContextId: this._contextId,
         arguments: await Promise.all(args.map(convertArgument.bind(this))),
         returnByValue,

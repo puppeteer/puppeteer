@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import glob from 'glob';
-import dts from 'rollup-plugin-dts';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 
@@ -26,15 +25,8 @@ export default ['cjs', 'esm'].flatMap(outputType => {
   for (const jsFile of glob.sync(`${thirdPartyPath}/**/*.js`)) {
     configs.push({
       input: jsFile,
-      output: {file: jsFile, format: outputType},
+      output: {file: jsFile, format: outputType, dynamicImportInCjs: false},
       plugins: [commonjs(), nodeResolve()],
-    });
-  }
-  for (const typesFile of glob.sync(`${thirdPartyPath}/**/*.d.ts`)) {
-    configs.push({
-      input: typesFile,
-      output: {file: typesFile, format: outputType},
-      plugins: [dts({respectExternal: true})],
     });
   }
   return configs;

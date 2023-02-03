@@ -869,7 +869,25 @@ export class ElementHandle<
   async tap(this: ElementHandle<Element>): Promise<void> {
     await this.#scrollIntoViewIfNeeded();
     const {x, y} = await this.clickablePoint();
-    await this.#page.touchscreen.tap(x, y);
+    await this.#page.touchscreen.touchStart(x, y);
+    await this.#page.touchscreen.touchEnd();
+  }
+
+  async touchStart(this: ElementHandle<Element>): Promise<void> {
+    await this.#scrollIntoViewIfNeeded();
+    const {x, y} = await this.clickablePoint();
+    await this.#page.touchscreen.touchStart(x, y);
+  }
+
+  async touchMove(this: ElementHandle<Element>): Promise<void> {
+    await this.#scrollIntoViewIfNeeded();
+    const {x, y} = await this.clickablePoint();
+    await this.#page.touchscreen.touchMove(x, y);
+  }
+
+  async touchEnd(this: ElementHandle<Element>): Promise<void> {
+    await this.#scrollIntoViewIfNeeded();
+    await this.#page.touchscreen.touchEnd();
   }
 
   /**

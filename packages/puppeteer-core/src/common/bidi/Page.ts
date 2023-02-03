@@ -16,8 +16,9 @@
 
 import {Page as PageBase} from '../../api/Page.js';
 import {Connection} from './Connection.js';
-import type {EvaluateFunc} from '..//types.js';
-
+import type {EvaluateFunc} from '../types.js';
+import {isString, stringifyFunction} from '../util.js';
+import {BidiSerializer} from './Serializer.js';
 /**
  * @internal
  */
@@ -42,15 +43,32 @@ export class Page extends PageBase {
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
   >(
     pageFunction: Func | string,
-    ..._args: Params
+    ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
-    // TODO: re-use evaluate logic from Execution context.
-    const str = `(${pageFunction.toString()})()`;
-    const result = (await this.#connection.send('script.evaluate', {
-      expression: str,
-      target: {context: this.#contextId},
-      awaitPromise: true,
-    })) as {result: {type: string; value: any}};
-    return result.result.value;
+    let responsePromise;
+    if (isString(pageFunction)) {
+      responsePromise = this.#connection.send('script.evaluate', {
+        expression: pageFunction,
+        target: {context: this.#contextId},
+        awaitPromise: true,
+      });
+    } else {
+      responsePromise = this.#connection.send('script.callFunction', {
+        functionDeclaration: stringifyFunction(pageFunction),
+        arguments: await Promise.all(args.map(BidiSerializer.serialize)),
+        target: {context: this.#contextId},
+        awaitPromise: true,
+      });
+    }
+
+    const {result} = await responsePromise;
+
+    if ('type' in result && result.type === 'exception') {
+      throw new Error(result.exceptionDetails.text);
+    }
+
+    return BidiSerializer.deserialize(result.result) as Awaited<
+      ReturnType<Func>
+    >;
   }
 }

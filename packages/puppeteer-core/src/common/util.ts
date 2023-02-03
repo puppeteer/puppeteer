@@ -162,6 +162,27 @@ export const isNumber = (obj: unknown): obj is number => {
 /**
  * @internal
  */
+export const isPlainObject = (obj: unknown): obj is Record<any, unknown> => {
+  return typeof obj === 'object' && obj?.constructor === Object;
+};
+
+/**
+ * @internal
+ */
+export const isRegExp = (obj: unknown): obj is RegExp => {
+  return typeof obj === 'object' && obj?.constructor === RegExp;
+};
+
+/**
+ * @internal
+ */
+export const isDate = (obj: unknown): obj is Date => {
+  return typeof obj === 'object' && obj?.constructor === Date;
+};
+
+/**
+ * @internal
+ */
 export async function waitForEvent<T>(
   emitter: CommonEventEmitter,
   eventName: string | symbol,
@@ -439,4 +460,30 @@ export async function getReadableFromProtocolStream(
       }
     },
   });
+}
+
+/**
+ * @internal
+ */
+export function stringifyFunction(expression: Function): string {
+  let functionText = expression.toString();
+  try {
+    new Function('(' + functionText + ')');
+  } catch (error) {
+    // This means we might have a function shorthand. Try another
+    // time prefixing 'function '.
+    if (functionText.startsWith('async ')) {
+      functionText =
+        'async function ' + functionText.substring('async '.length);
+    } else {
+      functionText = 'function ' + functionText;
+    }
+    try {
+      new Function('(' + functionText + ')');
+    } catch (error) {
+      // We tried hard to serialize, but there's a weird beast here.
+      throw new Error('Passed function is not well-serializable!');
+    }
+  }
+  return functionText;
 }
