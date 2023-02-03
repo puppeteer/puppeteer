@@ -670,12 +670,40 @@ export class Touchscreen {
    * @param y - Vertical position of the tap.
    */
   async tap(x: number, y: number): Promise<void> {
+    await this.touchStart(x, y);
+    await this.touchEnd();
+  }
+
+  /**
+   * Dispatches a `touchstart` event.
+   * @param x - Horizontal position of the tap.
+   * @param y - Vertical position of the tap.
+   */
+  async touchStart(x: number, y: number): Promise<void> {
     const touchPoints = [{x: Math.round(x), y: Math.round(y)}];
     await this.#client.send('Input.dispatchTouchEvent', {
       type: 'touchStart',
       touchPoints,
       modifiers: this.#keyboard._modifiers,
     });
+  }
+  /**
+   * Dispatches a `touchMove` event.
+   * @param x - Horizontal position of the move.
+   * @param y - Vertical position of the move.
+   */
+  async touchMove(x: number, y: number): Promise<void> {
+    const movePoints = [{x: Math.round(x), y: Math.round(y)}];
+    await this.#client.send('Input.dispatchTouchEvent', {
+      type: 'touchMove',
+      touchPoints: movePoints,
+      modifiers: this.#keyboard._modifiers,
+    });
+  }
+  /**
+   * Dispatches a `touchend` event.
+   */
+  async touchEnd(): Promise<void> {
     await this.#client.send('Input.dispatchTouchEvent', {
       type: 'touchEnd',
       touchPoints: [],

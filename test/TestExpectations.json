@@ -2976,6 +2976,12 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[touchscreen.spec] Touchscreen should report touchMove",
+    "platforms": ["linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[tracing.spec]",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
