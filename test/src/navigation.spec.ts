@@ -328,7 +328,6 @@ describe('navigation', function () {
       expect(response.ok()).toBe(false);
       expect(response.status()).toBe(500);
     });
-
     it('should return last response in redirect chain', async () => {
       const {page, server} = getTestState();
 
