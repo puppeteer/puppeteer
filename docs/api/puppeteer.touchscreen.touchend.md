@@ -4,7 +4,7 @@ sidebar_label: Touchscreen.touchEnd
 
 # Touchscreen.touchEnd() method
 
-Dispatches a `touchend` event. stop the touchStart function
+Dispatches a `touchend` event.
 
 #### Signature:
 
