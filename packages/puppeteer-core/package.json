@@ -174,5 +174,13 @@
     "tar-fs": "2.1.1",
     "unbzip2-stream": "1.4.3",
     "ws": "8.11.0"
+  },
+  "peerDependencies": {
+    "typescript": ">= 4.7.4"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
   }
 }
