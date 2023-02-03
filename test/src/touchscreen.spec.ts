@@ -26,6 +26,19 @@ describe('Touchscreen', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
 
+  it('should tap the button', async () => {
+    const {page, server} = getTestState();
+    const iPhone = KnownDevices['iPhone 6']!;
+    await page.emulate(iPhone);
+    await page.goto(server.PREFIX + '/input/button.html');
+    await page.tap('button');
+    expect(
+      await page.evaluate(() => {
+        return (globalThis as any).result;
+      })
+    ).toBe('Clicked');
+  });
+  
   it('should report touches', async () => {
     const {page, server} = getTestState();
     const iPhone = KnownDevices['iPhone 6']!;
