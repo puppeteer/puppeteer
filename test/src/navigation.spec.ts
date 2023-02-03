@@ -304,6 +304,31 @@ describe('navigation', function () {
       expect(response.ok()).toBe(false);
       expect(response.status()).toBe(404);
     });
+    it('should not throw a error when get a 404 response with empty body', async () => {
+      const {page, server} = getTestState();
+
+      server.setRoute('/404-error', (_, res) => {
+        res.statusCode = 404;
+        res.end();
+      });
+
+      const response = (await page.goto(server.PREFIX + '/404-error'))!;
+      expect(response.ok()).toBe(false);
+      expect(response.status()).toBe(404);
+    });
+    it('should not throw a error when get a 500 response with empty body', async () => {
+      const {page, server} = getTestState();
+
+      server.setRoute('/500-error', (_, res) => {
+        res.statusCode = 500;
+        res.end();
+      });
+
+      const response = (await page.goto(server.PREFIX + '/500-error'))!;
+      expect(response.ok()).toBe(false);
+      expect(response.status()).toBe(500);
+    });
+
     it('should return last response in redirect chain', async () => {
       const {page, server} = getTestState();
 
