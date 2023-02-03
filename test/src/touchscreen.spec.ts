@@ -38,7 +38,7 @@ describe('Touchscreen', function () {
       })
     ).toBe('Clicked');
   });
-  
+
   it('should report touches', async () => {
     const {page, server} = getTestState();
     const iPhone = KnownDevices['iPhone 6']!;
