@@ -276,7 +276,7 @@ export class Keyboard {
    * if specified, is the time to wait between `keydown` and `keyup` in milliseconds.
    * Defaults to 0.
    */
-  async type(text: string, options: {delay?: number} = {}): Promise<void> {
+  async type(text: string = [], options: {delay?: number} = {}): Promise<void> {
     const delay = options.delay || undefined;
     for (const char of text) {
       if (this.charIsKey(char)) {
