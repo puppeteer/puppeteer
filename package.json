@@ -27,7 +27,7 @@
     "test-install": "npm run test --workspace @puppeteer-test/installation",
     "test-types": "tsd -t packages/puppeteer",
     "test:chrome:headful": "npm test -- --test-suite chrome-headful",
-    "test:chrome:headless-chrome": "npm test -- --test-suite chrome-new-headless",
+    "test:chrome:new-headless": "npm test -- --test-suite chrome-new-headless",
     "test:chrome:headless": "npm test -- --test-suite chrome-headless",
     "test:chrome:bidi": "npm test -- --test-suite chrome-bidi",
     "test:chrome": "run-s test:chrome:*",
