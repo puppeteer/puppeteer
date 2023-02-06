@@ -316,7 +316,7 @@ describe('navigation', function () {
       expect(response.ok()).toBe(false);
       expect(response.status()).toBe(404);
     });
-    it('should not throw a error when get a 500 response with empty body', async () => {
+    it('should not throw an error for a 500 response with an empty body', async () => {
       const {page, server} = getTestState();
 
       server.setRoute('/500-error', (_, res) => {
