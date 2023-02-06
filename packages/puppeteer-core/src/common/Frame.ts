@@ -354,6 +354,9 @@ export class Frame {
           referrerPolicy,
         });
         ensureNewDocumentNavigation = !!response.loaderId;
+        if (response.errorText === 'net::ERR_HTTP_RESPONSE_CODE_FAILURE') {
+          return null;
+        }
         return response.errorText
           ? new Error(`${response.errorText} at ${url}`)
           : null;
