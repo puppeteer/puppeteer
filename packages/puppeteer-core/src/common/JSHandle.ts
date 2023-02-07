@@ -15,41 +15,15 @@
  */
 
 import {Protocol} from 'devtools-protocol';
+import {JSHandle as BaseJSHandle} from '../api/JSHandle.js';
 import {assert} from '../util/assert.js';
 import {CDPSession} from './Connection.js';
 import type {ElementHandle} from './ElementHandle.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {MouseButton} from './Input.js';
 import {EvaluateFunc, HandleFor, HandleOr} from './types.js';
 import {createJSHandle, releaseObject, valueFromRemoteObject} from './util.js';
 
 declare const __JSHandleSymbol: unique symbol;
-
-/**
- * @public
- */
-export interface BoxModel {
-  content: Point[];
-  padding: Point[];
-  border: Point[];
-  margin: Point[];
-  width: number;
-  height: number;
-}
-
-/**
- * @public
- */
-export interface BoundingBox extends Point {
-  /**
-   * the width of the element in pixels.
-   */
-  width: number;
-  /**
-   * the height of the element in pixels.
-   */
-  height: number;
-}
 
 /**
  * Represents a reference to a JavaScript object. Instances can be created using
@@ -72,7 +46,7 @@ export interface BoundingBox extends Point {
  *
  * @public
  */
-export class JSHandle<T = unknown> {
+export class JSHandle<T = unknown> extends BaseJSHandle {
   /**
    * Used for nominally typing {@link JSHandle}.
    */
@@ -85,14 +59,14 @@ export class JSHandle<T = unknown> {
   /**
    * @internal
    */
-  get client(): CDPSession {
+  override get client(): CDPSession {
     return this.#context._client;
   }
 
   /**
    * @internal
    */
-  get disposed(): boolean {
+  override get disposed(): boolean {
     return this.#disposed;
   }
 
@@ -103,6 +77,7 @@ export class JSHandle<T = unknown> {
     context: ExecutionContext,
     remoteObject: Protocol.Runtime.RemoteObject
   ) {
+    super();
     this.#context = context;
     this.#remoteObject = remoteObject;
   }
@@ -110,16 +85,14 @@ export class JSHandle<T = unknown> {
   /**
    * @internal
    */
-  executionContext(): ExecutionContext {
+  override executionContext(): ExecutionContext {
     return this.#context;
   }
 
   /**
-   * Evaluates the given function with the current handle as its first argument.
-   *
    * @see {@link ExecutionContext.evaluate} for more details.
    */
-  async evaluate<
+  override async evaluate<
     Params extends unknown[],
     Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
       [this, ...Params]
@@ -134,11 +107,9 @@ export class JSHandle<T = unknown> {
   }
 
   /**
-   * Evaluates the given function with the current handle as its first argument.
-   *
    * @see {@link ExecutionContext.evaluateHandle} for more details.
    */
-  async evaluateHandle<
+  override async evaluateHandle<
     Params extends unknown[],
     Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
       [this, ...Params]
@@ -156,14 +127,11 @@ export class JSHandle<T = unknown> {
     );
   }
 
-  /**
-   * Fetches a single property from the referenced object.
-   */
-  async getProperty<K extends keyof T>(
+  override async getProperty<K extends keyof T>(
     propertyName: HandleOr<K>
   ): Promise<HandleFor<T[K]>>;
-  async getProperty(propertyName: string): Promise<JSHandle<unknown>>;
-  async getProperty<K extends keyof T>(
+  override async getProperty(propertyName: string): Promise<JSHandle<unknown>>;
+  override async getProperty<K extends keyof T>(
     propertyName: HandleOr<K>
   ): Promise<HandleFor<T[K]>> {
     return this.evaluateHandle((object, propertyName) => {
@@ -171,25 +139,7 @@ export class JSHandle<T = unknown> {
     }, propertyName);
   }
 
-  /**
-   * Gets a map of handles representing the properties of the current handle.
-   *
-   * @example
-   *
-   * ```ts
-   * const listHandle = await page.evaluateHandle(() => document.body.children);
-   * const properties = await listHandle.getProperties();
-   * const children = [];
-   * for (const property of properties.values()) {
-   *   const element = property.asElement();
-   *   if (element) {
-   *     children.push(element);
-   *   }
-   * }
-   * children; // holds elementHandles to all children of document.body
-   * ```
-   */
-  async getProperties(): Promise<Map<string, JSHandle>> {
+  override async getProperties(): Promise<Map<string, JSHandle>> {
     assert(this.#remoteObject.objectId);
     // We use Runtime.getProperties rather than iterative building because the
     // iterative approach might create a distorted snapshot.
@@ -207,15 +157,7 @@ export class JSHandle<T = unknown> {
     return result;
   }
 
-  /**
-   * @returns A vanilla object representing the serializable portions of the
-   * referenced object.
-   * @throws Throws if the object cannot be serialized due to circularity.
-   *
-   * @remarks
-   * If the object has a `toJSON` function, it **will not** be called.
-   */
-  async jsonValue(): Promise<T> {
+  override async jsonValue(): Promise<T> {
     if (!this.#remoteObject.objectId) {
       return valueFromRemoteObject(this.#remoteObject);
     }
@@ -232,14 +174,11 @@ export class JSHandle<T = unknown> {
    * @returns Either `null` or the handle itself if the handle is an
    * instance of {@link ElementHandle}.
    */
-  asElement(): ElementHandle<Node> | null {
+  override asElement(): ElementHandle<Node> | null {
     return null;
   }
 
-  /**
-   * Releases the object referenced by the handle for garbage collection.
-   */
-  async dispose(): Promise<void> {
+  override async dispose(): Promise<void> {
     if (this.#disposed) {
       return;
     }
@@ -247,13 +186,7 @@ export class JSHandle<T = unknown> {
     await releaseObject(this.client, this.#remoteObject);
   }
 
-  /**
-   * Returns a string representation of the JSHandle.
-   *
-   * @remarks
-   * Useful during debugging.
-   */
-  toString(): string {
+  override toString(): string {
     if (!this.#remoteObject.objectId) {
       return 'JSHandle:' + valueFromRemoteObject(this.#remoteObject);
     }
@@ -266,67 +199,7 @@ export class JSHandle<T = unknown> {
    * [Protocol.Runtime.RemoteObject](https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-RemoteObject)
    * backing this handle.
    */
-  remoteObject(): Protocol.Runtime.RemoteObject {
+  override remoteObject(): Protocol.Runtime.RemoteObject {
     return this.#remoteObject;
   }
-}
-
-/**
- * @public
- */
-export interface Offset {
-  /**
-   * x-offset for the clickable point relative to the top-left corner of the border box.
-   */
-  x: number;
-  /**
-   * y-offset for the clickable point relative to the top-left corner of the border box.
-   */
-  y: number;
-}
-
-/**
- * @public
- */
-export interface ClickOptions {
-  /**
-   * Time to wait between `mousedown` and `mouseup` in milliseconds.
-   *
-   * @defaultValue 0
-   */
-  delay?: number;
-  /**
-   * @defaultValue 'left'
-   */
-  button?: MouseButton;
-  /**
-   * @defaultValue 1
-   */
-  clickCount?: number;
-  /**
-   * Offset for the clickable point relative to the top-left corner of the border box.
-   */
-  offset?: Offset;
-}
-
-/**
- * @public
- */
-export interface PressOptions {
-  /**
-   * Time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
-   */
-  delay?: number;
-  /**
-   * If specified, generates an input event with this text.
-   */
-  text?: string;
-}
-
-/**
- * @public
- */
-export interface Point {
-  x: number;
-  y: number;
 }
