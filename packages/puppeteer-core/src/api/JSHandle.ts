@@ -14,11 +14,33 @@
  * limitations under the License.
  */
 
-import {ElementHandle} from '../common/ElementHandle.js';
+import Protocol from 'devtools-protocol';
+import {ElementHandle} from './ElementHandle.js';
 import {EvaluateFunc, HandleFor, HandleOr} from '../common/types.js';
 
 declare const __JSHandleSymbol: unique symbol;
 
+/**
+ * Represents a reference to a JavaScript object. Instances can be created using
+ * {@link Page.evaluateHandle}.
+ *
+ * Handles prevent the referenced JavaScript object from being garbage-collected
+ * unless the handle is purposely {@link JSHandle.dispose | disposed}. JSHandles
+ * are auto-disposed when their associated frame is navigated away or the parent
+ * context gets destroyed.
+ *
+ * Handles can be used as arguments for any evaluation function such as
+ * {@link Page.$eval}, {@link Page.evaluate}, and {@link Page.evaluateHandle}.
+ * They are resolved to their referenced object.
+ *
+ * @example
+ *
+ * ```ts
+ * const windowHandle = await page.evaluateHandle(() => window);
+ * ```
+ *
+ * @public
+ */
 export class JSHandle<T = unknown> {
   /**
    * Used for nominally typing {@link JSHandle}.
@@ -57,9 +79,15 @@ export class JSHandle<T = unknown> {
       [this, ...Params]
     >
   >(
-    _pageFunction: Func | string,
-    ..._args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<Awaited<ReturnType<Func>>>;
+  async evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
+      [this, ...Params]
+    >
+  >(): Promise<Awaited<ReturnType<Func>>> {
     throw new Error('Not implemented');
   }
 
@@ -73,22 +101,26 @@ export class JSHandle<T = unknown> {
       [this, ...Params]
     >
   >(
-    _pageFunction: Func | string,
-    ..._args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
+  async evaluateHandle<
+    Params extends unknown[],
+    Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
+      [this, ...Params]
+    >
+  >(): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     throw new Error('Not implemented');
   }
 
   /**
    * Fetches a single property from the referenced object.
    */
+  async getProperty(propertyName: string): Promise<JSHandle<unknown>>;
   async getProperty<K extends keyof T>(
     propertyName: HandleOr<K>
   ): Promise<HandleFor<T[K]>>;
-  async getProperty(_propertyName: string): Promise<HandleFor<unknown>>;
-  async getProperty<K extends keyof T>(
-    _propertyName: HandleOr<K>
-  ): Promise<HandleFor<T[K]>> {
+  async getProperty<K extends keyof T>(): Promise<HandleFor<T[K]>> {
     throw new Error('Not implemented');
   }
 
@@ -151,7 +183,14 @@ export class JSHandle<T = unknown> {
     throw new Error('Not implemented');
   }
 
-  remoteObject(): any {
+  /**
+   * Provides access to the
+   * [Protocol.Runtime.RemoteObject](https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-RemoteObject)
+   * OR
+   * [Bidi.Script.RemoteReference](https://w3c.github.io/webdriver-bidi/#data-types-reference)
+   * backing this handle.
+   */
+  remoteObject(): Protocol.Runtime.RemoteObject | any {
     throw new Error('Not implemented');
   }
 }

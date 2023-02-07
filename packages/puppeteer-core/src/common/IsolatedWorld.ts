@@ -24,14 +24,14 @@ import {Frame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {MouseButton} from './Input.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
-import {JSHandle} from './JSHandle.js';
+import {JSHandle} from '../api/JSHandle.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {EvaluateFunc, HandleFor, InnerLazyParams, NodeFor} from './types.js';
 import {createJSHandle, debugError, pageBindingInitString} from './util.js';
 import {TaskManager, WaitTask} from './WaitTask.js';
 
-import type {ElementHandle} from './ElementHandle.js';
+import type {ElementHandle} from '../api/ElementHandle.js';
 import {LazyArg} from './LazyArg.js';
 
 /**

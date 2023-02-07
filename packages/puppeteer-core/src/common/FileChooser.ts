@@ -16,7 +16,7 @@
 
 import {Protocol} from 'devtools-protocol';
 import {assert} from '../util/assert.js';
-import {ElementHandle} from './ElementHandle.js';
+import {ElementHandle} from '../api/ElementHandle.js';
 
 /**
  * File choosers let you react to the page requesting for a file.

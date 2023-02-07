@@ -16,10 +16,10 @@
 
 import type {Poller} from '../injected/Poller.js';
 import {createDeferredPromise} from '../util/DeferredPromise.js';
-import {ElementHandle} from './ElementHandle.js';
+import {ElementHandle} from '../api/ElementHandle.js';
 import {TimeoutError} from './Errors.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
-import {JSHandle} from './JSHandle.js';
+import {JSHandle} from '../api/JSHandle.js';
 import {LazyArg} from './LazyArg.js';
 import {HandleFor} from './types.js';
 

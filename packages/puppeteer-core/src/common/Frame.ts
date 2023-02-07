@@ -18,7 +18,7 @@ import {Protocol} from 'devtools-protocol';
 import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {CDPSession} from './Connection.js';
-import {ElementHandle} from './ElementHandle.js';
+import {ElementHandle} from '../api/ElementHandle.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {FrameManager} from './FrameManager.js';
 import {HTTPResponse} from './HTTPResponse.js';

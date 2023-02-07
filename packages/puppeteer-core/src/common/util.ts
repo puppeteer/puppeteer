@@ -21,12 +21,13 @@ import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {CDPSession} from './Connection.js';
 import {debug} from './Debug.js';
-import {ElementHandle} from './ElementHandle.js';
+import {ElementHandle} from '../api/ElementHandle.js';
+import {CDPElementHandle} from './ElementHandle.js';
 import {TimeoutError} from './Errors.js';
 import {CommonEventEmitter} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {JSHandle} from './JSHandle.js';
-
+import {JSHandle} from '../api/JSHandle.js';
+import {CDPJSHandle} from './JSHandle.js';
 /**
  * @internal
  */
@@ -239,9 +240,9 @@ export function createJSHandle(
   remoteObject: Protocol.Runtime.RemoteObject
 ): JSHandle | ElementHandle<Node> {
   if (remoteObject.subtype === 'node' && context._world) {
-    return new ElementHandle(context, remoteObject, context._world.frame());
+    return new CDPElementHandle(context, remoteObject, context._world.frame());
   }
-  return new JSHandle(context, remoteObject);
+  return new CDPJSHandle(context, remoteObject);
 }
 
 /**

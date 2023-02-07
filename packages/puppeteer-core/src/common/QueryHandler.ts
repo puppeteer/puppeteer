@@ -17,7 +17,7 @@
 import PuppeteerUtil from '../injected/injected.js';
 import {assert} from '../util/assert.js';
 import {ariaHandler} from './AriaQueryHandler.js';
-import {ElementHandle} from './ElementHandle.js';
+import {ElementHandle} from '../api/ElementHandle.js';
 import {Frame} from './Frame.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';

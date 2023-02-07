@@ -20,7 +20,7 @@ import {assert} from '../util/assert.js';
 import {CDPSession} from './Connection.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 
-import type {ElementHandle} from './ElementHandle.js';
+import type {ElementHandle} from '../api/ElementHandle.js';
 import type {PuppeteerQueryHandler} from './QueryHandler.js';
 import type {Frame} from './Frame.js';
 

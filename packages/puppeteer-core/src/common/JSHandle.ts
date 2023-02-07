@@ -15,38 +15,20 @@
  */
 
 import {Protocol} from 'devtools-protocol';
-import {JSHandle as BaseJSHandle} from '../api/JSHandle.js';
+import {JSHandle} from '../api/JSHandle.js';
 import {assert} from '../util/assert.js';
 import {CDPSession} from './Connection.js';
-import type {ElementHandle} from './ElementHandle.js';
+import type {CDPElementHandle} from './ElementHandle.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {EvaluateFunc, HandleFor, HandleOr} from './types.js';
+import {EvaluateFunc, FlattenHandle, HandleFor, HandleOr} from './types.js';
 import {createJSHandle, releaseObject, valueFromRemoteObject} from './util.js';
 
 declare const __JSHandleSymbol: unique symbol;
 
 /**
- * Represents a reference to a JavaScript object. Instances can be created using
- * {@link Page.evaluateHandle}.
- *
- * Handles prevent the referenced JavaScript object from being garbage-collected
- * unless the handle is purposely {@link JSHandle.dispose | disposed}. JSHandles
- * are auto-disposed when their associated frame is navigated away or the parent
- * context gets destroyed.
- *
- * Handles can be used as arguments for any evaluation function such as
- * {@link Page.$eval}, {@link Page.evaluate}, and {@link Page.evaluateHandle}.
- * They are resolved to their referenced object.
- *
- * @example
- *
- * ```ts
- * const windowHandle = await page.evaluateHandle(() => window);
- * ```
- *
- * @public
+ * @internal
  */
-export class JSHandle<T = unknown> extends BaseJSHandle {
+export class CDPJSHandle<T> extends JSHandle<T> {
   /**
    * Used for nominally typing {@link JSHandle}.
    */
@@ -134,9 +116,12 @@ export class JSHandle<T = unknown> extends BaseJSHandle {
   override async getProperty<K extends keyof T>(
     propertyName: HandleOr<K>
   ): Promise<HandleFor<T[K]>> {
-    return this.evaluateHandle((object, propertyName) => {
-      return object[propertyName as K];
-    }, propertyName);
+    return this.evaluateHandle(
+      (object: FlattenHandle<JSHandle<T>>, propertyName) => {
+        return object[propertyName as K];
+      },
+      propertyName
+    );
   }
 
   override async getProperties(): Promise<Map<string, JSHandle>> {
@@ -161,7 +146,7 @@ export class JSHandle<T = unknown> extends BaseJSHandle {
     if (!this.#remoteObject.objectId) {
       return valueFromRemoteObject(this.#remoteObject);
     }
-    const value = await this.evaluate(object => {
+    const value = await this.evaluate((object: FlattenHandle<JSHandle<T>>) => {
       return object;
     });
     if (value === undefined) {
@@ -174,7 +159,7 @@ export class JSHandle<T = unknown> extends BaseJSHandle {
    * @returns Either `null` or the handle itself if the handle is an
    * instance of {@link ElementHandle}.
    */
-  override asElement(): ElementHandle<Node> | null {
+  override asElement(): CDPElementHandle<Node> | null {
     return null;
   }
 
@@ -194,11 +179,6 @@ export class JSHandle<T = unknown> extends BaseJSHandle {
     return 'JSHandle@' + type;
   }
 
-  /**
-   * Provides access to the
-   * [Protocol.Runtime.RemoteObject](https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-RemoteObject)
-   * backing this handle.
-   */
   override remoteObject(): Protocol.Runtime.RemoteObject {
     return this.#remoteObject;
   }
