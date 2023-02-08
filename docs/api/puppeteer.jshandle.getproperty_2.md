@@ -1,10 +1,8 @@
 ---
-sidebar_label: JSHandle.getProperty
+sidebar_label: JSHandle.getProperty_2
 ---
 
 # JSHandle.getProperty() method
-
-Fetches a single property from the referenced object.
 
 #### Signature:
 
