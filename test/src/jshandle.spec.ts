@@ -168,7 +168,7 @@ describe('JSHandle', function () {
       expect(json).toEqual({});
     });
     it('should throw for circular objects', async () => {
-      const {page, isChrome} = getTestState();
+      const {page} = getTestState();
 
       const handle = await page.evaluateHandle(() => {
         const t: {t?: unknown; g: number} = {g: 1};
@@ -179,13 +179,7 @@ describe('JSHandle', function () {
       await handle.jsonValue().catch(error_ => {
         return (error = error_);
       });
-      if (isChrome) {
-        expect(error.message).toContain(
-          'Could not serialize referenced object'
-        );
-      } else {
-        expect(error.message).toContain('Object is not serializable');
-      }
+      expect(error.message).toContain('Could not serialize referenced object');
     });
   });
 
