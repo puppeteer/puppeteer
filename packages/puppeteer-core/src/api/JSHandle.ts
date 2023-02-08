@@ -17,6 +17,8 @@
 import Protocol from 'devtools-protocol';
 import {ElementHandle} from './ElementHandle.js';
 import {EvaluateFunc, HandleFor, HandleOr} from '../common/types.js';
+import {ExecutionContext} from '../common/ExecutionContext.js';
+import {CDPSession} from '../common/Connection.js';
 
 declare const __JSHandleSymbol: unique symbol;
 
@@ -52,14 +54,14 @@ export class JSHandle<T = unknown> {
   /**
    * @internal
    */
-  executionContext(): any {
+  executionContext(): ExecutionContext {
     throw new Error('Not implemented');
   }
 
   /**
    * @internal
    */
-  get client(): any {
+  get client(): CDPSession {
     throw new Error('Not implemented');
   }
 
@@ -116,6 +118,9 @@ export class JSHandle<T = unknown> {
   /**
    * Fetches a single property from the referenced object.
    */
+  async getProperty<K extends keyof T>(
+    propertyName: HandleOr<K>
+  ): Promise<HandleFor<T[K]>>;
   async getProperty(propertyName: string): Promise<JSHandle<unknown>>;
   async getProperty<K extends keyof T>(
     propertyName: HandleOr<K>

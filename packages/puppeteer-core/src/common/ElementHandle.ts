@@ -37,6 +37,7 @@ import {
   Point,
   PressOptions,
 } from '../api/ElementHandle.js';
+import {CDPSession} from './Connection.js';
 
 const applyOffsetsToQuad = (
   quad: Point[],
@@ -65,6 +66,18 @@ export class CDPElementHandle<
     super();
     this.jsHandle = new CDPJSHandle(context, remoteObject);
     this.#frame = frame;
+  }
+
+  override executionContext(): ExecutionContext {
+    return this.jsHandle.executionContext();
+  }
+
+  override get client(): CDPSession {
+    return this.jsHandle.client;
+  }
+
+  override remoteObject(): Protocol.Runtime.RemoteObject {
+    return this.jsHandle.remoteObject();
   }
 
   get #frameManager(): FrameManager {
