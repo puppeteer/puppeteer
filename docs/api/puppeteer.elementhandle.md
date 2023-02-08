@@ -39,9 +39,10 @@ If you're using TypeScript, ElementHandle takes a generic argument that denotes 
 
 ## Properties
 
-| Property                                    | Modifiers             | Type                          | Description |
-| ------------------------------------------- | --------------------- | ----------------------------- | ----------- |
-| [frame](./puppeteer.elementhandle.frame.md) | <code>readonly</code> | [Frame](./puppeteer.frame.md) |             |
+| Property                                      | Modifiers             | Type                                    | Description |
+| --------------------------------------------- | --------------------- | --------------------------------------- | ----------- |
+| [client](./puppeteer.elementhandle.client.md) | <code>readonly</code> | [CDPSession](./puppeteer.cdpsession.md) |             |
+| [frame](./puppeteer.elementhandle.frame.md)   | <code>readonly</code> | [Frame](./puppeteer.frame.md)           |             |
 
 ## Methods
 
@@ -63,6 +64,7 @@ If you're using TypeScript, ElementHandle takes a generic argument that denotes 
 | [dragEnter(this, data)](./puppeteer.elementhandle.dragenter.md)                              |           | This method creates a <code>dragenter</code> event on the element.                                                                                                                                                                                                                                                            |
 | [dragOver(this, data)](./puppeteer.elementhandle.dragover.md)                                |           | This method creates a <code>dragover</code> event on the element.                                                                                                                                                                                                                                                             |
 | [drop(this, data)](./puppeteer.elementhandle.drop.md)                                        |           | This method triggers a drop on the element.                                                                                                                                                                                                                                                                                   |
+| [executionContext()](./puppeteer.elementhandle.executioncontext.md)                          |           |                                                                                                                                                                                                                                                                                                                               |
 | [focus()](./puppeteer.elementhandle.focus.md)                                                |           | Calls [focus](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus) on the element.                                                                                                                                                                                                                             |
 | [hover(this)](./puppeteer.elementhandle.hover.md)                                            |           | This method scrolls element into view if needed, and then uses [Page.mouse](./puppeteer.page.mouse.md) to hover over the center of the element. If the element is detached from DOM, the method throws an error.                                                                                                              |
 | [isIntersectingViewport(this, options)](./puppeteer.elementhandle.isintersectingviewport.md) |           | Resolves to true if the element is visible in the current viewport.                                                                                                                                                                                                                                                           |

@@ -21,12 +21,11 @@ import {Frame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {JSHandle} from '../api/JSHandle.js';
-import {CDPJSHandle} from './JSHandle.js';
 import {Page, ScreenshotOptions} from '../api/Page.js';
 import {getQueryHandlerAndSelector} from './QueryHandler.js';
 import {ElementFor, EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {KeyInput} from './USKeyboardLayout.js';
-import {debugError, isString} from './util.js';
+import {debugError, isString, releaseObject} from './util.js';
 import {CDPPage} from './Page.js';
 import {
   BoundingBox,
@@ -55,8 +54,10 @@ const applyOffsetsToQuad = (
 export class CDPElementHandle<
   ElementType extends Node = Element
 > extends ElementHandle<ElementType> {
+  #disposed = false;
   #frame: Frame;
-  jsHandle: CDPJSHandle<ElementType>;
+  #context: ExecutionContext;
+  #remoteObject: Protocol.Runtime.RemoteObject;
 
   constructor(
     context: ExecutionContext,
@@ -64,20 +65,55 @@ export class CDPElementHandle<
     frame: Frame
   ) {
     super();
-    this.jsHandle = new CDPJSHandle(context, remoteObject);
+    this.#context = context;
+    this.#remoteObject = remoteObject;
     this.#frame = frame;
   }
 
+  /**
+   * @internal
+   */
   override executionContext(): ExecutionContext {
-    return this.jsHandle.executionContext();
+    return this.#context;
   }
 
+  /**
+   * @internal
+   */
   override get client(): CDPSession {
-    return this.jsHandle.client;
+    return this.#context._client;
   }
 
   override remoteObject(): Protocol.Runtime.RemoteObject {
-    return this.jsHandle.remoteObject();
+    return this.#remoteObject;
+  }
+
+  override async evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
+      [this, ...Params]
+    >
+  >(
+    pageFunction: string | Func,
+    ...args: Params
+  ): // @ts-expect-error Circularity here is okay because we only need the return
+  // type which doesn't use `this`.
+  Promise<Awaited<ReturnType<Func>>> {
+    return this.executionContext().evaluate(pageFunction, this, ...args);
+  }
+
+  override evaluateHandle<
+    Params extends unknown[],
+    Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
+      [this, ...Params]
+    >
+  >(
+    pageFunction: string | Func,
+    ...args: Params
+  ): // @ts-expect-error Circularity here is okay because we only need the return
+  // type which doesn't use `this`.
+  Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    return this.executionContext().evaluateHandle(pageFunction, this, ...args);
   }
 
   get #frameManager(): FrameManager {
@@ -90,6 +126,10 @@ export class CDPElementHandle<
 
   override get frame(): Frame {
     return this.#frame;
+  }
+
+  override get disposed(): boolean {
+    return this.#disposed;
   }
 
   override async $<Selector extends string>(
@@ -166,7 +206,7 @@ export class CDPElementHandle<
       this,
       updatedSelector
     )) as Array<HandleFor<NodeFor<Selector>>>;
-    const elements = (await this.jsHandle.evaluateHandle((_, ...elements) => {
+    const elements = (await this.evaluateHandle((_, ...elements) => {
       return elements;
     }, ...handles)) as JSHandle<Array<NodeFor<Selector>>>;
     const [result] = await Promise.all([
@@ -219,7 +259,7 @@ export class CDPElementHandle<
   override async toElement<
     K extends keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap
   >(tagName: K): Promise<HandleFor<ElementFor<K>>> {
-    const isMatchingTagName = await this.jsHandle.evaluate((node, tagName) => {
+    const isMatchingTagName = await this.evaluate((node, tagName) => {
       return node.nodeName === tagName.toUpperCase();
     }, tagName);
     if (!isMatchingTagName) {
@@ -233,7 +273,7 @@ export class CDPElementHandle<
   }
 
   override async contentFrame(): Promise<Frame | null> {
-    const nodeInfo = await this.jsHandle.client.send('DOM.describeNode', {
+    const nodeInfo = await this.client.send('DOM.describeNode', {
       objectId: this.remoteObject().objectId,
     });
     if (typeof nodeInfo.node.frameId !== 'string') {
@@ -245,7 +285,7 @@ export class CDPElementHandle<
   async #scrollIntoViewIfNeeded(
     this: CDPElementHandle<Element>
   ): Promise<void> {
-    const error = await this.jsHandle.evaluate(
+    const error = await this.evaluate(
       async (element): Promise<string | undefined> => {
         if (!element.isConnected) {
           return 'Node is detached from document';
@@ -262,12 +302,12 @@ export class CDPElementHandle<
     }
 
     try {
-      await this.jsHandle.client.send('DOM.scrollIntoViewIfNeeded', {
+      await this.client.send('DOM.scrollIntoViewIfNeeded', {
         objectId: this.remoteObject().objectId,
       });
     } catch (_err) {
       // Fallback to Element.scrollIntoView if DOM.scrollIntoViewIfNeeded is not supported
-      await this.jsHandle.evaluate(
+      await this.evaluate(
         async (element, pageJavascriptEnabled): Promise<void> => {
           const visibleRatio = async () => {
             return await new Promise(resolve => {
@@ -326,7 +366,7 @@ export class CDPElementHandle<
 
   override async clickablePoint(offset?: Offset): Promise<Point> {
     const [result, layoutMetrics] = await Promise.all([
-      this.jsHandle.client
+      this.client
         .send('DOM.getContentQuads', {
           objectId: this.remoteObject().objectId,
         })
@@ -397,7 +437,7 @@ export class CDPElementHandle<
     const params: Protocol.DOM.GetBoxModelRequest = {
       objectId: this.remoteObject().objectId,
     };
-    return this.jsHandle.client.send('DOM.getBoxModel', params).catch(error => {
+    return this.client.send('DOM.getBoxModel', params).catch(error => {
       return debugError(error);
     });
   }
@@ -515,7 +555,7 @@ export class CDPElementHandle<
       );
     }
 
-    return this.jsHandle.evaluate((element, vals): string[] => {
+    return this.evaluate((element, vals): string[] => {
       const values = new Set(vals);
       if (!(element instanceof HTMLSelectElement)) {
         throw new Error('Element is not a <select> element.');
@@ -551,7 +591,7 @@ export class CDPElementHandle<
     this: CDPElementHandle<HTMLInputElement>,
     ...filePaths: string[]
   ): Promise<void> {
-    const isMultiple = await this.jsHandle.evaluate(element => {
+    const isMultiple = await this.evaluate(element => {
       return element.multiple;
     });
     assert(
@@ -579,7 +619,7 @@ export class CDPElementHandle<
       }
     });
     const {objectId} = this.remoteObject();
-    const {node} = await this.jsHandle.client.send('DOM.describeNode', {
+    const {node} = await this.client.send('DOM.describeNode', {
       objectId,
     });
     const {backendNodeId} = node;
@@ -589,7 +629,7 @@ export class CDPElementHandle<
          so the solution is to eval the element value to a new FileList directly.
      */
     if (files.length === 0) {
-      await this.jsHandle.evaluate(element => {
+      await this.evaluate(element => {
         element.files = new DataTransfer().files;
 
         // Dispatch events for this case because it should behave akin to a user action.
@@ -597,7 +637,7 @@ export class CDPElementHandle<
         element.dispatchEvent(new Event('change', {bubbles: true}));
       });
     } else {
-      await this.jsHandle.client.send('DOM.setFileInputFiles', {
+      await this.client.send('DOM.setFileInputFiles', {
         objectId,
         files,
         backendNodeId,
@@ -630,7 +670,7 @@ export class CDPElementHandle<
   }
 
   override async focus(): Promise<void> {
-    await this.jsHandle.evaluate(element => {
+    await this.evaluate(element => {
       if (!(element instanceof HTMLElement)) {
         throw new Error('Cannot focus non-HTMLElement');
       }
@@ -733,9 +773,7 @@ export class CDPElementHandle<
     assert(boundingBox.width !== 0, 'Node has 0 width.');
     assert(boundingBox.height !== 0, 'Node has 0 height.');
 
-    const layoutMetrics = await this.jsHandle.client.send(
-      'Page.getLayoutMetrics'
-    );
+    const layoutMetrics = await this.client.send('Page.getLayoutMetrics');
     // Fallback to `layoutViewport` in case of using Firefox.
     const {pageX, pageY} =
       layoutMetrics.cssVisualViewport || layoutMetrics.layoutViewport;
@@ -768,7 +806,7 @@ export class CDPElementHandle<
     }
   ): Promise<boolean> {
     const {threshold = 0} = options ?? {};
-    return await this.jsHandle.evaluate(async (element, threshold) => {
+    return await this.evaluate(async (element, threshold) => {
       const visibleRatio = await new Promise<number>(resolve => {
         const observer = new IntersectionObserver(entries => {
           resolve(entries[0]!.intersectionRatio);
@@ -778,6 +816,14 @@ export class CDPElementHandle<
       });
       return threshold === 1 ? visibleRatio === 1 : visibleRatio > threshold;
     }, threshold);
+  }
+
+  override async dispose(): Promise<void> {
+    if (this.#disposed) {
+      return;
+    }
+    this.#disposed = true;
+    await releaseObject(this.client, this.#remoteObject);
   }
 }
 

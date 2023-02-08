@@ -22,6 +22,8 @@ import {ScreenshotOptions} from './Page.js';
 import {ElementFor, EvaluateFunc, HandleFor, NodeFor} from '../common/types.js';
 import {KeyInput} from '../common/USKeyboardLayout.js';
 import {MouseButton} from '../common/Input.js';
+import {ExecutionContext} from '../common/ExecutionContext.js';
+import {CDPSession} from '../common/Connection.js';
 
 /**
  * @public
@@ -146,6 +148,14 @@ export interface Point {
 export class ElementHandle<
   ElementType extends Node = Element
 > extends JSHandle<ElementType> {
+  override executionContext(): ExecutionContext {
+    throw new Error('Not implemented');
+  }
+
+  override get client(): CDPSession {
+    throw new Error('Not implemented');
+  }
+
   get frame(): Frame {
     throw new Error('Not implemented');
   }

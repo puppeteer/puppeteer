@@ -38,23 +38,10 @@ export class CDPJSHandle<T> extends JSHandle<T> {
   #context: ExecutionContext;
   #remoteObject: Protocol.Runtime.RemoteObject;
 
-  /**
-   * @internal
-   */
-  override get client(): CDPSession {
-    return this.#context._client;
-  }
-
-  /**
-   * @internal
-   */
   override get disposed(): boolean {
     return this.#disposed;
   }
 
-  /**
-   * @internal
-   */
   constructor(
     context: ExecutionContext,
     remoteObject: Protocol.Runtime.RemoteObject
@@ -64,11 +51,12 @@ export class CDPJSHandle<T> extends JSHandle<T> {
     this.#remoteObject = remoteObject;
   }
 
-  /**
-   * @internal
-   */
   override executionContext(): ExecutionContext {
     return this.#context;
+  }
+
+  override get client(): CDPSession {
+    return this.#context._client;
   }
 
   /**

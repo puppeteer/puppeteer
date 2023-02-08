@@ -49,7 +49,12 @@ export class JSHandle<T = unknown> {
    */
   [__JSHandleSymbol]?: T;
 
-  #disposed = false;
+  /**
+   * @internal
+   */
+  get disposed(): boolean {
+    throw new Error('Not implemented');
+  }
 
   /**
    * @internal
@@ -63,13 +68,6 @@ export class JSHandle<T = unknown> {
    */
   get client(): CDPSession {
     throw new Error('Not implemented');
-  }
-
-  /**
-   * @internal
-   */
-  get disposed(): boolean {
-    return this.#disposed;
   }
 
   /**
