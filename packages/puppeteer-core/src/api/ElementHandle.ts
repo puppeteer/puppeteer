@@ -148,10 +148,16 @@ export interface Point {
 export class ElementHandle<
   ElementType extends Node = Element
 > extends JSHandle<ElementType> {
+  /**
+   * @internal
+   */
   override executionContext(): ExecutionContext {
     throw new Error('Not implemented');
   }
 
+  /**
+   * @internal
+   */
   override get client(): CDPSession {
     throw new Error('Not implemented');
   }
