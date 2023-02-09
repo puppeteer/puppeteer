@@ -186,11 +186,8 @@ export class JSHandle<T = unknown> {
   /**
    * Provides access to the
    * [Protocol.Runtime.RemoteObject](https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-RemoteObject)
-   * OR
-   * [Bidi.Script.RemoteReference](https://w3c.github.io/webdriver-bidi/#data-types-reference)
-   * backing this handle.
    */
-  remoteObject(): Protocol.Runtime.RemoteObject | any {
+  remoteObject(): Protocol.Runtime.RemoteObject {
     throw new Error('Not implemented');
   }
 }

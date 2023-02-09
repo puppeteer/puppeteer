@@ -60,6 +60,10 @@ const applyOffsetsToQuad = (
 };
 
 /**
+ * The CDPElementHandle extends ElementHandle now to keep compatibility
+ * with `instanceof` because of that we need to have methods for
+ * CDPJSHandle to in this implementation as well.
+ *
  * @internal
  */
 export class CDPElementHandle<
