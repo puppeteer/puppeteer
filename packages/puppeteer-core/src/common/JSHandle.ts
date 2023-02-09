@@ -97,12 +97,12 @@ export class CDPJSHandle<T> extends JSHandle<T> {
     );
   }
 
-  override async getProperty(propertyName: string): Promise<JSHandle<unknown>>;
   override async getProperty<K extends keyof T>(
     propertyName: HandleOr<K>
   ): Promise<HandleFor<T[K]>>;
+  override async getProperty(propertyName: string): Promise<JSHandle<unknown>>;
   override async getProperty<K extends keyof T>(
-    propertyName: string | HandleOr<K>
+    propertyName: HandleOr<K>
   ): Promise<HandleFor<T[K]>> {
     return this.evaluateHandle((object, propertyName) => {
       return object[propertyName as K];

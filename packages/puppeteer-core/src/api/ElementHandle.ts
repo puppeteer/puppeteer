@@ -151,6 +151,13 @@ export class ElementHandle<
   /**
    * @internal
    */
+  constructor() {
+    super();
+  }
+
+  /**
+   * @internal
+   */
   override executionContext(): ExecutionContext {
     throw new Error('Not implemented');
   }
