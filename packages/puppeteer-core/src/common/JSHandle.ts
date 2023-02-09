@@ -20,7 +20,7 @@ import {assert} from '../util/assert.js';
 import {CDPSession} from './Connection.js';
 import type {CDPElementHandle} from './ElementHandle.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {EvaluateFunc, FlattenHandle, HandleFor, HandleOr} from './types.js';
+import {EvaluateFunc, HandleFor, HandleOr} from './types.js';
 import {createJSHandle, releaseObject, valueFromRemoteObject} from './util.js';
 
 declare const __JSHandleSymbol: unique symbol;
@@ -104,12 +104,9 @@ export class CDPJSHandle<T> extends JSHandle<T> {
   override async getProperty<K extends keyof T>(
     propertyName: HandleOr<K>
   ): Promise<HandleFor<T[K]>> {
-    return this.evaluateHandle(
-      (object: FlattenHandle<JSHandle<T>>, propertyName) => {
-        return object[propertyName as K];
-      },
-      propertyName
-    );
+    return this.evaluateHandle((object, propertyName) => {
+      return object[propertyName as K];
+    }, propertyName);
   }
 
   override async getProperties(): Promise<Map<string, JSHandle>> {
@@ -134,7 +131,7 @@ export class CDPJSHandle<T> extends JSHandle<T> {
     if (!this.#remoteObject.objectId) {
       return valueFromRemoteObject(this.#remoteObject);
     }
-    const value = await this.evaluate((object: FlattenHandle<JSHandle<T>>) => {
+    const value = await this.evaluate(object => {
       return object;
     });
     if (value === undefined) {

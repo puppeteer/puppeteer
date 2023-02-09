@@ -23,9 +23,20 @@ import {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {JSHandle} from '../api/JSHandle.js';
 import {Page, ScreenshotOptions} from '../api/Page.js';
 import {getQueryHandlerAndSelector} from './QueryHandler.js';
-import {ElementFor, EvaluateFunc, HandleFor, NodeFor} from './types.js';
+import {
+  ElementFor,
+  EvaluateFunc,
+  HandleFor,
+  HandleOr,
+  NodeFor,
+} from './types.js';
 import {KeyInput} from './USKeyboardLayout.js';
-import {debugError, isString, releaseObject} from './util.js';
+import {
+  debugError,
+  isString,
+  releaseObject,
+  valueFromRemoteObject,
+} from './util.js';
 import {CDPPage} from './Page.js';
 import {
   BoundingBox,
@@ -37,6 +48,7 @@ import {
   PressOptions,
 } from '../api/ElementHandle.js';
 import {CDPSession} from './Connection.js';
+import {CDPJSHandle} from './JSHandle.js';
 
 const applyOffsetsToQuad = (
   quad: Point[],
@@ -130,6 +142,39 @@ export class CDPElementHandle<
 
   override get disposed(): boolean {
     return this.#disposed;
+  }
+
+  override async getProperty<K extends keyof ElementType>(
+    propertyName: HandleOr<K>
+  ): Promise<HandleFor<ElementType[K]>>;
+  override async getProperty(propertyName: string): Promise<JSHandle<unknown>>;
+  override async getProperty<K extends keyof ElementType>(
+    propertyName: HandleOr<K>
+  ): Promise<HandleFor<ElementType[K]>> {
+    return this.evaluateHandle((object, propertyName) => {
+      return object[propertyName as K];
+    }, propertyName);
+  }
+
+  override async jsonValue(): Promise<ElementType> {
+    if (!this.#remoteObject.objectId) {
+      return valueFromRemoteObject(this.#remoteObject);
+    }
+    const value = await this.evaluate(object => {
+      return object;
+    });
+    if (value === undefined) {
+      throw new Error('Could not serialize referenced object');
+    }
+    return value;
+  }
+
+  override toString(): string {
+    if (!this.#remoteObject.objectId) {
+      return 'JSHandle:' + valueFromRemoteObject(this.#remoteObject);
+    }
+    const type = this.#remoteObject.subtype || this.#remoteObject.type;
+    return 'JSHandle@' + type;
   }
 
   override async $<Selector extends string>(
