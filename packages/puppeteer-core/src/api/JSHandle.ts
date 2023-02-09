@@ -116,9 +116,6 @@ export class JSHandle<T = unknown> {
   /**
    * Fetches a single property from the referenced object.
    */
-  async getProperty<K extends keyof T>(
-    propertyName: HandleOr<K>
-  ): Promise<HandleFor<T[K]>>;
   async getProperty(propertyName: string): Promise<JSHandle<unknown>>;
   async getProperty<K extends keyof T>(
     propertyName: HandleOr<K>

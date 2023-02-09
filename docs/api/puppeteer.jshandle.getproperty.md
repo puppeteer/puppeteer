@@ -10,18 +10,16 @@ Fetches a single property from the referenced object.
 
 ```typescript
 class JSHandle {
-  getProperty<K extends keyof T>(
-    propertyName: HandleOr<K>
-  ): Promise<HandleFor<T[K]>>;
+  getProperty(propertyName: string): Promise<JSHandle<unknown>>;
 }
 ```
 
 ## Parameters
 
-| Parameter    | Type                                         | Description |
-| ------------ | -------------------------------------------- | ----------- |
-| propertyName | [HandleOr](./puppeteer.handleor.md)&lt;K&gt; |             |
+| Parameter    | Type   | Description |
+| ------------ | ------ | ----------- |
+| propertyName | string |             |
 
 **Returns:**
 
-Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;T\[K\]&gt;&gt;
+Promise&lt;[JSHandle](./puppeteer.jshandle.md)&lt;unknown&gt;&gt;
