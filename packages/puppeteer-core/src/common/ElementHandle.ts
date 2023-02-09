@@ -20,21 +20,34 @@ import {ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
+import {JSHandle} from '../api/JSHandle.js';
+import {Page, ScreenshotOptions} from '../api/Page.js';
+import {getQueryHandlerAndSelector} from './QueryHandler.js';
+import {
+  ElementFor,
+  EvaluateFunc,
+  HandleFor,
+  HandleOr,
+  NodeFor,
+} from './types.js';
+import {KeyInput} from './USKeyboardLayout.js';
+import {
+  debugError,
+  isString,
+  releaseObject,
+  valueFromRemoteObject,
+} from './util.js';
+import {CDPPage} from './Page.js';
 import {
   BoundingBox,
   BoxModel,
   ClickOptions,
-  JSHandle,
+  ElementHandle,
   Offset,
   Point,
   PressOptions,
-} from './JSHandle.js';
-import {Page, ScreenshotOptions} from '../api/Page.js';
-import {getQueryHandlerAndSelector} from './QueryHandler.js';
-import {ElementFor, EvaluateFunc, HandleFor, NodeFor} from './types.js';
-import {KeyInput} from './USKeyboardLayout.js';
-import {debugError, isString} from './util.js';
-import {CDPPage} from './Page.js';
+} from '../api/ElementHandle.js';
+import {CDPSession} from './Connection.js';
 
 const applyOffsetsToQuad = (
   quad: Point[],
@@ -47,54 +60,75 @@ const applyOffsetsToQuad = (
 };
 
 /**
- * ElementHandle represents an in-page DOM element.
+ * The CDPElementHandle extends ElementHandle now to keep compatibility
+ * with `instanceof` because of that we need to have methods for
+ * CDPJSHandle to in this implementation as well.
  *
- * @remarks
- * ElementHandles can be created with the {@link Page.$} method.
- *
- * ```ts
- * import puppeteer from 'puppeteer';
- *
- * (async () => {
- *   const browser = await puppeteer.launch();
- *   const page = await browser.newPage();
- *   await page.goto('https://example.com');
- *   const hrefElement = await page.$('a');
- *   await hrefElement.click();
- *   // ...
- * })();
- * ```
- *
- * ElementHandle prevents the DOM element from being garbage-collected unless the
- * handle is {@link JSHandle.dispose | disposed}. ElementHandles are auto-disposed
- * when their origin frame gets navigated.
- *
- * ElementHandle instances can be used as arguments in {@link Page.$eval} and
- * {@link Page.evaluate} methods.
- *
- * If you're using TypeScript, ElementHandle takes a generic argument that
- * denotes the type of element the handle is holding within. For example, if you
- * have a handle to a `<select>` element, you can type it as
- * `ElementHandle<HTMLSelectElement>` and you get some nicer type checks.
- *
- * @public
+ * @internal
  */
-
-export class ElementHandle<
+export class CDPElementHandle<
   ElementType extends Node = Element
-> extends JSHandle<ElementType> {
+> extends ElementHandle<ElementType> {
+  #disposed = false;
   #frame: Frame;
+  #context: ExecutionContext;
+  #remoteObject: Protocol.Runtime.RemoteObject;
 
-  /**
-   * @internal
-   */
   constructor(
     context: ExecutionContext,
     remoteObject: Protocol.Runtime.RemoteObject,
     frame: Frame
   ) {
-    super(context, remoteObject);
+    super();
+    this.#context = context;
+    this.#remoteObject = remoteObject;
     this.#frame = frame;
+  }
+
+  /**
+   * @internal
+   */
+  override executionContext(): ExecutionContext {
+    return this.#context;
+  }
+
+  /**
+   * @internal
+   */
+  override get client(): CDPSession {
+    return this.#context._client;
+  }
+
+  override remoteObject(): Protocol.Runtime.RemoteObject {
+    return this.#remoteObject;
+  }
+
+  override async evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
+      [this, ...Params]
+    >
+  >(
+    pageFunction: string | Func,
+    ...args: Params
+  ): // @ts-expect-error Circularity here is okay because we only need the return
+  // type which doesn't use `this`.
+  Promise<Awaited<ReturnType<Func>>> {
+    return this.executionContext().evaluate(pageFunction, this, ...args);
+  }
+
+  override evaluateHandle<
+    Params extends unknown[],
+    Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
+      [this, ...Params]
+    >
+  >(
+    pageFunction: string | Func,
+    ...args: Params
+  ): // @ts-expect-error Circularity here is okay because we only need the return
+  // type which doesn't use `this`.
+  Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    return this.executionContext().evaluateHandle(pageFunction, this, ...args);
   }
 
   get #frameManager(): FrameManager {
@@ -105,20 +139,50 @@ export class ElementHandle<
     return this.#frame.page();
   }
 
-  get frame(): Frame {
+  override get frame(): Frame {
     return this.#frame;
   }
 
-  /**
-   * Queries the current element for an element matching the given selector.
-   *
-   * @param selector - The selector to query for.
-   * @returns A {@link ElementHandle | element handle} to the first element
-   * matching the given selector. Otherwise, `null`.
-   */
-  async $<Selector extends string>(
+  override get disposed(): boolean {
+    return this.#disposed;
+  }
+
+  override async getProperty<K extends keyof ElementType>(
+    propertyName: HandleOr<K>
+  ): Promise<HandleFor<ElementType[K]>>;
+  override async getProperty(propertyName: string): Promise<JSHandle<unknown>>;
+  override async getProperty<K extends keyof ElementType>(
+    propertyName: HandleOr<K>
+  ): Promise<HandleFor<ElementType[K]>> {
+    return this.evaluateHandle((object, propertyName) => {
+      return object[propertyName as K];
+    }, propertyName);
+  }
+
+  override async jsonValue(): Promise<ElementType> {
+    if (!this.#remoteObject.objectId) {
+      return valueFromRemoteObject(this.#remoteObject);
+    }
+    const value = await this.evaluate(object => {
+      return object;
+    });
+    if (value === undefined) {
+      throw new Error('Could not serialize referenced object');
+    }
+    return value;
+  }
+
+  override toString(): string {
+    if (!this.#remoteObject.objectId) {
+      return 'JSHandle:' + valueFromRemoteObject(this.#remoteObject);
+    }
+    const type = this.#remoteObject.subtype || this.#remoteObject.type;
+    return 'JSHandle@' + type;
+  }
+
+  override async $<Selector extends string>(
     selector: Selector
-  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
+  ): Promise<CDPElementHandle<NodeFor<Selector>> | null> {
     const {updatedSelector, queryHandler} =
       getQueryHandlerAndSelector(selector);
     assert(
@@ -128,19 +192,12 @@ export class ElementHandle<
     return (await queryHandler.queryOne(
       this,
       updatedSelector
-    )) as ElementHandle<NodeFor<Selector>> | null;
+    )) as CDPElementHandle<NodeFor<Selector>> | null;
   }
 
-  /**
-   * Queries the current element for all elements matching the given selector.
-   *
-   * @param selector - The selector to query for.
-   * @returns An array of {@link ElementHandle | element handles} that point to
-   * elements matching the given selector.
-   */
-  async $$<Selector extends string>(
+  override async $$<Selector extends string>(
     selector: Selector
-  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
+  ): Promise<Array<CDPElementHandle<NodeFor<Selector>>>> {
     const {updatedSelector, queryHandler} =
       getQueryHandlerAndSelector(selector);
     assert(
@@ -148,47 +205,23 @@ export class ElementHandle<
       'Cannot handle queries for a multiple element with the given selector'
     );
     return (await queryHandler.queryAll(this, updatedSelector)) as Array<
-      ElementHandle<NodeFor<Selector>>
+      CDPElementHandle<NodeFor<Selector>>
     >;
   }
 
-  /**
-   * Runs the given function on the first element matching the given selector in
-   * the current element.
-   *
-   * If the given function returns a promise, then this method will wait till
-   * the promise resolves.
-   *
-   * @example
-   *
-   * ```ts
-   * const tweetHandle = await page.$('.tweet');
-   * expect(await tweetHandle.$eval('.like', node => node.innerText)).toBe(
-   *   '100'
-   * );
-   * expect(await tweetHandle.$eval('.retweets', node => node.innerText)).toBe(
-   *   '10'
-   * );
-   * ```
-   *
-   * @param selector - The selector to query for.
-   * @param pageFunction - The function to be evaluated in this element's page's
-   * context. The first element matching the selector will be passed in as the
-   * first argument.
-   * @param args - Additional arguments to pass to `pageFunction`.
-   * @returns A promise to the result of the function.
-   */
-  async $eval<
+  override async $eval<
     Selector extends string,
     Params extends unknown[],
     Func extends EvaluateFunc<
-      [ElementHandle<NodeFor<Selector>>, ...Params]
-    > = EvaluateFunc<[ElementHandle<NodeFor<Selector>>, ...Params]>
+      [CDPElementHandle<NodeFor<Selector>>, ...Params]
+    > = EvaluateFunc<[CDPElementHandle<NodeFor<Selector>>, ...Params]>
   >(
     selector: Selector,
     pageFunction: Func | string,
     ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
+  ): // @ts-expect-error Circularity here is okay because we only need the return
+  // type which doesn't use `this`.
+  Promise<Awaited<ReturnType<Func>>> {
     const elementHandle = await this.$(selector);
     if (!elementHandle) {
       throw new Error(
@@ -200,40 +233,7 @@ export class ElementHandle<
     return result;
   }
 
-  /**
-   * Runs the given function on an array of elements matching the given selector
-   * in the current element.
-   *
-   * If the given function returns a promise, then this method will wait till
-   * the promise resolves.
-   *
-   * @example
-   * HTML:
-   *
-   * ```html
-   * <div class="feed">
-   *   <div class="tweet">Hello!</div>
-   *   <div class="tweet">Hi!</div>
-   * </div>
-   * ```
-   *
-   * JavaScript:
-   *
-   * ```js
-   * const feedHandle = await page.$('.feed');
-   * expect(
-   *   await feedHandle.$$eval('.tweet', nodes => nodes.map(n => n.innerText))
-   * ).toEqual(['Hello!', 'Hi!']);
-   * ```
-   *
-   * @param selector - The selector to query for.
-   * @param pageFunction - The function to be evaluated in the element's page's
-   * context. An array of elements matching the given selector will be passed to
-   * the function as its first argument.
-   * @param args - Additional arguments to pass to `pageFunction`.
-   * @returns A promise to the result of the function.
-   */
-  async $$eval<
+  override async $$eval<
     Selector extends string,
     Params extends unknown[],
     Func extends EvaluateFunc<
@@ -267,66 +267,19 @@ export class ElementHandle<
     return result;
   }
 
-  /**
-   * @deprecated Use {@link ElementHandle.$$} with the `xpath` prefix.
-   *
-   * Example: `await elementHandle.$$('xpath/' + xpathExpression)`
-   *
-   * The method evaluates the XPath expression relative to the elementHandle.
-   * If `xpath` starts with `//` instead of `.//`, the dot will be appended
-   * automatically.
-   *
-   * If there are no such elements, the method will resolve to an empty array.
-   * @param expression - Expression to {@link https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate | evaluate}
-   */
-  async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
+  override async $x(
+    expression: string
+  ): Promise<Array<CDPElementHandle<Node>>> {
     if (expression.startsWith('//')) {
       expression = `.${expression}`;
     }
     return this.$$(`xpath/${expression}`);
   }
 
-  /**
-   * Wait for an element matching the given selector to appear in the current
-   * element.
-   *
-   * Unlike {@link Frame.waitForSelector}, this method does not work across
-   * navigations or if the element is detached from DOM.
-   *
-   * @example
-   *
-   * ```ts
-   * import puppeteer from 'puppeteer';
-   *
-   * (async () => {
-   *   const browser = await puppeteer.launch();
-   *   const page = await browser.newPage();
-   *   let currentURL;
-   *   page
-   *     .mainFrame()
-   *     .waitForSelector('img')
-   *     .then(() => console.log('First URL with image: ' + currentURL));
-   *
-   *   for (currentURL of [
-   *     'https://example.com',
-   *     'https://google.com',
-   *     'https://bbc.com',
-   *   ]) {
-   *     await page.goto(currentURL);
-   *   }
-   *   await browser.close();
-   * })();
-   * ```
-   *
-   * @param selector - The selector to query and wait for.
-   * @param options - Options for customizing waiting behavior.
-   * @returns An element matching the given selector.
-   * @throws Throws if an element matching the given selector doesn't appear.
-   */
-  async waitForSelector<Selector extends string>(
+  override async waitForSelector<Selector extends string>(
     selector: Selector,
     options: WaitForSelectorOptions = {}
-  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
+  ): Promise<CDPElementHandle<NodeFor<Selector>> | null> {
     const {updatedSelector, queryHandler} =
       getQueryHandlerAndSelector(selector);
     assert(queryHandler.waitFor, 'Query handler does not support waiting');
@@ -334,104 +287,24 @@ export class ElementHandle<
       this,
       updatedSelector,
       options
-    )) as ElementHandle<NodeFor<Selector>> | null;
+    )) as CDPElementHandle<NodeFor<Selector>> | null;
   }
 
-  /**
-   * @deprecated Use {@link ElementHandle.waitForSelector} with the `xpath`
-   * prefix.
-   *
-   * Example: `await elementHandle.waitForSelector('xpath/' + xpathExpression)`
-   *
-   * The method evaluates the XPath expression relative to the elementHandle.
-   *
-   * Wait for the `xpath` within the element. If at the moment of calling the
-   * method the `xpath` already exists, the method will return immediately. If
-   * the `xpath` doesn't appear after the `timeout` milliseconds of waiting, the
-   * function will throw.
-   *
-   * If `xpath` starts with `//` instead of `.//`, the dot will be appended
-   * automatically.
-   *
-   * This method works across navigation.
-   *
-   * ```ts
-   * import puppeteer from 'puppeteer';
-   * (async () => {
-   *   const browser = await puppeteer.launch();
-   *   const page = await browser.newPage();
-   *   let currentURL;
-   *   page
-   *     .waitForXPath('//img')
-   *     .then(() => console.log('First URL with image: ' + currentURL));
-   *   for (currentURL of [
-   *     'https://example.com',
-   *     'https://google.com',
-   *     'https://bbc.com',
-   *   ]) {
-   *     await page.goto(currentURL);
-   *   }
-   *   await browser.close();
-   * })();
-   * ```
-   *
-   * @param xpath - A
-   * {@link https://developer.mozilla.org/en-US/docs/Web/XPath | xpath} of an
-   * element to wait for
-   * @param options - Optional waiting parameters
-   * @returns Promise which resolves when element specified by xpath string is
-   * added to DOM. Resolves to `null` if waiting for `hidden: true` and xpath is
-   * not found in DOM, otherwise resolves to `ElementHandle`.
-   * @remarks
-   * The optional Argument `options` have properties:
-   *
-   * - `visible`: A boolean to wait for element to be present in DOM and to be
-   *   visible, i.e. to not have `display: none` or `visibility: hidden` CSS
-   *   properties. Defaults to `false`.
-   *
-   * - `hidden`: A boolean wait for element to not be found in the DOM or to be
-   *   hidden, i.e. have `display: none` or `visibility: hidden` CSS properties.
-   *   Defaults to `false`.
-   *
-   * - `timeout`: A number which is maximum time to wait for in milliseconds.
-   *   Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The
-   *   default value can be changed by using the {@link Page.setDefaultTimeout}
-   *   method.
-   */
-  async waitForXPath(
+  override async waitForXPath(
     xpath: string,
     options: {
       visible?: boolean;
       hidden?: boolean;
       timeout?: number;
     } = {}
-  ): Promise<ElementHandle<Node> | null> {
+  ): Promise<CDPElementHandle<Node> | null> {
     if (xpath.startsWith('//')) {
       xpath = `.${xpath}`;
     }
     return this.waitForSelector(`xpath/${xpath}`, options);
   }
 
-  /**
-   * Converts the current handle to the given element type.
-   *
-   * @example
-   *
-   * ```ts
-   * const element: ElementHandle<Element> = await page.$(
-   *   '.class-name-of-anchor'
-   * );
-   * // DO NOT DISPOSE `element`, this will be always be the same handle.
-   * const anchor: ElementHandle<HTMLAnchorElement> = await element.toElement(
-   *   'a'
-   * );
-   * ```
-   *
-   * @param tagName - The tag name of the desired element type.
-   * @throws An error if the handle does not match. **The handle will not be
-   * automatically disposed.**
-   */
-  async toElement<
+  override async toElement<
     K extends keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap
   >(tagName: K): Promise<HandleFor<ElementFor<K>>> {
     const isMatchingTagName = await this.evaluate((node, tagName) => {
@@ -443,15 +316,11 @@ export class ElementHandle<
     return this as unknown as HandleFor<ElementFor<K>>;
   }
 
-  override asElement(): ElementHandle<ElementType> | null {
+  override asElement(): CDPElementHandle<ElementType> | null {
     return this;
   }
 
-  /**
-   * Resolves to the content frame for element handles referencing
-   * iframe nodes, or null otherwise
-   */
-  async contentFrame(): Promise<Frame | null> {
+  override async contentFrame(): Promise<Frame | null> {
     const nodeInfo = await this.client.send('DOM.describeNode', {
       objectId: this.remoteObject().objectId,
     });
@@ -461,7 +330,9 @@ export class ElementHandle<
     return this.#frameManager.frame(nodeInfo.node.frameId);
   }
 
-  async #scrollIntoViewIfNeeded(this: ElementHandle<Element>): Promise<void> {
+  async #scrollIntoViewIfNeeded(
+    this: CDPElementHandle<Element>
+  ): Promise<void> {
     const error = await this.evaluate(
       async (element): Promise<string | undefined> => {
         if (!element.isConnected) {
@@ -541,10 +412,7 @@ export class ElementHandle<
     return {offsetX, offsetY};
   }
 
-  /**
-   * Returns the middle point within an element unless a specific offset is provided.
-   */
-  async clickablePoint(offset?: Offset): Promise<Point> {
+  override async clickablePoint(offset?: Offset): Promise<Point> {
     const [result, layoutMetrics] = await Promise.all([
       this.client
         .send('DOM.getContentQuads', {
@@ -649,7 +517,7 @@ export class ElementHandle<
    * uses {@link Page.mouse} to hover over the center of the element.
    * If the element is detached from DOM, the method throws an error.
    */
-  async hover(this: ElementHandle<Element>): Promise<void> {
+  override async hover(this: CDPElementHandle<Element>): Promise<void> {
     await this.#scrollIntoViewIfNeeded();
     const {x, y} = await this.clickablePoint();
     await this.#page.mouse.move(x, y);
@@ -660,8 +528,8 @@ export class ElementHandle<
    * uses {@link Page.mouse} to click in the center of the element.
    * If the element is detached from DOM, the method throws an error.
    */
-  async click(
-    this: ElementHandle<Element>,
+  override async click(
+    this: CDPElementHandle<Element>,
     options: ClickOptions = {}
   ): Promise<void> {
     await this.#scrollIntoViewIfNeeded();
@@ -672,8 +540,8 @@ export class ElementHandle<
   /**
    * This method creates and captures a dragevent from the element.
    */
-  async drag(
-    this: ElementHandle<Element>,
+  override async drag(
+    this: CDPElementHandle<Element>,
     target: Point
   ): Promise<Protocol.Input.DragData> {
     assert(
@@ -685,11 +553,8 @@ export class ElementHandle<
     return await this.#page.mouse.drag(start, target);
   }
 
-  /**
-   * This method creates a `dragenter` event on the element.
-   */
-  async dragEnter(
-    this: ElementHandle<Element>,
+  override async dragEnter(
+    this: CDPElementHandle<Element>,
     data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
   ): Promise<void> {
     await this.#scrollIntoViewIfNeeded();
@@ -697,11 +562,8 @@ export class ElementHandle<
     await this.#page.mouse.dragEnter(target, data);
   }
 
-  /**
-   * This method creates a `dragover` event on the element.
-   */
-  async dragOver(
-    this: ElementHandle<Element>,
+  override async dragOver(
+    this: CDPElementHandle<Element>,
     data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
   ): Promise<void> {
     await this.#scrollIntoViewIfNeeded();
@@ -709,11 +571,8 @@ export class ElementHandle<
     await this.#page.mouse.dragOver(target, data);
   }
 
-  /**
-   * This method triggers a drop on the element.
-   */
-  async drop(
-    this: ElementHandle<Element>,
+  override async drop(
+    this: CDPElementHandle<Element>,
     data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
   ): Promise<void> {
     await this.#scrollIntoViewIfNeeded();
@@ -721,12 +580,9 @@ export class ElementHandle<
     await this.#page.mouse.drop(destination, data);
   }
 
-  /**
-   * This method triggers a dragenter, dragover, and drop on the element.
-   */
-  async dragAndDrop(
-    this: ElementHandle<Element>,
-    target: ElementHandle<Node>,
+  override async dragAndDrop(
+    this: CDPElementHandle<Element>,
+    target: CDPElementHandle<Node>,
     options?: {delay: number}
   ): Promise<void> {
     await this.#scrollIntoViewIfNeeded();
@@ -735,23 +591,7 @@ export class ElementHandle<
     await this.#page.mouse.dragAndDrop(startPoint, targetPoint, options);
   }
 
-  /**
-   * Triggers a `change` and `input` event once all the provided options have been
-   * selected. If there's no `<select>` element matching `selector`, the method
-   * throws an error.
-   *
-   * @example
-   *
-   * ```ts
-   * handle.select('blue'); // single selection
-   * handle.select('red', 'green', 'blue'); // multiple selections
-   * ```
-   *
-   * @param values - Values of options to select. If the `<select>` has the
-   * `multiple` attribute, all values are considered, otherwise only the first
-   * one is taken into account.
-   */
-  async select(...values: string[]): Promise<string[]> {
+  override async select(...values: string[]): Promise<string[]> {
     for (const value of values) {
       assert(
         isString(value),
@@ -795,18 +635,8 @@ export class ElementHandle<
     }, values);
   }
 
-  /**
-   * This method expects `elementHandle` to point to an
-   * {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input | input element}.
-   *
-   * @param filePaths - Sets the value of the file input to these paths.
-   * If a path is relative, then it is resolved against the
-   * {@link https://nodejs.org/api/process.html#process_process_cwd | current working directory}.
-   * Note for locals script connecting to remote chrome environments,
-   * paths must be absolute.
-   */
-  async uploadFile(
-    this: ElementHandle<HTMLInputElement>,
+  override async uploadFile(
+    this: CDPElementHandle<HTMLInputElement>,
     ...filePaths: string[]
   ): Promise<void> {
     const isMultiple = await this.evaluate(element => {
@@ -837,7 +667,9 @@ export class ElementHandle<
       }
     });
     const {objectId} = this.remoteObject();
-    const {node} = await this.client.send('DOM.describeNode', {objectId});
+    const {node} = await this.client.send('DOM.describeNode', {
+      objectId,
+    });
     const {backendNodeId} = node;
 
     /*  The zero-length array is a special case, it seems that
@@ -861,39 +693,31 @@ export class ElementHandle<
     }
   }
 
-  /**
-   * This method scrolls element into view if needed, and then uses
-   * {@link Touchscreen.tap} to tap in the center of the element.
-   * If the element is detached from DOM, the method throws an error.
-   */
-  async tap(this: ElementHandle<Element>): Promise<void> {
+  override async tap(this: CDPElementHandle<Element>): Promise<void> {
     await this.#scrollIntoViewIfNeeded();
     const {x, y} = await this.clickablePoint();
     await this.#page.touchscreen.touchStart(x, y);
     await this.#page.touchscreen.touchEnd();
   }
 
-  async touchStart(this: ElementHandle<Element>): Promise<void> {
+  override async touchStart(this: CDPElementHandle<Element>): Promise<void> {
     await this.#scrollIntoViewIfNeeded();
     const {x, y} = await this.clickablePoint();
     await this.#page.touchscreen.touchStart(x, y);
   }
 
-  async touchMove(this: ElementHandle<Element>): Promise<void> {
+  override async touchMove(this: CDPElementHandle<Element>): Promise<void> {
     await this.#scrollIntoViewIfNeeded();
     const {x, y} = await this.clickablePoint();
     await this.#page.touchscreen.touchMove(x, y);
   }
 
-  async touchEnd(this: ElementHandle<Element>): Promise<void> {
+  override async touchEnd(this: CDPElementHandle<Element>): Promise<void> {
     await this.#scrollIntoViewIfNeeded();
     await this.#page.touchscreen.touchEnd();
   }
 
-  /**
-   * Calls {@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus | focus} on the element.
-   */
-  async focus(): Promise<void> {
+  override async focus(): Promise<void> {
     await this.evaluate(element => {
       if (!(element instanceof HTMLElement)) {
         throw new Error('Cannot focus non-HTMLElement');
@@ -902,58 +726,17 @@ export class ElementHandle<
     });
   }
 
-  /**
-   * Focuses the element, and then sends a `keydown`, `keypress`/`input`, and
-   * `keyup` event for each character in the text.
-   *
-   * To press a special key, like `Control` or `ArrowDown`,
-   * use {@link ElementHandle.press}.
-   *
-   * @example
-   *
-   * ```ts
-   * await elementHandle.type('Hello'); // Types instantly
-   * await elementHandle.type('World', {delay: 100}); // Types slower, like a user
-   * ```
-   *
-   * @example
-   * An example of typing into a text field and then submitting the form:
-   *
-   * ```ts
-   * const elementHandle = await page.$('input');
-   * await elementHandle.type('some text');
-   * await elementHandle.press('Enter');
-   * ```
-   */
-  async type(text: string, options?: {delay: number}): Promise<void> {
+  override async type(text: string, options?: {delay: number}): Promise<void> {
     await this.focus();
     await this.#page.keyboard.type(text, options);
   }
 
-  /**
-   * Focuses the element, and then uses {@link Keyboard.down} and {@link Keyboard.up}.
-   *
-   * @remarks
-   * If `key` is a single character and no modifier keys besides `Shift`
-   * are being held down, a `keypress`/`input` event will also be generated.
-   * The `text` option can be specified to force an input event to be generated.
-   *
-   * **NOTE** Modifier keys DO affect `elementHandle.press`. Holding down `Shift`
-   * will type the text in upper case.
-   *
-   * @param key - Name of key to press, such as `ArrowLeft`.
-   * See {@link KeyInput} for a list of all key names.
-   */
-  async press(key: KeyInput, options?: PressOptions): Promise<void> {
+  override async press(key: KeyInput, options?: PressOptions): Promise<void> {
     await this.focus();
     await this.#page.keyboard.press(key, options);
   }
 
-  /**
-   * This method returns the bounding box of the element (relative to the main frame),
-   * or `null` if the element is not visible.
-   */
-  async boundingBox(): Promise<BoundingBox | null> {
+  override async boundingBox(): Promise<BoundingBox | null> {
     const result = await this.#getBoxModel();
 
     if (!result) {
@@ -970,15 +753,7 @@ export class ElementHandle<
     return {x: x + offsetX, y: y + offsetY, width, height};
   }
 
-  /**
-   * This method returns boxes of the element, or `null` if the element is not visible.
-   *
-   * @remarks
-   *
-   * Boxes are represented as an array of points;
-   * Each Point is an object `{x, y}`. Box points are sorted clock-wise.
-   */
-  async boxModel(): Promise<BoxModel | null> {
+  override async boxModel(): Promise<BoxModel | null> {
     const result = await this.#getBoxModel();
 
     if (!result) {
@@ -1014,13 +789,8 @@ export class ElementHandle<
     };
   }
 
-  /**
-   * This method scrolls element into view if needed, and then uses
-   * {@link Page.screenshot} to take a screenshot of the element.
-   * If the element is detached from DOM, the method throws an error.
-   */
-  async screenshot(
-    this: ElementHandle<Element>,
+  override async screenshot(
+    this: CDPElementHandle<Element>,
     options: ScreenshotOptions = {}
   ): Promise<string | Buffer> {
     let needsViewportReset = false;
@@ -1077,11 +847,8 @@ export class ElementHandle<
     return imageData;
   }
 
-  /**
-   * Resolves to true if the element is visible in the current viewport.
-   */
-  async isIntersectingViewport(
-    this: ElementHandle<Element>,
+  override async isIntersectingViewport(
+    this: CDPElementHandle<Element>,
     options?: {
       threshold?: number;
     }
@@ -1097,6 +864,14 @@ export class ElementHandle<
       });
       return threshold === 1 ? visibleRatio === 1 : visibleRatio > threshold;
     }, threshold);
+  }
+
+  override async dispose(): Promise<void> {
+    if (this.#disposed) {
+      return;
+    }
+    this.#disposed = true;
+    await releaseObject(this.client, this.#remoteObject);
   }
 }
 

@@ -19,7 +19,7 @@ import {source as injectedSource} from '../generated/injected.js';
 import type PuppeteerUtil from '../injected/injected.js';
 import {CDPSession} from './Connection.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
-import {JSHandle} from './JSHandle.js';
+import {JSHandle} from '../api/JSHandle.js';
 import {LazyArg} from './LazyArg.js';
 import {EvaluateFunc, HandleFor} from './types.js';
 import {

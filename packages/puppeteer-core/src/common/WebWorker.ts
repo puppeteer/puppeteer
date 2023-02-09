@@ -19,7 +19,8 @@ import {ConsoleMessageType} from './ConsoleMessage.js';
 import {EvaluateFunc, HandleFor} from './types.js';
 import {EventEmitter} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {JSHandle} from './JSHandle.js';
+import {JSHandle} from '../api/JSHandle.js';
+import {CDPJSHandle} from './JSHandle.js';
 import {debugError} from './util.js';
 import {createDeferredPromise} from '../util/DeferredPromise.js';
 
@@ -93,7 +94,7 @@ export class WebWorker extends EventEmitter {
       return consoleAPICalled(
         event.type,
         event.args.map((object: Protocol.Runtime.RemoteObject) => {
-          return new JSHandle(context, object);
+          return new CDPJSHandle(context, object);
         }),
         event.stackTrace
       );

@@ -21,7 +21,7 @@ import {
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
 
-import {ElementHandle} from 'puppeteer-core/internal/common/ElementHandle.js';
+import type {ElementHandle} from 'puppeteer-core/internal/api/ElementHandle.js';
 import utils from './utils.js';
 import assert from 'assert';
 import {TimeoutError} from 'puppeteer';

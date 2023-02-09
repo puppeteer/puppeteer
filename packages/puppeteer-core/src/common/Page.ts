@@ -44,7 +44,7 @@ import {
 import {ConsoleMessage, ConsoleMessageType} from './ConsoleMessage.js';
 import {Coverage} from './Coverage.js';
 import {Dialog} from './Dialog.js';
-import {ElementHandle} from './ElementHandle.js';
+import {ElementHandle} from '../api/ElementHandle.js';
 import {EmulationManager} from './EmulationManager.js';
 import {FileChooser} from './FileChooser.js';
 import {
@@ -59,7 +59,7 @@ import {HTTPResponse} from './HTTPResponse.js';
 import {Keyboard, Mouse, MouseButton, Touchscreen} from './Input.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
-import {JSHandle} from './JSHandle.js';
+import {JSHandle} from '../api/JSHandle.js';
 import {
   Credentials,
   NetworkConditions,

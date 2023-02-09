@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {JSHandle} from './JSHandle.js';
-import {ElementHandle} from './ElementHandle.js';
+import {JSHandle} from '../api/JSHandle.js';
+import {ElementHandle} from '../api/ElementHandle.js';
 import {LazyArg} from './LazyArg.js';
 
 /**
