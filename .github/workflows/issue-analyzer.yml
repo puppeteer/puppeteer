@@ -134,9 +134,8 @@ jobs:
           issue-number: ${{ github.event.issue.number }}
           edit-mode: replace
           body: |
-            You bug has been successfully **confirmed** :rocket:.
-
-            A Puppeteer maintainer will take a closer look and assist you with you problem!
+            The issue has been labeled as **confirmed** by the automatic analyser.
+            Someone from the Puppeteer team will take a look soon!
 
   label-invalid-issue:
     needs: [analyze-issue]
