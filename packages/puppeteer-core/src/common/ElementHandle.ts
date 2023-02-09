@@ -48,7 +48,6 @@ import {
   PressOptions,
 } from '../api/ElementHandle.js';
 import {CDPSession} from './Connection.js';
-import {CDPJSHandle} from './JSHandle.js';
 
 const applyOffsetsToQuad = (
   quad: Point[],
