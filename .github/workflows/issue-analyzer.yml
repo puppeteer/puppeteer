@@ -121,6 +121,21 @@ jobs:
               repo: context.repo.repo,
               labels: ["confirmed"]
             })
+      - name: Find Comment Id
+        uses: peter-evans/find-comment@v2
+        id: find-comment-id
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          comment-author: 'github-actions[bot]'
+      - name: Upsert comment
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          comment-id: ${{ steps.find-comment-id.outputs.comment-id }}
+          issue-number: ${{ github.event.issue.number }}
+          edit-mode: replace
+          body: |
+            The issue has been labeled as **confirmed** by the automatic analyser.
+            Someone from the Puppeteer team will take a look soon!
 
   label-invalid-issue:
     needs: [analyze-issue]

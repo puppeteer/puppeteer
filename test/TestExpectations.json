@@ -60,18 +60,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[browsercontext.spec] BrowserContext window.open should use parent tab context",
-    "platforms": ["darwin", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[browsercontext.spec] BrowserContext window.open should use parent tab context",
-    "platforms": ["linux"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[browsercontext.spec] BrowserContext should provide a context id",
     "platforms": ["linux"],
     "parameters": ["firefox"],
@@ -360,54 +348,6 @@
     "expectations": ["TIMEOUT", "PASS"]
   },
   {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should be able to throw a tricky error",
-    "platforms": ["darwin", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should fail for circular object",
-    "platforms": ["darwin", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should fail for circular object",
-    "platforms": ["linux"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should not throw an error when evaluation does a navigation",
-    "platforms": ["darwin", "win32", "linux"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should return undefined for non-serializable objects",
-    "platforms": ["darwin", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should return undefined for non-serializable objects",
-    "platforms": ["linux"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should return undefined for objects with symbols",
-    "platforms": ["darwin", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should return undefined for objects with symbols",
-    "platforms": ["linux"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should simulate a user gesture",
     "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
@@ -421,21 +361,9 @@
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw a nice error after a navigation",
-    "platforms": ["darwin", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw a nice error after a navigation",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw if elementHandles are from other frames",
-    "platforms": ["darwin", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw when evaluation triggers reload",
@@ -445,15 +373,9 @@
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work from-inside an exposed function",
-    "platforms": ["darwin", "win32"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work from-inside an exposed function",
-    "platforms": ["linux"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument should evaluate before anything else on the page",
@@ -1608,12 +1530,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.Events.Close should work with window.close",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
     "testIdPattern": "[page.spec] Page Page.Events.Console should have location and stack trace for console API calls",
     "platforms": ["darwin", "win32"],
     "parameters": ["firefox"],
@@ -1693,15 +1609,9 @@
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Popup should work",
-    "platforms": ["darwin", "win32"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.Events.Popup should work",
-    "platforms": ["linux"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.Popup should work with clicking target=_blank and rel=noopener",
@@ -2880,12 +2790,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[target.spec] Target should be able to use async waitForTarget",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
     "testIdPattern": "[target.spec] Target should create a worker from a service worker",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -2905,39 +2809,15 @@
   },
   {
     "testIdPattern": "[target.spec] Target should not crash while redirecting if original request was missed",
-    "platforms": ["darwin", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[target.spec] Target should not crash while redirecting if original request was missed",
-    "platforms": ["linux"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[target.spec] Target should not report uninitialized pages",
-    "platforms": ["darwin", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[target.spec] Target should not report uninitialized pages",
-    "platforms": ["linux"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[target.spec] Target should report when a new page is created and closed",
-    "platforms": ["darwin", "win32"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[target.spec] Target should report when a new page is created and closed",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["FAIL"]
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[target.spec] Target should report when a service worker is created and destroyed",
