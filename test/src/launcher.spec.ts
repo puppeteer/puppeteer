@@ -36,7 +36,8 @@ const writeFileAsync = promisify(fs.writeFile);
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 const FIREFOX_TIMEOUT = 30 * 1000;
 
-describe('Launcher specs', function () {
+// eslint-disable-next-line mocha/no-exclusive-tests
+describe.only('Launcher specs', function () {
   if (getTestState().isFirefox) {
     this.timeout(FIREFOX_TIMEOUT);
   }

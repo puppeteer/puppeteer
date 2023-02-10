@@ -96,8 +96,11 @@ const defaultBrowserOptions = Object.assign(
     handleSIGINT: true,
     executablePath: process.env['BINARY'],
     headless: headless === 'new' ? ('new' as const) : isHeadless,
-    dumpio: !!process.env['DUMPIO'],
+    dumpio: true,
     protocol: protocol as 'cdp' | 'webDriverBiDi',
+    extraPrefsFirefox: {
+      'remote.log.level': 'Trace',
+    },
   },
   extraLaunchOptions
 );
