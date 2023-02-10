@@ -33,7 +33,7 @@
       ]
     },
     "test": {
-      "command": "mocha ",
+      "command": "mocha",
       "files": [
         ".mocharc.cjs"
       ],
