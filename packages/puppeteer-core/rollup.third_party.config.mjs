@@ -16,7 +16,8 @@
 import glob from 'glob';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import dts from 'rollup-plugin-dts';
+import copy from 'rollup-plugin-copy';
+import {dirname, join, relative} from 'path';
 
 export default ['cjs', 'esm'].flatMap(outputType => {
   const configs = [];
@@ -24,23 +25,37 @@ export default ['cjs', 'esm'].flatMap(outputType => {
   // the backslash path separator.
   const sourcePath = `.wireit/third_party/${outputType}/`;
   for (const file of glob.sync(`${sourcePath}**/*.js`)) {
+    const typesFile = `${file.slice(0, -3)}.d.ts`;
     configs.push({
       input: file,
       output: {
-        file: `lib/${outputType}/third_party/${file.slice(sourcePath.length)}`,
+        file: join(
+          'lib',
+          outputType,
+          'third_party',
+          relative(sourcePath, file)
+        ),
         format: outputType,
       },
-      plugins: [commonjs(), nodeResolve()],
-    });
-  }
-  for (const file of glob.sync(`${sourcePath}**/*.d.ts`)) {
-    configs.push({
-      input: file,
-      output: {
-        file: `lib/${outputType}/third_party/${file.slice(sourcePath.length)}`,
-        format: outputType,
-      },
-      plugins: [dts()],
+      plugins: [
+        commonjs(),
+        nodeResolve(),
+        copy({
+          targets: [
+            {
+              src: typesFile,
+              dest: dirname(
+                join(
+                  'lib',
+                  outputType,
+                  'third_party',
+                  relative(sourcePath, typesFile)
+                )
+              ),
+            },
+          ],
+        }),
+      ],
     });
   }
   return configs;
