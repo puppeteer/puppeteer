@@ -184,13 +184,17 @@ describe('Page', function () {
 
   describe('Page.Events.error', function () {
     it('should throw when page crashes', async () => {
-      const {page} = getTestState();
+      const {page, isChrome} = getTestState();
 
       let error!: Error;
       page.on('error', err => {
         return (error = err);
       });
-      page.goto('chrome://crash').catch(() => {});
+      if (isChrome) {
+        page.goto('chrome://crash').catch(() => {});
+      } else {
+        page.goto('about:crashcontent').catch(() => {});
+      }
       await waitEvent(page, 'error');
       expect(error.message).toBe('Page crashed!');
     });
@@ -1804,7 +1808,7 @@ describe('Page', function () {
     });
 
     // @see https://github.com/puppeteer/puppeteer/issues/4840
-    it.skip('should throw when added with content to the CSP page', async () => {
+    it('should throw when added with content to the CSP page', async () => {
       const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/csp.html');
