@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import assert from 'assert';
 import expect from 'expect';
+import {Puppeteer} from 'puppeteer-core';
 import {ElementHandle} from 'puppeteer-core/internal/api/ElementHandle.js';
 import {
   getTestState,
@@ -349,6 +351,140 @@ describe('Query handler tests', function () {
         expect(await elementHandle.$(`xpath/span`)).toBeFalsy();
         expect((await elementHandle.$$(`xpath/span`)).length).toBe(0);
       });
+    });
+  });
+
+  describe('P selectors', () => {
+    beforeEach(async () => {
+      const {page} = getTestState();
+      await page.setContent('<div>hello <button>world</button></div>');
+    });
+
+    it('should work with CSS selectors', async () => {
+      const {page} = getTestState();
+      const element = await page.$('div > button');
+      assert(element, 'Could not find element');
+      expect(
+        await element.evaluate(element => {
+          return element.tagName === 'BUTTON';
+        })
+      ).toBeTruthy();
+    });
+
+    it('should work with text selectors', async () => {
+      const {page} = getTestState();
+      const element = await page.$('div :-p-text(world)');
+      assert(element, 'Could not find element');
+      expect(
+        await element.evaluate(element => {
+          return element.tagName === 'BUTTON';
+        })
+      ).toBeTruthy();
+    });
+
+    it('should work ARIA selectors', async () => {
+      const {page} = getTestState();
+      await page.setContent('<div>hello <button>world</button></div>');
+
+      const element = await page.$('div :-p-aria(world)');
+      assert(element, 'Could not find element');
+      expect(
+        await element.evaluate(element => {
+          return element.tagName === 'BUTTON';
+        })
+      ).toBeTruthy();
+    });
+
+    it('should work XPath selectors', async () => {
+      const {page} = getTestState();
+      await page.setContent('<div>hello <button>world</button></div>');
+
+      const element = await page.$('div :-p-xpath(//button)');
+      assert(element, 'Could not find element');
+      expect(
+        await element.evaluate(element => {
+          return element.tagName === 'BUTTON';
+        })
+      ).toBeTruthy();
+    });
+
+    it('should work with custom selectors', async () => {
+      const {page} = getTestState();
+      await page.setContent('<div>hello <button>world</button></div>');
+      Puppeteer.clearCustomQueryHandlers();
+      Puppeteer.registerCustomQueryHandler('div', {
+        queryOne() {
+          return document.querySelector('div');
+        },
+      });
+
+      const element = await page.$(':-p-div()');
+      assert(element, 'Could not find element');
+      expect(
+        await element.evaluate(element => {
+          return element.tagName === 'DIV';
+        })
+      ).toBeTruthy();
+    });
+
+    it('should work with custom selectors with args', async () => {
+      const {page} = getTestState();
+      await page.setContent('<div>hello <button>world</button></div>');
+      Puppeteer.clearCustomQueryHandlers();
+      Puppeteer.registerCustomQueryHandler('div', {
+        queryOne(_, selector) {
+          if (selector === 'true') {
+            return document.querySelector('div');
+          } else {
+            return document.querySelector('button');
+          }
+        },
+      });
+
+      {
+        const element = await page.$(':-p-div(true)');
+        assert(element, 'Could not find element');
+        expect(
+          await element.evaluate(element => {
+            return element.tagName === 'DIV';
+          })
+        ).toBeTruthy();
+      }
+      {
+        const element = await page.$(':-p-div("true")');
+        assert(element, 'Could not find element');
+        expect(
+          await element.evaluate(element => {
+            return element.tagName === 'DIV';
+          })
+        ).toBeTruthy();
+      }
+      {
+        const element = await page.$(':-p-div()');
+        assert(element, 'Could not find element');
+        expect(
+          await element.evaluate(element => {
+            return element.tagName === 'BUTTON';
+          })
+        ).toBeTruthy();
+      }
+    });
+
+    it('should work with :hover', async () => {
+      const {page} = getTestState();
+      await page.setContent('<div>hello <button>world</button></div>');
+
+      let button = await page.$('div :-p-text(world)');
+      assert(button, 'Could not find element');
+      await button.hover();
+      await button.dispose();
+
+      button = await page.$('div :-p-text(world):hover');
+      assert(button, 'Could not find element');
+      const value = await button.evaluate(span => {
+        return {textContent: span.textContent, tagName: span.tagName};
+      });
+      expect(value).toMatchObject({textContent: 'world', tagName: 'BUTTON'});
     });
   });
 });

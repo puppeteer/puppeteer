@@ -29,6 +29,15 @@ export class IterableUtil {
     }
   }
 
+  static async *flatMap<T>(
+    iterable: AwaitableIterable<T>,
+    map: (item: T) => AwaitableIterable<T>
+  ): AwaitableIterable<T> {
+    for await (const value of iterable) {
+      yield* map(value);
+    }
+  }
+
   static async collect<T>(iterable: AwaitableIterable<T>): Promise<T[]> {
     const result = [];
     for await (const value of iterable) {
