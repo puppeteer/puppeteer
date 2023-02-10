@@ -15,7 +15,9 @@
  */
 
 const fs = require('fs/promises');
+const {join} = require('path');
 const path = require('path');
+
 /**
  *
  * @param {String} directory
@@ -42,8 +44,8 @@ async function findSchemaFiles(directory, files = []) {
 }
 
 async function copySchemaFiles() {
-  const srcDir = './src';
-  const outputDir = './lib';
+  const srcDir = join(__dirname, '..', 'src');
+  const outputDir = join(__dirname, '..', 'lib');
   const files = await findSchemaFiles(srcDir);
 
   const moves = files.map(file => {

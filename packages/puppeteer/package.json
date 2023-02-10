@@ -63,9 +63,11 @@
     },
     "generate:package-json": {
       "command": "tsx ../../tools/generate_module_package_json.ts lib/esm/package.json",
-      "clean": "if-file-deleted",
       "dependencies": [
         "build:tsc"
+      ],
+      "files": [
+        "../../tools/generate_module_package_json.ts"
       ],
       "output": [
         "lib/esm/package.json"
@@ -112,9 +114,9 @@
         "../puppeteer-core:build"
       ],
       "files": [
-        "src/**",
-        "compat/**",
-        "**/tsconfig.*.json"
+        "**/tsconfig.*.json",
+        "**/tsconfig.json",
+        "src/**"
       ],
       "output": [
         "lib/**"

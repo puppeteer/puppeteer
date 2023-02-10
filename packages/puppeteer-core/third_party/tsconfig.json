@@ -2,7 +2,7 @@
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
     "declarationMap": false,
-    "outDir": "../lib/esm/third_party",
+    "outDir": "../.wireit/third_party/esm",
     "sourceMap": false
   }
 }

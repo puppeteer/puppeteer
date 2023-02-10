@@ -3,18 +3,16 @@
   "version": "0.1.0",
   "description": "Puppeteer Angular schematics",
   "scripts": {
-    "dev": "npm run build --watch",
-    "dev:test": "npm run test --watch",
-    "copy": "wireit",
+    "build:tsc": "wireit",
     "build": "wireit",
-    "clean": "tsc --build --clean && rimraf lib",
-    "clean:test": "rimraf test/build",
+    "clean": "tsc -b --clean && rimraf lib && rimraf test/build",
+    "dev:test": "npm run test --watch",
+    "dev": "npm run build --watch",
     "test": "wireit"
   },
   "wireit": {
-    "copy": {
-      "clean": "if-file-deleted",
-      "command": "node copySchemaFiles.js",
+    "build": {
+      "command": "node tools/copySchemaFiles.js",
       "files": [
         "src/**/files/**",
         "src/**/*.json"
@@ -24,29 +22,25 @@
         "lib/**/*.json"
       ],
       "dependencies": [
-        "clean"
+        "build:tsc"
       ]
     },
-    "build": {
+    "build:tsc": {
       "command": "tsc -b",
+      "clean": "if-file-deleted",
       "files": [
-        "src/**/*.ts",
-        "!src/**/files",
-        "!src/**/*.json"
+        "**/tsconfig.*.json",
+        "**/tsconfig.json",
+        "src/**/*.ts"
       ],
       "output": [
-        "lib/**",
-        "!lib/**/files",
-        "!lib/**/*.json"
-      ],
-      "dependencies": [
-        "copy"
+        "lib/**/*.{ts,js}",
+        "lib/**/*.{ts,js}.map"
       ]
     },
     "test": {
       "command": "mocha",
       "dependencies": [
-        "clean:test",
         "build"
       ]
     }
