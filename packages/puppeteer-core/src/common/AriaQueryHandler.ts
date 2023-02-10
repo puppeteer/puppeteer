@@ -32,7 +32,7 @@ const queryAXTree = async (
   role?: string
 ): Promise<Protocol.Accessibility.AXNode[]> => {
   const {nodes} = await client.send('Accessibility.queryAXTree', {
-    objectId: element.remoteObject().objectId,
+    objectId: element.id,
     accessibleName,
     role,
   });

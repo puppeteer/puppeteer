@@ -525,13 +525,12 @@ export class CDPPage extends Page {
   ): Promise<JSHandle<Prototype[]>> {
     const context = await this.mainFrame().executionContext();
     assert(!prototypeHandle.disposed, 'Prototype JSHandle is disposed!');
-    const remoteObject = prototypeHandle.remoteObject();
     assert(
-      remoteObject.objectId,
+      prototypeHandle.id,
       'Prototype JSHandle must not be referencing primitive value'
     );
     const response = await context._client.send('Runtime.queryObjects', {
-      prototypeObjectId: remoteObject.objectId,
+      prototypeObjectId: prototypeHandle.id,
     });
     return createJSHandle(context, response.objects) as HandleFor<Prototype[]>;
   }
@@ -820,7 +819,7 @@ export class CDPPage extends Page {
     }
     const textTokens = [];
     for (const arg of args) {
-      const remoteObject = arg.remoteObject();
+      const remoteObject = arg.remoteObject() as Protocol.Runtime.RemoteObject;
       if (remoteObject.objectId) {
         textTokens.push(arg.toString());
       } else {

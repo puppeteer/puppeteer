@@ -29,6 +29,7 @@ import {
   stringifyFunction,
   valueFromRemoteObject,
 } from './util.js';
+import {CDPJSHandle} from './JSHandle.js';
 
 /**
  * @public
@@ -321,7 +322,7 @@ export class ExecutionContext {
       if (Object.is(arg, NaN)) {
         return {unserializableValue: 'NaN'};
       }
-      const objectHandle = arg && arg instanceof JSHandle ? arg : null;
+      const objectHandle = arg && arg instanceof CDPJSHandle ? arg : null;
       if (objectHandle) {
         if (objectHandle.executionContext() !== this) {
           throw new Error(
