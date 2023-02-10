@@ -16,17 +16,31 @@
 import glob from 'glob';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import dts from 'rollup-plugin-dts';
 
 export default ['cjs', 'esm'].flatMap(outputType => {
   const configs = [];
   // Note we don't use path.join here. We cannot since `glob` does not support
   // the backslash path separator.
-  const thirdPartyPath = `lib/${outputType}/third_party`;
-  for (const jsFile of glob.sync(`${thirdPartyPath}/**/*.js`)) {
+  const sourcePath = `.wireit/third_party/${outputType}/`;
+  for (const file of glob.sync(`${sourcePath}**/*.js`)) {
     configs.push({
-      input: jsFile,
-      output: {file: jsFile, format: outputType, dynamicImportInCjs: false},
+      input: file,
+      output: {
+        file: `lib/${outputType}/third_party/${file.slice(sourcePath.length)}`,
+        format: outputType,
+      },
       plugins: [commonjs(), nodeResolve()],
+    });
+  }
+  for (const file of glob.sync(`${sourcePath}**/*.d.ts`)) {
+    configs.push({
+      input: file,
+      output: {
+        file: `lib/${outputType}/third_party/${file.slice(sourcePath.length)}`,
+        format: outputType,
+      },
+      plugins: [dts()],
     });
   }
   return configs;

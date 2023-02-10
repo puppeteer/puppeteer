@@ -66,15 +66,15 @@
     },
     "generate:sources": {
       "command": "tsx tools/generate_sources.ts",
+      "clean": "if-file-deleted",
       "files": [
         "../../versions.js",
-        "package.json",
         "src/injected/**",
         "src/templates/**",
         "tools/generate_sources.ts"
       ],
       "output": [
-        "src/generated/**"
+        "src/generated/*.ts"
       ]
     },
     "build:third_party": {
@@ -82,9 +82,9 @@
       "dependencies": [
         "build:tsc"
       ],
-      "clean": false,
       "files": [
-        "third_party/**"
+        ".wireit/third_party/**",
+        "rollup.third_party.config.mjs"
       ],
       "output": [
         "lib/esm/third_party/**",
@@ -105,10 +105,6 @@
     },
     "build:types": {
       "command": "api-extractor run --local",
-      "dependencies": [
-        "build:tsc",
-        "build:third_party"
-      ],
       "files": [
         "tsconfig.json",
         "api-extractor.json",
@@ -116,10 +112,19 @@
       ],
       "output": [
         "lib/types.d.ts"
+      ],
+      "dependencies": [
+        "build:tsc",
+        "build:third_party"
       ]
     },
     "build:docs": {
       "command": "api-extractor run --local --config \"./api-extractor.docs.json\"",
+      "files": [
+        "tsconfig.json",
+        "api-extractor.docs.json",
+        "lib/esm/puppeteer/puppeteer-core.d.ts"
+      ],
       "dependencies": [
         "build:tsc"
       ]
@@ -147,13 +152,16 @@
       "files": [
         "**/tsconfig.*.json",
         "**/tsconfig.json",
-        "compat/**",
-        "src/**",
-        "third_party/**"
+        "compat/**/*.ts",
+        "src/**/*.ts",
+        "third_party/**/*.ts"
       ],
       "output": [
-        "lib/esm/**",
-        "lib/cjs/**"
+        ".wireit/third_party/**/*.{ts,js}",
+        "lib/{cjs,esm}/**/*.{ts,js}",
+        ".wireit/third_party/**/*.{ts,js}.map",
+        "lib/{cjs,esm}/**/*.{ts,js}.map",
+        "!lib/{cjs,esm}/third_party"
       ]
     }
   },
