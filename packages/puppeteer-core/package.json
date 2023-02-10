@@ -44,8 +44,7 @@
     "generate:package-json": "wireit",
     "generate:sources": "wireit",
     "prepack": "wireit",
-    "clean": "tsc -b --clean && rimraf lib src/generated",
-    "clean:third_party": "wireit"
+    "clean": "tsc -b --clean && rimraf lib src/generated"
   },
   "wireit": {
     "prepack": {
@@ -68,15 +67,15 @@
     "generate:sources": {
       "command": "tsx tools/generate_sources.ts",
       "files": [
-        "tools/generate_sources.ts",
-        "src/templates/**"
+        "../../versions.js",
+        "package.json",
+        "src/injected/**",
+        "src/templates/**",
+        "tools/generate_sources.ts"
       ],
       "output": [
         "src/generated/**"
       ]
-    },
-    "clean:third_party": {
-      "command": "rimraf lib/esm/third_party lib/cjs/third_party"
     },
     "build:third_party": {
       "command": "rollup --config rollup.third_party.config.mjs",
@@ -94,9 +93,11 @@
     },
     "generate:package-json": {
       "command": "tsx ../../tools/generate_module_package_json.ts lib/esm/package.json",
-      "clean": "if-file-deleted",
       "dependencies": [
         "build:tsc"
+      ],
+      "files": [
+        "../../tools/generate_module_package_json.ts"
       ],
       "output": [
         "lib/esm/package.json"
@@ -141,14 +142,14 @@
       "command": "tsc -b",
       "clean": "if-file-deleted",
       "dependencies": [
-        "clean:third_party",
         "generate:sources"
       ],
       "files": [
-        "src/**",
+        "**/tsconfig.*.json",
+        "**/tsconfig.json",
         "compat/**",
-        "third_party/**",
-        "**/tsconfig.*.json"
+        "src/**",
+        "third_party/**"
       ],
       "output": [
         "lib/esm/**",
