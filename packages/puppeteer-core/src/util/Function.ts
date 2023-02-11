@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google Inc. All rights reserved.
+ * Copyright 2023 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const createdFunctions = new Map<string, (...args: unknown[]) => unknown>();
 
 /**
+ * Creates a function from a string.
+ *
  * @internal
  */
-export const xpathQuerySelectorAll = function* (
-  root: Node,
-  selector: string
-): Iterable<Node> {
-  const doc = root.ownerDocument || document;
-  const iterator = doc.evaluate(
-    selector,
-    root,
-    null,
-    XPathResult.ORDERED_NODE_ITERATOR_TYPE
-  );
-  let item;
-  while ((item = iterator.iterateNext())) {
-    yield item;
+export const createFunction = (
+  functionValue: string
+): ((...args: unknown[]) => unknown) => {
+  let fn = createdFunctions.get(functionValue);
+  if (fn) {
+    return fn;
   }
+  fn = new Function(`return ${functionValue}`)() as (
+    ...args: unknown[]
+  ) => unknown;
+  createdFunctions.set(functionValue, fn);
+  return fn;
 };

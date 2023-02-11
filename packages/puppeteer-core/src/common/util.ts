@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 import type {Readable} from 'stream';
+import type {ElementHandle} from '../api/ElementHandle.js';
+import type {JSHandle} from '../api/JSHandle.js';
 import {isNode} from '../environment.js';
 import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
-import {CDPSession} from './Connection.js';
+import type {CDPSession} from './Connection.js';
 import {debug} from './Debug.js';
-import {ElementHandle} from '../api/ElementHandle.js';
 import {CDPElementHandle} from './ElementHandle.js';
 import {TimeoutError} from './Errors.js';
-import {CommonEventEmitter} from './EventEmitter.js';
-import {ExecutionContext} from './ExecutionContext.js';
-import {JSHandle} from '../api/JSHandle.js';
+import type {CommonEventEmitter} from './EventEmitter.js';
+import type {ExecutionContext} from './ExecutionContext.js';
 import {CDPJSHandle} from './JSHandle.js';
+
 /**
  * @internal
  */

@@ -35,6 +35,11 @@ export type BindingPayload = {
 /**
  * @public
  */
+export type AwaitableIterable<T> = Iterable<T> | AsyncIterable<T>;
+
+/**
+ * @public
+ */
 export type Awaitable<T> = T | PromiseLike<T>;
 
 /**

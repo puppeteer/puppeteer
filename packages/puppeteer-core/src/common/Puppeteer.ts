@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {Browser} from '../api/Browser.js';
 import {
   BrowserConnectOptions,
@@ -25,7 +26,7 @@ import {
   customQueryHandlerNames,
   registerCustomQueryHandler,
   unregisterCustomQueryHandler,
-} from './QueryHandler.js';
+} from './CustomQueryHandler.js';
 
 /**
  * Settings that are common to the Puppeteer class, regardless of environment.
