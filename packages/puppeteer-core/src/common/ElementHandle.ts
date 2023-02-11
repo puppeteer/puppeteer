@@ -31,9 +31,10 @@ import {CDPSession} from './Connection.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
+import {getQueryHandlerAndSelector} from './GetQueryHandler.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
+import {IterableUtil} from './IterableUtil.js';
 import {CDPPage} from './Page.js';
-import {getQueryHandlerAndSelector} from './QueryHandler.js';
 import {
   ElementFor,
   EvaluateFuncWith,
@@ -183,10 +184,6 @@ export class CDPElementHandle<
   ): Promise<CDPElementHandle<NodeFor<Selector>> | null> {
     const {updatedSelector, queryHandler} =
       getQueryHandlerAndSelector(selector);
-    assert(
-      queryHandler.queryOne,
-      'Cannot handle queries for a single element with the given selector'
-    );
     return (await queryHandler.queryOne(
       this,
       updatedSelector
@@ -198,13 +195,9 @@ export class CDPElementHandle<
   ): Promise<Array<CDPElementHandle<NodeFor<Selector>>>> {
     const {updatedSelector, queryHandler} =
       getQueryHandlerAndSelector(selector);
-    assert(
-      queryHandler.queryAll,
-      'Cannot handle queries for a multiple element with the given selector'
-    );
-    return (await queryHandler.queryAll(this, updatedSelector)) as Array<
-      CDPElementHandle<NodeFor<Selector>>
-    >;
+    return IterableUtil.collect(
+      queryHandler.queryAll(this, updatedSelector)
+    ) as Promise<Array<CDPElementHandle<NodeFor<Selector>>>>;
   }
 
   override async $eval<
@@ -242,23 +235,14 @@ export class CDPElementHandle<
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
-    const {updatedSelector, queryHandler} =
-      getQueryHandlerAndSelector(selector);
-    assert(
-      queryHandler.queryAll,
-      'Cannot handle queries for a multiple element with the given selector'
-    );
-    const handles = (await queryHandler.queryAll(
-      this,
-      updatedSelector
-    )) as Array<HandleFor<NodeFor<Selector>>>;
-    const elements = (await this.evaluateHandle((_, ...elements) => {
+    const results = await this.$$(selector);
+    const elements = await this.evaluateHandle((_, ...elements) => {
       return elements;
-    }, ...handles)) as JSHandle<Array<NodeFor<Selector>>>;
+    }, ...results);
     const [result] = await Promise.all([
       elements.evaluate(pageFunction, ...args),
-      ...handles.map(handle => {
-        return handle.dispose();
+      ...results.map(results => {
+        return results.dispose();
       }),
     ]);
     await elements.dispose();
@@ -280,7 +264,6 @@ export class CDPElementHandle<
   ): Promise<CDPElementHandle<NodeFor<Selector>> | null> {
     const {updatedSelector, queryHandler} =
       getQueryHandlerAndSelector(selector);
-    assert(queryHandler.waitFor, 'Query handler does not support waiting');
     return (await queryHandler.waitFor(
       this,
       updatedSelector,

@@ -16,46 +16,43 @@
 
 import {Protocol} from 'devtools-protocol';
 
+import {ElementHandle} from '../api/ElementHandle.js';
 import {assert} from '../util/assert.js';
 import {CDPSession} from './Connection.js';
-import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
-
-import type {ElementHandle} from '../api/ElementHandle.js';
-import type {PuppeteerQueryHandler} from './QueryHandler.js';
 import type {Frame} from './Frame.js';
+import type {WaitForSelectorOptions} from './IsolatedWorld.js';
+import {IterableUtil} from './IterableUtil.js';
+import {QueryHandler, QuerySelector} from './QueryHandler.js';
+import {AwaitableIterable} from './types.js';
 
-async function queryAXTree(
+const queryAXTree = async (
   client: CDPSession,
   element: ElementHandle<Node>,
   accessibleName?: string,
   role?: string
-): Promise<Protocol.Accessibility.AXNode[]> {
+): Promise<Protocol.Accessibility.AXNode[]> => {
   const {nodes} = await client.send('Accessibility.queryAXTree', {
     objectId: element.remoteObject().objectId,
     accessibleName,
     role,
   });
-  const filteredNodes: Protocol.Accessibility.AXNode[] = nodes.filter(
-    (node: Protocol.Accessibility.AXNode) => {
-      return !node.role || node.role.value !== 'StaticText';
-    }
-  );
-  return filteredNodes;
-}
+  return nodes.filter((node: Protocol.Accessibility.AXNode) => {
+    return !node.role || node.role.value !== 'StaticText';
+  });
+};
+
+type ARIASelector = {name?: string; role?: string};
+
+const KNOWN_ATTRIBUTES = Object.freeze(['name', 'role']);
+const isKnownAttribute = (
+  attribute: string
+): attribute is keyof ARIASelector => {
+  return KNOWN_ATTRIBUTES.includes(attribute);
+};
 
 const normalizeValue = (value: string): string => {
   return value.replace(/ +/g, ' ').trim();
 };
-const knownAttributes = new Set(['name', 'role']);
-const attributeRegexp =
-  /\[\s*(?<attribute>\w+)\s*=\s*(?<quote>"|')(?<value>\\.|.*?(?=\k<quote>))\k<quote>\s*\]/g;
-
-type ARIAQueryOption = {name?: string; role?: string};
-function isKnownAttribute(
-  attribute: string
-): attribute is keyof ARIAQueryOption {
-  return knownAttributes.has(attribute);
-}
 
 /**
  * The selectors consist of an accessible name to query for and optionally
@@ -68,11 +65,13 @@ function isKnownAttribute(
  * - 'label' queries for elements with name 'label' and any role.
  * - '[name=""][role="button"]' queries for elements with no name and role 'button'.
  */
-function parseAriaSelector(selector: string): ARIAQueryOption {
-  const queryOptions: ARIAQueryOption = {};
+const ATTRIBUTE_REGEXP =
+  /\[\s*(?<attribute>\w+)\s*=\s*(?<quote>"|')(?<value>\\.|.*?(?=\k<quote>))\k<quote>\s*\]/g;
+const parseARIASelector = (selector: string): ARIASelector => {
+  const queryOptions: ARIASelector = {};
   const defaultName = selector.replace(
-    attributeRegexp,
-    (_, attribute: string, _quote: string, value: string) => {
+    ATTRIBUTE_REGEXP,
+    (_, attribute, __, value) => {
       attribute = attribute.trim();
       assert(
         isKnownAttribute(attribute),
@@ -86,104 +85,56 @@ function parseAriaSelector(selector: string): ARIAQueryOption {
     queryOptions.name = normalizeValue(defaultName);
   }
   return queryOptions;
-}
-
-const queryOneId = async (element: ElementHandle<Node>, selector: string) => {
-  const {name, role} = parseAriaSelector(selector);
-  const res = await queryAXTree(element.client, element, name, role);
-  if (!res[0] || !res[0].backendDOMNodeId) {
-    return null;
-  }
-  return res[0].backendDOMNodeId;
-};
-
-const queryOne: PuppeteerQueryHandler['queryOne'] = async (
-  element,
-  selector
-) => {
-  const id = await queryOneId(element, selector);
-  if (!id) {
-    return null;
-  }
-  return (await element.frame.worlds[MAIN_WORLD].adoptBackendNode(
-    id
-  )) as ElementHandle<Node>;
-};
-
-const waitFor: PuppeteerQueryHandler['waitFor'] = async (
-  elementOrFrame,
-  selector,
-  options
-) => {
-  let frame: Frame;
-  let element: ElementHandle<Node> | undefined;
-  if ('isOOPFrame' in elementOrFrame) {
-    frame = elementOrFrame;
-  } else {
-    frame = elementOrFrame.frame;
-    element = await frame.worlds[PUPPETEER_WORLD].adoptHandle(elementOrFrame);
-  }
-
-  const ariaQuerySelector = async (selector: string) => {
-    const id = await queryOneId(
-      element || (await frame.worlds[PUPPETEER_WORLD].document()),
-      selector
-    );
-    if (!id) {
-      return null;
-    }
-    return (await frame.worlds[PUPPETEER_WORLD].adoptBackendNode(
-      id
-    )) as ElementHandle<Node>;
-  };
-
-  const result = await frame.worlds[PUPPETEER_WORLD]._waitForSelectorInPage(
-    (_: Element, selector: string) => {
-      return (
-        globalThis as unknown as {
-          ariaQuerySelector(selector: string): Node | null;
-        }
-      ).ariaQuerySelector(selector);
-    },
-    element,
-    selector,
-    options,
-    new Map([['ariaQuerySelector', ariaQuerySelector]])
-  );
-  if (element) {
-    await element.dispose();
-  }
-
-  const handle = result?.asElement();
-  if (!handle) {
-    await result?.dispose();
-    return null;
-  }
-  return handle.frame.worlds[MAIN_WORLD].transferHandle(handle);
-};
-
-const queryAll: PuppeteerQueryHandler['queryAll'] = async (
-  element,
-  selector
-) => {
-  const exeCtx = element.executionContext();
-  const {name, role} = parseAriaSelector(selector);
-  const res = await queryAXTree(exeCtx._client, element, name, role);
-  const world = exeCtx._world!;
-  return Promise.all(
-    res.map(axNode => {
-      return world.adoptBackendNode(axNode.backendDOMNodeId) as Promise<
-        ElementHandle<Node>
-      >;
-    })
-  );
 };
 
 /**
  * @internal
  */
-export const ariaHandler: PuppeteerQueryHandler = {
-  queryOne,
-  waitFor,
-  queryAll,
-};
+export interface ARIAQuerySelectorContext {
+  __ariaQuerySelector(node: Node, selector: string): Promise<Node | null>;
+}
+
+/**
+ * @internal
+ */
+export class ARIAQueryHandler extends QueryHandler {
+  static override querySelector: QuerySelector = async (node, selector) => {
+    const context = globalThis as unknown as ARIAQuerySelectorContext;
+    return context.__ariaQuerySelector(node, selector);
+  };
+
+  static override async *queryAll(
+    element: ElementHandle<Node>,
+    selector: string
+  ): AwaitableIterable<ElementHandle<Node>> {
+    const context = element.executionContext();
+    const {name, role} = parseARIASelector(selector);
+    const results = await queryAXTree(context._client, element, name, role);
+    const world = context._world!;
+    yield* IterableUtil.map(results, node => {
+      return world.adoptBackendNode(node.backendDOMNodeId) as Promise<
+        ElementHandle<Node>
+      >;
+    });
+  }
+
+  static override queryOne = async (
+    element: ElementHandle<Node>,
+    selector: string
+  ): Promise<ElementHandle<Node> | null> => {
+    return (await IterableUtil.first(this.queryAll(element, selector))) ?? null;
+  };
+
+  static override async waitFor(
+    elementOrFrame: ElementHandle<Node> | Frame,
+    selector: string,
+    options: WaitForSelectorOptions
+  ): Promise<ElementHandle<Node> | null> {
+    return super.waitFor(
+      elementOrFrame,
+      selector,
+      options,
+      new Map([['__ariaQuerySelector', this.queryOne]])
+    );
+  }
+}
