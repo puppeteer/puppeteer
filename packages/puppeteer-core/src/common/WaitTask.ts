@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import {ElementHandle} from '../api/ElementHandle.js';
+import {JSHandle} from '../api/JSHandle.js';
 import type {Poller} from '../injected/Poller.js';
 import {createDeferredPromise} from '../util/DeferredPromise.js';
-import {ElementHandle} from '../api/ElementHandle.js';
+import {Binding} from './Binding.js';
 import {TimeoutError} from './Errors.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
-import {JSHandle} from '../api/JSHandle.js';
 import {LazyArg} from './LazyArg.js';
 import {HandleFor} from './types.js';
 
@@ -84,7 +85,10 @@ export class WaitTask<T = unknown> {
 
     if (this.#bindings.size !== 0) {
       for (const [name, fn] of this.#bindings) {
-        this.#world._boundFunctions.set(name, fn);
+        this.#world._bindings.set(
+          name,
+          new Binding(name, fn as (...args: unknown[]) => unknown)
+        );
       }
     }
 

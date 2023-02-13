@@ -270,82 +270,57 @@ export function evaluationString(
 /**
  * @internal
  */
-export function pageBindingInitString(type: string, name: string): string {
-  function addPageBinding(type: string, name: string): void {
-    // This is the CDP binding.
-    // @ts-expect-error: In a different context.
-    const callCDP = self[name];
+export function addPageBinding(type: string, name: string): void {
+  // This is the CDP binding.
+  // @ts-expect-error: In a different context.
+  const callCDP = globalThis[name];
 
-    // We replace the CDP binding with a Puppeteer binding.
-    Object.assign(self, {
-      [name](...args: unknown[]): Promise<unknown> {
-        // This is the Puppeteer binding.
-        // @ts-expect-error: In a different context.
-        const callPuppeteer = self[name];
-        callPuppeteer.callbacks ??= new Map();
-        const seq = (callPuppeteer.lastSeq ?? 0) + 1;
-        callPuppeteer.lastSeq = seq;
-        callCDP(JSON.stringify({type, name, seq, args}));
-        return new Promise((resolve, reject) => {
-          callPuppeteer.callbacks.set(seq, {resolve, reject});
+  // We replace the CDP binding with a Puppeteer binding.
+  Object.assign(globalThis, {
+    [name](...args: unknown[]): Promise<unknown> {
+      // This is the Puppeteer binding.
+      // @ts-expect-error: In a different context.
+      const callPuppeteer = globalThis[name];
+      callPuppeteer.args ??= new Map();
+      callPuppeteer.callbacks ??= new Map();
+
+      const seq = (callPuppeteer.lastSeq ?? 0) + 1;
+      callPuppeteer.lastSeq = seq;
+      callPuppeteer.args.set(seq, args);
+
+      callCDP(
+        JSON.stringify({
+          type,
+          name,
+          seq,
+          args,
+          isTrivial: !args.some(value => {
+            return value instanceof Node;
+          }),
+        })
+      );
+
+      return new Promise((resolve, reject) => {
+        callPuppeteer.callbacks.set(seq, {
+          resolve(value: unknown) {
+            callPuppeteer.args.delete(seq);
+            resolve(value);
+          },
+          reject(value?: unknown) {
+            callPuppeteer.args.delete(seq);
+            reject(value);
+          },
         });
-      },
-    });
-  }
+      });
+    },
+  });
+}
+
+/**
+ * @internal
+ */
+export function pageBindingInitString(type: string, name: string): string {
   return evaluationString(addPageBinding, type, name);
-}
-
-/**
- * @internal
- */
-export function pageBindingDeliverResultString(
-  name: string,
-  seq: number,
-  result: unknown
-): string {
-  function deliverResult(name: string, seq: number, result: unknown): void {
-    (window as any)[name].callbacks.get(seq).resolve(result);
-    (window as any)[name].callbacks.delete(seq);
-  }
-  return evaluationString(deliverResult, name, seq, result);
-}
-
-/**
- * @internal
- */
-export function pageBindingDeliverErrorString(
-  name: string,
-  seq: number,
-  message: string,
-  stack?: string
-): string {
-  function deliverError(
-    name: string,
-    seq: number,
-    message: string,
-    stack?: string
-  ): void {
-    const error = new Error(message);
-    error.stack = stack;
-    (window as any)[name].callbacks.get(seq).reject(error);
-    (window as any)[name].callbacks.delete(seq);
-  }
-  return evaluationString(deliverError, name, seq, message, stack);
-}
-
-/**
- * @internal
- */
-export function pageBindingDeliverErrorValueString(
-  name: string,
-  seq: number,
-  value: unknown
-): string {
-  function deliverErrorValue(name: string, seq: number, value: unknown): void {
-    (window as any)[name].callbacks.get(seq).reject(value);
-    (window as any)[name].callbacks.delete(seq);
-  }
-  return evaluationString(deliverErrorValue, name, seq, value);
 }
 
 /**
