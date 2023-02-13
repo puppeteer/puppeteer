@@ -78,6 +78,13 @@ export type EvaluateFunc<T extends unknown[]> = (
 /**
  * @public
  */
+export type EvaluateFuncWith<V, T extends unknown[]> = (
+  ...params: [V, ...InnerParams<T>]
+) => Awaitable<unknown>;
+
+/**
+ * @public
+ */
 export type NodeFor<ComplexSelector extends string> =
   TypeSelectorOfComplexSelector<ComplexSelector> extends infer TypeSelector
     ? TypeSelector extends

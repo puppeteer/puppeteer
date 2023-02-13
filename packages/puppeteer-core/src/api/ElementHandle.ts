@@ -15,15 +15,20 @@
  */
 
 import {Protocol} from 'devtools-protocol';
+import {CDPSession} from '../common/Connection.js';
+import {ExecutionContext} from '../common/ExecutionContext.js';
 import {Frame} from '../common/Frame.js';
+import {MouseButton} from '../common/Input.js';
 import {WaitForSelectorOptions} from '../common/IsolatedWorld.js';
+import {
+  ElementFor,
+  EvaluateFuncWith,
+  HandleFor,
+  NodeFor,
+} from '../common/types.js';
+import {KeyInput} from '../common/USKeyboardLayout.js';
 import {JSHandle} from './JSHandle.js';
 import {ScreenshotOptions} from './Page.js';
-import {ElementFor, EvaluateFunc, HandleFor, NodeFor} from '../common/types.js';
-import {KeyInput} from '../common/USKeyboardLayout.js';
-import {MouseButton} from '../common/Input.js';
-import {ExecutionContext} from '../common/ExecutionContext.js';
-import {CDPSession} from '../common/Connection.js';
 
 /**
  * @public
@@ -234,21 +239,16 @@ export class ElementHandle<
   async $eval<
     Selector extends string,
     Params extends unknown[],
-    Func extends EvaluateFunc<
-      [ElementHandle<NodeFor<Selector>>, ...Params]
-    > = EvaluateFunc<[ElementHandle<NodeFor<Selector>>, ...Params]>
+    Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
+      NodeFor<Selector>,
+      Params
+    >
   >(
     selector: Selector,
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
-  async $eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFunc<
-      [ElementHandle<NodeFor<Selector>>, ...Params]
-    > = EvaluateFunc<[ElementHandle<NodeFor<Selector>>, ...Params]>
-  >(): Promise<Awaited<ReturnType<Func>>> {
+  async $eval(): Promise<unknown> {
     throw new Error('Not implemented');
   }
 
@@ -288,21 +288,16 @@ export class ElementHandle<
   async $$eval<
     Selector extends string,
     Params extends unknown[],
-    Func extends EvaluateFunc<
-      [HandleFor<Array<NodeFor<Selector>>>, ...Params]
-    > = EvaluateFunc<[HandleFor<Array<NodeFor<Selector>>>, ...Params]>
+    Func extends EvaluateFuncWith<
+      Array<NodeFor<Selector>>,
+      Params
+    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>
   >(
     selector: Selector,
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
-  async $$eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFunc<
-      [HandleFor<Array<NodeFor<Selector>>>, ...Params]
-    > = EvaluateFunc<[HandleFor<Array<NodeFor<Selector>>>, ...Params]>
-  >(): Promise<Awaited<ReturnType<Func>>> {
+  async $$eval(): Promise<unknown> {
     throw new Error('Not implemented');
   }
 

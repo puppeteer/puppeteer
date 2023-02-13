@@ -15,17 +15,28 @@
  */
 
 import {Protocol} from 'devtools-protocol';
+import {
+  BoundingBox,
+  BoxModel,
+  ClickOptions,
+  ElementHandle,
+  Offset,
+  Point,
+  PressOptions,
+} from '../api/ElementHandle.js';
+import {JSHandle} from '../api/JSHandle.js';
+import {Page, ScreenshotOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
+import {CDPSession} from './Connection.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
-import {JSHandle} from '../api/JSHandle.js';
-import {Page, ScreenshotOptions} from '../api/Page.js';
+import {CDPPage} from './Page.js';
 import {getQueryHandlerAndSelector} from './QueryHandler.js';
 import {
   ElementFor,
-  EvaluateFunc,
+  EvaluateFuncWith,
   HandleFor,
   HandleOr,
   NodeFor,
@@ -37,17 +48,6 @@ import {
   releaseObject,
   valueFromRemoteObject,
 } from './util.js';
-import {CDPPage} from './Page.js';
-import {
-  BoundingBox,
-  BoxModel,
-  ClickOptions,
-  ElementHandle,
-  Offset,
-  Point,
-  PressOptions,
-} from '../api/ElementHandle.js';
-import {CDPSession} from './Connection.js';
 
 const applyOffsetsToQuad = (
   quad: Point[],
@@ -105,29 +105,27 @@ export class CDPElementHandle<
 
   override async evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
-      [this, ...Params]
+    Func extends EvaluateFuncWith<ElementType, Params> = EvaluateFuncWith<
+      ElementType,
+      Params
     >
   >(
-    pageFunction: string | Func,
+    pageFunction: Func | string,
     ...args: Params
-  ): // @ts-expect-error Circularity here is okay because we only need the return
-  // type which doesn't use `this`.
-  Promise<Awaited<ReturnType<Func>>> {
+  ): Promise<Awaited<ReturnType<Func>>> {
     return this.executionContext().evaluate(pageFunction, this, ...args);
   }
 
   override evaluateHandle<
     Params extends unknown[],
-    Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
-      [this, ...Params]
+    Func extends EvaluateFuncWith<ElementType, Params> = EvaluateFuncWith<
+      ElementType,
+      Params
     >
   >(
-    pageFunction: string | Func,
+    pageFunction: Func | string,
     ...args: Params
-  ): // @ts-expect-error Circularity here is okay because we only need the return
-  // type which doesn't use `this`.
-  Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     return this.executionContext().evaluateHandle(pageFunction, this, ...args);
   }
 
@@ -212,16 +210,15 @@ export class CDPElementHandle<
   override async $eval<
     Selector extends string,
     Params extends unknown[],
-    Func extends EvaluateFunc<
-      [CDPElementHandle<NodeFor<Selector>>, ...Params]
-    > = EvaluateFunc<[CDPElementHandle<NodeFor<Selector>>, ...Params]>
+    Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
+      NodeFor<Selector>,
+      Params
+    >
   >(
     selector: Selector,
     pageFunction: Func | string,
     ...args: Params
-  ): // @ts-expect-error Circularity here is okay because we only need the return
-  // type which doesn't use `this`.
-  Promise<Awaited<ReturnType<Func>>> {
+  ): Promise<Awaited<ReturnType<Func>>> {
     const elementHandle = await this.$(selector);
     if (!elementHandle) {
       throw new Error(
@@ -236,9 +233,10 @@ export class CDPElementHandle<
   override async $$eval<
     Selector extends string,
     Params extends unknown[],
-    Func extends EvaluateFunc<
-      [HandleFor<Array<NodeFor<Selector>>>, ...Params]
-    > = EvaluateFunc<[HandleFor<Array<NodeFor<Selector>>>, ...Params]>
+    Func extends EvaluateFuncWith<
+      Array<NodeFor<Selector>>,
+      Params
+    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>
   >(
     selector: Selector,
     pageFunction: Func | string,
