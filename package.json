@@ -7,8 +7,8 @@
   },
   "scripts": {
     "bisect": "tsx tools/bisect.ts",
-    "build": "npm run build --workspaces --if-present",
-    "build:docs": "npm run build:docs --workspace puppeteer --if-present",
+    "build": "wireit",
+    "build:docs": "wireit",
     "check:pinned-deps": "tsx tools/ensure-pinned-deps",
     "check": "npm run check --workspaces --if-present && run-p check:*",
     "clean": "rimraf **/.wireit && npm run clean --workspaces --if-present",
@@ -26,16 +26,91 @@
     "prepare": "husky install",
     "test-install": "npm run test --workspace @puppeteer-test/installation",
     "test-types": "tsd -t packages/puppeteer",
-    "test:chrome:headful": "npm test -- --test-suite chrome-headful",
-    "test:chrome:new-headless": "npm test -- --test-suite chrome-new-headless",
-    "test:chrome:headless": "npm test -- --test-suite chrome-headless",
-    "test:chrome:bidi": "npm test -- --test-suite chrome-bidi",
-    "test:chrome": "run-s test:chrome:*",
-    "test:firefox:bidi": "npm test -- --test-suite firefox-bidi",
-    "test:firefox:headful": "npm test -- --test-suite firefox-headful",
-    "test:firefox:headless": "npm test -- --test-suite firefox-headless",
-    "test:firefox": "run-s test:firefox:*",
+    "test:chrome:headful": "wireit",
+    "test:chrome:new-headless": "wireit",
+    "test:chrome:headless": "wireit",
+    "test:chrome:bidi": "wireit",
+    "test:chrome": "wireit",
+    "test:firefox:bidi": "wireit",
+    "test:firefox:headful": "wireit",
+    "test:firefox:headless": "wireit",
+    "test:firefox": "wireit",
     "test": "cross-env PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 node tools/mochaRunner/lib/main.js"
+  },
+  "wireit": {
+    "build": {
+      "dependencies": [
+        "./packages/ng-schematics:build",
+        "./packages/puppeteer-core:build",
+        "./packages/puppeteer:build",
+        "./packages/testserver:build",
+        "./test:build",
+        "./test/installation:build"
+      ]
+    },
+    "build:docs": {
+      "dependencies": [
+        "./packages/puppeteer:build:docs",
+        "./packages/puppeteer-core:build:docs"
+      ]
+    },
+    "test:chrome:headful": {
+      "command": "npm test -- --test-suite chrome-headful",
+      "dependencies": [
+        "./test:build"
+      ]
+    },
+    "test:chrome:headless": {
+      "command": "npm test -- --test-suite chrome-headless",
+      "dependencies": [
+        "./test:build"
+      ]
+    },
+    "test:chrome:new-headless": {
+      "command": "npm test -- --test-suite chrome-new-headless",
+      "dependencies": [
+        "./test:build"
+      ]
+    },
+    "test:chrome:bidi": {
+      "command": "npm test -- --test-suite chrome-bidi",
+      "dependencies": [
+        "./test:build"
+      ]
+    },
+    "test:firefox:headful": {
+      "command": "npm test -- --test-suite firefox-headful",
+      "dependencies": [
+        "./test:build"
+      ]
+    },
+    "test:firefox:headless": {
+      "command": "npm test -- --test-suite firefox-headless",
+      "dependencies": [
+        "./test:build"
+      ]
+    },
+    "test:firefox:bidi": {
+      "command": "npm test -- --test-suite firefox-bidi",
+      "dependencies": [
+        "./test:build"
+      ]
+    },
+    "test:chrome": {
+      "dependencies": [
+        "test:chrome:headful",
+        "test:chrome:headless",
+        "test:chrome:new-headless",
+        "test:chrome:bidi"
+      ]
+    },
+    "test:firefox": {
+      "dependencies": [
+        "test:firefox:headful",
+        "test:firefox:headless",
+        "test:firefox:bidi"
+      ]
+    }
   },
   "devDependencies": {
     "@actions/core": "1.10.0",
@@ -96,7 +171,6 @@
     "prettier": "2.8.1",
     "puppeteer": "file:packages/puppeteer",
     "rollup": "3.12.1",
-    "rollup-plugin-copy": "3.4.0",
     "semver": "7.3.8",
     "sinon": "15.0.1",
     "source-map-support": "0.5.21",
