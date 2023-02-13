@@ -15,6 +15,7 @@
  */
 
 import {BrowserPlatform} from './types.js';
+import path from 'path';
 
 function archive(platform: BrowserPlatform, revision: string): string {
   switch (platform) {
@@ -24,7 +25,6 @@ function archive(platform: BrowserPlatform, revision: string): string {
     case BrowserPlatform.MAC:
       return `firefox-${revision}.en-US.mac.dmg`;
     case BrowserPlatform.WIN32:
-      return `firefox-${revision}.en-US.${platform}.zip`;
     case BrowserPlatform.WIN64:
       return `firefox-${revision}.en-US.${platform}.zip`;
   }
@@ -36,4 +36,28 @@ export function resolveDownloadUrl(
   baseUrl = 'https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central'
 ): string {
   return `${baseUrl}/${archive(platform, revision)}`;
+}
+
+export function executablePath(
+  platform: BrowserPlatform,
+  revision: string,
+  basePath = ''
+): string {
+  const browserPath = path.join(basePath, `${platform}-${revision}`);
+  switch (platform) {
+    case BrowserPlatform.MAC_ARM:
+    case BrowserPlatform.MAC:
+      return path.join(
+        browserPath,
+        'Firefox Nightly.app',
+        'Contents',
+        'MacOS',
+        'firefox'
+      );
+    case BrowserPlatform.LINUX:
+      return path.join(browserPath, 'firefox', 'firefox');
+    case BrowserPlatform.WIN32:
+    case BrowserPlatform.WIN64:
+      return path.join(browserPath, 'firefox', 'firefox.exe');
+  }
 }

@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import {resolveDownloadUrl} from '../../lib/cjs/browsers/chrome.js';
+import {
+  resolveDownloadUrl,
+  executablePath,
+} from '../../lib/cjs/browsers/chrome.js';
 import {BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
 import assert from 'assert';
+import path from 'path';
 
 describe('Chrome', () => {
   it('should resolve download URLs', () => {
@@ -39,6 +43,35 @@ describe('Chrome', () => {
     assert.strictEqual(
       resolveDownloadUrl(BrowserPlatform.WIN64, '1083080'),
       'https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/1083080/chrome-win.zip'
+    );
+  });
+
+  it('should resolve executable paths', () => {
+    assert.strictEqual(
+      executablePath(BrowserPlatform.LINUX, '12372323'),
+      path.join('linux-12372323', 'chrome')
+    );
+    assert.strictEqual(
+      executablePath(BrowserPlatform.MAC, '12372323'),
+      path.join('mac-12372323', 'Chromium.app', 'Contents', 'MacOS', 'Chromium')
+    );
+    assert.strictEqual(
+      executablePath(BrowserPlatform.MAC_ARM, '12372323'),
+      path.join(
+        'mac_arm-12372323',
+        'Chromium.app',
+        'Contents',
+        'MacOS',
+        'Chromium'
+      )
+    );
+    assert.strictEqual(
+      executablePath(BrowserPlatform.WIN32, '12372323'),
+      path.join('win32-12372323', 'chrome.exe')
+    );
+    assert.strictEqual(
+      executablePath(BrowserPlatform.WIN64, '12372323'),
+      path.join('win64-12372323', 'chrome.exe')
     );
   });
 });
