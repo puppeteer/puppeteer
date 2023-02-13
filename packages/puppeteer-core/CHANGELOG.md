@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.7.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.6.3...puppeteer-core-v19.7.0) (2023-02-13)
+
+
+### Features
+
+* add touchstart, touchmove and touchend methods ([#9622](https://github.com/puppeteer/puppeteer/issues/9622)) ([c8bb11a](https://github.com/puppeteer/puppeteer/commit/c8bb11adfcf1537032730a91baa3c36a6e324926))
+* **chromium:** roll to Chromium 111.0.5556.0 (r1095492) ([#9656](https://github.com/puppeteer/puppeteer/issues/9656)) ([df59d01](https://github.com/puppeteer/puppeteer/commit/df59d010c20644da06eb4c4e28a11c4eea164aba))
+
+
+### Bug Fixes
+
+* `page.goto` error throwing on 40x/50x responses with an empty body ([#9523](https://github.com/puppeteer/puppeteer/issues/9523)) ([#9577](https://github.com/puppeteer/puppeteer/issues/9577)) ([ddb0cc1](https://github.com/puppeteer/puppeteer/commit/ddb0cc174d2a14c0948dcdaf9bae78620937c667))
+
 ## [19.6.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.6.2...puppeteer-core-v19.6.3) (2023-02-01)
 
 
