@@ -20,7 +20,7 @@ import path from 'path';
 (async () => {
   const pathToExtension = path.join(process.cwd(), 'my-extension');
   const browser = await puppeteer.launch({
-    headless: 'chrome',
+    headless: 'new',
     args: [
       `--disable-extensions-except=${pathToExtension}`,
       `--load-extension=${pathToExtension}`,
