@@ -173,7 +173,6 @@ export class Frame {
   #url = '';
   #detached = false;
   #client!: CDPSession;
-  #deviceRequestPromptManager: DeviceRequestPromptManager;
 
   /**
    * @internal
@@ -222,10 +221,6 @@ export class Frame {
     this._id = frameId;
     this._parentId = parentFrameId;
     this.#detached = false;
-    this.#deviceRequestPromptManager = new DeviceRequestPromptManager(
-      client,
-      this._frameManager.timeoutSettings
-    );
 
     this._loaderId = '';
 
@@ -1093,6 +1088,16 @@ export class Frame {
   }
 
   /**
+   * @internal
+   */
+  _deviceRequestPromptManager(): DeviceRequestPromptManager {
+    if (this.isOOPFrame()) {
+      return this._frameManager._deviceRequestPromptManager(this.#client);
+    }
+    return this.parentFrame()!._deviceRequestPromptManager();
+  }
+
+  /**
    * This method is typically coupled with an action that triggers a device
    * request from an api such as WebBluetooth.
    *
@@ -1118,7 +1123,7 @@ export class Frame {
   waitForDevicePrompt(
     options: WaitTimeoutOptions = {}
   ): Promise<DeviceRequestPrompt> {
-    return this.#deviceRequestPromptManager.waitForDevicePrompt(options);
+    return this._deviceRequestPromptManager().waitForDevicePrompt(options);
   }
 
   /**
