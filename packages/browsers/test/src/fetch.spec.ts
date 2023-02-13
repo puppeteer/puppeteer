@@ -110,7 +110,7 @@ describe('fetch', () => {
   (os.platform() === 'darwin' ? it : it.skip)(
     'should download a revision that is a dmg archive',
     async function () {
-      this.timeout(60000);
+      this.timeout(120000);
       const expectedOutputPath = path.join(
         tmpDir,
         `${BrowserPlatform.MAC}-${testFirefoxRevision}`

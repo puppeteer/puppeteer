@@ -23,4 +23,9 @@ export const downloadUrls = {
   [Browser.FIREFOX]: firefox.resolveDownloadUrl,
 };
 
+export const executablePathByBrowser = {
+  [Browser.CHROME]: chrome.executablePath,
+  [Browser.FIREFOX]: firefox.executablePath,
+};
+
 export {Browser, BrowserPlatform};

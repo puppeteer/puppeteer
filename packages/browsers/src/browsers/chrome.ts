@@ -15,6 +15,7 @@
  */
 
 import {BrowserPlatform} from './types.js';
+import path from 'path';
 
 function archive(platform: BrowserPlatform, revision: string): string {
   switch (platform) {
@@ -54,4 +55,28 @@ export function resolveDownloadUrl(
     platform,
     revision
   )}.zip`;
+}
+
+export function executablePath(
+  platform: BrowserPlatform,
+  revision: string,
+  basePath = ''
+): string {
+  const browserPath = path.join(basePath, `${platform}-${revision}`);
+  switch (platform) {
+    case BrowserPlatform.MAC:
+    case BrowserPlatform.MAC_ARM:
+      return path.join(
+        browserPath,
+        'Chromium.app',
+        'Contents',
+        'MacOS',
+        'Chromium'
+      );
+    case BrowserPlatform.LINUX:
+      return path.join(browserPath, 'chrome');
+    case BrowserPlatform.WIN32:
+    case BrowserPlatform.WIN64:
+      return path.join(browserPath, 'chrome.exe');
+  }
 }
