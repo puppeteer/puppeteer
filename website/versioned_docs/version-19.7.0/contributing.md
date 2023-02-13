@@ -264,6 +264,16 @@ ensure this, the main `test` command runs coverage during testing.
 
 See [Debugging Tips](https://pptr.dev/guides/debugging).
 
+### Debugging Puppeteer tests via VSCode
+
+Copy the provided default `.vscode/launch.template.json` to `.vscode/launch.json` and then use the integrated VSCode debugger to debug test.
+
+Remember to build test before launching via:
+
+```sh
+npm run build --workspace @puppeteer-test/test
+```
+
 # For Project Maintainers
 
 ## Rolling new Chromium version

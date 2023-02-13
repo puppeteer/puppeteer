@@ -34,27 +34,23 @@ import puppeteer from 'puppeteer';
 class Page {
   waitForXPath(
     xpath: string,
-    options?: {
-      visible?: boolean;
-      hidden?: boolean;
-      timeout?: number;
-    }
+    options?: WaitForSelectorOptions
   ): Promise<ElementHandle<Node> | null>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                       | Description                                                                             |
-| --------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| xpath     | string                                                     | A [xpath](https://developer.mozilla.org/en-US/docs/Web/XPath) of an element to wait for |
-| options   | { visible?: boolean; hidden?: boolean; timeout?: number; } | <i>(Optional)</i> Optional waiting parameters                                           |
+| Parameter | Type                                                            | Description                                                                             |
+| --------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| xpath     | string                                                          | A [xpath](https://developer.mozilla.org/en-US/docs/Web/XPath) of an element to wait for |
+| options   | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) | <i>(Optional)</i> Optional waiting parameters                                           |
 
 **Returns:**
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;Node&gt; \| null&gt;
 
-Promise which resolves when element specified by xpath string is added to DOM. Resolves to `null` if waiting for `hidden: true` and xpath is not found in DOM.
+Promise which resolves when element specified by xpath string is added to DOM. Resolves to `null` if waiting for `hidden: true` and xpath is not found in DOM, otherwise resolves to `ElementHandle`.
 
 ## Remarks
 
