@@ -83,7 +83,8 @@
       "command": "tsc -b",
       "clean": "if-file-deleted",
       "dependencies": [
-        "../puppeteer-core:build"
+        "../puppeteer-core:build",
+        "generate:package-json"
       ],
       "files": [
         "src/**"
