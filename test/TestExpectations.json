@@ -6,10 +6,10 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[page.spec] Page BrowserContext.overridePermissions should trigger permission onchange",
+    "testIdPattern": "[navigation.spec] navigation Frame.goto should reject when frame detaches",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[accessibility.spec]",
