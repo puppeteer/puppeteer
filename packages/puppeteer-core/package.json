@@ -34,7 +34,6 @@
     "node": ">=14.1.0"
   },
   "scripts": {
-    "build:third_party": "wireit",
     "build:tsc": "wireit",
     "build:types": "wireit",
     "build:docs": "wireit",
@@ -59,7 +58,6 @@
     "build": {
       "dependencies": [
         "build:tsc",
-        "build:third_party",
         "format:types",
         "generate:package-json"
       ]
@@ -69,26 +67,11 @@
       "clean": "if-file-deleted",
       "files": [
         "../../versions.js",
-        "src/injected/**",
-        "src/templates/**",
+        "src/{injected,templates}/**",
         "tools/generate_sources.ts"
       ],
       "output": [
         "src/generated/*.ts"
-      ]
-    },
-    "build:third_party": {
-      "command": "rollup --config rollup.third_party.config.mjs",
-      "dependencies": [
-        "build:tsc"
-      ],
-      "files": [
-        ".wireit/third_party/**",
-        "rollup.third_party.config.mjs"
-      ],
-      "output": [
-        "lib/esm/third_party/**",
-        "lib/cjs/third_party/**"
       ]
     },
     "generate:package-json": {
@@ -114,8 +97,7 @@
         "lib/types.d.ts"
       ],
       "dependencies": [
-        "build:tsc",
-        "build:third_party"
+        "build:tsc"
       ]
     },
     "build:docs": {
@@ -144,24 +126,18 @@
       ]
     },
     "build:tsc": {
-      "command": "tsc -b",
+      "command": "tsc -b && rollup --config rollup.third_party.config.mjs",
       "clean": "if-file-deleted",
       "dependencies": [
         "generate:sources"
       ],
       "files": [
-        "**/tsconfig.*.json",
-        "**/tsconfig.json",
-        "compat/**/*.ts",
-        "src/**/*.ts",
-        "third_party/**/*.ts"
+        "rollup.third_party.config.mjs",
+        "**/tsconfig{.*,}.json",
+        "{compat,src,third_party}/**/*.ts"
       ],
       "output": [
-        ".wireit/third_party/**/*.{ts,js}",
-        "lib/{cjs,esm}/**/*.{ts,js}",
-        ".wireit/third_party/**/*.{ts,js}.map",
-        "lib/{cjs,esm}/**/*.{ts,js}.map",
-        "!lib/{cjs,esm}/third_party"
+        "lib/{cjs,esm}/**/*.{ts,js}{.map,}"
       ]
     }
   },

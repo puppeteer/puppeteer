@@ -13,49 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import glob from 'glob';
-import {nodeResolve} from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import copy from 'rollup-plugin-copy';
-import {dirname, join, relative} from 'path';
+import {nodeResolve} from '@rollup/plugin-node-resolve';
+import glob from 'glob';
 
 export default ['cjs', 'esm'].flatMap(outputType => {
   const configs = [];
   // Note we don't use path.join here. We cannot since `glob` does not support
   // the backslash path separator.
-  const sourcePath = `.wireit/third_party/${outputType}/`;
-  for (const file of glob.sync(`${sourcePath}**/*.js`)) {
-    const typesFile = `${file.slice(0, -3)}.d.ts`;
+  for (const file of glob.sync(`lib/${outputType}/third_party/**/*.js`)) {
     configs.push({
       input: file,
       output: {
-        file: join(
-          'lib',
-          outputType,
-          'third_party',
-          relative(sourcePath, file)
-        ),
+        file,
         format: outputType,
       },
-      plugins: [
-        commonjs(),
-        nodeResolve(),
-        copy({
-          targets: [
-            {
-              src: typesFile,
-              dest: dirname(
-                join(
-                  'lib',
-                  outputType,
-                  'third_party',
-                  relative(sourcePath, typesFile)
-                )
-              ),
-            },
-          ],
-        }),
-      ],
+      plugins: [commonjs(), nodeResolve()],
     });
   }
   return configs;

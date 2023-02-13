@@ -114,12 +114,11 @@
         "../puppeteer-core:build"
       ],
       "files": [
-        "**/tsconfig.*.json",
-        "**/tsconfig.json",
+        "**/tsconfig{.*,}.json",
         "src/**"
       ],
       "output": [
-        "lib/**"
+        "lib/{cjs,esm}/**/*.{ts,js}{.map,}"
       ]
     }
   },
