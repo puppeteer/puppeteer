@@ -34,12 +34,11 @@
     "node": ">=14.1.0"
   },
   "scripts": {
+    "build:docs": "wireit",
     "build:tsc": "wireit",
     "build:types": "wireit",
-    "build:docs": "wireit",
     "build": "wireit",
     "clean": "tsc -b --clean && rimraf lib",
-    "format:types": "wireit",
     "generate:package-json": "wireit",
     "postinstall": "node install.js",
     "prepack": "wireit"
@@ -57,15 +56,11 @@
     "build": {
       "dependencies": [
         "build:tsc",
-        "format:types",
-        "generate:package-json"
+        "build:types"
       ]
     },
     "generate:package-json": {
       "command": "tsx ../../tools/generate_module_package_json.ts lib/esm/package.json",
-      "dependencies": [
-        "build:tsc"
-      ],
       "files": [
         "../../tools/generate_module_package_json.ts"
       ],
@@ -73,38 +68,15 @@
         "lib/esm/package.json"
       ]
     },
-    "build:types": {
-      "command": "api-extractor run --local",
-      "dependencies": [
-        "build:tsc"
-      ],
-      "files": [
-        "tsconfig.json",
-        "api-extractor.json",
-        "lib/esm/puppeteer/types.d.ts"
-      ],
-      "output": [
-        "lib/types.d.ts"
-      ]
-    },
     "build:docs": {
       "command": "api-extractor run --local --config \"./api-extractor.docs.json\"",
+      "files": [
+        "api-extractor.docs.json",
+        "lib/esm/puppeteer/puppeteer-core.d.ts",
+        "tsconfig.json"
+      ],
       "dependencies": [
         "build:tsc"
-      ]
-    },
-    "format:types": {
-      "command": "eslint --cache-location .eslintcache --cache --ext=ts --no-ignore --no-eslintrc -c=../../.eslintrc.types.cjs --fix lib/types.d.ts",
-      "dependencies": [
-        "build:types"
-      ],
-      "clean": false,
-      "files": [
-        "lib/types.d.ts",
-        "../../.eslintrc.types.cjs"
-      ],
-      "output": [
-        "lib/types.d.ts"
       ]
     },
     "build:tsc": {
@@ -114,11 +86,26 @@
         "../puppeteer-core:build"
       ],
       "files": [
-        "**/tsconfig{.*,}.json",
         "src/**"
       ],
       "output": [
-        "lib/{cjs,esm}/**/*.{ts,js}{.map,}"
+        "lib/{cjs,esm}/**",
+        "!lib/esm/package.json"
+      ]
+    },
+    "build:types": {
+      "command": "api-extractor run --local && eslint --cache-location .eslintcache --cache --ext=ts --no-ignore --no-eslintrc -c=../../.eslintrc.types.cjs --fix lib/types.d.ts",
+      "files": [
+        "../../.eslintrc.types.cjs",
+        "api-extractor.json",
+        "lib/esm/puppeteer/types.d.ts",
+        "tsconfig.json"
+      ],
+      "output": [
+        "lib/types.d.ts"
+      ],
+      "dependencies": [
+        "build:tsc"
       ]
     }
   },
