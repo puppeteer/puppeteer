@@ -4,8 +4,21 @@
   "description": "testing server",
   "main": "lib/index.js",
   "scripts": {
-    "build": "tsc -b",
+    "build": "wireit",
     "clean": "tsc -b --clean && rimraf lib"
+  },
+  "wireit": {
+    "build": {
+      "command": "tsc -b",
+      "clean": "if-file-deleted",
+      "files": [
+        "src/**"
+      ],
+      "output": [
+        "lib/**",
+        "tsconfig.tsbuildinfo"
+      ]
+    }
   },
   "repository": {
     "type": "git",

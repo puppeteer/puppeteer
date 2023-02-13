@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import fs from 'fs';
+import {mkdirSync, writeFileSync} from 'fs';
+import {dirname} from 'path';
 
 /**
  * Outputs the dummy package.json file to the path specified
  * by the first argument.
  */
 
-fs.writeFileSync(process.argv[2], `{"type": "module"}`);
+mkdirSync(dirname(process.argv[2]), {recursive: true});
+writeFileSync(process.argv[2], `{"type": "module"}`);
