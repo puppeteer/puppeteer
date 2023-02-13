@@ -84,6 +84,9 @@ jobs:
             ng-schematics:
               - '.github/workflows/ci.yml'
               - 'packages/ng-schematics/**'
+            browsers:
+              - '.github/workflows/ci.yml'
+              - 'packages/browsers/**'
 
   deploy-docs:
     needs: check-changes
@@ -368,3 +371,38 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Run tests
         run: npm run test --workspace @puppeteer/ng-schematics
+
+  browsers-tests:
+    name: Browsers tests on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: check-changes
+    if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'browsers') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3.5.1
+        with:
+          cache: npm
+          node-version: latest
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+      - name: Run tests
+        run: npm run test --workspace @puppeteer/browsers
+
+  browsers-tests-required:
+    name: '[Required] Test the browsers packages'
+    needs: [check-changes, browsers-tests]
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+      - if: ${{ needs.browsers-tests.result != 'success' && contains(fromJSON(needs.check-changes.outputs.changes), 'browsers') }}
+        run: 'exit 1'
+      - run: 'exit 0'

@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "files": [],
+  "references": [
+    {"path": "src/tsconfig.esm.json"},
+    {"path": "src/tsconfig.cjs.json"}
+  ]
+}

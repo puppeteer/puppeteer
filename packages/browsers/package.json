@@ -1,0 +1,81 @@
+{
+  "name": "@puppeteer/browsers",
+  "version": "0.0.1",
+  "description": "Download and launch browsers",
+  "scripts": {
+    "build": "wireit",
+    "build:test": "wireit",
+    "clean": "tsc --build --clean && rimraf lib",
+    "test": "wireit"
+  },
+  "wireit": {
+    "build": {
+      "command": "tsc -b",
+      "files": [
+        "src/**/*.ts",
+        "tsconfig.json"
+      ],
+      "output": [
+        "lib/**"
+      ]
+    },
+    "build:test": {
+      "command": "tsc -b test/src/tsconfig.json",
+      "files": [
+        "test/**/*.ts",
+        "test/src/tsconfig.json"
+      ],
+      "output": [
+        "test/build/**"
+      ],
+      "dependencies": [
+        "build"
+      ]
+    },
+    "test": {
+      "command": "mocha",
+      "files": [
+        ".mocharc.cjs"
+      ],
+      "dependencies": [
+        "build:test"
+      ]
+    }
+  },
+  "keywords": [
+    "puppeteer",
+    "browsers"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/puppeteer/puppeteer/tree/main/packages/browsers"
+  },
+  "author": "The Chromium Authors",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=14.1.0"
+  },
+  "files": [
+    "lib",
+    "!*.tsbuildinfo"
+  ],
+  "dependencies": {
+    "debug": "4.3.4",
+    "extract-zip": "2.0.1",
+    "https-proxy-agent": "5.0.1",
+    "proxy-from-env": "1.1.0",
+    "tar-fs": "2.1.1",
+    "unbzip2-stream": "1.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^14.15.0"
+  },
+  "peerDependencies": {
+    "typescript": ">= 4.7.4"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  }
+}
