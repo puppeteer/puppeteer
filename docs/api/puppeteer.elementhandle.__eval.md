@@ -15,9 +15,10 @@ class ElementHandle {
   $$eval<
     Selector extends string,
     Params extends unknown[],
-    Func extends EvaluateFunc<
-      [HandleFor<Array<NodeFor<Selector>>>, ...Params]
-    > = EvaluateFunc<[HandleFor<Array<NodeFor<Selector>>>, ...Params]>
+    Func extends EvaluateFuncWith<
+      Array<NodeFor<Selector>>,
+      Params
+    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>
   >(
     selector: Selector,
     pageFunction: Func | string,

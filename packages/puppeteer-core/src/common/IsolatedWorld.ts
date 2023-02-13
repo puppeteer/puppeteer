@@ -15,6 +15,7 @@
  */
 
 import {Protocol} from 'devtools-protocol';
+import {JSHandle} from '../api/JSHandle.js';
 import {assert} from '../util/assert.js';
 import {createDeferredPromise} from '../util/DeferredPromise.js';
 import {isErrorLike} from '../util/ErrorLike.js';
@@ -24,10 +25,15 @@ import {Frame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {MouseButton} from './Input.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
-import {JSHandle} from '../api/JSHandle.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
-import {EvaluateFunc, HandleFor, InnerLazyParams, NodeFor} from './types.js';
+import {
+  EvaluateFunc,
+  EvaluateFuncWith,
+  HandleFor,
+  InnerLazyParams,
+  NodeFor,
+} from './types.js';
 import {createJSHandle, debugError, pageBindingInitString} from './util.js';
 import {TaskManager, WaitTask} from './WaitTask.js';
 
@@ -220,9 +226,10 @@ export class IsolatedWorld {
   async $eval<
     Selector extends string,
     Params extends unknown[],
-    Func extends EvaluateFunc<
-      [ElementHandle<NodeFor<Selector>>, ...Params]
-    > = EvaluateFunc<[ElementHandle<NodeFor<Selector>>, ...Params]>
+    Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
+      NodeFor<Selector>,
+      Params
+    >
   >(
     selector: Selector,
     pageFunction: Func | string,
@@ -235,9 +242,10 @@ export class IsolatedWorld {
   async $$eval<
     Selector extends string,
     Params extends unknown[],
-    Func extends EvaluateFunc<
-      [Array<NodeFor<Selector>>, ...Params]
-    > = EvaluateFunc<[Array<NodeFor<Selector>>, ...Params]>
+    Func extends EvaluateFuncWith<
+      Array<NodeFor<Selector>>,
+      Params
+    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>
   >(
     selector: Selector,
     pageFunction: Func | string,

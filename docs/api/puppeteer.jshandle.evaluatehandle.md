@@ -12,9 +12,7 @@ Evaluates the given function with the current handle as its first argument.
 class JSHandle {
   evaluateHandle<
     Params extends unknown[],
-    Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
-      [this, ...Params]
-    >
+    Func extends EvaluateFuncWith<T, Params> = EvaluateFuncWith<T, Params>
   >(
     pageFunction: Func | string,
     ...args: Params

@@ -20,7 +20,7 @@ import {assert} from '../util/assert.js';
 import {CDPSession} from './Connection.js';
 import type {CDPElementHandle} from './ElementHandle.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {EvaluateFunc, HandleFor, HandleOr} from './types.js';
+import {EvaluateFuncWith, HandleFor, HandleOr} from './types.js';
 import {createJSHandle, releaseObject, valueFromRemoteObject} from './util.js';
 
 declare const __JSHandleSymbol: unique symbol;
@@ -64,15 +64,11 @@ export class CDPJSHandle<T> extends JSHandle<T> {
    */
   override async evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
-      [this, ...Params]
-    >
+    Func extends EvaluateFuncWith<T, Params> = EvaluateFuncWith<T, Params>
   >(
     pageFunction: Func | string,
     ...args: Params
-  ): // @ts-expect-error Circularity here is okay because we only need the return
-  // type which doesn't use `this`.
-  Promise<Awaited<ReturnType<Func>>> {
+  ): Promise<Awaited<ReturnType<Func>>> {
     return await this.executionContext().evaluate(pageFunction, this, ...args);
   }
 
@@ -81,15 +77,11 @@ export class CDPJSHandle<T> extends JSHandle<T> {
    */
   override async evaluateHandle<
     Params extends unknown[],
-    Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
-      [this, ...Params]
-    >
+    Func extends EvaluateFuncWith<T, Params> = EvaluateFuncWith<T, Params>
   >(
     pageFunction: Func | string,
     ...args: Params
-  ): // @ts-expect-error Circularity here is okay because we only need the return
-  // type which doesn't use `this`.
-  Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     return await this.executionContext().evaluateHandle(
       pageFunction,
       this,

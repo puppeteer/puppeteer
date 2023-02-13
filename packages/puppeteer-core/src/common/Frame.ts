@@ -15,10 +15,11 @@
  */
 
 import {Protocol} from 'devtools-protocol';
+import {ElementHandle} from '../api/ElementHandle.js';
+import {Page} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {CDPSession} from './Connection.js';
-import {ElementHandle} from '../api/ElementHandle.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {FrameManager} from './FrameManager.js';
 import {HTTPResponse} from './HTTPResponse.js';
@@ -29,12 +30,11 @@ import {
   WaitForSelectorOptions,
 } from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
-import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
-import {Page} from '../api/Page.js';
-import {getQueryHandlerAndSelector} from './QueryHandler.js';
-import {EvaluateFunc, HandleFor, NodeFor} from './types.js';
-import {importFS} from './util.js';
 import {LazyArg} from './LazyArg.js';
+import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
+import {getQueryHandlerAndSelector} from './QueryHandler.js';
+import {EvaluateFunc, EvaluateFuncWith, HandleFor, NodeFor} from './types.js';
+import {importFS} from './util.js';
 
 /**
  * @public
@@ -518,9 +518,10 @@ export class Frame {
   async $eval<
     Selector extends string,
     Params extends unknown[],
-    Func extends EvaluateFunc<
-      [ElementHandle<NodeFor<Selector>>, ...Params]
-    > = EvaluateFunc<[ElementHandle<NodeFor<Selector>>, ...Params]>
+    Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
+      NodeFor<Selector>,
+      Params
+    >
   >(
     selector: Selector,
     pageFunction: Func | string,
@@ -552,9 +553,10 @@ export class Frame {
   async $$eval<
     Selector extends string,
     Params extends unknown[],
-    Func extends EvaluateFunc<
-      [Array<NodeFor<Selector>>, ...Params]
-    > = EvaluateFunc<[Array<NodeFor<Selector>>, ...Params]>
+    Func extends EvaluateFuncWith<
+      Array<NodeFor<Selector>>,
+      Params
+    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>
   >(
     selector: Selector,
     pageFunction: Func | string,

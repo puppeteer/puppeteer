@@ -15,10 +15,10 @@
  */
 
 import Protocol from 'devtools-protocol';
-import {ElementHandle} from './ElementHandle.js';
-import {EvaluateFunc, HandleFor, HandleOr} from '../common/types.js';
-import {ExecutionContext} from '../common/ExecutionContext.js';
 import {CDPSession} from '../common/Connection.js';
+import {ExecutionContext} from '../common/ExecutionContext.js';
+import {EvaluateFuncWith, HandleFor, HandleOr} from '../common/types.js';
+import {ElementHandle} from './ElementHandle.js';
 
 declare const __JSHandleSymbol: unique symbol;
 
@@ -80,19 +80,12 @@ export class JSHandle<T = unknown> {
    */
   async evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
-      [this, ...Params]
-    >
+    Func extends EvaluateFuncWith<T, Params> = EvaluateFuncWith<T, Params>
   >(
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
-  async evaluate<
-    Params extends unknown[],
-    Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
-      [this, ...Params]
-    >
-  >(): Promise<Awaited<ReturnType<Func>>> {
+  async evaluate(): Promise<unknown> {
     throw new Error('Not implemented');
   }
 
@@ -102,19 +95,12 @@ export class JSHandle<T = unknown> {
    */
   async evaluateHandle<
     Params extends unknown[],
-    Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
-      [this, ...Params]
-    >
+    Func extends EvaluateFuncWith<T, Params> = EvaluateFuncWith<T, Params>
   >(
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
-  async evaluateHandle<
-    Params extends unknown[],
-    Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
-      [this, ...Params]
-    >
-  >(): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+  async evaluateHandle(): Promise<HandleFor<unknown>> {
     throw new Error('Not implemented');
   }
 
