@@ -92,9 +92,9 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
     );
 
     for (const [key, value] of Object.entries(keys)) {
-      const handle = results[value as any];
+      const handle = results[key as any];
       if (handle) {
-        map.set(key, handle);
+        map.set(value, handle);
       }
     }
 
