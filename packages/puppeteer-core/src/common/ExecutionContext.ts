@@ -30,6 +30,7 @@ import {
   valueFromRemoteObject,
 } from './util.js';
 import {CDPJSHandle} from './JSHandle.js';
+import {CDPElementHandle} from './ElementHandle.js';
 
 /**
  * @public
@@ -322,7 +323,10 @@ export class ExecutionContext {
       if (Object.is(arg, NaN)) {
         return {unserializableValue: 'NaN'};
       }
-      const objectHandle = arg && arg instanceof CDPJSHandle ? arg : null;
+      const objectHandle =
+        arg && (arg instanceof CDPJSHandle || arg instanceof CDPElementHandle)
+          ? arg
+          : null;
       if (objectHandle) {
         if (objectHandle.executionContext() !== this) {
           throw new Error(
