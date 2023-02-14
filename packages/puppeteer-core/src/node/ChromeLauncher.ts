@@ -129,7 +129,9 @@ export class ChromeLauncher extends ProductLauncher {
 
       if (protocol === 'webDriverBiDi') {
         try {
-          const BiDi = await import('../common/bidi/bidi.js');
+          const BiDi = await import(
+            /* webpackIgnore: true */ '../common/bidi/bidi.js'
+          );
           const bidiConnection = await BiDi.connectBidiOverCDP(connection);
           browser = await BiDi.Browser.create({
             connection: bidiConnection,

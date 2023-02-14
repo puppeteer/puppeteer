@@ -262,7 +262,9 @@ export class BrowserRunner {
     );
     browserWSEndpoint += '/session';
     const transport = await WebSocketTransport.create(browserWSEndpoint);
-    const BiDi = await import('../common/bidi/bidi.js');
+    const BiDi = await import(
+      /* webpackIgnore: true */ '../common/bidi/bidi.js'
+    );
     return new BiDi.Connection(transport, slowMo);
   }
 

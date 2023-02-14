@@ -131,7 +131,6 @@
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "dependencies": {
-    "chromium-bidi": "0.4.3",
     "cross-fetch": "3.1.5",
     "debug": "4.3.4",
     "devtools-protocol": "0.0.1094867",
@@ -144,10 +143,14 @@
     "ws": "8.11.0"
   },
   "peerDependencies": {
-    "typescript": ">= 4.7.4"
+    "typescript": ">= 4.7.4",
+    "chromium-bidi": "0.4.3"
   },
   "peerDependenciesMeta": {
     "typescript": {
+      "optional": true
+    },
+    "chromium-bidi": {
       "optional": true
     }
   }
