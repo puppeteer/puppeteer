@@ -8,6 +8,6 @@ sidebar_label: CustomQueryHandler.queryAll
 
 ```typescript
 interface CustomQueryHandler {
-  queryAll?: (node: Node, selector: string) => AwaitableIterable<Node>;
+  queryAll?: (node: Node, selector: string) => Node[];
 }
 ```

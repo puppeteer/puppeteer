@@ -440,7 +440,7 @@ export class IsolatedWorld {
             return;
           }
           const node = (await PuppeteerUtil.createFunction(query)(
-            root ?? document,
+            root || document,
             selector,
             PuppeteerUtil
           )) as Node | null;
@@ -533,9 +533,9 @@ export class IsolatedWorld {
   }
 
   async adoptHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
-    const context = await this.executionContext();
+    const executionContext = await this.executionContext();
     assert(
-      handle.executionContext() !== context,
+      handle.executionContext() !== executionContext,
       'Cannot adopt handle that already belongs to this execution context'
     );
     const nodeInfo = await this.#client.send('DOM.describeNode', {
@@ -545,18 +545,9 @@ export class IsolatedWorld {
   }
 
   async transferHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
-    const context = await this.executionContext();
-    if (handle.executionContext() === context) {
-      return handle;
-    }
-    const info = await this.#client.send('DOM.describeNode', {
-      objectId: handle.remoteObject().objectId,
-    });
-    const newHandle = (await this.adoptBackendNode(
-      info.node.backendNodeId
-    )) as T;
+    const result = await this.adoptHandle(handle);
     await handle.dispose();
-    return newHandle;
+    return result;
   }
 }
 

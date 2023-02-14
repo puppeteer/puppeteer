@@ -17,10 +17,24 @@
 /**
  * @internal
  */
-export const xpathQuerySelectorAll = function* (
+export const xpathQuerySelector = (
   root: Node,
   selector: string
-): Iterable<Node> {
+): Node | null => {
+  const doc = root.ownerDocument || document;
+  const result = doc.evaluate(
+    selector,
+    root,
+    null,
+    XPathResult.FIRST_ORDERED_NODE_TYPE
+  );
+  return result.singleNodeValue;
+};
+
+/**
+ * @internal
+ */
+export const xpathQuerySelectorAll = (root: Node, selector: string): Node[] => {
   const doc = root.ownerDocument || document;
   const iterator = doc.evaluate(
     selector,
@@ -28,8 +42,10 @@ export const xpathQuerySelectorAll = function* (
     null,
     XPathResult.ORDERED_NODE_ITERATOR_TYPE
   );
+  const array: Node[] = [];
   let item;
   while ((item = iterator.iterateNext())) {
-    yield item;
+    array.push(item);
   }
+  return array;
 };

@@ -25,7 +25,6 @@ export * from './Connection.js';
 export * from './ConnectionTransport.js';
 export * from './ConsoleMessage.js';
 export * from './Coverage.js';
-export * from './CustomQueryHandler.js';
 export * from './Debug.js';
 export * from './Device.js';
 export * from './Dialog.js';
