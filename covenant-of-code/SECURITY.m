@@ -28,11 +28,8 @@ See Resolving a merge conflict using the command line for step-by-step instructi
 		"bierner.markdown-preview-github-styles",	
 		"streetsidesoftware.code-spell-checker",	
 		"alistairchristie.open-reusables"	
-	],	
-
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.	
-	"forwardPorts": [4000],	
-
+	// Use 'Port(4999 :; :8333)":,
+  ' to make a list of ports inside the container available locally.	
 	"portsAttributes": {	
 		"4000": {	
         		"label": "Preview",	
