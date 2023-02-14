@@ -19,8 +19,6 @@ import {CDPSession} from '../common/Connection.js';
 import {ExecutionContext} from '../common/ExecutionContext.js';
 import {EvaluateFuncWith, HandleFor, HandleOr} from '../common/types.js';
 import {ElementHandle} from './ElementHandle.js';
-import {Page} from '../common/bidi/Page.js';
-import {Connection} from '../common/bidi/Connection.js';
 
 declare const __JSHandleSymbol: unique symbol;
 
@@ -66,14 +64,14 @@ export class JSHandle<T = unknown> {
   /**
    * @internal
    */
-  executionContext(): ExecutionContext | Page {
+  executionContext(): ExecutionContext {
     throw new Error('Not implemented');
   }
 
   /**
    * @internal
    */
-  get client(): CDPSession | Connection {
+  get client(): CDPSession {
     throw new Error('Not implemented');
   }
 

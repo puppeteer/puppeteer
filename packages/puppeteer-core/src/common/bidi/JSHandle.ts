@@ -34,23 +34,14 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
     this.#remoteObject = remoteObject;
   }
 
-  /**
-   * @internal
-   */
-  override executionContext(): Page {
+  context(): Page {
     return this.#context;
   }
 
-  /**
-   * @internal
-   */
-  override get client(): Connection {
+  get connecton(): Connection {
     return this.#context.connection;
   }
 
-  /**
-   * @internal
-   */
   override get disposed(): boolean {
     return this.#disposed;
   }
@@ -62,7 +53,7 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
-    return await this.executionContext().evaluate(pageFunction, this, ...args);
+    return await this.context().evaluate(pageFunction, this, ...args);
   }
 
   override async evaluateHandle<
@@ -72,11 +63,7 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    return await this.executionContext().evaluateHandle(
-      pageFunction,
-      this,
-      ...args
-    );
+    return await this.context().evaluateHandle(pageFunction, this, ...args);
   }
 
   override async getProperty<K extends keyof T>(
@@ -136,7 +123,7 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
     }
     this.#disposed = true;
     if ('handle' in this.#remoteObject) {
-      await releaseReference(this.client, this.#remoteObject);
+      await releaseReference(this.connecton, this.#remoteObject);
     }
   }
 

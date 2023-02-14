@@ -133,7 +133,7 @@ export class BidiSerializer {
     // TODO: See use case of LazyArgs
     const objectHandle = arg && arg instanceof JSHandle ? arg : null;
     if (objectHandle) {
-      if (objectHandle.executionContext() !== context) {
+      if (objectHandle.context() !== context) {
         throw new Error(
           'JSHandles can be evaluated only in the context they were created!'
         );
