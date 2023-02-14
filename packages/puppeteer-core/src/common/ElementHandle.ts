@@ -66,7 +66,6 @@ const applyOffsetsToQuad = (
 export class CDPElementHandle<
   ElementType extends Node = Element
 > extends ElementHandle<ElementType> {
-  #disposed = false;
   #frame: Frame;
   #jsHandle: CDPJSHandle<ElementType>;
 
@@ -141,7 +140,7 @@ export class CDPElementHandle<
   }
 
   override get disposed(): boolean {
-    return this.#disposed;
+    return this.#jsHandle.disposed;
   }
 
   override async getProperty<K extends keyof ElementType>(
