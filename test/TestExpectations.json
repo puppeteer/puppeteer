@@ -414,12 +414,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[elementhandle.spec] ElementHandle spec ElementHandle.click should work",
-    "platforms": ["darwin", "win32", "linux"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[elementhandle.spec] ElementHandle spec ElementHandle.click should return Point data",
     "platforms": ["darwin", "win32", "linux"],
     "parameters": ["firefox"],
