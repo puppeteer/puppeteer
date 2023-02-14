@@ -414,7 +414,7 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[elementhandle.spec] ElementHandle ElementHandle.click should work",
+    "testIdPattern": "[elementhandle.spec] ElementHandle spec ElementHandle.click should work",
     "platforms": ["darwin", "win32", "linux"],
     "parameters": ["firefox"],
     "expectations": ["FAIL"]
