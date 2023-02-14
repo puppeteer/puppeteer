@@ -14,9 +14,23 @@
  * limitations under the License.
  */
 
-import {JSHandle} from '../api/JSHandle.js';
-import {ElementHandle} from '../api/ElementHandle.js';
-import {LazyArg} from './LazyArg.js';
+import type {JSHandle} from '../api/JSHandle.js';
+import type {ElementHandle} from '../api/ElementHandle.js';
+import type {LazyArg} from './LazyArg.js';
+
+/**
+ * @internal
+ */
+export type BindingPayload = {
+  type: string;
+  name: string;
+  seq: number;
+  args: unknown[];
+  /**
+   * Determines whether the arguments of the payload are trivial.
+   */
+  isTrivial: boolean;
+};
 
 /**
  * @public
