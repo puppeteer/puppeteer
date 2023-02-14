@@ -42,7 +42,7 @@ describe('fetch', () => {
   it('should check if a revision can be downloaded', async () => {
     assert.ok(
       await canFetch({
-        outputDir: tmpDir,
+        cacheDir: tmpDir,
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
         revision: testChromeRevision,
@@ -53,7 +53,7 @@ describe('fetch', () => {
   it('should report if a revision is not downloadable', async () => {
     assert.strictEqual(
       await canFetch({
-        outputDir: tmpDir,
+        cacheDir: tmpDir,
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
         revision: 'unknown',
@@ -66,11 +66,12 @@ describe('fetch', () => {
     this.timeout(60000);
     const expectedOutputPath = path.join(
       tmpDir,
+      'chrome',
       `${BrowserPlatform.LINUX}-${testChromeRevision}`
     );
     assert.strictEqual(fs.existsSync(expectedOutputPath), false);
     let browser = await fetch({
-      outputDir: tmpDir,
+      cacheDir: tmpDir,
       browser: Browser.CHROME,
       platform: BrowserPlatform.LINUX,
       revision: testChromeRevision,
@@ -79,7 +80,7 @@ describe('fetch', () => {
     assert.ok(fs.existsSync(expectedOutputPath));
     // Second iteration should be no-op.
     browser = await fetch({
-      outputDir: tmpDir,
+      cacheDir: tmpDir,
       browser: Browser.CHROME,
       platform: BrowserPlatform.LINUX,
       revision: testChromeRevision,
@@ -92,11 +93,12 @@ describe('fetch', () => {
     this.timeout(60000);
     const expectedOutputPath = path.join(
       tmpDir,
+      'firefox',
       `${BrowserPlatform.LINUX}-${testFirefoxRevision}`
     );
     assert.strictEqual(fs.existsSync(expectedOutputPath), false);
     const browser = await fetch({
-      outputDir: tmpDir,
+      cacheDir: tmpDir,
       browser: Browser.FIREFOX,
       platform: BrowserPlatform.LINUX,
       revision: testFirefoxRevision,
@@ -113,11 +115,12 @@ describe('fetch', () => {
       this.timeout(120000);
       const expectedOutputPath = path.join(
         tmpDir,
+        'firefox',
         `${BrowserPlatform.MAC}-${testFirefoxRevision}`
       );
       assert.strictEqual(fs.existsSync(expectedOutputPath), false);
       const browser = await fetch({
-        outputDir: tmpDir,
+        cacheDir: tmpDir,
         browser: Browser.FIREFOX,
         platform: BrowserPlatform.MAC,
         revision: testFirefoxRevision,

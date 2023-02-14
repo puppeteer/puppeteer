@@ -15,7 +15,7 @@
  */
 
 import {
-  executablePath,
+  relativeExecutablePath,
   resolveDownloadUrl,
 } from '../../lib/cjs/browsers/firefox.js';
 import {BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
@@ -48,36 +48,24 @@ describe('Firefox', () => {
 
   it('should resolve executable paths', () => {
     assert.strictEqual(
-      executablePath(BrowserPlatform.LINUX, '111.0a1'),
-      path.join('linux-111.0a1', 'firefox', 'firefox')
+      relativeExecutablePath(BrowserPlatform.LINUX, '111.0a1'),
+      path.join('firefox', 'firefox')
     );
     assert.strictEqual(
-      executablePath(BrowserPlatform.MAC, '111.0a1'),
-      path.join(
-        'mac-111.0a1',
-        'Firefox Nightly.app',
-        'Contents',
-        'MacOS',
-        'firefox'
-      )
+      relativeExecutablePath(BrowserPlatform.MAC, '111.0a1'),
+      path.join('Firefox Nightly.app', 'Contents', 'MacOS', 'firefox')
     );
     assert.strictEqual(
-      executablePath(BrowserPlatform.MAC_ARM, '111.0a1'),
-      path.join(
-        'mac_arm-111.0a1',
-        'Firefox Nightly.app',
-        'Contents',
-        'MacOS',
-        'firefox'
-      )
+      relativeExecutablePath(BrowserPlatform.MAC_ARM, '111.0a1'),
+      path.join('Firefox Nightly.app', 'Contents', 'MacOS', 'firefox')
     );
     assert.strictEqual(
-      executablePath(BrowserPlatform.WIN32, '111.0a1'),
-      path.join('win32-111.0a1', 'firefox', 'firefox.exe')
+      relativeExecutablePath(BrowserPlatform.WIN32, '111.0a1'),
+      path.join('firefox', 'firefox.exe')
     );
     assert.strictEqual(
-      executablePath(BrowserPlatform.WIN64, '111.0a1'),
-      path.join('win64-111.0a1', 'firefox', 'firefox.exe')
+      relativeExecutablePath(BrowserPlatform.WIN64, '111.0a1'),
+      path.join('firefox', 'firefox.exe')
     );
   });
 });

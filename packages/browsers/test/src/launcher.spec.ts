@@ -27,9 +27,9 @@ describe('launcher', () => {
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
         revision: '123',
-        path: 'cache',
+        cacheDir: 'cache',
       }),
-      path.join('cache', 'linux-123', 'chrome')
+      path.join('cache', 'chrome', 'linux-123', 'chrome')
     );
   });
   it('should compute executable path for Firefox', () => {
@@ -38,9 +38,9 @@ describe('launcher', () => {
         browser: Browser.FIREFOX,
         platform: BrowserPlatform.LINUX,
         revision: '123',
-        path: 'cache',
+        cacheDir: 'cache',
       }),
-      path.join('cache', 'linux-123', 'firefox', 'firefox')
+      path.join('cache', 'firefox', 'linux-123', 'firefox', 'firefox')
     );
   });
 });

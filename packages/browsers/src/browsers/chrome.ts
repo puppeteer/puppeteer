@@ -57,26 +57,18 @@ export function resolveDownloadUrl(
   )}.zip`;
 }
 
-export function executablePath(
+export function relativeExecutablePath(
   platform: BrowserPlatform,
-  revision: string,
-  basePath = ''
+  _revision: string
 ): string {
-  const browserPath = path.join(basePath, `${platform}-${revision}`);
   switch (platform) {
     case BrowserPlatform.MAC:
     case BrowserPlatform.MAC_ARM:
-      return path.join(
-        browserPath,
-        'Chromium.app',
-        'Contents',
-        'MacOS',
-        'Chromium'
-      );
+      return path.join('Chromium.app', 'Contents', 'MacOS', 'Chromium');
     case BrowserPlatform.LINUX:
-      return path.join(browserPath, 'chrome');
+      return 'chrome';
     case BrowserPlatform.WIN32:
     case BrowserPlatform.WIN64:
-      return path.join(browserPath, 'chrome.exe');
+      return 'chrome.exe';
   }
 }

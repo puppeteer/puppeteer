@@ -38,26 +38,18 @@ export function resolveDownloadUrl(
   return `${baseUrl}/${archive(platform, revision)}`;
 }
 
-export function executablePath(
+export function relativeExecutablePath(
   platform: BrowserPlatform,
-  revision: string,
-  basePath = ''
+  _revision: string
 ): string {
-  const browserPath = path.join(basePath, `${platform}-${revision}`);
   switch (platform) {
     case BrowserPlatform.MAC_ARM:
     case BrowserPlatform.MAC:
-      return path.join(
-        browserPath,
-        'Firefox Nightly.app',
-        'Contents',
-        'MacOS',
-        'firefox'
-      );
+      return path.join('Firefox Nightly.app', 'Contents', 'MacOS', 'firefox');
     case BrowserPlatform.LINUX:
-      return path.join(browserPath, 'firefox', 'firefox');
+      return path.join('firefox', 'firefox');
     case BrowserPlatform.WIN32:
     case BrowserPlatform.WIN64:
-      return path.join(browserPath, 'firefox', 'firefox.exe');
+      return path.join('firefox', 'firefox.exe');
   }
 }
