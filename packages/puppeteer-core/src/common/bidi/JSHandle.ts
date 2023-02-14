@@ -154,7 +154,7 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
       : undefined;
   }
 
-  override remoteObject(): Bidi.CommonDataTypes.RemoteValue {
+  bidiObject(): Bidi.CommonDataTypes.RemoteValue {
     return this.#remoteObject;
   }
 }

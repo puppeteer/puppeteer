@@ -141,7 +141,7 @@ export class BidiSerializer {
       if (objectHandle.disposed) {
         throw new Error('JSHandle is disposed!');
       }
-      return objectHandle.remoteObject();
+      return objectHandle.bidiObject();
     }
 
     return BidiSerializer.serializeRemoveValue(arg);
