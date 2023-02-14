@@ -171,7 +171,7 @@ export class CDPElementHandle<
   }
 
   override async dispose(): Promise<void> {
-    this.#jsHandle.dispose();
+    return await this.#jsHandle.dispose();
   }
 
   override async $<Selector extends string>(
