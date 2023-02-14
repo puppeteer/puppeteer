@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google Inc. All rights reserved.
+ * Copyright 2023 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
+import {QueryHandler, QuerySelectorAll} from './QueryHandler.js';
+
 /**
  * @internal
  */
-export const xpathQuerySelectorAll = function* (
-  root: Node,
-  selector: string
-): Iterable<Node> {
-  const doc = root.ownerDocument || document;
-  const iterator = doc.evaluate(
+export class TextQueryHandler extends QueryHandler {
+  static override querySelectorAll: QuerySelectorAll = (
+    element,
     selector,
-    root,
-    null,
-    XPathResult.ORDERED_NODE_ITERATOR_TYPE
-  );
-  let item;
-  while ((item = iterator.iterateNext())) {
-    yield item;
-  }
-};
+    {textQuerySelectorAll}
+  ) => {
+    return textQuerySelectorAll(element, selector);
+  };
+}
