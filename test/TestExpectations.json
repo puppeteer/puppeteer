@@ -420,6 +420,12 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[elementhandle.spec] ElementHandle spec ElementHandle.click should return Point data",
+    "platforms": ["darwin", "win32", "linux"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[jshandle.spec] JSHandle JSHandle.jsonValue should not work with dates",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
