@@ -131,7 +131,9 @@ export class FirefoxLauncher extends ProductLauncher {
           slowMo,
           preferredRevision: this.puppeteer.browserRevision,
         });
-        const BiDi = await import('../common/bidi/bidi.js');
+        const BiDi = await import(
+          /* webpackIgnore: true */ '../common/bidi/bidi.js'
+        );
         browser = await BiDi.Browser.create({
           connection,
           closeCallback: runner.close.bind(runner),
