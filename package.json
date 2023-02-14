@@ -40,6 +40,7 @@
   "wireit": {
     "build": {
       "dependencies": [
+        "./packages/browsers:build",
         "./packages/ng-schematics:build",
         "./packages/puppeteer-core:build",
         "./packages/puppeteer:build",
