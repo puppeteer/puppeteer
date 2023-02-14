@@ -15,6 +15,7 @@
  */
 
 import {createDeferredPromise} from '../util/DeferredPromise.js';
+import {createFunction} from '../util/Function.js';
 import {RAFPoller, MutationPoller, IntervalPoller} from './Poller.js';
 import {
   isSuitableNodeForTextMatching,
@@ -33,6 +34,7 @@ const PuppeteerUtil = Object.freeze({
   ...TextQuerySelector,
   ...XPathQuerySelector,
   ...PierceQuerySelector,
+  createFunction,
   createDeferredPromise,
   createTextContent,
   IntervalPoller,
