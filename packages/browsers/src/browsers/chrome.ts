@@ -65,11 +65,17 @@ export function relativeExecutablePath(
   switch (platform) {
     case BrowserPlatform.MAC:
     case BrowserPlatform.MAC_ARM:
-      return path.join('Chromium.app', 'Contents', 'MacOS', 'Chromium');
+      return path.join(
+        'chrome-mac',
+        'Chromium.app',
+        'Contents',
+        'MacOS',
+        'Chromium'
+      );
     case BrowserPlatform.LINUX:
-      return 'chrome';
+      return path.join('chrome-linux', 'chrome');
     case BrowserPlatform.WIN32:
     case BrowserPlatform.WIN64:
-      return 'chrome.exe';
+      return path.join('chrome-win', 'chrome.exe');
   }
 }
