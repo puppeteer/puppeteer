@@ -41,7 +41,6 @@ export class Page extends PageBase {
     });
   }
 
-  // TODO: Extract to ExecutionContext
   get connection(): Connection {
     return this.#connection;
   }
@@ -121,14 +120,14 @@ export class Page extends PageBase {
 
     return returnByValue
       ? BidiSerializer.deserialize(result.result)
-      : getBidiHandler(this, result.result as Reference);
+      : getBidiHandle(this, result.result as Reference);
   }
 }
 
 /**
  * @internal
  */
-export function getBidiHandler(context: Page, result: Reference): JSHandle {
+export function getBidiHandle(context: Page, result: Reference): JSHandle {
   // TODO: | ElementHandle<Node>
   if (
     (result.type === 'node' || result.type === 'window') &&

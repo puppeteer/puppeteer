@@ -26,12 +26,12 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 export class JSHandle<T = unknown> extends BaseJSHandle<T> {
   #disposed = false;
   #context;
-  #remoteObject;
+  #remoteValue;
 
-  constructor(context: Page, remoteObject: Bidi.CommonDataTypes.RemoteValue) {
+  constructor(context: Page, remoteValue: Bidi.CommonDataTypes.RemoteValue) {
     super();
     this.#context = context;
-    this.#remoteObject = remoteObject;
+    this.#remoteValue = remoteValue;
   }
 
   context(): Page {
@@ -79,7 +79,8 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
   }
 
   override async getProperties(): Promise<Map<string, BaseJSHandle>> {
-    // TODO(lightning00blade): Temporary solution
+    // TODO(lightning00blade): Either include return of depth Handles in RemoteValue
+    // or new BiDi command that returns array of remote value
     const keys = await this.evaluate(object => {
       return Object.getOwnPropertyNames(object);
     });
@@ -90,19 +91,19 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
       })
     );
 
-    keys.forEach((key, index) => {
-      const handle = results[index];
+    for (const [key, value] of Object.entries(keys)) {
+      const handle = results[value as any];
       if (handle) {
         map.set(key, handle);
       }
-    });
+    }
 
     return map;
   }
 
   override async jsonValue(): Promise<T> {
-    if (!('handle' in this.#remoteObject)) {
-      return BidiSerializer.deserialize(this.#remoteObject);
+    if (!('handle' in this.#remoteValue)) {
+      return BidiSerializer.deserialize(this.#remoteValue);
     }
     const value = await this.evaluate(object => {
       return object;
@@ -122,26 +123,24 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
       return;
     }
     this.#disposed = true;
-    if ('handle' in this.#remoteObject) {
-      await releaseReference(this.connecton, this.#remoteObject);
+    if ('handle' in this.#remoteValue) {
+      await releaseReference(this.connecton, this.#remoteValue);
     }
   }
 
   override toString(): string {
-    if (!('handle' in this.#remoteObject)) {
-      return 'JSHandle:' + BidiSerializer.deserialize(this.#remoteObject);
+    if (!('handle' in this.#remoteValue)) {
+      return 'JSHandle:' + BidiSerializer.deserialize(this.#remoteValue);
     }
 
-    return 'JSHandle@' + this.#remoteObject.type;
+    return 'JSHandle@' + this.#remoteValue.type;
   }
 
   override get id(): string | undefined {
-    return 'handle' in this.#remoteObject
-      ? this.#remoteObject.handle
-      : undefined;
+    return 'handle' in this.#remoteValue ? this.#remoteValue.handle : undefined;
   }
 
   bidiObject(): Bidi.CommonDataTypes.RemoteValue {
-    return this.#remoteObject;
+    return this.#remoteValue;
   }
 }
