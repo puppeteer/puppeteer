@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.7.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.7.0...puppeteer-core-v19.7.1) (2023-02-15)
+
+
+### Bug Fixes
+
+* fix circularity on JSHandle interface ([#9661](https://github.com/puppeteer/puppeteer/issues/9661)) ([eb13863](https://github.com/puppeteer/puppeteer/commit/eb138635d661d3cdaf2940959fece5aca482178a))
+* make chromium-bidi an opt peer dep ([#9667](https://github.com/puppeteer/puppeteer/issues/9667)) ([c6054ac](https://github.com/puppeteer/puppeteer/commit/c6054ac1a56c08ee7bf01321878699b7b4ab4e0b))
+
 ## [19.7.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.6.3...puppeteer-core-v19.7.0) (2023-02-13)
 
 
