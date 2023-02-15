@@ -1,5 +1,7 @@
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {debugError, isDate, isPlainObject, isRegExp} from '../util.js';
+import {JSHandle} from './JSHandle.js';
+import {Page} from './Page.js';
 
 /**
  * @internal
@@ -46,6 +48,18 @@ export class BidiSerializer {
         value: parsedArray,
       };
     } else if (isPlainObject(arg)) {
+      try {
+        JSON.stringify(arg);
+      } catch (error) {
+        if (
+          error instanceof TypeError &&
+          error.message.startsWith('Converting circular structure to JSON')
+        ) {
+          error.message += ' Recursive objects are not allowed.';
+        }
+        throw error;
+      }
+
       const parsedObject: Bidi.CommonDataTypes.MappingLocalValue = [];
       for (const key in arg) {
         parsedObject.push([
@@ -112,8 +126,24 @@ export class BidiSerializer {
     }
   }
 
-  static serialize(arg: unknown): Bidi.CommonDataTypes.LocalOrRemoteValue {
+  static serialize(
+    arg: unknown,
+    context: Page
+  ): Bidi.CommonDataTypes.LocalOrRemoteValue {
     // TODO: See use case of LazyArgs
+    const objectHandle = arg && arg instanceof JSHandle ? arg : null;
+    if (objectHandle) {
+      if (objectHandle.context() !== context) {
+        throw new Error(
+          'JSHandles can be evaluated only in the context they were created!'
+        );
+      }
+      if (objectHandle.disposed) {
+        throw new Error('JSHandle is disposed!');
+      }
+      return objectHandle.bidiObject();
+    }
+
     return BidiSerializer.serializeRemoveValue(arg);
   }
 
@@ -146,8 +176,8 @@ export class BidiSerializer {
         });
       case 'set':
         // TODO: Check expected output when value is undefined
-        return result.value.reduce((acc: Set<unknown>, value: unknown) => {
-          return acc.add(value);
+        return result.value.reduce((acc: Set<unknown>, value) => {
+          return acc.add(BidiSerializer.deserializeLocalValue(value));
         }, new Set());
       case 'object':
         if (result.value) {
@@ -202,7 +232,7 @@ export class BidiSerializer {
     return {key, value};
   }
 
-  static deserialize(result: Bidi.CommonDataTypes.RemoteValue): unknown {
+  static deserialize(result: Bidi.CommonDataTypes.RemoteValue): any {
     if (!result) {
       debugError('Service did not produce a result.');
       return undefined;

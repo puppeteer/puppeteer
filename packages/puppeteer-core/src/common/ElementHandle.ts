@@ -43,12 +43,8 @@ import {
   NodeFor,
 } from './types.js';
 import {KeyInput} from './USKeyboardLayout.js';
-import {
-  debugError,
-  isString,
-  releaseObject,
-  valueFromRemoteObject,
-} from './util.js';
+import {debugError, isString} from './util.js';
+import {CDPJSHandle} from './JSHandle.js';
 
 const applyOffsetsToQuad = (
   quad: Point[],
@@ -70,10 +66,8 @@ const applyOffsetsToQuad = (
 export class CDPElementHandle<
   ElementType extends Node = Element
 > extends ElementHandle<ElementType> {
-  #disposed = false;
   #frame: Frame;
-  #context: ExecutionContext;
-  #remoteObject: Protocol.Runtime.RemoteObject;
+  #jsHandle: CDPJSHandle<ElementType>;
 
   constructor(
     context: ExecutionContext,
@@ -81,8 +75,7 @@ export class CDPElementHandle<
     frame: Frame
   ) {
     super();
-    this.#context = context;
-    this.#remoteObject = remoteObject;
+    this.#jsHandle = new CDPJSHandle(context, remoteObject);
     this.#frame = frame;
   }
 
@@ -90,18 +83,22 @@ export class CDPElementHandle<
    * @internal
    */
   override executionContext(): ExecutionContext {
-    return this.#context;
+    return this.#jsHandle.executionContext();
   }
 
   /**
    * @internal
    */
   override get client(): CDPSession {
-    return this.#context._client;
+    return this.#jsHandle.client;
+  }
+
+  override get id(): string | undefined {
+    return this.#jsHandle.id;
   }
 
   override remoteObject(): Protocol.Runtime.RemoteObject {
-    return this.#remoteObject;
+    return this.#jsHandle.remoteObject();
   }
 
   override async evaluate<
@@ -143,7 +140,7 @@ export class CDPElementHandle<
   }
 
   override get disposed(): boolean {
-    return this.#disposed;
+    return this.#jsHandle.disposed;
   }
 
   override async getProperty<K extends keyof ElementType>(
@@ -153,30 +150,27 @@ export class CDPElementHandle<
   override async getProperty<K extends keyof ElementType>(
     propertyName: HandleOr<K>
   ): Promise<HandleFor<ElementType[K]>> {
-    return this.evaluateHandle((object, propertyName) => {
-      return object[propertyName as K];
-    }, propertyName);
+    return this.#jsHandle.getProperty(propertyName);
+  }
+
+  override async getProperties(): Promise<Map<string, JSHandle>> {
+    return this.#jsHandle.getProperties();
+  }
+
+  override asElement(): CDPElementHandle<ElementType> | null {
+    return this;
   }
 
   override async jsonValue(): Promise<ElementType> {
-    if (!this.#remoteObject.objectId) {
-      return valueFromRemoteObject(this.#remoteObject);
-    }
-    const value = await this.evaluate(object => {
-      return object;
-    });
-    if (value === undefined) {
-      throw new Error('Could not serialize referenced object');
-    }
-    return value;
+    return this.#jsHandle.jsonValue();
   }
 
   override toString(): string {
-    if (!this.#remoteObject.objectId) {
-      return 'JSHandle:' + valueFromRemoteObject(this.#remoteObject);
-    }
-    const type = this.#remoteObject.subtype || this.#remoteObject.type;
-    return 'JSHandle@' + type;
+    return this.#jsHandle.toString();
+  }
+
+  override async dispose(): Promise<void> {
+    return await this.#jsHandle.dispose();
   }
 
   override async $<Selector extends string>(
@@ -295,10 +289,6 @@ export class CDPElementHandle<
       throw new Error(`Element is not a(n) \`${tagName}\` element`);
     }
     return this as unknown as HandleFor<ElementFor<K>>;
-  }
-
-  override asElement(): CDPElementHandle<ElementType> | null {
-    return this;
   }
 
   override async contentFrame(): Promise<Frame | null> {
@@ -464,7 +454,7 @@ export class CDPElementHandle<
 
   #getBoxModel(): Promise<void | Protocol.DOM.GetBoxModelResponse> {
     const params: Protocol.DOM.GetBoxModelRequest = {
-      objectId: this.remoteObject().objectId,
+      objectId: this.id,
     };
     return this.client.send('DOM.getBoxModel', params).catch(error => {
       return debugError(error);
@@ -845,14 +835,6 @@ export class CDPElementHandle<
       });
       return threshold === 1 ? visibleRatio === 1 : visibleRatio > threshold;
     }, threshold);
-  }
-
-  override async dispose(): Promise<void> {
-    if (this.#disposed) {
-      return;
-    }
-    this.#disposed = true;
-    await releaseObject(this.client, this.#remoteObject);
   }
 }
 

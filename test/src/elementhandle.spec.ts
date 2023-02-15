@@ -21,6 +21,7 @@ import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
+  shortWaitForArrayToHaveAtLeastNElements,
 } from './mocha-utils.js';
 
 import {Puppeteer} from 'puppeteer';
@@ -173,7 +174,6 @@ describe('ElementHandle specs', function () {
   });
 
   describe('ElementHandle.click', function () {
-    // See https://github.com/puppeteer/puppeteer/issues/7175
     it('should work', async () => {
       const {page, server} = getTestState();
 
@@ -185,6 +185,40 @@ describe('ElementHandle specs', function () {
           return (globalThis as any).result;
         })
       ).toBe('Clicked');
+    });
+    it('should return Point data', async () => {
+      const {page} = getTestState();
+
+      const clicks: Array<[x: number, y: number]> = [];
+
+      await page.exposeFunction('reportClick', (x: number, y: number): void => {
+        clicks.push([x, y]);
+      });
+
+      await page.evaluate(() => {
+        document.body.style.padding = '0';
+        document.body.style.margin = '0';
+        document.body.innerHTML = `
+          <div style="cursor: pointer; width: 120px; height: 60px; margin: 30px; padding: 15px;"></div>
+        `;
+        document.body.addEventListener('click', e => {
+          (window as any).reportClick(e.clientX, e.clientY);
+        });
+      });
+
+      const divHandle = (await page.$('div'))!;
+      await divHandle.click();
+      await divHandle.click({
+        offset: {
+          x: 10,
+          y: 15,
+        },
+      });
+      await shortWaitForArrayToHaveAtLeastNElements(clicks, 2);
+      expect(clicks).toEqual([
+        [45 + 60, 45 + 30], // margin + middle point offset
+        [30 + 10, 30 + 15], // margin + offset
+      ]);
     });
     it('should work for Shadow DOM v1', async () => {
       const {page, server} = getTestState();
@@ -270,6 +304,70 @@ describe('ElementHandle specs', function () {
       expect(error.message).toBe(
         'Node is either not clickable or not an HTMLElement'
       );
+    });
+  });
+
+  describe('ElementHandle.clickablePoint', function () {
+    it('should work', async () => {
+      const {page} = getTestState();
+
+      await page.evaluate(() => {
+        document.body.style.padding = '0';
+        document.body.style.margin = '0';
+        document.body.innerHTML = `
+          <div style="cursor: pointer; width: 120px; height: 60px; margin: 30px; padding: 15px;"></div>
+        `;
+      });
+      await page.evaluate(async () => {
+        return new Promise(resolve => {
+          return window.requestAnimationFrame(resolve);
+        });
+      });
+      const divHandle = (await page.$('div'))!;
+      expect(await divHandle.clickablePoint()).toEqual({
+        x: 45 + 60, // margin + middle point offset
+        y: 45 + 30, // margin + middle point offset
+      });
+      expect(
+        await divHandle.clickablePoint({
+          x: 10,
+          y: 15,
+        })
+      ).toEqual({
+        x: 30 + 10, // margin + offset
+        y: 30 + 15, // margin + offset
+      });
+    });
+
+    it('should work for iframes', async () => {
+      const {page} = getTestState();
+      await page.evaluate(() => {
+        document.body.style.padding = '10px';
+        document.body.style.margin = '10px';
+        document.body.innerHTML = `
+          <iframe style="border: none; margin: 0; padding: 0;" seamless sandbox srcdoc="<style>* { margin: 0; padding: 0;}</style><div style='cursor: pointer; width: 120px; height: 60px; margin: 30px; padding: 15px;' />"></iframe>
+        `;
+      });
+      await page.evaluate(async () => {
+        return new Promise(resolve => {
+          return window.requestAnimationFrame(resolve);
+        });
+      });
+      const frame = page.frames()[1]!;
+      const divHandle = (await frame.$('div'))!;
+      expect(await divHandle.clickablePoint()).toEqual({
+        x: 20 + 45 + 60, // iframe pos + margin + middle point offset
+        y: 20 + 45 + 30, // iframe pos + margin + middle point offset
+      });
+      expect(
+        await divHandle.clickablePoint({
+          x: 10,
+          y: 15,
+        })
+      ).toEqual({
+        x: 20 + 30 + 10, // iframe pos + margin + offset
+        y: 20 + 30 + 15, // iframe pos + margin + offset
+      });
     });
   });
 

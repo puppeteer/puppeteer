@@ -36,6 +36,10 @@ interface Commands {
     params: Bidi.Script.CallFunctionParameters;
     returnType: Bidi.Script.CallFunctionResult;
   };
+  'script.disown': {
+    params: Bidi.Script.DisownParameters;
+    returnType: Bidi.Script.DisownResult;
+  };
   'browsingContext.create': {
     params: Bidi.BrowsingContext.CreateParameters;
     returnType: Bidi.BrowsingContext.CreateResult;

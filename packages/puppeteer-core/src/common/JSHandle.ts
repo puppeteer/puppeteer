@@ -156,6 +156,10 @@ export class CDPJSHandle<T> extends JSHandle<T> {
     return 'JSHandle@' + type;
   }
 
+  override get id(): string | undefined {
+    return this.#remoteObject.objectId;
+  }
+
   override remoteObject(): Protocol.Runtime.RemoteObject {
     return this.#remoteObject;
   }

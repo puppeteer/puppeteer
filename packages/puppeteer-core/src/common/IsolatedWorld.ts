@@ -539,7 +539,7 @@ export class IsolatedWorld {
       'Cannot adopt handle that already belongs to this execution context'
     );
     const nodeInfo = await this.#client.send('DOM.describeNode', {
-      objectId: handle.remoteObject().objectId,
+      objectId: handle.id,
     });
     return (await this.adoptBackendNode(nodeInfo.node.backendNodeId)) as T;
   }
