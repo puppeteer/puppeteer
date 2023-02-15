@@ -23,7 +23,7 @@ export type PSelector =
     }
   | CSSSelector;
 
-const PUPPETEER_FUNCTION_TOKEN = /^:-p-([-a-zA-Z_]+)\(/;
+const PUPPETEER_PSEUDO_ELEMENT = /^::-p-([-a-zA-Z_]+)\(/;
 
 class PSelectorParser {
   #input: string;
@@ -70,7 +70,7 @@ class PSelectorParser {
             this.#input = remainder.slice('>>>'.length);
             this.#parseDeepDescendent();
           } else {
-            const result = PUPPETEER_FUNCTION_TOKEN.exec(remainder);
+            const result = PUPPETEER_PSEUDO_ELEMENT.exec(remainder);
             if (!result) {
               continue;
             }

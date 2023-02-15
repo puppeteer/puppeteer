@@ -1,5 +1,6 @@
 import type {AwaitableIterable} from '../common/types.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
+import {isErrorLike} from '../util/ErrorLike.js';
 import {ariaQuerySelectorAll} from './ARIAQuerySelector.js';
 import {customQuerySelectors} from './CustomQuerySelector.js';
 import {parsePSelectors, PSelector} from './PSelectorParser.js';
@@ -7,7 +8,15 @@ import {textQuerySelectorAll} from './TextQuerySelector.js';
 import {deepChildren, deepDescendents} from './util.js';
 import {xpathQuerySelectorAll} from './XPathQuerySelector.js';
 
+class SelectorError extends Error {
+  constructor(selector: string, message: string) {
+    super(`${selector} is not a valid selector: ${message}`);
+  }
+}
+
 class PQueryEngine {
+  #input: string;
+
   #deepShadowSelectors: PSelector[][][];
   #shadowSelectors: PSelector[][];
   #selectors: PSelector[];
@@ -16,11 +25,20 @@ class PQueryEngine {
   elements: AwaitableIterable<Node>;
 
   constructor(element: Node, selector: string) {
-    selector = selector.trim();
-    if (selector.length === 0) {
-      throw new Error('The provided selector is empty.');
+    this.#input = selector.trim();
+
+    if (this.#input.length === 0) {
+      throw new SelectorError(this.#input, 'The provided selector is empty.');
     }
-    this.#deepShadowSelectors = parsePSelectors(selector);
+
+    try {
+      this.#deepShadowSelectors = parsePSelectors(this.#input);
+    } catch (error) {
+      if (!isErrorLike(error)) {
+        throw new SelectorError(this.#input, String(error));
+      }
+      throw new SelectorError(this.#input, error.message);
+    }
 
     // If there are any empty elements, then this implies the selector has
     // contiguous combinators (e.g. `>>> >>>>`) or starts/ends with one which we
@@ -32,7 +50,10 @@ class PQueryEngine {
         });
       })
     ) {
-      throw new Error(`${selector} is not a valid selector.`);
+      throw new SelectorError(
+        this.#input,
+        'Multiple deep combinators found in sequence.'
+      );
     }
 
     this.#shadowSelectors = this.#deepShadowSelectors.shift() as PSelector[][];
@@ -66,42 +87,48 @@ class PQueryEngine {
 
     for (; this.#selector !== undefined; this.#next()) {
       const selector = this.#selector;
+      const input = this.#input;
       this.elements = AsyncIterableUtil.flatMap(
         this.elements,
         async function* (element) {
           if (typeof selector === 'string') {
             if (!element.parentElement) {
               yield* (element as Element).querySelectorAll(selector);
-            } else {
-              let index = 0;
-              for (const child of element.parentElement.children) {
-                ++index;
-                if (child === element) {
-                  break;
-                }
+              return;
+            }
+
+            let index = 0;
+            for (const child of element.parentElement.children) {
+              ++index;
+              if (child === element) {
+                break;
               }
-              yield* element.parentElement.querySelectorAll(
-                `:scope > :nth-child(${index})${selector}`
-              );
             }
-          } else {
-            switch (selector.name) {
-              case 'text':
-                yield* textQuerySelectorAll(element, selector.value);
-                break;
-              case 'xpath':
-                yield* xpathQuerySelectorAll(element, selector.value);
-                break;
-              case 'aria':
-                yield* ariaQuerySelectorAll(element, selector.value);
-                break;
-              default:
-                const querySelector = customQuerySelectors.get(selector.name);
-                if (!querySelector) {
-                  throw new Error(`${selector} is not a valid selector.`);
-                }
-                yield* querySelector.querySelectorAll(element, selector.value);
-            }
+            yield* element.parentElement.querySelectorAll(
+              `:scope > :nth-child(${index})${selector}`
+            );
+            return;
+          }
+
+          switch (selector.name) {
+            case 'text':
+              yield* textQuerySelectorAll(element, selector.value);
+              break;
+            case 'xpath':
+              yield* xpathQuerySelectorAll(element, selector.value);
+              break;
+            case 'aria':
+              yield* ariaQuerySelectorAll(element, selector.value);
+              break;
+            default:
+              const querySelector = customQuerySelectors.get(selector.name);
+              if (!querySelector) {
+                throw new SelectorError(
+                  input,
+                  `Unknown selector type: ${selector.name}`
+                );
+              }
+              yield* querySelector.querySelectorAll(element, selector.value);
           }
         }
       );

@@ -373,7 +373,7 @@ describe('Query handler tests', function () {
 
     it('should work with text selectors', async () => {
       const {page} = getTestState();
-      const element = await page.$('div :-p-text(world)');
+      const element = await page.$('div ::-p-text(world)');
       assert(element, 'Could not find element');
       expect(
         await element.evaluate(element => {
@@ -386,7 +386,7 @@ describe('Query handler tests', function () {
       const {page} = getTestState();
       await page.setContent('<div>hello <button>world</button></div>');
 
-      const element = await page.$('div :-p-aria(world)');
+      const element = await page.$('div ::-p-aria(world)');
       assert(element, 'Could not find element');
       expect(
         await element.evaluate(element => {
@@ -399,7 +399,7 @@ describe('Query handler tests', function () {
       const {page} = getTestState();
       await page.setContent('<div>hello <button>world</button></div>');
 
-      const element = await page.$('div :-p-xpath(//button)');
+      const element = await page.$('div ::-p-xpath(//button)');
       assert(element, 'Could not find element');
       expect(
         await element.evaluate(element => {
@@ -411,14 +411,14 @@ describe('Query handler tests', function () {
     it('should work with custom selectors', async () => {
       const {page} = getTestState();
       await page.setContent('<div>hello <button>world</button></div>');
-      Puppeteer.customQueryHandlers.clear();
-      Puppeteer.customQueryHandlers.register('div', {
+      Puppeteer.clearCustomQueryHandlers();
+      Puppeteer.registerCustomQueryHandler('div', {
         queryOne() {
           return document.querySelector('div');
         },
       });
 
-      const element = await page.$(':-p-div()');
+      const element = await page.$('::-p-div()');
       assert(element, 'Could not find element');
       expect(
         await element.evaluate(element => {
@@ -430,8 +430,8 @@ describe('Query handler tests', function () {
     it('should work with custom selectors with args', async () => {
       const {page} = getTestState();
       await page.setContent('<div>hello <button>world</button></div>');
-      Puppeteer.customQueryHandlers.clear();
-      Puppeteer.customQueryHandlers.register('div', {
+      Puppeteer.clearCustomQueryHandlers();
+      Puppeteer.registerCustomQueryHandler('div', {
         queryOne(_, selector) {
           if (selector === 'true') {
             return document.querySelector('div');
@@ -442,7 +442,7 @@ describe('Query handler tests', function () {
       });
 
       {
-        const element = await page.$(':-p-div(true)');
+        const element = await page.$('::-p-div(true)');
         assert(element, 'Could not find element');
         expect(
           await element.evaluate(element => {
@@ -451,7 +451,7 @@ describe('Query handler tests', function () {
         ).toBeTruthy();
       }
       {
-        const element = await page.$(':-p-div("true")');
+        const element = await page.$('::-p-div("true")');
         assert(element, 'Could not find element');
         expect(
           await element.evaluate(element => {
@@ -460,7 +460,7 @@ describe('Query handler tests', function () {
         ).toBeTruthy();
       }
       {
-        const element = await page.$(":-p-div('true')");
+        const element = await page.$("::-p-div('true')");
         assert(element, 'Could not find element');
         expect(
           await element.evaluate(element => {
@@ -469,7 +469,7 @@ describe('Query handler tests', function () {
         ).toBeTruthy();
       }
       {
-        const element = await page.$(':-p-div()');
+        const element = await page.$('::-p-div()');
         assert(element, 'Could not find element');
         expect(
           await element.evaluate(element => {
@@ -483,12 +483,12 @@ describe('Query handler tests', function () {
       const {page} = getTestState();
       await page.setContent('<div>hello <button>world</button></div>');
 
-      let button = await page.$('div :-p-text(world)');
+      let button = await page.$('div ::-p-text(world)');
       assert(button, 'Could not find element');
       await button.hover();
       await button.dispose();
 
-      button = await page.$('div :-p-text(world):hover');
+      button = await page.$('div ::-p-text(world):hover');
       assert(button, 'Could not find element');
       const value = await button.evaluate(span => {
         return {textContent: span.textContent, tagName: span.tagName};
