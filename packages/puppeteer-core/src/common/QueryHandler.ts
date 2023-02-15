@@ -17,9 +17,9 @@
 import {ElementHandle} from '../api/ElementHandle.js';
 import type PuppeteerUtil from '../injected/injected.js';
 import {assert} from '../util/assert.js';
-import {createFunction} from '../util/Function.js';
-import {transposeIterableHandle} from './HandleIterator.js';
+import {interpolateFunction, stringifyFunction} from '../util/Function.js';
 import type {Frame} from './Frame.js';
+import {transposeIterableHandle} from './HandleIterator.js';
 import type {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {LazyArg} from './LazyArg.js';
@@ -56,28 +56,23 @@ export class QueryHandler {
       return this.querySelector;
     }
     if (!this.querySelectorAll) {
-      throw new Error('Cannot create default query selector');
+      throw new Error('Cannot create default `querySelector`.');
     }
 
-    const querySelector: QuerySelector = async (
-      node,
-      selector,
-      PuppeteerUtil
-    ) => {
-      const querySelectorAll =
-        'FUNCTION_DEFINITION' as unknown as QuerySelectorAll;
-      const results = querySelectorAll(node, selector, PuppeteerUtil);
-      for await (const result of results) {
-        return result;
+    return (this.querySelector = interpolateFunction(
+      async (node, selector, PuppeteerUtil) => {
+        const querySelectorAll: QuerySelectorAll =
+          PLACEHOLDER('querySelectorAll');
+        const results = querySelectorAll(node, selector, PuppeteerUtil);
+        for await (const result of results) {
+          return result;
+        }
+        return null;
+      },
+      {
+        querySelectorAll: stringifyFunction(this.querySelectorAll),
       }
-      return null;
-    };
-
-    return (this.querySelector = createFunction(
-      querySelector
-        .toString()
-        .replace("'FUNCTION_DEFINITION'", this.querySelectorAll.toString())
-    ) as typeof querySelector);
+    ));
   }
 
   static get _querySelectorAll(): QuerySelectorAll {
@@ -85,26 +80,21 @@ export class QueryHandler {
       return this.querySelectorAll;
     }
     if (!this.querySelector) {
-      throw new Error('Cannot create default query selector');
+      throw new Error('Cannot create default `querySelectorAll`.');
     }
 
-    const querySelectorAll: QuerySelectorAll = async function* (
-      node,
-      selector,
-      PuppeteerUtil
-    ) {
-      const querySelector = 'FUNCTION_DEFINITION' as unknown as QuerySelector;
-      const result = await querySelector(node, selector, PuppeteerUtil);
-      if (result) {
-        yield result;
+    return (this.querySelectorAll = interpolateFunction(
+      async function* (node, selector, PuppeteerUtil) {
+        const querySelector: QuerySelector = PLACEHOLDER('querySelector');
+        const result = await querySelector(node, selector, PuppeteerUtil);
+        if (result) {
+          yield result;
+        }
+      },
+      {
+        querySelector: stringifyFunction(this.querySelector),
       }
-    };
-
-    return (this.querySelectorAll = createFunction(
-      querySelectorAll
-        .toString()
-        .replace("'FUNCTION_DEFINITION'", this.querySelector.toString())
-    ) as typeof querySelectorAll);
+    ));
   }
 
   /**
@@ -160,8 +150,7 @@ export class QueryHandler {
   static async waitFor(
     elementOrFrame: ElementHandle<Node> | Frame,
     selector: string,
-    options: WaitForSelectorOptions,
-    bindings = new Map<string, (...args: never[]) => unknown>()
+    options: WaitForSelectorOptions
   ): Promise<ElementHandle<Node> | null> {
     let frame: Frame;
     let element: ElementHandle<Node> | undefined;
@@ -175,8 +164,7 @@ export class QueryHandler {
       this._querySelector,
       element,
       selector,
-      options,
-      bindings
+      options
     );
     if (element) {
       await element.dispose();

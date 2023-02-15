@@ -6,16 +6,19 @@ import {debugError} from './util.js';
 /**
  * @internal
  */
-export class Binding {
+export class Binding<Params extends unknown[] = any[]> {
   #name: string;
-  #fn: (...args: unknown[]) => unknown;
-  constructor(name: string, fn: (...args: unknown[]) => unknown) {
+  #fn: (...args: Params) => unknown;
+  constructor(name: string, fn: (...args: Params) => unknown) {
     this.#name = name;
     this.#fn = fn;
   }
 
+  get name(): string {
+    return this.#name;
+  }
+
   /**
-   *
    * @param context - Context to run the binding in; the context should have
    * the binding added to it beforehand.
    * @param id - ID of the call. This should come from the CDP
@@ -25,7 +28,7 @@ export class Binding {
   async run(
     context: ExecutionContext,
     id: number,
-    args: unknown[],
+    args: Params,
     isTrivial: boolean
   ): Promise<void> {
     const garbage = [];

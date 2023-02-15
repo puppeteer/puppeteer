@@ -617,9 +617,9 @@ export class Frame {
     selector: Selector,
     options: WaitForSelectorOptions = {}
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    const {updatedSelector, queryHandler} =
+    const {updatedSelector, QueryHandler} =
       getQueryHandlerAndSelector(selector);
-    return (await queryHandler.waitFor(
+    return (await QueryHandler.waitFor(
       this,
       updatedSelector,
       options

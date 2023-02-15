@@ -18,6 +18,7 @@ import {ElementHandle} from '../api/ElementHandle.js';
 import {JSHandle} from '../api/JSHandle.js';
 import type {Poller} from '../injected/Poller.js';
 import {createDeferredPromise} from '../util/DeferredPromise.js';
+import {stringifyFunction} from '../util/Function.js';
 import {Binding} from './Binding.js';
 import {TimeoutError} from './Errors.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
@@ -68,7 +69,7 @@ export class WaitTask<T = unknown> {
         this.#fn = `() => {return (${fn});}`;
         break;
       default:
-        this.#fn = fn.toString();
+        this.#fn = stringifyFunction(fn);
         break;
     }
     this.#args = args;
