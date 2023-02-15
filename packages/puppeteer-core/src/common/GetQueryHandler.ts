@@ -48,21 +48,23 @@ export function getQueryHandlerByName(
  */
 export function getQueryHandlerAndSelector(selector: string): {
   updatedSelector: string;
-  queryHandler: typeof QueryHandler;
+  QueryHandler: typeof QueryHandler;
 } {
   for (const handlerMap of [
-    customQueryHandlers,
+    customQueryHandlers.names().map(name => {
+      return [name, customQueryHandlers.get(name)!] as const;
+    }),
     Object.entries(BUILTIN_QUERY_HANDLERS),
   ]) {
-    for (const [name, queryHandler] of handlerMap) {
+    for (const [name, QueryHandler] of handlerMap) {
       for (const separator of QUERY_SEPARATORS) {
         const prefix = `${name}${separator}`;
         if (selector.startsWith(prefix)) {
           selector = selector.slice(prefix.length);
-          return {updatedSelector: selector, queryHandler};
+          return {updatedSelector: selector, QueryHandler};
         }
       }
     }
   }
-  return {updatedSelector: selector, queryHandler: CSSQueryHandler};
+  return {updatedSelector: selector, QueryHandler: CSSQueryHandler};
 }

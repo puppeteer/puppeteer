@@ -438,29 +438,3 @@ export async function getReadableFromProtocolStream(
     },
   });
 }
-
-/**
- * @internal
- */
-export function stringifyFunction(expression: Function): string {
-  let functionText = expression.toString();
-  try {
-    new Function('(' + functionText + ')');
-  } catch (error) {
-    // This means we might have a function shorthand. Try another
-    // time prefixing 'function '.
-    if (functionText.startsWith('async ')) {
-      functionText =
-        'async function ' + functionText.substring('async '.length);
-    } else {
-      functionText = 'function ' + functionText;
-    }
-    try {
-      new Function('(' + functionText + ')');
-    } catch (error) {
-      // We tried hard to serialize, but there's a weird beast here.
-      throw new Error('Passed function is not well-serializable!');
-    }
-  }
-  return functionText;
-}

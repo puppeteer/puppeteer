@@ -176,9 +176,9 @@ export class CDPElementHandle<
   override async $<Selector extends string>(
     selector: Selector
   ): Promise<CDPElementHandle<NodeFor<Selector>> | null> {
-    const {updatedSelector, queryHandler} =
+    const {updatedSelector, QueryHandler} =
       getQueryHandlerAndSelector(selector);
-    return (await queryHandler.queryOne(
+    return (await QueryHandler.queryOne(
       this,
       updatedSelector
     )) as CDPElementHandle<NodeFor<Selector>> | null;
@@ -187,10 +187,10 @@ export class CDPElementHandle<
   override async $$<Selector extends string>(
     selector: Selector
   ): Promise<Array<CDPElementHandle<NodeFor<Selector>>>> {
-    const {updatedSelector, queryHandler} =
+    const {updatedSelector, QueryHandler} =
       getQueryHandlerAndSelector(selector);
     return IterableUtil.collect(
-      queryHandler.queryAll(this, updatedSelector)
+      QueryHandler.queryAll(this, updatedSelector)
     ) as Promise<Array<CDPElementHandle<NodeFor<Selector>>>>;
   }
 
@@ -256,9 +256,9 @@ export class CDPElementHandle<
     selector: Selector,
     options: WaitForSelectorOptions = {}
   ): Promise<CDPElementHandle<NodeFor<Selector>> | null> {
-    const {updatedSelector, queryHandler} =
+    const {updatedSelector, QueryHandler} =
       getQueryHandlerAndSelector(selector);
-    return (await queryHandler.waitFor(
+    return (await QueryHandler.waitFor(
       this,
       updatedSelector,
       options

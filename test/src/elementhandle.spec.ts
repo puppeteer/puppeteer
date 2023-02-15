@@ -702,6 +702,27 @@ describe('ElementHandle specs', function () {
       });
       expect(txtContents).toBe('textcontent');
     });
+
+    it('should work with function shorthands', async () => {
+      const {page} = getTestState();
+      await page.setContent('<div id="not-foo"></div><div id="foo"></div>');
+
+      Puppeteer.registerCustomQueryHandler('getById', {
+        // This is a function shorthand
+        queryOne(_element, selector) {
+          return document.querySelector(`[id="${selector}"]`);
+        },
+      });
+
+      const element = (await page.$(
+        'getById/foo'
+      )) as ElementHandle<HTMLDivElement>;
+      expect(
+        await page.evaluate(element => {
+          return element.id;
+        }, element)
+      ).toBe('foo');
+    });
   });
 
   describe('Element.toElement', () => {

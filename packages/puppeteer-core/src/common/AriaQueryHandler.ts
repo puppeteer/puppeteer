@@ -19,8 +19,6 @@ import {Protocol} from 'devtools-protocol';
 import {ElementHandle} from '../api/ElementHandle.js';
 import {assert} from '../util/assert.js';
 import {CDPSession} from './Connection.js';
-import type {Frame} from './Frame.js';
-import type {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {IterableUtil} from './IterableUtil.js';
 import {QueryHandler, QuerySelector} from './QueryHandler.js';
 import {AwaitableIterable} from './types.js';
@@ -90,17 +88,13 @@ const parseARIASelector = (selector: string): ARIASelector => {
 /**
  * @internal
  */
-export interface ARIAQuerySelectorContext {
-  __ariaQuerySelector(node: Node, selector: string): Promise<Node | null>;
-}
-
-/**
- * @internal
- */
 export class ARIAQueryHandler extends QueryHandler {
-  static override querySelector: QuerySelector = async (node, selector) => {
-    const context = globalThis as unknown as ARIAQuerySelectorContext;
-    return context.__ariaQuerySelector(node, selector);
+  static override querySelector: QuerySelector = async (
+    node,
+    selector,
+    {ariaQuerySelector}
+  ) => {
+    return ariaQuerySelector(node, selector);
   };
 
   static override async *queryAll(
@@ -124,17 +118,4 @@ export class ARIAQueryHandler extends QueryHandler {
   ): Promise<ElementHandle<Node> | null> => {
     return (await IterableUtil.first(this.queryAll(element, selector))) ?? null;
   };
-
-  static override async waitFor(
-    elementOrFrame: ElementHandle<Node> | Frame,
-    selector: string,
-    options: WaitForSelectorOptions
-  ): Promise<ElementHandle<Node> | null> {
-    return super.waitFor(
-      elementOrFrame,
-      selector,
-      options,
-      new Map([['__ariaQuerySelector', this.queryOne]])
-    );
-  }
 }

@@ -41,6 +41,7 @@ import {TaskManager, WaitTask} from './WaitTask.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import {Binding} from './Binding.js';
 import {LazyArg} from './LazyArg.js';
+import {stringifyFunction} from '../util/Function.js';
 
 /**
  * @public
@@ -455,7 +456,7 @@ export class IsolatedWorld {
         LazyArg.create(context => {
           return context.puppeteerUtil;
         }),
-        queryOne.toString(),
+        stringifyFunction(queryOne as (...args: unknown[]) => unknown),
         selector,
         root,
         waitForVisible ? true : waitForHidden ? false : undefined

@@ -17,10 +17,11 @@
 import {Page as PageBase} from '../../api/Page.js';
 import {Connection} from './Connection.js';
 import type {EvaluateFunc, HandleFor} from '../types.js';
-import {isString, stringifyFunction} from '../util.js';
+import {isString} from '../util.js';
 import {BidiSerializer} from './Serializer.js';
 import {JSHandle} from './JSHandle.js';
 import {Reference} from './types.js';
+import {stringifyFunction} from '../../util/Function.js';
 
 /**
  * @internal

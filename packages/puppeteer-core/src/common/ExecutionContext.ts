@@ -15,18 +15,20 @@
  */
 
 import {Protocol} from 'devtools-protocol';
-import {source as injectedSource} from '../generated/injected.js';
+import {JSHandle} from '../api/JSHandle.js';
 import type PuppeteerUtil from '../injected/injected.js';
+import {stringifyFunction} from '../util/Function.js';
+import {ARIAQueryHandler} from './AriaQueryHandler.js';
+import {Binding} from './Binding.js';
 import {CDPSession} from './Connection.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
-import {JSHandle} from '../api/JSHandle.js';
 import {LazyArg} from './LazyArg.js';
+import {scriptInjector} from './ScriptInjector.js';
 import {EvaluateFunc, HandleFor} from './types.js';
 import {
   createJSHandle,
   getExceptionMessage,
   isString,
-  stringifyFunction,
   valueFromRemoteObject,
 } from './util.js';
 import {CDPJSHandle} from './JSHandle.js';
@@ -94,16 +96,35 @@ export class ExecutionContext {
 
   #puppeteerUtil?: Promise<JSHandle<PuppeteerUtil>>;
   get puppeteerUtil(): Promise<JSHandle<PuppeteerUtil>> {
-    if (!this.#puppeteerUtil) {
-      this.#puppeteerUtil = this.evaluateHandle(
-        `(() => {
-            const module = {};
-            ${injectedSource}
-            return module.exports.default;
-          })()`
-      ) as Promise<JSHandle<PuppeteerUtil>>;
+    scriptInjector.inject(script => {
+      if (this.#puppeteerUtil) {
+        this.#puppeteerUtil.then(handle => {
+          handle.dispose();
+        });
+      }
+      this.#puppeteerUtil = Promise.all([
+        this.#installGlobalBinding(
+          new Binding('__ariaQuerySelector', ARIAQueryHandler.queryOne)
+        ),
+        this.evaluateHandle(script) as Promise<JSHandle<PuppeteerUtil>>,
+      ]).then(([, util]) => {
+        return util;
+      });
+    }, !this.#puppeteerUtil);
+    return this.#puppeteerUtil as Promise<JSHandle<PuppeteerUtil>>;
+  }
+
+  async #installGlobalBinding(binding: Binding<any[]>) {
+    try {
+      if (this._world) {
+        this._world._bindings.set(binding.name, binding);
+        await this._world._addBindingToContext(this, binding.name);
+      }
+    } catch {
+      // If the binding cannot be added, then either the browser doesn't support
+      // bindings (e.g. Firefox) or the context is broken. Either breakage is
+      // okay, so we ignore the error.
     }
-    return this.#puppeteerUtil;
   }
 
   /**
@@ -272,8 +293,7 @@ export class ExecutionContext {
     let callFunctionOnPromise;
     try {
       callFunctionOnPromise = this._client.send('Runtime.callFunctionOn', {
-        functionDeclaration:
-          stringifyFunction(pageFunction) + '\n' + suffix + '\n',
+        functionDeclaration: `${stringifyFunction(pageFunction)}\n${suffix}\n`,
         executionContextId: this._contextId,
         arguments: await Promise.all(args.map(convertArgument.bind(this))),
         returnByValue,
