@@ -1,8 +1,8 @@
 ---
-sidebar_label: JSHandle.evaluate
+sidebar_label: JSHandle.evaluateHandle
 ---
 
-# JSHandle.evaluate() method
+# JSHandle.evaluateHandle() method
 
 Evaluates the given function with the current handle as its first argument.
 
@@ -10,15 +10,13 @@ Evaluates the given function with the current handle as its first argument.
 
 ```typescript
 class JSHandle {
-  evaluate<
+  evaluateHandle<
     Params extends unknown[],
-    Func extends EvaluateFunc<[this, ...Params]> = EvaluateFunc<
-      [this, ...Params]
-    >
+    Func extends EvaluateFuncWith<T, Params> = EvaluateFuncWith<T, Params>
   >(
     pageFunction: Func | string,
     ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
 }
 ```
 
@@ -31,4 +29,4 @@ class JSHandle {
 
 **Returns:**
 
-Promise&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;
+Promise&lt;[HandleFor](./puppeteer.handlefor.md)&lt;Awaited&lt;ReturnType&lt;Func&gt;&gt;&gt;&gt;
