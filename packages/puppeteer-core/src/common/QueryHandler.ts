@@ -17,6 +17,7 @@
 import {ElementHandle} from '../api/ElementHandle.js';
 import type PuppeteerUtil from '../injected/injected.js';
 import {assert} from '../util/assert.js';
+import {isErrorLike} from '../util/ErrorLike.js';
 import {interpolateFunction, stringifyFunction} from '../util/Function.js';
 import type {Frame} from './Frame.js';
 import {transposeIterableHandle} from './HandleIterator.js';
@@ -146,6 +147,9 @@ export class QueryHandler {
   /**
    * Waits until a single node appears for a given selector and
    * {@link ElementHandle}.
+   *
+   * This will always query the handle in the Puppeteer world and migrate the
+   * result to the main world.
    */
   static async waitFor(
     elementOrFrame: ElementHandle<Node> | Frame,
@@ -160,19 +164,51 @@ export class QueryHandler {
       frame = elementOrFrame.frame;
       element = await frame.worlds[PUPPETEER_WORLD].adoptHandle(elementOrFrame);
     }
-    const result = await frame.worlds[PUPPETEER_WORLD]._waitForSelectorInPage(
-      this._querySelector,
-      element,
-      selector,
-      options
-    );
-    if (element) {
-      await element.dispose();
+
+    const {visible = false, hidden = false, timeout} = options;
+
+    try {
+      const handle = await frame.worlds[PUPPETEER_WORLD].waitForFunction(
+        async (PuppeteerUtil, query, selector, root, visible) => {
+          const querySelector = PuppeteerUtil.createFunction(
+            query
+          ) as QuerySelector;
+          const node = await querySelector(
+            root ?? document,
+            selector,
+            PuppeteerUtil
+          );
+          return PuppeteerUtil.checkVisibility(node, visible);
+        },
+        {
+          polling: visible || hidden ? 'raf' : 'mutation',
+          root: element,
+          timeout,
+        },
+        LazyArg.create(context => {
+          return context.puppeteerUtil;
+        }),
+        stringifyFunction(this._querySelector),
+        selector,
+        element,
+        visible ? true : hidden ? false : undefined
+      );
+
+      if (!(handle instanceof ElementHandle)) {
+        await handle.dispose();
+        return null;
+      }
+      return frame.worlds[MAIN_WORLD].transferHandle(handle);
+    } catch (error) {
+      if (!isErrorLike(error)) {
+        throw error;
+      }
+      error.message = `Waiting for selector \`${selector}\` failed: ${error.message}`;
+      throw error;
+    } finally {
+      if (element) {
+        await element.dispose();
+      }
     }
-    if (!(result instanceof ElementHandle)) {
-      await result?.dispose();
-      return null;
-    }
-    return frame.worlds[MAIN_WORLD].transferHandle(result);
   }
 }

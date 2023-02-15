@@ -19,7 +19,6 @@ import {JSHandle} from '../api/JSHandle.js';
 import type {Poller} from '../injected/Poller.js';
 import {createDeferredPromise} from '../util/DeferredPromise.js';
 import {stringifyFunction} from '../util/Function.js';
-import {Binding} from './Binding.js';
 import {TimeoutError} from './Errors.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {LazyArg} from './LazyArg.js';
@@ -29,7 +28,6 @@ import {HandleFor} from './types.js';
  * @internal
  */
 export interface WaitTaskOptions {
-  bindings?: Map<string, (...args: never[]) => unknown>;
   polling: 'raf' | 'mutation' | number;
   root?: ElementHandle<Node>;
   timeout: number;
@@ -40,7 +38,6 @@ export interface WaitTaskOptions {
  */
 export class WaitTask<T = unknown> {
   #world: IsolatedWorld;
-  #bindings: Map<string, (...args: never[]) => unknown>;
   #polling: 'raf' | 'mutation' | number;
   #root?: ElementHandle<Node>;
 
@@ -60,7 +57,6 @@ export class WaitTask<T = unknown> {
     ...args: unknown[]
   ) {
     this.#world = world;
-    this.#bindings = options.bindings ?? new Map();
     this.#polling = options.polling;
     this.#root = options.root;
 
@@ -84,15 +80,6 @@ export class WaitTask<T = unknown> {
       }, options.timeout);
     }
 
-    if (this.#bindings.size !== 0) {
-      for (const [name, fn] of this.#bindings) {
-        this.#world._bindings.set(
-          name,
-          new Binding(name, fn as (...args: unknown[]) => unknown)
-        );
-      }
-    }
-
     this.rerun();
   }
 
@@ -102,15 +89,6 @@ export class WaitTask<T = unknown> {
 
   async rerun(): Promise<void> {
     try {
-      if (this.#bindings.size !== 0) {
-        const context = await this.#world.executionContext();
-        await Promise.all(
-          [...this.#bindings].map(async ([name]) => {
-            return await this.#world._addBindingToContext(context, name);
-          })
-        );
-      }
-
       switch (this.#polling) {
         case 'raf':
           this.#poller = await this.#world.evaluateHandle(
