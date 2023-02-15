@@ -25,6 +25,7 @@ import {
   isSuitableNodeForTextMatching,
 } from './TextContent.js';
 import * as TextQuerySelector from './TextQuerySelector.js';
+import * as PQuerySelector from './PQuerySelector.js';
 import * as util from './util.js';
 import * as XPathQuerySelector from './XPathQuerySelector.js';
 
@@ -35,6 +36,7 @@ const PuppeteerUtil = Object.freeze({
   ...ARIAQuerySelector,
   ...CustomQuerySelectors,
   ...PierceQuerySelector,
+  ...PQuerySelector,
   ...TextQuerySelector,
   ...util,
   ...XPathQuerySelector,

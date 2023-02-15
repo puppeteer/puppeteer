@@ -33,6 +33,11 @@ export type BindingPayload = {
 };
 
 /**
+ * @internal
+ */
+export type AwaitableIterator<T> = Iterator<T> | AsyncIterator<T>;
+
+/**
  * @public
  */
 export type AwaitableIterable<T> = Iterable<T> | AsyncIterable<T>;

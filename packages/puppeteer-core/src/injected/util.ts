@@ -29,3 +29,42 @@ function isBoundingBoxEmpty(element: Element): boolean {
   const rect = element.getBoundingClientRect();
   return rect.width === 0 || rect.height === 0;
 }
+
+/**
+ * @internal
+ */
+export function* deepChildren(
+  root: Node
+): IterableIterator<Element | ShadowRoot> {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+  let node = walker.nextNode() as Element | null;
+  for (; node; node = walker.nextNode() as Element | null) {
+    yield node.shadowRoot ?? node;
+  }
+}
+
+/**
+ * @internal
+ */
+export function* deepDescendents(
+  root: Node
+): IterableIterator<Element | ShadowRoot> {
+  const walkers = [document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT)];
+  let walker: TreeWalker | undefined;
+  while ((walker = walkers.shift())) {
+    for (
+      let node = walker.nextNode() as Element | null;
+      node;
+      node = walker.nextNode() as Element | null
+    ) {
+      if (!node.shadowRoot) {
+        yield node;
+        continue;
+      }
+      walkers.push(
+        document.createTreeWalker(node.shadowRoot, NodeFilter.SHOW_ELEMENT)
+      );
+      yield node.shadowRoot;
+    }
+  }
+}

@@ -33,7 +33,7 @@ import {Frame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {getQueryHandlerAndSelector} from './GetQueryHandler.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
-import {IterableUtil} from './IterableUtil.js';
+import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {CDPPage} from './Page.js';
 import {
   ElementFor,
@@ -189,7 +189,7 @@ export class CDPElementHandle<
   ): Promise<Array<CDPElementHandle<NodeFor<Selector>>>> {
     const {updatedSelector, QueryHandler} =
       getQueryHandlerAndSelector(selector);
-    return IterableUtil.collect(
+    return AsyncIterableUtil.collect(
       QueryHandler.queryAll(this, updatedSelector)
     ) as Promise<Array<CDPElementHandle<NodeFor<Selector>>>>;
   }

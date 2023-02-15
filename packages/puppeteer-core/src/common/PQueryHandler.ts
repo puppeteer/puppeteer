@@ -19,11 +19,19 @@ import {QueryHandler, QuerySelector, QuerySelectorAll} from './QueryHandler.js';
 /**
  * @internal
  */
-export class CSSQueryHandler extends QueryHandler {
-  static override querySelector: QuerySelector = (element, selector) => {
-    return (element as Element).querySelector(selector);
+export class PQueryHandler extends QueryHandler {
+  static override querySelectorAll: QuerySelectorAll = (
+    element,
+    selector,
+    {pQuerySelectorAll}
+  ) => {
+    return pQuerySelectorAll(element, selector);
   };
-  static override querySelectorAll: QuerySelectorAll = (element, selector) => {
-    return (element as Element).querySelectorAll(selector);
+  static override querySelector: QuerySelector = (
+    element,
+    selector,
+    {pQuerySelector}
+  ) => {
+    return pQuerySelector(element, selector);
   };
 }

@@ -15,8 +15,10 @@
  */
 
 import {Protocol} from 'devtools-protocol';
+import type {ElementHandle} from '../api/ElementHandle.js';
 import {JSHandle} from '../api/JSHandle.js';
 import type PuppeteerUtil from '../injected/injected.js';
+import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {stringifyFunction} from '../util/Function.js';
 import {ARIAQueryHandler} from './AriaQueryHandler.js';
 import {Binding} from './Binding.js';
@@ -78,7 +80,7 @@ export class ExecutionContext {
   /**
    * @internal
    */
-  _contextName: string;
+  _contextName?: string;
 
   /**
    * @internal
@@ -91,7 +93,9 @@ export class ExecutionContext {
     this._client = client;
     this._world = world;
     this._contextId = contextPayload.id;
-    this._contextName = contextPayload.name;
+    if (contextPayload.name) {
+      this._contextName = contextPayload.name;
+    }
   }
 
   #puppeteerUtil?: Promise<JSHandle<PuppeteerUtil>>;
@@ -104,17 +108,30 @@ export class ExecutionContext {
       }
       this.#puppeteerUtil = Promise.all([
         this.#installGlobalBinding(
-          new Binding('__ariaQuerySelector', ARIAQueryHandler.queryOne)
+          new Binding(
+            '__ariaQuerySelector',
+            ARIAQueryHandler.queryOne as (...args: unknown[]) => unknown
+          )
         ),
-        this.evaluateHandle(script) as Promise<JSHandle<PuppeteerUtil>>,
-      ]).then(([, util]) => {
-        return util;
+        this.#installGlobalBinding(
+          new Binding('__ariaQuerySelectorAll', (async (
+            element: ElementHandle<Node>,
+            selector: string
+          ): Promise<JSHandle<Node[]>> => {
+            const results = ARIAQueryHandler.queryAll(element, selector);
+            return element.executionContext().evaluateHandle((...elements) => {
+              return elements;
+            }, ...(await AsyncIterableUtil.collect(results)));
+          }) as (...args: unknown[]) => unknown)
+        ),
+      ]).then(() => {
+        return this.evaluateHandle(script) as Promise<JSHandle<PuppeteerUtil>>;
       });
     }, !this.#puppeteerUtil);
     return this.#puppeteerUtil as Promise<JSHandle<PuppeteerUtil>>;
   }
 
-  async #installGlobalBinding(binding: Binding<any[]>) {
+  async #installGlobalBinding(binding: Binding) {
     try {
       if (this._world) {
         this._world._bindings.set(binding.name, binding);
