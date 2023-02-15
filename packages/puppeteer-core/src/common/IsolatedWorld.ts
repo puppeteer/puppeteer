@@ -18,7 +18,6 @@ import {Protocol} from 'devtools-protocol';
 import {JSHandle} from '../api/JSHandle.js';
 import {assert} from '../util/assert.js';
 import {createDeferredPromise} from '../util/DeferredPromise.js';
-import {isErrorLike} from '../util/ErrorLike.js';
 import {CDPSession} from './Connection.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
@@ -40,8 +39,6 @@ import {TaskManager, WaitTask} from './WaitTask.js';
 
 import type {ElementHandle} from '../api/ElementHandle.js';
 import {Binding} from './Binding.js';
-import {LazyArg} from './LazyArg.js';
-import {stringifyFunction} from '../util/Function.js';
 
 /**
  * @public
@@ -421,61 +418,6 @@ export class IsolatedWorld {
     await binding?.run(context, seq, args, isTrivial);
   };
 
-  async _waitForSelectorInPage(
-    queryOne: Function,
-    root: ElementHandle<Node> | undefined,
-    selector: string,
-    options: WaitForSelectorOptions,
-    bindings = new Map<string, (...args: never[]) => unknown>()
-  ): Promise<JSHandle<unknown> | null> {
-    const {
-      visible: waitForVisible = false,
-      hidden: waitForHidden = false,
-      timeout = this.#timeoutSettings.timeout(),
-    } = options;
-
-    try {
-      const handle = await this.waitForFunction(
-        async (PuppeteerUtil, query, selector, root, visible) => {
-          if (!PuppeteerUtil) {
-            return;
-          }
-          const node = (await PuppeteerUtil.createFunction(query)(
-            root ?? document,
-            selector,
-            PuppeteerUtil
-          )) as Node | null;
-          return PuppeteerUtil.checkVisibility(node, visible);
-        },
-        {
-          bindings,
-          polling: waitForVisible || waitForHidden ? 'raf' : 'mutation',
-          root,
-          timeout,
-        },
-        LazyArg.create(context => {
-          return context.puppeteerUtil;
-        }),
-        stringifyFunction(queryOne as (...args: unknown[]) => unknown),
-        selector,
-        root,
-        waitForVisible ? true : waitForHidden ? false : undefined
-      );
-      const elementHandle = handle.asElement();
-      if (!elementHandle) {
-        await handle.dispose();
-        return null;
-      }
-      return elementHandle;
-    } catch (error) {
-      if (!isErrorLike(error)) {
-        throw error;
-      }
-      error.message = `Waiting for selector \`${selector}\` failed: ${error.message}`;
-      throw error;
-    }
-  }
-
   waitForFunction<
     Params extends unknown[],
     Func extends EvaluateFunc<InnerLazyParams<Params>> = EvaluateFunc<
@@ -487,14 +429,12 @@ export class IsolatedWorld {
       polling?: 'raf' | 'mutation' | number;
       timeout?: number;
       root?: ElementHandle<Node>;
-      bindings?: Map<string, (...args: never[]) => unknown>;
     } = {},
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     const {
       polling = 'raf',
       timeout = this.#timeoutSettings.timeout(),
-      bindings,
       root,
     } = options;
     if (typeof polling === 'number' && polling < 0) {
@@ -503,7 +443,6 @@ export class IsolatedWorld {
     const waitTask = new WaitTask(
       this,
       {
-        bindings,
         polling,
         root,
         timeout,
