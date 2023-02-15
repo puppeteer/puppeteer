@@ -1,6 +1,7 @@
 import type {AwaitableIterable} from '../common/types.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {isErrorLike} from '../util/ErrorLike.js';
+
 import {ariaQuerySelectorAll} from './ARIAQuerySelector.js';
 import {customQuerySelectors} from './CustomQuerySelector.js';
 import {parsePSelectors, PSelector} from './PSelectorParser.js';

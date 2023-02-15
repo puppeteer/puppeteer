@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import type {Protocol} from 'devtools-protocol';
 import type {Readable} from 'stream';
+
+import type {Protocol} from 'devtools-protocol';
+
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {isNode} from '../environment.js';
 import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
+
 import type {CDPSession} from './Connection.js';
 import {debug} from './Debug.js';
 import {CDPElementHandle} from './ElementHandle.js';

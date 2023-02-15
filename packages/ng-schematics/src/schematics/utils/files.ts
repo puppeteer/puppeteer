@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import {relative, resolve} from 'path';
+
 import {getSystemPath, normalize, strings} from '@angular-devkit/core';
 import {
   SchematicContext,
@@ -26,7 +28,7 @@ import {
   move,
   url,
 } from '@angular-devkit/schematics';
-import {relative, resolve} from 'path';
+
 import {SchematicsOptions, TestingFramework} from './types.js';
 
 export interface FilesOptions {

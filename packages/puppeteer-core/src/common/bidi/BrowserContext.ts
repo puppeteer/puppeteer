@@ -16,6 +16,7 @@
 
 import {BrowserContext as BrowserContextBase} from '../../api/BrowserContext.js';
 import {Page as PageBase} from '../../api/Page.js';
+
 import {Connection} from './Connection.js';
 import {Page} from './Page.js';
 

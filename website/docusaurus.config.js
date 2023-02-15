@@ -17,11 +17,12 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-const lightCodeTheme = require('prism-react-renderer/themes/github');
+const assert = require('assert');
+
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+const lightCodeTheme = require('prism-react-renderer/themes/github');
 
 const archivedVersions = require('./versionsArchived.json');
-const assert = require('assert');
 
 const DOC_ROUTE_BASE_PATH = '/';
 const DOC_PATH = '../docs';

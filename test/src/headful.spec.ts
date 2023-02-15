@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-import expect from 'expect';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import rimraf from 'rimraf';
 import {promisify} from 'util';
+
+import expect from 'expect';
 import {
   PuppeteerLaunchOptions,
   PuppeteerNode,
 } from 'puppeteer-core/internal/node/PuppeteerNode.js';
+import rimraf from 'rimraf';
+
 import {getTestState} from './mocha-utils.js';
 
 const rmAsync = promisify(rimraf);

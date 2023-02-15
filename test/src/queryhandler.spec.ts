@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 import assert from 'assert';
+
 import expect from 'expect';
 import {Puppeteer} from 'puppeteer-core';
 import {ElementHandle} from 'puppeteer-core/internal/api/ElementHandle.js';
+
 import {
   getTestState,
   setupTestBrowserHooks,

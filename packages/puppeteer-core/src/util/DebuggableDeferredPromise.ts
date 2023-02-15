@@ -1,4 +1,5 @@
 import {DEFERRED_PROMISE_DEBUG_TIMEOUT} from '../environment.js';
+
 import {DeferredPromise, createDeferredPromise} from './DeferredPromise.js';
 
 /**

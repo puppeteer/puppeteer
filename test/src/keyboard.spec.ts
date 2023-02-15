@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import utils from './utils.js';
 import os from 'os';
+
 import expect from 'expect';
+import {KeyInput} from 'puppeteer-core/internal/common/USKeyboardLayout.js';
+
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import {KeyInput} from 'puppeteer-core/internal/common/USKeyboardLayout.js';
+import utils from './utils.js';
 
 describe('Keyboard', function () {
   setupTestBrowserHooks();

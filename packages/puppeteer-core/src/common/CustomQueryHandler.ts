@@ -17,6 +17,7 @@
 import type PuppeteerUtil from '../injected/injected.js';
 import {assert} from '../util/assert.js';
 import {interpolateFunction, stringifyFunction} from '../util/Function.js';
+
 import {QueryHandler, QuerySelector, QuerySelectorAll} from './QueryHandler.js';
 import {scriptInjector} from './ScriptInjector.js';
 

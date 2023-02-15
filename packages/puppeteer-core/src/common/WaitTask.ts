@@ -19,6 +19,7 @@ import {JSHandle} from '../api/JSHandle.js';
 import type {Poller} from '../injected/Poller.js';
 import {createDeferredPromise} from '../util/DeferredPromise.js';
 import {stringifyFunction} from '../util/Function.js';
+
 import {TimeoutError} from './Errors.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {LazyArg} from './LazyArg.js';

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import {createWriteStream} from 'fs';
 import * as http from 'http';
 import * as https from 'https';
 import {URL} from 'url';
+
 import createHttpsProxyAgent from 'https-proxy-agent';
 import {getProxyForUrl} from 'proxy-from-env';
-import {createWriteStream} from 'fs';
 
 export function headHttpRequest(url: URL): Promise<boolean> {
   return new Promise(resolve => {

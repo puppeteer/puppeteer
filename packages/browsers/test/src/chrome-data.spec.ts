@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import assert from 'assert';
+import path from 'path';
+
+import {BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
 import {
   resolveDownloadUrl,
   relativeExecutablePath,
 } from '../../lib/cjs/browsers/chrome.js';
-import {BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
-import assert from 'assert';
-import path from 'path';
 
 describe('Chrome', () => {
   it('should resolve download URLs', () => {

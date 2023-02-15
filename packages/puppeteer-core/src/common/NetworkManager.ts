@@ -15,16 +15,18 @@
  */
 
 import {Protocol} from 'devtools-protocol';
+
 import {assert} from '../util/assert.js';
+import {createDebuggableDeferredPromise} from '../util/DebuggableDeferredPromise.js';
+import {DeferredPromise} from '../util/DeferredPromise.js';
+
+import {CDPSession} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
 import {Frame} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {FetchRequestId, NetworkEventManager} from './NetworkEventManager.js';
 import {debugError, isString} from './util.js';
-import {DeferredPromise} from '../util/DeferredPromise.js';
-import {createDebuggableDeferredPromise} from '../util/DebuggableDeferredPromise.js';
-import {CDPSession} from './Connection.js';
 
 /**
  * @public

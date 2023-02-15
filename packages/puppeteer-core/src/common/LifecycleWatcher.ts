@@ -16,21 +16,22 @@
 
 import {assert} from '../util/assert.js';
 import {
+  DeferredPromise,
+  createDeferredPromise,
+} from '../util/DeferredPromise.js';
+
+import {CDPSessionEmittedEvents} from './Connection.js';
+import {TimeoutError} from './Errors.js';
+import {Frame} from './Frame.js';
+import {FrameManager, FrameManagerEmittedEvents} from './FrameManager.js';
+import {HTTPRequest} from './HTTPRequest.js';
+import {HTTPResponse} from './HTTPResponse.js';
+import {NetworkManagerEmittedEvents} from './NetworkManager.js';
+import {
   addEventListener,
   PuppeteerEventListener,
   removeEventListeners,
 } from './util.js';
-import {
-  DeferredPromise,
-  createDeferredPromise,
-} from '../util/DeferredPromise.js';
-import {TimeoutError} from './Errors.js';
-import {FrameManager, FrameManagerEmittedEvents} from './FrameManager.js';
-import {Frame} from './Frame.js';
-import {HTTPRequest} from './HTTPRequest.js';
-import {HTTPResponse} from './HTTPResponse.js';
-import {NetworkManagerEmittedEvents} from './NetworkManager.js';
-import {CDPSessionEmittedEvents} from './Connection.js';
 /**
  * @public
  */

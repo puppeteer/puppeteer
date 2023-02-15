@@ -15,15 +15,19 @@
  */
 
 import {Protocol} from 'devtools-protocol';
+
 import type {ElementHandle} from '../api/ElementHandle.js';
 import {JSHandle} from '../api/JSHandle.js';
 import type PuppeteerUtil from '../injected/injected.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {stringifyFunction} from '../util/Function.js';
+
 import {ARIAQueryHandler} from './AriaQueryHandler.js';
 import {Binding} from './Binding.js';
 import {CDPSession} from './Connection.js';
+import {CDPElementHandle} from './ElementHandle.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
+import {CDPJSHandle} from './JSHandle.js';
 import {LazyArg} from './LazyArg.js';
 import {scriptInjector} from './ScriptInjector.js';
 import {EvaluateFunc, HandleFor} from './types.js';
@@ -33,8 +37,6 @@ import {
   isString,
   valueFromRemoteObject,
 } from './util.js';
-import {CDPJSHandle} from './JSHandle.js';
-import {CDPElementHandle} from './ElementHandle.js';
 
 /**
  * @public

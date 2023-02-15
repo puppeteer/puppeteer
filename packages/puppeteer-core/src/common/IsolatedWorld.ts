@@ -15,9 +15,13 @@
  */
 
 import {Protocol} from 'devtools-protocol';
+
+import type {ElementHandle} from '../api/ElementHandle.js';
 import {JSHandle} from '../api/JSHandle.js';
 import {assert} from '../util/assert.js';
 import {createDeferredPromise} from '../util/DeferredPromise.js';
+
+import {Binding} from './Binding.js';
 import {CDPSession} from './Connection.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
@@ -36,9 +40,6 @@ import {
 } from './types.js';
 import {addPageBinding, createJSHandle, debugError} from './util.js';
 import {TaskManager, WaitTask} from './WaitTask.js';
-
-import type {ElementHandle} from '../api/ElementHandle.js';
-import {Binding} from './Binding.js';
 
 /**
  * @public

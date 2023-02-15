@@ -16,6 +16,7 @@
 
 import {readdirSync, readFileSync} from 'fs';
 import {join} from 'path';
+
 import {devDependencies} from '../package.json';
 
 const LOCAL_PACKAGE_NAMES: string[] = [];

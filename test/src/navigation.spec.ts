@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-import utils from './utils.js';
+import {ServerResponse} from 'http';
+
 import expect from 'expect';
+import {TimeoutError} from 'puppeteer';
+import {HTTPRequest} from 'puppeteer-core/internal/common/HTTPRequest.js';
+
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import {ServerResponse} from 'http';
-import {HTTPRequest} from 'puppeteer-core/internal/common/HTTPRequest.js';
-import {TimeoutError} from 'puppeteer';
+import utils from './utils.js';
 
 describe('navigation', function () {
   setupTestBrowserHooks();

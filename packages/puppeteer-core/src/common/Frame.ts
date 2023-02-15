@@ -15,9 +15,11 @@
  */
 
 import {Protocol} from 'devtools-protocol';
+
 import {ElementHandle} from '../api/ElementHandle.js';
 import {Page} from '../api/Page.js';
 import {isErrorLike} from '../util/ErrorLike.js';
+
 import {CDPSession} from './Connection.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {FrameManager} from './FrameManager.js';

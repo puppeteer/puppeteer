@@ -19,6 +19,7 @@ import {Protocol} from 'devtools-protocol';
 import {ElementHandle} from '../api/ElementHandle.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
+
 import {CDPSession} from './Connection.js';
 import {QueryHandler, QuerySelector} from './QueryHandler.js';
 import {AwaitableIterable} from './types.js';

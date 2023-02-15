@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+import fs from 'fs';
+import {spawn, SpawnOptions} from 'node:child_process';
+import os from 'os';
+import path from 'path';
+
 import {
   TestExpectation,
   MochaResults,
@@ -23,11 +28,6 @@ import {
   TestSuiteFile,
   Platform,
 } from './types.js';
-
-import path from 'path';
-import fs from 'fs';
-import os from 'os';
-import {spawn, SpawnOptions} from 'node:child_process';
 import {
   extendProcessEnv,
   filterByPlatform,

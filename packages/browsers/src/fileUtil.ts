@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import * as path from 'path';
 import {exec as execChildProcess} from 'child_process';
-import extractZip from 'extract-zip';
 import {createReadStream} from 'fs';
 import {mkdir, readdir} from 'fs/promises';
+import * as path from 'path';
+import {promisify} from 'util';
+
+import extractZip from 'extract-zip';
 import tar from 'tar-fs';
 import bzip from 'unbzip2-stream';
-import {promisify} from 'util';
 
 const exec = promisify(execChildProcess);
 

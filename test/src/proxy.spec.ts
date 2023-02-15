@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import expect from 'expect';
 import http from 'http';
-import os from 'os';
-import {getTestState} from './mocha-utils.js';
 import type {Server, IncomingMessage, ServerResponse} from 'http';
-import type {Browser} from 'puppeteer-core/internal/api/Browser.js';
 import type {AddressInfo} from 'net';
+import os from 'os';
+
 import {TestServer} from '@pptr/testserver';
+import expect from 'expect';
+import type {Browser} from 'puppeteer-core/internal/api/Browser.js';
+
+import {getTestState} from './mocha-utils.js';
 
 let HOSTNAME = os.hostname();
 

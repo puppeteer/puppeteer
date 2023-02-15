@@ -18,6 +18,7 @@ import {
   createDeferredPromise,
   DeferredPromise,
 } from '../util/DeferredPromise.js';
+
 import type {Frame} from './Frame.js';
 
 /**

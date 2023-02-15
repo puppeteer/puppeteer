@@ -16,8 +16,9 @@
 
 import assert from 'assert/strict';
 import test from 'node:test';
-import {filterByParameters, getTestResultForFailure} from './utils.js';
+
 import {TestExpectation} from './types.js';
+import {filterByParameters, getTestResultForFailure} from './utils.js';
 import {getFilename, extendProcessEnv} from './utils.js';
 
 test('extendProcessEnv', () => {

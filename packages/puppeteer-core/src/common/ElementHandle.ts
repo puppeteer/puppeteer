@@ -15,6 +15,7 @@
  */
 
 import {Protocol} from 'devtools-protocol';
+
 import {
   BoundingBox,
   BoxModel,
@@ -27,13 +28,15 @@ import {
 import {JSHandle} from '../api/JSHandle.js';
 import {Page, ScreenshotOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
+import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
+
 import {CDPSession} from './Connection.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {getQueryHandlerAndSelector} from './GetQueryHandler.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
-import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
+import {CDPJSHandle} from './JSHandle.js';
 import {CDPPage} from './Page.js';
 import {
   ElementFor,
@@ -44,7 +47,6 @@ import {
 } from './types.js';
 import {KeyInput} from './USKeyboardLayout.js';
 import {debugError, isString} from './util.js';
-import {CDPJSHandle} from './JSHandle.js';
 
 const applyOffsetsToQuad = (
   quad: Point[],

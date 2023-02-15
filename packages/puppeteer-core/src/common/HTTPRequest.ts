@@ -15,12 +15,14 @@
  */
 import {Protocol} from 'devtools-protocol';
 import {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
+
 import {assert} from '../util/assert.js';
+
 import {ProtocolError} from './Errors.js';
 import {EventEmitter} from './EventEmitter.js';
 import {Frame} from './Frame.js';
-import {debugError, isString} from './util.js';
 import {HTTPResponse} from './HTTPResponse.js';
+import {debugError, isString} from './util.js';
 
 /**
  * @public

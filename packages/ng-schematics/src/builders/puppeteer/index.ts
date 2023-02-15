@@ -1,3 +1,5 @@
+import {spawn} from 'child_process';
+
 import {
   createBuilder,
   BuilderContext,
@@ -6,7 +8,6 @@ import {
   BuilderRun,
 } from '@angular-devkit/architect';
 import {JsonObject} from '@angular-devkit/core';
-import {spawn} from 'child_process';
 
 import {PuppeteerBuilderOptions} from './types.js';
 

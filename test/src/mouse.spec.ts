@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 import os from 'os';
+
 import expect from 'expect';
+import {KeyInput} from 'puppeteer-core/internal/common/USKeyboardLayout.js';
+
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import {KeyInput} from 'puppeteer-core/internal/common/USKeyboardLayout.js';
 
 interface Dimensions {
   x: number;

@@ -1,5 +1,5 @@
-import React from 'react';
 import Head from '@docusaurus/Head';
+import React from 'react';
 
 // Tracks the global package version as a local, monotonic counter. This
 // prevents Algolia from deleting based on differing package versions and

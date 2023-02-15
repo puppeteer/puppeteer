@@ -15,8 +15,10 @@
  */
 
 import {Protocol} from 'devtools-protocol';
+
 import {JSHandle} from '../api/JSHandle.js';
 import {assert} from '../util/assert.js';
+
 import {CDPSession} from './Connection.js';
 import type {CDPElementHandle} from './ElementHandle.js';
 import {ExecutionContext} from './ExecutionContext.js';

@@ -24,9 +24,9 @@
  * necessary.
  */
 
-const path = require('path');
-const fs = require('fs');
 const {execSync} = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
 // Need to ensure TS is compiled before loading the installer
 if (!fs.existsSync(path.join(__dirname, 'lib'))) {

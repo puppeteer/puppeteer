@@ -17,6 +17,7 @@
 import assert from 'assert';
 import {readdir} from 'fs/promises';
 import {join} from 'path';
+
 import {describeInstallation} from './describeInstallation.js';
 import {readAsset} from './util.js';
 

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {computeExecutablePath} from '../../lib/cjs/launcher.js';
-import {Browser, BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
-
 import assert from 'assert';
 import path from 'path';
+
+import {Browser, BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
+import {computeExecutablePath} from '../../lib/cjs/launcher.js';
 
 describe('launcher', () => {
   it('should compute executable path for Chrome', () => {

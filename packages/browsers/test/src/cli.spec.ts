@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import {CLI} from '../../lib/cjs/CLI.js';
-import fs from 'fs';
-import path from 'path';
-import os from 'os';
 import assert from 'assert';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+
+import {CLI} from '../../lib/cjs/CLI.js';
 
 describe('CLI', function () {
   this.timeout(60000);

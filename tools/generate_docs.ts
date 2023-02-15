@@ -17,7 +17,9 @@
 import {copyFile, readFile, rm, writeFile} from 'fs/promises';
 import {join, resolve} from 'path';
 import {chdir} from 'process';
+
 import semver from 'semver';
+
 import {generateDocs} from './internal/custom_markdown_action.js';
 import {job} from './internal/job.js';
 import {spawnAndLog} from './internal/util.js';

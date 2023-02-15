@@ -13,22 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import expect from 'expect';
 import fs from 'fs';
 import {ServerResponse} from 'http';
 import path from 'path';
-import sinon from 'sinon';
+
+import expect from 'expect';
+import {KnownDevices, TimeoutError} from 'puppeteer';
+import {Metrics, Page} from 'puppeteer-core/internal/api/Page.js';
 import {CDPSession} from 'puppeteer-core/internal/common/Connection.js';
 import {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
-import {Metrics, Page} from 'puppeteer-core/internal/api/Page.js';
+import {CDPPage} from 'puppeteer-core/internal/common/Page.js';
+import sinon from 'sinon';
+
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
 import utils, {attachFrame, waitEvent} from './utils.js';
-import {CDPPage} from 'puppeteer-core/internal/common/Page.js';
-import {KnownDevices, TimeoutError} from 'puppeteer';
 
 describe('Page', function () {
   setupTestBrowserHooks();

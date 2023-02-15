@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Protocol} from 'devtools-protocol';
-import expect from 'expect';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+import {TLSSocket} from 'tls';
+import {promisify} from 'util';
+
+import {Protocol} from 'devtools-protocol';
+import expect from 'expect';
 import {BrowserFetcher, TimeoutError} from 'puppeteer';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
 import rimraf from 'rimraf';
 import sinon from 'sinon';
-import {TLSSocket} from 'tls';
-import {promisify} from 'util';
+
 import {getTestState, itOnlyRegularInstall} from './mocha-utils.js';
 import utils from './utils.js';
 

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import expect from 'expect';
+
 import {
   expectCookieEquals,
   getTestState,

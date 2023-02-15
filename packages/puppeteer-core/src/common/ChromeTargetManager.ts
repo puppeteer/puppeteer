@@ -15,18 +15,20 @@
  */
 
 import {Protocol} from 'devtools-protocol';
+
+import {TargetFilterCallback} from '../api/Browser.js';
 import {assert} from '../util/assert.js';
+
 import {CDPSession, Connection} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
 import {Target} from './Target.js';
-import {debugError} from './util.js';
-import {TargetFilterCallback} from '../api/Browser.js';
 import {
   TargetInterceptor,
   TargetFactory,
   TargetManager,
   TargetManagerEmittedEvents,
 } from './TargetManager.js';
+import {debugError} from './util.js';
 
 /**
  * ChromeTargetManager uses the CDP's auto-attach mechanism to intercept

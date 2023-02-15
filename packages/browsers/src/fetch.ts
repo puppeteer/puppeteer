@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import assert from 'assert';
 import {existsSync} from 'fs';
 import {mkdir, unlink} from 'fs/promises';
 import os from 'os';
 import path from 'path';
 
-import {debug} from './debug.js';
 import {Browser, BrowserPlatform, downloadUrls} from './browsers/browsers.js';
-import {downloadFile, headHttpRequest} from './httpUtil.js';
-import assert from 'assert';
-import {unpackArchive} from './fileUtil.js';
-import {detectBrowserPlatform} from './detectPlatform.js';
 import {CacheStructure} from './CacheStructure.js';
+import {debug} from './debug.js';
+import {detectBrowserPlatform} from './detectPlatform.js';
+import {unpackArchive} from './fileUtil.js';
+import {downloadFile, headHttpRequest} from './httpUtil.js';
 
 const debugFetch = debug('puppeteer:browsers:fetcher');
 

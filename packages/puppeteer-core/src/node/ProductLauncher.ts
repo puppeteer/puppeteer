@@ -16,8 +16,10 @@
 import {existsSync} from 'fs';
 import os, {tmpdir} from 'os';
 import {join} from 'path';
+
 import {Browser} from '../api/Browser.js';
 import {Product} from '../common/Product.js';
+
 import {
   BrowserLaunchArgumentOptions,
   ChromeReleaseChannel,

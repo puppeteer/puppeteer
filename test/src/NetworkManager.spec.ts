@@ -15,14 +15,14 @@
  */
 
 import expect from 'expect';
+import {EventEmitter} from 'puppeteer-core/internal/common/EventEmitter.js';
+import {Frame} from 'puppeteer-core/internal/common/Frame.js';
+import {HTTPRequest} from 'puppeteer-core/internal/common/HTTPRequest.js';
+import {HTTPResponse} from 'puppeteer-core/internal/common/HTTPResponse.js';
 import {
   NetworkManager,
   NetworkManagerEmittedEvents,
 } from 'puppeteer-core/internal/common/NetworkManager.js';
-import {HTTPRequest} from 'puppeteer-core/internal/common/HTTPRequest.js';
-import {EventEmitter} from 'puppeteer-core/internal/common/EventEmitter.js';
-import {Frame} from 'puppeteer-core/internal/common/Frame.js';
-import {HTTPResponse} from 'puppeteer-core/internal/common/HTTPResponse.js';
 
 class MockCDPSession extends EventEmitter {
   async send(): Promise<any> {}

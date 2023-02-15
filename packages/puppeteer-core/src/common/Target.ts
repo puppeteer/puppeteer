@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-import {Page, PageEmittedEvents} from '../api/Page.js';
-import {WebWorker} from './WebWorker.js';
-import {CDPSession} from './Connection.js';
+import {Protocol} from 'devtools-protocol';
+
 import type {Browser, IsPageTargetCallback} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
-import {Viewport} from './PuppeteerViewport.js';
-import {Protocol} from 'devtools-protocol';
-import {TaskQueue} from './TaskQueue.js';
-import {TargetManager} from './TargetManager.js';
+import {Page, PageEmittedEvents} from '../api/Page.js';
+
+import {CDPSession} from './Connection.js';
 import {CDPPage} from './Page.js';
+import {Viewport} from './PuppeteerViewport.js';
+import {TargetManager} from './TargetManager.js';
+import {TaskQueue} from './TaskQueue.js';
+import {WebWorker} from './WebWorker.js';
 
 /**
  * Target represents a
