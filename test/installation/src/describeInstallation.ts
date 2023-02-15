@@ -18,6 +18,7 @@ import {createHash} from 'crypto';
 import {mkdtemp, rm, writeFile} from 'fs/promises';
 import {tmpdir} from 'os';
 import {join} from 'path';
+
 import {
   PUPPETEER_CORE_PACKAGE_PATH,
   PUPPETEER_PACKAGE_PATH,

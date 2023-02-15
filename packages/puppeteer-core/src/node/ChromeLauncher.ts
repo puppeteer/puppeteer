@@ -2,10 +2,12 @@ import {accessSync} from 'fs';
 import {mkdtemp} from 'fs/promises';
 import os from 'os';
 import path from 'path';
+
 import {Browser} from '../api/Browser.js';
-import {assert} from '../util/assert.js';
-import {BrowserRunner} from './BrowserRunner.js';
 import {CDPBrowser} from '../common/Browser.js';
+import {assert} from '../util/assert.js';
+
+import {BrowserRunner} from './BrowserRunner.js';
 import {
   BrowserLaunchArgumentOptions,
   ChromeReleaseChannel,

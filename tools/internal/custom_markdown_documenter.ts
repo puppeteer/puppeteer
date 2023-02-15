@@ -21,6 +21,24 @@
 // https://github.com/microsoft/rushstack/blob/main/apps/api-documenter/src/documenters/MarkdownDocumenter.ts
 // This file has been edited to morph into Docusaurus's expected inputs.
 
+import * as path from 'path';
+
+import {DocumenterConfig} from '@microsoft/api-documenter/lib/documenters/DocumenterConfig';
+import {CustomMarkdownEmitter} from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
+import {CustomDocNodes} from '@microsoft/api-documenter/lib/nodes/CustomDocNodeKind';
+import {DocEmphasisSpan} from '@microsoft/api-documenter/lib/nodes/DocEmphasisSpan';
+import {DocHeading} from '@microsoft/api-documenter/lib/nodes/DocHeading';
+import {DocNoteBox} from '@microsoft/api-documenter/lib/nodes/DocNoteBox';
+import {DocTable} from '@microsoft/api-documenter/lib/nodes/DocTable';
+import {DocTableCell} from '@microsoft/api-documenter/lib/nodes/DocTableCell';
+import {DocTableRow} from '@microsoft/api-documenter/lib/nodes/DocTableRow';
+import {MarkdownDocumenterAccessor} from '@microsoft/api-documenter/lib/plugin/MarkdownDocumenterAccessor';
+import {
+  IMarkdownDocumenterFeatureOnBeforeWritePageArgs,
+  MarkdownDocumenterFeatureContext,
+} from '@microsoft/api-documenter/lib/plugin/MarkdownDocumenterFeature';
+import {PluginLoader} from '@microsoft/api-documenter/lib/plugin/PluginLoader';
+import {Utilities} from '@microsoft/api-documenter/lib/utils/Utilities';
 import {
   ApiClass,
   ApiDeclaredItem,
@@ -68,24 +86,6 @@ import {
   NewlineKind,
   PackageName,
 } from '@rushstack/node-core-library';
-import * as path from 'path';
-
-import {DocumenterConfig} from '@microsoft/api-documenter/lib/documenters/DocumenterConfig';
-import {CustomMarkdownEmitter} from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
-import {CustomDocNodes} from '@microsoft/api-documenter/lib/nodes/CustomDocNodeKind';
-import {DocEmphasisSpan} from '@microsoft/api-documenter/lib/nodes/DocEmphasisSpan';
-import {DocHeading} from '@microsoft/api-documenter/lib/nodes/DocHeading';
-import {DocNoteBox} from '@microsoft/api-documenter/lib/nodes/DocNoteBox';
-import {DocTable} from '@microsoft/api-documenter/lib/nodes/DocTable';
-import {DocTableCell} from '@microsoft/api-documenter/lib/nodes/DocTableCell';
-import {DocTableRow} from '@microsoft/api-documenter/lib/nodes/DocTableRow';
-import {MarkdownDocumenterAccessor} from '@microsoft/api-documenter/lib/plugin/MarkdownDocumenterAccessor';
-import {
-  IMarkdownDocumenterFeatureOnBeforeWritePageArgs,
-  MarkdownDocumenterFeatureContext,
-} from '@microsoft/api-documenter/lib/plugin/MarkdownDocumenterFeature';
-import {PluginLoader} from '@microsoft/api-documenter/lib/plugin/PluginLoader';
-import {Utilities} from '@microsoft/api-documenter/lib/utils/Utilities';
 
 export interface IMarkdownDocumenterOptions {
   apiModel: ApiModel;

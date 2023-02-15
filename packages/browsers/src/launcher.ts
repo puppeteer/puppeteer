@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
+import os from 'os';
+import path from 'path';
+
 import {
   Browser,
   BrowserPlatform,
   executablePathByBrowser,
 } from './browsers/browsers.js';
-import {detectBrowserPlatform} from './detectPlatform.js';
-import os from 'os';
-import path from 'path';
 import {CacheStructure} from './CacheStructure.js';
+import {detectBrowserPlatform} from './detectPlatform.js';
 
 /**
  * @public

@@ -17,6 +17,7 @@
 import expect from 'expect';
 import {CDPSession} from 'puppeteer-core/internal/common/Connection.js';
 import {Frame} from 'puppeteer-core/internal/common/Frame.js';
+
 import {
   getTestState,
   setupTestBrowserHooks,

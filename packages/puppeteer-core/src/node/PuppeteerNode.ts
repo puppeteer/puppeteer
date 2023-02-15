@@ -15,16 +15,18 @@
  */
 
 import {join} from 'path';
+
 import {Browser} from '../api/Browser.js';
 import {BrowserConnectOptions} from '../common/BrowserConnector.js';
+import {Configuration} from '../common/Configuration.js';
 import {Product} from '../common/Product.js';
 import {
   CommonPuppeteerSettings,
   ConnectOptions,
   Puppeteer,
 } from '../common/Puppeteer.js';
-import {Configuration} from '../common/Configuration.js';
 import {PUPPETEER_REVISIONS} from '../revisions.js';
+
 import {BrowserFetcher, BrowserFetcherOptions} from './BrowserFetcher.js';
 import {ChromeLauncher} from './ChromeLauncher.js';
 import {FirefoxLauncher} from './FirefoxLauncher.js';

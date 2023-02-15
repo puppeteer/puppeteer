@@ -15,12 +15,14 @@
  */
 
 import https, {RequestOptions} from 'https';
+import URL from 'url';
+
 import createHttpsProxyAgent, {HttpsProxyAgentOptions} from 'https-proxy-agent';
 import ProgressBar from 'progress';
 import {getProxyForUrl} from 'proxy-from-env';
 import {PuppeteerNode} from 'puppeteer-core/internal/node/PuppeteerNode.js';
 import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
-import URL from 'url';
+
 import {getConfiguration} from '../getConfiguration.js';
 
 /**

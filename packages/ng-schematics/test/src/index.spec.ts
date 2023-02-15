@@ -1,12 +1,13 @@
-import expect from 'expect';
-import sinon from 'sinon';
 import https from 'https';
 import {join} from 'path';
+
+import {JsonObject} from '@angular-devkit/core';
 import {
   SchematicTestRunner,
   UnitTestTree,
 } from '@angular-devkit/schematics/testing/schematic-test-runner';
-import {JsonObject} from '@angular-devkit/core';
+import expect from 'expect';
+import sinon from 'sinon';
 
 const WORKSPACE_OPTIONS = {
   name: 'workspace',

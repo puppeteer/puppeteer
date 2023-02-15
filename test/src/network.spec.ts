@@ -15,17 +15,19 @@
  */
 
 import fs from 'fs';
+import {ServerResponse} from 'http';
 import path from 'path';
-import utils from './utils.js';
+
 import expect from 'expect';
+import {HTTPRequest} from 'puppeteer-core/internal/common/HTTPRequest.js';
+import {HTTPResponse} from 'puppeteer-core/internal/common/HTTPResponse.js';
+
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import {HTTPRequest} from 'puppeteer-core/internal/common/HTTPRequest.js';
-import {HTTPResponse} from 'puppeteer-core/internal/common/HTTPResponse.js';
-import {ServerResponse} from 'http';
+import utils from './utils.js';
 
 describe('network', function () {
   setupTestBrowserHooks();

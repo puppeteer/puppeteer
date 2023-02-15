@@ -15,6 +15,7 @@
  */
 
 import {Browser} from '../api/Browser.js';
+
 import {
   BrowserConnectOptions,
   _connectToCDPBrowser,

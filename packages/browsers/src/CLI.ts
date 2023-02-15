@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import yargs from 'yargs';
 import ProgressBar from 'progress';
+import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
+
 import {Browser, BrowserPlatform} from './browsers/types.js';
 import {fetch} from './fetch.js';
 

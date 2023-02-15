@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import {getTestState} from './mocha-utils'; // eslint-disable-line import/extensions
-import utils from './utils.js';
-
 import expect from 'expect';
-
 import {
   CDPBrowser,
   CDPBrowserContext,
 } from 'puppeteer-core/internal/common/Browser.js';
+
+import {getTestState} from './mocha-utils'; // eslint-disable-line import/extensions
+import utils from './utils.js';
 
 describe('TargetManager', () => {
   /* We use a special browser for this test as we need the --site-per-process flag */

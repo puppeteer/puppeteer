@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import {debug} from '../Debug.js';
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+
+import {debug} from '../Debug.js';
+
 import {Connection} from './Connection.js';
 
 /**

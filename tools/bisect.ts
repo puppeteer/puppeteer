@@ -16,14 +16,14 @@
  */
 
 import {execSync, fork, spawn} from 'child_process';
-import debug from 'debug';
 import fs from 'fs';
-import minimist from 'minimist';
 import path from 'path';
-import {BrowserFetcher, BrowserFetcherRevisionInfo} from 'puppeteer';
 import URL from 'url';
 
+import debug from 'debug';
+import minimist from 'minimist';
 import ProgressBar from 'progress';
+import {BrowserFetcher, BrowserFetcherRevisionInfo} from 'puppeteer';
 
 const COLOR_RESET = '\x1b[0m';
 const COLOR_RED = '\x1b[31m';

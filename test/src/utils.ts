@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import expect from 'expect';
 import path from 'path';
-import {Frame} from 'puppeteer-core/internal/common/Frame.js';
+
+import expect from 'expect';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
 import {EventEmitter} from 'puppeteer-core/internal/common/EventEmitter.js';
+import {Frame} from 'puppeteer-core/internal/common/Frame.js';
+
 import {compare} from './golden-utils.js';
 
 const PROJECT_ROOT = path.join(__dirname, '..', '..');

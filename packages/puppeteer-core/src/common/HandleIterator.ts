@@ -15,6 +15,7 @@
  */
 
 import {JSHandle} from '../api/JSHandle.js';
+
 import {AwaitableIterable, HandleFor} from './types.js';
 
 const DEFAULT_BATCH_SIZE = 20;

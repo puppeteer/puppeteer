@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import NodeWebSocket from 'ws';
+
 import {ConnectionTransport} from '../common/ConnectionTransport.js';
 import {packageVersion} from '../generated/version.js';
 

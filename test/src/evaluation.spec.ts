@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import utils from './utils.js';
 import expect from 'expect';
+
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
+import utils from './utils.js';
 
 const bigint = typeof BigInt !== 'undefined';
 

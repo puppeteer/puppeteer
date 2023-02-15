@@ -15,6 +15,7 @@
  */
 
 import os from 'os';
+
 import {BrowserPlatform} from './browsers/browsers.js';
 
 export function detectBrowserPlatform(): BrowserPlatform | undefined {

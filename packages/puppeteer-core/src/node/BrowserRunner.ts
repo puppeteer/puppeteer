@@ -18,8 +18,10 @@ import * as childProcess from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
-import removeFolder from 'rimraf';
 import {promisify} from 'util';
+
+import removeFolder from 'rimraf';
+
 import type {Connection as BiDiConnection} from '../common/bidi/bidi.js';
 import {Connection} from '../common/Connection.js';
 import {debug} from '../common/Debug.js';
@@ -34,6 +36,7 @@ import {
 } from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {isErrnoException, isErrorLike} from '../util/ErrorLike.js';
+
 import {LaunchOptions} from './LaunchOptions.js';
 import {PipeTransport} from './PipeTransport.js';
 

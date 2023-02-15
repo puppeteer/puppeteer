@@ -15,9 +15,11 @@
  */
 
 import Protocol from 'devtools-protocol';
+
 import {CDPSession} from '../common/Connection.js';
 import {ExecutionContext} from '../common/ExecutionContext.js';
 import {EvaluateFuncWith, HandleFor, HandleOr} from '../common/types.js';
+
 import {ElementHandle} from './ElementHandle.js';
 
 declare const __JSHandleSymbol: unique symbol;

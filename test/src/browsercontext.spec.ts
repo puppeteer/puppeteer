@@ -16,6 +16,7 @@
 
 import expect from 'expect';
 import {TimeoutError} from 'puppeteer';
+
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
 

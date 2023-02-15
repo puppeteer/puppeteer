@@ -15,16 +15,16 @@
  */
 
 import expect from 'expect';
+import {Puppeteer} from 'puppeteer';
 import {ElementHandle} from 'puppeteer-core/internal/api/ElementHandle.js';
 import sinon from 'sinon';
+
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   shortWaitForArrayToHaveAtLeastNElements,
 } from './mocha-utils.js';
-
-import {Puppeteer} from 'puppeteer';
 import utils from './utils.js';
 
 describe('ElementHandle specs', function () {

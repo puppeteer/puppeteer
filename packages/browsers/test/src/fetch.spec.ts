@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import {fetch, canFetch} from '../../lib/cjs/fetch.js';
-import {Browser, BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
-
-import fs from 'fs';
-import path from 'path';
-import os from 'os';
 import assert from 'assert';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+
+import {Browser, BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
+import {fetch, canFetch} from '../../lib/cjs/fetch.js';
 
 /**
  * Tests in this spec use real download URLs and unpack live browser archives

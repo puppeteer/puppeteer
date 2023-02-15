@@ -19,6 +19,7 @@ export {Protocol} from 'puppeteer-core';
 export * from 'puppeteer-core/internal/puppeteer-core.js';
 
 import {PuppeteerNode} from 'puppeteer-core/internal/node/PuppeteerNode.js';
+
 import {getConfiguration} from './getConfiguration.js';
 
 const configuration = getConfiguration();

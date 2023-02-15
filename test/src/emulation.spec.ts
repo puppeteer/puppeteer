@@ -16,6 +16,7 @@
 
 import expect from 'expect';
 import {KnownDevices, PredefinedNetworkConditions} from 'puppeteer';
+
 import {
   getTestState,
   setupTestBrowserHooks,

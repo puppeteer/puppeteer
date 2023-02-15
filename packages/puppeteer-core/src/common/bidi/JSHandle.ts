@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import {ElementHandle} from '../../api/ElementHandle.js';
-import {EvaluateFuncWith, HandleFor, HandleOr} from '../../common/types.js';
-import {releaseReference} from './utils.js';
-import {Page} from './Page.js';
-import {JSHandle as BaseJSHandle} from '../../api/JSHandle.js';
-import {BidiSerializer} from './Serializer.js';
-import {Connection} from './Connection.js';
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+
+import {ElementHandle} from '../../api/ElementHandle.js';
+import {JSHandle as BaseJSHandle} from '../../api/JSHandle.js';
+import {EvaluateFuncWith, HandleFor, HandleOr} from '../../common/types.js';
+
+import {Connection} from './Connection.js';
+import {Page} from './Page.js';
+import {BidiSerializer} from './Serializer.js';
+import {releaseReference} from './utils.js';
 
 export class JSHandle<T = unknown> extends BaseJSHandle<T> {
   #disposed = false;

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import {Browser, BrowserPlatform} from './browsers/types.js';
 import path from 'path';
+
+import {Browser, BrowserPlatform} from './browsers/types.js';
 
 /**
  * The cache used by Puppeteer relies on the following structure:

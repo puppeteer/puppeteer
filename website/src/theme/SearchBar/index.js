@@ -1,16 +1,18 @@
+/* eslint-disable import/order */
+import {DocSearchButton, useDocSearchKeyboardEvents} from '@docsearch/react';
+import Head from '@docusaurus/Head';
+import Link from '@docusaurus/Link';
+import {useHistory} from '@docusaurus/router';
+import {isRegexpStringMatch} from '@docusaurus/theme-common';
+import {useContextualSearchFilters} from '@docusaurus/theme-common';
+import {useSearchPage} from '@docusaurus/theme-common/internal';
+import Translate from '@docusaurus/Translate';
+import {useBaseUrlUtils} from '@docusaurus/useBaseUrl';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import React, {useState, useRef, useCallback, useMemo} from 'react';
 import {createPortal} from 'react-dom';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import {useHistory} from '@docusaurus/router';
-import {useBaseUrlUtils} from '@docusaurus/useBaseUrl';
-import Link from '@docusaurus/Link';
-import Head from '@docusaurus/Head';
-import {isRegexpStringMatch} from '@docusaurus/theme-common';
-import {useSearchPage} from '@docusaurus/theme-common/internal';
-import {DocSearchButton, useDocSearchKeyboardEvents} from '@docsearch/react';
-import Translate from '@docusaurus/Translate';
 import translations from '@theme/SearchTranslations';
-import {useContextualSearchFilters} from '@docusaurus/theme-common';
+
 // eslint-disable-next-line import/extensions
 import {tagToCounter} from '../SearchMetadata';
 let DocSearchModal = null;

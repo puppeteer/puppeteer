@@ -15,8 +15,10 @@
  */
 
 import assert from 'assert';
+
 import expect from 'expect';
 import {SerializedAXNode} from 'puppeteer-core/internal/common/Accessibility.js';
+
 import {
   getTestState,
   setupTestBrowserHooks,

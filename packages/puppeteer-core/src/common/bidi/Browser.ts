@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
+import {ChildProcess} from 'child_process';
+
 import {
   Browser as BrowserBase,
   BrowserCloseCallback,
   BrowserContextOptions,
 } from '../../api/Browser.js';
 import {BrowserContext as BrowserContextBase} from '../../api/BrowserContext.js';
-import {Connection} from './Connection.js';
-import {ChildProcess} from 'child_process';
+
 import {BrowserContext} from './BrowserContext.js';
+import {Connection} from './Connection.js';
 
 /**
  * @internal

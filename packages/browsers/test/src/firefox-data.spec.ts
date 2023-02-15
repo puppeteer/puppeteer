@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import assert from 'assert';
+import path from 'path';
+
+import {BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
 import {
   relativeExecutablePath,
   resolveDownloadUrl,
 } from '../../lib/cjs/browsers/firefox.js';
-import {BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
-import assert from 'assert';
-import path from 'path';
 
 describe('Firefox', () => {
   it('should resolve download URLs', () => {

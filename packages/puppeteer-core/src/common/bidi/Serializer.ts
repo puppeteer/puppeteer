@@ -1,5 +1,7 @@
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+
 import {debugError, isDate, isPlainObject, isRegExp} from '../util.js';
+
 import {JSHandle} from './JSHandle.js';
 import {Page} from './Page.js';
 

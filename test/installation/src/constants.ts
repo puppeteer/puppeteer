@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import glob from 'glob';
 import {dirname, join, resolve} from 'path';
 import {fileURLToPath} from 'url';
+
+import glob from 'glob';
 
 export const PUPPETEER_CORE_PACKAGE_PATH = resolve(
   glob.sync('puppeteer-core-*.tgz')[0]!

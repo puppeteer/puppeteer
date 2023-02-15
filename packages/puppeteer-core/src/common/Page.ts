@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
 import type {Readable} from 'stream';
+
+import {Protocol} from 'devtools-protocol';
+
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {ElementHandle} from '../api/ElementHandle.js';
@@ -37,6 +39,7 @@ import {
   DeferredPromise,
 } from '../util/DeferredPromise.js';
 import {isErrorLike} from '../util/ErrorLike.js';
+
 import {Accessibility} from './Accessibility.js';
 import {Binding} from './Binding.js';
 import {

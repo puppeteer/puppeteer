@@ -1,9 +1,11 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+
 import {Browser} from '../api/Browser.js';
 import {CDPBrowser} from '../common/Browser.js';
 import {assert} from '../util/assert.js';
+
 import {BrowserRunner} from './BrowserRunner.js';
 import {
   BrowserLaunchArgumentOptions,

@@ -16,6 +16,7 @@
 
 import {readFile, rm, writeFile} from 'fs/promises';
 import {join} from 'path';
+
 import {describeInstallation} from './describeInstallation.js';
 import {execFile, readAsset} from './util.js';
 

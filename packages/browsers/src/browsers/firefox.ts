@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import {BrowserPlatform} from './types.js';
 import path from 'path';
+
+import {BrowserPlatform} from './types.js';
 
 function archive(platform: BrowserPlatform, revision: string): string {
   switch (platform) {
