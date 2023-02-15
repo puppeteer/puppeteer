@@ -16,7 +16,7 @@
 
 import {
   resolveDownloadUrl,
-  executablePath,
+  relativeExecutablePath,
 } from '../../lib/cjs/browsers/chrome.js';
 import {BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
 import assert from 'assert';
@@ -48,30 +48,24 @@ describe('Chrome', () => {
 
   it('should resolve executable paths', () => {
     assert.strictEqual(
-      executablePath(BrowserPlatform.LINUX, '12372323'),
-      path.join('linux-12372323', 'chrome')
+      relativeExecutablePath(BrowserPlatform.LINUX, '12372323'),
+      path.join('chrome')
     );
     assert.strictEqual(
-      executablePath(BrowserPlatform.MAC, '12372323'),
-      path.join('mac-12372323', 'Chromium.app', 'Contents', 'MacOS', 'Chromium')
+      relativeExecutablePath(BrowserPlatform.MAC, '12372323'),
+      path.join('Chromium.app', 'Contents', 'MacOS', 'Chromium')
     );
     assert.strictEqual(
-      executablePath(BrowserPlatform.MAC_ARM, '12372323'),
-      path.join(
-        'mac_arm-12372323',
-        'Chromium.app',
-        'Contents',
-        'MacOS',
-        'Chromium'
-      )
+      relativeExecutablePath(BrowserPlatform.MAC_ARM, '12372323'),
+      path.join('Chromium.app', 'Contents', 'MacOS', 'Chromium')
     );
     assert.strictEqual(
-      executablePath(BrowserPlatform.WIN32, '12372323'),
-      path.join('win32-12372323', 'chrome.exe')
+      relativeExecutablePath(BrowserPlatform.WIN32, '12372323'),
+      path.join('chrome.exe')
     );
     assert.strictEqual(
-      executablePath(BrowserPlatform.WIN64, '12372323'),
-      path.join('win64-12372323', 'chrome.exe')
+      relativeExecutablePath(BrowserPlatform.WIN64, '12372323'),
+      path.join('chrome.exe')
     );
   });
 });

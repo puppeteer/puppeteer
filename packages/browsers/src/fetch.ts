@@ -24,7 +24,8 @@ import {Browser, BrowserPlatform, downloadUrls} from './browsers/browsers.js';
 import {downloadFile, headHttpRequest} from './httpUtil.js';
 import assert from 'assert';
 import {unpackArchive} from './fileUtil.js';
-import {detectPlatform} from './detectPlatform.js';
+import {detectBrowserPlatform} from './detectPlatform.js';
+import {CacheStructure} from './CacheStructure.js';
 
 const debugFetch = debug('puppeteer:browsers:fetcher');
 
@@ -35,7 +36,7 @@ export interface Options {
   /**
    * Determines the path to download browsers to.
    */
-  outputDir: string;
+  cacheDir: string;
   /**
    * Determines which platform the browser will be suited for.
    *
@@ -54,7 +55,10 @@ export interface Options {
   /**
    * Provides information about the progress of the download.
    */
-  progressCallback?: (downloadedBytes: number, totalBytes: number) => void;
+  downloadProgressCallback?: (
+    downloadedBytes: number,
+    totalBytes: number
+  ) => void;
 }
 
 export type InstalledBrowser = {
@@ -65,7 +69,7 @@ export type InstalledBrowser = {
 };
 
 export async function fetch(options: Options): Promise<InstalledBrowser> {
-  options.platform ??= detectPlatform();
+  options.platform ??= detectBrowserPlatform();
   if (!options.platform) {
     throw new Error(
       `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`
@@ -78,10 +82,16 @@ export async function fetch(options: Options): Promise<InstalledBrowser> {
   );
   const fileName = url.toString().split('/').pop();
   assert(fileName, `A malformed download URL was found: ${url}.`);
-  const archivePath = path.join(options.outputDir, fileName);
-  const outputPath = path.resolve(
-    options.outputDir,
-    `${options.platform}-${options.revision}`
+  const structure = new CacheStructure(options.cacheDir);
+  const browserRoot = structure.browserRoot(options.browser);
+  const archivePath = path.join(browserRoot, fileName);
+  if (!existsSync(browserRoot)) {
+    await mkdir(browserRoot, {recursive: true});
+  }
+  const outputPath = structure.installationDir(
+    options.browser,
+    options.platform,
+    options.revision
   );
   if (existsSync(outputPath)) {
     return {
@@ -91,12 +101,9 @@ export async function fetch(options: Options): Promise<InstalledBrowser> {
       revision: options.revision,
     };
   }
-  if (!existsSync(options.outputDir)) {
-    await mkdir(options.outputDir, {recursive: true});
-  }
   try {
     debugFetch(`Downloading binary from ${url}`);
-    await downloadFile(url, archivePath, options.progressCallback);
+    await downloadFile(url, archivePath, options.downloadProgressCallback);
     debugFetch(`Installing ${archivePath} to ${outputPath}`);
     await unpackArchive(archivePath, outputPath);
   } finally {
@@ -113,7 +120,7 @@ export async function fetch(options: Options): Promise<InstalledBrowser> {
 }
 
 export async function canFetch(options: Options): Promise<boolean> {
-  options.platform ??= detectPlatform();
+  options.platform ??= detectBrowserPlatform();
   if (!options.platform) {
     throw new Error(
       `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`

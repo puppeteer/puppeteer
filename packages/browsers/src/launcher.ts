@@ -19,8 +19,10 @@ import {
   BrowserPlatform,
   executablePathByBrowser,
 } from './browsers/browsers.js';
-import {detectPlatform} from './detectPlatform.js';
+import {detectBrowserPlatform} from './detectPlatform.js';
 import os from 'os';
+import path from 'path';
+import {CacheStructure} from './CacheStructure.js';
 
 /**
  * @public
@@ -29,7 +31,7 @@ export interface Options {
   /**
    * Root path to the storage directory.
    */
-  path: string;
+  cacheDir: string;
   /**
    * Determines which platform the browser will be suited for.
    *
@@ -48,15 +50,19 @@ export interface Options {
 }
 
 export function computeExecutablePath(options: Options): string {
-  options.platform ??= detectPlatform();
+  options.platform ??= detectBrowserPlatform();
   if (!options.platform) {
     throw new Error(
       `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`
     );
   }
-  return executablePathByBrowser[options.browser](
+  const installationDir = new CacheStructure(options.cacheDir).installationDir(
+    options.browser,
     options.platform,
-    options.revision,
-    options.path
+    options.revision
+  );
+  return path.join(
+    installationDir,
+    executablePathByBrowser[options.browser](options.platform, options.revision)
   );
 }

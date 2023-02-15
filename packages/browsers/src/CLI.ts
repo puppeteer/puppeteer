@@ -1,9 +1,24 @@
+/**
+ * Copyright 2023 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import yargs from 'yargs';
 import ProgressBar from 'progress';
 import {hideBin} from 'yargs/helpers';
 import {Browser, BrowserPlatform} from './browsers/types.js';
 import {fetch} from './fetch.js';
-import path from 'path';
 
 type Arguments = {
   browser: {
@@ -44,11 +59,8 @@ export class CLI {
             browser: args.browser.name,
             revision: args.browser.revision,
             platform: args.platform,
-            outputDir: path.join(
-              args.path ?? this.#cachePath,
-              args.browser.name
-            ),
-            progressCallback: this.#makeProgressBar(
+            cacheDir: args.path ?? this.#cachePath,
+            downloadProgressCallback: this.#makeProgressCallback(
               args.browser.name,
               args.browser.revision
             ),
@@ -82,8 +94,8 @@ export class CLI {
     return `${Math.round(mb * 10) / 10} Mb`;
   }
 
-  #makeProgressBar(browser: Browser, revision: string) {
-    let progressBar: ProgressBar | null = null;
+  #makeProgressCallback(browser: Browser, revision: string) {
+    let progressBar: ProgressBar;
     let lastDownloadedBytes = 0;
     return (downloadedBytes: number, totalBytes: number) => {
       if (!progressBar) {
