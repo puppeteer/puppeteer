@@ -411,8 +411,8 @@ describe('Query handler tests', function () {
     it('should work with custom selectors', async () => {
       const {page} = getTestState();
       await page.setContent('<div>hello <button>world</button></div>');
-      Puppeteer.clearCustomQueryHandlers();
-      Puppeteer.registerCustomQueryHandler('div', {
+      Puppeteer.customQueryHandlers.clear();
+      Puppeteer.customQueryHandlers.register('div', {
         queryOne() {
           return document.querySelector('div');
         },
@@ -430,8 +430,8 @@ describe('Query handler tests', function () {
     it('should work with custom selectors with args', async () => {
       const {page} = getTestState();
       await page.setContent('<div>hello <button>world</button></div>');
-      Puppeteer.clearCustomQueryHandlers();
-      Puppeteer.registerCustomQueryHandler('div', {
+      Puppeteer.customQueryHandlers.clear();
+      Puppeteer.customQueryHandlers.register('div', {
         queryOne(_, selector) {
           if (selector === 'true') {
             return document.querySelector('div');
@@ -452,6 +452,15 @@ describe('Query handler tests', function () {
       }
       {
         const element = await page.$(':-p-div("true")');
+        assert(element, 'Could not find element');
+        expect(
+          await element.evaluate(element => {
+            return element.tagName === 'DIV';
+          })
+        ).toBeTruthy();
+      }
+      {
+        const element = await page.$(":-p-div('true')");
         assert(element, 'Could not find element');
         expect(
           await element.evaluate(element => {

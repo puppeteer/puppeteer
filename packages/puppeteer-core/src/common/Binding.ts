@@ -6,10 +6,10 @@ import {debugError} from './util.js';
 /**
  * @internal
  */
-export class Binding<Params extends unknown[] = any[]> {
+export class Binding {
   #name: string;
-  #fn: (...args: Params) => unknown;
-  constructor(name: string, fn: (...args: Params) => unknown) {
+  #fn: (...args: unknown[]) => unknown;
+  constructor(name: string, fn: (...args: unknown[]) => unknown) {
     this.#name = name;
     this.#fn = fn;
   }
@@ -28,7 +28,7 @@ export class Binding<Params extends unknown[] = any[]> {
   async run(
     context: ExecutionContext,
     id: number,
-    args: Params,
+    args: unknown[],
     isTrivial: boolean
   ): Promise<void> {
     const garbage = [];

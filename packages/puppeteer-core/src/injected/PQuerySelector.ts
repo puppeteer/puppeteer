@@ -1,42 +1,21 @@
-/**
- * Copyright 2022 Google Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import {ElementHandle} from '../api/ElementHandle.js';
-import {getQueryHandlerByName} from './GetQueryHandler.js';
-import {IterableUtil} from './IterableUtil.js';
+import type {AwaitableIterable} from '../common/types.js';
+import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
+import {ariaQuerySelectorAll} from './ARIAQuerySelector.js';
+import {customQuerySelectors} from './CustomQuerySelector.js';
 import {parsePSelectors, PSelector} from './PSelectorParser.js';
-import {AwaitableIterable} from './types.js';
-import {
-  deepChildren,
-  deepDescendents,
-  transposeIterableHandle,
-} from './util.js';
+import {textQuerySelectorAll} from './TextQuerySelector.js';
+import {deepChildren, deepDescendents} from './util.js';
+import {xpathQuerySelectorAll} from './XPathQuerySelector.js';
 
-/**
- * Common state for {@link PQueryAllEngine}.
- */
-export class PQueryEngine {
+class PQueryEngine {
   #deepShadowSelectors: PSelector[][][];
   #shadowSelectors: PSelector[][];
   #selectors: PSelector[];
   #selector: PSelector | undefined;
 
-  elements: AwaitableIterable<ElementHandle<Node>>;
+  elements: AwaitableIterable<Node>;
 
-  constructor(element: ElementHandle<Node>, selector: string) {
+  constructor(element: Node, selector: string) {
     selector = selector.trim();
     if (selector.length === 0) {
       throw new Error('The provided selector is empty.');
@@ -59,6 +38,7 @@ export class PQueryEngine {
     this.#shadowSelectors = this.#deepShadowSelectors.shift() as PSelector[][];
     this.#selectors = this.#shadowSelectors.shift() as PSelector[];
     this.#selector = this.#selectors.shift();
+
     this.elements = [element];
   }
 
@@ -86,35 +66,42 @@ export class PQueryEngine {
 
     for (; this.#selector !== undefined; this.#next()) {
       const selector = this.#selector;
-      this.elements = IterableUtil.flatMap(
+      this.elements = AsyncIterableUtil.flatMap(
         this.elements,
         async function* (element) {
           if (typeof selector === 'string') {
-            const matches = await element.evaluateHandle(
-              (element, selector) => {
-                if (!element.parentElement) {
-                  return (element as Element).querySelectorAll(selector);
+            if (!element.parentElement) {
+              yield* (element as Element).querySelectorAll(selector);
+            } else {
+              let index = 0;
+              for (const child of element.parentElement.children) {
+                ++index;
+                if (child === element) {
+                  break;
                 }
-                let index = 0;
-                for (const child of element.parentElement.children) {
-                  ++index;
-                  if (child === element) {
-                    break;
-                  }
-                }
-                return element.parentElement.querySelectorAll(
-                  `:scope > :nth-child(${index})${selector}`
-                );
-              },
-              selector
-            );
-            yield* transposeIterableHandle(matches);
-          } else {
-            const handler = getQueryHandlerByName(selector.name);
-            if (!handler) {
-              throw new Error(`${selector} is not a valid selector.`);
+              }
+              yield* element.parentElement.querySelectorAll(
+                `:scope > :nth-child(${index})${selector}`
+              );
             }
-            yield* handler.queryAll(element, selector.value);
+          } else {
+            switch (selector.name) {
+              case 'text':
+                yield* textQuerySelectorAll(element, selector.value);
+                break;
+              case 'xpath':
+                yield* xpathQuerySelectorAll(element, selector.value);
+                break;
+              case 'aria':
+                yield* ariaQuerySelectorAll(element, selector.value);
+                break;
+              default:
+                const querySelector = customQuerySelectors.get(selector.name);
+                if (!querySelector) {
+                  throw new Error(`${selector} is not a valid selector.`);
+                }
+                yield* querySelector.querySelectorAll(element, selector.value);
+            }
           }
         }
       );
@@ -128,27 +115,19 @@ export class PQueryEngine {
           this.#selector = undefined;
           return;
         }
-        this.elements = IterableUtil.flatMap(
+        this.elements = AsyncIterableUtil.flatMap(
           this.elements,
-          async function* (element) {
-            try {
-              yield* deepDescendents(element);
-            } finally {
-              await element.dispose();
-            }
+          function* (element) {
+            yield* deepDescendents(element);
           }
         );
         this.#shadowSelectors =
           this.#deepShadowSelectors.shift() as PSelector[][];
       }
-      this.elements = IterableUtil.flatMap(
+      this.elements = AsyncIterableUtil.flatMap(
         this.elements,
-        async function* (element) {
-          try {
-            yield* deepChildren(element);
-          } finally {
-            await element.dispose();
-          }
+        function* (element) {
+          yield* deepChildren(element);
         }
       );
       this.#selectors = this.#shadowSelectors.shift() as PSelector[];
@@ -156,3 +135,32 @@ export class PQueryEngine {
     this.#selector = this.#selectors.shift() as PSelector;
   }
 }
+
+/**
+ * Queries the given node for all nodes matching the given text selector.
+ *
+ * @internal
+ */
+export const pQuerySelectorAll = async function* (
+  root: Node,
+  selector: string
+): AwaitableIterable<Node> {
+  const query = new PQueryEngine(root, selector);
+  query.run();
+  yield* query.elements;
+};
+
+/**
+ * Queries the given node for all nodes matching the given text selector.
+ *
+ * @internal
+ */
+export const pQuerySelector = async function (
+  root: Node,
+  selector: string
+): Promise<Node | null> {
+  for await (const element of pQuerySelectorAll(root, selector)) {
+    return element;
+  }
+  return null;
+};

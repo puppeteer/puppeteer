@@ -100,7 +100,7 @@ export class QueryHandler {
   /**
    * Queries for multiple nodes given a selector and {@link ElementHandle}.
    *
-   * Akin to {@link Window.prototype.querySelectorAll}.
+   * Akin to {@link Document.prototype.querySelectorAll}.
    */
   static async *queryAll(
     element: ElementHandle<Node>,
@@ -121,7 +121,7 @@ export class QueryHandler {
   /**
    * Queries for a single node given a selector and {@link ElementHandle}.
    *
-   * Akin to {@link Window.prototype.querySelector}.
+   * Akin to {@link Document.prototype.querySelector}.
    */
   static async queryOne(
     element: ElementHandle<Node>,

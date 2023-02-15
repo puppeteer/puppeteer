@@ -109,16 +109,20 @@ class PSelectorParser {
   }
 
   #scanParameter(): string {
-    if (!this.#input.startsWith('"')) {
-      return this.#scanEscapedValueTill(')');
+    const char = this.#input[0];
+    switch (char) {
+      case "'":
+      case '"':
+        this.#input = this.#input.slice(1);
+        const parameter = this.#scanEscapedValueTill(char);
+        if (!this.#input.startsWith(')')) {
+          throw new Error("Expected ')'");
+        }
+        this.#input = this.#input.slice(1);
+        return parameter;
+      default:
+        return this.#scanEscapedValueTill(')');
     }
-    this.#input = this.#input.slice(1);
-    const parameter = this.#scanEscapedValueTill('"');
-    if (!this.#input.startsWith(')')) {
-      throw new Error("Expected ')'");
-    }
-    this.#input = this.#input.slice(1);
-    return parameter;
   }
 
   #scanEscapedValueTill(end: string): string {
@@ -143,7 +147,7 @@ class PSelectorParser {
         }
       }
     }
-    throw new Error(`Expected '${end}'`);
+    throw new Error(`Expected \`${end}\``);
   }
 }
 

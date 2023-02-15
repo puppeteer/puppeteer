@@ -15,10 +15,11 @@
  */
 
 import type {CustomQueryHandler} from '../common/CustomQueryHandler.js';
+import type {Awaitable, AwaitableIterable} from '../common/types.js';
 
 export interface CustomQuerySelector {
-  querySelector(root: Node, selector: string): Node | null;
-  querySelectorAll(root: Node, selector: string): Iterable<Node>;
+  querySelector(root: Node, selector: string): Awaitable<Node | null>;
+  querySelectorAll(root: Node, selector: string): AwaitableIterable<Node>;
 }
 
 /**

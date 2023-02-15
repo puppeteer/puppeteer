@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type {AwaitableIterable} from './types.js';
+import {AwaitableIterable} from '../common/types.js';
 
 /**
  * @internal
  */
-export class IterableUtil {
+export class AsyncIterableUtil {
   static async *map<T, U>(
     iterable: AwaitableIterable<T>,
     map: (item: T) => Promise<U>
-  ): AwaitableIterable<U> {
+  ): AsyncIterable<U> {
     for await (const value of iterable) {
       yield await map(value);
     }
@@ -32,7 +31,7 @@ export class IterableUtil {
   static async *flatMap<T>(
     iterable: AwaitableIterable<T>,
     map: (item: T) => AwaitableIterable<T>
-  ): AwaitableIterable<T> {
+  ): AsyncIterable<T> {
     for await (const value of iterable) {
       yield* map(value);
     }
@@ -52,6 +51,6 @@ export class IterableUtil {
     for await (const value of iterable) {
       return value;
     }
-    return undefined;
+    return;
   }
 }

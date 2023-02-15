@@ -1635,7 +1635,7 @@
     "testIdPattern": "",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP", "TIMEOUT"]
+    "expectations": ["SKIP", "TIMEOUT", "FAIL"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch can launch and close the browser",
@@ -1809,6 +1809,12 @@
     "testIdPattern": "[jshandle.spec] JSHandle JSHandle.toString should work with different subtypes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[queryhandler.spec] Query handler tests P selectors should work ARIA selectors",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
     "expectations": ["FAIL"]
   }
 ]

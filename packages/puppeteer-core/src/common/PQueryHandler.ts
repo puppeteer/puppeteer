@@ -14,32 +14,24 @@
  * limitations under the License.
  */
 
-import {ElementHandle} from '../api/ElementHandle.js';
-import {IterableUtil} from './IterableUtil.js';
-import {PQueryEngine} from './PQueryEngine.js';
-import {QueryHandler} from './QueryHandler.js';
-import {AwaitableIterable} from './types.js';
+import {QueryHandler, QuerySelector, QuerySelectorAll} from './QueryHandler.js';
 
 /**
  * @internal
  */
 export class PQueryHandler extends QueryHandler {
-  static override async *queryAll(
-    element: ElementHandle<Node>,
-    selector: string
-  ): AwaitableIterable<ElementHandle<Node>> {
-    const query = new PQueryEngine(element, selector);
-    await query.run();
-    const world = element.executionContext()._world!;
-    yield* IterableUtil.map(query.elements, element => {
-      return world.transferHandle(element);
-    });
-  }
-
-  static override async queryOne(
-    element: ElementHandle<Node>,
-    selector: string
-  ): Promise<ElementHandle<Node> | null> {
-    return (await IterableUtil.first(this.queryAll(element, selector))) ?? null;
-  }
+  static override querySelectorAll: QuerySelectorAll = (
+    element,
+    selector,
+    {pQuerySelectorAll}
+  ) => {
+    return pQuerySelectorAll(element, selector);
+  };
+  static override querySelector: QuerySelector = (
+    element,
+    selector,
+    {pQuerySelector}
+  ) => {
+    return pQuerySelector(element, selector);
+  };
 }
