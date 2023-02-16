@@ -97,7 +97,7 @@ export class CLI {
           yargs.positional('browser', {
             description: 'The browser version',
             type: 'string',
-            coerce: (opt): InstallArgs['browser'] => {
+            coerce: (opt): LaunchArgs['browser'] => {
               return {
                 name: this.#parseBrowser(opt),
                 revision: this.#parseRevision(opt),
