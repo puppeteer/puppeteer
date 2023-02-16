@@ -42,6 +42,7 @@ interface Commands {
     params: Bidi.Script.DisownParameters;
     returnType: Bidi.Script.DisownResult;
   };
+
   'browsingContext.create': {
     params: Bidi.BrowsingContext.CreateParameters;
     returnType: Bidi.BrowsingContext.CreateResult;
@@ -50,9 +51,18 @@ interface Commands {
     params: Bidi.BrowsingContext.CloseParameters;
     returnType: Bidi.BrowsingContext.CloseResult;
   };
+
+  'session.new': {
+    params: {capabilities?: Record<any, unknown>}; // TODO: Update Types in chromium bidi
+    returnType: {sessionId: string};
+  };
   'session.status': {
     params: {context: string}; // TODO: Update Types in chromium bidi
     returnType: Bidi.Session.StatusResult;
+  };
+  'session.subscribe': {
+    params: Bidi.Session.SubscribeParameters;
+    returnType: Bidi.Session.SubscribeResult;
   };
 }
 

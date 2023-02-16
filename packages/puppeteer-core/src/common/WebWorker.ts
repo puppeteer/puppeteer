@@ -15,7 +15,6 @@
  */
 import {Protocol} from 'devtools-protocol';
 
-import {JSHandle} from '../api/JSHandle.js';
 import {createDeferredPromise} from '../util/DeferredPromise.js';
 
 import {CDPSession} from './Connection.js';
@@ -31,7 +30,7 @@ import {debugError} from './util.js';
  */
 export type ConsoleAPICalledCallback = (
   eventType: ConsoleMessageType,
-  handles: JSHandle[],
+  handles: CDPJSHandle[],
   trace: Protocol.Runtime.StackTrace
 ) => void;
 

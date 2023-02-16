@@ -36,10 +36,7 @@ export class Browser extends BrowserBase {
   static async create(opts: Options): Promise<Browser> {
     // TODO: await until the connection is established.
     try {
-      // TODO: Add 'session.new' to BiDi types
-      (await opts.connection.send('session.new' as any, {})) as unknown as {
-        sessionId: string;
-      };
+      await opts.connection.send('session.new', {});
     } catch {}
     return new Browser(opts);
   }

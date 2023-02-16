@@ -14,27 +14,76 @@
  * limitations under the License.
  */
 
-import {Page as PageBase} from '../../api/Page.js';
+import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+
+import {Page as PageBase, PageEmittedEvents} from '../../api/Page.js';
 import {stringifyFunction} from '../../util/Function.js';
+import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
 import type {EvaluateFunc, HandleFor} from '../types.js';
 import {isString} from '../util.js';
 
 import {Connection} from './Connection.js';
 import {JSHandle} from './JSHandle.js';
 import {BidiSerializer} from './Serializer.js';
-import {Reference} from './types.js';
 
 /**
  * @internal
  */
 export class Page extends PageBase {
   #connection: Connection;
+  #subscribedEvents = [
+    'log.entryAdded',
+  ] as Bidi.Session.SubscribeParameters['events'];
   _contextId: string;
 
   constructor(connection: Connection, contextId: string) {
     super();
     this.#connection = connection;
     this._contextId = contextId;
+
+    this.connection.send('session.subscribe', {
+      events: this.#subscribedEvents,
+      contexts: [this._contextId],
+    });
+
+    this.connection.on('log.entryAdded', this.#onLogEntryAdded.bind(this));
+  }
+
+  #onLogEntryAdded(event: Bidi.Log.LogEntry): void {
+    if (isConsoleLogEntry(event)) {
+      const args = event.args.map(arg => {
+        return getBidiHandle(this, arg);
+      });
+
+      const text = args
+        .reduce((value, arg) => {
+          const parsedValue = arg.isPrimitiveValue
+            ? BidiSerializer.deserialize(arg.bidiObject())
+            : arg.toString();
+          return `${value} ${parsedValue}`;
+        }, '')
+        .slice(1);
+
+      this.emit(
+        PageEmittedEvents.Console,
+        new ConsoleMessage(
+          event.method as any,
+          text,
+          args,
+          getStackTraceLocations(event.stackTrace)
+        )
+      );
+    } else if (isJavaScriptLogEntry(event)) {
+      this.emit(
+        PageEmittedEvents.Console,
+        new ConsoleMessage(
+          event.level as any,
+          event.text ?? '',
+          [],
+          getStackTraceLocations(event.stackTrace)
+        )
+      );
+    }
   }
 
   override async close(): Promise<void> {
@@ -122,20 +171,49 @@ export class Page extends PageBase {
 
     return returnByValue
       ? BidiSerializer.deserialize(result.result)
-      : getBidiHandle(this, result.result as Reference);
+      : getBidiHandle(this, result.result);
   }
 }
 
 /**
  * @internal
  */
-export function getBidiHandle(context: Page, result: Reference): JSHandle {
-  // TODO: | ElementHandle<Node>
+export function getBidiHandle(
+  context: Page,
+  result: Bidi.CommonDataTypes.RemoteValue
+): JSHandle {
   if (
     (result.type === 'node' || result.type === 'window') &&
     context._contextId
   ) {
-    throw new Error('ElementHandle not implemented');
+    // TODO: Implement ElementHandle
+    return new JSHandle(context, result);
   }
   return new JSHandle(context, result);
+}
+
+function isConsoleLogEntry(
+  event: Bidi.Log.LogEntry
+): event is Bidi.Log.ConsoleLogEntry {
+  return event.type === 'console';
+}
+
+function isJavaScriptLogEntry(
+  event: Bidi.Log.LogEntry
+): event is Bidi.Log.JavascriptLogEntry {
+  return event.type === 'javascript';
+}
+
+function getStackTraceLocations(stackTrace?: Bidi.Script.StackTrace) {
+  const stackTraceLocations: ConsoleMessageLocation[] = [];
+  if (stackTrace) {
+    for (const callFrame of stackTrace.callFrames) {
+      stackTraceLocations.push({
+        url: callFrame.url,
+        lineNumber: callFrame.lineNumber,
+        columnNumber: callFrame.columnNumber,
+      });
+    }
+  }
+  return stackTraceLocations;
 }

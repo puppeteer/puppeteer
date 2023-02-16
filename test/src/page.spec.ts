@@ -668,7 +668,39 @@ describe('Page', function () {
       expect(await message.args()[1]!.jsonValue()).toEqual(5);
       expect(await message.args()[2]!.jsonValue()).toEqual({foo: 'bar'});
     });
-    it('should work for different console API calls', async () => {
+    it('should work for different console API calls with logging functions', async () => {
+      const {page} = getTestState();
+
+      const messages: any[] = [];
+      page.on('console', msg => {
+        return messages.push(msg);
+      });
+      // All console events will be reported before `page.evaluate` is finished.
+      await page.evaluate(() => {
+        console.trace('calling console.trace');
+        console.dir('calling console.dir');
+        console.warn('calling console.warn');
+        console.error('calling console.error');
+        console.log(Promise.resolve('should not wait until resolved!'));
+      });
+      expect(
+        messages.map(msg => {
+          return msg.type();
+        })
+      ).toEqual(['trace', 'dir', 'warning', 'error', 'log']);
+      expect(
+        messages.map(msg => {
+          return msg.text();
+        })
+      ).toEqual([
+        'calling console.trace',
+        'calling console.dir',
+        'calling console.warn',
+        'calling console.error',
+        'JSHandle@promise',
+      ]);
+    });
+    it('should work for different console API calls with timing functions', async () => {
       const {page} = getTestState();
 
       const messages: any[] = [];
@@ -680,29 +712,17 @@ describe('Page', function () {
         // A pair of time/timeEnd generates only one Console API call.
         console.time('calling console.time');
         console.timeEnd('calling console.time');
-        console.trace('calling console.trace');
-        console.dir('calling console.dir');
-        console.warn('calling console.warn');
-        console.error('calling console.error');
-        console.log(Promise.resolve('should not wait until resolved!'));
       });
       expect(
         messages.map(msg => {
           return msg.type();
         })
-      ).toEqual(['timeEnd', 'trace', 'dir', 'warning', 'error', 'log']);
-      expect(messages[0]!.text()).toContain('calling console.time');
+      ).toEqual(['timeEnd']);
       expect(
-        messages.slice(1).map(msg => {
+        messages.map(msg => {
           return msg.text();
         })
-      ).toEqual([
-        'calling console.trace',
-        'calling console.dir',
-        'calling console.warn',
-        'calling console.error',
-        'JSHandle@promise',
-      ]);
+      ).toEqual(['calling console.time']);
     });
     it('should not fail for window object', async () => {
       const {page} = getTestState();
