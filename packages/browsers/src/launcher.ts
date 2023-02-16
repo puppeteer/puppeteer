@@ -27,7 +27,7 @@ import {CacheStructure} from './CacheStructure.js';
 import {debug} from './debug.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 
-const debugLaunch = debug('puppeteer:browsers:fetcher');
+const debugLaunch = debug('puppeteer:browsers:launcher');
 
 /**
  * @public
