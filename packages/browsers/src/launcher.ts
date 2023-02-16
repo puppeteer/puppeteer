@@ -106,22 +106,12 @@ class Process {
     opts.handleSIGHUP ??= true;
     opts.detached ??= true;
 
-    let stdio: Array<'ignore' | 'pipe'>;
-    if (opts.pipe) {
-      if (opts.dumpio) {
-        stdio = ['ignore', 'pipe', 'pipe', 'pipe', 'pipe'];
-      } else {
-        stdio = ['ignore', 'ignore', 'ignore', 'pipe', 'pipe'];
-      }
-    } else {
-      if (opts.dumpio) {
-        stdio = ['pipe', 'pipe', 'pipe'];
-      } else {
-        stdio = ['pipe', 'ignore', 'pipe'];
-      }
-    }
+    const stdio = this.#configureStdio({
+      pipe: opts.pipe,
+      dumpio: opts.dumpio,
+    });
 
-    debugLaunch(`Calling ${this.#executablePath} ${this.#args.join(' ')}`);
+    debugLaunch(`Launching ${this.#executablePath} ${this.#args.join(' ')}`);
 
     this.#browserProcess = childProcess.spawn(
       this.#executablePath,
@@ -157,6 +147,25 @@ class Process {
         resolve();
       });
     });
+  }
+
+  #configureStdio(opts: {
+    pipe: boolean;
+    dumpio: boolean;
+  }): Array<'ignore' | 'pipe'> {
+    if (opts.pipe) {
+      if (opts.dumpio) {
+        return ['ignore', 'pipe', 'pipe', 'pipe', 'pipe'];
+      } else {
+        return ['ignore', 'ignore', 'ignore', 'pipe', 'pipe'];
+      }
+    } else {
+      if (opts.dumpio) {
+        return ['pipe', 'pipe', 'pipe'];
+      } else {
+        return ['pipe', 'ignore', 'pipe'];
+      }
+    }
   }
 
   #clearListeners(): void {
@@ -199,21 +208,23 @@ class Process {
       this.#browserProcess.pid &&
       pidExists(this.#browserProcess.pid)
     ) {
-      const proc = this.#browserProcess;
       try {
         if (process.platform === 'win32') {
-          childProcess.exec(`taskkill /pid ${proc.pid} /T /F`, error => {
-            if (error) {
-              // taskkill can fail to kill the process e.g. due to missing permissions.
-              // Let's kill the process via Node API. This delays killing of all child
-              // processes of `this.proc` until the main Node.js process dies.
-              proc.kill();
+          childProcess.exec(
+            `taskkill /pid ${this.#browserProcess.pid} /T /F`,
+            error => {
+              if (error) {
+                // taskkill can fail to kill the process e.g. due to missing permissions.
+                // Let's kill the process via Node API. This delays killing of all child
+                // processes of `this.proc` until the main Node.js process dies.
+                this.#browserProcess.kill();
+              }
             }
-          });
+          );
         } else {
           // on linux the process group can be killed with the group id prefixed with
           // a minus sign. The process group id is the group leader's pid.
-          const processGroupId = -proc.pid;
+          const processGroupId = -this.#browserProcess.pid;
 
           try {
             process.kill(processGroupId, 'SIGKILL');
@@ -221,7 +232,7 @@ class Process {
             // Killing the process group can fail due e.g. to missing permissions.
             // Let's kill the process via Node API. This delays killing of all child
             // processes of `this.proc` until the main Node.js process dies.
-            proc.kill('SIGKILL');
+            this.#browserProcess.kill('SIGKILL');
           }
         }
       } catch (error) {
