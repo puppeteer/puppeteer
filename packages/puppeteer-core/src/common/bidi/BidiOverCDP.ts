@@ -102,9 +102,9 @@ class CDPClientAdapter<
     this.#client.on('*', this.#forwardMessage as Handler<any>);
   }
 
-  #forwardMessage = (
-    method: keyof ProtocolMapping.Events,
-    event: ProtocolMapping.Events[keyof ProtocolMapping.Events]
+  #forwardMessage = <T extends keyof CdpEvents>(
+    method: T,
+    event: CdpEvents[T]
   ) => {
     this.emit(method, event);
   };
