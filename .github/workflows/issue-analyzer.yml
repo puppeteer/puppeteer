@@ -136,6 +136,7 @@ jobs:
           body: |
             The issue has been labeled as **confirmed** by the automatic analyser.
             Someone from the Puppeteer team will take a look soon!
+
             ---
             [Analyzer run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
@@ -171,6 +172,7 @@ jobs:
           edit-mode: replace
           body: |
             ${{ needs.analyze-issue.outputs.errorMessage }}
+
             ---
             [Analyzer run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
@@ -229,5 +231,6 @@ jobs:
 
             Once the above checks are satisfied, please edit your issue with the changes and we will 
             try to reproduce the bug again.
+
             ---
             [Analyzer run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
