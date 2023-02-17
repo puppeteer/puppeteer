@@ -136,6 +136,8 @@ jobs:
           body: |
             The issue has been labeled as **confirmed** by the automatic analyser.
             Someone from the Puppeteer team will take a look soon!
+            ---
+            [Analyzer run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
   label-invalid-issue:
     needs: [analyze-issue]
@@ -167,7 +169,10 @@ jobs:
           comment-id: ${{ steps.find-comment-id.outputs.comment-id }}
           issue-number: ${{ github.event.issue.number }}
           edit-mode: replace
-          body: ${{ needs.analyze-issue.outputs.errorMessage }}
+          body: |
+            ${{ needs.analyze-issue.outputs.errorMessage }}
+            ---
+            [Analyzer run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
   label-unverifiable-issue:
     needs: [analyze-issue, verify-issue]
@@ -224,3 +229,5 @@ jobs:
 
             Once the above checks are satisfied, please edit your issue with the changes and we will 
             try to reproduce the bug again.
+            ---
+            [Analyzer run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
