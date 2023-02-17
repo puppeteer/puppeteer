@@ -15,10 +15,13 @@
  */
 
 import assert from 'assert';
+import fs from 'fs';
+import os from 'os';
 import path from 'path';
 
 import {Browser, BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
-import {computeExecutablePath} from '../../lib/cjs/launcher.js';
+import {fetch} from '../../lib/cjs/fetch.js';
+import {computeExecutablePath, launch} from '../../lib/cjs/launcher.js';
 
 describe('launcher', () => {
   it('should compute executable path for Chrome', () => {
@@ -29,9 +32,10 @@ describe('launcher', () => {
         revision: '123',
         cacheDir: 'cache',
       }),
-      path.join('cache', 'chrome', 'linux-123', 'chrome')
+      path.join('cache', 'chrome', 'linux-123', 'chrome-linux', 'chrome')
     );
   });
+
   it('should compute executable path for Firefox', () => {
     assert.strictEqual(
       computeExecutablePath({
@@ -42,5 +46,79 @@ describe('launcher', () => {
       }),
       path.join('cache', 'firefox', 'linux-123', 'firefox', 'firefox')
     );
+  });
+
+  describe('Chrome', function () {
+    this.timeout(60000);
+
+    let tmpDir = '/tmp/puppeteer-browsers-test';
+    const testChromeRevision = '1083080';
+
+    beforeEach(async () => {
+      tmpDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), 'puppeteer-browsers-test')
+      );
+      await fetch({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        revision: testChromeRevision,
+      });
+    });
+
+    afterEach(() => {
+      fs.rmSync(tmpDir, {recursive: true});
+    });
+
+    it('should launch a Chrome browser', async () => {
+      const executablePath = computeExecutablePath({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        revision: testChromeRevision,
+      });
+      const process = launch({
+        executablePath,
+        args: [
+          '--use-mock-keychain',
+          '--disable-features=DialMediaRouteProvider',
+          `--user-data-dir=${path.join(tmpDir, 'profile')}`,
+        ],
+      });
+      await process.close();
+    });
+  });
+
+  describe('Firefox', function () {
+    this.timeout(60000);
+
+    let tmpDir = '/tmp/puppeteer-browsers-test';
+    const testFirefoxRevision = '111.0a1';
+
+    beforeEach(async () => {
+      tmpDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), 'puppeteer-browsers-test')
+      );
+      await fetch({
+        cacheDir: tmpDir,
+        browser: Browser.FIREFOX,
+        revision: testFirefoxRevision,
+      });
+    });
+
+    afterEach(() => {
+      fs.rmSync(tmpDir, {recursive: true});
+    });
+
+    it('should launch a Firefox browser', async () => {
+      const executablePath = computeExecutablePath({
+        cacheDir: tmpDir,
+        browser: Browser.FIREFOX,
+        revision: testFirefoxRevision,
+      });
+      const process = launch({
+        executablePath,
+        args: [`--user-data-dir=${path.join(tmpDir, 'profile')}`],
+      });
+      await process.close();
+    });
   });
 });

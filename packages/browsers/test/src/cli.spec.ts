@@ -46,7 +46,14 @@ describe('CLI', function () {
       '--platform=linux',
     ]);
     assert.ok(
-      fs.existsSync(path.join(tmpDir, 'chrome', `linux-${testChromeRevision}`))
+      fs.existsSync(
+        path.join(
+          tmpDir,
+          'chrome',
+          `linux-${testChromeRevision}`,
+          'chrome-linux'
+        )
+      )
     );
   });
 
@@ -61,7 +68,7 @@ describe('CLI', function () {
     ]);
     assert.ok(
       fs.existsSync(
-        path.join(tmpDir, 'firefox', `linux-${testFirefoxRevision}`)
+        path.join(tmpDir, 'firefox', `linux-${testFirefoxRevision}`, 'firefox')
       )
     );
   });

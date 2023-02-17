@@ -50,23 +50,23 @@ describe('Chrome', () => {
   it('should resolve executable paths', () => {
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.LINUX, '12372323'),
-      path.join('chrome')
+      path.join('chrome-linux', 'chrome')
     );
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.MAC, '12372323'),
-      path.join('Chromium.app', 'Contents', 'MacOS', 'Chromium')
+      path.join('chrome-mac', 'Chromium.app', 'Contents', 'MacOS', 'Chromium')
     );
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.MAC_ARM, '12372323'),
-      path.join('Chromium.app', 'Contents', 'MacOS', 'Chromium')
+      path.join('chrome-mac', 'Chromium.app', 'Contents', 'MacOS', 'Chromium')
     );
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.WIN32, '12372323'),
-      path.join('chrome.exe')
+      path.join('chrome-win', 'chrome.exe')
     );
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.WIN64, '12372323'),
-      path.join('chrome.exe')
+      path.join('chrome-win', 'chrome.exe')
     );
   });
 });
