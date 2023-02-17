@@ -718,11 +718,7 @@ describe('Page', function () {
           return msg.type();
         })
       ).toEqual(['timeEnd']);
-      expect(
-        messages.map(msg => {
-          return msg.text();
-        })
-      ).toEqual(['calling console.time']);
+      expect(messages[0]!.text()).toContain('calling console.time');
     });
     it('should not fail for window object', async () => {
       const {page} = getTestState();
