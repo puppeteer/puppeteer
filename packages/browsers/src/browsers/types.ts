@@ -41,3 +41,7 @@ export const downloadUrls = {
   [Browser.CHROME]: chrome.resolveDownloadUrl,
   [Browser.FIREFOX]: firefox.resolveDownloadUrl,
 };
+
+export enum BrowserTag {
+  LATEST = 'latest',
+}

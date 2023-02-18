@@ -72,4 +72,15 @@ describe('CLI', function () {
       )
     );
   });
+
+  it('should download latest Firefox binaries', async () => {
+    await new CLI(tmpDir).run([
+      'npx',
+      '@puppeteer/browsers',
+      'install',
+      `firefox@latest`,
+      `--path=${tmpDir}`,
+      '--platform=linux',
+    ]);
+  });
 });

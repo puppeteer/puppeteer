@@ -18,6 +18,7 @@ import ProgressBar from 'progress';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 
+import {resolveRevision} from './browsers/browsers.js';
 import {Browser, BrowserPlatform} from './browsers/types.js';
 import {fetch} from './fetch.js';
 import {computeExecutablePath, launch} from './launcher.js';
@@ -67,6 +68,10 @@ export class CLI {
         },
         async argv => {
           const args = argv as unknown as InstallArgs;
+          args.browser.revision = await resolveRevision(
+            args.browser.name,
+            args.browser.revision
+          );
           await fetch({
             browser: args.browser.name,
             revision: args.browser.revision,
@@ -77,6 +82,9 @@ export class CLI {
               args.browser.revision
             ),
           });
+          console.log(
+            `${args.browser.name}@${args.browser.revision} downloaded successfully.`
+          );
         }
       )
       .option('path', {

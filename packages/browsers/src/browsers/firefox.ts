@@ -16,6 +16,8 @@
 
 import path from 'path';
 
+import {httpRequest} from '../httpUtil.js';
+
 import {BrowserPlatform} from './types.js';
 
 function archive(platform: BrowserPlatform, revision: string): string {
@@ -53,4 +55,36 @@ export function relativeExecutablePath(
     case BrowserPlatform.WIN64:
       return path.join('firefox', 'firefox.exe');
   }
+}
+
+export async function resolveRevision(
+  channel: 'FIREFOX_NIGHTLY' = 'FIREFOX_NIGHTLY'
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const request = httpRequest(
+      new URL('https://product-details.mozilla.org/1.0/firefox_versions.json'),
+      'GET',
+      response => {
+        let data = '';
+        if (response.statusCode && response.statusCode >= 400) {
+          return reject(new Error(`Got status code ${response.statusCode}`));
+        }
+        response.on('data', chunk => {
+          data += chunk;
+        });
+        response.on('end', () => {
+          try {
+            const versions = JSON.parse(data);
+            return resolve(versions[channel]);
+          } catch {
+            return reject(new Error('Firefox version not found'));
+          }
+        });
+      },
+      false
+    );
+    request.on('error', err => {
+      reject(err);
+    });
+  });
 }
