@@ -16,6 +16,8 @@
 
 import assert from 'assert';
 import fs from 'fs';
+import http from 'http';
+import https from 'https';
 import os from 'os';
 import path from 'path';
 
@@ -129,4 +131,98 @@ describe('fetch', () => {
       assert.ok(fs.existsSync(expectedOutputPath));
     }
   );
+
+  describe('with proxy', () => {
+    const proxyUrl = new URL(`http://localhost:54321`);
+    let proxyServer: http.Server;
+    let proxiedRequestUrls: string[] = [];
+
+    beforeEach(() => {
+      proxiedRequestUrls = [];
+      proxyServer = http
+        .createServer(
+          (
+            originalRequest: http.IncomingMessage,
+            originalResponse: http.ServerResponse
+          ) => {
+            const url = originalRequest.url as string;
+            const proxyRequest = (
+              url.startsWith('http:') ? http : https
+            ).request(
+              url,
+              {
+                method: originalRequest.method,
+                rejectUnauthorized: false,
+              },
+              proxyResponse => {
+                originalResponse.writeHead(
+                  proxyResponse.statusCode as number,
+                  proxyResponse.headers
+                );
+                proxyResponse.pipe(originalResponse, {end: true});
+              }
+            );
+            originalRequest.pipe(proxyRequest, {end: true});
+            proxiedRequestUrls.push(url);
+          }
+        )
+        .listen({
+          port: proxyUrl.port,
+          hostname: proxyUrl.hostname,
+        });
+
+      process.env['HTTPS_PROXY'] = proxyUrl.toString();
+      process.env['HTTP_PROXY'] = proxyUrl.toString();
+    });
+
+    afterEach(async () => {
+      await new Promise((resolve, reject) => {
+        proxyServer.close(error => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(undefined);
+          }
+        });
+      });
+      delete process.env['HTTP_PROXY'];
+      delete process.env['HTTPS_PROXY'];
+    });
+
+    it('can send canFetch requests via a proxy', async () => {
+      assert.strictEqual(
+        await canFetch({
+          cacheDir: tmpDir,
+          browser: Browser.CHROME,
+          platform: BrowserPlatform.LINUX,
+          revision: testChromeRevision,
+        }),
+        true
+      );
+      assert.deepStrictEqual(proxiedRequestUrls, [
+        'https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/1083080/chrome-linux.zip',
+      ]);
+    });
+
+    it('can fetch via a proxy', async function () {
+      this.timeout(60000);
+      const expectedOutputPath = path.join(
+        tmpDir,
+        'chrome',
+        `${BrowserPlatform.LINUX}-${testChromeRevision}`
+      );
+      assert.strictEqual(fs.existsSync(expectedOutputPath), false);
+      const browser = await fetch({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        platform: BrowserPlatform.LINUX,
+        revision: testChromeRevision,
+      });
+      assert.strictEqual(browser.path, expectedOutputPath);
+      assert.ok(fs.existsSync(expectedOutputPath));
+      assert.deepStrictEqual(proxiedRequestUrls, [
+        'https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/1083080/chrome-linux.zip',
+      ]);
+    });
+  });
 });
