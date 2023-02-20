@@ -44,9 +44,17 @@ npm i puppeteer
 ```
 
 When you install Puppeteer, it automatically downloads a recent version of
-Chromium (~170MB macOS, ~282MB Linux, ~280MB Windows) that is
-[guaranteed to work](https://pptr.dev/faq#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy)
-with Puppeteer. For a version of Puppeteer without installation, see
+Chromium (~170MB macOS, ~282MB Linux, ~280MB Windows) that is [guaranteed to
+work](https://pptr.dev/faq#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy)
+with Puppeteer. The browser is downloaded to the `$HOME/.cache/puppeteer` folder
+by default (starting with Puppeteer v19.0.0).
+
+If you deploy a project using Puppeteer to a hosting provider, such as Render or
+Heroku, you might need to reconfigure the location of the cache to be within
+your project folder (see an example below) because not all hosting providers
+include `$HOME/.cache` into the project's deployment.
+
+For a version of Puppeteer without the browser installation, see
 [`puppeteer-core`](#puppeteer-core).
 
 #### Configuration
