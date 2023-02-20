@@ -30,7 +30,7 @@ declare const __JSHandleSymbol: unique symbol;
 /**
  * @internal
  */
-export class CDPJSHandle<T> extends JSHandle<T> {
+export class CDPJSHandle<T = unknown> extends JSHandle<T> {
   /**
    * Used for nominally typing {@link JSHandle}.
    */

@@ -104,13 +104,9 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
   }
 
   override async jsonValue(): Promise<T> {
-    if (!('handle' in this.#remoteValue)) {
-      return BidiSerializer.deserialize(this.#remoteValue);
-    }
-    const value = await this.evaluate(object => {
-      return object;
-    });
-    if (value === undefined) {
+    const value = BidiSerializer.deserialize(this.#remoteValue);
+
+    if (this.#remoteValue.type !== 'undefined' && value === undefined) {
       throw new Error('Could not serialize referenced object');
     }
     return value;
@@ -130,8 +126,23 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
     }
   }
 
+  get isPrimitiveValue(): boolean {
+    switch (this.#remoteValue.type) {
+      case 'string':
+      case 'number':
+      case 'bigint':
+      case 'boolean':
+      case 'undefined':
+      case 'null':
+        return true;
+
+      default:
+        return false;
+    }
+  }
+
   override toString(): string {
-    if (!('handle' in this.#remoteValue)) {
+    if (this.isPrimitiveValue) {
       return 'JSHandle:' + BidiSerializer.deserialize(this.#remoteValue);
     }
 
