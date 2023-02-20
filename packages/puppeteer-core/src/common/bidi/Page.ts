@@ -41,6 +41,7 @@ export class Page extends PageBase {
     this.#connection = connection;
     this._contextId = contextId;
 
+    // TODO: Investigate an implementation similar to CDPSession
     this.connection.send('session.subscribe', {
       events: this.#subscribedEvents,
       contexts: [this._contextId],
@@ -90,6 +91,13 @@ export class Page extends PageBase {
     await this.#connection.send('browsingContext.close', {
       context: this._contextId,
     });
+
+    this.connection.send('session.unsubscribe', {
+      events: this.#subscribedEvents,
+      contexts: [this._contextId],
+    });
+
+    this.connection.off('log.entryAdded', this.#onLogEntryAdded.bind(this));
   }
 
   get connection(): Connection {

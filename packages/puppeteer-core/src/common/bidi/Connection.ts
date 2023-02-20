@@ -64,6 +64,10 @@ interface Commands {
     params: Bidi.Session.SubscribeParameters;
     returnType: Bidi.Session.SubscribeResult;
   };
+  'session.unsubscribe': {
+    params: Bidi.Session.SubscribeParameters;
+    returnType: Bidi.Session.UnsubscribeResult;
+  };
 }
 
 /**
