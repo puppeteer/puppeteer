@@ -57,7 +57,7 @@ interface Commands {
     returnType: {sessionId: string};
   };
   'session.status': {
-    params: {context: string}; // TODO: Update Types in chromium bidi
+    params: object;
     returnType: Bidi.Session.StatusResult;
   };
   'session.subscribe': {
