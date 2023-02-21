@@ -25,8 +25,8 @@ describe('CLI', function () {
   this.timeout(90000);
 
   let tmpDir = '/tmp/puppeteer-browsers-test';
-  const testChromeRevision = '1083080';
-  const testFirefoxRevision = '111.0a1';
+  const testChromeBuildId = '1083080';
+  const testFirefoxBuildId = '111.0a1';
 
   beforeEach(() => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'puppeteer-browsers-test'));
@@ -41,7 +41,7 @@ describe('CLI', function () {
       'npx',
       '@puppeteer/browsers',
       'install',
-      `chrome@${testChromeRevision}`,
+      `chrome@${testChromeBuildId}`,
       `--path=${tmpDir}`,
       '--platform=linux',
     ]);
@@ -50,7 +50,7 @@ describe('CLI', function () {
         path.join(
           tmpDir,
           'chrome',
-          `linux-${testChromeRevision}`,
+          `linux-${testChromeBuildId}`,
           'chrome-linux'
         )
       )
@@ -62,13 +62,13 @@ describe('CLI', function () {
       'npx',
       '@puppeteer/browsers',
       'install',
-      `firefox@${testFirefoxRevision}`,
+      `firefox@${testFirefoxBuildId}`,
       `--path=${tmpDir}`,
       '--platform=linux',
     ]);
     assert.ok(
       fs.existsSync(
-        path.join(tmpDir, 'firefox', `linux-${testFirefoxRevision}`, 'firefox')
+        path.join(tmpDir, 'firefox', `linux-${testFirefoxBuildId}`, 'firefox')
       )
     );
   });

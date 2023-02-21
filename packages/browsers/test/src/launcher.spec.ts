@@ -29,7 +29,7 @@ describe('launcher', () => {
       computeExecutablePath({
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
-        revision: '123',
+        buildId: '123',
         cacheDir: 'cache',
       }),
       path.join('cache', 'chrome', 'linux-123', 'chrome-linux', 'chrome')
@@ -41,7 +41,7 @@ describe('launcher', () => {
       computeExecutablePath({
         browser: Browser.FIREFOX,
         platform: BrowserPlatform.LINUX,
-        revision: '123',
+        buildId: '123',
         cacheDir: 'cache',
       }),
       path.join('cache', 'firefox', 'linux-123', 'firefox', 'firefox')
@@ -52,7 +52,7 @@ describe('launcher', () => {
     this.timeout(60000);
 
     let tmpDir = '/tmp/puppeteer-browsers-test';
-    const testChromeRevision = '1083080';
+    const testChromeBuildId = '1083080';
 
     beforeEach(async () => {
       tmpDir = fs.mkdtempSync(
@@ -61,7 +61,7 @@ describe('launcher', () => {
       await fetch({
         cacheDir: tmpDir,
         browser: Browser.CHROME,
-        revision: testChromeRevision,
+        buildId: testChromeBuildId,
       });
     });
 
@@ -73,7 +73,7 @@ describe('launcher', () => {
       const executablePath = computeExecutablePath({
         cacheDir: tmpDir,
         browser: Browser.CHROME,
-        revision: testChromeRevision,
+        buildId: testChromeBuildId,
       });
       const process = launch({
         executablePath,
@@ -91,7 +91,7 @@ describe('launcher', () => {
     this.timeout(60000);
 
     let tmpDir = '/tmp/puppeteer-browsers-test';
-    const testFirefoxRevision = '111.0a1';
+    const testFirefoxBuildId = '111.0a1';
 
     beforeEach(async () => {
       tmpDir = fs.mkdtempSync(
@@ -100,7 +100,7 @@ describe('launcher', () => {
       await fetch({
         cacheDir: tmpDir,
         browser: Browser.FIREFOX,
-        revision: testFirefoxRevision,
+        buildId: testFirefoxBuildId,
       });
     });
 
@@ -112,7 +112,7 @@ describe('launcher', () => {
       const executablePath = computeExecutablePath({
         cacheDir: tmpDir,
         browser: Browser.FIREFOX,
-        revision: testFirefoxRevision,
+        buildId: testFirefoxBuildId,
       });
       const process = launch({
         executablePath,
