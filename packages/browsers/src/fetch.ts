@@ -48,10 +48,10 @@ export interface Options {
    */
   browser: Browser;
   /**
-   * Determines which revision to dowloand. Revision should uniquely identify
+   * Determines which buildId to dowloand. BuildId should uniquely identify
    * binaries and they are used for caching.
    */
-  revision: string;
+  buildId: string;
   /**
    * Provides information about the progress of the download.
    */
@@ -64,7 +64,7 @@ export interface Options {
 export type InstalledBrowser = {
   path: string;
   browser: Browser;
-  revision: string;
+  buildId: string;
   platform: BrowserPlatform;
 };
 
@@ -78,7 +78,7 @@ export async function fetch(options: Options): Promise<InstalledBrowser> {
   const url = getDownloadUrl(
     options.browser,
     options.platform,
-    options.revision
+    options.buildId
   );
   const fileName = url.toString().split('/').pop();
   assert(fileName, `A malformed download URL was found: ${url}.`);
@@ -91,14 +91,14 @@ export async function fetch(options: Options): Promise<InstalledBrowser> {
   const outputPath = structure.installationDir(
     options.browser,
     options.platform,
-    options.revision
+    options.buildId
   );
   if (existsSync(outputPath)) {
     return {
       path: outputPath,
       browser: options.browser,
       platform: options.platform,
-      revision: options.revision,
+      buildId: options.buildId,
     };
   }
   try {
@@ -115,7 +115,7 @@ export async function fetch(options: Options): Promise<InstalledBrowser> {
     path: outputPath,
     browser: options.browser,
     platform: options.platform,
-    revision: options.revision,
+    buildId: options.buildId,
   };
 }
 
@@ -127,14 +127,14 @@ export async function canFetch(options: Options): Promise<boolean> {
     );
   }
   return await headHttpRequest(
-    getDownloadUrl(options.browser, options.platform, options.revision)
+    getDownloadUrl(options.browser, options.platform, options.buildId)
   );
 }
 
 function getDownloadUrl(
   browser: Browser,
   platform: BrowserPlatform,
-  revision: string
+  buildId: string
 ): URL {
-  return new URL(downloadUrls[browser](platform, revision));
+  return new URL(downloadUrls[browser](platform, buildId));
 }

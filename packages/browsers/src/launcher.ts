@@ -48,10 +48,10 @@ export interface Options {
    */
   browser: Browser;
   /**
-   * Determines which revision to dowloand. Revision should uniquely identify
+   * Determines which buildId to dowloand. BuildId should uniquely identify
    * binaries and they are used for caching.
    */
-  revision: string;
+  buildId: string;
 }
 
 export function computeExecutablePath(options: Options): string {
@@ -64,11 +64,11 @@ export function computeExecutablePath(options: Options): string {
   const installationDir = new CacheStructure(options.cacheDir).installationDir(
     options.browser,
     options.platform,
-    options.revision
+    options.buildId
   );
   return path.join(
     installationDir,
-    executablePathByBrowser[options.browser](options.platform, options.revision)
+    executablePathByBrowser[options.browser](options.platform, options.buildId)
   );
 }
 

@@ -18,7 +18,7 @@ import ProgressBar from 'progress';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 
-import {resolveRevision} from './browsers/browsers.js';
+import {resolveBuildId} from './browsers/browsers.js';
 import {Browser, BrowserPlatform} from './browsers/types.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {fetch} from './fetch.js';
@@ -27,7 +27,7 @@ import {computeExecutablePath, launch} from './launcher.js';
 type InstallArgs = {
   browser: {
     name: Browser;
-    revision: string;
+    buildId: string;
   };
   path?: string;
   platform?: BrowserPlatform;
@@ -36,7 +36,7 @@ type InstallArgs = {
 type LaunchArgs = {
   browser: {
     name: Browser;
-    revision: string;
+    buildId: string;
   };
   path?: string;
   platform?: BrowserPlatform;
@@ -62,7 +62,7 @@ export class CLI {
             coerce: (opt): InstallArgs['browser'] => {
               return {
                 name: this.#parseBrowser(opt),
-                revision: this.#parseRevision(opt),
+                buildId: this.#parseBuildId(opt),
               };
             },
           });
@@ -73,23 +73,23 @@ export class CLI {
           if (!args.platform) {
             throw new Error(`Could not resolve the current platform`);
           }
-          args.browser.revision = await resolveRevision(
+          args.browser.buildId = await resolveBuildId(
             args.browser.name,
             args.platform,
-            args.browser.revision
+            args.browser.buildId
           );
           await fetch({
             browser: args.browser.name,
-            revision: args.browser.revision,
+            buildId: args.browser.buildId,
             platform: args.platform,
             cacheDir: args.path ?? this.#cachePath,
             downloadProgressCallback: this.#makeProgressCallback(
               args.browser.name,
-              args.browser.revision
+              args.browser.buildId
             ),
           });
           console.log(
-            `${args.browser.name}@${args.browser.revision} downloaded successfully.`
+            `${args.browser.name}@${args.browser.buildId} downloaded successfully.`
           );
         }
       )
@@ -114,7 +114,7 @@ export class CLI {
             coerce: (opt): LaunchArgs['browser'] => {
               return {
                 name: this.#parseBrowser(opt),
-                revision: this.#parseRevision(opt),
+                buildId: this.#parseBuildId(opt),
               };
             },
           });
@@ -123,7 +123,7 @@ export class CLI {
           const args = argv as unknown as LaunchArgs;
           const executablePath = computeExecutablePath({
             browser: args.browser.name,
-            revision: args.browser.revision,
+            buildId: args.browser.buildId,
             cacheDir: args.path ?? this.#cachePath,
             platform: args.platform,
           });
@@ -156,7 +156,7 @@ export class CLI {
     return version.split('@').shift() as Browser;
   }
 
-  #parseRevision(version: string): string {
+  #parseBuildId(version: string): string {
     return version.split('@').pop() ?? 'latest';
   }
 
@@ -165,13 +165,13 @@ export class CLI {
     return `${Math.round(mb * 10) / 10} Mb`;
   }
 
-  #makeProgressCallback(browser: Browser, revision: string) {
+  #makeProgressCallback(browser: Browser, buildId: string) {
     let progressBar: ProgressBar;
     let lastDownloadedBytes = 0;
     return (downloadedBytes: number, totalBytes: number) => {
       if (!progressBar) {
         progressBar = new ProgressBar(
-          `Downloading ${browser} r${revision} - ${this.#toMegabytes(
+          `Downloading ${browser} r${buildId} - ${this.#toMegabytes(
             totalBytes
           )} [:bar] :percent :etas `,
           {
