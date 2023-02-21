@@ -20,6 +20,7 @@ import {hideBin} from 'yargs/helpers';
 
 import {resolveRevision} from './browsers/browsers.js';
 import {Browser, BrowserPlatform} from './browsers/types.js';
+import {detectBrowserPlatform} from './detectPlatform.js';
 import {fetch} from './fetch.js';
 import {computeExecutablePath, launch} from './launcher.js';
 
@@ -68,8 +69,13 @@ export class CLI {
         },
         async argv => {
           const args = argv as unknown as InstallArgs;
+          args.platform ??= detectBrowserPlatform();
+          if (!args.platform) {
+            throw new Error(`Could not resolve the current platform`);
+          }
           args.browser.revision = await resolveRevision(
             args.browser.name,
+            args.platform,
             args.browser.revision
           );
           await fetch({

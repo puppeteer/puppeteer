@@ -16,6 +16,8 @@
 
 import path from 'path';
 
+import {httpRequest} from '../httpUtil.js';
+
 import {BrowserPlatform} from './types.js';
 
 function archive(platform: BrowserPlatform, revision: string): string {
@@ -78,4 +80,41 @@ export function relativeExecutablePath(
     case BrowserPlatform.WIN64:
       return path.join('chrome-win', 'chrome.exe');
   }
+}
+
+export async function resolveRevision(
+  platform: BrowserPlatform,
+  // We will need it for other channels/keywords.
+  _channel: 'latest' = 'latest'
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const request = httpRequest(
+      new URL(
+        `https://storage.googleapis.com/chromium-browser-snapshots/${folder(
+          platform
+        )}/LAST_CHANGE`
+      ),
+      'GET',
+      response => {
+        let data = '';
+        if (response.statusCode && response.statusCode >= 400) {
+          return reject(new Error(`Got status code ${response.statusCode}`));
+        }
+        response.on('data', chunk => {
+          data += chunk;
+        });
+        response.on('end', () => {
+          try {
+            return resolve(String(data));
+          } catch {
+            return reject(new Error('Chrome version not found'));
+          }
+        });
+      },
+      false
+    );
+    request.on('error', err => {
+      reject(err);
+    });
+  });
 }
