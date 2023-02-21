@@ -22,7 +22,7 @@ import path from 'path';
 import {CLI} from '../../lib/cjs/CLI.js';
 
 describe('CLI', function () {
-  this.timeout(60000);
+  this.timeout(90000);
 
   let tmpDir = '/tmp/puppeteer-browsers-test';
   const testChromeRevision = '1083080';
@@ -71,5 +71,16 @@ describe('CLI', function () {
         path.join(tmpDir, 'firefox', `linux-${testFirefoxRevision}`, 'firefox')
       )
     );
+  });
+
+  it('should download latest Firefox binaries', async () => {
+    await new CLI(tmpDir).run([
+      'npx',
+      '@puppeteer/browsers',
+      'install',
+      `firefox@latest`,
+      `--path=${tmpDir}`,
+      '--platform=linux',
+    ]);
   });
 });

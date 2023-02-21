@@ -16,7 +16,7 @@
 
 import * as chrome from './chrome.js';
 import * as firefox from './firefox.js';
-import {Browser, BrowserPlatform} from './types.js';
+import {Browser, BrowserPlatform, BrowserTag} from './types.js';
 
 export const downloadUrls = {
   [Browser.CHROME]: chrome.resolveDownloadUrl,
@@ -29,3 +29,18 @@ export const executablePathByBrowser = {
 };
 
 export {Browser, BrowserPlatform};
+
+export async function resolveRevision(
+  browser: Browser,
+  tag: string
+): Promise<string> {
+  switch (browser) {
+    case Browser.FIREFOX:
+      switch (tag as BrowserTag) {
+        case BrowserTag.LATEST:
+          return await firefox.resolveRevision('FIREFOX_NIGHTLY');
+      }
+  }
+  // We assume the tag is the revision if it didn't match any keywords.
+  return tag;
+}
