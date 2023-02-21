@@ -83,4 +83,15 @@ describe('CLI', function () {
       '--platform=linux',
     ]);
   });
+
+  it('should download latest Chrome binaries', async () => {
+    await new CLI(tmpDir).run([
+      'npx',
+      '@puppeteer/browsers',
+      'install',
+      `chrome@latest`,
+      `--path=${tmpDir}`,
+      '--platform=linux',
+    ]);
+  });
 });

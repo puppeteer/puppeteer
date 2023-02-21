@@ -32,6 +32,7 @@ export {Browser, BrowserPlatform};
 
 export async function resolveRevision(
   browser: Browser,
+  platform: BrowserPlatform,
   tag: string
 ): Promise<string> {
   switch (browser) {
@@ -39,6 +40,11 @@ export async function resolveRevision(
       switch (tag as BrowserTag) {
         case BrowserTag.LATEST:
           return await firefox.resolveRevision('FIREFOX_NIGHTLY');
+      }
+    case Browser.CHROME:
+      switch (tag as BrowserTag) {
+        case BrowserTag.LATEST:
+          return await chrome.resolveRevision(platform, 'latest');
       }
   }
   // We assume the tag is the revision if it didn't match any keywords.
