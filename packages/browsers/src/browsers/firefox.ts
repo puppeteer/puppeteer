@@ -20,30 +20,30 @@ import {httpRequest} from '../httpUtil.js';
 
 import {BrowserPlatform} from './types.js';
 
-function archive(platform: BrowserPlatform, revision: string): string {
+function archive(platform: BrowserPlatform, buildId: string): string {
   switch (platform) {
     case BrowserPlatform.LINUX:
-      return `firefox-${revision}.en-US.${platform}-x86_64.tar.bz2`;
+      return `firefox-${buildId}.en-US.${platform}-x86_64.tar.bz2`;
     case BrowserPlatform.MAC_ARM:
     case BrowserPlatform.MAC:
-      return `firefox-${revision}.en-US.mac.dmg`;
+      return `firefox-${buildId}.en-US.mac.dmg`;
     case BrowserPlatform.WIN32:
     case BrowserPlatform.WIN64:
-      return `firefox-${revision}.en-US.${platform}.zip`;
+      return `firefox-${buildId}.en-US.${platform}.zip`;
   }
 }
 
 export function resolveDownloadUrl(
   platform: BrowserPlatform,
-  revision: string,
+  buildId: string,
   baseUrl = 'https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central'
 ): string {
-  return `${baseUrl}/${archive(platform, revision)}`;
+  return `${baseUrl}/${archive(platform, buildId)}`;
 }
 
 export function relativeExecutablePath(
   platform: BrowserPlatform,
-  _revision: string
+  _buildId: string
 ): string {
   switch (platform) {
     case BrowserPlatform.MAC_ARM:
@@ -57,7 +57,7 @@ export function relativeExecutablePath(
   }
 }
 
-export async function resolveRevision(
+export async function resolveBuildId(
   channel: 'FIREFOX_NIGHTLY' = 'FIREFOX_NIGHTLY'
 ): Promise<string> {
   return new Promise((resolve, reject) => {

@@ -23,12 +23,12 @@ import {Browser, BrowserPlatform} from './browsers/types.js';
  *
  * - rootDir
  *   -- <browser1> | browserRoot(browser1)
- *   ---- <platform>-<revision> | installationDir()
- *   ------ the browser-platform-revision
+ *   ---- <platform>-<buildId> | installationDir()
+ *   ------ the browser-platform-buildId
  *   ------ specific structure.
  *   -- <browser2> | browserRoot(browser2)
- *   ---- <platform>-<revision> | installationDir()
- *   ------ the browser-platform-revision
+ *   ---- <platform>-<buildId> | installationDir()
+ *   ------ the browser-platform-buildId
  *   ------ specific structure.
  *   @internal
  */
@@ -46,8 +46,8 @@ export class CacheStructure {
   installationDir(
     browser: Browser,
     platform: BrowserPlatform,
-    revision: string
+    buildId: string
   ): string {
-    return path.join(this.browserRoot(browser), `${platform}-${revision}`);
+    return path.join(this.browserRoot(browser), `${platform}-${buildId}`);
   }
 }

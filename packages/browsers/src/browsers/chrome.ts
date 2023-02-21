@@ -20,7 +20,7 @@ import {httpRequest} from '../httpUtil.js';
 
 import {BrowserPlatform} from './types.js';
 
-function archive(platform: BrowserPlatform, revision: string): string {
+function archive(platform: BrowserPlatform, buildId: string): string {
   switch (platform) {
     case BrowserPlatform.LINUX:
       return 'chrome-linux';
@@ -30,7 +30,7 @@ function archive(platform: BrowserPlatform, revision: string): string {
     case BrowserPlatform.WIN32:
     case BrowserPlatform.WIN64:
       // Windows archive name changed at r591479.
-      return parseInt(revision, 10) > 591479 ? 'chrome-win' : 'chrome-win32';
+      return parseInt(buildId, 10) > 591479 ? 'chrome-win' : 'chrome-win32';
   }
 }
 
@@ -51,18 +51,18 @@ function folder(platform: BrowserPlatform): string {
 
 export function resolveDownloadUrl(
   platform: BrowserPlatform,
-  revision: string,
+  buildId: string,
   baseUrl = 'https://storage.googleapis.com/chromium-browser-snapshots'
 ): string {
-  return `${baseUrl}/${folder(platform)}/${revision}/${archive(
+  return `${baseUrl}/${folder(platform)}/${buildId}/${archive(
     platform,
-    revision
+    buildId
   )}.zip`;
 }
 
 export function relativeExecutablePath(
   platform: BrowserPlatform,
-  _revision: string
+  _buildId: string
 ): string {
   switch (platform) {
     case BrowserPlatform.MAC:
@@ -82,7 +82,7 @@ export function relativeExecutablePath(
   }
 }
 
-export async function resolveRevision(
+export async function resolveBuildId(
   platform: BrowserPlatform,
   // We will need it for other channels/keywords.
   _channel: 'latest' = 'latest'

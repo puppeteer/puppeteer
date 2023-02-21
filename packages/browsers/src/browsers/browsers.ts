@@ -30,7 +30,7 @@ export const executablePathByBrowser = {
 
 export {Browser, BrowserPlatform};
 
-export async function resolveRevision(
+export async function resolveBuildId(
   browser: Browser,
   platform: BrowserPlatform,
   tag: string
@@ -39,14 +39,14 @@ export async function resolveRevision(
     case Browser.FIREFOX:
       switch (tag as BrowserTag) {
         case BrowserTag.LATEST:
-          return await firefox.resolveRevision('FIREFOX_NIGHTLY');
+          return await firefox.resolveBuildId('FIREFOX_NIGHTLY');
       }
     case Browser.CHROME:
       switch (tag as BrowserTag) {
         case BrowserTag.LATEST:
-          return await chrome.resolveRevision(platform, 'latest');
+          return await chrome.resolveBuildId(platform, 'latest');
       }
   }
-  // We assume the tag is the revision if it didn't match any keywords.
+  // We assume the tag is the buildId if it didn't match any keywords.
   return tag;
 }
