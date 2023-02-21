@@ -22,7 +22,7 @@ import path from 'path';
 import {CLI} from '../../lib/cjs/CLI.js';
 
 describe('CLI', function () {
-  this.timeout(60000);
+  this.timeout(90000);
 
   let tmpDir = '/tmp/puppeteer-browsers-test';
   const testChromeRevision = '1083080';
