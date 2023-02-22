@@ -13,7 +13,7 @@
   },
   "wireit": {
     "build": {
-      "command": "tsc -b",
+      "command": "tsc -b && chmod a+x lib/cjs/browsers.js lib/esm/browsers.js",
       "files": [
         "src/**/*.ts",
         "tsconfig.json"

@@ -149,6 +149,8 @@ export class CLI {
         choices: Object.values(BrowserPlatform),
         defaultDescription: 'Auto-detected by default.',
       })
+      .demandCommand(1)
+      .help()
       .parse();
   }
 
