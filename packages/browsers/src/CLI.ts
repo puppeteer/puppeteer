@@ -52,6 +52,17 @@ export class CLI {
 
   async run(argv: string[]): Promise<void> {
     await yargs(hideBin(argv))
+      .option('platform', {
+        type: 'string',
+        desc: 'Platform that the binary needs to be compatible with.',
+        choices: Object.values(BrowserPlatform),
+        defaultDescription: 'Auto-detected by default.',
+      })
+      .option('path', {
+        type: 'string',
+        desc: 'Path where the browsers will be downloaded to and installed from',
+        default: process.cwd(),
+      })
       .command(
         'install <browser>',
         'Download and install the specified browser',
@@ -93,17 +104,6 @@ export class CLI {
           );
         }
       )
-      .option('path', {
-        type: 'string',
-        desc: 'Path where the browsers will be downloaded to and installed from',
-        default: process.cwd(),
-      })
-      .option('platform', {
-        type: 'string',
-        desc: 'Platform that the binary needs to be compatible with.',
-        choices: Object.values(BrowserPlatform),
-        defaultDescription: 'Auto-detected by default.',
-      })
       .command(
         'launch <browser>',
         'Launch the specified browser',
@@ -142,12 +142,6 @@ export class CLI {
         type: 'boolean',
         desc: 'Whether to detach the child process.',
         default: false,
-      })
-      .option('platform', {
-        type: 'string',
-        desc: 'Platform that the binary needs to be compatible with.',
-        choices: Object.values(BrowserPlatform),
-        defaultDescription: 'Auto-detected by default.',
       })
       .demandCommand(1)
       .help()
