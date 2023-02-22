@@ -163,8 +163,8 @@ export class CLI {
   }
 
   #toMegabytes(bytes: number) {
-    const mb = bytes / 1024 / 1024;
-    return `${Math.round(mb * 10) / 10} Mb`;
+    const mb = bytes / 1000 / 1000;
+    return `${Math.round(mb * 10) / 10} MB`;
   }
 
   #makeProgressCallback(browser: Browser, buildId: string) {
