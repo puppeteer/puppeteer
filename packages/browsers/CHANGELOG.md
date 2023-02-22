@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.3](https://github.com/puppeteer/puppeteer/compare/browsers-v0.0.2...browsers-v0.0.3) (2023-02-22)
+
+
+### Bug Fixes
+
+* define options per command ([#9733](https://github.com/puppeteer/puppeteer/issues/9733)) ([8bae054](https://github.com/puppeteer/puppeteer/commit/8bae0545b7321d398dae3f522952dd981111587e))
+
 ## [0.0.2](https://github.com/puppeteer/puppeteer/compare/browsers-v0.0.1...browsers-v0.0.2) (2023-02-22)
 
 
