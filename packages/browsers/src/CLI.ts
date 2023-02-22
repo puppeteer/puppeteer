@@ -66,6 +66,17 @@ export class CLI {
               };
             },
           });
+          yargs.option('platform', {
+            type: 'string',
+            desc: 'Platform that the binary needs to be compatible with.',
+            choices: Object.values(BrowserPlatform),
+            defaultDescription: 'Auto-detected by default.',
+          });
+          yargs.option('path', {
+            type: 'string',
+            desc: 'Path where the browsers will be downloaded to and installed from',
+            default: process.cwd(),
+          });
         },
         async argv => {
           const args = argv as unknown as InstallArgs;
@@ -93,17 +104,6 @@ export class CLI {
           );
         }
       )
-      .option('path', {
-        type: 'string',
-        desc: 'Path where the browsers will be downloaded to and installed from',
-        default: process.cwd(),
-      })
-      .option('platform', {
-        type: 'string',
-        desc: 'Platform that the binary needs to be compatible with.',
-        choices: Object.values(BrowserPlatform),
-        defaultDescription: 'Auto-detected by default.',
-      })
       .command(
         'launch <browser>',
         'Launch the specified browser',
@@ -117,6 +117,22 @@ export class CLI {
                 buildId: this.#parseBuildId(opt),
               };
             },
+          });
+          yargs.option('detached', {
+            type: 'boolean',
+            desc: 'Whether to detach the child process.',
+            default: false,
+          });
+          yargs.option('platform', {
+            type: 'string',
+            desc: 'Platform that the binary needs to be compatible with.',
+            choices: Object.values(BrowserPlatform),
+            defaultDescription: 'Auto-detected by default.',
+          });
+          yargs.option('path', {
+            type: 'string',
+            desc: 'Path where the browsers will be downloaded to and installed from',
+            default: process.cwd(),
           });
         },
         async argv => {
@@ -133,22 +149,6 @@ export class CLI {
           });
         }
       )
-      .option('path', {
-        type: 'string',
-        desc: 'Path where the browsers will be downloaded to and installed from',
-        default: process.cwd(),
-      })
-      .option('detached', {
-        type: 'boolean',
-        desc: 'Whether to detach the child process.',
-        default: false,
-      })
-      .option('platform', {
-        type: 'string',
-        desc: 'Platform that the binary needs to be compatible with.',
-        choices: Object.values(BrowserPlatform),
-        defaultDescription: 'Auto-detected by default.',
-      })
       .demandCommand(1)
       .help()
       .parse();
