@@ -6,14 +6,40 @@ on:
       - release-please-*
 
 jobs:
+  check-changes:
+    name: Check which packages changed
+    runs-on: ubuntu-latest
+    outputs:
+      changes: ${{ steps.changes.outputs.changes }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3.3.0
+        with:
+          fetch-depth: 2
+      - name: Detect changed packages
+        uses: dorny/paths-filter@v2.11.1
+        id: changes
+        with:
+          filters: |
+            puppeteer:
+              - '.github/workflows/ci.yml'
+              - 'packages/puppeteer/**'
+              - 'packages/puppeteer-core/**'
+              - 'docker/**'
+              - 'test/**'
+              - 'test-d/**'
+              - 'tools/mochaRunner/**'
+
   pre-release:
-    if: "startsWith(github.event.head_commit.message, 'chore: release main')"
+    if: |
+      startsWith(github.event.head_commit.message, 'chore: release main') &&
+      contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer')
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.3.0
         with:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Install dependencies
