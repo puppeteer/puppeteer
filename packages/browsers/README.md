@@ -1,3 +1,3 @@
 # @puppeteer/browsers
 
-TODO
+Manage and launch browsers for Puppeteer. Documentation TODO.
