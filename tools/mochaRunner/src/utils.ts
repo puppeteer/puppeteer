@@ -94,6 +94,14 @@ type RecommendedExpecation = {
   action: 'remove' | 'add' | 'update';
 };
 
+export function isWildCardPattern(testIdPattern: string): boolean {
+  testIdPattern = testIdPattern.trim();
+  return (
+    testIdPattern === '' ||
+    Boolean(testIdPattern.match(/^\[[a-zA-Z]+\.spec\]$/))
+  );
+}
+
 export function getExpectationUpdates(
   results: MochaResults,
   expecations: TestExpectation[],
@@ -105,10 +113,10 @@ export function getExpectationUpdates(
   const output: RecommendedExpecation[] = [];
 
   for (const pass of results.passes) {
-    const expectation = findEffectiveExpectationForTest(expecations, pass);
-    if (expectation && !expectation.expectations.includes('PASS')) {
+    const expectationEntry = findEffectiveExpectationForTest(expecations, pass);
+    if (expectationEntry && !expectationEntry.expectations.includes('PASS')) {
       output.push({
-        expectation,
+        expectation: expectationEntry,
         test: pass,
         action: 'remove',
       });
@@ -116,16 +124,27 @@ export function getExpectationUpdates(
   }
 
   for (const failure of results.failures) {
-    const expectation = findEffectiveExpectationForTest(expecations, failure);
-    if (expectation) {
+    const expectationEntry = findEffectiveExpectationForTest(
+      expecations,
+      failure
+    );
+    // If the effective explanation is a wildcard, we recommend adding a new
+    // expectation instead of updating the wildcard that might affect multiple
+    // tests.
+    if (
+      expectationEntry &&
+      !isWildCardPattern(expectationEntry.testIdPattern)
+    ) {
       if (
-        !expectation.expectations.includes(getTestResultForFailure(failure))
+        !expectationEntry.expectations.includes(
+          getTestResultForFailure(failure)
+        )
       ) {
         output.push({
           expectation: {
-            ...expectation,
+            ...expectationEntry,
             expectations: [
-              ...expectation.expectations,
+              ...expectationEntry.expectations,
               getTestResultForFailure(failure),
             ],
           },

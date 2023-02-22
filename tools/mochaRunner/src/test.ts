@@ -18,7 +18,11 @@ import assert from 'assert/strict';
 import test from 'node:test';
 
 import {TestExpectation} from './types.js';
-import {filterByParameters, getTestResultForFailure} from './utils.js';
+import {
+  filterByParameters,
+  getTestResultForFailure,
+  isWildCardPattern,
+} from './utils.js';
 import {getFilename, extendProcessEnv} from './utils.js';
 
 test('extendProcessEnv', () => {
@@ -60,4 +64,13 @@ test('filterByParameters', () => {
     1
   );
   assert.equal(filterByParameters(expectations, ['other']).length, 0);
+});
+
+test('isWildCardPattern', () => {
+  assert.equal(isWildCardPattern(''), true);
+  assert.equal(isWildCardPattern('a'), false);
+  assert.equal(isWildCardPattern('[queryHandler.spec]'), true);
+  assert.equal(isWildCardPattern('[queryHandler.spec] '), true);
+  assert.equal(isWildCardPattern(' [queryHandler.spec] '), true);
+  assert.equal(isWildCardPattern('[queryHandler.spec] test'), false);
 });
