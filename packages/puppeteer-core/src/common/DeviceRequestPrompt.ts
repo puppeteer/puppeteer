@@ -99,9 +99,10 @@ export class DeviceRequestPrompt {
     this.#timeoutSettings = timeoutSettings;
     this.#id = firstEvent.id;
 
-    this.#client.on('DeviceAccess.deviceRequestPrompted', event => {
-      this.#updateDevices(event);
-    });
+    this.#client.on(
+      'DeviceAccess.deviceRequestPrompted',
+      this.#updateDevicesHandle
+    );
 
     this.#updateDevices(firstEvent);
   }
