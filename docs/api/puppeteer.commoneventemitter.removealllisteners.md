@@ -14,9 +14,9 @@ interface CommonEventEmitter {
 
 ## Parameters
 
-| Parameter | Type                                  | Description       |
-| --------- | ------------------------------------- | ----------------- |
-| event     | [EventType](./puppeteer.eventtype.md) | <i>(Optional)</i> |
+| Parameter | Type                                  | Description  |
+| --------- | ------------------------------------- | ------------ |
+| event     | [EventType](./puppeteer.eventtype.md) | _(Optional)_ |
 
 **Returns:**
 

@@ -16,9 +16,9 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type                            | Description       |
-| --------- | ------------------------------- | ----------------- |
-| offset    | [Offset](./puppeteer.offset.md) | <i>(Optional)</i> |
+| Parameter | Type                            | Description  |
+| --------- | ------------------------------- | ------------ |
+| offset    | [Offset](./puppeteer.offset.md) | _(Optional)_ |
 
 **Returns:**
 

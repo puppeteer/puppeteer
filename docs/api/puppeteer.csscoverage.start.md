@@ -14,9 +14,9 @@ class CSSCoverage {
 
 ## Parameters
 
-| Parameter | Type                             | Description       |
-| --------- | -------------------------------- | ----------------- |
-| options   | { resetOnNavigation?: boolean; } | <i>(Optional)</i> |
+| Parameter | Type                             | Description  |
+| --------- | -------------------------------- | ------------ |
+| options   | { resetOnNavigation?: boolean; } | _(Optional)_ |
 
 **Returns:**
 

@@ -19,10 +19,10 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type                                                         | Description       |
-| --------- | ------------------------------------------------------------ | ----------------- |
-| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |                   |
-| data      | Protocol.Input.DragData                                      | <i>(Optional)</i> |
+| Parameter | Type                                                         | Description  |
+| --------- | ------------------------------------------------------------ | ------------ |
+| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |              |
+| data      | Protocol.Input.DragData                                      | _(Optional)_ |
 
 **Returns:**
 

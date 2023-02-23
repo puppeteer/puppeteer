@@ -19,10 +19,10 @@ class Page {
 
 ## Parameters
 
-| Parameter      | Type                                                                                       | Description                                   |
-| -------------- | ------------------------------------------------------------------------------------------ | --------------------------------------------- |
-| urlOrPredicate | string \| ((frame: [Frame](./puppeteer.frame.md)) =&gt; boolean \| Promise&lt;boolean&gt;) | A URL or predicate to wait for.               |
-| options        | { timeout?: number; }                                                                      | <i>(Optional)</i> Optional waiting parameters |
+| Parameter      | Type                                                                                       | Description                              |
+| -------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------- |
+| urlOrPredicate | string \| ((frame: [Frame](./puppeteer.frame.md)) =&gt; boolean \| Promise&lt;boolean&gt;) | A URL or predicate to wait for.          |
+| options        | { timeout?: number; }                                                                      | _(Optional)_ Optional waiting parameters |
 
 **Returns:**
 

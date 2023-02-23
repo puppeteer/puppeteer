@@ -26,7 +26,7 @@ class Frame {
 | Parameter | Type                                                                                         | Description                |
 | --------- | -------------------------------------------------------------------------------------------- | -------------------------- |
 | selector  | string                                                                                       | The selector to query for. |
-| options   | { delay?: number; button?: [MouseButton](./puppeteer.mousebutton.md); clickCount?: number; } | <i>(Optional)</i>          |
+| options   | { delay?: number; button?: [MouseButton](./puppeteer.mousebutton.md); clickCount?: number; } | _(Optional)_               |
 
 **Returns:**
 

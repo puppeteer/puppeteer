@@ -19,10 +19,10 @@ class BrowserFetcher {
 
 ## Parameters
 
-| Parameter        | Type                              | Description                                                                                                                                             |
-| ---------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| revision         | string                            | The revision to download.                                                                                                                               |
-| progressCallback | (x: number, y: number) =&gt; void | <i>(Optional)</i> A function that will be called with two arguments: How many bytes have been downloaded and the total number of bytes of the download. |
+| Parameter        | Type                              | Description                                                                                                                                        |
+| ---------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| revision         | string                            | The revision to download.                                                                                                                          |
+| progressCallback | (x: number, y: number) =&gt; void | _(Optional)_ A function that will be called with two arguments: How many bytes have been downloaded and the total number of bytes of the download. |
 
 **Returns:**
 

@@ -16,9 +16,9 @@ class PuppeteerNode {
 
 ## Parameters
 
-| Parameter | Type                                                                         | Description                                                                                  |
-| --------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| options   | Partial&lt;[BrowserFetcherOptions](./puppeteer.browserfetcheroptions.md)&gt; | <i>(Optional)</i> Set of configurable options to specify the settings of the BrowserFetcher. |
+| Parameter | Type                                                                         | Description                                                                             |
+| --------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| options   | Partial&lt;[BrowserFetcherOptions](./puppeteer.browserfetcheroptions.md)&gt; | _(Optional)_ Set of configurable options to specify the settings of the BrowserFetcher. |
 
 **Returns:**
 

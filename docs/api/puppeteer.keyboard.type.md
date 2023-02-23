@@ -21,10 +21,10 @@ class Keyboard {
 
 ## Parameters
 
-| Parameter | Type                | Description                                                                                                                                                                        |
-| --------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| text      | string              | A text to type into a focused element.                                                                                                                                             |
-| options   | { delay?: number; } | <i>(Optional)</i> An object of options. Accepts delay which, if specified, is the time to wait between <code>keydown</code> and <code>keyup</code> in milliseconds. Defaults to 0. |
+| Parameter | Type                | Description                                                                                                                                                                   |
+| --------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| text      | string              | A text to type into a focused element.                                                                                                                                        |
+| options   | { delay?: number; } | _(Optional)_ An object of options. Accepts delay which, if specified, is the time to wait between <code>keydown</code> and <code>keyup</code> in milliseconds. Defaults to 0. |
 
 **Returns:**
 

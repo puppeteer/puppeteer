@@ -18,9 +18,9 @@ class PuppeteerNode {
 
 ## Parameters
 
-| Parameter | Type                                                            | Description                                                |
-| --------- | --------------------------------------------------------------- | ---------------------------------------------------------- |
-| options   | [PuppeteerLaunchOptions](./puppeteer.puppeteerlaunchoptions.md) | <i>(Optional)</i> Options to configure launching behavior. |
+| Parameter | Type                                                            | Description                                           |
+| --------- | --------------------------------------------------------------- | ----------------------------------------------------- |
+| options   | [PuppeteerLaunchOptions](./puppeteer.puppeteerlaunchoptions.md) | _(Optional)_ Options to configure launching behavior. |
 
 **Returns:**
 

@@ -16,9 +16,9 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                    | Description                                       |
-| --------- | --------------------------------------- | ------------------------------------------------- |
-| options   | [PDFOptions](./puppeteer.pdfoptions.md) | <i>(Optional)</i> options for generating the PDF. |
+| Parameter | Type                                    | Description                                  |
+| --------- | --------------------------------------- | -------------------------------------------- |
+| options   | [PDFOptions](./puppeteer.pdfoptions.md) | _(Optional)_ options for generating the PDF. |
 
 **Returns:**
 

@@ -16,9 +16,9 @@ class EventEmitter {
 
 ## Parameters
 
-| Parameter | Type                                  | Description                                          |
-| --------- | ------------------------------------- | ---------------------------------------------------- |
-| event     | [EventType](./puppeteer.eventtype.md) | <i>(Optional)</i> the event to remove listeners for. |
+| Parameter | Type                                  | Description                                     |
+| --------- | ------------------------------------- | ----------------------------------------------- |
+| event     | [EventType](./puppeteer.eventtype.md) | _(Optional)_ the event to remove listeners for. |
 
 **Returns:**
 

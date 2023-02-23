@@ -16,10 +16,10 @@ class EventEmitter {
 
 ## Parameters
 
-| Parameter | Type                                  | Description                                                  |
-| --------- | ------------------------------------- | ------------------------------------------------------------ |
-| event     | [EventType](./puppeteer.eventtype.md) | the event you'd like to emit                                 |
-| eventData | unknown                               | <i>(Optional)</i> any data you'd like to emit with the event |
+| Parameter | Type                                  | Description                                             |
+| --------- | ------------------------------------- | ------------------------------------------------------- |
+| event     | [EventType](./puppeteer.eventtype.md) | the event you'd like to emit                            |
+| eventData | unknown                               | _(Optional)_ any data you'd like to emit with the event |
 
 **Returns:**
 

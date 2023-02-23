@@ -21,10 +21,10 @@ class Page {
 
 ## Parameters
 
-| Parameter      | Type                                                                                                   | Description                                   |
-| -------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------- |
-| urlOrPredicate | string \| ((res: [HTTPResponse](./puppeteer.httpresponse.md)) =&gt; boolean \| Promise&lt;boolean&gt;) | A URL or predicate to wait for.               |
-| options        | { timeout?: number; }                                                                                  | <i>(Optional)</i> Optional waiting parameters |
+| Parameter      | Type                                                                                                   | Description                              |
+| -------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------- |
+| urlOrPredicate | string \| ((res: [HTTPResponse](./puppeteer.httpresponse.md)) =&gt; boolean \| Promise&lt;boolean&gt;) | A URL or predicate to wait for.          |
+| options        | { timeout?: number; }                                                                                  | _(Optional)_ Optional waiting parameters |
 
 **Returns:**
 

@@ -44,7 +44,7 @@ class Page {
 | Parameter | Type                                                            | Description                                                                             |
 | --------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | xpath     | string                                                          | A [xpath](https://developer.mozilla.org/en-US/docs/Web/XPath) of an element to wait for |
-| options   | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) | <i>(Optional)</i> Optional waiting parameters                                           |
+| options   | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) | _(Optional)_ Optional waiting parameters                                                |
 
 **Returns:**
 

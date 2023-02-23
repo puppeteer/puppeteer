@@ -23,7 +23,7 @@ class Page {
 | Parameter | Type                                                                                                 | Description                                                                        |
 | --------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | url       | string                                                                                               | URL to navigate page to. The URL should include scheme, e.g. <code>https://</code> |
-| options   | [WaitForOptions](./puppeteer.waitforoptions.md) &amp; { referer?: string; referrerPolicy?: string; } | <i>(Optional)</i> Navigation Parameter                                             |
+| options   | [WaitForOptions](./puppeteer.waitforoptions.md) &amp; { referer?: string; referrerPolicy?: string; } | _(Optional)_ Navigation Parameter                                                  |
 
 **Returns:**
 
