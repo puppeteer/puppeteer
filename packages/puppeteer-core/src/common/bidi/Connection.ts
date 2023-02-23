@@ -22,6 +22,8 @@ import {debug} from '../Debug.js';
 import {ProtocolError} from '../Errors.js';
 import {EventEmitter} from '../EventEmitter.js';
 
+import {Context} from './Context.js';
+
 const debugProtocolSend = debug('puppeteer:webDriverBiDi:SEND ►');
 const debugProtocolReceive = debug('puppeteer:webDriverBiDi:RECV ◀');
 
@@ -78,6 +80,7 @@ export class Connection extends EventEmitter {
   #lastId = 0;
   #closed = false;
   #callbacks: Map<number, ConnectionCallback> = new Map();
+  #contexts: Map<string, Context> = new Map();
 
   constructor(transport: ConnectionTransport, delay = 0) {
     super();
@@ -90,6 +93,10 @@ export class Connection extends EventEmitter {
 
   get closed(): boolean {
     return this.#closed;
+  }
+
+  context(contextId: string): Context | null {
+    return this.#contexts.get(contextId) || null;
   }
 
   send<T extends keyof Commands>(
@@ -126,7 +133,8 @@ export class Connection extends EventEmitter {
     debugProtocolReceive(message);
     const object = JSON.parse(message) as
       | Bidi.Message.CommandResponse
-      | Bidi.EventResponse<string, unknown>;
+      | Bidi.Message.EventMessage;
+
     if ('id' in object) {
       const callback = this.#callbacks.get(object.id);
       // Callbacks could be all rejected if someone has called `.dispose()`.
@@ -137,10 +145,21 @@ export class Connection extends EventEmitter {
             createProtocolError(callback.error, callback.method, object)
           );
         } else {
+          if (callback.method === 'browsingContext.create') {
+            this.#contexts.set(
+              object.result.context,
+              new Context(this, object.result.context)
+            );
+          }
           callback.resolve(object);
         }
       }
     } else {
+      if ('source' in object.params && !!object.params.source.context) {
+        const context = this.#contexts.get(object.params.source.context);
+        context?.emit(object.method, object.params);
+      }
+
       this.emit(object.method, object.params);
     }
   }

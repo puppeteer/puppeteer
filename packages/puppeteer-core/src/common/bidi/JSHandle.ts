@@ -21,7 +21,7 @@ import {JSHandle as BaseJSHandle} from '../../api/JSHandle.js';
 import {EvaluateFuncWith, HandleFor, HandleOr} from '../../common/types.js';
 
 import {Connection} from './Connection.js';
-import {Page} from './Page.js';
+import {Context} from './Context.js';
 import {BidiSerializer} from './Serializer.js';
 import {releaseReference} from './utils.js';
 
@@ -30,17 +30,17 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
   #context;
   #remoteValue;
 
-  constructor(context: Page, remoteValue: Bidi.CommonDataTypes.RemoteValue) {
+  constructor(context: Context, remoteValue: Bidi.CommonDataTypes.RemoteValue) {
     super();
     this.#context = context;
     this.#remoteValue = remoteValue;
   }
 
-  context(): Page {
+  context(): Context {
     return this.#context;
   }
 
-  get connecton(): Connection {
+  get connection(): Connection {
     return this.#context.connection;
   }
 
@@ -122,7 +122,7 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
     }
     this.#disposed = true;
     if ('handle' in this.#remoteValue) {
-      await releaseReference(this.connecton, this.#remoteValue);
+      await releaseReference(this.#context, this.#remoteValue);
     }
   }
 
@@ -153,7 +153,7 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
     return 'handle' in this.#remoteValue ? this.#remoteValue.handle : undefined;
   }
 
-  bidiObject(): Bidi.CommonDataTypes.RemoteValue {
+  remoteValue(): Bidi.CommonDataTypes.RemoteValue {
     return this.#remoteValue;
   }
 }
