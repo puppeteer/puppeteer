@@ -1,0 +1,44 @@
+name: Check which packages changed
+
+permissions: read-all
+
+on:
+  workflow_call:
+    outputs:
+      changes:
+        description: 'The packages that were changed for this PR'
+        value: ${{ jobs.check-changes.outputs.changes }}
+jobs:
+  check-changes:
+    name: Check which packages changed
+    runs-on: ubuntu-latest
+    outputs:
+      changes: ${{ steps.changes.outputs.changes }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3.3.0
+        with:
+          fetch-depth: 2
+      - name: Detect changed packages
+        uses: dorny/paths-filter@v2.11.1
+        id: changes
+        with:
+          filters: |
+            puppeteer:
+              - '.github/workflows/ci.yml'
+              - 'packages/puppeteer/**'
+              - 'packages/puppeteer-core/**'
+              - 'docker/**'
+              - 'test/**'
+              - 'test-d/**'
+              - 'tools/mochaRunner/**'
+            website:
+              - '.github/workflows/ci.yml'
+              - 'docs/**'
+              - 'website/**'
+            ng-schematics:
+              - '.github/workflows/ci.yml'
+              - 'packages/ng-schematics/**'
+            browsers:
+              - '.github/workflows/ci.yml'
+              - 'packages/browsers/**'
