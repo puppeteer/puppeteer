@@ -1094,7 +1094,9 @@ export class Frame {
     if (this.isOOPFrame()) {
       return this._frameManager._deviceRequestPromptManager(this.#client);
     }
-    return this.parentFrame()!._deviceRequestPromptManager();
+    const parentFrame = this.parentFrame();
+    assert(parentFrame !== null);
+    return parentFrame._deviceRequestPromptManager();
   }
 
   /**
