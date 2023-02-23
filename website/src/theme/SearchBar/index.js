@@ -1,4 +1,3 @@
-/* eslint-disable import/order */
 import {DocSearchButton, useDocSearchKeyboardEvents} from '@docsearch/react';
 import Head from '@docusaurus/Head';
 import Link from '@docusaurus/Link';
@@ -9,9 +8,9 @@ import {useSearchPage} from '@docusaurus/theme-common/internal';
 import Translate from '@docusaurus/Translate';
 import {useBaseUrlUtils} from '@docusaurus/useBaseUrl';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import translations from '@theme/SearchTranslations';
 import React, {useState, useRef, useCallback, useMemo} from 'react';
 import {createPortal} from 'react-dom';
-import translations from '@theme/SearchTranslations';
 
 // eslint-disable-next-line import/extensions
 import {tagToCounter} from '../SearchMetadata';
