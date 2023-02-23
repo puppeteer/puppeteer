@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-/* eslint-disable import/order */
-import {debug} from '../Debug.js';
-const debugProtocolSend = debug('puppeteer:webDriverBiDi:SEND ►');
-const debugProtocolReceive = debug('puppeteer:webDriverBiDi:RECV ◀');
+import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
+import {ConnectionCallback} from '../Connection.js';
 import {ConnectionTransport} from '../ConnectionTransport.js';
+import {debug} from '../Debug.js';
 import {ProtocolError} from '../Errors.js';
 import {EventEmitter} from '../EventEmitter.js';
-import {ConnectionCallback} from '../Connection.js';
 
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+const debugProtocolSend = debug('puppeteer:webDriverBiDi:SEND ►');
+const debugProtocolReceive = debug('puppeteer:webDriverBiDi:RECV ◀');
 
 /**
  * @internal
