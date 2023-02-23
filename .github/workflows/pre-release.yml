@@ -1,5 +1,7 @@
 name: Pre-release
 
+permissions: read-all
+
 on:
   push:
     branches:
@@ -7,28 +9,7 @@ on:
 
 jobs:
   check-changes:
-    name: Check which packages changed
-    runs-on: ubuntu-latest
-    outputs:
-      changes: ${{ steps.changes.outputs.changes }}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v3.3.0
-        with:
-          fetch-depth: 2
-      - name: Detect changed packages
-        uses: dorny/paths-filter@v2.11.1
-        id: changes
-        with:
-          filters: |
-            puppeteer:
-              - '.github/workflows/ci.yml'
-              - 'packages/puppeteer/**'
-              - 'packages/puppeteer-core/**'
-              - 'docker/**'
-              - 'test/**'
-              - 'test-d/**'
-              - 'tools/mochaRunner/**'
+    uses: ./.github/workflows/changed-packages.yml
 
   pre-release:
     if: |
