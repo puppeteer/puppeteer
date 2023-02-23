@@ -22,11 +22,11 @@ class Mouse {
 
 ## Parameters
 
-| Parameter | Type                          | Description                                                                                                                                                                        |
-| --------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| start     | [Point](./puppeteer.point.md) | point to drag from                                                                                                                                                                 |
-| target    | [Point](./puppeteer.point.md) | point to drop on                                                                                                                                                                   |
-| options   | { delay?: number; }           | <i>(Optional)</i> An object of options. Accepts delay which, if specified, is the time to wait between <code>dragover</code> and <code>drop</code> in milliseconds. Defaults to 0. |
+| Parameter | Type                          | Description                                                                                                                                                                   |
+| --------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| start     | [Point](./puppeteer.point.md) | point to drag from                                                                                                                                                            |
+| target    | [Point](./puppeteer.point.md) | point to drop on                                                                                                                                                              |
+| options   | { delay?: number; }           | _(Optional)_ An object of options. Accepts delay which, if specified, is the time to wait between <code>dragover</code> and <code>drop</code> in milliseconds. Defaults to 0. |
 
 **Returns:**
 

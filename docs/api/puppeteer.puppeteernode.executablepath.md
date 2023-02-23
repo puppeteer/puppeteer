@@ -14,9 +14,9 @@ class PuppeteerNode {
 
 ## Parameters
 
-| Parameter | Type                                                        | Description       |
-| --------- | ----------------------------------------------------------- | ----------------- |
-| channel   | [ChromeReleaseChannel](./puppeteer.chromereleasechannel.md) | <i>(Optional)</i> |
+| Parameter | Type                                                        | Description  |
+| --------- | ----------------------------------------------------------- | ------------ |
+| channel   | [ChromeReleaseChannel](./puppeteer.chromereleasechannel.md) | _(Optional)_ |
 
 **Returns:**
 

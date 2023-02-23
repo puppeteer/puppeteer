@@ -22,7 +22,7 @@ class Browser {
 | Parameter | Type                                                                         | Description                            |
 | --------- | ---------------------------------------------------------------------------- | -------------------------------------- |
 | predicate | (x: [Target](./puppeteer.target.md)) =&gt; boolean \| Promise&lt;boolean&gt; | A function to be run for every target. |
-| options   | [WaitForTargetOptions](./puppeteer.waitfortargetoptions.md)                  | <i>(Optional)</i>                      |
+| options   | [WaitForTargetOptions](./puppeteer.waitfortargetoptions.md)                  | _(Optional)_                           |
 
 **Returns:**
 

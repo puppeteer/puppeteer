@@ -23,11 +23,11 @@ class Page {
 
 ## Parameters
 
-| Parameter    | Type                                                                      | Description                                                 |
-| ------------ | ------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| pageFunction | Func \| string                                                            | Function to be evaluated in browser context                 |
-| options      | [FrameWaitForFunctionOptions](./puppeteer.framewaitforfunctionoptions.md) | <i>(Optional)</i> Options for configuring waiting behavior. |
-| args         | Params                                                                    |                                                             |
+| Parameter    | Type                                                                      | Description                                            |
+| ------------ | ------------------------------------------------------------------------- | ------------------------------------------------------ |
+| pageFunction | Func \| string                                                            | Function to be evaluated in browser context            |
+| options      | [FrameWaitForFunctionOptions](./puppeteer.framewaitforfunctionoptions.md) | _(Optional)_ Options for configuring waiting behavior. |
+| args         | Params                                                                    |                                                        |
 
 **Returns:**
 

@@ -16,9 +16,9 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                            | Description                            |
-| --------- | ----------------------------------------------- | -------------------------------------- |
-| options   | [WaitForOptions](./puppeteer.waitforoptions.md) | <i>(Optional)</i> Navigation Parameter |
+| Parameter | Type                                            | Description                       |
+| --------- | ----------------------------------------------- | --------------------------------- |
+| options   | [WaitForOptions](./puppeteer.waitforoptions.md) | _(Optional)_ Navigation Parameter |
 
 **Returns:**
 

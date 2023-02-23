@@ -14,9 +14,9 @@ class Dialog {
 
 ## Parameters
 
-| Parameter  | Type   | Description                                                                                                                               |
-| ---------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| promptText | string | <i>(Optional)</i> optional text that will be entered in the dialog prompt. Has no effect if the dialog's type is not <code>prompt</code>. |
+| Parameter  | Type   | Description                                                                                                                          |
+| ---------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| promptText | string | _(Optional)_ optional text that will be entered in the dialog prompt. Has no effect if the dialog's type is not <code>prompt</code>. |
 
 **Returns:**
 

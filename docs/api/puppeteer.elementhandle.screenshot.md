@@ -19,10 +19,10 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type                                                         | Description       |
-| --------- | ------------------------------------------------------------ | ----------------- |
-| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |                   |
-| options   | [ScreenshotOptions](./puppeteer.screenshotoptions.md)        | <i>(Optional)</i> |
+| Parameter | Type                                                         | Description  |
+| --------- | ------------------------------------------------------------ | ------------ |
+| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |              |
+| options   | [ScreenshotOptions](./puppeteer.screenshotoptions.md)        | _(Optional)_ |
 
 **Returns:**
 

@@ -14,9 +14,9 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type   | Description                                                                                                                                                                                                  |
-| --------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| type      | string | <i>(Optional)</i> Changes the CSS media type of the page. The only allowed values are <code>screen</code>, <code>print</code> and <code>null</code>. Passing <code>null</code> disables CSS media emulation. |
+| Parameter | Type   | Description                                                                                                                                                                                             |
+| --------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| type      | string | _(Optional)_ Changes the CSS media type of the page. The only allowed values are <code>screen</code>, <code>print</code> and <code>null</code>. Passing <code>null</code> disables CSS media emulation. |
 
 **Returns:**
 

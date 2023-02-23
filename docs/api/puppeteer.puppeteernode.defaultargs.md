@@ -14,9 +14,9 @@ class PuppeteerNode {
 
 ## Parameters
 
-| Parameter | Type                                                                        | Description                                                          |
-| --------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| options   | [BrowserLaunchArgumentOptions](./puppeteer.browserlaunchargumentoptions.md) | <i>(Optional)</i> Set of configurable options to set on the browser. |
+| Parameter | Type                                                                        | Description                                                     |
+| --------- | --------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| options   | [BrowserLaunchArgumentOptions](./puppeteer.browserlaunchargumentoptions.md) | _(Optional)_ Set of configurable options to set on the browser. |
 
 **Returns:**
 

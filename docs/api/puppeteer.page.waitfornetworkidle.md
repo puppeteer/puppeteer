@@ -17,9 +17,9 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                     | Description                                   |
-| --------- | ---------------------------------------- | --------------------------------------------- |
-| options   | { idleTime?: number; timeout?: number; } | <i>(Optional)</i> Optional waiting parameters |
+| Parameter | Type                                     | Description                              |
+| --------- | ---------------------------------------- | ---------------------------------------- |
+| options   | { idleTime?: number; timeout?: number; } | _(Optional)_ Optional waiting parameters |
 
 **Returns:**
 

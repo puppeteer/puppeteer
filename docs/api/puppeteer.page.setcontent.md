@@ -14,10 +14,10 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                            | Description                                            |
-| --------- | ----------------------------------------------- | ------------------------------------------------------ |
-| html      | string                                          | HTML markup to assign to the page.                     |
-| options   | [WaitForOptions](./puppeteer.waitforoptions.md) | <i>(Optional)</i> Parameters that has some properties. |
+| Parameter | Type                                            | Description                                       |
+| --------- | ----------------------------------------------- | ------------------------------------------------- |
+| html      | string                                          | HTML markup to assign to the page.                |
+| options   | [WaitForOptions](./puppeteer.waitforoptions.md) | _(Optional)_ Parameters that has some properties. |
 
 **Returns:**
 

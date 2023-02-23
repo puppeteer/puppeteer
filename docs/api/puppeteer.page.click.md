@@ -26,7 +26,7 @@ class Page {
 | Parameter | Type                                                                                         | Description                                                                                                                                            |
 | --------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | selector  | string                                                                                       | A <code>selector</code> to search for element to click. If there are multiple elements satisfying the <code>selector</code>, the first will be clicked |
-| options   | { delay?: number; button?: [MouseButton](./puppeteer.mousebutton.md); clickCount?: number; } | <i>(Optional)</i> <code>Object</code>                                                                                                                  |
+| options   | { delay?: number; button?: [MouseButton](./puppeteer.mousebutton.md); clickCount?: number; } | _(Optional)_ <code>Object</code>                                                                                                                       |
 
 **Returns:**
 

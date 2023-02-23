@@ -20,7 +20,7 @@ class Page {
 | Parameter         | Type                                 | Description                             |
 | ----------------- | ------------------------------------ | --------------------------------------- |
 | userAgent         | string                               | Specific user agent to use in this page |
-| userAgentMetadata | Protocol.Emulation.UserAgentMetadata | <i>(Optional)</i>                       |
+| userAgentMetadata | Protocol.Emulation.UserAgentMetadata | _(Optional)_                            |
 
 **Returns:**
 

@@ -58,7 +58,7 @@ class ElementHandle {
 | Parameter | Type                                                       | Description                                                                             |
 | --------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | xpath     | string                                                     | A [xpath](https://developer.mozilla.org/en-US/docs/Web/XPath) of an element to wait for |
-| options   | { visible?: boolean; hidden?: boolean; timeout?: number; } | <i>(Optional)</i> Optional waiting parameters                                           |
+| options   | { visible?: boolean; hidden?: boolean; timeout?: number; } | _(Optional)_ Optional waiting parameters                                                |
 
 **Returns:**
 

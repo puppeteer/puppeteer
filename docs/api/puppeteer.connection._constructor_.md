@@ -16,8 +16,8 @@ class Connection {
 
 ## Parameters
 
-| Parameter | Type                                                      | Description       |
-| --------- | --------------------------------------------------------- | ----------------- |
-| url       | string                                                    |                   |
-| transport | [ConnectionTransport](./puppeteer.connectiontransport.md) |                   |
-| delay     | number                                                    | <i>(Optional)</i> |
+| Parameter | Type                                                      | Description  |
+| --------- | --------------------------------------------------------- | ------------ |
+| url       | string                                                    |              |
+| transport | [ConnectionTransport](./puppeteer.connectiontransport.md) |              |
+| delay     | number                                                    | _(Optional)_ |

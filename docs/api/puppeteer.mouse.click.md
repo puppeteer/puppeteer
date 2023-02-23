@@ -22,11 +22,11 @@ class Mouse {
 
 ## Parameters
 
-| Parameter | Type                                                                  | Description                                           |
-| --------- | --------------------------------------------------------------------- | ----------------------------------------------------- |
-| x         | number                                                                | Horizontal position of the mouse.                     |
-| y         | number                                                                | Vertical position of the mouse.                       |
-| options   | [MouseOptions](./puppeteer.mouseoptions.md) &amp; { delay?: number; } | <i>(Optional)</i> Optional <code>MouseOptions</code>. |
+| Parameter | Type                                                                  | Description                                      |
+| --------- | --------------------------------------------------------------------- | ------------------------------------------------ |
+| x         | number                                                                | Horizontal position of the mouse.                |
+| y         | number                                                                | Vertical position of the mouse.                  |
+| options   | [MouseOptions](./puppeteer.mouseoptions.md) &amp; { delay?: number; } | _(Optional)_ Optional <code>MouseOptions</code>. |
 
 **Returns:**
 
