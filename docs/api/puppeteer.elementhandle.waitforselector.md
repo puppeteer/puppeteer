@@ -21,10 +21,10 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type                                                            | Description                                                 |
-| --------- | --------------------------------------------------------------- | ----------------------------------------------------------- |
-| selector  | Selector                                                        | The selector to query and wait for.                         |
-| options   | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) | <i>(Optional)</i> Options for customizing waiting behavior. |
+| Parameter | Type                                                            | Description                                            |
+| --------- | --------------------------------------------------------------- | ------------------------------------------------------ |
+| selector  | Selector                                                        | The selector to query and wait for.                    |
+| options   | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) | _(Optional)_ Options for customizing waiting behavior. |
 
 **Returns:**
 

@@ -16,9 +16,9 @@ class Mouse {
 
 ## Parameters
 
-| Parameter | Type                                        | Description                                           |
-| --------- | ------------------------------------------- | ----------------------------------------------------- |
-| options   | [MouseOptions](./puppeteer.mouseoptions.md) | <i>(Optional)</i> Optional <code>MouseOptions</code>. |
+| Parameter | Type                                        | Description                                      |
+| --------- | ------------------------------------------- | ------------------------------------------------ |
+| options   | [MouseOptions](./puppeteer.mouseoptions.md) | _(Optional)_ Optional <code>MouseOptions</code>. |
 
 **Returns:**
 

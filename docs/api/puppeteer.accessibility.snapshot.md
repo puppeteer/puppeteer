@@ -16,9 +16,9 @@ class Accessibility {
 
 ## Parameters
 
-| Parameter | Type                                              | Description       |
-| --------- | ------------------------------------------------- | ----------------- |
-| options   | [SnapshotOptions](./puppeteer.snapshotoptions.md) | <i>(Optional)</i> |
+| Parameter | Type                                              | Description  |
+| --------- | ------------------------------------------------- | ------------ |
+| options   | [SnapshotOptions](./puppeteer.snapshotoptions.md) | _(Optional)_ |
 
 **Returns:**
 

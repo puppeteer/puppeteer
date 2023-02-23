@@ -18,9 +18,9 @@ class Browser {
 
 ## Parameters
 
-| Parameter | Type                                                          | Description       |
-| --------- | ------------------------------------------------------------- | ----------------- |
-| options   | [BrowserContextOptions](./puppeteer.browsercontextoptions.md) | <i>(Optional)</i> |
+| Parameter | Type                                                          | Description  |
+| --------- | ------------------------------------------------------------- | ------------ |
+| options   | [BrowserContextOptions](./puppeteer.browsercontextoptions.md) | _(Optional)_ |
 
 **Returns:**
 

@@ -14,10 +14,10 @@ interface CommonEventEmitter {
 
 ## Parameters
 
-| Parameter | Type                                  | Description       |
-| --------- | ------------------------------------- | ----------------- |
-| event     | [EventType](./puppeteer.eventtype.md) |                   |
-| eventData | unknown                               | <i>(Optional)</i> |
+| Parameter | Type                                  | Description  |
+| --------- | ------------------------------------- | ------------ |
+| event     | [EventType](./puppeteer.eventtype.md) |              |
+| eventData | unknown                               | _(Optional)_ |
 
 **Returns:**
 

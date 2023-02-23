@@ -28,7 +28,7 @@ class Page {
 | --------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | selector  | string             | A [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) of an element to type into. If there are multiple elements satisfying the selector, the first will be used. |
 | text      | string             | A text to type into a focused element.                                                                                                                                                   |
-| options   | { delay: number; } | <i>(Optional)</i> have property <code>delay</code> which is the Time to wait between key presses in milliseconds. Defaults to <code>0</code>.                                            |
+| options   | { delay: number; } | _(Optional)_ have property <code>delay</code> which is the Time to wait between key presses in milliseconds. Defaults to <code>0</code>.                                                 |
 
 **Returns:**
 

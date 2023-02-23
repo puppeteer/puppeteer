@@ -14,9 +14,9 @@ class Coverage {
 
 ## Parameters
 
-| Parameter | Type                                                    | Description                                                                                                   |
-| --------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| options   | [CSSCoverageOptions](./puppeteer.csscoverageoptions.md) | <i>(Optional)</i> Set of configurable options for coverage, defaults to <code>resetOnNavigation : true</code> |
+| Parameter | Type                                                    | Description                                                                                              |
+| --------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| options   | [CSSCoverageOptions](./puppeteer.csscoverageoptions.md) | _(Optional)_ Set of configurable options for coverage, defaults to <code>resetOnNavigation : true</code> |
 
 **Returns:**
 

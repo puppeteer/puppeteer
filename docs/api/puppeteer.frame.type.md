@@ -22,11 +22,11 @@ class Frame {
 
 ## Parameters
 
-| Parameter | Type               | Description                                                                                                                                          |
-| --------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| selector  | string             | the selector for the element to type into. If there are multiple the first will be used.                                                             |
-| text      | string             | text to type into the element                                                                                                                        |
-| options   | { delay: number; } | <i>(Optional)</i> takes one option, <code>delay</code>, which sets the time to wait between key presses in milliseconds. Defaults to <code>0</code>. |
+| Parameter | Type               | Description                                                                                                                                     |
+| --------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| selector  | string             | the selector for the element to type into. If there are multiple the first will be used.                                                        |
+| text      | string             | text to type into the element                                                                                                                   |
+| options   | { delay: number; } | _(Optional)_ takes one option, <code>delay</code>, which sets the time to wait between key presses in milliseconds. Defaults to <code>0</code>. |
 
 **Returns:**
 

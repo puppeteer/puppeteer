@@ -19,7 +19,7 @@ class ElementHandle {
 | Parameter | Type                                        | Description                                                                                                                |
 | --------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | key       | [KeyInput](./puppeteer.keyinput.md)         | Name of key to press, such as <code>ArrowLeft</code>. See [KeyInput](./puppeteer.keyinput.md) for a list of all key names. |
-| options   | [PressOptions](./puppeteer.pressoptions.md) | <i>(Optional)</i>                                                                                                          |
+| options   | [PressOptions](./puppeteer.pressoptions.md) | _(Optional)_                                                                                                               |
 
 **Returns:**
 

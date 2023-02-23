@@ -21,10 +21,10 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type                                                         | Description       |
-| --------- | ------------------------------------------------------------ | ----------------- |
-| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |                   |
-| options   | { threshold?: number; }                                      | <i>(Optional)</i> |
+| Parameter | Type                                                         | Description  |
+| --------- | ------------------------------------------------------------ | ------------ |
+| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |              |
+| options   | { threshold?: number; }                                      | _(Optional)_ |
 
 **Returns:**
 

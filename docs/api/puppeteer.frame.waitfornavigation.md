@@ -21,9 +21,9 @@ class Frame {
 
 ## Parameters
 
-| Parameter | Type                                                                                                                                                                          | Description                                                                      |
-| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| options   | { timeout?: number; waitUntil?: [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) \| [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)\[\]; } | <i>(Optional)</i> options to configure when the navigation is consided finished. |
+| Parameter | Type                                                                                                                                                                          | Description                                                                 |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| options   | { timeout?: number; waitUntil?: [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) \| [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)\[\]; } | _(Optional)_ options to configure when the navigation is consided finished. |
 
 **Returns:**
 

@@ -14,9 +14,9 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                                  | Description       |
-| --------- | ----------------------------------------------------- | ----------------- |
-| options   | [ScreenshotOptions](./puppeteer.screenshotoptions.md) | <i>(Optional)</i> |
+| Parameter | Type                                                  | Description  |
+| --------- | ----------------------------------------------------- | ------------ |
+| options   | [ScreenshotOptions](./puppeteer.screenshotoptions.md) | _(Optional)_ |
 
 **Returns:**
 

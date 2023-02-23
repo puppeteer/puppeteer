@@ -16,10 +16,10 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type                                                         | Description       |
-| --------- | ------------------------------------------------------------ | ----------------- |
-| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |                   |
-| options   | [ClickOptions](./puppeteer.clickoptions.md)                  | <i>(Optional)</i> |
+| Parameter | Type                                                         | Description  |
+| --------- | ------------------------------------------------------------ | ------------ |
+| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |              |
+| options   | [ClickOptions](./puppeteer.clickoptions.md)                  | _(Optional)_ |
 
 **Returns:**
 

@@ -14,9 +14,9 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                    | Description       |
-| --------- | --------------------------------------- | ----------------- |
-| options   | [PDFOptions](./puppeteer.pdfoptions.md) | <i>(Optional)</i> |
+| Parameter | Type                                    | Description  |
+| --------- | --------------------------------------- | ------------ |
+| options   | [PDFOptions](./puppeteer.pdfoptions.md) | _(Optional)_ |
 
 **Returns:**
 

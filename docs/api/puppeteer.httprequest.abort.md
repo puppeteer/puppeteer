@@ -16,10 +16,10 @@ class HTTPRequest {
 
 ## Parameters
 
-| Parameter | Type                                  | Description                                                                                                                          |
-| --------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| errorCode | [ErrorCode](./puppeteer.errorcode.md) | <i>(Optional)</i> optional error code to provide.                                                                                    |
-| priority  | number                                | <i>(Optional)</i> If provided, intercept is resolved using cooperative handling rules. Otherwise, intercept is resolved immediately. |
+| Parameter | Type                                  | Description                                                                                                                     |
+| --------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| errorCode | [ErrorCode](./puppeteer.errorcode.md) | _(Optional)_ optional error code to provide.                                                                                    |
+| priority  | number                                | _(Optional)_ If provided, intercept is resolved using cooperative handling rules. Otherwise, intercept is resolved immediately. |
 
 **Returns:**
 

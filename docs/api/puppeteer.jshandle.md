@@ -28,9 +28,9 @@ const windowHandle = await page.evaluateHandle(() => window);
 
 ## Properties
 
-| Property                                                              | Modifiers | Type | Description                                                                      |
-| --------------------------------------------------------------------- | --------- | ---- | -------------------------------------------------------------------------------- |
-| [\[\_\_JSHandleSymbol\]?](./puppeteer.jshandle.___jshandlesymbol_.md) |           | T    | <i>(Optional)</i> Used for nominally typing [JSHandle](./puppeteer.jshandle.md). |
+| Property                                                              | Modifiers | Type | Description                                                                 |
+| --------------------------------------------------------------------- | --------- | ---- | --------------------------------------------------------------------------- |
+| [\[\_\_JSHandleSymbol\]?](./puppeteer.jshandle.___jshandlesymbol_.md) |           | T    | _(Optional)_ Used for nominally typing [JSHandle](./puppeteer.jshandle.md). |
 
 ## Methods
 

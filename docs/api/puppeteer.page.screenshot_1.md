@@ -18,9 +18,9 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type                                                                                 | Description       |
-| --------- | ------------------------------------------------------------------------------------ | ----------------- |
-| options   | [ScreenshotOptions](./puppeteer.screenshotoptions.md) &amp; { encoding?: 'binary'; } | <i>(Optional)</i> |
+| Parameter | Type                                                                                 | Description  |
+| --------- | ------------------------------------------------------------------------------------ | ------------ |
+| options   | [ScreenshotOptions](./puppeteer.screenshotoptions.md) &amp; { encoding?: 'binary'; } | _(Optional)_ |
 
 **Returns:**
 

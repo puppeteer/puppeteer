@@ -12,18 +12,18 @@ export interface Metrics
 
 ## Properties
 
-| Property                                                           | Modifiers | Type   | Description       | Default |
-| ------------------------------------------------------------------ | --------- | ------ | ----------------- | ------- |
-| [Documents?](./puppeteer.metrics.documents.md)                     |           | number | <i>(Optional)</i> |         |
-| [Frames?](./puppeteer.metrics.frames.md)                           |           | number | <i>(Optional)</i> |         |
-| [JSEventListeners?](./puppeteer.metrics.jseventlisteners.md)       |           | number | <i>(Optional)</i> |         |
-| [JSHeapTotalSize?](./puppeteer.metrics.jsheaptotalsize.md)         |           | number | <i>(Optional)</i> |         |
-| [JSHeapUsedSize?](./puppeteer.metrics.jsheapusedsize.md)           |           | number | <i>(Optional)</i> |         |
-| [LayoutCount?](./puppeteer.metrics.layoutcount.md)                 |           | number | <i>(Optional)</i> |         |
-| [LayoutDuration?](./puppeteer.metrics.layoutduration.md)           |           | number | <i>(Optional)</i> |         |
-| [Nodes?](./puppeteer.metrics.nodes.md)                             |           | number | <i>(Optional)</i> |         |
-| [RecalcStyleCount?](./puppeteer.metrics.recalcstylecount.md)       |           | number | <i>(Optional)</i> |         |
-| [RecalcStyleDuration?](./puppeteer.metrics.recalcstyleduration.md) |           | number | <i>(Optional)</i> |         |
-| [ScriptDuration?](./puppeteer.metrics.scriptduration.md)           |           | number | <i>(Optional)</i> |         |
-| [TaskDuration?](./puppeteer.metrics.taskduration.md)               |           | number | <i>(Optional)</i> |         |
-| [Timestamp?](./puppeteer.metrics.timestamp.md)                     |           | number | <i>(Optional)</i> |         |
+| Property                                                           | Modifiers | Type   | Description  | Default |
+| ------------------------------------------------------------------ | --------- | ------ | ------------ | ------- |
+| [Documents?](./puppeteer.metrics.documents.md)                     |           | number | _(Optional)_ |         |
+| [Frames?](./puppeteer.metrics.frames.md)                           |           | number | _(Optional)_ |         |
+| [JSEventListeners?](./puppeteer.metrics.jseventlisteners.md)       |           | number | _(Optional)_ |         |
+| [JSHeapTotalSize?](./puppeteer.metrics.jsheaptotalsize.md)         |           | number | _(Optional)_ |         |
+| [JSHeapUsedSize?](./puppeteer.metrics.jsheapusedsize.md)           |           | number | _(Optional)_ |         |
+| [LayoutCount?](./puppeteer.metrics.layoutcount.md)                 |           | number | _(Optional)_ |         |
+| [LayoutDuration?](./puppeteer.metrics.layoutduration.md)           |           | number | _(Optional)_ |         |
+| [Nodes?](./puppeteer.metrics.nodes.md)                             |           | number | _(Optional)_ |         |
+| [RecalcStyleCount?](./puppeteer.metrics.recalcstylecount.md)       |           | number | _(Optional)_ |         |
+| [RecalcStyleDuration?](./puppeteer.metrics.recalcstyleduration.md) |           | number | _(Optional)_ |         |
+| [ScriptDuration?](./puppeteer.metrics.scriptduration.md)           |           | number | _(Optional)_ |         |
+| [TaskDuration?](./puppeteer.metrics.taskduration.md)               |           | number | _(Optional)_ |         |
+| [Timestamp?](./puppeteer.metrics.timestamp.md)                     |           | number | _(Optional)_ |         |

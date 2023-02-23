@@ -44,7 +44,7 @@ class Page {
 | Parameter | Type                                                            | Description                                                                                            |
 | --------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | selector  | Selector                                                        | A [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) of an element to wait for |
-| options   | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) | <i>(Optional)</i> Optional waiting parameters                                                          |
+| options   | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) | _(Optional)_ Optional waiting parameters                                                               |
 
 **Returns:**
 

@@ -23,10 +23,10 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type               | Description       |
-| --------- | ------------------ | ----------------- |
-| text      | string             |                   |
-| options   | { delay: number; } | <i>(Optional)</i> |
+| Parameter | Type               | Description  |
+| --------- | ------------------ | ------------ |
+| text      | string             |              |
+| options   | { delay: number; } | _(Optional)_ |
 
 **Returns:**
 

@@ -16,9 +16,9 @@ class Page {
 
 ## Parameters
 
-| Parameter | Type    | Description                                                    |
-| --------- | ------- | -------------------------------------------------------------- |
-| enabled   | boolean | <i>(Optional)</i> sets the <code>enabled</code> state of cache |
+| Parameter | Type    | Description                                               |
+| --------- | ------- | --------------------------------------------------------- |
+| enabled   | boolean | _(Optional)_ sets the <code>enabled</code> state of cache |
 
 **Returns:**
 
