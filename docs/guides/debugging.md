@@ -10,7 +10,7 @@ issues.
 
 In general, there are two possible sources of an issue: Code running on Node.js
 (which we call _server code_), and
-[code running in the browser](<[`Page.evaluate()`](../api/puppeteer.page.evaluate)>)
+[code running in the browser](../api/puppeteer.page.evaluate)
 (which we call _client code_). There is also a third possible source being the
 browser itself (which we call _internal code_), but if you suspect this is the
 source **after attempting the methods below**, we suggest
