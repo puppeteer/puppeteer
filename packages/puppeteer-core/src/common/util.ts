@@ -72,7 +72,7 @@ export function valueFromRemoteObject(
 ): any {
   assert(!remoteObject.objectId, 'Cannot extract value when objectId is given');
   if (remoteObject.unserializableValue) {
-    if (remoteObject.type === 'bigint' && typeof BigInt !== 'undefined') {
+    if (remoteObject.type === 'bigint') {
       return BigInt(remoteObject.unserializableValue.replace('n', ''));
     }
     switch (remoteObject.unserializableValue) {
