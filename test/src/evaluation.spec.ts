@@ -23,8 +23,6 @@ import {
 } from './mocha-utils.js';
 import utils from './utils.js';
 
-const bigint = typeof BigInt !== 'undefined';
-
 describe('Evaluation specs', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
@@ -38,7 +36,7 @@ describe('Evaluation specs', function () {
       });
       expect(result).toBe(21);
     });
-    (bigint ? it : it.skip)('should transfer BigInt', async () => {
+    it('should transfer BigInt', async () => {
       const {page} = getTestState();
 
       const result = await page.evaluate((a: bigint) => {
@@ -259,7 +257,7 @@ describe('Evaluation specs', function () {
       expect(result).not.toBe(object);
       expect(result).toEqual(object);
     });
-    (bigint ? it : it.skip)('should return BigInt', async () => {
+    it('should return BigInt', async () => {
       const {page} = getTestState();
 
       const result = await page.evaluate(() => {
