@@ -52,6 +52,10 @@ interface Commands {
     params: Bidi.BrowsingContext.CloseParameters;
     returnType: Bidi.BrowsingContext.CloseResult;
   };
+  'browsingContext.navigate': {
+    params: Bidi.BrowsingContext.NavigateParameters;
+    returnType: Bidi.BrowsingContext.NavigateResult;
+  };
 
   'session.new': {
     params: {capabilities?: Record<any, unknown>}; // TODO: Update Types in chromium bidi
@@ -148,17 +152,20 @@ export class Connection extends EventEmitter {
           if (callback.method === 'browsingContext.create') {
             this.#contexts.set(
               object.result.context,
-              new Context(this, object.result.context)
+              new Context(this, object.result)
             );
           }
           callback.resolve(object);
         }
       }
     } else {
-      if ('source' in object.params && !!object.params.source.context) {
-        const context = this.#contexts.get(object.params.source.context);
-        context?.emit(object.method, object.params);
+      let context: Context | undefined;
+      if ('context' in object.params) {
+        context = this.#contexts.get(object.params.context);
+      } else if ('source' in object.params && !!object.params.source.context) {
+        context = this.#contexts.get(object.params.source.context);
       }
+      context?.emit(object.method, object.params);
 
       this.emit(object.method, object.params);
     }

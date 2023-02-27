@@ -16,8 +16,13 @@
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import {Page as PageBase, PageEmittedEvents} from '../../api/Page.js';
+import {
+  Page as PageBase,
+  PageEmittedEvents,
+  WaitForOptions,
+} from '../../api/Page.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
+import {HTTPResponse} from '../HTTPResponse.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
 
 import {Context, getBidiHandle} from './Context.js';
@@ -30,8 +35,11 @@ export class Page extends PageBase {
   #context: Context;
   #subscribedEvents = [
     'log.entryAdded',
+    'browsingContext.load',
   ] as Bidi.Session.SubscribeParameters['events'];
+
   #boundOnLogEntryAdded = this.#onLogEntryAdded.bind(this);
+  #boundOnLoaded = this.#onLoad.bind(this);
 
   constructor(context: Context) {
     super();
@@ -43,6 +51,7 @@ export class Page extends PageBase {
     });
 
     this.#context.on('log.entryAdded', this.#boundOnLogEntryAdded);
+    this.#context.on('browsingContext.load', this.#boundOnLoaded);
   }
 
   #onLogEntryAdded(event: Bidi.Log.LogEntry): void {
@@ -82,6 +91,10 @@ export class Page extends PageBase {
     }
   }
 
+  #onLoad(_event: Bidi.BrowsingContext.NavigationInfo): void {
+    this.emit(PageEmittedEvents.Load);
+  }
+
   override async close(): Promise<void> {
     await this.#context.connection.send('session.unsubscribe', {
       events: this.#subscribedEvents,
@@ -93,6 +106,7 @@ export class Page extends PageBase {
     });
 
     this.#context.off('log.entryAdded', this.#boundOnLogEntryAdded);
+    this.#context.off('browsingContext.load', this.#boundOnLogEntryAdded);
   }
 
   override async evaluateHandle<
@@ -113,6 +127,28 @@ export class Page extends PageBase {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     return this.#context.evaluate(pageFunction, ...args);
+  }
+
+  override async goto(
+    url: string,
+    options?: WaitForOptions & {
+      referer?: string | undefined;
+      referrerPolicy?: string | undefined;
+    }
+  ): Promise<HTTPResponse | null> {
+    return this.#context.goto(url, options);
+  }
+
+  override url(): string {
+    return this.#context.url();
+  }
+
+  override setDefaultNavigationTimeout(timeout: number): void {
+    this.#context._timeoutSettings.setDefaultNavigationTimeout(timeout);
+  }
+
+  override setDefaultTimeout(timeout: number): void {
+    this.#context._timeoutSettings.setDefaultTimeout(timeout);
   }
 }
 

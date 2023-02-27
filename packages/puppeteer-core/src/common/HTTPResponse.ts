@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 import {Protocol} from 'devtools-protocol';
-import {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
+import {CDPSession} from './Connection.js';
 import {ProtocolError} from './Errors.js';
-import {EventEmitter} from './EventEmitter.js';
 import {Frame} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {SecurityDetails} from './SecurityDetails.js';
@@ -28,13 +27,6 @@ import {SecurityDetails} from './SecurityDetails.js';
 export interface RemoteAddress {
   ip?: string;
   port?: number;
-}
-
-interface CDPSession extends EventEmitter {
-  send<T extends keyof ProtocolMapping.Commands>(
-    method: T,
-    ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
-  ): Promise<ProtocolMapping.Commands[T]['returnType']>;
 }
 
 /**
