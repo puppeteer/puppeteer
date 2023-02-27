@@ -15,6 +15,7 @@
         "../packages/testserver:build"
       ],
       "files": [
+        "../tools/mochaRunner/**",
         "src/**"
       ],
       "output": [

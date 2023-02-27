@@ -242,7 +242,7 @@ async function main() {
       });
       if (toUpdate.length) {
         console.log(
-          'Update the following expectations in the TestExpecations.json to ignore the error:'
+          'Update the following expectations in the TestExpectations.json to ignore the error:'
         );
         prettyPrintJSON(
           toUpdate.map(item => {
