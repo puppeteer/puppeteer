@@ -24,7 +24,7 @@ npm run build && npm run test -- --test-suite chrome-headless
 ## TestSuites.json
 
 Define test suites via the `testSuites` attribute. `parameters` can be used in the `TestExpectations.json` to disable tests
-based on parameters. The meaning for parameters is defined in `parameterDefinitons` which tell what env object corresponds
+based on parameters. The meaning for parameters is defined in `parameterDefinitions` which tell what env object corresponds
 to the given parameter.
 
 ## TestExpectations.json

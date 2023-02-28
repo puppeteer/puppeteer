@@ -57,6 +57,24 @@ export function prettyPrintJSON(json: unknown): void {
   console.log(JSON.stringify(json, null, 2));
 }
 
+export function printSuggestions(
+  recommendations: RecommendedExpectation[],
+  action: RecommendedExpectation['action'],
+  message: string
+): void {
+  const toPrint = recommendations.filter(item => {
+    return item.action === action;
+  });
+  if (toPrint.length) {
+    console.log(message);
+    prettyPrintJSON(
+      toPrint.map(item => {
+        return item.expectation;
+      })
+    );
+  }
+}
+
 export function filterByParameters(
   expectations: TestExpectation[],
   parameters: string[]
@@ -88,9 +106,8 @@ export function findEffectiveExpectationForTest(
     .pop();
 }
 
-type RecommendedExpecation = {
+type RecommendedExpectation = {
   expectation: TestExpectation;
-  test: MochaTestResult;
   action: 'remove' | 'add' | 'update';
 };
 
@@ -104,28 +121,42 @@ export function isWildCardPattern(testIdPattern: string): boolean {
 
 export function getExpectationUpdates(
   results: MochaResults,
-  expecations: TestExpectation[],
+  expectations: TestExpectation[],
   context: {
     platforms: NodeJS.Platform[];
     parameters: string[];
   }
-): RecommendedExpecation[] {
-  const output: RecommendedExpecation[] = [];
+): RecommendedExpectation[] {
+  const output: Map<string, RecommendedExpectation> = new Map();
 
   for (const pass of results.passes) {
-    const expectationEntry = findEffectiveExpectationForTest(expecations, pass);
+    // If an error occurs during a hook
+    // the error not have a file associated with it
+    if (!pass.file) {
+      continue;
+    }
+
+    const expectationEntry = findEffectiveExpectationForTest(
+      expectations,
+      pass
+    );
     if (expectationEntry && !expectationEntry.expectations.includes('PASS')) {
-      output.push({
+      addEntry({
         expectation: expectationEntry,
-        test: pass,
         action: 'remove',
       });
     }
   }
 
   for (const failure of results.failures) {
+    // If an error occurs during a hook
+    // the error not have a file associated with it
+    if (!failure.file) {
+      continue;
+    }
+
     const expectationEntry = findEffectiveExpectationForTest(
-      expecations,
+      expectations,
       failure
     );
     // If the effective explanation is a wildcard, we recommend adding a new
@@ -140,7 +171,7 @@ export function getExpectationUpdates(
           getTestResultForFailure(failure)
         )
       ) {
-        output.push({
+        addEntry({
           expectation: {
             ...expectationEntry,
             expectations: [
@@ -148,24 +179,30 @@ export function getExpectationUpdates(
               getTestResultForFailure(failure),
             ],
           },
-          test: failure,
           action: 'update',
         });
       }
     } else {
-      output.push({
+      addEntry({
         expectation: {
           testIdPattern: getTestId(failure.file, failure.fullTitle),
           platforms: context.platforms,
           parameters: context.parameters,
           expectations: [getTestResultForFailure(failure)],
         },
-        test: failure,
         action: 'add',
       });
     }
   }
-  return output;
+
+  function addEntry(value: RecommendedExpectation) {
+    const key = JSON.stringify(value);
+    if (!output.has(key)) {
+      output.set(key, value);
+    }
+  }
+
+  return [...output.values()];
 }
 
 export function getTestResultForFailure(
