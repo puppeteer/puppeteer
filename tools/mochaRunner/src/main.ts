@@ -109,7 +109,7 @@ async function main() {
 
       const env = extendProcessEnv([
         ...parameters.map(param => {
-          return parsedSuitesFile.parameterDefinitons[param];
+          return parsedSuitesFile.parameterDefinitions[param];
         }),
         {
           PUPPETEER_SKIPPED_TEST_CONFIG: JSON.stringify(

@@ -43,7 +43,7 @@
       "expectedLineCoverage": 56
     }
   ],
-  "parameterDefinitons": {
+  "parameterDefinitions": {
     "chrome": {
       "PUPPETEER_PRODUCT": "chrome"
     },
