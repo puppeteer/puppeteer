@@ -57,6 +57,24 @@ export function prettyPrintJSON(json: unknown): void {
   console.log(JSON.stringify(json, null, 2));
 }
 
+export function printSuggestions(
+  recommendations: RecommendedExpectation[],
+  action: RecommendedExpectation['action'],
+  message: string
+): void {
+  const toPrint = recommendations.filter(item => {
+    return item.action === action;
+  });
+  if (toPrint.length) {
+    console.log(message);
+    prettyPrintJSON(
+      toPrint.map(item => {
+        return item.expectation;
+      })
+    );
+  }
+}
+
 export function filterByParameters(
   expectations: TestExpectation[],
   parameters: string[]
@@ -90,7 +108,6 @@ export function findEffectiveExpectationForTest(
 
 type RecommendedExpectation = {
   expectation: TestExpectation;
-  test: MochaTestResult;
   action: 'remove' | 'add' | 'update';
 };
 
@@ -126,7 +143,6 @@ export function getExpectationUpdates(
     if (expectationEntry && !expectationEntry.expectations.includes('PASS')) {
       addEntry({
         expectation: expectationEntry,
-        test: pass,
         action: 'remove',
       });
     }
@@ -163,7 +179,6 @@ export function getExpectationUpdates(
               getTestResultForFailure(failure),
             ],
           },
-          test: failure,
           action: 'update',
         });
       }
@@ -175,14 +190,13 @@ export function getExpectationUpdates(
           parameters: context.parameters,
           expectations: [getTestResultForFailure(failure)],
         },
-        test: failure,
         action: 'add',
       });
     }
   }
 
   function addEntry(value: RecommendedExpectation) {
-    const key = JSON.stringify(value.expectation) + value.action;
+    const key = JSON.stringify(value);
     if (!output.has(key)) {
       output.set(key, value);
     }

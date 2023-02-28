@@ -31,10 +31,10 @@ import {
 import {
   extendProcessEnv,
   filterByPlatform,
-  prettyPrintJSON,
   readJSON,
   filterByParameters,
   getExpectationUpdates,
+  printSuggestions,
 } from './utils.js';
 
 function getApplicableTestSuites(
@@ -211,45 +211,21 @@ async function main() {
     console.error(err);
   } finally {
     if (!noSuggestions) {
-      const toAdd = recommendations.filter(item => {
-        return item.action === 'add';
-      });
-      if (toAdd.length) {
-        console.log(
-          'Add the following to TestExpectations.json to ignore the error:'
-        );
-        prettyPrintJSON(
-          toAdd.map(item => {
-            return item.expectation;
-          })
-        );
-      }
-      const toRemove = recommendations.filter(item => {
-        return item.action === 'remove';
-      });
-      if (toRemove.length) {
-        console.log(
-          'Remove the following from the TestExpectations.json to ignore the error:'
-        );
-        prettyPrintJSON(
-          toRemove.map(item => {
-            return item.expectation;
-          })
-        );
-      }
-      const toUpdate = recommendations.filter(item => {
-        return item.action === 'update';
-      });
-      if (toUpdate.length) {
-        console.log(
-          'Update the following expectations in the TestExpectations.json to ignore the error:'
-        );
-        prettyPrintJSON(
-          toUpdate.map(item => {
-            return item.expectation;
-          })
-        );
-      }
+      printSuggestions(
+        recommendations,
+        'add',
+        'Add the following to TestExpectations.json to ignore the error:'
+      );
+      printSuggestions(
+        recommendations,
+        'remove',
+        'Remove the following from the TestExpectations.json to ignore the error:'
+      );
+      printSuggestions(
+        recommendations,
+        'update',
+        'Update the following expectations in the TestExpectations.json to ignore the error:'
+      );
     }
     process.exit(fail ? 1 : 0);
   }
