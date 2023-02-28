@@ -103,13 +103,11 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
     this.#connection.on('sessiondetached', this.#onSessionDetached);
     this.#setupAttachmentListeners(this.#connection);
 
-    // TODO: remove `as any` once the protocol definitions are updated with the
-    // next Chromium roll.
     this.#connection
       .send('Target.setDiscoverTargets', {
         discover: true,
         filter: [{type: 'tab', exclude: true}, {}],
-      } as any)
+      })
       .then(this.#storeExistingTargetsForInit)
       .catch(debugError);
   }

@@ -17,49 +17,46 @@
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {Page as PageBase, PageEmittedEvents} from '../../api/Page.js';
-import {stringifyFunction} from '../../util/Function.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
-import type {EvaluateFunc, HandleFor} from '../types.js';
-import {isString} from '../util.js';
+import {EvaluateFunc, HandleFor} from '../types.js';
 
 import {Connection} from './Connection.js';
-import {JSHandle} from './JSHandle.js';
+import {Context, getBidiHandle} from './Context.js';
 import {BidiSerializer} from './Serializer.js';
 
 /**
  * @internal
  */
 export class Page extends PageBase {
-  #connection: Connection;
+  #context: Context;
   #subscribedEvents = [
     'log.entryAdded',
   ] as Bidi.Session.SubscribeParameters['events'];
-  _contextId: string;
+  #boundOnLogEntryAdded = this.#onLogEntryAdded.bind(this);
 
-  constructor(connection: Connection, contextId: string) {
+  constructor(context: Context) {
     super();
-    this.#connection = connection;
-    this._contextId = contextId;
+    this.#context = context;
 
     // TODO: Investigate an implementation similar to CDPSession
     this.connection.send('session.subscribe', {
       events: this.#subscribedEvents,
-      contexts: [this._contextId],
+      contexts: [this.contextId],
     });
 
-    this.connection.on('log.entryAdded', this.#onLogEntryAdded.bind(this));
+    this.#context.on('log.entryAdded', this.#boundOnLogEntryAdded);
   }
 
   #onLogEntryAdded(event: Bidi.Log.LogEntry): void {
     if (isConsoleLogEntry(event)) {
       const args = event.args.map(arg => {
-        return getBidiHandle(this, arg);
+        return getBidiHandle(this.#context, arg);
       });
 
       const text = args
         .reduce((value, arg) => {
           const parsedValue = arg.isPrimitiveValue
-            ? BidiSerializer.deserialize(arg.bidiObject())
+            ? BidiSerializer.deserialize(arg.remoteValue())
             : arg.toString();
           return `${value} ${parsedValue}`;
         }, '')
@@ -88,20 +85,24 @@ export class Page extends PageBase {
   }
 
   override async close(): Promise<void> {
-    await this.#connection.send('browsingContext.close', {
-      context: this._contextId,
-    });
-
-    this.connection.send('session.unsubscribe', {
+    await this.connection.send('session.unsubscribe', {
       events: this.#subscribedEvents,
-      contexts: [this._contextId],
+      contexts: [this.contextId],
     });
 
-    this.connection.off('log.entryAdded', this.#onLogEntryAdded.bind(this));
+    await this.connection.send('browsingContext.close', {
+      context: this.contextId,
+    });
+
+    this.#context.off('log.entryAdded', this.#boundOnLogEntryAdded);
   }
 
   get connection(): Connection {
-    return this.#connection;
+    return this.#context.connection;
+  }
+
+  get contextId(): string {
+    return this.#context.id;
   }
 
   override async evaluateHandle<
@@ -111,7 +112,7 @@ export class Page extends PageBase {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    return this.#evaluate(false, pageFunction, ...args);
+    return this.#context.evaluateHandle(pageFunction, ...args);
   }
 
   override async evaluate<
@@ -121,83 +122,8 @@ export class Page extends PageBase {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
-    return this.#evaluate(true, pageFunction, ...args);
+    return this.#context.evaluate(pageFunction, ...args);
   }
-
-  async #evaluate<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
-  >(
-    returnByValue: true,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async #evaluate<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
-  >(
-    returnByValue: false,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
-  async #evaluate<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
-  >(
-    returnByValue: boolean,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>> | Awaited<ReturnType<Func>>> {
-    let responsePromise;
-    const resultOwnership = returnByValue ? 'none' : 'root';
-    if (isString(pageFunction)) {
-      responsePromise = this.#connection.send('script.evaluate', {
-        expression: pageFunction,
-        target: {context: this._contextId},
-        resultOwnership,
-        awaitPromise: true,
-      });
-    } else {
-      responsePromise = this.#connection.send('script.callFunction', {
-        functionDeclaration: stringifyFunction(pageFunction),
-        arguments: await Promise.all(
-          args.map(arg => {
-            return BidiSerializer.serialize(arg, this);
-          })
-        ),
-        target: {context: this._contextId},
-        resultOwnership,
-        awaitPromise: true,
-      });
-    }
-
-    const {result} = await responsePromise;
-
-    if ('type' in result && result.type === 'exception') {
-      throw new Error(result.exceptionDetails.text);
-    }
-
-    return returnByValue
-      ? BidiSerializer.deserialize(result.result)
-      : getBidiHandle(this, result.result);
-  }
-}
-
-/**
- * @internal
- */
-export function getBidiHandle(
-  context: Page,
-  result: Bidi.CommonDataTypes.RemoteValue
-): JSHandle {
-  if (
-    (result.type === 'node' || result.type === 'window') &&
-    context._contextId
-  ) {
-    // TODO: Implement ElementHandle
-    return new JSHandle(context, result);
-  }
-  return new JSHandle(context, result);
 }
 
 function isConsoleLogEntry(

@@ -18,6 +18,7 @@ import {BrowserContext as BrowserContextBase} from '../../api/BrowserContext.js'
 import {Page as PageBase} from '../../api/Page.js';
 
 import {Connection} from './Connection.js';
+import {Context} from './Context.js';
 import {Page} from './Page.js';
 
 /**
@@ -32,10 +33,11 @@ export class BrowserContext extends BrowserContextBase {
   }
 
   override async newPage(): Promise<PageBase> {
-    const response = await this.#connection.send('browsingContext.create', {
+    const {result} = await this.#connection.send('browsingContext.create', {
       type: 'tab',
     });
-    return new Page(this.#connection, response.result.context);
+    const context = this.#connection.context(result.context) as Context;
+    return new Page(context);
   }
 
   override async close(): Promise<void> {}

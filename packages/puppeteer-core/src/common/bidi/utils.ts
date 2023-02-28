@@ -18,7 +18,7 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {debug} from '../Debug.js';
 
-import {Connection} from './Connection.js';
+import {Context} from './Context.js';
 
 /**
  * @internal
@@ -28,15 +28,15 @@ export const debugError = debug('puppeteer:error');
  * @internal
  */
 export async function releaseReference(
-  client: Connection,
+  client: Context,
   remoteReference: Bidi.CommonDataTypes.RemoteReference
 ): Promise<void> {
   if (!remoteReference.handle) {
     return;
   }
-  await client
+  await client.connection
     .send('script.disown', {
-      target: {realm: '', context: ''}, // TODO: Populate
+      target: {context: client._contextId},
       handles: [remoteReference.handle],
     })
     .catch((error: any) => {
