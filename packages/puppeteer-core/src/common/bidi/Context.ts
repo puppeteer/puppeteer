@@ -22,6 +22,7 @@ import {EvaluateFunc, HandleFor} from '../types.js';
 import {isString} from '../util.js';
 
 import {Connection} from './Connection.js';
+import {ElementHandle} from './ElementHandle.js';
 import {JSHandle} from './JSHandle.js';
 import {BidiSerializer} from './Serializer.js';
 
@@ -131,10 +132,9 @@ export class Context extends EventEmitter {
 export function getBidiHandle(
   context: Context,
   result: Bidi.CommonDataTypes.RemoteValue
-): JSHandle {
-  if ((result.type === 'node' || result.type === 'window') && context) {
-    // TODO: Implement ElementHandle
-    return new JSHandle(context, result);
+): JSHandle | ElementHandle<Node> {
+  if (result.type === 'node' || result.type === 'window') {
+    return new ElementHandle(context, result);
   }
   return new JSHandle(context, result);
 }

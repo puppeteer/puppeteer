@@ -25,7 +25,6 @@ import {
   Point,
   PressOptions,
 } from '../api/ElementHandle.js';
-import {JSHandle} from '../api/JSHandle.js';
 import {Page, ScreenshotOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
@@ -38,13 +37,7 @@ import {getQueryHandlerAndSelector} from './GetQueryHandler.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {CDPJSHandle} from './JSHandle.js';
 import {CDPPage} from './Page.js';
-import {
-  ElementFor,
-  EvaluateFuncWith,
-  HandleFor,
-  HandleOr,
-  NodeFor,
-} from './types.js';
+import {ElementFor, EvaluateFuncWith, HandleFor, NodeFor} from './types.js';
 import {KeyInput} from './USKeyboardLayout.js';
 import {debugError, isString} from './util.js';
 
@@ -69,15 +62,14 @@ export class CDPElementHandle<
   ElementType extends Node = Element
 > extends ElementHandle<ElementType> {
   #frame: Frame;
-  #jsHandle: CDPJSHandle<ElementType>;
+  declare handle: CDPJSHandle<ElementType>;
 
   constructor(
     context: ExecutionContext,
     remoteObject: Protocol.Runtime.RemoteObject,
     frame: Frame
   ) {
-    super();
-    this.#jsHandle = new CDPJSHandle(context, remoteObject);
+    super(new CDPJSHandle(context, remoteObject));
     this.#frame = frame;
   }
 
@@ -85,48 +77,18 @@ export class CDPElementHandle<
    * @internal
    */
   override executionContext(): ExecutionContext {
-    return this.#jsHandle.executionContext();
+    return this.handle.executionContext();
   }
 
   /**
    * @internal
    */
   override get client(): CDPSession {
-    return this.#jsHandle.client;
-  }
-
-  override get id(): string | undefined {
-    return this.#jsHandle.id;
+    return this.handle.client;
   }
 
   override remoteObject(): Protocol.Runtime.RemoteObject {
-    return this.#jsHandle.remoteObject();
-  }
-
-  override async evaluate<
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<ElementType, Params> = EvaluateFuncWith<
-      ElementType,
-      Params
-    >
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    return this.executionContext().evaluate(pageFunction, this, ...args);
-  }
-
-  override evaluateHandle<
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<ElementType, Params> = EvaluateFuncWith<
-      ElementType,
-      Params
-    >
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    return this.executionContext().evaluateHandle(pageFunction, this, ...args);
+    return this.handle.remoteObject();
   }
 
   get #frameManager(): FrameManager {
@@ -139,40 +101,6 @@ export class CDPElementHandle<
 
   override get frame(): Frame {
     return this.#frame;
-  }
-
-  override get disposed(): boolean {
-    return this.#jsHandle.disposed;
-  }
-
-  override async getProperty<K extends keyof ElementType>(
-    propertyName: HandleOr<K>
-  ): Promise<HandleFor<ElementType[K]>>;
-  override async getProperty(propertyName: string): Promise<JSHandle<unknown>>;
-  override async getProperty<K extends keyof ElementType>(
-    propertyName: HandleOr<K>
-  ): Promise<HandleFor<ElementType[K]>> {
-    return this.#jsHandle.getProperty(propertyName);
-  }
-
-  override async getProperties(): Promise<Map<string, JSHandle>> {
-    return this.#jsHandle.getProperties();
-  }
-
-  override asElement(): CDPElementHandle<ElementType> | null {
-    return this;
-  }
-
-  override async jsonValue(): Promise<ElementType> {
-    return this.#jsHandle.jsonValue();
-  }
-
-  override toString(): string {
-    return this.#jsHandle.toString();
-  }
-
-  override async dispose(): Promise<void> {
-    return await this.#jsHandle.dispose();
   }
 
   override async $<Selector extends string>(
