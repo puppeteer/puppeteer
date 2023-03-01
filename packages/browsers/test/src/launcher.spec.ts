@@ -36,6 +36,18 @@ describe('launcher', () => {
     );
   });
 
+  it('should compute executable path for Chromium', () => {
+    assert.strictEqual(
+      computeExecutablePath({
+        browser: Browser.CHROMIUM,
+        platform: BrowserPlatform.LINUX,
+        buildId: '123',
+        cacheDir: 'cache',
+      }),
+      path.join('cache', 'chromium', 'linux-123', 'chrome-linux', 'chrome')
+    );
+  });
+
   it('should compute executable path for Firefox', () => {
     assert.strictEqual(
       computeExecutablePath({
