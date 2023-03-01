@@ -1776,12 +1776,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[jshandle.spec] JSHandle JSHandle.asElement should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[jshandle.spec] JSHandle JSHandle.asElement should return ElementHandle for TextNodes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],

@@ -25,6 +25,7 @@ import {
   ElementFor,
   EvaluateFuncWith,
   HandleFor,
+  HandleOr,
   NodeFor,
 } from '../common/types.js';
 import {KeyInput} from '../common/USKeyboardLayout.js';
@@ -158,8 +159,108 @@ export class ElementHandle<
   /**
    * @internal
    */
-  constructor() {
+  protected handle;
+
+  /**
+   * @internal
+   */
+  constructor(handle: JSHandle<ElementType>) {
     super();
+    this.handle = handle;
+  }
+
+  /**
+   * @internal
+   */
+  override get id(): string | undefined {
+    return this.handle.id;
+  }
+
+  /**
+   * @internal
+   */
+  override get disposed(): boolean {
+    return this.handle.disposed;
+  }
+
+  /**
+   * @internal
+   */
+  override async getProperty<K extends keyof ElementType>(
+    propertyName: HandleOr<K>
+  ): Promise<HandleFor<ElementType[K]>>;
+  /**
+   * @internal
+   */
+  override async getProperty(propertyName: string): Promise<JSHandle<unknown>>;
+  override async getProperty<K extends keyof ElementType>(
+    propertyName: HandleOr<K>
+  ): Promise<HandleFor<ElementType[K]>> {
+    return this.handle.getProperty(propertyName);
+  }
+
+  /**
+   * @internal
+   */
+  override async getProperties(): Promise<Map<string, JSHandle>> {
+    return this.handle.getProperties();
+  }
+
+  /**
+   * @internal
+   */
+  override async evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFuncWith<ElementType, Params> = EvaluateFuncWith<
+      ElementType,
+      Params
+    >
+  >(
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<Awaited<ReturnType<Func>>> {
+    return this.handle.evaluate(pageFunction, ...args);
+  }
+
+  /**
+   * @internal
+   */
+  override evaluateHandle<
+    Params extends unknown[],
+    Func extends EvaluateFuncWith<ElementType, Params> = EvaluateFuncWith<
+      ElementType,
+      Params
+    >
+  >(
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    return this.handle.evaluateHandle(pageFunction, ...args);
+  }
+
+  /**
+   * @internal
+   */
+  override async jsonValue(): Promise<ElementType> {
+    return this.handle.jsonValue();
+  }
+
+  /**
+   * @internal
+   */
+  override toString(): string {
+    return this.handle.toString();
+  }
+
+  /**
+   * @internal
+   */
+  override async dispose(): Promise<void> {
+    return await this.handle.dispose();
+  }
+
+  override asElement(): ElementHandle<ElementType> {
+    return this;
   }
 
   /**
@@ -466,10 +567,6 @@ export class ElementHandle<
     K extends keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap
   >(): Promise<HandleFor<ElementFor<K>>> {
     throw new Error('Not implemented');
-  }
-
-  override asElement(): ElementHandle<ElementType> | null {
-    return this;
   }
 
   /**
