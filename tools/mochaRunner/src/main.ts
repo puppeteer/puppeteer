@@ -107,6 +107,19 @@ async function main() {
         parameters
       );
 
+      // Add more logging when the GitHub Action Debugging option is set
+      // https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables
+      const githubActionDebugging = process.env['RUNNER_DEBUG']
+        ? {
+            DEBUG: 'puppeteer:*',
+            EXTRA_LAUNCH_OPTIONS: {
+              extraPrefsFirefox: {
+                'remote.log.level': 'Trace',
+              },
+            },
+          }
+        : {};
+
       const env = extendProcessEnv([
         ...parameters.map(param => {
           return parsedSuitesFile.parameterDefinitions[param];
@@ -121,6 +134,7 @@ async function main() {
             })
           ),
         },
+        githubActionDebugging,
       ]);
 
       const tmpDir = fs.mkdtempSync(
