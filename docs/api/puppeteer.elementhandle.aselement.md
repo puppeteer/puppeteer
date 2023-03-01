@@ -8,10 +8,10 @@ sidebar_label: ElementHandle.asElement
 
 ```typescript
 class ElementHandle {
-  asElement(): ElementHandle<ElementType> | null;
+  asElement(): ElementHandle<ElementType>;
 }
 ```
 
 **Returns:**
 
-[ElementHandle](./puppeteer.elementhandle.md)&lt;ElementType&gt; \| null
+[ElementHandle](./puppeteer.elementhandle.md)&lt;ElementType&gt;

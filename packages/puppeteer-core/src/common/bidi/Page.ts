@@ -20,7 +20,6 @@ import {Page as PageBase, PageEmittedEvents} from '../../api/Page.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
 
-import {Connection} from './Connection.js';
 import {Context, getBidiHandle} from './Context.js';
 import {BidiSerializer} from './Serializer.js';
 
@@ -38,10 +37,9 @@ export class Page extends PageBase {
     super();
     this.#context = context;
 
-    // TODO: Investigate an implementation similar to CDPSession
-    this.connection.send('session.subscribe', {
+    this.#context.connection.send('session.subscribe', {
       events: this.#subscribedEvents,
-      contexts: [this.contextId],
+      contexts: [this.#context.id],
     });
 
     this.#context.on('log.entryAdded', this.#boundOnLogEntryAdded);
@@ -85,24 +83,16 @@ export class Page extends PageBase {
   }
 
   override async close(): Promise<void> {
-    await this.connection.send('session.unsubscribe', {
+    await this.#context.connection.send('session.unsubscribe', {
       events: this.#subscribedEvents,
-      contexts: [this.contextId],
+      contexts: [this.#context.id],
     });
 
-    await this.connection.send('browsingContext.close', {
-      context: this.contextId,
+    await this.#context.connection.send('browsingContext.close', {
+      context: this.#context.id,
     });
 
     this.#context.off('log.entryAdded', this.#boundOnLogEntryAdded);
-  }
-
-  get connection(): Connection {
-    return this.#context.connection;
-  }
-
-  get contextId(): string {
-    return this.#context.id;
   }
 
   override async evaluateHandle<

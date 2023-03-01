@@ -19,6 +19,7 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {debugError, isDate, isPlainObject, isRegExp} from '../util.js';
 
 import {Context} from './Context.js';
+import {ElementHandle} from './ElementHandle.js';
 import {JSHandle} from './JSHandle.js';
 
 /**
@@ -149,7 +150,10 @@ export class BidiSerializer {
     context: Context
   ): Bidi.CommonDataTypes.LocalOrRemoteValue {
     // TODO: See use case of LazyArgs
-    const objectHandle = arg && arg instanceof JSHandle ? arg : null;
+    const objectHandle =
+      arg && (arg instanceof JSHandle || arg instanceof ElementHandle)
+        ? arg
+        : null;
     if (objectHandle) {
       if (objectHandle.context() !== context) {
         throw new Error(
