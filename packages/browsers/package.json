@@ -70,7 +70,7 @@
     "proxy-from-env": "1.1.0",
     "tar-fs": "2.1.1",
     "unbzip2-stream": "1.4.3",
-    "yargs": "17.7.0"
+    "yargs": "17.7.1"
   },
   "devDependencies": {
     "@types/node": "^14.15.0",
