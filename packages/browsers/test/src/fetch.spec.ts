@@ -24,14 +24,14 @@ import path from 'path';
 import {Browser, BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
 import {fetch, canFetch} from '../../lib/cjs/fetch.js';
 
+import {testChromeBuildId, testFirefoxBuildId} from './versions.js';
+
 /**
  * Tests in this spec use real download URLs and unpack live browser archives
  * so it requires the network access.
  */
 describe('fetch', () => {
   let tmpDir = '/tmp/puppeteer-browsers-test';
-  const testChromeBuildId = '1083080';
-  const testFirefoxBuildId = '111.0a1';
 
   beforeEach(() => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'puppeteer-browsers-test'));
