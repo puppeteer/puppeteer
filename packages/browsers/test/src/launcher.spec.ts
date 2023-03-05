@@ -23,6 +23,8 @@ import {Browser, BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
 import {fetch} from '../../lib/cjs/fetch.js';
 import {computeExecutablePath, launch} from '../../lib/cjs/launcher.js';
 
+import {testChromeBuildId, testFirefoxBuildId} from './versions.js';
+
 describe('launcher', () => {
   it('should compute executable path for Chrome', () => {
     assert.strictEqual(
@@ -52,7 +54,6 @@ describe('launcher', () => {
     this.timeout(60000);
 
     let tmpDir = '/tmp/puppeteer-browsers-test';
-    const testChromeBuildId = '1083080';
 
     beforeEach(async () => {
       tmpDir = fs.mkdtempSync(
@@ -91,7 +92,6 @@ describe('launcher', () => {
     this.timeout(60000);
 
     let tmpDir = '/tmp/puppeteer-browsers-test';
-    const testFirefoxBuildId = '111.0a1';
 
     beforeEach(async () => {
       tmpDir = fs.mkdtempSync(
