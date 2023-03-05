@@ -21,12 +21,12 @@ import path from 'path';
 
 import {CLI} from '../../lib/cjs/CLI.js';
 
+import {testChromeBuildId, testFirefoxBuildId} from './versions.js';
+
 describe('CLI', function () {
   this.timeout(90000);
 
   let tmpDir = '/tmp/puppeteer-browsers-test';
-  const testChromeBuildId = '1083080';
-  const testFirefoxBuildId = '111.0a1';
 
   beforeEach(() => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'puppeteer-browsers-test'));
