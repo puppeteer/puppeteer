@@ -15,6 +15,7 @@ jobs:
     if: |
       startsWith(github.event.head_commit.message, 'chore: release main') &&
       contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer')
+    needs: check-changes
     runs-on: ubuntu-latest
     permissions:
       contents: write
