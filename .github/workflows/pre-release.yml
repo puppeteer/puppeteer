@@ -51,5 +51,5 @@ jobs:
           git config --global user.name 'release-please[bot]'
           git config --global user.email '55107282+release-please[bot]@users.noreply.github.com'
           git add .
-          git commit -m 'chore: generate versioned docs'
-          git push --no-verify
+          git commit -m 'chore: generate versioned docs' --no-verify
+          git push
