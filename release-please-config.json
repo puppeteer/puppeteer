@@ -1,6 +1,6 @@
 {
-  "separate-pull-requests": true,
   "last-release-sha": "30e5b1a58edb8b1d94acdff00d64c76e76cf02a3",
+  "prerelease": true,
   "packages": {
     "packages/puppeteer": {
       "component": "puppeteer"
@@ -9,11 +9,9 @@
       "component": "puppeteer-core"
     },
     "packages/testserver": {},
-    "packages/ng-schematics": {
-      "initial-version": "0.1.0"
-    },
+    "packages/ng-schematics": {},
     "packages/browsers": {
-      "initial-version": "0.0.1"
+      "release-as": "0.0.4"
     }
   },
   "plugins": [
