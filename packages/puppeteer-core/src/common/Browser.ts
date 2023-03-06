@@ -177,32 +177,6 @@ export class CDPBrowser extends BrowserBase {
   }
 
   /**
-   * @internal
-   */
-  override _detach(): void {
-    this.#connection.off(
-      ConnectionEmittedEvents.Disconnected,
-      this.#emitDisconnected
-    );
-    this.#targetManager.off(
-      TargetManagerEmittedEvents.TargetAvailable,
-      this.#onAttachedToTarget
-    );
-    this.#targetManager.off(
-      TargetManagerEmittedEvents.TargetGone,
-      this.#onDetachedFromTarget
-    );
-    this.#targetManager.off(
-      TargetManagerEmittedEvents.TargetChanged,
-      this.#onTargetChanged
-    );
-    this.#targetManager.off(
-      TargetManagerEmittedEvents.TargetDiscovered,
-      this.#onTargetDiscovered
-    );
-  }
-
-  /**
    * The spawned browser process. Returns `null` if the browser instance was created with
    * {@link Puppeteer.connect}.
    */

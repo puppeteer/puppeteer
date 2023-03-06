@@ -235,13 +235,6 @@ export class Browser extends EventEmitter {
   /**
    * @internal
    */
-  _detach(): void {
-    throw new Error('Not implemented');
-  }
-
-  /**
-   * @internal
-   */
   get _targets(): Map<string, Target> {
     throw new Error('Not implemented');
   }
