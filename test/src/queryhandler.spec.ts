@@ -360,6 +360,7 @@ describe('Query handler tests', function () {
     beforeEach(async () => {
       const {page} = getTestState();
       await page.setContent('<div>hello <button>world</button></div>');
+      Puppeteer.clearCustomQueryHandlers();
     });
 
     it('should work with CSS selectors', async () => {
@@ -386,8 +387,6 @@ describe('Query handler tests', function () {
 
     it('should work ARIA selectors', async () => {
       const {page} = getTestState();
-      await page.setContent('<div>hello <button>world</button></div>');
-
       const element = await page.$('div ::-p-aria(world)');
       assert(element, 'Could not find element');
       expect(
@@ -399,8 +398,6 @@ describe('Query handler tests', function () {
 
     it('should work XPath selectors', async () => {
       const {page} = getTestState();
-      await page.setContent('<div>hello <button>world</button></div>');
-
       const element = await page.$('div ::-p-xpath(//button)');
       assert(element, 'Could not find element');
       expect(
@@ -411,16 +408,14 @@ describe('Query handler tests', function () {
     });
 
     it('should work with custom selectors', async () => {
-      const {page} = getTestState();
-      await page.setContent('<div>hello <button>world</button></div>');
-      Puppeteer.clearCustomQueryHandlers();
       Puppeteer.registerCustomQueryHandler('div', {
         queryOne() {
           return document.querySelector('div');
         },
       });
 
-      const element = await page.$('::-p-div()');
+      const {page} = getTestState();
+      const element = await page.$('::-p-div');
       assert(element, 'Could not find element');
       expect(
         await element.evaluate(element => {
@@ -431,8 +426,6 @@ describe('Query handler tests', function () {
 
     it('should work with custom selectors with args', async () => {
       const {page} = getTestState();
-      await page.setContent('<div>hello <button>world</button></div>');
-      Puppeteer.clearCustomQueryHandlers();
       Puppeteer.registerCustomQueryHandler('div', {
         queryOne(_, selector) {
           if (selector === 'true') {
@@ -471,7 +464,7 @@ describe('Query handler tests', function () {
         ).toBeTruthy();
       }
       {
-        const element = await page.$('::-p-div()');
+        const element = await page.$('::-p-div');
         assert(element, 'Could not find element');
         expect(
           await element.evaluate(element => {
@@ -483,8 +476,6 @@ describe('Query handler tests', function () {
 
     it('should work with :hover', async () => {
       const {page} = getTestState();
-      await page.setContent('<div>hello <button>world</button></div>');
-
       let button = await page.$('div ::-p-text(world)');
       assert(button, 'Could not find element');
       await button.hover();
@@ -496,6 +487,12 @@ describe('Query handler tests', function () {
         return {textContent: span.textContent, tagName: span.tagName};
       });
       expect(value).toMatchObject({textContent: 'world', tagName: 'BUTTON'});
+    });
+
+    it('should work with commas', async () => {
+      const {page} = getTestState();
+      const elements = await page.$$('div, ::-p-text(world)');
+      expect(elements.length).toStrictEqual(2);
     });
   });
 });
