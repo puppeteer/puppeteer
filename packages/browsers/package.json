@@ -5,7 +5,7 @@
   "scripts": {
     "build": "wireit",
     "build:test": "wireit",
-    "clean": "tsc --build --clean && rimraf lib",
+    "clean": "tsc --build --clean && rm -rf lib",
     "test": "wireit"
   },
   "bin": {

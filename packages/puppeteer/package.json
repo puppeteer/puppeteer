@@ -31,14 +31,14 @@
     "url": "https://github.com/puppeteer/puppeteer/tree/main/packages/puppeteer"
   },
   "engines": {
-    "node": ">=14.1.0"
+    "node": ">=14.14.0"
   },
   "scripts": {
     "build:docs": "wireit",
     "build:tsc": "wireit",
     "build:types": "wireit",
     "build": "wireit",
-    "clean": "tsc -b --clean && rimraf lib",
+    "clean": "tsc -b --clean && rm -rf lib",
     "generate:package-json": "wireit",
     "postinstall": "node install.js",
     "prepack": "wireit"
