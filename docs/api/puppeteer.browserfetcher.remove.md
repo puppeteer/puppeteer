@@ -22,7 +22,7 @@ class BrowserFetcher {
 
 Promise&lt;void&gt;
 
-A promise that resolves when the revision has been removes or throws if the revision has not been downloaded.
+A promise that resolves when the revision has been removed or throws if the revision has not been downloaded.
 
 ## Remarks
 

@@ -16,11 +16,10 @@
 
 import * as childProcess from 'child_process';
 import * as fs from 'fs';
+import {rm} from 'fs/promises';
 import * as path from 'path';
 import * as readline from 'readline';
 import {promisify} from 'util';
-
-import removeFolder from 'rimraf';
 
 import type {Connection as BiDiConnection} from '../common/bidi/bidi.js';
 import {Connection} from '../common/Connection.js';
@@ -40,7 +39,6 @@ import {isErrnoException, isErrorLike} from '../util/ErrorLike.js';
 import {LaunchOptions} from './LaunchOptions.js';
 import {PipeTransport} from './PipeTransport.js';
 
-const removeFolderAsync = promisify(removeFolder);
 const renameAsync = promisify(fs.rename);
 const unlinkAsync = promisify(fs.unlink);
 
@@ -126,7 +124,7 @@ export class BrowserRunner {
         // Cleanup as processes exit.
         if (this.#isTempUserDataDir) {
           try {
-            await removeFolderAsync(this.#userDataDir);
+            await rm(this.#userDataDir, {recursive: true, force: true});
             fulfill();
           } catch (error) {
             debugError(error);
@@ -240,7 +238,7 @@ export class BrowserRunner {
     // Attempt to remove temporary profile directory to avoid littering.
     try {
       if (this.#isTempUserDataDir) {
-        removeFolder.sync(this.#userDataDir);
+        fs.rmSync(this.#userDataDir, {recursive: true, force: true});
       }
     } catch (error) {}
 
