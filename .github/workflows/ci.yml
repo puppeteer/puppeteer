@@ -55,6 +55,7 @@ jobs:
           rm $diff_file
 
   check-changes:
+    needs: inspect-code
     uses: ./.github/workflows/changed-packages.yml
 
   deploy-docs:
