@@ -5,7 +5,7 @@
   "scripts": {
     "build:tsc": "wireit",
     "build": "wireit",
-    "clean": "tsc -b --clean && rimraf lib && rimraf test/build",
+    "clean": "tsc -b --clean && rm -rf lib && rm -rf test/build",
     "dev:test": "npm run test --watch",
     "dev": "npm run build --watch",
     "test": "wireit"
@@ -62,7 +62,7 @@
   "dependencies": {
     "@angular-devkit/architect": "^0.1501.6",
     "@angular-devkit/core": "^15.2.1",
-    "@angular-devkit/schematics": "^15.2.0"
+    "@angular-devkit/schematics": "^15.2.1"
   },
   "devDependencies": {
     "@types/node": "^14.15.0",

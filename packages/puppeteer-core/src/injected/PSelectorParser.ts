@@ -14,145 +14,123 @@
  * limitations under the License.
  */
 
-type CSSSelector = string;
+import {tokenize, Tokens, TOKENS} from 'parsel-js';
 
-export type PSelector =
-  | {
-      name: string;
-      value: string;
-    }
-  | CSSSelector;
+export type CSSSelector = string;
+export type PPseudoSelector = {
+  name: string;
+  value: string;
+};
+export const enum PCombinator {
+  Descendent = '>>>',
+  Child = '>>>>',
+}
+export type CompoundPSelector = Array<CSSSelector | PPseudoSelector>;
+export type ComplexPSelector = Array<CompoundPSelector | PCombinator>;
+export type ComplexPSelectorList = ComplexPSelector[];
 
-const PUPPETEER_PSEUDO_ELEMENT = /^::-p-([-a-zA-Z_]+)\(/;
+TOKENS['combinator'] = new RegExp(
+  `${/\s*(?:>{3,4})\s*|/.source}${TOKENS['combinator']!.source}`,
+  'g'
+);
 
-class PSelectorParser {
-  #input: string;
-  #escaped = false;
-  #quoted = false;
+class TokenSpan {
+  #tokens: Tokens[] = [];
+  #selector: string;
 
-  // The first level are deep roots. The second level are shallow roots.
-  #selectors: PSelector[][][] = [[[]]];
-
-  constructor(input: string) {
-    this.#input = input;
+  constructor(selector: string) {
+    this.#selector = selector;
   }
 
-  get selectors(): PSelector[][][] {
-    return this.#selectors;
+  get length(): number {
+    return this.#tokens.length;
   }
 
-  parse(): void {
-    for (let i = 0; i < this.#input.length; ++i) {
-      if (this.#escaped) {
-        this.#escaped = false;
-        continue;
-      }
-      switch (this.#input[i]) {
-        case '\\': {
-          this.#escaped = true;
-          break;
-        }
-        case '"': {
-          this.#quoted = !this.#quoted;
-          break;
-        }
-        default: {
-          if (this.#quoted) {
-            break;
-          }
-          const remainder = this.#input.slice(i);
-          if (remainder.startsWith('>>>>')) {
-            this.#push(this.#input.slice(0, i));
-            this.#input = remainder.slice('>>>>'.length);
-            this.#parseDeepChild();
-          } else if (remainder.startsWith('>>>')) {
-            this.#push(this.#input.slice(0, i));
-            this.#input = remainder.slice('>>>'.length);
-            this.#parseDeepDescendent();
-          } else {
-            const result = PUPPETEER_PSEUDO_ELEMENT.exec(remainder);
-            if (!result) {
-              continue;
-            }
-            const [match, name] = result;
-            this.#push(this.#input.slice(0, i));
-            this.#input = remainder.slice(match.length);
-            this.#push({
-              name: name as string,
-              value: this.#scanParameter(),
-            });
-          }
-        }
-      }
-    }
-    this.#push(this.#input);
+  add(token: Tokens) {
+    this.#tokens.push(token);
   }
 
-  #push(selector: PSelector) {
-    if (typeof selector === 'string') {
-      // We only trim the end only since `.foo` and ` .foo` are different.
-      selector = selector.trimEnd();
-      if (selector.length === 0) {
-        return;
-      }
-    }
-    const roots = this.#selectors[this.#selectors.length - 1]!;
-    roots[roots.length - 1]!.push(selector);
-  }
-
-  #parseDeepChild() {
-    this.#selectors[this.#selectors.length - 1]!.push([]);
-  }
-
-  #parseDeepDescendent() {
-    this.#selectors.push([[]]);
-  }
-
-  #scanParameter(): string {
-    const char = this.#input[0];
-    switch (char) {
-      case "'":
-      case '"':
-        this.#input = this.#input.slice(1);
-        const parameter = this.#scanEscapedValueTill(char);
-        if (!this.#input.startsWith(')')) {
-          throw new Error("Expected ')'");
-        }
-        this.#input = this.#input.slice(1);
-        return parameter;
-      default:
-        return this.#scanEscapedValueTill(')');
-    }
-  }
-
-  #scanEscapedValueTill(end: string): string {
-    let string = '';
-    for (let i = 0; i < this.#input.length; ++i) {
-      if (this.#escaped) {
-        this.#escaped = false;
-        string += this.#input[i];
-        continue;
-      }
-      switch (this.#input[i]) {
-        case '\\': {
-          this.#escaped = true;
-          break;
-        }
-        case end: {
-          this.#input = this.#input.slice(i + 1);
-          return string;
-        }
-        default: {
-          string += this.#input[i];
-        }
-      }
-    }
-    throw new Error(`Expected \`${end}\``);
+  toStringAndClear() {
+    const startToken = this.#tokens[0] as Tokens;
+    const endToken = this.#tokens[this.#tokens.length - 1] as Tokens;
+    this.#tokens.splice(0);
+    return this.#selector.slice(startToken.pos[0], endToken.pos[1]);
   }
 }
 
-export function parsePSelectors(selector: string): PSelector[][][] {
-  const parser = new PSelectorParser(selector);
-  parser.parse();
-  return parser.selectors;
+const ESCAPE_REGEXP = /\\[\s\S]/g;
+const unquote = (text: string): string => {
+  if (text.length > 1) {
+    for (const char of ['"', "'"]) {
+      if (!text.startsWith(char) || !text.endsWith(char)) {
+        continue;
+      }
+      return text
+        .slice(char.length, -char.length)
+        .replace(ESCAPE_REGEXP, match => {
+          return match.slice(1);
+        });
+    }
+  }
+  return text;
+};
+
+export function parsePSelectors(selector: string): ComplexPSelectorList {
+  const tokens = tokenize(selector);
+  if (tokens.length === 0) {
+    return [];
+  }
+  let compoundSelector: CompoundPSelector = [];
+  let complexSelector: ComplexPSelector = [compoundSelector];
+  const selectors: ComplexPSelectorList = [complexSelector];
+  const storage = new TokenSpan(selector);
+  for (const token of tokens) {
+    switch (token.type) {
+      case 'combinator':
+        switch (token.content) {
+          case '>>>':
+            if (storage.length) {
+              compoundSelector.push(storage.toStringAndClear());
+            }
+            compoundSelector = [];
+            complexSelector.push(PCombinator.Descendent);
+            complexSelector.push(compoundSelector);
+            continue;
+          case '>>>>':
+            if (storage.length) {
+              compoundSelector.push(storage.toStringAndClear());
+            }
+            compoundSelector = [];
+            complexSelector.push(PCombinator.Child);
+            complexSelector.push(compoundSelector);
+            continue;
+        }
+        break;
+      case 'pseudo-element':
+        if (!token.name.startsWith('-p-')) {
+          break;
+        }
+        if (storage.length) {
+          compoundSelector.push(storage.toStringAndClear());
+        }
+        compoundSelector.push({
+          name: token.name.slice(3),
+          value: unquote(token.argument ?? ''),
+        });
+        continue;
+      case 'comma':
+        if (storage.length) {
+          compoundSelector.push(storage.toStringAndClear());
+        }
+        compoundSelector = [];
+        complexSelector = [compoundSelector];
+        selectors.push(complexSelector);
+        continue;
+    }
+    storage.add(token);
+  }
+  if (storage.length) {
+    compoundSelector.push(storage.toStringAndClear());
+  }
+  return selectors;
 }

@@ -16,7 +16,7 @@
 
 import {exec as execChildProcess} from 'child_process';
 import {createReadStream, createWriteStream, existsSync, readdirSync} from 'fs';
-import {chmod, mkdir, readdir, unlink} from 'fs/promises';
+import {chmod, mkdir, readdir, rm, unlink} from 'fs/promises';
 import * as http from 'http';
 import * as https from 'https';
 import * as os from 'os';
@@ -31,7 +31,6 @@ import createHttpsProxyAgent, {
   HttpsProxyAgentOptions,
 } from 'https-proxy-agent';
 import {getProxyForUrl} from 'proxy-from-env';
-import removeRecursive from 'rimraf';
 import tar from 'tar-fs';
 import bzip from 'unbzip2-stream';
 
@@ -404,7 +403,7 @@ export class BrowserFetcher {
    * @remarks
    * This method is affected by the current `product`.
    * @param revision - A revision to remove for the current `product`.
-   * @returns A promise that resolves when the revision has been removes or
+   * @returns A promise that resolves when the revision has been removed or
    * throws if the revision has not been downloaded.
    */
   async remove(revision: string): Promise<void> {
@@ -413,9 +412,7 @@ export class BrowserFetcher {
       existsSync(folderPath),
       `Failed to remove: revision ${revision} is not downloaded`
     );
-    await new Promise(fulfill => {
-      return removeRecursive(folderPath, fulfill);
-    });
+    await rm(folderPath, {recursive: true, force: true});
   }
 
   /**
