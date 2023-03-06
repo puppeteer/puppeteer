@@ -15,8 +15,8 @@ import {
 import Translate, {translate} from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
-import algoliaSearchHelper from 'algoliasearch-helper';
 import algoliaSearch from 'algoliasearch/lite';
+import algoliaSearchHelper from 'algoliasearch-helper';
 import clsx from 'clsx';
 import React, {useEffect, useState, useReducer, useRef} from 'react';
 

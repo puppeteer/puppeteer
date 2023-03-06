@@ -25,6 +25,12 @@ import {compare} from './golden-utils.js';
 
 const PROJECT_ROOT = path.join(__dirname, '..', '..');
 
+declare module 'expect' {
+  interface Matchers<R> {
+    toBeGolden(pathOrBuffer: string | Buffer): R;
+  }
+}
+
 export const extendExpectWithToBeGolden = (
   goldenDir: string,
   outputDir: string
@@ -42,7 +48,7 @@ export const extendExpectWithToBeGolden = (
         return {
           pass: true,
           message: () => {
-            return void 0;
+            return '';
           },
         };
       } else {
