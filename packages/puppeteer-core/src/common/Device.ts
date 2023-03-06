@@ -1523,7 +1523,7 @@ const knownDevices = [
 ] as const;
 
 const knownDevicesByName = {} as Record<
-  typeof knownDevices[number]['name'],
+  (typeof knownDevices)[number]['name'],
   Device
 >;
 

@@ -31,7 +31,7 @@ describe('Operation', () => {
         values.push(3);
       });
 
-    expect(values).toMatchObject([2, 3, 1]);
+    expect(values).toEqual([2, 3, 1]);
   });
 
   it('should work with error on operation', async () => {
@@ -53,7 +53,7 @@ describe('Operation', () => {
     }
 
     expect(errored).toBe('test');
-    expect(values).toMatchObject([1, 2]);
+    expect(values).toEqual([1, 2]);
   });
 
   it('should work with error on effect', async () => {
@@ -75,7 +75,7 @@ describe('Operation', () => {
     }
 
     expect(errored).toBe('test');
-    expect(values).toMatchObject([2, 1]);
+    expect(values).toEqual([2, 1]);
   });
 
   it('should work with error on both operation and effect', async () => {
@@ -97,7 +97,7 @@ describe('Operation', () => {
     }
 
     expect(errored).toBe('test1');
-    expect(values).toMatchObject([1]);
+    expect(values).toEqual([1]);
   });
 
   it('should work with delayed error on operation', async () => {
@@ -123,7 +123,7 @@ describe('Operation', () => {
     }
 
     expect(errored).toBe('test1');
-    expect(values).toMatchObject([1]);
+    expect(values).toEqual([1]);
   });
 
   it('should work with async error on effects', async () => {
@@ -145,7 +145,7 @@ describe('Operation', () => {
     }
 
     expect(errored).toBe('test');
-    expect(values).toMatchObject([2, 1]);
+    expect(values).toEqual([2, 1]);
   });
 
   it('should work with then', async () => {
@@ -166,7 +166,7 @@ describe('Operation', () => {
     await operation;
 
     expect(operation).toBeInstanceOf(Operation);
-    expect(values).toMatchObject([2, 3, 1, 4]);
+    expect(values).toEqual([2, 3, 1, 4]);
   });
 
   it('should work with catch', async () => {
@@ -187,7 +187,7 @@ describe('Operation', () => {
     await operation;
 
     expect(operation).toBeInstanceOf(Operation);
-    expect(values).toMatchObject([1, 2, 3]);
+    expect(values).toEqual([1, 2, 3]);
   });
 
   it('should work with finally', async () => {
@@ -208,7 +208,7 @@ describe('Operation', () => {
     await operation;
 
     expect(operation).toBeInstanceOf(Operation);
-    expect(values).toMatchObject([2, 3, 1, 4]);
+    expect(values).toEqual([2, 3, 1, 4]);
   });
 
   it('should throw when adding effects on on awaited operation', async () => {
@@ -229,6 +229,6 @@ describe('Operation', () => {
       )
     );
     expect(operation).toBeInstanceOf(Operation);
-    expect(values).toMatchObject([1]);
+    expect(values).toEqual([1]);
   });
 });
