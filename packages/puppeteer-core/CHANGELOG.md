@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.7.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.7.2...puppeteer-core-v19.7.3) (2023-03-06)
+
+
+### Bug Fixes
+
+* update dependencies ([#9781](https://github.com/puppeteer/puppeteer/issues/9781)) ([364b23f](https://github.com/puppeteer/puppeteer/commit/364b23f8b5c7b04974f233c58e5ded9a8f912ff2))
+
 ## [19.7.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.7.1...puppeteer-core-v19.7.2) (2023-02-20)
 
 
