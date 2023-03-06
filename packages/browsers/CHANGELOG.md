@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.4](https://github.com/puppeteer/puppeteer/compare/browsers-v0.0.3...browsers-v0.0.4) (2023-03-06)
+
+
+### Features
+
+* browsers: recognize chromium as a valid browser ([#9760](https://github.com/puppeteer/puppeteer/issues/9760)) ([04247a4](https://github.com/puppeteer/puppeteer/commit/04247a4e00b43683977bd8aa309d493eee663735))
+
 ## [0.0.3](https://github.com/puppeteer/puppeteer/compare/browsers-v0.0.2...browsers-v0.0.3) (2023-02-22)
 
 

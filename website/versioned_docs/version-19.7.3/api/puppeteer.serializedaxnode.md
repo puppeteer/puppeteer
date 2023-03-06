@@ -1,0 +1,44 @@
+---
+sidebar_label: SerializedAXNode
+---
+
+# SerializedAXNode interface
+
+Represents a Node and the properties of it that are relevant to Accessibility.
+
+#### Signature:
+
+```typescript
+export interface SerializedAXNode
+```
+
+## Properties
+
+| Property                                                            | Modifiers | Type                                                    | Description                                                                                                                                                 | Default |
+| ------------------------------------------------------------------- | --------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| [autocomplete?](./puppeteer.serializedaxnode.autocomplete.md)       |           | string                                                  | _(Optional)_                                                                                                                                                |         |
+| [checked?](./puppeteer.serializedaxnode.checked.md)                 |           | boolean \| 'mixed'                                      | _(Optional)_ Whether the checkbox is checked, or in a [mixed state](https://www.w3.org/TR/wai-aria-practices/examples/checkbox/checkbox-2/checkbox-2.html). |         |
+| [children?](./puppeteer.serializedaxnode.children.md)               |           | [SerializedAXNode](./puppeteer.serializedaxnode.md)\[\] | _(Optional)_ Children of this node, if there are any.                                                                                                       |         |
+| [description?](./puppeteer.serializedaxnode.description.md)         |           | string                                                  | _(Optional)_ An additional human readable description of the node.                                                                                          |         |
+| [disabled?](./puppeteer.serializedaxnode.disabled.md)               |           | boolean                                                 | _(Optional)_                                                                                                                                                |         |
+| [expanded?](./puppeteer.serializedaxnode.expanded.md)               |           | boolean                                                 | _(Optional)_                                                                                                                                                |         |
+| [focused?](./puppeteer.serializedaxnode.focused.md)                 |           | boolean                                                 | _(Optional)_                                                                                                                                                |         |
+| [haspopup?](./puppeteer.serializedaxnode.haspopup.md)               |           | string                                                  | _(Optional)_                                                                                                                                                |         |
+| [invalid?](./puppeteer.serializedaxnode.invalid.md)                 |           | string                                                  | _(Optional)_ Whether and in what way this node's value is invalid.                                                                                          |         |
+| [keyshortcuts?](./puppeteer.serializedaxnode.keyshortcuts.md)       |           | string                                                  | _(Optional)_ Any keyboard shortcuts associated with this node.                                                                                              |         |
+| [level?](./puppeteer.serializedaxnode.level.md)                     |           | number                                                  | _(Optional)_ The level of a heading.                                                                                                                        |         |
+| [modal?](./puppeteer.serializedaxnode.modal.md)                     |           | boolean                                                 | _(Optional)_                                                                                                                                                |         |
+| [multiline?](./puppeteer.serializedaxnode.multiline.md)             |           | boolean                                                 | _(Optional)_                                                                                                                                                |         |
+| [multiselectable?](./puppeteer.serializedaxnode.multiselectable.md) |           | boolean                                                 | _(Optional)_ Whether more than one child can be selected.                                                                                                   |         |
+| [name?](./puppeteer.serializedaxnode.name.md)                       |           | string                                                  | _(Optional)_ A human readable name for the node.                                                                                                            |         |
+| [orientation?](./puppeteer.serializedaxnode.orientation.md)         |           | string                                                  | _(Optional)_                                                                                                                                                |         |
+| [pressed?](./puppeteer.serializedaxnode.pressed.md)                 |           | boolean \| 'mixed'                                      | _(Optional)_ Whether the node is checked or in a mixed state.                                                                                               |         |
+| [readonly?](./puppeteer.serializedaxnode.readonly.md)               |           | boolean                                                 | _(Optional)_                                                                                                                                                |         |
+| [required?](./puppeteer.serializedaxnode.required.md)               |           | boolean                                                 | _(Optional)_                                                                                                                                                |         |
+| [role](./puppeteer.serializedaxnode.role.md)                        |           | string                                                  | The [role](https://www.w3.org/TR/wai-aria/#usage_intro) of the node.                                                                                        |         |
+| [roledescription?](./puppeteer.serializedaxnode.roledescription.md) |           | string                                                  | _(Optional)_ A human readable alternative to the role.                                                                                                      |         |
+| [selected?](./puppeteer.serializedaxnode.selected.md)               |           | boolean                                                 | _(Optional)_                                                                                                                                                |         |
+| [value?](./puppeteer.serializedaxnode.value.md)                     |           | string \| number                                        | _(Optional)_ The current value of the node.                                                                                                                 |         |
+| [valuemax?](./puppeteer.serializedaxnode.valuemax.md)               |           | number                                                  | _(Optional)_                                                                                                                                                |         |
+| [valuemin?](./puppeteer.serializedaxnode.valuemin.md)               |           | number                                                  | _(Optional)_                                                                                                                                                |         |
+| [valuetext?](./puppeteer.serializedaxnode.valuetext.md)             |           | string                                                  | _(Optional)_ A description of the current value.                                                                                                            |         |
