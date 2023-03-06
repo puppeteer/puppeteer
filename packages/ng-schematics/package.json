@@ -5,7 +5,7 @@
   "scripts": {
     "build:tsc": "wireit",
     "build": "wireit",
-    "clean": "tsc -b --clean && rimraf lib && rimraf test/build",
+    "clean": "tsc -b --clean && rm -rf lib && rm -rf test/build",
     "dev:test": "npm run test --watch",
     "dev": "npm run build --watch",
     "test": "wireit"
