@@ -20,11 +20,13 @@ import {Browser, BrowserPlatform, BrowserTag} from './types.js';
 
 export const downloadUrls = {
   [Browser.CHROME]: chrome.resolveDownloadUrl,
+  [Browser.CHROMIUM]: chrome.resolveDownloadUrl,
   [Browser.FIREFOX]: firefox.resolveDownloadUrl,
 };
 
 export const executablePathByBrowser = {
   [Browser.CHROME]: chrome.relativeExecutablePath,
+  [Browser.CHROMIUM]: chrome.relativeExecutablePath,
   [Browser.FIREFOX]: firefox.relativeExecutablePath,
 };
 
@@ -42,6 +44,7 @@ export async function resolveBuildId(
           return await firefox.resolveBuildId('FIREFOX_NIGHTLY');
       }
     case Browser.CHROME:
+    case Browser.CHROMIUM:
       switch (tag as BrowserTag) {
         case BrowserTag.LATEST:
           return await chrome.resolveBuildId(platform, 'latest');

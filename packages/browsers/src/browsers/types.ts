@@ -22,6 +22,7 @@ import * as firefox from './firefox.js';
  */
 export enum Browser {
   CHROME = 'chrome',
+  CHROMIUM = 'chromium',
   FIREFOX = 'firefox',
 }
 
@@ -39,6 +40,7 @@ export enum BrowserPlatform {
 
 export const downloadUrls = {
   [Browser.CHROME]: chrome.resolveDownloadUrl,
+  [Browser.CHROMIUM]: chrome.resolveDownloadUrl,
   [Browser.FIREFOX]: firefox.resolveDownloadUrl,
 };
 
