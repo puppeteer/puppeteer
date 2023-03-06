@@ -7,9 +7,15 @@
     "build": "wireit",
     "build:packages": "wireit",
     "clean": "tsc -b --clean && rm -rf build",
-    "test": "mocha"
+    "test": "wireit"
   },
   "wireit": {
+    "test": {
+      "command": "mocha",
+      "dependencies": [
+        "build"
+      ]
+    },
     "build": {
       "command": "tsc -b",
       "clean": "if-file-deleted",
@@ -44,7 +50,7 @@
     "assets"
   ],
   "dependencies": {
-    "glob": "8.1.0",
-    "mocha": "10.0.0"
+    "glob": "9.2.1",
+    "mocha": "10.2.0"
   }
 }
