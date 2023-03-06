@@ -30,9 +30,6 @@
     "type": "git",
     "url": "https://github.com/puppeteer/puppeteer/tree/main/packages/puppeteer"
   },
-  "engines": {
-    "node": ">=14.14.0"
-  },
   "scripts": {
     "build:docs": "wireit",
     "build:tsc": "wireit",
