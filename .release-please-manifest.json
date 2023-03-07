@@ -3,5 +3,5 @@
   "packages/puppeteer-core": "19.7.3",
   "packages/testserver": "0.6.0",
   "packages/ng-schematics": "0.1.0",
-  "packages/browsers": "0.0.4"
+  "packages/browsers": "0.0.5"
 }
