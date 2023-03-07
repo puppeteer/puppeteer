@@ -100,7 +100,14 @@ export class CLI {
             ),
           });
           console.log(
-            `${args.browser.name}@${args.browser.buildId} downloaded successfully.`
+            `${args.browser.name}@${
+              args.browser.buildId
+            } ${computeExecutablePath({
+              browser: args.browser.name,
+              buildId: args.browser.buildId,
+              cacheDir: args.path ?? this.#cachePath,
+              platform: args.platform,
+            })}`
           );
         }
       )
