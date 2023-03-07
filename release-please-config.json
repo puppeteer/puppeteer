@@ -10,9 +10,7 @@
     },
     "packages/testserver": {},
     "packages/ng-schematics": {},
-    "packages/browsers": {
-      "release-as": "0.0.4"
-    }
+    "packages/browsers": {}
   },
   "plugins": [
     {
