@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.0.4](https://github.com/puppeteer/puppeteer/compare/browsers-v0.0.4...browsers-v0.0.4) (2023-03-07)
+
+
+### Bug Fixes
+
+* change the install output to include the executable path ([#9797](https://github.com/puppeteer/puppeteer/issues/9797)) ([8cca7bb](https://github.com/puppeteer/puppeteer/commit/8cca7bb7a2a1cdf62919d9c7eca62d6774e698db))
+
 ## [0.0.4](https://github.com/puppeteer/puppeteer/compare/browsers-v0.0.3...browsers-v0.0.4) (2023-03-06)
 
 
