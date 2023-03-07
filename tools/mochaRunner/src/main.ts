@@ -112,11 +112,11 @@ async function main() {
       const githubActionDebugging = process.env['RUNNER_DEBUG']
         ? {
             DEBUG: 'puppeteer:*',
-            EXTRA_LAUNCH_OPTIONS: {
+            EXTRA_LAUNCH_OPTIONS: JSON.stringify({
               extraPrefsFirefox: {
                 'remote.log.level': 'Trace',
               },
-            },
+            }),
           }
         : {};
 
