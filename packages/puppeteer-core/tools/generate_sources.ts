@@ -50,6 +50,7 @@ chdir(packageRoot);
       format: 'cjs',
       platform: 'browser',
       target: 'ES2022',
+      minify: true,
     });
     const baseName = path.basename(input);
     const content = await readFile(
