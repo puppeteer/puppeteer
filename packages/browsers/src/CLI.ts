@@ -43,7 +43,6 @@ type LaunchArgs = {
   detached: boolean;
 };
 
-
 export class CLI {
   #cachePath;
 
@@ -51,7 +50,7 @@ export class CLI {
     this.#cachePath = cachePath;
   }
 
-  #defineBrowserParameter(yargs: yargs.Argv<{}>) {
+  #defineBrowserParameter(yargs: yargs.Argv<unknown>): void {
     yargs.positional('browser', {
       description: 'The browser version',
       type: 'string',
@@ -64,7 +63,7 @@ export class CLI {
     });
   }
 
-  #definePlatformParameter(yargs: yargs.Argv<{}>) {
+  #definePlatformParameter(yargs: yargs.Argv<unknown>): void {
     yargs.option('platform', {
       type: 'string',
       desc: 'Platform that the binary needs to be compatible with.',
@@ -73,7 +72,7 @@ export class CLI {
     });
   }
 
-  #definePathParameter(yargs: yargs.Argv<{}>) {
+  #definePathParameter(yargs: yargs.Argv<unknown>): void {
     yargs.option('path', {
       type: 'string',
       desc: 'Path to the root folder for the browser downloads and installation',
@@ -86,47 +85,6 @@ export class CLI {
       .command(
         'install <browser>',
         'Download and install the specified browser',
-        yargs => {
-          this.#defineBrowserParameter(yargs);
-          this.#definePlatformParameter(yargs);
-          this.#definePathParameter(yargs);
-        },
-        async argv => {
-          const args = argv as unknown as InstallArgs;
-          args.platform ??= detectBrowserPlatform();
-          if (!args.platform) {
-            throw new Error(`Could not resolve the current platform`);
-          }
-          args.browser.buildId = await resolveBuildId(
-            args.browser.name,
-            args.platform,
-            args.browser.buildId
-          );
-          await fetch({
-            browser: args.browser.name,
-            buildId: args.browser.buildId,
-            platform: args.platform,
-            cacheDir: args.path ?? this.#cachePath,
-            downloadProgressCallback: this.#makeProgressCallback(
-              args.browser.name,
-              args.browser.buildId
-            ),
-          });
-          console.log(
-            `${args.browser.name}@${
-              args.browser.buildId
-            } ${computeExecutablePath({
-              browser: args.browser.name,
-              buildId: args.browser.buildId,
-              cacheDir: args.path ?? this.#cachePath,
-              platform: args.platform,
-            })}`
-          );
-        }
-      )
-      .command(
-        'downloads <browser>',
-        'Downloads the specified browser',
         yargs => {
           this.#defineBrowserParameter(yargs);
           this.#definePlatformParameter(yargs);
