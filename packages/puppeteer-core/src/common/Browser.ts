@@ -567,6 +567,7 @@ export class CDPBrowser extends BrowserBase {
   override disconnect(): void {
     this.#targetManager.dispose();
     this.#connection.dispose();
+    this._detach();
   }
 
   /**
