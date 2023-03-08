@@ -152,7 +152,6 @@
     }
   },
   "devDependencies": {
-    "mitt": "3.0.0",
-    "parsel-js": "github:jrandolf/parsel"
+    "mitt": "3.0.0"
   }
 }
