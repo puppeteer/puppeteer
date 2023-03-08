@@ -50,33 +50,45 @@ export class CLI {
     this.#cachePath = cachePath;
   }
 
+  #defineBrowserParameter(yargs: yargs.Argv<unknown>): void {
+    yargs.positional('browser', {
+      description: 'The browser version',
+      type: 'string',
+      coerce: (opt): InstallArgs['browser'] => {
+        return {
+          name: this.#parseBrowser(opt),
+          buildId: this.#parseBuildId(opt),
+        };
+      },
+    });
+  }
+
+  #definePlatformParameter(yargs: yargs.Argv<unknown>): void {
+    yargs.option('platform', {
+      type: 'string',
+      desc: 'Platform that the binary needs to be compatible with.',
+      choices: Object.values(BrowserPlatform),
+      defaultDescription: 'Auto-detected by default.',
+    });
+  }
+
+  #definePathParameter(yargs: yargs.Argv<unknown>): void {
+    yargs.option('path', {
+      type: 'string',
+      desc: 'Path to the root folder for the browser downloads and installation',
+      default: process.cwd(),
+    });
+  }
+
   async run(argv: string[]): Promise<void> {
     await yargs(hideBin(argv))
       .command(
         'install <browser>',
         'Download and install the specified browser',
         yargs => {
-          yargs.positional('browser', {
-            description: 'The browser version',
-            type: 'string',
-            coerce: (opt): InstallArgs['browser'] => {
-              return {
-                name: this.#parseBrowser(opt),
-                buildId: this.#parseBuildId(opt),
-              };
-            },
-          });
-          yargs.option('platform', {
-            type: 'string',
-            desc: 'Platform that the binary needs to be compatible with.',
-            choices: Object.values(BrowserPlatform),
-            defaultDescription: 'Auto-detected by default.',
-          });
-          yargs.option('path', {
-            type: 'string',
-            desc: 'Path where the browsers will be downloaded to and installed from',
-            default: process.cwd(),
-          });
+          this.#defineBrowserParameter(yargs);
+          this.#definePlatformParameter(yargs);
+          this.#definePathParameter(yargs);
         },
         async argv => {
           const args = argv as unknown as InstallArgs;
@@ -115,31 +127,13 @@ export class CLI {
         'launch <browser>',
         'Launch the specified browser',
         yargs => {
-          yargs.positional('browser', {
-            description: 'The browser version',
-            type: 'string',
-            coerce: (opt): LaunchArgs['browser'] => {
-              return {
-                name: this.#parseBrowser(opt),
-                buildId: this.#parseBuildId(opt),
-              };
-            },
-          });
+          this.#defineBrowserParameter(yargs);
+          this.#definePlatformParameter(yargs);
+          this.#definePathParameter(yargs);
           yargs.option('detached', {
             type: 'boolean',
             desc: 'Whether to detach the child process.',
             default: false,
-          });
-          yargs.option('platform', {
-            type: 'string',
-            desc: 'Platform that the binary needs to be compatible with.',
-            choices: Object.values(BrowserPlatform),
-            defaultDescription: 'Auto-detected by default.',
-          });
-          yargs.option('path', {
-            type: 'string',
-            desc: 'Path where the browsers will be downloaded to and installed from',
-            default: process.cwd(),
           });
         },
         async argv => {
