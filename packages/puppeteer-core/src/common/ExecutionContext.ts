@@ -67,26 +67,11 @@ const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
  * @internal
  */
 export class ExecutionContext {
-  /**
-   * @internal
-   */
   _client: CDPSession;
-  /**
-   * @internal
-   */
   _world?: IsolatedWorld;
-  /**
-   * @internal
-   */
   _contextId: number;
-  /**
-   * @internal
-   */
   _contextName?: string;
 
-  /**
-   * @internal
-   */
   constructor(
     client: CDPSession,
     contextPayload: Protocol.Runtime.ExecutionContextDescription,

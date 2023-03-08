@@ -69,3 +69,4 @@ export * from './USKeyboardLayout.js';
 export * from './util.js';
 export * from './WaitTask.js';
 export * from './WebWorker.js';
+export * from './QueryHandler.js';

@@ -126,7 +126,7 @@ export class FirefoxLauncher extends ProductLauncher {
     });
 
     if (protocol === 'webDriverBiDi') {
-      let browser;
+      let browser: Browser;
       try {
         const connection = await runner.setupWebDriverBiDiConnection({
           timeout,

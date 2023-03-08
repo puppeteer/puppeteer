@@ -799,7 +799,7 @@ export class ElementHandle<
 
   /**
    * This method scrolls element into view if needed, and then uses
-   * {@link Page.screenshot} to take a screenshot of the element.
+   * {@link Page.(screenshot:3) } to take a screenshot of the element.
    * If the element is detached from DOM, the method throws an error.
    */
   async screenshot(

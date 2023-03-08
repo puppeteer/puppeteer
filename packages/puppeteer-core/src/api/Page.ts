@@ -1121,7 +1121,7 @@ export class Page extends EventEmitter {
    * a `<style type="text/css">` tag with the content.
    *
    * Shortcut for
-   * {@link Frame.addStyleTag | page.mainFrame().addStyleTag(options)}.
+   * {@link Frame.(addStyleTag:2) | page.mainFrame().addStyleTag(options)}.
    *
    * @returns An {@link ElementHandle | element handle} to the injected `<link>`
    * or `<style>` element.

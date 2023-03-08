@@ -247,6 +247,9 @@ export class BrowserRunner {
     removeEventListeners(this.#listeners);
   }
 
+  /**
+   * @internal
+   */
   async setupWebDriverBiDiConnection(options: {
     timeout: number;
     slowMo: number;

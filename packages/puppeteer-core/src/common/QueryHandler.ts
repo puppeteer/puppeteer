@@ -102,7 +102,7 @@ export class QueryHandler {
   /**
    * Queries for multiple nodes given a selector and {@link ElementHandle}.
    *
-   * Akin to {@link Document.prototype.querySelectorAll}.
+   * Akin to {@link https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll | Document.querySelectorAll()}.
    */
   static async *queryAll(
     element: ElementHandle<Node>,
@@ -123,7 +123,7 @@ export class QueryHandler {
   /**
    * Queries for a single node given a selector and {@link ElementHandle}.
    *
-   * Akin to {@link Document.prototype.querySelector}.
+   * Akin to {@link https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector}.
    */
   static async queryOne(
     element: ElementHandle<Node>,
