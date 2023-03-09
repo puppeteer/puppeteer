@@ -204,7 +204,7 @@ There are two reasons for this:
 #### Q: I am having trouble installing / running Puppeteer in my test environment. Where should I look for help?
 
 We have a
-[troubleshooting](https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md)
+[troubleshooting](https://pptr.dev/troubleshooting)
 guide for various operating systems that lists the required dependencies.
 
 #### Q: Chromium gets downloaded on every `npm ci` run. How can I cache the download?
