@@ -16,10 +16,11 @@
 
 import * as childProcess from 'child_process';
 import * as fs from 'fs';
-import {rm} from 'fs/promises';
 import * as path from 'path';
 import * as readline from 'readline';
 import {promisify} from 'util';
+
+import rimraf from 'rimraf';
 
 import type {Connection as BiDiConnection} from '../common/bidi/bidi.js';
 import {Connection} from '../common/Connection.js';
@@ -124,7 +125,7 @@ export class BrowserRunner {
         // Cleanup as processes exit.
         if (this.#isTempUserDataDir) {
           try {
-            await rm(this.#userDataDir, {recursive: true, force: true});
+            await rimraf(this.#userDataDir);
             fulfill();
           } catch (error) {
             debugError(error);
@@ -238,7 +239,7 @@ export class BrowserRunner {
     // Attempt to remove temporary profile directory to avoid littering.
     try {
       if (this.#isTempUserDataDir) {
-        fs.rmSync(this.#userDataDir, {recursive: true, force: true});
+        rimraf.sync(this.#userDataDir);
       }
     } catch (error) {}
 
