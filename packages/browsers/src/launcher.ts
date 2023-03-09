@@ -17,6 +17,7 @@
 import childProcess from 'child_process';
 import os from 'os';
 import path from 'path';
+import readline from 'readline';
 
 import {
   Browser,
@@ -87,6 +88,9 @@ type LaunchOptions = {
 export function launch(opts: LaunchOptions): Process {
   return new Process(opts);
 }
+
+export const CDP_WEBSOCKET_ENDPOINT_REGEX =
+  /^DevTools listening on (ws:\/\/.*)$/;
 
 class Process {
   #executablePath;
@@ -244,6 +248,66 @@ class Process {
       }
     }
     this.#clearListeners();
+  }
+
+  waitForLineOutput(regex: RegExp, timeout?: number): Promise<string> {
+    if (!this.#browserProcess.stderr) {
+      throw new Error('`browserProcess` does not have stderr.');
+    }
+    const rl = readline.createInterface(this.#browserProcess.stderr);
+    let stderr = '';
+
+    return new Promise((resolve, reject) => {
+      rl.on('line', onLine);
+      rl.on('close', onClose);
+      this.#browserProcess.on('exit', onClose);
+      this.#browserProcess.on('error', onClose);
+      const timeoutId = timeout ? setTimeout(onTimeout, timeout) : 0;
+
+      const cleanup = (): void => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+        rl.off('line', onLine);
+        rl.off('close', onClose);
+        this.#browserProcess.off('exit', onClose);
+        this.#browserProcess.off('error', onClose);
+      };
+
+      function onClose(error?: Error): void {
+        cleanup();
+        reject(
+          new Error(
+            [
+              `Failed to launch the browser process!${
+                error ? ' ' + error.message : ''
+              }`,
+              stderr,
+            ].join('\n')
+          )
+        );
+      }
+
+      function onTimeout(): void {
+        cleanup();
+        reject(
+          new Error(
+            `Timed out after ${timeout} ms while waiting for the WS endpoint URL to appear in stdout!`
+          )
+        );
+      }
+
+      function onLine(line: string): void {
+        stderr += line + '\n';
+        const match = line.match(regex);
+        if (!match) {
+          return;
+        }
+        cleanup();
+        // The RegExp matches, so this will obviously exist.
+        resolve(match[1]!);
+      }
+    });
   }
 }
 
