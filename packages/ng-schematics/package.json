@@ -8,7 +8,8 @@
     "clean": "tsc -b --clean && rm -rf lib && rm -rf test/build",
     "dev:test": "npm run test --watch",
     "dev": "npm run build --watch",
-    "test": "wireit"
+    "test": "wireit",
+    "sandbox": "node tools/sandbox.js"
   },
   "wireit": {
     "build": {
@@ -31,11 +32,13 @@
       "files": [
         "**/tsconfig.*.json",
         "**/tsconfig.json",
-        "src/**/*.ts"
+        "src/**/*.ts",
+        "!src/**/files/**"
       ],
       "output": [
         "lib/**/*.{ts,js}",
-        "lib/**/*.{ts,js}.map"
+        "lib/**/*.{ts,js}.map",
+        "!lib/**/files/**"
       ]
     },
     "test": {
@@ -66,7 +69,8 @@
   },
   "devDependencies": {
     "@types/node": "^14.15.0",
-    "@schematics/angular": "^14.2.8"
+    "@schematics/angular": "^14.2.8",
+    "@angular/cli": "^15.2.2"
   },
   "files": [
     "lib",

@@ -42,6 +42,22 @@ When adding schematics to your project you can to provide following options:
 
 Check out our [contributing guide](https://pptr.dev/contributing) to get an overview of what you need to develop in the Puppeteer repo.
 
+### Sandbox
+
+For easier development we provide a script to auto-generate the Angular project to test against. Simply run:
+
+```bash
+npm run sandbox -- --init
+```
+
+After that to run `@puppeteer/ng-schematics` against the Sandbox Angular project run:
+
+```bash
+npm run sandbox
+# or to auto-build and then run schematics
+npm run sandbox -- --build
+```
+
 ### Unit Testing
 
 The schematics utilize `@angular-devkit/schematics/testing` for verifying correct file creation and `package.json` updates. To execute the test suit:
