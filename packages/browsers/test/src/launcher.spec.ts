@@ -21,7 +21,11 @@ import path from 'path';
 
 import {Browser, BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
 import {fetch} from '../../lib/cjs/fetch.js';
-import {computeExecutablePath, launch} from '../../lib/cjs/launcher.js';
+import {
+  CDP_WEBSOCKET_ENDPOINT_REGEX,
+  computeExecutablePath,
+  launch,
+} from '../../lib/cjs/launcher.js';
 
 import {testChromeBuildId, testFirefoxBuildId} from './versions.js';
 
@@ -91,12 +95,34 @@ describe('launcher', () => {
       const process = launch({
         executablePath,
         args: [
+          '--headless=new',
           '--use-mock-keychain',
           '--disable-features=DialMediaRouteProvider',
           `--user-data-dir=${path.join(tmpDir, 'profile')}`,
         ],
       });
       await process.close();
+    });
+
+    it('should allow parsing stderr output of the browser process', async () => {
+      const executablePath = computeExecutablePath({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        buildId: testChromeBuildId,
+      });
+      const process = launch({
+        executablePath,
+        args: [
+          '--headless=new',
+          '--use-mock-keychain',
+          '--disable-features=DialMediaRouteProvider',
+          '--remote-debugging-port=9222',
+          `--user-data-dir=${path.join(tmpDir, 'profile')}`,
+        ],
+      });
+      const url = await process.waitForLineOutput(CDP_WEBSOCKET_ENDPOINT_REGEX);
+      await process.close();
+      assert.ok(url.startsWith('ws://127.0.0.1:9222/devtools/browser'));
     });
   });
 
