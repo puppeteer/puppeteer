@@ -68,6 +68,9 @@ export const NetworkManagerEmittedEvents = {
   RequestFinished: Symbol('NetworkManager.RequestFinished'),
 } as const;
 
+/**
+ * @internal
+ */
 interface FrameManager {
   frame(frameId: string): Frame | null;
 }
