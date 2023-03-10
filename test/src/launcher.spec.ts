@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import fs from 'fs';
-import {rm} from 'fs/promises';
 import os from 'os';
 import path from 'path';
 import {TLSSocket} from 'tls';
@@ -24,13 +23,14 @@ import {Protocol} from 'devtools-protocol';
 import expect from 'expect';
 import {BrowserFetcher, TimeoutError} from 'puppeteer';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
+import rimraf from 'rimraf';
 import sinon from 'sinon';
 
 import {getTestState, itOnlyRegularInstall} from './mocha-utils.js';
 import utils from './utils.js';
 
 const rmAsync = (filename: string) => {
-  return rm(filename, {force: true, recursive: true});
+  return rimraf(filename);
 };
 const mkdtempAsync = promisify(fs.mkdtemp);
 const readFileAsync = promisify(fs.readFile);

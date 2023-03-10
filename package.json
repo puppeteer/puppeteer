@@ -169,6 +169,7 @@
     "pngjs": "7.0.0",
     "prettier": "2.8.4",
     "puppeteer": "file:packages/puppeteer",
+    "rimraf": "4.4.0",
     "rollup": "3.18.0",
     "semver": "7.3.8",
     "sinon": "15.0.1",
