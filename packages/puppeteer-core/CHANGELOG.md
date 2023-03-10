@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.7.4](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.7.3...puppeteer-core-v19.7.4) (2023-03-10)
+
+
+### Bug Fixes
+
+* call _detach on disconnect ([#9807](https://github.com/puppeteer/puppeteer/issues/9807)) ([bc1a04d](https://github.com/puppeteer/puppeteer/commit/bc1a04def8f699ad245c12ec69ac176e3e7e888d))
+* restore rimraf for puppeteer-core code ([#9815](https://github.com/puppeteer/puppeteer/issues/9815)) ([cefc4ea](https://github.com/puppeteer/puppeteer/commit/cefc4eab4750d2c1209eb36ca44f6963a4a6bf4c))
+
 ## [19.7.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.7.2...puppeteer-core-v19.7.3) (2023-03-06)
 
 
