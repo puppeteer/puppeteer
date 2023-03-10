@@ -15,7 +15,6 @@
  */
 
 import fs from 'fs';
-import {rm} from 'fs/promises';
 import os from 'os';
 import path from 'path';
 import {promisify} from 'util';
@@ -25,6 +24,7 @@ import {
   PuppeteerLaunchOptions,
   PuppeteerNode,
 } from 'puppeteer-core/internal/node/PuppeteerNode.js';
+import rimraf from 'rimraf';
 
 import {getTestState} from './mocha-utils.js';
 
@@ -240,7 +240,7 @@ describe('headful tests', function () {
       });
       await headlessBrowser.close();
       // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
-      await rm(userDataDir, {recursive: true, force: true}).catch(() => {});
+      await rimraf(userDataDir).catch(() => {});
       expect(cookie).toBe('foo=true');
     });
     // TODO: Support OOOPIF. @see https://github.com/puppeteer/puppeteer/issues/2548
