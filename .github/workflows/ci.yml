@@ -31,6 +31,8 @@ jobs:
           node-version: latest
       - name: Install dependencies
         run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
       - name: Check code
         run: npm run check
       - name: Lint code
@@ -127,6 +129,8 @@ jobs:
           node-version: latest
       - name: Install dependencies
         run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
       - name: Build packages
         run: npm run build --workspace @puppeteer-test/test
       - name: Setup cache for Chromium binary
@@ -183,6 +187,8 @@ jobs:
           node-version: latest
       - name: Install dependencies
         run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
       - name: Build packages
         run: npm run build --workspace @puppeteer-test/test
       - name: Setup cache for Firefox binary
@@ -231,6 +237,8 @@ jobs:
           node-version: latest
       - name: Install dependencies
         run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
       - name: Build installation test
         run: npm run build --workspace @puppeteer-test/installation
       - name: Pack installation test
@@ -311,6 +319,8 @@ jobs:
           node-version: ${{ matrix.node }}
       - name: Install dependencies
         run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
       - name: Build packages
         run: npm run build --workspace puppeteer
       - name: Pack packages
@@ -339,6 +349,8 @@ jobs:
           node-version: latest
       - name: Install dependencies
         run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
       - name: Run tests
         run: npm run test --workspace @puppeteer/ng-schematics
 
@@ -364,6 +376,8 @@ jobs:
           node-version: latest
       - name: Install dependencies
         run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
       - name: Run tests
         run: npm run test --workspace @puppeteer/browsers
 

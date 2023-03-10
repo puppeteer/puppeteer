@@ -35,6 +35,8 @@ jobs:
           node-version: latest
       - name: Install dependencies
         run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
       - name: Install linux dependencies.
         run: sudo apt-get install xvfb
       - name: Build packages
