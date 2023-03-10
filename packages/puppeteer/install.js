@@ -35,6 +35,9 @@ if (!fs.existsSync(path.join(__dirname, 'lib'))) {
   execSync('npm run build --workspace puppeteer');
 }
 
-const {downloadBrowser} = require('puppeteer/internal/node/install.js');
-
-downloadBrowser();
+try {
+  const {downloadBrowser} = require('puppeteer/internal/node/install.js');
+  downloadBrowser();
+} catch (err) {
+  console.warn('Browser download failed', err);
+}
