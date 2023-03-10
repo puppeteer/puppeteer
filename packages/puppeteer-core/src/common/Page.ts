@@ -822,7 +822,7 @@ export class CDPPage extends Page {
     }
     const textTokens = [];
     for (const arg of args) {
-      const remoteObject = arg.remoteObject() as Protocol.Runtime.RemoteObject;
+      const remoteObject = arg.remoteObject();
       if (remoteObject.objectId) {
         textTokens.push(arg.toString());
       } else {
