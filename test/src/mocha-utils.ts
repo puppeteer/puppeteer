@@ -137,6 +137,8 @@ setupGoldenAssertions();
 
 interface PuppeteerTestState {
   browser: Browser;
+  sharedBrowser: Browser;
+  sharedBrowserWsEndpoint: string;
   context: BrowserContext;
   page: Page;
   puppeteer: PuppeteerNode;
@@ -189,12 +191,15 @@ process.on('unhandledRejection', reason => {
 
 export const setupTestBrowserHooks = (): void => {
   before(async () => {
-    const browser = await puppeteer.launch(defaultBrowserOptions);
+    const browser = await puppeteer.connect({
+      ...defaultBrowserOptions,
+      browserWSEndpoint: state.sharedBrowserWsEndpoint,
+    });
     state.browser = browser;
   });
 
   after(async () => {
-    await state.browser?.close();
+    await state.browser?.disconnect();
     state.browser = undefined;
   });
 };
@@ -228,6 +233,10 @@ export const mochaHooks = {
       state.puppeteerPath = path.resolve(
         path.join(__dirname, '..', '..', 'packages', 'puppeteer')
       );
+
+      state.sharedBrowser = await puppeteer.launch(defaultBrowserOptions);
+      state.sharedBrowserWsEndpoint = state.sharedBrowser.wsEndpoint();
+      state.sharedBrowser.disconnect();
     },
   ],
 
@@ -238,6 +247,9 @@ export const mochaHooks = {
 
   afterAll: [
     async (): Promise<void> => {
+      await state.sharedBrowser?.close();
+      state.sharedBrowser = undefined;
+
       await state.server!.stop();
       state.server = undefined;
       await state.httpsServer!.stop();
