@@ -49,7 +49,7 @@ module.exports = {
 ```
 
 You will need to reinstall `puppeteer` in order for the configuration to take
-effect. See [Configuring Puppeteer](./guides/configuration) for more
+effect. See [Configuring Puppeteer](./guides/configuration.mdx) for more
 information.
 
 ## Chrome headless doesn't launch on Windows
