@@ -40,8 +40,6 @@ export * from './FirefoxTargetManager.js';
 export * from './Frame.js';
 export * from './FrameManager.js';
 export * from './FrameTree.js';
-export * from './HTTPRequest.js';
-export * from './HTTPResponse.js';
 export * from './Input.js';
 export * from './IsolatedWorld.js';
 export * from './IsolatedWorlds.js';
