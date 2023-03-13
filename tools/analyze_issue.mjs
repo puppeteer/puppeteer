@@ -8,7 +8,7 @@ import {dirname, join} from 'path';
 import semver from 'semver';
 import {fileURLToPath} from 'url';
 import core from '@actions/core';
-import packageJson from '../packages/puppeteer/package.json' assert {type: 'json'};
+import packageJson from '../packages/puppeteer-core/package.json' assert {type: 'json'};
 
 const codifyAndJoinValues = values => {
   return values
