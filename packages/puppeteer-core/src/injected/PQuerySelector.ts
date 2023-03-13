@@ -170,6 +170,10 @@ class PQueryEngine {
   }
 }
 
+type QueryableNode = {
+  querySelectorAll: typeof Document.prototype.querySelectorAll;
+};
+
 /**
  * Queries the given node for all nodes matching the given text selector.
  *
@@ -180,13 +184,19 @@ export const pQuerySelectorAll = async function* (
   selector: string
 ): AwaitableIterable<Node> {
   let selectors: ComplexPSelectorList;
+  let isPureCSS: boolean;
   try {
-    selectors = parsePSelectors(selector);
+    [selectors, isPureCSS] = parsePSelectors(selector);
   } catch (error) {
     if (!isErrorLike(error)) {
       throw new SelectorError(selector, String(error));
     }
     throw new SelectorError(selector, error.message);
+  }
+
+  if (isPureCSS) {
+    yield* (root as unknown as QueryableNode).querySelectorAll(selector);
+    return;
   }
 
   // If there are any empty elements, then this implies the selector has

@@ -75,10 +75,13 @@ const unquote = (text: string): string => {
   return text;
 };
 
-export function parsePSelectors(selector: string): ComplexPSelectorList {
+export function parsePSelectors(
+  selector: string
+): [selector: ComplexPSelectorList, isPureCSS: boolean] {
+  let isPureCSS = true;
   const tokens = tokenize(selector);
   if (tokens.length === 0) {
-    return [];
+    return [[], isPureCSS];
   }
   let compoundSelector: CompoundPSelector = [];
   let complexSelector: ComplexPSelector = [compoundSelector];
@@ -89,6 +92,7 @@ export function parsePSelectors(selector: string): ComplexPSelectorList {
       case 'combinator':
         switch (token.content) {
           case '>>>':
+            isPureCSS = false;
             if (storage.length) {
               compoundSelector.push(storage.toStringAndClear());
             }
@@ -97,6 +101,7 @@ export function parsePSelectors(selector: string): ComplexPSelectorList {
             complexSelector.push(compoundSelector);
             continue;
           case '>>>>':
+            isPureCSS = false;
             if (storage.length) {
               compoundSelector.push(storage.toStringAndClear());
             }
@@ -110,6 +115,7 @@ export function parsePSelectors(selector: string): ComplexPSelectorList {
         if (!token.name.startsWith('-p-')) {
           break;
         }
+        isPureCSS = false;
         if (storage.length) {
           compoundSelector.push(storage.toStringAndClear());
         }
@@ -132,5 +138,5 @@ export function parsePSelectors(selector: string): ComplexPSelectorList {
   if (storage.length) {
     compoundSelector.push(storage.toStringAndClear());
   }
-  return selectors;
+  return [selectors, isPureCSS];
 }
