@@ -15,10 +15,13 @@
  */
 
 import assert from 'assert';
+import fs from 'fs';
+import os from 'os';
 import path from 'path';
 
 import {BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
 import {
+  createProfile,
   relativeExecutablePath,
   resolveDownloadUrl,
 } from '../../lib/cjs/browsers/firefox.js';
@@ -68,5 +71,33 @@ describe('Firefox', () => {
       relativeExecutablePath(BrowserPlatform.WIN64, '111.0a1'),
       path.join('firefox', 'firefox.exe')
     );
+  });
+
+  describe('profile', () => {
+    let tmpDir = '/tmp/puppeteer-browsers-test';
+
+    beforeEach(() => {
+      tmpDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), 'puppeteer-browsers-test')
+      );
+    });
+
+    afterEach(() => {
+      fs.rmSync(tmpDir, {recursive: true});
+    });
+
+    it('should create a profile', async () => {
+      await createProfile({
+        preferences: {
+          test: 1,
+        },
+        path: tmpDir,
+      });
+      const text = fs.readFileSync(path.join(tmpDir, 'user.js'), 'utf-8');
+      assert.ok(
+        text.includes(`user_pref("toolkit.startup.max_resumed_crashes", -1);`)
+      ); // default preference.
+      assert.ok(text.includes(`user_pref("test", 1);`)); // custom preference.
+    });
   });
 });
