@@ -28,10 +28,10 @@ export class AsyncIterableUtil {
     }
   }
 
-  static async *flatMap<T>(
+  static async *flatMap<T, U>(
     iterable: AwaitableIterable<T>,
-    map: (item: T) => AwaitableIterable<T>
-  ): AsyncIterable<T> {
+    map: (item: T) => AwaitableIterable<U>
+  ): AsyncIterable<U> {
     for await (const value of iterable) {
       yield* map(value);
     }
