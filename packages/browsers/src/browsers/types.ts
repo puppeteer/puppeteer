@@ -47,3 +47,8 @@ export const downloadUrls = {
 export enum BrowserTag {
   LATEST = 'latest',
 }
+
+export interface ProfileOptions {
+  preferences: Record<string, unknown>;
+  path: string;
+}

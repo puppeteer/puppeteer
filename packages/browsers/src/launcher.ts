@@ -91,6 +91,8 @@ export function launch(opts: LaunchOptions): Process {
 
 export const CDP_WEBSOCKET_ENDPOINT_REGEX =
   /^DevTools listening on (ws:\/\/.*)$/;
+export const WEBDRIVER_BIDI_WEBSOCKET_ENDPOINT_REGEX =
+  /^WebDriver BiDi listening on (ws:\/\/.*)$/;
 
 class Process {
   #executablePath;

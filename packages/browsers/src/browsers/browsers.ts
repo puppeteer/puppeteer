@@ -16,7 +16,7 @@
 
 import * as chrome from './chrome.js';
 import * as firefox from './firefox.js';
-import {Browser, BrowserPlatform, BrowserTag} from './types.js';
+import {Browser, BrowserPlatform, BrowserTag, ProfileOptions} from './types.js';
 
 export const downloadUrls = {
   [Browser.CHROME]: chrome.resolveDownloadUrl,
@@ -52,4 +52,17 @@ export async function resolveBuildId(
   }
   // We assume the tag is the buildId if it didn't match any keywords.
   return tag;
+}
+
+export async function createProfile(
+  browser: Browser,
+  opts: ProfileOptions
+): Promise<void> {
+  switch (browser) {
+    case Browser.FIREFOX:
+      return await firefox.createProfile(opts);
+    case Browser.CHROME:
+    case Browser.CHROMIUM:
+      throw new Error(`Profile creation is not support for ${browser} yet`);
+  }
 }
