@@ -170,6 +170,67 @@ class PQueryEngine {
   }
 }
 
+class DepthCalculator {
+  #cache = new Map<Node, number[]>();
+
+  calculate(node: Node, depth: number[] = []): number[] {
+    if (node instanceof Document) {
+      return depth;
+    }
+    if (node instanceof ShadowRoot) {
+      node = node.host;
+    }
+
+    const cachedDepth = this.#cache.get(node);
+    if (cachedDepth) {
+      return [...cachedDepth, ...depth];
+    }
+
+    let index = 0;
+    for (
+      let prevSibling = node.previousSibling;
+      prevSibling;
+      prevSibling = prevSibling.previousSibling
+    ) {
+      ++index;
+    }
+
+    const value = this.calculate(node.parentNode as Node, [index]);
+    this.#cache.set(node, value);
+    return [...value, ...depth];
+  }
+}
+
+const compareDepths = (a: number[], b: number[]): -1 | 0 | 1 => {
+  if (a.length + b.length === 0) {
+    return 0;
+  }
+  const [i = Infinity, ...otherA] = a;
+  const [j = Infinity, ...otherB] = b;
+  if (i === j) {
+    return compareDepths(otherA, otherB);
+  }
+  return i < j ? 1 : -1;
+};
+
+const domSort = async function* (elements: AwaitableIterable<Node>) {
+  const results = new Set<Node>();
+  for await (const element of elements) {
+    results.add(element);
+  }
+  const calculator = new DepthCalculator();
+  yield* [...results.values()]
+    .map(result => {
+      return [result, calculator.calculate(result)] as const;
+    })
+    .sort(([, a], [, b]) => {
+      return compareDepths(a, b);
+    })
+    .map(([result]) => {
+      return result;
+    });
+};
+
 type QueryableNode = {
   querySelectorAll: typeof Document.prototype.querySelectorAll;
 };
@@ -179,7 +240,7 @@ type QueryableNode = {
  *
  * @internal
  */
-export const pQuerySelectorAll = async function* (
+export const pQuerySelectorAll = function (
   root: Node,
   selector: string
 ): AwaitableIterable<Node> {
@@ -195,10 +256,8 @@ export const pQuerySelectorAll = async function* (
   }
 
   if (isPureCSS) {
-    yield* (root as unknown as QueryableNode).querySelectorAll(selector);
-    return;
+    return (root as unknown as QueryableNode).querySelectorAll(selector);
   }
-
   // If there are any empty elements, then this implies the selector has
   // contiguous combinators (e.g. `>>> >>>>`) or starts/ends with one which we
   // treat as illegal, similar to existing behavior.
@@ -221,11 +280,13 @@ export const pQuerySelectorAll = async function* (
     );
   }
 
-  for (const selectorParts of selectors) {
-    const query = new PQueryEngine(root, selector, selectorParts);
-    query.run();
-    yield* query.elements;
-  }
+  return domSort(
+    AsyncIterableUtil.flatMap(selectors, selectorParts => {
+      const query = new PQueryEngine(root, selector, selectorParts);
+      query.run();
+      return query.elements;
+    })
+  );
 };
 
 /**

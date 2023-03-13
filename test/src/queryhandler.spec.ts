@@ -359,7 +359,9 @@ describe('Query handler tests', function () {
   describe('P selectors', () => {
     beforeEach(async () => {
       const {page} = getTestState();
-      await page.setContent('<div>hello <button>world</button></div>');
+      await page.setContent(
+        '<div>hello <button>world<span></span></button></div>'
+      );
       Puppeteer.clearCustomQueryHandlers();
     });
 
@@ -489,10 +491,60 @@ describe('Query handler tests', function () {
       expect(value).toMatchObject({textContent: 'world', tagName: 'BUTTON'});
     });
 
-    it('should work with commas', async () => {
+    it('should work with selector lists', async () => {
       const {page} = getTestState();
       const elements = await page.$$('div, ::-p-text(world)');
       expect(elements.length).toStrictEqual(2);
+    });
+
+    const permute = <T>(inputs: T[]): T[][] => {
+      const results: T[][] = [];
+      for (let i = 0; i < inputs.length; ++i) {
+        const permutation = permute(
+          inputs.slice(0, i).concat(inputs.slice(i + 1))
+        );
+        const value = inputs[i] as T;
+        if (permutation.length === 0) {
+          results.push([value]);
+          continue;
+        }
+        for (const part of permutation) {
+          results.push([value].concat(part));
+        }
+      }
+      return results;
+    };
+
+    it('should match querySelector* ordering', async () => {
+      const {page} = getTestState();
+      for (const list of permute(['div', 'button', 'span'])) {
+        const expected = await page.evaluate(selector => {
+          return [...document.querySelectorAll(selector)].map(element => {
+            return element.tagName;
+          });
+        }, list.join(','));
+        const elements = await page.$$(
+          list
+            .map(selector => {
+              return selector === 'button' ? '::-p-text(world)' : selector;
+            })
+            .join(',')
+        );
+        const actual = await Promise.all(
+          elements.map(element => {
+            return element.evaluate(element => {
+              return element.tagName;
+            });
+          })
+        );
+        expect(actual.join()).toStrictEqual(expected.join());
+      }
+    });
+
+    it('should not have duplicate elements from selector lists', async () => {
+      const {page} = getTestState();
+      const elements = await page.$$('::-p-text(world), button');
+      expect(elements.length).toStrictEqual(1);
     });
   });
 });
