@@ -15,6 +15,7 @@
  */
 
 import childProcess from 'child_process';
+import {accessSync} from 'fs';
 import os from 'os';
 import path from 'path';
 import readline from 'readline';
@@ -23,7 +24,9 @@ import {
   Browser,
   BrowserPlatform,
   executablePathByBrowser,
+  resolveSystemExecutablePath,
 } from './browsers/browsers.js';
+import {ChromeReleaseChannel} from './browsers/types.js';
 import {CacheStructure} from './CacheStructure.js';
 import {debug} from './debug.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
@@ -49,7 +52,7 @@ export interface Options {
    */
   browser: Browser;
   /**
-   * Determines which buildId to dowloand. BuildId should uniquely identify
+   * Determines which buildId to download. BuildId should uniquely identify
    * binaries and they are used for caching.
    */
   buildId: string;
@@ -71,6 +74,47 @@ export function computeExecutablePath(options: Options): string {
     installationDir,
     executablePathByBrowser[options.browser](options.platform, options.buildId)
   );
+}
+
+/**
+ * @public
+ */
+export interface SystemOptions {
+  /**
+   * Determines which platform the browser will be suited for.
+   *
+   * @defaultValue Auto-detected.
+   */
+  platform?: BrowserPlatform;
+  /**
+   * Determines which browser to fetch.
+   */
+  browser: Browser;
+  /**
+   * Release channel to look for on the system.
+   */
+  channel: ChromeReleaseChannel;
+}
+export function computeSystemExecutablePath(options: SystemOptions): string {
+  options.platform ??= detectBrowserPlatform();
+  if (!options.platform) {
+    throw new Error(
+      `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`
+    );
+  }
+  const path = resolveSystemExecutablePath(
+    options.browser,
+    options.platform,
+    options.channel
+  );
+  try {
+    accessSync(path);
+  } catch (error) {
+    throw new Error(
+      `Could not find Google Chrome executable for channel '${options.channel}' at '${path}'.`
+    );
+  }
+  return path;
 }
 
 type LaunchOptions = {

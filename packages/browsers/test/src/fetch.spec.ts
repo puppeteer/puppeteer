@@ -92,7 +92,7 @@ describe('fetch', () => {
   });
 
   it('should download a buildId that is a bzip2 archive', async function () {
-    this.timeout(60000);
+    this.timeout(90000);
     const expectedOutputPath = path.join(
       tmpDir,
       'firefox',

@@ -52,3 +52,10 @@ export interface ProfileOptions {
   preferences: Record<string, unknown>;
   path: string;
 }
+
+export enum ChromeReleaseChannel {
+  STABLE = 'stable',
+  DEV = 'dev',
+  CANARY = 'canary',
+  BETA = 'beta',
+}

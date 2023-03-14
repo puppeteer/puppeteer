@@ -18,7 +18,7 @@ import path from 'path';
 
 import {httpRequest} from '../httpUtil.js';
 
-import {BrowserPlatform} from './types.js';
+import {BrowserPlatform, ChromeReleaseChannel} from './types.js';
 
 function archive(platform: BrowserPlatform, buildId: string): string {
   switch (platform) {
@@ -81,7 +81,6 @@ export function relativeExecutablePath(
       return path.join('chrome-win', 'chrome.exe');
   }
 }
-
 export async function resolveBuildId(
   platform: BrowserPlatform,
   // We will need it for other channels/keywords.
@@ -117,4 +116,49 @@ export async function resolveBuildId(
       reject(err);
     });
   });
+}
+
+export function resolveSystemExecutablePath(
+  platform: BrowserPlatform,
+  channel: ChromeReleaseChannel
+): string {
+  switch (platform) {
+    case BrowserPlatform.WIN64:
+    case BrowserPlatform.WIN32:
+      switch (channel) {
+        case ChromeReleaseChannel.STABLE:
+          return `${process.env['PROGRAMFILES']}\\Google\\Chrome\\Application\\chrome.exe`;
+        case ChromeReleaseChannel.BETA:
+          return `${process.env['PROGRAMFILES']}\\Google\\Chrome Beta\\Application\\chrome.exe`;
+        case ChromeReleaseChannel.CANARY:
+          return `${process.env['PROGRAMFILES']}\\Google\\Chrome SxS\\Application\\chrome.exe`;
+        case ChromeReleaseChannel.DEV:
+          return `${process.env['PROGRAMFILES']}\\Google\\Chrome Dev\\Application\\chrome.exe`;
+      }
+    case BrowserPlatform.MAC_ARM:
+    case BrowserPlatform.MAC:
+      switch (channel) {
+        case ChromeReleaseChannel.STABLE:
+          return '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+        case ChromeReleaseChannel.BETA:
+          return '/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta';
+        case ChromeReleaseChannel.CANARY:
+          return '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary';
+        case ChromeReleaseChannel.DEV:
+          return '/Applications/Google Chrome Dev.app/Contents/MacOS/Google Chrome Dev';
+      }
+    case BrowserPlatform.LINUX:
+      switch (channel) {
+        case ChromeReleaseChannel.STABLE:
+          return '/opt/google/chrome/chrome';
+        case ChromeReleaseChannel.BETA:
+          return '/opt/google/chrome-beta/chrome';
+        case ChromeReleaseChannel.DEV:
+          return '/opt/google/chrome-unstable/chrome';
+      }
+  }
+
+  throw new Error(
+    `Unable to detect browser executable path for '${channel}' on ${platform}.`
+  );
 }

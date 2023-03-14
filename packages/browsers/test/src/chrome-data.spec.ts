@@ -21,7 +21,9 @@ import {BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
 import {
   resolveDownloadUrl,
   relativeExecutablePath,
+  resolveSystemExecutablePath,
 } from '../../lib/cjs/browsers/chrome.js';
+import {ChromeReleaseChannel} from '../../lib/cjs/browsers/types.js';
 
 describe('Chrome', () => {
   it('should resolve download URLs', () => {
@@ -68,5 +70,37 @@ describe('Chrome', () => {
       relativeExecutablePath(BrowserPlatform.WIN64, '12372323'),
       path.join('chrome-win', 'chrome.exe')
     );
+  });
+
+  it('should resolve system executable path', () => {
+    process.env['PROGRAMFILES'] = 'C:\\ProgramFiles';
+    try {
+      assert.strictEqual(
+        resolveSystemExecutablePath(
+          BrowserPlatform.WIN32,
+          ChromeReleaseChannel.DEV
+        ),
+        'C:\\ProgramFiles\\Google\\Chrome Dev\\Application\\chrome.exe'
+      );
+    } finally {
+      delete process.env['PROGRAMFILES'];
+    }
+
+    assert.strictEqual(
+      resolveSystemExecutablePath(
+        BrowserPlatform.MAC,
+        ChromeReleaseChannel.BETA
+      ),
+      '/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta'
+    );
+    assert.throws(() => {
+      assert.strictEqual(
+        resolveSystemExecutablePath(
+          BrowserPlatform.LINUX,
+          ChromeReleaseChannel.CANARY
+        ),
+        path.join('chrome-linux', 'chrome')
+      );
+    }, new Error(`Unable to detect browser executable path for 'canary' on linux.`));
   });
 });

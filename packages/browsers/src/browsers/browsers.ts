@@ -16,7 +16,13 @@
 
 import * as chrome from './chrome.js';
 import * as firefox from './firefox.js';
-import {Browser, BrowserPlatform, BrowserTag, ProfileOptions} from './types.js';
+import {
+  Browser,
+  BrowserPlatform,
+  BrowserTag,
+  ChromeReleaseChannel,
+  ProfileOptions,
+} from './types.js';
 
 export const downloadUrls = {
   [Browser.CHROME]: chrome.resolveDownloadUrl,
@@ -64,5 +70,21 @@ export async function createProfile(
     case Browser.CHROME:
     case Browser.CHROMIUM:
       throw new Error(`Profile creation is not support for ${browser} yet`);
+  }
+}
+
+export function resolveSystemExecutablePath(
+  browser: Browser,
+  platform: BrowserPlatform,
+  channel: ChromeReleaseChannel
+): string {
+  switch (browser) {
+    case Browser.FIREFOX:
+      throw new Error(
+        'System browser detection is not supported for Firefox yet.'
+      );
+    case Browser.CHROME:
+    case Browser.CHROMIUM:
+      return chrome.resolveSystemExecutablePath(platform, channel);
   }
 }

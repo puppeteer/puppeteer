@@ -19,10 +19,18 @@ import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 
 import {resolveBuildId} from './browsers/browsers.js';
-import {Browser, BrowserPlatform} from './browsers/types.js';
+import {
+  Browser,
+  BrowserPlatform,
+  ChromeReleaseChannel,
+} from './browsers/types.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {fetch} from './fetch.js';
-import {computeExecutablePath, launch} from './launcher.js';
+import {
+  computeExecutablePath,
+  computeSystemExecutablePath,
+  launch,
+} from './launcher.js';
 
 type InstallArgs = {
   browser: {
@@ -41,6 +49,7 @@ type LaunchArgs = {
   path?: string;
   platform?: BrowserPlatform;
   detached: boolean;
+  system: boolean;
 };
 
 export class CLI {
@@ -132,18 +141,30 @@ export class CLI {
           this.#definePathParameter(yargs);
           yargs.option('detached', {
             type: 'boolean',
-            desc: 'Whether to detach the child process.',
+            desc: 'Detach the child process.',
+            default: false,
+          });
+          yargs.option('system', {
+            type: 'boolean',
+            desc: 'Search for a browser installed on the system instead of the cache folder.',
             default: false,
           });
         },
         async argv => {
           const args = argv as unknown as LaunchArgs;
-          const executablePath = computeExecutablePath({
-            browser: args.browser.name,
-            buildId: args.browser.buildId,
-            cacheDir: args.path ?? this.#cachePath,
-            platform: args.platform,
-          });
+          const executablePath = args.system
+            ? computeSystemExecutablePath({
+                browser: args.browser.name,
+                // TODO: throw an error if not a ChromeReleaseChannel is provided.
+                channel: args.browser.buildId as ChromeReleaseChannel,
+                platform: args.platform,
+              })
+            : computeExecutablePath({
+                browser: args.browser.name,
+                buildId: args.browser.buildId,
+                cacheDir: args.path ?? this.#cachePath,
+                platform: args.platform,
+              });
           launch({
             executablePath,
             detached: args.detached,
