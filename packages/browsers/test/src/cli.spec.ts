@@ -19,6 +19,8 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
+import rimraf from 'rimraf';
+
 import {CLI} from '../../lib/cjs/CLI.js';
 
 import {testChromeBuildId, testFirefoxBuildId} from './versions.js';
@@ -33,7 +35,7 @@ describe('CLI', function () {
   });
 
   afterEach(() => {
-    fs.rmSync(tmpDir, {recursive: true});
+    rimraf.sync(tmpDir);
   });
 
   it('should download Chromium binaries', async () => {

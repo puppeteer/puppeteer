@@ -19,6 +19,8 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
+import rimraf from 'rimraf';
+
 import {BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
 import {
   createProfile,
@@ -83,7 +85,7 @@ describe('Firefox', () => {
     });
 
     afterEach(() => {
-      fs.rmSync(tmpDir, {recursive: true});
+      rimraf.sync(tmpDir);
     });
 
     it('should create a profile', async () => {

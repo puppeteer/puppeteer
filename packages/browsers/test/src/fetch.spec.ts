@@ -21,6 +21,8 @@ import https from 'https';
 import os from 'os';
 import path from 'path';
 
+import rimraf from 'rimraf';
+
 import {fetch, canFetch, Browser, BrowserPlatform} from '../../lib/cjs/main.js';
 
 import {testChromeBuildId, testFirefoxBuildId} from './versions.js';
@@ -37,7 +39,7 @@ describe('fetch', () => {
   });
 
   afterEach(() => {
-    fs.rmSync(tmpDir, {recursive: true});
+    rimraf.sync(tmpDir);
   });
 
   it('should check if a buildId can be downloaded', async () => {
