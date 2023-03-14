@@ -17,13 +17,12 @@
 import {exec as execChildProcess} from 'child_process';
 import {createReadStream, createWriteStream, existsSync, readdirSync} from 'fs';
 import {chmod, mkdir, readdir, unlink} from 'fs/promises';
-import * as http from 'http';
-import * as https from 'https';
-import * as os from 'os';
-import * as path from 'path';
-import * as URL from 'url';
-import * as util from 'util';
-import {promisify} from 'util';
+import http from 'http';
+import https from 'https';
+import os from 'os';
+import path from 'path';
+import URL from 'url';
+import {promisify, format} from 'util';
 
 import extractZip from 'extract-zip';
 import createHttpsProxyAgent, {
@@ -106,7 +105,7 @@ function downloadURL(
   host: string,
   revision: string
 ): string {
-  const url = util.format(
+  const url = format(
     downloadURLs[product][platform],
     host,
     revision,

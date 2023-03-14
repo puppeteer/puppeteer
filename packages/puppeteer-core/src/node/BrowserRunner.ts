@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import * as childProcess from 'child_process';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as readline from 'readline';
-import {promisify} from 'util';
+import childProcess from 'child_process';
+import fs from 'fs';
+import {rename, unlink} from 'fs/promises';
+import path from 'path';
+import readline from 'readline';
 
 import rimraf from 'rimraf';
 
@@ -39,9 +39,6 @@ import {isErrnoException, isErrorLike} from '../util/ErrorLike.js';
 
 import {LaunchOptions} from './LaunchOptions.js';
 import {PipeTransport} from './PipeTransport.js';
-
-const renameAsync = promisify(fs.rename);
-const unlinkAsync = promisify(fs.unlink);
 
 const debugLauncher = debug('puppeteer:launcher');
 
@@ -136,7 +133,7 @@ export class BrowserRunner {
             try {
               // When an existing user profile has been used remove the user
               // preferences file and restore possibly backuped preferences.
-              await unlinkAsync(path.join(this.#userDataDir, 'user.js'));
+              await unlink(path.join(this.#userDataDir, 'user.js'));
 
               const prefsBackupPath = path.join(
                 this.#userDataDir,
@@ -144,8 +141,8 @@ export class BrowserRunner {
               );
               if (fs.existsSync(prefsBackupPath)) {
                 const prefsPath = path.join(this.#userDataDir, 'prefs.js');
-                await unlinkAsync(prefsPath);
-                await renameAsync(prefsBackupPath, prefsPath);
+                await unlink(prefsPath);
+                await rename(prefsBackupPath, prefsPath);
               }
             } catch (error) {
               debugError(error);
