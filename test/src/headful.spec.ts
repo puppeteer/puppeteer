@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import fs from 'fs';
+import {mkdtemp} from 'fs/promises';
 import os from 'os';
 import path from 'path';
-import {promisify} from 'util';
 
 import expect from 'expect';
 import {
@@ -27,8 +26,6 @@ import {
 import rimraf from 'rimraf';
 
 import {getTestState} from './mocha-utils.js';
-
-const mkdtempAsync = promisify(fs.mkdtemp);
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 
@@ -215,7 +212,7 @@ describe('headful tests', function () {
       /* Needs investigation into why but this fails consistently on Windows CI. */
       const {server, puppeteer} = getTestState();
 
-      const userDataDir = await mkdtempAsync(TMP_FOLDER);
+      const userDataDir = await mkdtemp(TMP_FOLDER);
       // Write a cookie in headful chrome
       const headfulBrowser = await launchBrowser(
         puppeteer,
