@@ -19,6 +19,8 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
+import rimraf from 'rimraf';
+
 import {
   CDP_WEBSOCKET_ENDPOINT_REGEX,
   computeExecutablePath,
@@ -84,7 +86,7 @@ describe('launcher', () => {
     });
 
     afterEach(() => {
-      fs.rmSync(tmpDir, {recursive: true});
+      rimraf.sync(tmpDir);
     });
 
     it('should launch a Chrome browser', async () => {
@@ -144,7 +146,7 @@ describe('launcher', () => {
     });
 
     afterEach(() => {
-      fs.rmSync(tmpDir, {recursive: true});
+      rimraf.sync(tmpDir);
     });
 
     it('should launch a Firefox browser', async () => {
