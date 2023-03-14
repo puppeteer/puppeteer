@@ -36,7 +36,7 @@ export const executablePathByBrowser = {
   [Browser.FIREFOX]: firefox.relativeExecutablePath,
 };
 
-export {Browser, BrowserPlatform};
+export {Browser, BrowserPlatform, ChromeReleaseChannel};
 
 export async function resolveBuildId(
   browser: Browser,
