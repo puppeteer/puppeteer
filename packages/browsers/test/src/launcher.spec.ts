@@ -19,13 +19,14 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-import {Browser, BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
-import {fetch} from '../../lib/cjs/fetch.js';
 import {
   CDP_WEBSOCKET_ENDPOINT_REGEX,
   computeExecutablePath,
   launch,
-} from '../../lib/cjs/launcher.js';
+  fetch,
+  Browser,
+  BrowserPlatform,
+} from '../../lib/cjs/main.js';
 
 import {testChromeBuildId, testFirefoxBuildId} from './versions.js';
 

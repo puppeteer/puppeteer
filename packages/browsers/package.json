@@ -11,6 +11,13 @@
   "bin": {
     "@puppeteer/browsers": "lib/cjs/browsers.js"
   },
+  "main": "./lib/cjs/main.js",
+  "exports": {
+    ".": {
+      "import": "./lib/esm/main.js",
+      "require": "./lib/cjs/main.js"
+    }
+  },
   "wireit": {
     "build": {
       "command": "tsc -b && chmod a+x lib/cjs/browsers.js lib/esm/browsers.js",

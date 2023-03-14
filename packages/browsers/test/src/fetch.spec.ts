@@ -21,8 +21,7 @@ import https from 'https';
 import os from 'os';
 import path from 'path';
 
-import {Browser, BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
-import {fetch, canFetch} from '../../lib/cjs/fetch.js';
+import {fetch, canFetch, Browser, BrowserPlatform} from '../../lib/cjs/main.js';
 
 import {testChromeBuildId, testFirefoxBuildId} from './versions.js';
 
