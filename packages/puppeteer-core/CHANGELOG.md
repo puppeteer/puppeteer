@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.7.5](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.7.4...puppeteer-core-v19.7.5) (2023-03-14)
+
+
+### Bug Fixes
+
+* sort elements based on selector matching algorithm ([#9836](https://github.com/puppeteer/puppeteer/issues/9836)) ([9044609](https://github.com/puppeteer/puppeteer/commit/9044609be3ea78c650420533e7f6f40b83cedd99))
+
+
+### Performance Improvements
+
+* use `querySelector*` for pure CSS selectors ([#9835](https://github.com/puppeteer/puppeteer/issues/9835)) ([8aea8e0](https://github.com/puppeteer/puppeteer/commit/8aea8e047103b72c0238dde8e4777acf7897ddaa))
+
 ## [19.7.4](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.7.3...puppeteer-core-v19.7.4) (2023-03-10)
 
 
