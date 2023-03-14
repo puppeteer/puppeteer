@@ -34,9 +34,9 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Properties
 
-| Property                                    | Modifiers             | Type       | Description                                                       |
-| ------------------------------------------- | --------------------- | ---------- | ----------------------------------------------------------------- |
-| [client](./puppeteer.httprequest.client.md) | <code>readonly</code> | CDPSession | Warning! Using this client can break Puppeteer. Use with caution. |
+| Property                                    | Modifiers             | Type                                    | Description                                                       |
+| ------------------------------------------- | --------------------- | --------------------------------------- | ----------------------------------------------------------------- |
+| [client](./puppeteer.httprequest.client.md) | <code>readonly</code> | [CDPSession](./puppeteer.cdpsession.md) | Warning! Using this client can break Puppeteer. Use with caution. |
 
 ## Methods
 
