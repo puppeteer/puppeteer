@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.0](https://github.com/puppeteer/puppeteer/compare/browsers-v0.0.5...browsers-v0.1.0) (2023-03-14)
+
+
+### Features
+
+* implement system channels for chrome in browsers ([#9844](https://github.com/puppeteer/puppeteer/issues/9844)) ([dec48a9](https://github.com/puppeteer/puppeteer/commit/dec48a95923e21a054c1d70d22c14001a0150293))
+
+
+### Bug Fixes
+
+* add browsers entry point ([#9846](https://github.com/puppeteer/puppeteer/issues/9846)) ([1a1e79d](https://github.com/puppeteer/puppeteer/commit/1a1e79d046ccad6fe843aa219501c17da08bc498))
+
 ## [0.0.5](https://github.com/puppeteer/puppeteer/compare/browsers-v0.0.4...browsers-v0.0.5) (2023-03-07)
 
 
