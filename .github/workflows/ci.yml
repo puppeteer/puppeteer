@@ -28,7 +28,7 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
         run: npm ci
         env:
@@ -74,7 +74,7 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
         working-directory: ./website
         run: npm ci
@@ -126,7 +126,7 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
         run: npm ci
         env:
@@ -140,14 +140,14 @@ jobs:
           key: ${{ runner.os }}-chromium-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}
       - name: Install Chromium
         run: npm run postinstall
-      - name: Install linux dependencies.
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: sudo apt-get install xvfb
       - name: Tests types
         run: npm run test-types
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
         run: npm run test -- --test-suite ${{ matrix.suite }}
+      - name: Install linux dependencies.
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: sudo apt-get install xvfb
       - name: Run all tests (for Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
@@ -184,7 +184,7 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
         run: npm ci
         env:
@@ -200,14 +200,14 @@ jobs:
         env:
           PUPPETEER_PRODUCT: firefox
         run: npm run postinstall
-      - name: Install linux dependencies.
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: sudo apt-get install xvfb
       - name: Tests types
         run: npm run test-types
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
         run: npm run test -- --test-suite ${{ matrix.suite }}
+      - name: Install linux dependencies.
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: sudo apt-get install xvfb
       - name: Run all tests (for Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
@@ -234,7 +234,7 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
         run: npm ci
         env:
@@ -262,9 +262,9 @@ jobs:
           - macos-latest
           - windows-latest
         node:
-          - 14
-          - 16
-          - 18
+          - lts/-2
+          - lts/-1
+          - lts/*
         pkg_manager:
           - npm
     steps:
@@ -279,11 +279,6 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - name: Set up ${{ matrix.pkg_manager }}
-        id: workaround
-        if: ${{ matrix.node == '14' && matrix.os == 'windows-latest' && matrix.pkg_manager == 'npm' }}
-        run: npm install -g ${{ matrix.pkg_manager }}@8.3
-      - name: Set up ${{ matrix.pkg_manager }}
-        if: ${{ steps.workaround.outcome == 'skipped' }}
         run: npm install -g ${{ matrix.pkg_manager }}@latest
       - name: Install dependencies
         run: ${{ matrix.pkg_manager }} install
@@ -316,7 +311,7 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: ${{ matrix.node }}
+          node-version: lts/*
       - name: Install dependencies
         run: npm ci
         env:
@@ -346,7 +341,7 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
         run: npm ci
         env:
@@ -373,7 +368,7 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
         run: npm ci
         env:
