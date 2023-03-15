@@ -93,6 +93,10 @@ jobs:
         run: ${{ env.PACKAGE_MANAGER }} install
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      - name: Install dependencies Firefox
+        run: node ./node_modules/puppeteer/install.js
+        env:
+          PUPPETEER_PRODUCT: firefox
       - name: Verify issue
         timeout-minutes: 10
         run: ${{ env.PACKAGE_MANAGER }} run verify
