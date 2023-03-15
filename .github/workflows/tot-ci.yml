@@ -32,7 +32,7 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
         run: npm ci
         env:
