@@ -58,7 +58,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3.5.1
         with:
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
         run: npm install
       - name: Analyze issue
