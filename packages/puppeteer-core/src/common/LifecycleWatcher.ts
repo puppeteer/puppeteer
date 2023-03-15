@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import {HTTPResponse} from '../api/HTTPResponse.js';
 import {assert} from '../util/assert.js';
 import {
   DeferredPromise,
@@ -25,7 +26,6 @@ import {TimeoutError} from './Errors.js';
 import {Frame} from './Frame.js';
 import {FrameManager, FrameManagerEmittedEvents} from './FrameManager.js';
 import {HTTPRequest} from './HTTPRequest.js';
-import {HTTPResponse} from './HTTPResponse.js';
 import {NetworkManagerEmittedEvents} from './NetworkManager.js';
 import {
   addEventListener,

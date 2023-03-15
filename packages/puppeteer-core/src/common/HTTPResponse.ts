@@ -15,6 +15,11 @@
  */
 import {Protocol} from 'devtools-protocol';
 
+import {
+  HTTPResponse as BaseHTTPResponse,
+  RemoteAddress,
+} from '../api/HTTPResponse.js';
+
 import {CDPSession} from './Connection.js';
 import {ProtocolError} from './Errors.js';
 import {Frame} from './Frame.js';
@@ -22,20 +27,9 @@ import {HTTPRequest} from './HTTPRequest.js';
 import {SecurityDetails} from './SecurityDetails.js';
 
 /**
- * @public
+ * @internal
  */
-export interface RemoteAddress {
-  ip?: string;
-  port?: number;
-}
-
-/**
- * The HTTPResponse class represents responses which are received by the
- * {@link Page} class.
- *
- * @public
- */
-export class HTTPResponse {
+export class HTTPResponse extends BaseHTTPResponse {
   #client: CDPSession;
   #request: HTTPRequest;
   #contentPromise: Promise<Buffer> | null = null;
@@ -51,15 +45,13 @@ export class HTTPResponse {
   #securityDetails: SecurityDetails | null;
   #timing: Protocol.Network.ResourceTiming | null;
 
-  /**
-   * @internal
-   */
   constructor(
     client: CDPSession,
     request: HTTPRequest,
     responsePayload: Protocol.Network.Response,
     extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null
   ) {
+    super();
     this.#client = client;
     this.#request = request;
 
@@ -111,81 +103,47 @@ export class HTTPResponse {
     return statusText;
   }
 
-  /**
-   * @internal
-   */
-  _resolveBody(err: Error | null): void {
+  override _resolveBody(err: Error | null): void {
     if (err) {
       return this.#bodyLoadedPromiseFulfill(err);
     }
     return this.#bodyLoadedPromiseFulfill();
   }
 
-  /**
-   * @returns The IP address and port number used to connect to the remote
-   * server.
-   */
-  remoteAddress(): RemoteAddress {
+  override remoteAddress(): RemoteAddress {
     return this.#remoteAddress;
   }
 
-  /**
-   * @returns The URL of the response.
-   */
-  url(): string {
+  override url(): string {
     return this.#url;
   }
 
-  /**
-   * @returns True if the response was successful (status in the range 200-299).
-   */
-  ok(): boolean {
+  override ok(): boolean {
     // TODO: document === 0 case?
     return this.#status === 0 || (this.#status >= 200 && this.#status <= 299);
   }
 
-  /**
-   * @returns The status code of the response (e.g., 200 for a success).
-   */
-  status(): number {
+  override status(): number {
     return this.#status;
   }
 
-  /**
-   * @returns The status text of the response (e.g. usually an "OK" for a
-   * success).
-   */
-  statusText(): string {
+  override statusText(): string {
     return this.#statusText;
   }
 
-  /**
-   * @returns An object with HTTP headers associated with the response. All
-   * header names are lower-case.
-   */
-  headers(): Record<string, string> {
+  override headers(): Record<string, string> {
     return this.#headers;
   }
 
-  /**
-   * @returns {@link SecurityDetails} if the response was received over the
-   * secure connection, or `null` otherwise.
-   */
-  securityDetails(): SecurityDetails | null {
+  override securityDetails(): SecurityDetails | null {
     return this.#securityDetails;
   }
 
-  /**
-   * @returns Timing information related to the response.
-   */
-  timing(): Protocol.Network.ResourceTiming | null {
+  override timing(): Protocol.Network.ResourceTiming | null {
     return this.#timing;
   }
 
-  /**
-   * @returns Promise which resolves to a buffer with response body.
-   */
-  buffer(): Promise<Buffer> {
+  override buffer(): Promise<Buffer> {
     if (!this.#contentPromise) {
       this.#contentPromise = this.#bodyLoadedPromise.then(async error => {
         if (error) {
@@ -216,55 +174,19 @@ export class HTTPResponse {
     return this.#contentPromise;
   }
 
-  /**
-   * @returns Promise which resolves to a text representation of response body.
-   */
-  async text(): Promise<string> {
-    const content = await this.buffer();
-    return content.toString('utf8');
-  }
-
-  /**
-   *
-   * @returns Promise which resolves to a JSON representation of response body.
-   *
-   * @remarks
-   *
-   * This method will throw if the response body is not parsable via
-   * `JSON.parse`.
-   */
-  async json(): Promise<any> {
-    const content = await this.text();
-    return JSON.parse(content);
-  }
-
-  /**
-   * @returns A matching {@link HTTPRequest} object.
-   */
-  request(): HTTPRequest {
+  override request(): HTTPRequest {
     return this.#request;
   }
 
-  /**
-   * @returns True if the response was served from either the browser's disk
-   * cache or memory cache.
-   */
-  fromCache(): boolean {
+  override fromCache(): boolean {
     return this.#fromDiskCache || this.#request._fromMemoryCache;
   }
 
-  /**
-   * @returns True if the response was served by a service worker.
-   */
-  fromServiceWorker(): boolean {
+  override fromServiceWorker(): boolean {
     return this.#fromServiceWorker;
   }
 
-  /**
-   * @returns A {@link Frame} that initiated this response, or `null` if
-   * navigating to error pages.
-   */
-  frame(): Frame | null {
+  override frame(): Frame | null {
     return this.#request.frame();
   }
 }

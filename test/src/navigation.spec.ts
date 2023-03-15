@@ -18,7 +18,7 @@ import {ServerResponse} from 'http';
 
 import expect from 'expect';
 import {TimeoutError} from 'puppeteer';
-import {HTTPRequest} from 'puppeteer-core/internal/common/HTTPRequest.js';
+import {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 
 import {
   getTestState,

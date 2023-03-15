@@ -15,10 +15,10 @@
  */
 
 import expect from 'expect';
+import {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
+import {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 import {EventEmitter} from 'puppeteer-core/internal/common/EventEmitter.js';
 import {Frame} from 'puppeteer-core/internal/common/Frame.js';
-import {HTTPRequest} from 'puppeteer-core/internal/common/HTTPRequest.js';
-import {HTTPResponse} from 'puppeteer-core/internal/common/HTTPResponse.js';
 import {
   NetworkManager,
   NetworkManagerEmittedEvents,
