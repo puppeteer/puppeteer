@@ -18,10 +18,11 @@ import assert from 'assert';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-
-import rimraf from 'rimraf';
+import * as readline from 'readline';
+import {Writable, Readable} from 'stream';
 
 import {CLI} from '../../lib/cjs/CLI.js';
+import {Cache} from '../../lib/cjs/main.js';
 
 import {testChromeBuildId, testFirefoxBuildId} from './versions.js';
 
@@ -30,12 +31,33 @@ describe('CLI', function () {
 
   let tmpDir = '/tmp/puppeteer-browsers-test';
 
+  function createMockedInterface(input: string) {
+    const readable = Readable.from([input]);
+    const writable = new Writable({
+      write(_chunk, _encoding, callback) {
+        // Suppress the output to keep the test clean
+        callback();
+      },
+    });
+
+    return readline.createInterface({
+      input: readable,
+      output: writable,
+    });
+  }
+
   beforeEach(() => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'puppeteer-browsers-test'));
   });
 
-  afterEach(() => {
-    rimraf.sync(tmpDir);
+  afterEach(async () => {
+    new Cache(tmpDir).clear();
+    await new CLI(tmpDir, createMockedInterface('yes')).run([
+      'npx',
+      '@puppeteer/browsers',
+      'clear',
+      `--path=${tmpDir}`,
+    ]);
   });
 
   it('should download Chromium binaries', async () => {
@@ -46,6 +68,23 @@ describe('CLI', function () {
       `chrome@${testChromeBuildId}`,
       `--path=${tmpDir}`,
       '--platform=linux',
+    ]);
+    assert.ok(
+      fs.existsSync(
+        path.join(
+          tmpDir,
+          'chrome',
+          `linux-${testChromeBuildId}`,
+          'chrome-linux'
+        )
+      )
+    );
+
+    await new CLI(tmpDir, createMockedInterface('no')).run([
+      'npx',
+      '@puppeteer/browsers',
+      'clear',
+      `--path=${tmpDir}`,
     ]);
     assert.ok(
       fs.existsSync(

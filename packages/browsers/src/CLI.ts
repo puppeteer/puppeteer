@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import {stdin as input, stdout as output} from 'process';
+import * as readline from 'readline';
+
 import ProgressBar from 'progress';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
@@ -24,6 +27,7 @@ import {
   BrowserPlatform,
   ChromeReleaseChannel,
 } from './browser-data/browser-data.js';
+import {Cache} from './Cache.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {fetch} from './fetch.js';
 import {
@@ -52,11 +56,17 @@ type LaunchArgs = {
   system: boolean;
 };
 
+type ClearArgs = {
+  path?: string;
+};
+
 export class CLI {
   #cachePath;
+  #rl?: readline.Interface;
 
-  constructor(cachePath = process.cwd()) {
+  constructor(cachePath = process.cwd(), rl?: readline.Interface) {
     this.#cachePath = cachePath;
+    this.#rl = rl;
   }
 
   #defineBrowserParameter(yargs: yargs.Argv<unknown>): void {
@@ -82,13 +92,16 @@ export class CLI {
     });
   }
 
-  #definePathParameter(yargs: yargs.Argv<unknown>): void {
+  #definePathParameter(yargs: yargs.Argv<unknown>, required = false): void {
     yargs.option('path', {
       type: 'string',
       desc: 'Path to the root folder for the browser downloads and installation. The installation folder structure is compatible with the cache structure used by Puppeteer.',
-      default: process.cwd(),
       defaultDescription: 'Current working directory',
+      ...(required ? {} : {default: process.cwd()}),
     });
+    if (required) {
+      yargs.demandOption('path');
+    }
   }
 
   async run(argv: string[]): Promise<void> {
@@ -212,6 +225,31 @@ export class CLI {
             executablePath,
             detached: args.detached,
           });
+        }
+      )
+      .command(
+        'clear',
+        'Removes all installed browsers from the specified cache directory',
+        yargs => {
+          this.#definePathParameter(yargs, true);
+        },
+        async argv => {
+          const args = argv as unknown as ClearArgs;
+          const cacheDir = args.path ?? this.#cachePath;
+          const rl = this.#rl ?? readline.createInterface({input, output});
+          rl.question(
+            `Do you want to permanently and recursively delete the content of ${cacheDir} (yes/No)? `,
+            answer => {
+              rl.close();
+              if (!['y', 'yes'].includes(answer.toLowerCase().trim())) {
+                console.log('Cancelled.');
+                return;
+              }
+              const cache = new Cache(cacheDir);
+              cache.clear();
+              console.log(`${cacheDir} cleared.`);
+            }
+          );
         }
       )
       .demandCommand(1)

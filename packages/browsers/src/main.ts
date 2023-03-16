@@ -29,3 +29,4 @@ export {
   ChromeReleaseChannel,
 } from './browser-data/browser-data.js';
 export {CLI} from './CLI.js';
+export {Cache} from './Cache.js';
