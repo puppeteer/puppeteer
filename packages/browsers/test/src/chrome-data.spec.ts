@@ -17,13 +17,15 @@
 import assert from 'assert';
 import path from 'path';
 
-import {BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
+import {
+  BrowserPlatform,
+  ChromeReleaseChannel,
+} from '../../lib/cjs/browser-data/browser-data.js';
 import {
   resolveDownloadUrl,
   relativeExecutablePath,
   resolveSystemExecutablePath,
-} from '../../lib/cjs/browsers/chrome.js';
-import {ChromeReleaseChannel} from '../../lib/cjs/browsers/types.js';
+} from '../../lib/cjs/browser-data/chrome.js';
 
 describe('Chrome', () => {
   it('should resolve download URLs', () => {

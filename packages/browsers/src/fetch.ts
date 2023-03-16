@@ -20,7 +20,11 @@ import {mkdir, unlink} from 'fs/promises';
 import os from 'os';
 import path from 'path';
 
-import {Browser, BrowserPlatform, downloadUrls} from './browsers/browsers.js';
+import {
+  Browser,
+  BrowserPlatform,
+  downloadUrls,
+} from './browser-data/browser-data.js';
 import {CacheStructure} from './CacheStructure.js';
 import {debug} from './debug.js';
 import {detectBrowserPlatform} from './detectPlatform.js';

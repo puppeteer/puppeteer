@@ -16,7 +16,7 @@
 
 import path from 'path';
 
-import {Browser, BrowserPlatform} from './browsers/types.js';
+import {Browser, BrowserPlatform} from './browser-data/browser-data.js';
 
 /**
  * The cache used by Puppeteer relies on the following structure:
