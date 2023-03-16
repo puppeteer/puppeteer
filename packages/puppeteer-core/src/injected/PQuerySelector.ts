@@ -33,6 +33,8 @@ import {textQuerySelectorAll} from './TextQuerySelector.js';
 import {deepChildren, deepDescendents} from './util.js';
 import {xpathQuerySelectorAll} from './XPathQuerySelector.js';
 
+const IDENT_TOKEN_START = /[-\w\P{ASCII}*]/;
+
 class SelectorError extends Error {
   constructor(selector: string, message: string) {
     super(`${selector} is not a valid selector: ${message}`);
@@ -67,13 +69,6 @@ class PQueryEngine {
           // are used right after so we treat this selector specially.
           this.#next();
           break;
-        default:
-          /**
-           * We add the space since `.foo` will interpolate incorrectly (see
-           * {@link PQueryAllEngine.query}). This is always equivalent.
-           */
-          this.#selector = ` ${this.#selector}`;
-          break;
       }
     }
 
@@ -84,7 +79,14 @@ class PQueryEngine {
         this.elements = AsyncIterableUtil.flatMap(
           this.elements,
           async function* (element) {
-            if (!element.parentElement) {
+            if (!selector[0]) {
+              return;
+            }
+            // The regular expression tests if the selector is a type/universal
+            // selector. Any other case means we want to apply the selector onto
+            // the element itself (e.g. `element.class`, `element>div`,
+            // `element:hover`, etc.).
+            if (IDENT_TOKEN_START.test(selector[0]) || !element.parentElement) {
               yield* (element as Element).querySelectorAll(selector);
               return;
             }
@@ -97,7 +99,7 @@ class PQueryEngine {
               }
             }
             yield* element.parentElement.querySelectorAll(
-              `:scope > :nth-child(${index})${selector}`
+              `:scope>:nth-child(${index})${selector}`
             );
           }
         );

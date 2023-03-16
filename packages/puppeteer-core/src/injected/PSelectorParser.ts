@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Token, tokenize, TokenType} from './PSelectorTokenizer.js';
+import {Token, tokenize, TOKENS, stringify} from 'parsel-js';
 
 export type CSSSelector = string;
 export type PPseudoSelector = {
@@ -29,29 +29,7 @@ export type CompoundPSelector = Array<CSSSelector | PPseudoSelector>;
 export type ComplexPSelector = Array<CompoundPSelector | PCombinator>;
 export type ComplexPSelectorList = ComplexPSelector[];
 
-class TokenSpan {
-  #tokens: Token[] = [];
-  #selector: string;
-
-  constructor(selector: string) {
-    this.#selector = selector;
-  }
-
-  get length(): number {
-    return this.#tokens.length;
-  }
-
-  add(token: Token) {
-    this.#tokens.push(token);
-  }
-
-  toStringAndClear() {
-    const startToken = this.#tokens[0] as Token;
-    const endToken = this.#tokens[this.#tokens.length - 1] as Token;
-    this.#tokens.splice(0);
-    return this.#selector.slice(startToken.pos[0], endToken.pos[1]);
-  }
-}
+TOKENS['combinator'] = /\s*(>>>>?|[\s>+~])\s*/g;
 
 const ESCAPE_REGEXP = /\\[\s\S]/g;
 const unquote = (text: string): string => {
@@ -81,15 +59,16 @@ export function parsePSelectors(
   let compoundSelector: CompoundPSelector = [];
   let complexSelector: ComplexPSelector = [compoundSelector];
   const selectors: ComplexPSelectorList = [complexSelector];
-  const storage = new TokenSpan(selector);
+  const storage: Token[] = [];
   for (const token of tokens) {
     switch (token.type) {
-      case TokenType.Combinator:
+      case 'combinator':
         switch (token.content) {
           case PCombinator.Descendent:
             isPureCSS = false;
             if (storage.length) {
-              compoundSelector.push(storage.toStringAndClear());
+              compoundSelector.push(stringify(storage));
+              storage.splice(0);
             }
             compoundSelector = [];
             complexSelector.push(PCombinator.Descendent);
@@ -98,7 +77,8 @@ export function parsePSelectors(
           case PCombinator.Child:
             isPureCSS = false;
             if (storage.length) {
-              compoundSelector.push(storage.toStringAndClear());
+              compoundSelector.push(stringify(storage));
+              storage.splice(0);
             }
             compoundSelector = [];
             complexSelector.push(PCombinator.Child);
@@ -106,32 +86,34 @@ export function parsePSelectors(
             continue;
         }
         break;
-      case TokenType.PseudoElement:
+      case 'pseudo-element':
         if (!token.name.startsWith('-p-')) {
           break;
         }
         isPureCSS = false;
         if (storage.length) {
-          compoundSelector.push(storage.toStringAndClear());
+          compoundSelector.push(stringify(storage));
+          storage.splice(0);
         }
         compoundSelector.push({
           name: token.name.slice(3),
           value: unquote(token.argument ?? ''),
         });
         continue;
-      case TokenType.Comma:
+      case 'comma':
         if (storage.length) {
-          compoundSelector.push(storage.toStringAndClear());
+          compoundSelector.push(stringify(storage));
+          storage.splice(0);
         }
         compoundSelector = [];
         complexSelector = [compoundSelector];
         selectors.push(complexSelector);
         continue;
     }
-    storage.add(token);
+    storage.push(token);
   }
   if (storage.length) {
-    compoundSelector.push(storage.toStringAndClear());
+    compoundSelector.push(stringify(storage));
   }
   return [selectors, isPureCSS];
 }
