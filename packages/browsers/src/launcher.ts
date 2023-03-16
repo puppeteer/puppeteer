@@ -25,8 +25,8 @@ import {
   BrowserPlatform,
   executablePathByBrowser,
   resolveSystemExecutablePath,
-} from './browsers/browsers.js';
-import {ChromeReleaseChannel} from './browsers/types.js';
+  ChromeReleaseChannel,
+} from './browser-data/browser-data.js';
 import {CacheStructure} from './CacheStructure.js';
 import {debug} from './debug.js';
 import {detectBrowserPlatform} from './detectPlatform.js';

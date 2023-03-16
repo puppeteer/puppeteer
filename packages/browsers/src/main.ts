@@ -27,4 +27,5 @@ export {
   Browser,
   BrowserPlatform,
   ChromeReleaseChannel,
-} from './browsers/browsers.js';
+} from './browser-data/browser-data.js';
+export {CLI} from './CLI.js';

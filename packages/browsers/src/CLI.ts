@@ -18,12 +18,12 @@ import ProgressBar from 'progress';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 
-import {resolveBuildId} from './browsers/browsers.js';
 import {
+  resolveBuildId,
   Browser,
   BrowserPlatform,
   ChromeReleaseChannel,
-} from './browsers/types.js';
+} from './browser-data/browser-data.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {fetch} from './fetch.js';
 import {
