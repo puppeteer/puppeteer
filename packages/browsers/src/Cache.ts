@@ -16,6 +16,8 @@
 
 import path from 'path';
 
+import rimraf from 'rimraf';
+
 import {Browser, BrowserPlatform} from './browser-data/browser-data.js';
 
 /**
@@ -32,7 +34,7 @@ import {Browser, BrowserPlatform} from './browser-data/browser-data.js';
  *   ------ specific structure.
  *   @internal
  */
-export class CacheStructure {
+export class Cache {
   #rootDir: string;
 
   constructor(rootDir: string) {
@@ -49,5 +51,9 @@ export class CacheStructure {
     buildId: string
   ): string {
     return path.join(this.browserRoot(browser), `${platform}-${buildId}`);
+  }
+
+  clear(): void {
+    rimraf.sync(this.#rootDir);
   }
 }

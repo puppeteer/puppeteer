@@ -152,6 +152,7 @@
     }
   },
   "devDependencies": {
-    "mitt": "3.0.0"
+    "mitt": "3.0.0",
+    "parsel-js": "1.1.0"
   }
 }
