@@ -15,6 +15,7 @@
  */
 
 import {Protocol} from 'devtools-protocol';
+
 import {
   BoundingBox,
   BoxModel,
@@ -24,30 +25,21 @@ import {
   Point,
   PressOptions,
 } from '../api/ElementHandle.js';
-import {JSHandle} from '../api/JSHandle.js';
 import {Page, ScreenshotOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
+import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
+
 import {CDPSession} from './Connection.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
+import {getQueryHandlerAndSelector} from './GetQueryHandler.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
+import {CDPJSHandle} from './JSHandle.js';
 import {CDPPage} from './Page.js';
-import {getQueryHandlerAndSelector} from './QueryHandler.js';
-import {
-  ElementFor,
-  EvaluateFuncWith,
-  HandleFor,
-  HandleOr,
-  NodeFor,
-} from './types.js';
+import {ElementFor, EvaluateFuncWith, HandleFor, NodeFor} from './types.js';
 import {KeyInput} from './USKeyboardLayout.js';
-import {
-  debugError,
-  isString,
-  releaseObject,
-  valueFromRemoteObject,
-} from './util.js';
+import {debugError, isString} from './util.js';
 
 const applyOffsetsToQuad = (
   quad: Point[],
@@ -69,19 +61,15 @@ const applyOffsetsToQuad = (
 export class CDPElementHandle<
   ElementType extends Node = Element
 > extends ElementHandle<ElementType> {
-  #disposed = false;
   #frame: Frame;
-  #context: ExecutionContext;
-  #remoteObject: Protocol.Runtime.RemoteObject;
+  declare handle: CDPJSHandle<ElementType>;
 
   constructor(
     context: ExecutionContext,
     remoteObject: Protocol.Runtime.RemoteObject,
     frame: Frame
   ) {
-    super();
-    this.#context = context;
-    this.#remoteObject = remoteObject;
+    super(new CDPJSHandle(context, remoteObject));
     this.#frame = frame;
   }
 
@@ -89,44 +77,18 @@ export class CDPElementHandle<
    * @internal
    */
   override executionContext(): ExecutionContext {
-    return this.#context;
+    return this.handle.executionContext();
   }
 
   /**
    * @internal
    */
   override get client(): CDPSession {
-    return this.#context._client;
+    return this.handle.client;
   }
 
   override remoteObject(): Protocol.Runtime.RemoteObject {
-    return this.#remoteObject;
-  }
-
-  override async evaluate<
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<ElementType, Params> = EvaluateFuncWith<
-      ElementType,
-      Params
-    >
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    return this.executionContext().evaluate(pageFunction, this, ...args);
-  }
-
-  override evaluateHandle<
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<ElementType, Params> = EvaluateFuncWith<
-      ElementType,
-      Params
-    >
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    return this.executionContext().evaluateHandle(pageFunction, this, ...args);
+    return this.handle.remoteObject();
   }
 
   get #frameManager(): FrameManager {
@@ -141,53 +103,12 @@ export class CDPElementHandle<
     return this.#frame;
   }
 
-  override get disposed(): boolean {
-    return this.#disposed;
-  }
-
-  override async getProperty<K extends keyof ElementType>(
-    propertyName: HandleOr<K>
-  ): Promise<HandleFor<ElementType[K]>>;
-  override async getProperty(propertyName: string): Promise<JSHandle<unknown>>;
-  override async getProperty<K extends keyof ElementType>(
-    propertyName: HandleOr<K>
-  ): Promise<HandleFor<ElementType[K]>> {
-    return this.evaluateHandle((object, propertyName) => {
-      return object[propertyName as K];
-    }, propertyName);
-  }
-
-  override async jsonValue(): Promise<ElementType> {
-    if (!this.#remoteObject.objectId) {
-      return valueFromRemoteObject(this.#remoteObject);
-    }
-    const value = await this.evaluate(object => {
-      return object;
-    });
-    if (value === undefined) {
-      throw new Error('Could not serialize referenced object');
-    }
-    return value;
-  }
-
-  override toString(): string {
-    if (!this.#remoteObject.objectId) {
-      return 'JSHandle:' + valueFromRemoteObject(this.#remoteObject);
-    }
-    const type = this.#remoteObject.subtype || this.#remoteObject.type;
-    return 'JSHandle@' + type;
-  }
-
   override async $<Selector extends string>(
     selector: Selector
   ): Promise<CDPElementHandle<NodeFor<Selector>> | null> {
-    const {updatedSelector, queryHandler} =
+    const {updatedSelector, QueryHandler} =
       getQueryHandlerAndSelector(selector);
-    assert(
-      queryHandler.queryOne,
-      'Cannot handle queries for a single element with the given selector'
-    );
-    return (await queryHandler.queryOne(
+    return (await QueryHandler.queryOne(
       this,
       updatedSelector
     )) as CDPElementHandle<NodeFor<Selector>> | null;
@@ -196,15 +117,11 @@ export class CDPElementHandle<
   override async $$<Selector extends string>(
     selector: Selector
   ): Promise<Array<CDPElementHandle<NodeFor<Selector>>>> {
-    const {updatedSelector, queryHandler} =
+    const {updatedSelector, QueryHandler} =
       getQueryHandlerAndSelector(selector);
-    assert(
-      queryHandler.queryAll,
-      'Cannot handle queries for a multiple element with the given selector'
-    );
-    return (await queryHandler.queryAll(this, updatedSelector)) as Array<
-      CDPElementHandle<NodeFor<Selector>>
-    >;
+    return AsyncIterableUtil.collect(
+      QueryHandler.queryAll(this, updatedSelector)
+    ) as Promise<Array<CDPElementHandle<NodeFor<Selector>>>>;
   }
 
   override async $eval<
@@ -242,23 +159,14 @@ export class CDPElementHandle<
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
-    const {updatedSelector, queryHandler} =
-      getQueryHandlerAndSelector(selector);
-    assert(
-      queryHandler.queryAll,
-      'Cannot handle queries for a multiple element with the given selector'
-    );
-    const handles = (await queryHandler.queryAll(
-      this,
-      updatedSelector
-    )) as Array<HandleFor<NodeFor<Selector>>>;
-    const elements = (await this.evaluateHandle((_, ...elements) => {
+    const results = await this.$$(selector);
+    const elements = await this.evaluateHandle((_, ...elements) => {
       return elements;
-    }, ...handles)) as JSHandle<Array<NodeFor<Selector>>>;
+    }, ...results);
     const [result] = await Promise.all([
       elements.evaluate(pageFunction, ...args),
-      ...handles.map(handle => {
-        return handle.dispose();
+      ...results.map(results => {
+        return results.dispose();
       }),
     ]);
     await elements.dispose();
@@ -278,10 +186,9 @@ export class CDPElementHandle<
     selector: Selector,
     options: WaitForSelectorOptions = {}
   ): Promise<CDPElementHandle<NodeFor<Selector>> | null> {
-    const {updatedSelector, queryHandler} =
+    const {updatedSelector, QueryHandler} =
       getQueryHandlerAndSelector(selector);
-    assert(queryHandler.waitFor, 'Query handler does not support waiting');
-    return (await queryHandler.waitFor(
+    return (await QueryHandler.waitFor(
       this,
       updatedSelector,
       options
@@ -312,10 +219,6 @@ export class CDPElementHandle<
       throw new Error(`Element is not a(n) \`${tagName}\` element`);
     }
     return this as unknown as HandleFor<ElementFor<K>>;
-  }
-
-  override asElement(): CDPElementHandle<ElementType> | null {
-    return this;
   }
 
   override async contentFrame(): Promise<Frame | null> {
@@ -481,7 +384,7 @@ export class CDPElementHandle<
 
   #getBoxModel(): Promise<void | Protocol.DOM.GetBoxModelResponse> {
     const params: Protocol.DOM.GetBoxModelRequest = {
-      objectId: this.remoteObject().objectId,
+      objectId: this.id,
     };
     return this.client.send('DOM.getBoxModel', params).catch(error => {
       return debugError(error);
@@ -862,14 +765,6 @@ export class CDPElementHandle<
       });
       return threshold === 1 ? visibleRatio === 1 : visibleRatio > threshold;
     }, threshold);
-  }
-
-  override async dispose(): Promise<void> {
-    if (this.#disposed) {
-      return;
-    }
-    this.#disposed = true;
-    await releaseObject(this.client, this.#remoteObject);
   }
 }
 

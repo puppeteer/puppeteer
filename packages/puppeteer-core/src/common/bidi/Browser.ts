@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
+import {ChildProcess} from 'child_process';
+
 import {
   Browser as BrowserBase,
   BrowserCloseCallback,
   BrowserContextOptions,
 } from '../../api/Browser.js';
 import {BrowserContext as BrowserContextBase} from '../../api/BrowserContext.js';
-import {Connection} from './Connection.js';
-import {ChildProcess} from 'child_process';
+
 import {BrowserContext} from './BrowserContext.js';
+import {Connection} from './Connection.js';
 
 /**
  * @internal
@@ -34,10 +36,7 @@ export class Browser extends BrowserBase {
   static async create(opts: Options): Promise<Browser> {
     // TODO: await until the connection is established.
     try {
-      // TODO: Add 'session.new' to BiDi types
-      (await opts.connection.send('session.new' as any, {})) as unknown as {
-        sessionId: string;
-      };
+      await opts.connection.send('session.new', {});
     } catch {}
     return new Browser(opts);
   }

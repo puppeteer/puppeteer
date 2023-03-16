@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {Browser} from '../api/Browser.js';
+
 import {
   BrowserConnectOptions,
   _connectToCDPBrowser,
 } from './BrowserConnector.js';
 import {ConnectionTransport} from './ConnectionTransport.js';
-import {
-  clearCustomQueryHandlers,
-  CustomQueryHandler,
-  customQueryHandlerNames,
-  registerCustomQueryHandler,
-  unregisterCustomQueryHandler,
-} from './QueryHandler.js';
+import {CustomQueryHandler, customQueryHandlers} from './CustomQueryHandler.js';
 
 /**
  * Settings that are common to the Puppeteer class, regardless of environment.
@@ -57,9 +53,18 @@ export interface ConnectOptions extends BrowserConnectOptions {
  * instance of {@link PuppeteerNode} when you import or require `puppeteer`.
  * That class extends `Puppeteer`, so has all the methods documented below as
  * well as all that are defined on {@link PuppeteerNode}.
+ *
  * @public
  */
 export class Puppeteer {
+  /**
+   * Operations for {@link CustomQueryHandler | custom query handlers}. See
+   * {@link CustomQueryHandlerRegistry}.
+   *
+   * @internal
+   */
+  static customQueryHandlers = customQueryHandlers;
+
   /**
    * Registers a {@link CustomQueryHandler | custom query handler}.
    *
@@ -86,28 +91,28 @@ export class Puppeteer {
     name: string,
     queryHandler: CustomQueryHandler
   ): void {
-    return registerCustomQueryHandler(name, queryHandler);
+    return this.customQueryHandlers.register(name, queryHandler);
   }
 
   /**
    * Unregisters a custom query handler for a given name.
    */
   static unregisterCustomQueryHandler(name: string): void {
-    return unregisterCustomQueryHandler(name);
+    return this.customQueryHandlers.unregister(name);
   }
 
   /**
    * Gets the names of all custom query handlers.
    */
   static customQueryHandlerNames(): string[] {
-    return customQueryHandlerNames();
+    return this.customQueryHandlers.names();
   }
 
   /**
    * Unregisters all custom query handlers.
    */
   static clearCustomQueryHandlers(): void {
-    return clearCustomQueryHandlers();
+    return this.customQueryHandlers.clear();
   }
 
   /**

@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import {promisify} from 'util';
 import {execFile as execFileAsync} from 'child_process';
-import {join} from 'path';
-import {ASSETS_DIR} from './constants.js';
 import {readFile} from 'fs/promises';
+import {join} from 'path';
+import {promisify} from 'util';
+
+import {ASSETS_DIR} from './constants.js';
 
 export const execFile = promisify(execFileAsync);
 export const readAsset = (...components: string[]): Promise<string> => {

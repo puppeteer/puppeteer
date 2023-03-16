@@ -15,7 +15,8 @@
  */
 import expect from 'expect';
 import {Puppeteer} from 'puppeteer';
-import {CustomQueryHandler} from 'puppeteer-core/internal/common/QueryHandler.js';
+import type {CustomQueryHandler} from 'puppeteer-core/internal/common/CustomQueryHandler.js';
+
 import {
   getTestState,
   setupTestBrowserHooks,

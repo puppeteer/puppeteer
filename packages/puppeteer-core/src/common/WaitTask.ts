@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import {ElementHandle} from '../api/ElementHandle.js';
+import {JSHandle} from '../api/JSHandle.js';
 import type {Poller} from '../injected/Poller.js';
 import {createDeferredPromise} from '../util/DeferredPromise.js';
-import {ElementHandle} from '../api/ElementHandle.js';
+import {stringifyFunction} from '../util/Function.js';
+
 import {TimeoutError} from './Errors.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
-import {JSHandle} from '../api/JSHandle.js';
 import {LazyArg} from './LazyArg.js';
 import {HandleFor} from './types.js';
 
@@ -27,7 +29,6 @@ import {HandleFor} from './types.js';
  * @internal
  */
 export interface WaitTaskOptions {
-  bindings?: Map<string, (...args: never[]) => unknown>;
   polling: 'raf' | 'mutation' | number;
   root?: ElementHandle<Node>;
   timeout: number;
@@ -38,7 +39,6 @@ export interface WaitTaskOptions {
  */
 export class WaitTask<T = unknown> {
   #world: IsolatedWorld;
-  #bindings: Map<string, (...args: never[]) => unknown>;
   #polling: 'raf' | 'mutation' | number;
   #root?: ElementHandle<Node>;
 
@@ -58,7 +58,6 @@ export class WaitTask<T = unknown> {
     ...args: unknown[]
   ) {
     this.#world = world;
-    this.#bindings = options.bindings ?? new Map();
     this.#polling = options.polling;
     this.#root = options.root;
 
@@ -67,7 +66,7 @@ export class WaitTask<T = unknown> {
         this.#fn = `() => {return (${fn});}`;
         break;
       default:
-        this.#fn = fn.toString();
+        this.#fn = stringifyFunction(fn);
         break;
     }
     this.#args = args;
@@ -82,12 +81,6 @@ export class WaitTask<T = unknown> {
       }, options.timeout);
     }
 
-    if (this.#bindings.size !== 0) {
-      for (const [name, fn] of this.#bindings) {
-        this.#world._boundFunctions.set(name, fn);
-      }
-    }
-
     this.rerun();
   }
 
@@ -97,15 +90,6 @@ export class WaitTask<T = unknown> {
 
   async rerun(): Promise<void> {
     try {
-      if (this.#bindings.size !== 0) {
-        const context = await this.#world.executionContext();
-        await Promise.all(
-          [...this.#bindings].map(async ([name]) => {
-            return await this.#world._addBindingToContext(context, name);
-          })
-        );
-      }
-
       switch (this.#polling) {
         case 'raf':
           this.#poller = await this.#world.evaluateHandle(

@@ -58,7 +58,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3.5.1
         with:
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
         run: npm install
       - name: Analyze issue
@@ -91,6 +91,12 @@ jobs:
         run: corepack enable
       - name: Install dependencies
         run: ${{ env.PACKAGE_MANAGER }} install
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      - name: Install dependencies Firefox
+        run: node ./node_modules/puppeteer/install.js
+        env:
+          PUPPETEER_PRODUCT: firefox
       - name: Verify issue
         timeout-minutes: 10
         run: ${{ env.PACKAGE_MANAGER }} run verify
@@ -137,6 +143,9 @@ jobs:
             The issue has been labeled as **confirmed** by the automatic analyser.
             Someone from the Puppeteer team will take a look soon!
 
+            ---
+            [Analyzer run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
   label-invalid-issue:
     needs: [analyze-issue]
     if: failure() && needs.analyze-issue.outputs.errorMessage != ''
@@ -167,7 +176,11 @@ jobs:
           comment-id: ${{ steps.find-comment-id.outputs.comment-id }}
           issue-number: ${{ github.event.issue.number }}
           edit-mode: replace
-          body: ${{ needs.analyze-issue.outputs.errorMessage }}
+          body: |
+            ${{ needs.analyze-issue.outputs.errorMessage }}
+
+            ---
+            [Analyzer run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
   label-unverifiable-issue:
     needs: [analyze-issue, verify-issue]
@@ -224,3 +237,6 @@ jobs:
 
             Once the above checks are satisfied, please edit your issue with the changes and we will 
             try to reproduce the bug again.
+
+            ---
+            [Analyzer run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})

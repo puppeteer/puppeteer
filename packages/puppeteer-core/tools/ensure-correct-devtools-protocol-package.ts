@@ -34,10 +34,10 @@
  */
 
 // eslint-disable-next-line import/extensions
-import {PUPPETEER_REVISIONS} from '../src/revisions.js';
 import {execSync} from 'child_process';
 
 import packageJson from '../package.json';
+import {PUPPETEER_REVISIONS} from '../src/revisions.js';
 
 const currentProtocolPackageInstalledVersion =
   packageJson.dependencies['devtools-protocol'];

@@ -14,28 +14,109 @@
  * limitations under the License.
  */
 
-import {Page as PageBase} from '../../api/Page.js';
-import {Connection} from './Connection.js';
-import type {EvaluateFunc} from '../types.js';
-import {isString, stringifyFunction} from '../util.js';
+import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+
+import {HTTPResponse} from '../../api/HTTPResponse.js';
+import {
+  Page as PageBase,
+  PageEmittedEvents,
+  WaitForOptions,
+} from '../../api/Page.js';
+import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
+import {EvaluateFunc, HandleFor} from '../types.js';
+
+import {Context, getBidiHandle} from './Context.js';
 import {BidiSerializer} from './Serializer.js';
+
 /**
  * @internal
  */
 export class Page extends PageBase {
-  #connection: Connection;
-  #contextId: string;
+  #context: Context;
+  #subscribedEvents = [
+    'log.entryAdded',
+    'browsingContext.load',
+  ] as Bidi.Session.SubscribeParameters['events'];
 
-  constructor(connection: Connection, contextId: string) {
+  #boundOnLogEntryAdded = this.#onLogEntryAdded.bind(this);
+  #boundOnLoaded = this.#onLoad.bind(this);
+
+  constructor(context: Context) {
     super();
-    this.#connection = connection;
-    this.#contextId = contextId;
+    this.#context = context;
+
+    this.#context.connection.send('session.subscribe', {
+      events: this.#subscribedEvents,
+      contexts: [this.#context.id],
+    });
+
+    this.#context.on('log.entryAdded', this.#boundOnLogEntryAdded);
+    this.#context.on('browsingContext.load', this.#boundOnLoaded);
+  }
+
+  #onLogEntryAdded(event: Bidi.Log.LogEntry): void {
+    if (isConsoleLogEntry(event)) {
+      const args = event.args.map(arg => {
+        return getBidiHandle(this.#context, arg);
+      });
+
+      const text = args
+        .reduce((value, arg) => {
+          const parsedValue = arg.isPrimitiveValue
+            ? BidiSerializer.deserialize(arg.remoteValue())
+            : arg.toString();
+          return `${value} ${parsedValue}`;
+        }, '')
+        .slice(1);
+
+      this.emit(
+        PageEmittedEvents.Console,
+        new ConsoleMessage(
+          event.method as any,
+          text,
+          args,
+          getStackTraceLocations(event.stackTrace)
+        )
+      );
+    } else if (isJavaScriptLogEntry(event)) {
+      this.emit(
+        PageEmittedEvents.Console,
+        new ConsoleMessage(
+          event.level as any,
+          event.text ?? '',
+          [],
+          getStackTraceLocations(event.stackTrace)
+        )
+      );
+    }
+  }
+
+  #onLoad(_event: Bidi.BrowsingContext.NavigationInfo): void {
+    this.emit(PageEmittedEvents.Load);
   }
 
   override async close(): Promise<void> {
-    await this.#connection.send('browsingContext.close', {
-      context: this.#contextId,
+    await this.#context.connection.send('session.unsubscribe', {
+      events: this.#subscribedEvents,
+      contexts: [this.#context.id],
     });
+
+    await this.#context.connection.send('browsingContext.close', {
+      context: this.#context.id,
+    });
+
+    this.#context.off('log.entryAdded', this.#boundOnLogEntryAdded);
+    this.#context.off('browsingContext.load', this.#boundOnLogEntryAdded);
+  }
+
+  override async evaluateHandle<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    return this.#context.evaluateHandle(pageFunction, ...args);
   }
 
   override async evaluate<
@@ -45,30 +126,54 @@ export class Page extends PageBase {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
-    let responsePromise;
-    if (isString(pageFunction)) {
-      responsePromise = this.#connection.send('script.evaluate', {
-        expression: pageFunction,
-        target: {context: this.#contextId},
-        awaitPromise: true,
-      });
-    } else {
-      responsePromise = this.#connection.send('script.callFunction', {
-        functionDeclaration: stringifyFunction(pageFunction),
-        arguments: await Promise.all(args.map(BidiSerializer.serialize)),
-        target: {context: this.#contextId},
-        awaitPromise: true,
-      });
-    }
-
-    const {result} = await responsePromise;
-
-    if ('type' in result && result.type === 'exception') {
-      throw new Error(result.exceptionDetails.text);
-    }
-
-    return BidiSerializer.deserialize(result.result) as Awaited<
-      ReturnType<Func>
-    >;
+    return this.#context.evaluate(pageFunction, ...args);
   }
+
+  override async goto(
+    url: string,
+    options?: WaitForOptions & {
+      referer?: string | undefined;
+      referrerPolicy?: string | undefined;
+    }
+  ): Promise<HTTPResponse | null> {
+    return this.#context.goto(url, options);
+  }
+
+  override url(): string {
+    return this.#context.url();
+  }
+
+  override setDefaultNavigationTimeout(timeout: number): void {
+    this.#context._timeoutSettings.setDefaultNavigationTimeout(timeout);
+  }
+
+  override setDefaultTimeout(timeout: number): void {
+    this.#context._timeoutSettings.setDefaultTimeout(timeout);
+  }
+}
+
+function isConsoleLogEntry(
+  event: Bidi.Log.LogEntry
+): event is Bidi.Log.ConsoleLogEntry {
+  return event.type === 'console';
+}
+
+function isJavaScriptLogEntry(
+  event: Bidi.Log.LogEntry
+): event is Bidi.Log.JavascriptLogEntry {
+  return event.type === 'javascript';
+}
+
+function getStackTraceLocations(stackTrace?: Bidi.Script.StackTrace) {
+  const stackTraceLocations: ConsoleMessageLocation[] = [];
+  if (stackTrace) {
+    for (const callFrame of stackTrace.callFrames) {
+      stackTraceLocations.push({
+        url: callFrame.url,
+        lineNumber: callFrame.lineNumber,
+        columnNumber: callFrame.columnNumber,
+      });
+    }
+  }
+  return stackTraceLocations;
 }

@@ -28,9 +28,11 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
-        run: npm ci --ignore-scripts
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
       - name: Check code
         run: npm run check
       - name: Lint code
@@ -55,38 +57,8 @@ jobs:
           rm $diff_file
 
   check-changes:
-    name: Check which packages changed
-    runs-on: ubuntu-latest
-    outputs:
-      changes: ${{ steps.changes.outputs.changes }}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v3.3.0
-        with:
-          fetch-depth: 2
-      - name: Detect changed packages
-        uses: dorny/paths-filter@v2.11.1
-        id: changes
-        with:
-          filters: |
-            puppeteer:
-              - '.github/workflows/ci.yml'
-              - 'packages/puppeteer/**'
-              - 'packages/puppeteer-core/**'
-              - 'docker/**'
-              - 'test/**'
-              - 'test-d/**'
-              - 'tools/mochaRunner/**'
-            website:
-              - '.github/workflows/ci.yml'
-              - 'docs/**'
-              - 'website/**'
-            ng-schematics:
-              - '.github/workflows/ci.yml'
-              - 'packages/ng-schematics/**'
-            browsers:
-              - '.github/workflows/ci.yml'
-              - 'packages/browsers/**'
+    needs: inspect-code
+    uses: ./.github/workflows/changed-packages.yml
 
   deploy-docs:
     needs: check-changes
@@ -102,7 +74,7 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
         working-directory: ./website
         run: npm ci
@@ -154,9 +126,11 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
-        run: npm ci --ignore-scripts
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
       - name: Build packages
         run: npm run build --workspace @puppeteer-test/test
       - name: Setup cache for Chromium binary
@@ -166,14 +140,14 @@ jobs:
           key: ${{ runner.os }}-chromium-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}
       - name: Install Chromium
         run: npm run postinstall
-      - name: Install linux dependencies.
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: sudo apt-get install xvfb
       - name: Tests types
         run: npm run test-types
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
         run: npm run test -- --test-suite ${{ matrix.suite }}
+      - name: Install linux dependencies.
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: sudo apt-get install xvfb
       - name: Run all tests (for Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
@@ -210,9 +184,11 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
-        run: npm ci --ignore-scripts
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
       - name: Build packages
         run: npm run build --workspace @puppeteer-test/test
       - name: Setup cache for Firefox binary
@@ -224,14 +200,14 @@ jobs:
         env:
           PUPPETEER_PRODUCT: firefox
         run: npm run postinstall
-      - name: Install linux dependencies.
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: sudo apt-get install xvfb
       - name: Tests types
         run: npm run test-types
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
         run: npm run test -- --test-suite ${{ matrix.suite }}
+      - name: Install linux dependencies.
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: sudo apt-get install xvfb
       - name: Run all tests (for Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
@@ -258,9 +234,11 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
-        run: npm ci --ignore-scripts
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
       - name: Build installation test
         run: npm run build --workspace @puppeteer-test/installation
       - name: Pack installation test
@@ -338,9 +316,11 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: ${{ matrix.node }}
+          node-version: lts/*
       - name: Install dependencies
-        run: npm ci --ignore-scripts
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
       - name: Build packages
         run: npm run build --workspace puppeteer
       - name: Pack packages
@@ -366,9 +346,11 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
-        run: npm ci --ignore-scripts
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
       - name: Run tests
         run: npm run test --workspace @puppeteer/ng-schematics
 
@@ -391,9 +373,11 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
-        run: npm ci --ignore-scripts
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
       - name: Run tests
         run: npm run test --workspace @puppeteer/browsers
 

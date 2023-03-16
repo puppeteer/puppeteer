@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
-import expect from 'expect';
 import * as fs from 'fs';
 import * as path from 'path';
-import rimraf from 'rimraf';
-import sinon from 'sinon';
+
+import {TestServer} from '@pptr/testserver';
+import {Protocol} from 'devtools-protocol';
+import expect from 'expect';
+import * as Mocha from 'mocha';
+import puppeteer from 'puppeteer/lib/cjs/puppeteer/puppeteer.js';
 import {Browser} from 'puppeteer-core/internal/api/Browser.js';
 import {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
-import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
-import {
-  PuppeteerLaunchOptions,
-  PuppeteerNode,
-} from 'puppeteer-core/internal/node/PuppeteerNode.js';
-import puppeteer from 'puppeteer/lib/cjs/puppeteer/puppeteer.js';
-import {TestServer} from '@pptr/testserver';
-import {extendExpectWithToBeGolden} from './utils.js';
-import * as Mocha from 'mocha';
 import {
   setLogCapture,
   getCapturedLogs,
 } from 'puppeteer-core/internal/common/Debug.js';
+import {
+  PuppeteerLaunchOptions,
+  PuppeteerNode,
+} from 'puppeteer-core/internal/node/PuppeteerNode.js';
+import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
+import rimraf from 'rimraf';
+import sinon from 'sinon';
+
+import {extendExpectWithToBeGolden} from './utils.js';
 
 const setupServer = async () => {
   const assetsPath = path.join(__dirname, '../assets');
@@ -116,12 +118,6 @@ const defaultBrowserOptions = Object.assign(
     }
   }
 })();
-
-declare module 'expect/build/types' {
-  interface Matchers<R> {
-    toBeGolden(x: string): R;
-  }
-}
 
 const setupGoldenAssertions = (): void => {
   let suffix = product.toLowerCase();

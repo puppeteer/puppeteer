@@ -1,8 +1,10 @@
 #!/usr/bin/env node
-import esbuild from 'esbuild';
 import {mkdir, mkdtemp, readFile, rm, writeFile} from 'fs/promises';
 import path, {join, resolve} from 'path';
 import {chdir} from 'process';
+
+import esbuild from 'esbuild';
+
 import {job} from '../../../tools/internal/job.js';
 
 const packageRoot = resolve(join(__dirname, '..'));
@@ -48,6 +50,7 @@ chdir(packageRoot);
       format: 'cjs',
       platform: 'browser',
       target: 'ES2022',
+      minify: true,
     });
     const baseName = path.basename(input);
     const content = await readFile(

@@ -28,12 +28,13 @@ import {
   Server as HttpsServer,
   ServerOptions as HttpsServerOptions,
 } from 'https';
-import {getType as getMimeType} from 'mime';
 import {AddressInfo} from 'net';
 import {join} from 'path';
 import {Duplex} from 'stream';
-import {Server as WebSocketServer, WebSocket} from 'ws';
 import {gzip} from 'zlib';
+
+import {getType as getMimeType} from 'mime';
+import {Server as WebSocketServer, WebSocket} from 'ws';
 
 interface Subscriber {
   resolve: (msg: IncomingMessage) => void;

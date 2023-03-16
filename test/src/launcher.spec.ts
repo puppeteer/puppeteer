@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Protocol} from 'devtools-protocol';
-import expect from 'expect';
 import fs from 'fs';
+import {mkdtemp, readFile, stat, writeFile} from 'fs/promises';
 import os from 'os';
 import path from 'path';
+import {TLSSocket} from 'tls';
+
+import {Protocol} from 'devtools-protocol';
+import expect from 'expect';
 import {BrowserFetcher, TimeoutError} from 'puppeteer';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
 import rimraf from 'rimraf';
 import sinon from 'sinon';
-import {TLSSocket} from 'tls';
-import {promisify} from 'util';
+
 import {getTestState, itOnlyRegularInstall} from './mocha-utils.js';
 import utils from './utils.js';
 
-const mkdtempAsync = promisify(fs.mkdtemp);
-const readFileAsync = promisify(fs.readFile);
-const rmAsync = promisify(rimraf);
-const statAsync = promisify(fs.stat);
-const writeFileAsync = promisify(fs.writeFile);
+const rmAsync = (filename: string) => {
+  return rimraf(filename);
+};
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 const FIREFOX_TIMEOUT = 30 * 1000;
@@ -46,7 +46,7 @@ describe('Launcher specs', function () {
       it('should download and extract chrome linux binary', async () => {
         const {server} = getTestState();
 
-        const downloadsFolder = await mkdtempAsync(TMP_FOLDER);
+        const downloadsFolder = await mkdtemp(TMP_FOLDER);
         const browserFetcher = new BrowserFetcher({
           platform: 'linux',
           path: downloadsFolder,
@@ -70,13 +70,13 @@ describe('Launcher specs', function () {
 
         revisionInfo = (await browserFetcher.download(expectedRevision))!;
         expect(revisionInfo.local).toBe(true);
-        expect(await readFileAsync(revisionInfo.executablePath, 'utf8')).toBe(
+        expect(await readFile(revisionInfo.executablePath, 'utf8')).toBe(
           'LINUX BINARY\n'
         );
         const expectedPermissions = os.platform() === 'win32' ? 0o666 : 0o755;
-        expect(
-          (await statAsync(revisionInfo.executablePath)).mode & 0o777
-        ).toBe(expectedPermissions);
+        expect((await stat(revisionInfo.executablePath)).mode & 0o777).toBe(
+          expectedPermissions
+        );
         expect(await browserFetcher.localRevisions()).toEqual([
           expectedRevision,
         ]);
@@ -87,7 +87,7 @@ describe('Launcher specs', function () {
       it('should download and extract firefox linux binary', async () => {
         const {server} = getTestState();
 
-        const downloadsFolder = await mkdtempAsync(TMP_FOLDER);
+        const downloadsFolder = await mkdtemp(TMP_FOLDER);
         const browserFetcher = new BrowserFetcher({
           platform: 'linux',
           path: downloadsFolder,
@@ -115,13 +115,13 @@ describe('Launcher specs', function () {
 
         revisionInfo = (await browserFetcher.download(expectedVersion))!;
         expect(revisionInfo.local).toBe(true);
-        expect(await readFileAsync(revisionInfo.executablePath, 'utf8')).toBe(
+        expect(await readFile(revisionInfo.executablePath, 'utf8')).toBe(
           'FIREFOX LINUX BINARY\n'
         );
         const expectedPermissions = os.platform() === 'win32' ? 0o666 : 0o755;
-        expect(
-          (await statAsync(revisionInfo.executablePath)).mode & 0o777
-        ).toBe(expectedPermissions);
+        expect((await stat(revisionInfo.executablePath)).mode & 0o777).toBe(
+          expectedPermissions
+        );
         expect(await browserFetcher.localRevisions()).toEqual([
           expectedVersion,
         ]);
@@ -239,7 +239,7 @@ describe('Launcher specs', function () {
       it('userDataDir option', async () => {
         const {defaultBrowserOptions, puppeteer} = getTestState();
 
-        const userDataDir = await mkdtempAsync(TMP_FOLDER);
+        const userDataDir = await mkdtemp(TMP_FOLDER);
         const options = Object.assign({userDataDir}, defaultBrowserOptions);
         const browser = await puppeteer.launch(options);
         // Open a page to make sure its functional.
@@ -284,11 +284,11 @@ describe('Launcher specs', function () {
       it('userDataDir option restores preferences', async () => {
         const {defaultBrowserOptions, puppeteer} = getTestState();
 
-        const userDataDir = await mkdtempAsync(TMP_FOLDER);
+        const userDataDir = await mkdtemp(TMP_FOLDER);
 
         const prefsJSPath = path.join(userDataDir, 'prefs.js');
         const prefsJSContent = 'user_pref("browser.warnOnQuit", true)';
-        await writeFileAsync(prefsJSPath, prefsJSContent);
+        await writeFile(prefsJSPath, prefsJSContent);
 
         const options = Object.assign({userDataDir}, defaultBrowserOptions);
         const browser = await puppeteer.launch(options);
@@ -298,7 +298,7 @@ describe('Launcher specs', function () {
         await browser.close();
         expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
 
-        expect(await readFileAsync(prefsJSPath, 'utf8')).toBe(prefsJSContent);
+        expect(await readFile(prefsJSPath, 'utf8')).toBe(prefsJSContent);
 
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(() => {});
@@ -306,7 +306,7 @@ describe('Launcher specs', function () {
       it('userDataDir argument', async () => {
         const {isChrome, puppeteer, defaultBrowserOptions} = getTestState();
 
-        const userDataDir = await mkdtempAsync(TMP_FOLDER);
+        const userDataDir = await mkdtemp(TMP_FOLDER);
         const options = Object.assign({}, defaultBrowserOptions);
         if (isChrome) {
           options.args = [
@@ -330,7 +330,7 @@ describe('Launcher specs', function () {
       it('userDataDir argument with non-existent dir', async () => {
         const {isChrome, puppeteer, defaultBrowserOptions} = getTestState();
 
-        const userDataDir = await mkdtempAsync(TMP_FOLDER);
+        const userDataDir = await mkdtemp(TMP_FOLDER);
         await rmAsync(userDataDir);
         const options = Object.assign({}, defaultBrowserOptions);
         if (isChrome) {
@@ -355,7 +355,7 @@ describe('Launcher specs', function () {
       it('userDataDir option should restore state', async () => {
         const {server, puppeteer, defaultBrowserOptions} = getTestState();
 
-        const userDataDir = await mkdtempAsync(TMP_FOLDER);
+        const userDataDir = await mkdtemp(TMP_FOLDER);
         const options = Object.assign({userDataDir}, defaultBrowserOptions);
         const browser = await puppeteer.launch(options);
         const page = await browser.newPage();
@@ -380,7 +380,7 @@ describe('Launcher specs', function () {
       it('userDataDir option should restore cookies', async () => {
         const {server, puppeteer, defaultBrowserOptions} = getTestState();
 
-        const userDataDir = await mkdtempAsync(TMP_FOLDER);
+        const userDataDir = await mkdtemp(TMP_FOLDER);
         const options = Object.assign({userDataDir}, defaultBrowserOptions);
         const browser = await puppeteer.launch(options);
         const page = await browser.newPage();

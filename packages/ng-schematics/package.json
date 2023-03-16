@@ -3,39 +3,26 @@
   "version": "0.1.0",
   "description": "Puppeteer Angular schematics",
   "scripts": {
-    "build:tsc": "wireit",
     "build": "wireit",
-    "clean": "tsc -b --clean && rimraf lib && rimraf test/build",
+    "clean": "tsc -b --clean && rm -rf lib && rm -rf test/build",
     "dev:test": "npm run test --watch",
     "dev": "npm run build --watch",
-    "test": "wireit"
+    "test": "wireit",
+    "sandbox": "node tools/sandbox.js"
   },
   "wireit": {
     "build": {
-      "command": "node tools/copySchemaFiles.js",
-      "files": [
-        "src/**/files/**",
-        "src/**/*.json"
-      ],
-      "output": [
-        "lib/**/files/**",
-        "lib/**/*.json"
-      ],
-      "dependencies": [
-        "build:tsc"
-      ]
-    },
-    "build:tsc": {
-      "command": "tsc -b",
+      "command": "tsc -b && node tools/copySchemaFiles.js",
       "clean": "if-file-deleted",
       "files": [
-        "**/tsconfig.*.json",
-        "**/tsconfig.json",
-        "src/**/*.ts"
+        "tsconfig.json",
+        "tsconfig.spec.json",
+        "src/**",
+        "test/src/**"
       ],
       "output": [
-        "lib/**/*.{ts,js}",
-        "lib/**/*.{ts,js}.map"
+        "lib/**",
+        "test/build/**"
       ]
     },
     "test": {
@@ -60,13 +47,14 @@
     "node": ">=14.1.0"
   },
   "dependencies": {
-    "@angular-devkit/architect": "^0.1501.5",
-    "@angular-devkit/core": "^15.1.5",
-    "@angular-devkit/schematics": "^15.1.5"
+    "@angular-devkit/architect": "^0.1502.2",
+    "@angular-devkit/core": "^15.2.1",
+    "@angular-devkit/schematics": "^15.2.2"
   },
   "devDependencies": {
     "@types/node": "^14.15.0",
-    "@schematics/angular": "^14.2.8"
+    "@schematics/angular": "^14.2.8",
+    "@angular/cli": "^15.2.2"
   },
   "files": [
     "lib",

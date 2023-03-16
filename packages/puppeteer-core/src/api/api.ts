@@ -19,3 +19,5 @@ export * from './BrowserContext.js';
 export * from './Page.js';
 export * from './JSHandle.js';
 export * from './ElementHandle.js';
+export * from './HTTPResponse.js';
+export * from './HTTPRequest.js';

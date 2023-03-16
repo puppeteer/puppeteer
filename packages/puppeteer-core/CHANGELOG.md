@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.7.5](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.7.4...puppeteer-core-v19.7.5) (2023-03-14)
+
+
+### Bug Fixes
+
+* sort elements based on selector matching algorithm ([#9836](https://github.com/puppeteer/puppeteer/issues/9836)) ([9044609](https://github.com/puppeteer/puppeteer/commit/9044609be3ea78c650420533e7f6f40b83cedd99))
+
+
+### Performance Improvements
+
+* use `querySelector*` for pure CSS selectors ([#9835](https://github.com/puppeteer/puppeteer/issues/9835)) ([8aea8e0](https://github.com/puppeteer/puppeteer/commit/8aea8e047103b72c0238dde8e4777acf7897ddaa))
+
+## [19.7.4](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.7.3...puppeteer-core-v19.7.4) (2023-03-10)
+
+
+### Bug Fixes
+
+* call _detach on disconnect ([#9807](https://github.com/puppeteer/puppeteer/issues/9807)) ([bc1a04d](https://github.com/puppeteer/puppeteer/commit/bc1a04def8f699ad245c12ec69ac176e3e7e888d))
+* restore rimraf for puppeteer-core code ([#9815](https://github.com/puppeteer/puppeteer/issues/9815)) ([cefc4ea](https://github.com/puppeteer/puppeteer/commit/cefc4eab4750d2c1209eb36ca44f6963a4a6bf4c))
+* update troubleshooting guide links in errors ([#9821](https://github.com/puppeteer/puppeteer/issues/9821)) ([0165f06](https://github.com/puppeteer/puppeteer/commit/0165f06deef9e45862fd127a205ade5ad30ddaa3))
+
+## [19.7.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.7.2...puppeteer-core-v19.7.3) (2023-03-06)
+
+
+### Bug Fixes
+
+* update dependencies ([#9781](https://github.com/puppeteer/puppeteer/issues/9781)) ([364b23f](https://github.com/puppeteer/puppeteer/commit/364b23f8b5c7b04974f233c58e5ded9a8f912ff2))
+
+## [19.7.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.7.1...puppeteer-core-v19.7.2) (2023-02-20)
+
+
+### Bug Fixes
+
+* bump chromium-bidi to a version that does not declare mitt as a peer dependency ([#9701](https://github.com/puppeteer/puppeteer/issues/9701)) ([82916c1](https://github.com/puppeteer/puppeteer/commit/82916c102b2c399093ba9019e272207b5ce81849))
+
+## [19.7.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.7.0...puppeteer-core-v19.7.1) (2023-02-15)
+
+
+### Bug Fixes
+
+* fix circularity on JSHandle interface ([#9661](https://github.com/puppeteer/puppeteer/issues/9661)) ([eb13863](https://github.com/puppeteer/puppeteer/commit/eb138635d661d3cdaf2940959fece5aca482178a))
+* make chromium-bidi an opt peer dep ([#9667](https://github.com/puppeteer/puppeteer/issues/9667)) ([c6054ac](https://github.com/puppeteer/puppeteer/commit/c6054ac1a56c08ee7bf01321878699b7b4ab4e0b))
+
 ## [19.7.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.6.3...puppeteer-core-v19.7.0) (2023-02-13)
 
 

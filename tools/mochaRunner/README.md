@@ -5,26 +5,26 @@ Mocha Runner is a test runner on top of mocha. It uses `/test/TestSuites.json` a
 ## Running tests for Mocha Runner itself.
 
 ```
-npm run build:test && npx c8 node tools/mochaRunner/lib/test.js
+npm run build && npx c8 node tools/mochaRunner/lib/test.js
 ```
 
 ## Running tests using Mocha Runner
 
 ```
-npm run build:test && npm run test
+npm run build && npm run test
 ```
 
 By default, the runner runs all test suites applicable to the current platform.
 To pick a test suite, provide the `--test-suite` arguments. For example,
 
 ```
-npm run build:test && npm run test -- --test-suite chrome-headless
+npm run build && npm run test -- --test-suite chrome-headless
 ```
 
 ## TestSuites.json
 
 Define test suites via the `testSuites` attribute. `parameters` can be used in the `TestExpectations.json` to disable tests
-based on parameters. The meaning for parameters is defined in `parameterDefinitons` which tell what env object corresponds
+based on parameters. The meaning for parameters is defined in `parameterDefinitions` which tell what env object corresponds
 to the given parameter.
 
 ## TestExpectations.json

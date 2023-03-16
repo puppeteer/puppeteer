@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import {assert} from '../util/assert.js';
-import {addEventListener, debugError, PuppeteerEventListener} from './util.js';
 import {Protocol} from 'devtools-protocol';
-import {CDPSession} from './Connection.js';
 
+import {assert} from '../util/assert.js';
+
+import {CDPSession} from './Connection.js';
 import {EVALUATION_SCRIPT_URL} from './ExecutionContext.js';
+import {addEventListener, debugError, PuppeteerEventListener} from './util.js';
 import {removeEventListeners} from './util.js';
 
 /**

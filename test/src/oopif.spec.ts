@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import utils from './utils.js';
 import expect from 'expect';
-import {describeWithDebugLogs, getTestState} from './mocha-utils.js';
 import {Browser} from 'puppeteer-core/internal/api/Browser.js';
 import {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
+
+import {describeWithDebugLogs, getTestState} from './mocha-utils.js';
+import utils from './utils.js';
 
 describeWithDebugLogs('OOPIF', function () {
   /* We use a special browser for this test as we need the --site-per-process flag */

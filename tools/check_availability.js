@@ -17,6 +17,7 @@
 
 const assert = require('assert');
 const https = require('https');
+
 const BrowserFetcher =
   require('puppeteer-core/internal/node/BrowserFetcher.js').BrowserFetcher;
 

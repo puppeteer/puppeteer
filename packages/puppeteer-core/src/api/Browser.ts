@@ -17,11 +17,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import {ChildProcess} from 'child_process';
+
 import {Protocol} from 'devtools-protocol';
+
 import {EventEmitter} from '../common/EventEmitter.js';
-import type {Page} from './Page.js'; // TODO: move to ./api
 import type {Target} from '../common/Target.js'; // TODO: move to ./api
+
 import type {BrowserContext} from './BrowserContext.js';
+import type {Page} from './Page.js'; // TODO: move to ./api
 
 /**
  * BrowserContext options.

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import {createWriteStream} from 'fs';
 import * as http from 'http';
 import * as https from 'https';
 import {URL} from 'url';
+
 import createHttpsProxyAgent from 'https-proxy-agent';
 import {getProxyForUrl} from 'proxy-from-env';
-import {createWriteStream} from 'fs';
 
 export function headHttpRequest(url: URL): Promise<boolean> {
   return new Promise(resolve => {
@@ -48,6 +49,7 @@ export function httpRequest(
     hostname: url.hostname,
     port: url.port,
     path: url.pathname,
+    method,
     headers: keepAlive ? {Connection: 'keep-alive'} : undefined,
   };
 
@@ -58,6 +60,7 @@ export function httpRequest(
       options.path = url.href;
       options.hostname = proxy.hostname;
       options.protocol = proxy.protocol;
+      options.port = proxy.port;
     } else {
       options.agent = createHttpsProxyAgent({
         host: proxy.host,

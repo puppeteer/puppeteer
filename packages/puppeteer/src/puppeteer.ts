@@ -19,6 +19,7 @@ export {Protocol} from 'puppeteer-core';
 export * from 'puppeteer-core/internal/puppeteer-core.js';
 
 import {PuppeteerNode} from 'puppeteer-core/internal/node/PuppeteerNode.js';
+
 import {getConfiguration} from './getConfiguration.js';
 
 const configuration = getConfiguration();
@@ -32,10 +33,25 @@ const puppeteer = new PuppeteerNode({
 });
 
 export const {
+  /**
+   * @public
+   */
   connect,
+  /**
+   * @public
+   */
   createBrowserFetcher,
+  /**
+   * @public
+   */
   defaultArgs,
+  /**
+   * @public
+   */
   executablePath,
+  /**
+   * @public
+   */
   launch,
 } = puppeteer;
 

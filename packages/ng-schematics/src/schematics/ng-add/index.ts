@@ -16,14 +16,15 @@
 
 import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
-
-import {concatMap, map, scan} from 'rxjs/operators';
 import {of} from 'rxjs';
+import {concatMap, map, scan} from 'rxjs/operators';
+
 import {
   addBaseFiles,
   addFrameworkFiles,
   getNgCommandName,
 } from '../utils/files.js';
+import {getAngularConfig} from '../utils/json.js';
 import {
   addPackageJsonDependencies,
   addPackageJsonScripts,
@@ -33,9 +34,7 @@ import {
   type NodePackage,
   updateAngularJsonScripts,
 } from '../utils/packages.js';
-
 import {type SchematicsOptions} from '../utils/types.js';
-import {getAngularConfig} from '../utils/json.js';
 
 // You don't have to export the function as default. You can also have more than one rule
 // factory per file.

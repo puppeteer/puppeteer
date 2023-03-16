@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "wireit",
-    "clean": "tsc -b --clean && rimraf build"
+    "clean": "tsc -b --clean && rm -rf build"
   },
   "wireit": {
     "build": {
@@ -15,6 +15,7 @@
         "../packages/testserver:build"
       ],
       "files": [
+        "../tools/mochaRunner/**",
         "src/**"
       ],
       "output": [

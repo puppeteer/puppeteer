@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "wireit",
-    "clean": "tsc -b --clean && rimraf lib"
+    "clean": "tsc -b --clean && rm -rf lib"
   },
   "wireit": {
     "build": {
@@ -28,6 +28,6 @@
   "license": "Apache-2.0",
   "dependencies": {
     "mime": "3.0.0",
-    "ws": "8.11.0"
+    "ws": "8.12.1"
   }
 }

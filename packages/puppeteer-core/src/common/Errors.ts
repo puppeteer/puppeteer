@@ -51,26 +51,22 @@ export class ProtocolError extends CustomError {
   #code?: number;
   #originalMessage = '';
 
-  /**
-   * @internal
-   */
   set code(code: number | undefined) {
     this.#code = code;
   }
   /**
+   * @readonly
    * @public
    */
   get code(): number | undefined {
     return this.#code;
   }
 
-  /**
-   * @internal
-   */
   set originalMessage(originalMessage: string) {
     this.#originalMessage = originalMessage;
   }
   /**
+   * @readonly
    * @public
    */
   get originalMessage(): string {

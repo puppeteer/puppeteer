@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-import {
-  executablePath,
-  resolveDownloadUrl,
-} from '../../lib/cjs/browsers/firefox.js';
-import {BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
 import assert from 'assert';
+import fs from 'fs';
+import os from 'os';
 import path from 'path';
+
+import rimraf from 'rimraf';
+
+import {BrowserPlatform} from '../../lib/cjs/browser-data/browser-data.js';
+import {
+  createProfile,
+  relativeExecutablePath,
+  resolveDownloadUrl,
+} from '../../lib/cjs/browser-data/firefox.js';
 
 describe('Firefox', () => {
   it('should resolve download URLs', () => {
@@ -48,36 +54,52 @@ describe('Firefox', () => {
 
   it('should resolve executable paths', () => {
     assert.strictEqual(
-      executablePath(BrowserPlatform.LINUX, '111.0a1'),
-      path.join('linux-111.0a1', 'firefox', 'firefox')
+      relativeExecutablePath(BrowserPlatform.LINUX, '111.0a1'),
+      path.join('firefox', 'firefox')
     );
     assert.strictEqual(
-      executablePath(BrowserPlatform.MAC, '111.0a1'),
-      path.join(
-        'mac-111.0a1',
-        'Firefox Nightly.app',
-        'Contents',
-        'MacOS',
-        'firefox'
-      )
+      relativeExecutablePath(BrowserPlatform.MAC, '111.0a1'),
+      path.join('Firefox Nightly.app', 'Contents', 'MacOS', 'firefox')
     );
     assert.strictEqual(
-      executablePath(BrowserPlatform.MAC_ARM, '111.0a1'),
-      path.join(
-        'mac_arm-111.0a1',
-        'Firefox Nightly.app',
-        'Contents',
-        'MacOS',
-        'firefox'
-      )
+      relativeExecutablePath(BrowserPlatform.MAC_ARM, '111.0a1'),
+      path.join('Firefox Nightly.app', 'Contents', 'MacOS', 'firefox')
     );
     assert.strictEqual(
-      executablePath(BrowserPlatform.WIN32, '111.0a1'),
-      path.join('win32-111.0a1', 'firefox', 'firefox.exe')
+      relativeExecutablePath(BrowserPlatform.WIN32, '111.0a1'),
+      path.join('firefox', 'firefox.exe')
     );
     assert.strictEqual(
-      executablePath(BrowserPlatform.WIN64, '111.0a1'),
-      path.join('win64-111.0a1', 'firefox', 'firefox.exe')
+      relativeExecutablePath(BrowserPlatform.WIN64, '111.0a1'),
+      path.join('firefox', 'firefox.exe')
     );
+  });
+
+  describe('profile', () => {
+    let tmpDir = '/tmp/puppeteer-browsers-test';
+
+    beforeEach(() => {
+      tmpDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), 'puppeteer-browsers-test')
+      );
+    });
+
+    afterEach(() => {
+      rimraf.sync(tmpDir);
+    });
+
+    it('should create a profile', async () => {
+      await createProfile({
+        preferences: {
+          test: 1,
+        },
+        path: tmpDir,
+      });
+      const text = fs.readFileSync(path.join(tmpDir, 'user.js'), 'utf-8');
+      assert.ok(
+        text.includes(`user_pref("toolkit.startup.max_resumed_crashes", -1);`)
+      ); // default preference.
+      assert.ok(text.includes(`user_pref("test", 1);`)); // custom preference.
+    });
   });
 });

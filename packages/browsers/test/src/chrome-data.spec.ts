@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import {
-  resolveDownloadUrl,
-  executablePath,
-} from '../../lib/cjs/browsers/chrome.js';
-import {BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
 import assert from 'assert';
 import path from 'path';
+
+import {
+  BrowserPlatform,
+  ChromeReleaseChannel,
+} from '../../lib/cjs/browser-data/browser-data.js';
+import {
+  resolveDownloadUrl,
+  relativeExecutablePath,
+  resolveSystemExecutablePath,
+} from '../../lib/cjs/browser-data/chrome.js';
 
 describe('Chrome', () => {
   it('should resolve download URLs', () => {
@@ -48,30 +53,56 @@ describe('Chrome', () => {
 
   it('should resolve executable paths', () => {
     assert.strictEqual(
-      executablePath(BrowserPlatform.LINUX, '12372323'),
-      path.join('linux-12372323', 'chrome')
+      relativeExecutablePath(BrowserPlatform.LINUX, '12372323'),
+      path.join('chrome-linux', 'chrome')
     );
     assert.strictEqual(
-      executablePath(BrowserPlatform.MAC, '12372323'),
-      path.join('mac-12372323', 'Chromium.app', 'Contents', 'MacOS', 'Chromium')
+      relativeExecutablePath(BrowserPlatform.MAC, '12372323'),
+      path.join('chrome-mac', 'Chromium.app', 'Contents', 'MacOS', 'Chromium')
     );
     assert.strictEqual(
-      executablePath(BrowserPlatform.MAC_ARM, '12372323'),
-      path.join(
-        'mac_arm-12372323',
-        'Chromium.app',
-        'Contents',
-        'MacOS',
-        'Chromium'
-      )
+      relativeExecutablePath(BrowserPlatform.MAC_ARM, '12372323'),
+      path.join('chrome-mac', 'Chromium.app', 'Contents', 'MacOS', 'Chromium')
     );
     assert.strictEqual(
-      executablePath(BrowserPlatform.WIN32, '12372323'),
-      path.join('win32-12372323', 'chrome.exe')
+      relativeExecutablePath(BrowserPlatform.WIN32, '12372323'),
+      path.join('chrome-win', 'chrome.exe')
     );
     assert.strictEqual(
-      executablePath(BrowserPlatform.WIN64, '12372323'),
-      path.join('win64-12372323', 'chrome.exe')
+      relativeExecutablePath(BrowserPlatform.WIN64, '12372323'),
+      path.join('chrome-win', 'chrome.exe')
     );
+  });
+
+  it('should resolve system executable path', () => {
+    process.env['PROGRAMFILES'] = 'C:\\ProgramFiles';
+    try {
+      assert.strictEqual(
+        resolveSystemExecutablePath(
+          BrowserPlatform.WIN32,
+          ChromeReleaseChannel.DEV
+        ),
+        'C:\\ProgramFiles\\Google\\Chrome Dev\\Application\\chrome.exe'
+      );
+    } finally {
+      delete process.env['PROGRAMFILES'];
+    }
+
+    assert.strictEqual(
+      resolveSystemExecutablePath(
+        BrowserPlatform.MAC,
+        ChromeReleaseChannel.BETA
+      ),
+      '/Applications/Google Chrome Beta.app/Contents/MacOS/Google Chrome Beta'
+    );
+    assert.throws(() => {
+      assert.strictEqual(
+        resolveSystemExecutablePath(
+          BrowserPlatform.LINUX,
+          ChromeReleaseChannel.CANARY
+        ),
+        path.join('chrome-linux', 'chrome')
+      );
+    }, new Error(`Unable to detect browser executable path for 'canary' on linux.`));
   });
 });

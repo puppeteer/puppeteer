@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
+import assert from 'assert';
 import {existsSync} from 'fs';
 import {mkdir, unlink} from 'fs/promises';
 import os from 'os';
 import path from 'path';
 
+import {
+  Browser,
+  BrowserPlatform,
+  downloadUrls,
+} from './browser-data/browser-data.js';
+import {Cache} from './Cache.js';
 import {debug} from './debug.js';
-import {Browser, BrowserPlatform, downloadUrls} from './browsers/browsers.js';
-import {downloadFile, headHttpRequest} from './httpUtil.js';
-import assert from 'assert';
+import {detectBrowserPlatform} from './detectPlatform.js';
 import {unpackArchive} from './fileUtil.js';
-import {detectPlatform} from './detectPlatform.js';
+import {downloadFile, headHttpRequest} from './httpUtil.js';
 
 const debugFetch = debug('puppeteer:browsers:fetcher');
 
@@ -35,7 +40,7 @@ export interface Options {
   /**
    * Determines the path to download browsers to.
    */
-  outputDir: string;
+  cacheDir: string;
   /**
    * Determines which platform the browser will be suited for.
    *
@@ -47,25 +52,28 @@ export interface Options {
    */
   browser: Browser;
   /**
-   * Determines which revision to dowloand. Revision should uniquely identify
+   * Determines which buildId to dowloand. BuildId should uniquely identify
    * binaries and they are used for caching.
    */
-  revision: string;
+  buildId: string;
   /**
    * Provides information about the progress of the download.
    */
-  progressCallback?: (downloadedBytes: number, totalBytes: number) => void;
+  downloadProgressCallback?: (
+    downloadedBytes: number,
+    totalBytes: number
+  ) => void;
 }
 
 export type InstalledBrowser = {
   path: string;
   browser: Browser;
-  revision: string;
+  buildId: string;
   platform: BrowserPlatform;
 };
 
 export async function fetch(options: Options): Promise<InstalledBrowser> {
-  options.platform ??= detectPlatform();
+  options.platform ??= detectBrowserPlatform();
   if (!options.platform) {
     throw new Error(
       `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`
@@ -74,29 +82,32 @@ export async function fetch(options: Options): Promise<InstalledBrowser> {
   const url = getDownloadUrl(
     options.browser,
     options.platform,
-    options.revision
+    options.buildId
   );
   const fileName = url.toString().split('/').pop();
   assert(fileName, `A malformed download URL was found: ${url}.`);
-  const archivePath = path.join(options.outputDir, fileName);
-  const outputPath = path.resolve(
-    options.outputDir,
-    `${options.platform}-${options.revision}`
+  const structure = new Cache(options.cacheDir);
+  const browserRoot = structure.browserRoot(options.browser);
+  const archivePath = path.join(browserRoot, fileName);
+  if (!existsSync(browserRoot)) {
+    await mkdir(browserRoot, {recursive: true});
+  }
+  const outputPath = structure.installationDir(
+    options.browser,
+    options.platform,
+    options.buildId
   );
   if (existsSync(outputPath)) {
     return {
       path: outputPath,
       browser: options.browser,
       platform: options.platform,
-      revision: options.revision,
+      buildId: options.buildId,
     };
-  }
-  if (!existsSync(options.outputDir)) {
-    await mkdir(options.outputDir, {recursive: true});
   }
   try {
     debugFetch(`Downloading binary from ${url}`);
-    await downloadFile(url, archivePath, options.progressCallback);
+    await downloadFile(url, archivePath, options.downloadProgressCallback);
     debugFetch(`Installing ${archivePath} to ${outputPath}`);
     await unpackArchive(archivePath, outputPath);
   } finally {
@@ -108,26 +119,26 @@ export async function fetch(options: Options): Promise<InstalledBrowser> {
     path: outputPath,
     browser: options.browser,
     platform: options.platform,
-    revision: options.revision,
+    buildId: options.buildId,
   };
 }
 
 export async function canFetch(options: Options): Promise<boolean> {
-  options.platform ??= detectPlatform();
+  options.platform ??= detectBrowserPlatform();
   if (!options.platform) {
     throw new Error(
       `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`
     );
   }
   return await headHttpRequest(
-    getDownloadUrl(options.browser, options.platform, options.revision)
+    getDownloadUrl(options.browser, options.platform, options.buildId)
   );
 }
 
 function getDownloadUrl(
   browser: Browser,
   platform: BrowserPlatform,
-  revision: string
+  buildId: string
 ): URL {
-  return new URL(downloadUrls[browser](platform, revision));
+  return new URL(downloadUrls[browser](platform, buildId));
 }

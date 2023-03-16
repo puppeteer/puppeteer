@@ -1,19 +1,27 @@
 name: Pre-release
 
+permissions: read-all
+
 on:
   push:
     branches:
       - release-please-*
 
 jobs:
+  check-changes:
+    uses: ./.github/workflows/changed-packages.yml
+
   pre-release:
-    if: "startsWith(github.event.head_commit.message, 'chore: release main')"
+    if: |
+      startsWith(github.event.head_commit.message, 'chore: release main') &&
+      contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer')
+    needs: check-changes
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@v3.3.0
         with:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Install dependencies
@@ -36,10 +44,12 @@ jobs:
           npm run docs
       - name: Format
         run: npm run format
+      - name: Install to refresh package-lock
+        run: npm install
       - name: Commit
         run: |
           git config --global user.name 'release-please[bot]'
           git config --global user.email '55107282+release-please[bot]@users.noreply.github.com'
           git add .
-          git commit -m 'chore: generate versioned docs'
-          git push --no-verify
+          git commit -m 'chore: generate versioned docs' --no-verify
+          git push

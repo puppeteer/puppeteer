@@ -15,6 +15,7 @@
  */
 
 import expect from 'expect';
+
 import {
   getTestState,
   setupTestPageAndContextHooks,

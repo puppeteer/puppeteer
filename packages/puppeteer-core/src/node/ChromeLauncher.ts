@@ -2,10 +2,12 @@ import {accessSync} from 'fs';
 import {mkdtemp} from 'fs/promises';
 import os from 'os';
 import path from 'path';
+
 import {Browser} from '../api/Browser.js';
-import {assert} from '../util/assert.js';
-import {BrowserRunner} from './BrowserRunner.js';
 import {CDPBrowser} from '../common/Browser.js';
+import {assert} from '../util/assert.js';
+
+import {BrowserRunner} from './BrowserRunner.js';
 import {
   BrowserLaunchArgumentOptions,
   ChromeReleaseChannel,
@@ -129,7 +131,9 @@ export class ChromeLauncher extends ProductLauncher {
 
       if (protocol === 'webDriverBiDi') {
         try {
-          const BiDi = await import('../common/bidi/bidi.js');
+          const BiDi = await import(
+            /* webpackIgnore: true */ '../common/bidi/bidi.js'
+          );
           const bidiConnection = await BiDi.connectBidiOverCDP(connection);
           browser = await BiDi.Browser.create({
             connection: bidiConnection,

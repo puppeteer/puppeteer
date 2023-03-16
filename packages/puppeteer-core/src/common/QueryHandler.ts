@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google Inc. All rights reserved.
+ * Copyright 2023 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,315 +14,202 @@
  * limitations under the License.
  */
 
-import PuppeteerUtil from '../injected/injected.js';
-import {assert} from '../util/assert.js';
-import {ariaHandler} from './AriaQueryHandler.js';
 import {ElementHandle} from '../api/ElementHandle.js';
-import {Frame} from './Frame.js';
-import {WaitForSelectorOptions} from './IsolatedWorld.js';
+import type PuppeteerUtil from '../injected/injected.js';
+import {assert} from '../util/assert.js';
+import {isErrorLike} from '../util/ErrorLike.js';
+import {interpolateFunction, stringifyFunction} from '../util/Function.js';
+
+import type {Frame} from './Frame.js';
+import {transposeIterableHandle} from './HandleIterator.js';
+import type {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {LazyArg} from './LazyArg.js';
-
-/**
- * @public
- */
-export interface CustomQueryHandler {
-  /**
-   * @returns A {@link Node} matching the given `selector` from {@link node}.
-   */
-  queryOne?: (node: Node, selector: string) => Node | null;
-  /**
-   * @returns Some {@link Node}s matching the given `selector` from {@link node}.
-   */
-  queryAll?: (node: Node, selector: string) => Node[];
-}
+import type {Awaitable, AwaitableIterable} from './types.js';
 
 /**
  * @internal
  */
-export interface InternalQueryHandler {
-  /**
-   * @returns A {@link Node} matching the given `selector` from {@link node}.
-   */
-  queryOne?: (
-    node: Node,
-    selector: string,
-    PuppeteerUtil: PuppeteerUtil
-  ) => Node | null;
-  /**
-   * @returns Some {@link Node}s matching the given `selector` from {@link node}.
-   */
-  queryAll?: (
-    node: Node,
-    selector: string,
-    PuppeteerUtil: PuppeteerUtil
-  ) => Node[];
-}
+export type QuerySelectorAll = (
+  node: Node,
+  selector: string,
+  PuppeteerUtil: PuppeteerUtil
+) => AwaitableIterable<Node>;
 
 /**
  * @internal
  */
-export interface PuppeteerQueryHandler {
-  /**
-   * Queries for a single node given a selector and {@link ElementHandle}.
-   *
-   * Akin to {@link Window.prototype.querySelector}.
-   */
-  queryOne?: (
-    element: ElementHandle<Node>,
-    selector: string
-  ) => Promise<ElementHandle<Node> | null>;
+export type QuerySelector = (
+  node: Node,
+  selector: string,
+  PuppeteerUtil: PuppeteerUtil
+) => Awaitable<Node | null>;
+
+/**
+ * @internal
+ */
+export class QueryHandler {
+  // Either one of these may be implemented, but at least one must be.
+  static querySelectorAll?: QuerySelectorAll;
+  static querySelector?: QuerySelector;
+
+  static get _querySelector(): QuerySelector {
+    if (this.querySelector) {
+      return this.querySelector;
+    }
+    if (!this.querySelectorAll) {
+      throw new Error('Cannot create default `querySelector`.');
+    }
+
+    return (this.querySelector = interpolateFunction(
+      async (node, selector, PuppeteerUtil) => {
+        const querySelectorAll: QuerySelectorAll =
+          PLACEHOLDER('querySelectorAll');
+        const results = querySelectorAll(node, selector, PuppeteerUtil);
+        for await (const result of results) {
+          return result;
+        }
+        return null;
+      },
+      {
+        querySelectorAll: stringifyFunction(this.querySelectorAll),
+      }
+    ));
+  }
+
+  static get _querySelectorAll(): QuerySelectorAll {
+    if (this.querySelectorAll) {
+      return this.querySelectorAll;
+    }
+    if (!this.querySelector) {
+      throw new Error('Cannot create default `querySelectorAll`.');
+    }
+
+    return (this.querySelectorAll = interpolateFunction(
+      async function* (node, selector, PuppeteerUtil) {
+        const querySelector: QuerySelector = PLACEHOLDER('querySelector');
+        const result = await querySelector(node, selector, PuppeteerUtil);
+        if (result) {
+          yield result;
+        }
+      },
+      {
+        querySelector: stringifyFunction(this.querySelector),
+      }
+    ));
+  }
+
   /**
    * Queries for multiple nodes given a selector and {@link ElementHandle}.
    *
-   * Akin to {@link Window.prototype.querySelectorAll}.
+   * Akin to {@link https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll | Document.querySelectorAll()}.
    */
-  queryAll?: (
+  static async *queryAll(
     element: ElementHandle<Node>,
     selector: string
-  ) => Promise<Array<ElementHandle<Node>>>;
+  ): AwaitableIterable<ElementHandle<Node>> {
+    const world = element.executionContext()._world;
+    assert(world);
+    const handle = await element.evaluateHandle(
+      this._querySelectorAll,
+      selector,
+      LazyArg.create(context => {
+        return context.puppeteerUtil;
+      })
+    );
+    yield* transposeIterableHandle(handle);
+  }
+
+  /**
+   * Queries for a single node given a selector and {@link ElementHandle}.
+   *
+   * Akin to {@link https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector}.
+   */
+  static async queryOne(
+    element: ElementHandle<Node>,
+    selector: string
+  ): Promise<ElementHandle<Node> | null> {
+    const world = element.executionContext()._world;
+    assert(world);
+    const result = await element.evaluateHandle(
+      this._querySelector,
+      selector,
+      LazyArg.create(context => {
+        return context.puppeteerUtil;
+      })
+    );
+    if (!(result instanceof ElementHandle)) {
+      await result.dispose();
+      return null;
+    }
+    return result;
+  }
 
   /**
    * Waits until a single node appears for a given selector and
    * {@link ElementHandle}.
+   *
+   * This will always query the handle in the Puppeteer world and migrate the
+   * result to the main world.
    */
-  waitFor?: (
+  static async waitFor(
     elementOrFrame: ElementHandle<Node> | Frame,
     selector: string,
     options: WaitForSelectorOptions
-  ) => Promise<ElementHandle<Node> | null>;
-}
+  ): Promise<ElementHandle<Node> | null> {
+    let frame: Frame;
+    let element: ElementHandle<Node> | undefined;
+    if (!(elementOrFrame instanceof ElementHandle)) {
+      frame = elementOrFrame;
+    } else {
+      frame = elementOrFrame.frame;
+      element = await frame.worlds[PUPPETEER_WORLD].adoptHandle(elementOrFrame);
+    }
 
-function createPuppeteerQueryHandler(
-  handler: InternalQueryHandler
-): PuppeteerQueryHandler {
-  const internalHandler: PuppeteerQueryHandler = {};
+    const {visible = false, hidden = false, timeout} = options;
 
-  if (handler.queryOne) {
-    const queryOne = handler.queryOne;
-    internalHandler.queryOne = async (element, selector) => {
-      const world = element.executionContext()._world;
-      assert(world);
-      const jsHandle = await element.evaluateHandle(
-        queryOne,
-        selector,
+    try {
+      const handle = await frame.worlds[PUPPETEER_WORLD].waitForFunction(
+        async (PuppeteerUtil, query, selector, root, visible) => {
+          const querySelector = PuppeteerUtil.createFunction(
+            query
+          ) as QuerySelector;
+          const node = await querySelector(
+            root ?? document,
+            selector,
+            PuppeteerUtil
+          );
+          return PuppeteerUtil.checkVisibility(node, visible);
+        },
+        {
+          polling: visible || hidden ? 'raf' : 'mutation',
+          root: element,
+          timeout,
+        },
         LazyArg.create(context => {
           return context.puppeteerUtil;
-        })
-      );
-      const elementHandle = jsHandle.asElement();
-      if (elementHandle) {
-        return elementHandle;
-      }
-      await jsHandle.dispose();
-      return null;
-    };
-    internalHandler.waitFor = async (elementOrFrame, selector, options) => {
-      let frame: Frame;
-      let element: ElementHandle<Node> | undefined;
-      if (elementOrFrame instanceof Frame) {
-        frame = elementOrFrame;
-      } else {
-        frame = elementOrFrame.frame;
-        element = await frame.worlds[PUPPETEER_WORLD].adoptHandle(
-          elementOrFrame
-        );
-      }
-      const result = await frame.worlds[PUPPETEER_WORLD]._waitForSelectorInPage(
-        queryOne,
-        element,
+        }),
+        stringifyFunction(this._querySelector),
         selector,
-        options
+        element,
+        visible ? true : hidden ? false : undefined
       );
+
+      if (!(handle instanceof ElementHandle)) {
+        await handle.dispose();
+        return null;
+      }
+      return frame.worlds[MAIN_WORLD].transferHandle(handle);
+    } catch (error) {
+      if (!isErrorLike(error)) {
+        throw error;
+      }
+      error.message = `Waiting for selector \`${selector}\` failed: ${error.message}`;
+      throw error;
+    } finally {
       if (element) {
         await element.dispose();
       }
-      if (!result) {
-        return null;
-      }
-      if (!(result instanceof ElementHandle)) {
-        await result.dispose();
-        return null;
-      }
-      return frame.worlds[MAIN_WORLD].transferHandle(result);
-    };
-  }
-
-  if (handler.queryAll) {
-    const queryAll = handler.queryAll;
-    internalHandler.queryAll = async (element, selector) => {
-      const world = element.executionContext()._world;
-      assert(world);
-      const jsHandle = await element.evaluateHandle(
-        queryAll,
-        selector,
-        LazyArg.create(context => {
-          return context.puppeteerUtil;
-        })
-      );
-      const properties = await jsHandle.getProperties();
-      await jsHandle.dispose();
-      const result = [];
-      for (const property of properties.values()) {
-        const elementHandle = property.asElement();
-        if (elementHandle) {
-          result.push(elementHandle);
-        }
-      }
-      return result;
-    };
-  }
-
-  return internalHandler;
-}
-
-const defaultHandler = createPuppeteerQueryHandler({
-  queryOne: (element, selector) => {
-    if (!('querySelector' in element)) {
-      throw new Error(
-        `Could not invoke \`querySelector\` on node of type ${element.nodeName}.`
-      );
-    }
-    return (
-      element as unknown as {querySelector(selector: string): Element}
-    ).querySelector(selector);
-  },
-  queryAll: (element, selector) => {
-    if (!('querySelectorAll' in element)) {
-      throw new Error(
-        `Could not invoke \`querySelectorAll\` on node of type ${element.nodeName}.`
-      );
-    }
-    return [
-      ...(
-        element as unknown as {
-          querySelectorAll(selector: string): NodeList;
-        }
-      ).querySelectorAll(selector),
-    ];
-  },
-});
-
-const pierceHandler = createPuppeteerQueryHandler({
-  queryOne: (element, selector, {pierceQuerySelector}) => {
-    return pierceQuerySelector(element, selector);
-  },
-  queryAll: (element, selector, {pierceQuerySelectorAll}) => {
-    return pierceQuerySelectorAll(element, selector);
-  },
-});
-
-const xpathHandler = createPuppeteerQueryHandler({
-  queryOne: (element, selector, {xpathQuerySelector}) => {
-    return xpathQuerySelector(element, selector);
-  },
-  queryAll: (element, selector, {xpathQuerySelectorAll}) => {
-    return xpathQuerySelectorAll(element, selector);
-  },
-});
-
-const textQueryHandler = createPuppeteerQueryHandler({
-  queryOne: (element, selector, {textQuerySelector}) => {
-    return textQuerySelector(element, selector);
-  },
-  queryAll: (element, selector, {textQuerySelectorAll}) => {
-    return textQuerySelectorAll(element, selector);
-  },
-});
-
-interface RegisteredQueryHandler {
-  handler: PuppeteerQueryHandler;
-  transformSelector?: (selector: string) => string;
-}
-
-const INTERNAL_QUERY_HANDLERS = new Map<string, RegisteredQueryHandler>([
-  ['aria', {handler: ariaHandler}],
-  ['pierce', {handler: pierceHandler}],
-  ['xpath', {handler: xpathHandler}],
-  ['text', {handler: textQueryHandler}],
-]);
-const QUERY_HANDLERS = new Map<string, RegisteredQueryHandler>();
-
-/**
- * @deprecated Import {@link Puppeteer} and use the static method
- * {@link Puppeteer.registerCustomQueryHandler}
- *
- * @public
- */
-export function registerCustomQueryHandler(
-  name: string,
-  handler: CustomQueryHandler
-): void {
-  if (INTERNAL_QUERY_HANDLERS.has(name)) {
-    throw new Error(`A query handler named "${name}" already exists`);
-  }
-  if (QUERY_HANDLERS.has(name)) {
-    throw new Error(`A custom query handler named "${name}" already exists`);
-  }
-
-  const isValidName = /^[a-zA-Z]+$/.test(name);
-  if (!isValidName) {
-    throw new Error(`Custom query handler names may only contain [a-zA-Z]`);
-  }
-
-  QUERY_HANDLERS.set(name, {handler: createPuppeteerQueryHandler(handler)});
-}
-
-/**
- * @deprecated Import {@link Puppeteer} and use the static method
- * {@link Puppeteer.unregisterCustomQueryHandler}
- *
- * @public
- */
-export function unregisterCustomQueryHandler(name: string): void {
-  QUERY_HANDLERS.delete(name);
-}
-
-/**
- * @deprecated Import {@link Puppeteer} and use the static method
- * {@link Puppeteer.customQueryHandlerNames}
- *
- * @public
- */
-export function customQueryHandlerNames(): string[] {
-  return [...QUERY_HANDLERS.keys()];
-}
-
-/**
- * @deprecated Import {@link Puppeteer} and use the static method
- * {@link Puppeteer.clearCustomQueryHandlers}
- *
- * @public
- */
-export function clearCustomQueryHandlers(): void {
-  QUERY_HANDLERS.clear();
-}
-
-const CUSTOM_QUERY_SEPARATORS = ['=', '/'];
-
-/**
- * @internal
- */
-export function getQueryHandlerAndSelector(selector: string): {
-  updatedSelector: string;
-  queryHandler: PuppeteerQueryHandler;
-} {
-  for (const handlerMap of [QUERY_HANDLERS, INTERNAL_QUERY_HANDLERS]) {
-    for (const [
-      name,
-      {handler: queryHandler, transformSelector},
-    ] of handlerMap) {
-      for (const separator of CUSTOM_QUERY_SEPARATORS) {
-        const prefix = `${name}${separator}`;
-        if (selector.startsWith(prefix)) {
-          selector = selector.slice(prefix.length);
-          if (transformSelector) {
-            selector = transformSelector(selector);
-          }
-          return {updatedSelector: selector, queryHandler};
-        }
-      }
     }
   }
-  return {updatedSelector: selector, queryHandler: defaultHandler};
 }

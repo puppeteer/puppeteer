@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
 import type {Readable} from 'stream';
+
+import type {Protocol} from 'devtools-protocol';
+
+import type {ElementHandle} from '../api/ElementHandle.js';
+import type {JSHandle} from '../api/JSHandle.js';
 import {isNode} from '../environment.js';
 import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
-import {CDPSession} from './Connection.js';
+
+import type {CDPSession} from './Connection.js';
 import {debug} from './Debug.js';
-import {ElementHandle} from '../api/ElementHandle.js';
 import {CDPElementHandle} from './ElementHandle.js';
 import {TimeoutError} from './Errors.js';
-import {CommonEventEmitter} from './EventEmitter.js';
-import {ExecutionContext} from './ExecutionContext.js';
-import {JSHandle} from '../api/JSHandle.js';
+import type {CommonEventEmitter} from './EventEmitter.js';
+import type {ExecutionContext} from './ExecutionContext.js';
 import {CDPJSHandle} from './JSHandle.js';
+
 /**
  * @internal
  */
@@ -68,7 +72,7 @@ export function valueFromRemoteObject(
 ): any {
   assert(!remoteObject.objectId, 'Cannot extract value when objectId is given');
   if (remoteObject.unserializableValue) {
-    if (remoteObject.type === 'bigint' && typeof BigInt !== 'undefined') {
+    if (remoteObject.type === 'bigint') {
       return BigInt(remoteObject.unserializableValue.replace('n', ''));
     }
     switch (remoteObject.unserializableValue) {
@@ -270,82 +274,57 @@ export function evaluationString(
 /**
  * @internal
  */
-export function pageBindingInitString(type: string, name: string): string {
-  function addPageBinding(type: string, name: string): void {
-    // This is the CDP binding.
-    // @ts-expect-error: In a different context.
-    const callCDP = self[name];
+export function addPageBinding(type: string, name: string): void {
+  // This is the CDP binding.
+  // @ts-expect-error: In a different context.
+  const callCDP = globalThis[name];
 
-    // We replace the CDP binding with a Puppeteer binding.
-    Object.assign(self, {
-      [name](...args: unknown[]): Promise<unknown> {
-        // This is the Puppeteer binding.
-        // @ts-expect-error: In a different context.
-        const callPuppeteer = self[name];
-        callPuppeteer.callbacks ??= new Map();
-        const seq = (callPuppeteer.lastSeq ?? 0) + 1;
-        callPuppeteer.lastSeq = seq;
-        callCDP(JSON.stringify({type, name, seq, args}));
-        return new Promise((resolve, reject) => {
-          callPuppeteer.callbacks.set(seq, {resolve, reject});
+  // We replace the CDP binding with a Puppeteer binding.
+  Object.assign(globalThis, {
+    [name](...args: unknown[]): Promise<unknown> {
+      // This is the Puppeteer binding.
+      // @ts-expect-error: In a different context.
+      const callPuppeteer = globalThis[name];
+      callPuppeteer.args ??= new Map();
+      callPuppeteer.callbacks ??= new Map();
+
+      const seq = (callPuppeteer.lastSeq ?? 0) + 1;
+      callPuppeteer.lastSeq = seq;
+      callPuppeteer.args.set(seq, args);
+
+      callCDP(
+        JSON.stringify({
+          type,
+          name,
+          seq,
+          args,
+          isTrivial: !args.some(value => {
+            return value instanceof Node;
+          }),
+        })
+      );
+
+      return new Promise((resolve, reject) => {
+        callPuppeteer.callbacks.set(seq, {
+          resolve(value: unknown) {
+            callPuppeteer.args.delete(seq);
+            resolve(value);
+          },
+          reject(value?: unknown) {
+            callPuppeteer.args.delete(seq);
+            reject(value);
+          },
         });
-      },
-    });
-  }
+      });
+    },
+  });
+}
+
+/**
+ * @internal
+ */
+export function pageBindingInitString(type: string, name: string): string {
   return evaluationString(addPageBinding, type, name);
-}
-
-/**
- * @internal
- */
-export function pageBindingDeliverResultString(
-  name: string,
-  seq: number,
-  result: unknown
-): string {
-  function deliverResult(name: string, seq: number, result: unknown): void {
-    (window as any)[name].callbacks.get(seq).resolve(result);
-    (window as any)[name].callbacks.delete(seq);
-  }
-  return evaluationString(deliverResult, name, seq, result);
-}
-
-/**
- * @internal
- */
-export function pageBindingDeliverErrorString(
-  name: string,
-  seq: number,
-  message: string,
-  stack?: string
-): string {
-  function deliverError(
-    name: string,
-    seq: number,
-    message: string,
-    stack?: string
-  ): void {
-    const error = new Error(message);
-    error.stack = stack;
-    (window as any)[name].callbacks.get(seq).reject(error);
-    (window as any)[name].callbacks.delete(seq);
-  }
-  return evaluationString(deliverError, name, seq, message, stack);
-}
-
-/**
- * @internal
- */
-export function pageBindingDeliverErrorValueString(
-  name: string,
-  seq: number,
-  value: unknown
-): string {
-  function deliverErrorValue(name: string, seq: number, value: unknown): void {
-    (window as any)[name].callbacks.get(seq).reject(value);
-    (window as any)[name].callbacks.delete(seq);
-  }
-  return evaluationString(deliverErrorValue, name, seq, value);
 }
 
 /**
@@ -461,30 +440,4 @@ export async function getReadableFromProtocolStream(
       }
     },
   });
-}
-
-/**
- * @internal
- */
-export function stringifyFunction(expression: Function): string {
-  let functionText = expression.toString();
-  try {
-    new Function('(' + functionText + ')');
-  } catch (error) {
-    // This means we might have a function shorthand. Try another
-    // time prefixing 'function '.
-    if (functionText.startsWith('async ')) {
-      functionText =
-        'async function ' + functionText.substring('async '.length);
-    } else {
-      functionText = 'function ' + functionText;
-    }
-    try {
-      new Function('(' + functionText + ')');
-    } catch (error) {
-      // We tried hard to serialize, but there's a weird beast here.
-      throw new Error('Passed function is not well-serializable!');
-    }
-  }
-  return functionText;
 }

@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import utils from './utils.js';
 import expect from 'expect';
+
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-
-const bigint = typeof BigInt !== 'undefined';
+import utils from './utils.js';
 
 describe('Evaluation specs', function () {
   setupTestBrowserHooks();
@@ -37,7 +36,7 @@ describe('Evaluation specs', function () {
       });
       expect(result).toBe(21);
     });
-    (bigint ? it : it.skip)('should transfer BigInt', async () => {
+    it('should transfer BigInt', async () => {
       const {page} = getTestState();
 
       const result = await page.evaluate((a: bigint) => {
@@ -258,7 +257,7 @@ describe('Evaluation specs', function () {
       expect(result).not.toBe(object);
       expect(result).toEqual(object);
     });
-    (bigint ? it : it.skip)('should return BigInt', async () => {
+    it('should return BigInt', async () => {
       const {page} = getTestState();
 
       const result = await page.evaluate(() => {

@@ -13,22 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import expect from 'expect';
 import fs from 'fs';
 import {ServerResponse} from 'http';
 import path from 'path';
-import sinon from 'sinon';
+
+import expect from 'expect';
+import {KnownDevices, TimeoutError} from 'puppeteer';
+import {Metrics, Page} from 'puppeteer-core/internal/api/Page.js';
 import {CDPSession} from 'puppeteer-core/internal/common/Connection.js';
 import {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
-import {Metrics, Page} from 'puppeteer-core/internal/api/Page.js';
+import {CDPPage} from 'puppeteer-core/internal/common/Page.js';
+import sinon from 'sinon';
+
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
 import utils, {attachFrame, waitEvent} from './utils.js';
-import {CDPPage} from 'puppeteer-core/internal/common/Page.js';
-import {KnownDevices, TimeoutError} from 'puppeteer';
 
 describe('Page', function () {
   setupTestBrowserHooks();
@@ -666,7 +668,39 @@ describe('Page', function () {
       expect(await message.args()[1]!.jsonValue()).toEqual(5);
       expect(await message.args()[2]!.jsonValue()).toEqual({foo: 'bar'});
     });
-    it('should work for different console API calls', async () => {
+    it('should work for different console API calls with logging functions', async () => {
+      const {page} = getTestState();
+
+      const messages: any[] = [];
+      page.on('console', msg => {
+        return messages.push(msg);
+      });
+      // All console events will be reported before `page.evaluate` is finished.
+      await page.evaluate(() => {
+        console.trace('calling console.trace');
+        console.dir('calling console.dir');
+        console.warn('calling console.warn');
+        console.error('calling console.error');
+        console.log(Promise.resolve('should not wait until resolved!'));
+      });
+      expect(
+        messages.map(msg => {
+          return msg.type();
+        })
+      ).toEqual(['trace', 'dir', 'warning', 'error', 'log']);
+      expect(
+        messages.map(msg => {
+          return msg.text();
+        })
+      ).toEqual([
+        'calling console.trace',
+        'calling console.dir',
+        'calling console.warn',
+        'calling console.error',
+        'JSHandle@promise',
+      ]);
+    });
+    it('should work for different console API calls with timing functions', async () => {
       const {page} = getTestState();
 
       const messages: any[] = [];
@@ -678,29 +712,13 @@ describe('Page', function () {
         // A pair of time/timeEnd generates only one Console API call.
         console.time('calling console.time');
         console.timeEnd('calling console.time');
-        console.trace('calling console.trace');
-        console.dir('calling console.dir');
-        console.warn('calling console.warn');
-        console.error('calling console.error');
-        console.log(Promise.resolve('should not wait until resolved!'));
       });
       expect(
         messages.map(msg => {
           return msg.type();
         })
-      ).toEqual(['timeEnd', 'trace', 'dir', 'warning', 'error', 'log']);
+      ).toEqual(['timeEnd']);
       expect(messages[0]!.text()).toContain('calling console.time');
-      expect(
-        messages.slice(1).map(msg => {
-          return msg.text();
-        })
-      ).toEqual([
-        'calling console.trace',
-        'calling console.dir',
-        'calling console.warn',
-        'calling console.error',
-        'JSHandle@promise',
-      ]);
     });
     it('should not fail for window object', async () => {
       const {page} = getTestState();

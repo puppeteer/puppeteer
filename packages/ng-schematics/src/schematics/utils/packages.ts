@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import {Tree} from '@angular-devkit/schematics';
 import {get} from 'https';
-import {SchematicsOptions, TestingFramework} from './types.js';
+
+import {Tree} from '@angular-devkit/schematics';
+
+import {getNgCommandName, getScriptFromOptions} from './files.js';
 import {
   getAngularConfig,
   getJsonFileAsObject,
   getObjectAsJson,
 } from './json.js';
-import {getNgCommandName, getScriptFromOptions} from './files.js';
+import {SchematicsOptions, TestingFramework} from './types.js';
 export interface NodePackage {
   name: string;
   version: string;

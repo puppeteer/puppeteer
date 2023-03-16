@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 import {Protocol} from 'devtools-protocol';
+
+import {createDeferredPromise} from '../util/DeferredPromise.js';
+
 import {CDPSession} from './Connection.js';
 import {ConsoleMessageType} from './ConsoleMessage.js';
-import {EvaluateFunc, HandleFor} from './types.js';
 import {EventEmitter} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {JSHandle} from '../api/JSHandle.js';
 import {CDPJSHandle} from './JSHandle.js';
+import {EvaluateFunc, HandleFor} from './types.js';
 import {debugError} from './util.js';
-import {createDeferredPromise} from '../util/DeferredPromise.js';
 
 /**
  * @internal
  */
 export type ConsoleAPICalledCallback = (
   eventType: ConsoleMessageType,
-  handles: JSHandle[],
+  handles: CDPJSHandle[],
   trace: Protocol.Runtime.StackTrace
 ) => void;
 

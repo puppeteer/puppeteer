@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 
-import {computeExecutablePath} from '../../lib/cjs/launcher.js';
-import {Browser, BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
-
 import assert from 'assert';
+import fs from 'fs';
+import os from 'os';
 import path from 'path';
+
+import {
+  CDP_WEBSOCKET_ENDPOINT_REGEX,
+  computeExecutablePath,
+  launch,
+  fetch,
+  Browser,
+  BrowserPlatform,
+  Cache,
+} from '../../lib/cjs/main.js';
+
+import {testChromeBuildId, testFirefoxBuildId} from './versions.js';
 
 describe('launcher', () => {
   it('should compute executable path for Chrome', () => {
@@ -26,21 +37,128 @@ describe('launcher', () => {
       computeExecutablePath({
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
-        revision: '123',
-        path: 'cache',
+        buildId: '123',
+        cacheDir: 'cache',
       }),
-      path.join('cache', 'linux-123', 'chrome')
+      path.join('cache', 'chrome', 'linux-123', 'chrome-linux', 'chrome')
     );
   });
+
+  it('should compute executable path for Chromium', () => {
+    assert.strictEqual(
+      computeExecutablePath({
+        browser: Browser.CHROMIUM,
+        platform: BrowserPlatform.LINUX,
+        buildId: '123',
+        cacheDir: 'cache',
+      }),
+      path.join('cache', 'chromium', 'linux-123', 'chrome-linux', 'chrome')
+    );
+  });
+
   it('should compute executable path for Firefox', () => {
     assert.strictEqual(
       computeExecutablePath({
         browser: Browser.FIREFOX,
         platform: BrowserPlatform.LINUX,
-        revision: '123',
-        path: 'cache',
+        buildId: '123',
+        cacheDir: 'cache',
       }),
-      path.join('cache', 'linux-123', 'firefox', 'firefox')
+      path.join('cache', 'firefox', 'linux-123', 'firefox', 'firefox')
     );
+  });
+
+  describe('Chrome', function () {
+    this.timeout(60000);
+
+    let tmpDir = '/tmp/puppeteer-browsers-test';
+
+    beforeEach(async () => {
+      tmpDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), 'puppeteer-browsers-test')
+      );
+      await fetch({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        buildId: testChromeBuildId,
+      });
+    });
+
+    afterEach(() => {
+      new Cache(tmpDir).clear();
+    });
+
+    it('should launch a Chrome browser', async () => {
+      const executablePath = computeExecutablePath({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        buildId: testChromeBuildId,
+      });
+      const process = launch({
+        executablePath,
+        args: [
+          '--headless=new',
+          '--use-mock-keychain',
+          '--disable-features=DialMediaRouteProvider',
+          `--user-data-dir=${path.join(tmpDir, 'profile')}`,
+        ],
+      });
+      await process.close();
+    });
+
+    it('should allow parsing stderr output of the browser process', async () => {
+      const executablePath = computeExecutablePath({
+        cacheDir: tmpDir,
+        browser: Browser.CHROME,
+        buildId: testChromeBuildId,
+      });
+      const process = launch({
+        executablePath,
+        args: [
+          '--headless=new',
+          '--use-mock-keychain',
+          '--disable-features=DialMediaRouteProvider',
+          '--remote-debugging-port=9222',
+          `--user-data-dir=${path.join(tmpDir, 'profile')}`,
+        ],
+      });
+      const url = await process.waitForLineOutput(CDP_WEBSOCKET_ENDPOINT_REGEX);
+      await process.close();
+      assert.ok(url.startsWith('ws://127.0.0.1:9222/devtools/browser'));
+    });
+  });
+
+  describe('Firefox', function () {
+    this.timeout(60000);
+
+    let tmpDir = '/tmp/puppeteer-browsers-test';
+
+    beforeEach(async () => {
+      tmpDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), 'puppeteer-browsers-test')
+      );
+      await fetch({
+        cacheDir: tmpDir,
+        browser: Browser.FIREFOX,
+        buildId: testFirefoxBuildId,
+      });
+    });
+
+    afterEach(() => {
+      new Cache(tmpDir).clear();
+    });
+
+    it('should launch a Firefox browser', async () => {
+      const executablePath = computeExecutablePath({
+        cacheDir: tmpDir,
+        browser: Browser.FIREFOX,
+        buildId: testFirefoxBuildId,
+      });
+      const process = launch({
+        executablePath,
+        args: [`--user-data-dir=${path.join(tmpDir, 'profile')}`],
+      });
+      await process.close();
+    });
   });
 });

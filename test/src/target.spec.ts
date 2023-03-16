@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import expect from 'expect';
 import {ServerResponse} from 'http';
+
+import expect from 'expect';
 import {TimeoutError} from 'puppeteer';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
 import {Target} from 'puppeteer-core/internal/common/Target.js';
+
 import {
   getTestState,
   setupTestBrowserHooks,

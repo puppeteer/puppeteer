@@ -31,7 +31,7 @@ export type TestSuite = z.infer<typeof zTestSuite>;
 
 export const zTestSuiteFile = z.object({
   testSuites: z.array(zTestSuite),
-  parameterDefinitons: z.record(z.any()),
+  parameterDefinitions: z.record(z.any()),
 });
 
 export type TestSuiteFile = z.infer<typeof zTestSuiteFile>;

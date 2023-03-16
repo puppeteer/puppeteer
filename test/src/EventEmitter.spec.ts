@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import expect from 'expect';
 import {EventEmitter} from 'puppeteer-core/internal/common/EventEmitter.js';
 import sinon from 'sinon';
-import expect from 'expect';
 
 describe('EventEmitter', () => {
   let emitter: EventEmitter;

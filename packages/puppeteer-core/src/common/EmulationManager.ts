@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {Protocol} from 'devtools-protocol';
+
 import {CDPSession} from './Connection.js';
 import {Viewport} from './PuppeteerViewport.js';
-import {Protocol} from 'devtools-protocol';
 
 /**
  * @internal

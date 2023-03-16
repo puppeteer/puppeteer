@@ -15,13 +15,15 @@
  */
 
 import path from 'path';
+
 import expect from 'expect';
+import {TimeoutError} from 'puppeteer';
+
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import {TimeoutError} from 'puppeteer';
 
 const FILE_TO_UPLOAD = path.join(__dirname, '/../assets/file-to-upload.txt');
 

@@ -1,9 +1,11 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+
 import {Browser} from '../api/Browser.js';
 import {CDPBrowser} from '../common/Browser.js';
 import {assert} from '../util/assert.js';
+
 import {BrowserRunner} from './BrowserRunner.js';
 import {
   BrowserLaunchArgumentOptions,
@@ -124,14 +126,16 @@ export class FirefoxLauncher extends ProductLauncher {
     });
 
     if (protocol === 'webDriverBiDi') {
-      let browser;
+      let browser: Browser;
       try {
         const connection = await runner.setupWebDriverBiDiConnection({
           timeout,
           slowMo,
           preferredRevision: this.puppeteer.browserRevision,
         });
-        const BiDi = await import('../common/bidi/bidi.js');
+        const BiDi = await import(
+          /* webpackIgnore: true */ '../common/bidi/bidi.js'
+        );
         browser = await BiDi.Browser.create({
           connection,
           closeCallback: runner.close.bind(runner),

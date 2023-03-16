@@ -15,9 +15,11 @@
  */
 
 import Protocol from 'devtools-protocol';
+
 import {CDPSession} from '../common/Connection.js';
 import {ExecutionContext} from '../common/ExecutionContext.js';
 import {EvaluateFuncWith, HandleFor, HandleOr} from '../common/types.js';
+
 import {ElementHandle} from './ElementHandle.js';
 
 declare const __JSHandleSymbol: unique symbol;
@@ -178,8 +180,16 @@ export class JSHandle<T = unknown> {
   }
 
   /**
+   * @internal
+   */
+  get id(): string | undefined {
+    throw new Error('Not implemented');
+  }
+
+  /**
    * Provides access to the
    * [Protocol.Runtime.RemoteObject](https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-RemoteObject)
+   * backing this handle.
    */
   remoteObject(): Protocol.Runtime.RemoteObject {
     throw new Error('Not implemented');

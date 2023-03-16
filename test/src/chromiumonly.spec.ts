@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import expect from 'expect';
 import {IncomingMessage} from 'http';
+
+import expect from 'expect';
+
 import {
   getTestState,
   setupTestBrowserHooks,
@@ -52,7 +54,7 @@ describe('Chromium-Specific Launcher tests', function () {
         })
       ).toBe(56);
       browser2.disconnect();
-      originalBrowser.close();
+      await originalBrowser.close();
     });
     it('should throw when using both browserWSEndpoint and browserURL', async () => {
       const {defaultBrowserOptions, puppeteer} = getTestState();
@@ -77,7 +79,7 @@ describe('Chromium-Specific Launcher tests', function () {
         'Exactly one of browserWSEndpoint, browserURL or transport'
       );
 
-      originalBrowser.close();
+      await originalBrowser.close();
     });
     it('should throw when trying to connect to non-existing browser', async () => {
       const {defaultBrowserOptions, puppeteer} = getTestState();
@@ -96,7 +98,7 @@ describe('Chromium-Specific Launcher tests', function () {
       expect(error.message).toContain(
         'Failed to fetch browser webSocket URL from'
       );
-      originalBrowser.close();
+      await originalBrowser.close();
     });
   });
 

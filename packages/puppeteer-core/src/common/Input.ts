@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import {Protocol} from 'devtools-protocol';
+
+import {Point} from '../api/ElementHandle.js';
 import {assert} from '../util/assert.js';
+
 import {CDPSession} from './Connection.js';
 import {_keyDefinitions, KeyDefinition, KeyInput} from './USKeyboardLayout.js';
-import {Protocol} from 'devtools-protocol';
-import {Point} from '../api/ElementHandle.js';
 
 type KeyDescription = Required<
   Pick<KeyDefinition, 'keyCode' | 'key' | 'text' | 'code' | 'location'>
@@ -476,18 +478,14 @@ export class Mouse {
     options: MouseOptions & {delay?: number} = {}
   ): Promise<void> {
     const {delay = null} = options;
+    await this.move(x, y);
+    await this.down(options);
     if (delay !== null) {
-      await this.move(x, y);
-      await this.down(options);
       await new Promise(f => {
         return setTimeout(f, delay);
       });
-      await this.up(options);
-    } else {
-      await this.move(x, y);
-      await this.down(options);
-      await this.up(options);
     }
+    await this.up(options);
   }
 
   /**

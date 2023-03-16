@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
 import type {Readable} from 'stream';
+
+import {Protocol} from 'devtools-protocol';
+
+import type {HTTPRequest} from '../api/HTTPRequest.js';
+import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {Accessibility} from '../common/Accessibility.js';
 import type {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {Coverage} from '../common/Coverage.js';
@@ -30,8 +34,6 @@ import type {
   FrameAddStyleTagOptions,
   FrameWaitForFunctionOptions,
 } from '../common/Frame.js';
-import type {HTTPRequest} from '../common/HTTPRequest.js';
-import type {HTTPResponse} from '../common/HTTPResponse.js';
 import type {
   Keyboard,
   Mouse,
@@ -52,6 +54,7 @@ import type {
   NodeFor,
 } from '../common/types.js';
 import type {WebWorker} from '../common/WebWorker.js';
+
 import type {Browser} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';
 import type {ElementHandle} from './ElementHandle.js';
@@ -1119,7 +1122,7 @@ export class Page extends EventEmitter {
    * a `<style type="text/css">` tag with the content.
    *
    * Shortcut for
-   * {@link Frame.addStyleTag | page.mainFrame().addStyleTag(options)}.
+   * {@link Frame.(addStyleTag:2) | page.mainFrame().addStyleTag(options)}.
    *
    * @returns An {@link ElementHandle | element handle} to the injected `<link>`
    * or `<style>` element.

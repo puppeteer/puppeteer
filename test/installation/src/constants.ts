@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import glob from 'glob';
 import {dirname, join, resolve} from 'path';
 import {fileURLToPath} from 'url';
 
+import {globIterateSync} from 'glob';
+
 export const PUPPETEER_CORE_PACKAGE_PATH = resolve(
-  glob.sync('puppeteer-core-*.tgz')[0]!
+  globIterateSync('puppeteer-core-*.tgz').next().value!
 );
 export const PUPPETEER_PACKAGE_PATH = resolve(
-  glob.sync('puppeteer-[0-9]*.tgz')[0]!
+  globIterateSync('puppeteer-[0-9]*.tgz').next().value!
 );
 export const ASSETS_DIR = join(
   dirname(fileURLToPath(import.meta.url)),

@@ -1,16 +1,26 @@
 {
   "name": "@puppeteer/browsers",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "description": "Download and launch browsers",
   "scripts": {
     "build": "wireit",
     "build:test": "wireit",
-    "clean": "tsc --build --clean && rimraf lib",
+    "clean": "tsc --build --clean && rm -rf lib",
     "test": "wireit"
+  },
+  "bin": {
+    "@puppeteer/browsers": "lib/cjs/main-cli.js"
+  },
+  "main": "./lib/cjs/main.js",
+  "exports": {
+    ".": {
+      "import": "./lib/esm/main.js",
+      "require": "./lib/cjs/main.js"
+    }
   },
   "wireit": {
     "build": {
-      "command": "tsc -b",
+      "command": "tsc -b && chmod a+x lib/cjs/main-cli.js lib/esm/main-cli.js",
       "files": [
         "src/**/*.ts",
         "tsconfig.json"
@@ -63,12 +73,16 @@
     "debug": "4.3.4",
     "extract-zip": "2.0.1",
     "https-proxy-agent": "5.0.1",
+    "progress": "2.0.3",
     "proxy-from-env": "1.1.0",
+    "rimraf": "4.4.0",
     "tar-fs": "2.1.1",
-    "unbzip2-stream": "1.4.3"
+    "unbzip2-stream": "1.4.3",
+    "yargs": "17.7.1"
   },
   "devDependencies": {
-    "@types/node": "^14.15.0"
+    "@types/node": "^14.15.0",
+    "@types/yargs": "17.0.22"
   },
   "peerDependencies": {
     "typescript": ">= 4.7.4"

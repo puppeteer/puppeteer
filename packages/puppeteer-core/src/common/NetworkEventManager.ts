@@ -15,6 +15,7 @@
  */
 
 import {Protocol} from 'devtools-protocol';
+
 import {HTTPRequest} from './HTTPRequest.js';
 
 /**

@@ -15,8 +15,10 @@
  */
 
 import {Protocol} from 'devtools-protocol';
+
 import {JSHandle} from '../api/JSHandle.js';
 import {assert} from '../util/assert.js';
+
 import {CDPSession} from './Connection.js';
 import type {CDPElementHandle} from './ElementHandle.js';
 import {ExecutionContext} from './ExecutionContext.js';
@@ -28,7 +30,7 @@ declare const __JSHandleSymbol: unique symbol;
 /**
  * @internal
  */
-export class CDPJSHandle<T> extends JSHandle<T> {
+export class CDPJSHandle<T = unknown> extends JSHandle<T> {
   /**
    * Used for nominally typing {@link JSHandle}.
    */
@@ -154,6 +156,10 @@ export class CDPJSHandle<T> extends JSHandle<T> {
     }
     const type = this.#remoteObject.subtype || this.#remoteObject.type;
     return 'JSHandle@' + type;
+  }
+
+  override get id(): string | undefined {
+    return this.#remoteObject.objectId;
   }
 
   override remoteObject(): Protocol.Runtime.RemoteObject {

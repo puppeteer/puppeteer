@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import {waitEvent} from './utils.js';
 import expect from 'expect';
+import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
+
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
+import {waitEvent} from './utils.js';
 
 describe('Target.createCDPSession', function () {
   setupTestBrowserHooks();

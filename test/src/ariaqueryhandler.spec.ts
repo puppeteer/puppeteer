@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
+import assert from 'assert';
+
 import expect from 'expect';
+import {TimeoutError} from 'puppeteer';
+import type {ElementHandle} from 'puppeteer-core/internal/api/ElementHandle.js';
+
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-
-import type {ElementHandle} from 'puppeteer-core/internal/api/ElementHandle.js';
 import utils from './utils.js';
-import assert from 'assert';
-import {TimeoutError} from 'puppeteer';
 
 describe('AriaQueryHandler', () => {
   setupTestBrowserHooks();

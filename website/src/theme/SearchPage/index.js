@@ -1,10 +1,7 @@
-import React, {useEffect, useState, useReducer, useRef} from 'react';
-import clsx from 'clsx';
-import algoliaSearch from 'algoliasearch/lite';
-import algoliaSearchHelper from 'algoliasearch-helper';
+import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
 import Head from '@docusaurus/Head';
 import Link from '@docusaurus/Link';
-import ExecutionEnvironment from '@docusaurus/ExecutionEnvironment';
+import {useAllDocsData} from '@docusaurus/plugin-content-docs/client';
 import {
   HtmlClassNameProvider,
   usePluralForm,
@@ -15,13 +12,18 @@ import {
   useTitleFormatter,
   useSearchPage,
 } from '@docusaurus/theme-common/internal';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
-import {useAllDocsData} from '@docusaurus/plugin-content-docs/client';
 import Translate, {translate} from '@docusaurus/Translate';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
-import styles from './styles.module.css';
+import algoliaSearch from 'algoliasearch/lite';
+import algoliaSearchHelper from 'algoliasearch-helper';
+import clsx from 'clsx';
+import React, {useEffect, useState, useReducer, useRef} from 'react';
+
 // eslint-disable-next-line import/extensions
 import {tagToCounter} from '../SearchMetadata';
+
+import styles from './styles.module.css';
 // Very simple pluralization: probably good enough for now
 function useDocumentsFoundPlural() {
   const {selectMessage} = usePluralForm();

@@ -15,24 +15,25 @@
  */
 
 import {exec as execChildProcess} from 'child_process';
-import extractZip from 'extract-zip';
 import {createReadStream, createWriteStream, existsSync, readdirSync} from 'fs';
 import {chmod, mkdir, readdir, unlink} from 'fs/promises';
-import * as http from 'http';
-import * as https from 'https';
+import http from 'http';
+import https from 'https';
+import os from 'os';
+import path from 'path';
+import URL from 'url';
+import {promisify, format} from 'util';
+
+import extractZip from 'extract-zip';
 import createHttpsProxyAgent, {
   HttpsProxyAgent,
   HttpsProxyAgentOptions,
 } from 'https-proxy-agent';
-import * as os from 'os';
-import * as path from 'path';
 import {getProxyForUrl} from 'proxy-from-env';
-import removeRecursive from 'rimraf';
+import rimraf from 'rimraf';
 import tar from 'tar-fs';
 import bzip from 'unbzip2-stream';
-import * as URL from 'url';
-import * as util from 'util';
-import {promisify} from 'util';
+
 import {debug} from '../common/Debug.js';
 import {Product} from '../common/Product.js';
 import {assert} from '../util/assert.js';
@@ -104,7 +105,7 @@ function downloadURL(
   host: string,
   revision: string
 ): string {
-  const url = util.format(
+  const url = format(
     downloadURLs[product][platform],
     host,
     revision,
@@ -402,7 +403,7 @@ export class BrowserFetcher {
    * @remarks
    * This method is affected by the current `product`.
    * @param revision - A revision to remove for the current `product`.
-   * @returns A promise that resolves when the revision has been removes or
+   * @returns A promise that resolves when the revision has been removed or
    * throws if the revision has not been downloaded.
    */
   async remove(revision: string): Promise<void> {
@@ -411,9 +412,7 @@ export class BrowserFetcher {
       existsSync(folderPath),
       `Failed to remove: revision ${revision} is not downloaded`
     );
-    await new Promise(fulfill => {
-      return removeRecursive(folderPath, fulfill);
-    });
+    await rimraf(folderPath);
   }
 
   /**
