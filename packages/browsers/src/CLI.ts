@@ -181,7 +181,7 @@ export class CLI {
             'Launch the Chrome browser identified by the revision 1083080.'
           );
           yargs.example(
-            '$0 launch chrome@112.0a1',
+            '$0 launch firefox@112.0a1',
             'Launch the Firefox browser identified by the milestone 112.0a1.'
           );
           yargs.example(
