@@ -96,7 +96,7 @@ export class CLI {
       .scriptName('@puppeteer/browsers')
       .command(
         'install <browser>',
-        'Download and install the specified browser. If successful, the command outputs the actual browser buildId that was installed and the absolute path to the browser executable.',
+        'Download and install the specified browser. If successful, the command outputs the actual browser buildId that was installed and the absolute path to the browser executable (format: <browser>@<buildID> <path>).',
         yargs => {
           this.#defineBrowserParameter(yargs);
           this.#definePlatformParameter(yargs);
