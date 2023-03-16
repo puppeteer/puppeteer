@@ -47,3 +47,7 @@ package-lock.json
 test/assets/
 docs/api
 versioned_*/
+
+# Ng-schematics
+/packages/ng-schematics/files/
+/packages/ng-schematics/sandbox/

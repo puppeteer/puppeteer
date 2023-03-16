@@ -17,7 +17,7 @@
 import Mocha from 'mocha';
 import commonInterface from 'mocha/lib/interfaces/common';
 
-import {getTestId} from './utils.js';
+import {testIdMatchesExpectationPattern} from './utils.js';
 
 type SuiteFunction = ((this: Mocha.Suite) => void) | undefined;
 type ExclusiveSuiteFunction = (this: Mocha.Suite) => void;
@@ -28,18 +28,10 @@ const skippedTests: Array<{testIdPattern: string; skip: true}> = process.env[
   ? JSON.parse(process.env['PUPPETEER_SKIPPED_TEST_CONFIG'])
   : [];
 
-skippedTests.reverse();
-
 function shouldSkipTest(test: Mocha.Test): boolean {
-  const testIdForFileName = getTestId(test.file!);
-  const testIdForTestName = getTestId(test.file!, test.fullTitle());
   // TODO: more efficient lookup.
   const definition = skippedTests.find(skippedTest => {
-    return (
-      '' === skippedTest.testIdPattern ||
-      testIdForFileName === skippedTest.testIdPattern ||
-      testIdForTestName === skippedTest.testIdPattern
-    );
+    return testIdMatchesExpectationPattern(test, skippedTest.testIdPattern);
   });
   if (definition && definition.skip) {
     return true;
