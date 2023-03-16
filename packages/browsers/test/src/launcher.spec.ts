@@ -19,8 +19,6 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-import rimraf from 'rimraf';
-
 import {
   CDP_WEBSOCKET_ENDPOINT_REGEX,
   computeExecutablePath,
@@ -28,6 +26,7 @@ import {
   fetch,
   Browser,
   BrowserPlatform,
+  Cache,
 } from '../../lib/cjs/main.js';
 
 import {testChromeBuildId, testFirefoxBuildId} from './versions.js';
@@ -86,7 +85,7 @@ describe('launcher', () => {
     });
 
     afterEach(() => {
-      rimraf.sync(tmpDir);
+      new Cache(tmpDir).clear();
     });
 
     it('should launch a Chrome browser', async () => {
@@ -146,7 +145,7 @@ describe('launcher', () => {
     });
 
     afterEach(() => {
-      rimraf.sync(tmpDir);
+      new Cache(tmpDir).clear();
     });
 
     it('should launch a Firefox browser', async () => {
