@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import assert from 'node:assert/strict';
-
 import {describe, test} from 'node:test';
 
 import {TestExpectation} from './types.js';
