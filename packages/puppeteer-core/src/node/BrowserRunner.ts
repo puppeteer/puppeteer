@@ -252,10 +252,11 @@ export class BrowserRunner {
     timeout: number;
     slowMo: number;
     preferredRevision: string;
+    protocolTimeout?: number;
   }): Promise<BiDiConnection> {
     assert(this.proc, 'BrowserRunner not started.');
 
-    const {timeout, slowMo, preferredRevision} = options;
+    const {timeout, slowMo, preferredRevision, protocolTimeout} = options;
     let browserWSEndpoint = await waitForWSEndpoint(
       this.proc,
       timeout,
@@ -267,7 +268,7 @@ export class BrowserRunner {
     const BiDi = await import(
       /* webpackIgnore: true */ '../common/bidi/bidi.js'
     );
-    return new BiDi.Connection(transport, slowMo);
+    return new BiDi.Connection(transport, slowMo, protocolTimeout);
   }
 
   async setupConnection(options: {
@@ -275,10 +276,12 @@ export class BrowserRunner {
     timeout: number;
     slowMo: number;
     preferredRevision: string;
+    protocolTimeout?: number;
   }): Promise<Connection> {
     assert(this.proc, 'BrowserRunner not started.');
 
-    const {usePipe, timeout, slowMo, preferredRevision} = options;
+    const {usePipe, timeout, slowMo, preferredRevision, protocolTimeout} =
+      options;
     if (!usePipe) {
       const browserWSEndpoint = await waitForWSEndpoint(
         this.proc,
@@ -286,7 +289,12 @@ export class BrowserRunner {
         preferredRevision
       );
       const transport = await WebSocketTransport.create(browserWSEndpoint);
-      this.connection = new Connection(browserWSEndpoint, transport, slowMo);
+      this.connection = new Connection(
+        browserWSEndpoint,
+        transport,
+        slowMo,
+        protocolTimeout
+      );
     } else {
       // stdio was assigned during start(), and the 'pipe' option there adds the
       // 4th and 5th items to stdio array
@@ -295,7 +303,7 @@ export class BrowserRunner {
         pipeWrite as NodeJS.WritableStream,
         pipeRead as NodeJS.ReadableStream
       );
-      this.connection = new Connection('', transport, slowMo);
+      this.connection = new Connection('', transport, slowMo, protocolTimeout);
     }
     return this.connection;
   }
