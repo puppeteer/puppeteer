@@ -198,7 +198,7 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[drag-and-drop.spec]",
+    "testIdPattern": "[drag-and-drop.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
@@ -1314,7 +1314,7 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[requestinterception-experimental.spec]",
+    "testIdPattern": "[requestinterception-experimental.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP", "FAIL"]
