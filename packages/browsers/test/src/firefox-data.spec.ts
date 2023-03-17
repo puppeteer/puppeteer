@@ -19,14 +19,12 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-import rimraf from 'rimraf';
-
-import {BrowserPlatform} from '../../lib/cjs/browsers/browsers.js';
+import {BrowserPlatform} from '../../lib/cjs/browser-data/browser-data.js';
 import {
   createProfile,
   relativeExecutablePath,
   resolveDownloadUrl,
-} from '../../lib/cjs/browsers/firefox.js';
+} from '../../lib/cjs/browser-data/firefox.js';
 
 describe('Firefox', () => {
   it('should resolve download URLs', () => {
@@ -85,7 +83,11 @@ describe('Firefox', () => {
     });
 
     afterEach(() => {
-      rimraf.sync(tmpDir);
+      fs.rmSync(tmpDir, {
+        force: true,
+        recursive: true,
+        maxRetries: 5,
+      });
     });
 
     it('should create a profile', async () => {

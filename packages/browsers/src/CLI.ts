@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
+import {stdin as input, stdout as output} from 'process';
+import * as readline from 'readline';
+
 import ProgressBar from 'progress';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 
-import {resolveBuildId} from './browsers/browsers.js';
 import {
+  resolveBuildId,
   Browser,
   BrowserPlatform,
   ChromeReleaseChannel,
-} from './browsers/types.js';
+} from './browser-data/browser-data.js';
+import {Cache} from './Cache.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {fetch} from './fetch.js';
 import {
@@ -52,16 +56,23 @@ type LaunchArgs = {
   system: boolean;
 };
 
+type ClearArgs = {
+  path?: string;
+};
+
 export class CLI {
   #cachePath;
+  #rl?: readline.Interface;
 
-  constructor(cachePath = process.cwd()) {
+  constructor(cachePath = process.cwd(), rl?: readline.Interface) {
     this.#cachePath = cachePath;
+    this.#rl = rl;
   }
 
   #defineBrowserParameter(yargs: yargs.Argv<unknown>): void {
     yargs.positional('browser', {
-      description: 'The browser version',
+      description:
+        'Which browser to install <browser>[@<buildId|latest>]. `latest` will try to find the latest available build. `buildId` is a browser-specific identifier such as a version or a revision.',
       type: 'string',
       coerce: (opt): InstallArgs['browser'] => {
         return {
@@ -77,27 +88,56 @@ export class CLI {
       type: 'string',
       desc: 'Platform that the binary needs to be compatible with.',
       choices: Object.values(BrowserPlatform),
-      defaultDescription: 'Auto-detected by default.',
+      defaultDescription: 'Auto-detected',
     });
   }
 
-  #definePathParameter(yargs: yargs.Argv<unknown>): void {
+  #definePathParameter(yargs: yargs.Argv<unknown>, required = false): void {
     yargs.option('path', {
       type: 'string',
-      desc: 'Path to the root folder for the browser downloads and installation',
-      default: process.cwd(),
+      desc: 'Path to the root folder for the browser downloads and installation. The installation folder structure is compatible with the cache structure used by Puppeteer.',
+      defaultDescription: 'Current working directory',
+      ...(required ? {} : {default: process.cwd()}),
     });
+    if (required) {
+      yargs.demandOption('path');
+    }
   }
 
   async run(argv: string[]): Promise<void> {
     await yargs(hideBin(argv))
+      .scriptName('@puppeteer/browsers')
       .command(
         'install <browser>',
-        'Download and install the specified browser',
+        'Download and install the specified browser. If successful, the command outputs the actual browser buildId that was installed and the absolute path to the browser executable (format: <browser>@<buildID> <path>).',
         yargs => {
           this.#defineBrowserParameter(yargs);
           this.#definePlatformParameter(yargs);
           this.#definePathParameter(yargs);
+          yargs.example(
+            '$0 install chrome',
+            'Install the latest available build of the Chrome browser.'
+          );
+          yargs.example(
+            '$0 install chrome@latest',
+            'Install the latest available build for the Chrome browser.'
+          );
+          yargs.example(
+            '$0 install chromium@1083080',
+            'Install the revision 1083080 of the Chromium browser.'
+          );
+          yargs.example(
+            '$0 install firefox',
+            'Install the latest available build of the Firefox browser.'
+          );
+          yargs.example(
+            '$0 install firefox --platform mac',
+            'Install the latest Mac (Intel) build of the Firefox browser.'
+          );
+          yargs.example(
+            '$0 install firefox --path /tmp/my-browser-cache',
+            'Install to the specified cache directory.'
+          );
         },
         async argv => {
           const args = argv as unknown as InstallArgs;
@@ -149,6 +189,22 @@ export class CLI {
             desc: 'Search for a browser installed on the system instead of the cache folder.',
             default: false,
           });
+          yargs.example(
+            '$0 launch chrome@1083080',
+            'Launch the Chrome browser identified by the revision 1083080.'
+          );
+          yargs.example(
+            '$0 launch firefox@112.0a1',
+            'Launch the Firefox browser identified by the milestone 112.0a1.'
+          );
+          yargs.example(
+            '$0 launch chrome@1083080 --detached',
+            'Launch the browser but detach the sub-processes.'
+          );
+          yargs.example(
+            '$0 launch chrome@canary --system',
+            'Try to locate the Canary build of Chrome installed on the system and launch it.'
+          );
         },
         async argv => {
           const args = argv as unknown as LaunchArgs;
@@ -171,8 +227,34 @@ export class CLI {
           });
         }
       )
+      .command(
+        'clear',
+        'Removes all installed browsers from the specified cache directory',
+        yargs => {
+          this.#definePathParameter(yargs, true);
+        },
+        async argv => {
+          const args = argv as unknown as ClearArgs;
+          const cacheDir = args.path ?? this.#cachePath;
+          const rl = this.#rl ?? readline.createInterface({input, output});
+          rl.question(
+            `Do you want to permanently and recursively delete the content of ${cacheDir} (yes/No)? `,
+            answer => {
+              rl.close();
+              if (!['y', 'yes'].includes(answer.toLowerCase().trim())) {
+                console.log('Cancelled.');
+                return;
+              }
+              const cache = new Cache(cacheDir);
+              cache.clear();
+              console.log(`${cacheDir} cleared.`);
+            }
+          );
+        }
+      )
       .demandCommand(1)
       .help()
+      .wrap(Math.min(120, yargs.terminalWidth()))
       .parse();
   }
 

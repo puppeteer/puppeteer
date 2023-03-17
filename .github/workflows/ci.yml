@@ -28,7 +28,7 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
         run: npm ci
         env:
@@ -74,7 +74,7 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
         working-directory: ./website
         run: npm ci
@@ -126,7 +126,7 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
         run: npm ci
         env:
@@ -140,14 +140,14 @@ jobs:
           key: ${{ runner.os }}-chromium-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}
       - name: Install Chromium
         run: npm run postinstall
-      - name: Install linux dependencies.
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: sudo apt-get install xvfb
       - name: Tests types
         run: npm run test-types
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
         run: npm run test -- --test-suite ${{ matrix.suite }}
+      - name: Install linux dependencies.
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: sudo apt-get install xvfb
       - name: Run all tests (for Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
@@ -184,7 +184,7 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
         run: npm ci
         env:
@@ -200,14 +200,14 @@ jobs:
         env:
           PUPPETEER_PRODUCT: firefox
         run: npm run postinstall
-      - name: Install linux dependencies.
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: sudo apt-get install xvfb
       - name: Tests types
         run: npm run test-types
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
         run: npm run test -- --test-suite ${{ matrix.suite }}
+      - name: Install linux dependencies.
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: sudo apt-get install xvfb
       - name: Run all tests (for Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
@@ -234,7 +234,7 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
         run: npm ci
         env:
@@ -316,7 +316,7 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: ${{ matrix.node }}
+          node-version: lts/*
       - name: Install dependencies
         run: npm ci
         env:
@@ -346,7 +346,7 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
         run: npm ci
         env:
@@ -373,7 +373,7 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           cache: npm
-          node-version: latest
+          node-version: lts/*
       - name: Install dependencies
         run: npm ci
         env:

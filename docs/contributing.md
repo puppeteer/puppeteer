@@ -291,8 +291,8 @@ The following steps are needed to update the Chromium version.
    You can find the corresponding version by going to [omahaproxy.appspot.com](https://omahaproxy.appspot.com/) then
    searching in `Find Releases` for `r<revision>`.
 4. Run `npm run check`. If it fails, update
-   `packages/puppeteer-core/package.json` and `packages/puppeteer/package.json`
-   with the expected `devtools-protocol` version.
+   `packages/puppeteer-core/package.json`
+   with the expected `devtools-protocol` version and run `npm install` to generate an updated `package-lock.json`.
 5. Run `npm run clean`, `npm run build` and `npm install`.
 6. Run `npm test` and ensure that all tests pass. If a test fails,
    [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and

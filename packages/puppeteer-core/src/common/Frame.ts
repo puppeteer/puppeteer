@@ -17,6 +17,7 @@
 import {Protocol} from 'devtools-protocol';
 
 import {ElementHandle} from '../api/ElementHandle.js';
+import {HTTPResponse} from '../api/HTTPResponse.js';
 import {Page} from '../api/Page.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
@@ -24,7 +25,6 @@ import {CDPSession} from './Connection.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {FrameManager} from './FrameManager.js';
 import {getQueryHandlerAndSelector} from './GetQueryHandler.js';
-import {HTTPResponse} from './HTTPResponse.js';
 import {MouseButton} from './Input.js';
 import {
   IsolatedWorld,

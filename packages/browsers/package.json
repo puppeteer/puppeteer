@@ -1,6 +1,6 @@
 {
   "name": "@puppeteer/browsers",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Download and launch browsers",
   "scripts": {
     "build": "wireit",
@@ -9,7 +9,7 @@
     "test": "wireit"
   },
   "bin": {
-    "@puppeteer/browsers": "lib/cjs/browsers.js"
+    "@puppeteer/browsers": "lib/cjs/main-cli.js"
   },
   "main": "./lib/cjs/main.js",
   "exports": {
@@ -20,7 +20,7 @@
   },
   "wireit": {
     "build": {
-      "command": "tsc -b && chmod a+x lib/cjs/browsers.js lib/esm/browsers.js",
+      "command": "tsc -b && chmod a+x lib/cjs/main-cli.js lib/esm/main-cli.js",
       "files": [
         "src/**/*.ts",
         "tsconfig.json"
@@ -75,7 +75,6 @@
     "https-proxy-agent": "5.0.1",
     "progress": "2.0.3",
     "proxy-from-env": "1.1.0",
-    "rimraf": "4.4.0",
     "tar-fs": "2.1.1",
     "unbzip2-stream": "1.4.3",
     "yargs": "17.7.1"

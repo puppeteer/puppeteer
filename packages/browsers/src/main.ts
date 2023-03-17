@@ -23,4 +23,10 @@ export {
 } from './launcher.js';
 export {fetch, canFetch} from './fetch.js';
 export {detectBrowserPlatform} from './detectPlatform.js';
-export {Browser, BrowserPlatform} from './browsers/browsers.js';
+export {
+  Browser,
+  BrowserPlatform,
+  ChromeReleaseChannel,
+} from './browser-data/browser-data.js';
+export {CLI} from './CLI.js';
+export {Cache} from './Cache.js';

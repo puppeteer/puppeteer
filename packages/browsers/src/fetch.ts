@@ -20,8 +20,12 @@ import {mkdir, unlink} from 'fs/promises';
 import os from 'os';
 import path from 'path';
 
-import {Browser, BrowserPlatform, downloadUrls} from './browsers/browsers.js';
-import {CacheStructure} from './CacheStructure.js';
+import {
+  Browser,
+  BrowserPlatform,
+  downloadUrls,
+} from './browser-data/browser-data.js';
+import {Cache} from './Cache.js';
 import {debug} from './debug.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {unpackArchive} from './fileUtil.js';
@@ -82,7 +86,7 @@ export async function fetch(options: Options): Promise<InstalledBrowser> {
   );
   const fileName = url.toString().split('/').pop();
   assert(fileName, `A malformed download URL was found: ${url}.`);
-  const structure = new CacheStructure(options.cacheDir);
+  const structure = new Cache(options.cacheDir);
   const browserRoot = structure.browserRoot(options.browser);
   const archivePath = path.join(browserRoot, fileName);
   if (!existsSync(browserRoot)) {

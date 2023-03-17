@@ -16,13 +16,13 @@
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
+import {HTTPResponse} from '../../api/HTTPResponse.js';
 import {
   Page as PageBase,
   PageEmittedEvents,
   WaitForOptions,
 } from '../../api/Page.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
-import {HTTPResponse} from '../HTTPResponse.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
 
 import {Context, getBidiHandle} from './Context.js';

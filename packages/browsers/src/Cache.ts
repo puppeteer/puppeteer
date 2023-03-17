@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import fs from 'fs';
 import path from 'path';
 
-import {Browser, BrowserPlatform} from './browsers/types.js';
+import {Browser, BrowserPlatform} from './browser-data/browser-data.js';
 
 /**
  * The cache used by Puppeteer relies on the following structure:
@@ -32,7 +33,7 @@ import {Browser, BrowserPlatform} from './browsers/types.js';
  *   ------ specific structure.
  *   @internal
  */
-export class CacheStructure {
+export class Cache {
   #rootDir: string;
 
   constructor(rootDir: string) {
@@ -49,5 +50,13 @@ export class CacheStructure {
     buildId: string
   ): string {
     return path.join(this.browserRoot(browser), `${platform}-${buildId}`);
+  }
+
+  clear(): void {
+    fs.rmSync(this.#rootDir, {
+      force: true,
+      recursive: true,
+      maxRetries: 5,
+    });
   }
 }

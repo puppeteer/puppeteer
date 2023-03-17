@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/puppeteer/puppeteer/compare/browsers-v0.1.0...browsers-v0.1.1) (2023-03-14)
+
+
+### Bug Fixes
+
+* export ChromeReleaseChannel ([#9851](https://github.com/puppeteer/puppeteer/issues/9851)) ([3e7a514](https://github.com/puppeteer/puppeteer/commit/3e7a514e556ddb4306aa3c15f24c512beaac65f4))
+
 ## [0.1.0](https://github.com/puppeteer/puppeteer/compare/browsers-v0.0.5...browsers-v0.1.0) (2023-03-14)
 
 

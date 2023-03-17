@@ -25,9 +25,9 @@ import {
   BrowserPlatform,
   executablePathByBrowser,
   resolveSystemExecutablePath,
-} from './browsers/browsers.js';
-import {ChromeReleaseChannel} from './browsers/types.js';
-import {CacheStructure} from './CacheStructure.js';
+  ChromeReleaseChannel,
+} from './browser-data/browser-data.js';
+import {Cache} from './Cache.js';
 import {debug} from './debug.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 
@@ -65,7 +65,7 @@ export function computeExecutablePath(options: Options): string {
       `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`
     );
   }
-  const installationDir = new CacheStructure(options.cacheDir).installationDir(
+  const installationDir = new Cache(options.cacheDir).installationDir(
     options.browser,
     options.platform,
     options.buildId

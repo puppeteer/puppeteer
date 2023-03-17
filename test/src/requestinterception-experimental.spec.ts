@@ -18,12 +18,12 @@ import fs from 'fs';
 import path from 'path';
 
 import expect from 'expect';
-import {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 import {
   ActionResult,
   HTTPRequest,
   InterceptResolutionAction,
-} from 'puppeteer-core/internal/common/HTTPRequest.js';
+} from 'puppeteer-core/internal/api/HTTPRequest.js';
+import {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 import {
   getTestState,
