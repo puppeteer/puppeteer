@@ -37,6 +37,8 @@ jobs:
         run: npm run check
       - name: Lint code
         run: npm run lint
+      - name: Validate licenses
+        run: npm run validate-licenses
       - name: Lint commits
         run: npm run commitlint
         if: github.event_name != 'pull_request'
