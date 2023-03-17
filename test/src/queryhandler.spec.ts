@@ -374,6 +374,16 @@ describe('Query handler tests', function () {
           return element.tagName === 'BUTTON';
         })
       ).toBeTruthy();
+
+      // Should parse more complex CSS selectors. Listing a few problematic
+      // cases from bug reports.
+      for (const selector of [
+        '.user_row[data-user-id="\\38 "]:not(.deactivated_user)',
+        `input[value='Search']:not([class='hidden'])`,
+        `[data-test-id^="test-"]:not([data-test-id^="test-foo"])`,
+      ]) {
+        await page.$$(selector);
+      }
     });
 
     it('should work with text selectors', async () => {
