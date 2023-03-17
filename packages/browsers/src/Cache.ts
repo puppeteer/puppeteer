@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
+import fs from 'fs';
 import path from 'path';
-
-import rimraf from 'rimraf';
 
 import {Browser, BrowserPlatform} from './browser-data/browser-data.js';
 
@@ -54,6 +53,10 @@ export class Cache {
   }
 
   clear(): void {
-    rimraf.sync(this.#rootDir);
+    fs.rmSync(this.#rootDir, {
+      force: true,
+      recursive: true,
+      maxRetries: 5,
+    });
   }
 }
