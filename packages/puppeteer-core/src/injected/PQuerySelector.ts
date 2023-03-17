@@ -16,7 +16,6 @@
 
 import type {AwaitableIterable} from '../common/types.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
-import {isErrorLike} from '../util/ErrorLike.js';
 
 import {ariaQuerySelectorAll} from './ARIAQuerySelector.js';
 import {customQuerySelectors} from './CustomQuerySelector.js';
@@ -251,10 +250,7 @@ export const pQuerySelectorAll = function (
   try {
     [selectors, isPureCSS] = parsePSelectors(selector);
   } catch (error) {
-    if (!isErrorLike(error)) {
-      throw new SelectorError(selector, String(error));
-    }
-    throw new SelectorError(selector, error.message);
+    return (root as unknown as QueryableNode).querySelectorAll(selector);
   }
 
   if (isPureCSS) {
