@@ -20,7 +20,7 @@ import {Point} from '../api/ElementHandle.js';
 import {assert} from '../util/assert.js';
 
 import {CDPSession} from './Connection.js';
-import {_keyDefinitions, KeyDefinition, KeyInput} from './USKeyboardLayout.js';
+import {KeyDefinition, KeyInput, _keyDefinitions} from './USKeyboardLayout.js';
 
 type KeyDescription = Required<
   Pick<KeyDefinition, 'keyCode' | 'key' | 'text' | 'code' | 'location'>
@@ -340,6 +340,7 @@ export type MouseButton = 'left' | 'right' | 'middle' | 'back' | 'forward';
  * @public
  */
 export interface MouseOptions {
+  dragging?: boolean;
   button?: MouseButton;
   clickCount?: number;
 }
@@ -426,9 +427,9 @@ export interface MouseWheelOptions {
 export class Mouse {
   #client: CDPSession;
   #keyboard: Keyboard;
-  #x = 0;
-  #y = 0;
+  #pos: Point = {x: 0, y: 0};
   #button: MouseButton | 'none' = 'none';
+  #dragData: Protocol.Input.DragData | undefined;
 
   /**
    * @internal
@@ -436,6 +437,27 @@ export class Mouse {
   constructor(client: CDPSession, keyboard: Keyboard) {
     this.#client = client;
     this.#keyboard = keyboard;
+
+    this.#client.on('Input.dragIntercepted', event => {
+      this.#dragData = event.data;
+    });
+    this.#client.on('Input.dragIntercepted', event => {
+      void this.#client.send('Input.dispatchDragEvent', {
+        type: 'dragEnter',
+        ...this.#pos,
+        modifiers: this.#keyboard._modifiers,
+        data: event.data,
+      });
+      void this.#client.send('Input.dispatchDragEvent', {
+        type: 'dragOver',
+        ...this.#pos,
+        modifiers: this.#keyboard._modifiers,
+        data: event.data,
+      });
+    });
+    this.#client.on('Input.dragCancelled', () => {
+      this.#dragData = undefined;
+    });
   }
 
   /**
@@ -451,18 +473,28 @@ export class Mouse {
     options: {steps?: number} = {}
   ): Promise<void> {
     const {steps = 1} = options;
-    const fromX = this.#x,
-      fromY = this.#y;
-    this.#x = x;
-    this.#y = y;
+    const pos = this.#pos;
+    this.#pos = {x, y};
     for (let i = 1; i <= steps; i++) {
-      await this.#client.send('Input.dispatchMouseEvent', {
-        type: 'mouseMoved',
-        button: this.#button,
-        x: fromX + (this.#x - fromX) * (i / steps),
-        y: fromY + (this.#y - fromY) * (i / steps),
-        modifiers: this.#keyboard._modifiers,
-      });
+      const nextPos = {
+        x: pos.x + (this.#pos.x - pos.x) * (i / steps),
+        y: (this.#pos.y - pos.y) * (i / steps),
+      };
+      if (!this.#dragData) {
+        await this.#client.send('Input.dispatchMouseEvent', {
+          type: 'mouseMoved',
+          button: this.#button,
+          ...nextPos,
+          modifiers: this.#keyboard._modifiers,
+        });
+      } else {
+        await this.#client.send('Input.dispatchDragEvent', {
+          type: 'dragOver',
+          ...nextPos,
+          modifiers: this.#keyboard._modifiers,
+          data: this.#dragData,
+        });
+      }
     }
   }
 
@@ -498,8 +530,7 @@ export class Mouse {
     await this.#client.send('Input.dispatchMouseEvent', {
       type: 'mousePressed',
       button,
-      x: this.#x,
-      y: this.#y,
+      ...this.#pos,
       modifiers: this.#keyboard._modifiers,
       clickCount,
     });
@@ -510,16 +541,25 @@ export class Mouse {
    * @param options - Optional `MouseOptions`.
    */
   async up(options: MouseOptions = {}): Promise<void> {
-    const {button = 'left', clickCount = 1} = options;
-    this.#button = 'none';
-    await this.#client.send('Input.dispatchMouseEvent', {
-      type: 'mouseReleased',
-      button,
-      x: this.#x,
-      y: this.#y,
-      modifiers: this.#keyboard._modifiers,
-      clickCount,
-    });
+    if (!this.#dragData) {
+      const {button = 'left', clickCount = 1} = options;
+      this.#button = button;
+      await this.#client.send('Input.dispatchMouseEvent', {
+        type: 'mouseReleased',
+        button,
+        ...this.#pos,
+        modifiers: this.#keyboard._modifiers,
+        clickCount,
+      });
+    } else {
+      await this.#client.send('Input.dispatchDragEvent', {
+        type: 'drop',
+        ...this.#pos,
+        modifiers: this.#keyboard._modifiers,
+        data: this.#dragData,
+      });
+      this.#dragData = undefined;
+    }
   }
 
   /**
@@ -548,8 +588,7 @@ export class Mouse {
     const {deltaX = 0, deltaY = 0} = options;
     await this.#client.send('Input.dispatchMouseEvent', {
       type: 'mouseWheel',
-      x: this.#x,
-      y: this.#y,
+      ...this.#pos,
       deltaX,
       deltaY,
       modifiers: this.#keyboard._modifiers,
@@ -558,6 +597,15 @@ export class Mouse {
   }
 
   /**
+   * Whether the mouse is currently dragging.
+   */
+  isDragging(): boolean {
+    return this.#dragData !== undefined;
+  }
+
+  /**
+   * @deprecated Use {@link Mouse.prototype.down} and {@link Mouse.prototype.move}.
+   *
    * Dispatches a `drag` event.
    * @param start - starting point for drag
    * @param target - point to drag to
@@ -575,6 +623,8 @@ export class Mouse {
   }
 
   /**
+   * @deprecated Use {@link Mouse.prototype.down} and {@link Mouse.prototype.move}.
+   *
    * Dispatches a `dragenter` event.
    * @param target - point for emitting `dragenter` event
    * @param data - drag data containing items and operations mask
@@ -590,6 +640,8 @@ export class Mouse {
   }
 
   /**
+   * @deprecated Use {@link Mouse.prototype.down} and {@link Mouse.prototype.move}.
+   *
    * Dispatches a `dragover` event.
    * @param target - point for emitting `dragover` event
    * @param data - drag data containing items and operations mask
@@ -605,7 +657,9 @@ export class Mouse {
   }
 
   /**
-   * Performs a dragenter, dragover, and drop in sequence.
+   * @deprecated Use {@link Mouse.prototype.up}.
+   *
+   * Dispatches a `drop` event.
    * @param target - point to drop on
    * @param data - drag data containing items and operations mask
    */
@@ -620,28 +674,29 @@ export class Mouse {
   }
 
   /**
-   * Performs a drag, dragenter, dragover, and drop in sequence.
+   * @deprecated Use {@link Mouse.prototype.down}, {@link Mouse.prototype.up}
+   * and {@link Mouse.prototype.move}.
+   *
    * @param start - point to drag from
    * @param target - point to drop on
-   * @param options - An object of options. Accepts delay which,
-   * if specified, is the time to wait between `dragover` and `drop` in milliseconds.
-   * Defaults to 0.
+   * @param options - An object of options. Accepts delay which, if specified,
+   * is the time to wait between `dragover` and `drop` in milliseconds. Defaults
+   * to 0.
    */
   async dragAndDrop(
     start: Point,
     target: Point,
     options: {delay?: number} = {}
   ): Promise<void> {
-    const {delay = null} = options;
-    const data = await this.drag(start, target);
-    await this.dragEnter(target, data);
-    await this.dragOver(target, data);
+    const {delay = 0} = options;
+    await this.move(start.x, start.y);
+    await this.down();
+    await this.move(target.x, target.y);
     if (delay) {
       await new Promise(resolve => {
         return setTimeout(resolve, delay);
       });
     }
-    await this.drop(target, data);
     await this.up();
   }
 }

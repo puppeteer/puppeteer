@@ -307,6 +307,7 @@ export class CDPPage extends Page {
         this.#frameManager.initialize(),
         this.#client.send('Performance.enable'),
         this.#client.send('Log.enable'),
+        this.#client.send('Input.enable' as never),
       ]);
     } catch (err) {
       if (isErrorLike(err) && isTargetClosedError(err)) {

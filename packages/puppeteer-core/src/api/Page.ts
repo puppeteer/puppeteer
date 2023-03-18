@@ -670,12 +670,15 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @param enabled - Whether to enable drag interception.
+   * Enables drag interception. This must be enabled to allow dragging with the
+   * mouse.
    *
    * @remarks
-   * Activating drag interception enables the `Input.drag`,
-   * methods This provides the capability to capture drag events emitted
-   * on the page, which can then be used to simulate drag-and-drop.
+   *
+   * Since dragging can contain sensitive data, this flag needs to be enabled
+   * manually.
+   *
+   * @param enabled - Whether to enable drag interception.
    */
   async setDragInterception(enabled: boolean): Promise<void>;
   async setDragInterception(): Promise<void> {
