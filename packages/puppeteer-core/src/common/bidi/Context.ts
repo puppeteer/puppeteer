@@ -16,6 +16,7 @@
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
+import {HTTPResponse} from '../../api/HTTPResponse.js';
 import {WaitForOptions} from '../../api/Page.js';
 import {assert} from '../../util/assert.js';
 import {stringifyFunction} from '../../util/Function.js';
@@ -24,7 +25,7 @@ import {EventEmitter} from '../EventEmitter.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
-import {isString} from '../util.js';
+import {isString, waitWithTimeout} from '../util.js';
 
 import {Connection} from './Connection.js';
 import {ElementHandle} from './ElementHandle.js';
@@ -34,12 +35,20 @@ import {BidiSerializer} from './Serializer.js';
 /**
  * @internal
  */
-const puppeteerToReadinessState = new Map<
+const lifeCycleToReadinessState = new Map<
   PuppeteerLifeCycleEvent,
   Bidi.BrowsingContext.ReadinessState
 >([
   ['load', 'complete'],
   ['domcontentloaded', 'interactive'],
+]);
+
+/**
+ * @internal
+ */
+const lifeCycleToSubscribedEvent = new Map<PuppeteerLifeCycleEvent, string>([
+  ['load', 'browsingContext.load'],
+  ['domcontentloaded', 'browsingContext.domContentLoaded'],
 ]);
 
 /**
@@ -150,69 +159,102 @@ export class Context extends EventEmitter {
       referer?: string | undefined;
       referrerPolicy?: string | undefined;
     } = {}
-  ): Promise<null> {
-    const {waitUntil = 'load'} = options;
+  ): Promise<HTTPResponse | null> {
+    const {
+      waitUntil = 'load',
+      timeout = this._timeoutSettings.navigationTimeout(),
+    } = options;
+
+    const readinessState = lifeCycleToReadinessState.get(
+      getWaitUntilSingle(waitUntil)
+    ) as Bidi.BrowsingContext.ReadinessState;
 
     try {
-      const response = await Promise.race([
+      const response = await waitWithTimeout(
         this.connection.send('browsingContext.navigate', {
           url: url,
           context: this.id,
-          wait: getWaitUntil(waitUntil),
+          wait: readinessState,
         }),
-        new Promise((_, reject) => {
-          const timeout =
-            options.timeout ?? this._timeoutSettings.navigationTimeout();
-          if (!timeout) {
-            return;
-          }
-          const error = new TimeoutError(
-            'Navigation timeout of ' + timeout + ' ms exceeded'
-          );
-          return setTimeout(() => {
-            return reject(error);
-          }, timeout);
-        }),
-      ]);
-      this.#url = (response as Bidi.BrowsingContext.NavigateResult).result.url;
+        'Navigation',
+        timeout
+      );
+      this.#url = response.result.url;
+
       return null;
     } catch (error) {
       if (error instanceof ProtocolError) {
         error.message += ` at ${url}`;
+      } else if (error instanceof TimeoutError) {
+        error.message = 'Navigation timeout of ' + timeout + ' ms exceeded';
       }
       throw error;
-    }
-
-    function getWaitUntil(
-      event: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[]
-    ): Bidi.BrowsingContext.ReadinessState {
-      if (Array.isArray(event) && event.length > 1) {
-        throw new Error('BiDi support only single `waitUntil` argument');
-      }
-      const waitUntilSingle = Array.isArray(event)
-        ? (event.find(lifecycle => {
-            return lifecycle === 'domcontentloaded' || lifecycle === 'load';
-          }) as PuppeteerLifeCycleEvent)
-        : event;
-
-      if (
-        waitUntilSingle === 'networkidle0' ||
-        waitUntilSingle === 'networkidle2'
-      ) {
-        throw new Error(`BiDi does not support 'waitUntil' ${waitUntilSingle}`);
-      }
-
-      assert(waitUntilSingle, `Invalid waitUntil option ${waitUntilSingle}`);
-
-      return puppeteerToReadinessState.get(
-        waitUntilSingle
-      ) as Bidi.BrowsingContext.ReadinessState;
     }
   }
 
   url(): string {
     return this.#url;
   }
+
+  async setContent(
+    html: string,
+    options: WaitForOptions | undefined = {}
+  ): Promise<void> {
+    const {
+      waitUntil = 'load',
+      timeout = this._timeoutSettings.navigationTimeout(),
+    } = options;
+
+    const waitUntilCommand = lifeCycleToSubscribedEvent.get(
+      getWaitUntilSingle(waitUntil)
+    ) as string;
+
+    await Promise.all([
+      // We rely upon the fact that document.open() will reset frame lifecycle with "init"
+      // lifecycle event. @see https://crrev.com/608658
+      this.evaluate(html => {
+        document.open();
+        document.write(html);
+        document.close();
+      }, html),
+      waitWithTimeout(
+        new Promise<void>(resolve => {
+          this.once(waitUntilCommand, () => {
+            resolve();
+          });
+        }),
+        waitUntilCommand,
+        timeout
+      ),
+    ]);
+  }
+}
+
+/**
+ * @internal
+ */
+function getWaitUntilSingle(
+  event: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[]
+): Extract<PuppeteerLifeCycleEvent, 'load' | 'domcontentloaded'> {
+  if (Array.isArray(event) && event.length > 1) {
+    throw new Error('BiDi support only single `waitUntil` argument');
+  }
+  const waitUntilSingle = Array.isArray(event)
+    ? (event.find(lifecycle => {
+        return lifecycle === 'domcontentloaded' || lifecycle === 'load';
+      }) as PuppeteerLifeCycleEvent)
+    : event;
+
+  if (
+    waitUntilSingle === 'networkidle0' ||
+    waitUntilSingle === 'networkidle2'
+  ) {
+    throw new Error(`BiDi does not support 'waitUntil' ${waitUntilSingle}`);
+  }
+
+  assert(waitUntilSingle, `Invalid waitUntil option ${waitUntilSingle}`);
+
+  return waitUntilSingle;
 }
 
 /**

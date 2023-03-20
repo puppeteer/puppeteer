@@ -47,6 +47,7 @@ export type TestExpectation = {
 
 export type MochaTestResult = {
   fullTitle: string;
+  title: string;
   file: string;
   err?: {code: string};
 };

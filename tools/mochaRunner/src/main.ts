@@ -35,6 +35,7 @@ import {
   filterByParameters,
   getExpectationUpdates,
   printSuggestions,
+  RecommendedExpectation,
 } from './utils.js';
 
 function getApplicableTestSuites(
@@ -97,7 +98,7 @@ async function main() {
   }
 
   let fail = false;
-  const recommendations = [];
+  const recommendations: RecommendedExpectation[] = [];
   try {
     for (const suite of applicableSuites) {
       const parameters = suite.parameters;
@@ -105,7 +106,7 @@ async function main() {
       const applicableExpectations = filterByParameters(
         filterByPlatform(expectations, platform),
         parameters
-      );
+      ).reverse();
 
       // Add more logging when the GitHub Action Debugging option is set
       // https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables
@@ -200,17 +201,13 @@ async function main() {
       console.log('Finished', JSON.stringify(parameters));
       try {
         const results = readJSON(tmpFilename) as MochaResults;
-        const recommendation = getExpectationUpdates(
-          results,
-          applicableExpectations,
-          {
-            platforms: [os.platform()],
-            parameters,
-          }
-        );
-        if (recommendation.length > 0) {
+        const updates = getExpectationUpdates(results, applicableExpectations, {
+          platforms: [os.platform()],
+          parameters,
+        });
+        if (updates.length > 0) {
           fail = true;
-          recommendations.push(...recommendation);
+          recommendations.push(...updates);
         } else {
           console.log('Test run matches expectations');
           continue;

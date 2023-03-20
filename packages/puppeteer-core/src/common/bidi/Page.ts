@@ -23,6 +23,7 @@ import {
   WaitForOptions,
 } from '../../api/Page.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
+import {Handler} from '../EventEmitter.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
 
 import {Context, getBidiHandle} from './Context.js';
@@ -33,25 +34,26 @@ import {BidiSerializer} from './Serializer.js';
  */
 export class Page extends PageBase {
   #context: Context;
-  #subscribedEvents = [
-    'log.entryAdded',
-    'browsingContext.load',
-  ] as Bidi.Session.SubscribeParameters['events'];
-
-  #boundOnLogEntryAdded = this.#onLogEntryAdded.bind(this);
-  #boundOnLoaded = this.#onLoad.bind(this);
+  #subscribedEvents = new Map<string, Handler<any>>([
+    ['log.entryAdded', this.#onLogEntryAdded.bind(this)],
+    ['browsingContext.load', this.#onLoad.bind(this)],
+    ['browsingContext.domContentLoaded', this.#onDOMLoad.bind(this)],
+  ]) as Map<Bidi.Session.SubscribeParametersEvent, Handler>;
 
   constructor(context: Context) {
     super();
     this.#context = context;
 
     this.#context.connection.send('session.subscribe', {
-      events: this.#subscribedEvents,
+      events: [
+        ...this.#subscribedEvents.keys(),
+      ] as Bidi.Session.SubscribeParameters['events'],
       contexts: [this.#context.id],
     });
 
-    this.#context.on('log.entryAdded', this.#boundOnLogEntryAdded);
-    this.#context.on('browsingContext.load', this.#boundOnLoaded);
+    for (const [event, subscriber] of this.#subscribedEvents) {
+      this.#context.on(event, subscriber);
+    }
   }
 
   #onLogEntryAdded(event: Bidi.Log.LogEntry): void {
@@ -95,9 +97,13 @@ export class Page extends PageBase {
     this.emit(PageEmittedEvents.Load);
   }
 
+  #onDOMLoad(_event: Bidi.BrowsingContext.NavigationInfo): void {
+    this.emit(PageEmittedEvents.DOMContentLoaded);
+  }
+
   override async close(): Promise<void> {
     await this.#context.connection.send('session.unsubscribe', {
-      events: this.#subscribedEvents,
+      events: [...this.#subscribedEvents.keys()],
       contexts: [this.#context.id],
     });
 
@@ -105,8 +111,9 @@ export class Page extends PageBase {
       context: this.#context.id,
     });
 
-    this.#context.off('log.entryAdded', this.#boundOnLogEntryAdded);
-    this.#context.off('browsingContext.load', this.#boundOnLogEntryAdded);
+    for (const [event, subscriber] of this.#subscribedEvents) {
+      this.#context.off(event, subscriber);
+    }
   }
 
   override async evaluateHandle<
@@ -149,6 +156,26 @@ export class Page extends PageBase {
 
   override setDefaultTimeout(timeout: number): void {
     this.#context._timeoutSettings.setDefaultTimeout(timeout);
+  }
+
+  override async setContent(
+    html: string,
+    options: WaitForOptions = {}
+  ): Promise<void> {
+    await this.#context.setContent(html, options);
+  }
+
+  override async content(): Promise<string> {
+    return await this.evaluate(() => {
+      let retVal = '';
+      if (document.doctype) {
+        retVal = new XMLSerializer().serializeToString(document.doctype);
+      }
+      if (document.documentElement) {
+        retVal += document.documentElement.outerHTML;
+      }
+      return retVal;
+    });
   }
 }
 

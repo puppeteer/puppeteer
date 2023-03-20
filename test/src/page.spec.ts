@@ -30,7 +30,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import utils, {attachFrame, waitEvent} from './utils.js';
+import {attachFrame, detachFrame, waitEvent} from './utils.js';
 
 describe('Page', function () {
   setupTestBrowserHooks();
@@ -124,10 +124,7 @@ describe('Page', function () {
     it('should fire when expected', async () => {
       const {page} = getTestState();
 
-      await Promise.all([
-        page.goto('about:blank'),
-        utils.waitEvent(page, 'load'),
-      ]);
+      await Promise.all([page.goto('about:blank'), waitEvent(page, 'load')]);
     });
   });
 
@@ -1284,11 +1281,11 @@ describe('Page', function () {
       const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await attachFrame(page, 'frame1', server.EMPTY_PAGE);
       await page.exposeFunction('compute', function (a: number, b: number) {
         return Promise.resolve(a * b);
       });
-      await utils.detachFrame(page, 'frame1');
+      await detachFrame(page, 'frame1');
 
       await expect(
         page.evaluate(async function () {
@@ -1369,7 +1366,7 @@ describe('Page', function () {
       await page.setUserAgent('foobar');
       const [request] = await Promise.all([
         server.waitForRequest('/empty.html'),
-        utils.attachFrame(page, 'frame1', server.EMPTY_PAGE),
+        attachFrame(page, 'frame1', server.EMPTY_PAGE),
       ]);
       expect(request.headers['user-agent']).toBe('foobar');
     });

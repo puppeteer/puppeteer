@@ -95,28 +95,18 @@ export function findEffectiveExpectationForTest(
   expectations: TestExpectation[],
   result: MochaTestResult
 ): TestExpectation | undefined {
-  return expectations
-    .filter(expectation => {
-      return (
-        '' === expectation.testIdPattern ||
-        getTestId(result.file) === expectation.testIdPattern ||
-        getTestId(result.file, result.fullTitle) === expectation.testIdPattern
-      );
-    })
-    .pop();
+  return expectations.find(expectation => {
+    return testIdMatchesExpectationPattern(result, expectation.testIdPattern);
+  });
 }
 
-type RecommendedExpectation = {
+export type RecommendedExpectation = {
   expectation: TestExpectation;
   action: 'remove' | 'add' | 'update';
 };
 
 export function isWildCardPattern(testIdPattern: string): boolean {
-  testIdPattern = testIdPattern.trim();
-  return (
-    testIdPattern === '' ||
-    Boolean(testIdPattern.match(/^\[[a-zA-Z]+\.spec\]$/))
-  );
+  return testIdPattern.includes('*');
 }
 
 export function getExpectationUpdates(
@@ -215,4 +205,23 @@ export function getTestId(file: string, fullTitle?: string): string {
   return fullTitle
     ? `[${getFilename(file)}] ${fullTitle}`
     : `[${getFilename(file)}]`;
+}
+
+export function testIdMatchesExpectationPattern(
+  test: MochaTestResult | Mocha.Test,
+  pattern: string
+): boolean {
+  const patternRegExString = pattern
+    // Replace `*` with non special character
+    .replace(/\*/g, '--STAR--')
+    // Escape special characters https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
+    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    // Replace placeholder with greedy match
+    .replace(/--STAR--/g, '(.*)?');
+  // Match beginning and end explicitly
+  const patternRegEx = new RegExp(`^${patternRegExString}$`);
+  const fullTitle =
+    typeof test.fullTitle === 'string' ? test.fullTitle : test.fullTitle();
+
+  return patternRegEx.test(getTestId(test.file ?? '', fullTitle));
 }

@@ -95,7 +95,7 @@ describe('Page.click', function () {
       () => {}
     );
   });
-  it('should click the button after navigation ', async () => {
+  it('should click the button after navigation', async () => {
     const {page, server} = getTestState();
 
     await page.goto(server.PREFIX + '/input/button.html');
