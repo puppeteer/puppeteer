@@ -23,6 +23,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
+import assert from 'assert';
 
 interface Dimensions {
   x: number;
@@ -258,5 +259,59 @@ describe('Mouse', function () {
     await page.mouse.click(30, 40);
 
     expect(await page.evaluate('result')).toEqual({x: 30, y: 40});
+  });
+
+  // Enable once the fix for 850071 has landed.
+  describe.skip("[crbug/850071] Drag n' Drop", () => {
+    const getDragStateMask = () => {
+      const {page} = getTestState();
+      return page.evaluate(() => {
+        return (
+          (globalThis as any).didDragStart +
+          ((globalThis as any).didDragEnter << 1) +
+          ((globalThis as any).didDragOver << 2) +
+          ((globalThis as any).didDrop << 3)
+        );
+      });
+    };
+    it('should drag', async () => {
+      const {page, server} = getTestState();
+
+      await page.goto(server.PREFIX + '/input/drag-and-drop.html');
+      expect(page.isDragInterceptionEnabled()).toBe(false);
+      const draggable = await page.$('#drag');
+      assert(draggable);
+      const dropzone = await page.$('#drop');
+      assert(dropzone);
+      const target = await draggable.clickablePoint();
+      const destination = await dropzone.clickablePoint();
+
+      await page.mouse.move(target.x, target.y);
+      await page.mouse.down();
+      await page.mouse.move(destination.x, destination.y);
+
+      expect(await getDragStateMask()).toBe(0b0111);
+    });
+    it('should drop', async () => {
+      const {page, server} = getTestState();
+
+      await page.goto(server.PREFIX + '/input/drag-and-drop.html');
+      expect(page.isDragInterceptionEnabled()).toBe(false);
+      const draggable = await page.$('#drag');
+      assert(draggable);
+      const dropzone = await page.$('#drop');
+      assert(dropzone);
+      const target = await draggable.clickablePoint();
+      const destination = await dropzone.clickablePoint();
+
+      await page.mouse.move(target.x, target.y);
+      await page.mouse.down();
+      await page.mouse.move(destination.x, destination.y);
+
+      expect(await getDragStateMask()).toBe(0b0111);
+
+      await page.mouse.up();
+      expect(await getDragStateMask()).toBe(0b1111);
+    });
   });
 });
