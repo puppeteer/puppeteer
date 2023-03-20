@@ -25,6 +25,7 @@ import {
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
 import {Handler} from '../EventEmitter.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
+import {debugError} from '../util.js';
 
 import {Context, getBidiHandle} from './Context.js';
 import {BidiSerializer} from './Serializer.js';
@@ -81,14 +82,28 @@ export class Page extends PageBase {
         )
       );
     } else if (isJavaScriptLogEntry(event)) {
-      this.emit(
-        PageEmittedEvents.Console,
-        new ConsoleMessage(
-          event.level as any,
-          event.text ?? '',
-          [],
-          getStackTraceLocations(event.stackTrace)
-        )
+      let message = event.text ?? '';
+
+      if (event.stackTrace) {
+        for (const callFrame of event.stackTrace.callFrames) {
+          const location =
+            callFrame.url +
+            ':' +
+            callFrame.lineNumber +
+            ':' +
+            callFrame.columnNumber;
+          const functionName = callFrame.functionName || '<anonymous>';
+          message += `\n    at ${functionName} (${location})`;
+        }
+      }
+
+      const error = new Error(message);
+      error.stack = ''; // Don't capture Puppeteer stacktrace.
+
+      this.emit(PageEmittedEvents.PageError, error);
+    } else {
+      debugError(
+        `Unhandled LogEntry with type "${event.type}", text "${event.text}" and level "${event.level}"`
       );
     }
   }
@@ -191,7 +206,9 @@ function isJavaScriptLogEntry(
   return event.type === 'javascript';
 }
 
-function getStackTraceLocations(stackTrace?: Bidi.Script.StackTrace) {
+function getStackTraceLocations(
+  stackTrace?: Bidi.Script.StackTrace
+): ConsoleMessageLocation[] {
   const stackTraceLocations: ConsoleMessageLocation[] = [];
   if (stackTrace) {
     for (const callFrame of stackTrace.callFrames) {
