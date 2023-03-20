@@ -1,2 +1,5 @@
 # Ignore File that will be copied to Angular
 /files/
+
+# Ignore sandbox enviroment
+./sandbox/

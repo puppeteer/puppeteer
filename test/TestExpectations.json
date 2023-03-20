@@ -12,13 +12,13 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
-    "testIdPattern": "[accessibility.spec]",
+    "testIdPattern": "[accessibility.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP", "TIMEOUT"]
   },
   {
-    "testIdPattern": "[ariaqueryhandler.spec]",
+    "testIdPattern": "[ariaqueryhandler.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
@@ -72,7 +72,7 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[chromiumonly.spec]",
+    "testIdPattern": "[chromiumonly.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
@@ -174,7 +174,7 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[coverage.spec]",
+    "testIdPattern": "[coverage.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
@@ -198,7 +198,7 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[drag-and-drop.spec]",
+    "testIdPattern": "[drag-and-drop.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
@@ -390,13 +390,13 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[headful.spec]",
+    "testIdPattern": "[headful.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[idle_override.spec]",
+    "testIdPattern": "[idle_override.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
@@ -420,7 +420,7 @@
     "expectations": ["PASS", "FAIL"]
   },
   {
-    "testIdPattern": "[input.spec]",
+    "testIdPattern": "[input.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
@@ -954,7 +954,7 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[oopif.spec]",
+    "testIdPattern": "[oopif.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
@@ -1302,7 +1302,7 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[proxy.spec]",
+    "testIdPattern": "[proxy.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
@@ -1314,13 +1314,13 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[requestinterception-experimental.spec]",
+    "testIdPattern": "[requestinterception-experimental.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP", "FAIL"]
   },
   {
-    "testIdPattern": "[requestinterception.spec]",
+    "testIdPattern": "[requestinterception.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP", "FAIL"]
@@ -1464,7 +1464,7 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[TargetManager.spec]",
+    "testIdPattern": "[TargetManager.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP", "FAIL"]
@@ -1488,7 +1488,7 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[tracing.spec]",
+    "testIdPattern": "[tracing.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
@@ -1536,7 +1536,7 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[worker.spec]",
+    "testIdPattern": "[worker.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["SKIP"]
@@ -1656,7 +1656,7 @@
     "expectations": ["PASS", "FAIL"]
   },
   {
-    "testIdPattern": "",
+    "testIdPattern": "*",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP", "TIMEOUT"]
@@ -1674,7 +1674,7 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[evaluation.spec]",
+    "testIdPattern": "[evaluation.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
@@ -1782,7 +1782,7 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[jshandle.spec]",
+    "testIdPattern": "[jshandle.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
@@ -1830,7 +1830,7 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[queryhandler.spec]",
+    "testIdPattern": "[queryhandler.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP", "FAIL"]
@@ -1848,7 +1848,7 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[navigation.spec]",
+    "testIdPattern": "[navigation.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]

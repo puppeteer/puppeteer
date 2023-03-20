@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import assert from 'assert/strict';
-import test from 'node:test';
+import assert from 'node:assert/strict';
+import {describe, test} from 'node:test';
 
 import {TestExpectation} from './types.js';
 import {
   filterByParameters,
   getTestResultForFailure,
   isWildCardPattern,
+  testIdMatchesExpectationPattern,
 } from './utils.js';
 import {getFilename, extendProcessEnv} from './utils.js';
 
@@ -67,10 +67,68 @@ test('filterByParameters', () => {
 });
 
 test('isWildCardPattern', () => {
-  assert.equal(isWildCardPattern(''), true);
+  assert.equal(isWildCardPattern(''), false);
   assert.equal(isWildCardPattern('a'), false);
-  assert.equal(isWildCardPattern('[queryHandler.spec]'), true);
-  assert.equal(isWildCardPattern('[queryHandler.spec] '), true);
-  assert.equal(isWildCardPattern(' [queryHandler.spec] '), true);
-  assert.equal(isWildCardPattern('[queryHandler.spec] test'), false);
+  assert.equal(isWildCardPattern('*'), true);
+
+  assert.equal(isWildCardPattern('[queryHandler.spec]'), false);
+  assert.equal(isWildCardPattern('[queryHandler.spec] *'), true);
+  assert.equal(isWildCardPattern(' [queryHandler.spec] '), false);
+
+  assert.equal(isWildCardPattern('[queryHandler.spec] Query'), false);
+  assert.equal(isWildCardPattern('[queryHandler.spec] Page *'), true);
+  assert.equal(isWildCardPattern('[queryHandler.spec] Page Page.goto *'), true);
+});
+
+describe('testIdMatchesExpectationPattern', () => {
+  const expectations: Array<[string, boolean]> = [
+    ['', false],
+    ['*', true],
+    ['* should work', true],
+    ['* Page.setContent *', true],
+    ['* should work as expected', false],
+    ['Page.setContent *', false],
+    ['[page.spec]', false],
+    ['[page.spec] *', true],
+    ['[page.spec] Page *', true],
+    ['[page.spec] Page Page.setContent *', true],
+    ['[page.spec] Page Page.setContent should work', true],
+    ['[page.spec] Page * should work', true],
+    ['[page.spec] * Page.setContent *', true],
+    ['[jshandle.spec] *', false],
+    ['[jshandle.spec] JSHandle should work', false],
+  ];
+
+  test('with MochaTest', () => {
+    const test = {
+      title: 'should work',
+      file: 'page.spec.ts',
+      fullTitle() {
+        return 'Page Page.setContent should work';
+      },
+    } as any;
+
+    for (const [pattern, expected] of expectations) {
+      assert.equal(
+        testIdMatchesExpectationPattern(test, pattern),
+        expected,
+        `Expected "${pattern}" to yield "${expected}"`
+      );
+    }
+  });
+  test('with MochaTestResult', () => {
+    const test = {
+      title: 'should work',
+      file: 'page.spec.ts',
+      fullTitle: 'Page Page.setContent should work',
+    } as any;
+
+    for (const [pattern, expected] of expectations) {
+      assert.equal(
+        testIdMatchesExpectationPattern(test, pattern),
+        expected,
+        `Expected "${pattern}" to yield "${expected}"`
+      );
+    }
+  });
 });
