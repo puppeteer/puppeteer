@@ -21,6 +21,7 @@ import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {CDPSession, isTargetClosedError} from './Connection.js';
+import {DeviceRequestPromptManager} from './DeviceRequestPrompt.js';
 import {EventEmitter} from './EventEmitter.js';
 import {EVALUATION_SCRIPT_URL, ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
@@ -76,6 +77,11 @@ export class FrameManager extends EventEmitter {
    * frameNavigated event usually contains the latest information.
    */
   #frameNavigatedReceived = new Set<string>();
+
+  #deviceRequestPromptManagerMap = new WeakMap<
+    CDPSession,
+    DeviceRequestPromptManager
+  >();
 
   get timeoutSettings(): TimeoutSettings {
     return this.#timeoutSettings;
@@ -217,6 +223,18 @@ export class FrameManager extends EventEmitter {
     }
     this.setupEventListeners(target._session()!);
     this.initialize(target._session());
+  }
+
+  /**
+   * @internal
+   */
+  _deviceRequestPromptManager(client: CDPSession): DeviceRequestPromptManager {
+    let manager = this.#deviceRequestPromptManagerMap.get(client);
+    if (manager === undefined) {
+      manager = new DeviceRequestPromptManager(client, this.#timeoutSettings);
+      this.#deviceRequestPromptManagerMap.set(client, manager);
+    }
+    return manager;
   }
 
   #onLifecycleEvent(event: Protocol.Page.LifecycleEventEvent): void {

@@ -18,10 +18,15 @@ import {Protocol} from 'devtools-protocol';
 
 import {ElementHandle} from '../api/ElementHandle.js';
 import {HTTPResponse} from '../api/HTTPResponse.js';
-import {Page} from '../api/Page.js';
+import {Page, WaitTimeoutOptions} from '../api/Page.js';
+import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {CDPSession} from './Connection.js';
+import {
+  DeviceRequestPrompt,
+  DeviceRequestPromptManager,
+} from './DeviceRequestPrompt.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {FrameManager} from './FrameManager.js';
 import {getQueryHandlerAndSelector} from './GetQueryHandler.js';
@@ -1081,6 +1086,47 @@ export class Frame {
    */
   async title(): Promise<string> {
     return this.worlds[PUPPETEER_WORLD].title();
+  }
+
+  /**
+   * @internal
+   */
+  _deviceRequestPromptManager(): DeviceRequestPromptManager {
+    if (this.isOOPFrame()) {
+      return this._frameManager._deviceRequestPromptManager(this.#client);
+    }
+    const parentFrame = this.parentFrame();
+    assert(parentFrame !== null);
+    return parentFrame._deviceRequestPromptManager();
+  }
+
+  /**
+   * This method is typically coupled with an action that triggers a device
+   * request from an api such as WebBluetooth.
+   *
+   * :::caution
+   *
+   * This must be called before the device request is made. It will not return a
+   * currently active device prompt.
+   *
+   * :::
+   *
+   * @example
+   *
+   * ```ts
+   * const [devicePrompt] = Promise.all([
+   *   frame.waitForDevicePrompt(),
+   *   frame.click('#connect-bluetooth'),
+   * ]);
+   * await devicePrompt.select(
+   *   await devicePrompt.waitForDevice(({name}) => name.includes('My Device'))
+   * );
+   * ```
+   */
+  waitForDevicePrompt(
+    options: WaitTimeoutOptions = {}
+  ): Promise<DeviceRequestPrompt> {
+    return this._deviceRequestPromptManager().waitForDevicePrompt(options);
   }
 
   /**

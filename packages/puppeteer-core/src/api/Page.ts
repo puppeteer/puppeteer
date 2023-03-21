@@ -24,6 +24,7 @@ import type {Accessibility} from '../common/Accessibility.js';
 import type {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {Coverage} from '../common/Coverage.js';
 import {Device} from '../common/Device.js';
+import {DeviceRequestPrompt} from '../common/DeviceRequestPrompt.js';
 import type {Dialog} from '../common/Dialog.js';
 import {EventEmitter, Handler} from '../common/EventEmitter.js';
 import type {FileChooser} from '../common/FileChooser.js';
@@ -2556,6 +2557,36 @@ export class Page extends EventEmitter {
     Params extends unknown[],
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
   >(): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    throw new Error('Not implemented');
+  }
+
+  /**
+   * This method is typically coupled with an action that triggers a device
+   * request from an api such as WebBluetooth.
+   *
+   * :::caution
+   *
+   * This must be called before the device request is made. It will not return a
+   * currently active device prompt.
+   *
+   * :::
+   *
+   * @example
+   *
+   * ```ts
+   * const [devicePrompt] = Promise.all([
+   *   page.waitForDevicePrompt(),
+   *   page.click('#connect-bluetooth'),
+   * ]);
+   * await devicePrompt.select(
+   *   await devicePrompt.waitForDevice(({name}) => name.includes('My Device'))
+   * );
+   * ```
+   */
+  waitForDevicePrompt(
+    options?: WaitTimeoutOptions
+  ): Promise<DeviceRequestPrompt>;
+  waitForDevicePrompt(): Promise<DeviceRequestPrompt> {
     throw new Error('Not implemented');
   }
 }

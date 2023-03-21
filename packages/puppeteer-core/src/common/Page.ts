@@ -50,6 +50,7 @@ import {
 } from './Connection.js';
 import {ConsoleMessage, ConsoleMessageType} from './ConsoleMessage.js';
 import {Coverage} from './Coverage.js';
+import {DeviceRequestPrompt} from './DeviceRequestPrompt.js';
 import {Dialog} from './Dialog.js';
 import {EmulationManager} from './EmulationManager.js';
 import {FileChooser} from './FileChooser.js';
@@ -1646,6 +1647,35 @@ export class CDPPage extends Page {
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     return this.mainFrame().waitForFunction(pageFunction, options, ...args);
+  }
+
+  /**
+   * This method is typically coupled with an action that triggers a device
+   * request from an api such as WebBluetooth.
+   *
+   * :::caution
+   *
+   * This must be called before the device request is made. It will not return a
+   * currently active device prompt.
+   *
+   * :::
+   *
+   * @example
+   *
+   * ```ts
+   * const [devicePrompt] = Promise.all([
+   *   page.waitForDevicePrompt(),
+   *   page.click('#connect-bluetooth'),
+   * ]);
+   * await devicePrompt.select(
+   *   await devicePrompt.waitForDevice(({name}) => name.includes('My Device'))
+   * );
+   * ```
+   */
+  override waitForDevicePrompt(
+    options: WaitTimeoutOptions = {}
+  ): Promise<DeviceRequestPrompt> {
+    return this.mainFrame().waitForDevicePrompt(options);
   }
 }
 
