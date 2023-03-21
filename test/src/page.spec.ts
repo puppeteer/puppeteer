@@ -1163,6 +1163,21 @@ describe('Page', function () {
       ]);
       expect(result).toBe(undefined);
     });
+    it('should work with aborted requests', async () => {
+      const {page, server} = getTestState();
+
+      await page.goto(server.PREFIX + '/abort-request.html');
+
+      const element = await page.$(`#abort`);
+      await element!.click();
+
+      let error = false;
+      await page.waitForNetworkIdle().catch(() => {
+        return (error = true);
+      });
+
+      expect(error).toBe(false);
+    });
   });
 
   describe('Page.exposeFunction', function () {

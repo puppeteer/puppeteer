@@ -302,11 +302,7 @@ export class NetworkManager extends EventEmitter {
   }
 
   #onAuthRequired(event: Protocol.Fetch.AuthRequiredEvent): void {
-    /* TODO(jacktfranklin): This is defined in protocol.d.ts but not
-     * in an easily referrable way - we should look at exposing it.
-     */
-    type AuthResponse = 'Default' | 'CancelAuth' | 'ProvideCredentials';
-    let response: AuthResponse = 'Default';
+    let response: Protocol.Fetch.AuthChallengeResponse['response'] = 'Default';
     if (this.#attemptedAuthentications.has(event.requestId)) {
       response = 'CancelAuth';
     } else if (this.#credentials) {

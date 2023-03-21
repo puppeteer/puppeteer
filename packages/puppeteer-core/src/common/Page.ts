@@ -991,10 +991,7 @@ export class CDPPage extends Page {
 
     const networkManager = this.#frameManager.networkManager;
 
-    let idleResolveCallback: () => void;
-    const idlePromise = new Promise<void>(resolve => {
-      idleResolveCallback = resolve;
-    });
+    const idlePromise = createDeferredPromise<void>();
 
     let abortRejectCallback: (error: Error) => void;
     const abortPromise = new Promise<Error>((_, reject) => {
@@ -1002,10 +999,6 @@ export class CDPPage extends Page {
     });
 
     let idleTimer: NodeJS.Timeout;
-    const onIdle = () => {
-      return idleResolveCallback();
-    };
-
     const cleanup = () => {
       idleTimer && clearTimeout(idleTimer);
       abortRejectCallback(new Error('abort'));
@@ -1014,7 +1007,7 @@ export class CDPPage extends Page {
     const evaluate = () => {
       idleTimer && clearTimeout(idleTimer);
       if (networkManager.numRequestsInProgress() === 0) {
-        idleTimer = setTimeout(onIdle, idleTime);
+        idleTimer = setTimeout(idlePromise.resolve, idleTime);
       }
     };
 
@@ -1038,6 +1031,7 @@ export class CDPPage extends Page {
     const eventPromises = [
       listenToEvent(NetworkManagerEmittedEvents.Request),
       listenToEvent(NetworkManagerEmittedEvents.Response),
+      listenToEvent(NetworkManagerEmittedEvents.RequestFailed),
     ];
 
     await Promise.race([
