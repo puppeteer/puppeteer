@@ -453,8 +453,8 @@ export async function setPageContent(
   // We rely upon the fact that document.open() will reset frame lifecycle with "init"
   // lifecycle event. @see https://crrev.com/608658
   return page.evaluate(html => {
-    document.open();
-    document.write(html);
-    document.close();
+    const blob = new Blob([html], {type: 'text/html'});
+    const url = URL.createObjectURL(blob);
+    location.href = url;
   }, content);
 }
