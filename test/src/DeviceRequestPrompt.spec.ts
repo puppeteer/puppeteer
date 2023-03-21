@@ -1,12 +1,12 @@
 import expect from 'expect';
-import {EventEmitter} from 'puppeteer-core/internal/common/EventEmitter.js';
-import {TimeoutSettings} from 'puppeteer-core/internal/common/TimeoutSettings.js';
+import {TimeoutError} from 'puppeteer';
 import {
   DeviceRequestPrompt,
   DeviceRequestPromptDevice,
   DeviceRequestPromptManager,
 } from 'puppeteer-core/internal/common/DeviceRequestPrompt.js';
-import {TimeoutError} from 'puppeteer';
+import {EventEmitter} from 'puppeteer-core/internal/common/EventEmitter.js';
+import {TimeoutSettings} from 'puppeteer-core/internal/common/TimeoutSettings.js';
 
 class MockCDPSession extends EventEmitter {
   async send(): Promise<any> {}
