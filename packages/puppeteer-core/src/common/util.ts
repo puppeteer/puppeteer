@@ -339,7 +339,7 @@ export async function waitWithTimeout<T>(
   const timeoutError = new TimeoutError(
     `waiting for ${taskName} failed: timeout ${timeout}ms exceeded`
   );
-  const timeoutPromise = new Promise<T>((_res, rej) => {
+  const timeoutPromise = new Promise<never>((_, rej) => {
     return (reject = rej);
   });
   let timeoutTimer = null;

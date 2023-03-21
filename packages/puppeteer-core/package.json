@@ -141,7 +141,7 @@
     "rimraf": "4.4.0",
     "tar-fs": "2.1.1",
     "unbzip2-stream": "1.4.3",
-    "ws": "8.12.1"
+    "ws": "8.13.0"
   },
   "peerDependencies": {
     "typescript": ">= 4.7.4"

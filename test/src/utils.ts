@@ -140,11 +140,10 @@ export const waitEvent = (
   }
 ): Promise<any> => {
   return new Promise(fulfill => {
-    emitter.on(eventName, function listener(event: any) {
+    emitter.once(eventName, (event: any) => {
       if (!predicate(event)) {
         return;
       }
-      emitter.off(eventName, listener);
       fulfill(event);
     });
   });
