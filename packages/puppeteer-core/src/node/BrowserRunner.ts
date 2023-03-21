@@ -20,8 +20,6 @@ import {rename, unlink} from 'fs/promises';
 import path from 'path';
 import readline from 'readline';
 
-import rimraf from 'rimraf';
-
 import type {Connection as BiDiConnection} from '../common/bidi/bidi.js';
 import {Connection} from '../common/Connection.js';
 import {debug} from '../common/Debug.js';
@@ -36,6 +34,7 @@ import {
 } from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {isErrnoException, isErrorLike} from '../util/ErrorLike.js';
+import {rm, rmSync} from '../util/fs.js';
 
 import {LaunchOptions} from './LaunchOptions.js';
 import {PipeTransport} from './PipeTransport.js';
@@ -122,7 +121,7 @@ export class BrowserRunner {
         // Cleanup as processes exit.
         if (this.#isTempUserDataDir) {
           try {
-            await rimraf(this.#userDataDir);
+            await rm(this.#userDataDir);
             fulfill();
           } catch (error) {
             debugError(error);
@@ -236,7 +235,7 @@ export class BrowserRunner {
     // Attempt to remove temporary profile directory to avoid littering.
     try {
       if (this.#isTempUserDataDir) {
-        rimraf.sync(this.#userDataDir);
+        rmSync(this.#userDataDir);
       }
     } catch (error) {}
 

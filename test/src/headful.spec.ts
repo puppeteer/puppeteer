@@ -23,8 +23,9 @@ import {
   PuppeteerLaunchOptions,
   PuppeteerNode,
 } from 'puppeteer-core/internal/node/PuppeteerNode.js';
+import {rmSync} from 'puppeteer-core/internal/util/fs.js';
 
-import {getTestState, rmSync} from './mocha-utils.js';
+import {getTestState} from './mocha-utils.js';
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 

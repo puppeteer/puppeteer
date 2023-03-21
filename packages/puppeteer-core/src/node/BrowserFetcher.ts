@@ -30,13 +30,13 @@ import createHttpsProxyAgent, {
   HttpsProxyAgentOptions,
 } from 'https-proxy-agent';
 import {getProxyForUrl} from 'proxy-from-env';
-import rimraf from 'rimraf';
 import tar from 'tar-fs';
 import bzip from 'unbzip2-stream';
 
 import {debug} from '../common/Debug.js';
 import {Product} from '../common/Product.js';
 import {assert} from '../util/assert.js';
+import {rm} from '../util/fs.js';
 
 const debugFetcher = debug('puppeteer:fetcher');
 
@@ -412,7 +412,7 @@ export class BrowserFetcher {
       existsSync(folderPath),
       `Failed to remove: revision ${revision} is not downloaded`
     );
-    await rimraf(folderPath);
+    await rm(folderPath);
   }
 
   /**
