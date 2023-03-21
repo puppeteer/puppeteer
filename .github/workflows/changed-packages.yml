@@ -27,7 +27,7 @@ jobs:
         if: ${{ inputs.check-mergeable-state }}
         run: |
           git fetch origin main --depth 1 &&
-          git merge-base --is-ancestor main @;
+          git merge-base --is-ancestor origin/main @;
       - name: Detect changed packages
         uses: dorny/paths-filter@v2.11.1
         id: changes
