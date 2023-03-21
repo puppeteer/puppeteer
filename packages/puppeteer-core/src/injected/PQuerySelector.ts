@@ -172,10 +172,10 @@ class PQueryEngine {
 }
 
 class DepthCalculator {
-  #cache = new Map<Node, number[]>();
+  #cache = new WeakMap<Node, number[]>();
 
-  calculate(node: Node, depth: number[] = []): number[] {
-    if (node instanceof Document) {
+  calculate(node: Node | null, depth: number[] = []): number[] {
+    if (node === null) {
       return depth;
     }
     if (node instanceof ShadowRoot) {
@@ -196,7 +196,7 @@ class DepthCalculator {
       ++index;
     }
 
-    const value = this.calculate(node.parentNode as Node, [index]);
+    const value = this.calculate(node.parentNode, [index]);
     this.#cache.set(node, value);
     return [...value, ...depth];
   }
