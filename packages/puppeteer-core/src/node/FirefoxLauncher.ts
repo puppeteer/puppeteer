@@ -43,6 +43,7 @@ export class FirefoxLauncher extends ProductLauncher {
       waitForInitialPage = true,
       debuggingPort = null,
       protocol = 'cdp',
+      protocolTimeout,
     } = options;
 
     const firefoxArguments = [];
@@ -132,6 +133,7 @@ export class FirefoxLauncher extends ProductLauncher {
           timeout,
           slowMo,
           preferredRevision: this.puppeteer.browserRevision,
+          protocolTimeout,
         });
         const BiDi = await import(
           /* webpackIgnore: true */ '../common/bidi/bidi.js'
@@ -156,6 +158,7 @@ export class FirefoxLauncher extends ProductLauncher {
         timeout,
         slowMo,
         preferredRevision: this.puppeteer.browserRevision,
+        protocolTimeout,
       });
       browser = await CDPBrowser._create(
         this.product,

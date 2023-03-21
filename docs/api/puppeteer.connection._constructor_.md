@@ -10,7 +10,12 @@ Constructs a new instance of the `Connection` class
 
 ```typescript
 class Connection {
-  constructor(url: string, transport: ConnectionTransport, delay?: number);
+  constructor(
+    url: string,
+    transport: ConnectionTransport,
+    delay?: number,
+    timeout?: number
+  );
 }
 ```
 
@@ -21,3 +26,4 @@ class Connection {
 | url       | string                                                    |              |
 | transport | [ConnectionTransport](./puppeteer.connectiontransport.md) |              |
 | delay     | number                                                    | _(Optional)_ |
+| timeout   | number                                                    | _(Optional)_ |

@@ -59,6 +59,12 @@ export interface BrowserConnectOptions {
    * @internal
    */
   protocol?: 'cdp' | 'webDriverBiDi';
+  /**
+   * Timeout setting for individual protocol (CDP) calls.
+   *
+   * @defaultValue 30000
+   */
+  protocolTimeout?: number;
 }
 
 const getWebSocketTransportClass = async () => {
@@ -87,6 +93,7 @@ export async function _connectToCDPBrowser(
     slowMo = 0,
     targetFilter,
     _isPageTarget: isPageTarget,
+    protocolTimeout,
   } = options;
 
   assert(
@@ -97,18 +104,28 @@ export async function _connectToCDPBrowser(
 
   let connection!: Connection;
   if (transport) {
-    connection = new Connection('', transport, slowMo);
+    connection = new Connection('', transport, slowMo, protocolTimeout);
   } else if (browserWSEndpoint) {
     const WebSocketClass = await getWebSocketTransportClass();
     const connectionTransport: ConnectionTransport =
       await WebSocketClass.create(browserWSEndpoint, headers);
-    connection = new Connection(browserWSEndpoint, connectionTransport, slowMo);
+    connection = new Connection(
+      browserWSEndpoint,
+      connectionTransport,
+      slowMo,
+      protocolTimeout
+    );
   } else if (browserURL) {
     const connectionURL = await getWSEndpoint(browserURL);
     const WebSocketClass = await getWebSocketTransportClass();
     const connectionTransport: ConnectionTransport =
       await WebSocketClass.create(connectionURL);
-    connection = new Connection(connectionURL, connectionTransport, slowMo);
+    connection = new Connection(
+      connectionURL,
+      connectionTransport,
+      slowMo,
+      protocolTimeout
+    );
   }
   const version = await connection.send('Browser.getVersion');
 

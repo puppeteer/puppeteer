@@ -45,6 +45,7 @@ export class ChromeLauncher extends ProductLauncher {
       waitForInitialPage = true,
       debuggingPort,
       protocol,
+      protocolTimeout,
     } = options;
 
     const chromeArguments = [];
@@ -127,6 +128,7 @@ export class ChromeLauncher extends ProductLauncher {
         timeout,
         slowMo,
         preferredRevision: this.puppeteer.browserRevision,
+        protocolTimeout,
       });
 
       if (protocol === 'webDriverBiDi') {

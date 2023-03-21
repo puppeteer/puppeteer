@@ -16,10 +16,9 @@
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import {ConnectionCallback} from '../Connection.js';
+import {CallbackRegistry} from '../Connection.js';
 import {ConnectionTransport} from '../ConnectionTransport.js';
 import {debug} from '../Debug.js';
-import {ProtocolError} from '../Errors.js';
 import {EventEmitter} from '../EventEmitter.js';
 
 import {Context} from './Context.js';
@@ -81,14 +80,15 @@ interface Commands {
 export class Connection extends EventEmitter {
   #transport: ConnectionTransport;
   #delay: number;
-  #lastId = 0;
+  #timeout? = 0;
   #closed = false;
-  #callbacks: Map<number, ConnectionCallback> = new Map();
+  #callbacks = new CallbackRegistry();
   #contexts: Map<string, Context> = new Map();
 
-  constructor(transport: ConnectionTransport, delay = 0) {
+  constructor(transport: ConnectionTransport, delay = 0, timeout?: number) {
     super();
     this.#delay = delay;
+    this.#timeout = timeout;
 
     this.#transport = transport;
     this.#transport.onmessage = this.onMessage.bind(this);
@@ -107,22 +107,15 @@ export class Connection extends EventEmitter {
     method: T,
     params: Commands[T]['params']
   ): Promise<Commands[T]['returnType']> {
-    const id = ++this.#lastId;
-    const stringifiedMessage = JSON.stringify({
-      id,
-      method,
-      params,
-    } as Bidi.Message.CommandRequest);
-    debugProtocolSend(stringifiedMessage);
-    this.#transport.send(stringifiedMessage);
-    return new Promise((resolve, reject) => {
-      this.#callbacks.set(id, {
-        resolve,
-        reject,
-        error: new ProtocolError(),
+    return this.#callbacks.create(method, this.#timeout, id => {
+      const stringifiedMessage = JSON.stringify({
+        id,
         method,
-      });
-    });
+        params,
+      } as Bidi.Message.CommandRequest);
+      debugProtocolSend(stringifiedMessage);
+      this.#transport.send(stringifiedMessage);
+    }) as Promise<Commands[T]['returnType']>;
   }
 
   /**
@@ -140,23 +133,23 @@ export class Connection extends EventEmitter {
       | Bidi.Message.EventMessage;
 
     if ('id' in object) {
-      const callback = this.#callbacks.get(object.id);
-      // Callbacks could be all rejected if someone has called `.dispose()`.
-      if (callback) {
-        this.#callbacks.delete(object.id);
-        if ('error' in object) {
-          callback.reject(
-            createProtocolError(callback.error, callback.method, object)
+      if ('error' in object) {
+        this.#callbacks.reject(
+          object.id,
+          createProtocolError(object),
+          object.message
+        );
+      } else {
+        if (
+          this.#callbacks.getCallback(object.id)?.label ===
+          'browsingContext.create'
+        ) {
+          this.#contexts.set(
+            object.result.context,
+            new Context(this, object.result)
           );
-        } else {
-          if (callback.method === 'browsingContext.create') {
-            this.#contexts.set(
-              object.result.context,
-              new Context(this, object.result)
-            );
-          }
-          callback.resolve(object);
         }
+        this.#callbacks.resolve(object.id, object);
       }
     } else {
       let context: Context | undefined;
@@ -178,14 +171,6 @@ export class Connection extends EventEmitter {
     this.#closed = true;
     this.#transport.onmessage = undefined;
     this.#transport.onclose = undefined;
-    for (const callback of this.#callbacks.values()) {
-      callback.reject(
-        rewriteError(
-          callback.error,
-          `Protocol error (${callback.method}): Connection closed.`
-        )
-      );
-    }
     this.#callbacks.clear();
   }
 
@@ -195,27 +180,13 @@ export class Connection extends EventEmitter {
   }
 }
 
-function rewriteError(
-  error: ProtocolError,
-  message: string,
-  originalMessage?: string
-): Error {
-  error.message = message;
-  error.originalMessage = originalMessage ?? error.originalMessage;
-  return error;
-}
-
 /**
  * @internal
  */
-function createProtocolError(
-  error: ProtocolError,
-  method: string,
-  object: Bidi.Message.ErrorResult
-): Error {
-  let message = `Protocol error (${method}): ${object.error} ${object.message}`;
+function createProtocolError(object: Bidi.Message.ErrorResult): string {
+  let message = `${object.error} ${object.message}`;
   if (object.stacktrace) {
     message += ` ${object.stacktrace}`;
   }
-  return rewriteError(error, message, object.message);
+  return message;
 }
