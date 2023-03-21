@@ -34,6 +34,7 @@ import {
   PuppeteerNode,
 } from 'puppeteer-core/internal/node/PuppeteerNode.js';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
+import {rmSync} from 'puppeteer-core/internal/util/fs.js';
 import sinon from 'sinon';
 
 import {extendExpectWithToBeGolden} from './utils.js';
@@ -331,11 +332,3 @@ export const createTimeout = <T>(
     }, n);
   });
 };
-
-export function rmSync(target: string): void {
-  fs.rmSync(target, {
-    force: true,
-    recursive: true,
-    maxRetries: 5,
-  });
-}

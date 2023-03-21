@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google Inc. All rights reserved.
+ * Copyright 2023 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,24 @@
  * limitations under the License.
  */
 
-export * from './assert.js';
-export * from './fs.js';
-export * from './DebuggableDeferredPromise.js';
-export * from './DeferredPromise.js';
-export * from './ErrorLike.js';
-export * from './AsyncIterableUtil.js';
+import fs from 'fs';
+
+const rmOptions = {
+  force: true,
+  recursive: true,
+  maxRetries: 5,
+};
+
+/**
+ * @internal
+ */
+export async function rm(path: string): Promise<void> {
+  await fs.promises.rm(path, rmOptions);
+}
+
+/**
+ * @internal
+ */
+export function rmSync(path: string): void {
+  fs.rmSync(path, rmOptions);
+}

@@ -23,9 +23,10 @@ import {Protocol} from 'devtools-protocol';
 import expect from 'expect';
 import {BrowserFetcher, TimeoutError} from 'puppeteer';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
+import {rmSync} from 'puppeteer-core/internal/util/fs.js';
 import sinon from 'sinon';
 
-import {getTestState, itOnlyRegularInstall, rmSync} from './mocha-utils.js';
+import {getTestState, itOnlyRegularInstall} from './mocha-utils.js';
 import utils from './utils.js';
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
