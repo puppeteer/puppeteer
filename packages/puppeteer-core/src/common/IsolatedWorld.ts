@@ -38,7 +38,12 @@ import {
   InnerLazyParams,
   NodeFor,
 } from './types.js';
-import {addPageBinding, createJSHandle, debugError} from './util.js';
+import {
+  addPageBinding,
+  createJSHandle,
+  debugError,
+  setPageContent,
+} from './util.js';
 import {TaskManager, WaitTask} from './WaitTask.js';
 
 /**
@@ -276,13 +281,9 @@ export class IsolatedWorld {
       waitUntil = ['load'],
       timeout = this.#timeoutSettings.navigationTimeout(),
     } = options;
-    // We rely upon the fact that document.open() will reset frame lifecycle with "init"
-    // lifecycle event. @see https://crrev.com/608658
-    await this.evaluate(html => {
-      document.open();
-      document.write(html);
-      document.close();
-    }, html);
+
+    await setPageContent(this, html);
+
     const watcher = new LifecycleWatcher(
       this.#frameManager,
       this.#frame,

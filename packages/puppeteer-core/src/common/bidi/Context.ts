@@ -25,7 +25,7 @@ import {EventEmitter} from '../EventEmitter.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
-import {isString, waitWithTimeout} from '../util.js';
+import {isString, setPageContent, waitWithTimeout} from '../util.js';
 
 import {Connection} from './Connection.js';
 import {ElementHandle} from './ElementHandle.js';
@@ -210,13 +210,7 @@ export class Context extends EventEmitter {
     ) as string;
 
     await Promise.all([
-      // We rely upon the fact that document.open() will reset frame lifecycle with "init"
-      // lifecycle event. @see https://crrev.com/608658
-      this.evaluate(html => {
-        document.open();
-        document.write(html);
-        document.close();
-      }, html),
+      setPageContent(this, html),
       waitWithTimeout(
         new Promise<void>(resolve => {
           this.once(waitUntilCommand, () => {

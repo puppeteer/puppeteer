@@ -20,6 +20,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
+import {Page} from '../api/Page.js';
 import {isNode} from '../environment.js';
 import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
@@ -440,4 +441,20 @@ export async function getReadableFromProtocolStream(
       }
     },
   });
+}
+
+/**
+ * @internal
+ */
+export async function setPageContent(
+  page: Pick<Page, 'evaluate'>,
+  content: string
+): Promise<void> {
+  // We rely upon the fact that document.open() will reset frame lifecycle with "init"
+  // lifecycle event. @see https://crrev.com/608658
+  page.evaluate(html => {
+    document.open();
+    document.write(html);
+    document.close();
+  }, content);
 }
