@@ -86,7 +86,9 @@ function customBDDInterface(suite: Mocha.Suite) {
         const test = new Mocha.Test(title, suite.isPending() ? undefined : fn);
         test.file = file;
         test.parent = suite;
-        if (shouldSkipTest(test)) {
+        // If we use `.only` the function will not have an `only` property
+        const isExclusiveTest = typeof fn?.only !== 'function';
+        if (shouldSkipTest(test) && !isExclusiveTest) {
           const test = new Mocha.Test(title);
           test.file = file;
           suite.addTest(test);
