@@ -21,6 +21,7 @@ import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {CDPSession, isTargetClosedError} from './Connection.js';
+import {DeviceRequestPromptManager} from './DeviceRequestPrompt.js';
 import {EventEmitter} from './EventEmitter.js';
 import {EVALUATION_SCRIPT_URL, ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
@@ -31,7 +32,6 @@ import {NetworkManager} from './NetworkManager.js';
 import {Target} from './Target.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {debugError} from './util.js';
-import {DeviceRequestPromptManager} from './DeviceRequestPrompt.js';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
