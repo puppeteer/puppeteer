@@ -23,9 +23,8 @@ import {
   PuppeteerLaunchOptions,
   PuppeteerNode,
 } from 'puppeteer-core/internal/node/PuppeteerNode.js';
-import rimraf from 'rimraf';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, rmSync} from './mocha-utils.js';
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 
@@ -237,7 +236,9 @@ describe('headful tests', function () {
       });
       await headlessBrowser.close();
       // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
-      await rimraf(userDataDir).catch(() => {});
+      try {
+        rmSync(userDataDir);
+      } catch {}
       expect(cookie).toBe('foo=true');
     });
     // TODO: Support OOOPIF. @see https://github.com/puppeteer/puppeteer/issues/2548
