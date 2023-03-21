@@ -34,7 +34,6 @@ import {
   PuppeteerNode,
 } from 'puppeteer-core/internal/node/PuppeteerNode.js';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
-import rimraf from 'rimraf';
 import sinon from 'sinon';
 
 import {extendExpectWithToBeGolden} from './utils.js';
@@ -128,7 +127,7 @@ const setupGoldenAssertions = (): void => {
   const GOLDEN_DIR = path.join(__dirname, `../golden-${suffix}`);
   const OUTPUT_DIR = path.join(__dirname, `../output-${suffix}`);
   if (fs.existsSync(OUTPUT_DIR)) {
-    rimraf.sync(OUTPUT_DIR);
+    rmSync(OUTPUT_DIR);
   }
   extendExpectWithToBeGolden(GOLDEN_DIR, OUTPUT_DIR);
 };
@@ -332,3 +331,11 @@ export const createTimeout = <T>(
     }, n);
   });
 };
+
+export function rmSync(target: string): void {
+  fs.rmSync(target, {
+    force: true,
+    recursive: true,
+    maxRetries: 5,
+  });
+}

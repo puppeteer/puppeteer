@@ -23,15 +23,10 @@ import {Protocol} from 'devtools-protocol';
 import expect from 'expect';
 import {BrowserFetcher, TimeoutError} from 'puppeteer';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
-import rimraf from 'rimraf';
 import sinon from 'sinon';
 
-import {getTestState, itOnlyRegularInstall} from './mocha-utils.js';
+import {getTestState, itOnlyRegularInstall, rmSync} from './mocha-utils.js';
 import utils from './utils.js';
-
-const rmAsync = (filename: string) => {
-  return rimraf(filename);
-};
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 const FIREFOX_TIMEOUT = 30 * 1000;
@@ -77,12 +72,10 @@ describe('Launcher specs', function () {
         expect((await stat(revisionInfo.executablePath)).mode & 0o777).toBe(
           expectedPermissions
         );
-        expect(await browserFetcher.localRevisions()).toEqual([
-          expectedRevision,
-        ]);
+        expect(browserFetcher.localRevisions()).toEqual([expectedRevision]);
         await browserFetcher.remove(expectedRevision);
-        expect(await browserFetcher.localRevisions()).toEqual([]);
-        await rmAsync(downloadsFolder);
+        expect(browserFetcher.localRevisions()).toEqual([]);
+        rmSync(downloadsFolder);
       });
       it('should download and extract firefox linux binary', async () => {
         const {server} = getTestState();
@@ -127,7 +120,7 @@ describe('Launcher specs', function () {
         ]);
         await browserFetcher.remove(expectedVersion);
         expect(await browserFetcher.localRevisions()).toEqual([]);
-        await rmAsync(downloadsFolder);
+        rmSync(downloadsFolder);
       });
     });
 
@@ -248,7 +241,9 @@ describe('Launcher specs', function () {
         await browser.close();
         expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
-        await rmAsync(userDataDir).catch(() => {});
+        try {
+          rmSync(userDataDir);
+        } catch {}
       });
       it('tmp profile should be cleaned up', async () => {
         const {defaultBrowserOptions, puppeteer} = getTestState();
@@ -301,7 +296,9 @@ describe('Launcher specs', function () {
         expect(await readFile(prefsJSPath, 'utf8')).toBe(prefsJSContent);
 
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
-        await rmAsync(userDataDir).catch(() => {});
+        try {
+          rmSync(userDataDir);
+        } catch {}
       });
       it('userDataDir argument', async () => {
         const {isChrome, puppeteer, defaultBrowserOptions} = getTestState();
@@ -325,13 +322,15 @@ describe('Launcher specs', function () {
         await browser.close();
         expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
-        await rmAsync(userDataDir).catch(() => {});
+        try {
+          rmSync(userDataDir);
+        } catch {}
       });
       it('userDataDir argument with non-existent dir', async () => {
         const {isChrome, puppeteer, defaultBrowserOptions} = getTestState();
 
         const userDataDir = await mkdtemp(TMP_FOLDER);
-        await rmAsync(userDataDir);
+        rmSync(userDataDir);
         const options = Object.assign({}, defaultBrowserOptions);
         if (isChrome) {
           options.args = [
@@ -350,7 +349,9 @@ describe('Launcher specs', function () {
         await browser.close();
         expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
-        await rmAsync(userDataDir).catch(() => {});
+        try {
+          rmSync(userDataDir);
+        } catch {}
       });
       it('userDataDir option should restore state', async () => {
         const {server, puppeteer, defaultBrowserOptions} = getTestState();
@@ -375,7 +376,9 @@ describe('Launcher specs', function () {
         ).toBe('hello');
         await browser2.close();
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
-        await rmAsync(userDataDir).catch(() => {});
+        try {
+          rmSync(userDataDir);
+        } catch {}
       });
       it('userDataDir option should restore cookies', async () => {
         const {server, puppeteer, defaultBrowserOptions} = getTestState();
@@ -401,7 +404,9 @@ describe('Launcher specs', function () {
         ).toBe('doSomethingOnlyOnce=true');
         await browser2.close();
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
-        await rmAsync(userDataDir).catch(() => {});
+        try {
+          rmSync(userDataDir);
+        } catch {}
       });
       it('should return the default arguments', async () => {
         const {isChrome, isFirefox, puppeteer} = getTestState();
