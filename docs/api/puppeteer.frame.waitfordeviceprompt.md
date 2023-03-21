@@ -24,9 +24,9 @@ class Frame {
 
 ## Parameters
 
-| Parameter | Type                                                    | Description       |
-| --------- | ------------------------------------------------------- | ----------------- |
-| options   | [WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md) | <i>(Optional)</i> |
+| Parameter | Type                                                    | Description  |
+| --------- | ------------------------------------------------------- | ------------ |
+| options   | [WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md) | _(Optional)_ |
 
 **Returns:**
 
