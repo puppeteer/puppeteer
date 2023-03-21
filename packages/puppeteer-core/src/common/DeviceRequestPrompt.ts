@@ -15,12 +15,14 @@
  */
 
 import Protocol from 'devtools-protocol';
+
+import {WaitTimeoutOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {
   createDeferredPromise,
   DeferredPromise,
 } from '../util/DeferredPromise.js';
-import {WaitTimeoutOptions} from '../api/Page.js';
+
 import {CDPSession} from './Connection.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 
