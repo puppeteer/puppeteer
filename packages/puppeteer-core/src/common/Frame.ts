@@ -23,6 +23,10 @@ import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {CDPSession} from './Connection.js';
+import {
+  DeviceRequestPrompt,
+  DeviceRequestPromptManager,
+} from './DeviceRequestPrompt.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {FrameManager} from './FrameManager.js';
 import {getQueryHandlerAndSelector} from './GetQueryHandler.js';
@@ -37,10 +41,6 @@ import {LazyArg} from './LazyArg.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {EvaluateFunc, EvaluateFuncWith, HandleFor, NodeFor} from './types.js';
 import {importFS} from './util.js';
-import {
-  DeviceRequestPrompt,
-  DeviceRequestPromptManager,
-} from './DeviceRequestPrompt.js';
 
 /**
  * @public
