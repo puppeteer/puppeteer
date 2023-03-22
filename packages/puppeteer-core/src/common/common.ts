@@ -55,7 +55,6 @@ export * from './PredefinedNetworkConditions.js';
 export * from './Product.js';
 export * from './Puppeteer.js';
 export * from './PuppeteerViewport.js';
-export * from './Operation.js';
 export * from './SecurityDetails.js';
 export * from './Target.js';
 export * from './TargetManager.js';
