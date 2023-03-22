@@ -41,6 +41,7 @@ jobs:
               - 'test/**'
               - 'test-d/**'
               - 'tools/mochaRunner/**'
+              - '.mocharc.cjs'
             website:
               - '.github/workflows/ci.yml'
               - 'docs/**'

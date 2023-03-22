@@ -12,6 +12,84 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
+    "testIdPattern": "[worker.spec] Workers Page.workers",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "headless"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[CDPSession.spec] Target.createCDPSession should send events",
+    "platforms": ["win32"],
+    "parameters": ["chrome", "new-headless"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should work with redirects",
+    "platforms": ["win32"],
+    "parameters": ["chrome", "new-headless"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should work with redirects",
+    "platforms": ["win32"],
+    "parameters": ["chrome", "new-headless"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF should support wait for navigation for transitions from local to OOPIF",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["PASS", "TIMEOUT"]
+  },
+  {
+    "testIdPattern": "[requestinterception-experimental.spec] request interception Page.setRequestInterception should load fonts if cache enabled",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["PASS", "TIMEOUT"]
+  },
+  {
+    "testIdPattern": "[proxy.spec] request proxy in incognito browser context should proxy requests when configured at context level",
+    "platforms": ["win32"],
+    "parameters": ["chrome"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[proxy.spec] request proxy in incognito browser context should proxy requests when configured at context level",
+    "platforms": ["linux"],
+    "parameters": ["chrome"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[fixtures.spec] Fixtures dumpio option should work with pipe option",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "headful"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[fixtures.spec] Fixtures dumpio option should work with pipe option",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "new-headless"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Network Events should fire events in proper order",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should be abortable",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "headful"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.waitForNetworkIdle should work with aborted requests",
+    "platforms": ["linux"],
+    "parameters": ["firefox", "headful"],
+    "expectations": ["PASS", "TIMEOUT"]
+  },
+  {
     "testIdPattern": "[accessibility.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -103,6 +181,12 @@
   },
   {
     "testIdPattern": "[click.spec] Page.click should select the text by triple clicking",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[click.spec] Page.click should click offscreen buttons",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["PASS", "FAIL"]
@@ -322,18 +406,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[fixtures.spec] Fixtures dumpio option should work with pipe option",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "headful"],
-    "expectations": ["PASS", "FAIL"]
-  },
-  {
-    "testIdPattern": "[fixtures.spec] Fixtures dumpio option should work with pipe option",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "new-headless"],
-    "expectations": ["PASS", "FAIL"]
   },
   {
     "testIdPattern": "[fixtures.spec] Fixtures dumpio option should work with pipe option",
@@ -802,12 +874,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
     "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[network.spec] network Network Events should fire events in proper order",
-    "platforms": ["win32"],
-    "parameters": ["chrome", "headful"],
-    "expectations": ["PASS", "FAIL"]
   },
   {
     "testIdPattern": "[network.spec] network Network Events should support redirects",
@@ -1308,12 +1374,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[proxy.spec] request proxy in incognito browser context should proxy requests when configured at context level",
-    "platforms": ["win32"],
-    "parameters": ["chrome"],
-    "expectations": ["SKIP"]
-  },
-  {
     "testIdPattern": "[requestinterception-experimental.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -1473,7 +1533,7 @@
     "testIdPattern": "[touchscreen.spec] Touchscreen should tap the button",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL", "TIMEOUT"]
   },
   {
     "testIdPattern": "[touchscreen.spec] Touchscreen should report touches",
@@ -1830,6 +1890,30 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[jshandle.spec] JSHandle Page.evaluateHandle should accept object handle to primitive types",
+    "platforms": ["darwin"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[jshandle.spec] JSHandle Page.evaluateHandle should accept object handle to unserializable value",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[jshandle.spec] JSHandle Page.evaluateHandle should use the same JS wrappers",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS", "FAIL"]
+  },
+  {
+    "testIdPattern": "[emulation.spec] Emulation Page.viewport should detect touch when applying viewport with touches",
+    "platforms": ["darwin"],
+    "parameters": ["firefox", "headful"],
+    "expectations": ["PASS", "TIMEOUT"]
+  },
+  {
     "testIdPattern": "[queryhandler.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1854,10 +1938,28 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should fail when server returns 204",
+    "platforms": ["darwin"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS", "TIMEOUT"]
+  },
+  {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should not leak listeners during navigation",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS", "FAIL", "TIMEOUT"]
+  },
+  {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work with redirects",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should work with anchor navigation",
+    "platforms": ["linux"],
+    "parameters": ["chrome", "headless", "webDriverBiDi"],
+    "expectations": ["PASS", "TIMEOUT"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should return response when page changes its URL after load",
@@ -2055,6 +2157,6 @@
     "testIdPattern": "[page.spec] Page Page.Events.PageError *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["PASS", "TIMEOUT"]
   }
 ]
