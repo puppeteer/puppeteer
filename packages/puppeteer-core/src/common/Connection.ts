@@ -137,10 +137,6 @@ export class CallbackRegistry {
     });
   }
 
-  getCallback(id: number): Callback | undefined {
-    return this.#callbacks.get(id);
-  }
-
   reject(id: number, message: string, originalMessage?: string): void {
     const callback = this.#callbacks.get(id);
     if (!callback) {
