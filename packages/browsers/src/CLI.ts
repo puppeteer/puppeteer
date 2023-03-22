@@ -155,7 +155,7 @@ export class CLI {
             buildId: args.browser.buildId,
             platform: args.platform,
             cacheDir: args.path ?? this.#cachePath,
-            downloadProgressCallback: this.#makeProgressCallback(
+            downloadProgressCallback: makeProgressCallback(
               args.browser.name,
               args.browser.buildId
             ),
@@ -265,32 +265,35 @@ export class CLI {
   #parseBuildId(version: string): string {
     return version.split('@').pop() ?? 'latest';
   }
+}
 
-  #toMegabytes(bytes: number) {
-    const mb = bytes / 1000 / 1000;
-    return `${Math.round(mb * 10) / 10} MB`;
-  }
+export function makeProgressCallback(
+  browser: Browser,
+  buildId: string
+): (downloadedBytes: number, totalBytes: number) => void {
+  let progressBar: ProgressBar;
+  let lastDownloadedBytes = 0;
+  return (downloadedBytes: number, totalBytes: number) => {
+    if (!progressBar) {
+      progressBar = new ProgressBar(
+        `Downloading ${browser} r${buildId} - ${toMegabytes(
+          totalBytes
+        )} [:bar] :percent :etas `,
+        {
+          complete: '=',
+          incomplete: ' ',
+          width: 20,
+          total: totalBytes,
+        }
+      );
+    }
+    const delta = downloadedBytes - lastDownloadedBytes;
+    lastDownloadedBytes = downloadedBytes;
+    progressBar.tick(delta);
+  };
+}
 
-  #makeProgressCallback(browser: Browser, buildId: string) {
-    let progressBar: ProgressBar;
-    let lastDownloadedBytes = 0;
-    return (downloadedBytes: number, totalBytes: number) => {
-      if (!progressBar) {
-        progressBar = new ProgressBar(
-          `Downloading ${browser} r${buildId} - ${this.#toMegabytes(
-            totalBytes
-          )} [:bar] :percent :etas `,
-          {
-            complete: '=',
-            incomplete: ' ',
-            width: 20,
-            total: totalBytes,
-          }
-        );
-      }
-      const delta = downloadedBytes - lastDownloadedBytes;
-      lastDownloadedBytes = downloadedBytes;
-      progressBar.tick(delta);
-    };
-  }
+function toMegabytes(bytes: number) {
+  const mb = bytes / 1000 / 1000;
+  return `${Math.round(mb * 10) / 10} MB`;
 }
