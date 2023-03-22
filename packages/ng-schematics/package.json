@@ -49,7 +49,7 @@
   "dependencies": {
     "@angular-devkit/architect": "^0.1502.4",
     "@angular-devkit/core": "^15.2.4",
-    "@angular-devkit/schematics": "^15.2.2"
+    "@angular-devkit/schematics": "^15.2.4"
   },
   "devDependencies": {
     "@types/node": "^14.15.0",
