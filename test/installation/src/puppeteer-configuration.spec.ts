@@ -24,7 +24,7 @@ import {readAsset} from './util.js';
 describeInstallation(
   '`puppeteer` with configuration',
   {
-    dependencies: ['puppeteer-core', 'puppeteer'],
+    dependencies: ['puppeteer-core', '@puppeteer/browsers', 'puppeteer'],
     before: async cwd => {
       await writeFile(
         join(cwd, '.puppeteerrc.cjs'),

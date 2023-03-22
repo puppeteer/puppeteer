@@ -143,7 +143,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/puppeteer/chrome
-          key: ${{ runner.os }}-chromium-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}
+          key: ${{ runner.os }}-chromium-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
       - name: Install Chromium
         run: npm run postinstall
       - name: Tests types
@@ -211,7 +211,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.cache/puppeteer/firefox
-          key: ${{ runner.os }}-firefox-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}
+          key: ${{ runner.os }}-firefox-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
       - name: Install Firefox
         env:
           PUPPETEER_PRODUCT: firefox

@@ -24,7 +24,7 @@ import {readAsset} from './util.js';
 describeInstallation(
   '`puppeteer`',
   {
-    dependencies: ['puppeteer-core', 'puppeteer'],
+    dependencies: ['@puppeteer/browsers', 'puppeteer-core', 'puppeteer'],
     env: cwd => {
       return {
         PUPPETEER_CACHE_DIR: join(cwd, '.cache', 'puppeteer'),

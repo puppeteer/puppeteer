@@ -23,7 +23,7 @@ import {execFile, readAsset} from './util.js';
 describeInstallation(
   '`puppeteer` with Webpack',
   {
-    dependencies: ['puppeteer-core', 'puppeteer'],
+    dependencies: ['@puppeteer/browsers', 'puppeteer-core', 'puppeteer'],
     devDependencies: ['webpack', 'webpack-cli'],
     env: cwd => {
       return {
