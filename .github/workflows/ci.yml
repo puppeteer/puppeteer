@@ -59,6 +59,8 @@ jobs:
   check-changes:
     needs: inspect-code
     uses: ./.github/workflows/changed-packages.yml
+    with:
+      check-mergeable-state: true
 
   deploy-docs:
     needs: check-changes

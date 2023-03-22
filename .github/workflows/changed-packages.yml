@@ -4,6 +4,10 @@ permissions: read-all
 
 on:
   workflow_call:
+    inputs:
+      check-mergeable-state:
+        default: false
+        type: boolean
     outputs:
       changes:
         description: 'The packages that were changed for this PR'
@@ -19,6 +23,11 @@ jobs:
         uses: actions/checkout@v3.3.0
         with:
           fetch-depth: 2
+      - name: Check if branch is out of date
+        if: ${{ inputs.check-mergeable-state }}
+        run: |
+          git fetch origin main --depth 1 &&
+          git merge-base --is-ancestor origin/main @;
       - name: Detect changed packages
         uses: dorny/paths-filter@v2.11.1
         id: changes
