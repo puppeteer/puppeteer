@@ -11,7 +11,7 @@
     "build:docs": "wireit",
     "check:pinned-deps": "tsx tools/ensure-pinned-deps",
     "check": "npm run check --workspaces --if-present && run-p check:*",
-    "clean": "rimraf \"**/.wireit\" && npm run clean --workspaces --if-present",
+    "clean": "rimraf -g \"./**/.wireit\" && npm run clean --workspaces --if-present",
     "commitlint": "commitlint --from=HEAD~1",
     "debug": "mocha --inspect-brk",
     "docs": "run-s build:docs generate:markdown",
