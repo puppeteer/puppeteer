@@ -22,6 +22,7 @@ import {
   PageEmittedEvents,
   WaitForOptions,
 } from '../../api/Page.js';
+import {isErrorLike} from '../../util/ErrorLike.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
 import {Handler} from '../EventEmitter.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
@@ -45,12 +46,18 @@ export class Page extends PageBase {
     super();
     this.#context = context;
 
-    this.#context.connection.send('session.subscribe', {
-      events: [
-        ...this.#subscribedEvents.keys(),
-      ] as Bidi.Session.SubscribeParameters['events'],
-      contexts: [this.#context.id],
-    });
+    this.#context.connection
+      .send('session.subscribe', {
+        events: [
+          ...this.#subscribedEvents.keys(),
+        ] as Bidi.Session.SubscribeParameters['events'],
+        contexts: [this.#context.id],
+      })
+      .catch(error => {
+        if (isErrorLike(error) && !error.message.includes('Target closed')) {
+          throw error;
+        }
+      });
 
     for (const [event, subscriber] of this.#subscribedEvents) {
       this.#context.on(event, subscriber);
