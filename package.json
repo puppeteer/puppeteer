@@ -17,6 +17,7 @@
     "docs": "run-s build:docs generate:markdown",
     "format:eslint": "eslint --ext js --ext ts --fix .",
     "format:prettier": "prettier --write .",
+    "format:expectations": "node tools/sort-test-expectations.js",
     "format": "run-s format:*",
     "generate:markdown": "tsx tools/generate_docs.ts",
     "lint:eslint": "([ \"$CI\" = true ] && eslint --ext js --ext ts --quiet -f codeframe . || eslint --ext js --ext ts .)",

@@ -72,6 +72,14 @@ export function printSuggestions(
         return item.expectation;
       })
     );
+    console.log(
+      'The recommendations are based on the following applied expectaions:'
+    );
+    prettyPrintJSON(
+      toPrint.map(item => {
+        return item.basedOn;
+      })
+    );
   }
 }
 
@@ -103,6 +111,7 @@ export function findEffectiveExpectationForTest(
 export type RecommendedExpectation = {
   expectation: TestExpectation;
   action: 'remove' | 'add' | 'update';
+  basedOn?: TestExpectation;
 };
 
 export function isWildCardPattern(testIdPattern: string): boolean {
@@ -134,6 +143,7 @@ export function getExpectationUpdates(
       addEntry({
         expectation: expectationEntry,
         action: 'remove',
+        basedOn: expectationEntry,
       });
     }
   }
@@ -149,28 +159,39 @@ export function getExpectationUpdates(
       expectations,
       failure
     );
-    // If the effective explanation is a wildcard, we recommend adding a new
-    // expectation instead of updating the wildcard that might affect multiple
-    // tests.
-    if (
-      expectationEntry &&
-      !isWildCardPattern(expectationEntry.testIdPattern)
-    ) {
+    if (expectationEntry) {
       if (
         !expectationEntry.expectations.includes(
           getTestResultForFailure(failure)
         )
       ) {
-        addEntry({
-          expectation: {
-            ...expectationEntry,
-            expectations: [
-              ...expectationEntry.expectations,
-              getTestResultForFailure(failure),
-            ],
-          },
-          action: 'update',
-        });
+        // If the effective explanation is a wildcard, we recommend adding a new
+        // expectation instead of updating the wildcard that might affect multiple
+        // tests.
+        if (isWildCardPattern(expectationEntry.testIdPattern)) {
+          addEntry({
+            expectation: {
+              testIdPattern: getTestId(failure.file, failure.fullTitle),
+              platforms: context.platforms,
+              parameters: context.parameters,
+              expectations: [getTestResultForFailure(failure)],
+            },
+            action: 'add',
+            basedOn: expectationEntry,
+          });
+        } else {
+          addEntry({
+            expectation: {
+              ...expectationEntry,
+              expectations: [
+                ...expectationEntry.expectations,
+                getTestResultForFailure(failure),
+              ],
+            },
+            action: 'update',
+            basedOn: expectationEntry,
+          });
+        }
       }
     } else {
       addEntry({
@@ -181,6 +202,7 @@ export function getExpectationUpdates(
           expectations: [getTestResultForFailure(failure)],
         },
         action: 'add',
+        basedOn: expectationEntry,
       });
     }
   }
