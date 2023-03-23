@@ -36,7 +36,8 @@
     "test:firefox:headful": "wireit",
     "test:firefox:headless": "wireit",
     "test:firefox": "wireit",
-    "test": "cross-env PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 node tools/mochaRunner/lib/main.js"
+    "test": "cross-env PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 node tools/mochaRunner/lib/main.js",
+    "validate-licenses": "tsx tools/third_party/validate-licenses.ts"
   },
   "wireit": {
     "build": {
@@ -157,10 +158,11 @@
     "eslint-plugin-unused-imports": "2.0.0",
     "esprima": "4.0.1",
     "expect": "29.4.3",
-    "glob": "9.3.1",
+    "glob": "8.1.0",
     "gts": "4.0.0",
     "husky": "8.0.3",
     "jpeg-js": "0.4.4",
+    "license-checker": "25.0.1",
     "mime": "3.0.0",
     "minimist": "1.2.8",
     "mocha": "10.2.0",
@@ -170,11 +172,11 @@
     "pngjs": "7.0.0",
     "prettier": "2.8.4",
     "puppeteer": "file:packages/puppeteer",
-    "rimraf": "4.4.0",
     "rollup": "3.18.0",
     "semver": "7.3.8",
     "sinon": "15.0.1",
     "source-map-support": "0.5.21",
+    "spdx-satisfies": "5.0.1",
     "text-diff": "1.0.1",
     "tsd": "0.26.0",
     "tsx": "3.12.3",
