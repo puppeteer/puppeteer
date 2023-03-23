@@ -140,27 +140,34 @@ export class Connection extends EventEmitter {
           object.message
         );
       } else {
-        if (
-          this.#callbacks.getCallback(object.id)?.label ===
-          'browsingContext.create'
-        ) {
-          this.#contexts.set(
-            object.result.context,
-            new Context(this, object.result)
-          );
-        }
         this.#callbacks.resolve(object.id, object);
       }
     } else {
-      let context: Context | undefined;
-      if ('context' in object.params) {
-        context = this.#contexts.get(object.params.context);
-      } else if ('source' in object.params && !!object.params.source.context) {
-        context = this.#contexts.get(object.params.source.context);
-      }
-      context?.emit(object.method, object.params);
-
+      this.#handleSpecialEvents(object);
+      this.#maybeEmitOnContext(object);
       this.emit(object.method, object.params);
+    }
+  }
+
+  #maybeEmitOnContext(event: Bidi.Message.EventMessage) {
+    let context: Context | undefined;
+    // Context specific events
+    if ('context' in event.params) {
+      context = this.#contexts.get(event.params.context);
+      // `log.entryAdded` specific context
+    } else if ('source' in event.params && !!event.params.source.context) {
+      context = this.#contexts.get(event.params.source.context);
+    }
+    context?.emit(event.method, event.params);
+  }
+
+  #handleSpecialEvents(event: Bidi.Message.EventMessage) {
+    switch (event.method) {
+      case 'browsingContext.contextCreated':
+        this.#contexts.set(
+          event.params.context,
+          new Context(this, event.params)
+        );
     }
   }
 

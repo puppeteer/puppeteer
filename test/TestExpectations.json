@@ -108,12 +108,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[emulation.spec] Emulation Page.viewport should detect touch when applying viewport with touches",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["PASS", "TIMEOUT"]
-  },
-  {
     "testIdPattern": "[evaluation.spec] Evaluation specs Frame.evaluate should execute after cross-site navigation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -670,6 +664,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[emulation.spec] Emulation Page.viewport should detect touch when applying viewport with touches",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["PASS", "TIMEOUT"]
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.viewport should support landscape emulation",
@@ -1831,6 +1831,12 @@
   },
   {
     "testIdPattern": "[queryhandler.spec] Query handler tests P selectors should work ARIA selectors",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[queryhandler.spec] Query handler tests P selectors should work with deep combinators",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]

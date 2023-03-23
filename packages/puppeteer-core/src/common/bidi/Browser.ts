@@ -16,6 +16,8 @@
 
 import {ChildProcess} from 'child_process';
 
+import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+
 import {
   Browser as BrowserBase,
   BrowserCloseCallback,
@@ -30,14 +32,16 @@ import {Connection} from './Connection.js';
  * @internal
  */
 export class Browser extends BrowserBase {
-  /**
-   * @internal
-   */
   static async create(opts: Options): Promise<Browser> {
     // TODO: await until the connection is established.
     try {
       await opts.connection.send('session.new', {});
     } catch {}
+    await opts.connection.send('session.subscribe', {
+      events: [
+        'browsingContext.contextCreated',
+      ] as Bidi.Session.SubscribeParametersEvent[],
+    });
     return new Browser(opts);
   }
 
@@ -45,9 +49,6 @@ export class Browser extends BrowserBase {
   #closeCallback?: BrowserCloseCallback;
   #connection: Connection;
 
-  /**
-   * @internal
-   */
   constructor(opts: Options) {
     super();
     this.#process = opts.process;
