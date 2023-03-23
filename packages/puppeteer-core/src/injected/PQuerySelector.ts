@@ -29,10 +29,18 @@ import {
   PPseudoSelector,
 } from './PSelectorParser.js';
 import {textQuerySelectorAll} from './TextQuerySelector.js';
-import {deepChildren, deepDescendents} from './util.js';
+import {pierce, pierceAll} from './util.js';
 import {xpathQuerySelectorAll} from './XPathQuerySelector.js';
 
 const IDENT_TOKEN_START = /[-\w\P{ASCII}*]/;
+
+interface QueryableNode extends Node {
+  querySelectorAll: typeof Document.prototype.querySelectorAll;
+}
+
+const isQueryableNode = (node: Node): node is QueryableNode => {
+  return 'querySelectorAll' in node;
+};
 
 class SelectorError extends Error {
   constructor(selector: string, message: string) {
@@ -75,33 +83,44 @@ class PQueryEngine {
       const selector = this.#selector;
       const input = this.#input;
       if (typeof selector === 'string') {
-        this.elements = AsyncIterableUtil.flatMap(
-          this.elements,
-          async function* (element) {
-            if (!selector[0]) {
-              return;
-            }
-            // The regular expression tests if the selector is a type/universal
-            // selector. Any other case means we want to apply the selector onto
-            // the element itself (e.g. `element.class`, `element>div`,
-            // `element:hover`, etc.).
-            if (IDENT_TOKEN_START.test(selector[0]) || !element.parentElement) {
-              yield* (element as Element).querySelectorAll(selector);
-              return;
-            }
-
-            let index = 0;
-            for (const child of element.parentElement.children) {
-              ++index;
-              if (child === element) {
-                break;
+        // The regular expression tests if the selector is a type/universal
+        // selector. Any other case means we want to apply the selector onto
+        // the element itself (e.g. `element.class`, `element>div`,
+        // `element:hover`, etc.).
+        if (selector[0] && IDENT_TOKEN_START.test(selector[0])) {
+          this.elements = AsyncIterableUtil.flatMap(
+            this.elements,
+            async function* (element) {
+              if (isQueryableNode(element)) {
+                yield* element.querySelectorAll(selector);
               }
             }
-            yield* element.parentElement.querySelectorAll(
-              `:scope>:nth-child(${index})${selector}`
-            );
-          }
-        );
+          );
+        } else {
+          this.elements = AsyncIterableUtil.flatMap(
+            this.elements,
+            async function* (element) {
+              if (!element.parentElement) {
+                if (!isQueryableNode(element)) {
+                  return;
+                }
+                yield* element.querySelectorAll(selector);
+                return;
+              }
+
+              let index = 0;
+              for (const child of element.parentElement.children) {
+                ++index;
+                if (child === element) {
+                  break;
+                }
+              }
+              yield* element.parentElement.querySelectorAll(
+                `:scope>:nth-child(${index})${selector}`
+              );
+            }
+          );
+        }
       } else {
         this.elements = AsyncIterableUtil.flatMap(
           this.elements,
@@ -144,22 +163,12 @@ class PQueryEngine {
     const selector = this.#complexSelector.shift();
     switch (selector) {
       case PCombinator.Child: {
-        this.elements = AsyncIterableUtil.flatMap(
-          this.elements,
-          function* (element) {
-            yield* deepChildren(element);
-          }
-        );
+        this.elements = AsyncIterableUtil.flatMap(this.elements, pierce);
         this.#next();
         break;
       }
       case PCombinator.Descendent: {
-        this.elements = AsyncIterableUtil.flatMap(
-          this.elements,
-          function* (element) {
-            yield* deepDescendents(element);
-          }
-        );
+        this.elements = AsyncIterableUtil.flatMap(this.elements, pierceAll);
         this.#next();
         break;
       }
@@ -206,12 +215,12 @@ const compareDepths = (a: number[], b: number[]): -1 | 0 | 1 => {
   if (a.length + b.length === 0) {
     return 0;
   }
-  const [i = Infinity, ...otherA] = a;
-  const [j = Infinity, ...otherB] = b;
+  const [i = -1, ...otherA] = a;
+  const [j = -1, ...otherB] = b;
   if (i === j) {
     return compareDepths(otherA, otherB);
   }
-  return i < j ? 1 : -1;
+  return i < j ? -1 : 1;
 };
 
 const domSort = async function* (elements: AwaitableIterable<Node>) {
@@ -230,10 +239,6 @@ const domSort = async function* (elements: AwaitableIterable<Node>) {
     .map(([result]) => {
       return result;
     });
-};
-
-type QueryableNode = {
-  querySelectorAll: typeof Document.prototype.querySelectorAll;
 };
 
 /**
