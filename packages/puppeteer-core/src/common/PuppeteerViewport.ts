@@ -30,6 +30,10 @@ export interface Viewport {
   /**
    * Specify device scale factor.
    * See {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio | devicePixelRatio} for more info.
+   *
+   * @remarks
+   * Setting this value to `0` will set the deviceScaleFactor to the system default.
+   *
    * @defaultValue 1
    */
   deviceScaleFactor?: number;
