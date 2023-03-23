@@ -358,10 +358,8 @@ describe('Query handler tests', function () {
 
   describe('P selectors', () => {
     beforeEach(async () => {
-      const {page} = getTestState();
-      await page.setContent(
-        '<div>hello <button>world<span></span></button></div>'
-      );
+      const {page, server} = getTestState();
+      await page.goto(`${server.PREFIX}/p-selectors.html`);
       Puppeteer.clearCustomQueryHandlers();
     });
 
@@ -371,7 +369,7 @@ describe('Query handler tests', function () {
       assert(element, 'Could not find element');
       expect(
         await element.evaluate(element => {
-          return element.tagName === 'BUTTON';
+          return element.id === 'b';
         })
       ).toBeTruthy();
 
@@ -386,13 +384,35 @@ describe('Query handler tests', function () {
       }
     });
 
+    it('should work with deep combinators', async () => {
+      const {page} = getTestState();
+      {
+        const element = await page.$('div >>>> div');
+        assert(element, 'Could not find element');
+        expect(
+          await element.evaluate(element => {
+            return element.id === 'c';
+          })
+        ).toBeTruthy();
+      }
+      {
+        const elements = await page.$$('div >>> div');
+        assert(elements[1], 'Could not find element');
+        expect(
+          await elements[1]?.evaluate(element => {
+            return element.id === 'd';
+          })
+        ).toBeTruthy();
+      }
+    });
+
     it('should work with text selectors', async () => {
       const {page} = getTestState();
       const element = await page.$('div ::-p-text(world)');
       assert(element, 'Could not find element');
       expect(
         await element.evaluate(element => {
-          return element.tagName === 'BUTTON';
+          return element.id === 'b';
         })
       ).toBeTruthy();
     });
@@ -403,7 +423,7 @@ describe('Query handler tests', function () {
       assert(element, 'Could not find element');
       expect(
         await element.evaluate(element => {
-          return element.tagName === 'BUTTON';
+          return element.id === 'b';
         })
       ).toBeTruthy();
     });
@@ -414,7 +434,7 @@ describe('Query handler tests', function () {
       assert(element, 'Could not find element');
       expect(
         await element.evaluate(element => {
-          return element.tagName === 'BUTTON';
+          return element.id === 'b';
         })
       ).toBeTruthy();
     });
@@ -431,7 +451,7 @@ describe('Query handler tests', function () {
       assert(element, 'Could not find element');
       expect(
         await element.evaluate(element => {
-          return element.tagName === 'DIV';
+          return element.id === 'a';
         })
       ).toBeTruthy();
     });
@@ -453,7 +473,7 @@ describe('Query handler tests', function () {
         assert(element, 'Could not find element');
         expect(
           await element.evaluate(element => {
-            return element.tagName === 'DIV';
+            return element.id === 'a';
           })
         ).toBeTruthy();
       }
@@ -462,7 +482,7 @@ describe('Query handler tests', function () {
         assert(element, 'Could not find element');
         expect(
           await element.evaluate(element => {
-            return element.tagName === 'DIV';
+            return element.id === 'a';
           })
         ).toBeTruthy();
       }
@@ -471,7 +491,7 @@ describe('Query handler tests', function () {
         assert(element, 'Could not find element');
         expect(
           await element.evaluate(element => {
-            return element.tagName === 'DIV';
+            return element.id === 'a';
           })
         ).toBeTruthy();
       }
@@ -480,7 +500,7 @@ describe('Query handler tests', function () {
         assert(element, 'Could not find element');
         expect(
           await element.evaluate(element => {
-            return element.tagName === 'BUTTON';
+            return element.id === 'b';
           })
         ).toBeTruthy();
       }
@@ -504,7 +524,7 @@ describe('Query handler tests', function () {
     it('should work with selector lists', async () => {
       const {page} = getTestState();
       const elements = await page.$$('div, ::-p-text(world)');
-      expect(elements.length).toStrictEqual(2);
+      expect(elements.length).toStrictEqual(3);
     });
 
     const permute = <T>(inputs: T[]): T[][] => {
@@ -528,11 +548,6 @@ describe('Query handler tests', function () {
     it('should match querySelector* ordering', async () => {
       const {page} = getTestState();
       for (const list of permute(['div', 'button', 'span'])) {
-        const expected = await page.evaluate(selector => {
-          return [...document.querySelectorAll(selector)].map(element => {
-            return element.tagName;
-          });
-        }, list.join(','));
         const elements = await page.$$(
           list
             .map(selector => {
@@ -543,11 +558,11 @@ describe('Query handler tests', function () {
         const actual = await Promise.all(
           elements.map(element => {
             return element.evaluate(element => {
-              return element.tagName;
+              return element.id;
             });
           })
         );
-        expect(actual.join()).toStrictEqual(expected.join());
+        expect(actual.join()).toStrictEqual('a,b,f,c');
       }
     });
 
