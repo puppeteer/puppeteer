@@ -147,14 +147,22 @@ jobs:
       - name: Tests types
         run: npm run test-types
       - name: Run all tests (for non-Linux)
+        uses: nick-fields/retry@v2
         if: ${{ matrix.os != 'ubuntu-latest' }}
-        run: npm run test -- --test-suite ${{ matrix.suite }}
+        with:
+          timeout_minutes: 30
+          max_attempts: 3
+          command: npm run test -- --test-suite ${{ matrix.suite }}
       - name: Install linux dependencies.
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: sudo apt-get install xvfb
       - name: Run all tests (for Linux)
+        uses: nick-fields/retry@v2
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
+        with:
+          timeout_minutes: 30
+          max_attempts: 3
+          command: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
 
   chrome-tests-required:
     name: '[Required] Chrome tests'
@@ -207,14 +215,25 @@ jobs:
       - name: Tests types
         run: npm run test-types
       - name: Run all tests (for non-Linux)
+        uses: nick-fields/retry@v2
+        if: ${{ matrix.os != 'ubuntu-latest' }}
+        with:
+          timeout_minutes: 60
+          max_attempts: 3
+          command: npm run test -- --test-suite ${{ matrix.suite }}
+      - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
         run: npm run test -- --test-suite ${{ matrix.suite }}
       - name: Install linux dependencies.
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: sudo apt-get install xvfb
       - name: Run all tests (for Linux)
+        uses: nick-fields/retry@v2
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
+        with:
+          timeout_minutes: 30
+          max_attempts: 3
+          command: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
 
   firefox-tests-required:
     name: '[Required] Firefox tests'

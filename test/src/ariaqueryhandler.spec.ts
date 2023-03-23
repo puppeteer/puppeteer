@@ -197,7 +197,9 @@ describe('AriaQueryHandler', () => {
     });
   });
   describe('queryAllArray', () => {
-    it('$$eval should handle many elements', async () => {
+    it('$$eval should handle many elements', async function () {
+      this.timeout(25_000);
+
       const {page} = getTestState();
       await page.setContent('');
       await page.evaluate(
