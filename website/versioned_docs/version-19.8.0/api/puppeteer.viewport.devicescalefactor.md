@@ -17,3 +17,7 @@ interface Viewport {
 #### Default value:
 
 1
+
+## Remarks
+
+Setting this value to `0` will set the deviceScaleFactor to the system default.

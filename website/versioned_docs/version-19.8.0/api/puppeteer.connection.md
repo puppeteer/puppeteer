@@ -14,9 +14,15 @@ export declare class Connection extends EventEmitter
 
 ## Constructors
 
-| Constructor                                                                     | Modifiers | Description                                                    |
-| ------------------------------------------------------------------------------- | --------- | -------------------------------------------------------------- |
-| [(constructor)(url, transport, delay)](./puppeteer.connection._constructor_.md) |           | Constructs a new instance of the <code>Connection</code> class |
+| Constructor                                                                              | Modifiers | Description                                                    |
+| ---------------------------------------------------------------------------------------- | --------- | -------------------------------------------------------------- |
+| [(constructor)(url, transport, delay, timeout)](./puppeteer.connection._constructor_.md) |           | Constructs a new instance of the <code>Connection</code> class |
+
+## Properties
+
+| Property                                     | Modifiers             | Type   | Description |
+| -------------------------------------------- | --------------------- | ------ | ----------- |
+| [timeout](./puppeteer.connection.timeout.md) | <code>readonly</code> | number |             |
 
 ## Methods
 
