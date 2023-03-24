@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/puppeteer/puppeteer/compare/browsers-v0.1.1...browsers-v0.2.0) (2023-03-24)
+
+
+### Features
+
+* implement a command to clear the cache ([#9868](https://github.com/puppeteer/puppeteer/issues/9868)) ([b8d38cb](https://github.com/puppeteer/puppeteer/commit/b8d38cb05f7eedf554ed46f2f7428b621197d1cc))
+
 ## [0.1.1](https://github.com/puppeteer/puppeteer/compare/browsers-v0.1.0...browsers-v0.1.1) (2023-03-14)
 
 

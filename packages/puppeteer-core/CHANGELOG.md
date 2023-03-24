@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.8.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.7.5...puppeteer-core-v19.8.0) (2023-03-24)
+
+
+### Features
+
+* add Page.waitForDevicePrompt ([#9299](https://github.com/puppeteer/puppeteer/issues/9299)) ([a5149d5](https://github.com/puppeteer/puppeteer/commit/a5149d52f54036a27a411bc070902b1eb3a7a629))
+* **chromium:** roll to Chromium 112.0.5614.0 (r1108766) ([#9841](https://github.com/puppeteer/puppeteer/issues/9841)) ([eddb1f6](https://github.com/puppeteer/puppeteer/commit/eddb1f6ec3958b79fea297123f7621eb7beaff04))
+
+
+### Bug Fixes
+
+* fallback to CSS ([#9876](https://github.com/puppeteer/puppeteer/issues/9876)) ([e6ec9c2](https://github.com/puppeteer/puppeteer/commit/e6ec9c295847fa0f1ec240952f0f2523bb13b7c8))
+* implement protocol-level timeouts ([#9877](https://github.com/puppeteer/puppeteer/issues/9877)) ([510b36c](https://github.com/puppeteer/puppeteer/commit/510b36c50001c95783b00dc8af42b5801ec57358))
+* viewport.deviceScaleFactor can be set to system default ([#9911](https://github.com/puppeteer/puppeteer/issues/9911)) ([022c909](https://github.com/puppeteer/puppeteer/commit/022c90932658d13ff4ae4aa51d26716f5dbe54ac))
+* waitForNavigation issue with aborted events ([#9883](https://github.com/puppeteer/puppeteer/issues/9883)) ([36c029b](https://github.com/puppeteer/puppeteer/commit/36c029b38d64a10590bfc74ecea255a58914b0d2))
+
 ## [19.7.5](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.7.4...puppeteer-core-v19.7.5) (2023-03-14)
 
 
