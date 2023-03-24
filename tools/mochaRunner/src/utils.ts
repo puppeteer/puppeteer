@@ -44,6 +44,10 @@ export function readJSON(path: string): unknown {
   return JSON.parse(fs.readFileSync(path, 'utf-8'));
 }
 
+export function writeJSON(path: string, json: unknown): unknown {
+  return fs.writeFileSync(path, JSON.stringify(json, null, 2));
+}
+
 export function filterByPlatform<T extends {platforms: NodeJS.Platform[]}>(
   items: T[],
   platform: NodeJS.Platform
