@@ -60,6 +60,12 @@
     "expectations": ["PASS", "TIMEOUT"]
   },
   {
+    "testIdPattern": "[page.spec] Page Page.pdf *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.setContent *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -297,7 +303,13 @@
     "testIdPattern": "[navigation.spec] navigation Page.goto should navigate to URL with hash and fire requests without hash",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL", "TIMEOUT"]
+  },
+  {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should not leak listeners during navigation of 11 pages",
+    "platforms": ["darwin"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS", "TIMEOUT"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should not throw an error for a 404 response with an empty body",
@@ -315,7 +327,7 @@
     "testIdPattern": "[navigation.spec] navigation Page.goto should return last response in redirect chain",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL", "TIMEOUT"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should return response when page changes its URL after load",
@@ -351,7 +363,7 @@
     "testIdPattern": "[navigation.spec] navigation Page.goto should work when navigating to valid url",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL", "TIMEOUT"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work when page calls history API in beforeunload",
@@ -369,7 +381,7 @@
     "testIdPattern": "[navigation.spec] navigation Page.reload should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL", "TIMEOUT"]
   },
   {
     "testIdPattern": "[oopif.spec] *",

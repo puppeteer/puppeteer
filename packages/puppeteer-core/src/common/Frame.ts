@@ -40,7 +40,7 @@ import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {LazyArg} from './LazyArg.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {EvaluateFunc, EvaluateFuncWith, HandleFor, NodeFor} from './types.js';
-import {importFS} from './util.js';
+import {importFSPromises} from './util.js';
 
 /**
  * @public
@@ -883,9 +883,9 @@ export class Frame {
     }
 
     if (path) {
-      let fs: typeof import('fs').promises;
+      let fs: typeof import('fs/promises');
       try {
-        fs = (await importFS()).promises;
+        fs = await importFSPromises();
       } catch (error) {
         if (error instanceof TypeError) {
           throw new Error(

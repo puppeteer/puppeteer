@@ -70,7 +70,7 @@ import {
   NetworkConditions,
   NetworkManagerEmittedEvents,
 } from './NetworkManager.js';
-import {LowerCasePaperFormat, PDFOptions, _paperFormats} from './PDFOptions.js';
+import {PDFOptions} from './PDFOptions.js';
 import {Viewport} from './PuppeteerViewport.js';
 import {Target} from './Target.js';
 import {TargetManagerEmittedEvents} from './TargetManager.js';
@@ -91,8 +91,7 @@ import {
   getExceptionMessage,
   getReadableAsBuffer,
   getReadableFromProtocolStream,
-  importFS,
-  isNumber,
+  importFSPromises,
   isString,
   pageBindingInitString,
   releaseObject,
@@ -1448,7 +1447,7 @@ export class CDPPage extends Page {
 
     if (options.path) {
       try {
-        const fs = (await importFS()).promises;
+        const fs = await importFSPromises();
         await fs.writeFile(options.path, buffer);
       } catch (error) {
         if (error instanceof TypeError) {
@@ -1471,68 +1470,37 @@ export class CDPPage extends Page {
   }
 
   override async createPDFStream(options: PDFOptions = {}): Promise<Readable> {
-    const {
-      scale = 1,
-      displayHeaderFooter = false,
-      headerTemplate = '',
-      footerTemplate = '',
-      printBackground = false,
-      landscape = false,
-      pageRanges = '',
-      preferCSSPageSize = false,
-      margin = {},
-      omitBackground = false,
-      timeout = 30000,
-    } = options;
+    const params = this._getPDFOptions(options);
 
-    let paperWidth = 8.5;
-    let paperHeight = 11;
-    if (options.format) {
-      const format =
-        _paperFormats[options.format.toLowerCase() as LowerCasePaperFormat];
-      assert(format, 'Unknown paper format: ' + options.format);
-      paperWidth = format.width;
-      paperHeight = format.height;
-    } else {
-      paperWidth = convertPrintParameterToInches(options.width) || paperWidth;
-      paperHeight =
-        convertPrintParameterToInches(options.height) || paperHeight;
-    }
-
-    const marginTop = convertPrintParameterToInches(margin.top) || 0;
-    const marginLeft = convertPrintParameterToInches(margin.left) || 0;
-    const marginBottom = convertPrintParameterToInches(margin.bottom) || 0;
-    const marginRight = convertPrintParameterToInches(margin.right) || 0;
-
-    if (omitBackground) {
+    if (params.omitBackground) {
       await this.#setTransparentBackgroundColor();
     }
 
     const printCommandPromise = this.#client.send('Page.printToPDF', {
       transferMode: 'ReturnAsStream',
-      landscape,
-      displayHeaderFooter,
-      headerTemplate,
-      footerTemplate,
-      printBackground,
-      scale,
-      paperWidth,
-      paperHeight,
-      marginTop,
-      marginBottom,
-      marginLeft,
-      marginRight,
-      pageRanges,
-      preferCSSPageSize,
+      landscape: params.landscape,
+      displayHeaderFooter: params.displayHeaderFooter,
+      headerTemplate: params.headerTemplate,
+      footerTemplate: params.footerTemplate,
+      printBackground: params.printBackground,
+      scale: params.scale,
+      paperWidth: params.width,
+      paperHeight: params.height,
+      marginTop: params.margin.top,
+      marginBottom: params.margin.bottom,
+      marginLeft: params.margin.left,
+      marginRight: params.margin.right,
+      pageRanges: params.pageRanges,
+      preferCSSPageSize: params.preferCSSPageSize,
     });
 
     const result = await waitWithTimeout(
       printCommandPromise,
       'Page.printToPDF',
-      timeout
+      params.timeout
     );
 
-    if (omitBackground) {
+    if (params.omitBackground) {
       await this.#resetDefaultBackgroundColor();
     }
 
@@ -1688,43 +1656,3 @@ const supportedMetrics = new Set<string>([
   'JSHeapUsedSize',
   'JSHeapTotalSize',
 ]);
-
-const unitToPixels = {
-  px: 1,
-  in: 96,
-  cm: 37.8,
-  mm: 3.78,
-};
-
-function convertPrintParameterToInches(
-  parameter?: string | number
-): number | undefined {
-  if (typeof parameter === 'undefined') {
-    return undefined;
-  }
-  let pixels;
-  if (isNumber(parameter)) {
-    // Treat numbers as pixel values to be aligned with phantom's paperSize.
-    pixels = parameter;
-  } else if (isString(parameter)) {
-    const text = parameter;
-    let unit = text.substring(text.length - 2).toLowerCase();
-    let valueText = '';
-    if (unit in unitToPixels) {
-      valueText = text.substring(0, text.length - 2);
-    } else {
-      // In case of unknown unit try to parse the whole parameter as number of pixels.
-      // This is consistent with phantom's paperSize behavior.
-      unit = 'px';
-      valueText = text;
-    }
-    const value = Number(valueText);
-    assert(!isNaN(value), 'Failed to parse parameter value: ' + text);
-    pixels = value * unitToPixels[unit as keyof typeof unitToPixels];
-  } else {
-    throw new Error(
-      'page.pdf() Cannot handle parameter type: ' + typeof parameter
-    );
-  }
-  return pixels / 96;
-}
