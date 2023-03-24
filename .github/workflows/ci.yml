@@ -148,13 +148,18 @@ jobs:
         run: npm run test-types
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
-        run: npm run test -- --test-suite ${{ matrix.suite }}
+        run: npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
       - name: Install linux dependencies.
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: sudo apt-get install xvfb
       - name: Run all tests (for Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
+        run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: test-results
+          path: /tmp/artifacts/*.json
 
   chrome-tests-required:
     name: '[Required] Chrome tests'
@@ -208,13 +213,18 @@ jobs:
         run: npm run test-types
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
-        run: npm run test -- --test-suite ${{ matrix.suite }}
+        run: npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
       - name: Install linux dependencies.
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: sudo apt-get install xvfb
       - name: Run all tests (for Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }}
+        run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: test-results
+          path: /tmp/artifacts/*.json
 
   firefox-tests-required:
     name: '[Required] Firefox tests'

@@ -16,6 +16,8 @@
 
 import {z} from 'zod';
 
+import {RecommendedExpectation} from './utils.js';
+
 export const zPlatform = z.enum(['win32', 'linux', 'darwin']);
 
 export type Platform = z.infer<typeof zPlatform>;
@@ -57,4 +59,9 @@ export type MochaResults = {
   pending: MochaTestResult[];
   passes: MochaTestResult[];
   failures: MochaTestResult[];
+  // Added by mochaRunner.
+  updates?: RecommendedExpectation[];
+  parameters?: string[];
+  platform?: string;
+  date?: string;
 };

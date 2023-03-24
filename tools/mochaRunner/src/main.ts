@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import {randomUUID} from 'crypto';
 import fs from 'fs';
 import {spawn, SpawnOptions} from 'node:child_process';
 import os from 'os';
@@ -36,6 +37,7 @@ import {
   getExpectationUpdates,
   printSuggestions,
   RecommendedExpectation,
+  writeJSON,
 } from './utils.js';
 
 function getApplicableTestSuites(
@@ -78,6 +80,9 @@ async function main() {
   let statsFilename = '';
   if (statsFilenameIdx !== -1) {
     statsFilename = process.argv[statsFilenameIdx + 1] as string;
+    if (statsFilename.includes('INSERTID')) {
+      statsFilename = statsFilename.replace(/INSERTID/gi, randomUUID());
+    }
   }
 
   const platform = zPlatform.parse(os.platform());
@@ -205,11 +210,17 @@ async function main() {
           platforms: [os.platform()],
           parameters,
         });
+        results.parameters = parameters;
+        results.platform = platform;
+        results.date = new Date().toISOString();
         if (updates.length > 0) {
           fail = true;
           recommendations.push(...updates);
+          results.updates = updates;
+          writeJSON(tmpFilename, results);
         } else {
           console.log('Test run matches expectations');
+          writeJSON(tmpFilename, results);
           continue;
         }
       } catch (err) {
