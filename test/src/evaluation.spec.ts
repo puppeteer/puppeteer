@@ -474,6 +474,7 @@ describe('Evaluation specs', function () {
       expect(result).toEqual([42]);
     });
     it('should transfer 100Mb of data from page to node.js', async function () {
+      this.timeout(25_000);
       const {page} = getTestState();
 
       const a = await page.evaluate(() => {

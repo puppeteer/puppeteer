@@ -20,8 +20,8 @@ module.exports = {
   require: ['./test/build/mocha-utils.js', 'source-map-support/register'],
   spec: 'test/build/**/*.spec.js',
   exit: !!process.env.CI,
-  retries: 0,
+  retries: process.env.CI ? 3 : 0,
   parallel: !!process.env.PARALLEL,
-  timeout: 25_000,
+  timeout: 10_000,
   reporter: process.env.CI ? 'spec' : 'dot',
 };

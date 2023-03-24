@@ -129,7 +129,9 @@ describe('querySelector', function () {
       );
       expect(sum).toBe(8);
     });
-    it('should handle many elements', async () => {
+    it('should handle many elements', async function () {
+      this.timeout(25_000);
+
       const {page} = getTestState();
       await page.evaluate(
         `
@@ -479,7 +481,9 @@ describe('querySelector', function () {
       );
       expect(sum).toBe(8);
     });
-    it('$$eval should handle many elements', async () => {
+    it('$$eval should handle many elements', async function () {
+      this.timeout(25_000);
+
       const {page} = getTestState();
       await page.evaluate(
         `
