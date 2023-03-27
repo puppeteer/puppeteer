@@ -308,7 +308,7 @@
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should not leak listeners during navigation of 11 pages",
     "platforms": ["darwin"],
-    "parameters": ["webDriverBiDi"],
+    "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS", "TIMEOUT"]
   },
   {
