@@ -48,7 +48,7 @@ export function httpRequest(
     protocol: url.protocol,
     hostname: url.hostname,
     port: url.port,
-    path: url.pathname,
+    path: url.pathname + url.search,
     method,
     headers: keepAlive ? {Connection: 'keep-alive'} : undefined,
   };

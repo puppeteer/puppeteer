@@ -14,8 +14,22 @@
  * limitations under the License.
  */
 
-export const testChromeBuildId = '113.0.5672.0';
-export const testChromiumBuildId = '1083080';
-// TODO: We can add a Cron job to auto-update on change.
-// Firefox keeps only `latest` version of Nightly builds.
-export const testFirefoxBuildId = '113.0a1';
+import * as readline from 'readline';
+import {Writable, Readable} from 'stream';
+
+export function createMockedReadlineInterface(
+  input: string
+): readline.Interface {
+  const readable = Readable.from([input]);
+  const writable = new Writable({
+    write(_chunk, _encoding, callback) {
+      // Suppress the output to keep the test clean
+      callback();
+    },
+  });
+
+  return readline.createInterface({
+    input: readable,
+    output: writable,
+  });
+}

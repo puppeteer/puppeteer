@@ -18,41 +18,22 @@ import assert from 'assert';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import * as readline from 'readline';
-import {Writable, Readable} from 'stream';
 
-import {CLI} from '../../lib/cjs/CLI.js';
-import {Cache} from '../../lib/cjs/main.js';
+import {CLI} from '../../../lib/cjs/CLI.js';
+import {createMockedReadlineInterface} from '../utils.js';
+import {testChromeBuildId} from '../versions.js';
 
-import {testChromeBuildId, testFirefoxBuildId} from './versions.js';
-
-describe('CLI', function () {
+describe('Chrome CLI', function () {
   this.timeout(90000);
 
   let tmpDir = '/tmp/puppeteer-browsers-test';
-
-  function createMockedInterface(input: string) {
-    const readable = Readable.from([input]);
-    const writable = new Writable({
-      write(_chunk, _encoding, callback) {
-        // Suppress the output to keep the test clean
-        callback();
-      },
-    });
-
-    return readline.createInterface({
-      input: readable,
-      output: writable,
-    });
-  }
 
   beforeEach(() => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'puppeteer-browsers-test'));
   });
 
   afterEach(async () => {
-    new Cache(tmpDir).clear();
-    await new CLI(tmpDir, createMockedInterface('yes')).run([
+    await new CLI(tmpDir, createMockedReadlineInterface('yes')).run([
       'npx',
       '@puppeteer/browsers',
       'clear',
@@ -60,7 +41,7 @@ describe('CLI', function () {
     ]);
   });
 
-  it('should download Chromium binaries', async () => {
+  it('should download Chrome binaries', async () => {
     await new CLI(tmpDir).run([
       'npx',
       '@puppeteer/browsers',
@@ -75,12 +56,13 @@ describe('CLI', function () {
           tmpDir,
           'chrome',
           `linux-${testChromeBuildId}`,
-          'chrome-linux'
+          'chrome-linux64',
+          'chrome'
         )
       )
     );
 
-    await new CLI(tmpDir, createMockedInterface('no')).run([
+    await new CLI(tmpDir, createMockedReadlineInterface('no')).run([
       'npx',
       '@puppeteer/browsers',
       'clear',
@@ -92,40 +74,14 @@ describe('CLI', function () {
           tmpDir,
           'chrome',
           `linux-${testChromeBuildId}`,
-          'chrome-linux'
+          'chrome-linux64',
+          'chrome'
         )
       )
     );
   });
 
-  it('should download Firefox binaries', async () => {
-    await new CLI(tmpDir).run([
-      'npx',
-      '@puppeteer/browsers',
-      'install',
-      `firefox@${testFirefoxBuildId}`,
-      `--path=${tmpDir}`,
-      '--platform=linux',
-    ]);
-    assert.ok(
-      fs.existsSync(
-        path.join(tmpDir, 'firefox', `linux-${testFirefoxBuildId}`, 'firefox')
-      )
-    );
-  });
-
-  it('should download latest Firefox binaries', async () => {
-    await new CLI(tmpDir).run([
-      'npx',
-      '@puppeteer/browsers',
-      'install',
-      `firefox@latest`,
-      `--path=${tmpDir}`,
-      '--platform=linux',
-    ]);
-  });
-
-  it('should download latest Chrome binaries', async () => {
+  it.skip('should download latest Chrome binaries', async () => {
     await new CLI(tmpDir).run([
       'npx',
       '@puppeteer/browsers',

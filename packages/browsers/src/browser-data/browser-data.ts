@@ -15,6 +15,7 @@
  */
 
 import * as chrome from './chrome.js';
+import * as chromium from './chromium.js';
 import * as firefox from './firefox.js';
 import {
   Browser,
@@ -26,13 +27,13 @@ import {
 
 export const downloadUrls = {
   [Browser.CHROME]: chrome.resolveDownloadUrl,
-  [Browser.CHROMIUM]: chrome.resolveDownloadUrl,
+  [Browser.CHROMIUM]: chromium.resolveDownloadUrl,
   [Browser.FIREFOX]: firefox.resolveDownloadUrl,
 };
 
 export const executablePathByBrowser = {
   [Browser.CHROME]: chrome.relativeExecutablePath,
-  [Browser.CHROMIUM]: chrome.relativeExecutablePath,
+  [Browser.CHROMIUM]: chromium.relativeExecutablePath,
   [Browser.FIREFOX]: firefox.relativeExecutablePath,
 };
 
@@ -50,10 +51,15 @@ export async function resolveBuildId(
           return await firefox.resolveBuildId('FIREFOX_NIGHTLY');
       }
     case Browser.CHROME:
+      switch (tag as BrowserTag) {
+        case BrowserTag.LATEST:
+          // In CfT beta is the latest version.
+          return await chrome.resolveBuildId(platform, 'beta');
+      }
     case Browser.CHROMIUM:
       switch (tag as BrowserTag) {
         case BrowserTag.LATEST:
-          return await chrome.resolveBuildId(platform, 'latest');
+          return await chromium.resolveBuildId(platform, 'latest');
       }
   }
   // We assume the tag is the buildId if it didn't match any keywords.
@@ -84,6 +90,7 @@ export function resolveSystemExecutablePath(
         'System browser detection is not supported for Firefox yet.'
       );
     case Browser.CHROME:
+      return chromium.resolveSystemExecutablePath(platform, channel);
     case Browser.CHROMIUM:
       return chrome.resolveSystemExecutablePath(platform, channel);
   }
