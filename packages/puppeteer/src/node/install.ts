@@ -53,7 +53,7 @@ export async function downloadBrowser(): Promise<void> {
     throw new Error('The current platform is not supported.');
   }
 
-  // TODO: remove once Mac ARM is enabled by default for Puppeteer.
+  // TODO: remove once Mac ARM is enabled by default for Puppeteer https://github.com/puppeteer/puppeteer/issues/9630.
   if (
     platform === BrowserPlatform.MAC_ARM &&
     !configuration.experiments?.macArmChromiumEnabled

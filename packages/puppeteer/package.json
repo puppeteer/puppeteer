@@ -121,6 +121,6 @@
     "progress": "2.0.3",
     "proxy-from-env": "1.1.0",
     "puppeteer-core": "19.8.0",
-    "@puppeteer/browsers": "0.2.0"
+    "@puppeteer/browsers": "0.3.0"
   }
 }

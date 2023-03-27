@@ -306,12 +306,6 @@
     "expectations": ["FAIL", "TIMEOUT"]
   },
   {
-    "testIdPattern": "[navigation.spec] navigation Page.goto should not leak listeners during navigation of 11 pages",
-    "platforms": ["darwin"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS", "TIMEOUT"]
-  },
-  {
     "testIdPattern": "[navigation.spec] navigation Page.goto should not throw an error for a 404 response with an empty body",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1174,6 +1168,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL", "PASS", "TIMEOUT"]
+  },
+  {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should not leak listeners during navigation of 11 pages",
+    "platforms": ["darwin"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS", "TIMEOUT"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should send referer",
