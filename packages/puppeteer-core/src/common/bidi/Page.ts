@@ -218,7 +218,7 @@ export class Page extends PageBase {
         },
         pageRanges: params.pageRanges.split(', '),
         scale: params.scale,
-        shrinkToFit: true,
+        shrinkToFit: !params.preferCSSPageSize,
       }),
       'browsingContext.print',
       params.timeout
