@@ -20,14 +20,14 @@ import path from 'path';
 import {
   BrowserPlatform,
   ChromeReleaseChannel,
-} from '../../lib/cjs/browser-data/browser-data.js';
+} from '../../../lib/cjs/browser-data/browser-data.js';
 import {
   resolveDownloadUrl,
   relativeExecutablePath,
   resolveSystemExecutablePath,
-} from '../../lib/cjs/browser-data/chrome.js';
+} from '../../../lib/cjs/browser-data/chromium.js';
 
-describe('Chrome', () => {
+describe('Chromium', () => {
   it('should resolve download URLs', () => {
     assert.strictEqual(
       resolveDownloadUrl(BrowserPlatform.LINUX, '1083080'),

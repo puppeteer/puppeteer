@@ -19,12 +19,12 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-import {BrowserPlatform} from '../../lib/cjs/browser-data/browser-data.js';
+import {BrowserPlatform} from '../../../lib/cjs/browser-data/browser-data.js';
 import {
   createProfile,
   relativeExecutablePath,
   resolveDownloadUrl,
-} from '../../lib/cjs/browser-data/firefox.js';
+} from '../../../lib/cjs/browser-data/firefox.js';
 
 describe('Firefox', () => {
   it('should resolve download URLs', () => {

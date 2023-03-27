@@ -27,15 +27,14 @@ import {
   Browser,
   BrowserPlatform,
   Cache,
-} from '../../lib/cjs/main.js';
-
-import {testChromeBuildId, testFirefoxBuildId} from './versions.js';
+} from '../../../lib/cjs/main.js';
+import {testChromeBuildId} from '../versions.js';
 
 /**
  * Tests in this spec use real download URLs and unpack live browser archives
  * so it requires the network access.
  */
-describe('fetch', () => {
+describe('Chrome fetch', () => {
   let tmpDir = '/tmp/puppeteer-browsers-test';
 
   beforeEach(() => {
@@ -95,47 +94,6 @@ describe('fetch', () => {
     assert.strictEqual(browser.path, expectedOutputPath);
     assert.ok(fs.existsSync(expectedOutputPath));
   });
-
-  it('should download a buildId that is a bzip2 archive', async function () {
-    this.timeout(90000);
-    const expectedOutputPath = path.join(
-      tmpDir,
-      'firefox',
-      `${BrowserPlatform.LINUX}-${testFirefoxBuildId}`
-    );
-    assert.strictEqual(fs.existsSync(expectedOutputPath), false);
-    const browser = await fetch({
-      cacheDir: tmpDir,
-      browser: Browser.FIREFOX,
-      platform: BrowserPlatform.LINUX,
-      buildId: testFirefoxBuildId,
-    });
-    assert.strictEqual(browser.path, expectedOutputPath);
-    assert.ok(fs.existsSync(expectedOutputPath));
-  });
-
-  // Fetch relies on the `hdiutil` utility on MacOS.
-  // The utility is not available on other platforms.
-  (os.platform() === 'darwin' ? it : it.skip)(
-    'should download a buildId that is a dmg archive',
-    async function () {
-      this.timeout(120000);
-      const expectedOutputPath = path.join(
-        tmpDir,
-        'firefox',
-        `${BrowserPlatform.MAC}-${testFirefoxBuildId}`
-      );
-      assert.strictEqual(fs.existsSync(expectedOutputPath), false);
-      const browser = await fetch({
-        cacheDir: tmpDir,
-        browser: Browser.FIREFOX,
-        platform: BrowserPlatform.MAC,
-        buildId: testFirefoxBuildId,
-      });
-      assert.strictEqual(browser.path, expectedOutputPath);
-      assert.ok(fs.existsSync(expectedOutputPath));
-    }
-  );
 
   describe('with proxy', () => {
     const proxyUrl = new URL(`http://localhost:54321`);
@@ -205,7 +163,7 @@ describe('fetch', () => {
         true
       );
       assert.deepStrictEqual(proxiedRequestUrls, [
-        'https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/1083080/chrome-linux.zip',
+        'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/113.0.5672.0/linux64/chrome-linux64.zip',
       ]);
     });
 
@@ -226,7 +184,7 @@ describe('fetch', () => {
       assert.strictEqual(browser.path, expectedOutputPath);
       assert.ok(fs.existsSync(expectedOutputPath));
       assert.deepStrictEqual(proxiedRequestUrls, [
-        'https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/1083080/chrome-linux.zip',
+        'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/113.0.5672.0/linux64/chrome-linux64.zip',
       ]);
     });
   });
