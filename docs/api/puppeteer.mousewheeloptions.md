@@ -12,7 +12,7 @@ export interface MouseWheelOptions
 
 ## Properties
 
-| Property                                           | Modifiers | Type   | Description  | Default |
-| -------------------------------------------------- | --------- | ------ | ------------ | ------- |
-| [deltaX?](./puppeteer.mousewheeloptions.deltax.md) |           | number | _(Optional)_ |         |
-| [deltaY?](./puppeteer.mousewheeloptions.deltay.md) |           | number | _(Optional)_ |         |
+| Property | Modifiers             | Type   | Description | Default |
+| -------- | --------------------- | ------ | ----------- | ------- |
+| deltaX   | <code>optional</code> | number |             |         |
+| deltaY   | <code>optional</code> | number |             |         |

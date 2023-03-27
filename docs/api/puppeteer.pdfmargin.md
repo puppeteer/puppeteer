@@ -12,9 +12,9 @@ export interface PDFMargin
 
 ## Properties
 
-| Property                                   | Modifiers | Type             | Description  | Default |
-| ------------------------------------------ | --------- | ---------------- | ------------ | ------- |
-| [bottom?](./puppeteer.pdfmargin.bottom.md) |           | string \| number | _(Optional)_ |         |
-| [left?](./puppeteer.pdfmargin.left.md)     |           | string \| number | _(Optional)_ |         |
-| [right?](./puppeteer.pdfmargin.right.md)   |           | string \| number | _(Optional)_ |         |
-| [top?](./puppeteer.pdfmargin.top.md)       |           | string \| number | _(Optional)_ |         |
+| Property | Modifiers             | Type             | Description | Default |
+| -------- | --------------------- | ---------------- | ----------- | ------- |
+| bottom   | <code>optional</code> | string \| number |             |         |
+| left     | <code>optional</code> | string \| number |             |         |
+| right    | <code>optional</code> | string \| number |             |         |
+| top      | <code>optional</code> | string \| number |             |         |

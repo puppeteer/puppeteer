@@ -12,7 +12,7 @@ export interface CustomQueryHandler
 
 ## Properties
 
-| Property                                                | Modifiers | Type                                                      | Description  | Default |
-| ------------------------------------------------------- | --------- | --------------------------------------------------------- | ------------ | ------- |
-| [queryAll?](./puppeteer.customqueryhandler.queryall.md) |           | (node: Node, selector: string) =&gt; Iterable&lt;Node&gt; | _(Optional)_ |         |
-| [queryOne?](./puppeteer.customqueryhandler.queryone.md) |           | (node: Node, selector: string) =&gt; Node \| null         | _(Optional)_ |         |
+| Property | Modifiers             | Type                                                      | Description | Default |
+| -------- | --------------------- | --------------------------------------------------------- | ----------- | ------- |
+| queryAll | <code>optional</code> | (node: Node, selector: string) =&gt; Iterable&lt;Node&gt; |             |         |
+| queryOne | <code>optional</code> | (node: Node, selector: string) =&gt; Node \| null         |             |         |

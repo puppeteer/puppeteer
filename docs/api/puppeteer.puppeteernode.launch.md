@@ -6,7 +6,7 @@ sidebar_label: PuppeteerNode.launch
 
 Launches a browser instance with given arguments and options when specified.
 
-When using with `puppeteer-core`, [options.executablePath](./puppeteer.launchoptions.executablepath.md) or [options.channel](./puppeteer.launchoptions.channel.md) must be provided.
+When using with `puppeteer-core`, [options.executablePath](./puppeteer.launchoptions.md) or [options.channel](./puppeteer.launchoptions.md) must be provided.
 
 #### Signature:
 
@@ -32,7 +32,7 @@ Puppeteer can also be used to control the Chrome browser, but it works best with
 
 ## Example
 
-You can use [options.ignoreDefaultArgs](./puppeteer.launchoptions.ignoredefaultargs.md) to filter out `--mute-audio` from default arguments:
+You can use [options.ignoreDefaultArgs](./puppeteer.launchoptions.md) to filter out `--mute-audio` from default arguments:
 
 ```ts
 const browser = await puppeteer.launch({

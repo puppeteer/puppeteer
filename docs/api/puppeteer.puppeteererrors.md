@@ -16,7 +16,7 @@ export interface PuppeteerErrors
 
 ## Properties
 
-| Property                                                      | Modifiers | Type                                                 | Description | Default |
-| ------------------------------------------------------------- | --------- | ---------------------------------------------------- | ----------- | ------- |
-| [ProtocolError](./puppeteer.puppeteererrors.protocolerror.md) |           | typeof [ProtocolError](./puppeteer.protocolerror.md) |             |         |
-| [TimeoutError](./puppeteer.puppeteererrors.timeouterror.md)   |           | typeof [TimeoutError](./puppeteer.timeouterror.md)   |             |         |
+| Property      | Modifiers | Type                                                 | Description | Default |
+| ------------- | --------- | ---------------------------------------------------- | ----------- | ------- |
+| ProtocolError |           | typeof [ProtocolError](./puppeteer.protocolerror.md) |             |         |
+| TimeoutError  |           | typeof [TimeoutError](./puppeteer.timeouterror.md)   |             |         |

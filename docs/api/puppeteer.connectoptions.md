@@ -14,9 +14,9 @@ export interface ConnectOptions extends BrowserConnectOptions
 
 ## Properties
 
-| Property                                                              | Modifiers | Type                                                      | Description                                                | Default |
-| --------------------------------------------------------------------- | --------- | --------------------------------------------------------- | ---------------------------------------------------------- | ------- |
-| [browserURL?](./puppeteer.connectoptions.browserurl.md)               |           | string                                                    | _(Optional)_                                               |         |
-| [browserWSEndpoint?](./puppeteer.connectoptions.browserwsendpoint.md) |           | string                                                    | _(Optional)_                                               |         |
-| [headers?](./puppeteer.connectoptions.headers.md)                     |           | Record&lt;string, string&gt;                              | _(Optional)_ Headers to use for the web socket connection. |         |
-| [transport?](./puppeteer.connectoptions.transport.md)                 |           | [ConnectionTransport](./puppeteer.connectiontransport.md) | _(Optional)_                                               |         |
+| Property          | Modifiers             | Type                                                      | Description                                   | Default |
+| ----------------- | --------------------- | --------------------------------------------------------- | --------------------------------------------- | ------- |
+| browserURL        | <code>optional</code> | string                                                    |                                               |         |
+| browserWSEndpoint | <code>optional</code> | string                                                    |                                               |         |
+| headers           | <code>optional</code> | Record&lt;string, string&gt;                              | Headers to use for the web socket connection. |         |
+| transport         | <code>optional</code> | [ConnectionTransport](./puppeteer.connectiontransport.md) |                                               |         |

@@ -12,6 +12,6 @@ export interface WaitForTargetOptions
 
 ## Properties
 
-| Property                                                | Modifiers | Type   | Description                                                                                 | Default     |
-| ------------------------------------------------------- | --------- | ------ | ------------------------------------------------------------------------------------------- | ----------- |
-| [timeout?](./puppeteer.waitfortargetoptions.timeout.md) |           | number | _(Optional)_ Maximum wait time in milliseconds. Pass <code>0</code> to disable the timeout. | 30 seconds. |
+| Property | Modifiers             | Type   | Description                                                                    | Default     |
+| -------- | --------------------- | ------ | ------------------------------------------------------------------------------ | ----------- |
+| timeout  | <code>optional</code> | number | Maximum wait time in milliseconds. Pass <code>0</code> to disable the timeout. | 30 seconds. |

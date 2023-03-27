@@ -32,9 +32,9 @@ await devicePrompt.select(
 
 ## Properties
 
-| Property                                              | Modifiers | Type                                                                      | Description                         |
-| ----------------------------------------------------- | --------- | ------------------------------------------------------------------------- | ----------------------------------- |
-| [devices](./puppeteer.devicerequestprompt.devices.md) |           | [DeviceRequestPromptDevice](./puppeteer.devicerequestpromptdevice.md)\[\] | Current list of selectable devices. |
+| Property | Modifiers | Type                                                                      | Description                         |
+| -------- | --------- | ------------------------------------------------------------------------- | ----------------------------------- |
+| devices  |           | [DeviceRequestPromptDevice](./puppeteer.devicerequestpromptdevice.md)\[\] | Current list of selectable devices. |
 
 ## Methods
 

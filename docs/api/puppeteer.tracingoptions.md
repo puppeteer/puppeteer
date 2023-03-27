@@ -12,8 +12,8 @@ export interface TracingOptions
 
 ## Properties
 
-| Property                                                  | Modifiers | Type       | Description  | Default |
-| --------------------------------------------------------- | --------- | ---------- | ------------ | ------- |
-| [categories?](./puppeteer.tracingoptions.categories.md)   |           | string\[\] | _(Optional)_ |         |
-| [path?](./puppeteer.tracingoptions.path.md)               |           | string     | _(Optional)_ |         |
-| [screenshots?](./puppeteer.tracingoptions.screenshots.md) |           | boolean    | _(Optional)_ |         |
+| Property    | Modifiers             | Type       | Description | Default |
+| ----------- | --------------------- | ---------- | ----------- | ------- |
+| categories  | <code>optional</code> | string\[\] |             |         |
+| path        | <code>optional</code> | string     |             |         |
+| screenshots | <code>optional</code> | boolean    |             |         |

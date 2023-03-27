@@ -14,7 +14,7 @@ export interface PuppeteerLaunchOptions extends LaunchOptions, BrowserLaunchArgu
 
 ## Properties
 
-| Property                                                                      | Modifiers | Type                              | Description  | Default |
-| ----------------------------------------------------------------------------- | --------- | --------------------------------- | ------------ | ------- |
-| [extraPrefsFirefox?](./puppeteer.puppeteerlaunchoptions.extraprefsfirefox.md) |           | Record&lt;string, unknown&gt;     | _(Optional)_ |         |
-| [product?](./puppeteer.puppeteerlaunchoptions.product.md)                     |           | [Product](./puppeteer.product.md) | _(Optional)_ |         |
+| Property          | Modifiers             | Type                              | Description | Default |
+| ----------------- | --------------------- | --------------------------------- | ----------- | ------- |
+| extraPrefsFirefox | <code>optional</code> | Record&lt;string, unknown&gt;     |             |         |
+| product           | <code>optional</code> | [Product](./puppeteer.product.md) |             |         |

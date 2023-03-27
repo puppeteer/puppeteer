@@ -16,6 +16,6 @@ export interface JSCoverageEntry extends CoverageEntry
 
 ## Properties
 
-| Property                                                               | Modifiers | Type                             | Description                                | Default |
-| ---------------------------------------------------------------------- | --------- | -------------------------------- | ------------------------------------------ | ------- |
-| [rawScriptCoverage?](./puppeteer.jscoverageentry.rawscriptcoverage.md) |           | Protocol.Profiler.ScriptCoverage | _(Optional)_ Raw V8 script coverage entry. |         |
+| Property          | Modifiers             | Type                             | Description                   | Default |
+| ----------------- | --------------------- | -------------------------------- | ----------------------------- | ------- |
+| rawScriptCoverage | <code>optional</code> | Protocol.Profiler.ScriptCoverage | Raw V8 script coverage entry. |         |

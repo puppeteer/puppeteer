@@ -12,10 +12,10 @@ export interface CDPSessionOnMessageObject
 
 ## Properties
 
-| Property                                                   | Modifiers | Type                                          | Description  | Default |
-| ---------------------------------------------------------- | --------- | --------------------------------------------- | ------------ | ------- |
-| [error](./puppeteer.cdpsessiononmessageobject.error.md)    |           | { message: string; data: any; code: number; } |              |         |
-| [id?](./puppeteer.cdpsessiononmessageobject.id.md)         |           | number                                        | _(Optional)_ |         |
-| [method](./puppeteer.cdpsessiononmessageobject.method.md)  |           | string                                        |              |         |
-| [params](./puppeteer.cdpsessiononmessageobject.params.md)  |           | Record&lt;string, unknown&gt;                 |              |         |
-| [result?](./puppeteer.cdpsessiononmessageobject.result.md) |           | any                                           | _(Optional)_ |         |
+| Property | Modifiers             | Type                                          | Description | Default |
+| -------- | --------------------- | --------------------------------------------- | ----------- | ------- |
+| error    |                       | { message: string; data: any; code: number; } |             |         |
+| id       | <code>optional</code> | number                                        |             |         |
+| method   |                       | string                                        |             |         |
+| params   |                       | Record&lt;string, unknown&gt;                 |             |         |
+| result   | <code>optional</code> | any                                           |             |         |

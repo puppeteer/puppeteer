@@ -6,28 +6,6 @@ sidebar_label: Page.waitForSelector
 
 Wait for the `selector` to appear in page. If at the moment of calling the method the `selector` already exists, the method will return immediately. If the `selector` doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
 
-This method works across navigations:
-
-```ts
-import puppeteer from 'puppeteer';
-(async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  let currentURL;
-  page
-    .waitForSelector('img')
-    .then(() => console.log('First URL with image: ' + currentURL));
-  for (currentURL of [
-    'https://example.com',
-    'https://google.com',
-    'https://bbc.com',
-  ]) {
-    await page.goto(currentURL);
-  }
-  await browser.close();
-})();
-```
-
 #### Signature:
 
 ```typescript
@@ -61,3 +39,27 @@ The optional Parameter in Arguments `options` are:
 - `hidden`: Wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
 
 - `timeout`: maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The default value can be changed by using the [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) method.
+
+## Example
+
+This method works across navigations:
+
+```ts
+import puppeteer from 'puppeteer';
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  let currentURL;
+  page
+    .waitForSelector('img')
+    .then(() => console.log('First URL with image: ' + currentURL));
+  for (currentURL of [
+    'https://example.com',
+    'https://google.com',
+    'https://bbc.com',
+  ]) {
+    await page.goto(currentURL);
+  }
+  await browser.close();
+})();
+```
