@@ -93,7 +93,7 @@ export class NetworkManager extends EventEmitter {
   constructor(
     client: CDPSession,
     ignoreHTTPSErrors: boolean,
-    frameManager: FrameManager
+    frameManager: Pick<FrameManager, 'frame'>
   ) {
     super();
     this.#client = client;
