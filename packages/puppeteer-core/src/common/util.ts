@@ -361,13 +361,15 @@ export async function waitWithTimeout<T>(
 /**
  * @internal
  */
-let fs: typeof import('fs') | null = null;
+let fs: typeof import('fs/promises') | null = null;
 /**
  * @internal
  */
-export async function importFS(): Promise<typeof import('fs')> {
+export async function importFSPromises(): Promise<
+  typeof import('fs/promises')
+> {
   if (!fs) {
-    fs = await import('fs');
+    fs = await import('fs/promises');
   }
   return fs;
 }
@@ -381,9 +383,9 @@ export async function getReadableAsBuffer(
 ): Promise<Buffer | null> {
   const buffers = [];
   if (path) {
-    let fs: typeof import('fs').promises;
+    let fs: typeof import('fs/promises');
     try {
-      fs = (await importFS()).promises;
+      fs = await importFSPromises();
     } catch (error) {
       if (error instanceof TypeError) {
         throw new Error(

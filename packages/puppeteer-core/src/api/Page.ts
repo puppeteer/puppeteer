@@ -43,7 +43,12 @@ import type {
 import type {WaitForSelectorOptions} from '../common/IsolatedWorld.js';
 import type {PuppeteerLifeCycleEvent} from '../common/LifecycleWatcher.js';
 import type {Credentials, NetworkConditions} from '../common/NetworkManager.js';
-import type {PDFOptions} from '../common/PDFOptions.js';
+import {
+  LowerCasePaperFormat,
+  ParsedPDFOptions,
+  PDFOptions,
+  paperFormats,
+} from '../common/PDFOptions.js';
 import type {Viewport} from '../common/PuppeteerViewport.js';
 import type {Target} from '../common/Target.js';
 import type {Tracing} from '../common/Tracing.js';
@@ -53,7 +58,9 @@ import type {
   HandleFor,
   NodeFor,
 } from '../common/types.js';
+import {isNumber, isString} from '../common/util.js';
 import type {WebWorker} from '../common/WebWorker.js';
+import {assert} from '../util/assert.js';
 
 import type {Browser} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';
@@ -2137,10 +2144,56 @@ export class Page extends EventEmitter {
   }
 
   /**
+   * @internal
+   */
+  _getPDFOptions(options: PDFOptions = {}): ParsedPDFOptions {
+    const defaults = {
+      scale: 1,
+      displayHeaderFooter: false,
+      headerTemplate: '',
+      footerTemplate: '',
+      printBackground: false,
+      landscape: false,
+      pageRanges: '',
+      preferCSSPageSize: false,
+      omitBackground: false,
+      timeout: 30000,
+    };
+
+    let width = 8.5;
+    let height = 11;
+    if (options.format) {
+      const format =
+        paperFormats[options.format.toLowerCase() as LowerCasePaperFormat];
+      assert(format, 'Unknown paper format: ' + options.format);
+      width = format.width;
+      height = format.height;
+    } else {
+      width = convertPrintParameterToInches(options.width) ?? width;
+      height = convertPrintParameterToInches(options.height) ?? height;
+    }
+
+    const margin = {
+      top: convertPrintParameterToInches(options.margin?.top) || 0,
+      left: convertPrintParameterToInches(options.margin?.left) || 0,
+      bottom: convertPrintParameterToInches(options.margin?.bottom) || 0,
+      right: convertPrintParameterToInches(options.margin?.right) || 0,
+    };
+
+    const output = {
+      ...defaults,
+      ...options,
+      width,
+      height,
+      margin,
+    };
+
+    return output;
+  }
+
+  /**
    * Generates a PDF of the page with the `print` CSS media type.
    * @remarks
-   *
-   * NOTE: PDF generation is only supported in Chrome headless mode.
    *
    * To generate a PDF with the `screen` media type, call
    * {@link Page.emulateMediaType | `page.emulateMediaType('screen')`} before
@@ -2159,8 +2212,7 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @param options -
-   * @returns
+   * {@inheritDoc Page.createPDFStream}
    */
   async pdf(options?: PDFOptions): Promise<Buffer>;
   async pdf(): Promise<Buffer> {
@@ -2619,3 +2671,36 @@ export const unitToPixels = {
   cm: 37.8,
   mm: 3.78,
 };
+
+function convertPrintParameterToInches(
+  parameter?: string | number
+): number | undefined {
+  if (typeof parameter === 'undefined') {
+    return undefined;
+  }
+  let pixels;
+  if (isNumber(parameter)) {
+    // Treat numbers as pixel values to be aligned with phantom's paperSize.
+    pixels = parameter;
+  } else if (isString(parameter)) {
+    const text = parameter;
+    let unit = text.substring(text.length - 2).toLowerCase();
+    let valueText = '';
+    if (unit in unitToPixels) {
+      valueText = text.substring(0, text.length - 2);
+    } else {
+      // In case of unknown unit try to parse the whole parameter as number of pixels.
+      // This is consistent with phantom's paperSize behavior.
+      unit = 'px';
+      valueText = text;
+    }
+    const value = Number(valueText);
+    assert(!isNaN(value), 'Failed to parse parameter value: ' + text);
+    pixels = value * unitToPixels[unit as keyof typeof unitToPixels];
+  } else {
+    throw new Error(
+      'page.pdf() Cannot handle parameter type: ' + typeof parameter
+    );
+  }
+  return pixels / 96;
+}

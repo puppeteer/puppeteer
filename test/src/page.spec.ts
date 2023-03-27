@@ -2051,28 +2051,19 @@ describe('Page', function () {
     });
   });
 
-  describe('printing to PDF', function () {
+  describe('Page.pdf', function () {
     it('can print to PDF and save to file', async () => {
-      // Printing to pdf is currently only supported in headless
-      const {isHeadless, page} = getTestState();
-
-      if (!isHeadless) {
-        return;
-      }
+      const {page, server} = getTestState();
 
       const outputFile = __dirname + '/../assets/output.pdf';
+      await page.goto(server.PREFIX + '/pdf.html');
       await page.pdf({path: outputFile});
       expect(fs.readFileSync(outputFile).byteLength).toBeGreaterThan(0);
       fs.unlinkSync(outputFile);
     });
 
     it('can print to PDF and stream the result', async () => {
-      // Printing to pdf is currently only supported in headless
-      const {isHeadless, page} = getTestState();
-
-      if (!isHeadless) {
-        return;
-      }
+      const {page} = getTestState();
 
       const stream = await page.createPDFStream();
       let size = 0;
@@ -2083,10 +2074,7 @@ describe('Page', function () {
     });
 
     it('should respect timeout', async () => {
-      const {isHeadless, page, server} = getTestState();
-      if (!isHeadless) {
-        return;
-      }
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/pdf.html');
 

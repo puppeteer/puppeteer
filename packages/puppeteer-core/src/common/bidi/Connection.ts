@@ -55,6 +55,10 @@ interface Commands {
     params: Bidi.BrowsingContext.NavigateParameters;
     returnType: Bidi.BrowsingContext.NavigateResult;
   };
+  'browsingContext.print': {
+    params: Bidi.BrowsingContext.PrintParameters;
+    returnType: Bidi.BrowsingContext.PrintResult;
+  };
 
   'session.new': {
     params: {capabilities?: Record<any, unknown>}; // TODO: Update Types in chromium bidi
@@ -152,10 +156,10 @@ export class Connection extends EventEmitter {
   #maybeEmitOnContext(event: Bidi.Message.EventMessage) {
     let context: Context | undefined;
     // Context specific events
-    if ('context' in event.params) {
+    if ('context' in event.params && event.params.context) {
       context = this.#contexts.get(event.params.context);
       // `log.entryAdded` specific context
-    } else if ('source' in event.params && !!event.params.source.context) {
+    } else if ('source' in event.params && event.params.source.context) {
       context = this.#contexts.get(event.params.source.context);
     }
     context?.emit(event.method, event.params);

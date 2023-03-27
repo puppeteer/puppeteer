@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type {Readable} from 'stream';
+
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {HTTPResponse} from '../../api/HTTPResponse.js';
@@ -25,8 +27,9 @@ import {
 import {isErrorLike} from '../../util/ErrorLike.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
 import {Handler} from '../EventEmitter.js';
+import {PDFOptions} from '../PDFOptions.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
-import {debugError} from '../util.js';
+import {debugError, importFSPromises, waitWithTimeout} from '../util.js';
 
 import {Context, getBidiHandle} from './Context.js';
 import {BidiSerializer} from './Serializer.js';
@@ -198,6 +201,64 @@ export class Page extends PageBase {
       }
       return retVal;
     });
+  }
+
+  override async pdf(options: PDFOptions = {}): Promise<Buffer> {
+    const {path = undefined} = options;
+    const params = this._getPDFOptions(options);
+    const {result} = await waitWithTimeout(
+      this.#context.connection.send('browsingContext.print', {
+        context: this.#context._contextId,
+        background: params.printBackground,
+        margin: params.margin,
+        orientation: params.landscape ? 'landscape' : 'portrait',
+        page: {
+          width: params.width,
+          height: params.height,
+        },
+        pageRanges: params.pageRanges.split(', '),
+        scale: params.scale,
+        shrinkToFit: !params.preferCSSPageSize,
+      }),
+      'browsingContext.print',
+      params.timeout
+    );
+
+    const buffer = Buffer.from(result.data, 'base64');
+
+    try {
+      if (path) {
+        const fs = await importFSPromises();
+
+        await fs.writeFile(path, buffer);
+      }
+    } catch (error) {
+      if (error instanceof TypeError) {
+        throw new Error(
+          'Can only pass a file path in a Node-like environment.'
+        );
+      }
+      throw error;
+    }
+
+    return buffer;
+  }
+
+  override async createPDFStream(
+    options?: PDFOptions | undefined
+  ): Promise<Readable> {
+    const buffer = await this.pdf(options);
+    try {
+      const {Readable} = await import('stream');
+      return Readable.from(buffer);
+    } catch (error) {
+      if (error instanceof TypeError) {
+        throw new Error(
+          'Can only pass a file path in a Node-like environment.'
+        );
+      }
+      throw error;
+    }
   }
 }
 
