@@ -22,7 +22,7 @@ import {DeferredPromise} from '../util/DeferredPromise.js';
 
 import {CDPSession} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
-import {Frame} from './Frame.js';
+import {FrameManager} from './FrameManager.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {FetchRequestId, NetworkEventManager} from './NetworkEventManager.js';
@@ -71,17 +71,10 @@ export const NetworkManagerEmittedEvents = {
 /**
  * @internal
  */
-interface FrameManager {
-  frame(frameId: string): Frame | null;
-}
-
-/**
- * @internal
- */
 export class NetworkManager extends EventEmitter {
   #client: CDPSession;
   #ignoreHTTPSErrors: boolean;
-  #frameManager: FrameManager;
+  #frameManager: Pick<FrameManager, 'frame'>;
   #networkEventManager = new NetworkEventManager();
   #extraHTTPHeaders: Record<string, string> = {};
   #credentials?: Credentials;
@@ -100,7 +93,7 @@ export class NetworkManager extends EventEmitter {
   constructor(
     client: CDPSession,
     ignoreHTTPSErrors: boolean,
-    frameManager: FrameManager
+    frameManager: Pick<FrameManager, 'frame'>
   ) {
     super();
     this.#client = client;

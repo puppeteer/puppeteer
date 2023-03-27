@@ -21,6 +21,7 @@ import {Protocol} from 'devtools-protocol';
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {ElementHandle} from '../api/ElementHandle.js';
+import {HTTPRequest} from '../api/HTTPRequest.js';
 import {HTTPResponse} from '../api/HTTPResponse.js';
 import {JSHandle} from '../api/JSHandle.js';
 import {
@@ -61,7 +62,6 @@ import {
   FrameWaitForFunctionOptions,
 } from './Frame.js';
 import {FrameManager, FrameManagerEmittedEvents} from './FrameManager.js';
-import {HTTPRequest} from './HTTPRequest.js';
 import {Keyboard, Mouse, MouseButton, Touchscreen} from './Input.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';

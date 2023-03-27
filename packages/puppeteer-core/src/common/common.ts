@@ -28,6 +28,7 @@ export * from './Coverage.js';
 export * from './CustomQueryHandler.js';
 export * from './Debug.js';
 export * from './Device.js';
+export * from './DeviceRequestPrompt.js';
 export * from './Dialog.js';
 export * from './ElementHandle.js';
 export * from './EmulationManager.js';
