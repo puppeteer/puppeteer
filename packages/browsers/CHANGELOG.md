@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/puppeteer/puppeteer/compare/browsers-v0.2.0...browsers-v0.3.0) (2023-03-27)
+
+
+### Features
+
+* update Chrome browser binaries ([#9917](https://github.com/puppeteer/puppeteer/issues/9917)) ([fcb233c](https://github.com/puppeteer/puppeteer/commit/fcb233ce949f5f716aee39253e910104b04aa000))
+
 ## [0.2.0](https://github.com/puppeteer/puppeteer/compare/browsers-v0.1.1...browsers-v0.2.0) (2023-03-24)
 
 
