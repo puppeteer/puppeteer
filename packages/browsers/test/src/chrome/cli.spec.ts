@@ -81,6 +81,7 @@ describe('Chrome CLI', function () {
     );
   });
 
+  // Skipped because the current latest is not published yet.
   it.skip('should download latest Chrome binaries', async () => {
     await new CLI(tmpDir).run([
       'npx',
