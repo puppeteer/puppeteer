@@ -30,7 +30,7 @@ class Frame {
 
 **Returns:**
 
-Promise&lt;DeviceRequestPrompt&gt;
+Promise&lt;[DeviceRequestPrompt](./puppeteer.devicerequestprompt.md)&gt;
 
 ## Example
 
