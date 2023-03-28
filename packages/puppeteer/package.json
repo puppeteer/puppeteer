@@ -81,6 +81,7 @@
       "clean": "if-file-deleted",
       "dependencies": [
         "../puppeteer-core:build",
+        "../browsers:build",
         "generate:package-json"
       ],
       "files": [
@@ -119,6 +120,7 @@
     "https-proxy-agent": "5.0.1",
     "progress": "2.0.3",
     "proxy-from-env": "1.1.0",
-    "puppeteer-core": "19.8.0"
+    "puppeteer-core": "19.8.0",
+    "@puppeteer/browsers": "0.3.0"
   }
 }

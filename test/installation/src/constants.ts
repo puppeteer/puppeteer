@@ -22,6 +22,9 @@ import glob from 'glob';
 export const PUPPETEER_CORE_PACKAGE_PATH = resolve(
   glob.sync('puppeteer-core-*.tgz')[0]!
 );
+export const PUPPETEER_BROWSERS_PACKAGE_PATH = resolve(
+  glob.sync('puppeteer-browsers-[0-9]*.tgz')[0]!
+);
 export const PUPPETEER_PACKAGE_PATH = resolve(
   glob.sync('puppeteer-[0-9]*.tgz')[0]!
 );

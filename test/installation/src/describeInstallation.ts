@@ -22,6 +22,7 @@ import {join} from 'path';
 import {
   PUPPETEER_CORE_PACKAGE_PATH,
   PUPPETEER_PACKAGE_PATH,
+  PUPPETEER_BROWSERS_PACKAGE_PATH,
 } from './constants.js';
 import {execFile} from './util.js';
 
@@ -78,6 +79,8 @@ export const describeInstallation = (
             return PUPPETEER_PACKAGE_PATH;
           case 'puppeteer-core':
             return PUPPETEER_CORE_PACKAGE_PATH;
+          case '@puppeteer/browsers':
+            return PUPPETEER_BROWSERS_PACKAGE_PATH;
           default:
             return module;
         }
@@ -102,7 +105,7 @@ export const describeInstallation = (
 
     after(async () => {
       if (process.env['KEEP_SANDBOX']) {
-        await rm(sandbox, {recursive: true, force: true});
+        await rm(sandbox, {recursive: true, force: true, maxRetries: 5});
       }
     });
 
