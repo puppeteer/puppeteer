@@ -41,7 +41,12 @@ export class Cache {
   }
 
   browserRoot(browser: Browser): string {
-    return path.join(this.#rootDir, browser);
+    // Chromium is a special case for backward compatibility: we install it in
+    // the Chrome folder.
+    return path.join(
+      this.#rootDir,
+      browser === Browser.CHROMIUM ? Browser.CHROME : browser
+    );
   }
 
   installationDir(
