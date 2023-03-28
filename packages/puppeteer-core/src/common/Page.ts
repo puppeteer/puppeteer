@@ -1444,7 +1444,7 @@ export class CDPPage extends Page {
     }
 
     const buffer = Buffer.from(result.data, 'base64');
-    this._maybeWriteBufferToFile(options.path, buffer);
+    await this._maybeWriteBufferToFile(options.path, buffer);
 
     return buffer;
 

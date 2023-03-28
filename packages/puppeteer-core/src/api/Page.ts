@@ -2090,12 +2090,14 @@ export class Page extends EventEmitter {
     path: string | undefined,
     buffer: Buffer
   ): Promise<void> {
-    try {
-      if (path) {
-        const fs = await importFSPromises();
+    if (!path) {
+      return;
+    }
 
-        await fs.writeFile(path, buffer);
-      }
+    try {
+      const fs = await importFSPromises();
+
+      await fs.writeFile(path, buffer);
     } catch (error) {
       if (error instanceof TypeError) {
         throw new Error(
