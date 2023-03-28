@@ -20,9 +20,9 @@ export declare class Connection extends EventEmitter
 
 ## Properties
 
-| Property                                     | Modifiers             | Type   | Description |
-| -------------------------------------------- | --------------------- | ------ | ----------- |
-| [timeout](./puppeteer.connection.timeout.md) | <code>readonly</code> | number |             |
+| Property | Modifiers             | Type   | Description |
+| -------- | --------------------- | ------ | ----------- |
+| timeout  | <code>readonly</code> | number |             |
 
 ## Methods
 

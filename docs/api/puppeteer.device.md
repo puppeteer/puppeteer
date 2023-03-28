@@ -12,7 +12,7 @@ export interface Device
 
 ## Properties
 
-| Property                                     | Modifiers | Type                                | Description | Default |
-| -------------------------------------------- | --------- | ----------------------------------- | ----------- | ------- |
-| [userAgent](./puppeteer.device.useragent.md) |           | string                              |             |         |
-| [viewport](./puppeteer.device.viewport.md)   |           | [Viewport](./puppeteer.viewport.md) |             |         |
+| Property  | Modifiers | Type                                | Description | Default |
+| --------- | --------- | ----------------------------------- | ----------- | ------- |
+| userAgent |           | string                              |             |         |
+| viewport  |           | [Viewport](./puppeteer.viewport.md) |             |         |

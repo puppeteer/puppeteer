@@ -14,8 +14,8 @@ export interface CoverageEntry
 
 ## Properties
 
-| Property                                      | Modifiers | Type                                         | Description                                   | Default |
-| --------------------------------------------- | --------- | -------------------------------------------- | --------------------------------------------- | ------- |
-| [ranges](./puppeteer.coverageentry.ranges.md) |           | Array&lt;{ start: number; end: number; }&gt; | The covered range as start and end positions. |         |
-| [text](./puppeteer.coverageentry.text.md)     |           | string                                       | The content of the style sheet or script.     |         |
-| [url](./puppeteer.coverageentry.url.md)       |           | string                                       | The URL of the style sheet or script.         |         |
+| Property | Modifiers | Type                                         | Description                                   | Default |
+| -------- | --------- | -------------------------------------------- | --------------------------------------------- | ------- |
+| ranges   |           | Array&lt;{ start: number; end: number; }&gt; | The covered range as start and end positions. |         |
+| text     |           | string                                       | The content of the style sheet or script.     |         |
+| url      |           | string                                       | The URL of the style sheet or script.         |         |

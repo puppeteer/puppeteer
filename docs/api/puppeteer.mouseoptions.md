@@ -12,7 +12,7 @@ export interface MouseOptions
 
 ## Properties
 
-| Property                                              | Modifiers | Type                                      | Description  | Default |
-| ----------------------------------------------------- | --------- | ----------------------------------------- | ------------ | ------- |
-| [button?](./puppeteer.mouseoptions.button.md)         |           | [MouseButton](./puppeteer.mousebutton.md) | _(Optional)_ |         |
-| [clickCount?](./puppeteer.mouseoptions.clickcount.md) |           | number                                    | _(Optional)_ |         |
+| Property   | Modifiers             | Type                                      | Description | Default |
+| ---------- | --------------------- | ----------------------------------------- | ----------- | ------- |
+| button     | <code>optional</code> | [MouseButton](./puppeteer.mousebutton.md) |             |         |
+| clickCount | <code>optional</code> | number                                    |             |         |

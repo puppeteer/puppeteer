@@ -12,7 +12,7 @@ export interface Point
 
 ## Properties
 
-| Property                    | Modifiers | Type   | Description | Default |
-| --------------------------- | --------- | ------ | ----------- | ------- |
-| [x](./puppeteer.point.x.md) |           | number |             |         |
-| [y](./puppeteer.point.y.md) |           | number |             |         |
+| Property | Modifiers | Type   | Description | Default |
+| -------- | --------- | ------ | ----------- | ------- |
+| x        |           | number |             |         |
+| y        |           | number |             |         |

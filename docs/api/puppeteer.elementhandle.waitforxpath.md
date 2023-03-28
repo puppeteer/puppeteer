@@ -15,28 +15,6 @@ sidebar_label: ElementHandle.waitForXPath
 > Wait for the `xpath` within the element. If at the moment of calling the method the `xpath` already exists, the method will return immediately. If the `xpath` doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
 >
 > If `xpath` starts with `//` instead of `.//`, the dot will be appended automatically.
->
-> This method works across navigation.
->
-> ```ts
-> import puppeteer from 'puppeteer';
-> (async () => {
->   const browser = await puppeteer.launch();
->   const page = await browser.newPage();
->   let currentURL;
->   page
->     .waitForXPath('//img')
->     .then(() => console.log('First URL with image: ' + currentURL));
->   for (currentURL of [
->     'https://example.com',
->     'https://google.com',
->     'https://bbc.com',
->   ]) {
->     await page.goto(currentURL);
->   }
->   await browser.close();
-> })();
-> ```
 
 #### Signature:
 
@@ -75,3 +53,27 @@ The optional Argument `options` have properties:
 - `hidden`: A boolean wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
 
 - `timeout`: A number which is maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout. The default value can be changed by using the [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) method.
+
+## Example
+
+This method works across navigation.
+
+```ts
+import puppeteer from 'puppeteer';
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  let currentURL;
+  page
+    .waitForXPath('//img')
+    .then(() => console.log('First URL with image: ' + currentURL));
+  for (currentURL of [
+    'https://example.com',
+    'https://google.com',
+    'https://bbc.com',
+  ]) {
+    await page.goto(currentURL);
+  }
+  await browser.close();
+})();
+```

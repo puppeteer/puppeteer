@@ -39,9 +39,9 @@ await context.close();
 
 ## Properties
 
-| Property                               | Modifiers             | Type                | Description |
-| -------------------------------------- | --------------------- | ------------------- | ----------- |
-| [id](./puppeteer.browsercontext.id.md) | <code>readonly</code> | string \| undefined |             |
+| Property | Modifiers             | Type                | Description |
+| -------- | --------------------- | ------------------- | ----------- |
+| id       | <code>readonly</code> | string \| undefined |             |
 
 ## Methods
 

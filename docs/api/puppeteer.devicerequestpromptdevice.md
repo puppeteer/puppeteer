@@ -18,7 +18,7 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Properties
 
-| Property                                              | Modifiers | Type   | Description                            |
-| ----------------------------------------------------- | --------- | ------ | -------------------------------------- |
-| [id](./puppeteer.devicerequestpromptdevice.id.md)     |           | string | Device id during a prompt.             |
-| [name](./puppeteer.devicerequestpromptdevice.name.md) |           | string | Device name as it appears in a prompt. |
+| Property | Modifiers | Type   | Description                            |
+| -------- | --------- | ------ | -------------------------------------- |
+| id       |           | string | Device id during a prompt.             |
+| name     |           | string | Device name as it appears in a prompt. |

@@ -14,6 +14,6 @@ export interface CSSCoverageOptions
 
 ## Properties
 
-| Property                                                                  | Modifiers | Type    | Description                                                 | Default |
-| ------------------------------------------------------------------------- | --------- | ------- | ----------------------------------------------------------- | ------- |
-| [resetOnNavigation?](./puppeteer.csscoverageoptions.resetonnavigation.md) |           | boolean | _(Optional)_ Whether to reset coverage on every navigation. |         |
+| Property          | Modifiers             | Type    | Description                                    | Default |
+| ----------------- | --------------------- | ------- | ---------------------------------------------- | ------- |
+| resetOnNavigation | <code>optional</code> | boolean | Whether to reset coverage on every navigation. |         |

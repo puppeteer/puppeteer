@@ -4,7 +4,7 @@ sidebar_label: Page.tap
 
 # Page.tap() method
 
-This method fetches an element with `selector`, scrolls it into view if needed, and then uses [Page.touchscreen](./puppeteer.page.touchscreen.md) to tap in the center of the element. If there's no element matching `selector`, the method throws an error.
+This method fetches an element with `selector`, scrolls it into view if needed, and then uses [Page.touchscreen](./puppeteer.page.md) to tap in the center of the element. If there's no element matching `selector`, the method throws an error.
 
 #### Signature:
 

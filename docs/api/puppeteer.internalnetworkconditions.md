@@ -14,6 +14,6 @@ export interface InternalNetworkConditions extends NetworkConditions
 
 ## Properties
 
-| Property                                                    | Modifiers | Type    | Description | Default |
-| ----------------------------------------------------------- | --------- | ------- | ----------- | ------- |
-| [offline](./puppeteer.internalnetworkconditions.offline.md) |           | boolean |             |         |
+| Property | Modifiers | Type    | Description | Default |
+| -------- | --------- | ------- | ----------- | ------- |
+| offline  |           | boolean |             |         |

@@ -216,7 +216,6 @@ export interface ScreenshotOptions {
 export const enum PageEmittedEvents {
   /**
    * Emitted when the page closes.
-   * @eventProperty
    */
   Close = 'close',
   /**
@@ -597,22 +596,37 @@ export class Page extends EventEmitter {
     throw new Error('Not implemented');
   }
 
+  /**
+   * {@inheritDoc Keyboard}
+   */
   get keyboard(): Keyboard {
     throw new Error('Not implemented');
   }
 
+  /**
+   * {@inheritDoc Touchscreen}
+   */
   get touchscreen(): Touchscreen {
     throw new Error('Not implemented');
   }
 
+  /**
+   * {@inheritDoc Coverage}
+   */
   get coverage(): Coverage {
     throw new Error('Not implemented');
   }
 
+  /**
+   * {@inheritDoc Tracing}
+   */
   get tracing(): Tracing {
     throw new Error('Not implemented');
   }
 
+  /**
+   * {@inheritDoc Accessibility}
+   */
   get accessibility(): Accessibility {
     throw new Error('Not implemented');
   }
@@ -2273,13 +2287,16 @@ export class Page extends EventEmitter {
     throw new Error('Not implemented');
   }
 
+  /**
+   * {@inheritDoc Mouse}
+   */
   get mouse(): Mouse {
     throw new Error('Not implemented');
   }
 
   /**
    * This method fetches an element with `selector`, scrolls it into view if
-   * needed, and then uses {@link Page.mouse} to click in the center of the
+   * needed, and then uses {@link Page | Page.mouse} to click in the center of the
    * element. If there's no element matching `selector`, the method throws an
    * error.
    * @remarks Bear in mind that if `click()` triggers a navigation event and
@@ -2334,7 +2351,8 @@ export class Page extends EventEmitter {
 
   /**
    * This method fetches an element with `selector`, scrolls it into view if
-   * needed, and then uses {@link Page.mouse} to hover over the center of the element.
+   * needed, and then uses {@link Page | Page.mouse}
+   * to hover over the center of the element.
    * If there's no element matching `selector`, the method throws an error.
    * @param selector - A
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
@@ -2381,7 +2399,8 @@ export class Page extends EventEmitter {
 
   /**
    * This method fetches an element with `selector`, scrolls it into view if
-   * needed, and then uses {@link Page.touchscreen} to tap in the center of the element.
+   * needed, and then uses {@link Page | Page.touchscreen}
+   * to tap in the center of the element.
    * If there's no element matching `selector`, the method throws an error.
    * @param selector - A
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | Selector}
@@ -2460,6 +2479,7 @@ export class Page extends EventEmitter {
    * the `selector` doesn't appear after the `timeout` milliseconds of waiting, the
    * function will throw.
    *
+   * @example
    * This method works across navigations:
    *
    * ```ts
@@ -2520,6 +2540,7 @@ export class Page extends EventEmitter {
    * the `xpath` doesn't appear after the `timeout` milliseconds of waiting, the
    * function will throw.
    *
+   * @example
    * This method works across navigation
    *
    * ```ts

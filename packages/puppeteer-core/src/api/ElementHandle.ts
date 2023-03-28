@@ -484,6 +484,7 @@ export class ElementHandle<
    * If `xpath` starts with `//` instead of `.//`, the dot will be appended
    * automatically.
    *
+   * @example
    * This method works across navigation.
    *
    * ```ts
@@ -587,7 +588,7 @@ export class ElementHandle<
 
   /**
    * This method scrolls element into view if needed, and then
-   * uses {@link Page.mouse} to hover over the center of the element.
+   * uses {@link Page} to hover over the center of the element.
    * If the element is detached from DOM, the method throws an error.
    */
   async hover(this: ElementHandle<Element>): Promise<void> {
@@ -596,7 +597,7 @@ export class ElementHandle<
 
   /**
    * This method scrolls element into view if needed, and then
-   * uses {@link Page.mouse} to click in the center of the element.
+   * uses {@link Page | Page.mouse} to click in the center of the element.
    * If the element is detached from DOM, the method throws an error.
    */
   async click(

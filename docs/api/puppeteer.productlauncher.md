@@ -18,9 +18,9 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Properties
 
-| Property                                          | Modifiers             | Type                              | Description |
-| ------------------------------------------------- | --------------------- | --------------------------------- | ----------- |
-| [product](./puppeteer.productlauncher.product.md) | <code>readonly</code> | [Product](./puppeteer.product.md) |             |
+| Property | Modifiers             | Type                              | Description |
+| -------- | --------------------- | --------------------------------- | ----------- |
+| product  | <code>readonly</code> | [Product](./puppeteer.product.md) |             |
 
 ## Methods
 

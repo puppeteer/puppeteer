@@ -12,10 +12,10 @@ export interface ConnectionTransport
 
 ## Properties
 
-| Property                                                   | Modifiers | Type                         | Description  | Default |
-| ---------------------------------------------------------- | --------- | ---------------------------- | ------------ | ------- |
-| [onclose?](./puppeteer.connectiontransport.onclose.md)     |           | () =&gt; void                | _(Optional)_ |         |
-| [onmessage?](./puppeteer.connectiontransport.onmessage.md) |           | (message: string) =&gt; void | _(Optional)_ |         |
+| Property  | Modifiers             | Type                         | Description | Default |
+| --------- | --------------------- | ---------------------------- | ----------- | ------- |
+| onclose   | <code>optional</code> | () =&gt; void                |             |         |
+| onmessage | <code>optional</code> | (message: string) =&gt; void |             |         |
 
 ## Methods
 

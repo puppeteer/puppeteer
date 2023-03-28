@@ -864,7 +864,7 @@ export class MarkdownDocumenter {
           if ((apiMember as ApiPropertyItem).isEventProperty) {
             eventsTable.addRow(
               new DocTableRow({configuration}, [
-                this._createTitleCell(apiMember),
+                this._createTitleCell(apiMember, true),
                 this._createModifiersCell(apiMember),
                 this._createPropertyTypeCell(apiMember),
                 this._createDescriptionCell(apiMember),
@@ -873,15 +873,13 @@ export class MarkdownDocumenter {
           } else {
             propertiesTable.addRow(
               new DocTableRow({configuration}, [
-                this._createTitleCell(apiMember),
+                this._createTitleCell(apiMember, true),
                 this._createModifiersCell(apiMember),
                 this._createPropertyTypeCell(apiMember),
                 this._createDescriptionCell(apiMember),
               ])
             );
           }
-
-          this._writeApiItemPage(apiMember);
           break;
         }
       }
@@ -1009,7 +1007,7 @@ export class MarkdownDocumenter {
           if ((apiMember as ApiPropertyItem).isEventProperty) {
             eventsTable.addRow(
               new DocTableRow({configuration}, [
-                this._createTitleCell(apiMember),
+                this._createTitleCell(apiMember, true),
                 this._createModifiersCell(apiMember),
                 this._createPropertyTypeCell(apiMember),
                 this._createDescriptionCell(apiMember),
@@ -1018,7 +1016,7 @@ export class MarkdownDocumenter {
           } else {
             propertiesTable.addRow(
               new DocTableRow({configuration}, [
-                this._createTitleCell(apiMember),
+                this._createTitleCell(apiMember, true),
                 this._createModifiersCell(apiMember),
                 this._createPropertyTypeCell(apiMember),
                 this._createDescriptionCell(apiMember),
@@ -1026,8 +1024,6 @@ export class MarkdownDocumenter {
               ])
             );
           }
-
-          this._writeApiItemPage(apiMember);
           break;
         }
       }
@@ -1215,22 +1211,21 @@ export class MarkdownDocumenter {
     );
   }
 
-  private _createTitleCell(apiItem: ApiItem): DocTableCell {
+  private _createTitleCell(apiItem: ApiItem, plain = false): DocTableCell {
     const configuration: TSDocConfiguration = this._tsdocConfiguration;
 
-    let linkText: string = Utilities.getConciseSignature(apiItem);
-    if (ApiOptionalMixin.isBaseClassOf(apiItem) && apiItem.isOptional) {
-      linkText += '?';
-    }
+    const text: string = Utilities.getConciseSignature(apiItem);
 
     return new DocTableCell({configuration}, [
       new DocParagraph({configuration}, [
-        new DocLinkTag({
-          configuration,
-          tagName: '@link',
-          linkText: linkText,
-          urlDestination: this._getLinkFilenameForApiItem(apiItem),
-        }),
+        plain
+          ? new DocPlainText({configuration, text})
+          : new DocLinkTag({
+              configuration,
+              tagName: '@link',
+              linkText: text,
+              urlDestination: this._getLinkFilenameForApiItem(apiItem),
+            }),
       ]),
     ]);
   }
@@ -1258,15 +1253,6 @@ export class MarkdownDocumenter {
           new DocPlainText({configuration, text: ' '}),
         ]);
       }
-    }
-
-    if (ApiOptionalMixin.isBaseClassOf(apiItem) && apiItem.isOptional) {
-      section.appendNodesInParagraph([
-        new DocEmphasisSpan({configuration, italic: true}, [
-          new DocPlainText({configuration, text: '(Optional)'}),
-        ]),
-        new DocPlainText({configuration, text: ' '}),
-      ]);
     }
 
     if (apiItem instanceof ApiDocumentedItem) {
@@ -1329,6 +1315,16 @@ export class MarkdownDocumenter {
         section.appendNode(
           new DocParagraph({configuration}, [
             new DocCodeSpan({configuration, code: 'static'}),
+          ])
+        );
+      }
+    }
+
+    if (ApiOptionalMixin.isBaseClassOf(apiItem)) {
+      if (apiItem.isOptional) {
+        section.appendNode(
+          new DocParagraph({configuration}, [
+            new DocCodeSpan({configuration, code: 'optional'}),
           ])
         );
       }
@@ -1421,7 +1417,6 @@ export class MarkdownDocumenter {
       if (ApiParameterListMixin.isBaseClassOf(hierarchyItem)) {
         if (hierarchyItem.overloadIndex > 1) {
           // Subtract one for compatibility with earlier releases of API Documenter.
-          // (This will get revamped when we fix GitHub issue #1308)
           qualifiedName += `_${hierarchyItem.overloadIndex - 1}`;
         }
       }
