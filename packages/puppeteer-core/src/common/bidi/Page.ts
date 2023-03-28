@@ -22,6 +22,7 @@ import {HTTPResponse} from '../../api/HTTPResponse.js';
 import {
   Page as PageBase,
   PageEmittedEvents,
+  ScreenshotOptions,
   WaitForOptions,
 } from '../../api/Page.js';
 import {isErrorLike} from '../../util/ErrorLike.js';
@@ -29,7 +30,7 @@ import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
 import {Handler} from '../EventEmitter.js';
 import {PDFOptions} from '../PDFOptions.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
-import {debugError, importFSPromises, waitWithTimeout} from '../util.js';
+import {debugError, waitWithTimeout} from '../util.js';
 
 import {Context, getBidiHandle} from './Context.js';
 import {BidiSerializer} from './Serializer.js';
@@ -226,20 +227,7 @@ export class Page extends PageBase {
 
     const buffer = Buffer.from(result.data, 'base64');
 
-    try {
-      if (path) {
-        const fs = await importFSPromises();
-
-        await fs.writeFile(path, buffer);
-      }
-    } catch (error) {
-      if (error instanceof TypeError) {
-        throw new Error(
-          'Can only pass a file path in a Node-like environment.'
-        );
-      }
-      throw error;
-    }
+    await this._maybeWriteBufferToFile(path, buffer);
 
     return buffer;
   }
@@ -259,6 +247,37 @@ export class Page extends PageBase {
       }
       throw error;
     }
+  }
+
+  override screenshot(
+    options: ScreenshotOptions & {encoding: 'base64'}
+  ): Promise<string>;
+  override screenshot(
+    options?: ScreenshotOptions & {encoding?: 'binary'}
+  ): never;
+  override async screenshot(
+    options: ScreenshotOptions = {}
+  ): Promise<Buffer | string> {
+    const {path = undefined, encoding, ...args} = options;
+    if (Object.keys(args).length >= 1) {
+      throw new Error('BiDi only supports "encoding" and "path" options');
+    }
+
+    const {result} = await this.#context.connection.send(
+      'browsingContext.captureScreenshot',
+      {
+        context: this.#context._contextId,
+      }
+    );
+
+    if (encoding === 'base64') {
+      return result.data;
+    }
+
+    const buffer = Buffer.from(result.data, 'base64');
+    await this._maybeWriteBufferToFile(path, buffer);
+
+    return buffer;
   }
 }
 

@@ -91,7 +91,6 @@ import {
   getExceptionMessage,
   getReadableAsBuffer,
   getReadableFromProtocolStream,
-  importFSPromises,
   isString,
   pageBindingInitString,
   releaseObject,
@@ -1440,24 +1439,13 @@ export class CDPPage extends Page {
       await this.setViewport(this.#viewport);
     }
 
-    const buffer =
-      options.encoding === 'base64'
-        ? result.data
-        : Buffer.from(result.data, 'base64');
-
-    if (options.path) {
-      try {
-        const fs = await importFSPromises();
-        await fs.writeFile(options.path, buffer);
-      } catch (error) {
-        if (error instanceof TypeError) {
-          throw new Error(
-            'Screenshots can only be written to a file path in a Node-like environment.'
-          );
-        }
-        throw error;
-      }
+    if (options.encoding === 'base64') {
+      return result.data;
     }
+
+    const buffer = Buffer.from(result.data, 'base64');
+    this._maybeWriteBufferToFile(options.path, buffer);
+
     return buffer;
 
     function processClip(clip: ScreenshotClip): ScreenshotClip {

@@ -59,6 +59,10 @@ interface Commands {
     params: Bidi.BrowsingContext.PrintParameters;
     returnType: Bidi.BrowsingContext.PrintResult;
   };
+  'browsingContext.captureScreenshot': {
+    params: Bidi.BrowsingContext.CaptureScreenshotParameters;
+    returnType: Bidi.BrowsingContext.CaptureScreenshotResult;
+  };
 
   'session.new': {
     params: {capabilities?: Record<any, unknown>}; // TODO: Update Types in chromium bidi
