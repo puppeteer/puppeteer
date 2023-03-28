@@ -96,7 +96,7 @@ export class Connection extends EventEmitter {
   constructor(transport: ConnectionTransport, delay = 0, timeout?: number) {
     super();
     this.#delay = delay;
-    this.#timeout = timeout;
+    this.#timeout = timeout ?? 180_000;
 
     this.#transport = transport;
     this.#transport.onmessage = this.onMessage.bind(this);

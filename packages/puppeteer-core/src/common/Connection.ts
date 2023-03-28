@@ -72,7 +72,12 @@ class Callback {
     this.#label = label;
     if (timeout) {
       this.#timer = setTimeout(() => {
-        this.#promise.reject(rewriteError(this.#error, `${label} timed out.`));
+        this.#promise.reject(
+          rewriteError(
+            this.#error,
+            `${label} timed out. Increase the 'protocolTimeout' setting in launch/connect calls for a higher timeout if needed.`
+          )
+        );
       }, timeout);
     }
   }
@@ -194,7 +199,7 @@ export class Connection extends EventEmitter {
     super();
     this.#url = url;
     this.#delay = delay;
-    this.#timeout = timeout ?? 30000;
+    this.#timeout = timeout ?? 180_000;
 
     this.#transport = transport;
     this.#transport.onmessage = this.onMessage.bind(this);
