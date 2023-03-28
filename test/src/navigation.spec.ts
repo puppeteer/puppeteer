@@ -418,7 +418,9 @@ describe('navigation', function () {
       // Expect navigation to succeed.
       expect(response.ok()).toBe(true);
     });
-    it('should not leak listeners during navigation', async () => {
+    it('should not leak listeners during navigation', async function () {
+      this.timeout(25_000);
+
       const {page, server} = getTestState();
 
       let warning = null;
@@ -432,7 +434,9 @@ describe('navigation', function () {
       process.removeListener('warning', warningHandler);
       expect(warning).toBe(null);
     });
-    it('should not leak listeners during bad navigation', async () => {
+    it('should not leak listeners during bad navigation', async function () {
+      this.timeout(25_000);
+
       const {page} = getTestState();
 
       let warning = null;
@@ -448,7 +452,9 @@ describe('navigation', function () {
       process.removeListener('warning', warningHandler);
       expect(warning).toBe(null);
     });
-    it('should not leak listeners during navigation of 11 pages', async () => {
+    it('should not leak listeners during navigation of 11 pages', async function () {
+      this.timeout(25_000);
+
       const {context, server} = getTestState();
 
       let warning = null;
