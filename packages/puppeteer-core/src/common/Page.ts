@@ -1458,37 +1458,51 @@ export class CDPPage extends Page {
   }
 
   override async createPDFStream(options: PDFOptions = {}): Promise<Readable> {
-    const params = this._getPDFOptions(options);
+    const {
+      landscape,
+      displayHeaderFooter,
+      headerTemplate,
+      footerTemplate,
+      printBackground,
+      scale,
+      width: paperWidth,
+      height: paperHeight,
+      margin,
+      pageRanges,
+      preferCSSPageSize,
+      omitBackground,
+      timeout,
+    } = this._getPDFOptions(options);
 
-    if (params.omitBackground) {
+    if (omitBackground) {
       await this.#setTransparentBackgroundColor();
     }
 
     const printCommandPromise = this.#client.send('Page.printToPDF', {
       transferMode: 'ReturnAsStream',
-      landscape: params.landscape,
-      displayHeaderFooter: params.displayHeaderFooter,
-      headerTemplate: params.headerTemplate,
-      footerTemplate: params.footerTemplate,
-      printBackground: params.printBackground,
-      scale: params.scale,
-      paperWidth: params.width,
-      paperHeight: params.height,
-      marginTop: params.margin.top,
-      marginBottom: params.margin.bottom,
-      marginLeft: params.margin.left,
-      marginRight: params.margin.right,
-      pageRanges: params.pageRanges,
-      preferCSSPageSize: params.preferCSSPageSize,
+      landscape,
+      displayHeaderFooter,
+      headerTemplate,
+      footerTemplate,
+      printBackground,
+      scale,
+      paperWidth,
+      paperHeight,
+      marginTop: margin.top,
+      marginBottom: margin.bottom,
+      marginLeft: margin.left,
+      marginRight: margin.right,
+      pageRanges,
+      preferCSSPageSize,
     });
 
     const result = await waitWithTimeout(
       printCommandPromise,
       'Page.printToPDF',
-      params.timeout
+      timeout
     );
 
-    if (params.omitBackground) {
+    if (omitBackground) {
       await this.#resetDefaultBackgroundColor();
     }
 
