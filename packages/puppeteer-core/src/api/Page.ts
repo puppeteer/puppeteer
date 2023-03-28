@@ -2171,7 +2171,10 @@ export class Page extends EventEmitter {
   /**
    * @internal
    */
-  _getPDFOptions(options: PDFOptions = {}): ParsedPDFOptions {
+  _getPDFOptions(
+    options: PDFOptions = {},
+    lengthUnit: 'in' | 'cm' = 'in'
+  ): ParsedPDFOptions {
     const defaults = {
       scale: 1,
       displayHeaderFooter: false,
@@ -2194,15 +2197,19 @@ export class Page extends EventEmitter {
       width = format.width;
       height = format.height;
     } else {
-      width = convertPrintParameterToInches(options.width) ?? width;
-      height = convertPrintParameterToInches(options.height) ?? height;
+      width = convertPrintParameterToInches(options.width, lengthUnit) ?? width;
+      height =
+        convertPrintParameterToInches(options.height, lengthUnit) ?? height;
     }
 
     const margin = {
-      top: convertPrintParameterToInches(options.margin?.top) || 0,
-      left: convertPrintParameterToInches(options.margin?.left) || 0,
-      bottom: convertPrintParameterToInches(options.margin?.bottom) || 0,
-      right: convertPrintParameterToInches(options.margin?.right) || 0,
+      top: convertPrintParameterToInches(options.margin?.top, lengthUnit) || 0,
+      left:
+        convertPrintParameterToInches(options.margin?.left, lengthUnit) || 0,
+      bottom:
+        convertPrintParameterToInches(options.margin?.bottom, lengthUnit) || 0,
+      right:
+        convertPrintParameterToInches(options.margin?.right, lengthUnit) || 0,
     };
 
     const output = {
@@ -2698,7 +2705,8 @@ export const unitToPixels = {
 };
 
 function convertPrintParameterToInches(
-  parameter?: string | number
+  parameter?: string | number,
+  lengthUnit: 'in' | 'cm' = 'in'
 ): number | undefined {
   if (typeof parameter === 'undefined') {
     return undefined;
@@ -2727,5 +2735,5 @@ function convertPrintParameterToInches(
       'page.pdf() Cannot handle parameter type: ' + typeof parameter
     );
   }
-  return pixels / 96;
+  return pixels / unitToPixels[lengthUnit];
 }

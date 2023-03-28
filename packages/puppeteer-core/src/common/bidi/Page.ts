@@ -206,23 +206,33 @@ export class Page extends PageBase {
 
   override async pdf(options: PDFOptions = {}): Promise<Buffer> {
     const {path = undefined} = options;
-    const params = this._getPDFOptions(options);
+    const {
+      printBackground: background,
+      margin,
+      landscape,
+      width,
+      height,
+      pageRanges,
+      scale,
+      preferCSSPageSize,
+      timeout,
+    } = this._getPDFOptions(options, 'cm');
     const {result} = await waitWithTimeout(
       this.#context.connection.send('browsingContext.print', {
         context: this.#context._contextId,
-        background: params.printBackground,
-        margin: params.margin,
-        orientation: params.landscape ? 'landscape' : 'portrait',
+        background,
+        margin,
+        orientation: landscape ? 'landscape' : 'portrait',
         page: {
-          width: params.width,
-          height: params.height,
+          width,
+          height,
         },
-        pageRanges: params.pageRanges.split(', '),
-        scale: params.scale,
-        shrinkToFit: !params.preferCSSPageSize,
+        pageRanges: pageRanges.split(', '),
+        scale,
+        shrinkToFit: !preferCSSPageSize,
       }),
       'browsingContext.print',
-      params.timeout
+      timeout
     );
 
     const buffer = Buffer.from(result.data, 'base64');
