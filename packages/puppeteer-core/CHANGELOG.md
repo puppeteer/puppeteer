@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.8.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.8.0...puppeteer-core-v19.8.1) (2023-03-28)
+
+
+### Bug Fixes
+
+* increase the default protocol timeout ([#9928](https://github.com/puppeteer/puppeteer/issues/9928)) ([4465f4b](https://github.com/puppeteer/puppeteer/commit/4465f4bd1900afc0b049ac863f4e372453a0c234))
+
 ## [19.8.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.7.5...puppeteer-core-v19.8.0) (2023-03-24)
 
 
