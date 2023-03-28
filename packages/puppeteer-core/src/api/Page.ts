@@ -153,7 +153,7 @@ export interface ScreenshotClip {
   width: number;
   height: number;
   /**
-   * @defaultValue 1
+   * @defaultValue `1`
    */
   scale?: number;
 }
@@ -2090,7 +2090,7 @@ export class Page extends EventEmitter {
    * Toggles ignoring cache for each request based on the enabled state. By
    * default, caching is enabled.
    * @param enabled - sets the `enabled` state of cache
-   * @defaultValue true
+   * @defaultValue `true`
    */
   async setCacheEnabled(enabled?: boolean): Promise<void>;
   async setCacheEnabled(): Promise<void> {

@@ -26,4 +26,4 @@ Promise&lt;void&gt;
 
 #### Default value:
 
-true
+`true`

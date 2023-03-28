@@ -99,7 +99,7 @@ export interface SerializedAXNode {
 export interface SnapshotOptions {
   /**
    * Prune uninteresting nodes from the tree.
-   * @defaultValue true
+   * @defaultValue `true`
    */
   interestingOnly?: boolean;
   /**

@@ -69,7 +69,7 @@ export interface WaitForSelectorOptions {
    *
    * The default value can be changed by using {@link Page.setDefaultTimeout}
    *
-   * @defaultValue `30000` (30 seconds)
+   * @defaultValue `30_000` (30 seconds)
    */
   timeout?: number;
 }

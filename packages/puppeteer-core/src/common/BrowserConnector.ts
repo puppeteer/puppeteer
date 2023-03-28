@@ -34,7 +34,7 @@ import {debugError} from './util.js';
 export interface BrowserConnectOptions {
   /**
    * Whether to ignore HTTPS errors during navigation.
-   * @defaultValue false
+   * @defaultValue `false`
    */
   ignoreHTTPSErrors?: boolean;
   /**
@@ -62,7 +62,7 @@ export interface BrowserConnectOptions {
   /**
    * Timeout setting for individual protocol (CDP) calls.
    *
-   * @defaultValue 180000
+   * @defaultValue `180_000`
    */
   protocolTimeout?: number;
 }

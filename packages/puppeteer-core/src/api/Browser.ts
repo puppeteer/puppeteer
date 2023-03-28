@@ -119,7 +119,7 @@ export type Permission =
 export interface WaitForTargetOptions {
   /**
    * Maximum wait time in milliseconds. Pass `0` to disable the timeout.
-   * @defaultValue 30 seconds.
+   * @defaultValue `30_000`
    */
   timeout?: number;
 }

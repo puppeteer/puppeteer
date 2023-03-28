@@ -80,7 +80,7 @@ export interface ClickOptions {
   /**
    * Time to wait between `mousedown` and `mouseup` in milliseconds.
    *
-   * @defaultValue 0
+   * @defaultValue `0`
    */
   delay?: number;
   /**
@@ -88,7 +88,7 @@ export interface ClickOptions {
    */
   button?: MouseButton;
   /**
-   * @defaultValue 1
+   * @defaultValue `1`
    */
   clickCount?: number;
   /**

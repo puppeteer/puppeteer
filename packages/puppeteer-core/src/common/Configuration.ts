@@ -95,7 +95,7 @@ export interface Configuration {
    *
    * Can be overridden by `PUPPETEER_EXECUTABLE_PATH`.
    *
-   * @defaultValue Auto-computed.
+   * @defaultValue **Auto-computed.**
    */
   executablePath?: string;
   /**
@@ -103,7 +103,7 @@ export interface Configuration {
    *
    * Can be overridden by `PUPPETEER_PRODUCT`.
    *
-   * @defaultValue `'chrome'`
+   * @defaultValue `chrome`
    */
   defaultProduct?: Product;
   /**

@@ -44,7 +44,7 @@ export interface Options {
   /**
    * Determines which platform the browser will be suited for.
    *
-   * @defaultValue Auto-detected.
+   * @defaultValue **Auto-detected.**
    */
   platform?: BrowserPlatform;
   /**
