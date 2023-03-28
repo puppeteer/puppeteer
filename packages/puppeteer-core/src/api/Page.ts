@@ -58,7 +58,7 @@ import type {
   HandleFor,
   NodeFor,
 } from '../common/types.js';
-import {isNumber, isString} from '../common/util.js';
+import {importFSPromises, isNumber, isString} from '../common/util.js';
 import type {WebWorker} from '../common/WebWorker.js';
 import {assert} from '../util/assert.js';
 
@@ -2081,6 +2081,31 @@ export class Page extends EventEmitter {
   async setCacheEnabled(enabled?: boolean): Promise<void>;
   async setCacheEnabled(): Promise<void> {
     throw new Error('Not implemented');
+  }
+
+  /**
+   * @internal
+   */
+  async _maybeWriteBufferToFile(
+    path: string | undefined,
+    buffer: Buffer
+  ): Promise<void> {
+    if (!path) {
+      return;
+    }
+
+    try {
+      const fs = await importFSPromises();
+
+      await fs.writeFile(path, buffer);
+    } catch (error) {
+      if (error instanceof TypeError) {
+        throw new Error(
+          'Can only pass a file path in a Node-like environment.'
+        );
+      }
+      throw error;
+    }
   }
 
   /**
