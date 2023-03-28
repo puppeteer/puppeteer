@@ -62,7 +62,7 @@ export interface BrowserConnectOptions {
   /**
    * Timeout setting for individual protocol (CDP) calls.
    *
-   * @defaultValue 30000
+   * @defaultValue 180000
    */
   protocolTimeout?: number;
 }
