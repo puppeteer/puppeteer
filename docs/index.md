@@ -107,8 +107,8 @@ or [managing browsers yourself](https://pptr.dev/api/puppeteer.browserfetcher).
 If you are managing browsers yourself, you will need to call
 [`puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch) with
 an an explicit
-[`executablePath`](https://pptr.dev/api/puppeteer.launchoptions.executablepath)
-(or [`channel`](https://pptr.dev/api/puppeteer.launchoptions.channel) if it's
+[`executablePath`](https://pptr.dev/api/puppeteer.launchoptions)
+(or [`channel`](https://pptr.dev/api/puppeteer.launchoptions) if it's
 installed in a standard location).
 
 When using `puppeteer-core`, remember to change the import:
@@ -177,7 +177,7 @@ import puppeteer from 'puppeteer';
 Puppeteer launches Chromium in
 [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome).
 To launch a full version of Chromium, set the
-[`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions.headless)
+[`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions)
 option when launching a browser:
 
 ```ts

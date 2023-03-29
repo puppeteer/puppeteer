@@ -7,11 +7,9 @@ import {
   usePluralForm,
   isRegexpStringMatch,
   useEvent,
+  useSearchQueryString,
 } from '@docusaurus/theme-common';
-import {
-  useTitleFormatter,
-  useSearchPage,
-} from '@docusaurus/theme-common/internal';
+import {useTitleFormatter} from '@docusaurus/theme-common/internal';
 import Translate, {translate} from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
@@ -128,7 +126,7 @@ function SearchPageContent() {
   } = themeConfig;
   const documentsFoundPlural = useDocumentsFoundPlural();
   const docsSearchVersionsHelpers = useDocsSearchVersionsHelpers();
-  const {searchQuery, setSearchQuery} = useSearchPage();
+  const [searchQuery, setSearchQuery] = useSearchQueryString();
   const initialSearchResultState = {
     items: [],
     query: null,
