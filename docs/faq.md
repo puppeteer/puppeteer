@@ -193,7 +193,7 @@ There are two reasons for this:
   This means that Puppeteer does not support licensed formats such as AAC or
   H.264. (However, it is possible to force Puppeteer to use a
   separately-installed version Chrome instead of Chromium via the
-  [`executablePath` option to `puppeteer.launch`](./api/puppeteer.launchoptions.executablepath).
+  [`executablePath` option to `puppeteer.launch`](./api/puppeteer.launchoptions).
   You should only use this configuration if you need an official release of
   Chrome that supports these media formats.)
 - Since Puppeteer (in all configurations) controls a desktop version of

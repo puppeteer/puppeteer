@@ -3,8 +3,10 @@ import Head from '@docusaurus/Head';
 import Link from '@docusaurus/Link';
 import {useHistory} from '@docusaurus/router';
 import {isRegexpStringMatch} from '@docusaurus/theme-common';
-import {useContextualSearchFilters} from '@docusaurus/theme-common';
-import {useSearchPage} from '@docusaurus/theme-common/internal';
+import {
+  useContextualSearchFilters,
+  useSearchLinkCreator,
+} from '@docusaurus/theme-common';
 import Translate from '@docusaurus/Translate';
 import {useBaseUrlUtils} from '@docusaurus/useBaseUrl';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
@@ -19,9 +21,9 @@ function Hit({hit, children}) {
   return <Link to={hit.url}>{children}</Link>;
 }
 function ResultsFooter({state, onClose}) {
-  const {generateSearchPageLink} = useSearchPage();
+  const createSearchLink = useSearchLinkCreator();
   return (
-    <Link to={generateSearchPageLink(state.query)} onClick={onClose}>
+    <Link to={createSearchLink(state.query)} onClick={onClose}>
       <Translate
         id="theme.SearchBar.seeAll"
         values={{count: state.context.nbHits}}
