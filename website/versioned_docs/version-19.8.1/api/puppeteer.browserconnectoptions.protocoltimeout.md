@@ -16,4 +16,4 @@ interface BrowserConnectOptions {
 
 #### Default value:
 
-30000
+180000
