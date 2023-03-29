@@ -104,8 +104,10 @@ export const describeInstallation = (
     });
 
     after(async () => {
-      if (process.env['KEEP_SANDBOX']) {
+      if (!process.env['KEEP_SANDBOX']) {
         await rm(sandbox, {recursive: true, force: true, maxRetries: 5});
+      } else {
+        console.log('sandbox saved in ' + sandbox);
       }
     });
 

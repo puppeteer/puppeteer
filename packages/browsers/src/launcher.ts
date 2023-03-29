@@ -270,10 +270,9 @@ class Process {
 
   async close(): Promise<void> {
     await this.#runHooks();
-    if (this.#exited) {
-      return this.#browserProcessExiting;
+    if (!this.#exited) {
+      this.kill();
     }
-    this.kill();
     return this.#browserProcessExiting;
   }
 

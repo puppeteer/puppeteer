@@ -278,6 +278,13 @@ export class Connection extends EventEmitter {
   /**
    * @internal
    */
+  async closeBrowser(): Promise<void> {
+    await this.send('Browser.close');
+  }
+
+  /**
+   * @internal
+   */
   protected async onMessage(message: string): Promise<void> {
     if (this.#delay) {
       await new Promise(f => {

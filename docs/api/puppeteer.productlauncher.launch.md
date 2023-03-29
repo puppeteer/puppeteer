@@ -8,15 +8,15 @@ sidebar_label: ProductLauncher.launch
 
 ```typescript
 class ProductLauncher {
-  launch(object: PuppeteerNodeLaunchOptions): Promise<Browser>;
+  launch(options?: PuppeteerNodeLaunchOptions): Promise<Browser>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                    | Description |
-| --------- | ----------------------------------------------------------------------- | ----------- |
-| object    | [PuppeteerNodeLaunchOptions](./puppeteer.puppeteernodelaunchoptions.md) |             |
+| Parameter | Type                                                                    | Description  |
+| --------- | ----------------------------------------------------------------------- | ------------ |
+| options   | [PuppeteerNodeLaunchOptions](./puppeteer.puppeteernodelaunchoptions.md) | _(Optional)_ |
 
 **Returns:**
 

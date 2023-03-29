@@ -19,7 +19,7 @@ import {readAsset} from './util.js';
 
 describeInstallation(
   '`puppeteer-core`',
-  {dependencies: ['puppeteer-core']},
+  {dependencies: ['@puppeteer/browsers', 'puppeteer-core']},
   ({itEvaluates}) => {
     itEvaluates('CommonJS', {commonjs: true}, async () => {
       return readAsset('puppeteer-core', 'requires.cjs');

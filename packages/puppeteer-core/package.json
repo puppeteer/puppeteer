@@ -97,7 +97,8 @@
       "clean": "if-file-deleted",
       "dependencies": [
         "generate:package-json",
-        "generate:sources"
+        "generate:sources",
+        "../browsers:build"
       ],
       "files": [
         "{compat,src,third_party}/**",
@@ -140,7 +141,8 @@
     "proxy-from-env": "1.1.0",
     "tar-fs": "2.1.1",
     "unbzip2-stream": "1.4.3",
-    "ws": "8.13.0"
+    "ws": "8.13.0",
+    "@puppeteer/browsers": "0.3.2"
   },
   "peerDependencies": {
     "typescript": ">= 4.7.4"

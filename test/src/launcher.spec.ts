@@ -462,10 +462,13 @@ describe('Launcher specs', function () {
         const options = Object.assign({}, defaultBrowserOptions);
         options.ignoreDefaultArgs = true;
         const browser = await puppeteer.launch(options);
-        const page = await browser.newPage();
-        expect(await page.evaluate('11 * 11')).toBe(121);
-        await page.close();
-        await browser.close();
+        try {
+          const page = await browser.newPage();
+          expect(await page.evaluate('11 * 11')).toBe(121);
+          await page.close();
+        } finally {
+          await browser.close();
+        }
       });
       it('should filter out ignored default arguments in Chrome', async () => {
         const {defaultBrowserOptions, puppeteer} = getTestState();
