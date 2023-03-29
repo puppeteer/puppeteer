@@ -143,13 +143,13 @@ export interface BrowserFetcherOptions {
   /**
    * Determines which platform the browser will be suited for.
    *
-   * @defaultValue Auto-detected.
+   * @defaultValue **Auto-detected.**
    */
   platform?: Platform;
   /**
    * Determines which product the {@link BrowserFetcher} is for.
    *
-   * @defaultValue `"chrome"`.
+   * @defaultValue `chrome`
    */
   product?: 'chrome' | 'firefox';
   /**

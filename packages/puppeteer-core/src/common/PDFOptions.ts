@@ -83,12 +83,12 @@ export type PaperFormat =
 export interface PDFOptions {
   /**
    * Scales the rendering of the web page. Amount must be between `0.1` and `2`.
-   * @defaultValue 1
+   * @defaultValue `1`
    */
   scale?: number;
   /**
    * Whether to show the header and footer.
-   * @defaultValue false
+   * @defaultValue `false`
    */
   displayHeaderFooter?: boolean;
   /**
@@ -113,12 +113,12 @@ export interface PDFOptions {
   footerTemplate?: string;
   /**
    * Set to `true` to print background graphics.
-   * @defaultValue false
+   * @defaultValue `false`
    */
   printBackground?: boolean;
   /**
    * Whether to print in landscape orientation.
-   * @defaultValue = false
+   * @defaultValue `false`
    */
   landscape?: boolean;
   /**
@@ -148,7 +148,7 @@ export interface PDFOptions {
   preferCSSPageSize?: boolean;
   /**
    * Set the PDF margins.
-   * @defaultValue no margins are set.
+   * @defaultValue `undefined` no margins are set.
    */
   margin?: PDFMargin;
   /**
@@ -158,17 +158,17 @@ export interface PDFOptions {
    *
    * If the path is relative, it's resolved relative to the current working directory.
    *
-   * @defaultValue the empty string, which means the PDF will not be written to disk.
+   * @defaultValue `undefined`, which means the PDF will not be written to disk.
    */
   path?: string;
   /**
    * Hides default white background and allows generating pdfs with transparency.
-   * @defaultValue false
+   * @defaultValue `false`
    */
   omitBackground?: boolean;
   /**
    * Timeout in milliseconds. Pass `0` to disable timeout.
-   * @defaultValue 30000
+   * @defaultValue `30_000`
    */
   timeout?: number;
 }
