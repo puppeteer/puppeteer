@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 0.3.0 to 0.3.1
+
 ## [19.8.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v19.8.0...puppeteer-v19.8.1) (2023-03-28)
 
 
