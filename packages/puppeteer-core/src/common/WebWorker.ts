@@ -116,7 +116,7 @@ export class WebWorker extends EventEmitter {
   }
 
   /**
-   * @returns The URL of this web worker.
+   * The URL of this web worker.
    */
   url(): string {
     return this.#url;

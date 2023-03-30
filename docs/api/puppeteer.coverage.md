@@ -51,9 +51,9 @@ console.log(`Bytes used: ${(usedBytes / totalBytes) * 100}%`);
 
 ## Methods
 
-| Method                                                                | Modifiers | Description |
-| --------------------------------------------------------------------- | --------- | ----------- |
-| [startCSSCoverage(options)](./puppeteer.coverage.startcsscoverage.md) |           |             |
-| [startJSCoverage(options)](./puppeteer.coverage.startjscoverage.md)   |           |             |
-| [stopCSSCoverage()](./puppeteer.coverage.stopcsscoverage.md)          |           |             |
-| [stopJSCoverage()](./puppeteer.coverage.stopjscoverage.md)            |           |             |
+| Method                                                                | Modifiers | Description                                                                 |
+| --------------------------------------------------------------------- | --------- | --------------------------------------------------------------------------- |
+| [startCSSCoverage(options)](./puppeteer.coverage.startcsscoverage.md) |           |                                                                             |
+| [startJSCoverage(options)](./puppeteer.coverage.startjscoverage.md)   |           |                                                                             |
+| [stopCSSCoverage()](./puppeteer.coverage.stopcsscoverage.md)          |           | Promise that resolves to the array of coverage reports for all stylesheets. |
+| [stopJSCoverage()](./puppeteer.coverage.stopjscoverage.md)            |           | Promise that resolves to the array of coverage reports for all scripts.     |

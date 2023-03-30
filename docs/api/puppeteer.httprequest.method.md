@@ -4,6 +4,8 @@ sidebar_label: HTTPRequest.method
 
 # HTTPRequest.method() method
 
+The method used (`GET`, `POST`, etc.)
+
 #### Signature:
 
 ```typescript
@@ -15,5 +17,3 @@ class HTTPRequest {
 **Returns:**
 
 string
-
-the method used (`GET`, `POST`, etc.)

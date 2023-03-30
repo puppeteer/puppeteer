@@ -4,6 +4,8 @@ sidebar_label: WebWorker.url
 
 # WebWorker.url() method
 
+The URL of this web worker.
+
 #### Signature:
 
 ```typescript
@@ -15,5 +17,3 @@ class WebWorker {
 **Returns:**
 
 string
-
-The URL of this web worker.

@@ -4,6 +4,8 @@ sidebar_label: ConsoleMessage.location
 
 # ConsoleMessage.location() method
 
+The location of the console message.
+
 #### Signature:
 
 ```typescript
@@ -15,5 +17,3 @@ class ConsoleMessage {
 **Returns:**
 
 [ConsoleMessageLocation](./puppeteer.consolemessagelocation.md)
-
-The location of the console message.

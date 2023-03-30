@@ -4,6 +4,8 @@ sidebar_label: HTTPResponse.text
 
 # HTTPResponse.text() method
 
+Promise which resolves to a text representation of response body.
+
 #### Signature:
 
 ```typescript
@@ -15,5 +17,3 @@ class HTTPResponse {
 **Returns:**
 
 Promise&lt;string&gt;
-
-Promise which resolves to a text representation of response body.

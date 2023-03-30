@@ -4,6 +4,8 @@ sidebar_label: ConsoleMessage.stackTrace
 
 # ConsoleMessage.stackTrace() method
 
+The array of locations on the stack of the console message.
+
 #### Signature:
 
 ```typescript
@@ -15,5 +17,3 @@ class ConsoleMessage {
 **Returns:**
 
 [ConsoleMessageLocation](./puppeteer.consolemessagelocation.md)\[\]
-
-The array of locations on the stack of the console message.

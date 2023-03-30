@@ -36,13 +36,13 @@ const browser = await puppeteer.launch({
 
 ## Methods
 
-| Method                                                                         | Modifiers | Description                                                     |
-| ------------------------------------------------------------------------------ | --------- | --------------------------------------------------------------- |
-| [canDownload(revision)](./puppeteer.browserfetcher.candownload.md)             |           | Initiates a HEAD request to check if the revision is available. |
-| [download(revision, progressCallback)](./puppeteer.browserfetcher.download.md) |           | Initiates a GET request to download the revision from the host. |
-| [host()](./puppeteer.browserfetcher.host.md)                                   |           |                                                                 |
-| [localRevisions()](./puppeteer.browserfetcher.localrevisions.md)               |           |                                                                 |
-| [platform()](./puppeteer.browserfetcher.platform.md)                           |           |                                                                 |
-| [product()](./puppeteer.browserfetcher.product.md)                             |           |                                                                 |
-| [remove(revision)](./puppeteer.browserfetcher.remove.md)                       |           |                                                                 |
-| [revisionInfo(revision)](./puppeteer.browserfetcher.revisioninfo.md)           |           |                                                                 |
+| Method                                                                         | Modifiers | Description                                                                                                                                |
+| ------------------------------------------------------------------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| [canDownload(revision)](./puppeteer.browserfetcher.candownload.md)             |           | Initiates a HEAD request to check if the revision is available.                                                                            |
+| [download(revision, progressCallback)](./puppeteer.browserfetcher.download.md) |           | Initiates a GET request to download the revision from the host.                                                                            |
+| [host()](./puppeteer.browserfetcher.host.md)                                   |           | The download host being used.                                                                                                              |
+| [localRevisions()](./puppeteer.browserfetcher.localrevisions.md)               |           |                                                                                                                                            |
+| [platform()](./puppeteer.browserfetcher.platform.md)                           |           | Returns the current <code>Platform</code>, which is one of <code>mac</code>, <code>linux</code>, <code>win32</code> or <code>win64</code>. |
+| [product()](./puppeteer.browserfetcher.product.md)                             |           | Returns the current <code>Product</code>, which is one of <code>chrome</code> or <code>firefox</code>.                                     |
+| [remove(revision)](./puppeteer.browserfetcher.remove.md)                       |           |                                                                                                                                            |
+| [revisionInfo(revision)](./puppeteer.browserfetcher.revisioninfo.md)           |           |                                                                                                                                            |

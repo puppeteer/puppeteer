@@ -4,6 +4,8 @@ sidebar_label: Frame.content
 
 # Frame.content() method
 
+The full HTML contents of the frame, including the DOCTYPE.
+
 #### Signature:
 
 ```typescript
@@ -15,5 +17,3 @@ class Frame {
 **Returns:**
 
 Promise&lt;string&gt;
-
-The full HTML contents of the frame, including the DOCTYPE.

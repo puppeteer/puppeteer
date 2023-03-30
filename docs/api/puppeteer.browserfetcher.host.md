@@ -4,6 +4,8 @@ sidebar_label: BrowserFetcher.host
 
 # BrowserFetcher.host() method
 
+The download host being used.
+
 #### Signature:
 
 ```typescript
@@ -15,5 +17,3 @@ class BrowserFetcher {
 **Returns:**
 
 string
-
-The download host being used.

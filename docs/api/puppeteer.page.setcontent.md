@@ -4,6 +4,8 @@ sidebar_label: Page.setContent
 
 # Page.setContent() method
 
+Set the content of the page.
+
 #### Signature:
 
 ```typescript

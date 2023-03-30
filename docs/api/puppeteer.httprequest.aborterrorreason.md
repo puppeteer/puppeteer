@@ -4,6 +4,8 @@ sidebar_label: HTTPRequest.abortErrorReason
 
 # HTTPRequest.abortErrorReason() method
 
+The most recent reason for aborting the request
+
 #### Signature:
 
 ```typescript
@@ -15,5 +17,3 @@ class HTTPRequest {
 **Returns:**
 
 Protocol.Network.ErrorReason \| null
-
-the most recent reason for aborting the request

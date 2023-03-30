@@ -26,11 +26,11 @@ import {scriptInjector} from './ScriptInjector.js';
  */
 export interface CustomQueryHandler {
   /**
-   * @returns A {@link https://developer.mozilla.org/en-US/docs/Web/API/Node | Node} matching the given `selector` from {@link https://developer.mozilla.org/en-US/docs/Web/API/Node | node}.
+   * Searches for a {@link https://developer.mozilla.org/en-US/docs/Web/API/Node | Node} matching the given `selector` from {@link https://developer.mozilla.org/en-US/docs/Web/API/Node | node}.
    */
   queryOne?: (node: Node, selector: string) => Node | null;
   /**
-   * @returns Some {@link https://developer.mozilla.org/en-US/docs/Web/API/Node | Nodes} matching the given `selector` from {@link https://developer.mozilla.org/en-US/docs/Web/API/Node | node}.
+   * Searches for some {@link https://developer.mozilla.org/en-US/docs/Web/API/Node | Nodes} matching the given `selector` from {@link https://developer.mozilla.org/en-US/docs/Web/API/Node | node}.
    */
   queryAll?: (node: Node, selector: string) => Iterable<Node>;
 }

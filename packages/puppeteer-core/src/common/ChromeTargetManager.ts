@@ -57,7 +57,6 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
    */
   #attachedTargetsByTargetId: Map<string, Target> = new Map();
   /**
-   *
    * Tracks which sessions attach to which target.
    */
   #attachedTargetsBySessionId: Map<string, Target> = new Map();

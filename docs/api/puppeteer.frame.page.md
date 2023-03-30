@@ -4,6 +4,8 @@ sidebar_label: Frame.page
 
 # Frame.page() method
 
+The page associated with the frame.
+
 #### Signature:
 
 ```typescript
@@ -15,5 +17,3 @@ class Frame {
 **Returns:**
 
 [Page](./puppeteer.page.md)
-
-The page associated with the frame.

@@ -4,6 +4,8 @@ sidebar_label: Page.viewport
 
 # Page.viewport() method
 
+Current page viewport settings.
+
 #### Signature:
 
 ```typescript

@@ -49,7 +49,7 @@ export class HTTPResponse {
   }
 
   /**
-   * @returns The IP address and port number used to connect to the remote
+   * The IP address and port number used to connect to the remote
    * server.
    */
   remoteAddress(): RemoteAddress {
@@ -57,28 +57,28 @@ export class HTTPResponse {
   }
 
   /**
-   * @returns The URL of the response.
+   * The URL of the response.
    */
   url(): string {
     throw new Error('Not implemented');
   }
 
   /**
-   * @returns True if the response was successful (status in the range 200-299).
+   * True if the response was successful (status in the range 200-299).
    */
   ok(): boolean {
     throw new Error('Not implemented');
   }
 
   /**
-   * @returns The status code of the response (e.g., 200 for a success).
+   * The status code of the response (e.g., 200 for a success).
    */
   status(): number {
     throw new Error('Not implemented');
   }
 
   /**
-   * @returns The status text of the response (e.g. usually an "OK" for a
+   * The status text of the response (e.g. usually an "OK" for a
    * success).
    */
   statusText(): string {
@@ -86,7 +86,7 @@ export class HTTPResponse {
   }
 
   /**
-   * @returns An object with HTTP headers associated with the response. All
+   * An object with HTTP headers associated with the response. All
    * header names are lower-case.
    */
   headers(): Record<string, string> {
@@ -94,7 +94,7 @@ export class HTTPResponse {
   }
 
   /**
-   * @returns {@link SecurityDetails} if the response was received over the
+   * {@link SecurityDetails} if the response was received over the
    * secure connection, or `null` otherwise.
    */
   securityDetails(): SecurityDetails | null {
@@ -102,21 +102,21 @@ export class HTTPResponse {
   }
 
   /**
-   * @returns Timing information related to the response.
+   * Timing information related to the response.
    */
   timing(): Protocol.Network.ResourceTiming | null {
     throw new Error('Not implemented');
   }
 
   /**
-   * @returns Promise which resolves to a buffer with response body.
+   * Promise which resolves to a buffer with response body.
    */
   buffer(): Promise<Buffer> {
     throw new Error('Not implemented');
   }
 
   /**
-   * @returns Promise which resolves to a text representation of response body.
+   * Promise which resolves to a text representation of response body.
    */
   async text(): Promise<string> {
     const content = await this.buffer();
@@ -124,8 +124,7 @@ export class HTTPResponse {
   }
 
   /**
-   *
-   * @returns Promise which resolves to a JSON representation of response body.
+   * Promise which resolves to a JSON representation of response body.
    *
    * @remarks
    *
@@ -138,14 +137,14 @@ export class HTTPResponse {
   }
 
   /**
-   * @returns A matching {@link HTTPRequest} object.
+   * A matching {@link HTTPRequest} object.
    */
   request(): HTTPRequest {
     throw new Error('Not implemented');
   }
 
   /**
-   * @returns True if the response was served from either the browser's disk
+   * True if the response was served from either the browser's disk
    * cache or memory cache.
    */
   fromCache(): boolean {
@@ -153,14 +152,14 @@ export class HTTPResponse {
   }
 
   /**
-   * @returns True if the response was served by a service worker.
+   * True if the response was served by a service worker.
    */
   fromServiceWorker(): boolean {
     throw new Error('Not implemented');
   }
 
   /**
-   * @returns A {@link Frame} that initiated this response, or `null` if
+   * A {@link Frame} that initiated this response, or `null` if
    * navigating to error pages.
    */
   frame(): Frame | null {

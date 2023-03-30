@@ -4,6 +4,8 @@ sidebar_label: HTTPRequest.frame
 
 # HTTPRequest.frame() method
 
+The frame that initiated the request, or null if navigating to error pages.
+
 #### Signature:
 
 ```typescript
@@ -15,5 +17,3 @@ class HTTPRequest {
 **Returns:**
 
 [Frame](./puppeteer.frame.md) \| null
-
-the frame that initiated the request, or null if navigating to error pages.

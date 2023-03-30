@@ -272,7 +272,7 @@ export class BrowserFetcher {
   }
 
   /**
-   * @returns Returns the current `Platform`, which is one of `mac`, `linux`,
+   * Returns the current `Platform`, which is one of `mac`, `linux`,
    * `win32` or `win64`.
    */
   platform(): Platform {
@@ -280,7 +280,7 @@ export class BrowserFetcher {
   }
 
   /**
-   * @returns Returns the current `Product`, which is one of `chrome` or
+   * Returns the current `Product`, which is one of `chrome` or
    * `firefox`.
    */
   product(): Product {
@@ -288,7 +288,7 @@ export class BrowserFetcher {
   }
 
   /**
-   * @returns The download host being used.
+   * The download host being used.
    */
   host(): string {
     return this.#downloadHost;

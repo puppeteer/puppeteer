@@ -143,7 +143,7 @@ export class JSHandle<T = unknown> {
   }
 
   /**
-   * @returns A vanilla object representing the serializable portions of the
+   * A vanilla object representing the serializable portions of the
    * referenced object.
    * @throws Throws if the object cannot be serialized due to circularity.
    *
@@ -155,7 +155,7 @@ export class JSHandle<T = unknown> {
   }
 
   /**
-   * @returns Either `null` or the handle itself if the handle is an
+   * Either `null` or the handle itself if the handle is an
    * instance of {@link ElementHandle}.
    */
   asElement(): ElementHandle<Node> | null {

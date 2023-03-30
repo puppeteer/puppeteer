@@ -4,6 +4,8 @@ sidebar_label: Page.screenshot
 
 # Page.screenshot() method
 
+Captures screenshot of the current page.
+
 #### Signature:
 
 ```typescript
@@ -49,5 +51,3 @@ Options object which might have the following properties:
 - `captureBeyondViewport` : When true, captures screenshot [beyond the viewport](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot). When false, falls back to old behaviour, and cuts the screenshot by the viewport size. Defaults to `true`.
 
 - `fromSurface` : When true, captures screenshot [from the surface rather than the view](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-captureScreenshot). When false, works only in headful mode and ignores page viewport (but not browser window's bounds). Defaults to `true`.
-
-NOTE: Screenshots take at least 1/6 second on OS X. See [https://crbug.com/741689](https://crbug.com/741689) for discussion.

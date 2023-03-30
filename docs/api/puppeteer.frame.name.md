@@ -4,6 +4,8 @@ sidebar_label: Frame.name
 
 # Frame.name() method
 
+The frame's `name` attribute as specified in the tag.
+
 #### Signature:
 
 ```typescript
@@ -15,8 +17,6 @@ class Frame {
 **Returns:**
 
 string
-
-The frame's `name` attribute as specified in the tag.
 
 ## Remarks
 

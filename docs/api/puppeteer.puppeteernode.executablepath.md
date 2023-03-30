@@ -4,6 +4,8 @@ sidebar_label: PuppeteerNode.executablePath
 
 # PuppeteerNode.executablePath() method
 
+The default executable path.
+
 #### Signature:
 
 ```typescript
@@ -21,5 +23,3 @@ class PuppeteerNode {
 **Returns:**
 
 string
-
-The default executable path.
