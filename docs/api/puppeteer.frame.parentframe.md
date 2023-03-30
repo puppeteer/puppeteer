@@ -4,6 +4,8 @@ sidebar_label: Frame.parentFrame
 
 # Frame.parentFrame() method
 
+The parent frame, if any. Detached and main frames return `null`.
+
 #### Signature:
 
 ```typescript
@@ -15,5 +17,3 @@ class Frame {
 **Returns:**
 
 [Frame](./puppeteer.frame.md) \| null
-
-The parent frame, if any. Detached and main frames return `null`.

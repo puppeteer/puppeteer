@@ -450,14 +450,14 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @returns `true` if drag events are being intercepted, `false` otherwise.
+   * `true` if drag events are being intercepted, `false` otherwise.
    */
   isDragInterceptionEnabled(): boolean {
     throw new Error('Not implemented');
   }
 
   /**
-   * @returns `true` if the page has JavaScript enabled, `false` otherwise.
+   * `true` if the page has JavaScript enabled, `false` otherwise.
    */
   isJavaScriptEnabled(): boolean {
     throw new Error('Not implemented');
@@ -566,7 +566,7 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @returns A target this page was created from.
+   * A target this page was created from.
    */
   target(): Target {
     throw new Error('Not implemented');
@@ -587,7 +587,7 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @returns The page's main frame.
+   * The page's main frame.
    *
    * @remarks
    * Page is guaranteed to have a main frame which persists during navigations.
@@ -632,14 +632,14 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @returns An array of all frames attached to the page.
+   * An array of all frames attached to the page.
    */
   frames(): Frame[] {
     throw new Error('Not implemented');
   }
 
   /**
-   * @returns all of the dedicated {@link
+   * All of the dedicated {@link
    * https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API |
    * WebWorkers} associated with the page.
    *
@@ -781,7 +781,7 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @returns Maximum time in milliseconds.
+   * Maximum time in milliseconds.
    */
   getDefaultTimeout(): number {
     throw new Error('Not implemented');
@@ -1292,7 +1292,9 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @returns Object containing metrics as key/value pairs.
+   * Object containing metrics as key/value pairs.
+   *
+   * @returns
    *
    * - `Timestamp` : The timestamp when the metrics sample was taken.
    *
@@ -1330,8 +1332,7 @@ export class Page extends EventEmitter {
   }
 
   /**
-   *
-   * @returns
+   * The page's URL.
    * @remarks Shortcut for
    * {@link Frame.url | page.mainFrame().url()}.
    */
@@ -1339,11 +1340,16 @@ export class Page extends EventEmitter {
     throw new Error('Not implemented');
   }
 
+  /**
+   * The full HTML contents of the page, including the DOCTYPE.
+   */
   async content(): Promise<string> {
     throw new Error('Not implemented');
   }
 
   /**
+   * Set the content of the page.
+   *
    * @param html - HTML markup to assign to the page.
    * @param options - Parameters that has some properties.
    * @remarks
@@ -1963,6 +1969,8 @@ export class Page extends EventEmitter {
   }
 
   /**
+   * Current page viewport settings.
+   *
    * @returns
    *
    * - `width`: page's width in pixels
@@ -2123,6 +2131,8 @@ export class Page extends EventEmitter {
   }
 
   /**
+   * Captures screenshot of the current page.
+   *
    * @remarks
    * Options object which might have the following properties:
    *
@@ -2166,8 +2176,6 @@ export class Page extends EventEmitter {
    *   headful mode and ignores page viewport (but not browser window's
    *   bounds). Defaults to `true`.
    *
-   * NOTE: Screenshots take at least 1/6 second on OS X. See
-   * {@link https://crbug.com/741689} for discussion.
    * @returns Promise which resolves to buffer or a base64 string (depending on
    * the value of `encoding`) with captured screenshot.
    */
@@ -2266,7 +2274,8 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @returns The page's title
+   * The page's title
+   *
    * @remarks
    * Shortcut for {@link Frame.title | page.mainFrame().title()}.
    */

@@ -4,6 +4,8 @@ sidebar_label: Page.mainFrame
 
 # Page.mainFrame() method
 
+The page's main frame.
+
 #### Signature:
 
 ```typescript
@@ -15,8 +17,6 @@ class Page {
 **Returns:**
 
 [Frame](./puppeteer.frame.md)
-
-The page's main frame.
 
 ## Remarks
 

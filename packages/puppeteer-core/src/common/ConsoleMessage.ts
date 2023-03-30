@@ -87,35 +87,35 @@ export class ConsoleMessage {
   }
 
   /**
-   * @returns The type of the console message.
+   * The type of the console message.
    */
   type(): ConsoleMessageType {
     return this.#type;
   }
 
   /**
-   * @returns The text of the console message.
+   * The text of the console message.
    */
   text(): string {
     return this.#text;
   }
 
   /**
-   * @returns An array of arguments passed to the console.
+   * An array of arguments passed to the console.
    */
   args(): JSHandle[] {
     return this.#args;
   }
 
   /**
-   * @returns The location of the console message.
+   * The location of the console message.
    */
   location(): ConsoleMessageLocation {
     return this.#stackTraceLocations[0] ?? {};
   }
 
   /**
-   * @returns The array of locations on the stack of the console message.
+   * The array of locations on the stack of the console message.
    */
   stackTrace(): ConsoleMessageLocation[] {
     return this.#stackTraceLocations;

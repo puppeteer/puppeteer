@@ -135,7 +135,7 @@ export class CDPJSHandle<T = unknown> extends JSHandle<T> {
   }
 
   /**
-   * @returns Either `null` or the handle itself if the handle is an
+   * Either `null` or the handle itself if the handle is an
    * instance of {@link ElementHandle}.
    */
   override asElement(): CDPElementHandle<Node> | null {

@@ -67,21 +67,21 @@ export class Dialog {
   }
 
   /**
-   * @returns The type of the dialog.
+   * The type of the dialog.
    */
   type(): Protocol.Page.DialogType {
     return this.#type;
   }
 
   /**
-   * @returns The message displayed in the dialog.
+   * The message displayed in the dialog.
    */
   message(): string {
     return this.#message;
   }
 
   /**
-   * @returns The default value of the prompt, or an empty string if the dialog
+   * The default value of the prompt, or an empty string if the dialog
    * is not a `prompt`.
    */
   defaultValue(): string {
@@ -89,10 +89,11 @@ export class Dialog {
   }
 
   /**
+   * A promise that resolves when the dialog has been accepted.
+   *
    * @param promptText - optional text that will be entered in the dialog
    * prompt. Has no effect if the dialog's type is not `prompt`.
    *
-   * @returns A promise that resolves when the dialog has been accepted.
    */
   async accept(promptText?: string): Promise<void> {
     assert(!this.#handled, 'Cannot accept dialog which is already handled!');
@@ -104,7 +105,7 @@ export class Dialog {
   }
 
   /**
-   * @returns A promise which will resolve once the dialog has been dismissed
+   * A promise which will resolve once the dialog has been dismissed
    */
   async dismiss(): Promise<void> {
     assert(!this.#handled, 'Cannot dismiss dialog which is already handled!');

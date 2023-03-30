@@ -4,6 +4,8 @@ sidebar_label: HTTPResponse.json
 
 # HTTPResponse.json() method
 
+Promise which resolves to a JSON representation of response body.
+
 #### Signature:
 
 ```typescript
@@ -15,8 +17,6 @@ class HTTPResponse {
 **Returns:**
 
 Promise&lt;any&gt;
-
-Promise which resolves to a JSON representation of response body.
 
 ## Remarks
 

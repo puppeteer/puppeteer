@@ -4,6 +4,8 @@ sidebar_label: JSHandle.jsonValue
 
 # JSHandle.jsonValue() method
 
+A vanilla object representing the serializable portions of the referenced object.
+
 #### Signature:
 
 ```typescript
@@ -15,8 +17,6 @@ class JSHandle {
 **Returns:**
 
 Promise&lt;T&gt;
-
-A vanilla object representing the serializable portions of the referenced object.
 
 ## Exceptions
 

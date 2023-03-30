@@ -142,14 +142,14 @@ export class HTTPRequest {
   constructor() {}
 
   /**
-   * @returns the URL of the request
+   * The URL of the request
    */
   url(): string {
     throw new Error('Not implemented');
   }
 
   /**
-   * @returns the `ContinueRequestOverrides` that will be used
+   * The `ContinueRequestOverrides` that will be used
    * if the interception is allowed to continue (ie, `abort()` and
    * `respond()` aren't called).
    */
@@ -158,7 +158,7 @@ export class HTTPRequest {
   }
 
   /**
-   * @returns The `ResponseForRequest` that gets used if the
+   * The `ResponseForRequest` that gets used if the
    * interception is allowed to respond (ie, `abort()` is not called).
    */
   responseForRequest(): Partial<ResponseForRequest> | null {
@@ -166,14 +166,14 @@ export class HTTPRequest {
   }
 
   /**
-   * @returns the most recent reason for aborting the request
+   * The most recent reason for aborting the request
    */
   abortErrorReason(): Protocol.Network.ErrorReason | null {
     throw new Error('Not implemented');
   }
 
   /**
-   * @returns An InterceptResolutionState object describing the current resolution
+   * An InterceptResolutionState object describing the current resolution
    * action and priority.
    *
    * InterceptResolutionState contains:
@@ -188,7 +188,7 @@ export class HTTPRequest {
   }
 
   /**
-   * @returns `true` if the intercept resolution has already been handled,
+   * Is `true` if the intercept resolution has already been handled,
    * `false` otherwise.
    */
   isInterceptResolutionHandled(): boolean {
@@ -225,21 +225,21 @@ export class HTTPRequest {
   }
 
   /**
-   * @returns the method used (`GET`, `POST`, etc.)
+   * The method used (`GET`, `POST`, etc.)
    */
   method(): string {
     throw new Error('Not implemented');
   }
 
   /**
-   * @returns the request's post body, if any.
+   * The request's post body, if any.
    */
   postData(): string | undefined {
     throw new Error('Not implemented');
   }
 
   /**
-   * @returns an object with HTTP headers associated with the request. All
+   * An object with HTTP headers associated with the request. All
    * header names are lower-case.
    */
   headers(): Record<string, string> {
@@ -247,7 +247,7 @@ export class HTTPRequest {
   }
 
   /**
-   * @returns A matching `HTTPResponse` object, or null if the response has not
+   * A matching `HTTPResponse` object, or null if the response has not
    * been received yet.
    */
   response(): HTTPResponse | null {
@@ -255,7 +255,7 @@ export class HTTPRequest {
   }
 
   /**
-   * @returns the frame that initiated the request, or null if navigating to
+   * The frame that initiated the request, or null if navigating to
    * error pages.
    */
   frame(): Frame | null {
@@ -263,14 +263,14 @@ export class HTTPRequest {
   }
 
   /**
-   * @returns true if the request is the driver of the current frame's navigation.
+   * True if the request is the driver of the current frame's navigation.
    */
   isNavigationRequest(): boolean {
     throw new Error('Not implemented');
   }
 
   /**
-   * @returns the initiator of the request.
+   * The initiator of the request.
    */
   initiator(): Protocol.Network.Initiator {
     throw new Error('Not implemented');

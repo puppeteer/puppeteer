@@ -241,14 +241,14 @@ export class Frame {
   }
 
   /**
-   * @returns The page associated with the frame.
+   * The page associated with the frame.
    */
   page(): Page {
     return this._frameManager.page();
   }
 
   /**
-   * @returns `true` if the frame is an out-of-process (OOP) frame. Otherwise,
+   * Is `true` if the frame is an out-of-process (OOP) frame. Otherwise,
    * `false`.
    */
   isOOPFrame(): boolean {
@@ -714,7 +714,7 @@ export class Frame {
   }
 
   /**
-   * @returns The full HTML contents of the frame, including the DOCTYPE.
+   * The full HTML contents of the frame, including the DOCTYPE.
    */
   async content(): Promise<string> {
     return this.worlds[PUPPETEER_WORLD].content();
@@ -738,7 +738,7 @@ export class Frame {
   }
 
   /**
-   * @returns The frame's `name` attribute as specified in the tag.
+   * The frame's `name` attribute as specified in the tag.
    *
    * @remarks
    * If the name is empty, it returns the `id` attribute instead.
@@ -752,28 +752,28 @@ export class Frame {
   }
 
   /**
-   * @returns The frame's URL.
+   * The frame's URL.
    */
   url(): string {
     return this.#url;
   }
 
   /**
-   * @returns The parent frame, if any. Detached and main frames return `null`.
+   * The parent frame, if any. Detached and main frames return `null`.
    */
   parentFrame(): Frame | null {
     return this._frameManager._frameTree.parentFrame(this._id) || null;
   }
 
   /**
-   * @returns An array of child frames.
+   * An array of child frames.
    */
   childFrames(): Frame[] {
     return this._frameManager._frameTree.childFrames(this._id);
   }
 
   /**
-   * @returns `true` if the frame has been detached. Otherwise, `false`.
+   * Is`true` if the frame has been detached. Otherwise, `false`.
    */
   isDetached(): boolean {
     return this.#detached;
@@ -1082,7 +1082,7 @@ export class Frame {
   }
 
   /**
-   * @returns the frame's title.
+   * The frame's title.
    */
   async title(): Promise<string> {
     return this.worlds[PUPPETEER_WORLD].title();

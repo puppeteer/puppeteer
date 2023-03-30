@@ -4,6 +4,8 @@ sidebar_label: HTTPRequest.url
 
 # HTTPRequest.url() method
 
+The URL of the request
+
 #### Signature:
 
 ```typescript
@@ -15,5 +17,3 @@ class HTTPRequest {
 **Returns:**
 
 string
-
-the URL of the request

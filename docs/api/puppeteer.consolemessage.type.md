@@ -4,6 +4,8 @@ sidebar_label: ConsoleMessage.type
 
 # ConsoleMessage.type() method
 
+The type of the console message.
+
 #### Signature:
 
 ```typescript
@@ -15,5 +17,3 @@ class ConsoleMessage {
 **Returns:**
 
 [ConsoleMessageType](./puppeteer.consolemessagetype.md)
-
-The type of the console message.

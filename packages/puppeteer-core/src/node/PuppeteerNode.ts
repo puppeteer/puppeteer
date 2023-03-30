@@ -132,8 +132,6 @@ export class PuppeteerNode extends Puppeteer {
    *
    * @param options - Set of configurable options to set on the browser.
    * @returns Promise which resolves to browser instance.
-   *
-   * @public
    */
   override connect(options: ConnectOptions): Promise<Browser> {
     return super.connect(options);
@@ -172,8 +170,6 @@ export class PuppeteerNode extends Puppeteer {
    * describes some differences for Linux users.
    *
    * @param options - Options to configure launching behavior.
-   *
-   * @public
    */
   launch(options: PuppeteerLaunchOptions = {}): Promise<Browser> {
     const {product = this.defaultProduct} = options;
@@ -207,9 +203,7 @@ export class PuppeteerNode extends Puppeteer {
   }
 
   /**
-   * @returns The default executable path.
-   *
-   * @public
+   * The default executable path.
    */
   executablePath(channel?: ChromeReleaseChannel): string {
     return this.#launcher.executablePath(channel);
@@ -227,7 +221,7 @@ export class PuppeteerNode extends Puppeteer {
   }
 
   /**
-   * @returns The default download path for puppeteer. For puppeteer-core, this
+   * The default download path for puppeteer. For puppeteer-core, this
    * code should never be called as it is never defined.
    *
    * @internal
@@ -240,20 +234,16 @@ export class PuppeteerNode extends Puppeteer {
   }
 
   /**
-   * @returns The name of the browser that was last launched.
-   *
-   * @public
+   * The name of the browser that was last launched.
    */
   get lastLaunchedProduct(): Product {
     return this.#lastLaunchedProduct ?? this.defaultProduct;
   }
 
   /**
-   * @returns The name of the browser that will be launched by default. For
+   * The name of the browser that will be launched by default. For
    * `puppeteer`, this is influenced by your configuration. Otherwise, it's
    * `chrome`.
-   *
-   * @public
    */
   get defaultProduct(): Product {
     return this.configuration.defaultProduct ?? 'chrome';
@@ -266,8 +256,6 @@ export class PuppeteerNode extends Puppeteer {
    * {@link PuppeteerNode.lastLaunchedProduct | lastLaunchedProduct}.
    *
    * @returns The name of the browser that is under automation.
-   *
-   * @public
    */
   get product(): string {
     return this.#launcher.product;
@@ -277,8 +265,6 @@ export class PuppeteerNode extends Puppeteer {
    * @param options - Set of configurable options to set on the browser.
    *
    * @returns The default flags that Chromium will be launched with.
-   *
-   * @public
    */
   defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
     return this.#launcher.defaultArgs(options);

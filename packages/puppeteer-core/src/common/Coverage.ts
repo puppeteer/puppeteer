@@ -158,7 +158,7 @@ export class Coverage {
   }
 
   /**
-   * @returns Promise that resolves to the array of coverage reports for
+   * Promise that resolves to the array of coverage reports for
    * all scripts.
    *
    * @remarks
@@ -179,8 +179,9 @@ export class Coverage {
   }
 
   /**
-   * @returns Promise that resolves to the array of coverage reports
+   * Promise that resolves to the array of coverage reports
    * for all stylesheets.
+   *
    * @remarks
    * CSS Coverage doesn't include dynamically injected style tags
    * without sourceURLs.

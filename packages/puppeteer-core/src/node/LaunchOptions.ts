@@ -41,7 +41,7 @@ export interface BrowserLaunchArgumentOptions {
    */
   devtools?: boolean;
   /**
-   *
+   * Specify the debugging port number to use
    */
   debuggingPort?: number;
   /**

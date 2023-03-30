@@ -4,6 +4,8 @@ sidebar_label: Frame.title
 
 # Frame.title() method
 
+The frame's title.
+
 #### Signature:
 
 ```typescript
@@ -15,5 +17,3 @@ class Frame {
 **Returns:**
 
 Promise&lt;string&gt;
-
-the frame's title.

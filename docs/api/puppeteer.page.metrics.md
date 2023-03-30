@@ -4,6 +4,8 @@ sidebar_label: Page.metrics
 
 # Page.metrics() method
 
+Object containing metrics as key/value pairs.
+
 #### Signature:
 
 ```typescript
@@ -15,8 +17,6 @@ class Page {
 **Returns:**
 
 Promise&lt;[Metrics](./puppeteer.metrics.md)&gt;
-
-Object containing metrics as key/value pairs.
 
 - `Timestamp` : The timestamp when the metrics sample was taken.
 

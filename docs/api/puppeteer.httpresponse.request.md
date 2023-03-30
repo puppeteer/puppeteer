@@ -4,6 +4,8 @@ sidebar_label: HTTPResponse.request
 
 # HTTPResponse.request() method
 
+A matching [HTTPRequest](./puppeteer.httprequest.md) object.
+
 #### Signature:
 
 ```typescript
@@ -15,5 +17,3 @@ class HTTPResponse {
 **Returns:**
 
 [HTTPRequest](./puppeteer.httprequest.md)
-
-A matching [HTTPRequest](./puppeteer.httprequest.md) object.

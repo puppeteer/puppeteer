@@ -43,14 +43,14 @@ export class SecurityDetails {
   }
 
   /**
-   * @returns The name of the issuer of the certificate.
+   * The name of the issuer of the certificate.
    */
   issuer(): string {
     return this.#issuer;
   }
 
   /**
-   * @returns {@link https://en.wikipedia.org/wiki/Unix_time | Unix timestamp}
+   * {@link https://en.wikipedia.org/wiki/Unix_time | Unix timestamp}
    * marking the start of the certificate's validity.
    */
   validFrom(): number {
@@ -58,7 +58,7 @@ export class SecurityDetails {
   }
 
   /**
-   * @returns {@link https://en.wikipedia.org/wiki/Unix_time | Unix timestamp}
+   * {@link https://en.wikipedia.org/wiki/Unix_time | Unix timestamp}
    * marking the end of the certificate's validity.
    */
   validTo(): number {
@@ -66,21 +66,21 @@ export class SecurityDetails {
   }
 
   /**
-   * @returns The security protocol being used, e.g. "TLS 1.2".
+   * The security protocol being used, e.g. "TLS 1.2".
    */
   protocol(): string {
     return this.#protocol;
   }
 
   /**
-   * @returns The name of the subject to which the certificate was issued.
+   * The name of the subject to which the certificate was issued.
    */
   subjectName(): string {
     return this.#subjectName;
   }
 
   /**
-   * @returns The list of {@link https://en.wikipedia.org/wiki/Subject_Alternative_Name | subject alternative names (SANs)} of the certificate.
+   * The list of {@link https://en.wikipedia.org/wiki/Subject_Alternative_Name | subject alternative names (SANs)} of the certificate.
    */
   subjectAlternativeNames(): string[] {
     return this.#sanList;

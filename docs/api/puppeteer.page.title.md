@@ -4,6 +4,8 @@ sidebar_label: Page.title
 
 # Page.title() method
 
+The page's title
+
 #### Signature:
 
 ```typescript
@@ -15,8 +17,6 @@ class Page {
 **Returns:**
 
 Promise&lt;string&gt;
-
-The page's title
 
 ## Remarks
 

@@ -4,6 +4,8 @@ sidebar_label: Dialog.accept
 
 # Dialog.accept() method
 
+A promise that resolves when the dialog has been accepted.
+
 #### Signature:
 
 ```typescript
@@ -21,5 +23,3 @@ class Dialog {
 **Returns:**
 
 Promise&lt;void&gt;
-
-A promise that resolves when the dialog has been accepted.

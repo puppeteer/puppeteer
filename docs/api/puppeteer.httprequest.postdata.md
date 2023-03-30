@@ -4,6 +4,8 @@ sidebar_label: HTTPRequest.postData
 
 # HTTPRequest.postData() method
 
+The request's post body, if any.
+
 #### Signature:
 
 ```typescript
@@ -15,5 +17,3 @@ class HTTPRequest {
 **Returns:**
 
 string \| undefined
-
-the request's post body, if any.
