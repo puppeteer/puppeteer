@@ -14,31 +14,31 @@
  * limitations under the License.
  */
 
-import {describeInstallation} from './describeInstallation.js';
+import {configureSandbox} from './sandbox.js';
 import {readAsset} from './util.js';
 
-describeInstallation(
-  '`puppeteer-core`',
-  {dependencies: ['@puppeteer/browsers', 'puppeteer-core']},
-  ({itEvaluates}) => {
-    itEvaluates('CommonJS', {commonjs: true}, async () => {
-      return readAsset('puppeteer-core', 'requires.cjs');
-    });
+describe('`puppeteer-core`', () => {
+  configureSandbox({
+    dependencies: ['@puppeteer/browsers', 'puppeteer-core'],
+  });
 
-    itEvaluates('ES modules', async () => {
-      return readAsset('puppeteer-core', 'imports.js');
-    });
+  it('evaluates CommonJS', async function () {
+    const script = await readAsset('puppeteer-core', 'requires.cjs');
+    await this.runScript(script, 'cjs');
+  });
 
-    for (const product of ['firefox', 'chrome']) {
-      itEvaluates(
-        `\`launch\` for \`${product}\` with a bad \`executablePath\``,
-        async () => {
-          return (await readAsset('puppeteer-core', 'launch.js')).replace(
-            '${product}',
-            product
-          );
-        }
+  it('evaluates ES modules', async function () {
+    const script = await readAsset('puppeteer-core', 'imports.js');
+    await this.runScript(script, 'mjs');
+  });
+
+  for (const product of ['firefox', 'chrome']) {
+    it(`\`launch\` for \`${product}\` with a bad \`executablePath\``, async function () {
+      const script = (await readAsset('puppeteer-core', 'launch.js')).replace(
+        '${product}',
+        product
       );
-    }
+      await this.runScript(script, 'mjs');
+    });
   }
-);
+});
