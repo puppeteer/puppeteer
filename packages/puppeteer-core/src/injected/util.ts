@@ -49,7 +49,8 @@ export function* pierce(root: Node): IterableIterator<Node | ShadowRoot> {
  * @internal
  */
 export function* pierceAll(root: Node): IterableIterator<Node | ShadowRoot> {
-  yield* pierce(root);
+  root = pierce(root).next().value;
+  yield root;
   const walkers = [document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT)];
   for (const walker of walkers) {
     let node: Element | null;

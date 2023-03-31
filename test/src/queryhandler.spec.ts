@@ -404,6 +404,24 @@ describe('Query handler tests', function () {
           })
         ).toBeTruthy();
       }
+      {
+        const elements = await page.$$('#c >>>> div');
+        assert(elements[0], 'Could not find element');
+        expect(
+          await elements[0]?.evaluate(element => {
+            return element.id === 'd';
+          })
+        ).toBeTruthy();
+      }
+      {
+        const elements = await page.$$('#c >>> div');
+        assert(elements[0], 'Could not find element');
+        expect(
+          await elements[0]?.evaluate(element => {
+            return element.id === 'd';
+          })
+        ).toBeTruthy();
+      }
     });
 
     it('should work with text selectors', async () => {
