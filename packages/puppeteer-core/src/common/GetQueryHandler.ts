@@ -59,7 +59,7 @@ export function getQueryHandlerAndSelector(selector: string): {
     for (const [name, QueryHandler] of handlerMap) {
       for (const separator of QUERY_SEPARATORS) {
         const prefix = `${name}${separator}`;
-        if (selector.startsWith(prefix)) {
+        if (selector?.startsWith(prefix)) {
           selector = selector.slice(prefix.length);
           return {updatedSelector: selector, QueryHandler};
         }
