@@ -6,7 +6,8 @@
       "component": "puppeteer"
     },
     "packages/puppeteer-core": {
-      "component": "puppeteer-core"
+      "component": "puppeteer-core",
+      "release-as": "19.8.3"
     },
     "packages/testserver": {},
     "packages/ng-schematics": {},
