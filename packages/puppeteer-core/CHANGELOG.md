@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.8.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.8.1...puppeteer-core-v19.8.3) (2023-04-03)
+
+
+### Bug Fixes
+
+* use shadowRoot for tree walker ([#9950](https://github.com/puppeteer/puppeteer/issues/9950)) ([728547d](https://github.com/puppeteer/puppeteer/commit/728547d4608e8c601e209ede860493b1986da174))
+
 ## [19.8.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.8.0...puppeteer-core-v19.8.1) (2023-03-28)
 
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/puppeteer/puppeteer/compare/browsers-v0.3.1...browsers-v0.3.2) (2023-04-03)
+
+
+### Bug Fixes
+
+* typo in the browsers package ([#9957](https://github.com/puppeteer/puppeteer/issues/9957)) ([c780384](https://github.com/puppeteer/puppeteer/commit/c7803844cf10b6edaa2da83134029b7acf5b45b2))
+
 ## [0.3.1](https://github.com/puppeteer/puppeteer/compare/browsers-v0.3.0...browsers-v0.3.1) (2023-03-29)
 
 

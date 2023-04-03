@@ -1,6 +1,6 @@
 {
   "name": "puppeteer",
-  "version": "19.8.2",
+  "version": "19.8.3",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "keywords": [
     "puppeteer",
@@ -120,7 +120,7 @@
     "https-proxy-agent": "5.0.1",
     "progress": "2.0.3",
     "proxy-from-env": "1.1.0",
-    "puppeteer-core": "19.8.1",
-    "@puppeteer/browsers": "0.3.1"
+    "puppeteer-core": "19.8.3",
+    "@puppeteer/browsers": "0.3.2"
   }
 }
