@@ -383,7 +383,7 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - windows-latest
+          - puppeteer-win-custom-runner
           - macos-latest
     steps:
       - name: Checkout
