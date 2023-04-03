@@ -235,7 +235,7 @@ class Process {
         this.kill();
         process.exit(130);
       case 'SIGTERM':
-      case 'SIGUP':
+      case 'SIGHUP':
         this.kill();
         break;
     }
