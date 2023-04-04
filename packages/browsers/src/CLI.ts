@@ -18,8 +18,9 @@ import {stdin as input, stdout as output} from 'process';
 import * as readline from 'readline';
 
 import ProgressBar from 'progress';
-import yargs from 'yargs';
+import type * as Yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
+import yargs from 'yargs/yargs';
 
 import {
   resolveBuildId,
@@ -69,7 +70,7 @@ export class CLI {
     this.#rl = rl;
   }
 
-  #defineBrowserParameter(yargs: yargs.Argv<unknown>): void {
+  #defineBrowserParameter(yargs: Yargs.Argv<unknown>): void {
     yargs.positional('browser', {
       description:
         'Which browser to install <browser>[@<buildId|latest>]. `latest` will try to find the latest available build. `buildId` is a browser-specific identifier such as a version or a revision.',
@@ -83,7 +84,7 @@ export class CLI {
     });
   }
 
-  #definePlatformParameter(yargs: yargs.Argv<unknown>): void {
+  #definePlatformParameter(yargs: Yargs.Argv<unknown>): void {
     yargs.option('platform', {
       type: 'string',
       desc: 'Platform that the binary needs to be compatible with.',
@@ -92,7 +93,7 @@ export class CLI {
     });
   }
 
-  #definePathParameter(yargs: yargs.Argv<unknown>, required = false): void {
+  #definePathParameter(yargs: Yargs.Argv<unknown>, required = false): void {
     yargs.option('path', {
       type: 'string',
       desc: 'Path to the root folder for the browser downloads and installation. The installation folder structure is compatible with the cache structure used by Puppeteer.',
@@ -105,7 +106,8 @@ export class CLI {
   }
 
   async run(argv: string[]): Promise<void> {
-    await yargs(hideBin(argv))
+    const yargsInstance = yargs(hideBin(argv));
+    await yargsInstance
       .scriptName('@puppeteer/browsers')
       .command(
         'install <browser>',
@@ -254,7 +256,7 @@ export class CLI {
       )
       .demandCommand(1)
       .help()
-      .wrap(Math.min(120, yargs.terminalWidth()))
+      .wrap(Math.min(120, yargsInstance.terminalWidth()))
       .parse();
   }
 
