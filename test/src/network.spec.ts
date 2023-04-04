@@ -27,7 +27,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import utils from './utils.js';
+import {attachFrame, isFavicon} from './utils.js';
 
 describe('network', function () {
   setupTestBrowserHooks();
@@ -39,9 +39,9 @@ describe('network', function () {
 
       const requests: HTTPRequest[] = [];
       page.on('request', request => {
-        return !utils.isFavicon(request) && requests.push(request);
+        return !isFavicon(request) && requests.push(request);
       });
-      (await page.goto(server.EMPTY_PAGE))!;
+      await page.goto(server.EMPTY_PAGE);
       expect(requests.length).toBe(1);
     });
     it('should fire for iframes', async () => {
@@ -49,10 +49,10 @@ describe('network', function () {
 
       const requests: HTTPRequest[] = [];
       page.on('request', request => {
-        return !utils.isFavicon(request) && requests.push(request);
+        return !isFavicon(request) && requests.push(request);
       });
-      (await page.goto(server.EMPTY_PAGE))!;
-      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await page.goto(server.EMPTY_PAGE);
+      await attachFrame(page, 'frame1', server.EMPTY_PAGE);
       expect(requests.length).toBe(2);
     });
     it('should fire for fetches', async () => {
@@ -60,9 +60,9 @@ describe('network', function () {
 
       const requests: HTTPRequest[] = [];
       page.on('request', request => {
-        return !utils.isFavicon(request) && requests.push(request);
+        return !isFavicon(request) && requests.push(request);
       });
-      (await page.goto(server.EMPTY_PAGE))!;
+      await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
         return fetch('/empty.html');
       });
@@ -75,31 +75,31 @@ describe('network', function () {
 
       const requests: HTTPRequest[] = [];
       page.on('request', request => {
-        return !utils.isFavicon(request) && requests.push(request);
+        return !isFavicon(request) && requests.push(request);
       });
-      (await page.goto(server.EMPTY_PAGE))!;
+      await page.goto(server.EMPTY_PAGE);
       expect(requests.length).toBe(1);
       expect(requests[0]!.frame()).toBe(page.mainFrame());
     });
     it('should work for subframe navigation request', async () => {
       const {page, server} = getTestState();
 
-      (await page.goto(server.EMPTY_PAGE))!;
+      await page.goto(server.EMPTY_PAGE);
       const requests: HTTPRequest[] = [];
       page.on('request', request => {
-        return !utils.isFavicon(request) && requests.push(request);
+        return !isFavicon(request) && requests.push(request);
       });
-      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await attachFrame(page, 'frame1', server.EMPTY_PAGE);
       expect(requests.length).toBe(1);
       expect(requests[0]!.frame()).toBe(page.frames()[1]!);
     });
     it('should work for fetch requests', async () => {
       const {page, server} = getTestState();
 
-      (await page.goto(server.EMPTY_PAGE))!;
+      await page.goto(server.EMPTY_PAGE);
       let requests: HTTPRequest[] = [];
       page.on('request', request => {
-        return !utils.isFavicon(request) && requests.push(request);
+        return !isFavicon(request) && requests.push(request);
       });
       await page.evaluate(() => {
         return fetch('/digits/1.png');
@@ -199,8 +199,7 @@ describe('network', function () {
       const responses = new Map();
       page.on('response', r => {
         return (
-          !utils.isFavicon(r.request()) &&
-          responses.set(r.url().split('/').pop(), r)
+          !isFavicon(r.request()) && responses.set(r.url().split('/').pop(), r)
         );
       });
 
@@ -229,9 +228,7 @@ describe('network', function () {
 
       const responses = new Map();
       page.on('response', r => {
-        return (
-          !utils.isFavicon(r) && responses.set(r.url().split('/').pop(), r)
-        );
+        return !isFavicon(r) && responses.set(r.url().split('/').pop(), r);
       });
 
       // Load and re-load to make sure serviceworker is installed and running.
@@ -255,13 +252,13 @@ describe('network', function () {
     it('should work', async () => {
       const {page, server} = getTestState();
 
-      (await page.goto(server.EMPTY_PAGE))!;
+      await page.goto(server.EMPTY_PAGE);
       server.setRoute('/post', (_req, res) => {
         return res.end();
       });
       let request!: HTTPRequest;
       page.on('request', r => {
-        if (!utils.isFavicon(r)) {
+        if (!isFavicon(r)) {
           request = r;
         }
       });
@@ -319,7 +316,7 @@ describe('network', function () {
     it('should wait until response completes', async () => {
       const {page, server} = getTestState();
 
-      (await page.goto(server.EMPTY_PAGE))!;
+      await page.goto(server.EMPTY_PAGE);
       // Setup server to trap request.
       let serverResponse!: ServerResponse;
       server.setRoute('/get', (_req, res) => {
@@ -337,7 +334,7 @@ describe('network', function () {
       // send request and wait for server response
       const [pageResponse] = await Promise.all([
         page.waitForResponse(r => {
-          return !utils.isFavicon(r.request());
+          return !isFavicon(r.request());
         }),
         page.evaluate(() => {
           return fetch('./get', {method: 'GET'});
@@ -466,7 +463,7 @@ describe('network', function () {
       page.on('response', response => {
         return responses.push(response);
       });
-      (await page.goto(server.EMPTY_PAGE))!;
+      await page.goto(server.EMPTY_PAGE);
       expect(responses.length).toBe(1);
       expect(responses[0]!.timing()!.receiveHeadersEnd).toBeGreaterThan(0);
     });
@@ -480,7 +477,7 @@ describe('network', function () {
       page.on('request', request => {
         return requests.push(request);
       });
-      (await page.goto(server.EMPTY_PAGE))!;
+      await page.goto(server.EMPTY_PAGE);
       expect(requests.length).toBe(1);
       expect(requests[0]!.url()).toBe(server.EMPTY_PAGE);
       expect(requests[0]!.resourceType()).toBe('document');
@@ -510,7 +507,7 @@ describe('network', function () {
       page.on('response', response => {
         return responses.push(response);
       });
-      (await page.goto(server.EMPTY_PAGE))!;
+      await page.goto(server.EMPTY_PAGE);
       expect(responses.length).toBe(1);
       expect(responses[0]!.url()).toBe(server.EMPTY_PAGE);
       expect(responses[0]!.status()).toBe(200);
@@ -560,7 +557,7 @@ describe('network', function () {
       page.on('requestfinished', request => {
         return requests.push(request);
       });
-      (await page.goto(server.EMPTY_PAGE))!;
+      await page.goto(server.EMPTY_PAGE);
       expect(requests.length).toBe(1);
       expect(requests[0]!.url()).toBe(server.EMPTY_PAGE);
       expect(requests[0]!.response()).toBeTruthy();
@@ -580,7 +577,7 @@ describe('network', function () {
       page.on('requestfinished', () => {
         return events.push('requestfinished');
       });
-      (await page.goto(server.EMPTY_PAGE))!;
+      await page.goto(server.EMPTY_PAGE);
       expect(events).toEqual(['request', 'response', 'requestfinished']);
     });
     it('should support redirects', async () => {
@@ -661,7 +658,7 @@ describe('network', function () {
       page.on('request', request => {
         return requests.push(request);
       });
-      (await page.goto(server.PREFIX + '/pptr.png'))!;
+      await page.goto(server.PREFIX + '/pptr.png');
       expect(requests[0]!.isNavigationRequest()).toBe(true);
     });
   });
@@ -807,7 +804,7 @@ describe('network', function () {
 
     it('Same-origin set-cookie subresource', async () => {
       const {page, server} = getTestState();
-      (await page.goto(server.EMPTY_PAGE))!;
+      await page.goto(server.EMPTY_PAGE);
 
       const setCookieString = 'foo=bar';
       server.setRoute('/foo', (_req, res) => {

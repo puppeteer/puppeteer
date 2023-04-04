@@ -66,6 +66,7 @@ function customBDDInterface(suite: Mocha.Suite) {
           title: title,
           file: file,
           fn: fn,
+          isOnly: true,
         });
       };
 
@@ -81,12 +82,21 @@ function customBDDInterface(suite: Mocha.Suite) {
       // @ts-ignore
       context['describe'] = describe;
 
-      function it(title: string, fn: Mocha.TestFunction) {
+      function it(title: string, fn: Mocha.TestFunction, itOnly = false) {
         const suite = suites[0]!;
         const test = new Mocha.Test(title, suite.isPending() ? undefined : fn);
         test.file = file;
         test.parent = suite;
-        if (shouldSkipTest(test)) {
+
+        const describeOnly = Boolean(
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          suite.parent?._onlySuites.find(child => {
+            return child === suite;
+          })
+        );
+
+        if (shouldSkipTest(test) && !(itOnly || describeOnly)) {
           const test = new Mocha.Test(title);
           test.file = file;
           suite.addTest(test);
@@ -98,7 +108,10 @@ function customBDDInterface(suite: Mocha.Suite) {
       }
 
       it.only = function (title: string, fn: Mocha.TestFunction) {
-        return common.test.only(mocha, context['it'](title, fn));
+        return common.test.only(
+          mocha,
+          (context['it'] as typeof it)(title, fn, true)
+        );
       };
 
       it.skip = function (title: string) {
