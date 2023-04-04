@@ -18,12 +18,11 @@ import assert from 'assert';
 import {readdir} from 'fs/promises';
 import {join} from 'path';
 
-import {describeInstallation} from './describeInstallation.js';
+import {configureSandbox} from './sandbox.js';
 import {readAsset} from './util.js';
 
-describeInstallation(
-  '`puppeteer` with Firefox',
-  {
+describe('`puppeteer` with Firefox', () => {
+  configureSandbox({
     dependencies: ['@puppeteer/browsers', 'puppeteer-core', 'puppeteer'],
     env: cwd => {
       return {
@@ -31,18 +30,18 @@ describeInstallation(
         PUPPETEER_PRODUCT: 'firefox',
       };
     },
-  },
-  ({itEvaluates}) => {
-    itEvaluates('CommonJS', {commonjs: true}, async cwd => {
-      const files = await readdir(join(cwd, '.cache', 'puppeteer'));
-      assert.equal(files.length, 1);
-      assert.equal(files[0], 'firefox');
+  });
 
-      return readAsset('puppeteer-core', 'requires.cjs');
-    });
+  it('evaluates CommonJS', async function () {
+    const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));
+    assert.equal(files.length, 1);
+    assert.equal(files[0], 'firefox');
+    const script = await readAsset('puppeteer-core', 'requires.cjs');
+    await this.runScript(script, 'cjs');
+  });
 
-    itEvaluates('ES modules', async () => {
-      return readAsset('puppeteer-core', 'imports.js');
-    });
-  }
-);
+  it('evaluates ES modules', async function () {
+    const script = await readAsset('puppeteer-core', 'imports.js');
+    await this.runScript(script, 'mjs');
+  });
+});

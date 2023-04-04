@@ -18,27 +18,31 @@ import assert from 'assert';
 import {readdir, writeFile} from 'fs/promises';
 import {join} from 'path';
 
-import {describeInstallation} from './describeInstallation.js';
+import {configureSandbox} from './sandbox.js';
 import {readAsset} from './util.js';
 
-describeInstallation(
-  '`puppeteer` with configuration',
-  {
-    dependencies: ['puppeteer-core', '@puppeteer/browsers', 'puppeteer'],
+describe('`puppeteer` with configuration', () => {
+  configureSandbox({
+    dependencies: ['@puppeteer/browsers', 'puppeteer-core', 'puppeteer'],
+    env: cwd => {
+      return {
+        PUPPETEER_CACHE_DIR: join(cwd, '.cache', 'puppeteer'),
+      };
+    },
     before: async cwd => {
       await writeFile(
         join(cwd, '.puppeteerrc.cjs'),
         await readAsset('puppeteer', 'configuration', '.puppeteerrc.cjs')
       );
     },
-  },
-  ({itEvaluates}) => {
-    itEvaluates('properly', async cwd => {
-      const files = await readdir(join(cwd, '.cache', 'puppeteer'));
-      assert.equal(files.length, 1);
-      assert.equal(files[0], 'chrome');
+  });
 
-      return readAsset('puppeteer', 'basic.js');
-    });
-  }
-);
+  it('evaluates', async function () {
+    const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));
+    assert.equal(files.length, 1);
+    assert.equal(files[0], 'chrome');
+
+    const script = await readAsset('puppeteer', 'basic.js');
+    await this.runScript(script, 'mjs');
+  });
+});

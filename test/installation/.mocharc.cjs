@@ -18,6 +18,4 @@
 module.exports = {
   spec: ['build/**/*.spec.js'],
   timeout: '240000ms',
-  // Parallel processing fails on other package managers due to caching.
-  parallel: (process.env['PKG_MANAGER'] ?? 'npm') === 'npm',
 };
