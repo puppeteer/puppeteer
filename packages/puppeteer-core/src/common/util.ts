@@ -369,7 +369,16 @@ export async function importFSPromises(): Promise<
   typeof import('fs/promises')
 > {
   if (!fs) {
-    fs = await import('fs/promises');
+    try {
+      fs = await import('fs/promises');
+    } catch (error) {
+      if (error instanceof TypeError) {
+        throw new Error(
+          'Cannot write to a path outside of a Node-like environment.'
+        );
+      }
+      throw error;
+    }
   }
   return fs;
 }
@@ -383,17 +392,7 @@ export async function getReadableAsBuffer(
 ): Promise<Buffer | null> {
   const buffers = [];
   if (path) {
-    let fs: typeof import('fs/promises');
-    try {
-      fs = await importFSPromises();
-    } catch (error) {
-      if (error instanceof TypeError) {
-        throw new Error(
-          'Cannot write to a path outside of a Node-like environment.'
-        );
-      }
-      throw error;
-    }
+    const fs = await importFSPromises();
     const fileHandle = await fs.open(path, 'w+');
     for await (const chunk of readable) {
       buffers.push(chunk);

@@ -2116,18 +2116,9 @@ export class Page extends EventEmitter {
       return;
     }
 
-    try {
-      const fs = await importFSPromises();
+    const fs = await importFSPromises();
 
-      await fs.writeFile(path, buffer);
-    } catch (error) {
-      if (error instanceof TypeError) {
-        throw new Error(
-          'Can only pass a file path in a Node-like environment.'
-        );
-      }
-      throw error;
-    }
+    await fs.writeFile(path, buffer);
   }
 
   /**
