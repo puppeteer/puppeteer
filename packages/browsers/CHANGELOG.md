@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.3](https://github.com/puppeteer/puppeteer/compare/browsers-v0.3.2...browsers-v0.3.3) (2023-04-04)
+
+
+### Bug Fixes
+
+* **browsers:** update package json ([#9968](https://github.com/puppeteer/puppeteer/issues/9968)) ([817288c](https://github.com/puppeteer/puppeteer/commit/817288cd901121ddc8a44226eda689bb784cee61))
+* **browsers:** various fixes and improvements ([#9966](https://github.com/puppeteer/puppeteer/issues/9966)) ([f1211cb](https://github.com/puppeteer/puppeteer/commit/f1211cbec091ec669de019aeb7fb4f011a81c1d7))
+
 ## [0.3.2](https://github.com/puppeteer/puppeteer/compare/browsers-v0.3.1...browsers-v0.3.2) (2023-04-03)
 
 
