@@ -118,4 +118,16 @@ function spliceIntoSection(
     ])
     .outputs(['docs/api'])
     .build();
+
+  job('', async ({inputs, outputs}) => {
+    await rm(outputs[0]!, {recursive: true, force: true});
+    generateDocs(inputs[0]!, outputs[0]!);
+    spawnAndLog('prettier', '--ignore-path', 'none', '--write', 'docs');
+  })
+    .inputs([
+      'docs/browsers.api.json',
+      'tools/internal/custom_markdown_documenter.ts',
+    ])
+    .outputs(['docs/browsers-api'])
+    .build();
 })();

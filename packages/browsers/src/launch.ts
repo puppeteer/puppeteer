@@ -117,7 +117,7 @@ export function computeSystemExecutablePath(options: SystemOptions): string {
   return path;
 }
 
-type LaunchOptions = {
+export type LaunchOptions = {
   executablePath: string;
   pipe?: boolean;
   dumpio?: boolean;
@@ -284,10 +284,6 @@ class Process {
   }
 
   hasClosed(): Promise<void> {
-    return this.#browserProcessExiting;
-  }
-
-  closed(): Promise<void> {
     return this.#browserProcessExiting;
   }
 
