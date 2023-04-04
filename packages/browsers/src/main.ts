@@ -18,6 +18,7 @@ export {
   launch,
   computeExecutablePath,
   computeSystemExecutablePath,
+  TimeoutError,
   CDP_WEBSOCKET_ENDPOINT_REGEX,
   WEBDRIVER_BIDI_WEBSOCKET_ENDPOINT_REGEX,
 } from './launcher.js';
@@ -28,6 +29,7 @@ export {
   Browser,
   BrowserPlatform,
   ChromeReleaseChannel,
+  createProfile,
 } from './browser-data/browser-data.js';
 export {CLI, makeProgressCallback} from './CLI.js';
 export {Cache} from './Cache.js';

@@ -122,11 +122,12 @@ type LaunchOptions = {
   pipe?: boolean;
   dumpio?: boolean;
   args?: string[];
-  env?: Record<string, string>;
+  env?: Record<string, string | undefined>;
   handleSIGINT?: boolean;
   handleSIGTERM?: boolean;
   handleSIGHUP?: boolean;
   detached?: boolean;
+  onExit?: () => Promise<void>;
 };
 
 export function launch(opts: LaunchOptions): Process {
@@ -143,6 +144,11 @@ class Process {
   #args: string[];
   #browserProcess: childProcess.ChildProcess;
   #exited = false;
+  // The browser process can be closed externally or from the driver process. We
+  // need to invoke the hooks only once though but we don't know how many times
+  // we will be invoked.
+  #hooksRan = false;
+  #onExitHook = async () => {};
   #browserProcessExiting: Promise<void>;
 
   constructor(opts: LaunchOptions) {
@@ -190,13 +196,34 @@ class Process {
     if (opts.handleSIGHUP) {
       process.on('SIGHUP', this.#onDriverProcessSignal);
     }
-    this.#browserProcessExiting = new Promise(resolve => {
-      this.#browserProcess.once('exit', () => {
-        this.#exited = true;
+    if (opts.onExit) {
+      this.#onExitHook = opts.onExit;
+    }
+    this.#browserProcessExiting = new Promise((resolve, reject) => {
+      this.#browserProcess.once('exit', async () => {
         this.#clearListeners();
+        this.#exited = true;
+        try {
+          await this.#runHooks();
+        } catch (err) {
+          reject(err);
+          return;
+        }
         resolve();
       });
     });
+  }
+
+  async #runHooks() {
+    if (this.#hooksRan) {
+      return;
+    }
+    this.#hooksRan = true;
+    await this.#onExitHook();
+  }
+
+  get nodeProcess(): childProcess.ChildProcess {
+    return this.#browserProcess;
   }
 
   #configureStdio(opts: {
@@ -236,16 +263,21 @@ class Process {
         process.exit(130);
       case 'SIGTERM':
       case 'SIGHUP':
-        this.kill();
+        this.close();
         break;
     }
   };
 
-  close(): Promise<void> {
+  async close(): Promise<void> {
+    await this.#runHooks();
     if (this.#exited) {
-      return Promise.resolve();
+      return this.#browserProcessExiting;
     }
     this.kill();
+    return this.#browserProcessExiting;
+  }
+
+  hasClosed(): Promise<void> {
     return this.#browserProcessExiting;
   }
 
@@ -329,6 +361,9 @@ class Process {
                 error ? ' ' + error.message : ''
               }`,
               stderr,
+              '',
+              'TROUBLESHOOTING: https://pptr.dev/troubleshooting',
+              '',
             ].join('\n')
           )
         );
@@ -337,7 +372,7 @@ class Process {
       function onTimeout(): void {
         cleanup();
         reject(
-          new Error(
+          new TimeoutError(
             `Timed out after ${timeout} ms while waiting for the WS endpoint URL to appear in stdout!`
           )
         );
@@ -402,4 +437,15 @@ export function isErrnoException(obj: unknown): obj is NodeJS.ErrnoException {
     isErrorLike(obj) &&
     ('errno' in obj || 'code' in obj || 'path' in obj || 'syscall' in obj)
   );
+}
+
+export class TimeoutError extends Error {
+  /**
+   * @internal
+   */
+  constructor(message?: string) {
+    super(message);
+    this.name = this.constructor.name;
+    Error.captureStackTrace(this, this.constructor);
+  }
 }

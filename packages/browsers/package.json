@@ -20,7 +20,7 @@
   },
   "wireit": {
     "build": {
-      "command": "tsc -b && chmod a+x lib/cjs/main-cli.js lib/esm/main-cli.js",
+      "command": "tsc -b && chmod a+x lib/cjs/main-cli.js lib/esm/main-cli.js && echo '{\"type\":\"module\"}' > lib/esm/package.json",
       "files": [
         "src/**/*.ts",
         "tsconfig.json"
