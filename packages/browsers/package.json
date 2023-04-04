@@ -12,6 +12,8 @@
     "@puppeteer/browsers": "lib/cjs/main-cli.js"
   },
   "main": "./lib/cjs/main.js",
+  "module": "./lib/esm/main.js",
+  "type": "commonjs",
   "exports": {
     ".": {
       "import": "./lib/esm/main.js",
