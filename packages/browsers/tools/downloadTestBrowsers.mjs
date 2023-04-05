@@ -38,7 +38,6 @@ function getBrowser(str) {
 }
 
 const cacheDir = path.normalize(path.join('.', 'test', 'cache'));
-const promises = [];
 
 for (const version of Object.keys(versions)) {
   const browser = getBrowser(version);
@@ -50,36 +49,30 @@ for (const version of Object.keys(versions)) {
   const buildId = versions[version];
 
   for (const platform of Object.values(BrowserPlatform)) {
-    promises.push(
-      (async function download(buildId, platform) {
-        const targetPath = path.join(
-          cacheDir,
-          'server',
-          ...downloadPaths[browser](platform, buildId)
-        );
-
-        if (fs.existsSync(targetPath)) {
-          return;
-        }
-
-        const result = await fetch({
-          browser,
-          buildId,
-          platform,
-          cacheDir: path.join(cacheDir, 'tmp'),
-          install: false,
-        });
-
-        fs.mkdirSync(path.dirname(targetPath), {
-          recursive: true,
-        });
-        fs.copyFileSync(result.path, targetPath);
-      })(buildId, platform)
+    const targetPath = path.join(
+      cacheDir,
+      'server',
+      ...downloadPaths[browser](platform, buildId)
     );
+
+    if (fs.existsSync(targetPath)) {
+      continue;
+    }
+
+    const result = await fetch({
+      browser,
+      buildId,
+      platform,
+      cacheDir: path.join(cacheDir, 'tmp'),
+      install: false,
+    });
+
+    fs.mkdirSync(path.dirname(targetPath), {
+      recursive: true,
+    });
+    fs.copyFileSync(result.path, targetPath);
   }
 }
-
-await Promise.all(promises);
 
 fs.rmSync(path.join(cacheDir, 'tmp'), {
   recursive: true,
