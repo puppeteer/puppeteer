@@ -291,17 +291,16 @@ class Process {
     ) {
       try {
         if (process.platform === 'win32') {
-          childProcess.exec(
-            `taskkill /pid ${this.#browserProcess.pid} /T /F`,
-            error => {
-              if (error) {
-                // taskkill can fail to kill the process e.g. due to missing permissions.
-                // Let's kill the process via Node API. This delays killing of all child
-                // processes of `this.proc` until the main Node.js process dies.
-                this.#browserProcess.kill();
-              }
-            }
-          );
+          try {
+            childProcess.execSync(
+              `taskkill /pid ${this.#browserProcess.pid} /T /F`
+            );
+          } catch (error) {
+            // taskkill can fail to kill the process e.g. due to missing permissions.
+            // Let's kill the process via Node API. This delays killing of all child
+            // processes of `this.proc` until the main Node.js process dies.
+            this.#browserProcess.kill();
+          }
         } else {
           // on linux the process group can be killed with the group id prefixed with
           // a minus sign. The process group id is the group leader's pid.

@@ -15,6 +15,7 @@
  */
 
 import assert from 'assert';
+import {execSync} from 'child_process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -26,6 +27,7 @@ import {
   Browser,
   BrowserPlatform,
   Cache,
+  createProfile,
 } from '../../../lib/cjs/main.js';
 import {testFirefoxBuildId} from '../versions.js';
 
@@ -59,10 +61,37 @@ describe('Firefox', () => {
     });
 
     afterEach(() => {
-      new Cache(tmpDir).clear();
+      try {
+        new Cache(tmpDir).clear();
+      } catch (err) {
+        if (os.platform() === 'win32') {
+          console.log(execSync('tasklist').toString('utf-8'));
+        }
+        throw err;
+      }
     });
 
     it('should launch a Firefox browser', async () => {
+      const userDataDir = path.join(tmpDir, 'profile');
+      function getArgs(): string[] {
+        const firefoxArguments = ['--no-remote'];
+        switch (os.platform()) {
+          case 'darwin':
+            firefoxArguments.push('--foreground');
+            break;
+          case 'win32':
+            firefoxArguments.push('--wait-for-browser');
+            break;
+        }
+        firefoxArguments.push('--profile', userDataDir);
+        firefoxArguments.push('--headless');
+        firefoxArguments.push('about:blank');
+        return firefoxArguments;
+      }
+      await createProfile(Browser.FIREFOX, {
+        path: userDataDir,
+        preferences: {},
+      });
       const executablePath = computeExecutablePath({
         cacheDir: tmpDir,
         browser: Browser.FIREFOX,
@@ -70,7 +99,7 @@ describe('Firefox', () => {
       });
       const process = launch({
         executablePath,
-        args: [`--user-data-dir=${path.join(tmpDir, 'profile')}`],
+        args: getArgs(),
       });
       await process.close();
     });
