@@ -83,8 +83,7 @@ describe('Firefox', () => {
             firefoxArguments.push('--wait-for-browser');
             break;
         }
-        firefoxArguments.push('--profile');
-        firefoxArguments.push(userDataDir);
+        firefoxArguments.push('--profile', userDataDir);
         firefoxArguments.push('--headless');
         firefoxArguments.push('about:blank');
         return firefoxArguments;
