@@ -485,6 +485,13 @@ export class NetworkManager extends EventEmitter {
       );
     }
 
+    // Chromium sends wrong extraInfo events for responses served from cache.
+    // See https://github.com/puppeteer/puppeteer/issues/9965 and
+    // https://crbug.com/1340398.
+    if (responseReceived.response.fromDiskCache) {
+      extraInfo = null;
+    }
+
     const response = new HTTPResponse(
       this.#client,
       request,

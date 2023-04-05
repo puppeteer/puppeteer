@@ -24,6 +24,9 @@ import {
   NetworkManagerEmittedEvents,
 } from 'puppeteer-core/internal/common/NetworkManager.js';
 
+// TODO: develop a helper to generate fake network events for attributes that
+// are not relevant for the network manager to make tests shorter.
+
 class MockCDPSession extends EventEmitter {
   async send(): Promise<any> {}
   connection() {
@@ -1127,5 +1130,408 @@ describe('NetworkManager', () => {
     expect(requests.length).toBe(1);
     expect(responses.length).toBe(1);
     expect(requests[0]!.response()).not.toEqual(null);
+  });
+
+  it(`should handle cached redirects`, async () => {
+    const mockCDPSession = new MockCDPSession();
+    const manager = new NetworkManager(mockCDPSession, true, {
+      frame(): Frame | null {
+        return null;
+      },
+    });
+
+    const responses: HTTPResponse[] = [];
+    const requests: HTTPRequest[] = [];
+    manager.on(
+      NetworkManagerEmittedEvents.Response,
+      (response: HTTPResponse) => {
+        responses.push(response);
+      }
+    );
+
+    manager.on(NetworkManagerEmittedEvents.Request, (request: HTTPRequest) => {
+      requests.push(request);
+    });
+
+    mockCDPSession.emit('Network.requestWillBeSent', {
+      requestId: '6D76C8ACAECE880C722FA515AD380015',
+      loaderId: '6D76C8ACAECE880C722FA515AD380015',
+      documentURL: 'http://localhost:3000/',
+      request: {
+        url: 'http://localhost:3000/',
+        method: 'GET',
+        headers: {
+          'Upgrade-Insecure-Requests': '1',
+          'User-Agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
+        },
+        mixedContentType: 'none',
+        initialPriority: 'VeryHigh',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+        isSameSite: true,
+      },
+      timestamp: 31949.95878,
+      wallTime: 1680698353.570949,
+      initiator: {type: 'other'},
+      redirectHasExtraInfo: false,
+      type: 'Document',
+      frameId: '4A6E05B1781795F1B586C1F8F8B2CBE4',
+      hasUserGesture: false,
+    });
+    mockCDPSession.emit('Network.requestWillBeSentExtraInfo', {
+      requestId: '6D76C8ACAECE880C722FA515AD380015',
+      associatedCookies: [],
+      headers: {
+        Accept:
+          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8',
+        Connection: 'keep-alive',
+        Host: 'localhost:3000',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Sec-Fetch-User': '?1',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent':
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
+        'sec-ch-ua-mobile': '?0',
+      },
+      connectTiming: {requestTime: 31949.959838},
+      siteHasCookieInOtherPartition: false,
+    });
+    mockCDPSession.emit('Network.responseReceivedExtraInfo', {
+      requestId: '6D76C8ACAECE880C722FA515AD380015',
+      blockedCookies: [],
+      headers: {
+        'Cache-Control': 'max-age=5',
+        Connection: 'keep-alive',
+        'Content-Type': 'text/html; charset=utf-8',
+        Date: 'Wed, 05 Apr 2023 12:39:13 GMT',
+        'Keep-Alive': 'timeout=5',
+        'Transfer-Encoding': 'chunked',
+      },
+      resourceIPAddressSpace: 'Local',
+      statusCode: 200,
+      headersText:
+        'HTTP/1.1 200 OK\\r\\nContent-Type: text/html; charset=utf-8\\r\\nCache-Control: max-age=5\\r\\nDate: Wed, 05 Apr 2023 12:39:13 GMT\\r\\nConnection: keep-alive\\r\\nKeep-Alive: timeout=5\\r\\nTransfer-Encoding: chunked\\r\\n\\r\\n',
+      cookiePartitionKey: 'http://localhost',
+      cookiePartitionKeyOpaque: false,
+    });
+
+    mockCDPSession.emit('Network.responseReceived', {
+      requestId: '6D76C8ACAECE880C722FA515AD380015',
+      loaderId: '6D76C8ACAECE880C722FA515AD380015',
+      timestamp: 31949.965149,
+      type: 'Document',
+      response: {
+        url: 'http://localhost:3000/',
+        status: 200,
+        statusText: 'OK',
+        headers: {
+          'Cache-Control': 'max-age=5',
+          Connection: 'keep-alive',
+          'Content-Type': 'text/html; charset=utf-8',
+          Date: 'Wed, 05 Apr 2023 12:39:13 GMT',
+          'Keep-Alive': 'timeout=5',
+          'Transfer-Encoding': 'chunked',
+        },
+        mimeType: 'text/html',
+        connectionReused: true,
+        connectionId: 34,
+        remoteIPAddress: '127.0.0.1',
+        remotePort: 3000,
+        fromDiskCache: false,
+        fromServiceWorker: false,
+        fromPrefetchCache: false,
+        encodedDataLength: 197,
+        timing: {
+          requestTime: 31949.959838,
+          proxyStart: -1,
+          proxyEnd: -1,
+          dnsStart: -1,
+          dnsEnd: -1,
+          connectStart: -1,
+          connectEnd: -1,
+          sslStart: -1,
+          sslEnd: -1,
+          workerStart: -1,
+          workerReady: -1,
+          workerFetchStart: -1,
+          workerRespondWithSettled: -1,
+          sendStart: 0.613,
+          sendEnd: 0.665,
+          pushStart: 0,
+          pushEnd: 0,
+          receiveHeadersEnd: 3.619,
+        },
+        responseTime: 1.680698353573552e12,
+        protocol: 'http/1.1',
+        alternateProtocolUsage: 'unspecifiedReason',
+        securityState: 'secure',
+      },
+      hasExtraInfo: true,
+      frameId: '4A6E05B1781795F1B586C1F8F8B2CBE4',
+    });
+    mockCDPSession.emit('Network.loadingFinished', {
+      requestId: '6D76C8ACAECE880C722FA515AD380015',
+      timestamp: 31949.963861,
+      encodedDataLength: 847,
+      shouldReportCorbBlocking: false,
+    });
+
+    mockCDPSession.emit('Network.requestWillBeSent', {
+      requestId: '4C2CC44FB6A6CAC5BE2780BCC9313105',
+      loaderId: '4C2CC44FB6A6CAC5BE2780BCC9313105',
+      documentURL: 'http://localhost:3000/redirect',
+      request: {
+        url: 'http://localhost:3000/redirect',
+        method: 'GET',
+        headers: {
+          Referer: 'http://localhost:3000/',
+          'Upgrade-Insecure-Requests': '1',
+          'User-Agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
+          'sec-ch-ua-mobile': '?0',
+        },
+        mixedContentType: 'none',
+        initialPriority: 'VeryHigh',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+        isSameSite: true,
+      },
+      timestamp: 31949.982895,
+      wallTime: 1680698353.595079,
+      initiator: {
+        type: 'script',
+        stack: {
+          callFrames: [
+            {
+              functionName: '',
+              scriptId: '5',
+              url: 'http://localhost:3000/',
+              lineNumber: 8,
+              columnNumber: 32,
+            },
+          ],
+        },
+      },
+      redirectHasExtraInfo: false,
+      type: 'Document',
+      frameId: '4A6E05B1781795F1B586C1F8F8B2CBE4',
+      hasUserGesture: false,
+    });
+
+    mockCDPSession.emit('Network.requestWillBeSentExtraInfo', {
+      requestId: '4C2CC44FB6A6CAC5BE2780BCC9313105',
+      associatedCookies: [],
+      headers: {
+        Accept:
+          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8',
+        Connection: 'keep-alive',
+        Host: 'localhost:3000',
+        Referer: 'http://localhost:3000/',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'same-origin',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent':
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
+        'sec-ch-ua-mobile': '?0',
+      },
+      connectTiming: {requestTime: 31949.983605},
+      siteHasCookieInOtherPartition: false,
+    });
+    mockCDPSession.emit('Network.responseReceivedExtraInfo', {
+      requestId: '4C2CC44FB6A6CAC5BE2780BCC9313105',
+      blockedCookies: [],
+      headers: {
+        Connection: 'keep-alive',
+        Date: 'Wed, 05 Apr 2023 12:39:13 GMT',
+        'Keep-Alive': 'timeout=5',
+        Location: 'http://localhost:3000/#from-redirect',
+        'Transfer-Encoding': 'chunked',
+      },
+      resourceIPAddressSpace: 'Local',
+      statusCode: 302,
+      headersText:
+        'HTTP/1.1 302 Found\\r\\nLocation: http://localhost:3000/#from-redirect\\r\\nDate: Wed, 05 Apr 2023 12:39:13 GMT\\r\\nConnection: keep-alive\\r\\nKeep-Alive: timeout=5\\r\\nTransfer-Encoding: chunked\\r\\n\\r\\n',
+      cookiePartitionKey: 'http://localhost',
+      cookiePartitionKeyOpaque: false,
+    });
+    mockCDPSession.emit('Network.requestWillBeSent', {
+      requestId: '4C2CC44FB6A6CAC5BE2780BCC9313105',
+      loaderId: '4C2CC44FB6A6CAC5BE2780BCC9313105',
+      documentURL: 'http://localhost:3000/',
+      request: {
+        url: 'http://localhost:3000/',
+        urlFragment: '#from-redirect',
+        method: 'GET',
+        headers: {
+          Referer: 'http://localhost:3000/',
+          'Upgrade-Insecure-Requests': '1',
+          'User-Agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
+          'sec-ch-ua-mobile': '?0',
+        },
+        mixedContentType: 'none',
+        initialPriority: 'VeryHigh',
+        referrerPolicy: 'strict-origin-when-cross-origin',
+        isSameSite: true,
+      },
+      timestamp: 31949.988506,
+      wallTime: 1680698353.60069,
+      initiator: {
+        type: 'script',
+        stack: {
+          callFrames: [
+            {
+              functionName: '',
+              scriptId: '5',
+              url: 'http://localhost:3000/',
+              lineNumber: 8,
+              columnNumber: 32,
+            },
+          ],
+        },
+      },
+      redirectHasExtraInfo: true,
+      redirectResponse: {
+        url: 'http://localhost:3000/redirect',
+        status: 302,
+        statusText: 'Found',
+        headers: {
+          Connection: 'keep-alive',
+          Date: 'Wed, 05 Apr 2023 12:39:13 GMT',
+          'Keep-Alive': 'timeout=5',
+          Location: 'http://localhost:3000/#from-redirect',
+          'Transfer-Encoding': 'chunked',
+        },
+        mimeType: '',
+        connectionReused: true,
+        connectionId: 34,
+        remoteIPAddress: '127.0.0.1',
+        remotePort: 3000,
+        fromDiskCache: false,
+        fromServiceWorker: false,
+        fromPrefetchCache: false,
+        encodedDataLength: 182,
+        timing: {
+          requestTime: 31949.983605,
+          proxyStart: -1,
+          proxyEnd: -1,
+          dnsStart: -1,
+          dnsEnd: -1,
+          connectStart: -1,
+          connectEnd: -1,
+          sslStart: -1,
+          sslEnd: -1,
+          workerStart: -1,
+          workerReady: -1,
+          workerFetchStart: -1,
+          workerRespondWithSettled: -1,
+          sendStart: 0.364,
+          sendEnd: 0.401,
+          pushStart: 0,
+          pushEnd: 0,
+          receiveHeadersEnd: 4.085,
+        },
+        responseTime: 1.680698353596548e12,
+        protocol: 'http/1.1',
+        alternateProtocolUsage: 'unspecifiedReason',
+        securityState: 'secure',
+      },
+      type: 'Document',
+      frameId: '4A6E05B1781795F1B586C1F8F8B2CBE4',
+      hasUserGesture: false,
+    });
+    mockCDPSession.emit('Network.requestWillBeSentExtraInfo', {
+      requestId: '4C2CC44FB6A6CAC5BE2780BCC9313105',
+      associatedCookies: [],
+      headers: {},
+      connectTiming: {requestTime: 31949.988855},
+      siteHasCookieInOtherPartition: false,
+    });
+
+    mockCDPSession.emit('Network.responseReceived', {
+      requestId: '4C2CC44FB6A6CAC5BE2780BCC9313105',
+      loaderId: '4C2CC44FB6A6CAC5BE2780BCC9313105',
+      timestamp: 31949.991319,
+      type: 'Document',
+      response: {
+        url: 'http://localhost:3000/',
+        status: 200,
+        statusText: 'OK',
+        headers: {
+          'Cache-Control': 'max-age=5',
+          'Content-Type': 'text/html; charset=utf-8',
+          Date: 'Wed, 05 Apr 2023 12:39:13 GMT',
+        },
+        mimeType: 'text/html',
+        connectionReused: false,
+        connectionId: 0,
+        remoteIPAddress: '127.0.0.1',
+        remotePort: 3000,
+        fromDiskCache: true,
+        fromServiceWorker: false,
+        fromPrefetchCache: false,
+        encodedDataLength: 0,
+        timing: {
+          requestTime: 31949.988855,
+          proxyStart: -1,
+          proxyEnd: -1,
+          dnsStart: -1,
+          dnsEnd: -1,
+          connectStart: -1,
+          connectEnd: -1,
+          sslStart: -1,
+          sslEnd: -1,
+          workerStart: -1,
+          workerReady: -1,
+          workerFetchStart: -1,
+          workerRespondWithSettled: -1,
+          sendStart: 0.069,
+          sendEnd: 0.069,
+          pushStart: 0,
+          pushEnd: 0,
+          receiveHeadersEnd: 0.321,
+        },
+        responseTime: 1.680698353573552e12,
+        protocol: 'http/1.1',
+        alternateProtocolUsage: 'unspecifiedReason',
+        securityState: 'secure',
+      },
+      hasExtraInfo: true,
+      frameId: '4A6E05B1781795F1B586C1F8F8B2CBE4',
+    });
+    mockCDPSession.emit('Network.responseReceivedExtraInfo', {
+      requestId: '4C2CC44FB6A6CAC5BE2780BCC9313105',
+      blockedCookies: [],
+      headers: {
+        Connection: 'keep-alive',
+        Date: 'Wed, 05 Apr 2023 12:39:13 GMT',
+        'Keep-Alive': 'timeout=5',
+        Location: 'http://localhost:3000/#from-redirect',
+        'Transfer-Encoding': 'chunked',
+      },
+      resourceIPAddressSpace: 'Local',
+      statusCode: 302,
+      headersText:
+        'HTTP/1.1 302 Found\\r\\nLocation: http://localhost:3000/#from-redirect\\r\\nDate: Wed, 05 Apr 2023 12:39:13 GMT\\r\\nConnection: keep-alive\\r\\nKeep-Alive: timeout=5\\r\\nTransfer-Encoding: chunked\\r\\n\\r\\n',
+      cookiePartitionKey: 'http://localhost',
+      cookiePartitionKeyOpaque: false,
+    });
+    mockCDPSession.emit('Network.loadingFinished', {
+      requestId: '4C2CC44FB6A6CAC5BE2780BCC9313105',
+      timestamp: 31949.989412,
+      encodedDataLength: 0,
+      shouldReportCorbBlocking: false,
+    });
+    expect(
+      responses.map(r => {
+        return r.status();
+      })
+    ).toEqual([200, 302, 200]);
   });
 });
