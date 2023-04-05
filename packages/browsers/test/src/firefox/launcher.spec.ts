@@ -29,6 +29,7 @@ import {
   Cache,
   createProfile,
 } from '../../../lib/cjs/main.js';
+import {setupTestServer, getServerUrl} from '../utils.js';
 import {testFirefoxBuildId} from '../versions.js';
 
 describe('Firefox', () => {
@@ -45,7 +46,9 @@ describe('Firefox', () => {
   });
 
   describe('launcher', function () {
-    this.timeout(60000);
+    this.timeout(120000);
+
+    setupTestServer();
 
     let tmpDir = '/tmp/puppeteer-browsers-test';
 
@@ -57,6 +60,7 @@ describe('Firefox', () => {
         cacheDir: tmpDir,
         browser: Browser.FIREFOX,
         buildId: testFirefoxBuildId,
+        baseUrl: getServerUrl(),
       });
     });
 

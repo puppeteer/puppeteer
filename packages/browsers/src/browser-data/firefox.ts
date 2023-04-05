@@ -39,7 +39,14 @@ export function resolveDownloadUrl(
   buildId: string,
   baseUrl = 'https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central'
 ): string {
-  return `${baseUrl}/${archive(platform, buildId)}`;
+  return `${baseUrl}/${resolveDownloadPath(platform, buildId).join('/')}`;
+}
+
+export function resolveDownloadPath(
+  platform: BrowserPlatform,
+  buildId: string
+): string[] {
+  return [archive(platform, buildId)];
 }
 
 export function relativeExecutablePath(

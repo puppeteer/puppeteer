@@ -20,11 +20,17 @@ import os from 'os';
 import path from 'path';
 
 import {CLI} from '../../../lib/cjs/CLI.js';
-import {createMockedReadlineInterface} from '../utils.js';
+import {
+  createMockedReadlineInterface,
+  getServerUrl,
+  setupTestServer,
+} from '../utils.js';
 import {testFirefoxBuildId} from '../versions.js';
 
 describe('Firefox CLI', function () {
   this.timeout(90000);
+
+  setupTestServer();
 
   let tmpDir = '/tmp/puppeteer-browsers-test';
 
@@ -38,6 +44,7 @@ describe('Firefox CLI', function () {
       '@puppeteer/browsers',
       'clear',
       `--path=${tmpDir}`,
+      `--base-url=${getServerUrl()}`,
     ]);
   });
 
@@ -49,6 +56,7 @@ describe('Firefox CLI', function () {
       `firefox@${testFirefoxBuildId}`,
       `--path=${tmpDir}`,
       '--platform=linux',
+      `--base-url=${getServerUrl()}`,
     ]);
     assert.ok(
       fs.existsSync(
@@ -65,6 +73,7 @@ describe('Firefox CLI', function () {
       `firefox@latest`,
       `--path=${tmpDir}`,
       '--platform=linux',
+      `--base-url=${getServerUrl()}`,
     ]);
   });
 });

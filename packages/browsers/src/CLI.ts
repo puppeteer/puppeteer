@@ -44,6 +44,7 @@ type InstallArgs = {
   };
   path?: string;
   platform?: BrowserPlatform;
+  baseUrl?: string;
 };
 
 type LaunchArgs = {
@@ -116,6 +117,10 @@ export class CLI {
           this.#defineBrowserParameter(yargs);
           this.#definePlatformParameter(yargs);
           this.#definePathParameter(yargs);
+          yargs.option('base-url', {
+            type: 'string',
+            desc: 'Base URL to download from',
+          });
           yargs.example(
             '$0 install chrome',
             'Install the latest available build of the Chrome browser.'
@@ -161,6 +166,7 @@ export class CLI {
               args.browser.name,
               args.browser.buildId
             ),
+            baseUrl: args.baseUrl,
           });
           console.log(
             `${args.browser.name}@${

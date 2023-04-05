@@ -20,6 +20,7 @@ import os from 'os';
 import path from 'path';
 
 import {fetch, Browser, BrowserPlatform, Cache} from '../../../lib/cjs/main.js';
+import {setupTestServer, getServerUrl} from '../utils.js';
 import {testFirefoxBuildId} from '../versions.js';
 
 /**
@@ -27,6 +28,8 @@ import {testFirefoxBuildId} from '../versions.js';
  * so it requires the network access.
  */
 describe('Firefox fetch', () => {
+  setupTestServer();
+
   let tmpDir = '/tmp/puppeteer-browsers-test';
 
   beforeEach(() => {
@@ -50,6 +53,7 @@ describe('Firefox fetch', () => {
       browser: Browser.FIREFOX,
       platform: BrowserPlatform.LINUX,
       buildId: testFirefoxBuildId,
+      baseUrl: getServerUrl(),
     });
     assert.strictEqual(browser.path, expectedOutputPath);
     assert.ok(fs.existsSync(expectedOutputPath));
@@ -60,7 +64,7 @@ describe('Firefox fetch', () => {
   (os.platform() === 'darwin' ? it : it.skip)(
     'should download a buildId that is a dmg archive',
     async function () {
-      this.timeout(120000);
+      this.timeout(180000);
       const expectedOutputPath = path.join(
         tmpDir,
         'firefox',
@@ -72,6 +76,7 @@ describe('Firefox fetch', () => {
         browser: Browser.FIREFOX,
         platform: BrowserPlatform.MAC,
         buildId: testFirefoxBuildId,
+        baseUrl: getServerUrl(),
       });
       assert.strictEqual(browser.path, expectedOutputPath);
       assert.ok(fs.existsSync(expectedOutputPath));

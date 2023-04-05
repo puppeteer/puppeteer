@@ -55,9 +55,14 @@ export function resolveDownloadUrl(
   buildId: string,
   baseUrl = 'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing'
 ): string {
-  return `${baseUrl}/${buildId}/${folder(platform)}/chrome-${folder(
-    platform
-  )}.zip`;
+  return `${baseUrl}/${resolveDownloadPath(platform, buildId).join('/')}`;
+}
+
+export function resolveDownloadPath(
+  platform: BrowserPlatform,
+  buildId: string
+): string[] {
+  return [buildId, folder(platform), `chrome-${folder(platform)}.zip`];
 }
 
 export function relativeExecutablePath(

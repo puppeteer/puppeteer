@@ -31,6 +31,12 @@ export const downloadUrls = {
   [Browser.FIREFOX]: firefox.resolveDownloadUrl,
 };
 
+export const downloadPaths = {
+  [Browser.CHROME]: chrome.resolveDownloadPath,
+  [Browser.CHROMIUM]: chromium.resolveDownloadPath,
+  [Browser.FIREFOX]: firefox.resolveDownloadPath,
+};
+
 export const executablePathByBrowser = {
   [Browser.CHROME]: chrome.relativeExecutablePath,
   [Browser.CHROMIUM]: chromium.relativeExecutablePath,

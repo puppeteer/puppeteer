@@ -28,6 +28,7 @@ import {
   BrowserPlatform,
   Cache,
 } from '../../../lib/cjs/main.js';
+import {getServerUrl, setupTestServer} from '../utils.js';
 import {testChromeBuildId} from '../versions.js';
 
 /**
@@ -35,6 +36,8 @@ import {testChromeBuildId} from '../versions.js';
  * so it requires the network access.
  */
 describe('Chrome fetch', () => {
+  setupTestServer();
+
   let tmpDir = '/tmp/puppeteer-browsers-test';
 
   beforeEach(() => {
@@ -52,6 +55,7 @@ describe('Chrome fetch', () => {
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
         buildId: testChromeBuildId,
+        baseUrl: getServerUrl(),
       })
     );
   });
@@ -63,6 +67,7 @@ describe('Chrome fetch', () => {
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
         buildId: 'unknown',
+        baseUrl: getServerUrl(),
       }),
       false
     );
@@ -81,6 +86,7 @@ describe('Chrome fetch', () => {
       browser: Browser.CHROME,
       platform: BrowserPlatform.LINUX,
       buildId: testChromeBuildId,
+      baseUrl: getServerUrl(),
     });
     assert.strictEqual(browser.path, expectedOutputPath);
     assert.ok(fs.existsSync(expectedOutputPath));
@@ -90,6 +96,7 @@ describe('Chrome fetch', () => {
       browser: Browser.CHROME,
       platform: BrowserPlatform.LINUX,
       buildId: testChromeBuildId,
+      baseUrl: getServerUrl(),
     });
     assert.strictEqual(browser.path, expectedOutputPath);
     assert.ok(fs.existsSync(expectedOutputPath));
@@ -159,11 +166,12 @@ describe('Chrome fetch', () => {
           browser: Browser.CHROME,
           platform: BrowserPlatform.LINUX,
           buildId: testChromeBuildId,
+          baseUrl: getServerUrl(),
         }),
         true
       );
       assert.deepStrictEqual(proxiedRequestUrls, [
-        'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/113.0.5672.0/linux64/chrome-linux64.zip',
+        getServerUrl() + '/113.0.5672.0/linux64/chrome-linux64.zip',
       ]);
     });
 
@@ -180,11 +188,12 @@ describe('Chrome fetch', () => {
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
         buildId: testChromeBuildId,
+        baseUrl: getServerUrl(),
       });
       assert.strictEqual(browser.path, expectedOutputPath);
       assert.ok(fs.existsSync(expectedOutputPath));
       assert.deepStrictEqual(proxiedRequestUrls, [
-        'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/113.0.5672.0/linux64/chrome-linux64.zip',
+        getServerUrl() + '/113.0.5672.0/linux64/chrome-linux64.zip',
       ]);
     });
   });

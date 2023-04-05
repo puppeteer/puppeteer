@@ -20,11 +20,17 @@ import os from 'os';
 import path from 'path';
 
 import {CLI} from '../../../lib/cjs/CLI.js';
-import {createMockedReadlineInterface} from '../utils.js';
+import {
+  createMockedReadlineInterface,
+  setupTestServer,
+  getServerUrl,
+} from '../utils.js';
 import {testChromeBuildId} from '../versions.js';
 
 describe('Chrome CLI', function () {
   this.timeout(90000);
+
+  setupTestServer();
 
   let tmpDir = '/tmp/puppeteer-browsers-test';
 
@@ -38,6 +44,7 @@ describe('Chrome CLI', function () {
       '@puppeteer/browsers',
       'clear',
       `--path=${tmpDir}`,
+      `--base-url=${getServerUrl()}`,
     ]);
   });
 
@@ -49,6 +56,7 @@ describe('Chrome CLI', function () {
       `chrome@${testChromeBuildId}`,
       `--path=${tmpDir}`,
       '--platform=linux',
+      `--base-url=${getServerUrl()}`,
     ]);
     assert.ok(
       fs.existsSync(
@@ -90,6 +98,7 @@ describe('Chrome CLI', function () {
       `chrome@latest`,
       `--path=${tmpDir}`,
       '--platform=linux',
+      `--base-url=${getServerUrl()}`,
     ]);
   });
 });

@@ -28,6 +28,7 @@ import {
   BrowserPlatform,
   Cache,
 } from '../../../lib/cjs/main.js';
+import {getServerUrl, setupTestServer} from '../utils.js';
 import {testChromiumBuildId} from '../versions.js';
 
 describe('Chromium', () => {
@@ -44,6 +45,8 @@ describe('Chromium', () => {
   });
 
   describe('launcher', function () {
+    setupTestServer();
+
     this.timeout(60000);
 
     let tmpDir = '/tmp/puppeteer-browsers-test';
@@ -56,6 +59,7 @@ describe('Chromium', () => {
         cacheDir: tmpDir,
         browser: Browser.CHROMIUM,
         buildId: testChromiumBuildId,
+        baseUrl: getServerUrl(),
       });
     });
 

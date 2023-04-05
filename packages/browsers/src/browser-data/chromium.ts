@@ -56,10 +56,14 @@ export function resolveDownloadUrl(
   buildId: string,
   baseUrl = 'https://storage.googleapis.com/chromium-browser-snapshots'
 ): string {
-  return `${baseUrl}/${folder(platform)}/${buildId}/${archive(
-    platform,
-    buildId
-  )}.zip`;
+  return `${baseUrl}/${resolveDownloadPath(platform, buildId).join('/')}`;
+}
+
+export function resolveDownloadPath(
+  platform: BrowserPlatform,
+  buildId: string
+): string[] {
+  return [folder(platform), buildId, `${archive(platform, buildId)}.zip`];
 }
 
 export function relativeExecutablePath(

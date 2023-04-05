@@ -399,6 +399,11 @@ jobs:
         run: npm ci
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
+      - name: Setup cache for browser binaries
+        uses: actions/cache@v3
+        with:
+          path: packages/browsers/test/cache
+          key: browsers-${{ hashFiles('packages/browsers/tools/downloadTestBrowsers.mjs') }}-${{ hashFiles('packages/browsers/test/src/versions.ts') }}
       - name: Run tests
         run: npm run test --workspace @puppeteer/browsers
 
