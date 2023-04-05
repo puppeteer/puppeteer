@@ -24,6 +24,7 @@ import {
 } from '@puppeteer/browsers';
 
 import {debugError} from '../common/util.js';
+import {Browser} from '../puppeteer-core.js';
 import {assert} from '../util/assert.js';
 
 import {
@@ -41,6 +42,27 @@ import {rm} from './util/fs.js';
 export class ChromeLauncher extends ProductLauncher {
   constructor(puppeteer: PuppeteerNode) {
     super(puppeteer, 'chrome');
+  }
+
+  override launch(options: PuppeteerNodeLaunchOptions = {}): Promise<Browser> {
+    const headless = options.headless ?? true;
+    if (
+      headless === true &&
+      this.puppeteer.configuration.logLevel !== 'silent'
+    ) {
+      console.warn(
+        [
+          '\u001b[1m\u001B[43m\u001b[30m',
+          'Puppeteer `Old headless` deprecation warning:\u001b[0m\u001b[33m',
+          '  In the near feature "headless" for Chrome will run `--headless=new` by default.',
+          '  For more information, please see https://developer.chrome.com/articles/new-headless/.',
+          '  Consider opting in early by passing `headless: "new"` to `puppeteer.launch()`',
+          '  If you encounter any bugs, please report them to https://github.com/puppeteer/puppeteer/issues/new/choose.\u001b[0m\n',
+        ].join('\n  ')
+      );
+    }
+
+    return super.launch(options);
   }
 
   /**
