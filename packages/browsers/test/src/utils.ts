@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import path from 'path';
 import * as readline from 'readline';
 import {Writable, Readable} from 'stream';
+
+import {TestServer} from '@pptr/testserver';
 
 export function createMockedReadlineInterface(
   input: string
@@ -32,4 +35,30 @@ export function createMockedReadlineInterface(
     input: readable,
     output: writable,
   });
+}
+
+const startServer = async () => {
+  const assetsPath = path.join(__dirname, '..', 'cache', 'server');
+  return await TestServer.create(assetsPath);
+};
+
+interface ServerState {
+  server: TestServer;
+}
+
+const state: Partial<ServerState> = {};
+
+export function setupTestServer(): void {
+  before(async () => {
+    state.server = await startServer();
+  });
+
+  after(async () => {
+    await state.server!.stop();
+    state.server = undefined;
+  });
+}
+
+export function getServerUrl(): string {
+  return `http://localhost:${state.server!.port}`;
 }

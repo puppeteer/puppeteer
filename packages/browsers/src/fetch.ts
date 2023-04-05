@@ -73,6 +73,12 @@ export interface Options {
    *
    */
   baseUrl?: string;
+  /**
+   * Whether to unpack and install browser archives.
+   *
+   * @defaultValue `true`
+   */
+  install?: boolean;
 }
 
 export type InstalledBrowser = {
@@ -84,6 +90,7 @@ export type InstalledBrowser = {
 
 export async function fetch(options: Options): Promise<InstalledBrowser> {
   options.platform ??= detectBrowserPlatform();
+  options.install ??= true;
   if (!options.platform) {
     throw new Error(
       `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`
@@ -103,6 +110,26 @@ export async function fetch(options: Options): Promise<InstalledBrowser> {
   if (!existsSync(browserRoot)) {
     await mkdir(browserRoot, {recursive: true});
   }
+
+  if (!options.install) {
+    if (existsSync(archivePath)) {
+      return {
+        path: archivePath,
+        browser: options.browser,
+        platform: options.platform,
+        buildId: options.buildId,
+      };
+    }
+    debugFetch(`Downloading binary from ${url}`);
+    await downloadFile(url, archivePath, options.downloadProgressCallback);
+    return {
+      path: archivePath,
+      browser: options.browser,
+      platform: options.platform,
+      buildId: options.buildId,
+    };
+  }
+
   const outputPath = structure.installationDir(
     options.browser,
     options.platform,

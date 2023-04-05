@@ -22,13 +22,27 @@
   },
   "wireit": {
     "build": {
-      "command": "tsc -b && chmod a+x lib/cjs/main-cli.js lib/esm/main-cli.js && echo '{\"type\":\"module\"}' > lib/esm/package.json",
+      "command": "tsc -b && chmod a+x lib/cjs/main-cli.js lib/esm/main-cli.js",
       "files": [
         "src/**/*.ts",
         "tsconfig.json"
       ],
+      "clean": "if-file-deleted",
       "output": [
-        "lib/**"
+        "lib/**",
+        "!lib/esm/package.json"
+      ],
+      "dependencies": [
+        "generate:package-json"
+      ]
+    },
+    "generate:package-json": {
+      "command": "tsx ../../tools/generate_module_package_json.ts lib/esm/package.json",
+      "files": [
+        "../../tools/generate_module_package_json.ts"
+      ],
+      "output": [
+        "lib/esm/package.json"
       ]
     },
     "build:test": {
@@ -41,11 +55,12 @@
         "test/build/**"
       ],
       "dependencies": [
-        "build"
+        "build",
+        "../testserver:build"
       ]
     },
     "test": {
-      "command": "mocha",
+      "command": "node tools/downloadTestBrowsers.mjs && mocha",
       "files": [
         ".mocharc.cjs"
       ],
