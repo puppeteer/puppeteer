@@ -33,6 +33,8 @@ jobs:
         run: npm ci
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
+      # Set up GitHub Actions caching for Wireit.
+      - uses: google/wireit@setup-github-actions-caching/v1
       - name: Check code
         run: npm run check
       - name: Lint code
