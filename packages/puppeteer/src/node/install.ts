@@ -48,6 +48,8 @@ export async function downloadBrowser(): Promise<void> {
     return;
   }
 
+  let downloadHost = configuration.downloadHost;
+
   let platform = detectBrowserPlatform();
   if (!platform) {
     throw new Error('The current platform is not supported.');
@@ -70,6 +72,19 @@ export async function downloadBrowser(): Promise<void> {
     PUPPETEER_REVISIONS[product === 'chrome' ? 'chromium' : 'firefox'] ||
     'latest';
 
+  if (product === 'chrome' && downloadHost) {
+    // TODO: remove downloadHost in favour of baseDownloadUrl. The "host" of
+    // Firefox is already a URL and not a host. This would be a breaking change.
+    if (
+      !downloadHost.endsWith('/chromium-browser-snapshots') &&
+      !downloadHost.endsWith('/chromium-browser-snapshots/')
+    ) {
+      downloadHost += downloadHost.endsWith('/')
+        ? 'chromium-browser-snapshots'
+        : '/chromium-browser-snapshots';
+    }
+  }
+
   const buildId = await resolveBuildId(browser, platform, unresolvedBuildId);
 
   try {
@@ -79,6 +94,7 @@ export async function downloadBrowser(): Promise<void> {
       platform,
       buildId,
       downloadProgressCallback: makeProgressCallback(browser, buildId),
+      baseUrl: downloadHost,
     });
 
     logPolitely(

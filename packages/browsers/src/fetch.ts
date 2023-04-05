@@ -63,6 +63,16 @@ export interface Options {
     downloadedBytes: number,
     totalBytes: number
   ) => void;
+  /**
+   * Determines the host that will be used for downloading.
+   *
+   * @defaultValue Either
+   *
+   * - https://storage.googleapis.com/chromium-browser-snapshots or
+   * - https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central
+   *
+   */
+  baseUrl?: string;
 }
 
 export type InstalledBrowser = {
@@ -82,7 +92,8 @@ export async function fetch(options: Options): Promise<InstalledBrowser> {
   const url = getDownloadUrl(
     options.browser,
     options.platform,
-    options.buildId
+    options.buildId,
+    options.baseUrl
   );
   const fileName = url.toString().split('/').pop();
   assert(fileName, `A malformed download URL was found: ${url}.`);
@@ -131,14 +142,20 @@ export async function canFetch(options: Options): Promise<boolean> {
     );
   }
   return await headHttpRequest(
-    getDownloadUrl(options.browser, options.platform, options.buildId)
+    getDownloadUrl(
+      options.browser,
+      options.platform,
+      options.buildId,
+      options.baseUrl
+    )
   );
 }
 
 function getDownloadUrl(
   browser: Browser,
   platform: BrowserPlatform,
-  buildId: string
+  buildId: string,
+  baseUrl?: string
 ): URL {
-  return new URL(downloadUrls[browser](platform, buildId));
+  return new URL(downloadUrls[browser](platform, buildId, baseUrl));
 }
