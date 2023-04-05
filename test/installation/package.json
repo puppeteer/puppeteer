@@ -26,7 +26,7 @@
       ]
     },
     "build:packages": {
-      "command": "npm pack --workspace puppeteer --workspace puppeteer-core --workspace @puppeteer/browsers",
+      "command": "npm pack --quiet --workspace puppeteer --workspace puppeteer-core --workspace @puppeteer/browsers",
       "dependencies": [
         "../../packages/puppeteer:build",
         "../../packages/puppeteer-core:build",
