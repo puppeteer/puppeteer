@@ -97,17 +97,6 @@ taking place in the Chromium repository. Here’s a typical story:
 - Once the upstream fix is landed, we roll updated Chromium into Puppeteer:
   https://github.com/puppeteer/puppeteer/pull/2769
 
-However, oftentimes it is desirable to use Puppeteer with the official Google
-Chrome rather than Chromium. For this to work, you should install a
-`puppeteer-core` version that corresponds to the Chrome version.
-
-For example, in order to drive Chrome 71 with puppeteer-core, use `chrome-71`
-npm tag:
-
-```bash
-npm install puppeteer-core@chrome-71
-```
-
 ## Q: Which Chromium version does Puppeteer use?
 
 Find the version using one of the following ways:
@@ -135,7 +124,6 @@ To fetch Firefox Nightly as part of Puppeteer installation:
 
 ```bash
 PUPPETEER_PRODUCT=firefox npm i puppeteer
-# or "yarn add puppeteer"
 ```
 
 #### Q: What’s considered a “Navigation”?

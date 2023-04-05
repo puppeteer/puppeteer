@@ -98,13 +98,15 @@ rely on complex conditions (such as names of distinct files) that cannot be
 captured by the build system. To clean artifacts, you can run
 
 ```sh
-npm run clean # or npm run clean --workspace <package>
+npm run clean
+# or specify the package
+npm run clean --workspace <package>
 ```
 
 ## Comprehensive testing
 
 Outside of `npm test`, there are several other
-[`npm` scripts](https://docs.npmjs.com/cli/v8/using-npm/scripts) that are
+[`npm` scripts](https://docs.npmjs.com/cli/using-npm/scripts) that are
 usually check through CI:
 
 - `test-install` - Tests whether `puppeteer` and `puppeteer-core` install
