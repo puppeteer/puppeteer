@@ -287,6 +287,10 @@ class Process {
     return this.#browserProcessExiting;
   }
 
+  closed(): Promise<void> {
+    return this.#browserProcessExiting;
+  }
+
   kill(): void {
     debugLaunch(`Trying to kill ${this.#browserProcess.pid}`);
     // If the process failed to launch (for example if the browser executable path
