@@ -15,7 +15,6 @@
  */
 
 import assert from 'assert';
-import {execSync} from 'child_process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -26,10 +25,9 @@ import {
   fetch,
   Browser,
   BrowserPlatform,
-  Cache,
   createProfile,
 } from '../../../lib/cjs/main.js';
-import {setupTestServer, getServerUrl} from '../utils.js';
+import {setupTestServer, getServerUrl, clearCache} from '../utils.js';
 import {testFirefoxBuildId} from '../versions.js';
 
 describe('Firefox', () => {
@@ -65,14 +63,7 @@ describe('Firefox', () => {
     });
 
     afterEach(() => {
-      try {
-        new Cache(tmpDir).clear();
-      } catch (err) {
-        if (os.platform() === 'win32') {
-          console.log(execSync('tasklist').toString('utf-8'));
-        }
-        throw err;
-      }
+      clearCache(tmpDir);
     });
 
     it('should launch a Firefox browser', async () => {

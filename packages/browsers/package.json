@@ -60,7 +60,7 @@
       ]
     },
     "test": {
-      "command": "node tools/downloadTestBrowsers.mjs && mocha",
+      "command": "node tools/downloadTestBrowsers.mjs && cross-env DEBUG=puppeteer:* mocha",
       "files": [
         ".mocharc.cjs"
       ],

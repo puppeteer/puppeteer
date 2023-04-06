@@ -176,7 +176,7 @@ describe('Chrome fetch', () => {
     });
 
     it('can fetch via a proxy', async function () {
-      this.timeout(60000);
+      this.timeout(120000);
       const expectedOutputPath = path.join(
         tmpDir,
         'chrome',

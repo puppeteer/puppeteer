@@ -19,8 +19,8 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-import {fetch, Browser, BrowserPlatform, Cache} from '../../../lib/cjs/main.js';
-import {setupTestServer, getServerUrl} from '../utils.js';
+import {fetch, Browser, BrowserPlatform} from '../../../lib/cjs/main.js';
+import {setupTestServer, getServerUrl, clearCache} from '../utils.js';
 import {testFirefoxBuildId} from '../versions.js';
 
 /**
@@ -37,7 +37,7 @@ describe('Firefox fetch', () => {
   });
 
   afterEach(() => {
-    new Cache(tmpDir).clear();
+    clearCache(tmpDir);
   });
 
   it('should download a buildId that is a bzip2 archive', async function () {

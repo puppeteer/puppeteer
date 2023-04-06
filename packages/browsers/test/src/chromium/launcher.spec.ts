@@ -26,9 +26,8 @@ import {
   fetch,
   Browser,
   BrowserPlatform,
-  Cache,
 } from '../../../lib/cjs/main.js';
-import {getServerUrl, setupTestServer} from '../utils.js';
+import {getServerUrl, setupTestServer, clearCache} from '../utils.js';
 import {testChromiumBuildId} from '../versions.js';
 
 describe('Chromium', () => {
@@ -47,7 +46,7 @@ describe('Chromium', () => {
   describe('launcher', function () {
     setupTestServer();
 
-    this.timeout(60000);
+    this.timeout(120000);
 
     let tmpDir = '/tmp/puppeteer-browsers-test';
 
@@ -64,7 +63,7 @@ describe('Chromium', () => {
     });
 
     afterEach(() => {
-      new Cache(tmpDir).clear();
+      clearCache(tmpDir);
     });
 
     function getArgs() {

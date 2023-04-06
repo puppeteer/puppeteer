@@ -26,9 +26,8 @@ import {
   fetch,
   Browser,
   BrowserPlatform,
-  Cache,
 } from '../../../lib/cjs/main.js';
-import {getServerUrl, setupTestServer} from '../utils.js';
+import {getServerUrl, setupTestServer, clearCache} from '../utils.js';
 import {testChromeBuildId} from '../versions.js';
 
 describe('Chrome', () => {
@@ -64,7 +63,7 @@ describe('Chrome', () => {
     });
 
     afterEach(() => {
-      new Cache(tmpDir).clear();
+      clearCache(tmpDir);
     });
 
     function getArgs() {
