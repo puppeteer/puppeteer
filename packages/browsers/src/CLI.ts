@@ -62,6 +62,9 @@ type ClearArgs = {
   path?: string;
 };
 
+/**
+ * @public
+ */
 export class CLI {
   #cachePath;
   #rl?: readline.Interface;
@@ -275,6 +278,9 @@ export class CLI {
   }
 }
 
+/**
+ * @public
+ */
 export function makeProgressCallback(
   browser: Browser,
   buildId: string

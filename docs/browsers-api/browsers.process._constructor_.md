@@ -1,13 +1,17 @@
 ---
-sidebar_label: launch
+sidebar_label: Process.(constructor)
 ---
 
-# launch() function
+# Process.(constructor)
+
+Constructs a new instance of the `Process` class
 
 #### Signature:
 
 ```typescript
-export declare function launch(opts: LaunchOptions): Process;
+class Process {
+  constructor(opts: LaunchOptions);
+}
 ```
 
 ## Parameters
@@ -15,7 +19,3 @@ export declare function launch(opts: LaunchOptions): Process;
 | Parameter | Type                                         | Description |
 | --------- | -------------------------------------------- | ----------- |
 | opts      | [LaunchOptions](./browsers.launchoptions.md) |             |
-
-**Returns:**
-
-[Process](./browsers.process.md)
