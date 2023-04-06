@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.8.5](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.8.4...puppeteer-core-v19.8.5) (2023-04-06)
+
+
+### Bug Fixes
+
+* add filter to setDiscoverTargets for Firefox ([#9693](https://github.com/puppeteer/puppeteer/issues/9693)) ([c09764e](https://github.com/puppeteer/puppeteer/commit/c09764e4c43d7a62096f430b598d63f2b688e860))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 0.3.3 to 0.4.0
+
 ## [19.8.4](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.8.3...puppeteer-core-v19.8.4) (2023-04-06)
 
 

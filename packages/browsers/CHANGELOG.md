@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/puppeteer/puppeteer/compare/browsers-v0.3.3...browsers-v0.4.0) (2023-04-06)
+
+
+### Features
+
+* **browsers:** support downloading chromedriver ([#9990](https://github.com/puppeteer/puppeteer/issues/9990)) ([ef0fb5d](https://github.com/puppeteer/puppeteer/commit/ef0fb5d87299c604af2387ac1c72be317c50316d))
+
 ## [0.3.3](https://github.com/puppeteer/puppeteer/compare/browsers-v0.3.2...browsers-v0.3.3) (2023-04-06)
 
 
