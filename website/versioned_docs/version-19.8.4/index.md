@@ -29,7 +29,7 @@ Here are a few examples to get you started:
 - Capture a
   [timeline trace](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/reference)
   of your site to help diagnose performance issues.
-- Test Chrome Extensions.
+- [Test Chrome Extensions](https://pptr.dev/guides/chrome-extensions).
 
 ## Getting Started
 
@@ -39,8 +39,10 @@ To use Puppeteer in your project, run:
 
 ```bash
 npm i puppeteer
-# or `yarn add puppeteer`
-# or `pnpm i puppeteer`
+# or using yarn
+yarn add puppeteer
+# or using pnpm
+pnpm i puppeteer
 ```
 
 When you install Puppeteer, it automatically downloads a recent version of

@@ -28,4 +28,4 @@ The constructor for this class is marked as internal. Third-party code should no
 | ------------------------------------------------------------------------ | --------- | ----------- |
 | [defaultArgs(object)](./puppeteer.productlauncher.defaultargs.md)        |           |             |
 | [executablePath(channel)](./puppeteer.productlauncher.executablepath.md) |           |             |
-| [launch(object)](./puppeteer.productlauncher.launch.md)                  |           |             |
+| [launch(options)](./puppeteer.productlauncher.launch.md)                 |           |             |

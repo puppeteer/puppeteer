@@ -8,6 +8,21 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 0.3.0 to 0.3.1
 
+## [19.8.4](https://github.com/puppeteer/puppeteer/compare/puppeteer-v19.8.3...puppeteer-v19.8.4) (2023-04-06)
+
+
+### Bug Fixes
+
+* consider downloadHost as baseUrl ([#9973](https://github.com/puppeteer/puppeteer/issues/9973)) ([05a44af](https://github.com/puppeteer/puppeteer/commit/05a44afe5affcac9fe0f0a2e83f17807c99b2f0c))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 19.8.3 to 19.8.4
+    * @puppeteer/browsers bumped from 0.3.2 to 0.3.3
+
 ## [19.8.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-v19.8.2...puppeteer-v19.8.3) (2023-04-03)
 
 
