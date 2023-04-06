@@ -18,4 +18,4 @@ export declare function launch(opts: LaunchOptions): Process;
 
 **Returns:**
 
-Process
+[Process](./browsers.process.md)

@@ -9,6 +9,7 @@ sidebar_label: API
 | Class                                      | Description |
 | ------------------------------------------ | ----------- |
 | [CLI](./browsers.cli.md)                   |             |
+| [Process](./browsers.process.md)           |             |
 | [TimeoutError](./browsers.timeouterror.md) |             |
 
 ## Enumerations
@@ -51,6 +52,7 @@ sidebar_label: API
 
 ## Type Aliases
 
-| Type Alias                                   | Description |
-| -------------------------------------------- | ----------- |
-| [LaunchOptions](./browsers.launchoptions.md) |             |
+| Type Alias                                         | Description |
+| -------------------------------------------------- | ----------- |
+| [InstalledBrowser](./browsers.installedbrowser.md) |             |
+| [LaunchOptions](./browsers.launchoptions.md)       |             |
