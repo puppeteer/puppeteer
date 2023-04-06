@@ -166,7 +166,10 @@ export class FirefoxTargetManager
   }
 
   async initialize(): Promise<void> {
-    await this.#connection.send('Target.setDiscoverTargets', {discover: true});
+    await this.#connection.send('Target.setDiscoverTargets', {
+      discover: true,
+      filter: [{}],
+    });
     this.#targetsIdsForInit = new Set(this.#discoveredTargetsByTargetId.keys());
     await this.#initializePromise;
   }
