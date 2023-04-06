@@ -20,12 +20,18 @@ export {
   computeSystemExecutablePath,
   TimeoutError,
   LaunchOptions,
-  Options,
+  ComputeExecutablePathOptions as Options,
   SystemOptions,
   CDP_WEBSOCKET_ENDPOINT_REGEX,
   WEBDRIVER_BIDI_WEBSOCKET_ENDPOINT_REGEX,
+  Process,
 } from './launch.js';
-export {install, canDownload, InstallOptions} from './install.js';
+export {
+  install,
+  canDownload,
+  InstallOptions,
+  InstalledBrowser,
+} from './install.js';
 export {detectBrowserPlatform} from './detectPlatform.js';
 export {
   resolveBuildId,

@@ -7,14 +7,16 @@ sidebar_label: computeExecutablePath
 #### Signature:
 
 ```typescript
-export declare function computeExecutablePath(options: Options): string;
+export declare function computeExecutablePath(
+  options: ComputeExecutablePathOptions
+): string;
 ```
 
 ## Parameters
 
-| Parameter | Type                             | Description |
-| --------- | -------------------------------- | ----------- |
-| options   | [Options](./browsers.options.md) |             |
+| Parameter | Type                                                  | Description |
+| --------- | ----------------------------------------------------- | ----------- |
+| options   | [ComputeExecutablePathOptions](./browsers.options.md) |             |
 
 **Returns:**
 

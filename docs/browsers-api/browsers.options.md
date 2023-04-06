@@ -7,7 +7,7 @@ sidebar_label: Options
 #### Signature:
 
 ```typescript
-export interface Options
+export interface ComputeExecutablePathOptions
 ```
 
 ## Properties

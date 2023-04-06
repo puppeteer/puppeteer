@@ -47,6 +47,9 @@ export const executablePathByBrowser = {
 
 export {Browser, BrowserPlatform, ChromeReleaseChannel};
 
+/**
+ * @public
+ */
 export async function resolveBuildId(
   browser: Browser,
   platform: BrowserPlatform,
@@ -74,6 +77,9 @@ export async function resolveBuildId(
   return tag;
 }
 
+/**
+ * @public
+ */
 export async function createProfile(
   browser: Browser,
   opts: ProfileOptions
@@ -87,6 +93,9 @@ export async function createProfile(
   }
 }
 
+/**
+ * @public
+ */
 export function resolveSystemExecutablePath(
   browser: Browser,
   platform: BrowserPlatform,

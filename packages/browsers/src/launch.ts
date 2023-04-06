@@ -36,7 +36,7 @@ const debugLaunch = debug('puppeteer:browsers:launcher');
 /**
  * @public
  */
-export interface Options {
+export interface ComputeExecutablePathOptions {
   /**
    * Root path to the storage directory.
    */
@@ -58,7 +58,12 @@ export interface Options {
   buildId: string;
 }
 
-export function computeExecutablePath(options: Options): string {
+/**
+ * @public
+ */
+export function computeExecutablePath(
+  options: ComputeExecutablePathOptions
+): string {
   options.platform ??= detectBrowserPlatform();
   if (!options.platform) {
     throw new Error(
@@ -95,6 +100,10 @@ export interface SystemOptions {
    */
   channel: ChromeReleaseChannel;
 }
+
+/**
+ * @public
+ */
 export function computeSystemExecutablePath(options: SystemOptions): string {
   options.platform ??= detectBrowserPlatform();
   if (!options.platform) {
@@ -117,6 +126,9 @@ export function computeSystemExecutablePath(options: SystemOptions): string {
   return path;
 }
 
+/**
+ * @public
+ */
 export type LaunchOptions = {
   executablePath: string;
   pipe?: boolean;
@@ -130,16 +142,29 @@ export type LaunchOptions = {
   onExit?: () => Promise<void>;
 };
 
+/**
+ * @public
+ */
 export function launch(opts: LaunchOptions): Process {
   return new Process(opts);
 }
 
+/**
+ * @public
+ */
 export const CDP_WEBSOCKET_ENDPOINT_REGEX =
   /^DevTools listening on (ws:\/\/.*)$/;
+
+/**
+ * @public
+ */
 export const WEBDRIVER_BIDI_WEBSOCKET_ENDPOINT_REGEX =
   /^WebDriver BiDi listening on (ws:\/\/.*)$/;
 
-class Process {
+/**
+ * @public
+ */
+export class Process {
   #executablePath;
   #args: string[];
   #browserProcess: childProcess.ChildProcess;
@@ -454,6 +479,9 @@ export function isErrnoException(obj: unknown): obj is NodeJS.ErrnoException {
   );
 }
 
+/**
+ * @public
+ */
 export class TimeoutError extends Error {
   /**
    * @internal

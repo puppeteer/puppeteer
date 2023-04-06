@@ -97,6 +97,9 @@ export interface InstallOptions {
   unpack?: boolean;
 }
 
+/**
+ * @public
+ */
 export type InstalledBrowser = {
   path: string;
   browser: Browser;
@@ -104,6 +107,9 @@ export type InstalledBrowser = {
   platform: BrowserPlatform;
 };
 
+/**
+ * @public
+ */
 export async function install(
   options: InstallOptions
 ): Promise<InstalledBrowser> {
@@ -194,6 +200,9 @@ export async function install(
   };
 }
 
+/**
+ * @public
+ */
 export async function canDownload(options: InstallOptions): Promise<boolean> {
   options.platform ??= detectBrowserPlatform();
   if (!options.platform) {

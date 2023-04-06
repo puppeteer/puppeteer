@@ -20,4 +20,4 @@ export declare function install(
 
 **Returns:**
 
-Promise&lt;InstalledBrowser&gt;
+Promise&lt;[InstalledBrowser](./browsers.installedbrowser.md)&gt;
