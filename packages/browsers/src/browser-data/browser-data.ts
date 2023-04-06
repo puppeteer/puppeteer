@@ -114,7 +114,7 @@ export function resolveSystemExecutablePath(
     case Browser.CHROMEDRIVER:
     case Browser.FIREFOX:
       throw new Error(
-        'System browser detection is not supported for Firefox yet.'
+        `System browser detection is not supported for ${browser} yet.`
       );
     case Browser.CHROME:
       return chromium.resolveSystemExecutablePath(platform, channel);
