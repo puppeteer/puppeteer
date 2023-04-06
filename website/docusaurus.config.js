@@ -280,9 +280,18 @@ const config = {
                   value: '<b>Archived versions</b>',
                 },
                 ...archivedVersions.map(version => {
+                  const parts = version.split('.').map(item => {
+                    return Number(item);
+                  });
+                  if (parts[0] <= 19 && parts[1] <= 2 && parts[2] <= 2) {
+                    return {
+                      label: version,
+                      href: `https://github.com/puppeteer/puppeteer/blob/v${version}/docs/api/index.md`,
+                    };
+                  }
                   return {
                     label: version,
-                    href: `https://github.com/puppeteer/puppeteer/blob/v${version}/docs/api/index.md`,
+                    href: `https://github.com/puppeteer/puppeteer/blob/puppeteer-v${version}/docs/api/index.md`,
                   };
                 }),
               ],
