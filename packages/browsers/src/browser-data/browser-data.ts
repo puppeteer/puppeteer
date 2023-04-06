@@ -15,6 +15,7 @@
  */
 
 import * as chrome from './chrome.js';
+import * as chromedriver from './chromedriver.js';
 import * as chromium from './chromium.js';
 import * as firefox from './firefox.js';
 import {
@@ -28,18 +29,21 @@ import {
 export {ProfileOptions};
 
 export const downloadUrls = {
+  [Browser.CHROMEDRIVER]: chromedriver.resolveDownloadUrl,
   [Browser.CHROME]: chrome.resolveDownloadUrl,
   [Browser.CHROMIUM]: chromium.resolveDownloadUrl,
   [Browser.FIREFOX]: firefox.resolveDownloadUrl,
 };
 
 export const downloadPaths = {
+  [Browser.CHROMEDRIVER]: chromedriver.resolveDownloadPath,
   [Browser.CHROME]: chrome.resolveDownloadPath,
   [Browser.CHROMIUM]: chromium.resolveDownloadPath,
   [Browser.FIREFOX]: firefox.resolveDownloadPath,
 };
 
 export const executablePathByBrowser = {
+  [Browser.CHROMEDRIVER]: chromedriver.relativeExecutablePath,
   [Browser.CHROME]: chrome.relativeExecutablePath,
   [Browser.CHROMIUM]: chromium.relativeExecutablePath,
   [Browser.FIREFOX]: firefox.relativeExecutablePath,
@@ -66,6 +70,11 @@ export async function resolveBuildId(
         case BrowserTag.LATEST:
           // In CfT beta is the latest version.
           return await chrome.resolveBuildId(platform, 'beta');
+      }
+    case Browser.CHROMEDRIVER:
+      switch (tag as BrowserTag) {
+        case BrowserTag.LATEST:
+          return await chromedriver.resolveBuildId('latest');
       }
     case Browser.CHROMIUM:
       switch (tag as BrowserTag) {
@@ -102,6 +111,7 @@ export function resolveSystemExecutablePath(
   channel: ChromeReleaseChannel
 ): string {
   switch (browser) {
+    case Browser.CHROMEDRIVER:
     case Browser.FIREFOX:
       throw new Error(
         'System browser detection is not supported for Firefox yet.'
