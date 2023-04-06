@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.8.4](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.8.3...puppeteer-core-v19.8.4) (2023-04-06)
+
+
+### Bug Fixes
+
+* ignore extraInfo events if the response is served from cache ([#9983](https://github.com/puppeteer/puppeteer/issues/9983)) ([e7265c9](https://github.com/puppeteer/puppeteer/commit/e7265c9aa94e749de5745e5e98d45d4659f19d30))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 0.3.2 to 0.3.3
+
 ## [19.8.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.8.1...puppeteer-core-v19.8.3) (2023-04-03)
 
 
