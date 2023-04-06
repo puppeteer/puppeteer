@@ -62,7 +62,7 @@ export class Cache {
       force: true,
       recursive: true,
       maxRetries: 10,
-      retryDelay: 200,
+      retryDelay: 500,
     });
   }
 }

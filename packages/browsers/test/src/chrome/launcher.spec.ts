@@ -26,9 +26,8 @@ import {
   fetch,
   Browser,
   BrowserPlatform,
-  Cache,
 } from '../../../lib/cjs/main.js';
-import {getServerUrl, setupTestServer} from '../utils.js';
+import {getServerUrl, setupTestServer, clearCache} from '../utils.js';
 import {testChromeBuildId} from '../versions.js';
 
 describe('Chrome', () => {
@@ -64,8 +63,43 @@ describe('Chrome', () => {
     });
 
     afterEach(() => {
-      new Cache(tmpDir).clear();
+      clearCache(tmpDir);
     });
+
+    function getArgs() {
+      return [
+        '--allow-pre-commit-input',
+        '--disable-background-networking',
+        '--disable-background-timer-throttling',
+        '--disable-backgrounding-occluded-windows',
+        '--disable-breakpad',
+        '--disable-client-side-phishing-detection',
+        '--disable-component-extensions-with-background-pages',
+        '--disable-component-update',
+        '--disable-default-apps',
+        '--disable-dev-shm-usage',
+        '--disable-extensions',
+        '--disable-features=Translate,BackForwardCache,AcceptCHFrame,MediaRouter,OptimizationHints,DialMediaRouteProvider',
+        '--disable-hang-monitor',
+        '--disable-ipc-flooding-protection',
+        '--disable-popup-blocking',
+        '--disable-prompt-on-repost',
+        '--disable-renderer-backgrounding',
+        '--disable-sync',
+        '--enable-automation',
+        '--enable-features=NetworkServiceInProcess2',
+        '--export-tagged-pdf',
+        '--force-color-profile=srgb',
+        '--headless=new',
+        '--metrics-recording-only',
+        '--no-first-run',
+        '--password-store=basic',
+        '--remote-debugging-port=9222',
+        '--use-mock-keychain',
+        `--user-data-dir=${path.join(tmpDir, 'profile')}`,
+        'about:blank',
+      ];
+    }
 
     it('should launch a Chrome browser', async () => {
       const executablePath = computeExecutablePath({
@@ -75,12 +109,7 @@ describe('Chrome', () => {
       });
       const process = launch({
         executablePath,
-        args: [
-          '--headless=new',
-          '--use-mock-keychain',
-          '--disable-features=DialMediaRouteProvider',
-          `--user-data-dir=${path.join(tmpDir, 'profile')}`,
-        ],
+        args: getArgs(),
       });
       await process.close();
     });
@@ -93,38 +122,7 @@ describe('Chrome', () => {
       });
       const process = launch({
         executablePath,
-        args: [
-          '--allow-pre-commit-input',
-          '--disable-background-networking',
-          '--disable-background-timer-throttling',
-          '--disable-backgrounding-occluded-windows',
-          '--disable-breakpad',
-          '--disable-client-side-phishing-detection',
-          '--disable-component-extensions-with-background-pages',
-          '--disable-component-update',
-          '--disable-default-apps',
-          '--disable-dev-shm-usage',
-          '--disable-extensions',
-          '--disable-features=Translate,BackForwardCache,AcceptCHFrame,MediaRouter,OptimizationHints,DialMediaRouteProvider',
-          '--disable-hang-monitor',
-          '--disable-ipc-flooding-protection',
-          '--disable-popup-blocking',
-          '--disable-prompt-on-repost',
-          '--disable-renderer-backgrounding',
-          '--disable-sync',
-          '--enable-automation',
-          '--enable-features=NetworkServiceInProcess2',
-          '--export-tagged-pdf',
-          '--force-color-profile=srgb',
-          '--headless=new',
-          '--metrics-recording-only',
-          '--no-first-run',
-          '--password-store=basic',
-          '--remote-debugging-port=9222',
-          '--use-mock-keychain',
-          `--user-data-dir=${path.join(tmpDir, 'profile')}`,
-          'about:blank',
-        ],
+        args: getArgs(),
       });
       const url = await process.waitForLineOutput(CDP_WEBSOCKET_ENDPOINT_REGEX);
       await process.close();

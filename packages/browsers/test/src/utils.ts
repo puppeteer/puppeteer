@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
+import {execSync} from 'child_process';
+import os from 'os';
 import path from 'path';
 import * as readline from 'readline';
 import {Writable, Readable} from 'stream';
 
 import {TestServer} from '@pptr/testserver';
+
+import {isErrorLike} from '../../lib/cjs/launcher.js';
+import {Cache} from '../../lib/cjs/main.js';
 
 export function createMockedReadlineInterface(
   input: string
@@ -61,4 +66,20 @@ export function setupTestServer(): void {
 
 export function getServerUrl(): string {
   return `http://localhost:${state.server!.port}`;
+}
+
+export function clearCache(tmpDir: string): void {
+  try {
+    new Cache(tmpDir).clear();
+  } catch (err) {
+    if (os.platform() === 'win32') {
+      console.log(execSync('tasklist').toString('utf-8'));
+      // Sometimes on Windows the folder cannot be removed due to unknown reasons.
+      // We suppress the error to avoud flakiness.
+      if (isErrorLike(err) && err.message.includes('EBUSY')) {
+        return;
+      }
+    }
+    throw err;
+  }
 }

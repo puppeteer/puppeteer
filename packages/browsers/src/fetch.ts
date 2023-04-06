@@ -33,6 +33,22 @@ import {downloadFile, headHttpRequest} from './httpUtil.js';
 
 const debugFetch = debug('puppeteer:browsers:fetcher');
 
+const times = new Map<string, [number, number]>();
+function debugTime(label: string) {
+  times.set(label, process.hrtime());
+}
+
+function debugTimeEnd(label: string) {
+  const end = process.hrtime();
+  const start = times.get(label);
+  if (!start) {
+    return;
+  }
+  const duration =
+    end[0] * 1000 + end[1] / 1e6 - (start[0] * 1000 + start[1] / 1e6); // calculate duration in milliseconds
+  debugFetch(`Duration for ${label}: ${duration}ms`);
+}
+
 /**
  * @public
  */
@@ -121,7 +137,9 @@ export async function fetch(options: Options): Promise<InstalledBrowser> {
       };
     }
     debugFetch(`Downloading binary from ${url}`);
+    debugTime('download');
     await downloadFile(url, archivePath, options.downloadProgressCallback);
+    debugTimeEnd('download');
     return {
       path: archivePath,
       browser: options.browser,
@@ -145,9 +163,22 @@ export async function fetch(options: Options): Promise<InstalledBrowser> {
   }
   try {
     debugFetch(`Downloading binary from ${url}`);
-    await downloadFile(url, archivePath, options.downloadProgressCallback);
+    try {
+      debugTime('download');
+      await downloadFile(url, archivePath, options.downloadProgressCallback);
+    } finally {
+      debugTimeEnd('download');
+    }
+
     debugFetch(`Installing ${archivePath} to ${outputPath}`);
-    await unpackArchive(archivePath, outputPath);
+    try {
+      debugTime('extract');
+      await unpackArchive(archivePath, outputPath);
+    } finally {
+      debugTimeEnd('extract');
+    }
+  } catch (err) {
+    debugFetch(`Error during installation`, err);
   } finally {
     if (existsSync(archivePath)) {
       await unlink(archivePath);

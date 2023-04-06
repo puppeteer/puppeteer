@@ -160,28 +160,34 @@ class Process {
     opts.handleSIGINT ??= true;
     opts.handleSIGTERM ??= true;
     opts.handleSIGHUP ??= true;
-    opts.detached ??= true;
+    // On non-windows platforms, `detached: true` makes child process a
+    // leader of a new process group, making it possible to kill child
+    // process tree with `.kill(-pid)` command. @see
+    // https://nodejs.org/api/child_process.html#child_process_options_detached
+    opts.detached ??= process.platform !== 'win32';
 
     const stdio = this.#configureStdio({
       pipe: opts.pipe,
       dumpio: opts.dumpio,
     });
 
-    debugLaunch(`Launching ${this.#executablePath} ${this.#args.join(' ')}`);
+    debugLaunch(`Launching ${this.#executablePath} ${this.#args.join(' ')}`, {
+      detached: opts.detached,
+      env: opts.env,
+      stdio,
+    });
 
     this.#browserProcess = childProcess.spawn(
       this.#executablePath,
       this.#args,
       {
-        // On non-windows platforms, `detached: true` makes child process a
-        // leader of a new process group, making it possible to kill child
-        // process tree with `.kill(-pid)` command. @see
-        // https://nodejs.org/api/child_process.html#child_process_options_detached
         detached: opts.detached,
         env: opts.env,
         stdio,
       }
     );
+
+    debugLaunch(`Launched ${this.#browserProcess.pid}`);
     if (opts.dumpio) {
       this.#browserProcess.stderr?.pipe(process.stderr);
       this.#browserProcess.stdout?.pipe(process.stdout);
@@ -201,6 +207,7 @@ class Process {
     }
     this.#browserProcessExiting = new Promise((resolve, reject) => {
       this.#browserProcess.once('exit', async () => {
+        debugLaunch(`Browser process ${this.#browserProcess.pid} onExit`);
         this.#clearListeners();
         this.#exited = true;
         try {
@@ -281,6 +288,7 @@ class Process {
   }
 
   kill(): void {
+    debugLaunch(`Trying to kill ${this.#browserProcess.pid}`);
     // If the process failed to launch (for example if the browser executable path
     // is invalid), then the process does not get a pid assigned. A call to
     // `proc.kill` would error, as the `pid` to-be-killed can not be found.
@@ -290,12 +298,17 @@ class Process {
       pidExists(this.#browserProcess.pid)
     ) {
       try {
+        debugLaunch(`Browser process ${this.#browserProcess.pid} exists`);
         if (process.platform === 'win32') {
           try {
             childProcess.execSync(
               `taskkill /pid ${this.#browserProcess.pid} /T /F`
             );
           } catch (error) {
+            debugLaunch(
+              `Killing ${this.#browserProcess.pid} using taskkill failed`,
+              error
+            );
             // taskkill can fail to kill the process e.g. due to missing permissions.
             // Let's kill the process via Node API. This delays killing of all child
             // processes of `this.proc` until the main Node.js process dies.
@@ -309,6 +322,10 @@ class Process {
           try {
             process.kill(processGroupId, 'SIGKILL');
           } catch (error) {
+            debugLaunch(
+              `Killing ${this.#browserProcess.pid} using process.kill failed`,
+              error
+            );
             // Killing the process group can fail due e.g. to missing permissions.
             // Let's kill the process via Node API. This delays killing of all child
             // processes of `this.proc` until the main Node.js process dies.
