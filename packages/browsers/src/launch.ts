@@ -48,7 +48,7 @@ export interface Options {
    */
   platform?: BrowserPlatform;
   /**
-   * Determines which browser to fetch.
+   * Determines which browser to launch.
    */
   browser: Browser;
   /**
@@ -87,7 +87,7 @@ export interface SystemOptions {
    */
   platform?: BrowserPlatform;
   /**
-   * Determines which browser to fetch.
+   * Determines which browser to launch.
    */
   browser: Browser;
   /**

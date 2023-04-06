@@ -23,30 +23,30 @@ import {
   CDP_WEBSOCKET_ENDPOINT_REGEX,
   computeExecutablePath,
   launch,
-  fetch,
+  install,
   Browser,
   BrowserPlatform,
 } from '../../../lib/cjs/main.js';
 import {getServerUrl, setupTestServer, clearCache} from '../utils.js';
-import {testChromiumBuildId} from '../versions.js';
+import {testChromeBuildId} from '../versions.js';
 
-describe('Chromium', () => {
-  it('should compute executable path for Chromium', () => {
+describe('Chrome', () => {
+  it('should compute executable path for Chrome', () => {
     assert.strictEqual(
       computeExecutablePath({
-        browser: Browser.CHROMIUM,
+        browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
         buildId: '123',
         cacheDir: 'cache',
       }),
-      path.join('cache', 'chrome', 'linux-123', 'chrome-linux', 'chrome')
+      path.join('cache', 'chrome', 'linux-123', 'chrome-linux64', 'chrome')
     );
   });
 
   describe('launcher', function () {
     setupTestServer();
 
-    this.timeout(120000);
+    this.timeout(60000);
 
     let tmpDir = '/tmp/puppeteer-browsers-test';
 
@@ -54,10 +54,10 @@ describe('Chromium', () => {
       tmpDir = fs.mkdtempSync(
         path.join(os.tmpdir(), 'puppeteer-browsers-test')
       );
-      await fetch({
+      await install({
         cacheDir: tmpDir,
-        browser: Browser.CHROMIUM,
-        buildId: testChromiumBuildId,
+        browser: Browser.CHROME,
+        buildId: testChromeBuildId,
         baseUrl: getServerUrl(),
       });
     });
@@ -101,11 +101,11 @@ describe('Chromium', () => {
       ];
     }
 
-    it('should launch a Chromium browser', async () => {
+    it('should launch a Chrome browser', async () => {
       const executablePath = computeExecutablePath({
         cacheDir: tmpDir,
-        browser: Browser.CHROMIUM,
-        buildId: testChromiumBuildId,
+        browser: Browser.CHROME,
+        buildId: testChromeBuildId,
       });
       const process = launch({
         executablePath,
@@ -117,8 +117,8 @@ describe('Chromium', () => {
     it('should allow parsing stderr output of the browser process', async () => {
       const executablePath = computeExecutablePath({
         cacheDir: tmpDir,
-        browser: Browser.CHROMIUM,
-        buildId: testChromiumBuildId,
+        browser: Browser.CHROME,
+        buildId: testChromeBuildId,
       });
       const process = launch({
         executablePath,

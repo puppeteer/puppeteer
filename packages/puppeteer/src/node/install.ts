@@ -15,7 +15,7 @@
  */
 
 import {
-  fetch,
+  install,
   Browser,
   resolveBuildId,
   makeProgressCallback,
@@ -88,7 +88,7 @@ export async function downloadBrowser(): Promise<void> {
   const buildId = await resolveBuildId(browser, platform, unresolvedBuildId);
 
   try {
-    const result = await fetch({
+    const result = await install({
       browser,
       cacheDir: configuration.cacheDirectory!,
       platform,

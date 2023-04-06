@@ -21,8 +21,8 @@ export {
   TimeoutError,
   CDP_WEBSOCKET_ENDPOINT_REGEX,
   WEBDRIVER_BIDI_WEBSOCKET_ENDPOINT_REGEX,
-} from './launcher.js';
-export {fetch, canFetch} from './fetch.js';
+} from './launch.js';
+export {install, canDownload} from './install.js';
 export {detectBrowserPlatform} from './detectPlatform.js';
 export {
   resolveBuildId,

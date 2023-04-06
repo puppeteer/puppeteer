@@ -22,7 +22,7 @@ import {Writable, Readable} from 'stream';
 
 import {TestServer} from '@pptr/testserver';
 
-import {isErrorLike} from '../../lib/cjs/launcher.js';
+import {isErrorLike} from '../../lib/cjs/launch.js';
 import {Cache} from '../../lib/cjs/main.js';
 
 export function createMockedReadlineInterface(

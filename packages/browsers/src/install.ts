@@ -31,7 +31,7 @@ import {detectBrowserPlatform} from './detectPlatform.js';
 import {unpackArchive} from './fileUtil.js';
 import {downloadFile, headHttpRequest} from './httpUtil.js';
 
-const debugFetch = debug('puppeteer:browsers:fetcher');
+const debugInstall = debug('puppeteer:browsers:install');
 
 const times = new Map<string, [number, number]>();
 function debugTime(label: string) {
@@ -46,7 +46,7 @@ function debugTimeEnd(label: string) {
   }
   const duration =
     end[0] * 1000 + end[1] / 1e6 - (start[0] * 1000 + start[1] / 1e6); // calculate duration in milliseconds
-  debugFetch(`Duration for ${label}: ${duration}ms`);
+  debugInstall(`Duration for ${label}: ${duration}ms`);
 }
 
 /**
@@ -64,7 +64,7 @@ export interface Options {
    */
   platform?: BrowserPlatform;
   /**
-   * Determines which browser to fetch.
+   * Determines which browser to install.
    */
   browser: Browser;
   /**
@@ -94,7 +94,7 @@ export interface Options {
    *
    * @defaultValue `true`
    */
-  install?: boolean;
+  unpack?: boolean;
 }
 
 export type InstalledBrowser = {
@@ -104,9 +104,9 @@ export type InstalledBrowser = {
   platform: BrowserPlatform;
 };
 
-export async function fetch(options: Options): Promise<InstalledBrowser> {
+export async function install(options: Options): Promise<InstalledBrowser> {
   options.platform ??= detectBrowserPlatform();
-  options.install ??= true;
+  options.unpack ??= true;
   if (!options.platform) {
     throw new Error(
       `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`
@@ -127,7 +127,7 @@ export async function fetch(options: Options): Promise<InstalledBrowser> {
     await mkdir(browserRoot, {recursive: true});
   }
 
-  if (!options.install) {
+  if (!options.unpack) {
     if (existsSync(archivePath)) {
       return {
         path: archivePath,
@@ -136,7 +136,7 @@ export async function fetch(options: Options): Promise<InstalledBrowser> {
         buildId: options.buildId,
       };
     }
-    debugFetch(`Downloading binary from ${url}`);
+    debugInstall(`Downloading binary from ${url}`);
     debugTime('download');
     await downloadFile(url, archivePath, options.downloadProgressCallback);
     debugTimeEnd('download');
@@ -162,7 +162,7 @@ export async function fetch(options: Options): Promise<InstalledBrowser> {
     };
   }
   try {
-    debugFetch(`Downloading binary from ${url}`);
+    debugInstall(`Downloading binary from ${url}`);
     try {
       debugTime('download');
       await downloadFile(url, archivePath, options.downloadProgressCallback);
@@ -170,7 +170,7 @@ export async function fetch(options: Options): Promise<InstalledBrowser> {
       debugTimeEnd('download');
     }
 
-    debugFetch(`Installing ${archivePath} to ${outputPath}`);
+    debugInstall(`Installing ${archivePath} to ${outputPath}`);
     try {
       debugTime('extract');
       await unpackArchive(archivePath, outputPath);
@@ -178,7 +178,7 @@ export async function fetch(options: Options): Promise<InstalledBrowser> {
       debugTimeEnd('extract');
     }
   } catch (err) {
-    debugFetch(`Error during installation`, err);
+    debugInstall(`Error during installation`, err);
   } finally {
     if (existsSync(archivePath)) {
       await unlink(archivePath);
@@ -192,7 +192,7 @@ export async function fetch(options: Options): Promise<InstalledBrowser> {
   };
 }
 
-export async function canFetch(options: Options): Promise<boolean> {
+export async function canDownload(options: Options): Promise<boolean> {
   options.platform ??= detectBrowserPlatform();
   if (!options.platform) {
     throw new Error(
