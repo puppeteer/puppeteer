@@ -26,6 +26,7 @@ export enum Browser {
   CHROME = 'chrome',
   CHROMIUM = 'chromium',
   FIREFOX = 'firefox',
+  CHROMEDRIVER = 'chromedriver',
 }
 
 /**
