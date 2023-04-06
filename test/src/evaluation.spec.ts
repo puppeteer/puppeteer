@@ -23,6 +23,16 @@ import {
 } from './mocha-utils.js';
 import utils from './utils.js';
 
+for (let i = 0; i < 2000; i++) {
+  describe('Debug spec', function () {
+    setupTestBrowserHooks();
+    setupTestPageAndContextHooks();
+
+    // eslint-disable-next-line mocha/no-exclusive-tests
+    it.only('should work', async () => {});
+  });
+}
+
 describe('Evaluation specs', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
