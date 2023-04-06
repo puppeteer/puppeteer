@@ -53,6 +53,7 @@
     },
     "build:docs": {
       "dependencies": [
+        "./packages/browsers:build:docs",
         "./packages/puppeteer:build:docs",
         "./packages/puppeteer-core:build:docs"
       ]

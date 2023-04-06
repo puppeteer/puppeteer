@@ -25,6 +25,8 @@ import {
   ProfileOptions,
 } from './types.js';
 
+export {ProfileOptions};
+
 export const downloadUrls = {
   [Browser.CHROME]: chrome.resolveDownloadUrl,
   [Browser.CHROMIUM]: chromium.resolveDownloadUrl,

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
+  "mainEntryPointFilePath": "<projectFolder>/lib/esm/main.d.ts",
+  "bundledPackages": [],
+
+  "apiReport": {
+    "enabled": false
+  },
+
+  "docModel": {
+    "enabled": false
+  },
+
+  "tsdocMetadata": {
+    "enabled": false
+  },
+
+  "messages": {
+    "compilerMessageReporting": {
+      "default": {
+        "logLevel": "warning"
+      }
+    },
+
+    "extractorMessageReporting": {
+      "ae-internal-missing-underscore": {
+        "logLevel": "none"
+      },
+      "default": {
+        "logLevel": "warning"
+      }
+    },
+
+    "tsdocMessageReporting": {
+      "default": {
+        "logLevel": "warning"
+      }
+    }
+  }
+}

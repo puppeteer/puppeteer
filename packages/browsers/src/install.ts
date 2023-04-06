@@ -52,7 +52,7 @@ function debugTimeEnd(label: string) {
 /**
  * @public
  */
-export interface Options {
+export interface InstallOptions {
   /**
    * Determines the path to download browsers to.
    */
@@ -104,7 +104,9 @@ export type InstalledBrowser = {
   platform: BrowserPlatform;
 };
 
-export async function install(options: Options): Promise<InstalledBrowser> {
+export async function install(
+  options: InstallOptions
+): Promise<InstalledBrowser> {
   options.platform ??= detectBrowserPlatform();
   options.unpack ??= true;
   if (!options.platform) {
@@ -192,7 +194,7 @@ export async function install(options: Options): Promise<InstalledBrowser> {
   };
 }
 
-export async function canDownload(options: Options): Promise<boolean> {
+export async function canDownload(options: InstallOptions): Promise<boolean> {
   options.platform ??= detectBrowserPlatform();
   if (!options.platform) {
     throw new Error(

@@ -1,0 +1,11 @@
+---
+sidebar_label: WEBDRIVER_BIDI_WEBSOCKET_ENDPOINT_REGEX
+---
+
+# WEBDRIVER_BIDI_WEBSOCKET_ENDPOINT_REGEX variable
+
+#### Signature:
+
+```typescript
+WEBDRIVER_BIDI_WEBSOCKET_ENDPOINT_REGEX: RegExp;
+```
