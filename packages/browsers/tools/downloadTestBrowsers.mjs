@@ -19,7 +19,7 @@
  * mirrors the structure of the download server.
  */
 
-import {BrowserPlatform, fetch} from '@puppeteer/browsers';
+import {BrowserPlatform, install} from '@puppeteer/browsers';
 import path from 'path';
 import fs from 'fs';
 
@@ -59,12 +59,12 @@ for (const version of Object.keys(versions)) {
       continue;
     }
 
-    const result = await fetch({
+    const result = await install({
       browser,
       buildId,
       platform,
       cacheDir: path.join(cacheDir, 'tmp'),
-      install: false,
+      unpack: false,
     });
 
     fs.mkdirSync(path.dirname(targetPath), {

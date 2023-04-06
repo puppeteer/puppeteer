@@ -22,8 +22,8 @@ import os from 'os';
 import path from 'path';
 
 import {
-  fetch,
-  canFetch,
+  install,
+  canDownload,
   Browser,
   BrowserPlatform,
   Cache,
@@ -35,7 +35,7 @@ import {testChromeBuildId} from '../versions.js';
  * Tests in this spec use real download URLs and unpack live browser archives
  * so it requires the network access.
  */
-describe('Chrome fetch', () => {
+describe('Chrome install', () => {
   setupTestServer();
 
   let tmpDir = '/tmp/puppeteer-browsers-test';
@@ -50,7 +50,7 @@ describe('Chrome fetch', () => {
 
   it('should check if a buildId can be downloaded', async () => {
     assert.ok(
-      await canFetch({
+      await canDownload({
         cacheDir: tmpDir,
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
@@ -62,7 +62,7 @@ describe('Chrome fetch', () => {
 
   it('should report if a buildId is not downloadable', async () => {
     assert.strictEqual(
-      await canFetch({
+      await canDownload({
         cacheDir: tmpDir,
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,
@@ -81,7 +81,7 @@ describe('Chrome fetch', () => {
       `${BrowserPlatform.LINUX}-${testChromeBuildId}`
     );
     assert.strictEqual(fs.existsSync(expectedOutputPath), false);
-    let browser = await fetch({
+    let browser = await install({
       cacheDir: tmpDir,
       browser: Browser.CHROME,
       platform: BrowserPlatform.LINUX,
@@ -91,7 +91,7 @@ describe('Chrome fetch', () => {
     assert.strictEqual(browser.path, expectedOutputPath);
     assert.ok(fs.existsSync(expectedOutputPath));
     // Second iteration should be no-op.
-    browser = await fetch({
+    browser = await install({
       cacheDir: tmpDir,
       browser: Browser.CHROME,
       platform: BrowserPlatform.LINUX,
@@ -159,9 +159,9 @@ describe('Chrome fetch', () => {
       delete process.env['HTTPS_PROXY'];
     });
 
-    it('can send canFetch requests via a proxy', async () => {
+    it('can send canDownload requests via a proxy', async () => {
       assert.strictEqual(
-        await canFetch({
+        await canDownload({
           cacheDir: tmpDir,
           browser: Browser.CHROME,
           platform: BrowserPlatform.LINUX,
@@ -175,7 +175,7 @@ describe('Chrome fetch', () => {
       ]);
     });
 
-    it('can fetch via a proxy', async function () {
+    it('can download via a proxy', async function () {
       this.timeout(120000);
       const expectedOutputPath = path.join(
         tmpDir,
@@ -183,7 +183,7 @@ describe('Chrome fetch', () => {
         `${BrowserPlatform.LINUX}-${testChromeBuildId}`
       );
       assert.strictEqual(fs.existsSync(expectedOutputPath), false);
-      const browser = await fetch({
+      const browser = await install({
         cacheDir: tmpDir,
         browser: Browser.CHROME,
         platform: BrowserPlatform.LINUX,

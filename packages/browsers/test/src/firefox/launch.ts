@@ -22,7 +22,7 @@ import path from 'path';
 import {
   computeExecutablePath,
   launch,
-  fetch,
+  install,
   Browser,
   BrowserPlatform,
   createProfile,
@@ -54,7 +54,7 @@ describe('Firefox', () => {
       tmpDir = fs.mkdtempSync(
         path.join(os.tmpdir(), 'puppeteer-browsers-test')
       );
-      await fetch({
+      await install({
         cacheDir: tmpDir,
         browser: Browser.FIREFOX,
         buildId: testFirefoxBuildId,

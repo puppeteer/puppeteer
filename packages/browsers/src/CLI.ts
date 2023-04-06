@@ -30,12 +30,12 @@ import {
 } from './browser-data/browser-data.js';
 import {Cache} from './Cache.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
-import {fetch} from './fetch.js';
+import {install} from './install.js';
 import {
   computeExecutablePath,
   computeSystemExecutablePath,
   launch,
-} from './launcher.js';
+} from './launch.js';
 
 type InstallArgs = {
   browser: {
@@ -157,7 +157,7 @@ export class CLI {
             args.platform,
             args.browser.buildId
           );
-          await fetch({
+          await install({
             browser: args.browser.name,
             buildId: args.browser.buildId,
             platform: args.platform,

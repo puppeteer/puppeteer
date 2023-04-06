@@ -19,7 +19,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-import {fetch, Browser, BrowserPlatform} from '../../../lib/cjs/main.js';
+import {install, Browser, BrowserPlatform} from '../../../lib/cjs/main.js';
 import {setupTestServer, getServerUrl, clearCache} from '../utils.js';
 import {testFirefoxBuildId} from '../versions.js';
 
@@ -27,7 +27,7 @@ import {testFirefoxBuildId} from '../versions.js';
  * Tests in this spec use real download URLs and unpack live browser archives
  * so it requires the network access.
  */
-describe('Firefox fetch', () => {
+describe('Firefox install', () => {
   setupTestServer();
 
   let tmpDir = '/tmp/puppeteer-browsers-test';
@@ -48,7 +48,7 @@ describe('Firefox fetch', () => {
       `${BrowserPlatform.LINUX}-${testFirefoxBuildId}`
     );
     assert.strictEqual(fs.existsSync(expectedOutputPath), false);
-    const browser = await fetch({
+    const browser = await install({
       cacheDir: tmpDir,
       browser: Browser.FIREFOX,
       platform: BrowserPlatform.LINUX,
@@ -59,7 +59,7 @@ describe('Firefox fetch', () => {
     assert.ok(fs.existsSync(expectedOutputPath));
   });
 
-  // Fetch relies on the `hdiutil` utility on MacOS.
+  // install relies on the `hdiutil` utility on MacOS.
   // The utility is not available on other platforms.
   (os.platform() === 'darwin' ? it : it.skip)(
     'should download a buildId that is a dmg archive',
@@ -71,7 +71,7 @@ describe('Firefox fetch', () => {
         `${BrowserPlatform.MAC}-${testFirefoxBuildId}`
       );
       assert.strictEqual(fs.existsSync(expectedOutputPath), false);
-      const browser = await fetch({
+      const browser = await install({
         cacheDir: tmpDir,
         browser: Browser.FIREFOX,
         platform: BrowserPlatform.MAC,
