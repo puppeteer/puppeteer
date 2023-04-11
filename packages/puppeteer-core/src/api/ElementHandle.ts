@@ -812,6 +812,27 @@ export class ElementHandle<
   }
 
   /**
+   * @internal
+   */
+  protected async assertConnectedElement(): Promise<void> {
+    const error = await this.evaluate(
+      async (element): Promise<string | undefined> => {
+        if (!element.isConnected) {
+          return 'Node is detached from document';
+        }
+        if (element.nodeType !== Node.ELEMENT_NODE) {
+          return 'Node is not of type HTMLElement';
+        }
+        return;
+      }
+    );
+
+    if (error) {
+      throw new Error(error);
+    }
+  }
+
+  /**
    * Resolves to true if the element is visible in the current viewport. If an
    * element is an SVG, we check if the svg owner element is in the viewport
    * instead. See https://crbug.com/963246.
@@ -822,6 +843,8 @@ export class ElementHandle<
       threshold?: number;
     }
   ): Promise<boolean> {
+    await this.assertConnectedElement();
+
     const {threshold = 0} = options ?? {};
     const svgHandle = await this.#asSVGElementHandle(this);
     const intersectionTarget: ElementHandle<Element> = svgHandle
@@ -844,6 +867,14 @@ export class ElementHandle<
         await intersectionTarget.dispose();
       }
     }
+  }
+
+  /**
+   * Scrolls the element into view using either the automation protocol client
+   * or by calling element.scrollIntoView.
+   */
+  async scrollIntoView(this: ElementHandle<Element>): Promise<void> {
+    throw new Error('Not implemented');
   }
 
   /**

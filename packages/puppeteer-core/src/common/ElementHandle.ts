@@ -231,56 +231,42 @@ export class CDPElementHandle<
     return this.#frameManager.frame(nodeInfo.node.frameId);
   }
 
-  async #scrollIntoViewIfNeeded(
+  override async scrollIntoView(
     this: CDPElementHandle<Element>
   ): Promise<void> {
-    const error = await this.evaluate(
-      async (element): Promise<string | undefined> => {
-        if (!element.isConnected) {
-          return 'Node is detached from document';
-        }
-        if (element.nodeType !== Node.ELEMENT_NODE) {
-          return 'Node is not of type HTMLElement';
-        }
-        return;
-      }
-    );
-
-    if (error) {
-      throw new Error(error);
-    }
+    await this.assertConnectedElement();
 
     try {
       await this.client.send('DOM.scrollIntoViewIfNeeded', {
         objectId: this.remoteObject().objectId,
       });
-    } catch (_err) {
+    } catch (error) {
+      debugError(error);
       // Fallback to Element.scrollIntoView if DOM.scrollIntoViewIfNeeded is not supported
-      await this.evaluate(
-        async (element, pageJavascriptEnabled): Promise<void> => {
-          const visibleRatio = async () => {
-            return await new Promise(resolve => {
-              const observer = new IntersectionObserver(entries => {
-                resolve(entries[0]!.intersectionRatio);
-                observer.disconnect();
-              });
-              observer.observe(element);
-            });
-          };
-          if (!pageJavascriptEnabled || (await visibleRatio()) !== 1.0) {
-            element.scrollIntoView({
-              block: 'center',
-              inline: 'center',
-              // @ts-expect-error Chrome still supports behavior: instant but
-              // it's not in the spec so TS shouts We don't want to make this
-              // breaking change in Puppeteer yet so we'll ignore the line.
-              behavior: 'instant',
-            });
-          }
-        },
-        this.#page.isJavaScriptEnabled()
-      );
+      await this.evaluate(async (element): Promise<void> => {
+        element.scrollIntoView({
+          block: 'center',
+          inline: 'center',
+          // @ts-expect-error Chrome still supports behavior: instant but
+          // it's not in the spec so TS shouts We don't want to make this
+          // breaking change in Puppeteer yet so we'll ignore the line.
+          behavior: 'instant',
+        });
+      });
     }
+  }
+
+  async #scrollIntoViewIfNeeded(
+    this: CDPElementHandle<Element>
+  ): Promise<void> {
+    if (
+      await this.isIntersectingViewport({
+        threshold: 1,
+      })
+    ) {
+      return;
+    }
+    await this.scrollIntoView();
   }
 
   async #getOOPIFOffsets(
