@@ -29,7 +29,7 @@ const DEFAULT_BATCH_SIZE = 20;
  */
 async function* fastTransposeIteratorHandle<T>(
   iterator: JSHandle<AwaitableIterator<T>>,
-  size = DEFAULT_BATCH_SIZE
+  size: number
 ) {
   const array = await iterator.evaluateHandle(async (iterator, size) => {
     const results = [];
@@ -56,8 +56,11 @@ async function* fastTransposeIteratorHandle<T>(
 async function* transposeIteratorHandle<T>(
   iterator: JSHandle<AwaitableIterator<T>>
 ) {
+  let size = DEFAULT_BATCH_SIZE;
   try {
-    while (!(yield* fastTransposeIteratorHandle(iterator))) {}
+    while (!(yield* fastTransposeIteratorHandle(iterator, size))) {
+      size <<= 1;
+    }
   } finally {
     await iterator.dispose();
   }
