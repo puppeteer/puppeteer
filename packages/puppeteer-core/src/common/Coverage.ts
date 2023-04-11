@@ -95,7 +95,7 @@ export interface CSSCoverageOptions {
 }
 
 /**
- * The Coverage class provides methods to gathers information about parts of
+ * The Coverage class provides methods to gather information about parts of
  * JavaScript and CSS that were used by the page.
  *
  * @remarks
