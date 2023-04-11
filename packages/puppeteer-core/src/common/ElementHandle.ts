@@ -747,25 +747,6 @@ export class CDPElementHandle<
 
     return imageData;
   }
-
-  override async isIntersectingViewport(
-    this: CDPElementHandle<Element>,
-    options?: {
-      threshold?: number;
-    }
-  ): Promise<boolean> {
-    const {threshold = 0} = options ?? {};
-    return await this.evaluate(async (element, threshold) => {
-      const visibleRatio = await new Promise<number>(resolve => {
-        const observer = new IntersectionObserver(entries => {
-          resolve(entries[0]!.intersectionRatio);
-          observer.disconnect();
-        });
-        observer.observe(element);
-      });
-      return threshold === 1 ? visibleRatio === 1 : visibleRatio > threshold;
-    }, threshold);
-  }
 }
 
 function computeQuadArea(quad: Point[]): number {

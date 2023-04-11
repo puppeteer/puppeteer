@@ -812,15 +812,67 @@ export class ElementHandle<
   }
 
   /**
-   * Resolves to true if the element is visible in the current viewport.
+   * Resolves to true if the element is visible in the current viewport. If an
+   * element is an SVG, we check if the svg owner element is in the viewport
+   * instead. See https://crbug.com/963246.
    */
   async isIntersectingViewport(
     this: ElementHandle<Element>,
     options?: {
       threshold?: number;
     }
-  ): Promise<boolean>;
-  async isIntersectingViewport(): Promise<boolean> {
-    throw new Error('Not implemented');
+  ): Promise<boolean> {
+    const {threshold = 0} = options ?? {};
+    const svgHandle = await this.#asSVGElementHandle(this);
+    const intersectionTarget: ElementHandle<Element> = svgHandle
+      ? await this.#getOwnerSVGElement(svgHandle)
+      : this;
+
+    try {
+      return await intersectionTarget.evaluate(async (element, threshold) => {
+        const visibleRatio = await new Promise<number>(resolve => {
+          const observer = new IntersectionObserver(entries => {
+            resolve(entries[0]!.intersectionRatio);
+            observer.disconnect();
+          });
+          observer.observe(element);
+        });
+        return threshold === 1 ? visibleRatio === 1 : visibleRatio > threshold;
+      }, threshold);
+    } finally {
+      if (intersectionTarget !== this) {
+        await intersectionTarget.dispose();
+      }
+    }
+  }
+
+  /**
+   * Returns true if an element is an SVGElement (included svg, path, rect
+   * etc.).
+   */
+  async #asSVGElementHandle(
+    handle: ElementHandle<Element>
+  ): Promise<ElementHandle<SVGElement> | null> {
+    if (
+      await handle.evaluate(element => {
+        return element instanceof SVGElement;
+      })
+    ) {
+      return handle as ElementHandle<SVGElement>;
+    } else {
+      return null;
+    }
+  }
+
+  async #getOwnerSVGElement(
+    handle: ElementHandle<SVGElement>
+  ): Promise<ElementHandle<SVGSVGElement>> {
+    // SVGSVGElement.ownerSVGElement === null.
+    return await handle.evaluateHandle(element => {
+      if (element instanceof SVGSVGElement) {
+        return element;
+      }
+      return element.ownerSVGElement!;
+    });
   }
 }
