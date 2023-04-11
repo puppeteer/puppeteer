@@ -486,6 +486,56 @@ describe('ElementHandle specs', function () {
         })
       ).toBe(true);
     });
+    it('should work with svg elements', async () => {
+      const {page, server} = getTestState();
+
+      await page.goto(server.PREFIX + '/inline-svg.html');
+      const visibleCircle = await page.$('circle');
+      const visibleSvg = await page.$('svg');
+      expect(
+        await visibleCircle!.isIntersectingViewport({
+          threshold: 1,
+        })
+      ).toBe(true);
+      expect(
+        await visibleCircle!.isIntersectingViewport({
+          threshold: 0,
+        })
+      ).toBe(true);
+      expect(
+        await visibleSvg!.isIntersectingViewport({
+          threshold: 1,
+        })
+      ).toBe(true);
+      expect(
+        await visibleSvg!.isIntersectingViewport({
+          threshold: 0,
+        })
+      ).toBe(true);
+
+      const invisibleCircle = await page.$('div circle');
+      const invisibleSvg = await page.$('div svg');
+      expect(
+        await invisibleCircle!.isIntersectingViewport({
+          threshold: 1,
+        })
+      ).toBe(false);
+      expect(
+        await invisibleCircle!.isIntersectingViewport({
+          threshold: 0,
+        })
+      ).toBe(false);
+      expect(
+        await invisibleSvg!.isIntersectingViewport({
+          threshold: 1,
+        })
+      ).toBe(false);
+      expect(
+        await invisibleSvg!.isIntersectingViewport({
+          threshold: 0,
+        })
+      ).toBe(false);
+    });
   });
 
   describe('Custom queries', function () {
