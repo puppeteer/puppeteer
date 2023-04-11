@@ -49,7 +49,7 @@ describe('Input.drag', function () {
     const draggable = (await page.$('#drag'))!;
     const data = await draggable.drag({x: 1, y: 1});
 
-    expect(data.items.length).toBe(1);
+    expect(data.items).toHaveLength(1);
     expect(
       await page.evaluate(() => {
         return (globalThis as any).didDragStart;

@@ -26,9 +26,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import utils from './utils.js';
-
-const {waitEvent} = utils;
+import {waitEvent} from './utils.js';
 
 describe('Target', function () {
   setupTestBrowserHooks();
@@ -55,7 +53,7 @@ describe('Target', function () {
 
     // The pages will be the testing page
     const allPages = await context.pages();
-    expect(allPages.length).toBe(1);
+    expect(allPages).toHaveLength(1);
     expect(allPages).toContain(page);
   });
   it('should contain browser target', async () => {
@@ -131,13 +129,11 @@ describe('Target', function () {
     expect(allPages).toContain(page);
     expect(allPages).toContain(otherPage);
 
-    const closePagePromise = new Promise(fulfill => {
-      return context.once('targetdestroyed', target => {
-        return fulfill(target.page());
-      });
-    });
-    await otherPage!.close();
-    expect(await closePagePromise).toBe(otherPage);
+    const [closedTarget] = await Promise.all([
+      waitEvent<Target>(context, 'targetdestroyed'),
+      otherPage!.close(),
+    ]);
+    expect(await closedTarget.page()).toBe(otherPage);
 
     allPages = (await Promise.all(
       context.targets().map(target => {
@@ -151,11 +147,7 @@ describe('Target', function () {
     const {page, server, context} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
-    const createdTarget = new Promise<Target>(fulfill => {
-      return context.once('targetcreated', target => {
-        return fulfill(target);
-      });
-    });
+    const createdTarget = waitEvent(context, 'targetcreated');
 
     await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
 
@@ -164,11 +156,7 @@ describe('Target', function () {
       server.PREFIX + '/serviceworkers/empty/sw.js'
     );
 
-    const destroyedTarget = new Promise(fulfill => {
-      return context.once('targetdestroyed', target => {
-        return fulfill(target);
-      });
-    });
+    const destroyedTarget = waitEvent(context, 'targetdestroyed');
     await page.evaluate(() => {
       return (
         globalThis as unknown as {
@@ -216,19 +204,11 @@ describe('Target', function () {
     const {page, server, context} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
-    let changedTarget = new Promise<Target>(fulfill => {
-      return context.once('targetchanged', target => {
-        return fulfill(target);
-      });
-    });
+    let changedTarget = waitEvent(context, 'targetchanged');
     await page.goto(server.CROSS_PROCESS_PREFIX + '/');
     expect((await changedTarget).url()).toBe(server.CROSS_PROCESS_PREFIX + '/');
 
-    changedTarget = new Promise(fulfill => {
-      return context.once('targetchanged', target => {
-        return fulfill(target);
-      });
-    });
+    changedTarget = waitEvent(context, 'targetchanged');
     await page.goto(server.EMPTY_PAGE);
     expect((await changedTarget).url()).toBe(server.EMPTY_PAGE);
   });
@@ -240,21 +220,13 @@ describe('Target', function () {
       return (targetChanged = true);
     };
     context.on('targetchanged', listener);
-    const targetPromise = new Promise<Target>(fulfill => {
-      return context.once('targetcreated', target => {
-        return fulfill(target);
-      });
-    });
+    const targetPromise = waitEvent<Target>(context, 'targetcreated');
     const newPagePromise = context.newPage();
     const target = await targetPromise;
     expect(target.url()).toBe('about:blank');
 
     const newPage = await newPagePromise;
-    const targetPromise2 = new Promise<Target>(fulfill => {
-      return context.once('targetcreated', target => {
-        return fulfill(target);
-      });
-    });
+    const targetPromise2 = waitEvent<Target>(context, 'targetcreated');
     const evaluatePromise = newPage.evaluate(() => {
       return window.open('about:blank');
     });
@@ -263,7 +235,7 @@ describe('Target', function () {
     await evaluatePromise;
     await newPage.close();
     expect(targetChanged).toBe(false);
-    context.removeListener('targetchanged', listener);
+    context.off('targetchanged', listener);
   });
   it('should not crash while redirecting if original request was missed', async () => {
     const {page, server, context} = getTestState();
@@ -297,11 +269,7 @@ describe('Target', function () {
 
     await page.goto(server.EMPTY_PAGE);
     const [createdTarget] = await Promise.all([
-      new Promise<Target>(fulfill => {
-        return context.once('targetcreated', target => {
-          return fulfill(target);
-        });
-      }),
+      waitEvent<Target>(context, 'targetcreated'),
       page.goto(server.PREFIX + '/popup/window-open.html'),
     ]);
     expect((await createdTarget.page())!.url()).toBe(

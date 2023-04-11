@@ -21,6 +21,7 @@ import path from 'path';
 import expect from 'expect';
 
 import {getTestState} from './mocha-utils.js';
+import {waitEvent} from './utils.js';
 
 describe('Fixtures', function () {
   it('dumpio option should work with pipe option', async () => {
@@ -96,9 +97,7 @@ describe('Fixtures', function () {
       browserWSEndpoint: await wsEndPointPromise,
     });
     const promises = [
-      new Promise(resolve => {
-        return browser.once('disconnected', resolve);
-      }),
+      waitEvent(browser, 'disconnected'),
       new Promise(resolve => {
         return res.on('close', resolve);
       }),

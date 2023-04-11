@@ -63,7 +63,7 @@ describe('Cookie specs', () => {
       });
       await page.goto(server.EMPTY_PAGE);
       const cookies = await page.cookies();
-      expect(cookies.length).toBe(1);
+      expect(cookies).toHaveLength(1);
       expect(cookies[0]!.httpOnly).toBe(true);
     });
     it('should properly report "Strict" sameSite cookie', async () => {
@@ -74,7 +74,7 @@ describe('Cookie specs', () => {
       });
       await page.goto(server.EMPTY_PAGE);
       const cookies = await page.cookies();
-      expect(cookies.length).toBe(1);
+      expect(cookies).toHaveLength(1);
       expect(cookies[0]!.sameSite).toBe('Strict');
     });
     it('should properly report "Lax" sameSite cookie', async () => {
@@ -85,7 +85,7 @@ describe('Cookie specs', () => {
       });
       await page.goto(server.EMPTY_PAGE);
       const cookies = await page.cookies();
-      expect(cookies.length).toBe(1);
+      expect(cookies).toHaveLength(1);
       expect(cookies[0]!.sameSite).toBe('Lax');
     });
     it('should get multiple cookies', async () => {
@@ -212,8 +212,8 @@ describe('Cookie specs', () => {
 
       const cookies1 = await page.cookies();
       const cookies2 = await anotherPage.cookies();
-      expect(cookies1.length).toBe(1);
-      expect(cookies2.length).toBe(1);
+      expect(cookies1).toHaveLength(1);
+      expect(cookies2).toHaveLength(1);
       expect(cookies1[0]!.name).toBe('page1cookie');
       expect(cookies1[0]!.value).toBe('page1value');
       expect(cookies2[0]!.name).toBe('page2cookie');

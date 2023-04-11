@@ -34,7 +34,7 @@ describe('Coverage specs', function () {
         waitUntil: 'networkidle0',
       });
       const coverage = await page.coverage.stopJSCoverage();
-      expect(coverage.length).toBe(1);
+      expect(coverage).toHaveLength(1);
       expect(coverage[0]!.url).toContain('/jscoverage/simple.html');
       expect(coverage[0]!.ranges).toEqual([
         {start: 0, end: 17},
@@ -47,7 +47,7 @@ describe('Coverage specs', function () {
       await page.coverage.startJSCoverage();
       await page.goto(server.PREFIX + '/jscoverage/sourceurl.html');
       const coverage = await page.coverage.stopJSCoverage();
-      expect(coverage.length).toBe(1);
+      expect(coverage).toHaveLength(1);
       expect(coverage[0]!.url).toBe('nicename.js');
     });
     it('should ignore eval() scripts by default', async () => {
@@ -56,7 +56,7 @@ describe('Coverage specs', function () {
       await page.coverage.startJSCoverage();
       await page.goto(server.PREFIX + '/jscoverage/eval.html');
       const coverage = await page.coverage.stopJSCoverage();
-      expect(coverage.length).toBe(1);
+      expect(coverage).toHaveLength(1);
     });
     it("shouldn't ignore eval() scripts if reportAnonymousScripts is true", async () => {
       const {page, server} = getTestState();
@@ -69,7 +69,7 @@ describe('Coverage specs', function () {
           return entry.url.startsWith('debugger://');
         })
       ).not.toBe(null);
-      expect(coverage.length).toBe(2);
+      expect(coverage).toHaveLength(2);
     });
     it('should ignore pptr internal scripts if reportAnonymousScripts is true', async () => {
       const {page, server} = getTestState();
@@ -81,7 +81,7 @@ describe('Coverage specs', function () {
         return console.log('bar');
       });
       const coverage = await page.coverage.stopJSCoverage();
-      expect(coverage.length).toBe(0);
+      expect(coverage).toHaveLength(0);
     });
     it('should report multiple scripts', async () => {
       const {page, server} = getTestState();
@@ -89,7 +89,7 @@ describe('Coverage specs', function () {
       await page.coverage.startJSCoverage();
       await page.goto(server.PREFIX + '/jscoverage/multiple.html');
       const coverage = await page.coverage.stopJSCoverage();
-      expect(coverage.length).toBe(2);
+      expect(coverage).toHaveLength(2);
       coverage.sort((a, b) => {
         return a.url.localeCompare(b.url);
       });
@@ -102,9 +102,9 @@ describe('Coverage specs', function () {
       await page.coverage.startJSCoverage();
       await page.goto(server.PREFIX + '/jscoverage/ranges.html');
       const coverage = await page.coverage.stopJSCoverage();
-      expect(coverage.length).toBe(1);
+      expect(coverage).toHaveLength(1);
       const entry = coverage[0]!;
-      expect(entry.ranges.length).toBe(2);
+      expect(entry.ranges).toHaveLength(2);
       const range1 = entry.ranges[0]!;
       expect(entry.text.substring(range1.start, range1.end)).toBe('\n');
       const range2 = entry.ranges[1]!;
@@ -122,9 +122,9 @@ describe('Coverage specs', function () {
       await page.coverage.startJSCoverage(coverageOptions);
       await page.goto(server.PREFIX + '/jscoverage/ranges.html');
       const coverage = await page.coverage.stopJSCoverage();
-      expect(coverage.length).toBe(1);
+      expect(coverage).toHaveLength(1);
       const entry = coverage[0]!;
-      expect(entry.ranges.length).toBe(2);
+      expect(entry.ranges).toHaveLength(2);
       const range1 = entry.ranges[0]!;
       expect(entry.text.substring(range1.start, range1.end)).toBe('\n');
       const range2 = entry.ranges[1]!;
@@ -138,10 +138,10 @@ describe('Coverage specs', function () {
       await page.coverage.startJSCoverage();
       await page.goto(server.PREFIX + '/jscoverage/unused.html');
       const coverage = await page.coverage.stopJSCoverage();
-      expect(coverage.length).toBe(1);
+      expect(coverage).toHaveLength(1);
       const entry = coverage[0]!;
       expect(entry.url).toContain('unused.html');
-      expect(entry.ranges.length).toBe(0);
+      expect(entry.ranges).toHaveLength(0);
     });
     it('should work with conditionals', async () => {
       const {page, server} = getTestState();
@@ -172,7 +172,7 @@ describe('Coverage specs', function () {
         await page.goto(server.PREFIX + '/jscoverage/multiple.html');
         await page.goto(server.EMPTY_PAGE);
         const coverage = await page.coverage.stopJSCoverage();
-        expect(coverage.length).toBe(2);
+        expect(coverage).toHaveLength(2);
       });
 
       it('should NOT report scripts across navigations when enabled', async () => {
@@ -182,7 +182,7 @@ describe('Coverage specs', function () {
         await page.goto(server.PREFIX + '/jscoverage/multiple.html');
         await page.goto(server.EMPTY_PAGE);
         const coverage = await page.coverage.stopJSCoverage();
-        expect(coverage.length).toBe(0);
+        expect(coverage).toHaveLength(0);
       });
     });
     describe('includeRawScriptCoverage', function () {
@@ -193,7 +193,7 @@ describe('Coverage specs', function () {
           waitUntil: 'networkidle0',
         });
         const coverage = await page.coverage.stopJSCoverage();
-        expect(coverage.length).toBe(1);
+        expect(coverage).toHaveLength(1);
         expect(coverage[0]!.rawScriptCoverage).toBeUndefined();
       });
       it('should include rawScriptCoverage field when enabled', async () => {
@@ -205,7 +205,7 @@ describe('Coverage specs', function () {
           waitUntil: 'networkidle0',
         });
         const coverage = await page.coverage.stopJSCoverage();
-        expect(coverage.length).toBe(1);
+        expect(coverage).toHaveLength(1);
         expect(coverage[0]!.rawScriptCoverage).toBeTruthy();
       });
     });
@@ -232,7 +232,7 @@ describe('Coverage specs', function () {
       await page.coverage.startCSSCoverage();
       await page.goto(server.PREFIX + '/csscoverage/simple.html');
       const coverage = await page.coverage.stopCSSCoverage();
-      expect(coverage.length).toBe(1);
+      expect(coverage).toHaveLength(1);
       expect(coverage[0]!.url).toContain('/csscoverage/simple.html');
       expect(coverage[0]!.ranges).toEqual([{start: 1, end: 22}]);
       const range = coverage[0]!.ranges[0]!;
@@ -246,7 +246,7 @@ describe('Coverage specs', function () {
       await page.coverage.startCSSCoverage();
       await page.goto(server.PREFIX + '/csscoverage/sourceurl.html');
       const coverage = await page.coverage.stopCSSCoverage();
-      expect(coverage.length).toBe(1);
+      expect(coverage).toHaveLength(1);
       expect(coverage[0]!.url).toBe('nicename.css');
     });
     it('should report multiple stylesheets', async () => {
@@ -255,7 +255,7 @@ describe('Coverage specs', function () {
       await page.coverage.startCSSCoverage();
       await page.goto(server.PREFIX + '/csscoverage/multiple.html');
       const coverage = await page.coverage.stopCSSCoverage();
-      expect(coverage.length).toBe(2);
+      expect(coverage).toHaveLength(2);
       coverage.sort((a, b) => {
         return a.url.localeCompare(b.url);
       });
@@ -268,9 +268,9 @@ describe('Coverage specs', function () {
       await page.coverage.startCSSCoverage();
       await page.goto(server.PREFIX + '/csscoverage/unused.html');
       const coverage = await page.coverage.stopCSSCoverage();
-      expect(coverage.length).toBe(1);
+      expect(coverage).toHaveLength(1);
       expect(coverage[0]!.url).toBe('unused.css');
-      expect(coverage[0]!.ranges.length).toBe(0);
+      expect(coverage[0]!.ranges).toHaveLength(0);
     });
     it('should work with media queries', async () => {
       const {page, server} = getTestState();
@@ -278,7 +278,7 @@ describe('Coverage specs', function () {
       await page.coverage.startCSSCoverage();
       await page.goto(server.PREFIX + '/csscoverage/media.html');
       const coverage = await page.coverage.stopCSSCoverage();
-      expect(coverage.length).toBe(1);
+      expect(coverage).toHaveLength(1);
       expect(coverage[0]!.url).toContain('/csscoverage/media.html');
       expect(coverage[0]!.ranges).toEqual([{start: 8, end: 40}]);
     });
@@ -298,7 +298,7 @@ describe('Coverage specs', function () {
       await page.coverage.startCSSCoverage();
       await page.goto(server.PREFIX + '/csscoverage/empty.html');
       const coverage = await page.coverage.stopCSSCoverage();
-      expect(coverage.length).toEqual(1);
+      expect(coverage).toHaveLength(1);
       expect(coverage[0]!.text).toEqual('');
     });
     it('should ignore injected stylesheets', async () => {
@@ -312,7 +312,7 @@ describe('Coverage specs', function () {
       });
       expect(margin).toBe('10px');
       const coverage = await page.coverage.stopCSSCoverage();
-      expect(coverage.length).toBe(0);
+      expect(coverage).toHaveLength(0);
     });
     it('should work with a recently loaded stylesheet', async () => {
       const {page, server} = getTestState();
@@ -330,7 +330,7 @@ describe('Coverage specs', function () {
         });
       }, server.PREFIX + '/csscoverage/stylesheet1.css');
       const coverage = await page.coverage.stopCSSCoverage();
-      expect(coverage.length).toBe(1);
+      expect(coverage).toHaveLength(1);
     });
     describe('resetOnNavigation', function () {
       it('should report stylesheets across navigations', async () => {
@@ -340,7 +340,7 @@ describe('Coverage specs', function () {
         await page.goto(server.PREFIX + '/csscoverage/multiple.html');
         await page.goto(server.EMPTY_PAGE);
         const coverage = await page.coverage.stopCSSCoverage();
-        expect(coverage.length).toBe(2);
+        expect(coverage).toHaveLength(2);
       });
       it('should NOT report scripts across navigations', async () => {
         const {page, server} = getTestState();
@@ -349,7 +349,7 @@ describe('Coverage specs', function () {
         await page.goto(server.PREFIX + '/csscoverage/multiple.html');
         await page.goto(server.EMPTY_PAGE);
         const coverage = await page.coverage.stopCSSCoverage();
-        expect(coverage.length).toBe(0);
+        expect(coverage).toHaveLength(0);
       });
     });
   });

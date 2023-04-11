@@ -185,16 +185,16 @@ describe('Page', function () {
     it('should throw when page crashes', async () => {
       const {page, isChrome} = getTestState();
 
-      let error!: Error;
-      page.on('error', err => {
-        return (error = err);
-      });
+      let navigate: Promise<unknown>;
       if (isChrome) {
-        page.goto('chrome://crash').catch(() => {});
+        navigate = page.goto('chrome://crash').catch(() => {});
       } else {
-        page.goto('about:crashcontent').catch(() => {});
+        navigate = page.goto('about:crashcontent').catch(() => {});
       }
-      await waitEvent(page, 'error');
+      const [error] = await Promise.all([
+        waitEvent<Error>(page, 'error'),
+        navigate,
+      ]);
       expect(error.message).toBe('Page crashed!');
     });
   });
@@ -204,9 +204,7 @@ describe('Page', function () {
       const {page} = getTestState();
 
       const [popup] = await Promise.all([
-        new Promise<Page>(x => {
-          return page.once('popup', x);
-        }),
+        waitEvent<Page>(page, 'popup'),
         page.evaluate(() => {
           return window.open('about:blank');
         }),
@@ -226,9 +224,7 @@ describe('Page', function () {
       const {page} = getTestState();
 
       const [popup] = await Promise.all([
-        new Promise<Page>(x => {
-          return page.once('popup', x);
-        }),
+        waitEvent<Page>(page, 'popup'),
         page.evaluate(() => {
           return window.open('about:blank', undefined, 'noopener');
         }),
@@ -250,9 +246,7 @@ describe('Page', function () {
       await page.goto(server.EMPTY_PAGE);
       await page.setContent('<a target=_blank href="/one-style.html">yo</a>');
       const [popup] = await Promise.all([
-        new Promise<Page>(x => {
-          return page.once('popup', x);
-        }),
+        waitEvent<Page>(page, 'popup'),
         page.click('a'),
       ]);
       expect(
@@ -274,9 +268,7 @@ describe('Page', function () {
         '<a target=_blank rel=opener href="/one-style.html">yo</a>'
       );
       const [popup] = await Promise.all([
-        new Promise<Page>(x => {
-          return page.once('popup', x);
-        }),
+        waitEvent<Page>(page, 'popup'),
         page.click('a'),
       ]);
       expect(
@@ -298,9 +290,7 @@ describe('Page', function () {
         '<a target=_blank rel=noopener href="/one-style.html">yo</a>'
       );
       const [popup] = await Promise.all([
-        new Promise<Page>(x => {
-          return page.once('popup', x);
-        }),
+        waitEvent<Page>(page, 'popup'),
         page.$eval('a', a => {
           return (a as HTMLAnchorElement).click();
         }),
@@ -324,9 +314,7 @@ describe('Page', function () {
         '<a target=_blank rel=noopener href="/one-style.html">yo</a>'
       );
       const [popup] = await Promise.all([
-        new Promise<Page>(x => {
-          return page.once('popup', x);
-        }),
+        waitEvent<Page>(page, 'popup'),
         page.click('a'),
       ]);
       expect(
@@ -642,15 +630,11 @@ describe('Page', function () {
     it('should work', async () => {
       const {page} = getTestState();
 
-      let message!: ConsoleMessage;
-      page.once('console', m => {
-        return (message = m);
-      });
-      await Promise.all([
+      const [message] = await Promise.all([
+        waitEvent<ConsoleMessage>(page, 'console'),
         page.evaluate(() => {
           return console.log('hello', 5, {foo: 'bar'});
         }),
-        waitEvent(page, 'console'),
       ]);
       expect(message.text()).toEqual('hello 5 JSHandle@object');
       expect(message.type()).toEqual('log');
@@ -720,15 +704,11 @@ describe('Page', function () {
     it('should not fail for window object', async () => {
       const {page} = getTestState();
 
-      let message!: ConsoleMessage;
-      page.once('console', msg => {
-        return (message = msg);
-      });
-      await Promise.all([
+      const [message] = await Promise.all([
+        waitEvent<ConsoleMessage>(page, 'console'),
         page.evaluate(() => {
           return console.error(window);
         }),
-        waitEvent(page, 'console'),
       ]);
       expect(message.text()).toBe('JSHandle@object');
     });
@@ -854,11 +834,11 @@ describe('Page', function () {
     it('metrics event fired on console.timeStamp', async () => {
       const {page} = getTestState();
 
-      const metricsPromise = new Promise<{metrics: Metrics; title: string}>(
-        fulfill => {
-          return page.once('metrics', fulfill);
-        }
+      const metricsPromise = waitEvent<{metrics: Metrics; title: string}>(
+        page,
+        'metrics'
       );
+
       await page.evaluate(() => {
         return console.timeStamp('test42');
       });
@@ -1342,13 +1322,9 @@ describe('Page', function () {
     it('should fire', async () => {
       const {page, server} = getTestState();
 
-      let error!: Error;
-      page.once('pageerror', e => {
-        return (error = e);
-      });
-      await Promise.all([
+      const [error] = await Promise.all([
+        waitEvent<Error>(page, 'pageerror'),
         page.goto(server.PREFIX + '/error.html'),
-        waitEvent(page, 'pageerror'),
       ]);
       expect(error.message).toContain('Fancy');
     });
@@ -2220,7 +2196,7 @@ describe('Page', function () {
         'black',
         'magenta'
       );
-      expect(result.length).toEqual(1);
+      expect(result).toHaveLength(1);
     });
     it('should return [] on no values', async () => {
       const {page, server} = getTestState();
@@ -2313,9 +2289,7 @@ describe('Page', function () {
         return ((window as any)['newPage'] = window.open('about:blank'));
       });
       const newPage = await newPagePromise;
-      const closedPromise = new Promise(x => {
-        return newPage.on('close', x);
-      });
+      const closedPromise = waitEvent(newPage, 'close');
       await page.evaluate(() => {
         return (window as any)['newPage'].close();
       });
@@ -2325,9 +2299,7 @@ describe('Page', function () {
       const {context} = getTestState();
 
       const newPage = await context.newPage();
-      const closedPromise = new Promise(x => {
-        return newPage.on('close', x);
-      });
+      const closedPromise = waitEvent(newPage, 'close');
       await newPage.close();
       await closedPromise;
     });

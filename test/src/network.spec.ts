@@ -27,7 +27,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import {attachFrame, isFavicon} from './utils.js';
+import {attachFrame, isFavicon, waitEvent} from './utils.js';
 
 describe('network', function () {
   setupTestBrowserHooks();
@@ -42,7 +42,7 @@ describe('network', function () {
         return !isFavicon(request) && requests.push(request);
       });
       await page.goto(server.EMPTY_PAGE);
-      expect(requests.length).toBe(1);
+      expect(requests).toHaveLength(1);
     });
     it('should fire for iframes', async () => {
       const {page, server} = getTestState();
@@ -53,7 +53,7 @@ describe('network', function () {
       });
       await page.goto(server.EMPTY_PAGE);
       await attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      expect(requests.length).toBe(2);
+      expect(requests).toHaveLength(2);
     });
     it('should fire for fetches', async () => {
       const {page, server} = getTestState();
@@ -66,7 +66,7 @@ describe('network', function () {
       await page.evaluate(() => {
         return fetch('/empty.html');
       });
-      expect(requests.length).toBe(2);
+      expect(requests).toHaveLength(2);
     });
   });
   describe('Request.frame', function () {
@@ -78,7 +78,7 @@ describe('network', function () {
         return !isFavicon(request) && requests.push(request);
       });
       await page.goto(server.EMPTY_PAGE);
-      expect(requests.length).toBe(1);
+      expect(requests).toHaveLength(1);
       expect(requests[0]!.frame()).toBe(page.mainFrame());
     });
     it('should work for subframe navigation request', async () => {
@@ -90,8 +90,8 @@ describe('network', function () {
         return !isFavicon(request) && requests.push(request);
       });
       await attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      expect(requests.length).toBe(1);
-      expect(requests[0]!.frame()).toBe(page.frames()[1]!);
+      expect(requests).toHaveLength(1);
+      expect(requests[0]!.frame()).toBe(page.frames()[1]);
     });
     it('should work for fetch requests', async () => {
       const {page, server} = getTestState();
@@ -107,7 +107,7 @@ describe('network', function () {
       requests = requests.filter(request => {
         return !request.url().includes('favicon');
       });
-      expect(requests.length).toBe(1);
+      expect(requests).toHaveLength(1);
       expect(requests[0]!.frame()).toBe(page.mainFrame());
     });
   });
@@ -256,18 +256,19 @@ describe('network', function () {
       server.setRoute('/post', (_req, res) => {
         return res.end();
       });
-      let request!: HTTPRequest;
-      page.on('request', r => {
-        if (!isFavicon(r)) {
-          request = r;
-        }
-      });
-      await page.evaluate(() => {
-        return fetch('./post', {
-          method: 'POST',
-          body: JSON.stringify({foo: 'bar'}),
-        });
-      });
+
+      const [request] = await Promise.all([
+        waitEvent<HTTPRequest>(page, 'request', r => {
+          return !isFavicon(r);
+        }),
+        page.evaluate(() => {
+          return fetch('./post', {
+            method: 'POST',
+            body: JSON.stringify({foo: 'bar'}),
+          });
+        }),
+      ]);
+
       expect(request).toBeTruthy();
       expect(request.postData()).toBe('{"foo":"bar"}');
     });
@@ -302,7 +303,7 @@ describe('network', function () {
       server.setRedirect('/foo.html', '/empty.html');
       const response = (await page.goto(server.PREFIX + '/foo.html'))!;
       const redirectChain = response.request().redirectChain();
-      expect(redirectChain.length).toBe(1);
+      expect(redirectChain).toHaveLength(1);
       const redirected = redirectChain[0]!.response()!;
       expect(redirected.status()).toBe(302);
       let error!: Error;
@@ -404,17 +405,16 @@ describe('network', function () {
         res.end('Hello World');
       });
       const url = server.CROSS_PROCESS_PREFIX + '/test.html';
-      const responsePromise = new Promise<HTTPResponse>(resolve => {
-        page.on('response', response => {
+      const responsePromise = waitEvent<HTTPResponse>(
+        page,
+        'response',
+        response => {
           // Get the preflight response.
-          if (
-            response.request().method() === 'OPTIONS' &&
-            response.url() === url
-          ) {
-            resolve(response);
-          }
-        });
-      });
+          return (
+            response.request().method() === 'OPTIONS' && response.url() === url
+          );
+        }
+      );
 
       // Trigger a request with a preflight.
       await page.evaluate(async src => {
@@ -464,7 +464,7 @@ describe('network', function () {
         return responses.push(response);
       });
       await page.goto(server.EMPTY_PAGE);
-      expect(responses.length).toBe(1);
+      expect(responses).toHaveLength(1);
       expect(responses[0]!.timing()!.receiveHeadersEnd).toBeGreaterThan(0);
     });
   });
@@ -478,7 +478,7 @@ describe('network', function () {
         return requests.push(request);
       });
       await page.goto(server.EMPTY_PAGE);
-      expect(requests.length).toBe(1);
+      expect(requests).toHaveLength(1);
       expect(requests[0]!.url()).toBe(server.EMPTY_PAGE);
       expect(requests[0]!.resourceType()).toBe('document');
       expect(requests[0]!.method()).toBe('GET');
@@ -508,7 +508,7 @@ describe('network', function () {
         return responses.push(response);
       });
       await page.goto(server.EMPTY_PAGE);
-      expect(responses.length).toBe(1);
+      expect(responses).toHaveLength(1);
       expect(responses[0]!.url()).toBe(server.EMPTY_PAGE);
       expect(responses[0]!.status()).toBe(200);
       expect(responses[0]!.ok()).toBe(true);
@@ -537,7 +537,7 @@ describe('network', function () {
         return failedRequests.push(request);
       });
       await page.goto(server.PREFIX + '/one-style.html');
-      expect(failedRequests.length).toBe(1);
+      expect(failedRequests).toHaveLength(1);
       expect(failedRequests[0]!.url()).toContain('one-style.css');
       expect(failedRequests[0]!.response()).toBe(null);
       expect(failedRequests[0]!.resourceType()).toBe('stylesheet');
@@ -558,7 +558,7 @@ describe('network', function () {
         return requests.push(request);
       });
       await page.goto(server.EMPTY_PAGE);
-      expect(requests.length).toBe(1);
+      expect(requests).toHaveLength(1);
       expect(requests[0]!.url()).toBe(server.EMPTY_PAGE);
       expect(requests[0]!.response()).toBeTruthy();
       expect(requests[0]!.frame() === page.mainFrame()).toBe(true);
@@ -610,7 +610,7 @@ describe('network', function () {
 
       // Check redirect chain
       const redirectChain = response.request().redirectChain();
-      expect(redirectChain.length).toBe(1);
+      expect(redirectChain).toHaveLength(1);
       expect(redirectChain[0]!.url()).toContain('/foo.html');
       expect(redirectChain[0]!.response()!.remoteAddress().port).toBe(
         server.PORT
@@ -812,11 +812,7 @@ describe('network', function () {
         res.end('hello world');
       });
 
-      const responsePromise = new Promise<HTTPResponse>(resolve => {
-        return page.on('response', response => {
-          return resolve(response);
-        });
-      });
+      const responsePromise = waitEvent<HTTPResponse>(page, 'response');
       page.evaluate(() => {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', '/foo');
@@ -847,18 +843,16 @@ describe('network', function () {
         });
         await page.goto(httpsServer.PREFIX + '/setcookie.html');
         const url = httpsServer.CROSS_PROCESS_PREFIX + '/setcookie.html';
-        const response = await new Promise<HTTPResponse>(resolve => {
-          page.on('response', response => {
-            if (response.url() === url) {
-              resolve(response);
-            }
-          });
+        const [response] = await Promise.all([
+          waitEvent<HTTPResponse>(page, 'response', response => {
+            return response.url() === url;
+          }),
           page.evaluate(src => {
             const xhr = new XMLHttpRequest();
             xhr.open('GET', src);
             xhr.send();
-          }, url);
-        });
+          }, url),
+        ]);
         expect(response.headers()['set-cookie']).toBe(setCookieString);
       } finally {
         await page.close();

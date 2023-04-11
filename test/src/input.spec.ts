@@ -24,6 +24,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
+import {waitEvent} from './utils.js';
 
 const FILE_TO_UPLOAD = path.join(__dirname, '/../assets/file-to-upload.txt');
 
@@ -174,9 +175,7 @@ describe('input tests', function () {
       ]);
       await Promise.all([
         chooser.accept([FILE_TO_UPLOAD]),
-        new Promise(x => {
-          return page.once('metrics', x);
-        }),
+        waitEvent(page, 'metrics'),
       ]);
       expect(
         await page.$eval('input', input => {

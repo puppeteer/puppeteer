@@ -106,13 +106,13 @@ describe('Query handler tests', function () {
         await page.setContent('<section>test</section>');
 
         expect(await page.$('text/test')).toBeTruthy();
-        expect((await page.$$('text/test')).length).toBe(1);
+        expect(await page.$$('text/test')).toHaveLength(1);
       });
       it('should return empty array for non-existing element', async () => {
         const {page} = getTestState();
 
         expect(await page.$('text/test')).toBeFalsy();
-        expect((await page.$$('text/test')).length).toBe(0);
+        expect(await page.$$('text/test')).toHaveLength(0);
       });
       it('should return first element', async () => {
         const {page} = getTestState();
@@ -132,7 +132,7 @@ describe('Query handler tests', function () {
         await page.setContent('<div>a</div><div>a</div>');
 
         const elements = await page.$$('text/a');
-        expect(elements.length).toBe(2);
+        expect(elements).toHaveLength(2);
       });
       it('should pierce shadow DOM', async () => {
         const {page} = getTestState();
@@ -277,7 +277,7 @@ describe('Query handler tests', function () {
 
         const elementHandle = (await page.$('div'))!;
         expect(await elementHandle.$(`text/a`)).toBeTruthy();
-        expect((await elementHandle.$$(`text/a`)).length).toBe(1);
+        expect(await elementHandle.$$(`text/a`)).toHaveLength(1);
       });
 
       it('should return null for non-existing element', async () => {
@@ -287,7 +287,7 @@ describe('Query handler tests', function () {
 
         const elementHandle = (await page.$('div'))!;
         expect(await elementHandle.$(`text/a`)).toBeFalsy();
-        expect((await elementHandle.$$(`text/a`)).length).toBe(0);
+        expect(await elementHandle.$$(`text/a`)).toHaveLength(0);
       });
     });
   });
@@ -300,7 +300,7 @@ describe('Query handler tests', function () {
         await page.setContent('<section>test</section>');
 
         expect(await page.$('xpath/html/body/section')).toBeTruthy();
-        expect((await page.$$('xpath/html/body/section')).length).toBe(1);
+        expect(await page.$$('xpath/html/body/section')).toHaveLength(1);
       });
       it('should return empty array for non-existing element', async () => {
         const {page} = getTestState();
@@ -309,8 +309,8 @@ describe('Query handler tests', function () {
           await page.$('xpath/html/body/non-existing-element')
         ).toBeFalsy();
         expect(
-          (await page.$$('xpath/html/body/non-existing-element')).length
-        ).toBe(0);
+          await page.$$('xpath/html/body/non-existing-element')
+        ).toHaveLength(0);
       });
       it('should return first element', async () => {
         const {page} = getTestState();
@@ -330,7 +330,7 @@ describe('Query handler tests', function () {
         await page.setContent('<div></div><div></div>');
 
         const elements = await page.$$('xpath/html/body/div');
-        expect(elements.length).toBe(2);
+        expect(elements).toHaveLength(2);
       });
     });
     describe('in ElementHandles', function () {
@@ -341,7 +341,7 @@ describe('Query handler tests', function () {
 
         const elementHandle = (await page.$('div'))!;
         expect(await elementHandle.$(`xpath/span`)).toBeTruthy();
-        expect((await elementHandle.$$(`xpath/span`)).length).toBe(1);
+        expect(await elementHandle.$$(`xpath/span`)).toHaveLength(1);
       });
 
       it('should return null for non-existing element', async () => {
@@ -351,7 +351,7 @@ describe('Query handler tests', function () {
 
         const elementHandle = (await page.$('div'))!;
         expect(await elementHandle.$(`xpath/span`)).toBeFalsy();
-        expect((await elementHandle.$$(`xpath/span`)).length).toBe(0);
+        expect(await elementHandle.$$(`xpath/span`)).toHaveLength(0);
       });
     });
   });
@@ -542,7 +542,7 @@ describe('Query handler tests', function () {
     it('should work with selector lists', async () => {
       const {page} = getTestState();
       const elements = await page.$$('div, ::-p-text(world)');
-      expect(elements.length).toStrictEqual(3);
+      expect(elements).toHaveLength(3);
     });
 
     const permute = <T>(inputs: T[]): T[][] => {
@@ -587,7 +587,7 @@ describe('Query handler tests', function () {
     it('should not have duplicate elements from selector lists', async () => {
       const {page} = getTestState();
       const elements = await page.$$('::-p-text(world), button');
-      expect(elements.length).toStrictEqual(1);
+      expect(elements).toHaveLength(1);
     });
   });
 });

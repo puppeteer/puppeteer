@@ -26,7 +26,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import utils from './utils.js';
+import {isFavicon, waitEvent} from './utils.js';
 
 describe('request interception', function () {
   setupTestBrowserHooks();
@@ -37,7 +37,7 @@ describe('request interception', function () {
 
       await page.setRequestInterception(true);
       page.on('request', request => {
-        if (utils.isFavicon(request)) {
+        if (isFavicon(request)) {
           request.continue();
           return;
         }
@@ -118,7 +118,7 @@ describe('request interception', function () {
       await page.setRequestInterception(true);
       const requests: HTTPRequest[] = [];
       page.on('request', request => {
-        if (!utils.isFavicon(request)) {
+        if (!isFavicon(request)) {
           requests.push(request);
         }
         request.continue();
@@ -240,11 +240,11 @@ describe('request interception', function () {
       page.on('request', request => {
         request.abort('internetdisconnected');
       });
-      let failedRequest!: HTTPRequest;
-      page.on('requestfailed', request => {
-        return (failedRequest = request);
-      });
-      await page.goto(server.EMPTY_PAGE).catch(() => {});
+      const [failedRequest] = await Promise.all([
+        waitEvent<HTTPRequest>(page, 'requestfailed'),
+        page.goto(server.EMPTY_PAGE).catch(() => {}),
+      ]);
+
       expect(failedRequest).toBeTruthy();
       expect(failedRequest.failure()!.errorText).toBe(
         'net::ERR_INTERNET_DISCONNECTED'
@@ -311,11 +311,11 @@ describe('request interception', function () {
       ))!;
       expect(response.status()).toBe(200);
       expect(response.url()).toContain('empty.html');
-      expect(requests.length).toBe(5);
+      expect(requests).toHaveLength(5);
       expect(requests[2]!.resourceType()).toBe('document');
       // Check redirect chain
       const redirectChain = response.request().redirectChain();
-      expect(redirectChain.length).toBe(4);
+      expect(redirectChain).toHaveLength(4);
       expect(redirectChain[0]!.url()).toContain('/non-existing-page.html');
       expect(redirectChain[2]!.url()).toContain('/non-existing-page-3.html');
       for (let i = 0; i < redirectChain.length; ++i) {
@@ -331,7 +331,7 @@ describe('request interception', function () {
       const requests: HTTPRequest[] = [];
       page.on('request', request => {
         request.continue();
-        if (!utils.isFavicon(request)) {
+        if (!isFavicon(request)) {
           requests.push(request);
         }
       });
@@ -345,12 +345,12 @@ describe('request interception', function () {
       const response = (await page.goto(server.PREFIX + '/one-style.html'))!;
       expect(response.status()).toBe(200);
       expect(response.url()).toContain('one-style.html');
-      expect(requests.length).toBe(5);
+      expect(requests).toHaveLength(5);
       expect(requests[0]!.resourceType()).toBe('document');
       expect(requests[1]!.resourceType()).toBe('stylesheet');
       // Check redirect chain
       const redirectChain = requests[1]!.redirectChain();
-      expect(redirectChain.length).toBe(3);
+      expect(redirectChain).toHaveLength(3);
       expect(redirectChain[0]!.url()).toContain('/one-style.css');
       expect(redirectChain[2]!.url()).toContain('/three-style.css');
     });
@@ -394,7 +394,7 @@ describe('request interception', function () {
       let spinner = false;
       // Cancel 2nd request.
       page.on('request', request => {
-        if (utils.isFavicon(request)) {
+        if (isFavicon(request)) {
           request.continue();
           return;
         }
@@ -440,7 +440,7 @@ describe('request interception', function () {
       const dataURL = 'data:text/html,<div>yo</div>';
       const response = (await page.goto(dataURL))!;
       expect(response.status()).toBe(200);
-      expect(requests.length).toBe(1);
+      expect(requests).toHaveLength(1);
       expect(requests[0]!.url()).toBe(dataURL);
     });
     it('should be able to fetch dataURL and fire dataURL requests', async () => {
@@ -450,7 +450,7 @@ describe('request interception', function () {
       await page.setRequestInterception(true);
       const requests: HTTPRequest[] = [];
       page.on('request', request => {
-        !utils.isFavicon(request) && requests.push(request);
+        !isFavicon(request) && requests.push(request);
         request.continue();
       });
       const dataURL = 'data:text/html,<div>yo</div>';
@@ -460,7 +460,7 @@ describe('request interception', function () {
         });
       }, dataURL);
       expect(text).toBe('<div>yo</div>');
-      expect(requests.length).toBe(1);
+      expect(requests).toHaveLength(1);
       expect(requests[0]!.url()).toBe(dataURL);
     });
     it('should navigate to URL with hash and fire requests without hash', async () => {
@@ -475,7 +475,7 @@ describe('request interception', function () {
       const response = (await page.goto(server.EMPTY_PAGE + '#hash'))!;
       expect(response.status()).toBe(200);
       expect(response.url()).toBe(server.EMPTY_PAGE);
-      expect(requests.length).toBe(1);
+      expect(requests).toHaveLength(1);
       expect(requests[0]!.url()).toBe(server.EMPTY_PAGE);
     });
     it('should work with encoded server', async () => {
@@ -522,7 +522,7 @@ describe('request interception', function () {
         `data:text/html,<link rel="stylesheet" href="${server.PREFIX}/fonts?helvetica|arial"/>`
       ))!;
       expect(response.status()).toBe(200);
-      expect(requests.length).toBe(2);
+      expect(requests).toHaveLength(2);
       expect(requests[1]!.response()!.status()).toBe(404);
     });
     it('should not throw "Invalid Interception Id" if the request was cancelled', async () => {
@@ -542,7 +542,7 @@ describe('request interception', function () {
         server.EMPTY_PAGE
       ),
         // Wait for request interception.
-        await utils.waitEvent(page, 'request');
+        await waitEvent(page, 'request');
       // Delete frame to cause request to be canceled.
       await page.$eval('iframe', frame => {
         return frame.remove();
@@ -595,13 +595,13 @@ describe('request interception', function () {
         return request.continue();
       });
 
-      const cached = [];
+      const cached: HTTPRequest[] = [];
       page.on('requestservedfromcache', r => {
         return cached.push(r);
       });
 
       await page.reload();
-      expect(cached.length).toBe(0);
+      expect(cached).toHaveLength(0);
     });
     it('should cache if cache enabled', async () => {
       const {page, server} = getTestState();
@@ -615,13 +615,13 @@ describe('request interception', function () {
         return request.continue();
       });
 
-      const cached = [];
+      const cached: HTTPRequest[] = [];
       page.on('requestservedfromcache', r => {
         return cached.push(r);
       });
 
       await page.reload();
-      expect(cached.length).toBe(1);
+      expect(cached).toHaveLength(1);
     });
     it('should load fonts if cache enabled', async () => {
       const {page, server} = getTestState();
@@ -678,11 +678,10 @@ describe('request interception', function () {
           : undefined;
         request.continue({url: redirectURL});
       });
-      let consoleMessage!: ConsoleMessage;
-      page.on('console', msg => {
-        return (consoleMessage = msg);
-      });
-      await page.goto(server.EMPTY_PAGE);
+      const [consoleMessage] = await Promise.all([
+        waitEvent<ConsoleMessage>(page, 'console'),
+        page.goto(server.EMPTY_PAGE),
+      ]);
       expect(page.url()).toBe(server.EMPTY_PAGE);
       expect(consoleMessage.text()).toBe('yellow');
     });
@@ -815,7 +814,7 @@ describe('request interception', function () {
         });
       });
       const response = (await page.goto(server.PREFIX + '/rrredirect'))!;
-      expect(response.request().redirectChain().length).toBe(1);
+      expect(response.request().redirectChain()).toHaveLength(1);
       expect(response.request().redirectChain()[0]!.url()).toBe(
         server.PREFIX + '/rrredirect'
       );

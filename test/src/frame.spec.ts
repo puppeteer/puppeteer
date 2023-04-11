@@ -23,7 +23,13 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import utils, {dumpFrames} from './utils.js';
+import {
+  attachFrame,
+  detachFrame,
+  dumpFrames,
+  navigateFrame,
+  waitEvent,
+} from './utils.js';
 
 describe('Frame specs', function () {
   setupTestBrowserHooks();
@@ -34,8 +40,8 @@ describe('Frame specs', function () {
       const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      expect(page.frames().length).toBe(2);
+      await attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      expect(page.frames()).toHaveLength(2);
       const [frame1, frame2] = page.frames();
       const context1 = await frame1!.executionContext();
       const context2 = await frame2!.executionContext();
@@ -83,12 +89,8 @@ describe('Frame specs', function () {
     it('should throw for detached frames', async () => {
       const {page, server} = getTestState();
 
-      const frame1 = (await utils.attachFrame(
-        page,
-        'frame1',
-        server.EMPTY_PAGE
-      ))!;
-      await utils.detachFrame(page, 'frame1');
+      const frame1 = (await attachFrame(page, 'frame1', server.EMPTY_PAGE))!;
+      await detachFrame(page, 'frame1');
       let error!: Error;
       await frame1
         .evaluate(() => {
@@ -147,8 +149,8 @@ describe('Frame specs', function () {
       page.on('frameattached', frame => {
         return attachedFrames.push(frame);
       });
-      await utils.attachFrame(page, 'frame1', './assets/frame.html');
-      expect(attachedFrames.length).toBe(1);
+      await attachFrame(page, 'frame1', './assets/frame.html');
+      expect(attachedFrames).toHaveLength(1);
       expect(attachedFrames[0]!.url()).toContain('/assets/frame.html');
 
       // validate framenavigated events
@@ -156,8 +158,8 @@ describe('Frame specs', function () {
       page.on('framenavigated', frame => {
         return navigatedFrames.push(frame);
       });
-      await utils.navigateFrame(page, 'frame1', './empty.html');
-      expect(navigatedFrames.length).toBe(1);
+      await navigateFrame(page, 'frame1', './empty.html');
+      expect(navigatedFrames).toHaveLength(1);
       expect(navigatedFrames[0]!.url()).toBe(server.EMPTY_PAGE);
 
       // validate framedetached events
@@ -165,8 +167,8 @@ describe('Frame specs', function () {
       page.on('framedetached', frame => {
         return detachedFrames.push(frame);
       });
-      await utils.detachFrame(page, 'frame1');
-      expect(detachedFrames.length).toBe(1);
+      await detachFrame(page, 'frame1');
+      expect(detachedFrames).toHaveLength(1);
       expect(detachedFrames[0]!.isDetached()).toBe(true);
     });
     it('should send "framenavigated" when navigating on anchor URLs', async () => {
@@ -175,7 +177,7 @@ describe('Frame specs', function () {
       await page.goto(server.EMPTY_PAGE);
       await Promise.all([
         page.goto(server.EMPTY_PAGE + '#foo'),
-        utils.waitEvent(page, 'framenavigated'),
+        waitEvent(page, 'framenavigated'),
       ]);
       expect(page.url()).toBe(server.EMPTY_PAGE + '#foo');
     });
@@ -203,9 +205,9 @@ describe('Frame specs', function () {
     it('should detach child frames on navigation', async () => {
       const {page, server} = getTestState();
 
-      let attachedFrames = [];
-      let detachedFrames = [];
-      let navigatedFrames = [];
+      let attachedFrames: Frame[] = [];
+      let detachedFrames: Frame[] = [];
+      let navigatedFrames: Frame[] = [];
       page.on('frameattached', frame => {
         return attachedFrames.push(frame);
       });
@@ -216,24 +218,24 @@ describe('Frame specs', function () {
         return navigatedFrames.push(frame);
       });
       await page.goto(server.PREFIX + '/frames/nested-frames.html');
-      expect(attachedFrames.length).toBe(4);
-      expect(detachedFrames.length).toBe(0);
-      expect(navigatedFrames.length).toBe(5);
+      expect(attachedFrames).toHaveLength(4);
+      expect(detachedFrames).toHaveLength(0);
+      expect(navigatedFrames).toHaveLength(5);
 
       attachedFrames = [];
       detachedFrames = [];
       navigatedFrames = [];
       await page.goto(server.EMPTY_PAGE);
-      expect(attachedFrames.length).toBe(0);
-      expect(detachedFrames.length).toBe(4);
-      expect(navigatedFrames.length).toBe(1);
+      expect(attachedFrames).toHaveLength(0);
+      expect(detachedFrames).toHaveLength(4);
+      expect(navigatedFrames).toHaveLength(1);
     });
     it('should support framesets', async () => {
       const {page, server} = getTestState();
 
-      let attachedFrames = [];
-      let detachedFrames = [];
-      let navigatedFrames = [];
+      let attachedFrames: Frame[] = [];
+      let detachedFrames: Frame[] = [];
+      let navigatedFrames: Frame[] = [];
       page.on('frameattached', frame => {
         return attachedFrames.push(frame);
       });
@@ -244,17 +246,17 @@ describe('Frame specs', function () {
         return navigatedFrames.push(frame);
       });
       await page.goto(server.PREFIX + '/frames/frameset.html');
-      expect(attachedFrames.length).toBe(4);
-      expect(detachedFrames.length).toBe(0);
-      expect(navigatedFrames.length).toBe(5);
+      expect(attachedFrames).toHaveLength(4);
+      expect(detachedFrames).toHaveLength(0);
+      expect(navigatedFrames).toHaveLength(5);
 
       attachedFrames = [];
       detachedFrames = [];
       navigatedFrames = [];
       await page.goto(server.EMPTY_PAGE);
-      expect(attachedFrames.length).toBe(0);
-      expect(detachedFrames.length).toBe(4);
-      expect(navigatedFrames.length).toBe(1);
+      expect(attachedFrames).toHaveLength(0);
+      expect(detachedFrames).toHaveLength(4);
+      expect(navigatedFrames).toHaveLength(1);
     });
     it('should report frame from-inside shadow DOM', async () => {
       const {page, server} = getTestState();
@@ -268,13 +270,13 @@ describe('Frame specs', function () {
           return (frame.onload = x);
         });
       }, server.EMPTY_PAGE);
-      expect(page.frames().length).toBe(2);
+      expect(page.frames()).toHaveLength(2);
       expect(page.frames()[1]!.url()).toBe(server.EMPTY_PAGE);
     });
     it('should report frame.name()', async () => {
       const {page, server} = getTestState();
 
-      await utils.attachFrame(page, 'theFrameId', server.EMPTY_PAGE);
+      await attachFrame(page, 'theFrameId', server.EMPTY_PAGE);
       await page.evaluate((url: string) => {
         const frame = document.createElement('iframe');
         frame.name = 'theFrameName';
@@ -291,8 +293,8 @@ describe('Frame specs', function () {
     it('should report frame.parent()', async () => {
       const {page, server} = getTestState();
 
-      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      await utils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
+      await attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await attachFrame(page, 'frame2', server.EMPTY_PAGE);
       expect(page.frames()[0]!.parentFrame()).toBe(null);
       expect(page.frames()[1]!.parentFrame()).toBe(page.mainFrame());
       expect(page.frames()[2]!.parentFrame()).toBe(page.mainFrame());
@@ -300,14 +302,14 @@ describe('Frame specs', function () {
     it('should report different frame instance when frame re-attaches', async () => {
       const {page, server} = getTestState();
 
-      const frame1 = await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      const frame1 = await attachFrame(page, 'frame1', server.EMPTY_PAGE);
       await page.evaluate(() => {
         (globalThis as any).frame = document.querySelector('#frame1');
         (globalThis as any).frame.remove();
       });
       expect(frame1!.isDetached()).toBe(true);
       const [frame2] = await Promise.all([
-        utils.waitEvent(page, 'frameattached'),
+        waitEvent(page, 'frameattached'),
         page.evaluate(() => {
           return document.body.appendChild((globalThis as any).frame);
         }),
@@ -320,7 +322,7 @@ describe('Frame specs', function () {
 
       await page.goto(server.PREFIX + '/frames/one-frame-url-fragment.html');
 
-      expect(page.frames().length).toBe(2);
+      expect(page.frames()).toHaveLength(2);
       expect(page.frames()[1]!.url()).toBe(
         server.PREFIX + '/frames/frame.html?param=value#fragment'
       );
