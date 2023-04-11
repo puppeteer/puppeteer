@@ -119,7 +119,7 @@ function spliceIntoSection(
     .outputs(['docs/api'])
     .build();
 
-  job('', async ({inputs, outputs}) => {
+  await job('', async ({inputs, outputs}) => {
     await rm(outputs[0]!, {recursive: true, force: true});
     generateDocs(inputs[0]!, outputs[0]!);
     spawnAndLog('prettier', '--ignore-path', 'none', '--write', 'docs');
@@ -129,5 +129,14 @@ function spliceIntoSection(
       'tools/internal/custom_markdown_documenter.ts',
     ])
     .outputs(['docs/browsers-api'])
+    .build();
+
+  job('', async ({inputs, outputs}) => {
+    const readme = await readFile(inputs[1]!, 'utf-8');
+    const index = await readFile(inputs[0]!, 'utf-8');
+    await writeFile(outputs[0]!, index.replace('# API Reference\n', readme));
+  })
+    .inputs(['docs/browsers-api/index.md', 'packages/browsers/README.md'])
+    .outputs(['docs/browsers-api/index.md'])
     .build();
 })();
