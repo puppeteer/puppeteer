@@ -173,6 +173,19 @@ describe('ElementHandle specs', function () {
     });
   });
 
+  describe.only('ElementHandle.waitForVisibility', function () {
+    it('should wait for element to be visible (display)', async () => {
+      const {page} = getTestState();
+      await page.setContent('<div style="display: none">text</div>');
+      const element = (await page.waitForSelector('div'))!;
+      const promise = element.waitForVisibility(true, 10000);
+      await element.evaluate(e => {
+        e.style.removeProperty('display');
+      });
+      await expect(promise).resolves.toBeUndefined();
+    });
+  });
+
   describe('ElementHandle.click', function () {
     it('should work', async () => {
       const {page, server} = getTestState();
