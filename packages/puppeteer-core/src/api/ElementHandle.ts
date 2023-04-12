@@ -469,6 +469,22 @@ export class ElementHandle<
   }
 
   /**
+   * Checks if an element is visible using the same mechanism as
+   * {@link ElementHandle.waitForSelector}.
+   */
+  async isVisible(): Promise<boolean> {
+    throw new Error('Not implemented.');
+  }
+
+  /**
+   * Checks if an element is hidden using the same mechanism as
+   * {@link ElementHandle.waitForSelector}.
+   */
+  async isHidden(): Promise<boolean> {
+    throw new Error('Not implemented.');
+  }
+
+  /**
    * @deprecated Use {@link ElementHandle.waitForSelector} with the `xpath`
    * prefix.
    *
