@@ -103,8 +103,8 @@ jobs:
           CRAWLER_ID: ${{secrets.ALGOLIA_CRAWLER_ID}}
         run: |
           RESPONSE=$(curl -H "Content-Type: application/json" -X GET --user "$CRAWLER_USER_ID:$CRAWLER_API_KEY" \
-            "https://crawler.algolia.com/api/1/crawlers/$CRAWLER_ID" | grep "\"blocked\":true" ); \
-          if [ ! -z "$RESPONSE" ]; then echo "\nPlease go to https://crawler.algolia.com/" && exit 1; fi
+            "https://crawler.algolia.com/api/1/crawlers/$CRAWLER_ID" | grep "\"blocked\":true" || true ); \
+          if [ ! -z "$RESPONSE" ]; then echo "Please go to https://crawler.algolia.com/" && exit 1; fi
       - name: Trigger Algolia reindexing
         env:
           CRAWLER_USER_ID: ${{secrets.ALGOLIA_CRAWLER_USER_ID}}
