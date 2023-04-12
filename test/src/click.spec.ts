@@ -116,6 +116,18 @@ describe('Page.click', function () {
     await Promise.all([page.click('a'), page.waitForNavigation()]);
     expect(page.url()).toBe(server.PREFIX + '/wrappedlink.html#clicked');
   });
+  it('should scroll and click with disabled javascript', async () => {
+    const {page, server} = getTestState();
+
+    await page.setJavaScriptEnabled(false);
+    await page.goto(server.PREFIX + '/wrappedlink.html');
+    const body = await page.waitForSelector('body');
+    await body!.evaluate(el => {
+      el.style.paddingTop = '3000px';
+    });
+    await Promise.all([page.click('a'), page.waitForNavigation()]);
+    expect(page.url()).toBe(server.PREFIX + '/wrappedlink.html#clicked');
+  });
   it('should click when one of inline box children is outside of viewport', async () => {
     const {page} = getTestState();
 

@@ -510,6 +510,12 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[click.spec] Page.click should scroll and click with disabled javascript",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[click.spec] Page.click should select the text by triple clicking",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
