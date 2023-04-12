@@ -114,6 +114,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.isVisible and ElementHandle.isHidden should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[emulation.spec] Emulation Page.viewport should detect touch when applying viewport with touches",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],

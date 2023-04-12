@@ -21,7 +21,6 @@ import {ExecutionContext} from '../common/ExecutionContext.js';
 import {Frame} from '../common/Frame.js';
 import {MouseButton} from '../common/Input.js';
 import {WaitForSelectorOptions} from '../common/IsolatedWorld.js';
-import {LazyArg} from '../common/LazyArg.js';
 import {
   ElementFor,
   EvaluateFuncWith,
@@ -30,7 +29,6 @@ import {
   NodeFor,
 } from '../common/types.js';
 import {KeyInput} from '../common/USKeyboardLayout.js';
-import {PUPPETEER_WORLD} from '../puppeteer-core.js';
 
 import {JSHandle} from './JSHandle.js';
 import {ScreenshotOptions} from './Page.js';
@@ -470,27 +468,20 @@ export class ElementHandle<
     throw new Error('Not implemented');
   }
 
-  async waitForVisibility(visible: boolean, timeout: number): Promise<void> {
-    const element = await this.frame.worlds[PUPPETEER_WORLD].adoptHandle(this);
-    try {
-      await this.frame.worlds[PUPPETEER_WORLD].waitForFunction(
-        async (PuppeteerUtil, element, visible) => {
-          return Boolean(PuppeteerUtil.checkVisibility(element, visible));
-        },
-        {
-          polling: 'raf',
-          root: element,
-          timeout,
-        },
-        LazyArg.create(context => {
-          return context.puppeteerUtil;
-        }),
-        element,
-        visible
-      );
-    } finally {
-      await element.dispose();
-    }
+  /**
+   * Checks if an element is visible using the same mechanism as
+   * {@link ElementHandle.waitForSelector}.
+   */
+  async isVisible(): Promise<boolean> {
+    throw new Error('Not implemented.');
+  }
+
+  /**
+   * Checks if an element is hidden using the same mechanism as
+   * {@link ElementHandle.waitForSelector}.
+   */
+  async isHidden(): Promise<boolean> {
+    throw new Error('Not implemented.');
   }
 
   /**

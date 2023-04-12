@@ -173,16 +173,18 @@ describe('ElementHandle specs', function () {
     });
   });
 
-  describe.only('ElementHandle.waitForVisibility', function () {
-    it('should wait for element to be visible (display)', async () => {
+  describe('ElementHandle.isVisible and ElementHandle.isHidden', function () {
+    it('should work', async () => {
       const {page} = getTestState();
       await page.setContent('<div style="display: none">text</div>');
       const element = (await page.waitForSelector('div'))!;
-      const promise = element.waitForVisibility(true, 10000);
+      await expect(element.isVisible()).resolves.toBeFalsy();
+      await expect(element.isHidden()).resolves.toBeTruthy();
       await element.evaluate(e => {
         e.style.removeProperty('display');
       });
-      await expect(promise).resolves.toBeUndefined();
+      await expect(element.isVisible()).resolves.toBeTruthy();
+      await expect(element.isHidden()).resolves.toBeFalsy();
     });
   });
 
