@@ -655,12 +655,11 @@ describe('network', function () {
     it('should work when navigating to image', async () => {
       const {page, server} = getTestState();
 
-      const requests: HTTPRequest[] = [];
-      page.on('request', request => {
-        return requests.push(request);
-      });
-      await page.goto(server.PREFIX + '/pptr.png');
-      expect(requests[0]!.isNavigationRequest()).toBe(true);
+      const [request] = await Promise.all([
+        waitEvent<HTTPRequest>(page, 'request'),
+        page.goto(server.PREFIX + '/pptr.png'),
+      ]);
+      expect(request.isNavigationRequest()).toBe(true);
     });
   });
 
@@ -813,14 +812,15 @@ describe('network', function () {
         res.end('hello world');
       });
 
-      const responsePromise = waitEvent<HTTPResponse>(page, 'response');
-      page.evaluate(() => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', '/foo');
-        xhr.send();
-      });
-      const subresourceResponse = await responsePromise;
-      expect(subresourceResponse.headers()['set-cookie']).toBe(setCookieString);
+      const [response] = await Promise.all([
+        waitEvent<HTTPResponse>(page, 'response'),
+        page.evaluate(() => {
+          const xhr = new XMLHttpRequest();
+          xhr.open('GET', '/foo');
+          xhr.send();
+        }),
+      ]);
+      expect(response.headers()['set-cookie']).toBe(setCookieString);
     });
 
     it('Cross-origin set-cookie', async () => {

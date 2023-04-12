@@ -29,6 +29,7 @@ import {isErrorLike} from '../../util/ErrorLike.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
 import {EventType, Handler} from '../EventEmitter.js';
 import {FrameManagerEmittedEvents} from '../FrameManager.js';
+import {NetworkManagerEmittedEvents} from '../NetworkManager.js';
 import {PDFOptions} from '../PDFOptions.js';
 import {Viewport} from '../PuppeteerViewport.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
@@ -43,6 +44,7 @@ import {Connection} from './Connection.js';
 import {Context, getBidiHandle} from './Context.js';
 import {Frame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
+import {NetworkManager} from './NetworkManager.js';
 import {BidiSerializer} from './Serializer.js';
 
 /**
@@ -52,6 +54,7 @@ export class Page extends PageBase {
   _timeoutSettings = new TimeoutSettings();
   #connection: Connection;
   #frameManager: FrameManager;
+  #networkManager: NetworkManager;
   #viewport: Viewport | null = null;
   #closed = false;
   #subscribedEvents = new Map<string, Handler<any>>([
@@ -79,6 +82,38 @@ export class Page extends PageBase {
       },
     ],
   ]);
+  #networkManagerEvents = new Map<symbol, Handler<any>>([
+    [
+      NetworkManagerEmittedEvents.Request,
+      event => {
+        return this.emit(PageEmittedEvents.Request, event);
+      },
+    ],
+    [
+      NetworkManagerEmittedEvents.RequestServedFromCache,
+      event => {
+        return this.emit(PageEmittedEvents.RequestServedFromCache, event);
+      },
+    ],
+    [
+      NetworkManagerEmittedEvents.RequestFailed,
+      event => {
+        return this.emit(PageEmittedEvents.RequestFailed, event);
+      },
+    ],
+    [
+      NetworkManagerEmittedEvents.RequestFinished,
+      event => {
+        return this.emit(PageEmittedEvents.RequestFinished, event);
+      },
+    ],
+    [
+      NetworkManagerEmittedEvents.Response,
+      event => {
+        return this.emit(PageEmittedEvents.RequestFinished, event);
+      },
+    ],
+  ]);
 
   constructor(connection: Connection, info: Bidi.BrowsingContext.Info) {
     super();
@@ -91,8 +126,16 @@ export class Page extends PageBase {
       this._timeoutSettings
     );
 
+    this.#networkManager = new NetworkManager(
+      this.#connection,
+      this.#frameManager
+    );
+
     for (const [event, subscriber] of this.#frameManagerEvents) {
       this.#frameManager.on(event, subscriber);
+    }
+    for (const [event, subscriber] of this.#networkManagerEvents) {
+      this.#networkManager.on(event, subscriber);
     }
   }
 
@@ -126,6 +169,10 @@ export class Page extends PageBase {
 
   override frames(): Frame[] {
     return this.#frameManager.frames();
+  }
+
+  get _networkManager(): NetworkManager {
+    return this.#networkManager;
   }
 
   context(): Context {
@@ -198,6 +245,7 @@ export class Page extends PageBase {
     this.#closed = true;
     this.removeAllListeners();
     this.#frameManager.dispose();
+    this.#networkManager.dispose();
 
     for (const [event, subscriber] of this.#subscribedEvents) {
       this.context().off(event, subscriber);

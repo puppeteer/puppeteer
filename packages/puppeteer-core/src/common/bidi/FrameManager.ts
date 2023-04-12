@@ -60,7 +60,9 @@ export class FrameManager extends EventEmitter {
     this.#page = page;
     this._contextId = info.context;
     this._timeoutSettings = timeoutSettings;
+
     this.#handleFrameTree(info);
+
     for (const [event, subscriber] of this.#subscribedEvents) {
       this.#connection.on(event, subscriber);
     }

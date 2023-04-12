@@ -25,13 +25,13 @@ import {
   Point,
   PressOptions,
 } from '../api/ElementHandle.js';
-import {Frame} from '../api/Frame.js';
 import {Page, ScreenshotOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 
 import {CDPSession} from './Connection.js';
 import {ExecutionContext} from './ExecutionContext.js';
+import {Frame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {getQueryHandlerAndSelector} from './GetQueryHandler.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
