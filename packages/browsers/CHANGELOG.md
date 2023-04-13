@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/puppeteer/puppeteer/compare/browsers-v0.4.0...browsers-v0.4.1) (2023-04-13)
+
+
+### Bug Fixes
+
+* report install errors properly ([#10016](https://github.com/puppeteer/puppeteer/issues/10016)) ([7381229](https://github.com/puppeteer/puppeteer/commit/7381229a164e598e7523862f2438cd0cd1cd796a))
+
 ## [0.4.0](https://github.com/puppeteer/puppeteer/compare/browsers-v0.3.3...browsers-v0.4.0) (2023-04-06)
 
 

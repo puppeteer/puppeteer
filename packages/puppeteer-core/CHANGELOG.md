@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.9.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.8.5...puppeteer-core-v19.9.0) (2023-04-13)
+
+
+### Features
+
+* add ElementHandle.isVisible and ElementHandle.isHidden  ([#10007](https://github.com/puppeteer/puppeteer/issues/10007)) ([26c81b7](https://github.com/puppeteer/puppeteer/commit/26c81b7408a98cb9ef1aac9b57a038b699e6d518))
+* add ElementHandle.scrollIntoView ([#10005](https://github.com/puppeteer/puppeteer/issues/10005)) ([0d556a7](https://github.com/puppeteer/puppeteer/commit/0d556a71d6bcd5da501724ccbb4ce0be433768df))
+
+
+### Bug Fixes
+
+* make isIntersectingViewport work with SVG elements ([#10004](https://github.com/puppeteer/puppeteer/issues/10004)) ([656b562](https://github.com/puppeteer/puppeteer/commit/656b562c7488d4976a7a53264feef508c6b629dd))
+
+
+### Performance Improvements
+
+* amortize handle iterator ([#10002](https://github.com/puppeteer/puppeteer/issues/10002)) ([ab27f73](https://github.com/puppeteer/puppeteer/commit/ab27f738c9abb56f6083d02f7f45d2b8da9fc3f3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 0.4.0 to 0.4.1
+
 ## [19.8.5](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.8.4...puppeteer-core-v19.8.5) (2023-04-06)
 
 
