@@ -185,8 +185,6 @@ export async function install(
     } finally {
       debugTimeEnd('extract');
     }
-  } catch (err) {
-    debugInstall(`Error during installation`, err);
   } finally {
     if (existsSync(archivePath)) {
       await unlink(archivePath);
