@@ -20,7 +20,7 @@ import type {Poller} from '../injected/Poller.js';
 import {createDeferredPromise} from '../util/DeferredPromise.js';
 import {stringifyFunction} from '../util/Function.js';
 
-import {TimeoutError} from './Errors.js';
+import {TimeoutError, AbortError} from './Errors.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {LazyArg} from './LazyArg.js';
 import {HandleFor} from './types.js';
@@ -32,6 +32,7 @@ export interface WaitTaskOptions {
   polling: 'raf' | 'mutation' | number;
   root?: ElementHandle<Node>;
   timeout: number;
+  abortController?: AbortController;
 }
 
 /**
@@ -50,6 +51,7 @@ export class WaitTask<T = unknown> {
   #result = createDeferredPromise<HandleFor<T>>();
 
   #poller?: JSHandle<Poller<T>>;
+  #abortController?: AbortController;
 
   constructor(
     world: IsolatedWorld,
@@ -60,6 +62,16 @@ export class WaitTask<T = unknown> {
     this.#world = world;
     this.#polling = options.polling;
     this.#root = options.root;
+    this.#abortController = options.abortController;
+    this.#abortController?.signal?.addEventListener(
+      'abort',
+      () => {
+        this.terminate(new AbortError('WaitTask has been aborted.'));
+      },
+      {
+        once: true,
+      }
+    );
 
     switch (typeof fn) {
       case 'string':

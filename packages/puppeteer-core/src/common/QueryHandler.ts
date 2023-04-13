@@ -20,6 +20,7 @@ import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {interpolateFunction, stringifyFunction} from '../util/Function.js';
 
+import {AbortError} from './Errors.js';
 import type {Frame} from './Frame.js';
 import {transposeIterableHandle} from './HandleIterator.js';
 import type {WaitForSelectorOptions} from './IsolatedWorld.js';
@@ -166,9 +167,13 @@ export class QueryHandler {
       element = await frame.worlds[PUPPETEER_WORLD].adoptHandle(elementOrFrame);
     }
 
-    const {visible = false, hidden = false, timeout} = options;
+    const {visible = false, hidden = false, timeout, abortController} = options;
 
     try {
+      if (options.abortController?.signal.aborted) {
+        throw new AbortError('QueryHander.waitFor has been aborted.');
+      }
+
       const handle = await frame.worlds[PUPPETEER_WORLD].waitForFunction(
         async (PuppeteerUtil, query, selector, root, visible) => {
           const querySelector = PuppeteerUtil.createFunction(
@@ -185,6 +190,7 @@ export class QueryHandler {
           polling: visible || hidden ? 'raf' : 'mutation',
           root: element,
           timeout,
+          abortController,
         },
         LazyArg.create(context => {
           return context.puppeteerUtil;
@@ -194,6 +200,11 @@ export class QueryHandler {
         element,
         visible ? true : hidden ? false : undefined
       );
+
+      if (options.abortController?.signal.aborted) {
+        await handle.dispose();
+        throw new AbortError('QueryHander.waitFor has been aborted.');
+      }
 
       if (!(handle instanceof ElementHandle)) {
         await handle.dispose();
