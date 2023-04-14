@@ -46,7 +46,7 @@
   },
   "wireit": {
     "prepack": {
-      "command": "cp ../../README.md README.md",
+      "command": "tsx ../../tools/cp.ts ../../README.md README.md",
       "files": [
         "../../README.md"
       ],
