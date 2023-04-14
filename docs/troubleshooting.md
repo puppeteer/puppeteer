@@ -71,11 +71,13 @@ const browser = await puppeteer.launch({
 > Context:
 > [issue 3681](https://github.com/puppeteer/puppeteer/issues/3681#issuecomment-447865342).
 
-## Chrome headless doesn't launch on UNIX
+## Chrome doesn't launch on Linux
 
-Make sure all the necessary dependencies are installed. You can run
-`ldd chrome | grep not` on a Linux machine to check which dependencies are
-missing. The common ones are provided below.
+Make sure all the necessary dependencies are installed. You can run `ldd chrome
+| grep not` on a Linux machine to check which dependencies are missing. The
+common ones are provided below. Also, see
+https://source.chromium.org/chromium/chromium/src/+/main:chrome/installer/linux/debian/dist_package_versions.json
+for the up-to-date list of dependencies declared by the Chrome installer.
 
 <details>
 <summary>Debian (e.g. Ubuntu) Dependencies</summary>
