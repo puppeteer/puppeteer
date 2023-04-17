@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.9.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.9.0...puppeteer-core-v19.9.1) (2023-04-17)
+
+
+### Bug Fixes
+
+* improve mouse actions ([#10021](https://github.com/puppeteer/puppeteer/issues/10021)) ([34db39e](https://github.com/puppeteer/puppeteer/commit/34db39e4474efee9d4579743026c3d6b6c8e494b))
+
 ## [19.9.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.8.5...puppeteer-core-v19.9.0) (2023-04-13)
 
 
