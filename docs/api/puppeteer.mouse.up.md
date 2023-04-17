@@ -4,7 +4,7 @@ sidebar_label: Mouse.up
 
 # Mouse.up() method
 
-Dispatches a `mouseup` event.
+Releases the mouse.
 
 #### Signature:
 
@@ -16,9 +16,9 @@ class Mouse {
 
 ## Parameters
 
-| Parameter | Type                                        | Description                                      |
-| --------- | ------------------------------------------- | ------------------------------------------------ |
-| options   | [MouseOptions](./puppeteer.mouseoptions.md) | _(Optional)_ Optional <code>MouseOptions</code>. |
+| Parameter | Type                                        | Description                                 |
+| --------- | ------------------------------------------- | ------------------------------------------- |
+| options   | [MouseOptions](./puppeteer.mouseoptions.md) | _(Optional)_ Options to configure behavior. |
 
 **Returns:**
 

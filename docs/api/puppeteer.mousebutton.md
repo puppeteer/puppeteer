@@ -2,10 +2,18 @@
 sidebar_label: MouseButton
 ---
 
-# MouseButton type
+# MouseButton variable
+
+Enum of valid mouse buttons.
 
 #### Signature:
 
 ```typescript
-export type MouseButton = 'left' | 'right' | 'middle' | 'back' | 'forward';
+MouseButton: Readonly<{
+  Left: 'left';
+  Right: 'right';
+  Middle: 'middle';
+  Back: 'back';
+  Forward: 'forward';
+}>;
 ```

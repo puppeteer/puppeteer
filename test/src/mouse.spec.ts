@@ -259,4 +259,96 @@ describe('Mouse', function () {
 
     expect(await page.evaluate('result')).toEqual({x: 30, y: 40});
   });
+  it('should throw if buttons are pressed incorrectly', async () => {
+    const {page, server} = getTestState();
+
+    await page.goto(server.EMPTY_PAGE);
+
+    await page.mouse.down();
+    await expect(page.mouse.down()).rejects.toBeInstanceOf(Error);
+  });
+  it('should not throw if clicking in parallel', async () => {
+    const {page, server} = getTestState();
+
+    await page.goto(server.EMPTY_PAGE);
+    interface ClickData {
+      type: string;
+      detail: number;
+      clientX: number;
+      clientY: number;
+      isTrusted: boolean;
+      button: number;
+      buttons: number;
+    }
+
+    await page.evaluate(() => {
+      const clicks: ClickData[] = [];
+      const mouseEventListener = (event: MouseEvent) => {
+        clicks.push({
+          type: event.type,
+          detail: event.detail,
+          clientX: event.clientX,
+          clientY: event.clientY,
+          isTrusted: event.isTrusted,
+          button: event.button,
+          buttons: event.buttons,
+        });
+      };
+      document.addEventListener('mousedown', mouseEventListener);
+      document.addEventListener('mouseup', mouseEventListener);
+      document.addEventListener('click', mouseEventListener);
+      (window as unknown as {clicks: ClickData[]}).clicks = clicks;
+    });
+
+    await Promise.all([page.mouse.click(0, 5), page.mouse.click(6, 10)]);
+
+    const data = await page.evaluate(() => {
+      return (window as unknown as {clicks: ClickData[]}).clicks;
+    });
+    const commonAttrs = {
+      isTrusted: true,
+      detail: 1,
+      clientY: 5,
+      clientX: 0,
+      button: 0,
+    };
+    expect(data.splice(0, 3)).toMatchObject({
+      0: {
+        type: 'mousedown',
+        buttons: 1,
+        ...commonAttrs,
+      },
+      1: {
+        type: 'mouseup',
+        buttons: 0,
+        ...commonAttrs,
+      },
+      2: {
+        type: 'click',
+        buttons: 0,
+        ...commonAttrs,
+      },
+    });
+    Object.assign(commonAttrs, {
+      clientX: 6,
+      clientY: 10,
+    });
+    expect(data).toMatchObject({
+      0: {
+        type: 'mousedown',
+        buttons: 1,
+        ...commonAttrs,
+      },
+      1: {
+        type: 'mouseup',
+        buttons: 0,
+        ...commonAttrs,
+      },
+      2: {
+        type: 'click',
+        buttons: 0,
+        ...commonAttrs,
+      },
+    });
+  });
 });

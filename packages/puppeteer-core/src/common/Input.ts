@@ -334,14 +334,29 @@ export class Keyboard {
 /**
  * @public
  */
-export type MouseButton = 'left' | 'right' | 'middle' | 'back' | 'forward';
+export interface MouseOptions {
+  /**
+   * Determines which button will be pressed.
+   *
+   * @defaultValue `'left'`
+   */
+  button?: MouseButton;
+  /**
+   * Determines the click count for the mouse.
+   *
+   * @defaultValue `1`
+   */
+  clickCount?: number;
+}
 
 /**
  * @public
  */
-export interface MouseOptions {
-  button?: MouseButton;
-  clickCount?: number;
+export interface MouseClickOptions extends MouseOptions {
+  /**
+   * Time (in ms) to delay the mouse release after the mouse press.
+   */
+  delay?: number;
 }
 
 /**
@@ -350,6 +365,69 @@ export interface MouseOptions {
 export interface MouseWheelOptions {
   deltaX?: number;
   deltaY?: number;
+}
+
+/**
+ * @public
+ */
+export interface MouseMoveOptions {
+  /**
+   * Determines the number of movements to make from the current mouse position
+   * to the new one.
+   *
+   * @defaultValue `1`
+   */
+  steps?: number;
+}
+
+/**
+ * Enum of valid mouse buttons.
+ *
+ * @public
+ */
+export const MouseButton = Object.freeze({
+  Left: 'left',
+  Right: 'right',
+  Middle: 'middle',
+  Back: 'back',
+  Forward: 'forward',
+});
+
+/**
+ * @public
+ */
+export type MouseButton = (typeof MouseButton)[keyof typeof MouseButton];
+
+/**
+ * This must follow {@link Protocol.Input.DispatchMouseEventRequest.buttons}.
+ */
+const enum MouseButtonFlag {
+  None = 0,
+  Left = 1,
+  Right = 1 << 1,
+  Middle = 1 << 2,
+  Back = 1 << 3,
+  Forward = 1 << 4,
+}
+
+const getFlag = (button: MouseButton): MouseButtonFlag => {
+  switch (button) {
+    case MouseButton.Left:
+      return MouseButtonFlag.Left;
+    case MouseButton.Right:
+      return MouseButtonFlag.Right;
+    case MouseButton.Middle:
+      return MouseButtonFlag.Middle;
+    case MouseButton.Back:
+      return MouseButtonFlag.Back;
+    case MouseButton.Forward:
+      return MouseButtonFlag.Forward;
+  }
+};
+
+interface MouseState {
+  position: Point;
+  buttons: number;
 }
 
 /**
@@ -426,9 +504,6 @@ export interface MouseWheelOptions {
 export class Mouse {
   #client: CDPSession;
   #keyboard: Keyboard;
-  #x = 0;
-  #y = 0;
-  #button: MouseButton | 'none' = 'none';
 
   /**
    * @internal
@@ -438,88 +513,176 @@ export class Mouse {
     this.#keyboard = keyboard;
   }
 
+  #_state: Readonly<MouseState> = {
+    position: {x: 0, y: 0},
+    buttons: MouseButtonFlag.None,
+  };
+  get #state(): MouseState {
+    return Object.assign({...this.#_state}, ...this.#transactions);
+  }
+
+  // Transactions can run in parallel, so we store each of thme in this array.
+  #transactions: Array<Partial<MouseState>> = [];
+  #createTransaction(): {
+    update: (updates: Partial<MouseState>) => void;
+    commit: () => void;
+    rollback: () => void;
+  } {
+    const transaction: Partial<MouseState> = {};
+    this.#transactions.push(transaction);
+    const popTransaction = () => {
+      this.#transactions.splice(this.#transactions.indexOf(transaction), 1);
+    };
+    return {
+      update: (updates: Partial<MouseState>) => {
+        Object.assign(transaction, updates);
+      },
+      commit: () => {
+        this.#_state = {...this.#_state, ...transaction};
+        popTransaction();
+      },
+      rollback: popTransaction,
+    };
+  }
+
   /**
-   * Dispatches a `mousemove` event.
+   * This is a shortcut for a typical update, commit/rollback lifecycle based on
+   * the error of the action.
+   */
+  async #withTransaction(
+    action: (update: (updates: Partial<MouseState>) => void) => Promise<unknown>
+  ): Promise<void> {
+    const {update, commit, rollback} = this.#createTransaction();
+    try {
+      await action(update);
+      commit();
+    } catch (error) {
+      rollback();
+      throw error;
+    }
+  }
+
+  /**
+   * Moves the mouse to the given coordinate.
+   *
    * @param x - Horizontal position of the mouse.
    * @param y - Vertical position of the mouse.
-   * @param options - Optional object. If specified, the `steps` property
-   * sends intermediate `mousemove` events when set to `1` (default).
+   * @param options - Options to configure behavior.
    */
   async move(
     x: number,
     y: number,
-    options: {steps?: number} = {}
+    options: MouseMoveOptions = {}
   ): Promise<void> {
     const {steps = 1} = options;
-    const fromX = this.#x,
-      fromY = this.#y;
-    this.#x = x;
-    this.#y = y;
+    const from = this.#state.position;
+    const to = {x, y};
     for (let i = 1; i <= steps; i++) {
-      await this.#client.send('Input.dispatchMouseEvent', {
-        type: 'mouseMoved',
-        button: this.#button,
-        x: fromX + (this.#x - fromX) * (i / steps),
-        y: fromY + (this.#y - fromY) * (i / steps),
-        modifiers: this.#keyboard._modifiers,
+      await this.#withTransaction(updateState => {
+        updateState({
+          position: {
+            x: from.x + (to.x - from.x) * (i / steps),
+            y: from.y + (to.y - from.y) * (i / steps),
+          },
+        });
+        const {buttons, position} = this.#state;
+        return this.#client.send('Input.dispatchMouseEvent', {
+          type: 'mouseMoved',
+          modifiers: this.#keyboard._modifiers,
+          buttons,
+          // This should always be 0 (i.e. 'left'). See
+          // https://w3c.github.io/uievents/#event-type-mousemove
+          button: MouseButton.Left,
+          ...position,
+        });
       });
     }
+  }
+
+  /**
+   * Presses the mouse.
+   *
+   * @param options - Options to configure behavior.
+   */
+  async down(options: MouseOptions = {}): Promise<void> {
+    const {button = MouseButton.Left, clickCount = 1} = options;
+    const flag = getFlag(button);
+    if (!flag) {
+      throw new Error(`Unsupported mouse button: ${button}`);
+    }
+    if (this.#state.buttons & flag) {
+      throw new Error(`'${button}' is already pressed.`);
+    }
+    await this.#withTransaction(updateState => {
+      updateState({buttons: this.#state.buttons | flag});
+      const {buttons, position} = this.#state;
+      return this.#client.send('Input.dispatchMouseEvent', {
+        type: 'mousePressed',
+        modifiers: this.#keyboard._modifiers,
+        clickCount,
+        buttons,
+        button,
+        ...position,
+      });
+    });
+  }
+
+  /**
+   * Releases the mouse.
+   *
+   * @param options - Options to configure behavior.
+   */
+  async up(options: MouseOptions = {}): Promise<void> {
+    const {button = MouseButton.Left, clickCount = 1} = options;
+    const flag = getFlag(button);
+    if (!flag) {
+      throw new Error(`Unsupported mouse button: ${button}`);
+    }
+    if (!(this.#state.buttons & flag)) {
+      throw new Error(`'${button}' is not pressed.`);
+    }
+    await this.#withTransaction(updateState => {
+      updateState({buttons: this.#state.buttons & ~flag});
+      const {buttons, position} = this.#state;
+      return this.#client.send('Input.dispatchMouseEvent', {
+        type: 'mouseReleased',
+        modifiers: this.#keyboard._modifiers,
+        clickCount,
+        buttons,
+        button,
+        ...position,
+      });
+    });
   }
 
   /**
    * Shortcut for `mouse.move`, `mouse.down` and `mouse.up`.
+   *
    * @param x - Horizontal position of the mouse.
    * @param y - Vertical position of the mouse.
-   * @param options - Optional `MouseOptions`.
+   * @param options - Options to configure behavior.
    */
   async click(
     x: number,
     y: number,
-    options: MouseOptions & {delay?: number} = {}
+    options: MouseClickOptions = {}
   ): Promise<void> {
-    const {delay = null} = options;
-    await this.move(x, y);
-    await this.down(options);
-    if (delay !== null) {
-      await new Promise(f => {
-        return setTimeout(f, delay);
+    const {delay} = options;
+    const actions: Array<Promise<void>> = [];
+    const {position} = this.#state;
+    if (position.x !== x || position.y !== y) {
+      actions.push(this.move(x, y));
+    }
+    actions.push(this.down(options));
+    if (typeof delay === 'number') {
+      await Promise.all(actions);
+      actions.length = 0;
+      await new Promise(resolve => {
+        setTimeout(resolve, delay);
       });
     }
-    await this.up(options);
-  }
-
-  /**
-   * Dispatches a `mousedown` event.
-   * @param options - Optional `MouseOptions`.
-   */
-  async down(options: MouseOptions = {}): Promise<void> {
-    const {button = 'left', clickCount = 1} = options;
-    this.#button = button;
-    await this.#client.send('Input.dispatchMouseEvent', {
-      type: 'mousePressed',
-      button,
-      x: this.#x,
-      y: this.#y,
-      modifiers: this.#keyboard._modifiers,
-      clickCount,
-    });
-  }
-
-  /**
-   * Dispatches a `mouseup` event.
-   * @param options - Optional `MouseOptions`.
-   */
-  async up(options: MouseOptions = {}): Promise<void> {
-    const {button = 'left', clickCount = 1} = options;
-    this.#button = 'none';
-    await this.#client.send('Input.dispatchMouseEvent', {
-      type: 'mouseReleased',
-      button,
-      x: this.#x,
-      y: this.#y,
-      modifiers: this.#keyboard._modifiers,
-      clickCount,
-    });
+    actions.push(this.up(options));
+    await Promise.all(actions);
   }
 
   /**
@@ -546,14 +709,15 @@ export class Mouse {
    */
   async wheel(options: MouseWheelOptions = {}): Promise<void> {
     const {deltaX = 0, deltaY = 0} = options;
+    const {position, buttons} = this.#state;
     await this.#client.send('Input.dispatchMouseEvent', {
       type: 'mouseWheel',
-      x: this.#x,
-      y: this.#y,
-      deltaX,
-      deltaY,
-      modifiers: this.#keyboard._modifiers,
       pointerType: 'mouse',
+      modifiers: this.#keyboard._modifiers,
+      deltaY,
+      deltaX,
+      buttons,
+      ...position,
     });
   }
 
