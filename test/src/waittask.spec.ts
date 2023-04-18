@@ -380,6 +380,18 @@ describe('waittask specs', function () {
       await frame.waitForSelector('div');
     });
 
+    it('should be cancellable', async () => {
+      const {page, server} = getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      const abortController = new AbortController();
+      const task = page.waitForSelector('wrong', {
+        abortController,
+      });
+      abortController.abort();
+      expect(task).rejects.toThrow(/aborted/);
+    });
+
     it('should work with removed MutationObserver', async () => {
       const {page} = getTestState();
 
