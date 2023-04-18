@@ -202,8 +202,9 @@ To deliver to a different location, use the "deliver" option:
 ## Writing documentation
 
 Documentation is generated from TSDoc comments via `npm run docs`. It is automatically
-published to our documentation site on merge and gets versioned on release. This means
-that you should not change the generated markdown files manually.
+published to our documentation site on merge and gets versioned on release.
+
+This means that you should not change the markdown in files `docs/api` manually.
 
 ## Writing TSDoc comments
 
