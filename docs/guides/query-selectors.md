@@ -30,89 +30,107 @@ import puppeteer from 'puppeteer';
 })();
 ```
 
-## CSS
+## `P` Selectors
 
-CSS selectors follow the CSS spec of the browser being automated. We provide some basic type deduction for CSS selectors (such as `HTMLInputElement` for `input`), but any selector that contains no type information (such as `.class-name`) will need to be coerced manually using TypeScript's `as` coercion mechanism.
+Puppeteer uses a superset of the CSS selector syntax for querying. We call this syntax _P selectors_ and it's supercharged with extra capabilities such as deep combinators and text selection.
 
-### Example
+:::caution
 
-```ts
-// Automatic
-const element = await page.waitForSelector('div > input');
-// Manual
-const element = (await page.waitForSelector(
-  'div > .class-name-for-input'
-)) as HTMLInputElement;
-```
+Although P selectors look like real CSS selectors (we intentionally designed it this way), they should not be used for actually CSS styling. They are designed only for Puppeteer.
 
-## Built-in selectors
+:::
 
-Built-in selectors are Puppeteer's own class of selectors for doing things CSS cannot. Every built-in selector starts with a prefix `.../` to assist Puppeteer in distinguishing between CSS selectors and a built-in.
+:::note
 
-### Text selectors (`text/`)
+P selectors only work on the first "depth" of selectors; for example, `:is(div >>> a)` will not work.
 
-Text selectors will select "minimal" elements containing the given text, even within (open) shadow roots. Here, "minimum" means the deepest elements that contain a given text, but not their parents (which technically will also contain the given text).
+:::
 
-#### Example
+### `>>>` and `>>>>` combinators
 
-```ts
-// Note we usually need type coercion since the type cannot be deduced, but for text selectors, `instanceof` checks may be better for runtime validation.
-const element = await page.waitForSelector('text/My name is Jun');
-```
+The `>>>` and `>>>>` are called _deep descendent_ and _deep_ combinators respectively. Both combinators have the effect of going into shadow hosts with `>>>` going into every shadow host under a node and `>>>>` going into the immediate one (if the node is a shadow host; otherwise, it's a no-op).
 
-### XPath selectors (`xpath/`)
+:::note
 
-XPath selectors will use the browser's native [`Document.evaluate`](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate) to query for elements.
-
-#### Example
-
-```ts
-// There is not type deduction for XPaths.
-const node = await page.waitForSelector('xpath/h2');
-```
-
-### ARIA selectors (`aria/`)
-
-ARIA selectors can be used to find elements with a given ARIA label. These labels are computed using Chrome's internal representation.
-
-#### Example
-
-```ts
-const node = await page.waitForSelector('aria/Button name');
-```
-
-### Pierce selectors (`pierce/`)
-
-Pierce selectors will run the `querySelector*` API on the document and all shadow roots to find an element.
-
-:::danger
-
-Selectors will **not** _partially_ pierce through shadow roots. See the examples below.
+A common question is when should `>>>>` be chosen over `>>>` considering the flexibility of `>>>`. A similar question can be asked about `>` and a space; choose `>` if you do not need to query all elements under a given node and a space otherwise. This answer extends to `>>>>` (`>`) and `>>>` (space) naturally.
 
 :::
 
 #### Example
 
-Suppose the HTML is
+Suppose we have the markup
 
 ```html
-<div>
+<custom-element>
+  <template shadowrootmode="open">
+    <slot></slot>
+  </template>
   <custom-element>
-    <div></div>
+    <template shadowrootmode="open">
+      <slot></slot>
+    </template>
+    <custom-element>
+      <template shadowrootmode="open">
+        <slot></slot>
+      </template>
+      <h2>Light content</h2>
+    </custom-element>
   </custom-element>
-</div>
+</custom-element>
 ```
 
-Then
+Then `custom-element >>> h2` will return `h2`, but `custom-element >>>> h2` will return nothing since the inner `h2` is in a deeper shadow root.
+
+### `P`-elements
+
+`P` elements are [pseudo-elements](https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements) with a `-p` vendor prefix. It allows you to enhance your selectors with Puppeteer-specific query engines such as XPath, text queries, and ARIA.
+
+#### Text selectors (`-p-text`)
+
+Text selectors will select "minimal" elements containing the given text, even within (open) shadow roots. Here, "minimum" means the deepest elements that contain a given text, but not their parents (which technically will also contain the given text).
+
+##### Example
 
 ```ts
-// This will be two elements because of the outer and inner div.
-expect((await page.$$('pierce/div')).length).toBe(2);
-
-// Partial piercing doesn't work.
-expect((await page.$$('pierce/div div')).length).toBe(0);
+const element = await page.waitForSelector('div ::-p-text(My name is Jun)');
+// You can also use escapes.
+const element = await page.waitForSelector(
+  ':scope >>> ::-p-text(My name is Jun \\(pronounced like "June"\\))'
+);
+// or quotes
+const element = await page.waitForSelector(
+  'div >>>> ::-p-text("My name is Jun (pronounced like \\"June\\")"):hover'
+);
 ```
 
-## Custom selectors
+#### XPath selectors (`-p-xpath`)
+
+XPath selectors will use the browser's native [`Document.evaluate`](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate) to query for elements.
+
+##### Example
+
+```ts
+const element = await page.waitForSelector('::-p-xpath(h2)');
+```
+
+#### ARIA selectors (`-p-aria`)
+
+ARIA selectors can be used to find elements with a given ARIA label. These labels are computed using Chrome's internal representation.
+
+##### Example
+
+```ts
+const node = await page.waitForSelector('::-p-aria(Submit)');
+```
+
+### Custom selectors
 
 Puppeteer provides users the ability to add their own query selectors to Puppeteer using [Puppeteer.registerCustomQueryHandler](../api/puppeteer.registercustomqueryhandler.md). This is useful for creating custom selectors based on framework objects or other vendor-specific objects.
+
+#### Example
+
+Suppose you register a custom selector called `lit`. You can use it like so:
+
+```ts
+const node = await page.waitForSelector('::-p-lit(LitElement)');
+```
