@@ -26,7 +26,7 @@ class ElementHandle {
 | Parameter | Type               | Description  |
 | --------- | ------------------ | ------------ |
 | text      | string             |              |
-| options   | { delay: number; } | _(Optional)_ Delay in milliseconds. Defaults to 0. |
+| options   | { delay: number; } | _(Optional)_ |
 
 **Returns:**
 
