@@ -136,6 +136,9 @@ jobs:
             suite: chrome-bidi
           - os: macos-latest
             suite: chrome-headful
+        include:
+          - os: macos-latest-xl
+            suite: chrome-headful
     steps:
       - name: Check out repository
         uses: actions/checkout@v3.3.0
@@ -203,6 +206,11 @@ jobs:
           - os: macos-latest
             suite: firefox-headful
           - os: macos-latest
+            suite: firefox-headless
+        include:
+          - os: macos-latest-xl
+            suite: firefox-headful
+          - os: macos-latest-xl
             suite: firefox-headless
     steps:
       - name: Checkout
