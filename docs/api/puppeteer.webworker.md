@@ -36,6 +36,12 @@ for (const worker of page.workers()) {
 }
 ```
 
+## Properties
+
+| Property | Modifiers             | Type                                    | Description                                      |
+| -------- | --------------------- | --------------------------------------- | ------------------------------------------------ |
+| client   | <code>readonly</code> | [CDPSession](./puppeteer.cdpsession.md) | The CDP session client the WebWorker belongs to. |
+
 ## Methods
 
 | Method                                                                        | Modifiers | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |

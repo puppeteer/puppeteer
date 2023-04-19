@@ -123,6 +123,13 @@ export class WebWorker extends EventEmitter {
   }
 
   /**
+   * The CDP session client the WebWorker belongs to.
+   */
+  get client(): CDPSession {
+    return this.#client;
+  }
+
+  /**
    * If the function passed to the `worker.evaluate` returns a Promise, then
    * `worker.evaluate` would wait for the promise to resolve and return its
    * value. If the function passed to the `worker.evaluate` returns a
