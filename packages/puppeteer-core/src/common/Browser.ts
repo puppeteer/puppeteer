@@ -495,7 +495,7 @@ export class CDPBrowser extends BrowserBase {
     }
 
     async function check(target: Target): Promise<void> {
-      if ((await predicate(target)) && !targetPromise.resolved) {
+      if ((await predicate(target)) && !targetPromise.resolved()) {
         targetPromise.resolve(target);
       }
     }
