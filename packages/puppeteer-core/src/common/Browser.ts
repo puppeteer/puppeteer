@@ -32,8 +32,8 @@ import {
 } from '../api/Browser.js';
 import {BrowserContext} from '../api/BrowserContext.js';
 import {Page} from '../api/Page.js';
-import {createDeferredPromise} from '../util/DeferredPromise.js';
 import {assert} from '../util/assert.js';
+import {createDeferredPromise} from '../util/DeferredPromise.js';
 
 import {ChromeTargetManager} from './ChromeTargetManager.js';
 import {CDPSession, Connection, ConnectionEmittedEvents} from './Connection.js';
