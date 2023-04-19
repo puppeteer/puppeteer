@@ -29,7 +29,7 @@ export interface BrowserLaunchArgumentOptions {
    * @remarks
    * In the future `headless: true` will be equivalent to `headless: 'new'`.
    * You can read more about the change {@link https://developer.chrome.com/articles/new-headless/ | here}.
-   * Consider opting in early by setting the value to `new`.
+   * Consider opting in early by setting the value to `"new"`.
    *
    * @defaultValue `true`
    */
