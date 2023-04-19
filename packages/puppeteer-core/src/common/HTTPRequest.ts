@@ -63,7 +63,7 @@ export class HTTPRequest extends BaseHTTPRequest {
     action: InterceptResolutionAction.None,
   };
   #interceptHandlers: Array<() => void | PromiseLike<any>>;
-  #initiator: Protocol.Network.Initiator;
+  #initiator?: Protocol.Network.Initiator;
 
   override get client(): CDPSession {
     return this.#client;
@@ -74,27 +74,52 @@ export class HTTPRequest extends BaseHTTPRequest {
     frame: Frame | null,
     interceptionId: string | undefined,
     allowInterception: boolean,
-    event: Protocol.Network.RequestWillBeSentEvent,
+    data: {
+      /**
+       * Request identifier.
+       */
+      requestId: Protocol.Network.RequestId;
+      /**
+       * Loader identifier. Empty string if the request is fetched from worker.
+       */
+      loaderId?: Protocol.Network.LoaderId;
+      /**
+       * URL of the document this request is loaded for.
+       */
+      documentURL?: string;
+      /**
+       * Request data.
+       */
+      request: Protocol.Network.Request;
+      /**
+       * Request initiator.
+       */
+      initiator?: Protocol.Network.Initiator;
+      /**
+       * Type of this resource.
+       */
+      type?: Protocol.Network.ResourceType;
+    },
     redirectChain: HTTPRequest[]
   ) {
     super();
     this.#client = client;
-    this._requestId = event.requestId;
+    this._requestId = data.requestId;
     this.#isNavigationRequest =
-      event.requestId === event.loaderId && event.type === 'Document';
+      data.requestId === data.loaderId && data.type === 'Document';
     this._interceptionId = interceptionId;
     this.#allowInterception = allowInterception;
-    this.#url = event.request.url;
-    this.#resourceType = (event.type || 'other').toLowerCase() as ResourceType;
-    this.#method = event.request.method;
-    this.#postData = event.request.postData;
+    this.#url = data.request.url;
+    this.#resourceType = (data.type || 'other').toLowerCase() as ResourceType;
+    this.#method = data.request.method;
+    this.#postData = data.request.postData;
     this.#frame = frame;
     this._redirectChain = redirectChain;
     this.#continueRequestOverrides = {};
     this.#interceptHandlers = [];
-    this.#initiator = event.initiator;
+    this.#initiator = data.initiator;
 
-    for (const [key, value] of Object.entries(event.request.headers)) {
+    for (const [key, value] of Object.entries(data.request.headers)) {
       this.#headers[key.toLowerCase()] = value;
     }
   }
@@ -184,7 +209,7 @@ export class HTTPRequest extends BaseHTTPRequest {
     return this.#isNavigationRequest;
   }
 
-  override initiator(): Protocol.Network.Initiator {
+  override initiator(): Protocol.Network.Initiator | undefined {
     return this.#initiator;
   }
 

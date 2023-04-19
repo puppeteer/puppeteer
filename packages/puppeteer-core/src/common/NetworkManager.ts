@@ -336,6 +336,7 @@ export class NetworkManager extends EventEmitter {
     const {networkId: networkRequestId, requestId: fetchRequestId} = event;
 
     if (!networkRequestId) {
+      this.#onRequestWithoutNetworkInstrumentation(event);
       return;
     }
 
@@ -372,6 +373,27 @@ export class NetworkManager extends EventEmitter {
       // includes extra headers, like: Accept, Origin
       ...requestPausedEvent.request.headers,
     };
+  }
+
+  #onRequestWithoutNetworkInstrumentation(
+    event: Protocol.Fetch.RequestPausedEvent
+  ): void {
+    // If an event has no networkId it should not have any network events. We
+    // still want to dispatch it for the interception by the user.
+    const frame = event.frameId
+      ? this.#frameManager.frame(event.frameId)
+      : null;
+
+    const request = new HTTPRequest(
+      this.#client,
+      frame,
+      event.requestId,
+      this.#userRequestInterceptionEnabled,
+      event,
+      []
+    );
+    this.emit(NetworkManagerEmittedEvents.Request, request);
+    request.finalizeInterceptions();
   }
 
   #onRequest(
