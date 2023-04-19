@@ -32,7 +32,7 @@ import {
 } from '../api/Browser.js';
 import {BrowserContext} from '../api/BrowserContext.js';
 import {Page} from '../api/Page.js';
-import {createDeferredPromise} from '../puppeteer-core.js';
+import {createDeferredPromise} from '../util/DeferredPromise.js';
 import {assert} from '../util/assert.js';
 
 import {ChromeTargetManager} from './ChromeTargetManager.js';
