@@ -21,10 +21,10 @@ class ElementHandle {
 
 ## Parameters
 
-| Parameter | Type                                                         | Description  |
-| --------- | ------------------------------------------------------------ | ------------ |
-| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |              |
-| options   | { threshold?: number; }                                      | _(Optional)_ |
+| Parameter | Type                                                         | Description                                                                                                       |
+| --------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |                                                                                                                   |
+| options   | { threshold?: number; }                                      | _(Optional)_ Threshold for the intersection between 0 (no intersection) and 1 (full intersection). Defaults to 1. |
 
 **Returns:**
 
