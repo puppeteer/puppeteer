@@ -32,6 +32,7 @@ import {
 } from '../api/Browser.js';
 import {BrowserContext} from '../api/BrowserContext.js';
 import {Page} from '../api/Page.js';
+import {createDeferredPromise} from '../puppeteer-core.js';
 import {assert} from '../util/assert.js';
 
 import {ChromeTargetManager} from './ChromeTargetManager.js';
@@ -478,11 +479,8 @@ export class CDPBrowser extends BrowserBase {
     options: WaitForTargetOptions = {}
   ): Promise<Target> {
     const {timeout = 30000} = options;
-    let resolve: (value: Target | PromiseLike<Target>) => void;
-    let isResolved = false;
-    const targetPromise = new Promise<Target>(x => {
-      return (resolve = x);
-    });
+    const targetPromise = createDeferredPromise<Target | PromiseLike<Target>>();
+
     this.on(BrowserEmittedEvents.TargetCreated, check);
     this.on(BrowserEmittedEvents.TargetChanged, check);
     try {
@@ -497,9 +495,8 @@ export class CDPBrowser extends BrowserBase {
     }
 
     async function check(target: Target): Promise<void> {
-      if ((await predicate(target)) && !isResolved) {
-        isResolved = true;
-        resolve(target);
+      if ((await predicate(target)) && !targetPromise.resolved) {
+        targetPromise.resolve(target);
       }
     }
   }

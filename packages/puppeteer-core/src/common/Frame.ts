@@ -798,17 +798,7 @@ export class Frame {
     }
 
     if (path) {
-      let fs;
-      try {
-        fs = (await import('fs')).promises;
-      } catch (error) {
-        if (error instanceof TypeError) {
-          throw new Error(
-            'Can only pass a file path in a Node-like environment.'
-          );
-        }
-        throw error;
-      }
+      const fs = await importFSPromises();
       content = await fs.readFile(path, 'utf8');
       content += `//# sourceURL=${path.replace(/\n/g, '')}`;
     }
