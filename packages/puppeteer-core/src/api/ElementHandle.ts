@@ -769,7 +769,7 @@ export class ElementHandle<
    * await elementHandle.type('some text');
    * await elementHandle.press('Enter');
    * ```
-   * 
+   *
    * @param options - Delay in milliseconds. Defaults to 0.
    */
   async type(text: string, options?: {delay: number}): Promise<void>;
@@ -854,7 +854,7 @@ export class ElementHandle<
    * Resolves to true if the element is visible in the current viewport. If an
    * element is an SVG, we check if the svg owner element is in the viewport
    * instead. See https://crbug.com/963246.
-   * 
+   *
    * @param options - Threshold for the intersection between 0 (no intersection) and 1
    * (full intersection). Defaults to 1.
    */
