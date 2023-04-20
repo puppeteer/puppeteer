@@ -127,6 +127,22 @@ describe('request interception', function () {
       expect(requests[1]!.url()).toContain('/one-style.css');
       expect(requests[1]!.headers()['referer']).toContain('/one-style.html');
     });
+    it('should work with requests without networkId', async () => {
+      const {page, server} = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      await page.setRequestInterception(true);
+
+      const cdp = await page.target().createCDPSession();
+      await cdp.send('DOM.enable');
+      const urls: string[] = [];
+      page.on('request', request => {
+        urls.push(request.url());
+        return request.continue();
+      });
+      // This causes network requests without networkId.
+      await cdp.send('CSS.enable');
+      expect(urls).toStrictEqual([server.EMPTY_PAGE]);
+    });
     it('should properly return navigation response when URL has cookies', async () => {
       const {page, server} = getTestState();
 

@@ -272,7 +272,7 @@ export class HTTPRequest {
   /**
    * The initiator of the request.
    */
-  initiator(): Protocol.Network.Initiator {
+  initiator(): Protocol.Network.Initiator | undefined {
     throw new Error('Not implemented');
   }
 
