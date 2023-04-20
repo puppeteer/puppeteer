@@ -4,6 +4,10 @@ sidebar_label: PuppeteerNode.createBrowserFetcher
 
 # PuppeteerNode.createBrowserFetcher() method
 
+> Warning: This API is now obsolete.
+>
+> Use https://pptr.dev/browsers-api instead.
+
 #### Signature:
 
 ```typescript

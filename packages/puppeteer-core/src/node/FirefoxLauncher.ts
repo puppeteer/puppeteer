@@ -19,7 +19,13 @@ import {rename, unlink, mkdtemp} from 'fs/promises';
 import os from 'os';
 import path from 'path';
 
-import {Browser as SupportedBrowsers, createProfile} from '@puppeteer/browsers';
+import {
+  Browser as SupportedBrowsers,
+  createProfile,
+  Cache,
+  detectBrowserPlatform,
+  Browser,
+} from '@puppeteer/browsers';
 
 import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
@@ -164,13 +170,15 @@ export class FirefoxLauncher extends ProductLauncher {
   override executablePath(): string {
     // replace 'latest' placeholder with actual downloaded revision
     if (this.puppeteer.browserRevision === 'latest') {
-      const browserFetcher = this.puppeteer.createBrowserFetcher({
-        product: this.product,
-        path: this.puppeteer.defaultDownloadPath!,
+      const cache = new Cache(this.puppeteer.defaultDownloadPath!);
+      const installedFirefox = cache.getInstalledBrowsers().find(browser => {
+        return (
+          browser.platform === detectBrowserPlatform() &&
+          browser.browser === Browser.FIREFOX
+        );
       });
-      const localRevisions = browserFetcher.localRevisions();
-      if (localRevisions[0]) {
-        this.actualBrowserRevision = localRevisions[0];
+      if (installedFirefox) {
+        this.actualBrowserRevision = installedFirefox.buildId;
       }
     }
     return this.resolveExecutablePath();

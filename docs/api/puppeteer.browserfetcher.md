@@ -4,6 +4,10 @@ sidebar_label: BrowserFetcher
 
 # BrowserFetcher class
 
+> Warning: This API is now obsolete.
+>
+> Use https://pptr.dev/browsers-api instead.
+
 BrowserFetcher can download and manage different versions of Chromium and Firefox.
 
 #### Signature:

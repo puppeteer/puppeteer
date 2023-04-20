@@ -216,6 +216,7 @@ export interface BrowserFetcherRevisionInfo {
  * ```
  *
  * @public
+ * @deprecated Use https://pptr.dev/browsers-api instead.
  */
 
 export class BrowserFetcher {

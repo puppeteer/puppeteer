@@ -18,10 +18,12 @@ import os, {tmpdir} from 'os';
 import {join} from 'path';
 
 import {
+  Browser as InstalledBrowser,
   CDP_WEBSOCKET_ENDPOINT_REGEX,
   launch,
   TimeoutError as BrowsersTimeoutError,
   WEBDRIVER_BIDI_WEBSOCKET_ENDPOINT_REGEX,
+  computeExecutablePath,
 } from '@puppeteer/browsers';
 
 import {Browser, BrowserCloseCallback} from '../api/Browser.js';
@@ -392,7 +394,7 @@ export class ProductLauncher {
    * @internal
    */
   protected resolveExecutablePath(): string {
-    const executablePath = this.puppeteer.configuration.executablePath;
+    let executablePath = this.puppeteer.configuration.executablePath;
     if (executablePath) {
       if (!existsSync(executablePath)) {
         throw new Error(
@@ -412,18 +414,26 @@ export class ProductLauncher {
       return ubuntuChromiumPath;
     }
 
-    const browserFetcher = this.puppeteer.createBrowserFetcher({
-      product: this.product,
-      path: this.puppeteer.defaultDownloadPath!,
+    function productToBrowser(product?: Product) {
+      switch (product) {
+        case 'chrome':
+          return InstalledBrowser.CHROME;
+        case 'firefox':
+          return InstalledBrowser.FIREFOX;
+      }
+      return InstalledBrowser.CHROME;
+    }
+
+    executablePath = computeExecutablePath({
+      cacheDir: this.puppeteer.defaultDownloadPath!,
+      browser: productToBrowser(this.product),
+      buildId: this.puppeteer.browserRevision,
     });
 
-    const revisionInfo = browserFetcher.revisionInfo(
-      this.puppeteer.browserRevision
-    );
-    if (!revisionInfo.local) {
+    if (!existsSync(executablePath)) {
       if (this.puppeteer.configuration.browserRevision) {
         throw new Error(
-          `Tried to find the browser at the configured path (${revisionInfo.executablePath}) for revision ${this.puppeteer.browserRevision}, but no executable was found.`
+          `Tried to find the browser at the configured path (${executablePath}) for revision ${this.puppeteer.browserRevision}, but no executable was found.`
         );
       }
       switch (this.product) {
@@ -443,6 +453,6 @@ export class ProductLauncher {
           );
       }
     }
-    return revisionInfo.executablePath;
+    return executablePath;
   }
 }

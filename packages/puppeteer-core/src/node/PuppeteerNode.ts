@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import {join} from 'path';
-
 import {Browser} from '../api/Browser.js';
 import {BrowserConnectOptions} from '../common/BrowserConnector.js';
 import {Configuration} from '../common/Configuration.js';
@@ -116,7 +114,7 @@ export class PuppeteerNode extends Puppeteer {
         break;
       default:
         this.configuration.defaultProduct = 'chrome';
-        this.defaultBrowserRevision = PUPPETEER_REVISIONS.chromium;
+        this.defaultBrowserRevision = PUPPETEER_REVISIONS.chrome;
         break;
     }
 
@@ -189,7 +187,7 @@ export class PuppeteerNode extends Puppeteer {
     }
     switch (this.lastLaunchedProduct) {
       case 'chrome':
-        this.defaultBrowserRevision = PUPPETEER_REVISIONS.chromium;
+        this.defaultBrowserRevision = PUPPETEER_REVISIONS.chrome;
         this.#_launcher = new ChromeLauncher(this);
         break;
       case 'firefox':
@@ -227,10 +225,7 @@ export class PuppeteerNode extends Puppeteer {
    * @internal
    */
   get defaultDownloadPath(): string | undefined {
-    return (
-      this.configuration.downloadPath ??
-      join(this.configuration.cacheDirectory!, this.product)
-    );
+    return this.configuration.downloadPath ?? this.configuration.cacheDirectory;
   }
 
   /**
@@ -279,6 +274,7 @@ export class PuppeteerNode extends Puppeteer {
    * construct {@link BrowserFetcher} manually.
    *
    * @returns A new BrowserFetcher instance.
+   * @deprecated Use https://pptr.dev/browsers-api instead.
    */
   createBrowserFetcher(
     options: Partial<BrowserFetcherOptions> = {}

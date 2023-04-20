@@ -52,9 +52,15 @@ if (/^[^0-9]/.test(currentProtocolPackageInstalledVersion)) {
   process.exit(1);
 }
 
+const chromeVersion = PUPPETEER_REVISIONS.chrome;
+console.log('Current Chrome version', chromeVersion);
+
+// TODO: lookup revision based on the version.
+const chromeRevision = '1109224';
+
 // find the right revision for our Chromium revision
 
-const command = `npm view "devtools-protocol@<=0.0.${PUPPETEER_REVISIONS.chromium}" version | tail -1`;
+const command = `npm view "devtools-protocol@<=0.0.${chromeRevision}" version | tail -1`;
 
 console.log(
   'Checking npm for devtools-protocol revisions:\n',
@@ -71,7 +77,7 @@ const bestRevisionFromNpm = output.split(' ')[1]!.replace(/'|\n/g, '');
 if (currentProtocolPackageInstalledVersion !== bestRevisionFromNpm) {
   console.log(`ERROR: bad devtools-protocol revision detected:
 
-    Current Puppeteer Chromium revision: ${PUPPETEER_REVISIONS.chromium}
+    Current Puppeteer Chromium revision: ${chromeRevision}
     Current devtools-protocol version in package.json: ${currentProtocolPackageInstalledVersion}
     Expected devtools-protocol version:                ${bestRevisionFromNpm}`);
 

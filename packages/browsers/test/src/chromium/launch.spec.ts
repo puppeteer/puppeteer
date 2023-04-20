@@ -39,7 +39,7 @@ describe('Chromium', () => {
         buildId: '123',
         cacheDir: 'cache',
       }),
-      path.join('cache', 'chrome', 'linux-123', 'chrome-linux', 'chrome')
+      path.join('cache', 'chromium', 'linux-123', 'chrome-linux', 'chrome')
     );
   });
 

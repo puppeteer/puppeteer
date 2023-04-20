@@ -20,7 +20,6 @@ import {
   resolveBuildId,
   makeProgressCallback,
   detectBrowserPlatform,
-  BrowserPlatform,
 } from '@puppeteer/browsers';
 import {Product} from 'puppeteer-core';
 import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
@@ -31,8 +30,7 @@ import {getConfiguration} from '../getConfiguration.js';
  * @internal
  */
 const supportedProducts = {
-  chromium: 'Chromium',
-  chrome: 'Chromium',
+  chrome: 'Chrome',
   firefox: 'Firefox Nightly',
 } as const;
 
@@ -48,42 +46,18 @@ export async function downloadBrowser(): Promise<void> {
     return;
   }
 
-  let downloadHost = configuration.downloadHost;
+  const downloadHost = configuration.downloadHost;
 
-  let platform = detectBrowserPlatform();
+  const platform = detectBrowserPlatform();
   if (!platform) {
     throw new Error('The current platform is not supported.');
-  }
-
-  // TODO: remove once Mac ARM is enabled by default for Puppeteer https://github.com/puppeteer/puppeteer/issues/9630.
-  if (
-    platform === BrowserPlatform.MAC_ARM &&
-    !configuration.experiments?.macArmChromiumEnabled
-  ) {
-    platform = BrowserPlatform.MAC;
   }
 
   const product = configuration.defaultProduct!;
   const browser = productToBrowser(product);
 
-  // TODO: PUPPETEER_REVISIONS should use Chrome and not Chromium.
   const unresolvedBuildId =
-    configuration.browserRevision ||
-    PUPPETEER_REVISIONS[product === 'chrome' ? 'chromium' : 'firefox'] ||
-    'latest';
-
-  if (product === 'chrome' && downloadHost) {
-    // TODO: remove downloadHost in favour of baseDownloadUrl. The "host" of
-    // Firefox is already a URL and not a host. This would be a breaking change.
-    if (
-      !downloadHost.endsWith('/chromium-browser-snapshots') &&
-      !downloadHost.endsWith('/chromium-browser-snapshots/')
-    ) {
-      downloadHost += downloadHost.endsWith('/')
-        ? 'chromium-browser-snapshots'
-        : '/chromium-browser-snapshots';
-    }
-  }
+    configuration.browserRevision || PUPPETEER_REVISIONS[product] || 'latest';
 
   const buildId = await resolveBuildId(browser, platform, unresolvedBuildId);
 
@@ -94,6 +68,8 @@ export async function downloadBrowser(): Promise<void> {
       platform,
       buildId,
       downloadProgressCallback: makeProgressCallback(browser, buildId),
+      // TODO: remove downloadHost in favour of baseDownloadUrl. The "host" of
+      // Firefox is already a URL and not a host. This would be a breaking change.
       baseUrl: downloadHost,
     });
 
@@ -112,11 +88,11 @@ export async function downloadBrowser(): Promise<void> {
 function productToBrowser(product?: Product) {
   switch (product) {
     case 'chrome':
-      return Browser.CHROMIUM;
+      return Browser.CHROME;
     case 'firefox':
       return Browser.FIREFOX;
   }
-  return Browser.CHROMIUM;
+  return Browser.CHROME;
 }
 
 /**
