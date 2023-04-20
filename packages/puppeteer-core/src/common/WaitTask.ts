@@ -32,7 +32,7 @@ export interface WaitTaskOptions {
   polling: 'raf' | 'mutation' | number;
   root?: ElementHandle<Node>;
   timeout: number;
-  abortController?: AbortController;
+  signal?: AbortSignal;
 }
 
 /**
@@ -51,7 +51,7 @@ export class WaitTask<T = unknown> {
   #result = createDeferredPromise<HandleFor<T>>();
 
   #poller?: JSHandle<Poller<T>>;
-  #abortController?: AbortController;
+  #signal?: AbortSignal;
 
   constructor(
     world: IsolatedWorld,
@@ -62,8 +62,8 @@ export class WaitTask<T = unknown> {
     this.#world = world;
     this.#polling = options.polling;
     this.#root = options.root;
-    this.#abortController = options.abortController;
-    this.#abortController?.signal?.addEventListener(
+    this.#signal = options.signal;
+    this.#signal?.addEventListener(
       'abort',
       () => {
         this.terminate(new AbortError('WaitTask has been aborted.'));

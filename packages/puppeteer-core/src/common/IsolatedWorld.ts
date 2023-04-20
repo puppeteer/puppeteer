@@ -73,9 +73,9 @@ export interface WaitForSelectorOptions {
    */
   timeout?: number;
   /**
-   * Provide an abort controller to cancel a waitForSelector call.
+   * A signal object that allows you to cancel a waitForSelector call.
    */
-  abortController?: AbortController;
+  signal?: AbortSignal;
 }
 
 /**
@@ -435,7 +435,7 @@ export class IsolatedWorld {
       polling?: 'raf' | 'mutation' | number;
       timeout?: number;
       root?: ElementHandle<Node>;
-      abortController?: AbortController;
+      signal?: AbortSignal;
     } = {},
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
@@ -443,7 +443,7 @@ export class IsolatedWorld {
       polling = 'raf',
       timeout = this.#timeoutSettings.timeout(),
       root,
-      abortController,
+      signal,
     } = options;
     if (typeof polling === 'number' && polling < 0) {
       throw new Error('Cannot poll with non-positive interval');
@@ -454,7 +454,7 @@ export class IsolatedWorld {
         polling,
         root,
         timeout,
-        abortController,
+        signal,
       },
       pageFunction as unknown as
         | ((...args: unknown[]) => Promise<Awaited<ReturnType<Func>>>)
