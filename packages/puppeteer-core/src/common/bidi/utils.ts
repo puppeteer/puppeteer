@@ -38,7 +38,7 @@ export async function releaseReference(
   }
   await client.connection
     .send('script.disown', {
-      target: {context: client._contextId},
+      target: {context: client.id},
       handles: [remoteReference.handle],
     })
     .catch((error: any) => {

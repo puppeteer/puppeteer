@@ -16,8 +16,8 @@
 import {Protocol} from 'devtools-protocol';
 
 import {CDPSession} from '../common/Connection.js';
-import {Frame} from '../common/Frame.js';
 
+import {Frame} from './Frame.js';
 import {HTTPResponse} from './HTTPResponse.js';
 
 /**

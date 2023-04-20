@@ -21,6 +21,12 @@ import {Protocol} from 'devtools-protocol';
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {ClickOptions, ElementHandle} from '../api/ElementHandle.js';
+import {
+  Frame,
+  FrameAddScriptTagOptions,
+  FrameAddStyleTagOptions,
+  FrameWaitForFunctionOptions,
+} from '../api/Frame.js';
 import {HTTPRequest} from '../api/HTTPRequest.js';
 import {HTTPResponse} from '../api/HTTPResponse.js';
 import {JSHandle} from '../api/JSHandle.js';
@@ -55,12 +61,6 @@ import {DeviceRequestPrompt} from './DeviceRequestPrompt.js';
 import {Dialog} from './Dialog.js';
 import {EmulationManager} from './EmulationManager.js';
 import {FileChooser} from './FileChooser.js';
-import {
-  Frame,
-  FrameAddScriptTagOptions,
-  FrameAddStyleTagOptions,
-  FrameWaitForFunctionOptions,
-} from './Frame.js';
 import {FrameManager, FrameManagerEmittedEvents} from './FrameManager.js';
 import {Keyboard, Mouse, Touchscreen} from './Input.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
@@ -895,21 +895,21 @@ export class CDPPage extends Page {
   }
 
   override async content(): Promise<string> {
-    return await this.#frameManager.mainFrame().content();
+    return await this.mainFrame().content();
   }
 
   override async setContent(
     html: string,
     options: WaitForOptions = {}
   ): Promise<void> {
-    await this.#frameManager.mainFrame().setContent(html, options);
+    await this.mainFrame().setContent(html, options);
   }
 
   override async goto(
     url: string,
     options: WaitForOptions & {referer?: string; referrerPolicy?: string} = {}
   ): Promise<HTTPResponse | null> {
-    return await this.#frameManager.mainFrame().goto(url, options);
+    return await this.mainFrame().goto(url, options);
   }
 
   override async reload(
@@ -926,7 +926,7 @@ export class CDPPage extends Page {
   override async waitForNavigation(
     options: WaitForOptions = {}
   ): Promise<HTTPResponse | null> {
-    return await this.#frameManager.mainFrame().waitForNavigation(options);
+    return await this.mainFrame().waitForNavigation(options);
   }
 
   #sessionClosePromise(): Promise<Error> {
@@ -1163,7 +1163,7 @@ export class CDPPage extends Page {
       'Throttling rate should be greater or equal to 1'
     );
     await this.#client.send('Emulation.setCPUThrottlingRate', {
-      rate: factor !== null ? factor : 1,
+      rate: factor ?? 1,
     });
   }
 
@@ -1265,7 +1265,7 @@ export class CDPPage extends Page {
       this.evaluate.name,
       pageFunction
     );
-    return this.#frameManager.mainFrame().evaluate(pageFunction, ...args);
+    return this.mainFrame().evaluate(pageFunction, ...args);
   }
 
   override async evaluateOnNewDocument<

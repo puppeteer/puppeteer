@@ -253,7 +253,7 @@ export class CDPElementHandle<
 
   override async contentFrame(): Promise<Frame | null> {
     const nodeInfo = await this.client.send('DOM.describeNode', {
-      objectId: this.remoteObject().objectId,
+      objectId: this.id,
     });
     if (typeof nodeInfo.node.frameId !== 'string') {
       return null;
@@ -268,7 +268,7 @@ export class CDPElementHandle<
 
     try {
       await this.client.send('DOM.scrollIntoViewIfNeeded', {
-        objectId: this.remoteObject().objectId,
+        objectId: this.id,
       });
     } catch (error) {
       debugError(error);
@@ -333,7 +333,7 @@ export class CDPElementHandle<
     const [result, layoutMetrics] = await Promise.all([
       this.client
         .send('DOM.getContentQuads', {
-          objectId: this.remoteObject().objectId,
+          objectId: this.id,
         })
         .catch(debugError),
       (this.#page as CDPPage)._client().send('Page.getLayoutMetrics'),
@@ -583,9 +583,8 @@ export class CDPElementHandle<
         return path.resolve(filePath);
       }
     });
-    const {objectId} = this.remoteObject();
     const {node} = await this.client.send('DOM.describeNode', {
-      objectId,
+      objectId: this.id,
     });
     const {backendNodeId} = node;
 
@@ -603,7 +602,7 @@ export class CDPElementHandle<
       });
     } else {
       await this.client.send('DOM.setFileInputFiles', {
-        objectId,
+        objectId: this.id,
         files,
         backendNodeId,
       });

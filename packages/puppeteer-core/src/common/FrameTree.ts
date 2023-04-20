@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
+import {Frame as BaseFrame} from '../api/Frame.js';
 import {
   createDeferredPromise,
   DeferredPromise,
 } from '../util/DeferredPromise.js';
-
-import type {Frame} from './Frame.js';
 
 /**
  * Keeps track of the page frame tree and it's is managed by
@@ -28,7 +27,7 @@ import type {Frame} from './Frame.js';
  * structure is eventually consistent.
  * @internal
  */
-export class FrameTree {
+export class FrameTree<Frame extends BaseFrame> {
   #frames = new Map<string, Frame>();
   // frameID -> parentFrameID
   #parentIds = new Map<string, string>();

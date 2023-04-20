@@ -33,16 +33,18 @@ import {Connection} from './Connection.js';
  * @internal
  */
 export class Browser extends BrowserBase {
+  static readonly subscribeModules = ['browsingContext'];
+
   static async create(opts: Options): Promise<Browser> {
     // TODO: await until the connection is established.
     try {
       await opts.connection.send('session.new', {});
     } catch {}
+
     await opts.connection.send('session.subscribe', {
-      events: [
-        'browsingContext.contextCreated',
-      ] as Bidi.Session.SubscribeParametersEvent[],
+      events: Browser.subscribeModules as Bidi.Message.EventNames[],
     });
+
     return new Browser(opts);
   }
 

@@ -31,7 +31,7 @@ class UnserializableError extends Error {}
  * @internal
  */
 export class BidiSerializer {
-  static serializeNumber(arg: number): Bidi.CommonDataTypes.LocalOrRemoteValue {
+  static serializeNumber(arg: number): Bidi.CommonDataTypes.LocalValue {
     let value: Bidi.CommonDataTypes.SpecialNumber | number;
     if (Object.is(arg, -0)) {
       value = '-0';
@@ -50,9 +50,7 @@ export class BidiSerializer {
     };
   }
 
-  static serializeObject(
-    arg: object | null
-  ): Bidi.CommonDataTypes.LocalOrRemoteValue {
+  static serializeObject(arg: object | null): Bidi.CommonDataTypes.LocalValue {
     if (arg === null) {
       return {
         type: 'null',
@@ -111,9 +109,7 @@ export class BidiSerializer {
     );
   }
 
-  static serializeRemoveValue(
-    arg: unknown
-  ): Bidi.CommonDataTypes.LocalOrRemoteValue {
+  static serializeRemoveValue(arg: unknown): Bidi.CommonDataTypes.LocalValue {
     switch (typeof arg) {
       case 'symbol':
       case 'function':
@@ -148,7 +144,7 @@ export class BidiSerializer {
   static serialize(
     arg: unknown,
     context: Context
-  ): Bidi.CommonDataTypes.LocalOrRemoteValue {
+  ): Bidi.CommonDataTypes.LocalValue | Bidi.CommonDataTypes.RemoteValue {
     // TODO: See use case of LazyArgs
     const objectHandle =
       arg && (arg instanceof JSHandle || arg instanceof ElementHandle)

@@ -49,7 +49,11 @@ interface Commands {
   };
   'browsingContext.close': {
     params: Bidi.BrowsingContext.CloseParameters;
-    returnType: Bidi.BrowsingContext.CloseResult;
+    returnType: Bidi.Message.EmptyResult;
+  };
+  'browsingContext.getTree': {
+    params: Bidi.BrowsingContext.GetTreeParameters;
+    returnType: Bidi.BrowsingContext.GetTreeResult;
   };
   'browsingContext.navigate': {
     params: Bidi.BrowsingContext.NavigateParameters;
@@ -73,11 +77,11 @@ interface Commands {
     returnType: Bidi.Session.StatusResult;
   };
   'session.subscribe': {
-    params: Bidi.Session.SubscribeParameters;
+    params: Bidi.Session.SubscriptionRequest;
     returnType: Bidi.Session.SubscribeResult;
   };
   'session.unsubscribe': {
-    params: Bidi.Session.SubscribeParameters;
+    params: Bidi.Session.SubscriptionRequest;
     returnType: Bidi.Session.UnsubscribeResult;
   };
   'cdp.sendCommand': {
@@ -159,7 +163,6 @@ export class Connection extends EventEmitter {
         this.#callbacks.resolve(object.id, object);
       }
     } else {
-      this.#handleSpecialEvents(object);
       this.#maybeEmitOnContext(object);
       this.emit(object.method, object.params);
     }
@@ -177,14 +180,12 @@ export class Connection extends EventEmitter {
     context?.emit(event.method, event.params);
   }
 
-  #handleSpecialEvents(event: Bidi.Message.EventMessage) {
-    switch (event.method) {
-      case 'browsingContext.contextCreated':
-        this.#contexts.set(
-          event.params.context,
-          new Context(this, event.params)
-        );
-    }
+  registerContext(context: Context): void {
+    this.#contexts.set(context.id, context);
+  }
+
+  unregisterContext(context: Context): void {
+    this.#contexts.delete(context.id);
   }
 
   #onClose(): void {

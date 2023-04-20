@@ -194,7 +194,8 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - macos-latest
+          # Disabled as BiDi has issue on mac https://bugzilla.mozilla.org/show_bug.cgi?id=1832778
+          # - macos-latest
         suite:
           - firefox-bidi
           - firefox-headful

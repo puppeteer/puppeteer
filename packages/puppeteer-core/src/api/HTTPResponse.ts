@@ -16,9 +16,9 @@
 
 import Protocol from 'devtools-protocol';
 
-import {Frame} from '../common/Frame.js';
 import {SecurityDetails} from '../common/SecurityDetails.js';
 
+import {Frame} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
 
 /**

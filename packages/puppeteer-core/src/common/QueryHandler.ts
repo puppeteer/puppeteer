@@ -15,12 +15,12 @@
  */
 
 import {ElementHandle} from '../api/ElementHandle.js';
+import type {Frame} from '../api/Frame.js';
 import type PuppeteerUtil from '../injected/injected.js';
 import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {interpolateFunction, stringifyFunction} from '../util/Function.js';
 
-import type {Frame} from './Frame.js';
 import {transposeIterableHandle} from './HandleIterator.js';
 import type {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';

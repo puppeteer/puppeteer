@@ -24,7 +24,6 @@ import {ProtocolMapping} from '../Connection.js';
 import {ProtocolError, TimeoutError} from '../Errors.js';
 import {EventEmitter} from '../EventEmitter.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
-import {TimeoutSettings} from '../TimeoutSettings.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
 import {
   getSourcePuppeteerURLIfAvailable,
@@ -36,6 +35,7 @@ import {
 
 import {Connection} from './Connection.js';
 import {ElementHandle} from './ElementHandle.js';
+import {FrameManager} from './FrameManager.js';
 import {JSHandle} from './JSHandle.js';
 import {BidiSerializer} from './Serializer.js';
 import {createEvaluationError} from './utils.js';
@@ -71,14 +71,28 @@ const lifeCycleToSubscribedEvent = new Map<PuppeteerLifeCycleEvent, string>([
 export class Context extends EventEmitter {
   #connection: Connection;
   #url: string;
-  _contextId: string;
-  _timeoutSettings = new TimeoutSettings();
+  #id: string;
+  #parentId?: string | null;
+  _frameManager: FrameManager;
 
-  constructor(connection: Connection, result: Bidi.BrowsingContext.Info) {
+  constructor(
+    connection: Connection,
+    frameManager: FrameManager,
+    result: Bidi.BrowsingContext.Info
+  ) {
     super();
     this.#connection = connection;
-    this._contextId = result.context;
+    this._frameManager = frameManager;
+    this.#id = result.context;
+    this.#parentId = result.parent;
     this.#url = result.url;
+
+    this.on(
+      'browsingContext.fragmentNavigated',
+      (info: Bidi.BrowsingContext.NavigationInfo) => {
+        this.#url = info.url;
+      }
+    );
   }
 
   get connection(): Connection {
@@ -86,7 +100,11 @@ export class Context extends EventEmitter {
   }
 
   get id(): string {
-    return this._contextId;
+    return this.#id;
+  }
+
+  get parentId(): string | undefined | null {
+    return this.#parentId;
   }
 
   async evaluateHandle<
@@ -146,8 +164,8 @@ export class Context extends EventEmitter {
         : `${pageFunction}\n${sourceUrlComment}\n`;
 
       responsePromise = this.#connection.send('script.evaluate', {
-        expression: expression,
-        target: {context: this._contextId},
+        expression,
+        target: {context: this.#id},
         resultOwnership,
         awaitPromise: true,
       });
@@ -163,7 +181,7 @@ export class Context extends EventEmitter {
             return BidiSerializer.serialize(arg, this);
           })
         ),
-        target: {context: this._contextId},
+        target: {context: this.#id},
         resultOwnership,
         awaitPromise: true,
       });
@@ -189,7 +207,7 @@ export class Context extends EventEmitter {
   ): Promise<HTTPResponse | null> {
     const {
       waitUntil = 'load',
-      timeout = this._timeoutSettings.navigationTimeout(),
+      timeout = this._frameManager._timeoutSettings.navigationTimeout(),
     } = options;
 
     const readinessState = lifeCycleToReadinessState.get(
@@ -229,7 +247,7 @@ export class Context extends EventEmitter {
   ): Promise<void> {
     const {
       waitUntil = 'load',
-      timeout = this._timeoutSettings.navigationTimeout(),
+      timeout = this._frameManager._timeoutSettings.navigationTimeout(),
     } = options;
 
     const waitUntilCommand = lifeCycleToSubscribedEvent.get(
@@ -250,12 +268,25 @@ export class Context extends EventEmitter {
     ]);
   }
 
+  async content(): Promise<string> {
+    return await this.evaluate(() => {
+      let retVal = '';
+      if (document.doctype) {
+        retVal = new XMLSerializer().serializeToString(document.doctype);
+      }
+      if (document.documentElement) {
+        retVal += document.documentElement.outerHTML;
+      }
+      return retVal;
+    });
+  }
+
   async sendCDPCommand(
     method: keyof ProtocolMapping.Commands,
     params: object = {}
   ): Promise<unknown> {
     const session = await this.#connection.send('cdp.getSession', {
-      context: this._contextId,
+      context: this.id,
     });
     // TODO: remove any once chromium-bidi types are updated.
     const sessionId = (session.result as any).cdpSession;

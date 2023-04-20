@@ -15,6 +15,7 @@
  */
 import {Protocol} from 'devtools-protocol';
 
+import {Frame} from '../api/Frame.js';
 import {
   HTTPResponse as BaseHTTPResponse,
   RemoteAddress,
@@ -23,7 +24,6 @@ import {createDeferredPromise} from '../util/DeferredPromise.js';
 
 import {CDPSession} from './Connection.js';
 import {ProtocolError} from './Errors.js';
-import {Frame} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {SecurityDetails} from './SecurityDetails.js';
 

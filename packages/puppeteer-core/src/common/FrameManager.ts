@@ -25,6 +25,7 @@ import {DeviceRequestPromptManager} from './DeviceRequestPrompt.js';
 import {EventEmitter} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
+import {Frame as CDPFrame} from './Frame.js';
 import {FrameTree} from './FrameTree.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
@@ -69,7 +70,7 @@ export class FrameManager extends EventEmitter {
   /**
    * @internal
    */
-  _frameTree = new FrameTree();
+  _frameTree = new FrameTree<Frame>();
 
   /**
    * Set of frame IDs stored to indicate if a frame has received a
@@ -305,7 +306,7 @@ export class FrameManager extends EventEmitter {
       return;
     }
 
-    frame = new Frame(this, frameId, parentFrameId, session);
+    frame = new CDPFrame(this, frameId, parentFrameId, session);
     this._frameTree.addFrame(frame);
     this.emit(FrameManagerEmittedEvents.FrameAttached, frame);
   }
@@ -331,7 +332,7 @@ export class FrameManager extends EventEmitter {
         frame._id = frameId;
       } else {
         // Initial main frame navigation.
-        frame = new Frame(this, frameId, undefined, this.#client);
+        frame = new CDPFrame(this, frameId, undefined, this.#client);
       }
       this._frameTree.addFrame(frame);
     }

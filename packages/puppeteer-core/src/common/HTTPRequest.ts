@@ -15,6 +15,7 @@
  */
 import {Protocol} from 'devtools-protocol';
 
+import {Frame} from '../api/Frame.js';
 import {
   ContinueRequestOverrides,
   ErrorCode,
@@ -31,7 +32,6 @@ import {assert} from '../util/assert.js';
 
 import {CDPSession} from './Connection.js';
 import {ProtocolError} from './Errors.js';
-import {Frame} from './Frame.js';
 import {debugError, isString} from './util.js';
 
 /**

@@ -28,12 +28,6 @@ import {DeviceRequestPrompt} from '../common/DeviceRequestPrompt.js';
 import type {Dialog} from '../common/Dialog.js';
 import {EventEmitter, Handler} from '../common/EventEmitter.js';
 import type {FileChooser} from '../common/FileChooser.js';
-import type {
-  Frame,
-  FrameAddScriptTagOptions,
-  FrameAddStyleTagOptions,
-  FrameWaitForFunctionOptions,
-} from '../common/Frame.js';
 import type {Keyboard, Mouse, Touchscreen} from '../common/Input.js';
 import type {WaitForSelectorOptions} from '../common/IsolatedWorld.js';
 import type {PuppeteerLifeCycleEvent} from '../common/LifecycleWatcher.js';
@@ -60,6 +54,12 @@ import {assert} from '../util/assert.js';
 import type {Browser} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';
 import type {ClickOptions, ElementHandle} from './ElementHandle.js';
+import type {
+  Frame,
+  FrameAddScriptTagOptions,
+  FrameAddStyleTagOptions,
+  FrameWaitForFunctionOptions,
+} from './Frame.js';
 import type {JSHandle} from './JSHandle.js';
 import {Locator} from './Locator.js';
 
