@@ -1,4 +1,4 @@
-# Query Selectors
+# Query Selectors (legacy)
 
 Queries are the primary mechanism for interacting with the DOM on your site. For example, a typical workflow goes like:
 
