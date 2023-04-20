@@ -167,10 +167,10 @@ export class QueryHandler {
       element = await frame.worlds[PUPPETEER_WORLD].adoptHandle(elementOrFrame);
     }
 
-    const {visible = false, hidden = false, timeout, abortController} = options;
+    const {visible = false, hidden = false, timeout, signal} = options;
 
     try {
-      if (options.abortController?.signal.aborted) {
+      if (signal?.aborted) {
         throw new AbortError('QueryHander.waitFor has been aborted.');
       }
 
@@ -190,7 +190,7 @@ export class QueryHandler {
           polling: visible || hidden ? 'raf' : 'mutation',
           root: element,
           timeout,
-          abortController,
+          signal,
         },
         LazyArg.create(context => {
           return context.puppeteerUtil;
@@ -201,7 +201,7 @@ export class QueryHandler {
         visible ? true : hidden ? false : undefined
       );
 
-      if (options.abortController?.signal.aborted) {
+      if (signal?.aborted) {
         await handle.dispose();
         throw new AbortError('QueryHander.waitFor has been aborted.');
       }

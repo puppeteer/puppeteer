@@ -386,7 +386,7 @@ describe('waittask specs', function () {
       await page.goto(server.EMPTY_PAGE);
       const abortController = new AbortController();
       const task = page.waitForSelector('wrong', {
-        abortController,
+        signal: abortController.signal,
       });
       abortController.abort();
       expect(task).rejects.toThrow(/aborted/);
