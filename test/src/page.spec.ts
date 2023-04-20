@@ -665,6 +665,21 @@ describe('Page', function () {
       expect(await message.args()[1]!.jsonValue()).toEqual(5);
       expect(await message.args()[2]!.jsonValue()).toEqual({foo: 'bar'});
     });
+    it('should work on script call right after navigation', async () => {
+      const {page} = getTestState();
+
+      let message!: ConsoleMessage;
+      page.once('console', m => {
+        return (message = m);
+      });
+
+      await Promise.all([
+        page.goto(`data:text/html,<script>console.log('SOME_LOG_MESSAGE');</script>`),
+        waitEvent(page, 'console')
+      ]);
+
+      expect(message.text()).toEqual('SOME_LOG_MESSAGE');
+    });
     it('should work for different console API calls with logging functions', async () => {
       const {page} = getTestState();
 
