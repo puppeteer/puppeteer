@@ -197,8 +197,8 @@ version of Chrome or Chromium, pass in the executable's path when creating a
 const browser = await puppeteer.launch({executablePath: '/path/to/Chrome'});
 ```
 
-You can also use Puppeteer with Firefox Nightly (experimental support). See
-[`Puppeteer.launch`](https://pptr.dev/api/puppeteer.puppeteernode.launch) for
+You can also use Puppeteer with Firefox. See
+[status of cross-browser support](https://pptr.dev/faq/#q-what-is-the-status-of-cross-browser-support) for
 more information.
 
 See
