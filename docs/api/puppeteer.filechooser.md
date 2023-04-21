@@ -32,8 +32,8 @@ await fileChooser.accept(['/tmp/myfile.pdf']);
 
 ## Methods
 
-| Method                                                 | Modifiers | Description                                                                                                                                   |
-| ------------------------------------------------------ | --------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| [accept(filePaths)](./puppeteer.filechooser.accept.md) |           | Accept the file chooser request with given paths.                                                                                             |
-| [cancel()](./puppeteer.filechooser.cancel.md)          |           | Closes the file chooser without selecting any files.                                                                                          |
-| [isMultiple()](./puppeteer.filechooser.ismultiple.md)  |           | Whether file chooser allow for [multiple](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#attr-multiple) file selection. |
+| Method                                                | Modifiers | Description                                                                                                                                   |
+| ----------------------------------------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| [accept(paths)](./puppeteer.filechooser.accept.md)    |           | Accept the file chooser request with the given file paths.                                                                                    |
+| [cancel()](./puppeteer.filechooser.cancel.md)         |           | Closes the file chooser without selecting any files.                                                                                          |
+| [isMultiple()](./puppeteer.filechooser.ismultiple.md) |           | Whether file chooser allow for [multiple](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#attr-multiple) file selection. |

@@ -4,7 +4,7 @@ sidebar_label: ElementHandle.uploadFile
 
 # ElementHandle.uploadFile() method
 
-This method expects `elementHandle` to point to an [input element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input).
+Sets the value of an [input element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input) to the given file paths.
 
 #### Signature:
 
@@ -12,18 +12,22 @@ This method expects `elementHandle` to point to an [input element](https://devel
 class ElementHandle {
   uploadFile(
     this: ElementHandle<HTMLInputElement>,
-    ...filePaths: string[]
+    ...paths: string[]
   ): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                  | Description                                                                                                                                                                                                                                                                            |
-| --------- | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLInputElement&gt; |                                                                                                                                                                                                                                                                                        |
-| filePaths | string\[\]                                                            | Sets the value of the file input to these paths. If a path is relative, then it is resolved against the [current working directory](https://nodejs.org/api/process.html#process_process_cwd). Note for locals script connecting to remote chrome environments, paths must be absolute. |
+| Parameter | Type                                                                  | Description |
+| --------- | --------------------------------------------------------------------- | ----------- |
+| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLInputElement&gt; |             |
+| paths     | string\[\]                                                            |             |
 
 **Returns:**
 
 Promise&lt;void&gt;
+
+## Remarks
+
+This will not validate whether the file paths exists. Also, if a path is relative, then it is resolved against the [current working directory](https://nodejs.org/api/process.html#process_process_cwd). For locals script connecting to remote chrome environments, paths must be absolute.

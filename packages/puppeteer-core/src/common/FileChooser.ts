@@ -67,19 +67,21 @@ export class FileChooser {
   }
 
   /**
-   * Accept the file chooser request with given paths.
+   * Accept the file chooser request with the given file paths.
    *
-   * @param filePaths - If some of the `filePaths` are relative paths, then
-   * they are resolved relative to the
+   * @remarks This will not validate whether the file paths exists. Also, if a
+   * path is relative, then it is resolved against the
    * {@link https://nodejs.org/api/process.html#process_process_cwd | current working directory}.
+   * For locals script connecting to remote chrome environments, paths must be
+   * absolute.
    */
-  async accept(filePaths: string[]): Promise<void> {
+  async accept(paths: string[]): Promise<void> {
     assert(
       !this.#handled,
       'Cannot accept FileChooser which is already handled!'
     );
     this.#handled = true;
-    await this.#element.uploadFile(...filePaths);
+    await this.#element.uploadFile(...paths);
   }
 
   /**
