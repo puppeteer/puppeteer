@@ -33,8 +33,8 @@ import {
   PuppeteerLaunchOptions,
   PuppeteerNode,
 } from 'puppeteer-core/internal/node/PuppeteerNode.js';
+import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
-import {rmSync} from 'puppeteer-core/internal/util/fs.js';
 import sinon from 'sinon';
 
 import {extendExpectWithToBeGolden} from './utils.js';

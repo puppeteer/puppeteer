@@ -36,7 +36,8 @@ import bzip from 'unbzip2-stream';
 import {debug} from '../common/Debug.js';
 import {Product} from '../common/Product.js';
 import {assert} from '../util/assert.js';
-import {rm} from '../util/fs.js';
+
+import {rm} from './util/fs.js';
 
 const debugFetcher = debug('puppeteer:fetcher');
 

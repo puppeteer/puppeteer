@@ -23,7 +23,7 @@ import {Protocol} from 'devtools-protocol';
 import expect from 'expect';
 import {BrowserFetcher, TimeoutError} from 'puppeteer';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
-import {rmSync} from 'puppeteer-core/internal/util/fs.js';
+import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 import sinon from 'sinon';
 
 import {getTestState, itOnlyRegularInstall} from './mocha-utils.js';

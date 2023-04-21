@@ -23,7 +23,6 @@ import {Browser as SupportedBrowsers, createProfile} from '@puppeteer/browsers';
 
 import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
-import {rm} from '../util/fs.js';
 
 import {
   BrowserLaunchArgumentOptions,
@@ -31,6 +30,7 @@ import {
 } from './LaunchOptions.js';
 import {ProductLauncher, ResolvedLaunchArgs} from './ProductLauncher.js';
 import {PuppeteerNode} from './PuppeteerNode.js';
+import {rm} from './util/fs.js';
 
 /**
  * @internal
