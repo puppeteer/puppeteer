@@ -51,7 +51,8 @@
       "PUPPETEER_PRODUCT": "firefox"
     },
     "headless": {
-      "HEADLESS": "true"
+      "HEADLESS": "true",
+      "PUPPETEER_LOGLEVEL": "silent"
     },
     "headful": {
       "HEADLESS": "false"

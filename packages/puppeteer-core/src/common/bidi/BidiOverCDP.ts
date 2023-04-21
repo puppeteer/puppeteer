@@ -106,9 +106,10 @@ class CDPConnectionAdapter {
  *
  * @internal
  */
-class CDPClientAdapter<
-  T extends Pick<CDPPPtrConnection, 'send' | 'on' | 'off'>
-> extends BidiMapper.EventEmitter<CdpEvents> {
+class CDPClientAdapter<T extends Pick<CDPPPtrConnection, 'send' | 'on' | 'off'>>
+  extends BidiMapper.EventEmitter<CdpEvents>
+  implements BidiMapper.CdpClient
+{
   #closed = false;
   #client: T;
 
@@ -157,17 +158,20 @@ class NoOpTransport
   extends BidiMapper.EventEmitter<any>
   implements BidiMapper.BidiTransport
 {
-  #onMessage: (message: Bidi.Message.RawCommandRequest) => Promise<void> =
-    async (_m: Bidi.Message.RawCommandRequest): Promise<void> => {
-      return;
-    };
+  #onMessage: (
+    message: Bidi.Message.RawCommandRequest
+  ) => Promise<void> | void = async (
+    _m: Bidi.Message.RawCommandRequest
+  ): Promise<void> => {
+    return;
+  };
 
   emitMessage(message: Bidi.Message.RawCommandRequest) {
     this.#onMessage(message);
   }
 
   setOnMessage(
-    onMessage: (message: Bidi.Message.RawCommandRequest) => Promise<void>
+    onMessage: (message: Bidi.Message.RawCommandRequest) => Promise<void> | void
   ): void {
     this.#onMessage = onMessage;
   }
