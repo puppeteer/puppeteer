@@ -23,7 +23,7 @@ import {
   PuppeteerLaunchOptions,
   PuppeteerNode,
 } from 'puppeteer-core/internal/node/PuppeteerNode.js';
-import {rmSync} from 'puppeteer-core/internal/util/fs.js';
+import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 
 import {getTestState} from './mocha-utils.js';
 

@@ -15,7 +15,6 @@
  */
 
 export * from './assert.js';
-export * from './fs.js';
 export * from './DebuggableDeferredPromise.js';
 export * from './DeferredPromise.js';
 export * from './ErrorLike.js';
