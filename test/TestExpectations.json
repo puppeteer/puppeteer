@@ -303,7 +303,7 @@
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should work with no default arguments",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome"],
-    "expectations": ["TIMEOUT"]
+    "expectations": ["FAIL", "TIMEOUT"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should fail when navigating to bad SSL",

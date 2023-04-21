@@ -39,52 +39,59 @@ import {execSync} from 'child_process';
 import packageJson from '../package.json';
 import {PUPPETEER_REVISIONS} from '../src/revisions.js';
 
-const currentProtocolPackageInstalledVersion =
-  packageJson.dependencies['devtools-protocol'];
+async function main() {
+  const currentProtocolPackageInstalledVersion =
+    packageJson.dependencies['devtools-protocol'];
 
-/**
- * Ensure that the devtools-protocol version is pinned.
- */
-if (/^[^0-9]/.test(currentProtocolPackageInstalledVersion)) {
-  console.log(
-    `ERROR: devtools-protocol package is not pinned to a specific version.\n`
+  /**
+   * Ensure that the devtools-protocol version is pinned.
+   */
+  if (/^[^0-9]/.test(currentProtocolPackageInstalledVersion)) {
+    console.log(
+      `ERROR: devtools-protocol package is not pinned to a specific version.\n`
+    );
+    process.exit(1);
+  }
+
+  const chromeVersion = PUPPETEER_REVISIONS.chrome;
+  // find the right revision for our Chrome version.
+  const req = await fetch(
+    `https://chromiumdash.appspot.com/fetch_releases?channel=stable`
   );
-  process.exit(1);
-}
+  const stableReleases = await req.json();
+  const chromeRevision = stableReleases.find(release => {
+    return release.version === chromeVersion;
+  }).chromium_main_branch_position;
+  console.log(`Revisions for ${chromeVersion}: ${chromeRevision}`);
 
-const chromeVersion = PUPPETEER_REVISIONS.chrome;
-console.log('Current Chrome version', chromeVersion);
+  const command = `npm view "devtools-protocol@<=0.0.${chromeRevision}" version | tail -1`;
 
-// TODO: lookup revision based on the version.
-const chromeRevision = '1109224';
+  console.log(
+    'Checking npm for devtools-protocol revisions:\n',
+    `'${command}'`,
+    '\n'
+  );
 
-// find the right revision for our Chromium revision
+  const output = execSync(command, {
+    encoding: 'utf8',
+  });
 
-const command = `npm view "devtools-protocol@<=0.0.${chromeRevision}" version | tail -1`;
+  const bestRevisionFromNpm = output.split(' ')[1]!.replace(/'|\n/g, '');
 
-console.log(
-  'Checking npm for devtools-protocol revisions:\n',
-  `'${command}'`,
-  '\n'
-);
-
-const output = execSync(command, {
-  encoding: 'utf8',
-});
-
-const bestRevisionFromNpm = output.split(' ')[1]!.replace(/'|\n/g, '');
-
-if (currentProtocolPackageInstalledVersion !== bestRevisionFromNpm) {
-  console.log(`ERROR: bad devtools-protocol revision detected:
+  if (currentProtocolPackageInstalledVersion !== bestRevisionFromNpm) {
+    console.log(`ERROR: bad devtools-protocol revision detected:
 
     Current Puppeteer Chromium revision: ${chromeRevision}
     Current devtools-protocol version in package.json: ${currentProtocolPackageInstalledVersion}
     Expected devtools-protocol version:                ${bestRevisionFromNpm}`);
 
-  process.exit(1);
+    process.exit(1);
+  }
+
+  console.log(
+    `Correct devtools-protocol version found (${bestRevisionFromNpm}).`
+  );
+  process.exit(0);
 }
 
-console.log(
-  `Correct devtools-protocol version found (${bestRevisionFromNpm}).`
-);
-process.exit(0);
+main();
