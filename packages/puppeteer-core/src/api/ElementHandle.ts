@@ -702,18 +702,19 @@ export class ElementHandle<
   }
 
   /**
-   * This method expects `elementHandle` to point to an
-   * {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input | input element}.
+   * Sets the value of an
+   * {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input | input element}
+   * to the given file paths.
    *
-   * @param filePaths - Sets the value of the file input to these paths.
-   * If a path is relative, then it is resolved against the
+   * @remarks This will not validate whether the file paths exists. Also, if a
+   * path is relative, then it is resolved against the
    * {@link https://nodejs.org/api/process.html#process_process_cwd | current working directory}.
-   * Note for locals script connecting to remote chrome environments,
-   * paths must be absolute.
+   * For locals script connecting to remote chrome environments, paths must be
+   * absolute.
    */
   async uploadFile(
     this: ElementHandle<HTMLInputElement>,
-    ...filePaths: string[]
+    ...paths: string[]
   ): Promise<void>;
   async uploadFile(this: ElementHandle<HTMLInputElement>): Promise<void> {
     throw new Error('Not implemented');
