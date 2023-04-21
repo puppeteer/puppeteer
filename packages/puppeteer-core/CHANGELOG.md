@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.10.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.10.0...puppeteer-core-v19.10.1) (2023-04-21)
+
+
+### Bug Fixes
+
+* move fs.js to the node folder ([#10055](https://github.com/puppeteer/puppeteer/issues/10055)) ([704624e](https://github.com/puppeteer/puppeteer/commit/704624eb2045a7e38ed14044d6863a2871e9d7e2))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 0.4.1 to 0.5.0
+
 ## [19.10.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.9.1...puppeteer-core-v19.10.0) (2023-04-20)
 
 

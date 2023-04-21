@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/puppeteer/puppeteer/compare/browsers-v0.4.1...browsers-v0.5.0) (2023-04-21)
+
+
+### Features
+
+* **browser:** add a method to get installed browsers ([#10057](https://github.com/puppeteer/puppeteer/issues/10057)) ([e16e2a9](https://github.com/puppeteer/puppeteer/commit/e16e2a97284f5e7ab4073f375254572a6a89e800))
+
 ## [0.4.1](https://github.com/puppeteer/puppeteer/compare/browsers-v0.4.0...browsers-v0.4.1) (2023-04-13)
 
 
