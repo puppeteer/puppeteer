@@ -25,7 +25,7 @@ import {
   BrowserPlatform,
   downloadUrls,
 } from './browser-data/browser-data.js';
-import {Cache} from './Cache.js';
+import {Cache, InstalledBrowser} from './Cache.js';
 import {debug} from './debug.js';
 import {detectBrowserPlatform} from './detectPlatform.js';
 import {unpackArchive} from './fileUtil.js';
@@ -96,16 +96,6 @@ export interface InstallOptions {
    */
   unpack?: boolean;
 }
-
-/**
- * @public
- */
-export type InstalledBrowser = {
-  path: string;
-  browser: Browser;
-  buildId: string;
-  platform: BrowserPlatform;
-};
 
 /**
  * @public

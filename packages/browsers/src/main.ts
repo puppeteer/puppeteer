@@ -26,12 +26,7 @@ export {
   WEBDRIVER_BIDI_WEBSOCKET_ENDPOINT_REGEX,
   Process,
 } from './launch.js';
-export {
-  install,
-  canDownload,
-  InstallOptions,
-  InstalledBrowser,
-} from './install.js';
+export {install, canDownload, InstallOptions} from './install.js';
 export {detectBrowserPlatform} from './detectPlatform.js';
 export {
   resolveBuildId,
@@ -42,4 +37,4 @@ export {
   ProfileOptions,
 } from './browser-data/browser-data.js';
 export {CLI, makeProgressCallback} from './CLI.js';
-export {Cache} from './Cache.js';
+export {Cache, InstalledBrowser} from './Cache.js';
