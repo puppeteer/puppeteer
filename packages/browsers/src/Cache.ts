@@ -20,6 +20,16 @@ import path from 'path';
 import {Browser, BrowserPlatform} from './browser-data/browser-data.js';
 
 /**
+ * @public
+ */
+export type InstalledBrowser = {
+  path: string;
+  browser: Browser;
+  buildId: string;
+  platform: BrowserPlatform;
+};
+
+/**
  * The cache used by Puppeteer relies on the following structure:
  *
  * - rootDir
@@ -65,4 +75,50 @@ export class Cache {
       retryDelay: 500,
     });
   }
+
+  getInstalledBrowsers(): InstalledBrowser[] {
+    if (!fs.existsSync(this.#rootDir)) {
+      return [];
+    }
+    const types = fs.readdirSync(this.#rootDir);
+    const browsers = types.filter((t): t is Browser => {
+      return (Object.values(Browser) as string[]).includes(t);
+    });
+    return browsers.flatMap(browser => {
+      const files = fs.readdirSync(this.browserRoot(browser));
+      return files
+        .map(file => {
+          const result = parseFolderPath(
+            path.join(this.browserRoot(browser), file)
+          );
+          if (!result) {
+            return null;
+          }
+          return {
+            path: path.join(this.browserRoot(browser), file),
+            browser,
+            platform: result.platform,
+            buildId: result.buildId,
+          };
+        })
+        .filter((item): item is InstalledBrowser => {
+          return item !== null;
+        });
+    });
+  }
+}
+
+function parseFolderPath(
+  folderPath: string
+): {platform: string; buildId: string} | undefined {
+  const name = path.basename(folderPath);
+  const splits = name.split('-');
+  if (splits.length !== 2) {
+    return;
+  }
+  const [platform, buildId] = splits;
+  if (!buildId || !platform) {
+    return;
+  }
+  return {platform, buildId};
 }

@@ -100,6 +100,10 @@ describe('Chrome install', () => {
     });
     assert.strictEqual(browser.path, expectedOutputPath);
     assert.ok(fs.existsSync(expectedOutputPath));
+    // Should discover installed browsers.
+    const cache = new Cache(tmpDir);
+    const installed = cache.getInstalledBrowsers();
+    assert.deepStrictEqual(browser, installed[0]);
   });
 
   it('throws on invalid URL', async function () {
