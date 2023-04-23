@@ -193,8 +193,8 @@ We recommend you try it out before the switch:
 const browser = await puppeteer.launch({headless: 'new'});
 ```
 
-To launch a full version of Chromium, set the
-[`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions) to `true`
+To launch a "headful" version of Chromium, set the
+[`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions) to `false`
 option when launching a browser:
 
 ```ts
