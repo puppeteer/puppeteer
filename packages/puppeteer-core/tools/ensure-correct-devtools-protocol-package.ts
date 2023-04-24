@@ -16,21 +16,21 @@
 
 /**
  * This script ensures that the pinned version of devtools-protocol in
- * package.json is the right version for the current revision of Chromium that
+ * package.json is the right version for the current revision of Chrome that
  * Puppeteer ships with.
  *
  * The devtools-protocol package publisher runs every hour and checks if there
  * are protocol changes. If there are, it will be versioned with the revision
  * number of the commit that last changed the .pdl files.
  *
- * Chromium branches/releases are figured out at a later point in time, so it's
- * not true that each Chromium revision will have an exact matching revision
+ * Chrome branches/releases are figured out at a later point in time, so it's
+ * not true that each Chrome revision will have an exact matching revision
  * version of devtools-protocol. To ensure we're using a devtools-protocol that
  * is aligned with our revision, we want to find the largest package number
  * that's \<= the revision that Puppeteer is using.
  *
  * This script uses npm's `view` function to list all versions in a range and
- * find the one closest to our Chromium revision.
+ * find the one closest to our Chrome revision.
  */
 
 // eslint-disable-next-line import/extensions
@@ -81,7 +81,7 @@ async function main() {
   if (currentProtocolPackageInstalledVersion !== bestRevisionFromNpm) {
     console.log(`ERROR: bad devtools-protocol revision detected:
 
-    Current Puppeteer Chromium revision: ${chromeRevision}
+    Current Puppeteer Chrome revision: ${chromeRevision}
     Current devtools-protocol version in package.json: ${currentProtocolPackageInstalledVersion}
     Expected devtools-protocol version:                ${bestRevisionFromNpm}`);
 

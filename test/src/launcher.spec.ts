@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 import fs from 'fs';
-import {mkdtemp, readFile, stat, writeFile} from 'fs/promises';
+import {mkdtemp, readFile, writeFile} from 'fs/promises';
 import os from 'os';
 import path from 'path';
 import {TLSSocket} from 'tls';
 
 import {Protocol} from 'devtools-protocol';
 import expect from 'expect';
-import {BrowserFetcher, TimeoutError} from 'puppeteer';
+import {TimeoutError} from 'puppeteer';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 import sinon from 'sinon';
@@ -38,93 +38,6 @@ describe('Launcher specs', function () {
   }
 
   describe('Puppeteer', function () {
-    describe('BrowserFetcher', function () {
-      it('should download and extract chrome linux binary', async () => {
-        const {server} = getTestState();
-
-        const downloadsFolder = await mkdtemp(TMP_FOLDER);
-        const browserFetcher = new BrowserFetcher({
-          platform: 'linux',
-          path: downloadsFolder,
-          host: server.PREFIX,
-        });
-        const expectedRevision = '123456';
-        let revisionInfo = browserFetcher.revisionInfo(expectedRevision);
-        server.setRoute(
-          revisionInfo.url.substring(server.PREFIX.length),
-          (req, res) => {
-            server.serveFile(req, res, '/chromium-linux.zip');
-          }
-        );
-
-        expect(revisionInfo.local).toBe(false);
-        expect(browserFetcher.platform()).toBe('linux');
-        expect(browserFetcher.product()).toBe('chrome');
-        expect(!!browserFetcher.host()).toBe(true);
-        expect(await browserFetcher.canDownload('100000')).toBe(false);
-        expect(await browserFetcher.canDownload(expectedRevision)).toBe(true);
-
-        revisionInfo = (await browserFetcher.download(expectedRevision))!;
-        expect(revisionInfo.local).toBe(true);
-        expect(await readFile(revisionInfo.executablePath, 'utf8')).toBe(
-          'LINUX BINARY\n'
-        );
-        const expectedPermissions = os.platform() === 'win32' ? 0o666 : 0o755;
-        expect((await stat(revisionInfo.executablePath)).mode & 0o777).toBe(
-          expectedPermissions
-        );
-        expect(browserFetcher.localRevisions()).toEqual([expectedRevision]);
-        await browserFetcher.remove(expectedRevision);
-        expect(browserFetcher.localRevisions()).toEqual([]);
-        rmSync(downloadsFolder);
-      });
-      it('should download and extract firefox linux binary', async () => {
-        const {server} = getTestState();
-
-        const downloadsFolder = await mkdtemp(TMP_FOLDER);
-        const browserFetcher = new BrowserFetcher({
-          platform: 'linux',
-          path: downloadsFolder,
-          host: server.PREFIX,
-          product: 'firefox',
-        });
-        const expectedVersion = '75.0a1';
-        let revisionInfo = browserFetcher.revisionInfo(expectedVersion);
-        server.setRoute(
-          revisionInfo.url.substring(server.PREFIX.length),
-          (req, res) => {
-            server.serveFile(
-              req,
-              res,
-              `/firefox-${expectedVersion}.en-US.linux-x86_64.tar.bz2`
-            );
-          }
-        );
-
-        expect(revisionInfo.local).toBe(false);
-        expect(browserFetcher.platform()).toBe('linux');
-        expect(browserFetcher.product()).toBe('firefox');
-        expect(await browserFetcher.canDownload('100000')).toBe(false);
-        expect(await browserFetcher.canDownload(expectedVersion)).toBe(true);
-
-        revisionInfo = (await browserFetcher.download(expectedVersion))!;
-        expect(revisionInfo.local).toBe(true);
-        expect(await readFile(revisionInfo.executablePath, 'utf8')).toBe(
-          'FIREFOX LINUX BINARY\n'
-        );
-        const expectedPermissions = os.platform() === 'win32' ? 0o666 : 0o755;
-        expect((await stat(revisionInfo.executablePath)).mode & 0o777).toBe(
-          expectedPermissions
-        );
-        expect(await browserFetcher.localRevisions()).toEqual([
-          expectedVersion,
-        ]);
-        await browserFetcher.remove(expectedVersion);
-        expect(await browserFetcher.localRevisions()).toEqual([]);
-        rmSync(downloadsFolder);
-      });
-    });
-
     describe('Browser.disconnect', function () {
       it('should reject navigation when browser closes', async () => {
         const {server, puppeteer, defaultBrowserOptions} = getTestState();
@@ -908,68 +821,6 @@ describe('Launcher specs', function () {
               'SOME_CUSTOM_EXECUTABLE'
             );
           }
-        });
-      });
-
-      describe('when the product is chrome, platform is not darwin, and arch is arm64', () => {
-        describe('and the executable exists', () => {
-          it('returns /usr/bin/chromium-browser', async () => {
-            const {puppeteer} = getTestState();
-            const osPlatformStub = sinon.stub(os, 'platform').returns('linux');
-            const osArchStub = sinon.stub(os, 'arch').returns('arm64');
-            const fsExistsStub = sinon.stub(fs, 'existsSync');
-            fsExistsStub.withArgs('/usr/bin/chromium-browser').returns(true);
-
-            const executablePath = puppeteer.executablePath();
-
-            expect(executablePath).toEqual('/usr/bin/chromium-browser');
-
-            osPlatformStub.restore();
-            osArchStub.restore();
-            fsExistsStub.restore();
-          });
-          describe('and the executable path is configured', () => {
-            const sandbox = sinon.createSandbox();
-
-            beforeEach(() => {
-              const {puppeteer} = getTestState();
-              sandbox
-                .stub(puppeteer.configuration, 'executablePath')
-                .value('SOME_CUSTOM_EXECUTABLE');
-            });
-
-            afterEach(() => {
-              sandbox.restore();
-            });
-
-            it('its value is used', async () => {
-              const {puppeteer} = getTestState();
-              try {
-                puppeteer.executablePath();
-              } catch (error) {
-                expect((error as Error).message).toContain(
-                  'SOME_CUSTOM_EXECUTABLE'
-                );
-              }
-            });
-          });
-        });
-        describe('and the executable does not exist', () => {
-          it('does not return /usr/bin/chromium-browser', async () => {
-            const {puppeteer} = getTestState();
-            const osPlatformStub = sinon.stub(os, 'platform').returns('linux');
-            const osArchStub = sinon.stub(os, 'arch').returns('arm64');
-            const fsExistsStub = sinon.stub(fs, 'existsSync');
-            fsExistsStub.withArgs('/usr/bin/chromium-browser').returns(false);
-
-            expect(() => {
-              return puppeteer.executablePath();
-            }).toThrowError();
-
-            osPlatformStub.restore();
-            osArchStub.restore();
-            fsExistsStub.restore();
-          });
         });
       });
     });

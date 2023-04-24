@@ -131,10 +131,10 @@ export interface WaitForTargetOptions {
  */
 export const enum BrowserEmittedEvents {
   /**
-   * Emitted when Puppeteer gets disconnected from the Chromium instance. This
+   * Emitted when Puppeteer gets disconnected from the browser instance. This
    * might happen because of one of the following:
    *
-   * - Chromium is closed or crashed
+   * - browser is closed or crashed
    *
    * - The {@link Browser.disconnect | browser.disconnect } method was called.
    */
@@ -173,7 +173,7 @@ export const enum BrowserEmittedEvents {
 }
 
 /**
- * A Browser is created when Puppeteer connects to a Chromium instance, either through
+ * A Browser is created when Puppeteer connects to a browser instance, either through
  * {@link PuppeteerNode.launch} or {@link Puppeteer.connect}.
  *
  * @remarks
@@ -203,14 +203,14 @@ export const enum BrowserEmittedEvents {
  *
  * (async () => {
  *   const browser = await puppeteer.launch();
- *   // Store the endpoint to be able to reconnect to Chromium
+ *   // Store the endpoint to be able to reconnect to the browser.
  *   const browserWSEndpoint = browser.wsEndpoint();
- *   // Disconnect puppeteer from Chromium
+ *   // Disconnect puppeteer from the browser.
  *   browser.disconnect();
  *
  *   // Use the endpoint to reestablish a connection
  *   const browser2 = await puppeteer.connect({browserWSEndpoint});
- *   // Close Chromium
+ *   // Close the browser.
  *   await browser2.close();
  * })();
  * ```
@@ -404,10 +404,10 @@ export class Browser extends EventEmitter {
    *
    * @remarks
    *
-   * For headless Chromium, this is similar to `HeadlessChrome/61.0.3153.0`. For
+   * For headless browser, this is similar to `HeadlessChrome/61.0.3153.0`. For
    * non-headless, this is similar to `Chrome/61.0.3153.0`.
    *
-   * The format of browser.version() might change with future releases of Chromium.
+   * The format of browser.version() might change with future releases of browsers.
    */
   version(): Promise<string> {
     throw new Error('Not implemented');
@@ -422,15 +422,16 @@ export class Browser extends EventEmitter {
   }
 
   /**
-   * Closes Chromium and all of its pages (if any were opened). The {@link Browser} object
-   * itself is considered to be disposed and cannot be used anymore.
+   * Closes the browser and all of its pages (if any were opened). The
+   * {@link Browser} object itself is considered to be disposed and cannot be
+   * used anymore.
    */
   close(): Promise<void> {
     throw new Error('Not implemented');
   }
 
   /**
-   * Disconnects Puppeteer from the browser, but leaves the Chromium process running.
+   * Disconnects Puppeteer from the browser, but leaves the browser process running.
    * After calling `disconnect`, the {@link Browser} object is considered disposed and
    * cannot be used anymore.
    */

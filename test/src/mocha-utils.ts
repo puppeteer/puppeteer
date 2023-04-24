@@ -120,11 +120,7 @@ const defaultBrowserOptions = Object.assign(
 })();
 
 const setupGoldenAssertions = (): void => {
-  let suffix = product.toLowerCase();
-  if (suffix === 'chrome') {
-    // TODO: to avoid moving golden folders.
-    suffix = 'chromium';
-  }
+  const suffix = product.toLowerCase();
   const GOLDEN_DIR = path.join(__dirname, `../golden-${suffix}`);
   const OUTPUT_DIR = path.join(__dirname, `../output-${suffix}`);
   if (fs.existsSync(OUTPUT_DIR)) {

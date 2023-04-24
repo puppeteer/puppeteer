@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {existsSync} from 'fs';
-import os, {tmpdir} from 'os';
+import {tmpdir} from 'os';
 import {join} from 'path';
 
 import {
@@ -404,16 +404,6 @@ export class ProductLauncher {
       return executablePath;
     }
 
-    const ubuntuChromiumPath = '/usr/bin/chromium-browser';
-    if (
-      this.product === 'chrome' &&
-      os.platform() !== 'darwin' &&
-      os.arch() === 'arm64' &&
-      existsSync(ubuntuChromiumPath)
-    ) {
-      return ubuntuChromiumPath;
-    }
-
     function productToBrowser(product?: Product) {
       switch (product) {
         case 'chrome':
@@ -439,7 +429,7 @@ export class ProductLauncher {
       switch (this.product) {
         case 'chrome':
           throw new Error(
-            `Could not find Chromium (rev. ${this.puppeteer.browserRevision}). This can occur if either\n` +
+            `Could not find Chrome (ver. ${this.puppeteer.browserRevision}). This can occur if either\n` +
               ' 1. you did not perform an installation before running the script (e.g. `npm install`) or\n' +
               ` 2. your cache path is incorrectly configured (which is: ${this.puppeteer.configuration.cacheDirectory}).\n` +
               'For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.'

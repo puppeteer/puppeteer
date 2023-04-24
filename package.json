@@ -6,7 +6,6 @@
     "url": "https://github.com/puppeteer/puppeteer"
   },
   "scripts": {
-    "bisect": "tsx tools/bisect.ts",
     "build": "wireit",
     "build:docs": "wireit",
     "check:pinned-deps": "tsx tools/ensure-pinned-deps",

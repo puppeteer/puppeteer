@@ -4,7 +4,7 @@ sidebar_label: Page
 
 # Page class
 
-Page provides methods to interact with a single tab or [extension background page](https://developer.chrome.com/extensions/background_pages) in Chromium.
+Page provides methods to interact with a single tab or [extension background page](https://developer.chrome.com/extensions/background_pages) in the browser.
 
 :::note
 
@@ -63,14 +63,14 @@ page.off('request', logRequest);
 
 ## Properties
 
-| Property      | Modifiers             | Type                                          | Description                                                                                                                                                                                                                                                                     |
-| ------------- | --------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| accessibility | <code>readonly</code> | [Accessibility](./puppeteer.accessibility.md) | The Accessibility class provides methods for inspecting Chromium's accessibility tree. The accessibility tree is used by assistive technology such as [screen readers](https://en.wikipedia.org/wiki/Screen_reader) or [switches](https://en.wikipedia.org/wiki/Switch_access). |
-| coverage      | <code>readonly</code> | [Coverage](./puppeteer.coverage.md)           | The Coverage class provides methods to gather information about parts of JavaScript and CSS that were used by the page.                                                                                                                                                         |
-| keyboard      | <code>readonly</code> | [Keyboard](./puppeteer.keyboard.md)           | Keyboard provides an api for managing a virtual keyboard. The high level api is [Keyboard.type()](./puppeteer.keyboard.type.md), which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.                                        |
-| mouse         | <code>readonly</code> | [Mouse](./puppeteer.mouse.md)                 | The Mouse class operates in main-frame CSS pixels relative to the top-left corner of the viewport.                                                                                                                                                                              |
-| touchscreen   | <code>readonly</code> | [Touchscreen](./puppeteer.touchscreen.md)     | The Touchscreen class exposes touchscreen events.                                                                                                                                                                                                                               |
-| tracing       | <code>readonly</code> | [Tracing](./puppeteer.tracing.md)             | The Tracing class exposes the tracing audit interface.                                                                                                                                                                                                                          |
+| Property      | Modifiers             | Type                                          | Description                                                                                                                                                                                                                                                                        |
+| ------------- | --------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| accessibility | <code>readonly</code> | [Accessibility](./puppeteer.accessibility.md) | The Accessibility class provides methods for inspecting the browser's accessibility tree. The accessibility tree is used by assistive technology such as [screen readers](https://en.wikipedia.org/wiki/Screen_reader) or [switches](https://en.wikipedia.org/wiki/Switch_access). |
+| coverage      | <code>readonly</code> | [Coverage](./puppeteer.coverage.md)           | The Coverage class provides methods to gather information about parts of JavaScript and CSS that were used by the page.                                                                                                                                                            |
+| keyboard      | <code>readonly</code> | [Keyboard](./puppeteer.keyboard.md)           | Keyboard provides an api for managing a virtual keyboard. The high level api is [Keyboard.type()](./puppeteer.keyboard.type.md), which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.                                           |
+| mouse         | <code>readonly</code> | [Mouse](./puppeteer.mouse.md)                 | The Mouse class operates in main-frame CSS pixels relative to the top-left corner of the viewport.                                                                                                                                                                                 |
+| touchscreen   | <code>readonly</code> | [Touchscreen](./puppeteer.touchscreen.md)     | The Touchscreen class exposes touchscreen events.                                                                                                                                                                                                                                  |
+| tracing       | <code>readonly</code> | [Tracing](./puppeteer.tracing.md)             | The Tracing class exposes the tracing audit interface.                                                                                                                                                                                                                             |
 
 ## Methods
 

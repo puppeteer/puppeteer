@@ -73,9 +73,17 @@ function spliceIntoSection(
         continue;
       }
       if (versionsArchived.includes(puppeteerVersion.substring(1))) {
-        buffer.push(
-          `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://github.com/puppeteer/puppeteer/blob/${puppeteerVersion}/docs/api/index.md)`
-        );
+        if (semver.gte(puppeteerVersion, '20.0.0')) {
+          buffer.push(
+            `  * Chrome for Testing ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://pptr.dev/${puppeteerVersion.slice(
+              1
+            )})`
+          );
+        } else {
+          buffer.push(
+            `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://github.com/puppeteer/puppeteer/blob/${puppeteerVersion}/docs/api/index.md)`
+          );
+        }
       } else if (semver.lt(puppeteerVersion, '15.0.0')) {
         buffer.push(
           `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://github.com/puppeteer/puppeteer/blob/${puppeteerVersion}/docs/api.md)`

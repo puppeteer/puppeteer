@@ -16,7 +16,7 @@ docker build -t puppeteer-chrome-linux . # `puppeteer-chrome-linux` is the name 
 docker run -i --init --rm --cap-add=SYS_ADMIN --name puppeteer-chrome puppeteer-chrome-linux node -e "`cat test.js`"
 ```
 
-`--cap-add=SYS_ADMIN` capability is needed to enable Chromium sandbox that makes the browser more secure. Alternatively, it should be possible to start the browser binary with the `--no-sandbox` flag.
+`--cap-add=SYS_ADMIN` capability is needed to enable Chrome sandbox that makes the browser more secure. Alternatively, it should be possible to start the browser binary with the `--no-sandbox` flag.
 
 ## GitHub Actions
 

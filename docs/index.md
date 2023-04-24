@@ -12,7 +12,7 @@
 > [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
 > Puppeteer runs in
 > [headless](https://developer.chrome.com/articles/new-headless/)
-> mode by default, but can be configured to run in full (non-headless)
+> mode by default, but can be configured to run in full ("headful")
 > Chrome/Chromium.
 
 #### What can I do?
@@ -46,7 +46,7 @@ pnpm i puppeteer
 ```
 
 When you install Puppeteer, it automatically downloads a recent version of
-Chromium (~170MB macOS, ~282MB Linux, ~280MB Windows) that is [guaranteed to
+Chrome for Testing (~170MB macOS, ~282MB Linux, ~280MB Windows) that is [guaranteed to
 work](https://pptr.dev/faq#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy)
 with Puppeteer. The browser is downloaded to the `$HOME/.cache/puppeteer` folder
 by default (starting with Puppeteer v19.0.0).
@@ -94,14 +94,14 @@ Every release since v1.7.0 we publish two packages:
 - [`puppeteer-core`](https://www.npmjs.com/package/puppeteer-core)
 
 `puppeteer` is a _product_ for browser automation. When installed, it downloads
-a version of Chromium, which it then drives using `puppeteer-core`. Being an
+a version of Chrome, which it then drives using `puppeteer-core`. Being an
 end-user product, `puppeteer` automates several workflows using reasonable
 defaults [that can be customized](https://pptr.dev/guides/configuration).
 
 `puppeteer-core` is a _library_ to help drive anything that supports DevTools
 protocol. Being a library, `puppeteer-core` is fully driven through its
 programmatic interface implying no defaults are assumed and `puppeteer-core`
-will not download Chromium when installed.
+will not download Chrome when installed.
 
 You should use `puppeteer-core` if you are
 [connecting to a remote browser](https://pptr.dev/api/puppeteer.puppeteer.connect)
@@ -176,7 +176,7 @@ import puppeteer from 'puppeteer';
 
 **1. Uses Headless mode**
 
-By default Puppeteer launches Chromium in
+By default Puppeteer launches Chrome in
 [old Headless mode](https://developer.chrome.com/articles/new-headless/).
 
 ```ts
@@ -193,17 +193,17 @@ We recommend you try it out before the switch:
 const browser = await puppeteer.launch({headless: 'new'});
 ```
 
-To launch a full version of Chromium, set the
-[`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions) to `true`
+To launch a "headful" version of Chrome, set the
+[`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions) to `false`
 option when launching a browser:
 
 ```ts
 const browser = await puppeteer.launch({headless: false});
 ```
 
-**2. Runs a bundled version of Chromium**
+**2. Runs a bundled version of Chrome**
 
-By default, Puppeteer downloads and uses a specific version of Chromium so its
+By default, Puppeteer downloads and uses a specific version of Chrome so its
 API is guaranteed to work out of the box. To use Puppeteer with a different
 version of Chrome or Chromium, pass in the executable's path when creating a
 `Browser` instance:

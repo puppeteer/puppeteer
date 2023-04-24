@@ -32,7 +32,7 @@ Promise&lt;[FileChooser](./puppeteer.filechooser.md)&gt;
 
 ## Remarks
 
-In non-headless Chromium, this method results in the native file picker dialog `not showing up` for the user.
+In the "headful" browser, this method results in the native file picker dialog `not showing up` for the user.
 
 ## Example
 

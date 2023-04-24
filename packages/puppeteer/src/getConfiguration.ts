@@ -47,16 +47,12 @@ export const getConfiguration = (): Configuration => {
     process.env['PUPPETEER_SKIP_DOWNLOAD'] ??
       process.env['npm_config_puppeteer_skip_download'] ??
       process.env['npm_package_config_puppeteer_skip_download'] ??
-      process.env['PUPPETEER_SKIP_CHROMIUM_DOWNLOAD'] ??
-      process.env['npm_config_puppeteer_skip_chromium_download'] ??
-      process.env['npm_package_config_puppeteer_skip_chromium_download'] ??
       configuration.skipDownload
   );
 
   // Prepare variables used in browser downloading
   if (!configuration.skipDownload) {
     configuration.browserRevision =
-      process.env['PUPPETEER_CHROMIUM_REVISION'] ??
       process.env['PUPPETEER_BROWSER_REVISION'] ??
       process.env['npm_config_puppeteer_browser_revision'] ??
       process.env['npm_package_config_puppeteer_browser_revision'] ??
@@ -86,14 +82,6 @@ export const getConfiguration = (): Configuration => {
     configuration.temporaryDirectory;
 
   configuration.experiments ??= {};
-  configuration.experiments.macArmChromiumEnabled = Boolean(
-    process.env['PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM'] ??
-      process.env['npm_config_puppeteer_experimental_chromium_mac_arm'] ??
-      process.env[
-        'npm_package_config_puppeteer_experimental_chromium_mac_arm'
-      ] ??
-      configuration.experiments.macArmChromiumEnabled
-  );
 
   configuration.logLevel = (process.env['PUPPETEER_LOGLEVEL'] ??
     process.env['npm_config_LOGLEVEL'] ??
