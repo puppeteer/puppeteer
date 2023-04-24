@@ -391,7 +391,7 @@ export const MouseButton = Object.freeze({
   Middle: 'middle',
   Back: 'back',
   Forward: 'forward',
-});
+}) satisfies Record<string, Protocol.Input.MouseButton>;
 
 /**
  * @public
@@ -425,8 +425,35 @@ const getFlag = (button: MouseButton): MouseButtonFlag => {
   }
 };
 
+/**
+ * This should match
+ * https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:content/browser/renderer_host/input/web_input_event_builders_mac.mm;drc=a61b95c63b0b75c1cfe872d9c8cdf927c226046e;bpv=1;bpt=1;l=221.
+ */
+const getButtonFromPressedButtons = (
+  buttons: number
+): Protocol.Input.MouseButton => {
+  if (buttons & MouseButtonFlag.Left) {
+    return MouseButton.Left;
+  } else if (buttons & MouseButtonFlag.Right) {
+    return MouseButton.Right;
+  } else if (buttons & MouseButtonFlag.Middle) {
+    return MouseButton.Middle;
+  } else if (buttons & MouseButtonFlag.Back) {
+    return MouseButton.Back;
+  } else if (buttons & MouseButtonFlag.Forward) {
+    return MouseButton.Forward;
+  }
+  return 'none';
+};
+
 interface MouseState {
+  /**
+   * The current position of the mouse.
+   */
   position: Point;
+  /**
+   * The buttons that are currently being pressed.
+   */
   buttons: number;
 }
 
@@ -590,9 +617,7 @@ export class Mouse {
           type: 'mouseMoved',
           modifiers: this.#keyboard._modifiers,
           buttons,
-          // This should always be 0 (i.e. 'left'). See
-          // https://w3c.github.io/uievents/#event-type-mousemove
-          button: MouseButton.Left,
+          button: getButtonFromPressedButtons(buttons),
           ...position,
         });
       });
@@ -614,7 +639,9 @@ export class Mouse {
       throw new Error(`'${button}' is already pressed.`);
     }
     await this.#withTransaction(updateState => {
-      updateState({buttons: this.#state.buttons | flag});
+      updateState({
+        buttons: this.#state.buttons | flag,
+      });
       const {buttons, position} = this.#state;
       return this.#client.send('Input.dispatchMouseEvent', {
         type: 'mousePressed',
@@ -642,7 +669,9 @@ export class Mouse {
       throw new Error(`'${button}' is not pressed.`);
     }
     await this.#withTransaction(updateState => {
-      updateState({buttons: this.#state.buttons & ~flag});
+      updateState({
+        buttons: this.#state.buttons & ~flag,
+      });
       const {buttons, position} = this.#state;
       return this.#client.send('Input.dispatchMouseEvent', {
         type: 'mouseReleased',
