@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.11.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.10.1...puppeteer-core-v19.11.0) (2023-04-24)
+
+
+### Features
+
+* add warn for `headless: true` ([#10039](https://github.com/puppeteer/puppeteer/issues/10039)) ([23d6a95](https://github.com/puppeteer/puppeteer/commit/23d6a95cf10c90f8aba2b12d7b02a73072e20382))
+
+
+### Bug Fixes
+
+* infer last pressed button in mouse move ([#10067](https://github.com/puppeteer/puppeteer/issues/10067)) ([a6eaac4](https://github.com/puppeteer/puppeteer/commit/a6eaac4c39d4b0ab3ab1a3c2f319a70fde393edb))
+
 ## [19.10.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.10.0...puppeteer-core-v19.10.1) (2023-04-21)
 
 
