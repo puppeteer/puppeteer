@@ -433,12 +433,20 @@ export async function getReadableFromProtocolStream(
         return;
       }
 
-      const response = await client.send('IO.read', {handle, size});
-      this.push(response.data, response.base64Encoded ? 'base64' : undefined);
-      if (response.eof) {
-        eof = true;
-        await client.send('IO.close', {handle});
-        this.push(null);
+      try {
+        const response = await client.send('IO.read', {handle, size});
+        this.push(response.data, response.base64Encoded ? 'base64' : undefined);
+        if (response.eof) {
+          eof = true;
+          await client.send('IO.close', {handle});
+          this.push(null);
+        }
+      } catch (error) {
+        if (isErrorLike(error)) {
+          this.destroy(error);
+          return;
+        }
+        throw error;
       }
     },
   });

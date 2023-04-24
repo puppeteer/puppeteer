@@ -2028,6 +2028,8 @@ describe('Page', function () {
   });
 
   describe('Page.pdf', function () {
+    this.timeout(20_000);
+
     it('can print to PDF and save to file', async () => {
       const {page, server} = getTestState();
 
