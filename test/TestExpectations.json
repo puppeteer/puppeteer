@@ -1776,6 +1776,18 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[page.spec] Page Page.pdf *",
+    "platforms": ["win32"],
+    "parameters": ["cdp", "chrome", "headful"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.pdf *",
+    "platforms": ["win32"],
+    "parameters": ["cdp", "chrome", "new-headless"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.select should work when re-defining top-level Event class",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -2218,18 +2230,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headful"],
     "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.pdf can print to PDF and save to file",
-    "platforms": ["win32"],
-    "parameters": ["cdp", "chrome", "headful"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.pdf can print to PDF and save to file",
-    "platforms": ["win32"],
-    "parameters": ["cdp", "chrome", "new-headless"],
-    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.waitForNetworkIdle should work with aborted requests",
