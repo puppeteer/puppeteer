@@ -394,11 +394,14 @@ export async function getReadableAsBuffer(
   if (path) {
     const fs = await importFSPromises();
     const fileHandle = await fs.open(path, 'w+');
-    for await (const chunk of readable) {
-      buffers.push(chunk);
-      await fileHandle.writeFile(chunk);
+    try {
+      for await (const chunk of readable) {
+        buffers.push(chunk);
+        await fileHandle.writeFile(chunk);
+      }
+    } finally {
+      await fileHandle.close();
     }
-    await fileHandle.close();
   } else {
     for await (const chunk of readable) {
       buffers.push(chunk);
