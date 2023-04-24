@@ -11,7 +11,7 @@
 > Chrome/Chromium over the
 > [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
 > Puppeteer runs in
-> [headless](https://developers.google.com/web/updates/2017/04/headless-chrome)
+> [headless](https://developer.chrome.com/articles/new-headless/)
 > mode by default, but can be configured to run in full (non-headless)
 > Chrome/Chromium.
 
@@ -176,14 +176,29 @@ import puppeteer from 'puppeteer';
 
 **1. Uses Headless mode**
 
-Puppeteer launches Chromium in
-[headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome).
+By default Puppeteer launches Chromium in
+[old Headless mode](https://developer.chrome.com/articles/new-headless/).
+
+```ts
+const browser = await puppeteer.launch();
+// Equivalent to
+const browser = await puppeteer.launch({headless: true});
+```
+
+[Chrome 112 launched a new Headless mode](https://developer.chrome.com/articles/new-headless/) that might cause some differences in behavior compared to the old Headless implementation.
+In the future Puppeteer will start defaulting to new implementation.
+We recommend you try it out before the switch:
+
+```ts
+const browser = await puppeteer.launch({headless: 'new'});
+```
+
 To launch a full version of Chromium, set the
-[`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions)
+[`headless`](https://pptr.dev/api/puppeteer.browserlaunchargumentoptions) to `true`
 option when launching a browser:
 
 ```ts
-const browser = await puppeteer.launch({headless: false}); // default is true
+const browser = await puppeteer.launch({headless: false});
 ```
 
 **2. Runs a bundled version of Chromium**
