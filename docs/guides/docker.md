@@ -1,6 +1,6 @@
 # Docker
 
-Puppeteer offers a Docker image that includes Chrome for Testing along with the required
+Puppeteer offers a Docker image that includes [Chrome for Testing](https://goo.gle/chrome-for-testing) along with the required
 dependencies and a pre-installed Puppeteer version. The image is available via
 the
 [GitHub Container Registry](https://github.com/puppeteer/puppeteer/pkgs/container/puppeteer).

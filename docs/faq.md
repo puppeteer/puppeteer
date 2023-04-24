@@ -166,7 +166,7 @@ that incorporate audio and video. (For example,
 [video playback/screenshots is likely to fail](https://github.com/puppeteer/puppeteer/issues/291).)
 There are two reasons for this:
 
-- Puppeteer is bundled with Chrome for Testing — not Chrome — and so by default, it
+- Puppeteer is bundled with [Chrome for Testing](https://goo.gle/chrome-for-testing) — not the regular Chrome — and so by default, it
   inherits all of
   [Chromium's media-related limitations](https://www.chromium.org/audio-video).
   This means that Puppeteer does not support licensed formats such as AAC or

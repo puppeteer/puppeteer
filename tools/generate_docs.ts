@@ -75,7 +75,7 @@ function spliceIntoSection(
       if (versionsArchived.includes(puppeteerVersion.substring(1))) {
         if (semver.gte(puppeteerVersion, '20.0.0')) {
           buffer.push(
-            `  * Chrome for Testing ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://pptr.dev/${puppeteerVersion.slice(
+            `  * [Chrome for Testing](https://goo.gle/chrome-for-testing) ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://pptr.dev/${puppeteerVersion.slice(
               1
             )})`
           );
