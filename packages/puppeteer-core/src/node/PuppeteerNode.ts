@@ -153,7 +153,7 @@ export class PuppeteerNode extends Puppeteer {
    *
    * @remarks
    * Puppeteer can also be used to control the Chrome browser, but it works best
-   * with the version of Chrome for Testing downloaded by default by Puppeteer.
+   * with the version of Chrome for Testing downloaded by default.
    * There is no guarantee it will work with any other version. If Google Chrome
    * (rather than Chrome for Testing) is preferred, a
    * {@link https://www.google.com/chrome/browser/canary.html | Chrome Canary}
