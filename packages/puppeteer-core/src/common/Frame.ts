@@ -64,6 +64,10 @@ export interface FrameWaitForFunctionOptions {
    * using {@link Page.setDefaultTimeout}.
    */
   timeout?: number;
+  /**
+   * A signal object that allows you to cancel a waitForFunction call.
+   */
+  signal?: AbortSignal;
 }
 
 /**

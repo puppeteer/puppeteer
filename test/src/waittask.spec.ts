@@ -330,6 +330,22 @@ describe('waittask specs', function () {
       });
       await watchdog;
     });
+    it('should be cancellable', async () => {
+      const {page, server} = getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      const abortController = new AbortController();
+      const task = page.waitForFunction(
+        () => {
+          return (globalThis as any).__done;
+        },
+        {
+          signal: abortController.signal,
+        }
+      );
+      abortController.abort();
+      expect(task).rejects.toThrow(/aborted/);
+    });
   });
 
   describe('Page.waitForTimeout', () => {
