@@ -445,7 +445,7 @@ export class CDPElementHandle<
    */
   override async click(
     this: CDPElementHandle<Element>,
-    options: ClickOptions = {}
+    options: Readonly<ClickOptions> = {}
   ): Promise<void> {
     await this.#scrollIntoViewIfNeeded();
     const {x, y} = await this.clickablePoint(options.offset);

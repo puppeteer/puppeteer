@@ -20,7 +20,7 @@ import {Protocol} from 'devtools-protocol';
 
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
-import {ElementHandle} from '../api/ElementHandle.js';
+import {ClickOptions, ElementHandle} from '../api/ElementHandle.js';
 import {HTTPRequest} from '../api/HTTPRequest.js';
 import {HTTPResponse} from '../api/HTTPResponse.js';
 import {JSHandle} from '../api/JSHandle.js';
@@ -62,7 +62,7 @@ import {
   FrameWaitForFunctionOptions,
 } from './Frame.js';
 import {FrameManager, FrameManagerEmittedEvents} from './FrameManager.js';
-import {Keyboard, Mouse, MouseButton, Touchscreen} from './Input.js';
+import {Keyboard, Mouse, Touchscreen} from './Input.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
 import {
@@ -1551,11 +1551,7 @@ export class CDPPage extends Page {
 
   override click(
     selector: string,
-    options: {
-      delay?: number;
-      button?: MouseButton;
-      clickCount?: number;
-    } = {}
+    options: Readonly<ClickOptions> = {}
   ): Promise<void> {
     return this.mainFrame().click(selector, options);
   }

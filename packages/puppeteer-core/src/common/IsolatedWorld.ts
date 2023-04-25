@@ -16,7 +16,7 @@
 
 import {Protocol} from 'devtools-protocol';
 
-import type {ElementHandle} from '../api/ElementHandle.js';
+import type {ClickOptions, ElementHandle} from '../api/ElementHandle.js';
 import {JSHandle} from '../api/JSHandle.js';
 import {assert} from '../util/assert.js';
 import {createDeferredPromise} from '../util/DeferredPromise.js';
@@ -26,7 +26,6 @@ import {CDPSession} from './Connection.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
-import {MouseButton} from './Input.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
@@ -306,7 +305,7 @@ export class IsolatedWorld {
 
   async click(
     selector: string,
-    options: {delay?: number; button?: MouseButton; clickCount?: number}
+    options: Readonly<ClickOptions> = {}
   ): Promise<void> {
     const handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);

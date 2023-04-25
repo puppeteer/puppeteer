@@ -10,17 +10,21 @@ Shortcut for `mouse.move`, `mouse.down` and `mouse.up`.
 
 ```typescript
 class Mouse {
-  click(x: number, y: number, options?: MouseClickOptions): Promise<void>;
+  click(
+    x: number,
+    y: number,
+    options?: Readonly<MouseClickOptions>
+  ): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                  | Description                                 |
-| --------- | ----------------------------------------------------- | ------------------------------------------- |
-| x         | number                                                | Horizontal position of the mouse.           |
-| y         | number                                                | Vertical position of the mouse.             |
-| options   | [MouseClickOptions](./puppeteer.mouseclickoptions.md) | _(Optional)_ Options to configure behavior. |
+| Parameter | Type                                                                  | Description                                 |
+| --------- | --------------------------------------------------------------------- | ------------------------------------------- |
+| x         | number                                                                | Horizontal position of the mouse.           |
+| y         | number                                                                | Vertical position of the mouse.             |
+| options   | Readonly&lt;[MouseClickOptions](./puppeteer.mouseclickoptions.md)&gt; | _(Optional)_ Options to configure behavior. |
 
 **Returns:**
 

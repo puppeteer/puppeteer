@@ -34,20 +34,15 @@ import type {
   FrameAddStyleTagOptions,
   FrameWaitForFunctionOptions,
 } from '../common/Frame.js';
-import type {
-  Keyboard,
-  Mouse,
-  MouseButton,
-  Touchscreen,
-} from '../common/Input.js';
+import type {Keyboard, Mouse, Touchscreen} from '../common/Input.js';
 import type {WaitForSelectorOptions} from '../common/IsolatedWorld.js';
 import type {PuppeteerLifeCycleEvent} from '../common/LifecycleWatcher.js';
 import type {Credentials, NetworkConditions} from '../common/NetworkManager.js';
 import {
   LowerCasePaperFormat,
+  paperFormats,
   ParsedPDFOptions,
   PDFOptions,
-  paperFormats,
 } from '../common/PDFOptions.js';
 import type {Viewport} from '../common/PuppeteerViewport.js';
 import type {Target} from '../common/Target.js';
@@ -64,7 +59,7 @@ import {assert} from '../util/assert.js';
 
 import type {Browser} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';
-import type {ElementHandle} from './ElementHandle.js';
+import type {ClickOptions, ElementHandle} from './ElementHandle.js';
 import type {JSHandle} from './JSHandle.js';
 
 /**
@@ -2319,14 +2314,7 @@ export class Page extends EventEmitter {
    * successfully clicked. The Promise will be rejected if there is no element
    * matching `selector`.
    */
-  click(
-    selector: string,
-    options?: {
-      delay?: number;
-      button?: MouseButton;
-      clickCount?: number;
-    }
-  ): Promise<void>;
+  click(selector: string, options?: Readonly<ClickOptions>): Promise<void>;
   click(): Promise<void> {
     throw new Error('Not implemented');
   }

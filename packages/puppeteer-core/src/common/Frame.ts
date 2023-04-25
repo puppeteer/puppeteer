@@ -16,7 +16,7 @@
 
 import {Protocol} from 'devtools-protocol';
 
-import {ElementHandle} from '../api/ElementHandle.js';
+import {type ClickOptions, ElementHandle} from '../api/ElementHandle.js';
 import {HTTPResponse} from '../api/HTTPResponse.js';
 import {Page, WaitTimeoutOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
@@ -30,7 +30,6 @@ import {
 import {ExecutionContext} from './ExecutionContext.js';
 import {FrameManager} from './FrameManager.js';
 import {getQueryHandlerAndSelector} from './GetQueryHandler.js';
-import {MouseButton} from './Input.js';
 import {
   IsolatedWorld,
   IsolatedWorldChart,
@@ -944,11 +943,7 @@ export class Frame {
    */
   async click(
     selector: string,
-    options: {
-      delay?: number;
-      button?: MouseButton;
-      clickCount?: number;
-    } = {}
+    options: Readonly<ClickOptions> = {}
   ): Promise<void> {
     return this.worlds[PUPPETEER_WORLD].click(selector, options);
   }
