@@ -1776,18 +1776,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.pdf *",
-    "platforms": ["win32"],
-    "parameters": ["cdp", "chrome", "headful"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.pdf *",
-    "platforms": ["win32"],
-    "parameters": ["cdp", "chrome", "new-headless"],
-    "expectations": ["SKIP"]
-  },
-  {
     "testIdPattern": "[page.spec] Page Page.select should work when re-defining top-level Event class",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
