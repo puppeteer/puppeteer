@@ -10,23 +10,16 @@ Clicks the first element found that matches `selector`.
 
 ```typescript
 class Frame {
-  click(
-    selector: string,
-    options?: {
-      delay?: number;
-      button?: MouseButton;
-      clickCount?: number;
-    }
-  ): Promise<void>;
+  click(selector: string, options?: Readonly<ClickOptions>): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                         | Description                |
-| --------- | -------------------------------------------------------------------------------------------- | -------------------------- |
-| selector  | string                                                                                       | The selector to query for. |
-| options   | { delay?: number; button?: [MouseButton](./puppeteer.mousebutton.md); clickCount?: number; } | _(Optional)_               |
+| Parameter | Type                                                        | Description                |
+| --------- | ----------------------------------------------------------- | -------------------------- |
+| selector  | string                                                      | The selector to query for. |
+| options   | Readonly&lt;[ClickOptions](./puppeteer.clickoptions.md)&gt; | _(Optional)_               |
 
 **Returns:**
 

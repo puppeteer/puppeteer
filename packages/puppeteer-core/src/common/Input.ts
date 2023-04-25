@@ -342,7 +342,10 @@ export interface MouseOptions {
    */
   button?: MouseButton;
   /**
-   * Determines the click count for the mouse.
+   * @deprecated Use {@link MouseClickOptions.count}.
+   *
+   * Determines the click count for the mouse event. This does not perform
+   * multiple clicks.
    *
    * @defaultValue `1`
    */
@@ -357,6 +360,12 @@ export interface MouseClickOptions extends MouseOptions {
    * Time (in ms) to delay the mouse release after the mouse press.
    */
   delay?: number;
+  /**
+   * Number of clicks to perform.
+   *
+   * @defaultValue `1`
+   */
+  count?: number;
 }
 
 /**
@@ -694,15 +703,22 @@ export class Mouse {
   async click(
     x: number,
     y: number,
-    options: MouseClickOptions = {}
+    options: Readonly<MouseClickOptions> = {}
   ): Promise<void> {
-    const {delay} = options;
-    const actions: Array<Promise<void>> = [];
-    const {position} = this.#state;
-    if (position.x !== x || position.y !== y) {
-      actions.push(this.move(x, y));
+    const {delay, count = 1, clickCount = count} = options;
+    if (count < 1) {
+      throw new Error('Click must occur a positive number of times.');
     }
-    actions.push(this.down(options));
+    const actions: Array<Promise<void>> = [this.move(x, y)];
+    if (clickCount === count) {
+      for (let i = 1; i < count; ++i) {
+        actions.push(
+          this.down({...options, clickCount: i}),
+          this.up({...options, clickCount: i})
+        );
+      }
+    }
+    actions.push(this.down({...options, clickCount}));
     if (typeof delay === 'number') {
       await Promise.all(actions);
       actions.length = 0;
@@ -710,7 +726,7 @@ export class Mouse {
         setTimeout(resolve, delay);
       });
     }
-    actions.push(this.up(options));
+    actions.push(this.up({...options, clickCount}));
     await Promise.all(actions);
   }
 

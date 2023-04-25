@@ -155,9 +155,18 @@ describe('Page.click', function () {
     const text =
       "This is the text that we are going to try to select. Let's see how it goes.";
     await page.keyboard.type(text);
-    await page.click('textarea');
-    await page.click('textarea', {clickCount: 2});
-    await page.click('textarea', {clickCount: 3});
+    await page.evaluate(() => {
+      (window as any).clicks = [];
+      window.addEventListener('click', event => {
+        return (window as any).clicks.push(event.detail);
+      });
+    });
+    await page.click('textarea', {count: 3});
+    expect(
+      await page.evaluate(() => {
+        return (window as any).clicks;
+      })
+    ).toMatchObject({0: 1, 1: 2, 2: 3});
     expect(
       await page.evaluate(() => {
         const textarea = document.querySelector('textarea');
@@ -328,7 +337,7 @@ describe('Page.click', function () {
       });
     });
     const button = (await page.$('button'))!;
-    await button!.click({clickCount: 2});
+    await button!.click({count: 2});
     expect(await page.evaluate('double')).toBe(true);
     expect(await page.evaluate('result')).toBe('Clicked');
   });

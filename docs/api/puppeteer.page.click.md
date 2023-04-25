@@ -10,23 +10,16 @@ This method fetches an element with `selector`, scrolls it into view if needed, 
 
 ```typescript
 class Page {
-  click(
-    selector: string,
-    options?: {
-      delay?: number;
-      button?: MouseButton;
-      clickCount?: number;
-    }
-  ): Promise<void>;
+  click(selector: string, options?: Readonly<ClickOptions>): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                                                         | Description                                                                                                                                            |
-| --------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| selector  | string                                                                                       | A <code>selector</code> to search for element to click. If there are multiple elements satisfying the <code>selector</code>, the first will be clicked |
-| options   | { delay?: number; button?: [MouseButton](./puppeteer.mousebutton.md); clickCount?: number; } | _(Optional)_ <code>Object</code>                                                                                                                       |
+| Parameter | Type                                                        | Description                                                                                                                                            |
+| --------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| selector  | string                                                      | A <code>selector</code> to search for element to click. If there are multiple elements satisfying the <code>selector</code>, the first will be clicked |
+| options   | Readonly&lt;[ClickOptions](./puppeteer.clickoptions.md)&gt; | _(Optional)_ <code>Object</code>                                                                                                                       |
 
 **Returns:**
 

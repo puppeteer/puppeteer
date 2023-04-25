@@ -19,7 +19,7 @@ import {Protocol} from 'devtools-protocol';
 import {CDPSession} from '../common/Connection.js';
 import {ExecutionContext} from '../common/ExecutionContext.js';
 import {Frame} from '../common/Frame.js';
-import {MouseButton} from '../common/Input.js';
+import {MouseClickOptions} from '../common/Input.js';
 import {WaitForSelectorOptions} from '../common/IsolatedWorld.js';
 import {
   ElementFor,
@@ -76,21 +76,7 @@ export interface Offset {
 /**
  * @public
  */
-export interface ClickOptions {
-  /**
-   * Time to wait between `mousedown` and `mouseup` in milliseconds.
-   *
-   * @defaultValue `0`
-   */
-  delay?: number;
-  /**
-   * @defaultValue 'left'
-   */
-  button?: MouseButton;
-  /**
-   * @defaultValue `1`
-   */
-  clickCount?: number;
+export interface ClickOptions extends MouseClickOptions {
   /**
    * Offset for the clickable point relative to the top-left corner of the border box.
    */
