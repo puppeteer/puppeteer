@@ -4,7 +4,8 @@ name: DevTools CI
 permissions: read-all
 
 on:
-  workflow_dispatch:
+  pull_request:
+    types: [labeled]
 
 concurrency:
   group: ${{ github.head_ref || github.run_id }}
@@ -14,6 +15,7 @@ jobs:
   build-puppeteer:
     name: Build Puppeteer
     runs-on: ubuntu-latest
+    if: contains(github.event.label.name, 'devtools')
     steps:
       - name: Checkout
         uses: actions/checkout@v3
