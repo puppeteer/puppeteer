@@ -1,0 +1,77 @@
+name: DevTools CI
+
+# Declare default permissions as read only.
+permissions: read-all
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  build-puppeteer:
+    name: Build Puppeteer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3.5.1
+        with:
+          cache: npm
+          node-version: lts/*
+      - name: Install dependencies
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
+      - name: Build Puppeteer
+        run: |
+          npm run build --workspace puppeteer-core
+          npm run build --workspace puppeteer
+      - name: Pack Puppeteer
+        run: |
+          npm pack --workspace puppeteer-core
+          npm pack --workspace puppeteer
+      - name: Upload Puppeteer build
+        uses: actions/upload-artifact@v3
+        with:
+          name: puppeteer-build
+          if-no-files-found: error
+          path: puppeteer-*.tgz
+
+  devtools-tests:
+    name: DevTools tests
+    needs: build-puppeteer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Puppeteer build
+        uses: actions/download-artifact@v3
+        with:
+          name: puppeteer-build
+      - name: Set up Node.js
+        uses: actions/setup-node@v3.5.1
+        with:
+          node-version: 18
+      - name: Checkout depot_tools
+        run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+      - name: Add depot_tools to path
+        run: echo $(realpath depot_tools) >> $GITHUB_PATH
+      - name: Fetch devtools-frontend
+        run: fetch devtools-frontend
+      - name: Sync gclient
+        working-directory: devtools-frontend
+        run: gclient sync
+      - name: Install Puppeteer
+        working-directory: devtools-frontend
+        run: |
+          puppeteer_pkgs=(puppeteer-*.tgz)
+          tar -xf ${puppeteer_pkgs[0]} --strip-components 1 -C node_modules/puppeteer
+          tar -xf ${puppeteer_pkgs[1]} --strip-components 1 -C node_modules/puppeteer-core
+      - name: Generate targets
+        working-directory: devtools-frontend
+        run: gn gen out/Default --args='devtools_skip_typecheck=true'
+      - name: Run tests
+        working-directory: devtools-frontend
+        run: npm run auto-e2etest
