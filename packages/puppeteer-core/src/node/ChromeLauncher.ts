@@ -179,7 +179,7 @@ export class ChromeLauncher extends ProductLauncher {
       '--disable-dev-shm-usage',
       '--disable-extensions',
       // AcceptCHFrame disabled because of crbug.com/1348106.
-      '--disable-features=Translate,BackForwardCache,AcceptCHFrame,MediaRouter,OptimizationHints,WebUsbDeviceDetection',
+      '--disable-features=Translate,BackForwardCache,AcceptCHFrame,MediaRouter,OptimizationHints',
       '--disable-hang-monitor',
       '--disable-ipc-flooding-protection',
       '--disable-popup-blocking',
