@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [19.11.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.11.0...puppeteer-core-v19.11.1) (2023-04-25)
+
+
+### Bug Fixes
+
+* implement click `count` ([#10069](https://github.com/puppeteer/puppeteer/issues/10069)) ([8124a7d](https://github.com/puppeteer/puppeteer/commit/8124a7d5bfc1cfa8cb579271f78ce586efc62b8e))
+* implement flag for disabling headless warning ([#10073](https://github.com/puppeteer/puppeteer/issues/10073)) ([cfe9bbc](https://github.com/puppeteer/puppeteer/commit/cfe9bbc852d014b31c754950590b6b6c96573eeb))
+
 ## [19.11.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.10.1...puppeteer-core-v19.11.0) (2023-04-24)
 
 
