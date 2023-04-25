@@ -28,10 +28,12 @@ jobs:
           PUPPETEER_SKIP_DOWNLOAD: true
       - name: Build Puppeteer
         run: |
+          npm run build --workspace @puppeteer/browsers
           npm run build --workspace puppeteer-core
           npm run build --workspace puppeteer
       - name: Pack Puppeteer
         run: |
+          npm pack --workspace @puppeteer/browsers
           npm pack --workspace puppeteer-core
           npm pack --workspace puppeteer
       - name: Upload Puppeteer build
@@ -68,7 +70,8 @@ jobs:
         run: |
           puppeteer_pkgs=(../puppeteer-*.tgz)
           tar -xf ${puppeteer_pkgs[0]} --strip-components 1 -C node_modules/puppeteer
-          tar -xf ${puppeteer_pkgs[1]} --strip-components 1 -C node_modules/puppeteer-core
+          tar -xf ${puppeteer_pkgs[1]} --strip-components 1 -C node_modules/@puppeteer/browsers
+          tar -xf ${puppeteer_pkgs[2]} --strip-components 1 -C node_modules/puppeteer-core
       - name: Generate targets
         working-directory: devtools-frontend
         run: gn gen out/Default --args='devtools_skip_typecheck=true'
