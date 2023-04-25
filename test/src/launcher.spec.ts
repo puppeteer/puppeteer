@@ -27,7 +27,7 @@ import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 import sinon from 'sinon';
 
 import {getTestState, itOnlyRegularInstall} from './mocha-utils.js';
-import utils from './utils.js';
+import {dumpFrames, waitEvent} from './utils.js';
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 const FIREFOX_TIMEOUT = 30 * 1000;
@@ -258,12 +258,12 @@ describe('Launcher specs', function () {
         puppeteer.configuration.temporaryDirectory = testTmpDir;
 
         // Path should be empty before starting the browser.
-        expect(fs.readdirSync(testTmpDir).length).toEqual(0);
+        expect(fs.readdirSync(testTmpDir)).toHaveLength(0);
         const browser = await puppeteer.launch(defaultBrowserOptions);
 
         // One profile folder should have been created at this moment.
         const profiles = fs.readdirSync(testTmpDir);
-        expect(profiles.length).toEqual(1);
+        expect(profiles).toHaveLength(1);
         expect(profiles[0]?.startsWith('puppeteer_dev_chrome_profile-')).toBe(
           true
         );
@@ -272,7 +272,7 @@ describe('Launcher specs', function () {
         await browser.newPage();
         await browser.close();
         // Profile should be deleted after closing the browser
-        expect(fs.readdirSync(testTmpDir).length).toEqual(0);
+        expect(fs.readdirSync(testTmpDir)).toHaveLength(0);
 
         // Restore env var
         puppeteer.configuration.temporaryDirectory = oldTmpDir;
@@ -523,7 +523,7 @@ describe('Launcher specs', function () {
         options.args = [server.EMPTY_PAGE].concat(options.args || []);
         const browser = await puppeteer.launch(options);
         const pages = await browser.pages();
-        expect(pages.length).toBe(1);
+        expect(pages).toHaveLength(1);
         const page = pages[0]!;
         if (page.url() !== server.EMPTY_PAGE) {
           await page.waitForNavigation();
@@ -628,7 +628,7 @@ describe('Launcher specs', function () {
         };
         const browser = await puppeteer.launch(options);
         const pages = await browser.pages();
-        expect(pages.length).toBe(0);
+        expect(pages).toHaveLength(0);
         await browser.close();
       });
     });
@@ -684,7 +684,7 @@ describe('Launcher specs', function () {
           browserWSEndpoint: originalBrowser.wsEndpoint(),
         });
         await Promise.all([
-          utils.waitEvent(originalBrowser, 'disconnected'),
+          waitEvent(originalBrowser, 'disconnected'),
           remoteBrowser.close(),
         ]);
       });
@@ -702,7 +702,7 @@ describe('Launcher specs', function () {
           browserWSEndpoint: originalBrowser.wsEndpoint(),
         });
         await Promise.all([
-          utils.waitEvent(originalBrowser, 'disconnected'),
+          waitEvent(originalBrowser, 'disconnected'),
           remoteBrowser.close(),
         ]);
       });
@@ -746,7 +746,7 @@ describe('Launcher specs', function () {
         });
         try {
           const targets = browser.targets();
-          expect(targets.length).toEqual(1);
+          expect(targets).toHaveLength(1);
           expect(
             targets.find(target => {
               return target.type() === 'page';
@@ -806,7 +806,7 @@ describe('Launcher specs', function () {
         const restoredPage = pages.find(page => {
           return page.url() === server.PREFIX + '/frames/nested-frames.html';
         })!;
-        expect(utils.dumpFrames(restoredPage.mainFrame())).toEqual([
+        expect(dumpFrames(restoredPage.mainFrame())).toEqual([
           'http://localhost:<PORT>/frames/nested-frames.html',
           '    http://localhost:<PORT>/frames/two-frames.html (2frames)',
           '        http://localhost:<PORT>/frames/frame.html (uno)',
@@ -1024,7 +1024,7 @@ describe('Launcher specs', function () {
       });
 
       await Promise.all([
-        utils.waitEvent(remoteBrowser2, 'disconnected'),
+        waitEvent(remoteBrowser2, 'disconnected'),
         remoteBrowser2.disconnect(),
       ]);
 
@@ -1033,8 +1033,8 @@ describe('Launcher specs', function () {
       expect(disconnectedRemote2).toBe(1);
 
       await Promise.all([
-        utils.waitEvent(remoteBrowser1, 'disconnected'),
-        utils.waitEvent(originalBrowser, 'disconnected'),
+        waitEvent(remoteBrowser1, 'disconnected'),
+        waitEvent(originalBrowser, 'disconnected'),
         originalBrowser.close(),
       ]);
 

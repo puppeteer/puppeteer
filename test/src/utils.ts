@@ -132,33 +132,19 @@ export const dumpFrames = (frame: Frame, indentation?: string): string[] => {
   return result;
 };
 
-export const waitEvent = (
+export const waitEvent = <T = any>(
   emitter: EventEmitter,
   eventName: string,
-  predicate: (event: any) => boolean = () => {
+  predicate: (event: T) => boolean = () => {
     return true;
   }
-): Promise<any> => {
+): Promise<T> => {
   return new Promise(fulfill => {
-    emitter.once(eventName, (event: any) => {
+    emitter.on(eventName, (event: T) => {
       if (!predicate(event)) {
         return;
       }
       fulfill(event);
     });
   });
-};
-
-/**
- * @deprecated Use exports directly.
- */
-export default {
-  extendExpectWithToBeGolden,
-  waitEvent,
-  dumpFrames,
-  navigateFrame,
-  isFavicon,
-  attachFrame,
-  projectRoot,
-  detachFrame,
 };

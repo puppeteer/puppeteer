@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
+import fs from 'fs';
+import path from 'path';
 
 import {TestServer} from '@pptr/testserver';
 import {Protocol} from 'devtools-protocol';

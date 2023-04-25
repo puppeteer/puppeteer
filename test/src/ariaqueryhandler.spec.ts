@@ -25,7 +25,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import utils from './utils.js';
+import {attachFrame, detachFrame} from './utils.js';
 
 describe('AriaQueryHandler', () => {
   setupTestBrowserHooks();
@@ -331,7 +331,7 @@ describe('AriaQueryHandler', () => {
       const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const otherFrame = page.frames()[1];
       const watchdog = page.waitForSelector('aria/[role="button"]');
       await otherFrame!.evaluate(addElement, 'button');
@@ -343,8 +343,8 @@ describe('AriaQueryHandler', () => {
     it('should run in specified frame', async () => {
       const {page, server} = getTestState();
 
-      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      await utils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
+      await attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await attachFrame(page, 'frame2', server.EMPTY_PAGE);
       const frame1 = page.frames()[1];
       const frame2 = page.frames()[2];
       const waitForSelectorPromise = frame2!.waitForSelector(
@@ -359,7 +359,7 @@ describe('AriaQueryHandler', () => {
     it('should throw when frame is detached', async () => {
       const {page, server} = getTestState();
 
-      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const frame = page.frames()[1];
       let waitError!: Error;
       const waitPromise = frame!
@@ -367,7 +367,7 @@ describe('AriaQueryHandler', () => {
         .catch(error => {
           return (waitError = error);
         });
-      await utils.detachFrame(page, 'frame1');
+      await detachFrame(page, 'frame1');
       await waitPromise;
       expect(waitError).toBeTruthy();
       expect(waitError.message).toContain(

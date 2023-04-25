@@ -173,7 +173,7 @@ describe('querySelector', function () {
 
       await page.setContent('<div>A</div><br/><div>B</div>');
       const elements = await page.$$('div');
-      expect(elements.length).toBe(2);
+      expect(elements).toHaveLength(2);
       const promises = elements.map(element => {
         return page.evaluate((e: HTMLElement) => {
           return e.textContent;
@@ -186,7 +186,7 @@ describe('querySelector', function () {
 
       await page.goto(server.EMPTY_PAGE);
       const elements = await page.$$('div');
-      expect(elements.length).toBe(0);
+      expect(elements).toHaveLength(0);
     });
   });
 
@@ -196,8 +196,8 @@ describe('querySelector', function () {
 
       await page.setContent('<section>test</section>');
       const elements = await page.$x('/html/body/section');
-      expect(elements[0]!).toBeTruthy();
-      expect(elements.length).toBe(1);
+      expect(elements[0]).toBeTruthy();
+      expect(elements).toHaveLength(1);
     });
     it('should return empty array for non-existing element', async () => {
       const {page} = getTestState();
@@ -210,7 +210,7 @@ describe('querySelector', function () {
 
       await page.setContent('<div></div><div></div>');
       const elements = await page.$x('/html/body/div');
-      expect(elements.length).toBe(2);
+      expect(elements).toHaveLength(2);
     });
   });
 
@@ -342,7 +342,7 @@ describe('querySelector', function () {
       );
       const html = (await page.$('html'))!;
       const elements = await html.$$('div');
-      expect(elements.length).toBe(2);
+      expect(elements).toHaveLength(2);
       const promises = elements.map(element => {
         return page.evaluate((e: HTMLElement) => {
           return e.textContent;
@@ -359,7 +359,7 @@ describe('querySelector', function () {
       );
       const html = (await page.$('html'))!;
       const elements = await html.$$('div');
-      expect(elements.length).toBe(0);
+      expect(elements).toHaveLength(0);
     });
   });
 
@@ -417,7 +417,7 @@ describe('querySelector', function () {
       );
       const html = (await page.$('html'))!;
       const elements = await html.$$('allArray/div');
-      expect(elements.length).toBe(2);
+      expect(elements).toHaveLength(2);
       const promises = elements.map(element => {
         return page.evaluate(e => {
           return e.textContent;
@@ -434,7 +434,7 @@ describe('querySelector', function () {
       );
       const html = (await page.$('html'))!;
       const elements = await html.$$('allArray/div');
-      expect(elements.length).toBe(0);
+      expect(elements).toHaveLength(0);
     });
     it('$$eval should work', async () => {
       const {page} = getTestState();

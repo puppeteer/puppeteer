@@ -95,7 +95,7 @@ describe('ignoreHTTPSErrors', function () {
         httpsServer.waitForRequest('/plzredirect'),
         page.goto(httpsServer.PREFIX + '/plzredirect'),
       ]);
-      expect(responses.length).toBe(2);
+      expect(responses).toHaveLength(2);
       expect(responses[0]!.status()).toBe(302);
       const securityDetails = responses[0]!.securityDetails()!;
       const protocol = (serverRequest.socket as TLSSocket)
@@ -134,7 +134,7 @@ describe('ignoreHTTPSErrors', function () {
     await page.goto(httpsServer.PREFIX + '/mixedcontent.html', {
       waitUntil: 'load',
     });
-    expect(page.frames().length).toBe(2);
+    expect(page.frames()).toHaveLength(2);
     // Make sure blocked iframe has functional execution context
     // @see https://github.com/puppeteer/puppeteer/issues/2709
     expect(await page.frames()[0]!.evaluate('1 + 2')).toBe(3);

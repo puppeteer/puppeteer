@@ -184,9 +184,9 @@ describe('navigation', function () {
         expect(error.message).toContain('SSL_ERROR_UNKNOWN');
       }
 
-      expect(requests.length).toBe(2);
-      expect(requests[0]!).toBe('request');
-      expect(requests[1]!).toBe('requestfailed');
+      expect(requests).toHaveLength(2);
+      expect(requests[0]).toBe('request');
+      expect(requests[1]).toBe('requestfailed');
     });
     it('should fail when navigating to bad SSL after redirects', async () => {
       const {page, server, httpsServer, isChrome} = getTestState();
@@ -383,9 +383,7 @@ describe('navigation', function () {
       });
 
       // Wait for the page's 'load' event.
-      await new Promise(fulfill => {
-        return page.once('load', fulfill);
-      });
+      await waitEvent(page, 'load');
       expect(navigationFinished).toBe(false);
 
       // Wait for the initial three resources to be requested.
@@ -482,7 +480,7 @@ describe('navigation', function () {
       const dataURL = 'data:text/html,<div>yo</div>';
       const response = (await page.goto(dataURL))!;
       expect(response.status()).toBe(200);
-      expect(requests.length).toBe(1);
+      expect(requests).toHaveLength(1);
       expect(requests[0]!.url()).toBe(dataURL);
     });
     it('should navigate to URL with hash and fire requests without hash', async () => {
@@ -495,7 +493,7 @@ describe('navigation', function () {
       const response = (await page.goto(server.EMPTY_PAGE + '#hash'))!;
       expect(response.status()).toBe(200);
       expect(response.url()).toBe(server.EMPTY_PAGE);
-      expect(requests.length).toBe(1);
+      expect(requests).toHaveLength(1);
       expect(requests[0]!.url()).toBe(server.EMPTY_PAGE);
     });
     it('should work with self requesting page', async () => {
@@ -677,12 +675,8 @@ describe('navigation', function () {
         server.PREFIX + '/frames/one-frame.html'
       );
       const frame = await waitEvent(page, 'frameattached');
-      await new Promise<void>(fulfill => {
-        page.on('framenavigated', f => {
-          if (f === frame) {
-            fulfill();
-          }
-        });
+      await waitEvent(page, 'framenavigated', f => {
+        return f === frame;
       });
       await Promise.all([
         frame.evaluate(() => {
@@ -740,7 +734,7 @@ describe('navigation', function () {
 
       const response = (await page.frames()[1]!.goto(server.EMPTY_PAGE))!;
       expect(response.ok()).toBe(true);
-      expect(response.frame()).toBe(page.frames()[1]!);
+      expect(response.frame()).toBe(page.frames()[1]);
     });
     it('should reject when frame detaches', async () => {
       const {page, server} = getTestState();

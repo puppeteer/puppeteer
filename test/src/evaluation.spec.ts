@@ -21,7 +21,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import utils from './utils.js';
+import {attachFrame} from './utils.js';
 
 describe('Evaluation specs', function () {
   setupTestBrowserHooks();
@@ -418,7 +418,7 @@ describe('Evaluation specs', function () {
     it('should throw if elementHandles are from other frames', async () => {
       const {page, server} = getTestState();
 
-      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const bodyHandle = await page.frames()[1]!.$('body');
       let error!: Error;
       await page
@@ -544,8 +544,8 @@ describe('Evaluation specs', function () {
       const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      expect(page.frames().length).toBe(2);
+      await attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      expect(page.frames()).toHaveLength(2);
       await page.frames()[0]!.evaluate(() => {
         return ((globalThis as any).FOO = 'foo');
       });
@@ -567,7 +567,7 @@ describe('Evaluation specs', function () {
       const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/frames/one-frame.html');
-      expect(page.frames().length).toBe(2);
+      expect(page.frames()).toHaveLength(2);
       expect(
         await page.frames()[0]!.evaluate(() => {
           return document.body.textContent!.trim();

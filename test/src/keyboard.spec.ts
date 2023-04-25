@@ -24,7 +24,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import utils from './utils.js';
+import {attachFrame} from './utils.js';
 
 describe('Keyboard', function () {
   setupTestBrowserHooks();
@@ -503,7 +503,7 @@ describe('Keyboard', function () {
     const {page, server} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
-    await utils.attachFrame(
+    await attachFrame(
       page,
       'emoji-test',
       server.PREFIX + '/input/textarea.html'

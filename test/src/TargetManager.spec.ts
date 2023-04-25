@@ -21,7 +21,7 @@ import {
 } from 'puppeteer-core/internal/common/Browser.js';
 
 import {getTestState} from './mocha-utils'; // eslint-disable-line import/extensions
-import utils from './utils.js';
+import {attachFrame} from './utils.js';
 
 describe('TargetManager', () => {
   /* We use a special browser for this test as we need the --site-per-process flag */
@@ -74,7 +74,7 @@ describe('TargetManager', () => {
     let framePromise = page.waitForFrame(frame => {
       return frame.url().endsWith('/empty.html');
     });
-    await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+    await attachFrame(page, 'frame1', server.EMPTY_PAGE);
     await framePromise;
     expect(await context.pages()).toHaveLength(1);
     expect(targetManager.getAvailableTargets().size).toBe(3);
@@ -84,7 +84,7 @@ describe('TargetManager', () => {
     framePromise = page.waitForFrame(frame => {
       return frame.url() === server.CROSS_PROCESS_PREFIX + '/empty.html';
     });
-    await utils.attachFrame(
+    await attachFrame(
       page,
       'frame2',
       server.CROSS_PROCESS_PREFIX + '/empty.html'
@@ -97,7 +97,7 @@ describe('TargetManager', () => {
     framePromise = page.waitForFrame(frame => {
       return frame.url() === server.CROSS_PROCESS_PREFIX + '/empty.html';
     });
-    await utils.attachFrame(
+    await attachFrame(
       page,
       'frame3',
       server.CROSS_PROCESS_PREFIX + '/empty.html'

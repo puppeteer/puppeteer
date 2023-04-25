@@ -551,7 +551,7 @@ describe('NetworkManager', () => {
       networkId: '11ACE9783588040D644B905E8B55285B',
     });
 
-    expect(requests.length).toBe(2);
+    expect(requests).toHaveLength(2);
   });
   it(`should handle Network.responseReceivedExtraInfo event after Network.responseReceived event (github.com/puppeteer/puppeteer/issues/8234)`, async () => {
     const mockCDPSession = new MockCDPSession();
@@ -668,7 +668,7 @@ describe('NetworkManager', () => {
       shouldReportCorbBlocking: false,
     });
 
-    expect(requests.length).toBe(1);
+    expect(requests).toHaveLength(1);
   });
 
   it(`should resolve the response once the late responseReceivedExtraInfo event arrives`, async () => {
@@ -796,8 +796,8 @@ describe('NetworkManager', () => {
       shouldReportCorbBlocking: false,
     });
 
-    expect(pendingRequests.length).toBe(1);
-    expect(finishedRequests.length).toBe(0);
+    expect(pendingRequests).toHaveLength(1);
+    expect(finishedRequests).toHaveLength(0);
     expect(pendingRequests[0]!.response()).toEqual(null);
 
     // The extra info might arrive late.
@@ -818,8 +818,8 @@ describe('NetworkManager', () => {
         'HTTP/1.1 200 OK\\r\\nCache-Control: no-cache, no-store\\r\\nContent-Type: text/html; charset=utf-8\\r\\nDate: Wed, 10 Aug 2022 09:04:39 GMT\\r\\nConnection: keep-alive\\r\\nKeep-Alive: timeout=5\\r\\nContent-Length: 0\\r\\n\\r\\n',
     });
 
-    expect(pendingRequests.length).toBe(1);
-    expect(finishedRequests.length).toBe(1);
+    expect(pendingRequests).toHaveLength(1);
+    expect(finishedRequests).toHaveLength(1);
     expect(pendingRequests[0]!.response()).not.toEqual(null);
   });
 
@@ -981,8 +981,8 @@ describe('NetworkManager', () => {
       frameId: '07D18B8630A8161C72B6079B74123D60',
     });
 
-    expect(requests.length).toBe(1);
-    expect(responses.length).toBe(1);
+    expect(requests).toHaveLength(1);
+    expect(responses).toHaveLength(1);
     expect(requests[0]!.response()).not.toEqual(null);
   });
 
@@ -1127,8 +1127,8 @@ describe('NetworkManager', () => {
         'HTTP/1.1 200 OK\r\nCache-Control: no-cache, no-store\r\nContent-Type: text/html; charset=utf-8\r\nDate: Wed, 10 Aug 2022 11:21:22 GMT\r\nConnection: keep-alive\r\nKeep-Alive: timeout=5\r\nContent-Length: 0\r\n\r\n',
     });
 
-    expect(requests.length).toBe(1);
-    expect(responses.length).toBe(1);
+    expect(requests).toHaveLength(1);
+    expect(responses).toHaveLength(1);
     expect(requests[0]!.response()).not.toEqual(null);
   });
 

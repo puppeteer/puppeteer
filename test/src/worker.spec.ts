@@ -32,9 +32,7 @@ describe('Workers', function () {
     const {page, server} = getTestState();
 
     await Promise.all([
-      new Promise(x => {
-        return page.once('workercreated', x);
-      }),
+      waitEvent(page, 'workercreated'),
       page.goto(server.PREFIX + '/worker/worker.html'),
     ]);
     const worker = page.workers()[0]!;
@@ -47,14 +45,12 @@ describe('Workers', function () {
     ).toBe('worker function result');
 
     await page.goto(server.EMPTY_PAGE);
-    expect(page.workers().length).toBe(0);
+    expect(page.workers()).toHaveLength(0);
   });
   it('should emit created and destroyed events', async () => {
     const {page} = getTestState();
 
-    const workerCreatedPromise = new Promise<WebWorker>(x => {
-      return page.once('workercreated', x);
-    });
+    const workerCreatedPromise = waitEvent<WebWorker>(page, 'workercreated');
     const workerObj = await page.evaluateHandle(() => {
       return new Worker('data:text/javascript,1');
     });
@@ -62,9 +58,7 @@ describe('Workers', function () {
     const workerThisObj = await worker.evaluateHandle(() => {
       return this;
     });
-    const workerDestroyedPromise = new Promise(x => {
-      return page.once('workerdestroyed', x);
-    });
+    const workerDestroyedPromise = waitEvent(page, 'workerdestroyed');
     await page.evaluate((workerObj: Worker) => {
       return workerObj.terminate();
     }, workerObj);
@@ -93,15 +87,13 @@ describe('Workers', function () {
   it('should have JSHandles for console logs', async () => {
     const {page} = getTestState();
 
-    const logPromise = new Promise<ConsoleMessage>(x => {
-      return page.on('console', x);
-    });
+    const logPromise = waitEvent<ConsoleMessage>(page, 'console');
     await page.evaluate(() => {
       return new Worker(`data:text/javascript,console.log(1,2,3,this)`);
     });
     const log = await logPromise;
     expect(log.text()).toBe('1 2 3 JSHandle@object');
-    expect(log.args().length).toBe(4);
+    expect(log.args()).toHaveLength(4);
     expect(await (await log.args()[3]!.getProperty('origin')).jsonValue()).toBe(
       'null'
     );
@@ -109,9 +101,7 @@ describe('Workers', function () {
   it('should have an execution context', async () => {
     const {page} = getTestState();
 
-    const workerCreatedPromise = new Promise<WebWorker>(x => {
-      return page.once('workercreated', x);
-    });
+    const workerCreatedPromise = waitEvent<WebWorker>(page, 'workercreated');
     await page.evaluate(() => {
       return new Worker(`data:text/javascript,console.log(1)`);
     });
@@ -121,9 +111,7 @@ describe('Workers', function () {
   it('should report errors', async () => {
     const {page} = getTestState();
 
-    const errorPromise = new Promise<Error>(x => {
-      return page.on('pageerror', x);
-    });
+    const errorPromise = waitEvent<Error>(page, 'pageerror');
     await page.evaluate(() => {
       return new Worker(
         `data:text/javascript, throw new Error('this is my error');`

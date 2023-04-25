@@ -220,7 +220,7 @@ describe('Accessibility', function () {
     // See https://chromium-review.googlesource.com/c/chromium/src/+/3088862
     assert(snapshot);
     assert(snapshot.children);
-    assert(snapshot.children[0]!);
+    assert(snapshot.children[0]);
     expect(snapshot.children[0]!.roledescription).toBeUndefined();
   });
   it('orientation', async () => {
@@ -232,7 +232,7 @@ describe('Accessibility', function () {
     const snapshot = await page.accessibility.snapshot();
     assert(snapshot);
     assert(snapshot.children);
-    assert(snapshot.children[0]!);
+    assert(snapshot.children[0]);
     expect(snapshot.children[0]!.orientation).toEqual('vertical');
   });
   it('autocomplete', async () => {
@@ -242,7 +242,7 @@ describe('Accessibility', function () {
     const snapshot = await page.accessibility.snapshot();
     assert(snapshot);
     assert(snapshot.children);
-    assert(snapshot.children[0]!);
+    assert(snapshot.children[0]);
     expect(snapshot.children[0]!.autocomplete).toEqual('list');
   });
   it('multiselectable', async () => {
@@ -254,7 +254,7 @@ describe('Accessibility', function () {
     const snapshot = await page.accessibility.snapshot();
     assert(snapshot);
     assert(snapshot.children);
-    assert(snapshot.children[0]!);
+    assert(snapshot.children[0]);
     expect(snapshot.children[0]!.multiselectable).toEqual(true);
   });
   it('keyshortcuts', async () => {
@@ -266,7 +266,7 @@ describe('Accessibility', function () {
     const snapshot = await page.accessibility.snapshot();
     assert(snapshot);
     assert(snapshot.children);
-    assert(snapshot.children[0]!);
+    assert(snapshot.children[0]);
     expect(snapshot.children[0]!.keyshortcuts).toEqual('foo');
   });
   describe('filtering children of leaf nodes', function () {
@@ -351,7 +351,7 @@ describe('Accessibility', function () {
       const snapshot = await page.accessibility.snapshot();
       assert(snapshot);
       assert(snapshot.children);
-      expect(snapshot.children[0]!).toEqual(golden);
+      expect(snapshot.children[0]).toEqual(golden);
     });
     it('rich text editable fields with role should have children', async () => {
       const {page, isFirefox} = getTestState();
@@ -388,7 +388,7 @@ describe('Accessibility', function () {
       const snapshot = await page.accessibility.snapshot();
       assert(snapshot);
       assert(snapshot.children);
-      expect(snapshot.children[0]!).toEqual(golden);
+      expect(snapshot.children[0]).toEqual(golden);
     });
 
     // Firefox does not support contenteditable="plaintext-only".
@@ -401,7 +401,7 @@ describe('Accessibility', function () {
         const snapshot = await page.accessibility.snapshot();
         assert(snapshot);
         assert(snapshot.children);
-        expect(snapshot.children[0]!).toEqual({
+        expect(snapshot.children[0]).toEqual({
           role: 'textbox',
           name: '',
           value: 'Edit this image:',
@@ -431,7 +431,7 @@ describe('Accessibility', function () {
       const snapshot = await page.accessibility.snapshot();
       assert(snapshot);
       assert(snapshot.children);
-      expect(snapshot.children[0]!).toEqual(golden);
+      expect(snapshot.children[0]).toEqual(golden);
     });
     it('checkbox with and tabIndex and label should not have children', async () => {
       const {page, isFirefox} = getTestState();
@@ -455,7 +455,7 @@ describe('Accessibility', function () {
       const snapshot = await page.accessibility.snapshot();
       assert(snapshot);
       assert(snapshot.children);
-      expect(snapshot.children[0]!).toEqual(golden);
+      expect(snapshot.children[0]).toEqual(golden);
     });
     it('checkbox without label should not have children', async () => {
       const {page, isFirefox} = getTestState();
@@ -479,7 +479,7 @@ describe('Accessibility', function () {
       const snapshot = await page.accessibility.snapshot();
       assert(snapshot);
       assert(snapshot.children);
-      expect(snapshot.children[0]!).toEqual(golden);
+      expect(snapshot.children[0]).toEqual(golden);
     });
 
     describe('root option', function () {
