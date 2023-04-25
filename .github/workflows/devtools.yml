@@ -66,7 +66,7 @@ jobs:
       - name: Install Puppeteer
         working-directory: devtools-frontend
         run: |
-          puppeteer_pkgs=(puppeteer-*.tgz)
+          puppeteer_pkgs=(../puppeteer-*.tgz)
           tar -xf ${puppeteer_pkgs[0]} --strip-components 1 -C node_modules/puppeteer
           tar -xf ${puppeteer_pkgs[1]} --strip-components 1 -C node_modules/puppeteer-core
       - name: Generate targets
