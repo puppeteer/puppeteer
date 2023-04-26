@@ -13,33 +13,33 @@ module.exports = {
 
   rules: {
     // Brackets keep code readable.
-    curly: [2, 'all'],
+    curly: ['error', 'all'],
     // Brackets keep code readable and `return` intentions clear.
     'arrow-body-style': ['error', 'always'],
     // Error if files are not formatted with Prettier correctly.
-    'prettier/prettier': 2,
+    'prettier/prettier': 'error',
     // syntax preferences
     'spaced-comment': [
-      2,
+      'error',
       'always',
       {
         markers: ['*'],
       },
     ],
-    eqeqeq: [2],
+    eqeqeq: ['error'],
     'accessor-pairs': [
-      2,
+      'error',
       {
         getWithoutSet: false,
         setWithoutGet: false,
       },
     ],
-    'new-parens': 2,
-    'func-call-spacing': 2,
-    'prefer-const': 2,
+    'new-parens': 'error',
+    'func-call-spacing': 'error',
+    'prefer-const': 'error',
 
     'max-len': [
-      2,
+      'error',
       {
         /* this setting doesn't impact things as we use Prettier to format
          * our code and hence dictate the line length.
@@ -58,27 +58,27 @@ module.exports = {
       },
     ],
     // anti-patterns
-    'no-var': 2,
-    'no-with': 2,
-    'no-multi-str': 2,
-    'no-caller': 2,
-    'no-implied-eval': 2,
-    'no-labels': 2,
-    'no-new-object': 2,
-    'no-octal-escape': 2,
-    'no-self-compare': 2,
-    'no-shadow-restricted-names': 2,
-    'no-cond-assign': 2,
-    'no-debugger': 2,
-    'no-dupe-keys': 2,
-    'no-duplicate-case': 2,
-    'no-empty-character-class': 2,
-    'no-unreachable': 2,
-    'no-unsafe-negation': 2,
-    radix: 2,
-    'valid-typeof': 2,
+    'no-var': 'error',
+    'no-with': 'error',
+    'no-multi-str': 'error',
+    'no-caller': 'error',
+    'no-implied-eval': 'error',
+    'no-labels': 'error',
+    'no-new-object': 'error',
+    'no-octal-escape': 'error',
+    'no-self-compare': 'error',
+    'no-shadow-restricted-names': 'error',
+    'no-cond-assign': 'error',
+    'no-debugger': 'error',
+    'no-dupe-keys': 'error',
+    'no-duplicate-case': 'error',
+    'no-empty-character-class': 'error',
+    'no-unreachable': 'error',
+    'no-unsafe-negation': 'error',
+    radix: 'error',
+    'valid-typeof': 'error',
     'no-unused-vars': [
-      2,
+      'error',
       {
         args: 'none',
         vars: 'local',
@@ -86,11 +86,11 @@ module.exports = {
           '([fx]?describe|[fx]?it|beforeAll|beforeEach|afterAll|afterEach)',
       },
     ],
-    'no-implicit-globals': [2],
+    'no-implicit-globals': ['error'],
 
     // es2015 features
-    'require-yield': 2,
-    'template-curly-spacing': [2, 'never'],
+    'require-yield': 'error',
+    'template-curly-spacing': ['error', 'never'],
 
     // ensure we don't have any it.only or describe.only in prod
     'mocha/no-exclusive-tests': 'error',
@@ -127,6 +127,10 @@ module.exports = {
   overrides: [
     {
       files: ['*.ts'],
+      parserOptions: {
+        allowAutomaticSingleRunInference: true,
+        project: './tsconfig.base.json',
+      },
       extends: [
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
@@ -134,33 +138,33 @@ module.exports = {
       plugins: ['eslint-plugin-tsdoc', 'local'],
       rules: {
         // Keeps comments formatted.
-        'local/prettier-comments': 2,
+        'local/prettier-comments': 'error',
         // Brackets keep code readable.
-        curly: [2, 'all'],
+        curly: ['error', 'all'],
         // Brackets keep code readable and `return` intentions clear.
         'arrow-body-style': ['error', 'always'],
         // Error if comments do not adhere to `tsdoc`.
-        'tsdoc/syntax': 2,
+        'tsdoc/syntax': 'error',
         // Keeps array types simple only when they are simple for readability.
         '@typescript-eslint/array-type': ['error', {default: 'array-simple'}],
-        'no-unused-vars': 0,
+        'no-unused-vars': 'off',
         '@typescript-eslint/no-unused-vars': [
           'error',
           {argsIgnorePattern: '^_'},
         ],
-        'func-call-spacing': 0,
-        '@typescript-eslint/func-call-spacing': 2,
-        semi: 0,
-        '@typescript-eslint/semi': 2,
-        '@typescript-eslint/no-empty-function': 0,
-        '@typescript-eslint/no-use-before-define': 0,
+        'func-call-spacing': 'off',
+        '@typescript-eslint/func-call-spacing': 'error',
+        semi: 'off',
+        '@typescript-eslint/semi': 'error',
+        '@typescript-eslint/no-empty-function': 'off',
+        '@typescript-eslint/no-use-before-define': 'off',
         // We have to use any on some types so the warning isn't valuable.
-        '@typescript-eslint/no-explicit-any': 0,
+        '@typescript-eslint/no-explicit-any': 'off',
         // We don't require explicit return types on basic functions or
         // dummy functions in tests, for example
-        '@typescript-eslint/explicit-function-return-type': 0,
+        '@typescript-eslint/explicit-function-return-type': 'off',
         // We allow non-null assertions if the value was asserted using `assert` API.
-        '@typescript-eslint/no-non-null-assertion': 0,
+        '@typescript-eslint/no-non-null-assertion': 'off',
         /**
          * This is the default options (as per
          * https://github.com/typescript-eslint/typescript-eslint/blob/HEAD/packages/eslint-plugin/docs/rules/ban-types.md),
@@ -182,7 +186,7 @@ module.exports = {
           },
         ],
         // By default this is a warning but we want it to error.
-        '@typescript-eslint/explicit-module-boundary-types': 2,
+        '@typescript-eslint/explicit-module-boundary-types': 'error',
         'no-restricted-syntax': [
           'error',
           {
@@ -190,6 +194,10 @@ module.exports = {
             selector: "CallExpression[callee.name='require']",
             message: '`require` statements are not allowed. Use `import`.',
           },
+        ],
+        '@typescript-eslint/no-floating-promises': [
+          'error',
+          {ignoreVoid: true, ignoreIIFE: true},
         ],
       },
     },

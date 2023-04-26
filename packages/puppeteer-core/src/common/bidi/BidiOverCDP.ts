@@ -167,7 +167,7 @@ class NoOpTransport
   };
 
   emitMessage(message: Bidi.Message.RawCommandRequest) {
-    this.#onMessage(message);
+    void this.#onMessage(message);
   }
 
   setOnMessage(

@@ -115,7 +115,7 @@ export class FrameManager extends EventEmitter {
     });
     session.on('Page.frameNavigated', event => {
       this.#frameNavigatedReceived.add(event.frame.id);
-      this.#onFrameNavigated(event.frame);
+      void this.#onFrameNavigated(event.frame);
     });
     session.on('Page.navigatedWithinDocument', event => {
       this.#onFrameNavigatedWithinDocument(event.frameId, event.url);
@@ -222,7 +222,7 @@ export class FrameManager extends EventEmitter {
       frame.updateClient(target._session()!);
     }
     this.setupEventListeners(target._session()!);
-    this.initialize(target._session());
+    void this.initialize(target._session());
   }
 
   /**
@@ -275,7 +275,7 @@ export class FrameManager extends EventEmitter {
       );
     }
     if (!this.#frameNavigatedReceived.has(frameTree.frame.id)) {
-      this.#onFrameNavigated(frameTree.frame);
+      void this.#onFrameNavigated(frameTree.frame);
     } else {
       this.#frameNavigatedReceived.delete(frameTree.frame.id);
     }

@@ -175,7 +175,7 @@ export class ProductLauncher {
         }
       }
     } catch (error) {
-      browserCloseCallback();
+      void browserCloseCallback();
       if (error instanceof BrowsersTimeoutError) {
         throw new TimeoutError(error.message);
       }

@@ -71,7 +71,7 @@ chdir(packageRoot);
   await Promise.all([versionJob, injectedJob]);
 
   if (process.env['PUBLISH']) {
-    job('', async ({inputs}) => {
+    await job('', async ({inputs}) => {
       const version = JSON.parse(await readFile(inputs[0]!, 'utf8')).version;
       await writeFile(
         inputs[1]!,

@@ -107,7 +107,7 @@ function spliceIntoSection(
   await Promise.all([job1, job2]);
 
   // Generate documentation
-  job('', async ({inputs, outputs}) => {
+  const puppeteerDocs = job('', async ({inputs, outputs}) => {
     await rm(outputs[0]!, {recursive: true, force: true});
     generateDocs(inputs[0]!, outputs[0]!);
     spawnAndLog('prettier', '--ignore-path', 'none', '--write', 'docs');
@@ -119,7 +119,7 @@ function spliceIntoSection(
     .outputs(['docs/api'])
     .build();
 
-  await job('', async ({inputs, outputs}) => {
+  const browsersDocs = job('', async ({inputs, outputs}) => {
     await rm(outputs[0]!, {recursive: true, force: true});
     generateDocs(inputs[0]!, outputs[0]!);
     spawnAndLog('prettier', '--ignore-path', 'none', '--write', 'docs');
@@ -131,7 +131,9 @@ function spliceIntoSection(
     .outputs(['docs/browsers-api'])
     .build();
 
-  job('', async ({inputs, outputs}) => {
+  await Promise.all([puppeteerDocs, browsersDocs]);
+
+  await job('', async ({inputs, outputs}) => {
     const readme = await readFile(inputs[1]!, 'utf-8');
     const index = await readFile(inputs[0]!, 'utf-8');
     await writeFile(outputs[0]!, index.replace('# API Reference\n', readme));

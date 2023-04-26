@@ -253,7 +253,7 @@ export class CDPPage extends Page {
     client.on('Page.fileChooserOpened', event => {
       return this.#onFileChooser(event);
     });
-    this.#target._isClosedPromise.then(() => {
+    void this.#target._isClosedPromise.then(() => {
       this.#target
         ._targetManager()
         .removeTargetInterceptor(this.#client, this.#onAttachedToTarget);

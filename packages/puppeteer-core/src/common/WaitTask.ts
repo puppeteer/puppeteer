@@ -66,7 +66,7 @@ export class WaitTask<T = unknown> {
     this.#signal?.addEventListener(
       'abort',
       () => {
-        this.terminate(new AbortError('WaitTask has been aborted.'));
+        void this.terminate(new AbortError('WaitTask has been aborted.'));
       },
       {
         once: true,
@@ -87,13 +87,13 @@ export class WaitTask<T = unknown> {
 
     if (options.timeout) {
       this.#timeout = setTimeout(() => {
-        this.terminate(
+        void this.terminate(
           new TimeoutError(`Waiting failed: ${options.timeout}ms exceeded`)
         );
       }, options.timeout);
     }
 
-    this.rerun();
+    void this.rerun();
   }
 
   get result(): Promise<HandleFor<T>> {
@@ -153,7 +153,7 @@ export class WaitTask<T = unknown> {
       }
 
       await this.#poller.evaluate(poller => {
-        poller.start();
+        void poller.start();
       });
 
       const result = await this.#poller.evaluateHandle(poller => {
@@ -245,7 +245,7 @@ export class TaskManager {
 
   terminateAll(error?: Error): void {
     for (const task of this.#tasks) {
-      task.terminate(error);
+      void task.terminate(error);
     }
     this.#tasks.clear();
   }

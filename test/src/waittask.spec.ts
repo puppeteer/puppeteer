@@ -405,7 +405,7 @@ describe('waittask specs', function () {
         signal: abortController.signal,
       });
       abortController.abort();
-      expect(task).rejects.toThrow(/aborted/);
+      await expect(task).rejects.toThrow(/aborted/);
     });
 
     it('should work with removed MutationObserver', async () => {

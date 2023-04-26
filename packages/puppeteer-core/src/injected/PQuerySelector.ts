@@ -286,7 +286,7 @@ export const pQuerySelectorAll = function (
   return domSort(
     AsyncIterableUtil.flatMap(selectors, selectorParts => {
       const query = new PQueryEngine(root, selector, selectorParts);
-      query.run();
+      void query.run();
       return query.elements;
     })
   );
