@@ -25,18 +25,18 @@ import {
 } from './utils.js';
 import {getFilename, extendProcessEnv} from './utils.js';
 
-test('extendProcessEnv', () => {
+void test('extendProcessEnv', () => {
   const env = extendProcessEnv([{TEST: 'TEST'}, {TEST2: 'TEST2'}]);
   assert.equal(env['TEST'], 'TEST');
   assert.equal(env['TEST2'], 'TEST2');
 });
 
-test('getFilename', () => {
+void test('getFilename', () => {
   assert.equal(getFilename('/etc/test.ts'), 'test');
   assert.equal(getFilename('/etc/test.js'), 'test');
 });
 
-test('getTestResultForFailure', () => {
+void test('getTestResultForFailure', () => {
   assert.equal(
     getTestResultForFailure({err: {code: 'ERR_MOCHA_TIMEOUT'}}),
     'TIMEOUT'
@@ -44,7 +44,7 @@ test('getTestResultForFailure', () => {
   assert.equal(getTestResultForFailure({err: {code: 'ERROR'}}), 'FAIL');
 });
 
-test('filterByParameters', () => {
+void test('filterByParameters', () => {
   const expectations: TestExpectation[] = [
     {
       testIdPattern:
@@ -66,7 +66,7 @@ test('filterByParameters', () => {
   assert.equal(filterByParameters(expectations, ['other']).length, 0);
 });
 
-test('isWildCardPattern', () => {
+void test('isWildCardPattern', () => {
   assert.equal(isWildCardPattern(''), false);
   assert.equal(isWildCardPattern('a'), false);
   assert.equal(isWildCardPattern('*'), true);
@@ -99,7 +99,7 @@ describe('testIdMatchesExpectationPattern', () => {
     ['[jshandle.spec] JSHandle should work', false],
   ];
 
-  test('with MochaTest', () => {
+  void test('with MochaTest', () => {
     const test = {
       title: 'should work',
       file: 'page.spec.ts',
@@ -116,7 +116,7 @@ describe('testIdMatchesExpectationPattern', () => {
       );
     }
   });
-  test('with MochaTestResult', () => {
+  void test('with MochaTestResult', () => {
     const test = {
       title: 'should work',
       file: 'page.spec.ts',

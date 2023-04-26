@@ -113,8 +113,8 @@ export class ExecutionContext {
     }
     scriptInjector.inject(script => {
       if (this.#puppeteerUtil) {
-        this.#puppeteerUtil.then(handle => {
-          handle.dispose();
+        void this.#puppeteerUtil.then(handle => {
+          void handle.dispose();
         });
       }
       this.#puppeteerUtil = promise.then(() => {

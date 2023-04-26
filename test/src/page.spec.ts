@@ -879,9 +879,9 @@ describe('Page', function () {
       const [request] = await Promise.all([
         page.waitForRequest(server.PREFIX + '/digits/2.png'),
         page.evaluate(() => {
-          fetch('/digits/1.png');
-          fetch('/digits/2.png');
-          fetch('/digits/3.png');
+          void fetch('/digits/1.png');
+          void fetch('/digits/2.png');
+          void fetch('/digits/3.png');
         }),
       ]);
       expect(request.url()).toBe(server.PREFIX + '/digits/2.png');
@@ -895,9 +895,9 @@ describe('Page', function () {
           return request.url() === server.PREFIX + '/digits/2.png';
         }),
         page.evaluate(() => {
-          fetch('/digits/1.png');
-          fetch('/digits/2.png');
-          fetch('/digits/3.png');
+          void fetch('/digits/1.png');
+          void fetch('/digits/2.png');
+          void fetch('/digits/3.png');
         }),
       ]);
       expect(request.url()).toBe(server.PREFIX + '/digits/2.png');
@@ -911,9 +911,9 @@ describe('Page', function () {
           return request.url() === server.PREFIX + '/digits/2.png';
         }),
         page.evaluate(() => {
-          fetch('/digits/1.png');
-          fetch('/digits/2.png');
-          fetch('/digits/3.png');
+          void fetch('/digits/1.png');
+          void fetch('/digits/2.png');
+          void fetch('/digits/3.png');
         }),
       ]);
       expect(request.url()).toBe(server.PREFIX + '/digits/2.png');
@@ -956,9 +956,9 @@ describe('Page', function () {
         page.waitForRequest(server.PREFIX + '/digits/2.png', {timeout: 0}),
         page.evaluate(() => {
           return setTimeout(() => {
-            fetch('/digits/1.png');
-            fetch('/digits/2.png');
-            fetch('/digits/3.png');
+            void fetch('/digits/1.png');
+            void fetch('/digits/2.png');
+            void fetch('/digits/3.png');
           }, 50);
         }),
       ]);
@@ -974,9 +974,9 @@ describe('Page', function () {
       const [response] = await Promise.all([
         page.waitForResponse(server.PREFIX + '/digits/2.png'),
         page.evaluate(() => {
-          fetch('/digits/1.png');
-          fetch('/digits/2.png');
-          fetch('/digits/3.png');
+          void fetch('/digits/1.png');
+          void fetch('/digits/2.png');
+          void fetch('/digits/3.png');
         }),
       ]);
       expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
@@ -1020,9 +1020,9 @@ describe('Page', function () {
           return response.url() === server.PREFIX + '/digits/2.png';
         }),
         page.evaluate(() => {
-          fetch('/digits/1.png');
-          fetch('/digits/2.png');
-          fetch('/digits/3.png');
+          void fetch('/digits/1.png');
+          void fetch('/digits/2.png');
+          void fetch('/digits/3.png');
         }),
       ]);
       expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
@@ -1035,9 +1035,9 @@ describe('Page', function () {
           return response.url() === server.PREFIX + '/digits/2.png';
         }),
         page.evaluate(() => {
-          fetch('/digits/1.png');
-          fetch('/digits/2.png');
-          fetch('/digits/3.png');
+          void fetch('/digits/1.png');
+          void fetch('/digits/2.png');
+          void fetch('/digits/3.png');
         }),
       ]);
       expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
@@ -1050,9 +1050,9 @@ describe('Page', function () {
         page.waitForResponse(server.PREFIX + '/digits/2.png', {timeout: 0}),
         page.evaluate(() => {
           return setTimeout(() => {
-            fetch('/digits/1.png');
-            fetch('/digits/2.png');
-            fetch('/digits/3.png');
+            void fetch('/digits/1.png');
+            void fetch('/digits/2.png');
+            void fetch('/digits/3.png');
           }, 50);
         }),
       ]);
@@ -1135,9 +1135,9 @@ describe('Page', function () {
         page.waitForNetworkIdle({timeout: 0}),
         page.evaluate(() => {
           return setTimeout(() => {
-            fetch('/digits/1.png');
-            fetch('/digits/2.png');
-            fetch('/digits/3.png');
+            void fetch('/digits/1.png');
+            void fetch('/digits/2.png');
+            void fetch('/digits/3.png');
           }, 50);
         }),
       ]);

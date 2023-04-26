@@ -149,7 +149,7 @@ export class IsolatedWorld {
   setContext(context: ExecutionContext): void {
     this.#contextBindings.clear();
     this.#context.resolve(context);
-    this.#taskManager.rerunAll();
+    void this.#taskManager.rerunAll();
   }
 
   hasContext(): boolean {

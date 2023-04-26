@@ -295,7 +295,7 @@ export class Process {
         process.exit(130);
       case 'SIGTERM':
       case 'SIGHUP':
-        this.close();
+        void this.close();
         break;
     }
   };

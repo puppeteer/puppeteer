@@ -18,4 +18,4 @@
 
 import {CLI} from './CLI.js';
 
-new CLI().run(process.argv);
+void new CLI().run(process.argv);

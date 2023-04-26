@@ -393,7 +393,7 @@ export class NetworkManager extends EventEmitter {
       []
     );
     this.emit(NetworkManagerEmittedEvents.Request, request);
-    request.finalizeInterceptions();
+    void request.finalizeInterceptions();
   }
 
   #onRequest(
@@ -449,7 +449,7 @@ export class NetworkManager extends EventEmitter {
     );
     this.#networkEventManager.storeRequest(event.requestId, request);
     this.emit(NetworkManagerEmittedEvents.Request, request);
-    request.finalizeInterceptions();
+    void request.finalizeInterceptions();
   }
 
   #onRequestServedFromCache(

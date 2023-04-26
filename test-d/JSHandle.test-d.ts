@@ -76,7 +76,7 @@ declare const handle2: JSHandle<{test: number}>;
 }
 
 {
-  handle.evaluate((value, other) => {
+  void handle.evaluate((value, other) => {
     expectType<unknown>(value);
     expectType<{test: number}>(other);
   }, handle2);
