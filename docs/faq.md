@@ -206,7 +206,7 @@ launch, so you don’t need to specify `PUPPETEER_EXECUTABLE_PATH` as well.
 
 For example, if you wish to keep the Chromium download in `~/.npm/chromium`:
 
-```sh
+```bash
 export PUPPETEER_DOWNLOAD_PATH=~/.npm/chromium
 npm ci
 

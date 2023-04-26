@@ -7,7 +7,7 @@ the
 The latest image is tagged as `latest` and other tags match Puppeteer versions.
 For example,
 
-```sh
+```bash
 docker pull ghcr.io/puppeteer/puppeteer:latest # pulls the latest
 docker pull ghcr.io/puppeteer/puppeteer:16.1.0 # pulls the image that contains Puppeteer v16.1.0
 ```
@@ -19,7 +19,7 @@ running the image requires the `SYS_ADMIN` capability.
 
 To use the docker image directly, run:
 
-```sh
+```bash
 docker run -i --init --cap-add=SYS_ADMIN --rm ghcr.io/puppeteer/puppeteer:latest node -e "$(cat path/to/script.js)"
 ```
 

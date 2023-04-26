@@ -29,7 +29,7 @@ the installation directory.
 
 For example,
 
-```sh
+```bash
 PUPPETEER_CACHE_DIR=$(pwd) npm install puppeteer
 PUPPETEER_CACHE_DIR=$(pwd) node <script-path>
 ```
@@ -603,13 +603,13 @@ and if you want to run Puppeteer tests in amazon-linux, follow these steps.
    comes as part of
    [EPEL (Extra Packages for Enterprise Linux)](https://aws.amazon.com/premiumsupport/knowledge-center/ec2-enable-epel/):
 
-   ```sh
+   ```bash
    sudo amazon-linux-extras install epel -y
    ```
 
 1. Next, install Chromium:
 
-   ```sh
+   ```bash
    sudo yum install -y chromium
    ```
 
