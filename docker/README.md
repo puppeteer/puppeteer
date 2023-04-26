@@ -6,13 +6,13 @@ browser instance.
 
 ## Building the image
 
-```sh
+```bash
 docker build -t puppeteer-chrome-linux . # `puppeteer-chrome-linux` is the name of the image.
 ```
 
 ## Running the image
 
-```sh
+```bash
 docker run -i --init --rm --cap-add=SYS_ADMIN --name puppeteer-chrome puppeteer-chrome-linux node -e "`cat test.js`"
 ```
 

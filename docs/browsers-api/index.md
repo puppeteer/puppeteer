@@ -10,13 +10,13 @@ Manage and launch browsers/drivers from a CLI or programmatically.
 
 Use `npx` to run the CLI:
 
-```sh
+```bash
 npx @puppeteer/browsers --help
 ```
 
 CLI help will provide all documentation you need to use the CLI.
 
-```sh
+```bash
 npx @puppeteer/browsers --help # help for all commands
 npx @puppeteer/browsers install --help # help for the install command
 npx @puppeteer/browsers launch --help # help for the launch command

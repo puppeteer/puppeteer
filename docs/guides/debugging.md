@@ -109,7 +109,7 @@ if you want to try something out, you have to add it to your test file.
 
 3. Run your server code with `--inspect-brk`. For example,
 
-   ```sh
+   ```bash
    node --inspect-brk path/to/script.js
    ```
 
@@ -126,7 +126,7 @@ DevTools protocol. You can debug this by setting the `DEBUG` environment
 variable before running your script. This will log internal traffic via
 [`debug`](https://github.com/visionmedia/debug) under the `puppeteer` namespace.
 
-```sh
+```bash
 # Basic verbose logging
 env DEBUG="puppeteer:*" node script.js
 

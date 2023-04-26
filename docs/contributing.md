@@ -19,7 +19,7 @@ again.
 
 1. Clone this repository
 
-   ```sh
+   ```bash
    git clone https://github.com/puppeteer/puppeteer
    cd puppeteer
    ```
@@ -30,7 +30,7 @@ again.
 
 2. Install the dependencies
 
-   ```sh
+   ```bash
    npm install
    # Or to download Firefox
    PUPPETEER_PRODUCT=firefox npm install
@@ -38,13 +38,13 @@ again.
 
 3. Build all packages
 
-   ```sh
+   ```bash
    npm run build
    ```
 
 4. Run all tests
 
-   ```sh
+   ```bash
    npm test
    ```
 
@@ -69,7 +69,7 @@ again.
 
 To build a single package, you can run:
 
-```sh
+```bash
 npm run build --workspace <package> # e.g. puppeteer
 ```
 
@@ -82,7 +82,7 @@ packages is sufficient. This is all possible due to
 
 To continuously build a package, you can run:
 
-```sh
+```bash
 npm run build --watch --workspace <package> # e.g. puppeteer
 ```
 
@@ -97,7 +97,7 @@ It's possible some generated artifacts (such as
 rely on complex conditions (such as names of distinct files) that cannot be
 captured by the build system. To clean artifacts, you can run
 
-```sh
+```bash
 npm run clean
 # or specify the package
 npm run clean --workspace <package>
@@ -274,7 +274,7 @@ Copy the provided default `.vscode/launch.template.json` to `.vscode/launch.json
 
 Remember to build test before launching via:
 
-```sh
+```bash
 npm run build --workspace @puppeteer-test/test
 ```
 
@@ -316,7 +316,7 @@ revision that changed the behavior. The `bisect` script can be helpful here.
 Given a pattern for one or more unit tests, it will automatically bisect the
 current range:
 
-```sh
+```bash
 npm run bisect -- --good 686378 --bad 706915 script.js
 npm run bisect -- --unit-test Response.fromCache
 ```
