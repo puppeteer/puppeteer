@@ -344,7 +344,7 @@ describe('waittask specs', function () {
         }
       );
       abortController.abort();
-      expect(task).rejects.toThrow(/aborted/);
+      await expect(task).rejects.toThrow(/aborted/);
     });
   });
 
