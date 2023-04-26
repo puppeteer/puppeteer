@@ -6,7 +6,19 @@
     "expectations": ["SKIP", "TIMEOUT"]
   },
   {
+    "testIdPattern": "[DeviceRequestPrompt.spec] DeviceRequestPrompt *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[evaluation.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[EventEmitter.spec] EventEmitter *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
@@ -46,6 +58,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[NetworkManager.spec] NetworkManager *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.Events.DOMContentLoaded *",
@@ -112,6 +130,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs Custom queries should throw with invalid query names",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.isVisible and ElementHandle.isHidden should work",
@@ -706,6 +730,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[emulation.spec] Emulation Page.viewport should support mobile emulation",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs \"after each\" hook for \"should transfer 100Mb of data from page to node.js\"",
