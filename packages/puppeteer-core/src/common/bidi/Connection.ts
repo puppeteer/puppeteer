@@ -80,6 +80,14 @@ interface Commands {
     params: Bidi.Session.SubscribeParameters;
     returnType: Bidi.Session.UnsubscribeResult;
   };
+  'cdp.sendCommand': {
+    params: Bidi.CDP.SendCommandParams;
+    returnType: Bidi.CDP.SendCommandResult;
+  };
+  'cdp.getSession': {
+    params: Bidi.CDP.GetSessionParams;
+    returnType: Bidi.CDP.GetSessionResult;
+  };
 }
 
 /**

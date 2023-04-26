@@ -20,6 +20,7 @@ import {HTTPResponse} from '../../api/HTTPResponse.js';
 import {WaitForOptions} from '../../api/Page.js';
 import {assert} from '../../util/assert.js';
 import {stringifyFunction} from '../../util/Function.js';
+import {ProtocolMapping} from '../Connection.js';
 import {ProtocolError, TimeoutError} from '../Errors.js';
 import {EventEmitter} from '../EventEmitter.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
@@ -221,6 +222,22 @@ export class Context extends EventEmitter {
         timeout
       ),
     ]);
+  }
+
+  async sendCDPCommand(
+    method: keyof ProtocolMapping.Commands,
+    params: object = {}
+  ): Promise<unknown> {
+    const session = await this.#connection.send('cdp.getSession', {
+      context: this._contextId,
+    });
+    // TODO: remove any once chromium-bidi types are updated.
+    const sessionId = (session.result as any).cdpSession;
+    return await this.#connection.send('cdp.sendCommand', {
+      cdpMethod: method,
+      cdpParams: params,
+      cdpSession: sessionId,
+    });
   }
 }
 

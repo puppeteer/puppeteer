@@ -29,6 +29,7 @@ import {isErrorLike} from '../../util/ErrorLike.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
 import {Handler} from '../EventEmitter.js';
 import {PDFOptions} from '../PDFOptions.js';
+import {Viewport} from '../PuppeteerViewport.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
 import {debugError, waitWithTimeout} from '../util.js';
 
@@ -45,6 +46,7 @@ export class Page extends PageBase {
     ['browsingContext.load', this.#onLoad.bind(this)],
     ['browsingContext.domContentLoaded', this.#onDOMLoad.bind(this)],
   ]) as Map<Bidi.Session.SubscribeParametersEvent, Handler>;
+  #viewport: Viewport | null = null;
 
   constructor(context: Context) {
     super();
@@ -202,6 +204,29 @@ export class Page extends PageBase {
       }
       return retVal;
     });
+  }
+
+  override async setViewport(viewport: Viewport): Promise<void> {
+    // TODO: use BiDi commands when available.
+    const mobile = false;
+    const width = viewport.width;
+    const height = viewport.height;
+    const deviceScaleFactor = 1;
+    const screenOrientation = {angle: 0, type: 'portraitPrimary'};
+
+    await this.#context.sendCDPCommand('Emulation.setDeviceMetricsOverride', {
+      mobile,
+      width,
+      height,
+      deviceScaleFactor,
+      screenOrientation,
+    });
+
+    this.#viewport = viewport;
+  }
+
+  override viewport(): Viewport | null {
+    return this.#viewport;
   }
 
   override async pdf(options: PDFOptions = {}): Promise<Buffer> {
