@@ -30,6 +30,7 @@ import {Connection} from '../common/Connection.js';
 import {TimeoutError} from '../common/Errors.js';
 import {NodeWebSocketTransport as WebSocketTransport} from '../common/NodeWebSocketTransport.js';
 import {Product} from '../common/Product.js';
+import {Viewport} from '../common/PuppeteerViewport.js';
 import {debugError} from '../common/util.js';
 
 import {
@@ -139,6 +140,7 @@ export class ProductLauncher {
             timeout,
             protocolTimeout,
             slowMo,
+            defaultViewport,
           }
         );
       } else {
@@ -159,7 +161,13 @@ export class ProductLauncher {
           browser = await this.createBiDiOverCDPBrowser(
             browserProcess,
             connection,
-            browserCloseCallback
+            browserCloseCallback,
+            {
+              timeout,
+              protocolTimeout,
+              slowMo,
+              defaultViewport,
+            }
           );
         } else {
           browser = await CDPBrowser._create(
@@ -313,8 +321,15 @@ export class ProductLauncher {
   protected async createBiDiOverCDPBrowser(
     browserProcess: ReturnType<typeof launch>,
     connection: Connection,
-    closeCallback: BrowserCloseCallback
+    closeCallback: BrowserCloseCallback,
+    opts: {
+      timeout: number;
+      protocolTimeout: number | undefined;
+      slowMo: number;
+      defaultViewport: Viewport | null;
+    }
   ): Promise<Browser> {
+    // TODO: use other options too.
     const BiDi = await import(
       /* webpackIgnore: true */ '../common/bidi/bidi.js'
     );
@@ -323,6 +338,7 @@ export class ProductLauncher {
       connection: bidiConnection,
       closeCallback,
       process: browserProcess.nodeProcess,
+      defaultViewport: opts.defaultViewport,
     });
   }
 
@@ -332,7 +348,12 @@ export class ProductLauncher {
   protected async createBiDiBrowser(
     browserProcess: ReturnType<typeof launch>,
     closeCallback: BrowserCloseCallback,
-    opts: {timeout: number; protocolTimeout: number | undefined; slowMo: number}
+    opts: {
+      timeout: number;
+      protocolTimeout: number | undefined;
+      slowMo: number;
+      defaultViewport: Viewport | null;
+    }
   ): Promise<Browser> {
     const browserWSEndpoint =
       (await browserProcess.waitForLineOutput(
@@ -348,10 +369,12 @@ export class ProductLauncher {
       opts.slowMo,
       opts.protocolTimeout
     );
+    // TODO: use other options too.
     return await BiDi.Browser.create({
       connection: bidiConnection,
       closeCallback,
       process: browserProcess.nodeProcess,
+      defaultViewport: opts.defaultViewport,
     });
   }
 

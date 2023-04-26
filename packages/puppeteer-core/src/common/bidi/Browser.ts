@@ -24,6 +24,7 @@ import {
   BrowserContextOptions,
 } from '../../api/Browser.js';
 import {BrowserContext as BrowserContextBase} from '../../api/BrowserContext.js';
+import {Viewport} from '../PuppeteerViewport.js';
 
 import {BrowserContext} from './BrowserContext.js';
 import {Connection} from './Connection.js';
@@ -48,12 +49,14 @@ export class Browser extends BrowserBase {
   #process?: ChildProcess;
   #closeCallback?: BrowserCloseCallback;
   #connection: Connection;
+  #defaultViewport: Viewport | null;
 
   constructor(opts: Options) {
     super();
     this.#process = opts.process;
     this.#closeCallback = opts.closeCallback;
     this.#connection = opts.connection;
+    this.#defaultViewport = opts.defaultViewport;
   }
 
   override async close(): Promise<void> {
@@ -72,7 +75,9 @@ export class Browser extends BrowserBase {
   override async createIncognitoBrowserContext(
     _options?: BrowserContextOptions
   ): Promise<BrowserContextBase> {
-    return new BrowserContext(this.#connection);
+    return new BrowserContext(this.#connection, {
+      defaultViewport: this.#defaultViewport,
+    });
   }
 }
 
@@ -80,4 +85,5 @@ interface Options {
   process?: ChildProcess;
   closeCallback?: BrowserCloseCallback;
   connection: Connection;
+  defaultViewport: Viewport | null;
 }
