@@ -144,11 +144,24 @@ export function getExpectationUpdates(
       pass
     );
     if (expectationEntry && !expectationEntry.expectations.includes('PASS')) {
-      addEntry({
-        expectation: expectationEntry,
-        action: 'remove',
-        basedOn: expectationEntry,
-      });
+      if (isWildCardPattern(expectationEntry.testIdPattern)) {
+        addEntry({
+          expectation: {
+            testIdPattern: getTestId(pass.file, pass.fullTitle),
+            platforms: context.platforms,
+            parameters: context.parameters,
+            expectations: ['PASS'],
+          },
+          action: 'add',
+          basedOn: expectationEntry,
+        });
+      } else {
+        addEntry({
+          expectation: expectationEntry,
+          action: 'remove',
+          basedOn: expectationEntry,
+        });
+      }
     }
   }
 
@@ -163,7 +176,7 @@ export function getExpectationUpdates(
       expectations,
       failure
     );
-    if (expectationEntry) {
+    if (expectationEntry && !expectationEntry.expectations.includes('SKIP')) {
       if (
         !expectationEntry.expectations.includes(
           getTestResultForFailure(failure)
@@ -197,7 +210,7 @@ export function getExpectationUpdates(
           });
         }
       }
-    } else {
+    } else if (!expectationEntry) {
       addEntry({
         expectation: {
           testIdPattern: getTestId(failure.file, failure.fullTitle),
@@ -206,7 +219,6 @@ export function getExpectationUpdates(
           expectations: [getTestResultForFailure(failure)],
         },
         action: 'add',
-        basedOn: expectationEntry,
       });
     }
   }
