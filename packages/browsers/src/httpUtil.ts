@@ -61,8 +61,8 @@ export function httpRequest(
       options.hostname = proxy.hostname;
       options.protocol = proxy.protocol;
       options.port = proxy.port;
-      options.headers ||= {};
-      options.headers.Host ||= url.host;
+      options.headers ??= {};
+      options.headers['Host'] ||= url.host;
     } else {
       options.agent = createHttpsProxyAgent({
         host: proxy.host,
