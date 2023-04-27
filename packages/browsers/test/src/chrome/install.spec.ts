@@ -136,9 +136,11 @@ describe('Chrome install', () => {
     const proxyUrl = new URL(`http://localhost:54321`);
     let proxyServer: http.Server;
     let proxiedRequestUrls: string[] = [];
+    let proxiedRequestHosts: string[] = [];
 
     beforeEach(() => {
       proxiedRequestUrls = [];
+      proxiedRequestHosts = [];
       proxyServer = http
         .createServer(
           (
@@ -164,6 +166,7 @@ describe('Chrome install', () => {
             );
             originalRequest.pipe(proxyRequest, {end: true});
             proxiedRequestUrls.push(url);
+            proxiedRequestHosts.push(originalRequest.headers?.host || '');
           }
         )
         .listen({
@@ -203,6 +206,9 @@ describe('Chrome install', () => {
       assert.deepStrictEqual(proxiedRequestUrls, [
         getServerUrl() + '/113.0.5672.0/linux64/chrome-linux64.zip',
       ]);
+      assert.deepStrictEqual(proxiedRequestHosts, [
+        getServerUrl().replace('http://', ''),
+      ]);
     });
 
     it('can download via a proxy', async function () {
@@ -224,6 +230,9 @@ describe('Chrome install', () => {
       assert.ok(fs.existsSync(expectedOutputPath));
       assert.deepStrictEqual(proxiedRequestUrls, [
         getServerUrl() + '/113.0.5672.0/linux64/chrome-linux64.zip',
+      ]);
+      assert.deepStrictEqual(proxiedRequestHosts, [
+        getServerUrl().replace('http://', ''),
       ]);
     });
   });
