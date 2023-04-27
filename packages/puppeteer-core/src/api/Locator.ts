@@ -16,11 +16,10 @@
 
 import {AbortError, TimeoutError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
-import type {MouseButton} from '../common/Input.js';
 import {debugError} from '../common/util.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
-import {ElementHandle, BoundingBox} from './ElementHandle.js';
+import {ElementHandle, BoundingBox, ClickOptions} from './ElementHandle.js';
 import type {Page} from './Page.js';
 
 /**
@@ -137,25 +136,25 @@ export class Locator extends EventEmitter {
   ): Promise<void> {
     let isActive = true;
     let isUserAborted = false;
-    let iterationController: AbortController;
+    let controller: AbortController;
     // If the loop times out, we abort only the last iteration's controller.
     const timeoutId = setTimeout(() => {
       isActive = false;
-      iterationController?.abort();
+      controller?.abort();
     }, timeout);
     // If the user's signal aborts, we abort the last iteration and the loop.
     signal?.addEventListener(
       'abort',
       () => {
-        iterationController?.abort();
+        controller?.abort();
         isUserAborted = true;
       },
       {once: true}
     );
     while (isActive && !isUserAborted) {
-      iterationController = new AbortController();
+      controller = new AbortController();
       try {
-        const result = await fn(iterationController.signal);
+        const result = await fn(controller.signal);
         if (result) {
           clearTimeout(timeoutId);
           return;
@@ -171,16 +170,12 @@ export class Locator extends EventEmitter {
           if (err instanceof AbortError) {
             continue;
           }
-          // Ignore error if the user's signal aborted.
-          if (signal?.aborted) {
-            return;
-          }
         }
         throw err;
       } finally {
         // We abort any operations that might have been started by `fn`, because
         // the iteration is now over.
-        iterationController.abort();
+        controller.abort();
       }
       await new Promise(resolve => {
         return setTimeout(resolve, 100);
@@ -233,10 +228,13 @@ export class Locator extends EventEmitter {
     element: ElementHandle,
     signal?: AbortSignal
   ): Promise<void> => {
+    if (this.#options.visibility === 'hidden') {
+      await this.#waitForFunction(async () => {
+        return element.isHidden();
+      }, signal);
+    }
     await this.#waitForFunction(async () => {
-      return this.#options.visibility === 'hidden'
-        ? element.isHidden()
-        : element.isVisible();
+      return element.isVisible();
     }, signal);
   };
 
@@ -246,9 +244,8 @@ export class Locator extends EventEmitter {
    */
   #waitForEnabled = async (
     element: ElementHandle,
-    _signal?: AbortSignal
+    signal?: AbortSignal
   ): Promise<void> => {
-    // TODO: use AbortSignal in waitForFunction.
     await this.#page.waitForFunction(
       el => {
         if (['button', 'textarea', 'input', 'select'].includes(el.tagName)) {
@@ -258,6 +255,7 @@ export class Locator extends EventEmitter {
       },
       {
         timeout: this.#options.operationTimeout,
+        signal,
       },
       element
     );
@@ -308,22 +306,22 @@ export class Locator extends EventEmitter {
     }, signal);
   };
 
-  async #performAction(
-    payloadFn: (el: ElementHandle) => Promise<void>,
-    actionOptions?: ActionOptions
+  async #run(
+    action: (el: ElementHandle) => Promise<void>,
+    options?: ActionOptions
   ) {
     function checkAbortSignal() {
-      if (actionOptions?.signal?.aborted) {
-        throw new Error(`Locator was aborted.`);
+      if (options?.signal?.aborted) {
+        throw new AbortError(`Locator was aborted.`);
       }
     }
     await this.#waitForFunction(
-      async iterationSignal => {
+      async signal => {
         // 1. Select the element without visibility checks.
         const element = await this.#page.waitForSelector(this.#selector, {
           visible: false,
           timeout: this.#options.operationTimeout,
-          signal: iterationSignal,
+          signal,
         });
         // Retry if no element is found.
         if (!element) {
@@ -333,30 +331,30 @@ export class Locator extends EventEmitter {
           checkAbortSignal();
           // 2. Perform action specific checks.
           await Promise.all(
-            actionOptions?.conditions.map(check => {
-              return check(element, iterationSignal);
+            options?.conditions.map(check => {
+              return check(element, signal);
             }) || []
           );
           checkAbortSignal();
           // 3. Perform the action
           this.emit(LocatorEmittedEvents.Action);
-          await payloadFn(element);
+          await action(element);
           return true;
         } finally {
           void element.dispose().catch(debugError);
         }
       },
-      actionOptions?.signal,
+      options?.signal,
       this.#options.timeout
     );
   }
 
-  async click(clickOptions?: {
-    delay?: number;
-    button?: MouseButton;
-    signal?: AbortSignal;
-  }): Promise<void> {
-    await this.#performAction(
+  async click(
+    clickOptions?: ClickOptions & {
+      signal?: AbortSignal;
+    }
+  ): Promise<void> {
+    await this.#run(
       async element => {
         await element.click(clickOptions);
       },

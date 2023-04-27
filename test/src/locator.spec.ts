@@ -15,7 +15,7 @@
  */
 
 import expect from 'expect';
-import {TimeoutError} from 'puppeteer-core';
+import {TimeoutError, AbortError} from 'puppeteer-core';
 import {LocatorEmittedEvents} from 'puppeteer-core/internal/api/Locator.js';
 import sinon from 'sinon';
 
@@ -166,12 +166,11 @@ describe('Locator', function () {
     });
 
     it('should time out', async () => {
-      let clock: sinon.SinonFakeTimers | undefined;
+      const clock = sinon.useFakeTimers();
       try {
-        clock = sinon.useFakeTimers();
         const {page} = getTestState();
 
-        await page.setDefaultTimeout(5000);
+        page.setDefaultTimeout(5000);
         await page.setViewport({width: 500, height: 500});
         await page.setContent(`
           <button style="display: none;" onclick="this.innerText = 'clicked';">test</button>
@@ -188,11 +187,9 @@ describe('Locator', function () {
 
     it('should retry clicks on errors', async () => {
       const {page} = getTestState();
-      let clock: sinon.SinonFakeTimers | undefined;
+      const clock = sinon.useFakeTimers();
       try {
-        clock = sinon.useFakeTimers();
-
-        await page.setDefaultTimeout(5000);
+        page.setDefaultTimeout(5000);
         await page.setViewport({width: 500, height: 500});
         await page.setContent(`
           <button style="display: none;" onclick="this.innerText = 'clicked';">test</button>
@@ -209,10 +206,8 @@ describe('Locator', function () {
 
     it('can be aborted', async () => {
       const {page} = getTestState();
-      let clock: sinon.SinonFakeTimers | undefined;
+      const clock = sinon.useFakeTimers();
       try {
-        clock = sinon.useFakeTimers();
-
         page.setDefaultTimeout(5000);
 
         await page.setViewport({width: 500, height: 500});
@@ -226,7 +221,7 @@ describe('Locator', function () {
         clock.tick(2000);
         abortController.abort();
         await expect(result).rejects.toEqual(
-          new Error('waitForFunction was aborted.')
+          new AbortError('waitForFunction was aborted.')
         );
       } finally {
         clock?.restore();
