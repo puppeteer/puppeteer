@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.0.0](https://github.com/puppeteer/puppeteer/compare/browsers-v0.5.0...browsers-v1.0.0) (2023-05-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop support for node14 ([#10019](https://github.com/puppeteer/puppeteer/issues/10019))
+* switch to Chrome for Testing instead of Chromium ([#10054](https://github.com/puppeteer/puppeteer/issues/10054))
+
+### Features
+
+* drop support for node14 ([#10019](https://github.com/puppeteer/puppeteer/issues/10019)) ([7405d65](https://github.com/puppeteer/puppeteer/commit/7405d6585aa09b240fbab09aa360674d4442b3d9))
+* switch to Chrome for Testing instead of Chromium ([#10054](https://github.com/puppeteer/puppeteer/issues/10054)) ([df4d60c](https://github.com/puppeteer/puppeteer/commit/df4d60c187aa11c4ad783827242e9511f4ec2aab))
+
+
+### Bug Fixes
+
+* add Host header when used with http_proxy ([#10080](https://github.com/puppeteer/puppeteer/issues/10080)) ([edbfff7](https://github.com/puppeteer/puppeteer/commit/edbfff7b04baffc29c01c37c595d6b3355c0dea0))
+
 ## [0.5.0](https://github.com/puppeteer/puppeteer/compare/browsers-v0.4.1...browsers-v0.5.0) (2023-04-21)
 
 
