@@ -20,7 +20,6 @@ import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {interpolateFunction, stringifyFunction} from '../util/Function.js';
 
-import {AbortError} from './Errors.js';
 import type {Frame} from './Frame.js';
 import {transposeIterableHandle} from './HandleIterator.js';
 import type {WaitForSelectorOptions} from './IsolatedWorld.js';
@@ -170,9 +169,7 @@ export class QueryHandler {
     const {visible = false, hidden = false, timeout, signal} = options;
 
     try {
-      if (signal?.aborted) {
-        throw new AbortError('QueryHander.waitFor has been aborted.');
-      }
+      signal?.throwIfAborted();
 
       const handle = await frame.worlds[PUPPETEER_WORLD].waitForFunction(
         async (PuppeteerUtil, query, selector, root, visible) => {
@@ -203,7 +200,7 @@ export class QueryHandler {
 
       if (signal?.aborted) {
         await handle.dispose();
-        throw new AbortError('QueryHander.waitFor has been aborted.');
+        throw signal.reason;
       }
 
       if (!(handle instanceof ElementHandle)) {
@@ -213,6 +210,9 @@ export class QueryHandler {
       return frame.worlds[MAIN_WORLD].transferHandle(handle);
     } catch (error) {
       if (!isErrorLike(error)) {
+        throw error;
+      }
+      if (error.name === 'AbortError') {
         throw error;
       }
       error.message = `Waiting for selector \`${selector}\` failed: ${error.message}`;

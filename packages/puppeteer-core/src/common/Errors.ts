@@ -43,17 +43,6 @@ export class CustomError extends Error {
 export class TimeoutError extends CustomError {}
 
 /**
- * AbortError is emitted whenever certain operations are terminated due to
- * an abort request.
- *
- * @remarks
- * Example operations are {@link Page.waitForSelector | page.waitForSelector}.
- *
- * @public
- */
-export class AbortError extends CustomError {}
-
-/**
  * ProtocolError is emitted whenever there is an error from the protocol.
  *
  * @public
