@@ -649,6 +649,19 @@ describe('Page', function () {
       expect(await message.args()[1]!.jsonValue()).toEqual(5);
       expect(await message.args()[2]!.jsonValue()).toEqual({foo: 'bar'});
     });
+    it('should work on script call right after navigation', async () => {
+      const {page} = getTestState();
+
+      const [message] = await Promise.all([
+        waitEvent<ConsoleMessage>(page, 'console'),
+        page.goto(
+          // Firefox prints warn if <!DOCTYPE html> is not present
+          `data:text/html,<!DOCTYPE html><script>console.log('SOME_LOG_MESSAGE');</script>`
+        ),
+      ]);
+
+      expect(message.text()).toEqual('SOME_LOG_MESSAGE');
+    });
     it('should work for different console API calls with logging functions', async () => {
       const {page} = getTestState();
 
