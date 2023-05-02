@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.11.1...puppeteer-core-v20.0.0) (2023-05-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop support for node14 ([#10019](https://github.com/puppeteer/puppeteer/issues/10019))
+* switch to Chrome for Testing instead of Chromium ([#10054](https://github.com/puppeteer/puppeteer/issues/10054))
+
+### Features
+
+* add AbortSignal to waitForFunction ([#10078](https://github.com/puppeteer/puppeteer/issues/10078)) ([4dd4cb9](https://github.com/puppeteer/puppeteer/commit/4dd4cb929242a6b1a621fd461edd3167d40e1c4c))
+* drop support for node14 ([#10019](https://github.com/puppeteer/puppeteer/issues/10019)) ([7405d65](https://github.com/puppeteer/puppeteer/commit/7405d6585aa09b240fbab09aa360674d4442b3d9))
+* switch to Chrome for Testing instead of Chromium ([#10054](https://github.com/puppeteer/puppeteer/issues/10054)) ([df4d60c](https://github.com/puppeteer/puppeteer/commit/df4d60c187aa11c4ad783827242e9511f4ec2aab))
+
+
+### Bug Fixes
+
+* use AbortSignal.throwIfAborted ([#10105](https://github.com/puppeteer/puppeteer/issues/10105)) ([575f00a](https://github.com/puppeteer/puppeteer/commit/575f00a31d0278f7ff27096e770ff84399cd9993))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 0.5.0 to 1.0.0
+
 ## [19.11.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.11.0...puppeteer-core-v19.11.1) (2023-04-25)
 
 
