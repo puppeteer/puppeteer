@@ -92,7 +92,7 @@
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=14.1.0"
+    "node": ">=16.0.0"
   },
   "files": [
     "lib",
