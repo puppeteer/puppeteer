@@ -8,6 +8,25 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 0.3.0 to 0.3.1
 
+## [20.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v19.11.1...puppeteer-v20.0.0) (2023-05-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* switch to Chrome for Testing instead of Chromium ([#10054](https://github.com/puppeteer/puppeteer/issues/10054))
+
+### Features
+
+* switch to Chrome for Testing instead of Chromium ([#10054](https://github.com/puppeteer/puppeteer/issues/10054)) ([df4d60c](https://github.com/puppeteer/puppeteer/commit/df4d60c187aa11c4ad783827242e9511f4ec2aab))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 19.11.1 to 20.0.0
+    * @puppeteer/browsers bumped from 0.5.0 to 1.0.0
+
 ## [19.11.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v19.11.0...puppeteer-v19.11.1) (2023-04-25)
 
 
