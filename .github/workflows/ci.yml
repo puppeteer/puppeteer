@@ -150,12 +150,12 @@ jobs:
           PUPPETEER_SKIP_DOWNLOAD: true
       - name: Build packages
         run: npm run build --workspace @puppeteer-test/test
-      - name: Setup cache for Chromium binary
+      - name: Setup cache for Chrome binary
         uses: actions/cache@v3
         with:
           path: ~/.cache/puppeteer/chrome
-          key: ${{ runner.os }}-chromium-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
-      - name: Install Chromium
+          key: ${{ runner.os }}-Chrome-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
+      - name: Install Chrome
         run: npm run postinstall
       - name: Tests types
         run: npm run test-types

@@ -23,21 +23,7 @@ import {Product} from './Product.js';
  *
  * @public
  */
-export interface ExperimentsConfiguration {
-  /**
-   * Require Puppeteer to download Chromium for Apple M1.
-   *
-   * On Apple M1 devices Puppeteer by default downloads the version for
-   * Intel's processor which runs via Rosetta. It works without any problems,
-   * however, with this option, you should get more efficient resource usage
-   * (CPU and RAM) that could lead to a faster execution time.
-   *
-   * Can be overridden by `PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM`.
-   *
-   * @defaultValue `false`
-   */
-  macArmChromiumEnabled?: boolean;
-}
+export type ExperimentsConfiguration = Record<string, never>;
 
 /**
  * Defines options to configure Puppeteer's behavior during installation and
@@ -68,7 +54,7 @@ export interface Configuration {
    */
   cacheDirectory?: string;
   /**
-   * Specifies the URL prefix that is used to download Chromium.
+   * Specifies the URL prefix that is used to download the browser.
    *
    * Can be overridden by `PUPPETEER_DOWNLOAD_HOST`.
    *

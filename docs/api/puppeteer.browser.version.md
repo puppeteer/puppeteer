@@ -20,6 +20,6 @@ Promise&lt;string&gt;
 
 ## Remarks
 
-For headless Chromium, this is similar to `HeadlessChrome/61.0.3153.0`. For non-headless, this is similar to `Chrome/61.0.3153.0`.
+For headless browser, this is similar to `HeadlessChrome/61.0.3153.0`. For non-headless, this is similar to `Chrome/61.0.3153.0`.
 
-The format of browser.version() might change with future releases of Chromium.
+The format of browser.version() might change with future releases of browsers.

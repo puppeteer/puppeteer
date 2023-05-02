@@ -97,19 +97,10 @@ taking place in the Chromium repository. Here’s a typical story:
 - Once the upstream fix is landed, we roll updated Chromium into Puppeteer:
   https://github.com/puppeteer/puppeteer/pull/2769
 
-## Q: Which Chromium version does Puppeteer use?
+## Q: Which Chrome version does Puppeteer use?
 
-Find the version using one of the following ways:
-
-- Look for the `chromium` entry in
-  [revisions.ts](https://github.com/puppeteer/puppeteer/blob/main/packages/puppeteer-core/src/revisions.ts).
-  To find the corresponding Chromium commit and version number, search for the
-  revision prefixed by an `r` in [OmahaProxy](https://omahaproxy.appspot.com/)'s
-  "Find Releases" section.
-- Look for the `versionsPerRelease` map in
-  [versions.js](https://github.com/puppeteer/puppeteer/blob/main/versions.js)
-  which contains mapping between Chromium and the smallest Puppeteer version
-  that supports it.
+Look for the `chrome` entry in
+[revisions.ts](https://github.com/puppeteer/puppeteer/blob/main/packages/puppeteer-core/src/revisions.ts).
 
 ## Q: Which Firefox version does Puppeteer use?
 
@@ -175,7 +166,7 @@ that incorporate audio and video. (For example,
 [video playback/screenshots is likely to fail](https://github.com/puppeteer/puppeteer/issues/291).)
 There are two reasons for this:
 
-- Puppeteer is bundled with Chromium — not Chrome — and so by default, it
+- Puppeteer is bundled with [Chrome for Testing](https://goo.gle/chrome-for-testing) — not the regular Chrome — and so by default, it
   inherits all of
   [Chromium's media-related limitations](https://www.chromium.org/audio-video).
   This means that Puppeteer does not support licensed formats such as AAC or
@@ -194,30 +185,6 @@ There are two reasons for this:
 We have a
 [troubleshooting](https://pptr.dev/troubleshooting)
 guide for various operating systems that lists the required dependencies.
-
-#### Q: Chromium gets downloaded on every `npm ci` run. How can I cache the download?
-
-The default download path is `node_modules/puppeteer/.local-chromium`. However,
-you can change that path with the `PUPPETEER_DOWNLOAD_PATH` environment
-variable.
-
-Puppeteer uses that variable to resolve the Chromium executable location during
-launch, so you don’t need to specify `PUPPETEER_EXECUTABLE_PATH` as well.
-
-For example, if you wish to keep the Chromium download in `~/.npm/chromium`:
-
-```bash
-export PUPPETEER_DOWNLOAD_PATH=~/.npm/chromium
-npm ci
-
-# by default the Chromium executable path is inferred
-# from the download path
-npm test
-
-# a new run of npm ci will check for the existence of
-# Chromium in ~/.npm/chromium
-npm ci
-```
 
 #### Q: I have more questions! Where do I ask?
 

@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 import {existsSync} from 'fs';
-import os, {tmpdir} from 'os';
+import {tmpdir} from 'os';
 import {join} from 'path';
 
 import {
+  Browser as InstalledBrowser,
   CDP_WEBSOCKET_ENDPOINT_REGEX,
   launch,
   TimeoutError as BrowsersTimeoutError,
   WEBDRIVER_BIDI_WEBSOCKET_ENDPOINT_REGEX,
+  computeExecutablePath,
 } from '@puppeteer/browsers';
 
 import {Browser, BrowserCloseCallback} from '../api/Browser.js';
@@ -392,7 +394,7 @@ export class ProductLauncher {
    * @internal
    */
   protected resolveExecutablePath(): string {
-    const executablePath = this.puppeteer.configuration.executablePath;
+    let executablePath = this.puppeteer.configuration.executablePath;
     if (executablePath) {
       if (!existsSync(executablePath)) {
         throw new Error(
@@ -402,34 +404,32 @@ export class ProductLauncher {
       return executablePath;
     }
 
-    const ubuntuChromiumPath = '/usr/bin/chromium-browser';
-    if (
-      this.product === 'chrome' &&
-      os.platform() !== 'darwin' &&
-      os.arch() === 'arm64' &&
-      existsSync(ubuntuChromiumPath)
-    ) {
-      return ubuntuChromiumPath;
+    function productToBrowser(product?: Product) {
+      switch (product) {
+        case 'chrome':
+          return InstalledBrowser.CHROME;
+        case 'firefox':
+          return InstalledBrowser.FIREFOX;
+      }
+      return InstalledBrowser.CHROME;
     }
 
-    const browserFetcher = this.puppeteer.createBrowserFetcher({
-      product: this.product,
-      path: this.puppeteer.defaultDownloadPath!,
+    executablePath = computeExecutablePath({
+      cacheDir: this.puppeteer.defaultDownloadPath!,
+      browser: productToBrowser(this.product),
+      buildId: this.puppeteer.browserRevision,
     });
 
-    const revisionInfo = browserFetcher.revisionInfo(
-      this.puppeteer.browserRevision
-    );
-    if (!revisionInfo.local) {
+    if (!existsSync(executablePath)) {
       if (this.puppeteer.configuration.browserRevision) {
         throw new Error(
-          `Tried to find the browser at the configured path (${revisionInfo.executablePath}) for revision ${this.puppeteer.browserRevision}, but no executable was found.`
+          `Tried to find the browser at the configured path (${executablePath}) for revision ${this.puppeteer.browserRevision}, but no executable was found.`
         );
       }
       switch (this.product) {
         case 'chrome':
           throw new Error(
-            `Could not find Chromium (rev. ${this.puppeteer.browserRevision}). This can occur if either\n` +
+            `Could not find Chrome (ver. ${this.puppeteer.browserRevision}). This can occur if either\n` +
               ' 1. you did not perform an installation before running the script (e.g. `npm install`) or\n' +
               ` 2. your cache path is incorrectly configured (which is: ${this.puppeteer.configuration.cacheDirectory}).\n` +
               'For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.'
@@ -443,6 +443,6 @@ export class ProductLauncher {
           );
       }
     }
-    return revisionInfo.executablePath;
+    return executablePath;
   }
 }

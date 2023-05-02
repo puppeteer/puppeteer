@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import {join} from 'path';
-
 import {Browser} from '../api/Browser.js';
 import {BrowserConnectOptions} from '../common/BrowserConnector.js';
 import {Configuration} from '../common/Configuration.js';
@@ -27,7 +25,6 @@ import {
 } from '../common/Puppeteer.js';
 import {PUPPETEER_REVISIONS} from '../revisions.js';
 
-import {BrowserFetcher, BrowserFetcherOptions} from './BrowserFetcher.js';
 import {ChromeLauncher} from './ChromeLauncher.js';
 import {FirefoxLauncher} from './FirefoxLauncher.js';
 import {
@@ -116,7 +113,7 @@ export class PuppeteerNode extends Puppeteer {
         break;
       default:
         this.configuration.defaultProduct = 'chrome';
-        this.defaultBrowserRevision = PUPPETEER_REVISIONS.chromium;
+        this.defaultBrowserRevision = PUPPETEER_REVISIONS.chrome;
         break;
     }
 
@@ -124,7 +121,6 @@ export class PuppeteerNode extends Puppeteer {
     this.launch = this.launch.bind(this);
     this.executablePath = this.executablePath.bind(this);
     this.defaultArgs = this.defaultArgs.bind(this);
-    this.createBrowserFetcher = this.createBrowserFetcher.bind(this);
   }
 
   /**
@@ -157,9 +153,9 @@ export class PuppeteerNode extends Puppeteer {
    *
    * @remarks
    * Puppeteer can also be used to control the Chrome browser, but it works best
-   * with the version of Chromium downloaded by default by Puppeteer. There is
-   * no guarantee it will work with any other version. If Google Chrome (rather
-   * than Chromium) is preferred, a
+   * with the version of Chrome for Testing downloaded by default.
+   * There is no guarantee it will work with any other version. If Google Chrome
+   * (rather than Chrome for Testing) is preferred, a
    * {@link https://www.google.com/chrome/browser/canary.html | Chrome Canary}
    * or
    * {@link https://www.chromium.org/getting-involved/dev-channel | Dev Channel}
@@ -167,7 +163,9 @@ export class PuppeteerNode extends Puppeteer {
    * {@link https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/ | this article}
    * for a description of the differences between Chromium and Chrome.
    * {@link https://chromium.googlesource.com/chromium/src/+/lkgr/docs/chromium_browser_vs_google_chrome.md | This article}
-   * describes some differences for Linux users.
+   * describes some differences for Linux users. See
+   * {@link https://goo.gle/chrome-for-testing | this doc} for the description
+   * of Chrome for Testing.
    *
    * @param options - Options to configure launching behavior.
    */
@@ -189,7 +187,7 @@ export class PuppeteerNode extends Puppeteer {
     }
     switch (this.lastLaunchedProduct) {
       case 'chrome':
-        this.defaultBrowserRevision = PUPPETEER_REVISIONS.chromium;
+        this.defaultBrowserRevision = PUPPETEER_REVISIONS.chrome;
         this.#_launcher = new ChromeLauncher(this);
         break;
       case 'firefox':
@@ -227,10 +225,7 @@ export class PuppeteerNode extends Puppeteer {
    * @internal
    */
   get defaultDownloadPath(): string | undefined {
-    return (
-      this.configuration.downloadPath ??
-      join(this.configuration.cacheDirectory!, this.product)
-    );
+    return this.configuration.downloadPath ?? this.configuration.cacheDirectory;
   }
 
   /**
@@ -268,40 +263,5 @@ export class PuppeteerNode extends Puppeteer {
    */
   defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
     return this.#launcher.defaultArgs(options);
-  }
-
-  /**
-   * @param options - Set of configurable options to specify the settings of the
-   * BrowserFetcher.
-   *
-   * @remarks
-   * If you are using `puppeteer-core`, do not use this method. Just
-   * construct {@link BrowserFetcher} manually.
-   *
-   * @returns A new BrowserFetcher instance.
-   */
-  createBrowserFetcher(
-    options: Partial<BrowserFetcherOptions> = {}
-  ): BrowserFetcher {
-    const downloadPath = this.defaultDownloadPath;
-    if (!options.path && downloadPath) {
-      options.path = downloadPath;
-    }
-    if (!options.path) {
-      throw new Error('A `path` must be specified for `puppeteer-core`.');
-    }
-    if (
-      !('useMacOSARMBinary' in options) &&
-      this.configuration.experiments?.macArmChromiumEnabled
-    ) {
-      options.useMacOSARMBinary = true;
-    }
-    if (!('host' in options) && this.configuration.downloadHost) {
-      options.host = this.configuration.downloadHost;
-    }
-    if (!('product' in options) && this.configuration.defaultProduct) {
-      options.product = this.configuration.defaultProduct;
-    }
-    return new BrowserFetcher(options as BrowserFetcherOptions);
   }
 }

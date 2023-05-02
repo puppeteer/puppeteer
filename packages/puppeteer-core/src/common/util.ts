@@ -394,11 +394,14 @@ export async function getReadableAsBuffer(
   if (path) {
     const fs = await importFSPromises();
     const fileHandle = await fs.open(path, 'w+');
-    for await (const chunk of readable) {
-      buffers.push(chunk);
-      await fileHandle.writeFile(chunk);
+    try {
+      for await (const chunk of readable) {
+        buffers.push(chunk);
+        await fileHandle.writeFile(chunk);
+      }
+    } finally {
+      await fileHandle.close();
     }
-    await fileHandle.close();
   } else {
     for await (const chunk of readable) {
       buffers.push(chunk);
@@ -433,12 +436,20 @@ export async function getReadableFromProtocolStream(
         return;
       }
 
-      const response = await client.send('IO.read', {handle, size});
-      this.push(response.data, response.base64Encoded ? 'base64' : undefined);
-      if (response.eof) {
-        eof = true;
-        await client.send('IO.close', {handle});
-        this.push(null);
+      try {
+        const response = await client.send('IO.read', {handle, size});
+        this.push(response.data, response.base64Encoded ? 'base64' : undefined);
+        if (response.eof) {
+          eof = true;
+          await client.send('IO.close', {handle});
+          this.push(null);
+        }
+      } catch (error) {
+        if (isErrorLike(error)) {
+          this.destroy(error);
+          return;
+        }
+        throw error;
       }
     },
   });

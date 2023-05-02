@@ -28,7 +28,7 @@ An AXNode object representing the snapshot.
 
 ## Remarks
 
-**NOTE** The Chromium accessibility tree contains nodes that go unused on most platforms and by most screen readers. Puppeteer will discard them as well for an easier to process tree, unless `interestingOnly` is set to `false`.
+**NOTE** The Chrome accessibility tree contains nodes that go unused on most platforms and by most screen readers. Puppeteer will discard them as well for an easier to process tree, unless `interestingOnly` is set to `false`.
 
 ## Example 1
 

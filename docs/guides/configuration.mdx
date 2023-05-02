@@ -78,49 +78,6 @@ about the ambient environment is needed (in this case, `__dirname`).
 
 :::
 
-#### Enabling experiments
-
-By default, experiments are turned off, but they can be individually turned on
-using the [`experiments`](../api/puppeteer.configuration) key.
-
-For example, if you want to enable ARM-native macOS chromium, you can use
-
-<Tabs>
-<TabItem value="CommonJS">
-
-```js title=".puppeteerrc.cjs"
-/**
- * @type {import("puppeteer").Configuration}
- */
-module.exports = {
-  experiments: {
-    macArmChromiumEnabled: true,
-  },
-};
-```
-
-</TabItem>
-<TabItem value="JSON">
-
-```json title=".puppeteerrc.json"
-{
-  "experiments": {
-    "macArmChromiumEnabled": true
-  }
-}
-```
-
-</TabItem>
-<TabItem value="YAML">
-
-```yaml title=".puppeteerrc.yaml"
-experiments:
-  macArmChromiumEnabled: true
-```
-
-</TabItem>
-</Tabs>
-
 ## Environment variables
 
 Along with configuration files, Puppeteer looks for certain

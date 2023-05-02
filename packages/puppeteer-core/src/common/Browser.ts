@@ -522,16 +522,6 @@ export class CDPBrowser extends BrowserBase {
     }, []);
   }
 
-  /**
-   * A string representing the browser name and version.
-   *
-   * @remarks
-   *
-   * For headless Chromium, this is similar to `HeadlessChrome/61.0.3153.0`. For
-   * non-headless, this is similar to `Chrome/61.0.3153.0`.
-   *
-   * The format of browser.version() might change with future releases of Chromium.
-   */
   override async version(): Promise<string> {
     const version = await this.#getVersion();
     return version.product;
@@ -546,21 +536,11 @@ export class CDPBrowser extends BrowserBase {
     return version.userAgent;
   }
 
-  /**
-   * Closes Chromium and all of its pages (if any were opened). The
-   * {@link CDPBrowser} object itself is considered to be disposed and cannot be
-   * used anymore.
-   */
   override async close(): Promise<void> {
     await this.#closeCallback.call(null);
     this.disconnect();
   }
 
-  /**
-   * Disconnects Puppeteer from the browser, but leaves the Chromium process running.
-   * After calling `disconnect`, the {@link CDPBrowser} object is considered disposed and
-   * cannot be used anymore.
-   */
   override disconnect(): void {
     this.#targetManager.dispose();
     this.#connection.dispose();

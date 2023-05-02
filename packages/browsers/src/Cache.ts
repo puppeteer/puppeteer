@@ -51,12 +51,7 @@ export class Cache {
   }
 
   browserRoot(browser: Browser): string {
-    // Chromium is a special case for backward compatibility: we install it in
-    // the Chrome folder so that Puppeteer can find it.
-    return path.join(
-      this.#rootDir,
-      browser === Browser.CHROMIUM ? Browser.CHROME : browser
-    );
+    return path.join(this.#rootDir, browser);
   }
 
   installationDir(

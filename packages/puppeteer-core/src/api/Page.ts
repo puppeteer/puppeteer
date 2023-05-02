@@ -388,7 +388,7 @@ export interface PageEventObject {
 /**
  * Page provides methods to interact with a single tab or
  * {@link https://developer.chrome.com/extensions/background_pages | extension background page}
- * in Chromium.
+ * in the browser.
  *
  * :::note
  *
@@ -521,7 +521,7 @@ export class Page extends EventEmitter {
    * :::
    *
    * @remarks
-   * In non-headless Chromium, this method results in the native file picker
+   * In the "headful" browser, this method results in the native file picker
    * dialog `not showing up` for the user.
    *
    * @example

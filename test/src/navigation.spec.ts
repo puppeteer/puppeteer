@@ -759,7 +759,7 @@ describe('navigation', function () {
     it('should return matching responses', async () => {
       const {page, server} = getTestState();
 
-      // Disable cache: otherwise, chromium will cache similar requests.
+      // Disable cache: otherwise, the browser will cache similar requests.
       await page.setCacheEnabled(false);
       await page.goto(server.EMPTY_PAGE);
       // Attach three frames.

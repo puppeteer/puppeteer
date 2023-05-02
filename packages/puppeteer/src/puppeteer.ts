@@ -40,10 +40,6 @@ export const {
   /**
    * @public
    */
-  createBrowserFetcher,
-  /**
-   * @public
-   */
   defaultArgs,
   /**
    * @public

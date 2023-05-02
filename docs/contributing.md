@@ -48,23 +48,6 @@ again.
    npm test
    ```
 
-### macOS ARM and custom executables.
-
-- To run experimental Chromium macOS ARM tests, firstly ensure you have correct
-  Chromium version installed locally (you only need to do this once, not on
-  every test run) and then you can run the tests:
-
-  ```bash
-  PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM=1 npm install
-  PUPPETEER_EXPERIMENTAL_CHROMIUM_MAC_ARM=1 npm run test
-  ```
-
-- To run tests with custom browser executable:
-
-  ```bash
-  BINARY=<path-to-chrome/firefox-executable> npm run test:chrome # Or npm run test:firefox
-  ```
-
 ## Building a single package
 
 To build a single package, you can run:
@@ -280,18 +263,15 @@ npm run build --workspace @puppeteer-test/test
 
 # For Project Maintainers
 
-## Rolling new Chromium version
+## Rolling new Chrome version
 
-The following steps are needed to update the Chromium version.
+The following steps are needed to update the Chrome version.
 
-1. Find a suitable Chromium revision. Not all revisions have builds for all
-   platforms, so we need to find one that does. The easiest way is to run
-   `tools/check_availability.js -rd` to find the latest suitable `dev` Chromium
-   revision (see `tools/check_availability.js -help` for more options).
-2. Update `packages/puppeteer-core/src/revisions.ts` with the found revision
+1. Find a suitable Chrome revision via https://mathiasbynens.github.io/chrome-for-testing/ or https://chromiumdash.appspot.com/.
+2. Update `packages/puppeteer-core/src/revisions.ts` with the found version
    number.
-3. Update `versions.js` with the new Chromium-to-Puppeteer version mapping and
-   update `lastMaintainedChromiumVersion` with the latest stable Chrome version.
+3. Update `versions.js` with the new Chrome-to-Puppeteer version mapping and
+   update `lastMaintainedChromeVersion` with the latest stable Chrome version.
    You can find the corresponding version by going to [omahaproxy.appspot.com](https://omahaproxy.appspot.com/) then
    searching in `Find Releases` for `r<revision>`.
 4. Run `npm run check`. If it fails, update
@@ -304,26 +284,13 @@ The following steps are needed to update the Chromium version.
    change) or work around the changes in Puppeteer (if it’s not desirable to
    change Puppeteer’s observable behavior).
 7. Commit and push your changes and open a pull request. The commit message must
-   contain the version in `Chromium <version> (r<revision>)` format to ensure
+   contain the version in `Chrome <version> (r<revision>)` format to ensure
    that [pptr.dev](https://pptr.dev/) can parse it correctly, e.g.
-   `'feat(chromium): roll to Chromium 90.0.4427.0 (r856583)'`.
+   `'feat(chrome): roll to Chrome 90.0.4427.0 (r856583)'`.
 
 ### Bisecting upstream changes
 
-Sometimes, performing a Chromium roll causes tests to fail. To figure out the
-cause, you need to bisect Chromium revisions to figure out the earliest possible
-revision that changed the behavior. The `bisect` script can be helpful here.
-Given a pattern for one or more unit tests, it will automatically bisect the
-current range:
-
-```bash
-npm run bisect -- --good 686378 --bad 706915 script.js
-npm run bisect -- --unit-test Response.fromCache
-```
-
-By default, it will use the Chromium revision in
-`packages/puppeteer-core/src/revisions.ts` from the `main` branch and from the
-working tree to determine the range to bisect.
+For bisecting Chrome/Chromium changes use https://www.chromium.org/developers/bisect-builds-py/.
 
 ## Releasing to npm
 
