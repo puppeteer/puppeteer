@@ -20,7 +20,7 @@ import type {Poller} from '../injected/Poller.js';
 import {createDeferredPromise} from '../util/DeferredPromise.js';
 import {stringifyFunction} from '../util/Function.js';
 
-import {TimeoutError, AbortError} from './Errors.js';
+import {TimeoutError} from './Errors.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {LazyArg} from './LazyArg.js';
 import {HandleFor} from './types.js';
@@ -66,7 +66,7 @@ export class WaitTask<T = unknown> {
     this.#signal?.addEventListener(
       'abort',
       () => {
-        void this.terminate(new AbortError('WaitTask has been aborted.'));
+        void this.terminate(this.#signal?.reason);
       },
       {
         once: true,
