@@ -109,7 +109,9 @@ const config = {
             function addNamespace(namespace, target) {
               let items = categories.get(namespace);
               if (!items) {
-                throw new Error(`Namespace ${namespace} not found`);
+                throw new Error(
+                  `Namespace ${namespace} not found. Did you update the list of sidebar namespaces below?`
+                );
               }
               items.sort((a, b) => {
                 return a.label.localeCompare(b.label);
@@ -172,7 +174,6 @@ const config = {
                 // the Puppeteer API.
                 'PuppeteerNode',
                 'Puppeteer',
-                'BrowserFetcher',
                 'Browser',
                 'BrowserContext',
                 'Page',
