@@ -188,7 +188,7 @@ export class JSHandle<T = unknown> {
 
   /**
    * Provides access to the
-   * [Protocol.Runtime.RemoteObject](https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-RemoteObject)
+   * {@link https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-RemoteObject | Protocol.Runtime.RemoteObject}
    * backing this handle.
    */
   remoteObject(): Protocol.Runtime.RemoteObject {
