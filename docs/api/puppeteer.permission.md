@@ -21,6 +21,7 @@ export type Permission =
   | 'accessibility-events'
   | 'clipboard-read'
   | 'clipboard-write'
+  | 'clipboard-sanitized-write'
   | 'payment-handler'
   | 'persistent-storage'
   | 'idle-detection'
