@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [20.1.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.0.0...puppeteer-core-v20.1.0) (2023-05-03)
+
+
+### Features
+
+* **chrome:** roll to Chrome 113.0.5672.63 (r1121455) ([#10116](https://github.com/puppeteer/puppeteer/issues/10116)) ([19f4334](https://github.com/puppeteer/puppeteer/commit/19f43348a884edfc3e73ab60e41a9757239df013))
+
 ## [20.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v19.11.1...puppeteer-core-v20.0.0) (2023-05-02)
 
 
