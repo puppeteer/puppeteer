@@ -267,7 +267,7 @@ npm run build --workspace @puppeteer-test/test
 
 The following steps are needed to update the Chrome version.
 
-1. Find a suitable Chrome revision via https://mathiasbynens.github.io/chrome-for-testing/ or https://chromiumdash.appspot.com/.
+1. Find a suitable Chrome revision via https://googlechromelabs.github.io/chrome-for-testing/ or https://chromiumdash.appspot.com/.
 2. Update `packages/puppeteer-core/src/revisions.ts` with the found version
    number.
 3. Update `versions.js` with the new Chrome-to-Puppeteer version mapping and
