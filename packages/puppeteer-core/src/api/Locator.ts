@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {AbortError, TimeoutError} from '../common/Errors.js';
+import {TimeoutError} from '../common/Errors.js';
 import {EventEmitter} from '../common/EventEmitter.js';
 import {debugError} from '../common/util.js';
 import {isErrorLike} from '../util/ErrorLike.js';
@@ -34,14 +34,16 @@ export interface LocatorOptions {
    * Total timeout for the entire locator operation.
    */
   timeout: number;
-  /**
-   * Timeout for individual operations inside the locator. On errors the
-   * operation is retried as long as {@link LocatorOptions.timeout} is not
-   * exceeded. This timeout should be generally much lower as locating an
-   * element means multiple asynchronious operations.
-   */
-  operationTimeout: number;
 }
+
+/**
+ * Timeout for individual operations inside the locator. On errors the
+ * operation is retried as long as {@link LocatorOptions.timeout} is not
+ * exceeded. This timeout should be generally much lower as locating an
+ * element means multiple asynchronious operations.
+ */
+const CONDITION_TIMEOUT = 1_000;
+const WAIT_FOR_FUNCTION_DELAY = 100;
 
 /**
  * @internal
@@ -96,7 +98,6 @@ export class Locator extends EventEmitter {
     options: LocatorOptions = {
       visibility: 'visible',
       timeout: page.getDefaultTimeout(),
-      operationTimeout: 1000,
     }
   ) {
     super();
@@ -132,10 +133,9 @@ export class Locator extends EventEmitter {
   async #waitForFunction(
     fn: (signal: AbortSignal) => unknown,
     signal?: AbortSignal,
-    timeout = this.#options.operationTimeout
+    timeout = CONDITION_TIMEOUT
   ): Promise<void> {
     let isActive = true;
-    let isUserAborted = false;
     let controller: AbortController;
     // If the loop times out, we abort only the last iteration's controller.
     const timeoutId = setTimeout(() => {
@@ -147,11 +147,11 @@ export class Locator extends EventEmitter {
       'abort',
       () => {
         controller?.abort();
-        isUserAborted = true;
+        isActive = false;
       },
       {once: true}
     );
-    while (isActive && !isUserAborted) {
+    while (isActive) {
       controller = new AbortController();
       try {
         const result = await fn(controller.signal);
@@ -167,7 +167,7 @@ export class Locator extends EventEmitter {
             continue;
           }
           // Abort error are ignored as they only affect one iteration.
-          if (err instanceof AbortError) {
+          if (err.name === 'AbortError') {
             continue;
           }
         }
@@ -178,12 +178,10 @@ export class Locator extends EventEmitter {
         controller.abort();
       }
       await new Promise(resolve => {
-        return setTimeout(resolve, 100);
+        return setTimeout(resolve, WAIT_FOR_FUNCTION_DELAY);
       });
     }
-    if (isUserAborted) {
-      throw new AbortError(`waitForFunction was aborted.`);
-    }
+    signal?.throwIfAborted();
     throw new TimeoutError(
       `waitForFunction timed out. The timeout is ${timeout}ms.`
     );
@@ -196,25 +194,20 @@ export class Locator extends EventEmitter {
     element: ElementHandle,
     signal?: AbortSignal
   ): Promise<void> => {
-    function checkAbortSignal() {
-      if (signal?.aborted) {
-        throw new AbortError(`ensureElementIsInTheViewport was aborted.`);
-      }
-    }
     // Side-effect: this also checks if it is connected.
     const isIntersectingViewport = await element.isIntersectingViewport({
       threshold: 0,
     });
-    checkAbortSignal();
+    signal?.throwIfAborted();
     if (!isIntersectingViewport) {
       await element.scrollIntoView();
-      checkAbortSignal();
+      signal?.throwIfAborted();
       await this.#waitForFunction(async () => {
         return await element.isIntersectingViewport({
           threshold: 0,
         });
       }, signal);
-      checkAbortSignal();
+      signal?.throwIfAborted();
     }
   };
 
@@ -254,7 +247,7 @@ export class Locator extends EventEmitter {
         return true;
       },
       {
-        timeout: this.#options.operationTimeout,
+        timeout: CONDITION_TIMEOUT,
         signal,
       },
       element
@@ -310,17 +303,12 @@ export class Locator extends EventEmitter {
     action: (el: ElementHandle) => Promise<void>,
     options?: ActionOptions
   ) {
-    function checkAbortSignal() {
-      if (options?.signal?.aborted) {
-        throw new AbortError(`Locator was aborted.`);
-      }
-    }
     await this.#waitForFunction(
       async signal => {
         // 1. Select the element without visibility checks.
         const element = await this.#page.waitForSelector(this.#selector, {
           visible: false,
-          timeout: this.#options.operationTimeout,
+          timeout: this.#options.timeout,
           signal,
         });
         // Retry if no element is found.
@@ -328,14 +316,14 @@ export class Locator extends EventEmitter {
           return false;
         }
         try {
-          checkAbortSignal();
+          signal?.throwIfAborted();
           // 2. Perform action specific checks.
           await Promise.all(
             options?.conditions.map(check => {
               return check(element, signal);
             }) || []
           );
-          checkAbortSignal();
+          signal?.throwIfAborted();
           // 3. Perform the action
           this.emit(LocatorEmittedEvents.Action);
           await action(element);
