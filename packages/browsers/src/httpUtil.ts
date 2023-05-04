@@ -19,6 +19,7 @@ import * as http from 'http';
 import * as https from 'https';
 import {URL} from 'url';
 
+import createHttpProxyAgent from 'http-proxy-agent';
 import createHttpsProxyAgent from 'https-proxy-agent';
 import {getProxyForUrl} from 'proxy-from-env';
 
@@ -57,12 +58,7 @@ export function httpRequest(
   if (proxyURL) {
     const proxy = new URL(proxyURL);
     if (proxy.protocol === 'http:') {
-      options.path = url.href;
-      options.hostname = proxy.hostname;
-      options.protocol = proxy.protocol;
-      options.port = proxy.port;
-      options.headers ??= {};
-      options.headers['Host'] ||= url.host;
+      options.agent = createHttpProxyAgent(proxyURL);
     } else {
       options.agent = createHttpsProxyAgent({
         host: proxy.host,
