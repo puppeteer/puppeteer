@@ -426,6 +426,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[page.spec] Page Page.Events.Console should work on script call right after navigation",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.setContent *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
