@@ -46,6 +46,7 @@ jobs:
               - '.github/workflows/ci.yml'
               - 'docs/**'
               - 'website/**'
+              - 'README.md'
             ng-schematics:
               - '.github/workflows/ci.yml'
               - 'packages/ng-schematics/**'
