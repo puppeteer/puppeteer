@@ -57,11 +57,11 @@ export const getConfiguration = (): Configuration => {
       process.env['npm_config_puppeteer_browser_revision'] ??
       process.env['npm_package_config_puppeteer_browser_revision'] ??
       configuration.browserRevision;
-    configuration.downloadHost =
-      process.env['PUPPETEER_DOWNLOAD_HOST'] ??
-      process.env['npm_config_puppeteer_download_host'] ??
-      process.env['npm_package_config_puppeteer_download_host'] ??
-      configuration.downloadHost;
+    configuration.downloadBaseUrl =
+      process.env['PUPPETEER_DOWNLOAD_BASE_URL'] ??
+      process.env['npm_config_puppeteer_download_base_url'] ??
+      process.env['npm_package_config_puppeteer_download_base_url'] ??
+      configuration.downloadBaseUrl;
     configuration.downloadPath =
       process.env['PUPPETEER_DOWNLOAD_PATH'] ??
       process.env['npm_config_puppeteer_download_path'] ??
