@@ -178,7 +178,6 @@ export class BidiSerializer {
       case 'NaN':
         return NaN;
       case 'Infinity':
-      case '+Infinity':
         return Infinity;
       case '-Infinity':
         return -Infinity;
