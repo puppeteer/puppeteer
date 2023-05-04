@@ -58,6 +58,7 @@ export const getConfiguration = (): Configuration => {
       process.env['npm_package_config_puppeteer_browser_revision'] ??
       configuration.browserRevision;
     configuration.downloadHost =
+      process.env['PUPPETEER_DOWNLOAD_HOST_NEW'] ??
       process.env['PUPPETEER_DOWNLOAD_HOST'] ??
       process.env['npm_config_puppeteer_download_host'] ??
       process.env['npm_package_config_puppeteer_download_host'] ??
