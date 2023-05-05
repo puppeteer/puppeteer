@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/puppeteer/puppeteer/compare/browsers-v1.0.0...browsers-v1.0.1) (2023-05-05)
+
+
+### Bug Fixes
+
+* rename PUPPETEER_DOWNLOAD_HOST to PUPPETEER_DOWNLOAD_BASE_URL ([#10130](https://github.com/puppeteer/puppeteer/issues/10130)) ([9758cae](https://github.com/puppeteer/puppeteer/commit/9758cae029f90908c4b5340561d9c51c26aa2f21))
+
 ## [1.0.0](https://github.com/puppeteer/puppeteer/compare/browsers-v0.5.0...browsers-v1.0.0) (2023-05-02)
 
 
