@@ -21,3 +21,4 @@ export * from './JSHandle.js';
 export * from './ElementHandle.js';
 export * from './HTTPResponse.js';
 export * from './HTTPRequest.js';
+export * from './Locator.js';
