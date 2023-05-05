@@ -84,7 +84,7 @@ export interface InstallOptions {
    *
    * @defaultValue Either
    *
-   * - https://storage.googleapis.com/chromium-browser-snapshots or
+   * - https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing or
    * - https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central
    *
    */

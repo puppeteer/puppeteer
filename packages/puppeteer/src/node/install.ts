@@ -46,7 +46,7 @@ export async function downloadBrowser(): Promise<void> {
     return;
   }
 
-  const downloadHost = configuration.downloadHost;
+  const downloadBaseUrl = configuration.downloadBaseUrl;
 
   const platform = detectBrowserPlatform();
   if (!platform) {
@@ -68,9 +68,7 @@ export async function downloadBrowser(): Promise<void> {
       platform,
       buildId,
       downloadProgressCallback: makeProgressCallback(browser, buildId),
-      // TODO: remove downloadHost in favour of baseDownloadUrl. The "host" of
-      // Firefox is already a URL and not a host. This would be a breaking change.
-      baseUrl: downloadHost,
+      baseUrl: downloadBaseUrl,
     });
 
     logPolitely(
