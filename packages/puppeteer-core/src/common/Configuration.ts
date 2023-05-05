@@ -109,9 +109,7 @@ export interface Configuration {
   /**
    * Tells Puppeteer to log at the given level.
    *
-   * At the moment, any option silences logging.
-   *
-   * @defaultValue `undefined`
+   * @defaultValue `warn`
    */
   logLevel?: 'silent' | 'error' | 'warn';
   /**

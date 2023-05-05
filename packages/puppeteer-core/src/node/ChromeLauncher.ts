@@ -48,8 +48,7 @@ export class ChromeLauncher extends ProductLauncher {
     const headless = options.headless ?? true;
     if (
       headless === true &&
-      (!this.puppeteer.configuration.logLevel ||
-        this.puppeteer.configuration.logLevel === 'warn') &&
+      this.puppeteer.configuration.logLevel === 'warn' &&
       !Boolean(process.env['PUPPETEER_DISABLE_HEADLESS_WARNING'])
     ) {
       console.warn(
