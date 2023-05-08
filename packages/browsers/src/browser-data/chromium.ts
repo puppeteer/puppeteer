@@ -16,9 +16,10 @@
 
 import path from 'path';
 
-import {httpRequest} from '../httpUtil.js';
+import {getText} from '../httpUtil.js';
 
-import {BrowserPlatform} from './types.js';
+import {getLastKnownGoodReleaseForChannel} from './chrome.js';
+import {BrowserPlatform, ChromeReleaseChannel} from './types.js';
 
 export {resolveSystemExecutablePath} from './chrome.js';
 
@@ -89,37 +90,16 @@ export function relativeExecutablePath(
 }
 export async function resolveBuildId(
   platform: BrowserPlatform,
-  // We will need it for other channels/keywords.
-  _channel: 'latest' = 'latest'
+  channel: ChromeReleaseChannel | 'latest' = 'latest'
 ): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const request = httpRequest(
+  if (channel === 'latest') {
+    return await getText(
       new URL(
         `https://storage.googleapis.com/chromium-browser-snapshots/${folder(
           platform
         )}/LAST_CHANGE`
-      ),
-      'GET',
-      response => {
-        let data = '';
-        if (response.statusCode && response.statusCode >= 400) {
-          return reject(new Error(`Got status code ${response.statusCode}`));
-        }
-        response.on('data', chunk => {
-          data += chunk;
-        });
-        response.on('end', () => {
-          try {
-            return resolve(String(data));
-          } catch {
-            return reject(new Error('Chrome version not found'));
-          }
-        });
-      },
-      false
+      )
     );
-    request.on('error', err => {
-      reject(err);
-    });
-  });
+  }
+  return (await getLastKnownGoodReleaseForChannel(channel)).revision;
 }

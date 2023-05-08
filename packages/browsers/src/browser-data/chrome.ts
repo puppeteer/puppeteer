@@ -16,7 +16,7 @@
 
 import path from 'path';
 
-import {httpRequest} from '../httpUtil.js';
+import {getJSON} from '../httpUtil.js';
 
 import {BrowserPlatform, ChromeReleaseChannel} from './types.js';
 
@@ -30,21 +30,6 @@ function folder(platform: BrowserPlatform): string {
       return 'mac-x64';
     case BrowserPlatform.WIN32:
       return 'win32';
-    case BrowserPlatform.WIN64:
-      return 'win64';
-  }
-}
-
-function chromiumDashPlatform(platform: BrowserPlatform): string {
-  switch (platform) {
-    case BrowserPlatform.LINUX:
-      return 'linux';
-    case BrowserPlatform.MAC_ARM:
-      return 'mac';
-    case BrowserPlatform.MAC:
-      return 'mac';
-    case BrowserPlatform.WIN32:
-      return 'win';
     case BrowserPlatform.WIN64:
       return 'win64';
   }
@@ -86,41 +71,39 @@ export function relativeExecutablePath(
       return path.join('chrome-' + folder(platform), 'chrome.exe');
   }
 }
+
+export async function getLastKnownGoodReleaseForChannel(
+  channel: ChromeReleaseChannel
+): Promise<{version: string; revision: string}> {
+  const data = (await getJSON(
+    new URL(
+      'https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json'
+    )
+  )) as {
+    channels: {
+      [channel: string]: {version: string};
+    };
+  };
+
+  for (const channel of Object.keys(data.channels)) {
+    data.channels[channel.toLowerCase()] = data.channels[channel]!;
+    delete data.channels[channel];
+  }
+
+  return (
+    data as {
+      channels: {
+        [channel in ChromeReleaseChannel]: {version: string; revision: string};
+      };
+    }
+  ).channels[channel];
+}
+
 export async function resolveBuildId(
-  platform: BrowserPlatform,
-  channel: 'beta' | 'stable' = 'beta'
+  _platform: BrowserPlatform,
+  channel: ChromeReleaseChannel
 ): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const request = httpRequest(
-      new URL(
-        `https://chromiumdash.appspot.com/fetch_releases?platform=${chromiumDashPlatform(
-          platform
-        )}&channel=${channel}`
-      ),
-      'GET',
-      response => {
-        let data = '';
-        if (response.statusCode && response.statusCode >= 400) {
-          return reject(new Error(`Got status code ${response.statusCode}`));
-        }
-        response.on('data', chunk => {
-          data += chunk;
-        });
-        response.on('end', () => {
-          try {
-            const response = JSON.parse(String(data));
-            return resolve(response[0].version);
-          } catch {
-            return reject(new Error('Chrome version not found'));
-          }
-        });
-      },
-      false
-    );
-    request.on('error', err => {
-      reject(err);
-    });
-  });
+  return (await getLastKnownGoodReleaseForChannel(channel)).version;
 }
 
 export function resolveSystemExecutablePath(

@@ -53,6 +53,10 @@ export const downloadUrls = {
  * @public
  */
 export enum BrowserTag {
+  CANARY = 'canary',
+  BETA = 'beta',
+  DEV = 'dev',
+  STABLE = 'stable',
   LATEST = 'latest',
 }
 
