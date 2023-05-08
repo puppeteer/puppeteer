@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/puppeteer/puppeteer/compare/browsers-v1.0.1...browsers-v1.1.0) (2023-05-08)
+
+
+### Features
+
+* support stable/dev/beta/canary keywords for chrome and chromium ([#10140](https://github.com/puppeteer/puppeteer/issues/10140)) ([90ed263](https://github.com/puppeteer/puppeteer/commit/90ed263eafb0ca0420ea1918d7c1f326eaa58e20))
+
 ## [1.0.1](https://github.com/puppeteer/puppeteer/compare/browsers-v1.0.0...browsers-v1.0.1) (2023-05-05)
 
 
