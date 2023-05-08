@@ -144,12 +144,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[emulation.spec] Emulation Page.viewport should detect touch when applying viewport with touches",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["FAIL", "PASS", "TIMEOUT"]
-  },
-  {
     "testIdPattern": "[evaluation.spec] Evaluation specs Frame.evaluate should execute after cross-site navigation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -432,12 +426,6 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.setContent *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS", "TIMEOUT"]
-  },
-  {
     "testIdPattern": "[proxy.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -523,12 +511,6 @@
   },
   {
     "testIdPattern": "[CDPSession.spec] Target.createCDPSession should send events",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[click.spec] Page.click should click offscreen buttons",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL", "PASS"]
@@ -732,12 +714,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[emulation.spec] Emulation Page.viewport should detect touch when applying viewport with touches",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["PASS", "TIMEOUT"]
-  },
-  {
     "testIdPattern": "[emulation.spec] Emulation Page.viewport should get the proper viewport size",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
@@ -876,12 +852,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[jshandle.spec] JSHandle JSHandle.asElement should return ElementHandle for TextNodes",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS", "TIMEOUT"]
-  },
-  {
     "testIdPattern": "[jshandle.spec] JSHandle JSHandle.jsonValue should not work with dates",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -892,24 +862,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[jshandle.spec] JSHandle Page.evaluateHandle should accept object handle as an argument",
-    "platforms": ["darwin"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[jshandle.spec] JSHandle Page.evaluateHandle should accept object handle to primitive types",
-    "platforms": ["darwin"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[jshandle.spec] JSHandle Page.evaluateHandle should accept object handle to unserializable value",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[keyboard.spec] Keyboard ElementHandle.press should support |text| option",
@@ -1186,12 +1138,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Page.goto should fail when server returns 204",
-    "platforms": ["darwin"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS", "TIMEOUT"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should navigate to dataURL and fire dataURL requests",
@@ -1826,25 +1772,25 @@
   {
     "testIdPattern": "[page.spec] Page Page.setContent should work with accents",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
+    "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setContent should work with emojis",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
+    "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setContent should work with newline",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
+    "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setContent should work with tricky content",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
+    "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
@@ -2097,7 +2043,7 @@
     "testIdPattern": "[touchscreen.spec] Touchscreen should tap the button",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL", "TIMEOUT"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should survive cross-process navigation",
@@ -2172,12 +2118,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[click.spec] Page.click should not hang with touch-enabled viewports",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox", "headless"],
-    "expectations": ["PASS", "TIMEOUT"]
-  },
-  {
     "testIdPattern": "[fixtures.spec] Fixtures dumpio option should work with pipe option",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headful"],
@@ -2224,12 +2164,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headful"],
     "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.waitForNetworkIdle should work with aborted requests",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox", "headless"],
-    "expectations": ["PASS", "TIMEOUT"]
   },
   {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should be abortable",
