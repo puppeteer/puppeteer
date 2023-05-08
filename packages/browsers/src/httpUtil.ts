@@ -135,3 +135,41 @@ export function downloadFile(
     });
   });
 }
+
+export async function getJSON(url: URL): Promise<unknown> {
+  const text = await getText(url);
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error('Could not parse JSON from ' + url.toString());
+  }
+}
+
+export function getText(url: URL): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const request = httpRequest(
+      url,
+      'GET',
+      response => {
+        let data = '';
+        if (response.statusCode && response.statusCode >= 400) {
+          return reject(new Error(`Got status code ${response.statusCode}`));
+        }
+        response.on('data', chunk => {
+          data += chunk;
+        });
+        response.on('end', () => {
+          try {
+            return resolve(String(data));
+          } catch {
+            return reject(new Error('Chrome version not found'));
+          }
+        });
+      },
+      false
+    );
+    request.on('error', err => {
+      reject(err);
+    });
+  });
+}

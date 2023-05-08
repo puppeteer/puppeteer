@@ -20,7 +20,7 @@ npx @puppeteer/browsers launch --help # help for the launch command
 
 ## Known limitations
 
-1. We support installing and running Firefox and Chrome/Chromium. The `latest` keyword only works during the installation. For the `launch` command you need to specify an exact build ID. The build ID is provided by the `install` command (see `npx @puppeteer/browsers install --help` for the format).
+1. We support installing and running Firefox, Chrome and Chromium. The `latest`, `beta`, `dev`, `canary`, `stable` keywords are only supported for the install command. For the `launch` command you need to specify an exact build ID. The build ID is provided by the `install` command (see `npx @puppeteer/browsers install --help` for the format).
 2. Launching the system browsers is only possible for Chrome/Chromium.
 
 ## API
