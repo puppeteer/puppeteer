@@ -163,7 +163,7 @@ import puppeteer from 'puppeteer';
   const textSelector = await page.waitForSelector(
     'text/Customize and automate'
   );
-  const fullTitle = await textSelector.evaluate(el => el.textContent);
+  const fullTitle = await textSelector?.evaluate(el => el.textContent);
 
   // Print the full title
   console.log('The title of this blog post is "%s".', fullTitle);
