@@ -31,7 +31,11 @@ import {Handler} from '../EventEmitter.js';
 import {PDFOptions} from '../PDFOptions.js';
 import {Viewport} from '../PuppeteerViewport.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
-import {debugError, waitWithTimeout} from '../util.js';
+import {
+  debugError,
+  waitWithTimeout,
+  withSourcePuppeteerURLIfNone,
+} from '../util.js';
 
 import {Context, getBidiHandle} from './Context.js';
 import {BidiSerializer} from './Serializer.js';
@@ -151,6 +155,10 @@ export class Page extends PageBase {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluateHandle.name,
+      pageFunction
+    );
     return this.#context.evaluateHandle(pageFunction, ...args);
   }
 
@@ -161,6 +169,10 @@ export class Page extends PageBase {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluate.name,
+      pageFunction
+    );
     return this.#context.evaluate(pageFunction, ...args);
   }
 

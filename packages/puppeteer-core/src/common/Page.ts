@@ -85,10 +85,10 @@ import {
   NodeFor,
 } from './types.js';
 import {
+  createClientError,
   createJSHandle,
   debugError,
   evaluationString,
-  getExceptionMessage,
   getReadableAsBuffer,
   getReadableFromProtocolStream,
   isString,
@@ -97,6 +97,7 @@ import {
   valueFromRemoteObject,
   waitForEvent,
   waitWithTimeout,
+  withSourcePuppeteerURLIfNone,
 } from './util.js';
 import {WebWorker} from './WebWorker.js';
 
@@ -518,6 +519,10 @@ export class CDPPage extends Page {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluateHandle.name,
+      pageFunction
+    );
     const context = await this.mainFrame().executionContext();
     return context.evaluateHandle(pageFunction, ...args);
   }
@@ -549,6 +554,7 @@ export class CDPPage extends Page {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
     return this.mainFrame().$eval(selector, pageFunction, ...args);
   }
 
@@ -564,6 +570,7 @@ export class CDPPage extends Page {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
     return this.mainFrame().$$eval(selector, pageFunction, ...args);
   }
 
@@ -735,10 +742,7 @@ export class CDPPage extends Page {
   }
 
   #handleException(exceptionDetails: Protocol.Runtime.ExceptionDetails): void {
-    const message = getExceptionMessage(exceptionDetails);
-    const err = new Error(message);
-    err.stack = ''; // Don't report clientside error with a node stack attached
-    this.emit(PageEmittedEvents.PageError, err);
+    this.emit(PageEmittedEvents.PageError, createClientError(exceptionDetails));
   }
 
   async #onConsoleAPI(
@@ -1257,6 +1261,10 @@ export class CDPPage extends Page {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluate.name,
+      pageFunction
+    );
     return this.#frameManager.mainFrame().evaluate(pageFunction, ...args);
   }
 

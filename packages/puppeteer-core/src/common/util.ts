@@ -41,29 +41,212 @@ export const debugError = debug('puppeteer:error');
 /**
  * @internal
  */
-export function getExceptionMessage(
-  exceptionDetails: Protocol.Runtime.ExceptionDetails
-): string {
-  if (exceptionDetails.exception) {
-    return (
-      exceptionDetails.exception.description || exceptionDetails.exception.value
-    );
+export function createEvaluationError(
+  details: Protocol.Runtime.ExceptionDetails
+): unknown {
+  let name: string;
+  let message: string;
+  if (!details.exception) {
+    name = 'Error';
+    message = details.text;
+  } else if (
+    details.exception.type !== 'object' ||
+    details.exception.subtype !== 'error'
+  ) {
+    return valueFromRemoteObject(details.exception);
+  } else {
+    const detail = getErrorDetails(details);
+    name = detail.name;
+    message = detail.message;
   }
-  let message = exceptionDetails.text;
-  if (exceptionDetails.stackTrace) {
-    for (const callframe of exceptionDetails.stackTrace.callFrames) {
-      const location =
-        callframe.url +
-        ':' +
-        callframe.lineNumber +
-        ':' +
-        callframe.columnNumber;
-      const functionName = callframe.functionName || '<anonymous>';
-      message += `\n    at ${functionName} (${location})`;
+  const messageHeight = message.split('\n').length;
+  const error = new Error(message);
+  error.name = name;
+  const stackLines = error.stack!.split('\n');
+  const messageLines = stackLines.splice(0, messageHeight);
+
+  // The first line is this function which we ignore.
+  stackLines.shift();
+  if (details.stackTrace && stackLines.length < Error.stackTraceLimit) {
+    for (const frame of details.stackTrace.callFrames.reverse()) {
+      if (
+        PuppeteerURL.isPuppeteerURL(frame.url) &&
+        frame.url !== PuppeteerURL.INTERNAL_URL
+      ) {
+        const url = PuppeteerURL.parse(frame.url);
+        stackLines.unshift(
+          `    at ${frame.functionName || url.functionName} (${
+            url.functionName
+          } at ${url.siteString}, <anonymous>:${frame.lineNumber}:${
+            frame.columnNumber
+          })`
+        );
+      } else {
+        stackLines.push(
+          `    at ${frame.functionName || '<anonymous>'} (${frame.url}:${
+            frame.lineNumber
+          }:${frame.columnNumber})`
+        );
+      }
+      if (stackLines.length >= Error.stackTraceLimit) {
+        break;
+      }
     }
   }
-  return message;
+
+  error.stack = [...messageLines, ...stackLines].join('\n');
+  return error;
 }
+
+/**
+ * @internal
+ */
+export function createClientError(
+  details: Protocol.Runtime.ExceptionDetails
+): unknown {
+  let name: string;
+  let message: string;
+  if (!details.exception) {
+    name = 'Error';
+    message = details.text;
+  } else if (
+    details.exception.type !== 'object' ||
+    details.exception.subtype !== 'error'
+  ) {
+    return valueFromRemoteObject(details.exception);
+  } else {
+    const detail = getErrorDetails(details);
+    name = detail.name;
+    message = detail.message;
+  }
+  const messageHeight = message.split('\n').length;
+  const error = new Error(message);
+  error.name = name;
+
+  const stackLines = [];
+  const messageLines = error.stack!.split('\n').splice(0, messageHeight);
+  if (details.stackTrace && stackLines.length < Error.stackTraceLimit) {
+    for (const frame of details.stackTrace.callFrames.reverse()) {
+      stackLines.push(
+        `    at ${frame.functionName || '<anonymous>'} (${frame.url}:${
+          frame.lineNumber
+        }:${frame.columnNumber})`
+      );
+      if (stackLines.length >= Error.stackTraceLimit) {
+        break;
+      }
+    }
+  }
+
+  error.stack = [...messageLines, ...stackLines].join('\n');
+  return error;
+}
+
+const getErrorDetails = (details: Protocol.Runtime.ExceptionDetails) => {
+  let name = '';
+  let message: string;
+  const lines = details.exception?.description?.split('\n') ?? [];
+  const size = details.stackTrace?.callFrames.length ?? 0;
+  lines.splice(-size, size);
+  if (details.exception?.className) {
+    name = details.exception.className;
+  }
+  message = lines.join('\n');
+  if (name && message.startsWith(`${name}: `)) {
+    message = message.slice(name.length + 2);
+  }
+  return {message, name};
+};
+
+/**
+ * @internal
+ */
+const SOURCE_URL = Symbol('Source URL for Puppeteer evaluation scripts');
+
+/**
+ * @internal
+ */
+export class PuppeteerURL {
+  static INTERNAL_URL = 'pptr:internal';
+
+  static fromCallSite(
+    functionName: string,
+    site: NodeJS.CallSite
+  ): PuppeteerURL {
+    const url = new PuppeteerURL();
+    url.#functionName = functionName;
+    url.#siteString = site.toString();
+    return url;
+  }
+
+  static parse = (url: string): PuppeteerURL => {
+    url = url.slice('pptr:'.length);
+    const [functionName = '', siteString = ''] = url.split(';');
+    const puppeteerUrl = new PuppeteerURL();
+    puppeteerUrl.#functionName = functionName;
+    puppeteerUrl.#siteString = globalThis.atob(siteString);
+    return puppeteerUrl;
+  };
+
+  static isPuppeteerURL = (url: string): boolean => {
+    return url.startsWith('pptr:');
+  };
+
+  #functionName!: string;
+  #siteString!: string;
+
+  get functionName(): string {
+    return this.#functionName;
+  }
+
+  get siteString(): string {
+    return this.#siteString;
+  }
+
+  toString(): string {
+    return `pptr:${[this.#functionName, globalThis.btoa(this.#siteString)].join(
+      ';'
+    )}`;
+  }
+}
+
+/**
+ * @internal
+ */
+export const withSourcePuppeteerURLIfNone = <T extends NonNullable<unknown>>(
+  functionName: string,
+  object: T
+): T => {
+  if (Object.prototype.hasOwnProperty.call(object, SOURCE_URL)) {
+    return object;
+  }
+  const original = Error.prepareStackTrace;
+  Error.prepareStackTrace = (_, stack) => {
+    // First element is the function. Second element is the caller of this
+    // function. Third element is the caller of the caller of this function
+    // which is precisely what we want.
+    return stack[2];
+  };
+  const site = new Error().stack as unknown as NodeJS.CallSite;
+  Error.prepareStackTrace = original;
+  return Object.assign(object, {
+    [SOURCE_URL]: PuppeteerURL.fromCallSite(functionName, site),
+  });
+};
+
+/**
+ * @internal
+ */
+export const getSourcePuppeteerURLIfAvailable = <
+  T extends NonNullable<unknown>
+>(
+  object: T
+): PuppeteerURL | undefined => {
+  if (Object.prototype.hasOwnProperty.call(object, SOURCE_URL)) {
+    return object[SOURCE_URL as keyof T] as PuppeteerURL;
+  }
+  return undefined;
+};
 
 /**
  * @internal

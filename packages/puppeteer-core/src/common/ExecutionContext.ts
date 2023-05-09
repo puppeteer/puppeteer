@@ -32,17 +32,19 @@ import {LazyArg} from './LazyArg.js';
 import {scriptInjector} from './ScriptInjector.js';
 import {EvaluateFunc, HandleFor} from './types.js';
 import {
+  PuppeteerURL,
+  createEvaluationError,
   createJSHandle,
-  getExceptionMessage,
+  getSourcePuppeteerURLIfAvailable,
   isString,
   valueFromRemoteObject,
 } from './util.js';
 
-/**
- * @public
- */
-export const EVALUATION_SCRIPT_URL = 'pptr://__puppeteer_evaluation_script__';
 const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
+
+const getSourceUrlComment = (url: string) => {
+  return `//# sourceURL=${url}`;
+};
 
 /**
  * Represents a context for JavaScript execution.
@@ -270,14 +272,17 @@ export class ExecutionContext {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>> | Awaited<ReturnType<Func>>> {
-    const suffix = `//# sourceURL=${EVALUATION_SCRIPT_URL}`;
+    const sourceUrlComment = getSourceUrlComment(
+      getSourcePuppeteerURLIfAvailable(pageFunction)?.toString() ??
+        PuppeteerURL.INTERNAL_URL
+    );
 
     if (isString(pageFunction)) {
       const contextId = this._contextId;
       const expression = pageFunction;
       const expressionWithSourceUrl = SOURCE_URL_REGEX.test(expression)
         ? expression
-        : expression + '\n' + suffix;
+        : `${expression}\n${sourceUrlComment}\n`;
 
       const {exceptionDetails, result: remoteObject} = await this._client
         .send('Runtime.evaluate', {
@@ -290,9 +295,7 @@ export class ExecutionContext {
         .catch(rewriteError);
 
       if (exceptionDetails) {
-        throw new Error(
-          'Evaluation failed: ' + getExceptionMessage(exceptionDetails)
-        );
+        throw createEvaluationError(exceptionDetails);
       }
 
       return returnByValue
@@ -300,10 +303,16 @@ export class ExecutionContext {
         : createJSHandle(this, remoteObject);
     }
 
+    const functionDeclaration = stringifyFunction(pageFunction);
+    const functionDeclarationWithSourceUrl = SOURCE_URL_REGEX.test(
+      functionDeclaration
+    )
+      ? functionDeclaration
+      : `${functionDeclaration}\n${sourceUrlComment}\n`;
     let callFunctionOnPromise;
     try {
       callFunctionOnPromise = this._client.send('Runtime.callFunctionOn', {
-        functionDeclaration: `${stringifyFunction(pageFunction)}\n${suffix}\n`,
+        functionDeclaration: functionDeclarationWithSourceUrl,
         executionContextId: this._contextId,
         arguments: await Promise.all(args.map(convertArgument.bind(this))),
         returnByValue,
@@ -322,9 +331,7 @@ export class ExecutionContext {
     const {exceptionDetails, result: remoteObject} =
       await callFunctionOnPromise.catch(rewriteError);
     if (exceptionDetails) {
-      throw new Error(
-        'Evaluation failed: ' + getExceptionMessage(exceptionDetails)
-      );
+      throw createEvaluationError(exceptionDetails);
     }
     return returnByValue
       ? valueFromRemoteObject(remoteObject)

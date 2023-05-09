@@ -41,7 +41,7 @@ import {LazyArg} from './LazyArg.js';
 import {CDPPage} from './Page.js';
 import {ElementFor, EvaluateFuncWith, HandleFor, NodeFor} from './types.js';
 import {KeyInput} from './USKeyboardLayout.js';
-import {debugError, isString} from './util.js';
+import {debugError, isString, withSourcePuppeteerURLIfNone} from './util.js';
 
 const applyOffsetsToQuad = (
   quad: Point[],
@@ -138,6 +138,7 @@ export class CDPElementHandle<
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
     const elementHandle = await this.$(selector);
     if (!elementHandle) {
       throw new Error(
@@ -161,6 +162,7 @@ export class CDPElementHandle<
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
     const results = await this.$$(selector);
     const elements = await this.evaluateHandle((_, ...elements) => {
       return elements;

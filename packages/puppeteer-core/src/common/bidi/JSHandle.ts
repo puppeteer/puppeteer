@@ -19,6 +19,7 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {ElementHandle} from '../../api/ElementHandle.js';
 import {JSHandle as BaseJSHandle} from '../../api/JSHandle.js';
 import {EvaluateFuncWith, HandleFor, HandleOr} from '../../common/types.js';
+import {withSourcePuppeteerURLIfNone} from '../util.js';
 
 import {Connection} from './Connection.js';
 import {Context} from './Context.js';
@@ -55,6 +56,10 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluate.name,
+      pageFunction
+    );
     return await this.context().evaluate(pageFunction, this, ...args);
   }
 
@@ -65,6 +70,10 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluateHandle.name,
+      pageFunction
+    );
     return await this.context().evaluateHandle(pageFunction, this, ...args);
   }
 
