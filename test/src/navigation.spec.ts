@@ -142,16 +142,16 @@ describe('navigation', function () {
       expect(response!.status()).toBe(200);
     });
     it('should fail when navigating to bad url', async () => {
-      const {page, isChrome} = getTestState();
+      const {page, isChrome, protocol} = getTestState();
 
       let error!: Error;
       await page.goto('asdfasdf').catch(error_ => {
         return (error = error_);
       });
-      if (isChrome) {
-        expect(error.message).toContain('Cannot navigate to invalid URL');
+      if (!isChrome && protocol === 'webDriverBiDi') {
+        expect(error.message).toContain('invalid argument');
       } else {
-        expect(error.message).toContain('Invalid url');
+        expect(error.message).toContain('Cannot navigate to invalid URL');
       }
     });
 
@@ -189,7 +189,7 @@ describe('navigation', function () {
       expect(requests[1]).toBe('requestfailed');
     });
     it('should fail when navigating to bad SSL after redirects', async () => {
-      const {page, server, httpsServer, isChrome} = getTestState();
+      const {page, server, httpsServer, isChrome, protocol} = getTestState();
 
       server.setRedirect('/redirect/1.html', '/redirect/2.html');
       server.setRedirect('/redirect/2.html', '/empty.html');
@@ -200,7 +200,13 @@ describe('navigation', function () {
       if (isChrome) {
         expect(error.message).toMatch(EXPECTED_SSL_CERT_MESSAGE_REGEX);
       } else {
-        expect(error.message).toContain('SSL_ERROR_UNKNOWN');
+        if (protocol === 'cdp') {
+          expect(error.message).toContain('SSL_ERROR_UNKNOWN');
+        } else {
+          expect(error.message).toContain(
+            'MOZILLA_PKIX_ERROR_SELF_SIGNED_CERT'
+          );
+        }
       }
     });
     it('should fail when main resources failed to load', async () => {
