@@ -143,6 +143,7 @@ interface PuppeteerTestState {
   isChrome: boolean;
   isHeadless: boolean;
   headless: 'true' | 'false' | 'new';
+  protocol: string;
   puppeteerPath: string;
 }
 const state: Partial<PuppeteerTestState> = {};
@@ -224,6 +225,7 @@ export const mochaHooks = {
       state.puppeteerPath = path.resolve(
         path.join(__dirname, '..', '..', 'packages', 'puppeteer')
       );
+      state.protocol = protocol;
     },
   ],
 
