@@ -17,7 +17,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import {httpRequest} from '../httpUtil.js';
+import {getJSON} from '../httpUtil.js';
 
 import {BrowserPlatform, ProfileOptions} from './types.js';
 
@@ -68,33 +68,16 @@ export function relativeExecutablePath(
 export async function resolveBuildId(
   channel: 'FIREFOX_NIGHTLY' = 'FIREFOX_NIGHTLY'
 ): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const request = httpRequest(
-      new URL('https://product-details.mozilla.org/1.0/firefox_versions.json'),
-      'GET',
-      response => {
-        let data = '';
-        if (response.statusCode && response.statusCode >= 400) {
-          return reject(new Error(`Got status code ${response.statusCode}`));
-        }
-        response.on('data', chunk => {
-          data += chunk;
-        });
-        response.on('end', () => {
-          try {
-            const versions = JSON.parse(data);
-            return resolve(versions[channel]);
-          } catch {
-            return reject(new Error('Firefox version not found'));
-          }
-        });
-      },
-      false
-    );
-    request.on('error', err => {
-      reject(err);
-    });
-  });
+  const versions = (await getJSON(
+    new URL('https://product-details.mozilla.org/1.0/firefox_versions.json')
+  )) as {
+    [channel: string]: string;
+  };
+  const version = versions[channel];
+  if (!version) {
+    throw new Error(`Channel ${channel} is not found.`);
+  }
+  return version;
 }
 
 export async function createProfile(options: ProfileOptions): Promise<void> {
