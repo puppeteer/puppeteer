@@ -242,6 +242,10 @@ export const mochaHooks = {
   ],
 
   afterEach: (): void => {
+    if (browserCleanups.length > 0) {
+      throw new Error('A manually launched browser was not closed!');
+    }
+
     sinon.restore();
   },
 };
@@ -327,4 +331,54 @@ export const createTimeout = <T>(
       return resolve(value);
     }, n);
   });
+};
+
+const browserCleanups: Array<() => Promise<void>> = [];
+
+export const launch = async (
+  options: PuppeteerLaunchOptions
+): Promise<
+  PuppeteerTestState & {
+    close: () => Promise<void>;
+  }
+> => {
+  const close = async () => {
+    let cleanup = browserCleanups.pop();
+    while (cleanup) {
+      await cleanup();
+      cleanup = browserCleanups.pop();
+    }
+  };
+
+  try {
+    const browser = await puppeteer.launch({
+      ...defaultBrowserOptions,
+      ...options,
+    });
+    browserCleanups.push(async () => {
+      browser.close();
+    });
+
+    const context = await browser.createIncognitoBrowserContext();
+    browserCleanups.push(async () => {
+      context.close();
+    });
+
+    const page = await context.newPage();
+    browserCleanups.push(async () => {
+      page.close();
+    });
+
+    return {
+      ...getTestState(),
+      browser,
+      context,
+      page,
+      close,
+    };
+  } catch (error) {
+    await close();
+
+    throw error;
+  }
 };
