@@ -42,6 +42,7 @@ import {
   createJSHandle,
   debugError,
   setPageContent,
+  withSourcePuppeteerURLIfNone,
 } from './util.js';
 import {TaskManager, WaitTask} from './WaitTask.js';
 
@@ -183,6 +184,10 @@ export class IsolatedWorld {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluateHandle.name,
+      pageFunction
+    );
     const context = await this.executionContext();
     return context.evaluateHandle(pageFunction, ...args);
   }
@@ -194,6 +199,10 @@ export class IsolatedWorld {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluate.name,
+      pageFunction
+    );
     const context = await this.executionContext();
     return context.evaluate(pageFunction, ...args);
   }
@@ -240,6 +249,7 @@ export class IsolatedWorld {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
     const document = await this.document();
     return document.$eval(selector, pageFunction, ...args);
   }
@@ -256,6 +266,7 @@ export class IsolatedWorld {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
     const document = await this.document();
     return document.$$eval(selector, pageFunction, ...args);
   }

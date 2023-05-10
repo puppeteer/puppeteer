@@ -230,8 +230,7 @@ describe('Evaluation specs', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeTruthy();
-      expect(error.message).toContain('qwerty');
+      expect(error).toEqual('qwerty');
     });
     it('should support thrown numbers as error messages', async () => {
       const {page} = getTestState();
@@ -244,8 +243,7 @@ describe('Evaluation specs', function () {
         .catch(error_ => {
           return (error = error_);
         });
-      expect(error).toBeTruthy();
-      expect(error.message).toContain('100500');
+      expect(error).toEqual(100500);
     });
     it('should return complex objects', async () => {
       const {page} = getTestState();

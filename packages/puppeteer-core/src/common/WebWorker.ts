@@ -23,7 +23,7 @@ import {EventEmitter} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {CDPJSHandle} from './JSHandle.js';
 import {EvaluateFunc, HandleFor} from './types.js';
-import {debugError} from './util.js';
+import {debugError, withSourcePuppeteerURLIfNone} from './util.js';
 
 /**
  * @internal
@@ -150,6 +150,10 @@ export class WebWorker extends EventEmitter {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluate.name,
+      pageFunction
+    );
     const context = await this.#executionContext;
     return context.evaluate(pageFunction, ...args);
   }
@@ -173,6 +177,10 @@ export class WebWorker extends EventEmitter {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluateHandle.name,
+      pageFunction
+    );
     const context = await this.#executionContext;
     return context.evaluateHandle(pageFunction, ...args);
   }

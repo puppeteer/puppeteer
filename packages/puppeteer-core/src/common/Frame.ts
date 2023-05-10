@@ -39,7 +39,7 @@ import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {LazyArg} from './LazyArg.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {EvaluateFunc, EvaluateFuncWith, HandleFor, NodeFor} from './types.js';
-import {importFSPromises} from './util.js';
+import {importFSPromises, withSourcePuppeteerURLIfNone} from './util.js';
 
 /**
  * @public
@@ -459,6 +459,10 @@ export class Frame {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluateHandle.name,
+      pageFunction
+    );
     return this.worlds[MAIN_WORLD].evaluateHandle(pageFunction, ...args);
   }
 
@@ -475,6 +479,10 @@ export class Frame {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluate.name,
+      pageFunction
+    );
     return this.worlds[MAIN_WORLD].evaluate(pageFunction, ...args);
   }
 
@@ -536,6 +544,7 @@ export class Frame {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
     return this.worlds[MAIN_WORLD].$eval(selector, pageFunction, ...args);
   }
 
@@ -571,6 +580,7 @@ export class Frame {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
     return this.worlds[MAIN_WORLD].$$eval(selector, pageFunction, ...args);
   }
 

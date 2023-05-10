@@ -23,7 +23,7 @@ import {isErrorLike} from '../util/ErrorLike.js';
 import {CDPSession, isTargetClosedError} from './Connection.js';
 import {DeviceRequestPromptManager} from './DeviceRequestPrompt.js';
 import {EventEmitter} from './EventEmitter.js';
-import {EVALUATION_SCRIPT_URL, ExecutionContext} from './ExecutionContext.js';
+import {ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
 import {FrameTree} from './FrameTree.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
@@ -31,7 +31,7 @@ import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {NetworkManager} from './NetworkManager.js';
 import {Target} from './Target.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
-import {debugError} from './util.js';
+import {debugError, PuppeteerURL} from './util.js';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
@@ -349,7 +349,7 @@ export class FrameManager extends EventEmitter {
     }
 
     await session.send('Page.addScriptToEvaluateOnNewDocument', {
-      source: `//# sourceURL=${EVALUATION_SCRIPT_URL}`,
+      source: `//# sourceURL=${PuppeteerURL.INTERNAL_URL}`,
       worldName: name,
     });
 

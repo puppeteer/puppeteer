@@ -26,12 +26,25 @@ import {EventEmitter} from '../EventEmitter.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
-import {isString, setPageContent, waitWithTimeout} from '../util.js';
+import {
+  getSourcePuppeteerURLIfAvailable,
+  isString,
+  PuppeteerURL,
+  setPageContent,
+  waitWithTimeout,
+} from '../util.js';
 
 import {Connection} from './Connection.js';
 import {ElementHandle} from './ElementHandle.js';
 import {JSHandle} from './JSHandle.js';
 import {BidiSerializer} from './Serializer.js';
+import {createEvaluationError} from './utils.js';
+
+const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
+
+const getSourceUrlComment = (url: string) => {
+  return `//# sourceURL=${url}`;
+};
 
 /**
  * @internal
@@ -120,18 +133,31 @@ export class Context extends EventEmitter {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>> | Awaited<ReturnType<Func>>> {
+    const sourceUrlComment = getSourceUrlComment(
+      getSourcePuppeteerURLIfAvailable(pageFunction)?.toString() ??
+        PuppeteerURL.INTERNAL_URL
+    );
+
     let responsePromise;
     const resultOwnership = returnByValue ? 'none' : 'root';
     if (isString(pageFunction)) {
+      const expression = SOURCE_URL_REGEX.test(pageFunction)
+        ? pageFunction
+        : `${pageFunction}\n${sourceUrlComment}\n`;
+
       responsePromise = this.#connection.send('script.evaluate', {
-        expression: pageFunction,
+        expression: expression,
         target: {context: this._contextId},
         resultOwnership,
         awaitPromise: true,
       });
     } else {
+      let functionDeclaration = stringifyFunction(pageFunction);
+      functionDeclaration = SOURCE_URL_REGEX.test(functionDeclaration)
+        ? functionDeclaration
+        : `${functionDeclaration}\n${sourceUrlComment}\n`;
       responsePromise = this.#connection.send('script.callFunction', {
-        functionDeclaration: stringifyFunction(pageFunction),
+        functionDeclaration,
         arguments: await Promise.all(
           args.map(arg => {
             return BidiSerializer.serialize(arg, this);
@@ -146,7 +172,7 @@ export class Context extends EventEmitter {
     const {result} = await responsePromise;
 
     if ('type' in result && result.type === 'exception') {
-      throw new Error(result.exceptionDetails.text);
+      throw createEvaluationError(result.exceptionDetails);
     }
 
     return returnByValue

@@ -23,7 +23,12 @@ import {CDPSession} from './Connection.js';
 import type {CDPElementHandle} from './ElementHandle.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {EvaluateFuncWith, HandleFor, HandleOr} from './types.js';
-import {createJSHandle, releaseObject, valueFromRemoteObject} from './util.js';
+import {
+  createJSHandle,
+  releaseObject,
+  valueFromRemoteObject,
+  withSourcePuppeteerURLIfNone,
+} from './util.js';
 
 declare const __JSHandleSymbol: unique symbol;
 
@@ -71,6 +76,10 @@ export class CDPJSHandle<T = unknown> extends JSHandle<T> {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluate.name,
+      pageFunction
+    );
     return await this.executionContext().evaluate(pageFunction, this, ...args);
   }
 
@@ -84,6 +93,10 @@ export class CDPJSHandle<T = unknown> extends JSHandle<T> {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluateHandle.name,
+      pageFunction
+    );
     return await this.executionContext().evaluateHandle(
       pageFunction,
       this,
