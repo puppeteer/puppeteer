@@ -101,12 +101,14 @@ export async function resolveBuildId(
     case Browser.CHROMEDRIVER:
       switch (tag as BrowserTag) {
         case BrowserTag.LATEST:
-          return await chromedriver.resolveBuildId('latest');
-        case BrowserTag.BETA:
         case BrowserTag.CANARY:
+          return await chromedriver.resolveBuildId(ChromeReleaseChannel.CANARY);
+        case BrowserTag.BETA:
+          return await chromedriver.resolveBuildId(ChromeReleaseChannel.BETA);
         case BrowserTag.DEV:
+          return await chromedriver.resolveBuildId(ChromeReleaseChannel.DEV);
         case BrowserTag.STABLE:
-          throw new Error(`${tag} is not support for ${browser}`);
+          return await chromedriver.resolveBuildId(ChromeReleaseChannel.STABLE);
       }
     case Browser.CHROMIUM:
       switch (tag as BrowserTag) {

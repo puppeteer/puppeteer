@@ -15,6 +15,7 @@
  */
 
 import assert from 'assert';
+import path from 'path';
 
 import {BrowserPlatform} from '../../../lib/cjs/browser-data/browser-data.js';
 import {
@@ -25,47 +26,47 @@ import {
 describe('ChromeDriver', () => {
   it('should resolve download URLs', () => {
     assert.strictEqual(
-      resolveDownloadUrl(BrowserPlatform.LINUX, '112.0.5615.49'),
-      'https://chromedriver.storage.googleapis.com/112.0.5615.49/chromedriver_linux64.zip'
+      resolveDownloadUrl(BrowserPlatform.LINUX, '115.0.5763.0'),
+      'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/115.0.5763.0/linux64/chromedriver-linux64.zip'
     );
     assert.strictEqual(
-      resolveDownloadUrl(BrowserPlatform.MAC, '112.0.5615.49'),
-      'https://chromedriver.storage.googleapis.com/112.0.5615.49/chromedriver_mac64.zip'
+      resolveDownloadUrl(BrowserPlatform.MAC, '115.0.5763.0'),
+      'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/115.0.5763.0/mac-x64/chromedriver-mac-x64.zip'
     );
     assert.strictEqual(
-      resolveDownloadUrl(BrowserPlatform.MAC_ARM, '112.0.5615.49'),
-      'https://chromedriver.storage.googleapis.com/112.0.5615.49/chromedriver_mac_arm64.zip'
+      resolveDownloadUrl(BrowserPlatform.MAC_ARM, '115.0.5763.0'),
+      'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/115.0.5763.0/mac-arm64/chromedriver-mac-arm64.zip'
     );
     assert.strictEqual(
-      resolveDownloadUrl(BrowserPlatform.WIN32, '112.0.5615.49'),
-      'https://chromedriver.storage.googleapis.com/112.0.5615.49/chromedriver_win32.zip'
+      resolveDownloadUrl(BrowserPlatform.WIN32, '115.0.5763.0'),
+      'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/115.0.5763.0/win32/chromedriver-win32.zip'
     );
     assert.strictEqual(
-      resolveDownloadUrl(BrowserPlatform.WIN64, '112.0.5615.49'),
-      'https://chromedriver.storage.googleapis.com/112.0.5615.49/chromedriver_win32.zip'
+      resolveDownloadUrl(BrowserPlatform.WIN64, '115.0.5763.0'),
+      'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/115.0.5763.0/win64/chromedriver-win64.zip'
     );
   });
 
   it('should resolve executable paths', () => {
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.LINUX, '12372323'),
-      'chromedriver'
+      path.join('chromedriver-linux64', 'chromedriver')
     );
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.MAC, '12372323'),
-      'chromedriver'
+      path.join('chromedriver-mac-x64/', 'chromedriver')
     );
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.MAC_ARM, '12372323'),
-      'chromedriver'
+      path.join('chromedriver-mac-arm64', 'chromedriver')
     );
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.WIN32, '12372323'),
-      'chromedriver.exe'
+      path.join('chromedriver-win32', 'chromedriver.exe')
     );
     assert.strictEqual(
       relativeExecutablePath(BrowserPlatform.WIN64, '12372323'),
-      'chromedriver.exe'
+      path.join('chromedriver-win64', 'chromedriver.exe')
     );
   });
 });

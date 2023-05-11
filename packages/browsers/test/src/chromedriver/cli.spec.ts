@@ -64,6 +64,7 @@ describe('ChromeDriver CLI', function () {
           tmpDir,
           'chromedriver',
           `linux-${testChromeDriverBuildId}`,
+          'chromedriver-linux64',
           'chromedriver'
         )
       )
@@ -81,6 +82,7 @@ describe('ChromeDriver CLI', function () {
           tmpDir,
           'chromedriver',
           `linux-${testChromeDriverBuildId}`,
+          'chromedriver-linux64',
           'chromedriver'
         )
       )
