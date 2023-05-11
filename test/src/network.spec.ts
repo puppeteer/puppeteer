@@ -24,6 +24,7 @@ import {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 
 import {
   getTestState,
+  launch,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
@@ -823,15 +824,9 @@ describe('network', function () {
     });
 
     it('Cross-origin set-cookie', async () => {
-      const {httpsServer, puppeteer, defaultBrowserOptions} = getTestState();
-
-      const browser = await puppeteer.launch({
-        ...defaultBrowserOptions,
+      const {page, httpsServer, close} = await launch({
         ignoreHTTPSErrors: true,
       });
-
-      const page = await browser.newPage();
-
       try {
         await page.goto(httpsServer.PREFIX + '/empty.html');
 
@@ -855,8 +850,7 @@ describe('network', function () {
         ]);
         expect(response.headers()['set-cookie']).toBe(setCookieString);
       } finally {
-        await page.close();
-        await browser.close();
+        await close();
       }
     });
   });
