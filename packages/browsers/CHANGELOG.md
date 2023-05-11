@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/puppeteer/puppeteer/compare/browsers-v1.1.0...browsers-v1.2.0) (2023-05-11)
+
+
+### Features
+
+* support Chrome channels for ChromeDriver ([#10158](https://github.com/puppeteer/puppeteer/issues/10158)) ([e313b05](https://github.com/puppeteer/puppeteer/commit/e313b054e658887e2c062ea55d8ee99f3f4f3789))
+
 ## [1.1.0](https://github.com/puppeteer/puppeteer/compare/browsers-v1.0.1...browsers-v1.1.0) (2023-05-08)
 
 
