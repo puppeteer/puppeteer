@@ -71,8 +71,7 @@ export interface Configuration {
    *
    * Can be overridden by `PUPPETEER_DOWNLOAD_PATH`.
    *
-   * @defaultValue `<cache>/<product>` where `<cache>` is Puppeteer's cache
-   * directory and `<product>` is the name of the browser.
+   * @defaultValue `<cacheDirectory>`
    */
   downloadPath?: string;
   /**
