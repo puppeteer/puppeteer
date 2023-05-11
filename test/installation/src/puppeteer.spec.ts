@@ -44,3 +44,23 @@ describe('`puppeteer`', () => {
     await this.runScript(script, 'mjs');
   });
 });
+
+describe('`puppeteer` with PUPPETEER_DOWNLOAD_PATH', () => {
+  configureSandbox({
+    dependencies: ['@puppeteer/browsers', 'puppeteer-core', 'puppeteer'],
+    env: cwd => {
+      return {
+        PUPPETEER_DOWNLOAD_PATH: join(cwd, '.cache', 'puppeteer'),
+      };
+    },
+  });
+
+  it('evaluates', async function () {
+    const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));
+    assert.equal(files.length, 1);
+    assert.equal(files[0], 'chrome');
+
+    const script = await readAsset('puppeteer', 'basic.js');
+    await this.runScript(script, 'mjs');
+  });
+});
