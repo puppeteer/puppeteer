@@ -254,17 +254,22 @@ export class CDPPage extends Page {
     client.on('Page.fileChooserOpened', event => {
       return this.#onFileChooser(event);
     });
-    void this.#target._isClosedPromise.then(() => {
-      this.#target
-        ._targetManager()
-        .removeTargetInterceptor(this.#client, this.#onAttachedToTarget);
+    this.#target._isClosedPromise
+      .then(() => {
+        this.#target
+          ._targetManager()
+          .removeTargetInterceptor(this.#client, this.#onAttachedToTarget);
 
-      this.#target
-        ._targetManager()
-        .off(TargetManagerEmittedEvents.TargetGone, this.#onDetachedFromTarget);
-      this.emit(PageEmittedEvents.Close);
-      this.#closed = true;
-    });
+        this.#target
+          ._targetManager()
+          .off(
+            TargetManagerEmittedEvents.TargetGone,
+            this.#onDetachedFromTarget
+          );
+        this.emit(PageEmittedEvents.Close);
+        this.#closed = true;
+      })
+      .catch(debugError);
   }
 
   #onDetachedFromTarget = (target: Target) => {
@@ -283,8 +288,7 @@ export class CDPPage extends Page {
       const session = createdTarget._session();
       assert(session);
       const worker = new WebWorker(
-        session,
-        createdTarget.url(),
+        createdTarget,
         this.#addConsoleMessage.bind(this),
         this.#handleException.bind(this)
       );

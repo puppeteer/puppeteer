@@ -346,8 +346,8 @@ export class CDPBrowser extends BrowserBase {
   };
 
   #onDetachedFromTarget = async (target: Target): Promise<void> => {
-    target._initializedCallback(false);
-    target._closedCallback();
+    target._initializedPromise.resolve(false);
+    target._isClosedPromise.resolve();
     if (await target._initializedPromise) {
       this.emit(BrowserEmittedEvents.TargetDestroyed, target);
       target
@@ -356,17 +356,21 @@ export class CDPBrowser extends BrowserBase {
     }
   };
 
-  #onTargetChanged = ({
+  #onTargetChanged = async ({
     target,
     targetInfo,
   }: {
     target: Target;
     targetInfo: Protocol.Target.TargetInfo;
-  }): void => {
+  }): Promise<void> => {
     const previousURL = target.url();
-    const wasInitialized = target._isInitialized;
+    const wasInitialized = target._initializedPromise.resolved();
+    if (!wasInitialized) {
+      return;
+    }
+    const wasInitializedSuccessfully = await target._initializedPromise;
     target._targetInfoChanged(targetInfo);
-    if (wasInitialized && previousURL !== target.url()) {
+    if (wasInitializedSuccessfully && previousURL !== target.url()) {
       this.emit(BrowserEmittedEvents.TargetChanged, target);
       target
         .browserContext()
@@ -440,7 +444,7 @@ export class CDPBrowser extends BrowserBase {
     return Array.from(
       this.#targetManager.getAvailableTargets().values()
     ).filter(target => {
-      return target._isInitialized;
+      return target._initializedPromise.resolved();
     });
   }
 

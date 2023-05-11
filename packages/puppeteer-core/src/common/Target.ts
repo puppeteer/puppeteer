@@ -19,12 +19,14 @@ import {Protocol} from 'devtools-protocol';
 import type {Browser, IsPageTargetCallback} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {Page, PageEmittedEvents} from '../api/Page.js';
+import {createDeferredPromise} from '../util/DeferredPromise.js';
 
 import {CDPSession} from './Connection.js';
 import {CDPPage} from './Page.js';
 import {Viewport} from './PuppeteerViewport.js';
 import {TargetManager} from './TargetManager.js';
 import {TaskQueue} from './TaskQueue.js';
+import {debugError} from './util.js';
 import {WebWorker} from './WebWorker.js';
 
 /**
@@ -49,23 +51,11 @@ export class Target {
   /**
    * @internal
    */
-  _initializedPromise: Promise<boolean>;
+  _initializedPromise = createDeferredPromise<boolean>();
   /**
    * @internal
    */
-  _initializedCallback!: (x: boolean) => void;
-  /**
-   * @internal
-   */
-  _isClosedPromise: Promise<void>;
-  /**
-   * @internal
-   */
-  _closedCallback!: () => void;
-  /**
-   * @internal
-   */
-  _isInitialized: boolean;
+  _isClosedPromise = createDeferredPromise<void>();
   /**
    * @internal
    */
@@ -101,32 +91,29 @@ export class Target {
     this.#defaultViewport = defaultViewport ?? undefined;
     this.#screenshotTaskQueue = screenshotTaskQueue;
     this._isPageTargetCallback = isPageTargetCallback;
-    this._initializedPromise = new Promise<boolean>(fulfill => {
-      return (this._initializedCallback = fulfill);
-    }).then(async success => {
-      if (!success) {
-        return false;
-      }
-      const opener = this.opener();
-      if (!opener || !opener.#pagePromise || this.type() !== 'page') {
+    this._initializedPromise
+      .then(async success => {
+        if (!success) {
+          return false;
+        }
+        const opener = this.opener();
+        if (!opener || !opener.#pagePromise || this.type() !== 'page') {
+          return true;
+        }
+        const openerPage = await opener.#pagePromise;
+        if (!openerPage.listenerCount(PageEmittedEvents.Popup)) {
+          return true;
+        }
+        const popupPage = await this.page();
+        openerPage.emit(PageEmittedEvents.Popup, popupPage);
         return true;
-      }
-      const openerPage = await opener.#pagePromise;
-      if (!openerPage.listenerCount(PageEmittedEvents.Popup)) {
-        return true;
-      }
-      const popupPage = await this.page();
-      openerPage.emit(PageEmittedEvents.Popup, popupPage);
-      return true;
-    });
-    this._isClosedPromise = new Promise<void>(fulfill => {
-      return (this._closedCallback = fulfill);
-    });
-    this._isInitialized =
+      })
+      .catch(debugError);
+    if (
       !this._isPageTargetCallback(this.#targetInfo) ||
-      this.#targetInfo.url !== '';
-    if (this._isInitialized) {
-      this._initializedCallback(true);
+      this.#targetInfo.url !== ''
+    ) {
+      this._initializedPromise.resolve(true);
     }
   }
 
@@ -135,6 +122,15 @@ export class Target {
    */
   _session(): CDPSession | undefined {
     return this.#session;
+  }
+
+  /**
+   * @internal
+   */
+  _createSessionIfNeeded(isAutoAttachEmulated: boolean): Promise<CDPSession> {
+    return this.#session
+      ? Promise.resolve(this.#session)
+      : this.#sessionFactory(isAutoAttachEmulated);
   }
 
   /**
@@ -192,17 +188,14 @@ export class Target {
     }
     if (!this.#workerPromise) {
       // TODO(einbinder): Make workers send their console logs.
-      this.#workerPromise = (
-        this.#session
-          ? Promise.resolve(this.#session)
-          : this.#sessionFactory(false)
-      ).then(client => {
-        return new WebWorker(
-          client,
-          this.#targetInfo.url,
+      this.#workerPromise = new Promise(async resolve => {
+        const worker = new WebWorker(
+          this,
           () => {} /* consoleAPICalled */,
           () => {} /* exceptionThrown */
         );
+        await worker._initialized;
+        return resolve(worker);
       });
     }
     return this.#workerPromise;
@@ -273,12 +266,11 @@ export class Target {
     this.#targetInfo = targetInfo;
 
     if (
-      !this._isInitialized &&
+      !this._initializedPromise.resolved() &&
       (!this._isPageTargetCallback(this.#targetInfo) ||
         this.#targetInfo.url !== '')
     ) {
-      this._isInitialized = true;
-      this._initializedCallback(true);
+      this._initializedPromise.resolve(true);
       return;
     }
   }

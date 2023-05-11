@@ -22,6 +22,7 @@ import {ConsoleMessageType} from './ConsoleMessage.js';
 import {EventEmitter} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {CDPJSHandle} from './JSHandle.js';
+import type {Target} from './Target.js';
 import {EvaluateFunc, HandleFor} from './types.js';
 import {debugError, withSourcePuppeteerURLIfNone} from './util.js';
 
@@ -69,43 +70,52 @@ export type ExceptionThrownCallback = (
  */
 export class WebWorker extends EventEmitter {
   #executionContext = createDeferredPromise<ExecutionContext>();
+  #target: Target;
+  // WebWorker initializes its own session which will be always present if
+  // _initialized is resolved.
+  #client!: CDPSession;
 
-  #client: CDPSession;
-  #url: string;
+  /**
+   * @internal
+   */
+  _initialized = createDeferredPromise<void>();
 
   /**
    * @internal
    */
   constructor(
-    client: CDPSession,
-    url: string,
+    target: Target,
     consoleAPICalled: ConsoleAPICalledCallback,
     exceptionThrown: ExceptionThrownCallback
   ) {
     super();
-    this.#client = client;
-    this.#url = url;
-
-    this.#client.once('Runtime.executionContextCreated', async event => {
-      const context = new ExecutionContext(client, event.context);
-      this.#executionContext.resolve(context);
-    });
-    this.#client.on('Runtime.consoleAPICalled', async event => {
-      const context = await this.#executionContext;
-      return consoleAPICalled(
-        event.type,
-        event.args.map((object: Protocol.Runtime.RemoteObject) => {
-          return new CDPJSHandle(context, object);
-        }),
-        event.stackTrace
-      );
-    });
-    this.#client.on('Runtime.exceptionThrown', exception => {
-      return exceptionThrown(exception.exceptionDetails);
-    });
-
-    // This might fail if the target is closed before we receive all execution contexts.
-    this.#client.send('Runtime.enable').catch(debugError);
+    this.#target = target;
+    target
+      ._createSessionIfNeeded(false)
+      .then(client => {
+        this.#client = client;
+        this.#client.once('Runtime.executionContextCreated', async event => {
+          const context = new ExecutionContext(client, event.context);
+          this.#executionContext.resolve(context);
+        });
+        this.#client.on('Runtime.consoleAPICalled', async event => {
+          const context = await this.#executionContext;
+          return consoleAPICalled(
+            event.type,
+            event.args.map((object: Protocol.Runtime.RemoteObject) => {
+              return new CDPJSHandle(context, object);
+            }),
+            event.stackTrace
+          );
+        });
+        this.#client.on('Runtime.exceptionThrown', exception => {
+          return exceptionThrown(exception.exceptionDetails);
+        });
+        // This might fail if the target is closed before we receive all
+        // execution contexts.
+        this.#client.send('Runtime.enable').catch(debugError);
+      })
+      .catch(debugError);
   }
 
   /**
@@ -119,7 +129,7 @@ export class WebWorker extends EventEmitter {
    * The URL of this web worker.
    */
   url(): string {
-    return this.#url;
+    return this.#target.url();
   }
 
   /**
