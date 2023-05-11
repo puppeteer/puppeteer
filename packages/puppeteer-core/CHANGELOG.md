@@ -8,6 +8,25 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.0.1 to 1.1.0
 
+## [20.2.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.1.2...puppeteer-core-v20.2.0) (2023-05-11)
+
+
+### Features
+
+* implement detailed errors for evaluation ([#10114](https://github.com/puppeteer/puppeteer/issues/10114)) ([317fa73](https://github.com/puppeteer/puppeteer/commit/317fa732f920382f9b3f6dea4e31ed31b04e25da))
+
+
+### Bug Fixes
+
+* downloadPath should be used by the install script ([#10163](https://github.com/puppeteer/puppeteer/issues/10163)) ([4398f66](https://github.com/puppeteer/puppeteer/commit/4398f66f281f1ffe5be81b529fc4751edfaf761d))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 1.1.0 to 1.2.0
+
 ## [20.1.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.1.0...puppeteer-core-v20.1.1) (2023-05-05)
 
 
