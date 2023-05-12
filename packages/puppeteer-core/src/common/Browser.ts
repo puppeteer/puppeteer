@@ -39,7 +39,7 @@ import {ChromeTargetManager} from './ChromeTargetManager.js';
 import {CDPSession, Connection, ConnectionEmittedEvents} from './Connection.js';
 import {FirefoxTargetManager} from './FirefoxTargetManager.js';
 import {Viewport} from './PuppeteerViewport.js';
-import {Target} from './Target.js';
+import {PageTarget, Target} from './Target.js';
 import {TargetManager, TargetManagerEmittedEvents} from './TargetManager.js';
 import {TaskQueue} from './TaskQueue.js';
 import {waitWithTimeout} from './util.js';
@@ -318,6 +318,23 @@ export class CDPBrowser extends BrowserBase {
       throw new Error('Missing browser context');
     }
 
+    if (this.#isPageTargetCallback(targetInfo)) {
+      return new PageTarget(
+        targetInfo,
+        session,
+        context,
+        this.#targetManager,
+        (isAutoAttachEmulated: boolean) => {
+          return this.#connection._createSession(
+            targetInfo,
+            isAutoAttachEmulated
+          );
+        },
+        this.#ignoreHTTPSErrors,
+        this.#defaultViewport ?? null,
+        this.#screenshotTaskQueue
+      );
+    }
     return new Target(
       targetInfo,
       session,
@@ -328,11 +345,7 @@ export class CDPBrowser extends BrowserBase {
           targetInfo,
           isAutoAttachEmulated
         );
-      },
-      this.#ignoreHTTPSErrors,
-      this.#defaultViewport ?? null,
-      this.#screenshotTaskQueue,
-      this.#isPageTargetCallback
+      }
     );
   };
 
