@@ -68,7 +68,7 @@ export interface InstallOptions {
    */
   browser: Browser;
   /**
-   * Determines which buildId to dowloand. BuildId should uniquely identify
+   * Determines which buildId to download. BuildId should uniquely identify
    * binaries and they are used for caching.
    */
   buildId: string;
@@ -186,6 +186,64 @@ export async function install(
     platform: options.platform,
     buildId: options.buildId,
   };
+}
+
+export interface UninstallOptions {
+  /**
+   * Determines the platform for the browser binary.
+   *
+   * @defaultValue **Auto-detected.**
+   */
+  platform?: BrowserPlatform;
+  /**
+   * The path to the root of the cache directory.
+   */
+  cacheDir: string;
+  /**
+   * Determines which browser to uninstall.
+   */
+  browser: Browser;
+  /**
+   * The browser build to uninstall
+   */
+  buildId: string;
+}
+
+/**
+ *
+ * @public
+ */
+export async function uninstall(options: UninstallOptions): Promise<void> {
+  options.platform ??= detectBrowserPlatform();
+  if (!options.platform) {
+    throw new Error(
+      `Cannot detect the browser platform for: ${os.platform()} (${os.arch()})`
+    );
+  }
+
+  new Cache(options.cacheDir).uninstall(
+    options.browser,
+    options.platform,
+    options.buildId
+  );
+}
+
+export interface GetInstalledBrowsersOptions {
+  /**
+   * The path to the root of the cache directory.
+   */
+  cacheDir: string;
+}
+
+/**
+ * Returns metadata about browsers installed in the cache directory.
+ *
+ * @public
+ */
+export async function getInstalledBrowsers(
+  options: GetInstalledBrowsersOptions
+): Promise<InstalledBrowser[]> {
+  return new Cache(options.cacheDir).getInstalledBrowsers();
 }
 
 /**
