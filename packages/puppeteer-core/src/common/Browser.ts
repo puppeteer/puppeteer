@@ -39,7 +39,7 @@ import {ChromeTargetManager} from './ChromeTargetManager.js';
 import {CDPSession, Connection, ConnectionEmittedEvents} from './Connection.js';
 import {FirefoxTargetManager} from './FirefoxTargetManager.js';
 import {Viewport} from './PuppeteerViewport.js';
-import {PageTarget, Target} from './Target.js';
+import {OtherTarget, PageTarget, Target, WorkerTarget} from './Target.js';
 import {TargetManager, TargetManagerEmittedEvents} from './TargetManager.js';
 import {TaskQueue} from './TaskQueue.js';
 import {waitWithTimeout} from './util.js';
@@ -318,34 +318,39 @@ export class CDPBrowser extends BrowserBase {
       throw new Error('Missing browser context');
     }
 
+    const createSession = (isAutoAttachEmulated: boolean) => {
+      return this.#connection._createSession(targetInfo, isAutoAttachEmulated);
+    };
     if (this.#isPageTargetCallback(targetInfo)) {
       return new PageTarget(
         targetInfo,
         session,
         context,
         this.#targetManager,
-        (isAutoAttachEmulated: boolean) => {
-          return this.#connection._createSession(
-            targetInfo,
-            isAutoAttachEmulated
-          );
-        },
+        createSession,
         this.#ignoreHTTPSErrors,
         this.#defaultViewport ?? null,
         this.#screenshotTaskQueue
       );
     }
-    return new Target(
+    if (
+      targetInfo.type === 'service_worker' ||
+      targetInfo.type === 'shared_worker'
+    ) {
+      return new WorkerTarget(
+        targetInfo,
+        session,
+        context,
+        this.#targetManager,
+        createSession
+      );
+    }
+    return new OtherTarget(
       targetInfo,
       session,
       context,
       this.#targetManager,
-      (isAutoAttachEmulated: boolean) => {
-        return this.#connection._createSession(
-          targetInfo,
-          isAutoAttachEmulated
-        );
-      }
+      createSession
     );
   };
 

@@ -41,7 +41,6 @@ export class Target {
   #session?: CDPSession;
   #targetInfo: Protocol.Target.TargetInfo;
   #sessionFactory: (isAutoAttachEmulated: boolean) => Promise<CDPSession>;
-  #workerPromise?: Promise<WebWorker>;
 
   /**
    * @internal
@@ -136,28 +135,7 @@ export class Target {
    * If the target is not of type `"service_worker"` or `"shared_worker"`, returns `null`.
    */
   async worker(): Promise<WebWorker | null> {
-    if (
-      this.#targetInfo.type !== 'service_worker' &&
-      this.#targetInfo.type !== 'shared_worker'
-    ) {
-      return null;
-    }
-    if (!this.#workerPromise) {
-      // TODO(einbinder): Make workers send their console logs.
-      this.#workerPromise = (
-        this.#session
-          ? Promise.resolve(this.#session)
-          : this.#sessionFactory(false)
-      ).then(client => {
-        return new WebWorker(
-          client,
-          this.#targetInfo.url,
-          () => {} /* consoleAPICalled */,
-          () => {} /* exceptionThrown */
-        );
-      });
-    }
-    return this.#workerPromise;
+    return null;
   }
 
   url(): string {
@@ -314,7 +292,9 @@ export class PageTarget extends Target {
     if (!this.pagePromise) {
       const session = this._session();
       this.pagePromise = (
-        session ? Promise.resolve(session) : this._sessionFactory()(true)
+        session
+          ? Promise.resolve(session)
+          : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
       ).then(client => {
         return CDPPage._create(
           client,
@@ -338,3 +318,35 @@ export class PageTarget extends Target {
     }
   }
 }
+
+/**
+ * @internal
+ */
+export class WorkerTarget extends Target {
+  #workerPromise?: Promise<WebWorker>;
+
+  override async worker(): Promise<WebWorker | null> {
+    if (!this.#workerPromise) {
+      const session = this._session();
+      // TODO(einbinder): Make workers send their console logs.
+      this.#workerPromise = (
+        session
+          ? Promise.resolve(session)
+          : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
+      ).then(client => {
+        return new WebWorker(
+          client,
+          this._getTargetInfo().url,
+          () => {} /* consoleAPICalled */,
+          () => {} /* exceptionThrown */
+        );
+      });
+    }
+    return this.#workerPromise;
+  }
+}
+
+/**
+ * @internal
+ */
+export class OtherTarget extends Target {}
