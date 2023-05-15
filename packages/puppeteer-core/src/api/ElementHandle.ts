@@ -18,7 +18,6 @@ import {Protocol} from 'devtools-protocol';
 
 import {CDPSession} from '../common/Connection.js';
 import {ExecutionContext} from '../common/ExecutionContext.js';
-import {Frame} from '../common/Frame.js';
 import {MouseClickOptions} from '../common/Input.js';
 import {WaitForSelectorOptions} from '../common/IsolatedWorld.js';
 import {
@@ -30,6 +29,7 @@ import {
 } from '../common/types.js';
 import {KeyInput} from '../common/USKeyboardLayout.js';
 
+import {Frame} from './Frame.js';
 import {JSHandle} from './JSHandle.js';
 import {ScreenshotOptions} from './Page.js';
 

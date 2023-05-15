@@ -38,7 +38,6 @@ export * from './ExecutionContext.js';
 export * from './fetch.js';
 export * from './FileChooser.js';
 export * from './FirefoxTargetManager.js';
-export * from './Frame.js';
 export * from './FrameManager.js';
 export * from './FrameTree.js';
 export * from './Input.js';

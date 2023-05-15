@@ -30,7 +30,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
-import {attachFrame, detachFrame, waitEvent} from './utils.js';
+import {attachFrame, detachFrame, isFavicon, waitEvent} from './utils.js';
 
 describe('Page', function () {
   setupTestBrowserHooks();
@@ -135,7 +135,7 @@ describe('Page', function () {
       const handler = sinon.spy();
       const onResponse = (response: {url: () => string}) => {
         // Ignore default favicon requests.
-        if (!response.url().endsWith('favicon.ico')) {
+        if (!isFavicon(response)) {
           handler();
         }
       };
@@ -158,7 +158,7 @@ describe('Page', function () {
       const handler = sinon.spy();
       const onResponse = (response: {url: () => string}) => {
         // Ignore default favicon requests.
-        if (!response.url().endsWith('favicon.ico')) {
+        if (!isFavicon(response)) {
           handler();
         }
       };

@@ -15,8 +15,8 @@
  */
 
 import expect from 'expect';
+import {Frame} from 'puppeteer-core/internal/api/Frame.js';
 import {CDPSession} from 'puppeteer-core/internal/common/Connection.js';
-import {Frame} from 'puppeteer-core/internal/common/Frame.js';
 
 import {
   getTestState,

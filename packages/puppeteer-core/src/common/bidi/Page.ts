@@ -27,9 +27,11 @@ import {
 } from '../../api/Page.js';
 import {isErrorLike} from '../../util/ErrorLike.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
-import {Handler} from '../EventEmitter.js';
+import {EventType, Handler} from '../EventEmitter.js';
+import {FrameManagerEmittedEvents} from '../FrameManager.js';
 import {PDFOptions} from '../PDFOptions.js';
 import {Viewport} from '../PuppeteerViewport.js';
+import {TimeoutSettings} from '../TimeoutSettings.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
 import {
   debugError,
@@ -37,31 +39,77 @@ import {
   withSourcePuppeteerURLIfNone,
 } from '../util.js';
 
+import {Connection} from './Connection.js';
 import {Context, getBidiHandle} from './Context.js';
+import {Frame} from './Frame.js';
+import {FrameManager} from './FrameManager.js';
 import {BidiSerializer} from './Serializer.js';
 
 /**
  * @internal
  */
 export class Page extends PageBase {
-  #context: Context;
+  _timeoutSettings = new TimeoutSettings();
+  #connection: Connection;
+  #frameManager: FrameManager;
+  #viewport: Viewport | null = null;
+  #closed = false;
   #subscribedEvents = new Map<string, Handler<any>>([
     ['log.entryAdded', this.#onLogEntryAdded.bind(this)],
     ['browsingContext.load', this.#onLoad.bind(this)],
     ['browsingContext.domContentLoaded', this.#onDOMLoad.bind(this)],
-  ]) as Map<Bidi.Session.SubscribeParametersEvent, Handler>;
-  #viewport: Viewport | null = null;
+  ]) as Map<Bidi.Session.SubscriptionRequestEvent, Handler>;
+  #frameManagerEvents = new Map<EventType, Handler<any>>([
+    [
+      FrameManagerEmittedEvents.FrameAttached,
+      frame => {
+        return this.emit(PageEmittedEvents.FrameAttached, frame);
+      },
+    ],
+    [
+      FrameManagerEmittedEvents.FrameDetached,
+      frame => {
+        return this.emit(PageEmittedEvents.FrameDetached, frame);
+      },
+    ],
+    [
+      FrameManagerEmittedEvents.FrameNavigated,
+      frame => {
+        return this.emit(PageEmittedEvents.FrameNavigated, frame);
+      },
+    ],
+  ]);
 
-  constructor(context: Context) {
+  constructor(connection: Connection, info: Bidi.BrowsingContext.Info) {
     super();
-    this.#context = context;
+    this.#connection = connection;
 
-    this.#context.connection
+    this.#frameManager = new FrameManager(
+      this.#connection,
+      this,
+      info,
+      this._timeoutSettings
+    );
+
+    for (const [event, subscriber] of this.#frameManagerEvents) {
+      this.#frameManager.on(event, subscriber);
+    }
+  }
+
+  static async _create(
+    connection: Connection,
+    info: Bidi.BrowsingContext.Info
+  ): Promise<Page> {
+    const page = new Page(connection, info);
+
+    for (const [event, subscriber] of page.#subscribedEvents) {
+      page.context().on(event, subscriber);
+    }
+
+    await page.#connection
       .send('session.subscribe', {
-        events: [
-          ...this.#subscribedEvents.keys(),
-        ] as Bidi.Session.SubscribeParameters['events'],
-        contexts: [this.#context.id],
+        events: [...page.#subscribedEvents.keys()],
+        contexts: [info.context],
       })
       .catch(error => {
         if (isErrorLike(error) && !error.message.includes('Target closed')) {
@@ -69,15 +117,25 @@ export class Page extends PageBase {
         }
       });
 
-    for (const [event, subscriber] of this.#subscribedEvents) {
-      this.#context.on(event, subscriber);
-    }
+    return page;
+  }
+
+  override mainFrame(): Frame {
+    return this.#frameManager.mainFrame();
+  }
+
+  override frames(): Frame[] {
+    return this.#frameManager.frames();
+  }
+
+  context(): Context {
+    return this.#frameManager.mainFrame()._context;
   }
 
   #onLogEntryAdded(event: Bidi.Log.LogEntry): void {
     if (isConsoleLogEntry(event)) {
       const args = event.args.map(arg => {
-        return getBidiHandle(this.#context, arg);
+        return getBidiHandle(this.context(), arg);
       });
 
       const text = args
@@ -134,18 +192,30 @@ export class Page extends PageBase {
   }
 
   override async close(): Promise<void> {
-    await this.#context.connection.send('session.unsubscribe', {
-      events: [...this.#subscribedEvents.keys()],
-      contexts: [this.#context.id],
-    });
-
-    await this.#context.connection.send('browsingContext.close', {
-      context: this.#context.id,
-    });
+    if (this.#closed) {
+      return;
+    }
+    this.#closed = true;
+    this.removeAllListeners();
+    this.#frameManager.dispose();
 
     for (const [event, subscriber] of this.#subscribedEvents) {
-      this.#context.off(event, subscriber);
+      this.context().off(event, subscriber);
     }
+
+    await this.#connection
+      .send('session.unsubscribe', {
+        events: [...this.#subscribedEvents.keys()],
+        contexts: [this.context().id],
+      })
+      .catch(() => {
+        // Suppress the error as we remove the context
+        // after that anyway.
+      });
+
+    await this.#connection.send('browsingContext.close', {
+      context: this.context().id,
+    });
   }
 
   override async evaluateHandle<
@@ -159,7 +229,7 @@ export class Page extends PageBase {
       this.evaluateHandle.name,
       pageFunction
     );
-    return this.#context.evaluateHandle(pageFunction, ...args);
+    return this.mainFrame().evaluateHandle(pageFunction, ...args);
   }
 
   override async evaluate<
@@ -173,7 +243,7 @@ export class Page extends PageBase {
       this.evaluate.name,
       pageFunction
     );
-    return this.#context.evaluate(pageFunction, ...args);
+    return this.mainFrame().evaluate(pageFunction, ...args);
   }
 
   override async goto(
@@ -183,26 +253,26 @@ export class Page extends PageBase {
       referrerPolicy?: string | undefined;
     }
   ): Promise<HTTPResponse | null> {
-    return this.#context.goto(url, options);
+    return this.mainFrame().goto(url, options);
   }
 
   override url(): string {
-    return this.#context.url();
+    return this.mainFrame().url();
   }
 
   override setDefaultNavigationTimeout(timeout: number): void {
-    this.#context._timeoutSettings.setDefaultNavigationTimeout(timeout);
+    this._timeoutSettings.setDefaultNavigationTimeout(timeout);
   }
 
   override setDefaultTimeout(timeout: number): void {
-    this.#context._timeoutSettings.setDefaultTimeout(timeout);
+    this._timeoutSettings.setDefaultTimeout(timeout);
   }
 
   override async setContent(
     html: string,
     options: WaitForOptions = {}
   ): Promise<void> {
-    await this.#context.setContent(html, options);
+    await this.mainFrame().setContent(html, options);
   }
 
   override async content(): Promise<string> {
@@ -226,7 +296,7 @@ export class Page extends PageBase {
     const deviceScaleFactor = 1;
     const screenOrientation = {angle: 0, type: 'portraitPrimary'};
 
-    await this.#context.sendCDPCommand('Emulation.setDeviceMetricsOverride', {
+    await this.context().sendCDPCommand('Emulation.setDeviceMetricsOverride', {
       mobile,
       width,
       height,
@@ -255,8 +325,8 @@ export class Page extends PageBase {
       timeout,
     } = this._getPDFOptions(options, 'cm');
     const {result} = await waitWithTimeout(
-      this.#context.connection.send('browsingContext.print', {
-        context: this.#context._contextId,
+      this.#connection.send('browsingContext.print', {
+        context: this.context().id,
         background,
         margin,
         orientation: landscape ? 'landscape' : 'portrait',
@@ -310,10 +380,10 @@ export class Page extends PageBase {
       throw new Error('BiDi only supports "encoding" and "path" options');
     }
 
-    const {result} = await this.#context.connection.send(
+    const {result} = await this.#connection.send(
       'browsingContext.captureScreenshot',
       {
-        context: this.#context._contextId,
+        context: this.context().id,
       }
     );
 
