@@ -71,6 +71,19 @@ export class Cache {
     });
   }
 
+  uninstall(
+    browser: Browser,
+    platform: BrowserPlatform,
+    buildId: string
+  ): void {
+    fs.rmSync(this.installationDir(browser, platform, buildId), {
+      force: true,
+      recursive: true,
+      maxRetries: 10,
+      retryDelay: 500,
+    });
+  }
+
   getInstalledBrowsers(): InstalledBrowser[] {
     if (!fs.existsSync(this.#rootDir)) {
       return [];

@@ -26,7 +26,15 @@ export {
   WEBDRIVER_BIDI_WEBSOCKET_ENDPOINT_REGEX,
   Process,
 } from './launch.js';
-export {install, canDownload, InstallOptions} from './install.js';
+export {
+  install,
+  getInstalledBrowsers,
+  canDownload,
+  uninstall,
+  InstallOptions,
+  GetInstalledBrowsersOptions,
+  UninstallOptions,
+} from './install.js';
 export {detectBrowserPlatform} from './detectPlatform.js';
 export {
   resolveBuildId,

@@ -49,26 +49,30 @@ The programmatic API allows installing and launching browsers from your code. Se
 
 ## Functions
 
-| Function                                                                          | Description |
-| --------------------------------------------------------------------------------- | ----------- |
-| [canDownload(options)](./browsers.candownload.md)                                 |             |
-| [computeExecutablePath(options)](./browsers.computeexecutablepath.md)             |             |
-| [computeSystemExecutablePath(options)](./browsers.computesystemexecutablepath.md) |             |
-| [createProfile(browser, opts)](./browsers.createprofile.md)                       |             |
-| [detectBrowserPlatform()](./browsers.detectbrowserplatform.md)                    |             |
-| [install(options)](./browsers.install.md)                                         |             |
-| [launch(opts)](./browsers.launch.md)                                              |             |
-| [makeProgressCallback(browser, buildId)](./browsers.makeprogresscallback.md)      |             |
-| [resolveBuildId(browser, platform, tag)](./browsers.resolvebuildid.md)            |             |
+| Function                                                                          | Description                                                       |
+| --------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| [canDownload(options)](./browsers.candownload.md)                                 |                                                                   |
+| [computeExecutablePath(options)](./browsers.computeexecutablepath.md)             |                                                                   |
+| [computeSystemExecutablePath(options)](./browsers.computesystemexecutablepath.md) |                                                                   |
+| [createProfile(browser, opts)](./browsers.createprofile.md)                       |                                                                   |
+| [detectBrowserPlatform()](./browsers.detectbrowserplatform.md)                    |                                                                   |
+| [getInstalledBrowsers(options)](./browsers.getinstalledbrowsers.md)               | Returns metadata about browsers installed in the cache directory. |
+| [install(options)](./browsers.install.md)                                         |                                                                   |
+| [launch(opts)](./browsers.launch.md)                                              |                                                                   |
+| [makeProgressCallback(browser, buildId)](./browsers.makeprogresscallback.md)      |                                                                   |
+| [resolveBuildId(browser, platform, tag)](./browsers.resolvebuildid.md)            |                                                                   |
+| [uninstall(options)](./browsers.uninstall.md)                                     |                                                                   |
 
 ## Interfaces
 
-| Interface                                      | Description |
-| ---------------------------------------------- | ----------- |
-| [InstallOptions](./browsers.installoptions.md) |             |
-| [Options](./browsers.options.md)               |             |
-| [ProfileOptions](./browsers.profileoptions.md) |             |
-| [SystemOptions](./browsers.systemoptions.md)   |             |
+| Interface                                                                | Description |
+| ------------------------------------------------------------------------ | ----------- |
+| [GetInstalledBrowsersOptions](./browsers.getinstalledbrowsersoptions.md) |             |
+| [InstallOptions](./browsers.installoptions.md)                           |             |
+| [Options](./browsers.options.md)                                         |             |
+| [ProfileOptions](./browsers.profileoptions.md)                           |             |
+| [SystemOptions](./browsers.systemoptions.md)                             |             |
+| [UninstallOptions](./browsers.uninstalloptions.md)                       |             |
 
 ## Variables
 
