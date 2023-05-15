@@ -9,7 +9,7 @@ sidebar_label: Page.goto
 ```typescript
 class Page {
   goto(
-    url: string,
+    url: URL | string,
     options?: WaitForOptions & {
       referer?: string;
       referrerPolicy?: string;
