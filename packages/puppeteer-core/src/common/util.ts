@@ -184,7 +184,7 @@ export class PuppeteerURL {
     const [functionName = '', siteString = ''] = url.split(';');
     const puppeteerUrl = new PuppeteerURL();
     puppeteerUrl.#functionName = functionName;
-    puppeteerUrl.#siteString = globalThis.atob(siteString);
+    puppeteerUrl.#siteString = decodeURIComponent(siteString);
     return puppeteerUrl;
   };
 
@@ -204,9 +204,10 @@ export class PuppeteerURL {
   }
 
   toString(): string {
-    return `pptr:${[this.#functionName, globalThis.btoa(this.#siteString)].join(
-      ';'
-    )}`;
+    return `pptr:${[
+      this.#functionName,
+      encodeURIComponent(this.#siteString),
+    ].join(';')}`;
   }
 }
 
