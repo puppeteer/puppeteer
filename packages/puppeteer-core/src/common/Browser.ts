@@ -374,22 +374,11 @@ export class CDPBrowser extends BrowserBase {
     }
   };
 
-  #onTargetChanged = ({
-    target,
-    targetInfo,
-  }: {
-    target: Target;
-    targetInfo: Protocol.Target.TargetInfo;
-  }): void => {
-    const previousURL = target.url();
-    const wasInitialized = target._isInitialized;
-    target._targetInfoChanged(targetInfo);
-    if (wasInitialized && previousURL !== target.url()) {
-      this.emit(BrowserEmittedEvents.TargetChanged, target);
-      target
-        .browserContext()
-        .emit(BrowserContextEmittedEvents.TargetChanged, target);
-    }
+  #onTargetChanged = ({target}: {target: Target}): void => {
+    this.emit(BrowserEmittedEvents.TargetChanged, target);
+    target
+      .browserContext()
+      .emit(BrowserContextEmittedEvents.TargetChanged, target);
   };
 
   #onTargetDiscovered = (targetInfo: Protocol.Target.TargetInfo): void => {
