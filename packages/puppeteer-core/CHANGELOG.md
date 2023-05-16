@@ -8,6 +8,20 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.0.1 to 1.1.0
 
+## [20.2.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.2.0...puppeteer-core-v20.2.1) (2023-05-15)
+
+
+### Bug Fixes
+
+* use encode/decodeURIComponent ([#10183](https://github.com/puppeteer/puppeteer/issues/10183)) ([d0c68ff](https://github.com/puppeteer/puppeteer/commit/d0c68ff002df37907968d3b999a8273590ac7c97))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 1.2.0 to 1.3.0
+
 ## [20.2.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.1.2...puppeteer-core-v20.2.0) (2023-05-11)
 
 

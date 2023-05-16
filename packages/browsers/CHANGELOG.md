@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/puppeteer/puppeteer/compare/browsers-v1.2.0...browsers-v1.3.0) (2023-05-15)
+
+
+### Features
+
+* add ability to uninstall a browser ([#10179](https://github.com/puppeteer/puppeteer/issues/10179)) ([d388a6e](https://github.com/puppeteer/puppeteer/commit/d388a6edfd164548b008cb0d8e9cb5c0d03cdcda))
+
+
+### Bug Fixes
+
+* update the command name ([#10178](https://github.com/puppeteer/puppeteer/issues/10178)) ([ccbb82d](https://github.com/puppeteer/puppeteer/commit/ccbb82d9cd5b77f8262c143a5663fc1f9938a8c4))
+
 ## [1.2.0](https://github.com/puppeteer/puppeteer/compare/browsers-v1.1.0...browsers-v1.2.0) (2023-05-11)
 
 

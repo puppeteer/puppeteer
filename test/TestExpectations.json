@@ -1260,6 +1260,12 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should work with anchor navigation",
+    "platforms": ["linux"],
+    "parameters": ["chrome", "headless"],
+    "expectations": ["PASS", "TIMEOUT"]
+  },
+  {
     "testIdPattern": "[navigation.spec] navigation Page.goto should work with redirects",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
@@ -2208,6 +2214,12 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[navigation.spec] navigation \"after each\" hook in \"navigation\"",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "headless", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[network.spec] network \"after each\" hook for \"Same-origin set-cookie subresource\"",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome", "new-headless"],
@@ -2290,17 +2302,5 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headless"],
     "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Page.goto should work with anchor navigation",
-    "platforms": ["linux"],
-    "parameters": ["chrome", "headless"],
-    "expectations": ["PASS", "TIMEOUT"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation \"after each\" hook in \"navigation\"",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "headless", "webDriverBiDi"],
-    "expectations": ["FAIL"]
   }
 ]
