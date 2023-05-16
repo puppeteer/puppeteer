@@ -8,6 +8,7 @@ export interface DeferredPromise<T> extends Promise<T> {
   resolved: () => boolean;
   resolve: (value: T) => void;
   reject: (reason?: unknown) => void;
+  value: () => T | undefined;
 }
 
 /**
@@ -32,6 +33,7 @@ export function createDeferredPromise<T>(
 ): DeferredPromise<T> {
   let isResolved = false;
   let isRejected = false;
+  let _value: T | undefined;
   let resolver: (value: T) => void;
   let rejector: (reason?: unknown) => void;
   const taskPromise = new Promise<T>((resolve, reject) => {
@@ -57,12 +59,16 @@ export function createDeferredPromise<T>(
         clearTimeout(timeoutId);
       }
       isResolved = true;
+      _value = value;
       resolver(value);
     },
     reject: (err?: unknown) => {
       clearTimeout(timeoutId);
       isRejected = true;
       rejector(err);
+    },
+    value: () => {
+      return _value;
     },
   });
 }

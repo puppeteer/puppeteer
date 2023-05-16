@@ -19,6 +19,7 @@ import {Protocol} from 'devtools-protocol';
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {Page, PageEmittedEvents} from '../api/Page.js';
+import {createDeferredPromise} from '../util/DeferredPromise.js';
 
 import {CDPSession} from './Connection.js';
 import {CDPPage} from './Page.js';
@@ -27,6 +28,14 @@ import {TargetManager} from './TargetManager.js';
 import {TaskQueue} from './TaskQueue.js';
 import {debugError} from './util.js';
 import {WebWorker} from './WebWorker.js';
+
+/**
+ * @internal
+ */
+export enum InitializationStatus {
+  SUCCESS = 'success',
+  ABORTED = 'aborted',
+}
 
 /**
  * Target represents a
@@ -40,34 +49,21 @@ export class Target {
   #browserContext: BrowserContext;
   #session?: CDPSession;
   #targetInfo: Protocol.Target.TargetInfo;
+  #targetManager: TargetManager;
   #sessionFactory: (isAutoAttachEmulated: boolean) => Promise<CDPSession>;
 
   /**
    * @internal
    */
-  _initializedPromise: Promise<boolean>;
+  _initializedPromise = createDeferredPromise<InitializationStatus>();
   /**
    * @internal
    */
-  _initializedCallback!: (x: boolean) => void;
-  /**
-   * @internal
-   */
-  _isClosedPromise: Promise<void>;
-  /**
-   * @internal
-   */
-  _closedCallback!: () => void;
-  /**
-   * @internal
-   */
-  _isInitialized = false;
+  _isClosedPromise = createDeferredPromise<void>();
   /**
    * @internal
    */
   _targetId: string;
-
-  #targetManager: TargetManager;
 
   /**
    * @internal
@@ -85,12 +81,6 @@ export class Target {
     this.#browserContext = browserContext;
     this._targetId = targetInfo.targetId;
     this.#sessionFactory = sessionFactory;
-    this._initializedPromise = new Promise<boolean>(fulfill => {
-      return (this._initializedCallback = fulfill);
-    });
-    this._isClosedPromise = new Promise<void>(fulfill => {
-      return (this._closedCallback = fulfill);
-    });
     this._initialize();
   }
 
@@ -208,21 +198,15 @@ export class Target {
    * @internal
    */
   protected _initialize(): void {
-    // TODO: refactor to deferred promises.
-    this._isInitialized = true;
-    if (this._isInitialized) {
-      this._initializedCallback(true);
-    }
+    this._initializedPromise.resolve(InitializationStatus.SUCCESS);
   }
 
   /**
    * @internal
    */
   protected _checkIfInitialized(): void {
-    if (!this._isInitialized) {
-      this._isInitialized = true;
-      this._initializedCallback(true);
-      return;
+    if (!this._initializedPromise.resolved()) {
+      this._initializedPromise.resolve(InitializationStatus.SUCCESS);
     }
   }
 
@@ -309,12 +293,11 @@ export class PageTarget extends Target {
   }
 
   override _checkIfInitialized(): void {
-    if (this._isInitialized) {
+    if (this._initializedPromise.resolved()) {
       return;
     }
-    this._isInitialized = this._getTargetInfo().url !== '';
-    if (this._isInitialized) {
-      this._initializedCallback(true);
+    if (this._getTargetInfo().url !== '') {
+      this._initializedPromise.resolve(InitializationStatus.SUCCESS);
     }
   }
 }
