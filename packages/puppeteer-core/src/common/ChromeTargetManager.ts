@@ -263,10 +263,21 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
     const target = this.#attachedTargetsByTargetId.get(
       event.targetInfo.targetId
     );
-    this.emit(TargetManagerEmittedEvents.TargetChanged, {
-      target: target!,
-      targetInfo: event.targetInfo,
-    });
+    if (!target) {
+      return;
+    }
+    const previousURL = target.url();
+    const wasInitialized = target._isInitialized;
+
+    target._targetInfoChanged(event.targetInfo);
+
+    if (wasInitialized && previousURL !== target.url()) {
+      this.emit(TargetManagerEmittedEvents.TargetChanged, {
+        target: target,
+        wasInitialized,
+        previousURL,
+      });
+    }
   };
 
   #onAttachedToTarget = async (
