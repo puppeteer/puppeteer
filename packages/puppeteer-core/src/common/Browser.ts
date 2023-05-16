@@ -39,7 +39,13 @@ import {ChromeTargetManager} from './ChromeTargetManager.js';
 import {CDPSession, Connection, ConnectionEmittedEvents} from './Connection.js';
 import {FirefoxTargetManager} from './FirefoxTargetManager.js';
 import {Viewport} from './PuppeteerViewport.js';
-import {OtherTarget, PageTarget, Target, WorkerTarget} from './Target.js';
+import {
+  InitializationStatus,
+  OtherTarget,
+  PageTarget,
+  Target,
+  WorkerTarget,
+} from './Target.js';
 import {TargetManager, TargetManagerEmittedEvents} from './TargetManager.js';
 import {TaskQueue} from './TaskQueue.js';
 import {waitWithTimeout} from './util.js';
@@ -364,8 +370,8 @@ export class CDPBrowser extends BrowserBase {
   };
 
   #onDetachedFromTarget = async (target: Target): Promise<void> => {
-    target._initializedCallback(false);
-    target._closedCallback();
+    target._initializedPromise.resolve(InitializationStatus.ABORTED);
+    target._isClosedPromise.resolve();
     if (await target._initializedPromise) {
       this.emit(BrowserEmittedEvents.TargetDestroyed, target);
       target
@@ -447,7 +453,7 @@ export class CDPBrowser extends BrowserBase {
     return Array.from(
       this.#targetManager.getAvailableTargets().values()
     ).filter(target => {
-      return target._isInitialized;
+      return target._initializedPromise.resolved();
     });
   }
 

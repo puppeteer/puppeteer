@@ -22,7 +22,7 @@ import {createDeferredPromise} from '../util/DeferredPromise.js';
 
 import {CDPSession, Connection} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
-import {Target} from './Target.js';
+import {InitializationStatus, Target} from './Target.js';
 import {
   TargetInterceptor,
   TargetFactory,
@@ -267,7 +267,8 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
       return;
     }
     const previousURL = target.url();
-    const wasInitialized = target._isInitialized;
+    const wasInitialized =
+      target._initializedPromise.value() === InitializationStatus.SUCCESS;
 
     target._targetInfoChanged(event.targetInfo);
 
