@@ -19,9 +19,12 @@ import * as http from 'http';
 import * as https from 'https';
 import {URL} from 'url';
 
-import createHttpProxyAgent from 'http-proxy-agent';
-import createHttpsProxyAgent from 'https-proxy-agent';
+import * as httpProxyAgent from 'http-proxy-agent';
+import * as httpsProxyAgent from 'https-proxy-agent';
 import {getProxyForUrl} from 'proxy-from-env';
+
+const {HttpProxyAgent} = httpProxyAgent;
+const {HttpsProxyAgent} = httpsProxyAgent;
 
 export function headHttpRequest(url: URL): Promise<boolean> {
   return new Promise(resolve => {
@@ -58,9 +61,9 @@ export function httpRequest(
   if (proxyURL) {
     const proxy = new URL(proxyURL);
     if (proxy.protocol === 'http:') {
-      options.agent = createHttpProxyAgent(proxyURL);
+      options.agent = new HttpProxyAgent(proxyURL);
     } else {
-      options.agent = createHttpsProxyAgent({
+      options.agent = new HttpsProxyAgent({
         host: proxy.host,
         path: proxy.pathname,
         port: proxy.port,
