@@ -49,6 +49,10 @@ export const {
    * @public
    */
   launch,
+  /**
+   * @public
+   */
+  trimCache,
 } = puppeteer;
 
 export default puppeteer;
