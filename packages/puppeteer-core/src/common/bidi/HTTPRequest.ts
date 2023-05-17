@@ -29,7 +29,7 @@ import {HTTPResponse} from './HTTPResponse.js';
 export class HTTPRequest extends BaseHTTPRequest {
   override _response: HTTPResponse | null = null;
   override _redirectChain: HTTPRequest[];
-  _navigation: string | null;
+  _navigationId: string | null;
 
   #url: string;
   #resourceType: ResourceType;
@@ -56,7 +56,7 @@ export class HTTPRequest extends BaseHTTPRequest {
 
     this._requestId = event.request.request;
     this._redirectChain = redirectChain ?? [];
-    this._navigation = event.navigation;
+    this._navigationId = event.navigation;
 
     for (const {name, value} of event.request.headers) {
       // TODO: How to handle Binary Headers
@@ -92,7 +92,7 @@ export class HTTPRequest extends BaseHTTPRequest {
   }
 
   override isNavigationRequest(): boolean {
-    return Boolean(this._navigation);
+    return Boolean(this._navigationId);
   }
 
   override initiator(): Bidi.Network.Initiator {

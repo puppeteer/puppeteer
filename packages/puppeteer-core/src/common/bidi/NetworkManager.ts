@@ -20,16 +20,16 @@ import {EventEmitter, Handler} from '../EventEmitter.js';
 import {NetworkManagerEmittedEvents} from '../NetworkManager.js';
 
 import {Connection} from './Connection.js';
-import {FrameManager} from './FrameManager.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
+import {Page} from './Page.js';
 
 /**
  * @internal
  */
 export class NetworkManager extends EventEmitter {
   #connection: Connection;
-  #frameManager: FrameManager;
+  #page: Page;
   #subscribedEvents = new Map<string, Handler<any>>([
     ['network.beforeRequestSent', this.#onBeforeRequestSent.bind(this)],
     ['network.responseStarted', this.#onResponseStarted.bind(this)],
@@ -37,24 +37,26 @@ export class NetworkManager extends EventEmitter {
     ['network.fetchError', this.#onFetchError.bind(this)],
   ]) as Map<Bidi.Message.EventNames, Handler>;
 
-  _requestMap = new Map<string, HTTPRequest>();
+  #requestMap = new Map<string, HTTPRequest>();
+  #navigationMap = new Map<string, HTTPResponse>();
 
-  constructor(connection: Connection, frameManager: FrameManager) {
+  constructor(connection: Connection, page: Page) {
     super();
     this.#connection = connection;
-    this.#frameManager = frameManager;
+    this.#page = page;
 
+    // TODO: Subscribe to the Frame indivutally
     for (const [event, subscriber] of this.#subscribedEvents) {
       this.#connection.on(event, subscriber);
     }
   }
 
   #onBeforeRequestSent(event: Bidi.Network.BeforeRequestSentParams): void {
-    const frame = this.#frameManager.frame(event.context ?? '');
+    const frame = this.#page.frame(event.context ?? '');
     if (!frame) {
       return;
     }
-    const request = this._requestMap.get(event.request.request);
+    const request = this.#requestMap.get(event.request.request);
 
     let upsertRequest: HTTPRequest;
     if (request) {
@@ -64,17 +66,20 @@ export class NetworkManager extends EventEmitter {
     } else {
       upsertRequest = new HTTPRequest(event, frame, []);
     }
-    this._requestMap.set(event.request.request, upsertRequest);
+    this.#requestMap.set(event.request.request, upsertRequest);
     this.emit(NetworkManagerEmittedEvents.Request, upsertRequest);
   }
 
   #onResponseStarted(_event: any) {}
 
   #onResponseCompleted(event: Bidi.Network.ResponseCompletedParams): void {
-    const request = this._requestMap.get(event.request.request);
+    const request = this.#requestMap.get(event.request.request);
     if (request) {
       const response = new HTTPResponse(request, event);
       request._response = response;
+      if (event.navigation) {
+        this.#navigationMap.set(event.navigation, response);
+      }
       if (response.fromCache()) {
         this.emit(NetworkManagerEmittedEvents.RequestServedFromCache, request);
       }
@@ -84,7 +89,7 @@ export class NetworkManager extends EventEmitter {
   }
 
   #onFetchError(event: any) {
-    const request = this._requestMap.get(event.request.request);
+    const request = this.#requestMap.get(event.request.request);
     if (!request) {
       return;
     }
@@ -93,18 +98,13 @@ export class NetworkManager extends EventEmitter {
   }
 
   getNavigationResponse(navigationId: string | null): HTTPResponse | null {
-    for (const request of this._requestMap.values()) {
-      if (navigationId === request._navigation) {
-        return request.response();
-      }
-    }
-
-    return null;
+    return this.#navigationMap.get(navigationId ?? '') ?? null;
   }
 
   dispose(): void {
     this.removeAllListeners();
-    this._requestMap = new Map();
+    this.#requestMap.clear();
+    this.#navigationMap.clear();
 
     for (const [event, subscriber] of this.#subscribedEvents) {
       this.#connection.off(event, subscriber);

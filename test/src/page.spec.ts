@@ -124,7 +124,7 @@ describe('Page', function () {
     it('should fire when expected', async () => {
       const {page} = getTestState();
 
-      await Promise.all([page.goto('about:blank'), waitEvent(page, 'load')]);
+      await Promise.all([waitEvent(page, 'load'), page.goto('about:blank')]);
     });
   });
 

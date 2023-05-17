@@ -18,8 +18,7 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {ElementHandle as BaseElementHandle} from '../../api/ElementHandle.js';
 
-import {Connection} from './Connection.js';
-import {Context} from './Context.js';
+import {BrowsingContext} from './BrowsingContext.js';
 import {JSHandle} from './JSHandle.js';
 
 /**
@@ -30,16 +29,15 @@ export class ElementHandle<
 > extends BaseElementHandle<ElementType> {
   declare handle: JSHandle<ElementType>;
 
-  constructor(context: Context, remoteValue: Bidi.CommonDataTypes.RemoteValue) {
+  constructor(
+    context: BrowsingContext,
+    remoteValue: Bidi.CommonDataTypes.RemoteValue
+  ) {
     super(new JSHandle(context, remoteValue));
   }
 
-  context(): Context {
+  context(): BrowsingContext {
     return this.handle.context();
-  }
-
-  get connection(): Connection {
-    return this.handle.connection;
   }
 
   get isPrimitiveValue(): boolean {

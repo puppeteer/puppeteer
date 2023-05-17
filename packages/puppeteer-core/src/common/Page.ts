@@ -60,6 +60,7 @@ import {Coverage} from './Coverage.js';
 import {DeviceRequestPrompt} from './DeviceRequestPrompt.js';
 import {Dialog} from './Dialog.js';
 import {EmulationManager} from './EmulationManager.js';
+import {TargetCloseError} from './Errors.js';
 import {FileChooser} from './FileChooser.js';
 import {FrameManager, FrameManagerEmittedEvents} from './FrameManager.js';
 import {Keyboard, Mouse, Touchscreen} from './Input.js';
@@ -933,7 +934,7 @@ export class CDPPage extends Page {
     if (!this.#disconnectPromise) {
       this.#disconnectPromise = new Promise(fulfill => {
         return this.#client.once(CDPSessionEmittedEvents.Disconnected, () => {
-          return fulfill(new Error('Target closed'));
+          return fulfill(new TargetCloseError('Target closed'));
         });
       });
     }

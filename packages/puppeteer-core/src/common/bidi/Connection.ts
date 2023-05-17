@@ -21,7 +21,7 @@ import {ConnectionTransport} from '../ConnectionTransport.js';
 import {debug} from '../Debug.js';
 import {EventEmitter} from '../EventEmitter.js';
 
-import {Context} from './Context.js';
+import {BrowsingContext} from './BrowsingContext.js';
 
 const debugProtocolSend = debug('puppeteer:webDriverBiDi:SEND ►');
 const debugProtocolReceive = debug('puppeteer:webDriverBiDi:RECV ◀');
@@ -103,7 +103,7 @@ export class Connection extends EventEmitter {
   #timeout? = 0;
   #closed = false;
   #callbacks = new CallbackRegistry();
-  #contexts: Map<string, Context> = new Map();
+  #browsingContexts: Map<string, BrowsingContext> = new Map();
 
   constructor(transport: ConnectionTransport, delay = 0, timeout?: number) {
     super();
@@ -117,10 +117,6 @@ export class Connection extends EventEmitter {
 
   get closed(): boolean {
     return this.#closed;
-  }
-
-  context(contextId: string): Context | null {
-    return this.#contexts.get(contextId) || null;
   }
 
   send<T extends keyof Commands>(
@@ -169,23 +165,23 @@ export class Connection extends EventEmitter {
   }
 
   #maybeEmitOnContext(event: Bidi.Message.EventMessage) {
-    let context: Context | undefined;
+    let context: BrowsingContext | undefined;
     // Context specific events
     if ('context' in event.params && event.params.context) {
-      context = this.#contexts.get(event.params.context);
+      context = this.#browsingContexts.get(event.params.context);
       // `log.entryAdded` specific context
     } else if ('source' in event.params && event.params.source.context) {
-      context = this.#contexts.get(event.params.source.context);
+      context = this.#browsingContexts.get(event.params.source.context);
     }
     context?.emit(event.method, event.params);
   }
 
-  registerContext(context: Context): void {
-    this.#contexts.set(context.id, context);
+  registerBrowsingContexts(context: BrowsingContext): void {
+    this.#browsingContexts.set(context.id, context);
   }
 
-  unregisterContext(context: Context): void {
-    this.#contexts.delete(context.id);
+  unregisterBrowsingContexts(id: string): void {
+    this.#browsingContexts.delete(id);
   }
 
   #onClose(): void {

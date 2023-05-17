@@ -75,6 +75,11 @@ export class ProtocolError extends CustomError {
 }
 
 /**
+ * @internal
+ */
+export class TargetCloseError extends ProtocolError {}
+
+/**
  * @deprecated Do not use.
  *
  * @public

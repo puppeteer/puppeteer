@@ -560,10 +560,11 @@ describe('network', function () {
       });
       await page.goto(server.EMPTY_PAGE);
       expect(requests).toHaveLength(1);
-      expect(requests[0]!.url()).toBe(server.EMPTY_PAGE);
-      expect(requests[0]!.response()).toBeTruthy();
-      expect(requests[0]!.frame() === page.mainFrame()).toBe(true);
-      expect(requests[0]!.frame()!.url()).toBe(server.EMPTY_PAGE);
+      const request = requests[0]!;
+      expect(request.url()).toBe(server.EMPTY_PAGE);
+      expect(request.response()).toBeTruthy();
+      expect(request.frame() === page.mainFrame()).toBe(true);
+      expect(request.frame()!.url()).toBe(server.EMPTY_PAGE);
     });
     it('should fire events in proper order', async () => {
       const {page, server} = getTestState();

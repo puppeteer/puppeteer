@@ -22,7 +22,7 @@ import {createDeferredPromise} from '../util/util.js';
 
 import {ConnectionTransport} from './ConnectionTransport.js';
 import {debug} from './Debug.js';
-import {ProtocolError} from './Errors.js';
+import {TargetCloseError, ProtocolError} from './Errors.js';
 import {EventEmitter} from './EventEmitter.js';
 
 const debugProtocolSend = debug('puppeteer:protocol:SEND ►');
@@ -150,10 +150,18 @@ export class CallbackRegistry {
     this._reject(callback, message, originalMessage);
   }
 
-  _reject(callback: Callback, message: string, originalMessage?: string): void {
+  _reject(
+    callback: Callback,
+    errorMessage: string | ProtocolError,
+    originalMessage?: string
+  ): void {
+    const isError = errorMessage instanceof ProtocolError;
+    const message = isError ? errorMessage.message : errorMessage;
+    const error = isError ? errorMessage : callback.error;
+
     callback.reject(
       rewriteError(
-        callback.error,
+        error,
         `Protocol error (${callback.label}): ${message}`,
         originalMessage
       )
@@ -171,7 +179,7 @@ export class CallbackRegistry {
   clear(): void {
     for (const callback of this.#callbacks.values()) {
       // TODO: probably we can accept error messages as params.
-      this._reject(callback, 'Target closed');
+      this._reject(callback, new TargetCloseError('Target closed'));
     }
     this.#callbacks.clear();
   }
@@ -513,7 +521,7 @@ export class CDPSessionImpl extends CDPSession {
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
     if (!this.#connection) {
       return Promise.reject(
-        new Error(
+        new TargetCloseError(
           `Protocol error (${method}): Session closed. Most likely the ${
             this.#targetType
           } has been closed.`
@@ -607,9 +615,6 @@ function rewriteError(
 /**
  * @internal
  */
-export function isTargetClosedError(err: Error): boolean {
-  return (
-    err.message.includes('Target closed') ||
-    err.message.includes('Session closed')
-  );
+export function isTargetClosedError(error: Error): boolean {
+  return error instanceof TargetCloseError;
 }

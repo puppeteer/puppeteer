@@ -19,6 +19,7 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 import {CDPSession, Connection as CDPPPtrConnection} from '../Connection.js';
+import {TargetCloseError} from '../Errors.js';
 import {Handler} from '../EventEmitter.js';
 
 import {Connection as BidiPPtrConnection} from './Connection.js';
@@ -146,6 +147,10 @@ class CDPClientAdapter<T extends Pick<CDPPPtrConnection, 'send' | 'on' | 'off'>>
   close() {
     this.#client.off('*', this.#forwardMessage as Handler<any>);
     this.#closed = true;
+  }
+
+  isCloseError(error: any): boolean {
+    return error instanceof TargetCloseError;
   }
 }
 

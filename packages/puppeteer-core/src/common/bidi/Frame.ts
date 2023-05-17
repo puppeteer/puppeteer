@@ -15,54 +15,48 @@
  */
 
 import {Frame as BaseFrame} from '../../api/Frame.js';
-import {HTTPResponse} from '../../api/HTTPResponse.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
 
-import {Context} from './Context.js';
-import {FrameManager} from './FrameManager.js';
+import {BrowsingContext} from './BrowsingContext.js';
+import {HTTPResponse} from './HTTPResponse.js';
 import {Page} from './Page.js';
 
 /**
+ * Puppeteer's Frame class could be viewed as a BiDi BrowsingContext implementation
  * @internal
  */
 export class Frame extends BaseFrame {
-  _frameManager: FrameManager;
-  _context: Context;
+  #page: Page;
+  #context: BrowsingContext;
+  override _id: string;
 
-  /**
-   * @internal
-   */
-  constructor(frameManager: FrameManager, context: Context) {
+  constructor(page: Page, context: BrowsingContext, parentId?: string | null) {
     super();
-    this._frameManager = frameManager;
-    this._context = context;
-    this._id = context.id;
-    this._parentId = context.parentId ?? undefined;
+    this.#page = page;
+    this.#context = context;
+    this._id = this.#context.id;
+    this._parentId = parentId ?? undefined;
   }
 
   override page(): Page {
-    return this._frameManager.page();
+    return this.#page;
   }
 
-  override async goto(
-    url: string,
-    options?: {
-      referer?: string;
-      referrerPolicy?: string;
-      timeout?: number;
-      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    }
-  ): Promise<HTTPResponse | null> {
-    return this._context.goto(url, options);
+  override name(): string {
+    return this._name || '';
   }
 
-  override async waitForNavigation(options?: {
-    timeout?: number;
-    waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-  }): Promise<HTTPResponse | null>;
-  override async waitForNavigation(): Promise<HTTPResponse | null> {
-    throw new Error('Not implemented');
+  override url(): string {
+    return this.#context.url;
+  }
+
+  override parentFrame(): Frame | null {
+    return this.#page.frame(this._parentId ?? '');
+  }
+
+  override childFrames(): Frame[] {
+    return this.#page.childFrames(this.#context.id);
   }
 
   override async evaluateHandle<
@@ -72,7 +66,7 @@ export class Frame extends BaseFrame {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    return this._context.evaluateHandle(pageFunction, ...args);
+    return this.#context.evaluateHandle(pageFunction, ...args);
   }
 
   override async evaluate<
@@ -82,44 +76,46 @@ export class Frame extends BaseFrame {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
-    return this._context.evaluate(pageFunction, ...args);
+    return this.#context.evaluate(pageFunction, ...args);
   }
 
-  override async content(): Promise<string> {
-    return this._context.content();
+  override async goto(
+    url: string,
+    options?:
+      | {
+          referer?: string | undefined;
+          referrerPolicy?: string | undefined;
+          timeout?: number | undefined;
+          waitUntil?:
+            | PuppeteerLifeCycleEvent
+            | PuppeteerLifeCycleEvent[]
+            | undefined;
+        }
+      | undefined
+  ): Promise<HTTPResponse | null> {
+    const navigationId = await this.#context.goto(url, options);
+    return this.#page.getNavigationResponse(navigationId);
   }
 
-  override async setContent(
+  override setContent(
     html: string,
     options: {
       timeout?: number;
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
     }
   ): Promise<void> {
-    return this._context.setContent(html, options);
+    return this.#context.setContent(html, options);
   }
 
-  override name(): string {
-    return this._name || '';
+  override content(): Promise<string> {
+    return this.#context.content();
   }
 
-  override url(): string {
-    return this._context.url();
+  context(): BrowsingContext {
+    return this.#context;
   }
 
-  override parentFrame(): Frame | null {
-    return this._frameManager._frameTree.parentFrame(this._id) ?? null;
-  }
-
-  override childFrames(): Frame[] {
-    return this._frameManager._frameTree.childFrames(this._id);
-  }
-
-  override isDetached(): boolean {
-    throw new Error('Not implemented');
-  }
-
-  override async title(): Promise<string> {
-    throw new Error('Not implemented');
+  dispose(): void {
+    this.#context.dispose();
   }
 }
