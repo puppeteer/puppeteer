@@ -301,44 +301,66 @@ export class PuppeteerNode extends Puppeteer {
 
     const product = this.configuration.defaultProduct!;
 
-    const chromeBuildId = await resolveBuildId(
-      SupportedBrowser.CHROME,
-      platform,
-      (product === 'chrome' ? this.configuration.browserRevision : null) ||
-        PUPPETEER_REVISIONS['chrome']
+    const puppeteerBrowsers: Array<{
+      product: Product;
+      browser: SupportedBrowser;
+      currentBuildId: string;
+    }> = [
+      {
+        product: 'chrome',
+        browser: SupportedBrowser.CHROME,
+        currentBuildId: '',
+      },
+      {
+        product: 'firefox',
+        browser: SupportedBrowser.FIREFOX,
+        currentBuildId: '',
+      },
+    ];
+
+    // Resolve current buildIds.
+    for (const item of puppeteerBrowsers) {
+      item.currentBuildId = await resolveBuildId(
+        item.browser,
+        platform,
+        (product === item.product
+          ? this.configuration.browserRevision
+          : null) || PUPPETEER_REVISIONS[item.product]
+      );
+    }
+
+    const currentBrowserBuilds = new Set(
+      puppeteerBrowsers.map(browser => {
+        return `${browser.browser}_${browser.currentBuildId}`;
+      })
     );
 
-    const firefoxBuildId = await resolveBuildId(
-      SupportedBrowser.FIREFOX,
-      platform,
-      (product === 'firefox' ? this.configuration.browserRevision : null) ||
-        PUPPETEER_REVISIONS['firefox']
+    const currentBrowsers = new Set(
+      puppeteerBrowsers.map(browser => {
+        return browser.browser;
+      })
     );
 
-    for (const browser of installedBrowsers) {
+    for (const installedBrowser of installedBrowsers) {
+      // Don't uninstall browsers that are not managed by Puppeteer yet.
+      if (!currentBrowsers.has(installedBrowser.browser)) {
+        continue;
+      }
+      // Keep the browser build used by the current Puppeteer installation.
       if (
-        browser.browser === SupportedBrowser.CHROME &&
-        browser.buildId !== chromeBuildId
+        currentBrowserBuilds.has(
+          `${installedBrowser.browser}_${installedBrowser.buildId}`
+        )
       ) {
-        await uninstall({
-          browser: SupportedBrowser.CHROME,
-          platform,
-          cacheDir,
-          buildId: chromeBuildId,
-        });
+        continue;
       }
 
-      if (
-        browser.browser === SupportedBrowser.FIREFOX &&
-        browser.buildId !== firefoxBuildId
-      ) {
-        await uninstall({
-          browser: SupportedBrowser.FIREFOX,
-          platform,
-          cacheDir,
-          buildId: firefoxBuildId,
-        });
-      }
+      await uninstall({
+        browser: SupportedBrowser.CHROME,
+        platform,
+        cacheDir,
+        buildId: installedBrowser.buildId,
+      });
     }
   }
 }
