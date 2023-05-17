@@ -361,7 +361,7 @@ export class CDPBrowser extends BrowserBase {
   };
 
   #onAttachedToTarget = async (target: Target) => {
-    if (await target._initializedPromise) {
+    if ((await target._initializedPromise) === InitializationStatus.SUCCESS) {
       this.emit(BrowserEmittedEvents.TargetCreated, target);
       target
         .browserContext()
@@ -372,7 +372,7 @@ export class CDPBrowser extends BrowserBase {
   #onDetachedFromTarget = async (target: Target): Promise<void> => {
     target._initializedPromise.resolve(InitializationStatus.ABORTED);
     target._isClosedPromise.resolve();
-    if (await target._initializedPromise) {
+    if ((await target._initializedPromise) === InitializationStatus.SUCCESS) {
       this.emit(BrowserEmittedEvents.TargetDestroyed, target);
       target
         .browserContext()
@@ -432,7 +432,8 @@ export class CDPBrowser extends BrowserBase {
     if (!target) {
       throw new Error(`Missing target for page (id = ${targetId})`);
     }
-    const initialized = await target._initializedPromise;
+    const initialized =
+      (await target._initializedPromise) === InitializationStatus.SUCCESS;
     if (!initialized) {
       throw new Error(`Failed to create target for page (id = ${targetId})`);
     }
@@ -453,7 +454,9 @@ export class CDPBrowser extends BrowserBase {
     return Array.from(
       this.#targetManager.getAvailableTargets().values()
     ).filter(target => {
-      return target._initializedPromise.resolved();
+      return (
+        target._initializedPromise.value() === InitializationStatus.SUCCESS
+      );
     });
   }
 

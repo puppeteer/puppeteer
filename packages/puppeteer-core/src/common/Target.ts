@@ -249,13 +249,13 @@ export class PageTarget extends Target {
 
   protected override _initialize(): void {
     this._initializedPromise
-      .then(async success => {
-        if (!success) {
-          return false;
+      .then(async result => {
+        if (result === InitializationStatus.ABORTED) {
+          return;
         }
         const opener = this.opener();
         if (!(opener instanceof PageTarget)) {
-          return true;
+          return;
         }
         if (!opener || !opener.pagePromise || this.type() !== 'page') {
           return true;
