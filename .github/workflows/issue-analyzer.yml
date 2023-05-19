@@ -100,6 +100,8 @@ jobs:
       - name: Verify issue
         timeout-minutes: 10
         run: ${{ env.PACKAGE_MANAGER }} run verify
+        env:
+          DEBUG: 'puppeteer:*'
       - uses: actions/upload-artifact@v3
         if: success() || failure()
         with:

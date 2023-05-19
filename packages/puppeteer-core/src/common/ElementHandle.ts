@@ -502,6 +502,10 @@ export class CDPElementHandle<
     target: CDPElementHandle<Node>,
     options?: {delay: number}
   ): Promise<void> {
+    assert(
+      this.#page.isDragInterceptionEnabled(),
+      'Drag Interception is not enabled!'
+    );
     await this.#scrollIntoViewIfNeeded();
     const startPoint = await this.clickablePoint();
     const targetPoint = await target.clickablePoint();
