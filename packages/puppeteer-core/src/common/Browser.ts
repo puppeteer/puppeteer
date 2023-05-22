@@ -90,7 +90,7 @@ export class CDPBrowser extends BrowserBase {
   #targetFilterCallback: TargetFilterCallback;
   #isPageTargetCallback!: IsPageTargetCallback;
   #defaultContext: CDPBrowserContext;
-  #contexts: Map<string, CDPBrowserContext>;
+  #contexts = new Map<string, CDPBrowserContext>();
   #screenshotTaskQueue: TaskQueue;
   #targetManager: TargetManager;
 
@@ -143,7 +143,6 @@ export class CDPBrowser extends BrowserBase {
       );
     }
     this.#defaultContext = new CDPBrowserContext(this.#connection, this);
-    this.#contexts = new Map();
     for (const contextId of contextIds) {
       this.#contexts.set(
         contextId,

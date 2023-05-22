@@ -108,30 +108,24 @@ export class Page extends PageBase {
     ],
   ]);
 
-  constructor(connection: Connection, info: Bidi.BrowsingContext.Info) {
+  constructor(connection: Connection, info: {context: string}) {
     super();
     this.#connection = connection;
 
     this.#networkManager = new NetworkManager(connection, this);
+    this.#onFrameAttached({
+      ...info,
+      url: 'about:blank',
+      children: [],
+    });
 
-    this.#handleFrameTree(info);
+    for (const [event, subscriber] of this.#subscribedEvents) {
+      this.#connection.on(event, subscriber);
+    }
 
     for (const [event, subscriber] of this.#networkManagerEvents) {
       this.#networkManager.on(event, subscriber);
     }
-  }
-
-  static async _create(
-    connection: Connection,
-    info: Bidi.BrowsingContext.Info
-  ): Promise<Page> {
-    const page = new Page(connection, info);
-
-    for (const [event, subscriber] of page.#subscribedEvents) {
-      connection.on(event, subscriber);
-    }
-
-    return page;
   }
 
   override mainFrame(): Frame {
@@ -144,26 +138,12 @@ export class Page extends PageBase {
     return Array.from(this.#frameTree.frames());
   }
 
-  frame(frameId: string): Frame | null {
-    return this.#frameTree.getById(frameId) || null;
+  frame(frameId?: string): Frame | null {
+    return this.#frameTree.getById(frameId ?? '') || null;
   }
 
   childFrames(frameId: string): Frame[] {
     return this.#frameTree.childFrames(frameId);
-  }
-
-  #handleFrameTree(info: Bidi.BrowsingContext.Info): void {
-    if (info) {
-      this.#onFrameAttached(info);
-    }
-
-    if (!info.children) {
-      return;
-    }
-
-    for (const child of info.children) {
-      this.#handleFrameTree(child);
-    }
   }
 
   #onFrameAttached(info: Bidi.BrowsingContext.Info): void {
@@ -177,6 +157,7 @@ export class Page extends PageBase {
         info
       );
       this.#connection.registerBrowsingContexts(context);
+
       const frame = new Frame(this, context, info.parent);
 
       this.#frameTree.addFrame(frame);
@@ -195,10 +176,10 @@ export class Page extends PageBase {
       for (const child of frame.childFrames()) {
         this.#removeFramesRecursively(child);
       }
-    }
 
-    frame = await this.#frameTree.waitForFrame(frameId);
-    this.emit(FrameManagerEmittedEvents.FrameNavigated, frame);
+      frame = await this.#frameTree.waitForFrame(frameId);
+      this.emit(FrameManagerEmittedEvents.FrameNavigated, frame);
+    }
   }
 
   #onFrameDetached(info: Bidi.BrowsingContext.Info): void {
@@ -219,6 +200,9 @@ export class Page extends PageBase {
   }
 
   #onLogEntryAdded(event: Bidi.Log.LogEntry): void {
+    if (!this.frame(event.source.context)) {
+      return;
+    }
     if (isConsoleLogEntry(event)) {
       const args = event.args.map(arg => {
         return getBidiHandle(this.mainFrame().context(), arg);
