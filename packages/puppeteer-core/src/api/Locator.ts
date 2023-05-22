@@ -342,7 +342,7 @@ export class Locator extends EventEmitter {
       signal?: AbortSignal;
     }
   ): Promise<void> {
-    await this.#run(
+    return await this.#run(
       async element => {
         await element.click(clickOptions);
       },
@@ -352,6 +352,53 @@ export class Locator extends EventEmitter {
           this.#ensureElementIsInTheViewport,
           this.#waitForVisibility,
           this.#waitForEnabled,
+          this.#waitForStableBoundingBox,
+        ],
+      }
+    );
+  }
+
+  async hover(hoverOptions?: {signal?: AbortSignal}): Promise<void> {
+    return await this.#run(
+      async element => {
+        await element.hover();
+      },
+      {
+        signal: hoverOptions?.signal,
+        conditions: [
+          this.#ensureElementIsInTheViewport,
+          this.#waitForVisibility,
+          this.#waitForStableBoundingBox,
+        ],
+      }
+    );
+  }
+
+  async scroll(scrollOptions?: {
+    scrollTop?: number;
+    scrollLeft?: number;
+    signal?: AbortSignal;
+  }): Promise<void> {
+    return await this.#run(
+      async element => {
+        await element.evaluate(
+          (el, scrollTop, scrollLeft) => {
+            if (scrollTop !== undefined) {
+              el.scrollTop = scrollTop;
+            }
+            if (scrollLeft !== undefined) {
+              el.scrollLeft = scrollLeft;
+            }
+          },
+          scrollOptions?.scrollTop,
+          scrollOptions?.scrollLeft
+        );
+      },
+      {
+        signal: scrollOptions?.signal,
+        conditions: [
+          this.#ensureElementIsInTheViewport,
+          this.#waitForVisibility,
           this.#waitForStableBoundingBox,
         ],
       }

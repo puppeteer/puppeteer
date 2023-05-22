@@ -226,4 +226,57 @@ describe('Locator', function () {
       }
     });
   });
+
+  describe('Locator.hover', function () {
+    it('should work', async () => {
+      const {page} = getTestState();
+
+      await page.setViewport({width: 500, height: 500});
+      await page.setContent(`
+        <button onmouseenter="this.innerText = 'hovered';">test</button>
+      `);
+      let hovered = false;
+      await page
+        .locator('button')
+        .on(LocatorEmittedEvents.Action, () => {
+          hovered = true;
+        })
+        .hover();
+      const button = await page.$('button');
+      const text = await button?.evaluate(el => {
+        return el.innerText;
+      });
+      expect(text).toBe('hovered');
+      expect(hovered).toBe(true);
+    });
+  });
+
+  describe('Locator.scroll', function () {
+    it('should work', async () => {
+      const {page} = getTestState();
+
+      await page.setViewport({width: 500, height: 500});
+      await page.setContent(`
+        <div style="height: 500px; width: 500px; overflow: scroll;">
+          <div style="height: 1000px; width: 1000px;">test</div>
+        </div>
+      `);
+      let scrolled = false;
+      await page
+        .locator('div')
+        .on(LocatorEmittedEvents.Action, () => {
+          scrolled = true;
+        })
+        .scroll({
+          scrollTop: 500,
+          scrollLeft: 500,
+        });
+      const scrollable = await page.$('div');
+      const scroll = await scrollable?.evaluate(el => {
+        return el.scrollTop + ' ' + el.scrollLeft;
+      });
+      expect(scroll).toBe('500 500');
+      expect(scrolled).toBe(true);
+    });
+  });
 });
