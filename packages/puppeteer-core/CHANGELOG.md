@@ -8,6 +8,18 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.0.1 to 1.1.0
 
+## [20.3.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.2.1...puppeteer-core-v20.3.0) (2023-05-22)
+
+
+### Features
+
+* add an ability to trim cache for Puppeteer ([#10199](https://github.com/puppeteer/puppeteer/issues/10199)) ([1ad32ec](https://github.com/puppeteer/puppeteer/commit/1ad32ec9948ca3e07e15548a562c8f3c633b3dc3))
+
+
+### Bug Fixes
+
+* ElementHandle dragAndDrop should fail when interception is disabled ([#10209](https://github.com/puppeteer/puppeteer/issues/10209)) ([bcf5fd8](https://github.com/puppeteer/puppeteer/commit/bcf5fd87aeeb822203c3388e8aa6dadaa0107690))
+
 ## [20.2.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.2.0...puppeteer-core-v20.2.1) (2023-05-15)
 
 

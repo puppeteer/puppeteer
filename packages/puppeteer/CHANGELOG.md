@@ -15,6 +15,20 @@ All notable changes to this project will be documented in this file. See [standa
     * puppeteer-core bumped from 20.1.1 to 20.1.2
     * @puppeteer/browsers bumped from 1.0.1 to 1.1.0
 
+## [20.3.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v20.2.1...puppeteer-v20.3.0) (2023-05-22)
+
+
+### Features
+
+* add an ability to trim cache for Puppeteer ([#10199](https://github.com/puppeteer/puppeteer/issues/10199)) ([1ad32ec](https://github.com/puppeteer/puppeteer/commit/1ad32ec9948ca3e07e15548a562c8f3c633b3dc3))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 20.2.1 to 20.3.0
+
 ## [20.2.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-v20.2.0...puppeteer-v20.2.1) (2023-05-15)
 
 
