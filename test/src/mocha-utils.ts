@@ -355,18 +355,18 @@ export const launch = async (
       ...defaultBrowserOptions,
       ...options,
     });
-    browserCleanups.push(async () => {
-      browser.close();
+    browserCleanups.push(() => {
+      return browser.close();
     });
 
     const context = await browser.createIncognitoBrowserContext();
-    browserCleanups.push(async () => {
-      context.close();
+    browserCleanups.push(() => {
+      return context.close();
     });
 
     const page = await context.newPage();
-    browserCleanups.push(async () => {
-      page.close();
+    browserCleanups.push(() => {
+      return page.close();
     });
 
     return {

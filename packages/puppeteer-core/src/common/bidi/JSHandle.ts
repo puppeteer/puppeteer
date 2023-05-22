@@ -21,8 +21,7 @@ import {JSHandle as BaseJSHandle} from '../../api/JSHandle.js';
 import {EvaluateFuncWith, HandleFor, HandleOr} from '../../common/types.js';
 import {withSourcePuppeteerURLIfNone} from '../util.js';
 
-import {Connection} from './Connection.js';
-import {Context} from './Context.js';
+import {BrowsingContext} from './BrowsingContext.js';
 import {BidiSerializer} from './Serializer.js';
 import {releaseReference} from './utils.js';
 
@@ -31,18 +30,17 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
   #context;
   #remoteValue;
 
-  constructor(context: Context, remoteValue: Bidi.CommonDataTypes.RemoteValue) {
+  constructor(
+    context: BrowsingContext,
+    remoteValue: Bidi.CommonDataTypes.RemoteValue
+  ) {
     super();
     this.#context = context;
     this.#remoteValue = remoteValue;
   }
 
-  context(): Context {
+  context(): BrowsingContext {
     return this.#context;
-  }
-
-  get connection(): Connection {
-    return this.#context.connection;
   }
 
   override get disposed(): boolean {
@@ -74,7 +72,7 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
       this.evaluateHandle.name,
       pageFunction
     );
-    return await this.context().evaluateHandle(pageFunction, this, ...args);
+    return this.context().evaluateHandle(pageFunction, this, ...args);
   }
 
   override async getProperty<K extends keyof T>(

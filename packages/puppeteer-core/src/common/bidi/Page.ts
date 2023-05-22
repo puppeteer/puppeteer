@@ -18,17 +18,20 @@ import type {Readable} from 'stream';
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import {HTTPResponse} from '../../api/HTTPResponse.js';
 import {
   Page as PageBase,
   PageEmittedEvents,
   ScreenshotOptions,
   WaitForOptions,
 } from '../../api/Page.js';
+import {assert} from '../../util/assert.js';
 import {isErrorLike} from '../../util/ErrorLike.js';
+import {isTargetClosedError} from '../Connection.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
-import {EventType, Handler} from '../EventEmitter.js';
+import {Handler} from '../EventEmitter.js';
 import {FrameManagerEmittedEvents} from '../FrameManager.js';
+import {FrameTree} from '../FrameTree.js';
+import {NetworkManagerEmittedEvents} from '../NetworkManager.js';
 import {PDFOptions} from '../PDFOptions.js';
 import {Viewport} from '../PuppeteerViewport.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
@@ -39,43 +42,70 @@ import {
   withSourcePuppeteerURLIfNone,
 } from '../util.js';
 
+import {BrowsingContext, getBidiHandle} from './BrowsingContext.js';
 import {Connection} from './Connection.js';
-import {Context, getBidiHandle} from './Context.js';
 import {Frame} from './Frame.js';
-import {FrameManager} from './FrameManager.js';
+import {HTTPResponse} from './HTTPResponse.js';
+import {NetworkManager} from './NetworkManager.js';
 import {BidiSerializer} from './Serializer.js';
 
 /**
  * @internal
  */
 export class Page extends PageBase {
-  _timeoutSettings = new TimeoutSettings();
+  #timeoutSettings = new TimeoutSettings();
   #connection: Connection;
-  #frameManager: FrameManager;
+  #frameTree = new FrameTree<Frame>();
+  #networkManager: NetworkManager;
   #viewport: Viewport | null = null;
   #closed = false;
   #subscribedEvents = new Map<string, Handler<any>>([
     ['log.entryAdded', this.#onLogEntryAdded.bind(this)],
-    ['browsingContext.load', this.#onLoad.bind(this)],
-    ['browsingContext.domContentLoaded', this.#onDOMLoad.bind(this)],
+    [
+      'browsingContext.load',
+      () => {
+        return this.emit(PageEmittedEvents.Load);
+      },
+    ],
+    [
+      'browsingContext.domContentLoaded',
+      () => {
+        return this.emit(PageEmittedEvents.DOMContentLoaded);
+      },
+    ],
+    ['browsingContext.contextCreated', this.#onFrameAttached.bind(this)],
+    ['browsingContext.contextDestroyed', this.#onFrameDetached.bind(this)],
+    ['browsingContext.fragmentNavigated', this.#onFrameNavigated.bind(this)],
   ]) as Map<Bidi.Session.SubscriptionRequestEvent, Handler>;
-  #frameManagerEvents = new Map<EventType, Handler<any>>([
+  #networkManagerEvents = new Map<symbol, Handler<any>>([
     [
-      FrameManagerEmittedEvents.FrameAttached,
-      frame => {
-        return this.emit(PageEmittedEvents.FrameAttached, frame);
+      NetworkManagerEmittedEvents.Request,
+      event => {
+        return this.emit(PageEmittedEvents.Request, event);
       },
     ],
     [
-      FrameManagerEmittedEvents.FrameDetached,
-      frame => {
-        return this.emit(PageEmittedEvents.FrameDetached, frame);
+      NetworkManagerEmittedEvents.RequestServedFromCache,
+      event => {
+        return this.emit(PageEmittedEvents.RequestServedFromCache, event);
       },
     ],
     [
-      FrameManagerEmittedEvents.FrameNavigated,
-      frame => {
-        return this.emit(PageEmittedEvents.FrameNavigated, frame);
+      NetworkManagerEmittedEvents.RequestFailed,
+      event => {
+        return this.emit(PageEmittedEvents.RequestFailed, event);
+      },
+    ],
+    [
+      NetworkManagerEmittedEvents.RequestFinished,
+      event => {
+        return this.emit(PageEmittedEvents.RequestFinished, event);
+      },
+    ],
+    [
+      NetworkManagerEmittedEvents.Response,
+      event => {
+        return this.emit(PageEmittedEvents.Response, event);
       },
     ],
   ]);
@@ -84,15 +114,12 @@ export class Page extends PageBase {
     super();
     this.#connection = connection;
 
-    this.#frameManager = new FrameManager(
-      this.#connection,
-      this,
-      info,
-      this._timeoutSettings
-    );
+    this.#networkManager = new NetworkManager(connection, this);
 
-    for (const [event, subscriber] of this.#frameManagerEvents) {
-      this.#frameManager.on(event, subscriber);
+    this.#handleFrameTree(info);
+
+    for (const [event, subscriber] of this.#networkManagerEvents) {
+      this.#networkManager.on(event, subscriber);
     }
   }
 
@@ -103,16 +130,17 @@ export class Page extends PageBase {
     const page = new Page(connection, info);
 
     for (const [event, subscriber] of page.#subscribedEvents) {
-      page.context().on(event, subscriber);
+      connection.on(event, subscriber);
     }
 
     await page.#connection
       .send('session.subscribe', {
         events: [...page.#subscribedEvents.keys()],
+        // TODO: We should subscribe globally
         contexts: [info.context],
       })
       .catch(error => {
-        if (isErrorLike(error) && !error.message.includes('Target closed')) {
+        if (isErrorLike(error) && isTargetClosedError(error)) {
           throw error;
         }
       });
@@ -121,21 +149,93 @@ export class Page extends PageBase {
   }
 
   override mainFrame(): Frame {
-    return this.#frameManager.mainFrame();
+    const mainFrame = this.#frameTree.getMainFrame();
+    assert(mainFrame, 'Requesting main frame too early!');
+    return mainFrame;
   }
 
   override frames(): Frame[] {
-    return this.#frameManager.frames();
+    return Array.from(this.#frameTree.frames());
   }
 
-  context(): Context {
-    return this.#frameManager.mainFrame()._context;
+  frame(frameId: string): Frame | null {
+    return this.#frameTree.getById(frameId) || null;
+  }
+
+  childFrames(frameId: string): Frame[] {
+    return this.#frameTree.childFrames(frameId);
+  }
+
+  #handleFrameTree(info: Bidi.BrowsingContext.Info): void {
+    if (info) {
+      this.#onFrameAttached(info);
+    }
+
+    if (!info.children) {
+      return;
+    }
+
+    for (const child of info.children) {
+      this.#handleFrameTree(child);
+    }
+  }
+
+  #onFrameAttached(info: Bidi.BrowsingContext.Info): void {
+    if (
+      !this.frame(info.context) &&
+      (this.frame(info.parent ?? '') || !this.#frameTree.getMainFrame())
+    ) {
+      const context = new BrowsingContext(
+        this.#connection,
+        this.#timeoutSettings,
+        info
+      );
+      this.#connection.registerBrowsingContexts(context);
+      const frame = new Frame(this, context, info.parent);
+
+      this.#frameTree.addFrame(frame);
+      this.emit(FrameManagerEmittedEvents.FrameAttached, frame);
+    }
+  }
+
+  async #onFrameNavigated(
+    info: Bidi.BrowsingContext.NavigationInfo
+  ): Promise<void> {
+    const frameId = info.context;
+
+    let frame = this.frame(frameId);
+    // Detach all child frames first.
+    if (frame) {
+      for (const child of frame.childFrames()) {
+        this.#removeFramesRecursively(child);
+      }
+    }
+
+    frame = await this.#frameTree.waitForFrame(frameId);
+    this.emit(FrameManagerEmittedEvents.FrameNavigated, frame);
+  }
+
+  #onFrameDetached(info: Bidi.BrowsingContext.Info): void {
+    const frame = this.frame(info.context);
+
+    if (frame) {
+      this.#removeFramesRecursively(frame);
+    }
+  }
+
+  #removeFramesRecursively(frame: Frame): void {
+    for (const child of frame.childFrames()) {
+      this.#removeFramesRecursively(child);
+    }
+    frame.dispose();
+    this.#frameTree.removeFrame(frame);
+    this.emit(FrameManagerEmittedEvents.FrameDetached, frame);
   }
 
   #onLogEntryAdded(event: Bidi.Log.LogEntry): void {
     if (isConsoleLogEntry(event)) {
       const args = event.args.map(arg => {
-        return getBidiHandle(this.context(), arg);
+        return getBidiHandle(this.mainFrame().context(), arg);
       });
 
       const text = args
@@ -183,12 +283,8 @@ export class Page extends PageBase {
     }
   }
 
-  #onLoad(_event: Bidi.BrowsingContext.NavigationInfo): void {
-    this.emit(PageEmittedEvents.Load);
-  }
-
-  #onDOMLoad(_event: Bidi.BrowsingContext.NavigationInfo): void {
-    this.emit(PageEmittedEvents.DOMContentLoaded);
+  getNavigationResponse(id: string | null): HTTPResponse | null {
+    return this.#networkManager.getNavigationResponse(id);
   }
 
   override async close(): Promise<void> {
@@ -197,16 +293,13 @@ export class Page extends PageBase {
     }
     this.#closed = true;
     this.removeAllListeners();
-    this.#frameManager.dispose();
-
-    for (const [event, subscriber] of this.#subscribedEvents) {
-      this.context().off(event, subscriber);
-    }
+    this.#networkManager.dispose();
 
     await this.#connection
       .send('session.unsubscribe', {
         events: [...this.#subscribedEvents.keys()],
-        contexts: [this.context().id],
+        // TODO: Remove this once we subscrite gloablly
+        contexts: [this.mainFrame()._id],
       })
       .catch(() => {
         // Suppress the error as we remove the context
@@ -214,7 +307,7 @@ export class Page extends PageBase {
       });
 
     await this.#connection.send('browsingContext.close', {
-      context: this.context().id,
+      context: this.mainFrame()._id,
     });
   }
 
@@ -261,11 +354,15 @@ export class Page extends PageBase {
   }
 
   override setDefaultNavigationTimeout(timeout: number): void {
-    this._timeoutSettings.setDefaultNavigationTimeout(timeout);
+    this.#timeoutSettings.setDefaultNavigationTimeout(timeout);
   }
 
   override setDefaultTimeout(timeout: number): void {
-    this._timeoutSettings.setDefaultTimeout(timeout);
+    this.#timeoutSettings.setDefaultTimeout(timeout);
+  }
+
+  override getDefaultTimeout(): number {
+    return this.#timeoutSettings.timeout();
   }
 
   override async setContent(
@@ -276,16 +373,7 @@ export class Page extends PageBase {
   }
 
   override async content(): Promise<string> {
-    return await this.evaluate(() => {
-      let retVal = '';
-      if (document.doctype) {
-        retVal = new XMLSerializer().serializeToString(document.doctype);
-      }
-      if (document.documentElement) {
-        retVal += document.documentElement.outerHTML;
-      }
-      return retVal;
-    });
+    return this.mainFrame().content();
   }
 
   override async setViewport(viewport: Viewport): Promise<void> {
@@ -296,13 +384,15 @@ export class Page extends PageBase {
     const deviceScaleFactor = 1;
     const screenOrientation = {angle: 0, type: 'portraitPrimary'};
 
-    await this.context().sendCDPCommand('Emulation.setDeviceMetricsOverride', {
-      mobile,
-      width,
-      height,
-      deviceScaleFactor,
-      screenOrientation,
-    });
+    await this.mainFrame()
+      .context()
+      .sendCDPCommand('Emulation.setDeviceMetricsOverride', {
+        mobile,
+        width,
+        height,
+        deviceScaleFactor,
+        screenOrientation,
+      });
 
     this.#viewport = viewport;
   }
@@ -326,7 +416,7 @@ export class Page extends PageBase {
     } = this._getPDFOptions(options, 'cm');
     const {result} = await waitWithTimeout(
       this.#connection.send('browsingContext.print', {
-        context: this.context().id,
+        context: this.mainFrame()._id,
         background,
         margin,
         orientation: landscape ? 'landscape' : 'portrait',
@@ -383,7 +473,7 @@ export class Page extends PageBase {
     const {result} = await this.#connection.send(
       'browsingContext.captureScreenshot',
       {
-        context: this.context().id,
+        context: this.mainFrame()._id,
       }
     );
 

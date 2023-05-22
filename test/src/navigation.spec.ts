@@ -65,8 +65,8 @@ describe('navigation', function () {
     it('should return response when page changes its URL after load', async () => {
       const {page, server} = getTestState();
 
-      const response = (await page.goto(server.PREFIX + '/historyapi.html'))!;
-      expect(response.status()).toBe(200);
+      const response = await page.goto(server.PREFIX + '/historyapi.html');
+      expect(response!.status()).toBe(200);
     });
     it('should work with subframes return 204', async () => {
       const {page, server} = getTestState();

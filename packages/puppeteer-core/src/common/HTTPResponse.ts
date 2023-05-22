@@ -114,11 +114,6 @@ export class HTTPResponse extends BaseHTTPResponse {
     return this.#url;
   }
 
-  override ok(): boolean {
-    // TODO: document === 0 case?
-    return this.#status === 0 || (this.#status >= 200 && this.#status <= 299);
-  }
-
   override status(): number {
     return this.#status;
   }

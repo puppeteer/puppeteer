@@ -19,7 +19,7 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {debug} from '../Debug.js';
 import {PuppeteerURL} from '../util.js';
 
-import {Context} from './Context.js';
+import {BrowsingContext} from './BrowsingContext.js';
 import {BidiSerializer} from './Serializer.js';
 
 /**
@@ -30,7 +30,7 @@ export const debugError = debug('puppeteer:error');
  * @internal
  */
 export async function releaseReference(
-  client: Context,
+  client: BrowsingContext,
   remoteReference: Bidi.CommonDataTypes.RemoteReference
 ): Promise<void> {
   if (!remoteReference.handle) {

@@ -480,7 +480,7 @@ describe('Evaluation specs', function () {
       });
       expect(a.length).toBe(100 * 1024 * 1024);
     });
-    it('should throw error with detailed information on exception inside promise ', async () => {
+    it('should throw error with detailed information on exception inside promise', async () => {
       const {page} = getTestState();
 
       let error!: Error;
