@@ -157,6 +157,7 @@ export class CDPPage extends Page {
   #fileChooserPromises = new Set<DeferredPromise<FileChooser>>();
 
   #disconnectPromise?: Promise<Error>;
+  #serviceWorkerBypassed = false;
   #userDragInterceptionEnabled = false;
 
   /**
@@ -347,6 +348,10 @@ export class CDPPage extends Page {
     return this.#client;
   }
 
+  override isServiceWorkerBypassed(): boolean {
+    return this.#serviceWorkerBypassed;
+  }
+
   override isDragInterceptionEnabled(): boolean {
     return this.#userDragInterceptionEnabled;
   }
@@ -470,6 +475,11 @@ export class CDPPage extends Page {
 
   override async setRequestInterception(value: boolean): Promise<void> {
     return this.#frameManager.networkManager.setRequestInterception(value);
+  }
+
+  override async setBypassServiceWorker(bypass: boolean): Promise<void> {
+    this.#serviceWorkerBypassed = bypass;
+    return this.#client.send('Network.setBypassServiceWorker', {bypass});
   }
 
   override async setDragInterception(enabled: boolean): Promise<void> {

@@ -522,6 +522,18 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[network.spec] network Page.setBypassServiceWorker *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Page.setBypassServiceWorker *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[oopif.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],

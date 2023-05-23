@@ -446,6 +446,13 @@ export class Page extends EventEmitter {
   }
 
   /**
+   * `true` if the service worker are being bypassed, `false` otherwise.
+   */
+  isServiceWorkerBypassed(): boolean {
+    throw new Error('Not implemented');
+  }
+
+  /**
    * `true` if drag events are being intercepted, `false` otherwise.
    */
   isDragInterceptionEnabled(): boolean {
@@ -684,6 +691,16 @@ export class Page extends EventEmitter {
    */
   async setRequestInterception(value: boolean): Promise<void>;
   async setRequestInterception(): Promise<void> {
+    throw new Error('Not implemented');
+  }
+
+  /**
+   * Toggles ignoring of service worker for each request.
+   *
+   * @param bypass - Whether to bypass service worker and load from network.
+   */
+  async setBypassServiceWorker(bypass: boolean): Promise<void>;
+  async setBypassServiceWorker(): Promise<void> {
     throw new Error('Not implemented');
   }
 

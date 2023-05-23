@@ -855,4 +855,44 @@ describe('network', function () {
       }
     });
   });
+
+  describe('Page.setBypassServiceWorker', async () => {
+    it('bypass for network', async () => {
+      const {page, server} = getTestState();
+
+      const responses = new Map();
+      page.on('response', r => {
+        return !isFavicon(r) && responses.set(r.url().split('/').pop(), r);
+      });
+
+      // Load and re-load to make sure serviceworker is installed and running.
+      await page.goto(server.PREFIX + '/serviceworkers/fetch/sw.html', {
+        waitUntil: 'networkidle2',
+      });
+      await page.evaluate(async () => {
+        return await (globalThis as any).activationPromise;
+      });
+      await page.reload({
+        waitUntil: 'networkidle2',
+      });
+
+      expect(page.isServiceWorkerBypassed()).toBe(false);
+      expect(responses.size).toBe(2);
+      expect(responses.get('sw.html').status()).toBe(200);
+      expect(responses.get('sw.html').fromServiceWorker()).toBe(true);
+      expect(responses.get('style.css').status()).toBe(200);
+      expect(responses.get('style.css').fromServiceWorker()).toBe(true);
+
+      await page.setBypassServiceWorker(true);
+      await page.reload({
+        waitUntil: 'networkidle2',
+      });
+
+      expect(page.isServiceWorkerBypassed()).toBe(true);
+      expect(responses.get('sw.html').status()).toBe(200);
+      expect(responses.get('sw.html').fromServiceWorker()).toBe(false);
+      expect(responses.get('style.css').status()).toBe(200);
+      expect(responses.get('style.css').fromServiceWorker()).toBe(false);
+    });
+  });
 });
