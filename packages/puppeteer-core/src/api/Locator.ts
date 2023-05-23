@@ -358,6 +358,116 @@ export class Locator extends EventEmitter {
     );
   }
 
+  /**
+   * Fills out the input identified by the locator using the provided value. The
+   * type of the input is determined at runtime and the appropriate fill-out
+   * method is chosen based on the type. contenteditable, selector, inputs are
+   * supported.
+   */
+  async fill(
+    value: string,
+    fillOptions?: {signal?: AbortSignal}
+  ): Promise<void> {
+    return await this.#run(
+      async element => {
+        const input = element as ElementHandle<HTMLElement>;
+        const inputType = await input.evaluate(el => {
+          if (el instanceof HTMLSelectElement) {
+            return 'select';
+          }
+          if (el instanceof HTMLInputElement) {
+            if (
+              new Set([
+                'textarea',
+                'text',
+                'url',
+                'tel',
+                'search',
+                'password',
+                'number',
+                'email',
+              ]).has(el.type)
+            ) {
+              return 'typeable-input';
+            } else {
+              return 'other-input';
+            }
+          }
+
+          if (el.isContentEditable) {
+            return 'contenteditable';
+          }
+
+          return 'unknown';
+        });
+
+        switch (inputType) {
+          case 'select':
+            await input.select(value);
+            break;
+          case 'contenteditable':
+          case 'typeable-input':
+            const textToType = await (
+              input as ElementHandle<HTMLInputElement>
+            ).evaluate((input, newValue) => {
+              const currentValue = input.isContentEditable
+                ? input.innerText
+                : input.value;
+
+              // Clear the input if the current value does not match the filled
+              // out value.
+              if (
+                newValue.length <= currentValue.length ||
+                !newValue.startsWith(input.value)
+              ) {
+                if (input.isContentEditable) {
+                  input.innerText = '';
+                } else {
+                  input.value = '';
+                }
+                return newValue;
+              }
+              const originalValue = input.isContentEditable
+                ? input.innerText
+                : input.value;
+
+              // If the value is partially filled out, only type the rest. Move
+              // cursor to the end of the common prefix.
+              if (input.isContentEditable) {
+                input.innerText = '';
+                input.innerText = originalValue;
+              } else {
+                input.value = '';
+                input.value = originalValue;
+              }
+              return newValue.substring(originalValue.length);
+            }, value);
+            await input.type(textToType);
+            break;
+          case 'other-input':
+            await input.focus();
+            await input.evaluate((input, value) => {
+              (input as HTMLInputElement).value = value;
+              input.dispatchEvent(new Event('input', {bubbles: true}));
+              input.dispatchEvent(new Event('change', {bubbles: true}));
+            }, value);
+            break;
+          case 'unknown':
+            throw new Error(`Element cannot be filled out.`);
+        }
+      },
+      {
+        signal: fillOptions?.signal,
+        conditions: [
+          this.#ensureElementIsInTheViewport,
+          this.#waitForVisibility,
+          this.#waitForEnabled,
+          this.#waitForStableBoundingBox,
+        ],
+      }
+    );
+  }
+
   async hover(hoverOptions?: {signal?: AbortSignal}): Promise<void> {
     return await this.#run(
       async element => {

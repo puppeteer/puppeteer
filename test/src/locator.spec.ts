@@ -279,4 +279,119 @@ describe('Locator', function () {
       expect(scrolled).toBe(true);
     });
   });
+
+  describe('Locator.change', function () {
+    it('should work for selects', async () => {
+      const {page} = getTestState();
+
+      await page.setContent(`
+        <select>
+          <option value="value1">Option 1</option>
+          <option value="value2">Option 2</option>
+        <select>
+      `);
+      let filled = false;
+      await page
+        .locator('select')
+        .on(LocatorEmittedEvents.Action, () => {
+          filled = true;
+        })
+        .fill('value2');
+      expect(
+        await page.evaluate(() => {
+          return document.querySelector('select')?.value === 'value2';
+        })
+      ).toBe(true);
+      expect(filled).toBe(true);
+    });
+
+    it('should work for inputs', async () => {
+      const {page} = getTestState();
+      await page.setContent(`
+        <input>
+      `);
+      await page.locator('input').fill('test');
+      expect(
+        await page.evaluate(() => {
+          return document.querySelector('input')?.value === 'test';
+        })
+      ).toBe(true);
+    });
+
+    it('should work if the input becomes enabled later', async () => {
+      const {page} = getTestState();
+
+      await page.setContent(`
+        <input disabled>
+      `);
+      const input = await page.$('input');
+      const result = page.locator('input').fill('test');
+      expect(
+        await input?.evaluate(el => {
+          return el.value;
+        })
+      ).toBe('');
+      await input?.evaluate(el => {
+        el.disabled = false;
+      });
+      await result;
+      expect(
+        await input?.evaluate(el => {
+          return el.value;
+        })
+      ).toBe('test');
+    });
+
+    it('should work for contenteditable', async () => {
+      const {page} = getTestState();
+      await page.setContent(`
+        <div contenteditable="true">
+      `);
+      await page.locator('div').fill('test');
+      expect(
+        await page.evaluate(() => {
+          return document.querySelector('div')?.innerText === 'test';
+        })
+      ).toBe(true);
+    });
+
+    it('should work for pre-filled inputs', async () => {
+      const {page} = getTestState();
+      await page.setContent(`
+        <input value="te">
+      `);
+      await page.locator('input').fill('test');
+      expect(
+        await page.evaluate(() => {
+          return document.querySelector('input')?.value === 'test';
+        })
+      ).toBe(true);
+    });
+
+    it('should override pre-filled inputs', async () => {
+      const {page} = getTestState();
+      await page.setContent(`
+        <input value="wrong prefix">
+      `);
+      await page.locator('input').fill('test');
+      expect(
+        await page.evaluate(() => {
+          return document.querySelector('input')?.value === 'test';
+        })
+      ).toBe(true);
+    });
+
+    it('should work for non-text inputs', async () => {
+      const {page} = getTestState();
+      await page.setContent(`
+        <input type="color">
+      `);
+      await page.locator('input').fill('#333333');
+      expect(
+        await page.evaluate(() => {
+          return document.querySelector('input')?.value === '#333333';
+        })
+      ).toBe(true);
+    });
+  });
 });
