@@ -23,6 +23,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
+import {waitEvent} from './utils.js';
 
 const FILENAME = __filename.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
 
@@ -48,7 +49,7 @@ describe('Stack trace', function () {
     expect(error.stack.split('\n    at ').slice(0, 2)).toMatchObject({
       ...[
         'Error: Test',
-        'evaluate (evaluate at Context.<anonymous> (<filename>:31:14), <anonymous>:1:18)',
+        'evaluate (evaluate at Context.<anonymous> (<filename>:32:14), <anonymous>:1:18)',
       ],
     });
   });
@@ -71,7 +72,7 @@ describe('Stack trace', function () {
     expect(error.stack.split('\n    at ').slice(0, 2)).toMatchObject({
       ...[
         'Error: Test',
-        'evaluateHandle (evaluateHandle at Context.<anonymous> (<filename>:51:14), <anonymous>:1:18)',
+        'evaluateHandle (evaluateHandle at Context.<anonymous> (<filename>:52:14), <anonymous>:1:18)',
       ],
     });
   });
@@ -99,8 +100,8 @@ describe('Stack trace', function () {
     expect(error.stack.split('\n    at ').slice(0, 3)).toMatchObject({
       ...[
         'Error: Test',
-        'evaluateHandle (evaluateHandle at Context.<anonymous> (<filename>:70:36), <anonymous>:2:22)',
-        'evaluate (evaluate at Context.<anonymous> (<filename>:76:14), <anonymous>:1:12)',
+        'evaluateHandle (evaluateHandle at Context.<anonymous> (<filename>:71:36), <anonymous>:2:22)',
+        'evaluate (evaluate at Context.<anonymous> (<filename>:77:14), <anonymous>:1:12)',
       ],
     });
   });
@@ -135,12 +136,26 @@ describe('Stack trace', function () {
     expect(error.stack.split('\n    at ').slice(0, 6)).toMatchObject({
       ...[
         'Error: Test',
-        'a (evaluate at Context.<anonymous> (<filename>:97:14), <anonymous>:2:22)',
-        'b (evaluate at Context.<anonymous> (<filename>:97:14), <anonymous>:5:16)',
-        'c (evaluate at Context.<anonymous> (<filename>:97:14), <anonymous>:8:16)',
-        'd (evaluate at Context.<anonymous> (<filename>:97:14), <anonymous>:11:16)',
-        'evaluate (evaluate at Context.<anonymous> (<filename>:97:14), <anonymous>:13:12)',
+        'a (evaluate at Context.<anonymous> (<filename>:98:14), <anonymous>:2:22)',
+        'b (evaluate at Context.<anonymous> (<filename>:98:14), <anonymous>:5:16)',
+        'c (evaluate at Context.<anonymous> (<filename>:98:14), <anonymous>:8:16)',
+        'd (evaluate at Context.<anonymous> (<filename>:98:14), <anonymous>:11:16)',
+        'evaluate (evaluate at Context.<anonymous> (<filename>:98:14), <anonymous>:13:12)',
       ],
     });
+  });
+
+  it('should work for none error objects', async () => {
+    const {page} = getTestState();
+
+    const [error] = await Promise.all([
+      waitEvent<Error>(page, 'pageerror'),
+      page.evaluate(() => {
+        // This can happen when a 404 with HTML is returned
+        void Promise.reject(new Response());
+      }),
+    ]);
+
+    expect(error).toBeTruthy();
   });
 });

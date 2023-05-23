@@ -50,8 +50,9 @@ export function createEvaluationError(
     name = 'Error';
     message = details.text;
   } else if (
-    details.exception.type !== 'object' ||
-    details.exception.subtype !== 'error'
+    (details.exception.type !== 'object' ||
+      details.exception.subtype !== 'error') &&
+    !details.exception.objectId
   ) {
     return valueFromRemoteObject(details.exception);
   } else {
@@ -110,8 +111,9 @@ export function createClientError(
     name = 'Error';
     message = details.text;
   } else if (
-    details.exception.type !== 'object' ||
-    details.exception.subtype !== 'error'
+    (details.exception.type !== 'object' ||
+      details.exception.subtype !== 'error') &&
+    !details.exception.objectId
   ) {
     return valueFromRemoteObject(details.exception);
   } else {
