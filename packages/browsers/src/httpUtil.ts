@@ -19,12 +19,7 @@ import * as http from 'http';
 import * as https from 'https';
 import {URL} from 'url';
 
-import * as httpProxyAgent from 'http-proxy-agent';
-import * as httpsProxyAgent from 'https-proxy-agent';
-import {getProxyForUrl} from 'proxy-from-env';
-
-const {HttpProxyAgent} = httpProxyAgent;
-const {HttpsProxyAgent} = httpsProxyAgent;
+import {ProxyAgent} from 'proxy-agent';
 
 export function headHttpRequest(url: URL): Promise<boolean> {
   return new Promise(resolve => {
@@ -55,23 +50,8 @@ export function httpRequest(
     path: url.pathname + url.search,
     method,
     headers: keepAlive ? {Connection: 'keep-alive'} : undefined,
+    agent: new ProxyAgent(),
   };
-
-  const proxyURL = getProxyForUrl(url.toString());
-  if (proxyURL) {
-    const proxy = new URL(proxyURL);
-    if (proxy.protocol === 'http:') {
-      options.agent = new HttpProxyAgent(proxyURL);
-    } else {
-      options.agent = new HttpsProxyAgent({
-        host: proxy.host,
-        path: proxy.pathname,
-        port: proxy.port,
-        secureProxy: proxy.protocol === 'https:',
-        headers: options.headers,
-      });
-    }
-  }
 
   const requestCallback = (res: http.IncomingMessage): void => {
     if (
