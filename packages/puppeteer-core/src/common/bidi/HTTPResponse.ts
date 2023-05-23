@@ -56,7 +56,8 @@ export class HTTPResponse extends BaseHTTPResponse {
     // TODO: update once BiDi has types
     this.#timings = (response as any).timings ?? null;
 
-    for (const header of response.headers) {
+    // TODO: Removed once the Firefox implementation is compliant with https://w3c.github.io/webdriver-bidi/#get-the-response-data.
+    for (const header of response.headers || []) {
       this.#headers[header.name] = header.value ?? '';
     }
   }
