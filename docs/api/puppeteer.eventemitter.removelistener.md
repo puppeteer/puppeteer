@@ -14,7 +14,7 @@ Remove an event listener.
 
 ```typescript
 class EventEmitter {
-  removeListener(event: EventType, handler: Handler<any>): EventEmitter;
+  removeListener(event: EventType, handler: Handler<any>): this;
 }
 ```
 
@@ -27,4 +27,4 @@ class EventEmitter {
 
 **Returns:**
 
-[EventEmitter](./puppeteer.eventemitter.md)
+this

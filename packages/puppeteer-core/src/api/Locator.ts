@@ -109,22 +109,22 @@ export class Locator extends EventEmitter {
   override on<K extends keyof LocatorEventObject>(
     eventName: K,
     handler: (event: LocatorEventObject[K]) => void
-  ): Locator {
-    return super.on(eventName, handler) as Locator;
+  ): this {
+    return super.on(eventName, handler);
   }
 
   override once<K extends keyof LocatorEventObject>(
     eventName: K,
     handler: (event: LocatorEventObject[K]) => void
-  ): Locator {
-    return super.once(eventName, handler) as Locator;
+  ): this {
+    return super.once(eventName, handler);
   }
 
   override off<K extends keyof LocatorEventObject>(
     eventName: K,
     handler: (event: LocatorEventObject[K]) => void
-  ): Locator {
-    return super.off(eventName, handler) as Locator;
+  ): this {
+    return super.off(eventName, handler);
   }
 
   /**

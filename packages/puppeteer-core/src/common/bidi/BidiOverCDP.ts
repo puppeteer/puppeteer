@@ -20,7 +20,7 @@ import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js'
 
 import {CDPSession, Connection as CDPPPtrConnection} from '../Connection.js';
 import {TargetCloseError} from '../Errors.js';
-import {Handler} from '../EventEmitter.js';
+import {EventEmitter, Handler} from '../EventEmitter.js';
 
 import {Connection as BidiPPtrConnection} from './Connection.js';
 
@@ -107,7 +107,7 @@ class CDPConnectionAdapter {
  *
  * @internal
  */
-class CDPClientAdapter<T extends Pick<CDPPPtrConnection, 'send' | 'on' | 'off'>>
+class CDPClientAdapter<T extends EventEmitter & Pick<CDPPPtrConnection, 'send'>>
   extends BidiMapper.EventEmitter<CdpEvents>
   implements BidiMapper.CdpClient
 {
