@@ -588,6 +588,12 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[stacktrace.spec] Stack trace *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[TargetManager.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -2220,28 +2226,10 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[stacktrace.spec] Stack trace should work",
+    "testIdPattern": "[stacktrace.spec] Stack trace should work for none error objects",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[stacktrace.spec] Stack trace should work with contiguous evaluation",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[stacktrace.spec] Stack trace should work with handles",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[stacktrace.spec] Stack trace should work with nested function calls",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[target.spec] Target Browser.waitForTarget should wait for a target",
