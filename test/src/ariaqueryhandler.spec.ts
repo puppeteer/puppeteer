@@ -591,7 +591,7 @@ describe('AriaQueryHandler', () => {
     });
   });
 
-  describe('queryOne (Chromium web test)', async () => {
+  describe('queryOne (Chromium web test)', () => {
     beforeEach(async () => {
       const {page} = getTestState();
       await page.setContent(

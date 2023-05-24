@@ -795,7 +795,7 @@ describe('network', function () {
     });
   });
 
-  describe('raw network headers', async () => {
+  describe('raw network headers', () => {
     it('Same-origin set-cookie navigation', async () => {
       const {page, server} = getTestState();
 
@@ -861,7 +861,7 @@ describe('network', function () {
     });
   });
 
-  describe('Page.setBypassServiceWorker', async () => {
+  describe('Page.setBypassServiceWorker', () => {
     it('bypass for network', async () => {
       const {page, server} = getTestState();
 
