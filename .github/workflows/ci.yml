@@ -151,23 +151,39 @@ jobs:
       - name: Build packages
         run: npm run build --workspace @puppeteer-test/test
       - name: Setup cache for Chrome binary
+        if: ${{ matrix.suite != 'chrome-bidi' }}
         uses: actions/cache@v3
         with:
           path: ~/.cache/puppeteer/chrome
           key: ${{ runner.os }}-Chrome-${{ hashFiles('packages/puppeteer-core/src/revisions.ts') }}-${{ hashFiles('packages/puppeteer/src/node/install.ts') }}
       - name: Install Chrome
+        if: ${{ matrix.suite != 'chrome-bidi' }}
         run: npm run postinstall
+      - name: Setup cache for Chrome Canary binary
+        if: ${{ matrix.suite == 'chrome-bidi' }}
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/puppeteer/chrome-canary
+          key: ${{ runner.os }}-Chrome-Canary-${{ hashFiles('package.json') }}
+      - name: Install Chrome Canary
+        if: ${{ matrix.suite == 'chrome-bidi' }}
+        id: browser
+        run: node tools/download_chrome_bidi.mjs ~/.cache/puppeteer/chrome-canary
       - name: Tests types
         run: npm run test-types
       - name: Run all tests (for non-Linux)
         if: ${{ matrix.os != 'ubuntu-latest' }}
         run: npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        env:
+          PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
       - name: Install linux dependencies.
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: sudo apt-get install xvfb
       - name: Run all tests (for Linux)
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: xvfb-run --auto-servernum npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
+        env:
+          PUPPETEER_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
       - uses: actions/upload-artifact@v3
         if: always()
         with:

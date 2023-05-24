@@ -61,7 +61,7 @@ export class BrowserContext extends BrowserContextBase {
     const {result} = await this.#connection.send('browsingContext.create', {
       type: 'tab',
     });
-    const page = await Page._create(this.#connection, result);
+    const page = new Page(this.#connection, result);
     if (this.#defaultViewport) {
       try {
         await page.setViewport(this.#defaultViewport);
@@ -81,6 +81,6 @@ export class BrowserContext extends BrowserContextBase {
         debugError(error);
       });
     }
-    this.#pages = new Map();
+    this.#pages.clear();
   }
 }
