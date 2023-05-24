@@ -371,50 +371,70 @@ describe('navigation', function () {
           // Ignore Error that arise from test server during hooks
         });
 
-      // Navigate to a page which loads immediately and then does a bunch of
-      // requests via javascript's fetch method.
-      const navigationPromise = page.goto(server.PREFIX + '/networkidle.html', {
-        waitUntil: 'networkidle0',
-      });
       // Track when the navigation gets completed.
       let navigationFinished = false;
-      navigationPromise.then(() => {
-        return (navigationFinished = true);
+      let navigationError: Error | undefined;
+      // Navigate to a page which loads immediately and then does a bunch of
+      // requests via javascript's fetch method.
+      const navigationPromise = page
+        .goto(server.PREFIX + '/networkidle.html', {
+          waitUntil: 'networkidle0',
+        })
+        .then(response => {
+          navigationFinished = true;
+          return response;
+        })
+        .catch(error => {
+          navigationError = error;
+          return null;
+        });
+
+      let afterNavigationError: Error | undefined;
+      const afterNavigationPromise = (async () => {
+        // Wait for the page's 'load' event.
+        await waitEvent(page, 'load');
+        expect(navigationFinished).toBe(false);
+
+        // Wait for the initial three resources to be requested.
+        await initialFetchResourcesRequested;
+
+        // Expect navigation still to be not finished.
+        expect(navigationFinished).toBe(false);
+
+        // Respond to initial requests.
+        for (const response of responses) {
+          response.statusCode = 404;
+          response.end(`File not found`);
+        }
+
+        // Reset responses array
+        responses = [];
+
+        // Wait for the second round to be requested.
+        await secondFetchResourceRequested;
+        // Expect navigation still to be not finished.
+        expect(navigationFinished).toBe(false);
+
+        // Respond to requests.
+        for (const response of responses) {
+          response.statusCode = 404;
+          response.end(`File not found`);
+        }
+      })().catch(error => {
+        afterNavigationError = error;
       });
 
-      // Wait for the page's 'load' event.
-      await waitEvent(page, 'load');
-      expect(navigationFinished).toBe(false);
-
-      // Wait for the initial three resources to be requested.
-      await initialFetchResourcesRequested;
-
-      // Expect navigation still to be not finished.
-      expect(navigationFinished).toBe(false);
-
-      // Respond to initial requests.
-      for (const response of responses) {
-        response.statusCode = 404;
-        response.end(`File not found`);
+      await Promise.race([navigationPromise, afterNavigationPromise]);
+      if (navigationError) {
+        throw navigationError;
       }
-
-      // Reset responses array
-      responses = [];
-
-      // Wait for the second round to be requested.
-      await secondFetchResourceRequested;
-      // Expect navigation still to be not finished.
-      expect(navigationFinished).toBe(false);
-
-      // Respond to requests.
-      for (const response of responses) {
-        response.statusCode = 404;
-        response.end(`File not found`);
+      await Promise.all([navigationPromise, afterNavigationPromise]);
+      if (afterNavigationError) {
+        throw afterNavigationError;
       }
-
-      const response = (await navigationPromise)!;
       // Expect navigation to succeed.
-      expect(response.ok()).toBe(true);
+      expect(navigationFinished).toBeTruthy();
+      expect((await navigationPromise)?.ok()).toBe(true);
     });
     it('should not leak listeners during navigation', async function () {
       this.timeout(25_000);
