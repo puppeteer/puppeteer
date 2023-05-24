@@ -10,7 +10,7 @@ Like `on` but the listener will only be fired once and then it will be removed.
 
 ```typescript
 class EventEmitter {
-  once(event: EventType, handler: Handler<any>): EventEmitter;
+  once(event: EventType, handler: Handler<any>): this;
 }
 ```
 
@@ -23,6 +23,6 @@ class EventEmitter {
 
 **Returns:**
 
-[EventEmitter](./puppeteer.eventemitter.md)
+this
 
 `this` to enable you to chain method calls.

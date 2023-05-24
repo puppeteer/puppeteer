@@ -8,7 +8,7 @@ sidebar_label: CommonEventEmitter.off
 
 ```typescript
 interface CommonEventEmitter {
-  off(event: EventType, handler: Handler): CommonEventEmitter;
+  off(event: EventType, handler: Handler): this;
 }
 ```
 
@@ -21,4 +21,4 @@ interface CommonEventEmitter {
 
 **Returns:**
 
-[CommonEventEmitter](./puppeteer.commoneventemitter.md)
+this

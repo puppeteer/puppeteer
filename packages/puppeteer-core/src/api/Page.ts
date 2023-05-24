@@ -480,7 +480,7 @@ export class Page extends EventEmitter {
   override on<K extends keyof PageEventObject>(
     eventName: K,
     handler: (event: PageEventObject[K]) => void
-  ): EventEmitter {
+  ): this {
     if (eventName === 'request') {
       const wrap =
         this.#handlerMap.get(handler) ||
@@ -500,7 +500,7 @@ export class Page extends EventEmitter {
   override once<K extends keyof PageEventObject>(
     eventName: K,
     handler: (event: PageEventObject[K]) => void
-  ): EventEmitter {
+  ): this {
     // Note: this method only exists to define the types; we delegate the impl
     // to EventEmitter.
     return super.once(eventName, handler);
@@ -509,7 +509,7 @@ export class Page extends EventEmitter {
   override off<K extends keyof PageEventObject>(
     eventName: K,
     handler: (event: PageEventObject[K]) => void
-  ): EventEmitter {
+  ): this {
     if (eventName === 'request') {
       handler = this.#handlerMap.get(handler) || handler;
     }

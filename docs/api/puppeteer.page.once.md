@@ -11,7 +11,7 @@ class Page {
   once<K extends keyof PageEventObject>(
     eventName: K,
     handler: (event: PageEventObject[K]) => void
-  ): EventEmitter;
+  ): this;
 }
 ```
 
@@ -24,4 +24,4 @@ class Page {
 
 **Returns:**
 
-[EventEmitter](./puppeteer.eventemitter.md)
+this

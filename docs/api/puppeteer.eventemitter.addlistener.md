@@ -14,7 +14,7 @@ Add an event listener.
 
 ```typescript
 class EventEmitter {
-  addListener(event: EventType, handler: Handler<any>): EventEmitter;
+  addListener(event: EventType, handler: Handler<any>): this;
 }
 ```
 
@@ -27,4 +27,4 @@ class EventEmitter {
 
 **Returns:**
 
-[EventEmitter](./puppeteer.eventemitter.md)
+this
