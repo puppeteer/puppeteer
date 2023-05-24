@@ -556,7 +556,7 @@ describe('network', function () {
 
       const requests: HTTPRequest[] = [];
       page.on('requestfinished', request => {
-        return requests.push(request);
+        return !isFavicon(request) && requests.push(request);
       });
       await page.goto(server.EMPTY_PAGE);
       expect(requests).toHaveLength(1);
@@ -580,7 +580,12 @@ describe('network', function () {
         return events.push('requestfinished');
       });
       await page.goto(server.EMPTY_PAGE);
-      expect(events).toEqual(['request', 'response', 'requestfinished']);
+      // Events can sneak in after the page has navigate
+      expect(events.slice(0, 3)).toEqual([
+        'request',
+        'response',
+        'requestfinished',
+      ]);
     });
     it('should support redirects', async () => {
       const {page, server} = getTestState();

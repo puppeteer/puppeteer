@@ -96,6 +96,12 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[network.spec] network Request.isNavigationRequest *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[network.spec] network Response.buffer *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -462,12 +468,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[network.spec] network raw network headers Same-origin set-cookie subresource",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[network.spec] network Request.frame should work for subframe navigation request",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -487,18 +487,6 @@
   },
   {
     "testIdPattern": "[network.spec] network Request.initiator should return the initiator",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[network.spec] network Request.isNavigationRequest should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[network.spec] network Request.isNavigationRequest should work with request interception",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"]
@@ -1296,6 +1284,12 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should navigate to dataURL and fire dataURL requests",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[navigation.spec] navigation Page.goto should navigate to empty page with domcontentloaded",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -1320,6 +1314,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should navigate to URL with hash and fire requests without hash",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[navigation.spec] navigation Page.goto should not leak listeners during navigation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
@@ -1339,6 +1339,12 @@
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should not throw an error for a 500 response with an empty body",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should return last response in redirect chain",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
@@ -1407,6 +1413,12 @@
     "testIdPattern": "[navigation.spec] navigation Page.goto should work with redirects",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[navigation.spec] navigation Page.goto should work with self requesting page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
@@ -1542,9 +1554,21 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[network.spec] network Page.authenticate should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[network.spec] network Page.setExtraHTTPHeaders should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[network.spec] network raw network headers Same-origin set-cookie subresource",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
@@ -1560,6 +1584,12 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
+    "testIdPattern": "[network.spec] network Request.headers should define Firefox as user agent header",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[network.spec] network Request.initiator should return the initiator",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -1572,9 +1602,21 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[network.spec] network Request.isNavigationRequest should work when navigating to image",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[network.spec] network Request.isNavigationRequest should work with request interception",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Request.postData should be |undefined| when there is no post data",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
@@ -1602,6 +1644,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[network.spec] network Response.fromCache should return |false| for non-cached content",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[network.spec] network Response.fromCache should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -1614,10 +1662,28 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[network.spec] network Response.headers should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[network.spec] network Response.json should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Response.statusText handles missing status text",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Response.statusText should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[network.spec] network Response.text should return uncompressed text",

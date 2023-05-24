@@ -25,8 +25,6 @@ import {
   WaitForOptions,
 } from '../../api/Page.js';
 import {assert} from '../../util/assert.js';
-import {isErrorLike} from '../../util/ErrorLike.js';
-import {isTargetClosedError} from '../Connection.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
 import {Handler} from '../EventEmitter.js';
 import {FrameManagerEmittedEvents} from '../FrameManager.js';
@@ -132,18 +130,6 @@ export class Page extends PageBase {
     for (const [event, subscriber] of page.#subscribedEvents) {
       connection.on(event, subscriber);
     }
-
-    await page.#connection
-      .send('session.subscribe', {
-        events: [...page.#subscribedEvents.keys()],
-        // TODO: We should subscribe globally
-        contexts: [info.context],
-      })
-      .catch(error => {
-        if (isErrorLike(error) && isTargetClosedError(error)) {
-          throw error;
-        }
-      });
 
     return page;
   }
@@ -294,17 +280,6 @@ export class Page extends PageBase {
     this.#closed = true;
     this.removeAllListeners();
     this.#networkManager.dispose();
-
-    await this.#connection
-      .send('session.unsubscribe', {
-        events: [...this.#subscribedEvents.keys()],
-        // TODO: Remove this once we subscrite gloablly
-        contexts: [this.mainFrame()._id],
-      })
-      .catch(() => {
-        // Suppress the error as we remove the context
-        // after that anyway.
-      });
 
     await this.#connection.send('browsingContext.close', {
       context: this.mainFrame()._id,
