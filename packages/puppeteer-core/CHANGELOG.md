@@ -8,6 +8,25 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.0.1 to 1.1.0
 
+## [20.4.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.3.0...puppeteer-core-v20.4.0) (2023-05-24)
+
+
+### Features
+
+* Page.setBypassServiceWorker ([#10229](https://github.com/puppeteer/puppeteer/issues/10229)) ([81f73a5](https://github.com/puppeteer/puppeteer/commit/81f73a55f31892e55219ef9d37e235e988731fc1))
+
+
+### Bug Fixes
+
+* stacktraces should not throw errors ([#10231](https://github.com/puppeteer/puppeteer/issues/10231)) ([557ec24](https://github.com/puppeteer/puppeteer/commit/557ec24cfc084440197da67581bf9782f10eb346))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 1.3.0 to 1.4.0
+
 ## [20.3.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.2.1...puppeteer-core-v20.3.0) (2023-05-22)
 
 

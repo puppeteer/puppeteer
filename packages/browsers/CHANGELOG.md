@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/puppeteer/puppeteer/compare/browsers-v1.3.0...browsers-v1.4.0) (2023-05-24)
+
+
+### Features
+
+* use proxy-agent to support various proxies ([#10227](https://github.com/puppeteer/puppeteer/issues/10227)) ([2c0bd54](https://github.com/puppeteer/puppeteer/commit/2c0bd54d2e3b778818b9b4b32f436778f571b918))
+
 ## [1.3.0](https://github.com/puppeteer/puppeteer/compare/browsers-v1.2.0...browsers-v1.3.0) (2023-05-15)
 
 
