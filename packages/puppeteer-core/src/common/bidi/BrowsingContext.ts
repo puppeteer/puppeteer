@@ -54,7 +54,7 @@ export class BrowsingContext extends EventEmitter {
   connection: Connection;
   #timeoutSettings: TimeoutSettings;
   #id: string;
-  #url: string;
+  #url = 'about:blank';
 
   constructor(
     connection: Connection,
@@ -65,7 +65,6 @@ export class BrowsingContext extends EventEmitter {
     this.connection = connection;
     this.#timeoutSettings = timeoutSettings;
     this.#id = info.context;
-    this.#url = info.url;
   }
 
   get url(): string {

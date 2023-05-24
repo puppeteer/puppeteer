@@ -33,7 +33,7 @@ import {Connection} from './Connection.js';
  * @internal
  */
 export class Browser extends BrowserBase {
-  static readonly subscribeModules = ['browsingContext', 'network'];
+  static readonly subscribeModules = ['browsingContext', 'network', 'log'];
 
   static async create(opts: Options): Promise<Browser> {
     // TODO: await until the connection is established.
