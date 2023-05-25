@@ -80,7 +80,7 @@ export class MutationPoller<T> implements Poller<T> {
 
   result(): Promise<T> {
     assert(this.#promise, 'Polling never started.');
-    return this.#promise;
+    return this.#promise.valueOrThrow();
   }
 }
 
@@ -126,7 +126,7 @@ export class RAFPoller<T> implements Poller<T> {
 
   result(): Promise<T> {
     assert(this.#promise, 'Polling never started.');
-    return this.#promise;
+    return this.#promise.valueOrThrow();
   }
 }
 
@@ -176,6 +176,6 @@ export class IntervalPoller<T> implements Poller<T> {
 
   result(): Promise<T> {
     assert(this.#promise, 'Polling never started.');
-    return this.#promise;
+    return this.#promise.valueOrThrow();
   }
 }

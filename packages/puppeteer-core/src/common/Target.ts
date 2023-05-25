@@ -249,6 +249,7 @@ export class PageTarget extends Target {
 
   protected override _initialize(): void {
     this._initializedPromise
+      .valueOrThrow()
       .then(async result => {
         if (result === InitializationStatus.ABORTED) {
           return;

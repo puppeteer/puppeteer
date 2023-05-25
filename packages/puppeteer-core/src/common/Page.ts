@@ -256,17 +256,23 @@ export class CDPPage extends Page {
     client.on('Page.fileChooserOpened', event => {
       return this.#onFileChooser(event);
     });
-    void this.#target._isClosedPromise.then(() => {
-      this.#target
-        ._targetManager()
-        .removeTargetInterceptor(this.#client, this.#onAttachedToTarget);
+    this.#target._isClosedPromise
+      .valueOrThrow()
+      .then(() => {
+        this.#target
+          ._targetManager()
+          .removeTargetInterceptor(this.#client, this.#onAttachedToTarget);
 
-      this.#target
-        ._targetManager()
-        .off(TargetManagerEmittedEvents.TargetGone, this.#onDetachedFromTarget);
-      this.emit(PageEmittedEvents.Close);
-      this.#closed = true;
-    });
+        this.#target
+          ._targetManager()
+          .off(
+            TargetManagerEmittedEvents.TargetGone,
+            this.#onDetachedFromTarget
+          );
+        this.emit(PageEmittedEvents.Close);
+        this.#closed = true;
+      })
+      .catch(debugError);
   }
 
   #onDetachedFromTarget = (target: Target) => {
@@ -376,7 +382,7 @@ export class CDPPage extends Page {
         enabled: true,
       });
     }
-    return Promise.all([promise, enablePromise])
+    return Promise.all([promise.valueOrThrow(), enablePromise])
       .then(([result]) => {
         return result;
       })
@@ -1048,7 +1054,7 @@ export class CDPPage extends Page {
     ];
 
     await Promise.race([
-      idlePromise,
+      idlePromise.valueOrThrow(),
       ...eventPromises,
       this.#sessionClosePromise(),
     ]).then(
@@ -1556,7 +1562,7 @@ export class CDPPage extends Page {
       await connection.send('Target.closeTarget', {
         targetId: this.#target._targetId,
       });
-      await this.#target._isClosedPromise;
+      await this.#target._isClosedPromise.valueOrThrow();
     }
   }
 

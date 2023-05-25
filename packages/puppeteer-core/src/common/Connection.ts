@@ -18,12 +18,13 @@ import {Protocol} from 'devtools-protocol';
 import {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 import {assert} from '../util/assert.js';
-import {createDeferredPromise} from '../util/util.js';
+import {createDeferredPromise, DeferredPromise} from '../util/util.js';
 
 import {ConnectionTransport} from './ConnectionTransport.js';
 import {debug} from './Debug.js';
 import {TargetCloseError, ProtocolError} from './Errors.js';
 import {EventEmitter} from './EventEmitter.js';
+import {debugError} from './util.js';
 
 const debugProtocolSend = debug('puppeteer:protocol:SEND ►');
 const debugProtocolReceive = debug('puppeteer:protocol:RECV ◀');
@@ -96,7 +97,7 @@ class Callback {
     return this.#id;
   }
 
-  get promise(): Promise<unknown> {
+  get promise(): DeferredPromise<unknown> {
     return this.#promise;
   }
 
@@ -130,14 +131,17 @@ export class CallbackRegistry {
     } catch (error) {
       // We still throw sync errors synchronously and clean up the scheduled
       // callback.
-      callback.promise.catch(() => {
-        this.#callbacks.delete(callback.id);
-      });
+      callback.promise
+        .valueOrThrow()
+        .catch(debugError)
+        .finally(() => {
+          this.#callbacks.delete(callback.id);
+        });
       callback.reject(error as Error);
       throw error;
     }
     // Must only have sync code up until here.
-    return callback.promise.finally(() => {
+    return callback.promise.valueOrThrow().finally(() => {
       this.#callbacks.delete(callback.id);
     });
   }

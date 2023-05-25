@@ -131,7 +131,7 @@ export class NetworkManager extends EventEmitter {
    */
   initialize(): Promise<void> {
     if (this.#deferredInitPromise) {
-      return this.#deferredInitPromise;
+      return this.#deferredInitPromise.valueOrThrow();
     }
     this.#deferredInitPromise = createDebuggableDeferredPromise(
       'NetworkManager initialization timed out'
@@ -152,7 +152,7 @@ export class NetworkManager extends EventEmitter {
       .catch(err => {
         deferredInitPromise.reject(err);
       });
-    return this.#deferredInitPromise;
+    return this.#deferredInitPromise.valueOrThrow();
   }
 
   async authenticate(credentials?: Credentials): Promise<void> {

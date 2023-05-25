@@ -57,7 +57,7 @@ export class FrameTree<Frame extends BaseFrame> {
     const callbacks =
       this.#waitRequests.get(frameId) || new Set<DeferredPromise<Frame>>();
     callbacks.add(deferred);
-    return deferred;
+    return deferred.valueOrThrow();
   }
 
   frames(): Frame[] {

@@ -131,7 +131,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
       autoAttach: true,
     });
     this.#finishInitializationIfReady();
-    await this.#initializePromise;
+    await this.#initializePromise.valueOrThrow();
   }
 
   dispose(): void {
