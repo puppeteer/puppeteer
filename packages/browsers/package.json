@@ -90,7 +90,7 @@
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=16.3.0"
   },
   "files": [
     "lib",
@@ -106,7 +106,7 @@
     "yargs": "17.7.1"
   },
   "devDependencies": {
-    "@types/node": "^14.15.0",
+    "@types/node": "^16.11.7",
     "@types/yargs": "17.0.22"
   },
   "peerDependencies": {
