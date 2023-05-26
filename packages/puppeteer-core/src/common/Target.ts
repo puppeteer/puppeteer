@@ -19,7 +19,7 @@ import {Protocol} from 'devtools-protocol';
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {Page, PageEmittedEvents} from '../api/Page.js';
-import {createDeferredPromise} from '../util/DeferredPromise.js';
+import {createDeferred} from '../util/Deferred.js';
 
 import {CDPSession} from './Connection.js';
 import {CDPPage} from './Page.js';
@@ -55,11 +55,11 @@ export class Target {
   /**
    * @internal
    */
-  _initializedPromise = createDeferredPromise<InitializationStatus>();
+  _initializedDeferred = createDeferred<InitializationStatus>();
   /**
    * @internal
    */
-  _isClosedPromise = createDeferredPromise<void>();
+  _isClosedDeferred = createDeferred<void>();
   /**
    * @internal
    */
@@ -198,15 +198,15 @@ export class Target {
    * @internal
    */
   protected _initialize(): void {
-    this._initializedPromise.resolve(InitializationStatus.SUCCESS);
+    this._initializedDeferred.resolve(InitializationStatus.SUCCESS);
   }
 
   /**
    * @internal
    */
   protected _checkIfInitialized(): void {
-    if (!this._initializedPromise.resolved()) {
-      this._initializedPromise.resolve(InitializationStatus.SUCCESS);
+    if (!this._initializedDeferred.resolved()) {
+      this._initializedDeferred.resolve(InitializationStatus.SUCCESS);
     }
   }
 
@@ -248,7 +248,7 @@ export class PageTarget extends Target {
   }
 
   protected override _initialize(): void {
-    this._initializedPromise
+    this._initializedDeferred
       .valueOrThrow()
       .then(async result => {
         if (result === InitializationStatus.ABORTED) {
@@ -294,11 +294,11 @@ export class PageTarget extends Target {
   }
 
   override _checkIfInitialized(): void {
-    if (this._initializedPromise.resolved()) {
+    if (this._initializedDeferred.resolved()) {
       return;
     }
     if (this._getTargetInfo().url !== '') {
-      this._initializedPromise.resolve(InitializationStatus.SUCCESS);
+      this._initializedDeferred.resolve(InitializationStatus.SUCCESS);
     }
   }
 }

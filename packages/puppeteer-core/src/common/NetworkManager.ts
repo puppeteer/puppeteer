@@ -17,8 +17,8 @@
 import {Protocol} from 'devtools-protocol';
 
 import {assert} from '../util/assert.js';
-import {createDebuggableDeferredPromise} from '../util/DebuggableDeferredPromise.js';
-import {DeferredPromise} from '../util/DeferredPromise.js';
+import {createDebuggableDeferred} from '../util/DebuggableDeferred.js';
+import {Deferred} from '../util/Deferred.js';
 
 import {CDPSession} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
@@ -88,7 +88,7 @@ export class NetworkManager extends EventEmitter {
     download: -1,
     latency: 0,
   };
-  #deferredInitPromise?: DeferredPromise<void>;
+  #deferredInit?: Deferred<void>;
 
   constructor(
     client: CDPSession,
@@ -130,10 +130,10 @@ export class NetworkManager extends EventEmitter {
    * might not resolve until after the target is resumed causing a deadlock.
    */
   initialize(): Promise<void> {
-    if (this.#deferredInitPromise) {
-      return this.#deferredInitPromise.valueOrThrow();
+    if (this.#deferredInit) {
+      return this.#deferredInit.valueOrThrow();
     }
-    this.#deferredInitPromise = createDebuggableDeferredPromise(
+    this.#deferredInit = createDebuggableDeferred(
       'NetworkManager initialization timed out'
     );
     const init = Promise.all([
@@ -144,7 +144,7 @@ export class NetworkManager extends EventEmitter {
         : null,
       this.#client.send('Network.enable'),
     ]);
-    const deferredInitPromise = this.#deferredInitPromise;
+    const deferredInitPromise = this.#deferredInit;
     init
       .then(() => {
         deferredInitPromise.resolve();
@@ -152,7 +152,7 @@ export class NetworkManager extends EventEmitter {
       .catch(err => {
         deferredInitPromise.reject(err);
       });
-    return this.#deferredInitPromise.valueOrThrow();
+    return this.#deferredInit.valueOrThrow();
   }
 
   async authenticate(credentials?: Credentials): Promise<void> {

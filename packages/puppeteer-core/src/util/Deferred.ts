@@ -3,7 +3,7 @@ import {TimeoutError} from '../common/Errors.js';
 /**
  * @internal
  */
-export interface DeferredPromise<T> {
+export interface Deferred<T> {
   finished: () => boolean;
   resolved: () => boolean;
   resolve: (value: T) => void;
@@ -15,7 +15,7 @@ export interface DeferredPromise<T> {
 /**
  * @internal
  */
-export interface DeferredPromiseOptions {
+export interface DeferredOptions {
   message: string;
   timeout: number;
 }
@@ -29,9 +29,7 @@ export interface DeferredPromiseOptions {
  *
  * @internal
  */
-export function createDeferredPromise<T>(
-  opts?: DeferredPromiseOptions
-): DeferredPromise<T> {
+export function createDeferred<T>(opts?: DeferredOptions): Deferred<T> {
   let isResolved = false;
   let isRejected = false;
   let _value: T | Error | undefined;

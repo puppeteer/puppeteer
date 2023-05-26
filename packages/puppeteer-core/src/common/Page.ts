@@ -43,10 +43,7 @@ import {
   NewDocumentScriptEvaluation,
 } from '../api/Page.js';
 import {assert} from '../util/assert.js';
-import {
-  createDeferredPromise,
-  DeferredPromise,
-} from '../util/DeferredPromise.js';
+import {createDeferred, Deferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {Accessibility} from './Accessibility.js';
@@ -155,7 +152,7 @@ export class CDPPage extends Page {
   #viewport: Viewport | null;
   #screenshotTaskQueue: TaskQueue;
   #workers = new Map<string, WebWorker>();
-  #fileChooserPromises = new Set<DeferredPromise<FileChooser>>();
+  #fileChooserPromises = new Set<Deferred<FileChooser>>();
 
   #disconnectPromise?: Promise<Error>;
   #serviceWorkerBypassed = false;
@@ -257,7 +254,7 @@ export class CDPPage extends Page {
     client.on('Page.fileChooserOpened', event => {
       return this.#onFileChooser(event);
     });
-    this.#target._isClosedPromise
+    this.#target._isClosedDeferred
       .valueOrThrow()
       .then(() => {
         this.#target
@@ -372,23 +369,23 @@ export class CDPPage extends Page {
   ): Promise<FileChooser> {
     const needsEnable = this.#fileChooserPromises.size === 0;
     const {timeout = this.#timeoutSettings.timeout()} = options;
-    const promise = createDeferredPromise<FileChooser>({
+    const deferred = createDeferred<FileChooser>({
       message: `Waiting for \`FileChooser\` failed: ${timeout}ms exceeded`,
       timeout,
     });
-    this.#fileChooserPromises.add(promise);
+    this.#fileChooserPromises.add(deferred);
     let enablePromise: Promise<void> | undefined;
     if (needsEnable) {
       enablePromise = this.#client.send('Page.setInterceptFileChooserDialog', {
         enabled: true,
       });
     }
-    return Promise.all([promise.valueOrThrow(), enablePromise])
+    return Promise.all([deferred.valueOrThrow(), enablePromise])
       .then(([result]) => {
         return result;
       })
       .catch(error => {
-        this.#fileChooserPromises.delete(promise);
+        this.#fileChooserPromises.delete(deferred);
         throw error;
       });
   }
@@ -1011,7 +1008,7 @@ export class CDPPage extends Page {
 
     const networkManager = this.#frameManager.networkManager;
 
-    const idlePromise = createDeferredPromise<void>();
+    const idleDeferred = createDeferred<void>();
 
     let abortRejectCallback: (error: Error) => void;
     const abortPromise = new Promise<Error>((_, reject) => {
@@ -1027,7 +1024,7 @@ export class CDPPage extends Page {
     const evaluate = () => {
       idleTimer && clearTimeout(idleTimer);
       if (networkManager.numRequestsInProgress() === 0) {
-        idleTimer = setTimeout(idlePromise.resolve, idleTime);
+        idleTimer = setTimeout(idleDeferred.resolve, idleTime);
       }
     };
 
@@ -1055,7 +1052,7 @@ export class CDPPage extends Page {
     ];
 
     await Promise.race([
-      idlePromise.valueOrThrow(),
+      idleDeferred.valueOrThrow(),
       ...eventPromises,
       this.#sessionClosePromise(),
     ]).then(
@@ -1579,7 +1576,7 @@ export class CDPPage extends Page {
       await connection.send('Target.closeTarget', {
         targetId: this.#target._targetId,
       });
-      await this.#target._isClosedPromise.valueOrThrow();
+      await this.#target._isClosedDeferred.valueOrThrow();
     }
   }
 

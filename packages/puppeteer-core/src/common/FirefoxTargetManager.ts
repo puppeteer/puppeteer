@@ -18,7 +18,7 @@ import {Protocol} from 'devtools-protocol';
 
 import {TargetFilterCallback} from '../api/Browser.js';
 import {assert} from '../util/assert.js';
-import {createDeferredPromise} from '../util/DeferredPromise.js';
+import {createDeferred} from '../util/Deferred.js';
 
 import {CDPSession, Connection} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
@@ -88,7 +88,7 @@ export class FirefoxTargetManager
     (event: Protocol.Target.AttachedToTargetEvent) => Promise<void>
   > = new WeakMap();
 
-  #initializePromise = createDeferredPromise<void>();
+  #initializeDeferred = createDeferred<void>();
   #targetsIdsForInit: Set<string> = new Set();
 
   constructor(
@@ -169,7 +169,7 @@ export class FirefoxTargetManager
       filter: [{}],
     });
     this.#targetsIdsForInit = new Set(this.#discoveredTargetsByTargetId.keys());
-    await this.#initializePromise.valueOrThrow();
+    await this.#initializeDeferred.valueOrThrow();
   }
 
   #onTargetCreated = async (
@@ -253,7 +253,7 @@ export class FirefoxTargetManager
   #finishInitializationIfReady(targetId: string): void {
     this.#targetsIdsForInit.delete(targetId);
     if (this.#targetsIdsForInit.size === 0) {
-      this.#initializePromise.resolve();
+      this.#initializeDeferred.resolve();
     }
   }
 }
