@@ -111,6 +111,10 @@ export class Frame extends BaseFrame {
     return this.#context.content();
   }
 
+  override title(): Promise<string> {
+    return this.#context.title();
+  }
+
   context(): BrowsingContext {
     return this.#context;
   }

@@ -270,6 +270,12 @@ export class BrowsingContext extends EventEmitter {
     this.removeAllListeners();
     this.connection.unregisterBrowsingContexts(this.#id);
   }
+
+  title(): Promise<string> {
+    return this.evaluate(() => {
+      return document.title;
+    });
+  }
 }
 
 /**
