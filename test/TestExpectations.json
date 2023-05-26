@@ -18,6 +18,18 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.removeScriptToEvaluateOnNewDocument *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[EventEmitter.spec] EventEmitter *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -294,15 +306,15 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument should evaluate before anything else on the page",
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument *",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
+    "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument should work with CSP",
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.removeScriptToEvaluateOnNewDocument *",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
+    "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
   },
   {
@@ -904,18 +916,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument should evaluate before anything else on the page",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument should work with CSP",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[fixtures.spec] Fixtures dumpio option should work with pipe option",

@@ -40,6 +40,7 @@ import {
   ScreenshotOptions,
   WaitForOptions,
   WaitTimeoutOptions,
+  NewDocumentScriptEvaluation,
 } from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {
@@ -1288,10 +1289,26 @@ export class CDPPage extends Page {
   override async evaluateOnNewDocument<
     Params extends unknown[],
     Func extends (...args: Params) => unknown = (...args: Params) => unknown
-  >(pageFunction: Func | string, ...args: Params): Promise<void> {
+  >(
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<NewDocumentScriptEvaluation> {
     const source = evaluationString(pageFunction, ...args);
-    await this.#client.send('Page.addScriptToEvaluateOnNewDocument', {
-      source,
+    const {identifier} = await this.#client.send(
+      'Page.addScriptToEvaluateOnNewDocument',
+      {
+        source,
+      }
+    );
+
+    return {identifier};
+  }
+
+  override async removeScriptToEvaluateOnNewDocument(
+    identifier: string
+  ): Promise<void> {
+    await this.#client.send('Page.removeScriptToEvaluateOnNewDocument', {
+      identifier,
     });
   }
 
