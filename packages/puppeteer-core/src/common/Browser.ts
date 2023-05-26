@@ -33,7 +33,7 @@ import {
 import {BrowserContext} from '../api/BrowserContext.js';
 import {Page} from '../api/Page.js';
 import {assert} from '../util/assert.js';
-import {createDeferredPromise} from '../util/DeferredPromise.js';
+import {createDeferred} from '../util/Deferred.js';
 
 import {ChromeTargetManager} from './ChromeTargetManager.js';
 import {CDPSession, Connection, ConnectionEmittedEvents} from './Connection.js';
@@ -361,7 +361,7 @@ export class CDPBrowser extends BrowserBase {
 
   #onAttachedToTarget = async (target: Target) => {
     if (
-      (await target._initializedPromise.valueOrThrow()) ===
+      (await target._initializedDeferred.valueOrThrow()) ===
       InitializationStatus.SUCCESS
     ) {
       this.emit(BrowserEmittedEvents.TargetCreated, target);
@@ -372,10 +372,10 @@ export class CDPBrowser extends BrowserBase {
   };
 
   #onDetachedFromTarget = async (target: Target): Promise<void> => {
-    target._initializedPromise.resolve(InitializationStatus.ABORTED);
-    target._isClosedPromise.resolve();
+    target._initializedDeferred.resolve(InitializationStatus.ABORTED);
+    target._isClosedDeferred.resolve();
     if (
-      (await target._initializedPromise.valueOrThrow()) ===
+      (await target._initializedDeferred.valueOrThrow()) ===
       InitializationStatus.SUCCESS
     ) {
       this.emit(BrowserEmittedEvents.TargetDestroyed, target);
@@ -438,7 +438,7 @@ export class CDPBrowser extends BrowserBase {
       throw new Error(`Missing target for page (id = ${targetId})`);
     }
     const initialized =
-      (await target._initializedPromise.valueOrThrow()) ===
+      (await target._initializedDeferred.valueOrThrow()) ===
       InitializationStatus.SUCCESS;
     if (!initialized) {
       throw new Error(`Failed to create target for page (id = ${targetId})`);
@@ -461,7 +461,7 @@ export class CDPBrowser extends BrowserBase {
       this.#targetManager.getAvailableTargets().values()
     ).filter(target => {
       return (
-        target._initializedPromise.value() === InitializationStatus.SUCCESS
+        target._initializedDeferred.value() === InitializationStatus.SUCCESS
       );
     });
   }
@@ -501,17 +501,17 @@ export class CDPBrowser extends BrowserBase {
     options: WaitForTargetOptions = {}
   ): Promise<Target> {
     const {timeout = 30000} = options;
-    const targetPromise = createDeferredPromise<Target | PromiseLike<Target>>();
+    const targetDeferred = createDeferred<Target | PromiseLike<Target>>();
 
     this.on(BrowserEmittedEvents.TargetCreated, check);
     this.on(BrowserEmittedEvents.TargetChanged, check);
     try {
       this.targets().forEach(check);
       if (!timeout) {
-        return await targetPromise.valueOrThrow();
+        return await targetDeferred.valueOrThrow();
       }
       return await waitWithTimeout(
-        targetPromise.valueOrThrow(),
+        targetDeferred.valueOrThrow(),
         'target',
         timeout
       );
@@ -521,8 +521,8 @@ export class CDPBrowser extends BrowserBase {
     }
 
     async function check(target: Target): Promise<void> {
-      if ((await predicate(target)) && !targetPromise.resolved()) {
-        targetPromise.resolve(target);
+      if ((await predicate(target)) && !targetDeferred.resolved()) {
+        targetDeferred.resolve(target);
       }
     }
   }

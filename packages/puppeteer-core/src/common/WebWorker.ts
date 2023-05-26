@@ -15,7 +15,7 @@
  */
 import {Protocol} from 'devtools-protocol';
 
-import {createDeferredPromise} from '../util/DeferredPromise.js';
+import {createDeferred} from '../util/Deferred.js';
 
 import {CDPSession} from './Connection.js';
 import {ConsoleMessageType} from './ConsoleMessage.js';
@@ -68,7 +68,7 @@ export type ExceptionThrownCallback = (
  * @public
  */
 export class WebWorker extends EventEmitter {
-  #executionContext = createDeferredPromise<ExecutionContext>();
+  #executionContext = createDeferred<ExecutionContext>();
 
   #client: CDPSession;
   #url: string;

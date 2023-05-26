@@ -1,6 +1,6 @@
 import {DEFERRED_PROMISE_DEBUG_TIMEOUT} from '../environment.js';
 
-import {DeferredPromise, createDeferredPromise} from './DeferredPromise.js';
+import {Deferred, createDeferred} from './Deferred.js';
 
 /**
  * Creates and returns a deferred promise using DEFERRED_PROMISE_DEBUG_TIMEOUT
@@ -8,14 +8,12 @@ import {DeferredPromise, createDeferredPromise} from './DeferredPromise.js';
  *
  * @internal
  */
-export function createDebuggableDeferredPromise<T>(
-  message: string
-): DeferredPromise<T> {
+export function createDebuggableDeferred<T>(message: string): Deferred<T> {
   if (DEFERRED_PROMISE_DEBUG_TIMEOUT > 0) {
-    return createDeferredPromise({
+    return createDeferred({
       message,
       timeout: DEFERRED_PROMISE_DEBUG_TIMEOUT,
     });
   }
-  return createDeferredPromise();
+  return createDeferred();
 }

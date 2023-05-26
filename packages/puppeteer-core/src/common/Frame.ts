@@ -389,8 +389,8 @@ export class Frame extends BaseFrame {
 
     return this.worlds[MAIN_WORLD].transferHandle(
       await this.worlds[PUPPETEER_WORLD].evaluateHandle(
-        async ({createDeferredPromise}, {url, id, type, content}) => {
-          const promise = createDeferredPromise<void>();
+        async ({createDeferred}, {url, id, type, content}) => {
+          const deferred = createDeferred<void>();
           const script = document.createElement('script');
           script.type = type;
           script.text = content;
@@ -399,27 +399,27 @@ export class Frame extends BaseFrame {
             script.addEventListener(
               'load',
               () => {
-                return promise.resolve();
+                return deferred.resolve();
               },
               {once: true}
             );
             script.addEventListener(
               'error',
               event => {
-                promise.reject(
+                deferred.reject(
                   new Error(event.message ?? 'Could not load script')
                 );
               },
               {once: true}
             );
           } else {
-            promise.resolve();
+            deferred.resolve();
           }
           if (id) {
             script.id = id;
           }
           document.head.appendChild(script);
-          await promise.valueOrThrow();
+          await deferred.valueOrThrow();
           return script;
         },
         LazyArg.create(context => {
@@ -457,8 +457,8 @@ export class Frame extends BaseFrame {
 
     return this.worlds[MAIN_WORLD].transferHandle(
       await this.worlds[PUPPETEER_WORLD].evaluateHandle(
-        async ({createDeferredPromise}, {url, content}) => {
-          const promise = createDeferredPromise<void>();
+        async ({createDeferred}, {url, content}) => {
+          const deferred = createDeferred<void>();
           let element: HTMLStyleElement | HTMLLinkElement;
           if (!url) {
             element = document.createElement('style');
@@ -472,14 +472,14 @@ export class Frame extends BaseFrame {
           element.addEventListener(
             'load',
             () => {
-              promise.resolve();
+              deferred.resolve();
             },
             {once: true}
           );
           element.addEventListener(
             'error',
             event => {
-              promise.reject(
+              deferred.reject(
                 new Error(
                   (event as ErrorEvent).message ?? 'Could not load style'
                 )
@@ -488,7 +488,7 @@ export class Frame extends BaseFrame {
             {once: true}
           );
           document.head.appendChild(element);
-          await promise.valueOrThrow();
+          await deferred.valueOrThrow();
           return element;
         },
         LazyArg.create(context => {

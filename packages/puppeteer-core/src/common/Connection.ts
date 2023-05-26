@@ -18,7 +18,7 @@ import {Protocol} from 'devtools-protocol';
 import {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 import {assert} from '../util/assert.js';
-import {createDeferredPromise, DeferredPromise} from '../util/util.js';
+import {createDeferred, Deferred} from '../util/util.js';
 
 import {ConnectionTransport} from './ConnectionTransport.js';
 import {debug} from './Debug.js';
@@ -64,7 +64,7 @@ function createIncrementalIdGenerator(): GetIdFn {
 class Callback {
   #id: number;
   #error = new ProtocolError();
-  #promise = createDeferredPromise<unknown>();
+  #deferred = createDeferred<unknown>();
   #timer?: ReturnType<typeof setTimeout>;
   #label: string;
 
@@ -73,7 +73,7 @@ class Callback {
     this.#label = label;
     if (timeout) {
       this.#timer = setTimeout(() => {
-        this.#promise.reject(
+        this.#deferred.reject(
           rewriteError(
             this.#error,
             `${label} timed out. Increase the 'protocolTimeout' setting in launch/connect calls for a higher timeout if needed.`
@@ -85,20 +85,20 @@ class Callback {
 
   resolve(value: unknown): void {
     clearTimeout(this.#timer);
-    this.#promise.resolve(value);
+    this.#deferred.resolve(value);
   }
 
   reject(error: Error): void {
     clearTimeout(this.#timer);
-    this.#promise.reject(error);
+    this.#deferred.reject(error);
   }
 
   get id(): number {
     return this.#id;
   }
 
-  get promise(): DeferredPromise<unknown> {
-    return this.#promise;
+  get promise(): Deferred<unknown> {
+    return this.#deferred;
   }
 
   get error(): ProtocolError {

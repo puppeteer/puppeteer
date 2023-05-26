@@ -18,7 +18,7 @@ import {Protocol} from 'devtools-protocol';
 
 import {TargetFilterCallback} from '../api/Browser.js';
 import {assert} from '../util/assert.js';
-import {createDeferredPromise} from '../util/DeferredPromise.js';
+import {createDeferred} from '../util/Deferred.js';
 
 import {CDPSession, Connection} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
@@ -81,7 +81,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
     (event: Protocol.Target.DetachedFromTargetEvent) => void
   > = new WeakMap();
 
-  #initializePromise = createDeferredPromise<void>();
+  #initializeDeferred = createDeferred<void>();
   #targetsIdsForInit: Set<string> = new Set();
 
   constructor(
@@ -131,7 +131,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
       autoAttach: true,
     });
     this.#finishInitializationIfReady();
-    await this.#initializePromise.valueOrThrow();
+    await this.#initializeDeferred.valueOrThrow();
   }
 
   dispose(): void {
@@ -268,7 +268,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
     }
     const previousURL = target.url();
     const wasInitialized =
-      target._initializedPromise.value() === InitializationStatus.SUCCESS;
+      target._initializedDeferred.value() === InitializationStatus.SUCCESS;
 
     target._targetInfoChanged(event.targetInfo);
 
@@ -391,7 +391,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
   #finishInitializationIfReady(targetId?: string): void {
     targetId !== undefined && this.#targetsIdsForInit.delete(targetId);
     if (this.#targetsIdsForInit.size === 0) {
-      this.#initializePromise.resolve();
+      this.#initializeDeferred.resolve();
     }
   }
 

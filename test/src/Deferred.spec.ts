@@ -16,9 +16,9 @@
 
 import expect from 'expect';
 import {
-  DeferredPromise,
-  createDeferredPromise,
-} from 'puppeteer-core/internal/util/DeferredPromise.js';
+  Deferred,
+  createDeferred,
+} from 'puppeteer-core/internal/util/Deferred.js';
 
 describe('DeferredPromise', function () {
   it('should catch errors', async () => {
@@ -29,8 +29,8 @@ describe('DeferredPromise', function () {
       });
     }
     // Async function that fails.
-    function fails(): DeferredPromise<void> {
-      const deferred = createDeferredPromise<void>();
+    function fails(): Deferred<void> {
+      const deferred = createDeferred<void>();
       setTimeout(() => {
         deferred.reject(new Error('test'));
       }, 25);

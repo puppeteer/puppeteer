@@ -20,7 +20,7 @@ import {
   HTTPResponse as BaseHTTPResponse,
   RemoteAddress,
 } from '../api/HTTPResponse.js';
-import {createDeferredPromise} from '../util/DeferredPromise.js';
+import {createDeferred} from '../util/Deferred.js';
 
 import {CDPSession} from './Connection.js';
 import {ProtocolError} from './Errors.js';
@@ -34,7 +34,7 @@ export class HTTPResponse extends BaseHTTPResponse {
   #client: CDPSession;
   #request: HTTPRequest;
   #contentPromise: Promise<Buffer> | null = null;
-  #bodyLoadedPromise = createDeferredPromise<Error | void>();
+  #bodyLoadedDeferred = createDeferred<Error | void>();
   #remoteAddress: RemoteAddress;
   #status: number;
   #statusText: string;
@@ -101,9 +101,9 @@ export class HTTPResponse extends BaseHTTPResponse {
 
   override _resolveBody(err: Error | null): void {
     if (err) {
-      return this.#bodyLoadedPromise.resolve(err);
+      return this.#bodyLoadedDeferred.resolve(err);
     }
-    return this.#bodyLoadedPromise.resolve();
+    return this.#bodyLoadedDeferred.resolve();
   }
 
   override remoteAddress(): RemoteAddress {
@@ -136,7 +136,7 @@ export class HTTPResponse extends BaseHTTPResponse {
 
   override buffer(): Promise<Buffer> {
     if (!this.#contentPromise) {
-      this.#contentPromise = this.#bodyLoadedPromise
+      this.#contentPromise = this.#bodyLoadedDeferred
         .valueOrThrow()
         .then(async error => {
           if (error) {
