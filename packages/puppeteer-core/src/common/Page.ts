@@ -153,7 +153,7 @@ export class CDPPage extends Page {
   #screenshotTaskQueue: TaskQueue;
   #workers = new Map<string, WebWorker>();
   #fileChooserDeferreds = new Set<Deferred<FileChooser>>();
-  #sessionCloseDeferred = createDeferred<Error>();
+  #sessionCloseDeferred = createDeferred<TargetCloseError>();
   #serviceWorkerBypassed = false;
   #userDragInterceptionEnabled = false;
 
@@ -1000,64 +1000,11 @@ export class CDPPage extends Page {
   ): Promise<void> {
     const {idleTime = 500, timeout = this.#timeoutSettings.timeout()} = options;
 
-    const networkManager = this.#frameManager.networkManager;
-
-    const idleDeferred = createDeferred<void>();
-
-    let abortRejectCallback: (error: Error) => void;
-    const abortPromise = new Promise<Error>((_, reject) => {
-      abortRejectCallback = reject;
-    });
-
-    let idleTimer: NodeJS.Timeout;
-    const cleanup = () => {
-      idleTimer && clearTimeout(idleTimer);
-      abortRejectCallback(new Error('abort'));
-    };
-
-    const evaluate = () => {
-      idleTimer && clearTimeout(idleTimer);
-      if (networkManager.numRequestsInProgress() === 0) {
-        idleTimer = setTimeout(idleDeferred.resolve, idleTime);
-      }
-    };
-
-    evaluate();
-
-    const eventHandler = () => {
-      evaluate();
-      return false;
-    };
-
-    const listenToEvent = (event: symbol) => {
-      return waitForEvent(
-        networkManager,
-        event,
-        eventHandler,
-        timeout,
-        abortPromise
-      );
-    };
-
-    const eventPromises = [
-      listenToEvent(NetworkManagerEmittedEvents.Request),
-      listenToEvent(NetworkManagerEmittedEvents.Response),
-      listenToEvent(NetworkManagerEmittedEvents.RequestFailed),
-    ];
-
-    await Promise.race([
-      idleDeferred.valueOrThrow(),
-      ...eventPromises,
-      this.#sessionCloseDeferred.valueOrThrow(),
-    ]).then(
-      r => {
-        cleanup();
-        return r;
-      },
-      error => {
-        cleanup();
-        throw error;
-      }
+    await this._waitForNetworkIdle(
+      this.#frameManager.networkManager,
+      idleTime,
+      timeout,
+      this.#sessionCloseDeferred
     );
   }
 

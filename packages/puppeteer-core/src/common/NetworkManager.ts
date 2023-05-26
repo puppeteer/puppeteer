@@ -181,8 +181,8 @@ export class NetworkManager extends EventEmitter {
     return Object.assign({}, this.#extraHTTPHeaders);
   }
 
-  numRequestsInProgress(): number {
-    return this.#networkEventManager.numRequestsInProgress();
+  inFlightRequestsCount(): number {
+    return this.#networkEventManager.inFlightRequestsCount();
   }
 
   async setOfflineMode(value: boolean): Promise<void> {

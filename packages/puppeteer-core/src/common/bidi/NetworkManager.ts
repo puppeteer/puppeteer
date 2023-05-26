@@ -88,7 +88,7 @@ export class NetworkManager extends EventEmitter {
     }
   }
 
-  #onFetchError(event: any) {
+  #onFetchError(event: Bidi.Network.FetchErrorParams) {
     const request = this.#requestMap.get(event.request.request);
     if (!request) {
       return;
@@ -99,6 +99,17 @@ export class NetworkManager extends EventEmitter {
 
   getNavigationResponse(navigationId: string | null): HTTPResponse | null {
     return this.#navigationMap.get(navigationId ?? '') ?? null;
+  }
+
+  inFlightRequestsCount(): number {
+    let inFlightRequestCounter = 0;
+    for (const [, request] of this.#requestMap) {
+      if (!request.response() || request._failureText) {
+        inFlightRequestCounter++;
+      }
+    }
+
+    return inFlightRequestCounter;
   }
 
   dispose(): void {

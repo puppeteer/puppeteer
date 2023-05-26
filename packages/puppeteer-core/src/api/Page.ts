@@ -26,12 +26,17 @@ import type {Coverage} from '../common/Coverage.js';
 import {Device} from '../common/Device.js';
 import {DeviceRequestPrompt} from '../common/DeviceRequestPrompt.js';
 import type {Dialog} from '../common/Dialog.js';
+import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter, Handler} from '../common/EventEmitter.js';
 import type {FileChooser} from '../common/FileChooser.js';
 import type {Keyboard, Mouse, Touchscreen} from '../common/Input.js';
 import type {WaitForSelectorOptions} from '../common/IsolatedWorld.js';
 import type {PuppeteerLifeCycleEvent} from '../common/LifecycleWatcher.js';
-import type {Credentials, NetworkConditions} from '../common/NetworkManager.js';
+import {
+  Credentials,
+  NetworkConditions,
+  NetworkManagerEmittedEvents,
+} from '../common/NetworkManager.js';
 import {
   LowerCasePaperFormat,
   paperFormats,
@@ -47,9 +52,16 @@ import type {
   HandleFor,
   NodeFor,
 } from '../common/types.js';
-import {importFSPromises, isNumber, isString} from '../common/util.js';
+import {
+  importFSPromises,
+  isNumber,
+  isString,
+  waitForEvent,
+} from '../common/util.js';
 import type {WebWorker} from '../common/WebWorker.js';
 import {assert} from '../util/assert.js';
+import {Deferred} from '../util/Deferred.js';
+import {createDeferred} from '../util/Deferred.js';
 
 import type {Browser} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';
@@ -1613,6 +1625,72 @@ export class Page extends EventEmitter {
   }): Promise<void>;
   async waitForNetworkIdle(): Promise<void> {
     throw new Error('Not implemented');
+  }
+
+  /**
+   * @internal
+   */
+  protected async _waitForNetworkIdle(
+    networkManager: EventEmitter & {
+      inFlightRequestsCount: () => number;
+    },
+    idleTime: number,
+    timeout: number,
+    closedDeferred: Deferred<TargetCloseError>
+  ): Promise<void> {
+    const idleDeferred = createDeferred<void>();
+    const abortDeferred = createDeferred<Error>();
+
+    let idleTimer: NodeJS.Timeout;
+    const cleanup = () => {
+      idleTimer && clearTimeout(idleTimer);
+      abortDeferred.reject(new Error('abort'));
+    };
+
+    const evaluate = () => {
+      idleTimer && clearTimeout(idleTimer);
+      if (networkManager.inFlightRequestsCount() === 0) {
+        idleTimer = setTimeout(idleDeferred.resolve, idleTime);
+      }
+    };
+
+    evaluate();
+
+    const eventHandler = () => {
+      evaluate();
+      return false;
+    };
+
+    const listenToEvent = (event: symbol) => {
+      return waitForEvent(
+        networkManager,
+        event,
+        eventHandler,
+        timeout,
+        abortDeferred.valueOrThrow()
+      );
+    };
+
+    const eventPromises = [
+      listenToEvent(NetworkManagerEmittedEvents.Request),
+      listenToEvent(NetworkManagerEmittedEvents.Response),
+      listenToEvent(NetworkManagerEmittedEvents.RequestFailed),
+    ];
+
+    await Promise.race([
+      idleDeferred.valueOrThrow(),
+      ...eventPromises,
+      closedDeferred.valueOrThrow(),
+    ]).then(
+      r => {
+        cleanup();
+        return r;
+      },
+      error => {
+        cleanup();
+        throw error;
+      }
+    );
   }
 
   /**

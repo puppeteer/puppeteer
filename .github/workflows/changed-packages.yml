@@ -24,7 +24,7 @@ jobs:
         with:
           fetch-depth: 2
       - name: Check if branch is out of date
-        if: ${{ inputs.check-mergeable-state }}
+        if: ${{ inputs.check-mergeable-state &&  github.base_ref == 'main' }}
         run: |
           git fetch origin main --depth 1 &&
           git merge-base --is-ancestor origin/main @;
