@@ -161,7 +161,7 @@ export class DeviceRequestPrompt {
     const handle = {filter, promise};
     this.#waitForDevicePromises.add(handle);
     try {
-      return await promise;
+      return await promise.valueOrThrow();
     } finally {
       this.#waitForDevicePromises.delete(handle);
     }
@@ -262,7 +262,10 @@ export class DeviceRequestPromptManager {
     this.#deviceRequestPromptPromises.add(promise);
 
     try {
-      const [result] = await Promise.all([promise, enablePromise]);
+      const [result] = await Promise.all([
+        promise.valueOrThrow(),
+        enablePromise,
+      ]);
       return result;
     } finally {
       this.#deviceRequestPromptPromises.delete(promise);

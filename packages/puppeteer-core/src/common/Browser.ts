@@ -360,7 +360,10 @@ export class CDPBrowser extends BrowserBase {
   };
 
   #onAttachedToTarget = async (target: Target) => {
-    if ((await target._initializedPromise) === InitializationStatus.SUCCESS) {
+    if (
+      (await target._initializedPromise.valueOrThrow()) ===
+      InitializationStatus.SUCCESS
+    ) {
       this.emit(BrowserEmittedEvents.TargetCreated, target);
       target
         .browserContext()
@@ -371,7 +374,10 @@ export class CDPBrowser extends BrowserBase {
   #onDetachedFromTarget = async (target: Target): Promise<void> => {
     target._initializedPromise.resolve(InitializationStatus.ABORTED);
     target._isClosedPromise.resolve();
-    if ((await target._initializedPromise) === InitializationStatus.SUCCESS) {
+    if (
+      (await target._initializedPromise.valueOrThrow()) ===
+      InitializationStatus.SUCCESS
+    ) {
       this.emit(BrowserEmittedEvents.TargetDestroyed, target);
       target
         .browserContext()
@@ -432,7 +438,8 @@ export class CDPBrowser extends BrowserBase {
       throw new Error(`Missing target for page (id = ${targetId})`);
     }
     const initialized =
-      (await target._initializedPromise) === InitializationStatus.SUCCESS;
+      (await target._initializedPromise.valueOrThrow()) ===
+      InitializationStatus.SUCCESS;
     if (!initialized) {
       throw new Error(`Failed to create target for page (id = ${targetId})`);
     }
@@ -501,9 +508,13 @@ export class CDPBrowser extends BrowserBase {
     try {
       this.targets().forEach(check);
       if (!timeout) {
-        return await targetPromise;
+        return await targetPromise.valueOrThrow();
       }
-      return await waitWithTimeout(targetPromise, 'target', timeout);
+      return await waitWithTimeout(
+        targetPromise.valueOrThrow(),
+        'target',
+        timeout
+      );
     } finally {
       this.off(BrowserEmittedEvents.TargetCreated, check);
       this.off(BrowserEmittedEvents.TargetChanged, check);

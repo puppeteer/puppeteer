@@ -169,7 +169,7 @@ export class FirefoxTargetManager
       filter: [{}],
     });
     this.#targetsIdsForInit = new Set(this.#discoveredTargetsByTargetId.keys());
-    await this.#initializePromise;
+    await this.#initializePromise.valueOrThrow();
   }
 
   #onTargetCreated = async (

@@ -91,14 +91,18 @@ export class WebWorker extends EventEmitter {
       this.#executionContext.resolve(context);
     });
     this.#client.on('Runtime.consoleAPICalled', async event => {
-      const context = await this.#executionContext;
-      return consoleAPICalled(
-        event.type,
-        event.args.map((object: Protocol.Runtime.RemoteObject) => {
-          return new CDPJSHandle(context, object);
-        }),
-        event.stackTrace
-      );
+      try {
+        const context = await this.#executionContext.valueOrThrow();
+        return consoleAPICalled(
+          event.type,
+          event.args.map((object: Protocol.Runtime.RemoteObject) => {
+            return new CDPJSHandle(context, object);
+          }),
+          event.stackTrace
+        );
+      } catch (err) {
+        debugError(err);
+      }
     });
     this.#client.on('Runtime.exceptionThrown', exception => {
       return exceptionThrown(exception.exceptionDetails);
@@ -112,7 +116,7 @@ export class WebWorker extends EventEmitter {
    * @internal
    */
   async executionContext(): Promise<ExecutionContext> {
-    return this.#executionContext;
+    return this.#executionContext.valueOrThrow();
   }
 
   /**
@@ -154,7 +158,7 @@ export class WebWorker extends EventEmitter {
       this.evaluate.name,
       pageFunction
     );
-    const context = await this.#executionContext;
+    const context = await this.#executionContext.valueOrThrow();
     return context.evaluate(pageFunction, ...args);
   }
 
@@ -181,7 +185,7 @@ export class WebWorker extends EventEmitter {
       this.evaluateHandle.name,
       pageFunction
     );
-    const context = await this.#executionContext;
+    const context = await this.#executionContext.valueOrThrow();
     return context.evaluateHandle(pageFunction, ...args);
   }
 }

@@ -204,7 +204,7 @@ export class LifecycleWatcher {
 
   async navigationResponse(): Promise<HTTPResponse | null> {
     // Continue with a possibly null response.
-    await this.#navigationResponseReceived?.catch(() => {});
+    await this.#navigationResponseReceived?.valueOrThrow();
     return this.#navigationRequest ? this.#navigationRequest.response() : null;
   }
 
@@ -213,19 +213,22 @@ export class LifecycleWatcher {
   }
 
   sameDocumentNavigationPromise(): Promise<Error | undefined> {
-    return this.#sameDocumentNavigationPromise;
+    return this.#sameDocumentNavigationPromise.valueOrThrow();
   }
 
   newDocumentNavigationPromise(): Promise<Error | undefined> {
-    return this.#newDocumentNavigationPromise;
+    return this.#newDocumentNavigationPromise.valueOrThrow();
   }
 
   lifecyclePromise(): Promise<void> {
-    return this.#lifecyclePromise;
+    return this.#lifecyclePromise.valueOrThrow();
   }
 
   timeoutOrTerminationPromise(): Promise<Error | TimeoutError | undefined> {
-    return Promise.race([this.#timeoutPromise, this.#terminationPromise]);
+    return Promise.race([
+      this.#timeoutPromise,
+      this.#terminationPromise.valueOrThrow(),
+    ]);
   }
 
   async #createTimeoutPromise(): Promise<TimeoutError | undefined> {

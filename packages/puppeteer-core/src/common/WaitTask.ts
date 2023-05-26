@@ -18,6 +18,7 @@ import {ElementHandle} from '../api/ElementHandle.js';
 import {JSHandle} from '../api/JSHandle.js';
 import type {Poller} from '../injected/Poller.js';
 import {createDeferredPromise} from '../util/DeferredPromise.js';
+import {isErrorLike} from '../util/ErrorLike.js';
 import {stringifyFunction} from '../util/Function.js';
 
 import {TimeoutError} from './Errors.js';
@@ -97,7 +98,7 @@ export class WaitTask<T = unknown> {
   }
 
   get result(): Promise<HandleFor<T>> {
-    return this.#result;
+    return this.#result.valueOrThrow();
   }
 
   async rerun(): Promise<void> {
@@ -170,7 +171,7 @@ export class WaitTask<T = unknown> {
     }
   }
 
-  async terminate(error?: unknown): Promise<void> {
+  async terminate(error?: Error): Promise<void> {
     this.#world.taskManager.delete(this);
 
     if (this.#timeout) {
@@ -199,8 +200,8 @@ export class WaitTask<T = unknown> {
   /**
    * Not all errors lead to termination. They usually imply we need to rerun the task.
    */
-  getBadError(error: unknown): unknown {
-    if (error instanceof Error) {
+  getBadError(error: unknown): Error | undefined {
+    if (isErrorLike(error)) {
       // When frame is detached the task should have been terminated by the IsolatedWorld.
       // This can fail if we were adding this task while the frame was detached,
       // so we terminate here instead.
@@ -223,9 +224,14 @@ export class WaitTask<T = unknown> {
       if (error.message.includes('Cannot find context with specified id')) {
         return;
       }
+
+      return error;
     }
 
-    return error;
+    // @ts-expect-error TODO: uncomment once cause is supported in Node types.
+    return new Error('WaitTask failed with an error', {
+      cause: error,
+    });
   }
 }
 

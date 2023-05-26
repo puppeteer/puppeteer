@@ -136,31 +136,37 @@ export class HTTPResponse extends BaseHTTPResponse {
 
   override buffer(): Promise<Buffer> {
     if (!this.#contentPromise) {
-      this.#contentPromise = this.#bodyLoadedPromise.then(async error => {
-        if (error) {
-          throw error;
-        }
-        try {
-          const response = await this.#client.send('Network.getResponseBody', {
-            requestId: this.#request._requestId,
-          });
-          return Buffer.from(
-            response.body,
-            response.base64Encoded ? 'base64' : 'utf8'
-          );
-        } catch (error) {
-          if (
-            error instanceof ProtocolError &&
-            error.originalMessage === 'No resource with given identifier found'
-          ) {
-            throw new ProtocolError(
-              'Could not load body for this request. This might happen if the request is a preflight request.'
-            );
+      this.#contentPromise = this.#bodyLoadedPromise
+        .valueOrThrow()
+        .then(async error => {
+          if (error) {
+            throw error;
           }
+          try {
+            const response = await this.#client.send(
+              'Network.getResponseBody',
+              {
+                requestId: this.#request._requestId,
+              }
+            );
+            return Buffer.from(
+              response.body,
+              response.base64Encoded ? 'base64' : 'utf8'
+            );
+          } catch (error) {
+            if (
+              error instanceof ProtocolError &&
+              error.originalMessage ===
+                'No resource with given identifier found'
+            ) {
+              throw new ProtocolError(
+                'Could not load body for this request. This might happen if the request is a preflight request.'
+              );
+            }
 
-          throw error;
-        }
-      });
+            throw error;
+          }
+        });
     }
     return this.#contentPromise;
   }

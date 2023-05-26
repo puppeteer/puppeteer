@@ -174,7 +174,7 @@ export class IsolatedWorld {
     if (this.#context === null) {
       throw new Error(`Execution content promise is missing`);
     }
-    return this.#context;
+    return this.#context.valueOrThrow();
   }
 
   async evaluateHandle<
@@ -425,13 +425,17 @@ export class IsolatedWorld {
       return;
     }
 
-    const context = await this.#context;
-    if (event.executionContextId !== context._contextId) {
-      return;
-    }
+    try {
+      const context = await this.#context.valueOrThrow();
+      if (event.executionContextId !== context._contextId) {
+        return;
+      }
 
-    const binding = this._bindings.get(name);
-    await binding?.run(context, seq, args, isTrivial);
+      const binding = this._bindings.get(name);
+      await binding?.run(context, seq, args, isTrivial);
+    } catch (err) {
+      debugError(err);
+    }
   };
 
   waitForFunction<

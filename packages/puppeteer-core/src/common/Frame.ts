@@ -419,7 +419,7 @@ export class Frame extends BaseFrame {
             script.id = id;
           }
           document.head.appendChild(script);
-          await promise;
+          await promise.valueOrThrow();
           return script;
         },
         LazyArg.create(context => {
@@ -488,7 +488,7 @@ export class Frame extends BaseFrame {
             {once: true}
           );
           document.head.appendChild(element);
-          await promise;
+          await promise.valueOrThrow();
           return element;
         },
         LazyArg.create(context => {
