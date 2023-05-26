@@ -25,7 +25,9 @@ import {
   WaitForOptions,
 } from '../../api/Page.js';
 import {assert} from '../../util/assert.js';
+import {createDeferred} from '../../util/Deferred.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
+import {TargetCloseError} from '../Errors.js';
 import {Handler} from '../EventEmitter.js';
 import {FrameManagerEmittedEvents} from '../FrameManager.js';
 import {FrameTree} from '../FrameTree.js';
@@ -36,6 +38,8 @@ import {TimeoutSettings} from '../TimeoutSettings.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
 import {
   debugError,
+  isString,
+  waitForEvent,
   waitWithTimeout,
   withSourcePuppeteerURLIfNone,
 } from '../util.js';
@@ -43,6 +47,7 @@ import {
 import {BrowsingContext, getBidiHandle} from './BrowsingContext.js';
 import {Connection} from './Connection.js';
 import {Frame} from './Frame.js';
+import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {NetworkManager} from './NetworkManager.js';
 import {BidiSerializer} from './Serializer.js';
@@ -56,7 +61,7 @@ export class Page extends PageBase {
   #frameTree = new FrameTree<Frame>();
   #networkManager: NetworkManager;
   #viewport: Viewport | null = null;
-  #closed = false;
+  #closedDeferred = createDeferred<TargetCloseError>();
   #subscribedEvents = new Map<string, Handler<any>>([
     ['log.entryAdded', this.#onLogEntryAdded.bind(this)],
     [
@@ -258,10 +263,10 @@ export class Page extends PageBase {
   }
 
   override async close(): Promise<void> {
-    if (this.#closed) {
+    if (this.#closedDeferred.finished()) {
       return;
     }
-    this.#closed = true;
+    this.#closedDeferred.resolve(new TargetCloseError('Page closed!'));
     this.removeAllListeners();
     this.#networkManager.dispose();
 
@@ -444,6 +449,52 @@ export class Page extends PageBase {
     await this._maybeWriteBufferToFile(path, buffer);
 
     return buffer;
+  }
+
+  override waitForRequest(
+    urlOrPredicate: string | ((req: HTTPRequest) => boolean | Promise<boolean>),
+    options: {timeout?: number} = {}
+  ): Promise<HTTPRequest> {
+    const {timeout = this.#timeoutSettings.timeout()} = options;
+    return waitForEvent(
+      this.#networkManager,
+      NetworkManagerEmittedEvents.Request,
+      async request => {
+        if (isString(urlOrPredicate)) {
+          return urlOrPredicate === request.url();
+        }
+        if (typeof urlOrPredicate === 'function') {
+          return !!(await urlOrPredicate(request));
+        }
+        return false;
+      },
+      timeout,
+      this.#closedDeferred.valueOrThrow()
+    );
+  }
+
+  override waitForResponse(
+    urlOrPredicate:
+      | string
+      | ((res: HTTPResponse) => boolean | Promise<boolean>),
+    options: {timeout?: number} = {}
+  ): Promise<HTTPResponse> {
+    const {timeout = this.#timeoutSettings.timeout()} = options;
+    return waitForEvent(
+      this.#networkManager,
+      NetworkManagerEmittedEvents.Response,
+      async response => {
+        if (isString(urlOrPredicate)) {
+          return urlOrPredicate === response.url();
+        }
+        if (typeof urlOrPredicate === 'function') {
+          return !!(await urlOrPredicate(response));
+        }
+        return false;
+      },
+      timeout,
+      this.#closedDeferred.valueOrThrow()
+    );
   }
 }
 
