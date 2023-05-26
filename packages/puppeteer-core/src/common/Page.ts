@@ -152,9 +152,8 @@ export class CDPPage extends Page {
   #viewport: Viewport | null;
   #screenshotTaskQueue: TaskQueue;
   #workers = new Map<string, WebWorker>();
-  #fileChooserPromises = new Set<Deferred<FileChooser>>();
-
-  #disconnectPromise?: Promise<Error>;
+  #fileChooserDeferreds = new Set<Deferred<FileChooser>>();
+  #sessionCloseDeferred = createDeferred<Error>();
   #serviceWorkerBypassed = false;
   #userDragInterceptionEnabled = false;
 
@@ -222,6 +221,12 @@ export class CDPPage extends Page {
     });
     networkManager.on(NetworkManagerEmittedEvents.RequestFinished, event => {
       return this.emit(PageEmittedEvents.RequestFinished, event);
+    });
+
+    client.once(CDPSessionEmittedEvents.Disconnected, () => {
+      return this.#sessionCloseDeferred.resolve(
+        new TargetCloseError('Target closed')
+      );
     });
 
     client.on('Page.domContentEventFired', () => {
@@ -326,7 +331,7 @@ export class CDPPage extends Page {
   async #onFileChooser(
     event: Protocol.Page.FileChooserOpenedEvent
   ): Promise<void> {
-    if (!this.#fileChooserPromises.size) {
+    if (!this.#fileChooserDeferreds.size) {
       return;
     }
 
@@ -339,10 +344,10 @@ export class CDPPage extends Page {
     )) as ElementHandle<HTMLInputElement>;
 
     const fileChooser = new FileChooser(handle, event);
-    for (const promise of this.#fileChooserPromises) {
+    for (const promise of this.#fileChooserDeferreds) {
       promise.resolve(fileChooser);
     }
-    this.#fileChooserPromises.clear();
+    this.#fileChooserDeferreds.clear();
   }
 
   /**
@@ -367,13 +372,13 @@ export class CDPPage extends Page {
   override waitForFileChooser(
     options: WaitTimeoutOptions = {}
   ): Promise<FileChooser> {
-    const needsEnable = this.#fileChooserPromises.size === 0;
+    const needsEnable = this.#fileChooserDeferreds.size === 0;
     const {timeout = this.#timeoutSettings.timeout()} = options;
     const deferred = createDeferred<FileChooser>({
       message: `Waiting for \`FileChooser\` failed: ${timeout}ms exceeded`,
       timeout,
     });
-    this.#fileChooserPromises.add(deferred);
+    this.#fileChooserDeferreds.add(deferred);
     let enablePromise: Promise<void> | undefined;
     if (needsEnable) {
       enablePromise = this.#client.send('Page.setInterceptFileChooserDialog', {
@@ -385,7 +390,7 @@ export class CDPPage extends Page {
         return result;
       })
       .catch(error => {
-        this.#fileChooserPromises.delete(deferred);
+        this.#fileChooserDeferreds.delete(deferred);
         throw error;
       });
   }
@@ -944,17 +949,6 @@ export class CDPPage extends Page {
     return await this.mainFrame().waitForNavigation(options);
   }
 
-  #sessionClosePromise(): Promise<Error> {
-    if (!this.#disconnectPromise) {
-      this.#disconnectPromise = new Promise(fulfill => {
-        return this.#client.once(CDPSessionEmittedEvents.Disconnected, () => {
-          return fulfill(new TargetCloseError('Target closed'));
-        });
-      });
-    }
-    return this.#disconnectPromise;
-  }
-
   override async waitForRequest(
     urlOrPredicate: string | ((req: HTTPRequest) => boolean | Promise<boolean>),
     options: {timeout?: number} = {}
@@ -973,7 +967,7 @@ export class CDPPage extends Page {
         return false;
       },
       timeout,
-      this.#sessionClosePromise()
+      this.#sessionCloseDeferred.valueOrThrow()
     );
   }
 
@@ -997,7 +991,7 @@ export class CDPPage extends Page {
         return false;
       },
       timeout,
-      this.#sessionClosePromise()
+      this.#sessionCloseDeferred.valueOrThrow()
     );
   }
 
@@ -1054,7 +1048,7 @@ export class CDPPage extends Page {
     await Promise.race([
       idleDeferred.valueOrThrow(),
       ...eventPromises,
-      this.#sessionClosePromise(),
+      this.#sessionCloseDeferred.valueOrThrow(),
     ]).then(
       r => {
         cleanup();
@@ -1094,14 +1088,14 @@ export class CDPPage extends Page {
         FrameManagerEmittedEvents.FrameAttached,
         predicate,
         timeout,
-        this.#sessionClosePromise()
+        this.#sessionCloseDeferred.valueOrThrow()
       ),
       waitForEvent(
         this.#frameManager,
         FrameManagerEmittedEvents.FrameNavigated,
         predicate,
         timeout,
-        this.#sessionClosePromise()
+        this.#sessionCloseDeferred.valueOrThrow()
       ),
       ...this.frames().map(async frame => {
         if (await predicate(frame)) {
