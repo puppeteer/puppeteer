@@ -387,6 +387,13 @@ export interface PageEventObject {
 }
 
 /**
+ * @public
+ */
+export interface NewDocumentScriptEvaluation {
+  identifier: string;
+}
+
+/**
  * Page provides methods to interact with a single tab or
  * {@link https://developer.chrome.com/extensions/background_pages | extension background page}
  * in the browser.
@@ -2109,8 +2116,21 @@ export class Page extends EventEmitter {
   async evaluateOnNewDocument<
     Params extends unknown[],
     Func extends (...args: Params) => unknown = (...args: Params) => unknown
-  >(pageFunction: Func | string, ...args: Params): Promise<void>;
-  async evaluateOnNewDocument(): Promise<void> {
+  >(
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<NewDocumentScriptEvaluation>;
+  async evaluateOnNewDocument(): Promise<NewDocumentScriptEvaluation> {
+    throw new Error('Not implemented');
+  }
+
+  /**
+   * Removes script that injected into page by Page.evaluateOnNewDocument.
+   *
+   * @param identifier - script identifier
+   */
+  async removeScriptToEvaluateOnNewDocument(identifier: string): Promise<void>;
+  async removeScriptToEvaluateOnNewDocument(): Promise<void> {
     throw new Error('Not implemented');
   }
 

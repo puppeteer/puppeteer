@@ -537,6 +537,30 @@ describe('Evaluation specs', function () {
     });
   });
 
+  describe('Page.removeScriptToEvaluateOnNewDocument', function () {
+    it('should remove new document script', async () => {
+      const {page, server} = getTestState();
+
+      const {identifier} = await page.evaluateOnNewDocument(function () {
+        (globalThis as any).injected = 123;
+      });
+      await page.goto(server.PREFIX + '/tamperable.html');
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).result;
+        })
+      ).toBe(123);
+
+      await page.removeScriptToEvaluateOnNewDocument(identifier);
+      await page.reload();
+      expect(
+        await page.evaluate(() => {
+          return (globalThis as any).result || null;
+        })
+      ).toBe(null);
+    });
+  });
+
   describe('Frame.evaluate', function () {
     it('should have different execution contexts', async () => {
       const {page, server} = getTestState();
