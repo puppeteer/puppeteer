@@ -125,13 +125,17 @@ describe('Tracing', function () {
 
     await page.tracing.start({screenshots: true});
     await page.goto(server.PREFIX + '/grid.html');
+
     const oldBufferConcat = Buffer.concat;
-    Buffer.concat = () => {
-      throw 'error';
-    };
-    const trace = await page.tracing.stop();
-    expect(trace).toEqual(undefined);
-    Buffer.concat = oldBufferConcat;
+    try {
+      Buffer.concat = () => {
+        throw new Error('error');
+      };
+      const trace = await page.tracing.stop();
+      expect(trace).toEqual(undefined);
+    } finally {
+      Buffer.concat = oldBufferConcat;
+    }
   });
 
   it('should support a buffer without a path', async () => {
