@@ -147,6 +147,7 @@ export class CDPPage extends Page {
   #emulationManager: EmulationManager;
   #tracing: Tracing;
   #bindings = new Map<string, Binding>();
+  #exposedFunctions = new Map<string, string>();
   #coverage: Coverage;
   #javascriptEnabled = true;
   #viewport: Viewport | null;
@@ -705,15 +706,48 @@ export class CDPPage extends Page {
     this.#bindings.set(name, binding);
 
     const expression = pageBindingInitString('exposedFun', name);
-    await this.#client.send('Runtime.addBinding', {name: name});
-    await this.#client.send('Page.addScriptToEvaluateOnNewDocument', {
-      source: expression,
-    });
+    await this.#client.send('Runtime.addBinding', {name});
+    const {identifier} = await this.#client.send(
+      'Page.addScriptToEvaluateOnNewDocument',
+      {
+        source: expression,
+      }
+    );
+
+    this.#exposedFunctions.set(name, identifier);
+
     await Promise.all(
       this.frames().map(frame => {
         return frame.evaluate(expression).catch(debugError);
       })
     );
+  }
+
+  override async removeExposedFunction(name: string): Promise<void> {
+    const exposedFun = this.#exposedFunctions.get(name);
+    if (!exposedFun) {
+      throw new Error(
+        `Failed to remove page binding with name ${name}: window['${name}'] does not exists!`
+      );
+    }
+
+    await this.#client.send('Runtime.removeBinding', {name});
+    await this.removeScriptToEvaluateOnNewDocument(exposedFun);
+
+    await Promise.all(
+      this.frames().map(frame => {
+        return frame
+          .evaluate(name => {
+            // Removes the dangling Puppeteer binding wrapper.
+            // @ts-expect-error: In a different context.
+            globalThis[name] = undefined;
+          }, name)
+          .catch(debugError);
+      })
+    );
+
+    this.#exposedFunctions.delete(name);
+    this.#bindings.delete(name);
   }
 
   override async authenticate(credentials: Credentials): Promise<void> {

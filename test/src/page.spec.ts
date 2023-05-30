@@ -1331,6 +1331,31 @@ describe('Page', function () {
     });
   });
 
+  describe('Page.removeExposedFunction', function () {
+    it('should work', async () => {
+      const {page} = getTestState();
+
+      await page.exposeFunction('compute', function (a: number, b: number) {
+        return a * b;
+      });
+      const result = await page.evaluate(async function () {
+        return await (globalThis as any).compute(9, 4);
+      });
+      expect(result).toBe(36);
+      await page.removeExposedFunction('compute');
+
+      let error: Error | null = null;
+      await page
+        .evaluate(async function () {
+          return (globalThis as any).compute(9, 4);
+        })
+        .catch(_error => {
+          return (error = _error);
+        });
+      expect(error).toBeTruthy();
+    });
+  });
+
   describe('Page.Events.PageError', function () {
     it('should fire', async () => {
       const {page, server} = getTestState();

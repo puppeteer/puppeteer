@@ -1280,6 +1280,15 @@ export class Page extends EventEmitter {
   }
 
   /**
+   * The method removes a previously added function via ${@link Page.exposeFunction}
+   * called `name` from the page's `window` object.
+   */
+  async removeExposedFunction(name: string): Promise<void>;
+  async removeExposedFunction(): Promise<void> {
+    throw new Error('Not implemented');
+  }
+
+  /**
    * Provide credentials for `HTTP authentication`.
    *
    * @remarks
