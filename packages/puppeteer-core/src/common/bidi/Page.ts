@@ -496,6 +496,10 @@ export class Page extends PageBase {
       this.#closedDeferred.valueOrThrow()
     );
   }
+
+  override title(): Promise<string> {
+    return this.mainFrame().title();
+  }
 }
 
 function isConsoleLogEntry(
