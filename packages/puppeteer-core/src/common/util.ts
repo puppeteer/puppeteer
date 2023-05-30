@@ -22,6 +22,7 @@ import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {Page} from '../api/Page.js';
 import {isNode} from '../environment.js';
+import {createDeferred} from '../puppeteer-core.js';
 import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
@@ -382,45 +383,28 @@ export async function waitForEvent<T>(
   timeout: number,
   abortPromise: Promise<Error>
 ): Promise<T> {
-  let eventTimeout: NodeJS.Timeout;
-  let resolveCallback: (value: T | PromiseLike<T>) => void;
-  let rejectCallback: (value: Error) => void;
-  const promise = new Promise<T>((resolve, reject) => {
-    resolveCallback = resolve;
-    rejectCallback = reject;
+  const deferred = createDeferred<T>({
+    message: `Timeout exceeded while waiting for event ${String(eventName)}`,
+    timeout,
   });
   const listener = addEventListener(emitter, eventName, async event => {
-    if (!(await predicate(event))) {
-      return;
+    if (await predicate(event)) {
+      deferred.resolve(event);
     }
-    resolveCallback(event);
   });
-  if (timeout) {
-    eventTimeout = setTimeout(() => {
-      rejectCallback(
-        new TimeoutError('Timeout exceeded while waiting for event')
-      );
-    }, timeout);
-  }
-  function cleanup(): void {
-    removeEventListeners([listener]);
-    clearTimeout(eventTimeout);
-  }
-  const result = await Promise.race([promise, abortPromise]).then(
+  return Promise.race([deferred.valueOrThrow(), abortPromise]).then(
     r => {
-      cleanup();
+      removeEventListeners([listener]);
+      if (isErrorLike(r)) {
+        throw r;
+      }
       return r;
     },
     error => {
-      cleanup();
+      removeEventListeners([listener]);
       throw error;
     }
   );
-  if (isErrorLike(result)) {
-    throw result;
-  }
-
-  return result;
 }
 
 /**
