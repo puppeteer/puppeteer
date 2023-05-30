@@ -61,7 +61,7 @@ function createIncrementalIdGenerator(): GetIdFn {
 /**
  * @internal
  */
-class Callback {
+export class Callback {
   #id: number;
   #error = new ProtocolError();
   #deferred = createDeferred<unknown>();

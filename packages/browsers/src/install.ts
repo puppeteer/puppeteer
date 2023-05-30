@@ -188,6 +188,9 @@ export async function install(
   };
 }
 
+/**
+ * @public
+ */
 export interface UninstallOptions {
   /**
    * Determines the platform for the browser binary.
@@ -228,6 +231,9 @@ export async function uninstall(options: UninstallOptions): Promise<void> {
   );
 }
 
+/**
+ * @public
+ */
 export interface GetInstalledBrowsersOptions {
   /**
    * The path to the root of the cache directory.
