@@ -22,14 +22,13 @@ import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {Page} from '../api/Page.js';
 import {isNode} from '../environment.js';
-import {createDeferred} from '../puppeteer-core.js';
 import {assert} from '../util/assert.js';
+import {createDeferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {CDPSession} from './Connection.js';
 import {debug} from './Debug.js';
 import {CDPElementHandle} from './ElementHandle.js';
-import {TimeoutError} from './Errors.js';
 import type {CommonEventEmitter} from './EventEmitter.js';
 import type {ExecutionContext} from './ExecutionContext.js';
 import {CDPJSHandle} from './JSHandle.js';
@@ -392,19 +391,23 @@ export async function waitForEvent<T>(
       deferred.resolve(event);
     }
   });
-  return Promise.race([deferred.valueOrThrow(), abortPromise]).then(
-    r => {
-      removeEventListeners([listener]);
-      if (isErrorLike(r)) {
-        throw r;
+  return Promise.race([deferred.valueOrThrow(), abortPromise])
+    .then(
+      r => {
+        removeEventListeners([listener]);
+        if (isErrorLike(r)) {
+          throw r;
+        }
+        return r;
+      },
+      error => {
+        removeEventListeners([listener]);
+        throw error;
       }
-      return r;
-    },
-    error => {
-      removeEventListeners([listener]);
-      throw error;
-    }
-  );
+    )
+    .finally(() => {
+      deferred.reject(new Error('Cleared'));
+    });
 }
 
 /**
@@ -506,26 +509,14 @@ export async function waitWithTimeout<T>(
   taskName: string,
   timeout: number
 ): Promise<T> {
-  let reject: (reason?: Error) => void;
-  const timeoutError = new TimeoutError(
-    `waiting for ${taskName} failed: timeout ${timeout}ms exceeded`
-  );
-  const timeoutPromise = new Promise<never>((_, rej) => {
-    return (reject = rej);
+  const deferred = createDeferred<never>({
+    message: `waiting for ${taskName} failed: timeout ${timeout}ms exceeded`,
+    timeout,
   });
-  let timeoutTimer = null;
-  if (timeout) {
-    timeoutTimer = setTimeout(() => {
-      return reject(timeoutError);
-    }, timeout);
-  }
-  try {
-    return await Promise.race([promise, timeoutPromise]);
-  } finally {
-    if (timeoutTimer) {
-      clearTimeout(timeoutTimer);
-    }
-  }
+
+  return await Promise.race([promise, deferred.valueOrThrow()]).finally(() => {
+    deferred.reject(new Error('Cleared'));
+  });
 }
 
 /**
