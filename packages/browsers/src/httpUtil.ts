@@ -17,7 +17,7 @@
 import {createWriteStream} from 'fs';
 import * as http from 'http';
 import * as https from 'https';
-import {URL} from 'url';
+import {URL, urlToHttpOptions} from 'url';
 
 import {ProxyAgent} from 'proxy-agent';
 
@@ -50,6 +50,7 @@ export function httpRequest(
     path: url.pathname + url.search,
     method,
     headers: keepAlive ? {Connection: 'keep-alive'} : undefined,
+    auth: urlToHttpOptions(url).auth,
     agent: new ProxyAgent(),
   };
 
