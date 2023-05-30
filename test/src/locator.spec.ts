@@ -29,6 +29,33 @@ describe('Locator', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
 
+  it('should work without preconditions', async () => {
+    const {page} = getTestState();
+
+    await page.setViewport({width: 500, height: 500});
+    await page.setContent(`
+      <button onclick="this.innerText = 'clicked';">test</button>
+    `);
+    let willClick = false;
+    await page
+      .locator('button')
+      .setEnsureElementIsInTheViewport(false)
+      .setTimeout(0)
+      .setVisibility(null)
+      .setWaitForEnabled(false)
+      .setWaitForStableBoundingBox(false)
+      .on(LocatorEmittedEvents.Action, () => {
+        willClick = true;
+      })
+      .click();
+    const button = await page.$('button');
+    const text = await button?.evaluate(el => {
+      return el.innerText;
+    });
+    expect(text).toBe('clicked');
+    expect(willClick).toBe(true);
+  });
+
   describe('Locator.click', function () {
     it('should work', async () => {
       const {page} = getTestState();

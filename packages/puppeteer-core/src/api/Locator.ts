@@ -22,18 +22,42 @@ import {isErrorLike} from '../util/ErrorLike.js';
 import {ElementHandle, BoundingBox, ClickOptions} from './ElementHandle.js';
 import type {Page} from './Page.js';
 
+type VisibilityOption = 'hidden' | 'visible' | null;
+
 /**
  * @internal
  */
 export interface LocatorOptions {
   /**
-   * Whether to wait for the element to be `visible` or `hidden`.
+   * Whether to wait for the element to be `visible` or `hidden`. `null` to
+   * disable visibility checks.
    */
-  visibility: 'hidden' | 'visible';
+  visibility: VisibilityOption;
   /**
    * Total timeout for the entire locator operation.
+   *
+   * Pass `0` to disable timeout.
+   *
+   * @defaultValue `Page.getDefaultTimeout()`
    */
   timeout: number;
+  /**
+   * Whether to scroll the element into viewport if not in the viewprot already.
+   * @defaultValue `true`
+   */
+  ensureElementIsInTheViewport: boolean;
+  /**
+   * Whether to wait for input elements to become enabled before the action.
+   * Applicable to `click` and `fill` actions.
+   * @defaultValue `true`
+   */
+  waitForEnabled: boolean;
+  /**
+   * Whether to wait for the element's bounding box to be same between two
+   * animation frames.
+   * @defaultValue `true`
+   */
+  waitForStableBoundingBox: boolean;
 }
 
 /**
@@ -98,6 +122,9 @@ export class Locator extends EventEmitter {
     options: LocatorOptions = {
       visibility: 'visible',
       timeout: page.getDefaultTimeout(),
+      ensureElementIsInTheViewport: true,
+      waitForEnabled: true,
+      waitForStableBoundingBox: true,
     }
   ) {
     super();
@@ -127,6 +154,31 @@ export class Locator extends EventEmitter {
     return super.off(eventName, handler);
   }
 
+  setVisibility(visibility: VisibilityOption): this {
+    this.#options.visibility = visibility;
+    return this;
+  }
+
+  setTimeout(timeout: number): this {
+    this.#options.timeout = timeout;
+    return this;
+  }
+
+  setEnsureElementIsInTheViewport(value: boolean): this {
+    this.#options.ensureElementIsInTheViewport = value;
+    return this;
+  }
+
+  setWaitForEnabled(value: boolean): this {
+    this.#options.waitForEnabled = value;
+    return this;
+  }
+
+  setWaitForStableBoundingBox(value: boolean): this {
+    this.#options.waitForStableBoundingBox = value;
+    return this;
+  }
+
   /**
    * Retries the `fn` until a truthy result is returned.
    */
@@ -138,10 +190,12 @@ export class Locator extends EventEmitter {
     let isActive = true;
     let controller: AbortController;
     // If the loop times out, we abort only the last iteration's controller.
-    const timeoutId = setTimeout(() => {
-      isActive = false;
-      controller?.abort();
-    }, timeout);
+    const timeoutId = timeout
+      ? setTimeout(() => {
+          isActive = false;
+          controller?.abort();
+        }, timeout)
+      : 0;
     // If the user's signal aborts, we abort the last iteration and the loop.
     signal?.addEventListener(
       'abort',
@@ -194,6 +248,9 @@ export class Locator extends EventEmitter {
     element: ElementHandle,
     signal?: AbortSignal
   ): Promise<void> => {
+    if (!this.#options.ensureElementIsInTheViewport) {
+      return;
+    }
     // Side-effect: this also checks if it is connected.
     const isIntersectingViewport = await element.isIntersectingViewport({
       threshold: 0,
@@ -221,6 +278,9 @@ export class Locator extends EventEmitter {
     element: ElementHandle,
     signal?: AbortSignal
   ): Promise<void> => {
+    if (this.#options.visibility === null) {
+      return;
+    }
     if (this.#options.visibility === 'hidden') {
       await this.#waitForFunction(async () => {
         return element.isHidden();
@@ -239,6 +299,9 @@ export class Locator extends EventEmitter {
     element: ElementHandle,
     signal?: AbortSignal
   ): Promise<void> => {
+    if (!this.#options.waitForEnabled) {
+      return;
+    }
     await this.#page.waitForFunction(
       el => {
         if (['button', 'textarea', 'input', 'select'].includes(el.tagName)) {
@@ -262,6 +325,9 @@ export class Locator extends EventEmitter {
     element: ElementHandle,
     signal?: AbortSignal
   ): Promise<void> => {
+    if (!this.#options.waitForStableBoundingBox) {
+      return;
+    }
     function getClientRect() {
       return element.evaluate(el => {
         return new Promise<[BoundingBox, BoundingBox]>(resolve => {
