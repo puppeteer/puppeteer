@@ -497,6 +497,19 @@ export class Page extends PageBase {
     );
   }
 
+  override async waitForNetworkIdle(
+    options: {idleTime?: number; timeout?: number} = {}
+  ): Promise<void> {
+    const {idleTime = 500, timeout = this.#timeoutSettings.timeout()} = options;
+
+    await this._waitForNetworkIdle(
+      this.#networkManager,
+      idleTime,
+      timeout,
+      this.#closedDeferred
+    );
+  }
+
   override title(): Promise<string> {
     return this.mainFrame().title();
   }

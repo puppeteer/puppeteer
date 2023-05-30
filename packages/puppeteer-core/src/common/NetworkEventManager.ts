@@ -149,10 +149,14 @@ export class NetworkEventManager {
     return this.queuedRedirectInfo(fetchRequestId).shift();
   }
 
-  numRequestsInProgress(): number {
-    return [...this.#httpRequestsMap].filter(([, request]) => {
-      return !request.response();
-    }).length;
+  inFlightRequestsCount(): number {
+    let inProgressRequestCounter = 0;
+    for (const [, request] of this.#httpRequestsMap) {
+      if (!request.response()) {
+        inProgressRequestCounter++;
+      }
+    }
+    return inProgressRequestCounter;
   }
 
   storeRequestWillBeSent(
