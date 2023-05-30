@@ -1,6 +1,7 @@
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import ProtocolMapping from 'devtools-protocol/types/protocol-mapping.js';
 
+import {WaitForOptions} from '../../api/Page.js';
 import {assert} from '../../util/assert.js';
 import {stringifyFunction} from '../../util/Function.js';
 import {ProtocolError, TimeoutError} from '../Errors.js';
@@ -114,6 +115,26 @@ export class BrowsingContext extends EventEmitter {
       }
       throw error;
     }
+  }
+
+  async reload(options: WaitForOptions = {}): Promise<void> {
+    const {
+      waitUntil = 'load',
+      timeout = this.#timeoutSettings.navigationTimeout(),
+    } = options;
+
+    const readinessState = lifeCycleToReadinessState.get(
+      getWaitUntilSingle(waitUntil)
+    ) as Bidi.BrowsingContext.ReadinessState;
+
+    await waitWithTimeout(
+      this.connection.send('browsingContext.reload', {
+        context: this.#id,
+        wait: readinessState,
+      }),
+      'Navigation',
+      timeout
+    );
   }
 
   async evaluateHandle<

@@ -313,6 +313,22 @@ export class Page extends PageBase {
     return this.mainFrame().goto(url, options);
   }
 
+  override async reload(
+    options?: WaitForOptions
+  ): Promise<HTTPResponse | null> {
+    const [response] = await Promise.all([
+      this.waitForResponse(response => {
+        return (
+          response.request().isNavigationRequest() &&
+          response.url() === this.url()
+        );
+      }),
+      this.mainFrame().context().reload(options),
+    ]);
+
+    return response;
+  }
+
   override url(): string {
     return this.mainFrame().url();
   }
