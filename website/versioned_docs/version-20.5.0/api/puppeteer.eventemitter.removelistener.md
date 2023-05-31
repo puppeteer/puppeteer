@@ -1,20 +1,20 @@
 ---
-sidebar_label: EventEmitter.addListener
+sidebar_label: EventEmitter.removeListener
 ---
 
-# EventEmitter.addListener() method
+# EventEmitter.removeListener() method
 
 > Warning: This API is now obsolete.
 >
-> please use [EventEmitter.on()](./puppeteer.eventemitter.on.md) instead.
+> please use [EventEmitter.off()](./puppeteer.eventemitter.off.md) instead.
 
-Add an event listener.
+Remove an event listener.
 
 #### Signature:
 
 ```typescript
 class EventEmitter {
-  addListener(event: EventType, handler: Handler<any>): EventEmitter;
+  removeListener(event: EventType, handler: Handler<any>): this;
 }
 ```
 
@@ -27,4 +27,4 @@ class EventEmitter {
 
 **Returns:**
 
-[EventEmitter](./puppeteer.eventemitter.md)
+this

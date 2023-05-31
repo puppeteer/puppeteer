@@ -1,17 +1,17 @@
 ---
-sidebar_label: Page.off
+sidebar_label: Page.once
 ---
 
-# Page.off() method
+# Page.once() method
 
 #### Signature:
 
 ```typescript
 class Page {
-  off<K extends keyof PageEventObject>(
+  once<K extends keyof PageEventObject>(
     eventName: K,
     handler: (event: PageEventObject[K]) => void
-  ): EventEmitter;
+  ): this;
 }
 ```
 
@@ -24,4 +24,4 @@ class Page {
 
 **Returns:**
 
-[EventEmitter](./puppeteer.eventemitter.md)
+this

@@ -1,14 +1,14 @@
 ---
-sidebar_label: CommonEventEmitter.once
+sidebar_label: CommonEventEmitter.off
 ---
 
-# CommonEventEmitter.once() method
+# CommonEventEmitter.off() method
 
 #### Signature:
 
 ```typescript
 interface CommonEventEmitter {
-  once(event: EventType, handler: Handler): CommonEventEmitter;
+  off(event: EventType, handler: Handler): this;
 }
 ```
 
@@ -21,4 +21,4 @@ interface CommonEventEmitter {
 
 **Returns:**
 
-[CommonEventEmitter](./puppeteer.commoneventemitter.md)
+this

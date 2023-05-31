@@ -10,7 +10,7 @@ Remove an event listener from firing.
 
 ```typescript
 class EventEmitter {
-  off(event: EventType, handler: Handler<any>): EventEmitter;
+  off(event: EventType, handler: Handler<any>): this;
 }
 ```
 
@@ -23,6 +23,6 @@ class EventEmitter {
 
 **Returns:**
 
-[EventEmitter](./puppeteer.eventemitter.md)
+this
 
 `this` to enable you to chain method calls.

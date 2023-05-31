@@ -8,7 +8,7 @@ sidebar_label: CommonEventEmitter.removeAllListeners
 
 ```typescript
 interface CommonEventEmitter {
-  removeAllListeners(event?: EventType): CommonEventEmitter;
+  removeAllListeners(event?: EventType): this;
 }
 ```
 
@@ -20,4 +20,4 @@ interface CommonEventEmitter {
 
 **Returns:**
 
-[CommonEventEmitter](./puppeteer.commoneventemitter.md)
+this
