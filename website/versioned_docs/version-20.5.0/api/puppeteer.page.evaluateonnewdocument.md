@@ -19,7 +19,10 @@ class Page {
   evaluateOnNewDocument<
     Params extends unknown[],
     Func extends (...args: Params) => unknown = (...args: Params) => unknown
-  >(pageFunction: Func | string, ...args: Params): Promise<void>;
+  >(
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<NewDocumentScriptEvaluation>;
 }
 ```
 
@@ -32,7 +35,7 @@ class Page {
 
 **Returns:**
 
-Promise&lt;void&gt;
+Promise&lt;[NewDocumentScriptEvaluation](./puppeteer.newdocumentscriptevaluation.md)&gt;
 
 ## Example
 

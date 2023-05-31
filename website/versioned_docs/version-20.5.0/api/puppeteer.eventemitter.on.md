@@ -10,7 +10,7 @@ Bind an event listener to fire when an event occurs.
 
 ```typescript
 class EventEmitter {
-  on(event: EventType, handler: Handler<any>): EventEmitter;
+  on(event: EventType, handler: Handler<any>): this;
 }
 ```
 
@@ -23,6 +23,6 @@ class EventEmitter {
 
 **Returns:**
 
-[EventEmitter](./puppeteer.eventemitter.md)
+this
 
 `this` to enable you to chain method calls.

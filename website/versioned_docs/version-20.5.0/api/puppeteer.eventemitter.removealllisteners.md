@@ -10,7 +10,7 @@ Removes all listeners. If given an event argument, it will remove only listeners
 
 ```typescript
 class EventEmitter {
-  removeAllListeners(event?: EventType): EventEmitter;
+  removeAllListeners(event?: EventType): this;
 }
 ```
 
@@ -22,6 +22,6 @@ class EventEmitter {
 
 **Returns:**
 
-[EventEmitter](./puppeteer.eventemitter.md)
+this
 
 `this` to enable you to chain method calls.
