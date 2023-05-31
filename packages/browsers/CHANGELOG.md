@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/puppeteer/puppeteer/compare/browsers-v1.4.0...browsers-v1.4.1) (2023-05-31)
+
+
+### Bug Fixes
+
+* pass on the auth from the download URL ([#10271](https://github.com/puppeteer/puppeteer/issues/10271)) ([3a1f4f0](https://github.com/puppeteer/puppeteer/commit/3a1f4f0f8f5fe4e20c4ed69f5485a827a841cf54))
+
 ## [1.4.0](https://github.com/puppeteer/puppeteer/compare/browsers-v1.3.0...browsers-v1.4.0) (2023-05-24)
 
 
