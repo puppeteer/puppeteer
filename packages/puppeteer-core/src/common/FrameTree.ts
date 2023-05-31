@@ -15,7 +15,7 @@
  */
 
 import {Frame as BaseFrame} from '../api/Frame.js';
-import {createDeferred, Deferred} from '../util/Deferred.js';
+import {Deferred} from '../util/Deferred.js';
 
 /**
  * Keeps track of the page frame tree and it's is managed by
@@ -50,7 +50,7 @@ export class FrameTree<Frame extends BaseFrame> {
     if (frame) {
       return Promise.resolve(frame);
     }
-    const deferred = createDeferred<Frame>();
+    const deferred = Deferred.create<Frame>();
     const callbacks =
       this.#waitRequests.get(frameId) || new Set<Deferred<Frame>>();
     callbacks.add(deferred);

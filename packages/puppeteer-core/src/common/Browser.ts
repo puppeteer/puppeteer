@@ -33,7 +33,7 @@ import {
 import {BrowserContext} from '../api/BrowserContext.js';
 import {Page} from '../api/Page.js';
 import {assert} from '../util/assert.js';
-import {createDeferred} from '../util/Deferred.js';
+import {Deferred} from '../util/Deferred.js';
 
 import {ChromeTargetManager} from './ChromeTargetManager.js';
 import {CDPSession, Connection, ConnectionEmittedEvents} from './Connection.js';
@@ -501,7 +501,7 @@ export class CDPBrowser extends BrowserBase {
     options: WaitForTargetOptions = {}
   ): Promise<Target> {
     const {timeout = 30000} = options;
-    const targetDeferred = createDeferred<Target | PromiseLike<Target>>();
+    const targetDeferred = Deferred.create<Target | PromiseLike<Target>>();
 
     this.on(BrowserEmittedEvents.TargetCreated, check);
     this.on(BrowserEmittedEvents.TargetChanged, check);

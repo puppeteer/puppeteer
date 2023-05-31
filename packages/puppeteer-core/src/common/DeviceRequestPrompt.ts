@@ -18,7 +18,7 @@ import Protocol from 'devtools-protocol';
 
 import {WaitTimeoutOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
-import {createDeferred, Deferred} from '../util/Deferred.js';
+import {Deferred} from '../util/Deferred.js';
 
 import {CDPSession} from './Connection.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
@@ -151,7 +151,7 @@ export class DeviceRequestPrompt {
     }
 
     const {timeout = this.#timeoutSettings.timeout()} = options;
-    const deferred = createDeferred<DeviceRequestPromptDevice>({
+    const deferred = Deferred.create<DeviceRequestPromptDevice>({
       message: `Waiting for \`DeviceRequestPromptDevice\` failed: ${timeout}ms exceeded`,
       timeout,
     });
@@ -250,7 +250,7 @@ export class DeviceRequestPromptManager {
     }
 
     const {timeout = this.#timeoutSettings.timeout()} = options;
-    const deferred = createDeferred<DeviceRequestPrompt>({
+    const deferred = Deferred.create<DeviceRequestPrompt>({
       message: `Waiting for \`DeviceRequestPrompt\` failed: ${timeout}ms exceeded`,
       timeout,
     });

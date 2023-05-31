@@ -18,7 +18,7 @@ import {Protocol} from 'devtools-protocol';
 import {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 import {assert} from '../util/assert.js';
-import {createDeferred, Deferred} from '../util/util.js';
+import {Deferred} from '../util/util.js';
 
 import {ConnectionTransport} from './ConnectionTransport.js';
 import {debug} from './Debug.js';
@@ -64,7 +64,7 @@ function createIncrementalIdGenerator(): GetIdFn {
 export class Callback {
   #id: number;
   #error = new ProtocolError();
-  #deferred = createDeferred<unknown>();
+  #deferred = Deferred.create<unknown>();
   #timer?: ReturnType<typeof setTimeout>;
   #label: string;
 

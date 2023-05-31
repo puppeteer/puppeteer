@@ -25,7 +25,7 @@ import {
   WaitForOptions,
 } from '../../api/Page.js';
 import {assert} from '../../util/assert.js';
-import {createDeferred} from '../../util/Deferred.js';
+import {Deferred} from '../../util/Deferred.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
 import {TargetCloseError} from '../Errors.js';
 import {Handler} from '../EventEmitter.js';
@@ -61,7 +61,7 @@ export class Page extends PageBase {
   #frameTree = new FrameTree<Frame>();
   #networkManager: NetworkManager;
   #viewport: Viewport | null = null;
-  #closedDeferred = createDeferred<TargetCloseError>();
+  #closedDeferred = Deferred.create<TargetCloseError>();
   #subscribedEvents = new Map<string, Handler<any>>([
     ['log.entryAdded', this.#onLogEntryAdded.bind(this)],
     [

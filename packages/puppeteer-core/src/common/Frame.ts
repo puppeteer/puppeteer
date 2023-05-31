@@ -26,6 +26,7 @@ import {
 import {HTTPResponse} from '../api/HTTPResponse.js';
 import {Page, WaitTimeoutOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
+import {Deferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {CDPSession} from './Connection.js';
@@ -123,7 +124,7 @@ export class Frame extends BaseFrame {
       waitUntil,
       timeout
     );
-    let error = await Promise.race([
+    let error = await Deferred.race([
       navigate(
         this.#client,
         url,
@@ -134,7 +135,7 @@ export class Frame extends BaseFrame {
       watcher.timeoutOrTerminationPromise(),
     ]);
     if (!error) {
-      error = await Promise.race([
+      error = await Deferred.race([
         watcher.timeoutOrTerminationPromise(),
         ensureNewDocumentNavigation
           ? watcher.newDocumentNavigationPromise()
@@ -197,7 +198,7 @@ export class Frame extends BaseFrame {
       waitUntil,
       timeout
     );
-    const error = await Promise.race([
+    const error = await Deferred.race([
       watcher.timeoutOrTerminationPromise(),
       watcher.sameDocumentNavigationPromise(),
       watcher.newDocumentNavigationPromise(),
@@ -389,8 +390,8 @@ export class Frame extends BaseFrame {
 
     return this.worlds[MAIN_WORLD].transferHandle(
       await this.worlds[PUPPETEER_WORLD].evaluateHandle(
-        async ({createDeferred}, {url, id, type, content}) => {
-          const deferred = createDeferred<void>();
+        async ({Deferred}, {url, id, type, content}) => {
+          const deferred = Deferred.create<void>();
           const script = document.createElement('script');
           script.type = type;
           script.text = content;
@@ -457,8 +458,8 @@ export class Frame extends BaseFrame {
 
     return this.worlds[MAIN_WORLD].transferHandle(
       await this.worlds[PUPPETEER_WORLD].evaluateHandle(
-        async ({createDeferred}, {url, content}) => {
-          const deferred = createDeferred<void>();
+        async ({Deferred}, {url, content}) => {
+          const deferred = Deferred.create<void>();
           let element: HTMLStyleElement | HTMLLinkElement;
           if (!url) {
             element = document.createElement('style');
