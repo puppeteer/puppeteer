@@ -522,12 +522,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[network.spec] network Response.fromCache should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[network.spec] network Response.fromServiceWorker Response.fromServiceWorker",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1681,6 +1675,12 @@
   },
   {
     "testIdPattern": "[network.spec] network Response.fromCache should return |false| for non-cached content",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[network.spec] network Response.fromCache should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
