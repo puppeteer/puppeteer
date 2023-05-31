@@ -22,8 +22,8 @@ import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {Page} from '../api/Page.js';
 import {isNode} from '../environment.js';
+import {Deferred} from '../puppeteer-core.js';
 import {assert} from '../util/assert.js';
-import {createDeferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {CDPSession} from './Connection.js';
@@ -382,7 +382,7 @@ export async function waitForEvent<T>(
   timeout: number,
   abortPromise: Promise<Error>
 ): Promise<T> {
-  const deferred = createDeferred<T>({
+  const deferred = Deferred.create<T>({
     message: `Timeout exceeded while waiting for event ${String(eventName)}`,
     timeout,
   });
@@ -391,23 +391,19 @@ export async function waitForEvent<T>(
       deferred.resolve(event);
     }
   });
-  return Promise.race([deferred.valueOrThrow(), abortPromise])
-    .then(
-      r => {
-        removeEventListeners([listener]);
-        if (isErrorLike(r)) {
-          throw r;
-        }
-        return r;
-      },
-      error => {
-        removeEventListeners([listener]);
-        throw error;
+  return Deferred.race<T | Error>([deferred, abortPromise]).then(
+    r => {
+      removeEventListeners([listener]);
+      if (isErrorLike(r)) {
+        throw r;
       }
-    )
-    .finally(() => {
-      deferred.reject(new Error('Cleared'));
-    });
+      return r;
+    },
+    error => {
+      removeEventListeners([listener]);
+      throw error;
+    }
+  );
 }
 
 /**
@@ -509,12 +505,12 @@ export async function waitWithTimeout<T>(
   taskName: string,
   timeout: number
 ): Promise<T> {
-  const deferred = createDeferred<never>({
+  const deferred = Deferred.create<never>({
     message: `waiting for ${taskName} failed: timeout ${timeout}ms exceeded`,
     timeout,
   });
 
-  return await Promise.race([promise, deferred.valueOrThrow()]).finally(() => {
+  return await Deferred.race([promise, deferred.valueOrThrow()]).finally(() => {
     deferred.reject(new Error('Cleared'));
   });
 }

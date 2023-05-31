@@ -18,7 +18,7 @@ import {Protocol} from 'devtools-protocol';
 
 import {TargetFilterCallback} from '../api/Browser.js';
 import {assert} from '../util/assert.js';
-import {createDeferred} from '../util/Deferred.js';
+import {Deferred} from '../util/Deferred.js';
 
 import {CDPSession, Connection} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
@@ -88,7 +88,7 @@ export class FirefoxTargetManager
     (event: Protocol.Target.AttachedToTargetEvent) => Promise<void>
   > = new WeakMap();
 
-  #initializeDeferred = createDeferred<void>();
+  #initializeDeferred = Deferred.create<void>();
   #targetsIdsForInit: Set<string> = new Set();
 
   constructor(

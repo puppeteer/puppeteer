@@ -15,7 +15,7 @@
  */
 
 import {assert} from '../util/assert.js';
-import {createDeferred, Deferred} from '../util/Deferred.js';
+import {Deferred} from '../util/Deferred.js';
 
 /**
  * @internal
@@ -42,7 +42,7 @@ export class MutationPoller<T> implements Poller<T> {
   }
 
   async start(): Promise<void> {
-    const deferred = (this.#deferred = createDeferred<T>());
+    const deferred = (this.#deferred = Deferred.create<T>());
     const result = await this.#fn();
     if (result) {
       deferred.resolve(result);
@@ -92,7 +92,7 @@ export class RAFPoller<T> implements Poller<T> {
   }
 
   async start(): Promise<void> {
-    const deferred = (this.#deferred = createDeferred<T>());
+    const deferred = (this.#deferred = Deferred.create<T>());
     const result = await this.#fn();
     if (result) {
       deferred.resolve(result);
@@ -143,7 +143,7 @@ export class IntervalPoller<T> implements Poller<T> {
   }
 
   async start(): Promise<void> {
-    const deferred = (this.#deferred = createDeferred<T>());
+    const deferred = (this.#deferred = Deferred.create<T>());
     const result = await this.#fn();
     if (result) {
       deferred.resolve(result);

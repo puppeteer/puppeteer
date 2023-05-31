@@ -19,7 +19,7 @@ import {Protocol} from 'devtools-protocol';
 import type {ClickOptions, ElementHandle} from '../api/ElementHandle.js';
 import {JSHandle} from '../api/JSHandle.js';
 import {assert} from '../util/assert.js';
-import {createDeferred} from '../util/Deferred.js';
+import {Deferred} from '../util/Deferred.js';
 
 import {Binding} from './Binding.js';
 import {CDPSession} from './Connection.js';
@@ -101,7 +101,7 @@ export interface IsolatedWorldChart {
 export class IsolatedWorld {
   #frame: Frame;
   #document?: ElementHandle<Document>;
-  #context = createDeferred<ExecutionContext>();
+  #context = Deferred.create<ExecutionContext>();
   #detached = false;
 
   // Set of bindings that have been registered in the current context.
@@ -144,7 +144,7 @@ export class IsolatedWorld {
 
   clearContext(): void {
     this.#document = undefined;
-    this.#context = createDeferred();
+    this.#context = Deferred.create();
   }
 
   setContext(context: ExecutionContext): void {
@@ -304,7 +304,7 @@ export class IsolatedWorld {
       waitUntil,
       timeout
     );
-    const error = await Promise.race([
+    const error = await Deferred.race<void | Error | undefined>([
       watcher.timeoutOrTerminationPromise(),
       watcher.lifecyclePromise(),
     ]);

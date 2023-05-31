@@ -61,7 +61,6 @@ import {
 import type {WebWorker} from '../common/WebWorker.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
-import {createDeferred} from '../util/Deferred.js';
 
 import type {Browser} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';
@@ -1638,8 +1637,8 @@ export class Page extends EventEmitter {
     timeout: number,
     closedDeferred: Deferred<TargetCloseError>
   ): Promise<void> {
-    const idleDeferred = createDeferred<void>();
-    const abortDeferred = createDeferred<Error>();
+    const idleDeferred = Deferred.create<void>();
+    const abortDeferred = Deferred.create<Error>();
 
     let idleTimer: NodeJS.Timeout | undefined;
     const cleanup = () => {
@@ -1651,7 +1650,9 @@ export class Page extends EventEmitter {
       clearTimeout(idleTimer);
 
       if (networkManager.inFlightRequestsCount() === 0) {
-        idleTimer = setTimeout(idleDeferred.resolve, idleTime);
+        idleTimer = setTimeout(() => {
+          return idleDeferred.resolve();
+        }, idleTime);
       }
     };
 
@@ -1676,11 +1677,7 @@ export class Page extends EventEmitter {
 
     evaluate();
 
-    await Promise.race([
-      idleDeferred.valueOrThrow(),
-      ...eventPromises,
-      closedDeferred.valueOrThrow(),
-    ]).then(
+    await Deferred.race([idleDeferred, ...eventPromises, closedDeferred]).then(
       r => {
         cleanup();
         return r;

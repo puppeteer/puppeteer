@@ -16,7 +16,7 @@
 
 import {HTTPResponse} from '../api/HTTPResponse.js';
 import {assert} from '../util/assert.js';
-import {Deferred, createDeferred} from '../util/Deferred.js';
+import {Deferred} from '../util/Deferred.js';
 
 import {CDPSessionEmittedEvents} from './Connection.js';
 import {TimeoutError} from './Errors.js';
@@ -71,10 +71,10 @@ export class LifecycleWatcher {
   #eventListeners: PuppeteerEventListener[];
   #initialLoaderId: string;
 
-  #sameDocumentNavigationDeferred = createDeferred<Error | undefined>();
-  #lifecycleDeferred = createDeferred<void>();
-  #newDocumentNavigationDeferred = createDeferred<Error | undefined>();
-  #terminationDeferred = createDeferred<Error | undefined>();
+  #sameDocumentNavigationDeferred = Deferred.create<undefined>();
+  #lifecycleDeferred = Deferred.create<void>();
+  #newDocumentNavigationDeferred = Deferred.create<undefined>();
+  #terminationDeferred = Deferred.create<Error>();
 
   #timeoutPromise: Promise<TimeoutError | undefined>;
 
@@ -169,7 +169,7 @@ export class LifecycleWatcher {
     // navigation requests reported by the backend. This generally should not
     // happen by it looks like it's possible.
     this.#navigationResponseReceived?.resolve();
-    this.#navigationResponseReceived = createDeferred();
+    this.#navigationResponseReceived = Deferred.create();
     if (request.response() !== null) {
       this.#navigationResponseReceived?.resolve();
     }
@@ -222,10 +222,7 @@ export class LifecycleWatcher {
   }
 
   timeoutOrTerminationPromise(): Promise<Error | TimeoutError | undefined> {
-    return Promise.race([
-      this.#timeoutPromise,
-      this.#terminationDeferred.valueOrThrow(),
-    ]);
+    return Deferred.race([this.#timeoutPromise, this.#terminationDeferred]);
   }
 
   async #createTimeoutPromise(): Promise<TimeoutError | undefined> {
@@ -299,6 +296,6 @@ export class LifecycleWatcher {
 
   dispose(): void {
     removeEventListeners(this.#eventListeners);
-    this.#maximumTimer !== undefined && clearTimeout(this.#maximumTimer);
+    clearTimeout(this.#maximumTimer);
   }
 }

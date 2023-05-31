@@ -3,18 +3,6 @@ import {TimeoutError} from '../common/Errors.js';
 /**
  * @internal
  */
-export interface Deferred<T> {
-  finished: () => boolean;
-  resolved: () => boolean;
-  resolve: (value: T) => void;
-  reject: (error: Error) => void;
-  value: () => T | Error | undefined;
-  valueOrThrow: () => Promise<T>;
-}
-
-/**
- * @internal
- */
 export interface DeferredOptions {
   message: string;
   timeout: number;
@@ -29,61 +17,94 @@ export interface DeferredOptions {
  *
  * @internal
  */
-export function createDeferred<T>(opts?: DeferredOptions): Deferred<T> {
-  let isResolved = false;
-  let isRejected = false;
-  let _value: T | Error | undefined;
-  let resolver: (value: void) => void;
-  const taskPromise = new Promise<void>(resolve => {
-    resolver = resolve;
+export class Deferred<T> {
+  #isResolved = false;
+  #isRejected = false;
+  #value: T | Error | undefined;
+  #resolver: (value: void) => void = () => {};
+  #taskPromise = new Promise<void>(resolve => {
+    this.#resolver = resolve;
   });
-  const timeoutId =
-    opts && opts.timeout > 0
-      ? setTimeout(() => {
-          reject(new TimeoutError(opts.message));
-        }, opts.timeout)
-      : undefined;
+  #timeoutId: ReturnType<typeof setTimeout> | undefined;
 
-  function finish(value: T | Error) {
-    clearTimeout(timeoutId);
-    _value = value;
-    resolver();
+  constructor(opts?: DeferredOptions) {
+    this.#timeoutId =
+      opts && opts.timeout > 0
+        ? setTimeout(() => {
+            this.reject(new TimeoutError(opts.message));
+          }, opts.timeout)
+        : undefined;
   }
 
-  function resolve(value: T) {
-    if (isRejected || isResolved) {
+  #finish(value: T | Error) {
+    clearTimeout(this.#timeoutId);
+    this.#value = value;
+    this.#resolver();
+  }
+
+  resolve(value: T): void {
+    if (this.#isRejected || this.#isResolved) {
       return;
     }
-    isResolved = true;
-    finish(value);
+    this.#isResolved = true;
+    this.#finish(value);
   }
 
-  function reject(error: Error) {
-    if (isRejected || isResolved) {
+  reject(error: Error): void {
+    if (this.#isRejected || this.#isResolved) {
       return;
     }
-    isRejected = true;
-    finish(error);
+    this.#isRejected = true;
+    this.#finish(error);
   }
 
-  return {
-    resolved: () => {
-      return isResolved;
-    },
-    finished: () => {
-      return isResolved || isRejected;
-    },
-    resolve,
-    reject,
-    value: () => {
-      return _value;
-    },
-    async valueOrThrow() {
-      await taskPromise;
-      if (isRejected) {
-        throw _value;
+  resolved(): boolean {
+    return this.#isResolved;
+  }
+
+  finished(): boolean {
+    return this.#isResolved || this.#isRejected;
+  }
+
+  value(): T | Error | undefined {
+    return this.#value;
+  }
+
+  async valueOrThrow(): Promise<T> {
+    await this.#taskPromise;
+    if (this.#isRejected) {
+      throw this.#value;
+    }
+    return this.#value as T;
+  }
+
+  static create<R>(opts?: DeferredOptions): Deferred<R> {
+    return new Deferred<R>(opts);
+  }
+
+  static async race<R>(
+    awaitables: Array<Promise<R> | Deferred<R>>
+  ): Promise<R> {
+    const deferredWithTimeout: Set<Deferred<R>> = new Set();
+    try {
+      const promises = awaitables.map(value => {
+        if (value instanceof Deferred) {
+          deferredWithTimeout.add(value);
+
+          return value.valueOrThrow();
+        }
+
+        return value;
+      });
+      // eslint-disable-next-line no-restricted-syntax
+      return await Promise.race(promises);
+    } finally {
+      for (const deferred of deferredWithTimeout) {
+        // We need to stop the timeout else
+        // Node.JS will keep running the event loop till the
+        // timer executes
+        deferred.reject(new Error('Timeout cleared'));
       }
-      return _value as T;
-    },
-  };
+    }
+  }
 }

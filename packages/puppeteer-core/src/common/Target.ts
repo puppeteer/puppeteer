@@ -19,7 +19,7 @@ import {Protocol} from 'devtools-protocol';
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {Page, PageEmittedEvents} from '../api/Page.js';
-import {createDeferred} from '../util/Deferred.js';
+import {Deferred} from '../util/Deferred.js';
 
 import {CDPSession} from './Connection.js';
 import {CDPPage} from './Page.js';
@@ -55,11 +55,11 @@ export class Target {
   /**
    * @internal
    */
-  _initializedDeferred = createDeferred<InitializationStatus>();
+  _initializedDeferred = Deferred.create<InitializationStatus>();
   /**
    * @internal
    */
-  _isClosedDeferred = createDeferred<void>();
+  _isClosedDeferred = Deferred.create<void>();
   /**
    * @internal
    */

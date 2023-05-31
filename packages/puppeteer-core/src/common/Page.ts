@@ -43,7 +43,7 @@ import {
   NewDocumentScriptEvaluation,
 } from '../api/Page.js';
 import {assert} from '../util/assert.js';
-import {createDeferred, Deferred} from '../util/Deferred.js';
+import {Deferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {Accessibility} from './Accessibility.js';
@@ -153,7 +153,7 @@ export class CDPPage extends Page {
   #screenshotTaskQueue: TaskQueue;
   #workers = new Map<string, WebWorker>();
   #fileChooserDeferreds = new Set<Deferred<FileChooser>>();
-  #sessionCloseDeferred = createDeferred<TargetCloseError>();
+  #sessionCloseDeferred = Deferred.create<TargetCloseError>();
   #serviceWorkerBypassed = false;
   #userDragInterceptionEnabled = false;
 
@@ -374,7 +374,7 @@ export class CDPPage extends Page {
   ): Promise<FileChooser> {
     const needsEnable = this.#fileChooserDeferreds.size === 0;
     const {timeout = this.#timeoutSettings.timeout()} = options;
-    const deferred = createDeferred<FileChooser>({
+    const deferred = Deferred.create<FileChooser>({
       message: `Waiting for \`FileChooser\` failed: ${timeout}ms exceeded`,
       timeout,
     });
@@ -1029,7 +1029,7 @@ export class CDPPage extends Page {
       };
     }
 
-    const eventRace: Promise<Frame> = Promise.race([
+    const eventRace: Promise<Frame> = Deferred.race([
       waitForEvent(
         this.#frameManager,
         FrameManagerEmittedEvents.FrameAttached,

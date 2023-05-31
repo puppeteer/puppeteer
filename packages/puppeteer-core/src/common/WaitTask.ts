@@ -17,7 +17,7 @@
 import {ElementHandle} from '../api/ElementHandle.js';
 import {JSHandle} from '../api/JSHandle.js';
 import type {Poller} from '../injected/Poller.js';
-import {createDeferred} from '../util/Deferred.js';
+import {Deferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {stringifyFunction} from '../util/Function.js';
 
@@ -49,7 +49,7 @@ export class WaitTask<T = unknown> {
 
   #timeout?: NodeJS.Timeout;
 
-  #result = createDeferred<HandleFor<T>>();
+  #result = Deferred.create<HandleFor<T>>();
 
   #poller?: JSHandle<Poller<T>>;
   #signal?: AbortSignal;

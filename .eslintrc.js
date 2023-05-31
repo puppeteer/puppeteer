@@ -194,6 +194,12 @@ module.exports = {
             selector: "CallExpression[callee.name='require']",
             message: '`require` statements are not allowed. Use `import`.',
           },
+          {
+            // We need this as NodeJS will run until all the timers have resolved
+            message: 'Use method `Deferred.race()` instead.',
+            selector:
+              'MemberExpression[object.name="Promise"][property.name="race"]',
+          },
         ],
         '@typescript-eslint/no-floating-promises': [
           'error',
