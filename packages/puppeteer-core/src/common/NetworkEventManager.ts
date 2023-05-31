@@ -150,13 +150,13 @@ export class NetworkEventManager {
   }
 
   inFlightRequestsCount(): number {
-    let inProgressRequestCounter = 0;
-    for (const [, request] of this.#httpRequestsMap) {
+    let inFlightRequestCounter = 0;
+    for (const request of this.#httpRequestsMap.values()) {
       if (!request.response()) {
-        inProgressRequestCounter++;
+        inFlightRequestCounter++;
       }
     }
-    return inProgressRequestCounter;
+    return inFlightRequestCounter;
   }
 
   storeRequestWillBeSent(

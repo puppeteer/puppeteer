@@ -1641,31 +1641,28 @@ export class Page extends EventEmitter {
     const idleDeferred = createDeferred<void>();
     const abortDeferred = createDeferred<Error>();
 
-    let idleTimer: NodeJS.Timeout;
+    let idleTimer: NodeJS.Timeout | undefined;
     const cleanup = () => {
-      idleTimer && clearTimeout(idleTimer);
+      clearTimeout(idleTimer);
       abortDeferred.reject(new Error('abort'));
     };
 
     const evaluate = () => {
-      idleTimer && clearTimeout(idleTimer);
+      clearTimeout(idleTimer);
+
       if (networkManager.inFlightRequestsCount() === 0) {
         idleTimer = setTimeout(idleDeferred.resolve, idleTime);
       }
-    };
-
-    evaluate();
-
-    const eventHandler = () => {
-      evaluate();
-      return false;
     };
 
     const listenToEvent = (event: symbol) => {
       return waitForEvent(
         networkManager,
         event,
-        eventHandler,
+        () => {
+          evaluate();
+          return false;
+        },
         timeout,
         abortDeferred.valueOrThrow()
       );
@@ -1676,6 +1673,8 @@ export class Page extends EventEmitter {
       listenToEvent(NetworkManagerEmittedEvents.Response),
       listenToEvent(NetworkManagerEmittedEvents.RequestFailed),
     ];
+
+    evaluate();
 
     await Promise.race([
       idleDeferred.valueOrThrow(),

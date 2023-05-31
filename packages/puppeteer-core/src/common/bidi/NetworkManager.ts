@@ -103,7 +103,7 @@ export class NetworkManager extends EventEmitter {
 
   inFlightRequestsCount(): number {
     let inFlightRequestCounter = 0;
-    for (const [, request] of this.#requestMap) {
+    for (const request of this.#requestMap.values()) {
       if (!request.response() || request._failureText) {
         inFlightRequestCounter++;
       }
