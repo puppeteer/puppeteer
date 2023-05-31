@@ -72,7 +72,7 @@ const WAIT_FOR_FUNCTION_DELAY = 100;
 /**
  * @internal
  */
-type ActionCondition = (
+export type ActionCondition = (
   element: ElementHandle,
   signal: AbortSignal
 ) => Promise<void>;
