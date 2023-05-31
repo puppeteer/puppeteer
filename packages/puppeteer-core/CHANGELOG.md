@@ -8,6 +8,25 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.0.1 to 1.1.0
 
+## [20.5.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.4.0...puppeteer-core-v20.5.0) (2023-05-31)
+
+
+### Features
+
+* Page.removeScriptToEvaluateOnNewDocument ([#10250](https://github.com/puppeteer/puppeteer/issues/10250)) ([b5a124f](https://github.com/puppeteer/puppeteer/commit/b5a124ff738a03fa7eb5755b441af5b773447449))
+
+
+### Bug Fixes
+
+* bind trimCache to the instance ([#10270](https://github.com/puppeteer/puppeteer/issues/10270)) ([50e72a4](https://github.com/puppeteer/puppeteer/commit/50e72a4d1164af7d53e31b8b83117f695ede7ae4))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 1.4.0 to 1.4.1
+
 ## [20.4.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.3.0...puppeteer-core-v20.4.0) (2023-05-24)
 
 
