@@ -59,6 +59,10 @@ interface Commands {
     params: Bidi.BrowsingContext.NavigateParameters;
     returnType: Bidi.BrowsingContext.NavigateResult;
   };
+  'browsingContext.reload': {
+    params: Bidi.BrowsingContext.ReloadParameters;
+    returnType: Bidi.Message.EmptyResult;
+  };
   'browsingContext.print': {
     params: Bidi.BrowsingContext.PrintParameters;
     returnType: Bidi.BrowsingContext.PrintResult;

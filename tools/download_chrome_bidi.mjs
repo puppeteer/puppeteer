@@ -51,7 +51,9 @@ try {
     browser,
     buildId,
   });
-  actions.setOutput('executablePath', executablePath);
+  if (process.argv.indexOf('--shell') === -1) {
+    actions.setOutput('executablePath', executablePath);
+  }
   console.log(executablePath);
 } catch (err) {
   actions.setFailed(`Failed to download the browser: ${err.message}`);
