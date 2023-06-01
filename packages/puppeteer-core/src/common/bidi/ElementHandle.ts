@@ -47,4 +47,12 @@ export class ElementHandle<
   remoteValue(): Bidi.CommonDataTypes.RemoteValue {
     return this.handle.remoteValue();
   }
+
+  /**
+   * @internal
+   */
+  override assertElementHasWorld(): asserts this {
+    // TODO: Should assert element has a Sandbox
+    return;
+  }
 }

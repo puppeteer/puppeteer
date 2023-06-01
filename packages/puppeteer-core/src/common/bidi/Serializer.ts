@@ -16,6 +16,7 @@
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
+import {LazyArg} from '../LazyArg.js';
 import {debugError, isDate, isPlainObject, isRegExp} from '../util.js';
 
 import {BrowsingContext} from './BrowsingContext.js';
@@ -141,11 +142,15 @@ export class BidiSerializer {
     }
   }
 
-  static serialize(
+  static async serialize(
     arg: unknown,
     context: BrowsingContext
-  ): Bidi.CommonDataTypes.LocalValue | Bidi.CommonDataTypes.RemoteValue {
-    // TODO: See use case of LazyArgs
+  ): Promise<
+    Bidi.CommonDataTypes.LocalValue | Bidi.CommonDataTypes.RemoteValue
+  > {
+    if (arg instanceof LazyArg) {
+      arg = await arg.get(context);
+    }
     const objectHandle =
       arg && (arg instanceof JSHandle || arg instanceof ElementHandle)
         ? arg
@@ -205,6 +210,7 @@ export class BidiSerializer {
           }, {});
         }
         break;
+
       case 'map':
         return result.value.reduce((acc: Map<unknown, unknown>, tuple) => {
           const {key, value} = BidiSerializer.deserializeTuple(tuple);

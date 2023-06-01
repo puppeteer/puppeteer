@@ -76,13 +76,7 @@ import {TargetManagerEmittedEvents} from './TargetManager.js';
 import {TaskQueue} from './TaskQueue.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {Tracing} from './Tracing.js';
-import {
-  BindingPayload,
-  EvaluateFunc,
-  EvaluateFuncWith,
-  HandleFor,
-  NodeFor,
-} from './types.js';
+import {BindingPayload, EvaluateFunc, HandleFor, NodeFor} from './types.js';
 import {
   createClientError,
   createJSHandle,
@@ -521,18 +515,6 @@ export class CDPPage extends Page {
     return this.#timeoutSettings.timeout();
   }
 
-  override async $<Selector extends string>(
-    selector: Selector
-  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    return this.mainFrame().$(selector);
-  }
-
-  override async $$<Selector extends string>(
-    selector: Selector
-  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    return this.mainFrame().$$(selector);
-  }
-
   override async evaluateHandle<
     Params extends unknown[],
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
@@ -561,38 +543,6 @@ export class CDPPage extends Page {
       prototypeObjectId: prototypeHandle.id,
     });
     return createJSHandle(context, response.objects) as HandleFor<Prototype[]>;
-  }
-
-  override async $eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
-      NodeFor<Selector>,
-      Params
-    >
-  >(
-    selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
-    return this.mainFrame().$eval(selector, pageFunction, ...args);
-  }
-
-  override async $$eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<
-      Array<NodeFor<Selector>>,
-      Params
-    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>
-  >(
-    selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
-    return this.mainFrame().$$eval(selector, pageFunction, ...args);
   }
 
   override async $x(expression: string): Promise<Array<ElementHandle<Node>>> {

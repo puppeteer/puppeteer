@@ -91,7 +91,14 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
     // TODO(lightning00blade): Either include return of depth Handles in RemoteValue
     // or new BiDi command that returns array of remote value
     const keys = await this.evaluate(object => {
-      return Object.getOwnPropertyNames(object);
+      const enumerableKeys = [];
+      const descriptors = Object.getOwnPropertyDescriptors(object);
+      for (const key in descriptors) {
+        if (descriptors[key]?.enumerable) {
+          enumerableKeys.push(key);
+        }
+      }
+      return enumerableKeys;
     });
     const map: Map<string, BaseJSHandle> = new Map();
     const results = await Promise.all(

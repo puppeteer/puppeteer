@@ -18,6 +18,7 @@ import {Protocol} from 'devtools-protocol';
 
 import {CDPSession} from '../common/Connection.js';
 import {ExecutionContext} from '../common/ExecutionContext.js';
+import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {MouseClickOptions} from '../common/Input.js';
 import {WaitForSelectorOptions} from '../common/IsolatedWorld.js';
 import {
@@ -28,6 +29,9 @@ import {
   NodeFor,
 } from '../common/types.js';
 import {KeyInput} from '../common/USKeyboardLayout.js';
+import {withSourcePuppeteerURLIfNone} from '../common/util.js';
+import {assert} from '../util/assert.js';
+import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 
 import {Frame} from './Frame.js';
 import {JSHandle} from './JSHandle.js';
@@ -276,11 +280,13 @@ export class ElementHandle<
    */
   async $<Selector extends string>(
     selector: Selector
-  ): Promise<ElementHandle<NodeFor<Selector>> | null>;
-  async $<Selector extends string>(): Promise<ElementHandle<
-    NodeFor<Selector>
-  > | null> {
-    throw new Error('Not implemented');
+  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
+    const {updatedSelector, QueryHandler} =
+      getQueryHandlerAndSelector(selector);
+    return (await QueryHandler.queryOne(
+      this,
+      updatedSelector
+    )) as ElementHandle<NodeFor<Selector>> | null;
   }
 
   /**
@@ -292,11 +298,12 @@ export class ElementHandle<
    */
   async $$<Selector extends string>(
     selector: Selector
-  ): Promise<Array<ElementHandle<NodeFor<Selector>>>>;
-  async $$<Selector extends string>(): Promise<
-    Array<ElementHandle<NodeFor<Selector>>>
-  > {
-    throw new Error('Not implemented');
+  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
+    const {updatedSelector, QueryHandler} =
+      getQueryHandlerAndSelector(selector);
+    return AsyncIterableUtil.collect(
+      QueryHandler.queryAll(this, updatedSelector)
+    ) as Promise<Array<ElementHandle<NodeFor<Selector>>>>;
   }
 
   /**
@@ -336,9 +343,17 @@ export class ElementHandle<
     selector: Selector,
     pageFunction: Func | string,
     ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async $eval(): Promise<unknown> {
-    throw new Error('Not implemented');
+  ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
+    const elementHandle = await this.$(selector);
+    if (!elementHandle) {
+      throw new Error(
+        `Error: failed to find element matching selector "${selector}"`
+      );
+    }
+    const result = await elementHandle.evaluate(pageFunction, ...args);
+    await elementHandle.dispose();
+    return result;
   }
 
   /**
@@ -385,9 +400,20 @@ export class ElementHandle<
     selector: Selector,
     pageFunction: Func | string,
     ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async $$eval(): Promise<unknown> {
-    throw new Error('Not implemented');
+  ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
+    const results = await this.$$(selector);
+    const elements = await this.evaluateHandle((_, ...elements) => {
+      return elements;
+    }, ...results);
+    const [result] = await Promise.all([
+      elements.evaluate(pageFunction, ...args),
+      ...results.map(results => {
+        return results.dispose();
+      }),
+    ]);
+    await elements.dispose();
+    return result;
   }
 
   /**
@@ -913,5 +939,12 @@ export class ElementHandle<
       }
       return element.ownerSVGElement!;
     });
+  }
+
+  /**
+   * @internal
+   */
+  assertElementHasWorld(): asserts this {
+    assert(this.executionContext()._world);
   }
 }

@@ -17,7 +17,6 @@
 import {ElementHandle} from '../api/ElementHandle.js';
 import type {Frame} from '../api/Frame.js';
 import type PuppeteerUtil from '../injected/injected.js';
-import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {interpolateFunction, stringifyFunction} from '../util/Function.js';
 
@@ -108,8 +107,7 @@ export class QueryHandler {
     element: ElementHandle<Node>,
     selector: string
   ): AwaitableIterable<ElementHandle<Node>> {
-    const world = element.executionContext()._world;
-    assert(world);
+    element.assertElementHasWorld();
     const handle = await element.evaluateHandle(
       this._querySelectorAll,
       selector,
@@ -129,8 +127,7 @@ export class QueryHandler {
     element: ElementHandle<Node>,
     selector: string
   ): Promise<ElementHandle<Node> | null> {
-    const world = element.executionContext()._world;
-    assert(world);
+    element.assertElementHasWorld();
     const result = await element.evaluateHandle(
       this._querySelector,
       selector,

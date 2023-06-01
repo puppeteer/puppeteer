@@ -1,13 +1,14 @@
 <div id="a">hello <button id="b">world</button>
     <span id="f"></span>
-    <div id="c">
-        <template shadowrootmode="open">
-            shadow dom
-            <div id="d">
-                <template shadowrootmode="open">
-                    <a id="e">deep text</a>
-                </template>
-            </div>
-        </template>
-    </div>
+    <div id="c"></div>
 </div>
+
+<script>
+    const topShadow = document.querySelector('#c');
+    topShadow.attachShadow({ mode: "open" });
+    topShadow.shadowRoot.innerHTML = `shadow dom<div id="d"></div>`;
+
+    const innerShadow = topShadow.shadowRoot.querySelector('#d');
+    innerShadow.attachShadow({ mode: "open" });
+    innerShadow.shadowRoot.innerHTML = `<a id="e">deep text</a>`;
+</script>

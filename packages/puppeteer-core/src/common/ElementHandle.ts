@@ -27,7 +27,6 @@ import {
 } from '../api/ElementHandle.js';
 import {Page, ScreenshotOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
-import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 
 import {CDPSession} from './Connection.js';
 import {ExecutionContext} from './ExecutionContext.js';
@@ -39,9 +38,9 @@ import {PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {CDPJSHandle} from './JSHandle.js';
 import {LazyArg} from './LazyArg.js';
 import {CDPPage} from './Page.js';
-import {ElementFor, EvaluateFuncWith, HandleFor, NodeFor} from './types.js';
+import {ElementFor, HandleFor, NodeFor} from './types.js';
 import {KeyInput} from './USKeyboardLayout.js';
-import {debugError, isString, withSourcePuppeteerURLIfNone} from './util.js';
+import {debugError, isString} from './util.js';
 
 const applyOffsetsToQuad = (
   quad: Point[],
@@ -108,73 +107,17 @@ export class CDPElementHandle<
   override async $<Selector extends string>(
     selector: Selector
   ): Promise<CDPElementHandle<NodeFor<Selector>> | null> {
-    const {updatedSelector, QueryHandler} =
-      getQueryHandlerAndSelector(selector);
-    return (await QueryHandler.queryOne(
-      this,
-      updatedSelector
-    )) as CDPElementHandle<NodeFor<Selector>> | null;
+    return super.$(selector) as Promise<CDPElementHandle<
+      NodeFor<Selector>
+    > | null>;
   }
 
   override async $$<Selector extends string>(
     selector: Selector
   ): Promise<Array<CDPElementHandle<NodeFor<Selector>>>> {
-    const {updatedSelector, QueryHandler} =
-      getQueryHandlerAndSelector(selector);
-    return AsyncIterableUtil.collect(
-      QueryHandler.queryAll(this, updatedSelector)
-    ) as Promise<Array<CDPElementHandle<NodeFor<Selector>>>>;
-  }
-
-  override async $eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
-      NodeFor<Selector>,
-      Params
-    >
-  >(
-    selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
-    const elementHandle = await this.$(selector);
-    if (!elementHandle) {
-      throw new Error(
-        `Error: failed to find element matching selector "${selector}"`
-      );
-    }
-    const result = await elementHandle.evaluate(pageFunction, ...args);
-    await elementHandle.dispose();
-    return result;
-  }
-
-  override async $$eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<
-      Array<NodeFor<Selector>>,
-      Params
-    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>
-  >(
-    selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
-    const results = await this.$$(selector);
-    const elements = await this.evaluateHandle((_, ...elements) => {
-      return elements;
-    }, ...results);
-    const [result] = await Promise.all([
-      elements.evaluate(pageFunction, ...args),
-      ...results.map(results => {
-        return results.dispose();
-      }),
-    ]);
-    await elements.dispose();
-    return result;
+    return super.$$(selector) as Promise<
+      Array<CDPElementHandle<NodeFor<Selector>>>
+    >;
   }
 
   override async $x(

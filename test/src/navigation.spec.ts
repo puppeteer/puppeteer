@@ -17,7 +17,7 @@
 import {ServerResponse} from 'http';
 
 import expect from 'expect';
-import {TimeoutError} from 'puppeteer';
+import {Frame, TimeoutError} from 'puppeteer';
 import {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 
 import {
@@ -595,18 +595,30 @@ describe('navigation', function () {
       server.setRoute('/one-style.css', (_req, res) => {
         return (response = res);
       });
-      const navigationPromise = page.goto(server.PREFIX + '/one-style.html');
-      const domContentLoadedPromise = page.waitForNavigation({
-        waitUntil: 'domcontentloaded',
-      });
-
+      let error: Error | undefined;
       let bothFired = false;
+      const navigationPromise = page
+        .goto(server.PREFIX + '/one-style.html')
+        .catch(_error => {
+          return (error = _error);
+        });
+      const domContentLoadedPromise = page
+        .waitForNavigation({
+          waitUntil: 'domcontentloaded',
+        })
+        .catch(_error => {
+          return (error = _error);
+        });
+
       const bothFiredPromise = page
         .waitForNavigation({
           waitUntil: ['load', 'domcontentloaded'],
         })
         .then(() => {
           return (bothFired = true);
+        })
+        .catch(_error => {
+          return (error = _error);
         });
 
       await server.waitForRequest('/one-style.css').catch(() => {});
@@ -615,6 +627,7 @@ describe('navigation', function () {
       response.end();
       await bothFiredPromise;
       await navigationPromise;
+      expect(error).toBeUndefined();
     });
     it('should work with clicking on anchor links', async () => {
       const {page, server} = getTestState();
@@ -690,19 +703,40 @@ describe('navigation', function () {
       expect(forwardResponse).toBe(null);
       expect(page.url()).toBe(server.PREFIX + '/second.html');
     });
-    it('should work when subframe issues window.stop()', async () => {
+    it('should work when subframe issues window.stop()', async function () {
       const {page, server} = getTestState();
 
       server.setRoute('/frames/style.css', () => {});
+      let frame: Frame | undefined;
+      let timeout: NodeJS.Timeout | undefined;
+      const eventPromises = Promise.race([
+        Promise.all([
+          waitEvent(page, 'frameattached').then(_frame => {
+            return (frame = _frame);
+          }),
+          waitEvent(page, 'framenavigated', f => {
+            return f === frame;
+          }),
+        ]),
+        new Promise((_, rej) => {
+          timeout = setTimeout(() => {
+            return rej(new Error('Timeout'));
+          }, this.timeout());
+        }),
+      ]);
       const navigationPromise = page.goto(
         server.PREFIX + '/frames/one-frame.html'
       );
-      const frame = await waitEvent(page, 'frameattached');
-      await waitEvent(page, 'framenavigated', f => {
-        return f === frame;
-      });
+      try {
+        await eventPromises;
+        clearTimeout(timeout);
+      } catch (error) {
+        navigationPromise.catch(() => {});
+        throw error;
+      }
+
       await Promise.all([
-        frame.evaluate(() => {
+        frame!.evaluate(() => {
           return window.stop();
         }),
         navigationPromise,
