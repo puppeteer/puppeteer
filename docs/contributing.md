@@ -265,19 +265,27 @@ npm run build --workspace @puppeteer-test/test
 
 ## Rolling new Chrome version
 
-The following steps are needed to update the Chrome version.
+There is a [GitHub action](https://github.com/puppeteer/puppeteer/blob/main/.github/workflows/update-browser-pins.yml) that runs once per day.
+The action has a manual trigger that can be found on the [Actions Tab](https://github.com/puppeteer/puppeteer/actions/workflows/update-browser-pins.yml).
 
-1. Find a suitable Chrome revision via https://googlechromelabs.github.io/chrome-for-testing/ or https://chromiumdash.appspot.com/.
-2. Update `packages/puppeteer-core/src/revisions.ts` with the found version
+### Manual instructions
+
+You can run the [`tools/update_chrome_revision.mjs`](https://github.com/puppeteer/puppeteer/blob/main/tools/update_chrome_revision.mjs) locally
+and try see if any changes need to be committed.
+
+> Note: You may need to run `node --experimental-fetch tools/update_chrome_revision.mjs` as the script relies on `fetch`
+
+The following steps are manual version of the script above.
+
+1. Find a suitable Chrome `revision` and `version` via https://googlechromelabs.github.io/chrome-for-testing/ or https://chromiumdash.appspot.com/.
+2. Update `packages/puppeteer-core/src/revisions.ts` with the found `version`
    number.
-3. Update `versions.js` with the new Chrome-to-Puppeteer version mapping and
-   update `lastMaintainedChromeVersion` with the latest stable Chrome version.
-   You can find the corresponding version by going to [omahaproxy.appspot.com](https://omahaproxy.appspot.com/) then
-   searching in `Find Releases` for `r<revision>`.
+3. Update `versions.js` with the new Chrome-to-Puppeteer `version` mapping and
+   update `lastMaintainedChromeVersion` with the the next one in from the list.
 4. Run `npm run check`. If it fails, update
    `packages/puppeteer-core/package.json`
    with the expected `devtools-protocol` version and run `npm install` to generate an updated `package-lock.json`.
-5. Run `npm run clean`, `npm run build` and `npm install`.
+5. Run `npm run clean`, `npm install` and `npm run build`.
 6. Run `npm test` and ensure that all tests pass. If a test fails,
    [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and
    either update the test expectations accordingly (if it was an intended
@@ -286,7 +294,10 @@ The following steps are needed to update the Chrome version.
 7. Commit and push your changes and open a pull request. The commit message must
    contain the version in `Chrome <version> (r<revision>)` format to ensure
    that [pptr.dev](https://pptr.dev/) can parse it correctly, e.g.
-   `'feat(chrome): roll to Chrome 90.0.4427.0 (r856583)'`.
+   `feat(chrome): roll to Chrome 90.0.4427.0 (r856583)`.
+
+> NOTE: Another place you can find version corresponding version is [omahaproxy.appspot.com](https://omahaproxy.appspot.com/) by
+> searching in `Find Releases` for `r<revision>`.
 
 ### Bisecting upstream changes
 
