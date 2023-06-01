@@ -20,6 +20,7 @@ import {BrowserContext as BrowserContextBase} from '../../api/BrowserContext.js'
 import {Page as PageBase} from '../../api/Page.js';
 import {Viewport} from '../PuppeteerViewport.js';
 
+import {Browser} from './Browser.js';
 import {Connection} from './Connection.js';
 import {Page} from './Page.js';
 import {debugError} from './utils.js';
@@ -32,19 +33,25 @@ interface BrowserContextOptions {
  * @internal
  */
 export class BrowserContext extends BrowserContextBase {
+  #browser: Browser;
   #connection: Connection;
   #defaultViewport: Viewport | null;
   #pages = new Map<string, Page>();
   #onContextDestroyedBind = this.#onContextDestroyed.bind(this);
 
-  constructor(connection: Connection, options: BrowserContextOptions) {
+  constructor(browser: Browser, options: BrowserContextOptions) {
     super();
-    this.#connection = connection;
+    this.#browser = browser;
+    this.#connection = this.#browser.connection;
     this.#defaultViewport = options.defaultViewport;
     this.#connection.on(
       'browsingContext.contextDestroyed',
       this.#onContextDestroyedBind
     );
+  }
+
+  get connection(): Connection {
+    return this.#connection;
   }
 
   async #onContextDestroyed(
@@ -61,7 +68,7 @@ export class BrowserContext extends BrowserContextBase {
     const {result} = await this.#connection.send('browsingContext.create', {
       type: 'tab',
     });
-    const page = new Page(this.#connection, result);
+    const page = new Page(this, result);
     if (this.#defaultViewport) {
       try {
         await page.setViewport(this.#defaultViewport);
@@ -82,5 +89,9 @@ export class BrowserContext extends BrowserContextBase {
       });
     }
     this.#pages.clear();
+  }
+
+  override browser(): Browser {
+    return this.#browser;
   }
 }
