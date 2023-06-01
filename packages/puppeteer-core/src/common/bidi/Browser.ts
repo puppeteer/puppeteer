@@ -61,6 +61,10 @@ export class Browser extends BrowserBase {
     this.#defaultViewport = opts.defaultViewport;
   }
 
+  get connection(): Connection {
+    return this.#connection;
+  }
+
   override async close(): Promise<void> {
     this.#connection.dispose();
     await this.#closeCallback?.call(null);
@@ -77,7 +81,7 @@ export class Browser extends BrowserBase {
   override async createIncognitoBrowserContext(
     _options?: BrowserContextOptions
   ): Promise<BrowserContextBase> {
-    return new BrowserContext(this.#connection, {
+    return new BrowserContext(this, {
       defaultViewport: this.#defaultViewport,
     });
   }

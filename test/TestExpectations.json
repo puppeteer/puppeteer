@@ -138,6 +138,18 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[page.spec] Page Page.browser *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.browserContext *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.Events.DOMContentLoaded *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],

@@ -44,6 +44,8 @@ import {
   withSourcePuppeteerURLIfNone,
 } from '../util.js';
 
+import {Browser} from './Browser.js';
+import {BrowserContext} from './BrowserContext.js';
 import {BrowsingContext, getBidiHandle} from './BrowsingContext.js';
 import {Connection} from './Connection.js';
 import {Frame} from './Frame.js';
@@ -57,6 +59,7 @@ import {BidiSerializer} from './Serializer.js';
  */
 export class Page extends PageBase {
   #timeoutSettings = new TimeoutSettings();
+  #browserContext: BrowserContext;
   #connection: Connection;
   #frameTree = new FrameTree<Frame>();
   #networkManager: NetworkManager;
@@ -113,11 +116,12 @@ export class Page extends PageBase {
     ],
   ]);
 
-  constructor(connection: Connection, info: {context: string}) {
+  constructor(browserContext: BrowserContext, info: {context: string}) {
     super();
-    this.#connection = connection;
+    this.#browserContext = browserContext;
+    this.#connection = browserContext.connection;
 
-    this.#networkManager = new NetworkManager(connection, this);
+    this.#networkManager = new NetworkManager(this.#connection, this);
     this.#onFrameAttached({
       ...info,
       url: 'about:blank',
@@ -131,6 +135,14 @@ export class Page extends PageBase {
     for (const [event, subscriber] of this.#networkManagerEvents) {
       this.#networkManager.on(event, subscriber);
     }
+  }
+
+  override browser(): Browser {
+    return this.#browserContext.browser();
+  }
+
+  override browserContext(): BrowserContext {
+    return this.#browserContext;
   }
 
   override mainFrame(): Frame {
