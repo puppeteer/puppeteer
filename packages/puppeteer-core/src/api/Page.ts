@@ -2248,7 +2248,7 @@ export class Page extends EventEmitter {
    *   | current working directory}.
    *   If no path is provided, the image won't be saved to the disk.
    *
-   * - `type` : Specify screenshot type, can be either `jpeg` or `png`.
+   * - `type` : Specify screenshot type, can be `jpeg`, `png` or `webp`.
    *   Defaults to 'png'.
    *
    * - `quality` : The quality of the image, between 0-100. Not
