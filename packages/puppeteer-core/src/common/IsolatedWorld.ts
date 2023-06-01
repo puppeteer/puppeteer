@@ -41,6 +41,7 @@ import {
   addPageBinding,
   createJSHandle,
   debugError,
+  getPageContent,
   setPageContent,
   withSourcePuppeteerURLIfNone,
 } from './util.js';
@@ -272,16 +273,7 @@ export class IsolatedWorld {
   }
 
   async content(): Promise<string> {
-    return await this.evaluate(() => {
-      let retVal = '';
-      if (document.doctype) {
-        retVal = new XMLSerializer().serializeToString(document.doctype);
-      }
-      if (document.documentElement) {
-        retVal += document.documentElement.outerHTML;
-      }
-      return retVal;
-    });
+    return await this.evaluate(getPageContent);
   }
 
   async setContent(
@@ -533,12 +525,9 @@ class Mutex {
       this.#locked = true;
       return Promise.resolve();
     }
-    let resolve!: () => void;
-    const promise = new Promise<void>(res => {
-      resolve = res;
-    });
-    this.#acquirers.push(resolve);
-    return promise;
+    const deferred = Deferred.create<void>();
+    this.#acquirers.push(deferred.resolve.bind(deferred));
+    return deferred.valueOrThrow();
   }
 
   release(): void {
