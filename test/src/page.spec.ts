@@ -1555,6 +1555,14 @@ describe('Page', function () {
         })
       ).toBe('\n');
     });
+    it('should work with comments outside HTML tag', async () => {
+      const {page} = getTestState();
+
+      const comment = '<!-- Comment -->';
+      await page.setContent(`${comment}<div>hello</div>`);
+      const result = await page.content();
+      expect(result).toBe(`${comment}${expectedOutput}`);
+    });
   });
 
   describe('Page.setBypassCSP', function () {

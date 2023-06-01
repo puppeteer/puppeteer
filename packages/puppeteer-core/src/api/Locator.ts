@@ -22,7 +22,10 @@ import {isErrorLike} from '../util/ErrorLike.js';
 import {ElementHandle, BoundingBox, ClickOptions} from './ElementHandle.js';
 import type {Page} from './Page.js';
 
-type VisibilityOption = 'hidden' | 'visible' | null;
+/**
+ * @internal
+ */
+export type VisibilityOption = 'hidden' | 'visible' | null;
 
 /**
  * @internal

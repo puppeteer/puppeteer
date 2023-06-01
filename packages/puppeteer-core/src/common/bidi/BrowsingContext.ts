@@ -11,6 +11,7 @@ import {TimeoutSettings} from '../TimeoutSettings.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
 import {
   PuppeteerURL,
+  getPageContent,
   getSourcePuppeteerURLIfAvailable,
   isString,
   setPageContent,
@@ -240,7 +241,7 @@ export class BrowsingContext extends EventEmitter {
       timeout = this.#timeoutSettings.navigationTimeout(),
     } = options;
 
-    const waitUntilCommand = lifeCycleToSubscribedEvent.get(
+    const waitUntilEvent = lifeCycleToSubscribedEvent.get(
       getWaitUntilSingle(waitUntil)
     ) as string;
 
@@ -248,27 +249,18 @@ export class BrowsingContext extends EventEmitter {
       setPageContent(this, html),
       waitWithTimeout(
         new Promise<void>(resolve => {
-          this.once(waitUntilCommand, () => {
+          this.once(waitUntilEvent, () => {
             resolve();
           });
         }),
-        waitUntilCommand,
+        waitUntilEvent,
         timeout
       ),
     ]);
   }
 
   async content(): Promise<string> {
-    return await this.evaluate(() => {
-      let retVal = '';
-      if (document.doctype) {
-        retVal = new XMLSerializer().serializeToString(document.doctype);
-      }
-      if (document.documentElement) {
-        retVal += document.documentElement.outerHTML;
-      }
-      return retVal;
-    });
+    return await this.evaluate(getPageContent);
   }
 
   async sendCDPCommand(

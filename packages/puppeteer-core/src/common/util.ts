@@ -510,7 +510,7 @@ export async function waitWithTimeout<T>(
     timeout,
   });
 
-  return await Deferred.race([promise, deferred.valueOrThrow()]).finally(() => {
+  return await Deferred.race([promise, deferred]).finally(() => {
     deferred.reject(new Error('Cleared'));
   });
 }
@@ -626,4 +626,23 @@ export async function setPageContent(
     document.write(html);
     document.close();
   }, content);
+}
+
+/**
+ * @internal
+ */
+export function getPageContent(): string {
+  let content = '';
+  for (const node of document.childNodes) {
+    switch (node) {
+      case document.documentElement:
+        content += document.documentElement.outerHTML;
+        break;
+      default:
+        content += new XMLSerializer().serializeToString(node);
+        break;
+    }
+  }
+
+  return content;
 }

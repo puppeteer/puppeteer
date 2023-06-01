@@ -200,6 +200,12 @@ module.exports = {
             selector:
               'MemberExpression[object.name="Promise"][property.name="race"]',
           },
+          {
+            message:
+              'Deferred `valueOrThrow` should not be called in `Deferred.race()` pass deferred directly',
+            selector:
+              'CallExpression[callee.object.name="Deferred"][callee.property.name="race"] MemberExpression[property.name="valueOrThrow"]',
+          },
         ],
         '@typescript-eslint/no-floating-promises': [
           'error',
