@@ -26,7 +26,7 @@ jobs:
       issues: write
     steps:
       - name: Remove labels
-        uses: actions/github-script@v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6.4.1
         with:
           script: |
             if (${{ contains(github.event.issue.labels.*.name, 'not-reproducible') }}) {
@@ -54,9 +54,9 @@ jobs:
               })
             }
       - name: Check out repository
-        uses: actions/checkout@v3.0.2
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - name: Set up Node.js
-        uses: actions/setup-node@v3.5.1
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: lts/*
       - name: Install dependencies
@@ -64,7 +64,7 @@ jobs:
       - name: Analyze issue
         id: issue-analysis
         run: echo $ISSUE_BODY | ./tools/analyze_issue.mjs >> $GITHUB_OUTPUT
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: issue-files
           path: out/
@@ -79,12 +79,12 @@ jobs:
       PACKAGE_MANAGER: ${{ needs.analyze-issue.outputs.packageManager }}
       NODE_VERSION: ${{ needs.analyze-issue.outputs.nodeVersion }}
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
           name: issue-files
           path: '.'
       - name: Set up Node.js
-        uses: actions/setup-node@v3.5.1
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Enable corepack
@@ -102,7 +102,7 @@ jobs:
         run: ${{ env.PACKAGE_MANAGER }} run verify
         env:
           DEBUG: 'puppeteer:*'
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         if: success() || failure()
         with:
           name: runtime-output
@@ -120,7 +120,7 @@ jobs:
       issues: write
     steps:
       - name: Add labels
-        uses: actions/github-script@v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6.4.1
         with:
           script: |
             github.rest.issues.addLabels({
@@ -130,13 +130,13 @@ jobs:
               labels: ["confirmed"]
             })
       - name: Find Comment Id
-        uses: peter-evans/find-comment@v2
+        uses: peter-evans/find-comment@a54c31d7fa095754bfef525c0c8e5e5674c4b4b1 # v2.4.0
         id: find-comment-id
         with:
           issue-number: ${{ github.event.issue.number }}
           comment-author: 'github-actions[bot]'
       - name: Upsert comment
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@ca08ebd5dc95aa0cd97021e9708fcd6b87138c9b # v3.0.1
         with:
           comment-id: ${{ steps.find-comment-id.outputs.comment-id }}
           issue-number: ${{ github.event.issue.number }}
@@ -157,7 +157,7 @@ jobs:
       issues: write
     steps:
       - name: Add labels
-        uses: actions/github-script@v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6.4.1
         with:
           script: |
             github.rest.issues.addLabels({
@@ -167,13 +167,13 @@ jobs:
               labels: ["invalid"]
             })
       - name: Find Comment Id
-        uses: peter-evans/find-comment@v2
+        uses: peter-evans/find-comment@a54c31d7fa095754bfef525c0c8e5e5674c4b4b1 # v2.4.0
         id: find-comment-id
         with:
           issue-number: ${{ github.event.issue.number }}
           comment-author: 'github-actions[bot]'
       - name: Upsert comment
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@ca08ebd5dc95aa0cd97021e9708fcd6b87138c9b # v3.0.1
         with:
           comment-id: ${{ steps.find-comment-id.outputs.comment-id }}
           issue-number: ${{ github.event.issue.number }}
@@ -193,7 +193,7 @@ jobs:
       issues: write
     steps:
       - name: Add labels
-        uses: actions/github-script@v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6.4.1
         with:
           script: |
             github.rest.issues.addLabels({
@@ -203,13 +203,13 @@ jobs:
               labels: ["not-reproducible", "needs-feedback"]
             })
       - name: Find Comment Id
-        uses: peter-evans/find-comment@v2
+        uses: peter-evans/find-comment@a54c31d7fa095754bfef525c0c8e5e5674c4b4b1 # v2.4.0
         id: find-comment-id
         with:
           issue-number: ${{ github.event.issue.number }}
           comment-author: 'github-actions[bot]'
       - name: Upsert comment
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@ca08ebd5dc95aa0cd97021e9708fcd6b87138c9b # v3.0.1
         with:
           comment-id: ${{ steps.find-comment-id.outputs.comment-id }}
           issue-number: ${{ github.event.issue.number }}

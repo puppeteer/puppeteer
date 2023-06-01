@@ -18,9 +18,9 @@ jobs:
     if: contains(github.event.label.name, 'devtools')
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - name: Set up Node.js
-        uses: actions/setup-node@v3.5.1
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           cache: npm
           node-version: lts/*
@@ -39,7 +39,7 @@ jobs:
           npm pack --workspace puppeteer-core
           npm pack --workspace puppeteer
       - name: Upload Puppeteer build
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
         with:
           name: puppeteer-build
           if-no-files-found: error
@@ -51,13 +51,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Puppeteer build
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
           name: puppeteer-build
       - name: Set up Node.js
-        uses: actions/setup-node@v3.5.1
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
-          node-version: 18
+          node-version: lts/*
       - name: Checkout depot_tools
         run: git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
       - name: Add depot_tools to path
