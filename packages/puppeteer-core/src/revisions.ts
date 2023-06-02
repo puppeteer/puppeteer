@@ -18,6 +18,6 @@
  * @internal
  */
 export const PUPPETEER_REVISIONS = Object.freeze({
-  chrome: '114.0.5735.45',
+  chrome: '113.0.5672.63',
   firefox: 'latest',
 });
