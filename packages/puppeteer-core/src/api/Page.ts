@@ -819,7 +819,12 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @internal
+   * Creates a locator for the provided `selector`. See {@link Locator} for
+   * details and supported actions.
+   *
+   * @remarks
+   * Locators API is experimental and we will not follow semver for breaking
+   * change in the Locators API.
    */
   locator(selector: string): Locator {
     return new Locator(this, selector);
