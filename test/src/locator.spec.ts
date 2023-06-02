@@ -29,6 +29,29 @@ describe('Locator', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
 
+  it('should work with a frame', async () => {
+    const {page} = getTestState();
+
+    await page.setViewport({width: 500, height: 500});
+    await page.setContent(`
+      <button onclick="this.innerText = 'clicked';">test</button>
+    `);
+    let willClick = false;
+    await page
+      .mainFrame()
+      .locator('button')
+      .on(LocatorEmittedEvents.Action, () => {
+        willClick = true;
+      })
+      .click();
+    const button = await page.$('button');
+    const text = await button?.evaluate(el => {
+      return el.innerText;
+    });
+    expect(text).toBe('clicked');
+    expect(willClick).toBe(true);
+  });
+
   it('should work without preconditions', async () => {
     const {page} = getTestState();
 

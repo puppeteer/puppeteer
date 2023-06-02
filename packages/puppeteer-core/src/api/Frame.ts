@@ -32,6 +32,8 @@ import {
   NodeFor,
 } from '../common/types.js';
 
+import {Locator} from './Locator.js';
+
 /**
  * @public
  */
@@ -343,6 +345,18 @@ export class Frame {
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
   >(): Promise<Awaited<ReturnType<Func>>> {
     throw new Error('Not implemented');
+  }
+
+  /**
+   * Creates a locator for the provided `selector`. See {@link Locator} for
+   * details and supported actions.
+   *
+   * @remarks
+   * Locators API is experimental and we will not follow semver for breaking
+   * change in the Locators API.
+   */
+  locator(selector: string): Locator {
+    return new Locator(this, selector);
   }
 
   /**

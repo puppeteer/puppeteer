@@ -20,15 +20,16 @@ import {debugError} from '../common/util.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {ElementHandle, BoundingBox, ClickOptions} from './ElementHandle.js';
+import type {Frame} from './Frame.js';
 import type {Page} from './Page.js';
 
 /**
- * @internal
+ * @public
  */
 export type VisibilityOption = 'hidden' | 'visible' | null;
 
 /**
- * @internal
+ * @public
  */
 export interface LocatorOptions {
   /**
@@ -73,7 +74,7 @@ const CONDITION_TIMEOUT = 1_000;
 const WAIT_FOR_FUNCTION_DELAY = 100;
 
 /**
- * @internal
+ * @public
  */
 export type ActionCondition = (
   element: ElementHandle,
@@ -81,7 +82,7 @@ export type ActionCondition = (
 ) => Promise<void>;
 
 /**
- * @internal
+ * @public
  */
 export interface ActionOptions {
   signal?: AbortSignal;
@@ -91,7 +92,7 @@ export interface ActionOptions {
 /**
  * All the events that a locator instance may emit.
  *
- * @internal
+ * @public
  */
 export enum LocatorEmittedEvents {
   /**
@@ -101,7 +102,7 @@ export enum LocatorEmittedEvents {
 }
 
 /**
- * @internal
+ * @public
  */
 export interface LocatorEventObject {
   [LocatorEmittedEvents.Action]: never;
@@ -109,29 +110,33 @@ export interface LocatorEventObject {
 
 /**
  * Locators describe a strategy of locating elements and performing an action on
- * them. If the action fails because the element are not ready for the action,
- * the whole operation is retried.
+ * them. If the action fails because the element is not ready for the action,
+ * the whole operation is retried. Various preconditions for a successful action
+ * are checked automatically.
  *
- * @internal
+ * @public
  */
 export class Locator extends EventEmitter {
-  #page: Page;
+  #pageOrFrame: Page | Frame;
   #selector: string;
   #options: LocatorOptions;
 
   constructor(
-    page: Page,
+    pageOrFrame: Page | Frame,
     selector: string,
     options: LocatorOptions = {
       visibility: 'visible',
-      timeout: page.getDefaultTimeout(),
+      timeout:
+        'getDefaultTimeout' in pageOrFrame
+          ? pageOrFrame.getDefaultTimeout()
+          : pageOrFrame.page().getDefaultTimeout(),
       ensureElementIsInTheViewport: true,
       waitForEnabled: true,
       waitForStableBoundingBox: true,
     }
   ) {
     super();
-    this.#page = page;
+    this.#pageOrFrame = pageOrFrame;
     this.#selector = selector;
     this.#options = options;
   }
@@ -305,7 +310,7 @@ export class Locator extends EventEmitter {
     if (!this.#options.waitForEnabled) {
       return;
     }
-    await this.#page.waitForFunction(
+    await this.#pageOrFrame.waitForFunction(
       el => {
         if (['button', 'textarea', 'input', 'select'].includes(el.tagName)) {
           return !(el as HTMLInputElement).disabled;
@@ -375,11 +380,14 @@ export class Locator extends EventEmitter {
     await this.#waitForFunction(
       async signal => {
         // 1. Select the element without visibility checks.
-        const element = await this.#page.waitForSelector(this.#selector, {
-          visible: false,
-          timeout: this.#options.timeout,
-          signal,
-        });
+        const element = await this.#pageOrFrame.waitForSelector(
+          this.#selector,
+          {
+            visible: false,
+            timeout: this.#options.timeout,
+            signal,
+          }
+        );
         // Retry if no element is found.
         if (!element) {
           return false;
