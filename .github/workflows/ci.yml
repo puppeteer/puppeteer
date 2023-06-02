@@ -41,9 +41,6 @@ jobs:
         run: npm run lint
       - name: Validate licenses
         run: npm run validate-licenses
-      - name: Lint commits
-        run: npm run commitlint
-        if: github.event_name != 'pull_request'
       - name: Build every package
         run: npm run build
       - name: Generate documents
