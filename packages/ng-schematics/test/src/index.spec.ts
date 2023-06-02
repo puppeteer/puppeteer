@@ -5,7 +5,7 @@ import {JsonObject} from '@angular-devkit/core';
 import {
   SchematicTestRunner,
   UnitTestTree,
-} from '@angular-devkit/schematics/testing/schematic-test-runner';
+} from '@angular-devkit/schematics/testing';
 import expect from 'expect';
 import sinon from 'sinon';
 
@@ -65,26 +65,20 @@ async function buildTestingTree(userOptions?: Record<string, any>) {
   let workingTree: UnitTestTree;
 
   // Build workspace
-  workingTree = await runner
-    .runExternalSchematicAsync(
-      '@schematics/angular',
-      'workspace',
-      WORKSPACE_OPTIONS
-    )
-    .toPromise();
+  workingTree = await runner.runExternalSchematic(
+    '@schematics/angular',
+    'workspace',
+    WORKSPACE_OPTIONS
+  );
   // Build dummy application
-  workingTree = await runner
-    .runExternalSchematicAsync(
-      '@schematics/angular',
-      'application',
-      APPLICATION_OPTIONS,
-      workingTree
-    )
-    .toPromise();
+  workingTree = await runner.runExternalSchematic(
+    '@schematics/angular',
+    'application',
+    APPLICATION_OPTIONS,
+    workingTree
+  );
 
-  return await runner
-    .runSchematicAsync('ng-add', options, workingTree)
-    .toPromise();
+  return await runner.runSchematic('ng-add', options, workingTree);
 }
 
 describe('@puppeteer/ng-schematics: ng-add', () => {
