@@ -19,6 +19,7 @@ import {writeFile, readFile} from 'fs/promises';
 
 import actions from '@actions/core';
 import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
+import {SemVer} from 'semver';
 
 import packageJson from '../packages/puppeteer-core/package.json' assert {type: 'json'};
 import {versionsPerRelease, lastMaintainedChromeVersion} from '../versions.js';
@@ -26,6 +27,25 @@ import {versionsPerRelease, lastMaintainedChromeVersion} from '../versions.js';
 const CHROME_CURRENT_VERSION = PUPPETEER_REVISIONS.chrome;
 const VERSIONS_PER_RELEASE_COMMENT =
   '// In Chrome roll patches, use `NEXT` for the Puppeteer version.';
+
+function checkIfNeedsUpdate(oldVersion, newVersion, newRevision) {
+  const oldSemVer = new SemVer(oldVersion, true);
+  const newSemVer = new SemVer(newVersion, true);
+  let message = `roll to Chrome ${newVersion} (r${newRevision})`;
+
+  if (newSemVer.compare(oldSemVer) <= 0) {
+    // Exit the process without setting up version
+    console.warn(
+      `Version ${newVersion} is older then the current ${oldVersion}`
+    );
+    process.exit(0);
+  } else if (newSemVer.compareMain(oldSemVer) === 0) {
+    message = `fix: ${message}`;
+  } else {
+    message = `feat: ${message}`;
+  }
+  actions.setOutput('commit', message);
+}
 
 async function replaceInFile(filePath, search, replace) {
   const buffer = await readFile(filePath);
@@ -90,6 +110,8 @@ async function updateVersionFileLastMaintained(updateVersion) {
 
 const {version, revision} = await getVersionAndRevisionForStable();
 
+checkIfNeedsUpdate(CHROME_CURRENT_VERSION, version, revision);
+
 await replaceInFile(
   './packages/puppeteer-core/src/revisions.ts',
   CHROME_CURRENT_VERSION,
@@ -99,5 +121,11 @@ await replaceInFile(
 await updateVersionFileLastMaintained(version);
 await updateDevToolsProtocolVersion(revision);
 
+// Create new `package-lock.json` as we update devtools-protocol
+execSync('npm install --ignore-scripts');
+// Make sure we pass CI formatter check by running all the new files though it
+execSync('npm run format');
+
+// Keep this as they can be used to debug GitHub Actions if needed
 actions.setOutput('version', version);
 actions.setOutput('revision', revision);
