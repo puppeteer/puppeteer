@@ -123,8 +123,7 @@ Our coding style is fully defined in
 [`.prettierrc.cjs`](https://github.com/puppeteer/puppeteer/blob/main/.prettierrc.cjs)
 ([Prettier](https://prettier.io)).
 
-Code is checked during `pre-push` using
-[Husky](https://typicode.github.io/husky/#/), but you can check your code
+Code is checked for PRs automatically and you can check your code
 manually by running:
 
 ```bash
@@ -165,7 +164,6 @@ When authoring new API methods, consider the following:
 
 Commit messages should follow
 [the Conventional Commits format](https://www.conventionalcommits.org/en/v1.0.0/#summary).
-This is enforced via `npm run commitlint`.
 
 In particular, breaking changes should clearly be noted as “BREAKING CHANGE:” in
 the commit message footer. Example:
