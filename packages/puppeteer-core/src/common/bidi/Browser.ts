@@ -38,7 +38,7 @@ export class Browser extends BrowserBase {
   static async create(opts: Options): Promise<Browser> {
     // TODO: await until the connection is established.
     try {
-      await opts.connection.send('session.new', {});
+      await opts.connection.send('session.new', {capabilities: {}});
     } catch {}
 
     await opts.connection.send('session.subscribe', {
