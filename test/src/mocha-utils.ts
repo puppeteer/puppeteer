@@ -250,6 +250,37 @@ export const mochaHooks = {
   },
 };
 
+declare module 'expect' {
+  interface Matchers<R> {
+    atLeastOneToContain(expected: string[]): R;
+  }
+}
+
+expect.extend({
+  atLeastOneToContain: (actual: string, expected: string[]) => {
+    for (const test of expected) {
+      try {
+        expect(actual).toContain(test);
+        return {
+          pass: true,
+          message: () => {
+            return '';
+          },
+        };
+      } catch (err) {}
+    }
+
+    return {
+      pass: false,
+      message: () => {
+        return `"${actual}" didn't contain any of the strings ${JSON.stringify(
+          expected
+        )}`;
+      },
+    };
+  },
+});
+
 export const expectCookieEquals = (
   cookies: Protocol.Network.Cookie[],
   expectedCookies: Array<Partial<Protocol.Network.Cookie>>
