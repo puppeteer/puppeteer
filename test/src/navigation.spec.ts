@@ -142,17 +142,17 @@ describe('navigation', function () {
       expect(response!.status()).toBe(200);
     });
     it('should fail when navigating to bad url', async () => {
-      const {page, isChrome} = getTestState();
+      const {page} = getTestState();
 
       let error!: Error;
       await page.goto('asdfasdf').catch(error_ => {
         return (error = error_);
       });
-      if (isChrome) {
-        expect(error.message).toContain('Cannot navigate to invalid URL');
-      } else {
-        expect(error.message).toContain('Invalid url');
-      }
+
+      expect(error.message).atLeastOneToContain([
+        'Cannot navigate to invalid URL', // Firefox WebDriver BiDi.
+        'invalid argument', // Others.
+      ]);
     });
 
     const EXPECTED_SSL_CERT_MESSAGE_REGEX =
@@ -200,7 +200,10 @@ describe('navigation', function () {
       if (isChrome) {
         expect(error.message).toMatch(EXPECTED_SSL_CERT_MESSAGE_REGEX);
       } else {
-        expect(error.message).toContain('SSL_ERROR_UNKNOWN');
+        expect(error.message).atLeastOneToContain([
+          'MOZILLA_PKIX_ERROR_SELF_SIGNED_CERT', // Firefox WebDriver BiDi.
+          'SSL_ERROR_UNKNOWN ', // Others.
+        ]);
       }
     });
     it('should fail when main resources failed to load', async () => {
