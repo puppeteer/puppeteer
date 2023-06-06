@@ -446,7 +446,7 @@ describe('Query handler tests', function () {
       ).toBeTruthy();
     });
 
-    it('should work ARIA selectors with  role', async () => {
+    it('should work ARIA selectors with role', async () => {
       const {page} = getTestState();
       const element = await page.$('::-p-aria(world[role="button"])');
       assert(element, 'Could not find element');
