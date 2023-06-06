@@ -121,6 +121,9 @@ ARIA selectors can be used to find elements with a given ARIA label. These label
 
 ```ts
 const node = await page.waitForSelector('::-p-aria(Submit)');
+const node = await page.waitForSelector(
+  '::-p-aria([name="Click me"][role="button"])'
+);
 ```
 
 ### Custom selectors
