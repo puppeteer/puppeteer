@@ -126,16 +126,16 @@ async function updateVersionFileLastMaintained(currentVersion, updateVersion) {
       VERSIONS_PER_RELEASE_COMMENT,
       `${VERSIONS_PER_RELEASE_COMMENT}\n  ['${version}', 'NEXT'],`
     );
+
+    const lastMaintainedIndex = versions.indexOf(lastMaintainedChromeVersion);
+    const nextMaintainedVersion = versions[lastMaintainedIndex - 1];
+
+    await replaceInFile(
+      './versions.js',
+      `const lastMaintainedChromeVersion = '${lastMaintainedChromeVersion}';`,
+      `const lastMaintainedChromeVersion = '${nextMaintainedVersion}';`
+    );
   }
-
-  const lastMaintainedIndex = versions.indexOf(lastMaintainedChromeVersion);
-  const nextMaintainedVersion = versions[lastMaintainedIndex - 1];
-
-  await replaceInFile(
-    './versions.js',
-    `const lastMaintainedChromeVersion = '${lastMaintainedChromeVersion}';`,
-    `const lastMaintainedChromeVersion = '${nextMaintainedVersion}';`
-  );
 }
 
 const {version, revision} = await getVersionAndRevisionForStable();
