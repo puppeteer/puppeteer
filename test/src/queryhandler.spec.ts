@@ -446,6 +446,28 @@ describe('Query handler tests', function () {
       ).toBeTruthy();
     });
 
+    it('should work ARIA selectors with  role', async () => {
+      const {page} = getTestState();
+      const element = await page.$('::-p-aria(world[role="button"])');
+      assert(element, 'Could not find element');
+      expect(
+        await element.evaluate(element => {
+          return element.id === 'b';
+        })
+      ).toBeTruthy();
+    });
+
+    it('should work ARIA selectors with name and role', async () => {
+      const {page} = getTestState();
+      const element = await page.$('::-p-aria([name="world"][role="button"])');
+      assert(element, 'Could not find element');
+      expect(
+        await element.evaluate(element => {
+          return element.id === 'b';
+        })
+      ).toBeTruthy();
+    });
+
     it('should work XPath selectors', async () => {
       const {page} = getTestState();
       const element = await page.$('div ::-p-xpath(//button)');
