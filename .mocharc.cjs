@@ -22,6 +22,6 @@ module.exports = {
   exit: !!process.env.CI,
   retries: process.env.CI ? 3 : 0,
   parallel: !!process.env.PARALLEL,
-  timeout: 10_000,
+  timeout: process.platform === 'win32' ? 20_000 : 10_000,
   reporter: process.env.CI ? 'spec' : 'dot',
 };
