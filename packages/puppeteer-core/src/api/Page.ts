@@ -827,7 +827,7 @@ export class Page extends EventEmitter {
    * change in the Locators API.
    */
   locator(selector: string): Locator {
-    return new Locator(this, selector);
+    return Locator.create(this, selector);
   }
 
   /**

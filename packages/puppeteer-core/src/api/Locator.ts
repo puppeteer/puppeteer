@@ -117,11 +117,31 @@ export interface LocatorEventObject {
  * @public
  */
 export class Locator extends EventEmitter {
+  /**
+   * @internal
+   */
+  static create(
+    pageOrFrame: Page | Frame,
+    selector: string,
+    options: LocatorOptions = {
+      visibility: 'visible',
+      timeout:
+        'getDefaultTimeout' in pageOrFrame
+          ? pageOrFrame.getDefaultTimeout()
+          : pageOrFrame.page().getDefaultTimeout(),
+      ensureElementIsInTheViewport: true,
+      waitForEnabled: true,
+      waitForStableBoundingBox: true,
+    }
+  ): Locator {
+    return new Locator(pageOrFrame, selector, options);
+  }
+
   #pageOrFrame: Page | Frame;
   #selector: string;
   #options: LocatorOptions;
 
-  constructor(
+  private constructor(
     pageOrFrame: Page | Frame,
     selector: string,
     options: LocatorOptions = {
