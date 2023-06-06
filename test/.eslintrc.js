@@ -15,7 +15,7 @@ module.exports = {
       files: ['*.spec.ts'],
       rules: {
         'no-restricted-syntax': [
-          'warn',
+          'error',
           {
             message:
               'Use helper command `launch` to make sure the browsers get cleaned',

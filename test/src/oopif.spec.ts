@@ -30,6 +30,7 @@ describeWithDebugLogs('OOPIF', function () {
 
   before(async () => {
     const {puppeteer, defaultBrowserOptions} = getTestState();
+    // eslint-disable-next-line no-restricted-syntax
     browser = await puppeteer.launch(
       Object.assign({}, defaultBrowserOptions, {
         args: (defaultBrowserOptions.args || []).concat([

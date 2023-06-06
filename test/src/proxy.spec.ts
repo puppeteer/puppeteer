@@ -21,9 +21,8 @@ import os from 'os';
 
 import {TestServer} from '@pptr/testserver';
 import expect from 'expect';
-import type {Browser} from 'puppeteer-core/internal/api/Browser.js';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, launch} from './mocha-utils.js';
 
 let HOSTNAME = os.hostname();
 
@@ -52,12 +51,13 @@ function getEmptyPageUrl(server: TestServer): string {
 }
 
 describe('request proxy', () => {
-  let browser: Browser;
   let proxiedRequestUrls: string[];
   let proxyServer: Server;
   let proxyServerUrl: string;
   const defaultArgs = [
-    '--disable-features=NetworkTimeServiceQuerying', // We disable this in tests so that proxy-related tests don't intercept queries from this service in headful.
+    // We disable this in tests so that proxy-related tests
+    // don't intercept queries from this service in headful.
+    '--disable-features=NetworkTimeServiceQuerying',
   ];
 
   beforeEach(() => {
@@ -97,8 +97,6 @@ describe('request proxy', () => {
   });
 
   afterEach(async () => {
-    await browser.close();
-
     await new Promise((resolve, reject) => {
       proxyServer.close(error => {
         if (error) {
@@ -111,27 +109,29 @@ describe('request proxy', () => {
   });
 
   it('should proxy requests when configured', async () => {
-    const {puppeteer, defaultBrowserOptions, server} = getTestState();
+    const {defaultBrowserOptions, server} = getTestState();
     const emptyPageUrl = getEmptyPageUrl(server);
 
-    browser = await puppeteer.launch({
+    const {browser, close} = await launch({
       ...defaultBrowserOptions,
       args: [...defaultArgs, `--proxy-server=${proxyServerUrl}`],
     });
+    try {
+      const page = await browser.newPage();
+      const response = (await page.goto(emptyPageUrl))!;
 
-    const page = await browser.newPage();
-    const response = (await page.goto(emptyPageUrl))!;
-
-    expect(response.ok()).toBe(true);
-
-    expect(proxiedRequestUrls).toEqual([emptyPageUrl]);
+      expect(response.ok()).toBe(true);
+      expect(proxiedRequestUrls).toEqual([emptyPageUrl]);
+    } finally {
+      await close();
+    }
   });
 
   it('should respect proxy bypass list', async () => {
-    const {puppeteer, defaultBrowserOptions, server} = getTestState();
+    const {defaultBrowserOptions, server} = getTestState();
     const emptyPageUrl = getEmptyPageUrl(server);
 
-    browser = await puppeteer.launch({
+    const {browser, close} = await launch({
       ...defaultBrowserOptions,
       args: [
         ...defaultArgs,
@@ -139,39 +139,43 @@ describe('request proxy', () => {
         `--proxy-bypass-list=${new URL(emptyPageUrl).host}`,
       ],
     });
+    try {
+      const page = await browser.newPage();
+      const response = (await page.goto(emptyPageUrl))!;
 
-    const page = await browser.newPage();
-    const response = (await page.goto(emptyPageUrl))!;
-
-    expect(response.ok()).toBe(true);
-
-    expect(proxiedRequestUrls).toEqual([]);
+      expect(response.ok()).toBe(true);
+      expect(proxiedRequestUrls).toEqual([]);
+    } finally {
+      await close();
+    }
   });
 
   describe('in incognito browser context', () => {
     it('should proxy requests when configured at browser level', async () => {
-      const {puppeteer, defaultBrowserOptions, server} = getTestState();
+      const {defaultBrowserOptions, server} = getTestState();
       const emptyPageUrl = getEmptyPageUrl(server);
 
-      browser = await puppeteer.launch({
+      const {browser, close} = await launch({
         ...defaultBrowserOptions,
         args: [...defaultArgs, `--proxy-server=${proxyServerUrl}`],
       });
+      try {
+        const context = await browser.createIncognitoBrowserContext();
+        const page = await context.newPage();
+        const response = (await page.goto(emptyPageUrl))!;
 
-      const context = await browser.createIncognitoBrowserContext();
-      const page = await context.newPage();
-      const response = (await page.goto(emptyPageUrl))!;
-
-      expect(response.ok()).toBe(true);
-
-      expect(proxiedRequestUrls).toEqual([emptyPageUrl]);
+        expect(response.ok()).toBe(true);
+        expect(proxiedRequestUrls).toEqual([emptyPageUrl]);
+      } finally {
+        await close();
+      }
     });
 
     it('should respect proxy bypass list when configured at browser level', async () => {
-      const {puppeteer, defaultBrowserOptions, server} = getTestState();
+      const {defaultBrowserOptions, server} = getTestState();
       const emptyPageUrl = getEmptyPageUrl(server);
 
-      browser = await puppeteer.launch({
+      const {browser, close} = await launch({
         ...defaultBrowserOptions,
         args: [
           ...defaultArgs,
@@ -179,58 +183,64 @@ describe('request proxy', () => {
           `--proxy-bypass-list=${new URL(emptyPageUrl).host}`,
         ],
       });
+      try {
+        const context = await browser.createIncognitoBrowserContext();
+        const page = await context.newPage();
+        const response = (await page.goto(emptyPageUrl))!;
 
-      const context = await browser.createIncognitoBrowserContext();
-      const page = await context.newPage();
-      const response = (await page.goto(emptyPageUrl))!;
-
-      expect(response.ok()).toBe(true);
-
-      expect(proxiedRequestUrls).toEqual([]);
+        expect(response.ok()).toBe(true);
+        expect(proxiedRequestUrls).toEqual([]);
+      } finally {
+        await close();
+      }
     });
 
     /**
      * See issues #7873, #7719, and #7698.
      */
     it('should proxy requests when configured at context level', async () => {
-      const {puppeteer, defaultBrowserOptions, server} = getTestState();
+      const {defaultBrowserOptions, server} = getTestState();
       const emptyPageUrl = getEmptyPageUrl(server);
 
-      browser = await puppeteer.launch({
+      const {browser, close} = await launch({
         ...defaultBrowserOptions,
         args: defaultArgs,
       });
+      try {
+        const context = await browser.createIncognitoBrowserContext({
+          proxyServer: proxyServerUrl,
+        });
+        const page = await context.newPage();
+        const response = (await page.goto(emptyPageUrl))!;
 
-      const context = await browser.createIncognitoBrowserContext({
-        proxyServer: proxyServerUrl,
-      });
-      const page = await context.newPage();
-      const response = (await page.goto(emptyPageUrl))!;
-
-      expect(response.ok()).toBe(true);
-
-      expect(proxiedRequestUrls).toEqual([emptyPageUrl]);
+        expect(response.ok()).toBe(true);
+        expect(proxiedRequestUrls).toEqual([emptyPageUrl]);
+      } finally {
+        await close();
+      }
     });
 
     it('should respect proxy bypass list when configured at context level', async () => {
-      const {puppeteer, defaultBrowserOptions, server} = getTestState();
+      const {defaultBrowserOptions, server} = getTestState();
       const emptyPageUrl = getEmptyPageUrl(server);
 
-      browser = await puppeteer.launch({
+      const {browser, close} = await launch({
         ...defaultBrowserOptions,
         args: defaultArgs,
       });
+      try {
+        const context = await browser.createIncognitoBrowserContext({
+          proxyServer: proxyServerUrl,
+          proxyBypassList: [new URL(emptyPageUrl).host],
+        });
+        const page = await context.newPage();
+        const response = (await page.goto(emptyPageUrl))!;
 
-      const context = await browser.createIncognitoBrowserContext({
-        proxyServer: proxyServerUrl,
-        proxyBypassList: [new URL(emptyPageUrl).host],
-      });
-      const page = await context.newPage();
-      const response = (await page.goto(emptyPageUrl))!;
-
-      expect(response.ok()).toBe(true);
-
-      expect(proxiedRequestUrls).toEqual([]);
+        expect(response.ok()).toBe(true);
+        expect(proxiedRequestUrls).toEqual([]);
+      } finally {
+        await close();
+      }
     });
   });
 });

@@ -20,6 +20,7 @@ import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
+  launch,
 } from './mocha-utils.js';
 
 describe('Cookie specs', () => {
@@ -480,16 +481,15 @@ describe('Cookie specs', () => {
       ]);
     });
     it('should set secure same-site cookies from a frame', async () => {
-      const {httpsServer, puppeteer, defaultBrowserOptions} = getTestState();
+      const {httpsServer, defaultBrowserOptions} = getTestState();
 
-      const browser = await puppeteer.launch({
+      const {browser, close} = await launch({
         ...defaultBrowserOptions,
         ignoreHTTPSErrors: true,
       });
 
-      const page = await browser.newPage();
-
       try {
+        const page = await browser.newPage();
         await page.goto(httpsServer.PREFIX + '/grid.html');
         await page.evaluate(src => {
           let fulfill!: () => void;
@@ -533,8 +533,7 @@ describe('Cookie specs', () => {
           ]
         );
       } finally {
-        await page.close();
-        await browser.close();
+        await close();
       }
     });
   });

@@ -18,35 +18,30 @@ import fs from 'fs';
 import path from 'path';
 
 import expect from 'expect';
-import {Browser} from 'puppeteer-core/internal/api/Browser.js';
-import {Page} from 'puppeteer-core/internal/api/Page.js';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, launch} from './mocha-utils.js';
 
 describe('Tracing', function () {
   let outputFile!: string;
-  let browser!: Browser;
-  let page!: Page;
+  let testState: Awaited<ReturnType<typeof launch>>;
 
   /* we manually manage the browser here as we want a new browser for each
    * individual test, which isn't the default behaviour of getTestState()
    */
-
   beforeEach(async () => {
-    const {defaultBrowserOptions, puppeteer} = getTestState();
-    browser = await puppeteer.launch(defaultBrowserOptions);
-    page = await browser.newPage();
+    const {defaultBrowserOptions} = getTestState();
+    testState = await launch(defaultBrowserOptions);
     outputFile = path.join(__dirname, 'trace.json');
   });
 
   afterEach(async () => {
-    await browser.close();
+    await testState.close();
     if (fs.existsSync(outputFile)) {
       fs.unlinkSync(outputFile);
     }
   });
   it('should output a trace', async () => {
-    const {server} = getTestState();
+    const {server, page} = testState;
 
     await page.tracing.start({screenshots: true, path: outputFile});
     await page.goto(server.PREFIX + '/grid.html');
@@ -55,6 +50,7 @@ describe('Tracing', function () {
   });
 
   it('should run with custom categories if provided', async () => {
+    const {page} = testState;
     await page.tracing.start({
       path: outputFile,
       categories: ['-*', 'disabled-by-default-devtools.timeline.frame'],
@@ -77,6 +73,7 @@ describe('Tracing', function () {
   });
 
   it('should run with default categories', async () => {
+    const {page} = testState;
     await page.tracing.start({
       path: outputFile,
     });
@@ -92,6 +89,7 @@ describe('Tracing', function () {
     );
   });
   it('should throw if tracing on two pages', async () => {
+    const {page, browser} = testState;
     await page.tracing.start({path: outputFile});
     const newPage = await browser.newPage();
     let error!: Error;
@@ -103,7 +101,7 @@ describe('Tracing', function () {
     await page.tracing.stop();
   });
   it('should return a buffer', async () => {
-    const {server} = getTestState();
+    const {page, server} = testState;
 
     await page.tracing.start({screenshots: true, path: outputFile});
     await page.goto(server.PREFIX + '/grid.html');
@@ -112,7 +110,7 @@ describe('Tracing', function () {
     expect(trace.toString()).toEqual(buf.toString());
   });
   it('should work without options', async () => {
-    const {server} = getTestState();
+    const {page, server} = testState;
 
     await page.tracing.start();
     await page.goto(server.PREFIX + '/grid.html');
@@ -121,7 +119,7 @@ describe('Tracing', function () {
   });
 
   it('should return undefined in case of Buffer error', async () => {
-    const {server} = getTestState();
+    const {page, server} = testState;
 
     await page.tracing.start({screenshots: true});
     await page.goto(server.PREFIX + '/grid.html');
@@ -139,7 +137,7 @@ describe('Tracing', function () {
   });
 
   it('should support a buffer without a path', async () => {
-    const {server} = getTestState();
+    const {page, server} = testState;
 
     await page.tracing.start({screenshots: true});
     await page.goto(server.PREFIX + '/grid.html');
@@ -148,6 +146,7 @@ describe('Tracing', function () {
   });
 
   it('should properly fail if readProtocolStream errors out', async () => {
+    const {page} = testState;
     await page.tracing.start({path: __dirname});
 
     let error!: Error;

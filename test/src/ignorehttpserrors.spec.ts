@@ -39,6 +39,7 @@ describe('ignoreHTTPSErrors', function () {
       {ignoreHTTPSErrors: true},
       defaultBrowserOptions
     );
+    // eslint-disable-next-line no-restricted-syntax
     browser = await puppeteer.launch(options);
   });
 
