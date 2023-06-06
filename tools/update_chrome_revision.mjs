@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import {execSync} from 'child_process';
+import {execSync, exec} from 'child_process';
 import {writeFile, readFile} from 'fs/promises';
+import {promisify} from 'util';
 
 import actions from '@actions/core';
 import {PUPPETEER_REVISIONS} from 'puppeteer-core/internal/revisions.js';
@@ -24,9 +25,13 @@ import {SemVer} from 'semver';
 import packageJson from '../packages/puppeteer-core/package.json' assert {type: 'json'};
 import {versionsPerRelease, lastMaintainedChromeVersion} from '../versions.js';
 
+const execAsync = promisify(exec);
+
 const CHROME_CURRENT_VERSION = PUPPETEER_REVISIONS.chrome;
 const VERSIONS_PER_RELEASE_COMMENT =
   '// In Chrome roll patches, use `NEXT` for the Puppeteer version.';
+
+const touchedFiles = [];
 
 function checkIfNeedsUpdate(oldVersion, newVersion, newRevision) {
   const oldSemVer = new SemVer(oldVersion, true);
@@ -47,11 +52,30 @@ function checkIfNeedsUpdate(oldVersion, newVersion, newRevision) {
   actions.setOutput('commit', message);
 }
 
+/**
+ * We cant use `npm run format` as it's too slow
+ * so we only scope the files we updated
+ */
+async function formatUpdateFiles() {
+  await Promise.all(
+    touchedFiles.map(file => {
+      return execAsync(`npx eslint --ext js --ext ts --fix ${file}`);
+    })
+  );
+  await Promise.all(
+    touchedFiles.map(file => {
+      return execAsync(`npx prettier --write ${file}`);
+    })
+  );
+}
+
 async function replaceInFile(filePath, search, replace) {
   const buffer = await readFile(filePath);
   const update = buffer.toString().replace(search, replace);
 
   await writeFile(filePath, update);
+
+  touchedFiles.push(filePath);
 }
 
 async function getVersionAndRevisionForStable() {
@@ -86,17 +110,23 @@ async function updateDevToolsProtocolVersion(revision) {
   );
 }
 
-async function updateVersionFileLastMaintained(updateVersion) {
+async function updateVersionFileLastMaintained(currentVersion, updateVersion) {
   const versions = [...versionsPerRelease.keys()];
-  if (version.indexOf(updateVersion) !== -1) {
+  if (versions.indexOf(updateVersion) !== -1) {
     return;
   }
 
-  await replaceInFile(
-    './versions.js',
-    VERSIONS_PER_RELEASE_COMMENT,
-    `${VERSIONS_PER_RELEASE_COMMENT}\n  ['${version}', 'NEXT'],`
-  );
+  // If we have manually rolled Chrome but not yet released
+  // We will have NEXT as value in the Map
+  if (versionsPerRelease.get(currentVersion) === 'NEXT') {
+    await replaceInFile('./versions.js', currentVersion, updateVersion);
+  } else {
+    await replaceInFile(
+      './versions.js',
+      VERSIONS_PER_RELEASE_COMMENT,
+      `${VERSIONS_PER_RELEASE_COMMENT}\n  ['${version}', 'NEXT'],`
+    );
+  }
 
   const lastMaintainedIndex = versions.indexOf(lastMaintainedChromeVersion);
   const nextMaintainedVersion = versions[lastMaintainedIndex - 1];
@@ -118,13 +148,13 @@ await replaceInFile(
   version
 );
 
-await updateVersionFileLastMaintained(version);
+await updateVersionFileLastMaintained(CHROME_CURRENT_VERSION, version);
 await updateDevToolsProtocolVersion(revision);
 
 // Create new `package-lock.json` as we update devtools-protocol
 execSync('npm install --ignore-scripts');
 // Make sure we pass CI formatter check by running all the new files though it
-execSync('npm run format');
+await formatUpdateFiles();
 
 // Keep this as they can be used to debug GitHub Actions if needed
 actions.setOutput('version', version);
