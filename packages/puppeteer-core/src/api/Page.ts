@@ -1125,9 +1125,8 @@ export class Page extends EventEmitter {
    *
    * @param expression - Expression to evaluate
    */
-  async $x(expression: string): Promise<Array<ElementHandle<Node>>>;
-  async $x(): Promise<Array<ElementHandle<Node>>> {
-    throw new Error('Not implemented');
+  async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
+    return this.mainFrame().$x(expression);
   }
 
   /**
@@ -2642,12 +2641,9 @@ export class Page extends EventEmitter {
    */
   async waitForSelector<Selector extends string>(
     selector: Selector,
-    options?: WaitForSelectorOptions
-  ): Promise<ElementHandle<NodeFor<Selector>> | null>;
-  async waitForSelector<Selector extends string>(): Promise<ElementHandle<
-    NodeFor<Selector>
-  > | null> {
-    throw new Error('Not implemented');
+    options: WaitForSelectorOptions = {}
+  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
+    return await this.mainFrame().waitForSelector(selector, options);
   }
 
   /**

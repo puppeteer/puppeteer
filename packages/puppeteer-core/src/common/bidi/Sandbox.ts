@@ -112,4 +112,9 @@ export class Sandbox {
     const document = await this.document();
     return document.$$eval(selector, pageFunction, ...args);
   }
+
+  async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
+    const document = await this.document();
+    return document.$x(expression);
+  }
 }

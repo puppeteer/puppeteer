@@ -22,6 +22,7 @@ import {
   Browser as BrowserBase,
   BrowserCloseCallback,
   BrowserContextOptions,
+  BrowserEmittedEvents,
 } from '../../api/Browser.js';
 import {BrowserContext as BrowserContextBase} from '../../api/BrowserContext.js';
 import {Viewport} from '../PuppeteerViewport.js';
@@ -59,6 +60,10 @@ export class Browser extends BrowserBase {
     this.#closeCallback = opts.closeCallback;
     this.#connection = opts.connection;
     this.#defaultViewport = opts.defaultViewport;
+
+    this.#process?.on('close', () => {
+      return this.emit(BrowserEmittedEvents.Disconnected);
+    });
   }
 
   get connection(): Connection {

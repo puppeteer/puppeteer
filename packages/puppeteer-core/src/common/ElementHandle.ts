@@ -32,15 +32,14 @@ import {CDPSession} from './Connection.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
-import {getQueryHandlerAndSelector} from './GetQueryHandler.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {CDPJSHandle} from './JSHandle.js';
 import {LazyArg} from './LazyArg.js';
 import {CDPPage} from './Page.js';
-import {ElementFor, HandleFor, NodeFor} from './types.js';
+import {NodeFor} from './types.js';
 import {KeyInput} from './USKeyboardLayout.js';
-import {debugError, isString} from './util.js';
+import {debugError} from './util.js';
 
 const applyOffsetsToQuad = (
   quad: Point[],
@@ -120,26 +119,13 @@ export class CDPElementHandle<
     >;
   }
 
-  override async $x(
-    expression: string
-  ): Promise<Array<CDPElementHandle<Node>>> {
-    if (expression.startsWith('//')) {
-      expression = `.${expression}`;
-    }
-    return this.$$(`xpath/${expression}`);
-  }
-
   override async waitForSelector<Selector extends string>(
     selector: Selector,
-    options: WaitForSelectorOptions = {}
+    options?: WaitForSelectorOptions
   ): Promise<CDPElementHandle<NodeFor<Selector>> | null> {
-    const {updatedSelector, QueryHandler} =
-      getQueryHandlerAndSelector(selector);
-    return (await QueryHandler.waitFor(
-      this,
-      updatedSelector,
-      options
-    )) as CDPElementHandle<NodeFor<Selector>> | null;
+    return (await super.waitForSelector(selector, options)) as CDPElementHandle<
+      NodeFor<Selector>
+    > | null;
   }
 
   override async waitForXPath(
@@ -182,18 +168,6 @@ export class CDPElementHandle<
     return this.#checkVisibility(false);
   }
 
-  override async toElement<
-    K extends keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap
-  >(tagName: K): Promise<HandleFor<ElementFor<K>>> {
-    const isMatchingTagName = await this.evaluate((node, tagName) => {
-      return node.nodeName === tagName.toUpperCase();
-    }, tagName);
-    if (!isMatchingTagName) {
-      throw new Error(`Element is not a(n) \`${tagName}\` element`);
-    }
-    return this as unknown as HandleFor<ElementFor<K>>;
-  }
-
   override async contentFrame(): Promise<Frame | null> {
     const nodeInfo = await this.client.send('DOM.describeNode', {
       objectId: this.id,
@@ -208,7 +182,6 @@ export class CDPElementHandle<
     this: CDPElementHandle<Element>
   ): Promise<void> {
     await this.assertConnectedElement();
-
     try {
       await this.client.send('DOM.scrollIntoViewIfNeeded', {
         objectId: this.id,
@@ -216,13 +189,7 @@ export class CDPElementHandle<
     } catch (error) {
       debugError(error);
       // Fallback to Element.scrollIntoView if DOM.scrollIntoViewIfNeeded is not supported
-      await this.evaluate(async (element): Promise<void> => {
-        element.scrollIntoView({
-          block: 'center',
-          inline: 'center',
-          behavior: 'instant',
-        });
-      });
+      await super.scrollIntoView();
     }
   }
 
@@ -452,50 +419,6 @@ export class CDPElementHandle<
     await this.#page.mouse.dragAndDrop(startPoint, targetPoint, options);
   }
 
-  override async select(...values: string[]): Promise<string[]> {
-    for (const value of values) {
-      assert(
-        isString(value),
-        'Values must be strings. Found value "' +
-          value +
-          '" of type "' +
-          typeof value +
-          '"'
-      );
-    }
-
-    return this.evaluate((element, vals): string[] => {
-      const values = new Set(vals);
-      if (!(element instanceof HTMLSelectElement)) {
-        throw new Error('Element is not a <select> element.');
-      }
-
-      const selectedValues = new Set<string>();
-      if (!element.multiple) {
-        for (const option of element.options) {
-          option.selected = false;
-        }
-        for (const option of element.options) {
-          if (values.has(option.value)) {
-            option.selected = true;
-            selectedValues.add(option.value);
-            break;
-          }
-        }
-      } else {
-        for (const option of element.options) {
-          option.selected = values.has(option.value);
-          if (option.selected) {
-            selectedValues.add(option.value);
-          }
-        }
-      }
-      element.dispatchEvent(new Event('input', {bubbles: true}));
-      element.dispatchEvent(new Event('change', {bubbles: true}));
-      return [...selectedValues.values()];
-    }, values);
-  }
-
   override async uploadFile(
     this: CDPElementHandle<HTMLInputElement>,
     ...filePaths: string[]
@@ -575,15 +498,6 @@ export class CDPElementHandle<
   override async touchEnd(this: CDPElementHandle<Element>): Promise<void> {
     await this.#scrollIntoViewIfNeeded();
     await this.#page.touchscreen.touchEnd();
-  }
-
-  override async focus(): Promise<void> {
-    await this.evaluate(element => {
-      if (!(element instanceof HTMLElement)) {
-        throw new Error('Cannot focus non-HTMLElement');
-      }
-      return element.focus();
-    });
   }
 
   override async type(text: string, options?: {delay: number}): Promise<void> {

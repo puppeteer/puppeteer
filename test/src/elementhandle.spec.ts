@@ -467,12 +467,23 @@ describe('ElementHandle specs', function () {
     it('should work', async () => {
       const {page, server} = getTestState();
 
+      async function getVisibilityForButton(selector: string) {
+        const button = (await page.$(selector))!;
+        return await button.isIntersectingViewport();
+      }
+
       await page.goto(server.PREFIX + '/offscreenbuttons.html');
+      const buttonsPromises = [];
+      // Firefox seems slow when using `isIntersectingViewport`
+      // so we do all the tasks asynchronously
       for (let i = 0; i < 11; ++i) {
-        const button = (await page.$('#btn' + i))!;
+        buttonsPromises.push(getVisibilityForButton('#btn' + i));
+      }
+      const buttonVisibility = await Promise.all(buttonsPromises);
+      for (let i = 0; i < 11; ++i) {
         // All but last button are visible.
         const visible = i < 10;
-        expect(await button.isIntersectingViewport()).toBe(visible);
+        expect(buttonVisibility[i]).toBe(visible);
       }
     });
     it('should work with threshold', async () => {
@@ -505,51 +516,69 @@ describe('ElementHandle specs', function () {
       const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/inline-svg.html');
-      const visibleCircle = await page.$('circle');
-      const visibleSvg = await page.$('svg');
-      expect(
-        await visibleCircle!.isIntersectingViewport({
-          threshold: 1,
-        })
-      ).toBe(true);
-      expect(
-        await visibleCircle!.isIntersectingViewport({
-          threshold: 0,
-        })
-      ).toBe(true);
-      expect(
-        await visibleSvg!.isIntersectingViewport({
-          threshold: 1,
-        })
-      ).toBe(true);
-      expect(
-        await visibleSvg!.isIntersectingViewport({
-          threshold: 0,
-        })
-      ).toBe(true);
+      const [visibleCircle, visibleSvg] = await Promise.all([
+        page.$('circle'),
+        page.$('svg'),
+      ]);
 
-      const invisibleCircle = await page.$('div circle');
-      const invisibleSvg = await page.$('div svg');
-      expect(
-        await invisibleCircle!.isIntersectingViewport({
+      // Firefox seems slow when using `isIntersectingViewport`
+      // so we do all the tasks asynchronously
+      const [
+        circleThresholdOne,
+        circleThresholdZero,
+        svgThresholdOne,
+        svgThresholdZero,
+      ] = await Promise.all([
+        visibleCircle!.isIntersectingViewport({
           threshold: 1,
-        })
-      ).toBe(false);
-      expect(
-        await invisibleCircle!.isIntersectingViewport({
+        }),
+        visibleCircle!.isIntersectingViewport({
           threshold: 0,
-        })
-      ).toBe(false);
-      expect(
-        await invisibleSvg!.isIntersectingViewport({
+        }),
+        visibleSvg!.isIntersectingViewport({
           threshold: 1,
-        })
-      ).toBe(false);
-      expect(
-        await invisibleSvg!.isIntersectingViewport({
+        }),
+        visibleSvg!.isIntersectingViewport({
           threshold: 0,
-        })
-      ).toBe(false);
+        }),
+      ]);
+
+      expect(circleThresholdOne).toBe(true);
+      expect(circleThresholdZero).toBe(true);
+      expect(svgThresholdOne).toBe(true);
+      expect(svgThresholdZero).toBe(true);
+
+      const [invisibleCircle, invisibleSvg] = await Promise.all([
+        page.$('div circle'),
+        await page.$('div svg'),
+      ]);
+
+      // Firefox seems slow when using `isIntersectingViewport`
+      // so we do all the tasks asynchronously
+      const [
+        invisibleCircleThresholdOne,
+        invisibleCircleThresholdZero,
+        invisibleSvgThresholdOne,
+        invisibleSvgThresholdZero,
+      ] = await Promise.all([
+        invisibleCircle!.isIntersectingViewport({
+          threshold: 1,
+        }),
+        invisibleCircle!.isIntersectingViewport({
+          threshold: 0,
+        }),
+        invisibleSvg!.isIntersectingViewport({
+          threshold: 1,
+        }),
+        invisibleSvg!.isIntersectingViewport({
+          threshold: 0,
+        }),
+      ]);
+
+      expect(invisibleCircleThresholdOne).toBe(false);
+      expect(invisibleCircleThresholdZero).toBe(false);
+      expect(invisibleSvgThresholdOne).toBe(false);
+      expect(invisibleSvgThresholdZero).toBe(false);
     });
   });
 

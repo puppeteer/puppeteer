@@ -158,14 +158,14 @@ describe('JSHandle', function () {
       expect(await bHandle.jsonValue()).toEqual(undefined);
     });
 
-    it('should not work with dates', async () => {
+    it('should work with dates', async () => {
       const {page} = getTestState();
 
       const dateHandle = await page.evaluateHandle(() => {
         return new Date('2017-09-26T00:00:00.000Z');
       });
-      const json = await dateHandle.jsonValue();
-      expect(json).toEqual({});
+      const date = await dateHandle.jsonValue();
+      expect(date.toISOString()).toEqual('2017-09-26T00:00:00.000Z');
     });
     it('should throw for circular objects', async () => {
       const {page} = getTestState();
@@ -277,7 +277,10 @@ describe('JSHandle', function () {
       const aHandle = await page.evaluateHandle(() => {
         return window;
       });
-      expect(aHandle.toString()).toBe('JSHandle@object');
+      expect(aHandle.toString()).atLeastOneToContain([
+        'JSHandle@object',
+        'JSHandle@window',
+      ]);
     });
     it('should work with different subtypes', async () => {
       const {page} = getTestState();
