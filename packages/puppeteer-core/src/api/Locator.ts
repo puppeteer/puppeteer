@@ -66,7 +66,7 @@ export interface LocatorOptions {
 
 /**
  * Timeout for individual operations inside the locator. On errors the
- * operation is retried as long as {@link LocatorOptions.timeout} is not
+ * operation is retried as long as {@link Locator.setTimeout} is not
  * exceeded. This timeout should be generally much lower as locating an
  * element means multiple asynchronious operations.
  */
@@ -120,45 +120,26 @@ export class Locator extends EventEmitter {
   /**
    * @internal
    */
-  static create(
-    pageOrFrame: Page | Frame,
-    selector: string,
-    options: LocatorOptions = {
-      visibility: 'visible',
-      timeout:
-        'getDefaultTimeout' in pageOrFrame
-          ? pageOrFrame.getDefaultTimeout()
-          : pageOrFrame.page().getDefaultTimeout(),
-      ensureElementIsInTheViewport: true,
-      waitForEnabled: true,
-      waitForStableBoundingBox: true,
-    }
-  ): Locator {
-    return new Locator(pageOrFrame, selector, options);
+  static create(pageOrFrame: Page | Frame, selector: string): Locator {
+    return new Locator(pageOrFrame, selector).setTimeout(
+      'getDefaultTimeout' in pageOrFrame
+        ? pageOrFrame.getDefaultTimeout()
+        : pageOrFrame.page().getDefaultTimeout()
+    );
   }
 
   #pageOrFrame: Page | Frame;
   #selector: string;
-  #options: LocatorOptions;
+  #visibility: VisibilityOption = 'visible';
+  #timeout = 30_000;
+  #ensureElementIsInTheViewport = true;
+  #waitForEnabled = true;
+  #waitForStableBoundingBox = true;
 
-  private constructor(
-    pageOrFrame: Page | Frame,
-    selector: string,
-    options: LocatorOptions = {
-      visibility: 'visible',
-      timeout:
-        'getDefaultTimeout' in pageOrFrame
-          ? pageOrFrame.getDefaultTimeout()
-          : pageOrFrame.page().getDefaultTimeout(),
-      ensureElementIsInTheViewport: true,
-      waitForEnabled: true,
-      waitForStableBoundingBox: true,
-    }
-  ) {
+  private constructor(pageOrFrame: Page | Frame, selector: string) {
     super();
     this.#pageOrFrame = pageOrFrame;
     this.#selector = selector;
-    this.#options = options;
   }
 
   override on<K extends keyof LocatorEventObject>(
@@ -183,27 +164,27 @@ export class Locator extends EventEmitter {
   }
 
   setVisibility(visibility: VisibilityOption): this {
-    this.#options.visibility = visibility;
+    this.#visibility = visibility;
     return this;
   }
 
   setTimeout(timeout: number): this {
-    this.#options.timeout = timeout;
+    this.#timeout = timeout;
     return this;
   }
 
   setEnsureElementIsInTheViewport(value: boolean): this {
-    this.#options.ensureElementIsInTheViewport = value;
+    this.#ensureElementIsInTheViewport = value;
     return this;
   }
 
   setWaitForEnabled(value: boolean): this {
-    this.#options.waitForEnabled = value;
+    this.#waitForEnabled = value;
     return this;
   }
 
   setWaitForStableBoundingBox(value: boolean): this {
-    this.#options.waitForStableBoundingBox = value;
+    this.#waitForStableBoundingBox = value;
     return this;
   }
 
@@ -272,11 +253,11 @@ export class Locator extends EventEmitter {
   /**
    * Checks if the element is in the viewport and auto-scrolls it if it is not.
    */
-  #ensureElementIsInTheViewport = async (
+  #ensureElementIsInTheViewportIfNeeded = async (
     element: ElementHandle,
     signal?: AbortSignal
   ): Promise<void> => {
-    if (!this.#options.ensureElementIsInTheViewport) {
+    if (!this.#ensureElementIsInTheViewport) {
       return;
     }
     // Side-effect: this also checks if it is connected.
@@ -302,14 +283,14 @@ export class Locator extends EventEmitter {
    * than 'hidden' or 'collapse' and non-empty bounding box. visibility ===
    * 'hidden' means the opposite of that.
    */
-  #waitForVisibility = async (
+  #waitForVisibilityIfNeeded = async (
     element: ElementHandle,
     signal?: AbortSignal
   ): Promise<void> => {
-    if (this.#options.visibility === null) {
+    if (this.#visibility === null) {
       return;
     }
-    if (this.#options.visibility === 'hidden') {
+    if (this.#visibility === 'hidden') {
       await this.#waitForFunction(async () => {
         return element.isHidden();
       }, signal);
@@ -323,11 +304,11 @@ export class Locator extends EventEmitter {
    * If the element is a button, textarea, input or select, wait till the
    * element becomes enabled.
    */
-  #waitForEnabled = async (
+  #waitForEnabledIfNeeded = async (
     element: ElementHandle,
     signal?: AbortSignal
   ): Promise<void> => {
-    if (!this.#options.waitForEnabled) {
+    if (!this.#waitForEnabled) {
       return;
     }
     await this.#pageOrFrame.waitForFunction(
@@ -349,11 +330,11 @@ export class Locator extends EventEmitter {
    * Compares the bounding box of the element for two consecutive animation
    * frames and waits till they are the same.
    */
-  #waitForStableBoundingBox = async (
+  #waitForStableBoundingBoxIfNeeded = async (
     element: ElementHandle,
     signal?: AbortSignal
   ): Promise<void> => {
-    if (!this.#options.waitForStableBoundingBox) {
+    if (!this.#waitForStableBoundingBox) {
       return;
     }
     function getClientRect() {
@@ -404,7 +385,7 @@ export class Locator extends EventEmitter {
           this.#selector,
           {
             visible: false,
-            timeout: this.#options.timeout,
+            timeout: this.#timeout,
             signal,
           }
         );
@@ -430,7 +411,7 @@ export class Locator extends EventEmitter {
         }
       },
       options?.signal,
-      this.#options.timeout
+      this.#timeout
     );
   }
 
@@ -446,10 +427,10 @@ export class Locator extends EventEmitter {
       {
         signal: clickOptions?.signal,
         conditions: [
-          this.#ensureElementIsInTheViewport,
-          this.#waitForVisibility,
-          this.#waitForEnabled,
-          this.#waitForStableBoundingBox,
+          this.#ensureElementIsInTheViewportIfNeeded,
+          this.#waitForVisibilityIfNeeded,
+          this.#waitForEnabledIfNeeded,
+          this.#waitForStableBoundingBoxIfNeeded,
         ],
       }
     );
@@ -556,10 +537,10 @@ export class Locator extends EventEmitter {
       {
         signal: fillOptions?.signal,
         conditions: [
-          this.#ensureElementIsInTheViewport,
-          this.#waitForVisibility,
-          this.#waitForEnabled,
-          this.#waitForStableBoundingBox,
+          this.#ensureElementIsInTheViewportIfNeeded,
+          this.#waitForVisibilityIfNeeded,
+          this.#waitForEnabledIfNeeded,
+          this.#waitForStableBoundingBoxIfNeeded,
         ],
       }
     );
@@ -573,9 +554,9 @@ export class Locator extends EventEmitter {
       {
         signal: hoverOptions?.signal,
         conditions: [
-          this.#ensureElementIsInTheViewport,
-          this.#waitForVisibility,
-          this.#waitForStableBoundingBox,
+          this.#ensureElementIsInTheViewportIfNeeded,
+          this.#waitForVisibilityIfNeeded,
+          this.#waitForStableBoundingBoxIfNeeded,
         ],
       }
     );
@@ -604,9 +585,9 @@ export class Locator extends EventEmitter {
       {
         signal: scrollOptions?.signal,
         conditions: [
-          this.#ensureElementIsInTheViewport,
-          this.#waitForVisibility,
-          this.#waitForStableBoundingBox,
+          this.#ensureElementIsInTheViewportIfNeeded,
+          this.#waitForVisibilityIfNeeded,
+          this.#waitForStableBoundingBoxIfNeeded,
         ],
       }
     );
