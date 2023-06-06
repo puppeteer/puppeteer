@@ -178,8 +178,7 @@ export class ChromeLauncher extends ProductLauncher {
       '--disable-dev-shm-usage',
       '--disable-extensions',
       // AcceptCHFrame disabled because of crbug.com/1348106.
-      // DIPS is disabled because of crbug.com/1439578. TODO: enable after M115.
-      '--disable-features=Translate,BackForwardCache,AcceptCHFrame,MediaRouter,OptimizationHints,DIPS',
+      '--disable-features=Translate,BackForwardCache,AcceptCHFrame,MediaRouter,OptimizationHints',
       '--disable-hang-monitor',
       '--disable-ipc-flooding-protection',
       '--disable-popup-blocking',
