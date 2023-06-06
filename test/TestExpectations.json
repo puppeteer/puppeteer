@@ -2136,6 +2136,18 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[queryhandler.spec] Query handler tests P selectors should work ARIA selectors with name and role",
+    "platforms": ["linux"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[queryhandler.spec] Query handler tests P selectors should work ARIA selectors with role",
+    "platforms": ["linux"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[queryhandler.spec] Query handler tests P selectors should work with deep combinators",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
