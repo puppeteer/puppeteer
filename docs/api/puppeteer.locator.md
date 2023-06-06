@@ -14,12 +14,6 @@ export declare class Locator extends EventEmitter
 
 **Extends:** [EventEmitter](./puppeteer.eventemitter.md)
 
-## Constructors
-
-| Constructor                                                                           | Modifiers | Description                                                 |
-| ------------------------------------------------------------------------------------- | --------- | ----------------------------------------------------------- |
-| [(constructor)(pageOrFrame, selector, options)](./puppeteer.locator._constructor_.md) |           | Constructs a new instance of the <code>Locator</code> class |
-
 ## Methods
 
 | Method                                                                                           | Modifiers | Description                                                                                                                                                                                                                              |
