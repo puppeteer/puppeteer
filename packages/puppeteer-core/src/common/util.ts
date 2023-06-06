@@ -147,8 +147,11 @@ export function createClientError(
 const getErrorDetails = (details: Protocol.Runtime.ExceptionDetails) => {
   let name = '';
   let message: string;
-  const lines = details.exception?.description?.split('\n') ?? [];
-  const size = details.stackTrace?.callFrames.length ?? 0;
+  const lines = details.exception?.description?.split('\n    at ') ?? [];
+  const size = Math.min(
+    details.stackTrace?.callFrames.length ?? 0,
+    lines.length - 1
+  );
   lines.splice(-size, size);
   if (details.exception?.className) {
     name = details.exception.className;
