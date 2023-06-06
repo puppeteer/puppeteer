@@ -2,11 +2,13 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import ProtocolMapping from 'devtools-protocol/types/protocol-mapping.js';
 
 import {WaitForOptions} from '../../api/Page.js';
+import PuppeteerUtil from '../../injected/injected.js';
 import {assert} from '../../util/assert.js';
 import {stringifyFunction} from '../../util/Function.js';
 import {ProtocolError, TimeoutError} from '../Errors.js';
 import {EventEmitter} from '../EventEmitter.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
+import {scriptInjector} from '../ScriptInjector.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
 import {
@@ -67,6 +69,22 @@ export class BrowsingContext extends EventEmitter {
     this.connection = connection;
     this.#timeoutSettings = timeoutSettings;
     this.#id = info.context;
+  }
+
+  #puppeteerUtil?: Promise<JSHandle<PuppeteerUtil>>;
+  get puppeteerUtil(): Promise<JSHandle<PuppeteerUtil>> {
+    const promise = Promise.resolve() as Promise<unknown>;
+    scriptInjector.inject(script => {
+      if (this.#puppeteerUtil) {
+        void this.#puppeteerUtil.then(handle => {
+          void handle.dispose();
+        });
+      }
+      this.#puppeteerUtil = promise.then(() => {
+        return this.evaluateHandle(script) as Promise<JSHandle<PuppeteerUtil>>;
+      });
+    }, !this.#puppeteerUtil);
+    return this.#puppeteerUtil as Promise<JSHandle<PuppeteerUtil>>;
   }
 
   get url(): string {

@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
+import {ElementHandle} from '../../api/ElementHandle.js';
 import {Frame as BaseFrame} from '../../api/Frame.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
-import {EvaluateFunc, HandleFor} from '../types.js';
+import {EvaluateFunc, EvaluateFuncWith, HandleFor, NodeFor} from '../types.js';
+import {withSourcePuppeteerURLIfNone} from '../util.js';
 
 import {BrowsingContext} from './BrowsingContext.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {Page} from './Page.js';
+import {
+  MAIN_SANDBOX,
+  PUPPETEER_SANDBOX,
+  SandboxChart,
+  Sandbox,
+} from './Sandbox.js';
 
 /**
  * Puppeteer's Frame class could be viewed as a BiDi BrowsingContext implementation
@@ -29,6 +37,7 @@ import {Page} from './Page.js';
 export class Frame extends BaseFrame {
   #page: Page;
   #context: BrowsingContext;
+  sandboxes: SandboxChart;
   override _id: string;
 
   constructor(page: Page, context: BrowsingContext, parentId?: string | null) {
@@ -37,6 +46,11 @@ export class Frame extends BaseFrame {
     this.#context = context;
     this._id = this.#context.id;
     this._parentId = parentId ?? undefined;
+
+    this.sandboxes = {
+      [MAIN_SANDBOX]: new Sandbox(context),
+      [PUPPETEER_SANDBOX]: new Sandbox(context),
+    };
   }
 
   override page(): Page {
@@ -117,6 +131,50 @@ export class Frame extends BaseFrame {
 
   context(): BrowsingContext {
     return this.#context;
+  }
+
+  override $<Selector extends string>(
+    selector: Selector
+  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
+    return this.sandboxes[MAIN_SANDBOX].$(selector);
+  }
+
+  override $$<Selector extends string>(
+    selector: Selector
+  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
+    return this.sandboxes[MAIN_SANDBOX].$$(selector);
+  }
+
+  override $eval<
+    Selector extends string,
+    Params extends unknown[],
+    Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
+      NodeFor<Selector>,
+      Params
+    >
+  >(
+    selector: Selector,
+    pageFunction: string | Func,
+    ...args: Params
+  ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
+    return this.sandboxes[MAIN_SANDBOX].$eval(selector, pageFunction, ...args);
+  }
+
+  override $$eval<
+    Selector extends string,
+    Params extends unknown[],
+    Func extends EvaluateFuncWith<
+      Array<NodeFor<Selector>>,
+      Params
+    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>
+  >(
+    selector: Selector,
+    pageFunction: string | Func,
+    ...args: Params
+  ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
+    return this.sandboxes[MAIN_SANDBOX].$$eval(selector, pageFunction, ...args);
   }
 
   dispose(): void {

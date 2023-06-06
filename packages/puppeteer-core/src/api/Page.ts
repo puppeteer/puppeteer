@@ -57,6 +57,7 @@ import {
   isNumber,
   isString,
   waitForEvent,
+  withSourcePuppeteerURLIfNone,
 } from '../common/util.js';
 import type {WebWorker} from '../common/WebWorker.js';
 import {assert} from '../util/assert.js';
@@ -840,11 +841,8 @@ export class Page extends EventEmitter {
    */
   async $<Selector extends string>(
     selector: Selector
-  ): Promise<ElementHandle<NodeFor<Selector>> | null>;
-  async $<Selector extends string>(): Promise<ElementHandle<
-    NodeFor<Selector>
-  > | null> {
-    throw new Error('Not implemented');
+  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
+    return this.mainFrame().$(selector);
   }
 
   /**
@@ -856,11 +854,8 @@ export class Page extends EventEmitter {
    */
   async $$<Selector extends string>(
     selector: Selector
-  ): Promise<Array<ElementHandle<NodeFor<Selector>>>>;
-  async $$<Selector extends string>(): Promise<
-    Array<ElementHandle<NodeFor<Selector>>>
-  > {
-    throw new Error('Not implemented');
+  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
+    return this.mainFrame().$$(selector);
   }
 
   /**
@@ -1037,9 +1032,9 @@ export class Page extends EventEmitter {
     selector: Selector,
     pageFunction: Func | string,
     ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async $eval(): Promise<unknown> {
-    throw new Error('Not implemented');
+  ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
+    return this.mainFrame().$eval(selector, pageFunction, ...args);
   }
 
   /**
@@ -1115,9 +1110,9 @@ export class Page extends EventEmitter {
     selector: Selector,
     pageFunction: Func | string,
     ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async $$eval(): Promise<unknown> {
-    throw new Error('Not implemented');
+  ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
+    return this.mainFrame().$$eval(selector, pageFunction, ...args);
   }
 
   /**

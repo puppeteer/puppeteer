@@ -21,13 +21,13 @@
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.removeScriptToEvaluateOnNewDocument *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[EventEmitter.spec] EventEmitter *",
@@ -51,25 +51,25 @@
     "testIdPattern": "[navigation.spec] navigation Frame.goto *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.waitForNavigation *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL", "TIMEOUT"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goBack *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL", "TIMEOUT"]
   },
   {
     "testIdPattern": "[network.spec] network *",
@@ -87,7 +87,7 @@
     "testIdPattern": "[network.spec] network Page.authenticate *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL", "TIMEOUT"]
   },
   {
     "testIdPattern": "[network.spec] network Page.setBypassServiceWorker *",
@@ -201,7 +201,7 @@
     "testIdPattern": "[queryhandler.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL", "SKIP"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[accessibility.spec] *",
@@ -252,88 +252,40 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Frame.evaluate should have correct execution contexts",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
     "testIdPattern": "[evaluation.spec] Evaluation specs Frame.evaluate should have different execution contexts",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should accept element handle as an argument",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should be able to throw a tricky error",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should evaluate in the page context",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should not throw an error when evaluation does a navigation",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should not throw an error when evaluation does a navigation",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should simulate a user gesture",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw a nice error after a navigation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw if elementHandles are from other frames",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw if underlying element was disposed",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw when evaluation triggers reload",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work from-inside an exposed function",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work right after framenavigated",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL", "TIMEOUT"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument *",
@@ -495,7 +447,7 @@
     "testIdPattern": "[network.spec] network raw network headers Cross-origin set-cookie",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[network.spec] network raw network headers Same-origin set-cookie navigation",
@@ -570,30 +522,6 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.setContent should work with accents",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.setContent should work with emojis",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.setContent should work with newline",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.setContent should work with tricky content",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[page.spec] Page Page.waitForNetworkIdle should work with aborted requests",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -604,6 +532,36 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[queryhandler.spec] Query handler tests P selectors should work ARIA selectors",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[queryhandler.spec] Query handler tests P selectors should work ARIA selectors with name and role",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[queryhandler.spec] Query handler tests P selectors should work ARIA selectors with role",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[queryhandler.spec] Query handler tests P selectors should work with :hover",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[queryhandler.spec] Query handler tests Text selectors in Page should clear caches",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[requestinterception-experimental.spec] *",
@@ -1578,12 +1536,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[network.spec] network Page.authenticate should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
     "testIdPattern": "[network.spec] network Page.setExtraHTTPHeaders should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -2137,18 +2089,12 @@
   },
   {
     "testIdPattern": "[queryhandler.spec] Query handler tests P selectors should work ARIA selectors with name and role",
-    "platforms": ["linux"],
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[queryhandler.spec] Query handler tests P selectors should work ARIA selectors with role",
-    "platforms": ["linux"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[queryhandler.spec] Query handler tests P selectors should work with deep combinators",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
@@ -2536,5 +2482,11 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headless"],
     "expectations": ["FAIL", "PASS"]
+  },
+  {
+    "testIdPattern": "[navigation.spec] navigation \"after each\" hook for \"should work with both domcontentloaded and load\"",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
   }
 ]
