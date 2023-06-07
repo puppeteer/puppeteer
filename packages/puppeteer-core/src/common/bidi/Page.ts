@@ -26,6 +26,7 @@ import {
 } from '../../api/Page.js';
 import {assert} from '../../util/assert.js';
 import {Deferred} from '../../util/Deferred.js';
+import {Accessibility} from '../Accessibility.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
 import {TargetCloseError} from '../Errors.js';
 import {Handler} from '../EventEmitter.js';
@@ -58,6 +59,7 @@ import {BidiSerializer} from './Serializer.js';
  * @internal
  */
 export class Page extends PageBase {
+  #accessibility: Accessibility;
   #timeoutSettings = new TimeoutSettings();
   #browserContext: BrowserContext;
   #connection: Connection;
@@ -135,6 +137,24 @@ export class Page extends PageBase {
     for (const [event, subscriber] of this.#networkManagerEvents) {
       this.#networkManager.on(event, subscriber);
     }
+
+    // TODO: https://github.com/w3c/webdriver-bidi/issues/443
+    this.#accessibility = new Accessibility({
+      describeNode: (id: string) => {
+        return this.mainFrame().context().sendCDPCommand('DOM.describeNode', {
+          objectId: id,
+        });
+      },
+      getFullAXTree: () => {
+        return this.mainFrame()
+          .context()
+          .sendCDPCommand('Accessibility.getFullAXTree');
+      },
+    });
+  }
+
+  override get accessibility(): Accessibility {
+    return this.#accessibility;
   }
 
   override browser(): Browser {
@@ -374,7 +394,7 @@ export class Page extends PageBase {
     const width = viewport.width;
     const height = viewport.height;
     const deviceScaleFactor = 1;
-    const screenOrientation = {angle: 0, type: 'portraitPrimary'};
+    const screenOrientation = {angle: 0, type: 'portraitPrimary' as const};
 
     await this.mainFrame()
       .context()

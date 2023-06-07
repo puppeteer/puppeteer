@@ -281,20 +281,20 @@ export class BrowsingContext extends EventEmitter {
     return await this.evaluate(getPageContent);
   }
 
-  async sendCDPCommand(
-    method: keyof ProtocolMapping.Commands,
-    params: object = {}
-  ): Promise<unknown> {
+  async sendCDPCommand<T extends keyof ProtocolMapping.Commands>(
+    method: T,
+    params: ProtocolMapping.Commands[T]['paramsType'][0] = {}
+  ): Promise<ProtocolMapping.Commands[T]['returnType']> {
     const session = await this.connection.send('cdp.getSession', {
       context: this.#id,
     });
-    // TODO: remove any once chromium-bidi types are updated.
-    const sessionId = (session.result as any).cdpSession;
-    return await this.connection.send('cdp.sendCommand', {
+    const sessionId = session.result.cdpSession;
+    const result = await this.connection.send('cdp.sendCommand', {
       cdpMethod: method,
       cdpParams: params,
       cdpSession: sessionId,
     });
+    return result.result;
   }
 
   dispose(): void {

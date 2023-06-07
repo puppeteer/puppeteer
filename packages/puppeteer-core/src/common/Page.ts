@@ -167,7 +167,16 @@ export class CDPPage extends Page {
     this.#keyboard = new Keyboard(client);
     this.#mouse = new Mouse(client, this.#keyboard);
     this.#touchscreen = new Touchscreen(client, this.#keyboard);
-    this.#accessibility = new Accessibility(client);
+    this.#accessibility = new Accessibility({
+      describeNode(id: string) {
+        return client.send('DOM.describeNode', {
+          objectId: id,
+        });
+      },
+      getFullAXTree() {
+        return client.send('Accessibility.getFullAXTree');
+      },
+    });
     this.#frameManager = new FrameManager(
       client,
       this,
