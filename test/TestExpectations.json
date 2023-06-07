@@ -216,6 +216,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[browser.spec] Browser specs Browser.process should return child_process instance",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[chromiumonly.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
