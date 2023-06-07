@@ -37,7 +37,10 @@
         "--no-coverage",
         "--no-suggestions"
       ],
-      "outFiles": ["${workspaceFolder}/**/*.js"]
+      "outFiles": ["${workspaceFolder}/**/*.js"],
+      "env": {
+        "DEBUGGER_ATTACHED": true
+      }
     }
   ]
 }
