@@ -220,9 +220,6 @@ export class CDPElementHandle<
         element.scrollIntoView({
           block: 'center',
           inline: 'center',
-          // @ts-expect-error Chrome still supports behavior: instant but
-          // it's not in the spec so TS shouts We don't want to make this
-          // breaking change in Puppeteer yet so we'll ignore the line.
           behavior: 'instant',
         });
       });

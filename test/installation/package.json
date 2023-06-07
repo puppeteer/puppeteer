@@ -45,10 +45,7 @@
     "assets"
   ],
   "dependencies": {
-    "glob": "8.1.0",
+    "glob": "10.2.7",
     "mocha": "10.2.0"
-  },
-  "devDependencies": {
-    "@types/glob": "8.1.0"
   }
 }

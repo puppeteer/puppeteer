@@ -1213,6 +1213,7 @@ describe('Page', function () {
       const thrown = await page.evaluate(async () => {
         try {
           await (globalThis as any).woof();
+          return;
         } catch (error) {
           return error;
         }

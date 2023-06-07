@@ -323,11 +323,6 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - name: Set up ${{ matrix.pkg_manager }}
-        id: workaround
-        if: ${{ matrix.node == '14' && matrix.os == 'windows-latest' && matrix.pkg_manager == 'npm' }}
-        run: npm install -g ${{ matrix.pkg_manager }}@8.3
-      - name: Set up ${{ matrix.pkg_manager }}
-        if: ${{ steps.workaround.outcome == 'skipped' }}
         run: npm install -g ${{ matrix.pkg_manager }}@latest
       - name: Install dependencies
         run: ${{ matrix.pkg_manager }} install
