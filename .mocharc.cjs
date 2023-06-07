@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+let timeout = process.platform === 'win32' ? 20_000 : 10_000;
+if (!!process.env.DEBUGGER_ATTACHED) {
+  timeout = 0;
+}
 module.exports = {
   reporter: 'dot',
   logLevel: 'debug',
@@ -22,6 +26,6 @@ module.exports = {
   exit: !!process.env.CI,
   retries: process.env.CI ? 3 : 0,
   parallel: !!process.env.PARALLEL,
-  timeout: process.platform === 'win32' ? 20_000 : 10_000,
+  timeout: timeout,
   reporter: process.env.CI ? 'spec' : 'dot',
 };

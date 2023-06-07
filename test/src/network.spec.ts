@@ -819,7 +819,9 @@ describe('network', function () {
       });
 
       const [response] = await Promise.all([
-        waitEvent<HTTPResponse>(page, 'response'),
+        waitEvent<HTTPResponse>(page, 'response', res => {
+          return !isFavicon(res);
+        }),
         page.evaluate(() => {
           const xhr = new XMLHttpRequest();
           xhr.open('GET', '/foo');
