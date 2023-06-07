@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {assert} from '../util/assert.js';
-import {Deferred} from '../util/Deferred.js';
-import {isErrorLike} from '../util/ErrorLike.js';
+import Protocol from 'devtools-protocol';
 
-import {CDPSession} from './Connection.js';
-import {getReadableAsBuffer, getReadableFromProtocolStream} from './util.js';
+import {assert} from '../util/assert.js';
+
+import {
+  getReadableAsBuffer,
+  getReadableFromProtocolStream,
+  ProtocolReadable,
+} from './util.js';
 
 /**
  * @public
@@ -27,6 +30,11 @@ export interface TracingOptions {
   path?: string;
   screenshots?: boolean;
   categories?: string[];
+}
+
+interface TracingSource extends ProtocolReadable {
+  start(opts: Protocol.Tracing.StartRequest): Promise<void>;
+  stop(): Promise<Protocol.Tracing.TracingCompleteEvent>;
 }
 
 /**
@@ -46,15 +54,15 @@ export interface TracingOptions {
  * @public
  */
 export class Tracing {
-  #client: CDPSession;
+  #source: TracingSource;
   #recording = false;
   #path?: string;
 
   /**
    * @internal
    */
-  constructor(client: CDPSession) {
-    this.#client = client;
+  constructor(source: TracingSource) {
+    this.#source = source;
   }
 
   /**
@@ -102,7 +110,7 @@ export class Tracing {
 
     this.#path = path;
     this.#recording = true;
-    await this.#client.send('Tracing.start', {
+    await this.#source.start({
       transferMode: 'ReturnAsStream',
       traceConfig: {
         excludedCategories,
@@ -116,25 +124,13 @@ export class Tracing {
    * @returns Promise which resolves to buffer with trace data.
    */
   async stop(): Promise<Buffer | undefined> {
-    const contentDeferred = Deferred.create<Buffer | undefined>();
-    this.#client.once('Tracing.tracingComplete', async event => {
-      try {
-        const readable = await getReadableFromProtocolStream(
-          this.#client,
-          event.stream
-        );
-        const buffer = await getReadableAsBuffer(readable, this.#path);
-        contentDeferred.resolve(buffer ?? undefined);
-      } catch (error) {
-        if (isErrorLike(error)) {
-          contentDeferred.reject(error);
-        } else {
-          contentDeferred.reject(new Error(`Unknown error: ${error}`));
-        }
-      }
-    });
-    await this.#client.send('Tracing.end');
+    const result = await this.#source.stop();
+    const readable = await getReadableFromProtocolStream(
+      this.#source,
+      result.stream!
+    );
+    const buffer = await getReadableAsBuffer(readable, this.#path);
     this.#recording = false;
-    return contentDeferred.valueOrThrow();
+    return buffer ?? undefined;
   }
 }

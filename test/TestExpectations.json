@@ -860,8 +860,20 @@
   {
     "testIdPattern": "[tracing.spec] *",
     "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[tracing.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[tracing.spec] Tracing should throw if tracing on two pages",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForTimeout waits for the given timeout before resolving",

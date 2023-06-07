@@ -17,6 +17,7 @@
 import type {Readable} from 'stream';
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import Protocol from 'devtools-protocol';
 
 import {
   Page as PageBase,
@@ -36,6 +37,7 @@ import {NetworkManagerEmittedEvents} from '../NetworkManager.js';
 import {PDFOptions} from '../PDFOptions.js';
 import {Viewport} from '../PuppeteerViewport.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
+import {Tracing} from '../Tracing.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
 import {
   debugError,
@@ -117,6 +119,7 @@ export class Page extends PageBase {
       },
     ],
   ]);
+  #tracing: Tracing;
 
   constructor(browserContext: BrowserContext, info: {context: string}) {
     super();
@@ -151,10 +154,36 @@ export class Page extends PageBase {
           .sendCDPCommand('Accessibility.getFullAXTree');
       },
     });
+
+    this.#tracing = new Tracing({
+      read: opts => {
+        return this.mainFrame().context().sendCDPCommand('IO.read', opts);
+      },
+      close: opts => {
+        return this.mainFrame().context().sendCDPCommand('IO.close', opts);
+      },
+      start: opts => {
+        return this.mainFrame().context().sendCDPCommand('Tracing.start', opts);
+      },
+      stop: async () => {
+        const deferred = Deferred.create();
+        this.mainFrame()
+          .context()
+          .once('Tracing.tracingComplete', event => {
+            deferred.resolve(event);
+          });
+        await this.mainFrame().context().sendCDPCommand('Tracing.end');
+        return deferred.valueOrThrow() as Promise<Protocol.Tracing.TracingCompleteEvent>;
+      },
+    });
   }
 
   override get accessibility(): Accessibility {
     return this.#accessibility;
+  }
+
+  override get tracing(): Tracing {
+    return this.#tracing;
   }
 
   override browser(): Browser {

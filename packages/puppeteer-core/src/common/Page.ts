@@ -184,7 +184,26 @@ export class CDPPage extends Page {
       this.#timeoutSettings
     );
     this.#emulationManager = new EmulationManager(client);
-    this.#tracing = new Tracing(client);
+    this.#tracing = new Tracing({
+      read: opts => {
+        return this.#client.send('IO.read', opts);
+      },
+      close: opts => {
+        return this.#client.send('IO.close', opts);
+      },
+      start: opts => {
+        return client.send('Tracing.start', opts);
+      },
+      stop: async () => {
+        const deferred = Deferred.create();
+        this.#client.once('Tracing.tracingComplete', event => {
+          console.log('resolved');
+          deferred.resolve(event);
+        });
+        await this.#client.send('Tracing.end');
+        return deferred.valueOrThrow() as Promise<Protocol.Tracing.TracingCompleteEvent>;
+      },
+    });
     this.#coverage = new Coverage(client);
     this.#screenshotTaskQueue = screenshotTaskQueue;
     this.#viewport = null;
@@ -1476,7 +1495,17 @@ export class CDPPage extends Page {
     }
 
     assert(result.stream, '`stream` is missing from `Page.printToPDF');
-    return getReadableFromProtocolStream(this.#client, result.stream);
+    return getReadableFromProtocolStream(
+      {
+        read: opts => {
+          return this.#client.send('IO.read', opts);
+        },
+        close: opts => {
+          return this.#client.send('IO.close', opts);
+        },
+      },
+      result.stream
+    );
   }
 
   override async pdf(options: PDFOptions = {}): Promise<Buffer> {

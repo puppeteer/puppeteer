@@ -577,8 +577,16 @@ export async function getReadableAsBuffer(
 /**
  * @internal
  */
+export interface ProtocolReadable {
+  read(opts: {handle: string; size: number}): Promise<Protocol.IO.ReadResponse>;
+  close(opts: {handle: string}): Promise<void>;
+}
+
+/**
+ * @internal
+ */
 export async function getReadableFromProtocolStream(
-  client: CDPSession,
+  source: ProtocolReadable,
   handle: string
 ): Promise<Readable> {
   // TODO: Once Node 18 becomes the lowest supported version, we can migrate to
@@ -597,11 +605,11 @@ export async function getReadableFromProtocolStream(
       }
 
       try {
-        const response = await client.send('IO.read', {handle, size});
+        const response = await source.read({handle, size});
         this.push(response.data, response.base64Encoded ? 'base64' : undefined);
         if (response.eof) {
           eof = true;
-          await client.send('IO.close', {handle});
+          await source.close({handle});
           this.push(null);
         }
       } catch (error) {

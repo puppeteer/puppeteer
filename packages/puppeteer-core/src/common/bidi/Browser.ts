@@ -35,7 +35,13 @@ import {debugError} from './utils.js';
  * @internal
  */
 export class Browser extends BrowserBase {
-  static readonly subscribeModules = ['browsingContext', 'network', 'log'];
+  static readonly subscribeModules = [
+    'browsingContext',
+    'network',
+    'log',
+    'cdp',
+  ];
+
   #browserName = '';
   #browserVersion = '';
 
