@@ -48,6 +48,7 @@ describe('Fixtures', function () {
     await new Promise(resolve => {
       return res.on('close', resolve);
     });
+    console.log(dumpioData);
     expect(dumpioData).toContain('message from dumpio');
   });
   it('should dump browser process stderr', async () => {

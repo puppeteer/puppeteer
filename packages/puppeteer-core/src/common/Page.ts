@@ -1549,10 +1549,6 @@ export class CDPPage extends Page {
     return this.mainFrame().type(selector, text, options);
   }
 
-  override waitForTimeout(milliseconds: number): Promise<void> {
-    return this.mainFrame().waitForTimeout(milliseconds);
-  }
-
   override waitForXPath(
     xpath: string,
     options: WaitForSelectorOptions = {}

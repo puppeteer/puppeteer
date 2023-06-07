@@ -2583,9 +2583,8 @@ export class Page extends EventEmitter {
    *
    * @param milliseconds - the number of milliseconds to wait.
    */
-  waitForTimeout(milliseconds: number): Promise<void>;
-  waitForTimeout(): Promise<void> {
-    throw new Error('Not implemented');
+  waitForTimeout(milliseconds: number): Promise<void> {
+    return this.mainFrame().waitForTimeout(milliseconds);
   }
 
   /**

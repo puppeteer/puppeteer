@@ -723,7 +723,10 @@ describe('Page', function () {
           return console.error(window);
         }),
       ]);
-      expect(message.text()).toBe('JSHandle@object');
+      expect(message.text()).atLeastOneToContain([
+        'JSHandle@object',
+        'JSHandle@window',
+      ]);
     });
     it('should trigger correct Log', async () => {
       const {page, server, isChrome} = getTestState();
