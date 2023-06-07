@@ -10,7 +10,7 @@ Fills out the input identified by the locator using the provided value. The type
 
 ```typescript
 class Locator {
-  fill(
+  abstract fill(
     value: string,
     fillOptions?: {
       signal?: AbortSignal;

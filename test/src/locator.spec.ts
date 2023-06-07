@@ -16,7 +16,10 @@
 
 import expect from 'expect';
 import {TimeoutError} from 'puppeteer-core';
-import {LocatorEmittedEvents} from 'puppeteer-core/internal/api/Locator.js';
+import {
+  Locator,
+  LocatorEmittedEvents,
+} from 'puppeteer-core/internal/api/Locator.js';
 import sinon from 'sinon';
 
 import {
@@ -442,6 +445,55 @@ describe('Locator', function () {
           return document.querySelector('input')?.value === '#333333';
         })
       ).toBe(true);
+    });
+  });
+
+  describe('Locator.race', () => {
+    it('races multiple locators', async () => {
+      const {page} = getTestState();
+
+      await page.setViewport({width: 500, height: 500});
+      await page.setContent(`
+        <button onclick="window.count++;">test</button>
+      `);
+      await page.evaluate(() => {
+        // @ts-expect-error different context.
+        window.count = 0;
+      });
+      await Locator.race([
+        page.locator('button'),
+        page.locator('button'),
+      ]).click();
+      const count = await page.evaluate(() => {
+        // @ts-expect-error different context.
+        return globalThis.count;
+      });
+      expect(count).toBe(1);
+    });
+
+    it('can be aborted', async () => {
+      const {page} = getTestState();
+      const clock = sinon.useFakeTimers();
+      try {
+        await page.setViewport({width: 500, height: 500});
+        await page.setContent(`
+          <button style="display: none;" onclick="this.innerText = 'clicked';">test</button>
+        `);
+        const abortController = new AbortController();
+        const result = Locator.race([
+          page.locator('button'),
+          page.locator('button'),
+        ])
+          .setTimeout(5000)
+          .click({
+            signal: abortController.signal,
+          });
+        clock.tick(2000);
+        abortController.abort();
+        await expect(result).rejects.toThrow(/aborted/);
+      } finally {
+        clock.restore();
+      }
     });
   });
 });

@@ -8,7 +8,7 @@ sidebar_label: Locator.setWaitForStableBoundingBox
 
 ```typescript
 class Locator {
-  setWaitForStableBoundingBox(value: boolean): this;
+  abstract setWaitForStableBoundingBox(value: boolean): this;
 }
 ```
 

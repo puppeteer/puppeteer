@@ -8,7 +8,7 @@ sidebar_label: Locator.hover
 
 ```typescript
 class Locator {
-  hover(hoverOptions?: {signal?: AbortSignal}): Promise<void>;
+  abstract hover(hoverOptions?: {signal?: AbortSignal}): Promise<void>;
 }
 ```
 

@@ -8,7 +8,7 @@ sidebar_label: Locator.setVisibility
 
 ```typescript
 class Locator {
-  setVisibility(visibility: VisibilityOption): this;
+  abstract setVisibility(visibility: VisibilityOption): this;
 }
 ```
 

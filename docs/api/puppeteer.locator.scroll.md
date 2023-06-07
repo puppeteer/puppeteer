@@ -8,7 +8,7 @@ sidebar_label: Locator.scroll
 
 ```typescript
 class Locator {
-  scroll(scrollOptions?: {
+  abstract scroll(scrollOptions?: {
     scrollTop?: number;
     scrollLeft?: number;
     signal?: AbortSignal;
