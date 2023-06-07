@@ -17,16 +17,16 @@
 import {dirname, join, resolve} from 'path';
 import {fileURLToPath} from 'url';
 
-import glob from 'glob';
+import {globSync} from 'glob';
 
 export const PUPPETEER_CORE_PACKAGE_PATH = resolve(
-  glob.sync('puppeteer-core-*.tgz')[0]!
+  globSync('puppeteer-core-*.tgz')[0]!
 );
 export const PUPPETEER_BROWSERS_PACKAGE_PATH = resolve(
-  glob.sync('puppeteer-browsers-[0-9]*.tgz')[0]!
+  globSync('puppeteer-browsers-[0-9]*.tgz')[0]!
 );
 export const PUPPETEER_PACKAGE_PATH = resolve(
-  glob.sync('puppeteer-[0-9]*.tgz')[0]!
+  globSync('puppeteer-[0-9]*.tgz')[0]!
 );
 export const ASSETS_DIR = join(
   dirname(fileURLToPath(import.meta.url)),
