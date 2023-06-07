@@ -160,7 +160,7 @@
     "eslint-plugin-unused-imports": "2.0.0",
     "esprima": "4.0.1",
     "expect": "29.4.3",
-    "glob": "8.1.0",
+    "glob": "10.2.7",
     "gts": "4.0.1",
     "jpeg-js": "0.4.4",
     "license-checker": "25.0.1",
