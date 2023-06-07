@@ -18,8 +18,6 @@ import {Protocol} from 'devtools-protocol';
 
 import {ElementHandle} from '../api/ElementHandle.js';
 
-import {CDPSession} from './Connection.js';
-
 /**
  * Represents a Node and the properties of it that are relevant to Accessibility.
  * @public
@@ -109,6 +107,11 @@ export interface SnapshotOptions {
   root?: ElementHandle<Node>;
 }
 
+interface DataProvider {
+  getFullAXTree(): Promise<Protocol.Accessibility.GetFullAXTreeResponse>;
+  describeNode(id: string): Promise<Protocol.DOM.DescribeNodeResponse>;
+}
+
 /**
  * The Accessibility class provides methods for inspecting the browser's
  * accessibility tree. The accessibility tree is used by assistive technology
@@ -132,13 +135,13 @@ export interface SnapshotOptions {
  * @public
  */
 export class Accessibility {
-  #client: CDPSession;
+  #dataProvider: DataProvider;
 
   /**
    * @internal
    */
-  constructor(client: CDPSession) {
-    this.#client = client;
+  constructor(dataProvider: DataProvider) {
+    this.#dataProvider = dataProvider;
   }
 
   /**
@@ -184,12 +187,10 @@ export class Accessibility {
     options: SnapshotOptions = {}
   ): Promise<SerializedAXNode | null> {
     const {interestingOnly = true, root = null} = options;
-    const {nodes} = await this.#client.send('Accessibility.getFullAXTree');
+    const {nodes} = await this.#dataProvider.getFullAXTree();
     let backendNodeId: number | undefined;
-    if (root) {
-      const {node} = await this.#client.send('DOM.describeNode', {
-        objectId: root.id,
-      });
+    if (root && root.id) {
+      const {node} = await this.#dataProvider.describeNode(root.id);
       backendNodeId = node.backendNodeId;
     }
     const defaultRoot = AXNode.createTree(nodes);

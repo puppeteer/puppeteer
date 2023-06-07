@@ -210,6 +210,12 @@
     "expectations": ["SKIP", "TIMEOUT"]
   },
   {
+    "testIdPattern": "[accessibility.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[ariaqueryhandler.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -2362,6 +2368,24 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[accessibility.spec] Accessibility get snapshots while the tree is re-calculated",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[accessibility.spec] Accessibility should report uninteresting nodes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[accessibility.spec] Accessibility should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[CDPSession.spec] Target.createCDPSession should send events",
