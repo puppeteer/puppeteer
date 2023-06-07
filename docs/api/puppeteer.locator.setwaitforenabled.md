@@ -8,7 +8,7 @@ sidebar_label: Locator.setWaitForEnabled
 
 ```typescript
 class Locator {
-  setWaitForEnabled(value: boolean): this;
+  abstract setWaitForEnabled(value: boolean): this;
 }
 ```
 

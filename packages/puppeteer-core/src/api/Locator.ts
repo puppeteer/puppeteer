@@ -116,30 +116,24 @@ export interface LocatorEventObject {
  *
  * @public
  */
-export class Locator extends EventEmitter {
+export abstract class Locator extends EventEmitter {
   /**
    * @internal
    */
   static create(pageOrFrame: Page | Frame, selector: string): Locator {
-    return new Locator(pageOrFrame, selector).setTimeout(
+    return new LocatorImpl(pageOrFrame, selector).setTimeout(
       'getDefaultTimeout' in pageOrFrame
         ? pageOrFrame.getDefaultTimeout()
         : pageOrFrame.page().getDefaultTimeout()
     );
   }
 
-  #pageOrFrame: Page | Frame;
-  #selector: string;
-  #visibility: VisibilityOption = 'visible';
-  #timeout = 30_000;
-  #ensureElementIsInTheViewport = true;
-  #waitForEnabled = true;
-  #waitForStableBoundingBox = true;
-
-  private constructor(pageOrFrame: Page | Frame, selector: string) {
-    super();
-    this.#pageOrFrame = pageOrFrame;
-    this.#selector = selector;
+  /**
+   * Creates a race between multiple locators but ensures that only a single one
+   * acts.
+   */
+  static race(locators: Locator[]): Locator {
+    return new RaceLocatorImpl(locators);
   }
 
   override on<K extends keyof LocatorEventObject>(
@@ -161,6 +155,60 @@ export class Locator extends EventEmitter {
     handler: (event: LocatorEventObject[K]) => void
   ): this {
     return super.off(eventName, handler);
+  }
+
+  abstract setVisibility(visibility: VisibilityOption): this;
+
+  abstract setTimeout(timeout: number): this;
+
+  abstract setEnsureElementIsInTheViewport(value: boolean): this;
+
+  abstract setWaitForEnabled(value: boolean): this;
+
+  abstract setWaitForStableBoundingBox(value: boolean): this;
+
+  abstract click(
+    clickOptions?: ClickOptions & {
+      signal?: AbortSignal;
+    }
+  ): Promise<void>;
+
+  /**
+   * Fills out the input identified by the locator using the provided value. The
+   * type of the input is determined at runtime and the appropriate fill-out
+   * method is chosen based on the type. contenteditable, selector, inputs are
+   * supported.
+   */
+  abstract fill(
+    value: string,
+    fillOptions?: {signal?: AbortSignal}
+  ): Promise<void>;
+
+  abstract hover(hoverOptions?: {signal?: AbortSignal}): Promise<void>;
+
+  abstract scroll(scrollOptions?: {
+    scrollTop?: number;
+    scrollLeft?: number;
+    signal?: AbortSignal;
+  }): Promise<void>;
+}
+
+/**
+ * @internal
+ */
+export class LocatorImpl extends Locator {
+  #pageOrFrame: Page | Frame;
+  #selector: string;
+  #visibility: VisibilityOption = 'visible';
+  #timeout = 30_000;
+  #ensureElementIsInTheViewport = true;
+  #waitForEnabled = true;
+  #waitForStableBoundingBox = true;
+
+  constructor(pageOrFrame: Page | Frame, selector: string) {
+    super();
+    this.#pageOrFrame = pageOrFrame;
+    this.#selector = selector;
   }
 
   setVisibility(visibility: VisibilityOption): this {
@@ -211,6 +259,7 @@ export class Locator extends EventEmitter {
       () => {
         controller?.abort();
         isActive = false;
+        clearTimeout(timeoutId);
       },
       {once: true}
     );
@@ -589,6 +638,165 @@ export class Locator extends EventEmitter {
           this.#waitForVisibilityIfNeeded,
           this.#waitForStableBoundingBoxIfNeeded,
         ],
+      }
+    );
+  }
+}
+
+/**
+ * @internal
+ */
+class RaceLocatorImpl extends Locator {
+  #locators: Locator[];
+
+  constructor(locators: Locator[]) {
+    super();
+    this.#locators = locators;
+  }
+
+  override setVisibility(visibility: VisibilityOption): this {
+    for (const locator of this.#locators) {
+      locator.setVisibility(visibility);
+    }
+    return this;
+  }
+
+  override setTimeout(timeout: number): this {
+    for (const locator of this.#locators) {
+      locator.setTimeout(timeout);
+    }
+    return this;
+  }
+
+  override setEnsureElementIsInTheViewport(value: boolean): this {
+    for (const locator of this.#locators) {
+      locator.setEnsureElementIsInTheViewport(value);
+    }
+    return this;
+  }
+
+  override setWaitForEnabled(value: boolean): this {
+    for (const locator of this.#locators) {
+      locator.setWaitForEnabled(value);
+    }
+    return this;
+  }
+
+  override setWaitForStableBoundingBox(value: boolean): this {
+    for (const locator of this.#locators) {
+      locator.setWaitForStableBoundingBox(value);
+    }
+    return this;
+  }
+
+  async #runRace(
+    action: (el: Locator, abortSignal: AbortSignal) => Promise<void>,
+    options: {
+      signal?: AbortSignal;
+    }
+  ) {
+    const abortControllers = new WeakMap<Locator, AbortController>();
+
+    // Abort all locators if the user-provided signal aborts.
+    options.signal?.addEventListener('abort', () => {
+      for (const locator of this.#locators) {
+        abortControllers.get(locator)?.abort();
+      }
+    });
+
+    const handleLocatorAction = (locator: Locator): (() => void) => {
+      return () => {
+        // When one locator is ready to act, we will abort other locators.
+        for (const other of this.#locators) {
+          if (other !== locator) {
+            abortControllers.get(other)?.abort();
+          }
+        }
+        this.emit(LocatorEmittedEvents.Action);
+      };
+    };
+
+    const createAbortController = (locator: Locator): AbortController => {
+      const abortController = new AbortController();
+      abortControllers.set(locator, abortController);
+      return abortController;
+    };
+
+    await Promise.allSettled(
+      this.#locators.map(locator => {
+        return action(
+          locator.on(LocatorEmittedEvents.Action, handleLocatorAction(locator)),
+          createAbortController(locator).signal
+        );
+      })
+    );
+
+    options.signal?.throwIfAborted();
+  }
+
+  override async click(
+    clickOptions?: ClickOptions & {
+      signal?: AbortSignal;
+    }
+  ): Promise<void> {
+    return await this.#runRace(
+      (locator, abortSignal) => {
+        return locator.click({
+          ...clickOptions,
+          signal: abortSignal,
+        });
+      },
+      {
+        signal: clickOptions?.signal,
+      }
+    );
+  }
+
+  override async fill(
+    value: string,
+    fillOptions?: {signal?: AbortSignal}
+  ): Promise<void> {
+    return await this.#runRace(
+      (locator, abortSignal) => {
+        return locator.fill(value, {
+          ...fillOptions,
+          signal: abortSignal,
+        });
+      },
+      {
+        signal: fillOptions?.signal,
+      }
+    );
+  }
+
+  override async hover(hoverOptions?: {signal?: AbortSignal}): Promise<void> {
+    return await this.#runRace(
+      (locator, abortSignal) => {
+        return locator.hover({
+          ...hoverOptions,
+          signal: abortSignal,
+        });
+      },
+      {
+        signal: hoverOptions?.signal,
+      }
+    );
+  }
+
+  override async scroll(scrollOptions?: {
+    scrollTop?: number;
+    scrollLeft?: number;
+    signal?: AbortSignal;
+  }): Promise<void> {
+    return await this.#runRace(
+      (locator, abortSignal) => {
+        return locator.hover({
+          ...scrollOptions,
+          signal: abortSignal,
+        });
+      },
+      {
+        signal: scrollOptions?.signal,
       }
     );
   }

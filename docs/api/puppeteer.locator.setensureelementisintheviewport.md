@@ -8,7 +8,7 @@ sidebar_label: Locator.setEnsureElementIsInTheViewport
 
 ```typescript
 class Locator {
-  setEnsureElementIsInTheViewport(value: boolean): this;
+  abstract setEnsureElementIsInTheViewport(value: boolean): this;
 }
 ```
 

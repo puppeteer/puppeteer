@@ -8,7 +8,7 @@ sidebar_label: Locator.click
 
 ```typescript
 class Locator {
-  click(
+  abstract click(
     clickOptions?: ClickOptions & {
       signal?: AbortSignal;
     }
