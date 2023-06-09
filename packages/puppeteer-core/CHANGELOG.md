@@ -8,6 +8,24 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.0.1 to 1.1.0
 
+## [20.6.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.5.0...puppeteer-core-v20.6.0) (2023-06-09)
+
+
+### Features
+
+* add `page.removeExposedFunction` ([#10297](https://github.com/puppeteer/puppeteer/issues/10297)) ([4d0dbbc](https://github.com/puppeteer/puppeteer/commit/4d0dbbc517f388a3fe984ec569bc1bad28d91494))
+* **chrome:** roll to Chrome 114.0.5735.45 (r1135570) ([#10302](https://github.com/puppeteer/puppeteer/issues/10302)) ([021402d](https://github.com/puppeteer/puppeteer/commit/021402d1363accabc05f75ea1004451a90e1dfca))
+* implement Locator.race ([#10337](https://github.com/puppeteer/puppeteer/issues/10337)) ([9c35e9a](https://github.com/puppeteer/puppeteer/commit/9c35e9ab1f92e99aab8dabcd17f687befd6aad81))
+* implement Locators ([#10305](https://github.com/puppeteer/puppeteer/issues/10305)) ([1f978f5](https://github.com/puppeteer/puppeteer/commit/1f978f5fc5f0580859ad423e952595979f50d5a9))
+
+
+### Bug Fixes
+
+* content() not showing comments outside html tag ([#10293](https://github.com/puppeteer/puppeteer/issues/10293)) ([9abd48a](https://github.com/puppeteer/puppeteer/commit/9abd48a062a4a30fb93d0b555f2fa03d3dc410f3))
+* ensure stack trace contains one line ([#10317](https://github.com/puppeteer/puppeteer/issues/10317)) ([bc0b04b](https://github.com/puppeteer/puppeteer/commit/bc0b04beef3244280e6569a233173d512adaa9d8))
+* roll to Chrome 114.0.5735.90 (r1135570) ([#10329](https://github.com/puppeteer/puppeteer/issues/10329)) ([60acefc](https://github.com/puppeteer/puppeteer/commit/60acefc1d6d719ed6c5053d6b9ad734306d08c4a))
+* send capabilities property in session.new command ([#10311](https://github.com/puppeteer/puppeteer/issues/10311)) ([e8d044c](https://github.com/puppeteer/puppeteer/commit/e8d044cb8dcb689cc066ffa18a1e3c9366f57902))
+
 ## [20.5.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.4.0...puppeteer-core-v20.5.0) (2023-05-31)
 
 
