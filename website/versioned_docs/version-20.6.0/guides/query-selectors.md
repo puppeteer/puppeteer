@@ -79,6 +79,9 @@ Suppose we have the markup
 </custom-element>
 ```
 
+> Note: `<template shadowrootmode="open">` is not supported on Firefox.
+> You can read more about it [here](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template#attributes).
+
 Then `custom-element >>> h2` will return `h2`, but `custom-element >>>> h2` will return nothing since the inner `h2` is in a deeper shadow root.
 
 ### `P`-elements
@@ -121,6 +124,9 @@ ARIA selectors can be used to find elements with a given ARIA label. These label
 
 ```ts
 const node = await page.waitForSelector('::-p-aria(Submit)');
+const node = await page.waitForSelector(
+  '::-p-aria([name="Click me"][role="button"])'
+);
 ```
 
 ### Custom selectors
