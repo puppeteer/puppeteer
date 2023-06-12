@@ -19,13 +19,10 @@ import os from 'os';
 import path from 'path';
 
 import expect from 'expect';
-import {
-  PuppeteerLaunchOptions,
-  PuppeteerNode,
-} from 'puppeteer-core/internal/node/PuppeteerNode.js';
+import {PuppeteerLaunchOptions} from 'puppeteer-core/internal/node/PuppeteerNode.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, launch} from './mocha-utils.js';
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 
@@ -59,7 +56,7 @@ describe('headful tests', function () {
     headless: boolean;
     devtools: boolean;
   };
-  const browsers: any[] = [];
+  const browsers: Array<() => Promise<void>> = [];
 
   beforeEach(() => {
     const {server, defaultBrowserOptions} = getTestState();
@@ -96,29 +93,24 @@ describe('headful tests', function () {
     });
   });
 
-  async function launchBrowser(puppeteer: PuppeteerNode, options: any) {
-    const browser = await puppeteer.launch(options);
-    browsers.push(browser);
+  async function launchBrowser(options: any) {
+    const {browser, close} = await launch(options, {createContext: false});
+    browsers.push(close);
     return browser;
   }
 
-  afterEach(() => {
-    for (const i in browsers) {
-      const browser = browsers[i];
-      if (browser.isConnected()) {
-        browser.close();
-      }
-      delete browsers[i];
-    }
+  afterEach(async () => {
+    await Promise.all(
+      browsers.map((close, index) => {
+        delete browsers[index];
+        return close();
+      })
+    );
   });
 
   describe('HEADFUL', function () {
     it('background_page target type should be available', async () => {
-      const {puppeteer} = getTestState();
-      const browserWithExtension = await launchBrowser(
-        puppeteer,
-        extensionOptions
-      );
+      const browserWithExtension = await launchBrowser(extensionOptions);
       const page = await browserWithExtension.newPage();
       const backgroundPageTarget = await browserWithExtension.waitForTarget(
         target => {
@@ -130,8 +122,8 @@ describe('headful tests', function () {
       expect(backgroundPageTarget).toBeTruthy();
     });
     it('service_worker target type should be available', async () => {
-      const {puppeteer, defaultBrowserOptions} = getTestState();
-      const browserWithExtension = await launchBrowser(puppeteer, {
+      const {defaultBrowserOptions} = getTestState();
+      const browserWithExtension = await launchBrowser({
         ...defaultBrowserOptions,
         headless: false,
         args: [
@@ -150,11 +142,7 @@ describe('headful tests', function () {
       expect(serviceWorkerTarget).toBeTruthy();
     });
     it('target.page() should return a background_page', async function () {
-      const {puppeteer} = getTestState();
-      const browserWithExtension = await launchBrowser(
-        puppeteer,
-        extensionOptions
-      );
+      const browserWithExtension = await launchBrowser(extensionOptions);
       const backgroundPageTarget = await browserWithExtension.waitForTarget(
         target => {
           return target.type() === 'background_page';
@@ -175,7 +163,7 @@ describe('headful tests', function () {
     });
     it('target.page() should return a DevTools page if custom isPageTarget is provided', async function () {
       const {puppeteer} = getTestState();
-      const originalBrowser = await launchBrowser(puppeteer, devtoolsOptions);
+      const originalBrowser = await launchBrowser(devtoolsOptions);
 
       const browserWSEndpoint = originalBrowser.wsEndpoint();
 
@@ -197,25 +185,21 @@ describe('headful tests', function () {
         })
       ).toBe(6);
       expect(await browser.pages()).toContainEqual(page);
-      await browser.close();
     });
     it('should have default url when launching browser', async function () {
-      const {puppeteer} = getTestState();
-      const browser = await launchBrowser(puppeteer, extensionOptions);
+      const browser = await launchBrowser(extensionOptions);
       const pages = (await browser.pages()).map((page: {url: () => any}) => {
         return page.url();
       });
       expect(pages).toEqual(['about:blank']);
-      await browser.close();
     });
     it('headless should be able to read cookies written by headful', async () => {
       /* Needs investigation into why but this fails consistently on Windows CI. */
-      const {server, puppeteer} = getTestState();
+      const {server} = getTestState();
 
       const userDataDir = await mkdtemp(TMP_FOLDER);
       // Write a cookie in headful chrome
       const headfulBrowser = await launchBrowser(
-        puppeteer,
         Object.assign({userDataDir}, headfulOptions)
       );
       const headfulPage = await headfulBrowser.newPage();
@@ -227,7 +211,6 @@ describe('headful tests', function () {
       await headfulBrowser.close();
       // Read the cookie from headless chrome
       const headlessBrowser = await launchBrowser(
-        puppeteer,
         Object.assign({userDataDir}, headlessOptions)
       );
       const headlessPage = await headlessBrowser.newPage();
@@ -244,10 +227,10 @@ describe('headful tests', function () {
     });
     // TODO: Support OOOPIF. @see https://github.com/puppeteer/puppeteer/issues/2548
     it.skip('OOPIF: should report google.com frame', async () => {
-      const {server, puppeteer} = getTestState();
+      const {server} = getTestState();
 
       // https://google.com is isolated by default in Chromium embedder.
-      const browser = await launchBrowser(puppeteer, headfulOptions);
+      const browser = await launchBrowser(headfulOptions);
       const page = await browser.newPage();
       await page.goto(server.EMPTY_PAGE);
       await page.setRequestInterception(true);
@@ -270,12 +253,11 @@ describe('headful tests', function () {
         })
         .sort();
       expect(urls).toEqual([server.EMPTY_PAGE, 'https://google.com/']);
-      await browser.close();
     });
     it('OOPIF: should expose events within OOPIFs', async () => {
-      const {server, puppeteer} = getTestState();
+      const {server} = getTestState();
 
-      const browser = await launchBrowser(puppeteer, forcedOopifOptions);
+      const browser = await launchBrowser(forcedOopifOptions);
       const page = await browser.newPage();
 
       // Setup our session listeners to observe OOPIF activity.
@@ -333,9 +315,9 @@ describe('headful tests', function () {
       expect(requests).toContain(`http://oopifdomain:${server.PORT}/fetch`);
     });
     it('should close browser with beforeunload page', async () => {
-      const {server, puppeteer} = getTestState();
+      const {server} = getTestState();
 
-      const browser = await launchBrowser(puppeteer, headfulOptions);
+      const browser = await launchBrowser(headfulOptions);
       const page = await browser.newPage();
       await page.goto(server.PREFIX + '/beforeunload.html');
       // We have to interact with a page so that 'beforeunload' handlers
@@ -344,10 +326,7 @@ describe('headful tests', function () {
       await browser.close();
     });
     it('should open devtools when "devtools: true" option is given', async () => {
-      const {puppeteer} = getTestState();
-
       const browser = await launchBrowser(
-        puppeteer,
         Object.assign({devtools: true}, headfulOptions)
       );
       const context = await browser.createIncognitoBrowserContext();
@@ -363,8 +342,7 @@ describe('headful tests', function () {
 
   describe('Page.bringToFront', function () {
     it('should work', async () => {
-      const {puppeteer} = getTestState();
-      const browser = await launchBrowser(puppeteer, headfulOptions);
+      const browser = await launchBrowser(headfulOptions);
       const page1 = await browser.newPage();
       const page2 = await browser.newPage();
 
@@ -400,8 +378,8 @@ describe('headful tests', function () {
 
   describe('Page.screenshot', function () {
     it('should run in parallel in multiple pages', async () => {
-      const {server, puppeteer} = getTestState();
-      const browser = await puppeteer.launch(headfulOptions);
+      const {server} = getTestState();
+      const browser = await launchBrowser(headfulOptions);
       const context = await browser.createIncognitoBrowserContext();
 
       const N = 2;

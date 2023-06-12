@@ -15,46 +15,39 @@
  */
 
 import expect from 'expect';
-import {
-  CDPBrowser,
-  CDPBrowserContext,
-} from 'puppeteer-core/internal/common/Browser.js';
+import {CDPBrowser} from 'puppeteer-core/internal/common/Browser.js';
 
-import {getTestState} from './mocha-utils'; // eslint-disable-line import/extensions
+import {getTestState, launch} from './mocha-utils.js';
 import {attachFrame} from './utils.js';
 
 describe('TargetManager', () => {
   /* We use a special browser for this test as we need the --site-per-process flag */
-  let browser: CDPBrowser;
-  let context: CDPBrowserContext;
+  let testState: Awaited<ReturnType<typeof launch>> & {
+    browser: CDPBrowser;
+  };
 
-  before(async () => {
-    const {puppeteer, defaultBrowserOptions} = getTestState();
-    browser = (await puppeteer.launch(
+  beforeEach(async () => {
+    const {defaultBrowserOptions} = getTestState();
+    testState = (await launch(
       Object.assign({}, defaultBrowserOptions, {
         args: (defaultBrowserOptions.args || []).concat([
           '--site-per-process',
           '--remote-debugging-port=21222',
           '--host-rules=MAP * 127.0.0.1',
         ]),
-      })
-    )) as CDPBrowser;
-  });
-
-  beforeEach(async () => {
-    context = await browser.createIncognitoBrowserContext();
+      }),
+      {createPage: false}
+    )) as Awaited<ReturnType<typeof launch>> & {
+      browser: CDPBrowser;
+    };
   });
 
   afterEach(async () => {
-    await context.close();
-  });
-
-  after(async () => {
-    await browser.close();
+    await testState.close();
   });
 
   it('should handle targets', async () => {
-    const {server} = getTestState();
+    const {server, context, browser} = testState;
 
     const targetManager = browser._targetManager();
     expect(targetManager.getAvailableTargets().size).toBe(2);

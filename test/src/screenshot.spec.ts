@@ -20,6 +20,7 @@ import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
+  launch,
 } from './mocha-utils.js';
 
 describe('Screenshots', function () {
@@ -223,9 +224,9 @@ describe('Screenshots', function () {
       expect(screenshot).toBeGolden('screenshot-element-bounding-box.png');
     });
     it('should work with a null viewport', async () => {
-      const {defaultBrowserOptions, puppeteer, server} = getTestState();
+      const {defaultBrowserOptions, server} = getTestState();
 
-      const browser = await puppeteer.launch({
+      const {browser, close} = await launch({
         ...defaultBrowserOptions,
         defaultViewport: null,
       });
@@ -240,7 +241,7 @@ describe('Screenshots', function () {
         const screenshot = await elementHandle.screenshot();
         expect(screenshot).toBeTruthy();
       } finally {
-        await browser.close();
+        await close();
       }
     });
     it('should take into account padding and border', async () => {

@@ -364,47 +364,69 @@ export const createTimeout = <T>(
   });
 };
 
-const browserCleanups: Array<() => Promise<void>> = [];
+let browserCleanups: Array<() => Promise<void>> = [];
 
 export const launch = async (
-  options: PuppeteerLaunchOptions
+  launchOptions: PuppeteerLaunchOptions,
+  options: {
+    createContext?: boolean;
+    createPage?: boolean;
+  } = {}
 ): Promise<
   PuppeteerTestState & {
     close: () => Promise<void>;
   }
 > => {
+  const {createContext = true, createPage = true} = options;
   const close = async () => {
     let cleanup = browserCleanups.pop();
-    while (cleanup) {
-      await cleanup();
-      cleanup = browserCleanups.pop();
+    try {
+      while (cleanup) {
+        await cleanup();
+        cleanup = browserCleanups.pop();
+      }
+    } catch (error) {
+      // If the browser was closed by other mean swallow the error
+      // and mark he browser as closed
+      if ((error as any)?.message.includes('Connection closed')) {
+        browserCleanups = [];
+        return;
+      }
+
+      throw error;
     }
   };
 
   try {
     const browser = await puppeteer.launch({
       ...defaultBrowserOptions,
-      ...options,
+      ...launchOptions,
     });
     browserCleanups.push(() => {
       return browser.close();
     });
 
-    const context = await browser.createIncognitoBrowserContext();
-    browserCleanups.push(() => {
-      return context.close();
-    });
+    let context: BrowserContext;
+    let page: Page;
+    if (createContext) {
+      context = await browser.createIncognitoBrowserContext();
+      browserCleanups.push(() => {
+        return context.close();
+      });
 
-    const page = await context.newPage();
-    browserCleanups.push(() => {
-      return page.close();
-    });
+      if (createPage) {
+        page = await context.newPage();
+        browserCleanups.push(() => {
+          return page.close();
+        });
+      }
+    }
 
     return {
       ...getTestState(),
       browser,
-      context,
-      page,
+      context: context!,
+      page: page!,
       close,
     };
   } catch (error) {
