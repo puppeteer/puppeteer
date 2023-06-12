@@ -87,5 +87,6 @@ await browser
 | [dragOver(target, data)](./puppeteer.mouse.dragover.md)                 |           | Dispatches a <code>dragover</code> event.                                                |
 | [drop(target, data)](./puppeteer.mouse.drop.md)                         |           | Performs a dragenter, dragover, and drop in sequence.                                    |
 | [move(x, y, options)](./puppeteer.mouse.move.md)                        |           | Moves the mouse to the given coordinate.                                                 |
+| [reset()](./puppeteer.mouse.reset.md)                                   |           | Resets the mouse to the default state: No buttons pressed; position at (0,0).            |
 | [up(options)](./puppeteer.mouse.up.md)                                  |           | Releases the mouse.                                                                      |
 | [wheel(options)](./puppeteer.mouse.wheel.md)                            |           | Dispatches a <code>mousewheel</code> event.                                              |
