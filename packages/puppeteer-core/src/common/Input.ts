@@ -599,6 +599,29 @@ export class Mouse {
   }
 
   /**
+   * Resets the mouse to the default state: No buttons pressed; position at
+   * (0,0).
+   */
+  async reset(): Promise<void> {
+    const actions = [];
+    for (const [flag, button] of [
+      [MouseButtonFlag.Left, MouseButton.Left],
+      [MouseButtonFlag.Middle, MouseButton.Middle],
+      [MouseButtonFlag.Right, MouseButton.Right],
+      [MouseButtonFlag.Forward, MouseButton.Forward],
+      [MouseButtonFlag.Back, MouseButton.Back],
+    ] as const) {
+      if (this.#state.buttons & flag) {
+        actions.push(this.up({button: button}));
+      }
+    }
+    if (this.#state.position.x !== 0 || this.#state.position.y !== 0) {
+      actions.push(this.move(0, 0));
+    }
+    await Promise.all(actions);
+  }
+
+  /**
    * Moves the mouse to the given coordinate.
    *
    * @param x - Horizontal position of the mouse.

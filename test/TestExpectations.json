@@ -1458,6 +1458,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[mouse.spec] Mouse should reset properly",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[mouse.spec] Mouse should select the text with mouse",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome"],

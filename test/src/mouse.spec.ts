@@ -16,6 +16,8 @@
 import os from 'os';
 
 import expect from 'expect';
+import {MouseButton} from 'puppeteer-core';
+import {Page} from 'puppeteer-core/internal/api/Page.js';
 import {KeyInput} from 'puppeteer-core/internal/common/USKeyboardLayout.js';
 
 import {
@@ -23,6 +25,16 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } from './mocha-utils.js';
+
+interface ClickData {
+  type: string;
+  detail: number;
+  clientX: number;
+  clientY: number;
+  isTrusted: boolean;
+  button: number;
+  buttons: number;
+}
 
 interface Dimensions {
   x: number;
@@ -267,21 +279,16 @@ describe('Mouse', function () {
     await page.mouse.down();
     await expect(page.mouse.down()).rejects.toBeInstanceOf(Error);
   });
-  it('should not throw if clicking in parallel', async () => {
-    const {page, server} = getTestState();
 
-    await page.goto(server.EMPTY_PAGE);
-    interface ClickData {
-      type: string;
-      detail: number;
-      clientX: number;
-      clientY: number;
-      isTrusted: boolean;
-      button: number;
-      buttons: number;
-    }
+  interface AddMouseDataListenersOptions {
+    includeMove?: boolean;
+  }
 
-    await page.evaluate(() => {
+  const addMouseDataListeners = (
+    page: Page,
+    options: AddMouseDataListenersOptions = {}
+  ) => {
+    return page.evaluate(({includeMove}) => {
       const clicks: ClickData[] = [];
       const mouseEventListener = (event: MouseEvent) => {
         clicks.push({
@@ -295,10 +302,20 @@ describe('Mouse', function () {
         });
       };
       document.addEventListener('mousedown', mouseEventListener);
+      if (includeMove) {
+        document.addEventListener('mousemove', mouseEventListener);
+      }
       document.addEventListener('mouseup', mouseEventListener);
       document.addEventListener('click', mouseEventListener);
       (window as unknown as {clicks: ClickData[]}).clicks = clicks;
-    });
+    }, options);
+  };
+
+  it('should not throw if clicking in parallel', async () => {
+    const {page, server} = getTestState();
+
+    await page.goto(server.EMPTY_PAGE);
+    await addMouseDataListeners(page);
 
     await Promise.all([page.mouse.click(0, 5), page.mouse.click(6, 10)]);
 
@@ -350,5 +367,69 @@ describe('Mouse', function () {
         ...commonAttrs,
       },
     });
+  });
+
+  it('should reset properly', async () => {
+    const {page, server} = getTestState();
+
+    await page.goto(server.EMPTY_PAGE);
+
+    await page.mouse.move(5, 5);
+    await Promise.all([
+      page.mouse.down({button: MouseButton.Left}),
+      page.mouse.down({button: MouseButton.Middle}),
+      page.mouse.down({button: MouseButton.Right}),
+    ]);
+
+    await addMouseDataListeners(page, {includeMove: true});
+    await page.mouse.reset();
+
+    const data = await page.evaluate(() => {
+      return (window as unknown as {clicks: ClickData[]}).clicks;
+    });
+    const commonAttrs = {
+      isTrusted: true,
+      clientY: 5,
+      clientX: 5,
+    };
+    expect(data).toMatchObject([
+      {
+        ...commonAttrs,
+        button: 0,
+        buttons: 6,
+        detail: 1,
+        type: 'mouseup',
+      },
+      {
+        ...commonAttrs,
+        button: 0,
+        buttons: 6,
+        detail: 1,
+        type: 'click',
+      },
+      {
+        ...commonAttrs,
+        button: 1,
+        buttons: 2,
+        detail: 0,
+        type: 'mouseup',
+      },
+      {
+        ...commonAttrs,
+        button: 2,
+        buttons: 0,
+        detail: 0,
+        type: 'mouseup',
+      },
+      {
+        ...commonAttrs,
+        button: 0,
+        buttons: 0,
+        clientX: 0,
+        clientY: 0,
+        detail: 0,
+        type: 'mousemove',
+      },
+    ]);
   });
 });
