@@ -94,4 +94,8 @@ export class BrowserContext extends BrowserContextBase {
   override browser(): Browser {
     return this.#browser;
   }
+
+  override async pages(): Promise<PageBase[]> {
+    return [...this.#pages.values()];
+  }
 }

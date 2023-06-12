@@ -177,6 +177,10 @@ export class Frame extends BaseFrame {
     return this.sandboxes[MAIN_SANDBOX].$$eval(selector, pageFunction, ...args);
   }
 
+  override $x(expression: string): Promise<Array<ElementHandle<Node>>> {
+    return this.sandboxes[MAIN_SANDBOX].$x(expression);
+  }
+
   dispose(): void {
     this.#context.dispose();
   }

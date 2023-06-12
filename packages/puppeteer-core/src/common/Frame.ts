@@ -531,12 +531,6 @@ export class Frame extends BaseFrame {
     return this.worlds[PUPPETEER_WORLD].type(selector, text, options);
   }
 
-  override waitForTimeout(milliseconds: number): Promise<void> {
-    return new Promise(resolve => {
-      setTimeout(resolve, milliseconds);
-    });
-  }
-
   override async title(): Promise<string> {
     return this.worlds[PUPPETEER_WORLD].title();
   }

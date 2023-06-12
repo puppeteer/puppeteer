@@ -107,7 +107,10 @@ export interface SnapshotOptions {
   root?: ElementHandle<Node>;
 }
 
-interface DataProvider {
+/**
+ * @internal
+ */
+export interface DataProvider {
   getFullAXTree(): Promise<Protocol.Accessibility.GetFullAXTreeResponse>;
   describeNode(id: string): Promise<Protocol.DOM.DescribeNodeResponse>;
 }

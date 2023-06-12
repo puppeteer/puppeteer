@@ -76,7 +76,7 @@ import {TargetManagerEmittedEvents} from './TargetManager.js';
 import {TaskQueue} from './TaskQueue.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {Tracing} from './Tracing.js';
-import {BindingPayload, EvaluateFunc, HandleFor, NodeFor} from './types.js';
+import {BindingPayload, EvaluateFunc, HandleFor} from './types.js';
 import {
   createClientError,
   createJSHandle,
@@ -552,10 +552,6 @@ export class CDPPage extends Page {
       prototypeObjectId: prototypeHandle.id,
     });
     return createJSHandle(context, response.objects) as HandleFor<Prototype[]>;
-  }
-
-  override async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
-    return this.mainFrame().$x(expression);
   }
 
   override async cookies(
@@ -1555,13 +1551,6 @@ export class CDPPage extends Page {
 
   override waitForTimeout(milliseconds: number): Promise<void> {
     return this.mainFrame().waitForTimeout(milliseconds);
-  }
-
-  override async waitForSelector<Selector extends string>(
-    selector: Selector,
-    options: WaitForSelectorOptions = {}
-  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    return await this.mainFrame().waitForSelector(selector, options);
   }
 
   override waitForXPath(

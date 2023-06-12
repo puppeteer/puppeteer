@@ -29,7 +29,7 @@ import {
   NodeFor,
 } from '../common/types.js';
 import {KeyInput} from '../common/USKeyboardLayout.js';
-import {withSourcePuppeteerURLIfNone} from '../common/util.js';
+import {isString, withSourcePuppeteerURLIfNone} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 
@@ -428,9 +428,11 @@ export class ElementHandle<
    * If there are no such elements, the method will resolve to an empty array.
    * @param expression - Expression to {@link https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate | evaluate}
    */
-  async $x(expression: string): Promise<Array<ElementHandle<Node>>>;
-  async $x(): Promise<Array<ElementHandle<Node>>> {
-    throw new Error('Not implemented');
+  async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
+    if (expression.startsWith('//')) {
+      expression = `.${expression}`;
+    }
+    return this.$$(`xpath/${expression}`);
   }
 
   /**
@@ -472,12 +474,15 @@ export class ElementHandle<
    */
   async waitForSelector<Selector extends string>(
     selector: Selector,
-    options?: WaitForSelectorOptions
-  ): Promise<ElementHandle<NodeFor<Selector>> | null>;
-  async waitForSelector<Selector extends string>(): Promise<ElementHandle<
-    NodeFor<Selector>
-  > | null> {
-    throw new Error('Not implemented');
+    options: WaitForSelectorOptions = {}
+  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
+    const {updatedSelector, QueryHandler} =
+      getQueryHandlerAndSelector(selector);
+    return (await QueryHandler.waitFor(
+      this,
+      updatedSelector,
+      options
+    )) as ElementHandle<NodeFor<Selector>> | null;
   }
 
   /**
@@ -591,11 +596,14 @@ export class ElementHandle<
    */
   async toElement<
     K extends keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap
-  >(tagName: K): Promise<HandleFor<ElementFor<K>>>;
-  async toElement<
-    K extends keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap
-  >(): Promise<HandleFor<ElementFor<K>>> {
-    throw new Error('Not implemented');
+  >(tagName: K): Promise<HandleFor<ElementFor<K>>> {
+    const isMatchingTagName = await this.evaluate((node, tagName) => {
+      return node.nodeName === tagName.toUpperCase();
+    }, tagName);
+    if (!isMatchingTagName) {
+      throw new Error(`Element is not a(n) \`${tagName}\` element`);
+    }
+    return this as unknown as HandleFor<ElementFor<K>>;
   }
 
   /**
@@ -708,9 +716,48 @@ export class ElementHandle<
    * `multiple` attribute, all values are considered, otherwise only the first
    * one is taken into account.
    */
-  async select(...values: string[]): Promise<string[]>;
-  async select(): Promise<string[]> {
-    throw new Error('Not implemented');
+  async select(...values: string[]): Promise<string[]> {
+    for (const value of values) {
+      assert(
+        isString(value),
+        'Values must be strings. Found value "' +
+          value +
+          '" of type "' +
+          typeof value +
+          '"'
+      );
+    }
+
+    return this.evaluate((element, vals): string[] => {
+      const values = new Set(vals);
+      if (!(element instanceof HTMLSelectElement)) {
+        throw new Error('Element is not a <select> element.');
+      }
+
+      const selectedValues = new Set<string>();
+      if (!element.multiple) {
+        for (const option of element.options) {
+          option.selected = false;
+        }
+        for (const option of element.options) {
+          if (values.has(option.value)) {
+            option.selected = true;
+            selectedValues.add(option.value);
+            break;
+          }
+        }
+      } else {
+        for (const option of element.options) {
+          option.selected = values.has(option.value);
+          if (option.selected) {
+            selectedValues.add(option.value);
+          }
+        }
+      }
+      element.dispatchEvent(new Event('input', {bubbles: true}));
+      element.dispatchEvent(new Event('change', {bubbles: true}));
+      return [...selectedValues.values()];
+    }, values);
   }
 
   /**
@@ -757,7 +804,12 @@ export class ElementHandle<
    * Calls {@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus | focus} on the element.
    */
   async focus(): Promise<void> {
-    throw new Error('Not implemented');
+    await this.evaluate(element => {
+      if (!(element instanceof HTMLElement)) {
+        throw new Error('Cannot focus non-HTMLElement');
+      }
+      return element.focus();
+    });
   }
 
   /**
@@ -908,7 +960,14 @@ export class ElementHandle<
    * or by calling element.scrollIntoView.
    */
   async scrollIntoView(this: ElementHandle<Element>): Promise<void> {
-    throw new Error('Not implemented');
+    await this.assertConnectedElement();
+    await this.evaluate(async (element): Promise<void> => {
+      element.scrollIntoView({
+        block: 'center',
+        inline: 'center',
+        behavior: 'instant',
+      });
+    });
   }
 
   /**
