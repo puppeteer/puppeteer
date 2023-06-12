@@ -804,6 +804,12 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[queryhandler.spec] Query handler tests P selectors should work for ARIA selectors in multiple isolated worlds",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[queryhandler.spec] Query handler tests P selectors should work with :hover",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -2425,6 +2431,12 @@
   },
   {
     "testIdPattern": "[queryhandler.spec] Query handler tests P selectors should work ARIA selectors with role",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[queryhandler.spec] Query handler tests P selectors should work for ARIA selectors in multiple isolated worlds",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]

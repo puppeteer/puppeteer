@@ -446,6 +446,26 @@ describe('Query handler tests', function () {
       ).toBeTruthy();
     });
 
+    it('should work for ARIA selectors in multiple isolated worlds', async () => {
+      const {page} = getTestState();
+      let element = await page.waitForSelector('::-p-aria(world)');
+      assert(element, 'Could not find element');
+      expect(
+        await element.evaluate(element => {
+          return element.id === 'b';
+        })
+      ).toBeTruthy();
+      // $ would add ARIA query handler to the main world.
+      await element.$('::-p-aria(world)');
+      element = await page.waitForSelector('::-p-aria(world)');
+      assert(element, 'Could not find element');
+      expect(
+        await element.evaluate(element => {
+          return element.id === 'b';
+        })
+      ).toBeTruthy();
+    });
+
     it('should work ARIA selectors with role', async () => {
       const {page} = getTestState();
       const element = await page.$('::-p-aria(world[role="button"])');
