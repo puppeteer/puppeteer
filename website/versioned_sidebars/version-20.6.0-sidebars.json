@@ -15,6 +15,7 @@
       "items": [
         "guides/configuration",
         "guides/query-selectors",
+        "guides/locators",
         "guides/evaluate-javascript",
         "guides/docker",
         "guides/request-interception",
