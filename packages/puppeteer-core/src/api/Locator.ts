@@ -790,7 +790,7 @@ class RaceLocatorImpl extends Locator {
   }): Promise<void> {
     return await this.#runRace(
       (locator, abortSignal) => {
-        return locator.hover({
+        return locator.scroll({
           ...scrollOptions,
           signal: abortSignal,
         });
