@@ -37,12 +37,10 @@ describe('WebDriver BiDi', () => {
       const transport = new TestConnectionTransport();
       const connection = new Connection(transport);
       const responsePromise = connection.send('session.new', {
-        capabilities: {
-          proxy: {},
-        },
+        capabilities: {},
       });
       expect(transport.sent).toEqual([
-        `{"id":1,"method":"session.new","params":{"capabilities":{"proxy":{}}}}`,
+        `{"id":1,"method":"session.new","params":{"capabilities":{}}}`,
       ]);
       const id = JSON.parse(transport.sent[0]!).id;
       const rawResponse = {

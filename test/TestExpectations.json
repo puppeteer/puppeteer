@@ -270,6 +270,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[browser.spec] Browser specs Browser.version should return version",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[chromiumonly.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],

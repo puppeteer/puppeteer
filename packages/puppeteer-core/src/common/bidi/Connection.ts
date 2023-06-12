@@ -26,6 +26,29 @@ import {BrowsingContext} from './BrowsingContext.js';
 const debugProtocolSend = debug('puppeteer:webDriverBiDi:SEND ►');
 const debugProtocolReceive = debug('puppeteer:webDriverBiDi:RECV ◀');
 
+type Capability = {
+  // session.CapabilityRequest = {
+  //   ? acceptInsecureCerts: bool,
+  //   ? browserName: text,
+  //   ? browserVersion: text,
+  //   ? platformName: text,
+  //   ? proxy: {
+  //     ? proxyType: "pac" / "direct" / "autodetect" / "system" / "manual",
+  //     ? proxyAutoconfigUrl: text,
+  //     ? ftpProxy: text,
+  //     ? httpProxy: text,
+  //     ? noProxy: [*text],
+  //     ? sslProxy: text,
+  //     ? socksProxy: text,
+  //     ? socksVersion: 0..255,
+  //   },
+  //   Extensible
+  // };
+  acceptInsecureCerts?: boolean;
+  browserName?: string;
+  browserVersion?: string;
+};
+
 /**
  * @internal
  */
@@ -73,8 +96,19 @@ interface Commands {
   };
 
   'session.new': {
-    params: {capabilities?: Record<any, unknown>}; // TODO: Update Types in chromium bidi
-    returnType: {sessionId: string};
+    params: {
+      // capabilities: session.CapabilitiesRequest
+      capabilities?: {
+        // session.CapabilitiesRequest = {
+        //   ? alwaysMatch: session.CapabilityRequest,
+        //   ? firstMatch: [*session.CapabilityRequest]
+        // }
+        alwaysMatch?: Capability;
+      };
+    }; // TODO: Update Types in chromium bidi
+    returnType: {
+      result: {sessionId: string; capabilities: Capability};
+    };
   };
   'session.status': {
     params: object;
