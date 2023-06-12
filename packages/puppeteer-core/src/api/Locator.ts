@@ -240,10 +240,26 @@ export abstract class Locator<T> extends EventEmitter {
     options?: Readonly<ActionOptions>
   ): Promise<void>;
 
+<<<<<<< HEAD
   abstract scroll<ElementType extends Element>(
     this: Locator<ElementType>,
     options?: Readonly<LocatorScrollOptions>
   ): Promise<void>;
+=======
+  /**
+   * Scrolls the element.
+   */
+  abstract scroll(scrollOptions?: {
+    scrollTop?: number;
+    scrollLeft?: number;
+    signal?: AbortSignal;
+  }): Promise<void>;
+
+  /**
+   * Waits for an element to be located.
+   */
+  abstract wait(waitOptions?: {signal?: AbortSignal}): Promise<void>;
+>>>>>>> 3474eeaa10 (feat: add Locator.wait)
 }
 
 /**
@@ -693,6 +709,18 @@ export class NodeLocator<T extends Node> extends Locator<T> {
       ]
     );
   }
+
+  override async wait(waitOptions?: {signal?: AbortSignal}): Promise<void> {
+    return await this.#run(
+      async _element => {
+        // No-op: we just wait for element to be there.
+      },
+      {
+        signal: waitOptions?.signal,
+        conditions: [this.#waitForVisibilityIfNeeded],
+      }
+    );
+  }
 }
 
 class ExpectedLocator<From, To extends From> extends Locator<To> {
@@ -933,6 +961,20 @@ class RaceLocator<T> extends Locator<T> {
         return locator.scroll({...options, signal});
       },
       options?.signal
+    );
+  }
+
+  override async wait(waitOptions?: {signal?: AbortSignal}): Promise<void> {
+    return await this.#runRace(
+      (locator, abortSignal) => {
+        return locator.wait({
+          ...waitOptions,
+          signal: abortSignal,
+        });
+      },
+      {
+        signal: waitOptions?.signal,
+      }
     );
   }
 }

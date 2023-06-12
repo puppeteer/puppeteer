@@ -4,6 +4,8 @@ sidebar_label: Locator.scroll
 
 # Locator.scroll() method
 
+Scrolls the element.
+
 #### Signature:
 
 ```typescript

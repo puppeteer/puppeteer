@@ -342,7 +342,7 @@ describe('Locator', function () {
     });
   });
 
-  describe('Locator.change', function () {
+  describe('Locator.fill', function () {
     it('should work for selects', async () => {
       const {page} = await getTestState();
 
@@ -566,6 +566,24 @@ describe('Locator', function () {
       } finally {
         clock.restore();
       }
+    });
+  });
+
+  describe('Locator.wait', function () {
+    it('should wait for element', async () => {
+      const {page} = getTestState();
+      await page.setContent(`
+        <div class="wrapper"></div>
+      `);
+
+      const waiter = page.locator('.child').wait();
+      await page.evaluate(() => {
+        const child = document.createElement('div');
+        child.classList.add('child');
+        child.innerText = 'content';
+        document.querySelector('.wrapper')?.append(child);
+      });
+      await expect(waiter).resolves.toBe(undefined);
     });
   });
 });
