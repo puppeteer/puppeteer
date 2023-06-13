@@ -22,8 +22,8 @@ import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {Page} from '../api/Page.js';
 import {isNode} from '../environment.js';
-import {Deferred} from '../puppeteer-core.js';
 import {assert} from '../util/assert.js';
+import {Deferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import type {CDPSession} from './Connection.js';

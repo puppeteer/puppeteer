@@ -23,8 +23,8 @@ import {
   ChromeReleaseChannel as BrowsersChromeReleaseChannel,
 } from '@puppeteer/browsers';
 
+import {Browser} from '../api/Browser.js';
 import {debugError} from '../common/util.js';
-import {Browser} from '../puppeteer-core.js';
 import {assert} from '../util/assert.js';
 
 import {
