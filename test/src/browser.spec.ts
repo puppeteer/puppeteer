@@ -22,14 +22,12 @@ describe('Browser specs', function () {
   setupTestBrowserHooks();
 
   describe('Browser.version', function () {
-    it('should return whether we are in headless', async () => {
-      const {browser, isHeadless, headless} = getTestState();
+    it('should return version', async () => {
+      const {browser} = getTestState();
 
       const version = await browser.version();
       expect(version.length).toBeGreaterThan(0);
-      expect(version.startsWith('Headless')).toBe(
-        isHeadless && headless !== 'new'
-      );
+      expect(version.toLowerCase()).atLeastOneToContain(['firefox', 'chrome']);
     });
   });
 

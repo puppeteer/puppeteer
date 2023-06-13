@@ -29,24 +29,44 @@ import {Viewport} from '../PuppeteerViewport.js';
 
 import {BrowserContext} from './BrowserContext.js';
 import {Connection} from './Connection.js';
+import {debugError} from './utils.js';
 
 /**
  * @internal
  */
 export class Browser extends BrowserBase {
   static readonly subscribeModules = ['browsingContext', 'network', 'log'];
+  #browserName = '';
+  #browserVersion = '';
 
   static async create(opts: Options): Promise<Browser> {
+    let browserName = '';
+    let browserVersion = '';
+
     // TODO: await until the connection is established.
     try {
-      await opts.connection.send('session.new', {capabilities: {}});
-    } catch {}
+      const {result} = await opts.connection.send('session.new', {
+        capabilities: {
+          alwaysMatch: {
+            acceptInsecureCerts: opts.ignoreHTTPSErrors,
+          },
+        },
+      });
+      browserName = result.capabilities.browserName ?? '';
+      browserVersion = result.capabilities.browserVersion ?? '';
+    } catch (err) {
+      debugError(err);
+    }
 
     await opts.connection.send('session.subscribe', {
       events: Browser.subscribeModules as Bidi.Message.EventNames[],
     });
 
-    return new Browser(opts);
+    return new Browser({
+      ...opts,
+      browserName,
+      browserVersion,
+    });
   }
 
   #process?: ChildProcess;
@@ -54,12 +74,19 @@ export class Browser extends BrowserBase {
   #connection: Connection;
   #defaultViewport: Viewport | null;
 
-  constructor(opts: Options) {
+  constructor(
+    opts: Options & {
+      browserName: string;
+      browserVersion: string;
+    }
+  ) {
     super();
     this.#process = opts.process;
     this.#closeCallback = opts.closeCallback;
     this.#connection = opts.connection;
     this.#defaultViewport = opts.defaultViewport;
+    this.#browserName = opts.browserName;
+    this.#browserVersion = opts.browserVersion;
 
     this.#process?.on('close', () => {
       return this.emit(BrowserEmittedEvents.Disconnected);
@@ -90,6 +117,10 @@ export class Browser extends BrowserBase {
       defaultViewport: this.#defaultViewport,
     });
   }
+
+  override async version(): Promise<string> {
+    return `${this.#browserName}/${this.#browserVersion}`;
+  }
 }
 
 interface Options {
@@ -97,4 +128,5 @@ interface Options {
   closeCallback?: BrowserCloseCallback;
   connection: Connection;
   defaultViewport: Viewport | null;
+  ignoreHTTPSErrors?: boolean;
 }
