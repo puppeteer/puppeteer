@@ -411,7 +411,7 @@ export class Connection extends EventEmitter {
 }
 
 /**
- * @public
+ * @internal
  */
 export interface CDPSessionOnMessageObject {
   id?: number;
