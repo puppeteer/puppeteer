@@ -15,6 +15,7 @@
  */
 
 import {ElementHandle} from '../api/ElementHandle.js';
+import {Realm} from '../api/Frame.js';
 import {JSHandle} from '../api/JSHandle.js';
 import type {Poller} from '../injected/Poller.js';
 import {Deferred} from '../util/Deferred.js';
@@ -22,7 +23,6 @@ import {isErrorLike} from '../util/ErrorLike.js';
 import {stringifyFunction} from '../util/Function.js';
 
 import {TimeoutError} from './Errors.js';
-import {IsolatedWorld} from './IsolatedWorld.js';
 import {LazyArg} from './LazyArg.js';
 import {HandleFor} from './types.js';
 
@@ -40,7 +40,7 @@ export interface WaitTaskOptions {
  * @internal
  */
 export class WaitTask<T = unknown> {
-  #world: IsolatedWorld;
+  #world: Realm;
   #polling: 'raf' | 'mutation' | number;
   #root?: ElementHandle<Node>;
 
@@ -55,7 +55,7 @@ export class WaitTask<T = unknown> {
   #signal?: AbortSignal;
 
   constructor(
-    world: IsolatedWorld,
+    world: Realm,
     options: WaitTaskOptions,
     fn: ((...args: unknown[]) => Promise<T>) | string,
     ...args: unknown[]

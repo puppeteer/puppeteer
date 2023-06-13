@@ -21,7 +21,6 @@ import {
   Frame as BaseFrame,
   FrameAddScriptTagOptions,
   FrameAddStyleTagOptions,
-  FrameWaitForFunctionOptions,
 } from '../api/Frame.js';
 import {HTTPResponse} from '../api/HTTPResponse.js';
 import {Page, WaitTimeoutOptions} from '../api/Page.js';
@@ -36,12 +35,7 @@ import {
 } from './DeviceRequestPrompt.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {FrameManager} from './FrameManager.js';
-import {getQueryHandlerAndSelector} from './GetQueryHandler.js';
-import {
-  IsolatedWorld,
-  IsolatedWorldChart,
-  WaitForSelectorOptions,
-} from './IsolatedWorld.js';
+import {IsolatedWorld, IsolatedWorldChart} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {LazyArg} from './LazyArg.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
@@ -221,6 +215,20 @@ export class Frame extends BaseFrame {
     return this.worlds[MAIN_WORLD].executionContext();
   }
 
+  /**
+   * @internal
+   */
+  override mainRealm(): IsolatedWorld {
+    return this.worlds[MAIN_WORLD];
+  }
+
+  /**
+   * @internal
+   */
+  override isolatedRealm(): IsolatedWorld {
+    return this.worlds[PUPPETEER_WORLD];
+  }
+
   override async evaluateHandle<
     Params extends unknown[],
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
@@ -232,7 +240,7 @@ export class Frame extends BaseFrame {
       this.evaluateHandle.name,
       pageFunction
     );
-    return this.worlds[MAIN_WORLD].evaluateHandle(pageFunction, ...args);
+    return this.mainRealm().evaluateHandle(pageFunction, ...args);
   }
 
   override async evaluate<
@@ -246,19 +254,19 @@ export class Frame extends BaseFrame {
       this.evaluate.name,
       pageFunction
     );
-    return this.worlds[MAIN_WORLD].evaluate(pageFunction, ...args);
+    return this.mainRealm().evaluate(pageFunction, ...args);
   }
 
   override async $<Selector extends string>(
     selector: Selector
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    return this.worlds[MAIN_WORLD].$(selector);
+    return this.mainRealm().$(selector);
   }
 
   override async $$<Selector extends string>(
     selector: Selector
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    return this.worlds[MAIN_WORLD].$$(selector);
+    return this.mainRealm().$$(selector);
   }
 
   override async $eval<
@@ -274,7 +282,7 @@ export class Frame extends BaseFrame {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
-    return this.worlds[MAIN_WORLD].$eval(selector, pageFunction, ...args);
+    return this.mainRealm().$eval(selector, pageFunction, ...args);
   }
 
   override async $$eval<
@@ -290,53 +298,15 @@ export class Frame extends BaseFrame {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
-    return this.worlds[MAIN_WORLD].$$eval(selector, pageFunction, ...args);
+    return this.mainRealm().$$eval(selector, pageFunction, ...args);
   }
 
   override async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
-    return this.worlds[MAIN_WORLD].$x(expression);
-  }
-
-  override async waitForSelector<Selector extends string>(
-    selector: Selector,
-    options: WaitForSelectorOptions = {}
-  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    const {updatedSelector, QueryHandler} =
-      getQueryHandlerAndSelector(selector);
-    return (await QueryHandler.waitFor(
-      this,
-      updatedSelector,
-      options
-    )) as ElementHandle<NodeFor<Selector>> | null;
-  }
-
-  override async waitForXPath(
-    xpath: string,
-    options: WaitForSelectorOptions = {}
-  ): Promise<ElementHandle<Node> | null> {
-    if (xpath.startsWith('//')) {
-      xpath = `.${xpath}`;
-    }
-    return this.waitForSelector(`xpath/${xpath}`, options);
-  }
-
-  override waitForFunction<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
-  >(
-    pageFunction: Func | string,
-    options: FrameWaitForFunctionOptions = {},
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    return this.worlds[MAIN_WORLD].waitForFunction(
-      pageFunction,
-      options,
-      ...args
-    ) as Promise<HandleFor<Awaited<ReturnType<Func>>>>;
+    return this.mainRealm().$x(expression);
   }
 
   override async content(): Promise<string> {
-    return this.worlds[PUPPETEER_WORLD].content();
+    return this.isolatedRealm().content();
   }
 
   override async setContent(
@@ -346,7 +316,7 @@ export class Frame extends BaseFrame {
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
     } = {}
   ): Promise<void> {
-    return this.worlds[PUPPETEER_WORLD].setContent(html, options);
+    return this.isolatedRealm().setContent(html, options);
   }
 
   override name(): string {
@@ -388,8 +358,8 @@ export class Frame extends BaseFrame {
 
     type = type ?? 'text/javascript';
 
-    return this.worlds[MAIN_WORLD].transferHandle(
-      await this.worlds[PUPPETEER_WORLD].evaluateHandle(
+    return this.mainRealm().transferHandle(
+      await this.isolatedRealm().evaluateHandle(
         async ({Deferred}, {url, id, type, content}) => {
           const deferred = Deferred.create<void>();
           const script = document.createElement('script');
@@ -456,8 +426,8 @@ export class Frame extends BaseFrame {
       options.content = content;
     }
 
-    return this.worlds[MAIN_WORLD].transferHandle(
-      await this.worlds[PUPPETEER_WORLD].evaluateHandle(
+    return this.mainRealm().transferHandle(
+      await this.isolatedRealm().evaluateHandle(
         async ({Deferred}, {url, content}) => {
           const deferred = Deferred.create<void>();
           let element: HTMLStyleElement | HTMLLinkElement;
@@ -504,23 +474,23 @@ export class Frame extends BaseFrame {
     selector: string,
     options: Readonly<ClickOptions> = {}
   ): Promise<void> {
-    return this.worlds[PUPPETEER_WORLD].click(selector, options);
+    return this.isolatedRealm().click(selector, options);
   }
 
   override async focus(selector: string): Promise<void> {
-    return this.worlds[PUPPETEER_WORLD].focus(selector);
+    return this.isolatedRealm().focus(selector);
   }
 
   override async hover(selector: string): Promise<void> {
-    return this.worlds[PUPPETEER_WORLD].hover(selector);
+    return this.isolatedRealm().hover(selector);
   }
 
   override select(selector: string, ...values: string[]): Promise<string[]> {
-    return this.worlds[PUPPETEER_WORLD].select(selector, ...values);
+    return this.isolatedRealm().select(selector, ...values);
   }
 
   override async tap(selector: string): Promise<void> {
-    return this.worlds[PUPPETEER_WORLD].tap(selector);
+    return this.isolatedRealm().tap(selector);
   }
 
   override async type(
@@ -528,11 +498,11 @@ export class Frame extends BaseFrame {
     text: string,
     options?: {delay: number}
   ): Promise<void> {
-    return this.worlds[PUPPETEER_WORLD].type(selector, text, options);
+    return this.isolatedRealm().type(selector, text, options);
   }
 
   override async title(): Promise<string> {
-    return this.worlds[PUPPETEER_WORLD].title();
+    return this.isolatedRealm().title();
   }
 
   _deviceRequestPromptManager(): DeviceRequestPromptManager {

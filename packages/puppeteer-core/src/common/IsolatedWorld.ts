@@ -17,6 +17,7 @@
 import {Protocol} from 'devtools-protocol';
 
 import type {ClickOptions, ElementHandle} from '../api/ElementHandle.js';
+import {Realm} from '../api/Frame.js';
 import {JSHandle} from '../api/JSHandle.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
@@ -99,7 +100,7 @@ export interface IsolatedWorldChart {
 /**
  * @internal
  */
-export class IsolatedWorld {
+export class IsolatedWorld implements Realm {
   #frame: Frame;
   #document?: ElementHandle<Document>;
   #context = Deferred.create<ExecutionContext>();

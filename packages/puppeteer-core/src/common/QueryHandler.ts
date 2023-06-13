@@ -22,7 +22,6 @@ import {interpolateFunction, stringifyFunction} from '../util/Function.js';
 
 import {transposeIterableHandle} from './HandleIterator.js';
 import type {WaitForSelectorOptions} from './IsolatedWorld.js';
-import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {LazyArg} from './LazyArg.js';
 import type {Awaitable, AwaitableIterable} from './types.js';
 
@@ -160,7 +159,7 @@ export class QueryHandler {
       frame = elementOrFrame;
     } else {
       frame = elementOrFrame.frame;
-      element = await frame.worlds[PUPPETEER_WORLD].adoptHandle(elementOrFrame);
+      element = await frame.isolatedRealm().adoptHandle(elementOrFrame);
     }
 
     const {visible = false, hidden = false, timeout, signal} = options;
@@ -168,7 +167,7 @@ export class QueryHandler {
     try {
       signal?.throwIfAborted();
 
-      const handle = await frame.worlds[PUPPETEER_WORLD].waitForFunction(
+      const handle = await frame.isolatedRealm().waitForFunction(
         async (PuppeteerUtil, query, selector, root, visible) => {
           const querySelector = PuppeteerUtil.createFunction(
             query
@@ -204,7 +203,7 @@ export class QueryHandler {
         await handle.dispose();
         return null;
       }
-      return frame.worlds[MAIN_WORLD].transferHandle(handle);
+      return frame.mainRealm().transferHandle(handle);
     } catch (error) {
       if (!isErrorLike(error)) {
         throw error;

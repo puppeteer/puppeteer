@@ -21,26 +21,23 @@ import {JSHandle as BaseJSHandle} from '../../api/JSHandle.js';
 import {EvaluateFuncWith, HandleFor, HandleOr} from '../../common/types.js';
 import {withSourcePuppeteerURLIfNone} from '../util.js';
 
-import {BrowsingContext} from './BrowsingContext.js';
+import {Realm} from './Realm.js';
 import {BidiSerializer} from './Serializer.js';
 import {releaseReference} from './utils.js';
 
 export class JSHandle<T = unknown> extends BaseJSHandle<T> {
   #disposed = false;
-  #context;
+  #realm: Realm;
   #remoteValue;
 
-  constructor(
-    context: BrowsingContext,
-    remoteValue: Bidi.CommonDataTypes.RemoteValue
-  ) {
+  constructor(realm: Realm, remoteValue: Bidi.CommonDataTypes.RemoteValue) {
     super();
-    this.#context = context;
+    this.#realm = realm;
     this.#remoteValue = remoteValue;
   }
 
-  context(): BrowsingContext {
-    return this.#context;
+  context(): Realm {
+    return this.#realm;
   }
 
   override get disposed(): boolean {
@@ -136,7 +133,7 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
     }
     this.#disposed = true;
     if ('handle' in this.#remoteValue) {
-      await releaseReference(this.#context, this.#remoteValue);
+      await releaseReference(this.#realm, this.#remoteValue);
     }
   }
 

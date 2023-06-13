@@ -65,6 +65,10 @@ interface Commands {
     params: Bidi.Script.DisownParameters;
     returnType: Bidi.Script.DisownResult;
   };
+  'script.addPreloadScript': {
+    params: Bidi.Script.AddPreloadScriptParameters;
+    returnType: Bidi.Script.AddPreloadScriptResult;
+  };
 
   'browsingContext.create': {
     params: Bidi.BrowsingContext.CreateParameters;
@@ -116,11 +120,11 @@ interface Commands {
   };
   'session.subscribe': {
     params: Bidi.Session.SubscriptionRequest;
-    returnType: Bidi.Session.SubscribeResult;
+    returnType: Bidi.Message.EmptyResult;
   };
   'session.unsubscribe': {
     params: Bidi.Session.SubscriptionRequest;
-    returnType: Bidi.Session.UnsubscribeResult;
+    returnType: Bidi.Message.EmptyResult;
   };
   'cdp.sendCommand': {
     params: Bidi.CDP.SendCommandParams;

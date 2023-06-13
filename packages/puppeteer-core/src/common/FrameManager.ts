@@ -34,7 +34,10 @@ import {Target} from './Target.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {debugError, PuppeteerURL} from './util.js';
 
-const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
+/**
+ * @internal
+ */
+export const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
 /**
  * We use symbols to prevent external parties listening to these events.

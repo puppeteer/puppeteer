@@ -156,7 +156,10 @@ export class BidiSerializer {
         ? arg
         : null;
     if (objectHandle) {
-      if (objectHandle.context() !== context) {
+      if (
+        objectHandle.context() !== context &&
+        !('sharedId' in objectHandle.remoteValue())
+      ) {
         throw new Error(
           'JSHandles can be evaluated only in the context they were created!'
         );
