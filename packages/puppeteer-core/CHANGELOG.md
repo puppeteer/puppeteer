@@ -8,6 +8,13 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.0.1 to 1.1.0
 
+## [20.7.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.7.0...puppeteer-core-v20.7.1) (2023-06-13)
+
+
+### Bug Fixes
+
+* avoid importing puppeteer-core.js ([#10376](https://github.com/puppeteer/puppeteer/issues/10376)) ([3171c12](https://github.com/puppeteer/puppeteer/commit/3171c12a0c16b283e6b65b1ed3d801b089a6e28b))
+
 ## [20.7.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.6.0...puppeteer-core-v20.7.0) (2023-06-13)
 
 
