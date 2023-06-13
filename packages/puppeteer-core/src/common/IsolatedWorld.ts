@@ -369,10 +369,18 @@ export class IsolatedWorld {
 
     await this.#mutex.acquire();
     try {
-      await context._client.send('Runtime.addBinding', {
-        name,
-        executionContextName: context._contextName,
-      });
+      await context._client.send(
+        'Runtime.addBinding',
+        context._contextName
+          ? {
+              name,
+              executionContextName: context._contextName,
+            }
+          : {
+              name,
+              executionContextId: context._contextId,
+            }
+      );
 
       await context.evaluate(addPageBinding, 'internal', name);
 
