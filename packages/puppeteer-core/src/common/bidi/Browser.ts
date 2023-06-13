@@ -99,8 +99,9 @@ export class Browser extends BrowserBase {
     this.#browserName = opts.browserName;
     this.#browserVersion = opts.browserVersion;
 
-    this.#process?.on('close', () => {
-      return this.emit(BrowserEmittedEvents.Disconnected);
+    this.#process?.once('close', () => {
+      this.#connection.dispose();
+      this.emit(BrowserEmittedEvents.Disconnected);
     });
   }
 
@@ -109,6 +110,9 @@ export class Browser extends BrowserBase {
   }
 
   override async close(): Promise<void> {
+    if (this.#connection.closed) {
+      return;
+    }
     this.#connection.dispose();
     await this.#closeCallback?.call(null);
   }
