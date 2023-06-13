@@ -184,8 +184,17 @@ process.on('unhandledRejection', reason => {
 });
 
 export const setupTestBrowserHooks = (): void => {
-  before(async () => {
-    const browser = await puppeteer.launch(defaultBrowserOptions);
+  before(async function () {
+    const browser = await puppeteer.launch(
+      Object.assign(
+        {
+          // Set the protocol timeout a slightly smaller than the Mocha one
+          // This way we may get the command that failed
+          protocolTimeout: this.timeout() - 1_000,
+        },
+        defaultBrowserOptions
+      )
+    );
     state.browser = browser;
   });
 
@@ -196,9 +205,12 @@ export const setupTestBrowserHooks = (): void => {
 };
 
 export const setupTestPageAndContextHooks = (): void => {
-  beforeEach(async () => {
+  beforeEach(async function () {
     state.context = await state.browser!.createIncognitoBrowserContext();
     state.page = await state.context.newPage();
+    // Set the default timeout a slightly smaller than the Mocha one
+    // This way we may get the exact location that the timeout happens
+    state.page.setDefaultTimeout(this.timeout() - 500);
   });
 
   afterEach(async () => {
