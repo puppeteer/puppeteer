@@ -8,6 +8,20 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.0.1 to 1.1.0
 
+## [20.7.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.6.0...puppeteer-core-v20.7.0) (2023-06-13)
+
+
+### Features
+
+* add `reset` to mouse ([#10340](https://github.com/puppeteer/puppeteer/issues/10340)) ([35aedc0](https://github.com/puppeteer/puppeteer/commit/35aedc0dbbd80818e6f83ff9f0777dc3ea2588f0))
+
+
+### Bug Fixes
+
+* Locator.scroll in race ([#10363](https://github.com/puppeteer/puppeteer/issues/10363)) ([ba28724](https://github.com/puppeteer/puppeteer/commit/ba28724952b41ea653830a75efc4c73b234ea354))
+* mark CDPSessionOnMessageObject as internal ([#10373](https://github.com/puppeteer/puppeteer/issues/10373)) ([7cb6059](https://github.com/puppeteer/puppeteer/commit/7cb6059bcc36f8dc3739a8df9119c658146ac100))
+* specify the context id when adding bindings ([#10366](https://github.com/puppeteer/puppeteer/issues/10366)) ([c2d3488](https://github.com/puppeteer/puppeteer/commit/c2d3488ad8c0453312557ba28e6ade9c32464f17))
+
 ## [20.6.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.5.0...puppeteer-core-v20.6.0) (2023-06-09)
 
 
