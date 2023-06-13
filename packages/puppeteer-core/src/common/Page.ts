@@ -197,7 +197,6 @@ export class CDPPage extends Page {
       stop: async () => {
         const deferred = Deferred.create();
         this.#client.once('Tracing.tracingComplete', event => {
-          console.log('resolved');
           deferred.resolve(event);
         });
         await this.#client.send('Tracing.end');

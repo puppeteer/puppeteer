@@ -32,7 +32,10 @@ export interface TracingOptions {
   categories?: string[];
 }
 
-interface TracingSource extends ProtocolReadable {
+/**
+ * @internal
+ */
+export interface TracingSource extends ProtocolReadable {
   start(opts: Protocol.Tracing.StartRequest): Promise<void>;
   stop(): Promise<Protocol.Tracing.TracingCompleteEvent>;
 }
