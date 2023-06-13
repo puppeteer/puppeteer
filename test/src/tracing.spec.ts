@@ -40,9 +40,9 @@ describe('Tracing', function () {
       fs.unlinkSync(outputFile);
     }
   });
+
   it('should output a trace', async () => {
     const {server, page} = testState;
-
     await page.tracing.start({screenshots: true, path: outputFile});
     await page.goto(server.PREFIX + '/grid.html');
     await page.tracing.stop();

@@ -59,6 +59,7 @@ export class BrowsingContext extends EventEmitter {
   #timeoutSettings: TimeoutSettings;
   #id: string;
   #url = 'about:blank';
+  #cdpSessionId?: string;
 
   constructor(
     connection: Connection,
@@ -93,6 +94,10 @@ export class BrowsingContext extends EventEmitter {
 
   get id(): string {
     return this.#id;
+  }
+
+  get cdpSessionId(): string | undefined {
+    return this.#cdpSessionId;
   }
 
   async goto(
@@ -285,14 +290,17 @@ export class BrowsingContext extends EventEmitter {
     method: T,
     params: ProtocolMapping.Commands[T]['paramsType'][0] = {}
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
-    const session = await this.connection.send('cdp.getSession', {
-      context: this.#id,
-    });
-    const sessionId = session.result.cdpSession;
+    if (!this.#cdpSessionId) {
+      const session = await this.connection.send('cdp.getSession', {
+        context: this.#id,
+      });
+      const sessionId = session.result.cdpSession;
+      this.#cdpSessionId = sessionId;
+    }
     const result = await this.connection.send('cdp.sendCommand', {
       cdpMethod: method,
       cdpParams: params,
-      cdpSession: sessionId,
+      cdpSession: this.#cdpSessionId,
     });
     return result.result;
   }

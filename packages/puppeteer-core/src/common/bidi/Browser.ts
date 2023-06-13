@@ -35,7 +35,13 @@ import {debugError} from './utils.js';
  * @internal
  */
 export class Browser extends BrowserBase {
-  static readonly subscribeModules = ['browsingContext', 'network', 'log'];
+  static readonly subscribeModules = [
+    'browsingContext',
+    'network',
+    'log',
+    'cdp',
+  ];
+
   #browserName = '';
   #browserVersion = '';
 
@@ -55,11 +61,16 @@ export class Browser extends BrowserBase {
       browserName = result.capabilities.browserName ?? '';
       browserVersion = result.capabilities.browserVersion ?? '';
     } catch (err) {
+      // Chrome does not support session.new.
       debugError(err);
     }
 
     await opts.connection.send('session.subscribe', {
-      events: Browser.subscribeModules as Bidi.Message.EventNames[],
+      events: (browserName.toLocaleLowerCase().includes('firefox')
+        ? Browser.subscribeModules.filter(module => {
+            return !['cdp'].includes(module);
+          })
+        : Browser.subscribeModules) as Bidi.Message.EventNames[],
     });
 
     return new Browser({

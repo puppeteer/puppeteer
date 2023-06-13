@@ -210,6 +210,16 @@ export class Connection extends EventEmitter {
       // `log.entryAdded` specific context
     } else if ('source' in event.params && event.params.source.context) {
       context = this.#browsingContexts.get(event.params.source.context);
+    } else if (event.method === 'cdp.eventReceived') {
+      // TODO: this is not a good solution and we need to find a better one.
+      // Perhaps we need to have a dedicated CDP event emitter or emulate
+      // the CDPSession interface with BiDi?.
+      const cdpSessionId = event.params.cdpSession;
+      for (const context of this.#browsingContexts.values()) {
+        if (context.cdpSessionId === cdpSessionId) {
+          context?.emit(event.params.cdpMethod, event.params.cdpParams);
+        }
+      }
     }
     context?.emit(event.method, event.params);
   }
