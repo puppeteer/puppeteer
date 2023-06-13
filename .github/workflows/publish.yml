@@ -76,7 +76,7 @@ jobs:
             latest
             type=match,pattern=puppeteer-v(\d+\.\d+\.\d+),group=1
       - name: Build and push the Docker image
-        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671 # v4.0.0
+        uses: docker/build-push-action@44ea916f6c540f9302d50c2b1e5a8dc071f15cdf # v4.1.0
         with:
           context: ./docker
           push: true
