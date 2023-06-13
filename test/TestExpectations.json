@@ -633,7 +633,7 @@
     "testIdPattern": "[network.spec] network raw network headers Cross-origin set-cookie",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[network.spec] network raw network headers Same-origin set-cookie navigation",
