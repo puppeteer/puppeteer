@@ -427,6 +427,9 @@ describe('AriaQueryHandler', () => {
         .waitForSelector('aria/inner', {visible: true})
         .then(() => {
           return (divVisible = true);
+        })
+        .catch(() => {
+          return (divVisible = false);
         });
       await page.setContent(
         `<div style='display: none; visibility: hidden;'><div aria-label="inner">hi</div></div>`
@@ -456,6 +459,9 @@ describe('AriaQueryHandler', () => {
         .waitForSelector('aria/[role="button"]', {hidden: true})
         .then(() => {
           return (divHidden = true);
+        })
+        .catch(() => {
+          return (divHidden = false);
         });
       await page.waitForSelector('aria/[role="button"]'); // do a round trip
       expect(divHidden).toBe(false);
@@ -479,6 +485,9 @@ describe('AriaQueryHandler', () => {
         .waitForSelector('aria/[role="main"]', {hidden: true})
         .then(() => {
           return (divHidden = true);
+        })
+        .catch(() => {
+          return (divHidden = false);
         });
       await page.waitForSelector('aria/[role="main"]'); // do a round trip
       expect(divHidden).toBe(false);
@@ -500,6 +509,9 @@ describe('AriaQueryHandler', () => {
         .waitForSelector('aria/[role="main"]', {hidden: true})
         .then(() => {
           return (divRemoved = true);
+        })
+        .catch(() => {
+          return (divRemoved = false);
         });
       await page.waitForSelector('aria/[role="main"]'); // do a round trip
       expect(divRemoved).toBe(false);
@@ -553,9 +565,14 @@ describe('AriaQueryHandler', () => {
       const {page} = getTestState();
 
       let divFound = false;
-      const waitForSelector = page.waitForSelector('aria/zombo').then(() => {
-        return (divFound = true);
-      });
+      const waitForSelector = page
+        .waitForSelector('aria/zombo')
+        .then(() => {
+          return (divFound = true);
+        })
+        .catch(() => {
+          return (divFound = false);
+        });
       await page.setContent(`<div aria-label='notZombo'></div>`);
       expect(divFound).toBe(false);
       await page.evaluate(() => {
@@ -569,7 +586,9 @@ describe('AriaQueryHandler', () => {
     it('should return the element handle', async () => {
       const {page} = getTestState();
 
-      const waitForSelector = page.waitForSelector('aria/zombo');
+      const waitForSelector = page.waitForSelector('aria/zombo').catch(err => {
+        return err;
+      });
       await page.setContent(`<div aria-label='zombo'>anything</div>`);
       expect(
         await page.evaluate(x => {

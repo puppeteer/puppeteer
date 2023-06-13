@@ -150,7 +150,12 @@ describe('Locator', function () {
         <button style="display: none;" onclick="this.innerText = 'clicked';">test</button>
       `);
       const button = await page.$('button');
-      const result = page.locator('button').click();
+      const result = page
+        .locator('button')
+        .click()
+        .catch(err => {
+          return err;
+        });
       expect(
         await button?.evaluate(el => {
           return el.innerText;
@@ -159,7 +164,10 @@ describe('Locator', function () {
       await button?.evaluate(el => {
         el.style.display = 'block';
       });
-      await result;
+      const maybeError = await result;
+      if (maybeError instanceof Error) {
+        throw maybeError;
+      }
       expect(
         await button?.evaluate(el => {
           return el.innerText;

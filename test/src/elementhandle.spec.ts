@@ -389,23 +389,29 @@ describe('ElementHandle specs', function () {
   describe('Element.waitForSelector', () => {
     it('should wait correctly with waitForSelector on an element', async () => {
       const {page} = getTestState();
-      const waitFor = page.waitForSelector('.foo') as Promise<
-        ElementHandle<HTMLDivElement>
-      >;
+      const waitFor = page.waitForSelector('.foo').catch(err => {
+        return err;
+      }) as Promise<ElementHandle<HTMLDivElement>>;
       // Set the page content after the waitFor has been started.
       await page.setContent(
         '<div id="not-foo"></div><div class="bar">bar2</div><div class="foo">Foo1</div>'
       );
       let element = (await waitFor)!;
+      if (element instanceof Error) {
+        throw element;
+      }
       expect(element).toBeDefined();
 
-      const innerWaitFor = element.waitForSelector('.bar') as Promise<
-        ElementHandle<HTMLDivElement>
-      >;
+      const innerWaitFor = element.waitForSelector('.bar').catch(err => {
+        return err;
+      }) as Promise<ElementHandle<HTMLDivElement>>;
       await element.evaluate(el => {
         el.innerHTML = '<div class="bar">bar1</div>';
       });
       element = (await innerWaitFor)!;
+      if (element instanceof Error) {
+        throw element;
+      }
       expect(element).toBeDefined();
       expect(
         await element.evaluate(el => {
@@ -683,13 +689,19 @@ describe('ElementHandle specs', function () {
           return (element as Element).querySelector(`.${selector}`);
         },
       });
-      const waitFor = page.waitForSelector('getByClass/foo');
+      const waitFor = page.waitForSelector('getByClass/foo').catch(err => {
+        return err;
+      });
 
       // Set the page content after the waitFor has been started.
       await page.setContent(
         '<div id="not-foo"></div><div class="foo">Foo1</div>'
       );
       const element = await waitFor;
+
+      if (element instanceof Error) {
+        throw element;
+      }
 
       expect(element).toBeDefined();
     });
@@ -701,26 +713,34 @@ describe('ElementHandle specs', function () {
           return (element as Element).querySelector(`.${selector}`);
         },
       });
-      const waitFor = page.waitForSelector('getByClass/foo') as Promise<
-        ElementHandle<HTMLElement>
-      >;
+      const waitFor = page.waitForSelector('getByClass/foo').catch(err => {
+        return err;
+      }) as Promise<ElementHandle<HTMLElement>>;
 
       // Set the page content after the waitFor has been started.
       await page.setContent(
         '<div id="not-foo"></div><div class="bar">bar2</div><div class="foo">Foo1</div>'
       );
       let element = (await waitFor)!;
+      if (element instanceof Error) {
+        throw element;
+      }
       expect(element).toBeDefined();
 
-      const innerWaitFor = element.waitForSelector('getByClass/bar') as Promise<
-        ElementHandle<HTMLElement>
-      >;
+      const innerWaitFor = element
+        .waitForSelector('getByClass/bar')
+        .catch(err => {
+          return err;
+        }) as Promise<ElementHandle<HTMLElement>>;
 
       await element.evaluate(el => {
         el.innerHTML = '<div class="bar">bar1</div>';
       });
 
       element = (await innerWaitFor)!;
+      if (element instanceof Error) {
+        throw element;
+      }
       expect(element).toBeDefined();
       expect(
         await element.evaluate(el => {
@@ -738,13 +758,19 @@ describe('ElementHandle specs', function () {
           return (element as Element).querySelector(`.${selector}`);
         },
       });
-      const waitFor = page.waitForSelector('getByClass/foo');
+      const waitFor = page.waitForSelector('getByClass/foo').catch(err => {
+        return err;
+      });
 
       // Set the page content after the waitFor has been started.
       await page.setContent(
         '<div id="not-foo"></div><div class="foo">Foo1</div>'
       );
       const element = await waitFor;
+
+      if (element instanceof Error) {
+        throw element;
+      }
 
       expect(element).toBeDefined();
     });

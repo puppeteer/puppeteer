@@ -20,6 +20,7 @@ import expect from 'expect';
 import {Frame} from 'puppeteer-core/internal/api/Frame.js';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
 import {EventEmitter} from 'puppeteer-core/internal/common/EventEmitter.js';
+import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 
 import {compare} from './golden-utils.js';
 
@@ -132,19 +133,27 @@ export const dumpFrames = (frame: Frame, indentation?: string): string[] => {
   return result;
 };
 
-export const waitEvent = <T = any>(
+export const waitEvent = async <T = any>(
   emitter: EventEmitter,
   eventName: string,
   predicate: (event: T) => boolean = () => {
     return true;
   }
 ): Promise<T> => {
-  return new Promise(fulfill => {
-    emitter.on(eventName, (event: T) => {
-      if (!predicate(event)) {
-        return;
-      }
-      fulfill(event);
-    });
+  const deferred = Deferred.create<T>({
+    timeout: 5000,
+    message: 'Waiting for test event timed out.',
   });
+  const handler = (event: T) => {
+    if (!predicate(event)) {
+      return;
+    }
+    deferred.resolve(event);
+  };
+  emitter.on(eventName, handler);
+  try {
+    return await deferred.valueOrThrow();
+  } finally {
+    emitter.off(eventName, handler);
+  }
 };
