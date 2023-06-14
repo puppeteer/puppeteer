@@ -110,23 +110,29 @@ async function updateDevToolsProtocolVersion(revision) {
   );
 }
 
-async function updateVersionFileLastMaintained(currentVersion, updateVersion) {
+async function updateVersionFileLastMaintained(oldVersion, newVersion) {
   const versions = [...versionsPerRelease.keys()];
-  if (versions.indexOf(updateVersion) !== -1) {
+  if (versions.indexOf(newVersion) !== -1) {
     return;
   }
 
   // If we have manually rolled Chrome but not yet released
   // We will have NEXT as value in the Map
-  if (versionsPerRelease.get(currentVersion) === 'NEXT') {
-    await replaceInFile('./versions.js', currentVersion, updateVersion);
-  } else {
-    await replaceInFile(
-      './versions.js',
-      VERSIONS_PER_RELEASE_COMMENT,
-      `${VERSIONS_PER_RELEASE_COMMENT}\n  ['${version}', 'NEXT'],`
-    );
+  if (versionsPerRelease.get(oldVersion) === 'NEXT') {
+    await replaceInFile('./versions.js', oldVersion, newVersion);
+    return;
+  }
 
+  await replaceInFile(
+    './versions.js',
+    VERSIONS_PER_RELEASE_COMMENT,
+    `${VERSIONS_PER_RELEASE_COMMENT}\n  ['${version}', 'NEXT'],`
+  );
+
+  const oldSemVer = new SemVer(oldVersion, true);
+  const newSemVer = new SemVer(newVersion, true);
+
+  if (newSemVer.compareMain(oldSemVer) !== 0) {
     const lastMaintainedIndex = versions.indexOf(lastMaintainedChromeVersion);
     const nextMaintainedVersion = versions[lastMaintainedIndex - 1];
 
