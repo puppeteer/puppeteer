@@ -60,7 +60,7 @@ jobs:
         with:
           node-version: lts/*
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       - name: Analyze issue
         id: issue-analysis
         run: echo $ISSUE_BODY | ./tools/analyze_issue.mjs >> $GITHUB_OUTPUT
