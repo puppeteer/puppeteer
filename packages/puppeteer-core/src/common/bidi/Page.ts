@@ -29,6 +29,7 @@ import {assert} from '../../util/assert.js';
 import {Deferred} from '../../util/Deferred.js';
 import {Accessibility} from '../Accessibility.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
+import {Coverage} from '../Coverage.js';
 import {TargetCloseError} from '../Errors.js';
 import {Handler} from '../EventEmitter.js';
 import {FrameManagerEmittedEvents} from '../FrameManager.js';
@@ -120,6 +121,7 @@ export class Page extends PageBase {
     ],
   ]);
   #tracing: Tracing;
+  #coverage: Coverage;
 
   constructor(browserContext: BrowserContext, info: {context: string}) {
     super();
@@ -169,13 +171,15 @@ export class Page extends PageBase {
         const deferred = Deferred.create();
         this.mainFrame()
           .context()
-          .once('Tracing.tracingComplete', event => {
+          .cdpSession.once('Tracing.tracingComplete', event => {
             deferred.resolve(event);
           });
         await this.mainFrame().context().sendCDPCommand('Tracing.end');
         return deferred.valueOrThrow() as Promise<Protocol.Tracing.TracingCompleteEvent>;
       },
     });
+
+    this.#coverage = new Coverage(this.mainFrame().context().cdpSession);
   }
 
   override get accessibility(): Accessibility {
@@ -184,6 +188,10 @@ export class Page extends PageBase {
 
   override get tracing(): Tracing {
     return this.#tracing;
+  }
+
+  override get coverage(): Coverage {
+    return this.#coverage;
   }
 
   override browser(): Browser {

@@ -4,7 +4,9 @@ import ProtocolMapping from 'devtools-protocol/types/protocol-mapping.js';
 import {WaitForOptions} from '../../api/Page.js';
 import PuppeteerUtil from '../../injected/injected.js';
 import {assert} from '../../util/assert.js';
+import {Deferred} from '../../util/Deferred.js';
 import {stringifyFunction} from '../../util/Function.js';
+import type {CDPSession, Connection as CDPConnection} from '../Connection.js';
 import {ProtocolError, TimeoutError} from '../Errors.js';
 import {EventEmitter} from '../EventEmitter.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
@@ -54,12 +56,60 @@ const lifeCycleToReadinessState = new Map<
 /**
  * @internal
  */
+export class CDPSessionWrapper extends EventEmitter implements CDPSession {
+  #context: BrowsingContext;
+  #sessionId = Deferred.create<string>();
+
+  constructor(context: BrowsingContext) {
+    super();
+    this.#context = context;
+    context.connection
+      .send('cdp.getSession', {
+        context: context.id,
+      })
+      .then(session => {
+        this.#sessionId.resolve(session.result.cdpSession);
+      })
+      .catch(err => {
+        this.#sessionId.reject(err);
+      });
+  }
+
+  connection(): CDPConnection | undefined {
+    return undefined;
+  }
+  async send<T extends keyof ProtocolMapping.Commands>(
+    method: T,
+    ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
+  ): Promise<ProtocolMapping.Commands[T]['returnType']> {
+    const cdpSession = await this.#sessionId.valueOrThrow();
+    const result = await this.#context.connection.send('cdp.sendCommand', {
+      cdpMethod: method,
+      cdpParams: paramArgs[0] || {},
+      cdpSession,
+    });
+    return result.result;
+  }
+
+  detach(): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  id(): string {
+    const val = this.#sessionId.value();
+    return val instanceof Error || val === undefined ? '' : val;
+  }
+}
+
+/**
+ * @internal
+ */
 export class BrowsingContext extends EventEmitter {
   connection: Connection;
   #timeoutSettings: TimeoutSettings;
   #id: string;
   #url = 'about:blank';
-  #cdpSessionId?: string;
+  #cdpSession: CDPSession;
 
   constructor(
     connection: Connection,
@@ -70,6 +120,7 @@ export class BrowsingContext extends EventEmitter {
     this.connection = connection;
     this.#timeoutSettings = timeoutSettings;
     this.#id = info.context;
+    this.#cdpSession = new CDPSessionWrapper(this);
   }
 
   #puppeteerUtil?: Promise<JSHandle<PuppeteerUtil>>;
@@ -96,8 +147,8 @@ export class BrowsingContext extends EventEmitter {
     return this.#id;
   }
 
-  get cdpSessionId(): string | undefined {
-    return this.#cdpSessionId;
+  get cdpSession(): CDPSession {
+    return this.#cdpSession;
   }
 
   async goto(
@@ -288,21 +339,9 @@ export class BrowsingContext extends EventEmitter {
 
   async sendCDPCommand<T extends keyof ProtocolMapping.Commands>(
     method: T,
-    params: ProtocolMapping.Commands[T]['paramsType'][0] = {}
+    ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
-    if (!this.#cdpSessionId) {
-      const session = await this.connection.send('cdp.getSession', {
-        context: this.#id,
-      });
-      const sessionId = session.result.cdpSession;
-      this.#cdpSessionId = sessionId;
-    }
-    const result = await this.connection.send('cdp.sendCommand', {
-      cdpMethod: method,
-      cdpParams: params,
-      cdpSession: this.#cdpSessionId,
-    });
-    return result.result;
+    return this.#cdpSession.send(method, ...paramArgs);
   }
 
   dispose(): void {

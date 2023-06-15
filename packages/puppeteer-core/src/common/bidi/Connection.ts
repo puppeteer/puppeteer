@@ -216,8 +216,11 @@ export class Connection extends EventEmitter {
       // the CDPSession interface with BiDi?.
       const cdpSessionId = event.params.cdpSession;
       for (const context of this.#browsingContexts.values()) {
-        if (context.cdpSessionId === cdpSessionId) {
-          context?.emit(event.params.cdpMethod, event.params.cdpParams);
+        if (context.cdpSession?.id() === cdpSessionId) {
+          context.cdpSession!.emit(
+            event.params.cdpMethod,
+            event.params.cdpParams
+          );
         }
       }
     }
