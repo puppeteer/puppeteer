@@ -1230,10 +1230,40 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[emulation.spec] Emulation Page.viewport should support mobile emulation",
+    "testIdPattern": "[emulation.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[emulation.spec] Emulation Page.viewport should support touch emulation",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[emulation.spec] Emulation Page.viewport should detect touch when applying viewport with touches",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[emulation.spec] Emulation Page.emulate should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[emulation.spec] Emulation Page.emulate should support clicking",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[emulation.spec] Emulation Page.emulateNetworkConditions should change navigator.connection.effectiveType",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs \"after each\" hook for \"should transfer 100Mb of data from page to node.js\"",

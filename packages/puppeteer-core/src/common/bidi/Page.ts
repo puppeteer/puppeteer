@@ -17,8 +17,11 @@
 import type {Readable} from 'stream';
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import Protocol from 'devtools-protocol';
 
 import {
+  GeolocationOptions,
+  MediaFeature,
   Page as PageBase,
   PageEmittedEvents,
   ScreenshotOptions,
@@ -29,6 +32,7 @@ import {Deferred} from '../../util/Deferred.js';
 import {Accessibility} from '../Accessibility.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
 import {Coverage} from '../Coverage.js';
+import {EmulationManager} from '../EmulationManager.js';
 import {TargetCloseError} from '../Errors.js';
 import {Handler} from '../EventEmitter.js';
 import {FrameManagerEmittedEvents} from '../FrameManager.js';
@@ -121,6 +125,7 @@ export class Page extends PageBase {
   ]);
   #tracing: Tracing;
   #coverage: Coverage;
+  #emulationManager: EmulationManager;
 
   constructor(browserContext: BrowserContext, info: {context: string}) {
     super();
@@ -148,6 +153,9 @@ export class Page extends PageBase {
     );
     this.#tracing = new Tracing(this.mainFrame().context().cdpSession);
     this.#coverage = new Coverage(this.mainFrame().context().cdpSession);
+    this.#emulationManager = new EmulationManager(
+      this.mainFrame().context().cdpSession
+    );
   }
 
   override get accessibility(): Accessibility {
@@ -393,25 +401,56 @@ export class Page extends PageBase {
     return this.mainFrame().content();
   }
 
+  override isJavaScriptEnabled(): boolean {
+    return this.#emulationManager.javascriptEnabled;
+  }
+
+  override async setGeolocation(options: GeolocationOptions): Promise<void> {
+    return await this.#emulationManager.setGeolocation(options);
+  }
+
+  override async setJavaScriptEnabled(enabled: boolean): Promise<void> {
+    return await this.#emulationManager.setJavaScriptEnabled(enabled);
+  }
+
+  override async emulateMediaType(type?: string): Promise<void> {
+    return await this.#emulationManager.emulateMediaType(type);
+  }
+
+  override async emulateCPUThrottling(factor: number | null): Promise<void> {
+    return await this.#emulationManager.emulateCPUThrottling(factor);
+  }
+
+  override async emulateMediaFeatures(
+    features?: MediaFeature[]
+  ): Promise<void> {
+    return await this.#emulationManager.emulateMediaFeatures(features);
+  }
+
+  override async emulateTimezone(timezoneId?: string): Promise<void> {
+    return await this.#emulationManager.emulateTimezone(timezoneId);
+  }
+
+  override async emulateIdleState(overrides?: {
+    isUserActive: boolean;
+    isScreenUnlocked: boolean;
+  }): Promise<void> {
+    return await this.#emulationManager.emulateIdleState(overrides);
+  }
+
+  override async emulateVisionDeficiency(
+    type?: Protocol.Emulation.SetEmulatedVisionDeficiencyRequest['type']
+  ): Promise<void> {
+    return await this.#emulationManager.emulateVisionDeficiency(type);
+  }
+
   override async setViewport(viewport: Viewport): Promise<void> {
-    // TODO: use BiDi commands when available.
-    const mobile = false;
-    const width = viewport.width;
-    const height = viewport.height;
-    const deviceScaleFactor = 1;
-    const screenOrientation = {angle: 0, type: 'portraitPrimary' as const};
-
-    await this.mainFrame()
-      .context()
-      .sendCDPCommand('Emulation.setDeviceMetricsOverride', {
-        mobile,
-        width,
-        height,
-        deviceScaleFactor,
-        screenOrientation,
-      });
-
+    const needsReload = await this.#emulationManager.emulateViewport(viewport);
     this.#viewport = viewport;
+    if (needsReload) {
+      // TODO: reload seems to hang in BiDi.
+      // await this.reload();
+    }
   }
 
   override viewport(): Viewport | null {
