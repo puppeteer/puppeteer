@@ -288,6 +288,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[coverage.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[Deferred.spec] DeferredPromise should catch errors",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1071,6 +1077,48 @@
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[coverage.spec] Coverage specs CSSCoverage should ignore injected stylesheets",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[coverage.spec] Coverage specs CSSCoverage should work with complicated usecases",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[coverage.spec] Coverage specs CSSCoverage should work with media queries",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage includeRawScriptCoverage should include rawScriptCoverage field when enabled",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage includeRawScriptCoverage should not include rawScriptCoverage field when disabled",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should ignore pptr internal scripts if reportAnonymousScripts is true",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
