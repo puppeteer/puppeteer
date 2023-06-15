@@ -167,16 +167,7 @@ export class CDPPage extends Page {
     this.#keyboard = new Keyboard(client);
     this.#mouse = new Mouse(client, this.#keyboard);
     this.#touchscreen = new Touchscreen(client, this.#keyboard);
-    this.#accessibility = new Accessibility({
-      describeNode(id: string) {
-        return client.send('DOM.describeNode', {
-          objectId: id,
-        });
-      },
-      getFullAXTree() {
-        return client.send('Accessibility.getFullAXTree');
-      },
-    });
+    this.#accessibility = new Accessibility(client);
     this.#frameManager = new FrameManager(
       client,
       this,
@@ -184,25 +175,7 @@ export class CDPPage extends Page {
       this.#timeoutSettings
     );
     this.#emulationManager = new EmulationManager(client);
-    this.#tracing = new Tracing({
-      read: opts => {
-        return this.#client.send('IO.read', opts);
-      },
-      close: opts => {
-        return this.#client.send('IO.close', opts);
-      },
-      start: opts => {
-        return client.send('Tracing.start', opts);
-      },
-      stop: async () => {
-        const deferred = Deferred.create();
-        this.#client.once('Tracing.tracingComplete', event => {
-          deferred.resolve(event);
-        });
-        await this.#client.send('Tracing.end');
-        return deferred.valueOrThrow() as Promise<Protocol.Tracing.TracingCompleteEvent>;
-      },
-    });
+    this.#tracing = new Tracing(client);
     this.#coverage = new Coverage(client);
     this.#screenshotTaskQueue = screenshotTaskQueue;
     this.#viewport = null;
@@ -1494,17 +1467,7 @@ export class CDPPage extends Page {
     }
 
     assert(result.stream, '`stream` is missing from `Page.printToPDF');
-    return getReadableFromProtocolStream(
-      {
-        read: opts => {
-          return this.#client.send('IO.read', opts);
-        },
-        close: opts => {
-          return this.#client.send('IO.close', opts);
-        },
-      },
-      result.stream
-    );
+    return getReadableFromProtocolStream(this.#client, result.stream);
   }
 
   override async pdf(options: PDFOptions = {}): Promise<Buffer> {
