@@ -17,7 +17,6 @@
 import type {Readable} from 'stream';
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
-import Protocol from 'devtools-protocol';
 
 import {
   Page as PageBase,
@@ -144,41 +143,10 @@ export class Page extends PageBase {
     }
 
     // TODO: https://github.com/w3c/webdriver-bidi/issues/443
-    this.#accessibility = new Accessibility({
-      describeNode: (id: string) => {
-        return this.mainFrame().context().sendCDPCommand('DOM.describeNode', {
-          objectId: id,
-        });
-      },
-      getFullAXTree: () => {
-        return this.mainFrame()
-          .context()
-          .sendCDPCommand('Accessibility.getFullAXTree');
-      },
-    });
-
-    this.#tracing = new Tracing({
-      read: opts => {
-        return this.mainFrame().context().sendCDPCommand('IO.read', opts);
-      },
-      close: opts => {
-        return this.mainFrame().context().sendCDPCommand('IO.close', opts);
-      },
-      start: opts => {
-        return this.mainFrame().context().sendCDPCommand('Tracing.start', opts);
-      },
-      stop: async () => {
-        const deferred = Deferred.create();
-        this.mainFrame()
-          .context()
-          .cdpSession.once('Tracing.tracingComplete', event => {
-            deferred.resolve(event);
-          });
-        await this.mainFrame().context().sendCDPCommand('Tracing.end');
-        return deferred.valueOrThrow() as Promise<Protocol.Tracing.TracingCompleteEvent>;
-      },
-    });
-
+    this.#accessibility = new Accessibility(
+      this.mainFrame().context().cdpSession
+    );
+    this.#tracing = new Tracing(this.mainFrame().context().cdpSession);
     this.#coverage = new Coverage(this.mainFrame().context().cdpSession);
   }
 
