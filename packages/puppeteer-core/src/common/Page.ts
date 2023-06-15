@@ -143,7 +143,6 @@ export class CDPPage extends Page {
   #bindings = new Map<string, Binding>();
   #exposedFunctions = new Map<string, string>();
   #coverage: Coverage;
-  #javascriptEnabled = true;
   #viewport: Viewport | null;
   #screenshotTaskQueue: TaskQueue;
   #workers = new Map<string, WebWorker>();
@@ -361,7 +360,7 @@ export class CDPPage extends Page {
   }
 
   override isJavaScriptEnabled(): boolean {
-    return this.#javascriptEnabled;
+    return this.#emulationManager.javascriptEnabled;
   }
 
   override waitForFileChooser(
@@ -391,27 +390,7 @@ export class CDPPage extends Page {
   }
 
   override async setGeolocation(options: GeolocationOptions): Promise<void> {
-    const {longitude, latitude, accuracy = 0} = options;
-    if (longitude < -180 || longitude > 180) {
-      throw new Error(
-        `Invalid longitude "${longitude}": precondition -180 <= LONGITUDE <= 180 failed.`
-      );
-    }
-    if (latitude < -90 || latitude > 90) {
-      throw new Error(
-        `Invalid latitude "${latitude}": precondition -90 <= LATITUDE <= 90 failed.`
-      );
-    }
-    if (accuracy < 0) {
-      throw new Error(
-        `Invalid accuracy "${accuracy}": precondition 0 <= ACCURACY failed.`
-      );
-    }
-    await this.#client.send('Emulation.setGeolocationOverride', {
-      longitude,
-      latitude,
-      accuracy,
-    });
+    return await this.#emulationManager.setGeolocation(options);
   }
 
   override target(): Target {
@@ -874,22 +853,6 @@ export class CDPPage extends Page {
     this.emit(PageEmittedEvents.Dialog, dialog);
   }
 
-  /**
-   * Resets default white background
-   */
-  async #resetDefaultBackgroundColor() {
-    await this.#client.send('Emulation.setDefaultBackgroundColorOverride');
-  }
-
-  /**
-   * Hides default white background
-   */
-  async #setTransparentBackgroundColor(): Promise<void> {
-    await this.#client.send('Emulation.setDefaultBackgroundColorOverride', {
-      color: {r: 0, g: 0, b: 0, a: 0},
-    });
-  }
-
   override url(): string {
     return this.mainFrame().url();
   }
@@ -1068,13 +1031,7 @@ export class CDPPage extends Page {
   }
 
   override async setJavaScriptEnabled(enabled: boolean): Promise<void> {
-    if (this.#javascriptEnabled === enabled) {
-      return;
-    }
-    this.#javascriptEnabled = enabled;
-    await this.#client.send('Emulation.setScriptExecutionDisabled', {
-      value: !enabled,
-    });
+    return await this.#emulationManager.setJavaScriptEnabled(enabled);
   }
 
   override async setBypassCSP(enabled: boolean): Promise<void> {
@@ -1082,100 +1039,34 @@ export class CDPPage extends Page {
   }
 
   override async emulateMediaType(type?: string): Promise<void> {
-    assert(
-      type === 'screen' ||
-        type === 'print' ||
-        (type ?? undefined) === undefined,
-      'Unsupported media type: ' + type
-    );
-    await this.#client.send('Emulation.setEmulatedMedia', {
-      media: type || '',
-    });
+    return await this.#emulationManager.emulateMediaType(type);
   }
 
   override async emulateCPUThrottling(factor: number | null): Promise<void> {
-    assert(
-      factor === null || factor >= 1,
-      'Throttling rate should be greater or equal to 1'
-    );
-    await this.#client.send('Emulation.setCPUThrottlingRate', {
-      rate: factor ?? 1,
-    });
+    return await this.#emulationManager.emulateCPUThrottling(factor);
   }
 
   override async emulateMediaFeatures(
     features?: MediaFeature[]
   ): Promise<void> {
-    if (!features) {
-      await this.#client.send('Emulation.setEmulatedMedia', {});
-    }
-    if (Array.isArray(features)) {
-      for (const mediaFeature of features) {
-        const name = mediaFeature.name;
-        assert(
-          /^(?:prefers-(?:color-scheme|reduced-motion)|color-gamut)$/.test(
-            name
-          ),
-          'Unsupported media feature: ' + name
-        );
-      }
-      await this.#client.send('Emulation.setEmulatedMedia', {
-        features: features,
-      });
-    }
+    return await this.#emulationManager.emulateMediaFeatures(features);
   }
 
   override async emulateTimezone(timezoneId?: string): Promise<void> {
-    try {
-      await this.#client.send('Emulation.setTimezoneOverride', {
-        timezoneId: timezoneId || '',
-      });
-    } catch (error) {
-      if (isErrorLike(error) && error.message.includes('Invalid timezone')) {
-        throw new Error(`Invalid timezone ID: ${timezoneId}`);
-      }
-      throw error;
-    }
+    return await this.#emulationManager.emulateTimezone(timezoneId);
   }
 
   override async emulateIdleState(overrides?: {
     isUserActive: boolean;
     isScreenUnlocked: boolean;
   }): Promise<void> {
-    if (overrides) {
-      await this.#client.send('Emulation.setIdleOverride', {
-        isUserActive: overrides.isUserActive,
-        isScreenUnlocked: overrides.isScreenUnlocked,
-      });
-    } else {
-      await this.#client.send('Emulation.clearIdleOverride');
-    }
+    return await this.#emulationManager.emulateIdleState(overrides);
   }
 
   override async emulateVisionDeficiency(
     type?: Protocol.Emulation.SetEmulatedVisionDeficiencyRequest['type']
   ): Promise<void> {
-    const visionDeficiencies = new Set<
-      Protocol.Emulation.SetEmulatedVisionDeficiencyRequest['type']
-    >([
-      'none',
-      'achromatopsia',
-      'blurredVision',
-      'deuteranopia',
-      'protanopia',
-      'tritanopia',
-    ]);
-    try {
-      assert(
-        !type || visionDeficiencies.has(type),
-        `Unsupported vision deficiency: ${type}`
-      );
-      await this.#client.send('Emulation.setEmulatedVisionDeficiency', {
-        type: type || 'none',
-      });
-    } catch (error) {
-      throw error;
-    }
+    return await this.#emulationManager.emulateVisionDeficiency(type);
   }
 
   override async setViewport(viewport: Viewport): Promise<void> {
@@ -1378,7 +1269,7 @@ export class CDPPage extends Page {
     const shouldSetDefaultBackground =
       options.omitBackground && (format === 'png' || format === 'webp');
     if (shouldSetDefaultBackground) {
-      await this.#setTransparentBackgroundColor();
+      await this.#emulationManager.setTransparentBackgroundColor();
     }
 
     const result = await this.#client.send('Page.captureScreenshot', {
@@ -1392,7 +1283,7 @@ export class CDPPage extends Page {
       fromSurface,
     });
     if (shouldSetDefaultBackground) {
-      await this.#resetDefaultBackgroundColor();
+      await this.#emulationManager.resetDefaultBackgroundColor();
     }
 
     if (options.fullPage && this.#viewport) {
@@ -1435,7 +1326,7 @@ export class CDPPage extends Page {
     } = this._getPDFOptions(options);
 
     if (omitBackground) {
-      await this.#setTransparentBackgroundColor();
+      await this.#emulationManager.setTransparentBackgroundColor();
     }
 
     const printCommandPromise = this.#client.send('Page.printToPDF', {
@@ -1463,7 +1354,7 @@ export class CDPPage extends Page {
     );
 
     if (omitBackground) {
-      await this.#resetDefaultBackgroundColor();
+      await this.#emulationManager.resetDefaultBackgroundColor();
     }
 
     assert(result.stream, '`stream` is missing from `Page.printToPDF');
