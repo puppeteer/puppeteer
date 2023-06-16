@@ -25,7 +25,6 @@ import {
   Frame,
   FrameAddScriptTagOptions,
   FrameAddStyleTagOptions,
-  FrameWaitForFunctionOptions,
 } from '../api/Frame.js';
 import {HTTPRequest} from '../api/HTTPRequest.js';
 import {HTTPResponse} from '../api/HTTPResponse.js';
@@ -1436,17 +1435,6 @@ export class CDPPage extends Page {
     options: WaitForSelectorOptions = {}
   ): Promise<ElementHandle<Node> | null> {
     return this.mainFrame().waitForXPath(xpath, options);
-  }
-
-  override waitForFunction<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
-  >(
-    pageFunction: Func | string,
-    options: FrameWaitForFunctionOptions = {},
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    return this.mainFrame().waitForFunction(pageFunction, options, ...args);
   }
 
   /**

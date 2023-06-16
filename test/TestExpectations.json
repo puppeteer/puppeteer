@@ -246,6 +246,42 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work when resolved right before execution context disposal",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work with strict CSP policy",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should disable timeout when its set to 0",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should survive cross-process navigation",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should survive navigations",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[accessibility.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
