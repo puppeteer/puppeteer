@@ -2768,12 +2768,8 @@ export class Page extends EventEmitter {
     pageFunction: Func | string,
     options?: FrameWaitForFunctionOptions,
     ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
-  waitForFunction<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
-  >(): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    throw new Error('Not implemented');
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    return this.mainFrame().waitForFunction(pageFunction, options, ...args);
   }
 
   /**
