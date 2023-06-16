@@ -372,6 +372,7 @@ export class ProductLauncher {
       /* webpackIgnore: true */ '../common/bidi/bidi.js'
     );
     const bidiConnection = new BiDi.Connection(
+      browserWSEndpoint,
       transport,
       opts.slowMo,
       opts.protocolTimeout

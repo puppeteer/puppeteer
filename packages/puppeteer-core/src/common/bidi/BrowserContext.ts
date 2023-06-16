@@ -18,6 +18,7 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {BrowserContext as BrowserContextBase} from '../../api/BrowserContext.js';
 import {Page as PageBase} from '../../api/Page.js';
+import {Deferred} from '../../util/Deferred.js';
 import {Viewport} from '../PuppeteerViewport.js';
 
 import {Browser} from './Browser.js';
@@ -27,6 +28,7 @@ import {debugError} from './utils.js';
 
 interface BrowserContextOptions {
   defaultViewport: Viewport | null;
+  isDefault: boolean;
 }
 
 /**
@@ -38,6 +40,8 @@ export class BrowserContext extends BrowserContextBase {
   #defaultViewport: Viewport | null;
   #pages = new Map<string, Page>();
   #onContextDestroyedBind = this.#onContextDestroyed.bind(this);
+  #init = Deferred.create<void>();
+  #isDefault = false;
 
   constructor(browser: Browser, options: BrowserContextOptions) {
     super();
@@ -48,10 +52,32 @@ export class BrowserContext extends BrowserContextBase {
       'browsingContext.contextDestroyed',
       this.#onContextDestroyedBind
     );
+    this.#isDefault = options.isDefault;
+    this.#getTree().catch(debugError);
   }
 
   get connection(): Connection {
     return this.#connection;
+  }
+
+  async #getTree(): Promise<void> {
+    if (!this.#isDefault) {
+      this.#init.resolve();
+      return;
+    }
+    try {
+      const {result} = await this.#connection.send(
+        'browsingContext.getTree',
+        {}
+      );
+      for (const context of result.contexts) {
+        const page = new Page(this, context);
+        this.#pages.set(context.context, page);
+      }
+      this.#init.resolve();
+    } catch (err) {
+      this.#init.reject(err as Error);
+    }
   }
 
   async #onContextDestroyed(
@@ -65,6 +91,8 @@ export class BrowserContext extends BrowserContextBase {
   }
 
   override async newPage(): Promise<PageBase> {
+    await this.#init.valueOrThrow();
+
     const {result} = await this.#connection.send('browsingContext.create', {
       type: 'tab',
     });
@@ -83,6 +111,8 @@ export class BrowserContext extends BrowserContextBase {
   }
 
   override async close(): Promise<void> {
+    await this.#init.valueOrThrow();
+
     for (const page of this.#pages.values()) {
       await page?.close().catch(error => {
         debugError(error);
@@ -96,6 +126,7 @@ export class BrowserContext extends BrowserContextBase {
   }
 
   override async pages(): Promise<PageBase[]> {
+    await this.#init.valueOrThrow();
     return [...this.#pages.values()];
   }
 }

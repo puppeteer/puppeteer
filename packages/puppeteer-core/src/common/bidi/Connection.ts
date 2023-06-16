@@ -140,6 +140,7 @@ interface Commands {
  * @internal
  */
 export class Connection extends EventEmitter {
+  #url: string;
   #transport: ConnectionTransport;
   #delay: number;
   #timeout? = 0;
@@ -147,8 +148,14 @@ export class Connection extends EventEmitter {
   #callbacks = new CallbackRegistry();
   #browsingContexts: Map<string, BrowsingContext> = new Map();
 
-  constructor(transport: ConnectionTransport, delay = 0, timeout?: number) {
+  constructor(
+    url: string,
+    transport: ConnectionTransport,
+    delay = 0,
+    timeout?: number
+  ) {
     super();
+    this.#url = url;
     this.#delay = delay;
     this.#timeout = timeout ?? 180_000;
 
@@ -159,6 +166,10 @@ export class Connection extends EventEmitter {
 
   get closed(): boolean {
     return this.#closed;
+  }
+
+  get url(): string {
+    return this.#url;
   }
 
   send<T extends keyof Commands>(

@@ -25,6 +25,8 @@ import {
 } from './mocha-utils.js';
 import {waitEvent} from './utils.js';
 
+// TODO: rename this test suite to launch/connect test suite as it actually
+// works across browsers.
 describe('Chromium-Specific Launcher tests', function () {
   describe('Puppeteer.launch |browserURL| option', function () {
     it('should be able to connect using browserUrl, with and without trailing slash', async () => {

@@ -35,7 +35,7 @@ describe('WebDriver BiDi', () => {
 
     it('should work', async () => {
       const transport = new TestConnectionTransport();
-      const connection = new Connection(transport);
+      const connection = new Connection('ws://127.0.0.1', transport);
       const responsePromise = connection.send('session.new', {
         capabilities: {},
       });

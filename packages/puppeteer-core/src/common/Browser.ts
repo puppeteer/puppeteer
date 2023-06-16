@@ -527,27 +527,6 @@ export class CDPBrowser extends BrowserBase {
     }
   }
 
-  /**
-   * An array of all open pages inside the Browser.
-   *
-   * @remarks
-   *
-   * In case of multiple browser contexts, returns an array with all the pages in all
-   * browser contexts. Non-visible pages, such as `"background_page"`, will not be listed
-   * here. You can find them using {@link Target.page}.
-   */
-  override async pages(): Promise<Page[]> {
-    const contextPages = await Promise.all(
-      this.browserContexts().map(context => {
-        return context.pages();
-      })
-    );
-    // Flatten array.
-    return contextPages.reduce((acc, x) => {
-      return acc.concat(x);
-    }, []);
-  }
-
   override async version(): Promise<string> {
     const version = await this.#getVersion();
     return version.product;
