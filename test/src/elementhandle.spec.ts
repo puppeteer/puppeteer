@@ -262,7 +262,10 @@ describe('ElementHandle specs', function () {
       await buttonTextNode.click().catch(error_ => {
         return (error = error_);
       });
-      expect(error.message).toBe('Node is not of type HTMLElement');
+      expect(error.message).atLeastOneToContain([
+        'Node is not of type HTMLElement',
+        'no such node',
+      ]);
     });
     it('should throw for detached nodes', async () => {
       const {page, server} = getTestState();
@@ -276,7 +279,10 @@ describe('ElementHandle specs', function () {
       await button.click().catch(error_ => {
         return (error = error_);
       });
-      expect(error.message).toBe('Node is detached from document');
+      expect(error.message).atLeastOneToContain([
+        'Node is detached from document',
+        'no such node',
+      ]);
     });
     it('should throw for hidden nodes', async () => {
       const {page, server} = getTestState();
@@ -289,9 +295,10 @@ describe('ElementHandle specs', function () {
       const error = await button.click().catch(error_ => {
         return error_;
       });
-      expect(error.message).toBe(
-        'Node is either not clickable or not an HTMLElement'
-      );
+      expect(error.message).atLeastOneToContain([
+        'Node is either not clickable or not an HTMLElement',
+        'no such node',
+      ]);
     });
     it('should throw for recursively hidden nodes', async () => {
       const {page, server} = getTestState();
@@ -304,9 +311,10 @@ describe('ElementHandle specs', function () {
       const error = await button.click().catch(error_ => {
         return error_;
       });
-      expect(error.message).toBe(
-        'Node is either not clickable or not an HTMLElement'
-      );
+      expect(error.message).atLeastOneToContain([
+        'Node is either not clickable or not an HTMLElement',
+        'no such node',
+      ]);
     });
     it('should throw for <br> elements', async () => {
       const {page} = getTestState();
@@ -316,9 +324,10 @@ describe('ElementHandle specs', function () {
       const error = await br.click().catch(error_ => {
         return error_;
       });
-      expect(error.message).toBe(
-        'Node is either not clickable or not an HTMLElement'
-      );
+      expect(error.message).atLeastOneToContain([
+        'Node is either not clickable or not an HTMLElement',
+        'no such node',
+      ]);
     });
   });
 

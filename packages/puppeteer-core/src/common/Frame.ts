@@ -16,7 +16,7 @@
 
 import {Protocol} from 'devtools-protocol';
 
-import {type ClickOptions, ElementHandle} from '../api/ElementHandle.js';
+import {ElementHandle} from '../api/ElementHandle.js';
 import {
   Frame as BaseFrame,
   FrameAddScriptTagOptions,
@@ -468,37 +468,6 @@ export class Frame extends BaseFrame {
         options
       )
     );
-  }
-
-  override async click(
-    selector: string,
-    options: Readonly<ClickOptions> = {}
-  ): Promise<void> {
-    return this.isolatedRealm().click(selector, options);
-  }
-
-  override async focus(selector: string): Promise<void> {
-    return this.isolatedRealm().focus(selector);
-  }
-
-  override async hover(selector: string): Promise<void> {
-    return this.isolatedRealm().hover(selector);
-  }
-
-  override select(selector: string, ...values: string[]): Promise<string[]> {
-    return this.isolatedRealm().select(selector, ...values);
-  }
-
-  override async tap(selector: string): Promise<void> {
-    return this.isolatedRealm().tap(selector);
-  }
-
-  override async type(
-    selector: string,
-    text: string,
-    options?: {delay: number}
-  ): Promise<void> {
-    return this.isolatedRealm().type(selector, text, options);
   }
 
   override async title(): Promise<string> {
