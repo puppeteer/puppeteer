@@ -395,8 +395,16 @@ export class Browser extends EventEmitter {
    * browser contexts. Non-visible pages, such as `"background_page"`, will not be listed
    * here. You can find them using {@link Target.page}.
    */
-  pages(): Promise<Page[]> {
-    throw new Error('Not implemented');
+  async pages(): Promise<Page[]> {
+    const contextPages = await Promise.all(
+      this.browserContexts().map(context => {
+        return context.pages();
+      })
+    );
+    // Flatten array.
+    return contextPages.reduce((acc, x) => {
+      return acc.concat(x);
+    }, []);
   }
 
   /**

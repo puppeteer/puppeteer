@@ -25,6 +25,7 @@ import {
   BrowserEmittedEvents,
 } from '../../api/Browser.js';
 import {BrowserContext as BrowserContextBase} from '../../api/BrowserContext.js';
+import {Page} from '../../api/Page.js';
 import {Viewport} from '../PuppeteerViewport.js';
 
 import {BrowserContext} from './BrowserContext.js';
@@ -84,6 +85,7 @@ export class Browser extends BrowserBase {
   #closeCallback?: BrowserCloseCallback;
   #connection: Connection;
   #defaultViewport: Viewport | null;
+  #defaultContext: BrowserContext;
 
   constructor(
     opts: Options & {
@@ -103,16 +105,26 @@ export class Browser extends BrowserBase {
       this.#connection.dispose();
       this.emit(BrowserEmittedEvents.Disconnected);
     });
+    this.#defaultContext = new BrowserContext(this, {
+      defaultViewport: this.#defaultViewport,
+      isDefault: true,
+    });
   }
 
   get connection(): Connection {
     return this.#connection;
   }
 
+  override wsEndpoint(): string {
+    return this.#connection.url;
+  }
+
   override async close(): Promise<void> {
     if (this.#connection.closed) {
       return;
     }
+    // TODO: implement browser.close.
+    // await this.#connection.send('browser.close', {});
     this.#connection.dispose();
     await this.#closeCallback?.call(null);
   }
@@ -128,13 +140,35 @@ export class Browser extends BrowserBase {
   override async createIncognitoBrowserContext(
     _options?: BrowserContextOptions
   ): Promise<BrowserContextBase> {
+    // TODO: implement incognito context https://github.com/w3c/webdriver-bidi/issues/289.
     return new BrowserContext(this, {
       defaultViewport: this.#defaultViewport,
+      isDefault: false,
     });
   }
 
   override async version(): Promise<string> {
     return `${this.#browserName}/${this.#browserVersion}`;
+  }
+
+  /**
+   * Returns an array of all open browser contexts. In a newly created browser, this will
+   * return a single instance of {@link BrowserContext}.
+   */
+  override browserContexts(): BrowserContext[] {
+    // TODO: implement incognito context https://github.com/w3c/webdriver-bidi/issues/289.
+    return [this.#defaultContext];
+  }
+
+  /**
+   * Returns the default browser context. The default browser context cannot be closed.
+   */
+  override defaultBrowserContext(): BrowserContext {
+    return this.#defaultContext;
+  }
+
+  override newPage(): Promise<Page> {
+    return this.#defaultContext.newPage();
   }
 }
 

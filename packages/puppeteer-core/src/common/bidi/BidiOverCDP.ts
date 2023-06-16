@@ -53,7 +53,7 @@ export async function connectBidiOverCDP(
     // Forwards a BiDi event sent by BidiServer to Puppeteer.
     pptrTransport.onmessage(JSON.stringify(message));
   });
-  const pptrBiDiConnection = new BidiPPtrConnection(pptrTransport);
+  const pptrBiDiConnection = new BidiPPtrConnection(cdp.url(), pptrTransport);
   const bidiServer = await BidiMapper.BidiServer.createAndStart(
     transportBiDi,
     cdpConnectionAdapter,
