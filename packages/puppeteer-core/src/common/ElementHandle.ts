@@ -23,8 +23,8 @@ import {
   ElementHandle,
   Offset,
   Point,
-  PressOptions,
 } from '../api/ElementHandle.js';
+import {KeyPressOptions, TypeOptions} from '../api/Input.js';
 import {Page, ScreenshotOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 
@@ -458,12 +458,18 @@ export class CDPElementHandle<
     await this.#page.touchscreen.touchEnd();
   }
 
-  override async type(text: string, options?: {delay: number}): Promise<void> {
+  override async type(
+    text: string,
+    options?: Readonly<TypeOptions>
+  ): Promise<void> {
     await this.focus();
     await this.#page.keyboard.type(text, options);
   }
 
-  override async press(key: KeyInput, options?: PressOptions): Promise<void> {
+  override async press(
+    key: KeyInput,
+    options?: Readonly<KeyPressOptions>
+  ): Promise<void> {
     await this.focus();
     await this.#page.keyboard.press(key, options);
   }

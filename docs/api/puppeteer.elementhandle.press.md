@@ -10,16 +10,16 @@ Focuses the element, and then uses [Keyboard.down()](./puppeteer.keyboard.down.m
 
 ```typescript
 class ElementHandle {
-  press(key: KeyInput, options?: PressOptions): Promise<void>;
+  press(key: KeyInput, options?: Readonly<KeyPressOptions>): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                        | Description                                                                                                                |
-| --------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| key       | [KeyInput](./puppeteer.keyinput.md)         | Name of key to press, such as <code>ArrowLeft</code>. See [KeyInput](./puppeteer.keyinput.md) for a list of all key names. |
-| options   | [PressOptions](./puppeteer.pressoptions.md) | _(Optional)_                                                                                                               |
+| Parameter | Type                                                              | Description                                                                                                                |
+| --------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| key       | [KeyInput](./puppeteer.keyinput.md)                               | Name of key to press, such as <code>ArrowLeft</code>. See [KeyInput](./puppeteer.keyinput.md) for a list of all key names. |
+| options   | Readonly&lt;[KeyPressOptions](./puppeteer.keypressoptions.md)&gt; | _(Optional)_                                                                                                               |
 
 **Returns:**
 

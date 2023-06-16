@@ -10,15 +10,15 @@ Dispatches a `mousewheel` event.
 
 ```typescript
 class Mouse {
-  wheel(options?: MouseWheelOptions): Promise<void>;
+  wheel(options?: Readonly<MouseWheelOptions>): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                  | Description                                            |
-| --------- | ----------------------------------------------------- | ------------------------------------------------------ |
-| options   | [MouseWheelOptions](./puppeteer.mousewheeloptions.md) | _(Optional)_ Optional: <code>MouseWheelOptions</code>. |
+| Parameter | Type                                                                  | Description                                            |
+| --------- | --------------------------------------------------------------------- | ------------------------------------------------------ |
+| options   | Readonly&lt;[MouseWheelOptions](./puppeteer.mousewheeloptions.md)&gt; | _(Optional)_ Optional: <code>MouseWheelOptions</code>. |
 
 **Returns:**
 

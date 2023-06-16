@@ -29,7 +29,6 @@ import type {Dialog} from '../common/Dialog.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter, Handler} from '../common/EventEmitter.js';
 import type {FileChooser} from '../common/FileChooser.js';
-import type {Keyboard, Mouse, Touchscreen} from '../common/Input.js';
 import type {WaitForSelectorOptions} from '../common/IsolatedWorld.js';
 import type {PuppeteerLifeCycleEvent} from '../common/LifecycleWatcher.js';
 import {
@@ -72,6 +71,7 @@ import type {
   FrameAddStyleTagOptions,
   FrameWaitForFunctionOptions,
 } from './Frame.js';
+import {Keyboard, Mouse, Touchscreen} from './Input.js';
 import type {JSHandle} from './JSHandle.js';
 import {Locator} from './Locator.js';
 

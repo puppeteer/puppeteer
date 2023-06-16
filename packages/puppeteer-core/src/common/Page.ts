@@ -60,7 +60,7 @@ import {EmulationManager} from './EmulationManager.js';
 import {TargetCloseError} from './Errors.js';
 import {FileChooser} from './FileChooser.js';
 import {FrameManager, FrameManagerEmittedEvents} from './FrameManager.js';
-import {Keyboard, Mouse, Touchscreen} from './Input.js';
+import {CDPKeyboard, CDPMouse, CDPTouchscreen} from './Input.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
 import {
@@ -131,10 +131,10 @@ export class CDPPage extends Page {
   #closed = false;
   #client: CDPSession;
   #target: Target;
-  #keyboard: Keyboard;
-  #mouse: Mouse;
+  #keyboard: CDPKeyboard;
+  #mouse: CDPMouse;
   #timeoutSettings = new TimeoutSettings();
-  #touchscreen: Touchscreen;
+  #touchscreen: CDPTouchscreen;
   #accessibility: Accessibility;
   #frameManager: FrameManager;
   #emulationManager: EmulationManager;
@@ -162,9 +162,9 @@ export class CDPPage extends Page {
     super();
     this.#client = client;
     this.#target = target;
-    this.#keyboard = new Keyboard(client);
-    this.#mouse = new Mouse(client, this.#keyboard);
-    this.#touchscreen = new Touchscreen(client, this.#keyboard);
+    this.#keyboard = new CDPKeyboard(client);
+    this.#mouse = new CDPMouse(client, this.#keyboard);
+    this.#touchscreen = new CDPTouchscreen(client, this.#keyboard);
     this.#accessibility = new Accessibility(client);
     this.#frameManager = new FrameManager(
       client,
@@ -427,11 +427,11 @@ export class CDPPage extends Page {
     return this.#frameManager.mainFrame();
   }
 
-  override get keyboard(): Keyboard {
+  override get keyboard(): CDPKeyboard {
     return this.#keyboard;
   }
 
-  override get touchscreen(): Touchscreen {
+  override get touchscreen(): CDPTouchscreen {
     return this.#touchscreen;
   }
 
@@ -1395,7 +1395,7 @@ export class CDPPage extends Page {
     return this.#closed;
   }
 
-  override get mouse(): Mouse {
+  override get mouse(): CDPMouse {
     return this.#mouse;
   }
 
