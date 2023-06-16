@@ -16,11 +16,13 @@
 
 import {Protocol} from 'devtools-protocol';
 
+import {Frame} from '../api/Frame.js';
 import {CDPSession} from '../common/Connection.js';
 import {ExecutionContext} from '../common/ExecutionContext.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {MouseClickOptions} from '../common/Input.js';
 import {WaitForSelectorOptions} from '../common/IsolatedWorld.js';
+import {LazyArg} from '../common/LazyArg.js';
 import {
   ElementFor,
   EvaluateFuncWith,
@@ -33,7 +35,6 @@ import {isString, withSourcePuppeteerURLIfNone} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 
-import {Frame} from './Frame.js';
 import {JSHandle} from './JSHandle.js';
 import {ScreenshotOptions} from './Page.js';
 
@@ -485,12 +486,30 @@ export class ElementHandle<
     )) as ElementHandle<NodeFor<Selector>> | null;
   }
 
+  async #checkVisibility(visibility: boolean): Promise<boolean> {
+    const element = await this.frame.isolatedRealm().adoptHandle(this);
+    try {
+      return await this.frame.isolatedRealm().evaluate(
+        async (PuppeteerUtil, element, visibility) => {
+          return Boolean(PuppeteerUtil.checkVisibility(element, visibility));
+        },
+        LazyArg.create(context => {
+          return context.puppeteerUtil;
+        }),
+        element,
+        visibility
+      );
+    } finally {
+      await element.dispose();
+    }
+  }
+
   /**
    * Checks if an element is visible using the same mechanism as
    * {@link ElementHandle.waitForSelector}.
    */
   async isVisible(): Promise<boolean> {
-    throw new Error('Not implemented.');
+    return this.#checkVisibility(true);
   }
 
   /**
@@ -498,7 +517,7 @@ export class ElementHandle<
    * {@link ElementHandle.waitForSelector}.
    */
   async isHidden(): Promise<boolean> {
-    throw new Error('Not implemented.');
+    return this.#checkVisibility(false);
   }
 
   /**
@@ -565,14 +584,16 @@ export class ElementHandle<
    */
   async waitForXPath(
     xpath: string,
-    options?: {
+    options: {
       visible?: boolean;
       hidden?: boolean;
       timeout?: number;
+    } = {}
+  ): Promise<ElementHandle<Node> | null> {
+    if (xpath.startsWith('//')) {
+      xpath = `.${xpath}`;
     }
-  ): Promise<ElementHandle<Node> | null>;
-  async waitForXPath(): Promise<ElementHandle<Node> | null> {
-    throw new Error('Not implemented');
+    return this.waitForSelector(`xpath/${xpath}`, options);
   }
 
   /**

@@ -33,9 +33,7 @@ import {ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
-import {PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {CDPJSHandle} from './JSHandle.js';
-import {LazyArg} from './LazyArg.js';
 import {CDPPage} from './Page.js';
 import {NodeFor} from './types.js';
 import {KeyInput} from './USKeyboardLayout.js';
@@ -126,46 +124,6 @@ export class CDPElementHandle<
     return (await super.waitForSelector(selector, options)) as CDPElementHandle<
       NodeFor<Selector>
     > | null;
-  }
-
-  override async waitForXPath(
-    xpath: string,
-    options: {
-      visible?: boolean;
-      hidden?: boolean;
-      timeout?: number;
-    } = {}
-  ): Promise<CDPElementHandle<Node> | null> {
-    if (xpath.startsWith('//')) {
-      xpath = `.${xpath}`;
-    }
-    return this.waitForSelector(`xpath/${xpath}`, options);
-  }
-
-  async #checkVisibility(visibility: boolean): Promise<boolean> {
-    const element = await this.frame.worlds[PUPPETEER_WORLD].adoptHandle(this);
-    try {
-      return await this.frame.worlds[PUPPETEER_WORLD].evaluate(
-        async (PuppeteerUtil, element, visibility) => {
-          return Boolean(PuppeteerUtil.checkVisibility(element, visibility));
-        },
-        LazyArg.create(context => {
-          return context.puppeteerUtil;
-        }),
-        element,
-        visibility
-      );
-    } finally {
-      await element.dispose();
-    }
-  }
-
-  override async isVisible(): Promise<boolean> {
-    return this.#checkVisibility(true);
-  }
-
-  override async isHidden(): Promise<boolean> {
-    return this.#checkVisibility(false);
   }
 
   override async contentFrame(): Promise<Frame | null> {

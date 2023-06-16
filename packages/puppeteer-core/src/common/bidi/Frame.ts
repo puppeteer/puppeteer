@@ -16,7 +16,9 @@
 
 import {ElementHandle} from '../../api/ElementHandle.js';
 import {Frame as BaseFrame} from '../../api/Frame.js';
+import {UTILITY_WORLD_NAME} from '../FrameManager.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
+import {TimeoutSettings} from '../TimeoutSettings.js';
 import {EvaluateFunc, EvaluateFuncWith, HandleFor, NodeFor} from '../types.js';
 import {withSourcePuppeteerURLIfNone} from '../util.js';
 
@@ -40,7 +42,12 @@ export class Frame extends BaseFrame {
   sandboxes: SandboxChart;
   override _id: string;
 
-  constructor(page: Page, context: BrowsingContext, parentId?: string | null) {
+  constructor(
+    page: Page,
+    context: BrowsingContext,
+    timeoutSettings: TimeoutSettings,
+    parentId?: string | null
+  ) {
     super();
     this.#page = page;
     this.#context = context;
@@ -48,9 +55,20 @@ export class Frame extends BaseFrame {
     this._parentId = parentId ?? undefined;
 
     this.sandboxes = {
-      [MAIN_SANDBOX]: new Sandbox(context),
-      [PUPPETEER_SANDBOX]: new Sandbox(context),
+      [MAIN_SANDBOX]: new Sandbox(context, timeoutSettings),
+      [PUPPETEER_SANDBOX]: new Sandbox(
+        context.createSandboxRealm(UTILITY_WORLD_NAME),
+        timeoutSettings
+      ),
     };
+  }
+
+  override mainRealm(): Sandbox {
+    return this.sandboxes[MAIN_SANDBOX];
+  }
+
+  override isolatedRealm(): Sandbox {
+    return this.sandboxes[PUPPETEER_SANDBOX];
   }
 
   override page(): Page {

@@ -15,11 +15,21 @@
  */
 
 import {ElementHandle} from '../../api/ElementHandle.js';
-import {withSourcePuppeteerURLIfNone} from '../common.js';
-import {EvaluateFuncWith, NodeFor} from '../types.js';
+import {Realm as RealmBase} from '../../api/Frame.js';
+import {JSHandle as BaseJSHandle} from '../../api/JSHandle.js';
+import {TimeoutSettings} from '../TimeoutSettings.js';
+import {
+  EvaluateFunc,
+  EvaluateFuncWith,
+  HandleFor,
+  InnerLazyParams,
+  NodeFor,
+} from '../types.js';
+import {withSourcePuppeteerURLIfNone} from '../util.js';
+import {TaskManager, WaitTask} from '../WaitTask.js';
 
-import {BrowsingContext} from './BrowsingContext.js';
-
+import {JSHandle} from './JSHandle.js';
+import {Realm} from './Realm.js';
 /**
  * A unique key for {@link SandboxChart} to denote the default world.
  * Realms are automatically created in the default sandbox.
@@ -47,19 +57,27 @@ export interface SandboxChart {
 /**
  * @internal
  */
-export class Sandbox {
+export class Sandbox implements RealmBase {
   #document?: ElementHandle<Document>;
-  #context: BrowsingContext;
+  #realm: Realm;
 
-  constructor(context: BrowsingContext) {
-    this.#context = context;
+  #timeoutSettings: TimeoutSettings;
+  #taskManager = new TaskManager();
+
+  constructor(context: Realm, timeoutSettings: TimeoutSettings) {
+    this.#realm = context;
+    this.#timeoutSettings = timeoutSettings;
+  }
+
+  get taskManager(): TaskManager {
+    return this.#taskManager;
   }
 
   async document(): Promise<ElementHandle<Document>> {
     if (this.#document) {
       return this.#document;
     }
-    this.#document = await this.#context.evaluateHandle(() => {
+    this.#document = await this.#realm.evaluateHandle(() => {
       return document;
     });
     return this.#document;
@@ -116,5 +134,91 @@ export class Sandbox {
   async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
     const document = await this.document();
     return document.$x(expression);
+  }
+
+  async evaluateHandle<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluateHandle.name,
+      pageFunction
+    );
+    return this.#realm.evaluateHandle(pageFunction, ...args);
+  }
+
+  async evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluate.name,
+      pageFunction
+    );
+    return this.#realm.evaluate(pageFunction, ...args);
+  }
+
+  async adoptHandle<T extends BaseJSHandle<Node>>(handle: T): Promise<T> {
+    return (await this.evaluateHandle(node => {
+      return node;
+    }, handle)) as unknown as T;
+  }
+
+  async transferHandle<T extends BaseJSHandle<Node>>(handle: T): Promise<T> {
+    if ((handle as unknown as JSHandle).context() === this.#realm) {
+      return handle;
+    }
+    const transferredHandle = await this.evaluateHandle(node => {
+      return node;
+    }, handle);
+
+    await handle.dispose();
+    return transferredHandle as unknown as T;
+  }
+
+  waitForFunction<
+    Params extends unknown[],
+    Func extends EvaluateFunc<InnerLazyParams<Params>> = EvaluateFunc<
+      InnerLazyParams<Params>
+    >
+  >(
+    pageFunction: Func | string,
+    options: {
+      polling?: 'raf' | 'mutation' | number;
+      timeout?: number;
+      root?: ElementHandle<Node>;
+      signal?: AbortSignal;
+    } = {},
+    ...args: Params
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    const {
+      polling = 'raf',
+      timeout = this.#timeoutSettings.timeout(),
+      root,
+      signal,
+    } = options;
+    if (typeof polling === 'number' && polling < 0) {
+      throw new Error('Cannot poll with non-positive interval');
+    }
+    const waitTask = new WaitTask(
+      this,
+      {
+        polling,
+        root,
+        timeout,
+        signal,
+      },
+      pageFunction as unknown as
+        | ((...args: unknown[]) => Promise<Awaited<ReturnType<Func>>>)
+        | string,
+      ...args
+    );
+    return waitTask.result;
   }
 }

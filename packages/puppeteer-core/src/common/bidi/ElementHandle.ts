@@ -18,8 +18,9 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {ElementHandle as BaseElementHandle} from '../../api/ElementHandle.js';
 
-import {BrowsingContext} from './BrowsingContext.js';
+import {Frame} from './Frame.js';
 import {JSHandle} from './JSHandle.js';
+import {Realm} from './Realm.js';
 
 /**
  * @internal
@@ -28,15 +29,22 @@ export class ElementHandle<
   ElementType extends Node = Element
 > extends BaseElementHandle<ElementType> {
   declare handle: JSHandle<ElementType>;
+  #frame: Frame;
 
   constructor(
-    context: BrowsingContext,
-    remoteValue: Bidi.CommonDataTypes.RemoteValue
+    realm: Realm,
+    remoteValue: Bidi.CommonDataTypes.RemoteValue,
+    frame: Frame
   ) {
-    super(new JSHandle(context, remoteValue));
+    super(new JSHandle(realm, remoteValue));
+    this.#frame = frame;
   }
 
-  context(): BrowsingContext {
+  override get frame(): Frame {
+    return this.#frame;
+  }
+
+  context(): Realm {
     return this.handle.context();
   }
 

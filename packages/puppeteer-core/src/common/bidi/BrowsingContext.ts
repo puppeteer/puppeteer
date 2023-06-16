@@ -2,37 +2,17 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import ProtocolMapping from 'devtools-protocol/types/protocol-mapping.js';
 
 import {WaitForOptions} from '../../api/Page.js';
-import PuppeteerUtil from '../../injected/injected.js';
 import {assert} from '../../util/assert.js';
 import {Deferred} from '../../util/Deferred.js';
-import {stringifyFunction} from '../../util/Function.js';
 import type {CDPSession, Connection as CDPConnection} from '../Connection.js';
 import {ProtocolError, TimeoutError} from '../Errors.js';
 import {EventEmitter} from '../EventEmitter.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
-import {scriptInjector} from '../ScriptInjector.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
-import {EvaluateFunc, HandleFor} from '../types.js';
-import {
-  PuppeteerURL,
-  getPageContent,
-  getSourcePuppeteerURLIfAvailable,
-  isString,
-  setPageContent,
-  waitWithTimeout,
-} from '../util.js';
+import {getPageContent, setPageContent, waitWithTimeout} from '../util.js';
 
 import {Connection} from './Connection.js';
-import {ElementHandle} from './ElementHandle.js';
-import {JSHandle} from './JSHandle.js';
-import {BidiSerializer} from './Serializer.js';
-import {createEvaluationError} from './utils.js';
-
-const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
-
-const getSourceUrlComment = (url: string) => {
-  return `//# sourceURL=${url}`;
-};
+import {Realm} from './Realm.js';
 
 /**
  * @internal
@@ -104,8 +84,7 @@ export class CDPSessionWrapper extends EventEmitter implements CDPSession {
 /**
  * @internal
  */
-export class BrowsingContext extends EventEmitter {
-  connection: Connection;
+export class BrowsingContext extends Realm {
   #timeoutSettings: TimeoutSettings;
   #id: string;
   #url = 'about:blank';
@@ -116,27 +95,15 @@ export class BrowsingContext extends EventEmitter {
     timeoutSettings: TimeoutSettings,
     info: Bidi.BrowsingContext.Info
   ) {
-    super();
+    super(connection, info.context);
     this.connection = connection;
     this.#timeoutSettings = timeoutSettings;
     this.#id = info.context;
     this.#cdpSession = new CDPSessionWrapper(this);
   }
 
-  #puppeteerUtil?: Promise<JSHandle<PuppeteerUtil>>;
-  get puppeteerUtil(): Promise<JSHandle<PuppeteerUtil>> {
-    const promise = Promise.resolve() as Promise<unknown>;
-    scriptInjector.inject(script => {
-      if (this.#puppeteerUtil) {
-        void this.#puppeteerUtil.then(handle => {
-          void handle.dispose();
-        });
-      }
-      this.#puppeteerUtil = promise.then(() => {
-        return this.evaluateHandle(script) as Promise<JSHandle<PuppeteerUtil>>;
-      });
-    }, !this.#puppeteerUtil);
-    return this.#puppeteerUtil as Promise<JSHandle<PuppeteerUtil>>;
+  createSandboxRealm(sandbox: string): Realm {
+    return new Realm(this.connection, this.#id, sandbox);
   }
 
   get url(): string {
@@ -212,97 +179,6 @@ export class BrowsingContext extends EventEmitter {
     );
   }
 
-  async evaluateHandle<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    return this.#evaluate(false, pageFunction, ...args);
-  }
-
-  async evaluate<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    return this.#evaluate(true, pageFunction, ...args);
-  }
-
-  async #evaluate<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
-  >(
-    returnByValue: true,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async #evaluate<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
-  >(
-    returnByValue: false,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
-  async #evaluate<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
-  >(
-    returnByValue: boolean,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>> | Awaited<ReturnType<Func>>> {
-    const sourceUrlComment = getSourceUrlComment(
-      getSourcePuppeteerURLIfAvailable(pageFunction)?.toString() ??
-        PuppeteerURL.INTERNAL_URL
-    );
-
-    let responsePromise;
-    const resultOwnership = returnByValue ? 'none' : 'root';
-    if (isString(pageFunction)) {
-      const expression = SOURCE_URL_REGEX.test(pageFunction)
-        ? pageFunction
-        : `${pageFunction}\n${sourceUrlComment}\n`;
-
-      responsePromise = this.connection.send('script.evaluate', {
-        expression,
-        target: {context: this.#id},
-        resultOwnership,
-        awaitPromise: true,
-      });
-    } else {
-      let functionDeclaration = stringifyFunction(pageFunction);
-      functionDeclaration = SOURCE_URL_REGEX.test(functionDeclaration)
-        ? functionDeclaration
-        : `${functionDeclaration}\n${sourceUrlComment}\n`;
-      responsePromise = this.connection.send('script.callFunction', {
-        functionDeclaration,
-        arguments: await Promise.all(
-          args.map(arg => {
-            return BidiSerializer.serialize(arg, this);
-          })
-        ),
-        target: {context: this.#id},
-        resultOwnership,
-        awaitPromise: true,
-      });
-    }
-
-    const {result} = await responsePromise;
-
-    if ('type' in result && result.type === 'exception') {
-      throw createEvaluationError(result.exceptionDetails);
-    }
-
-    return returnByValue
-      ? BidiSerializer.deserialize(result.result)
-      : getBidiHandle(this, result.result);
-  }
-
   async setContent(
     html: string,
     options: {
@@ -344,29 +220,16 @@ export class BrowsingContext extends EventEmitter {
     return this.#cdpSession.send(method, ...paramArgs);
   }
 
-  dispose(): void {
-    this.removeAllListeners();
-    this.connection.unregisterBrowsingContexts(this.#id);
-  }
-
   title(): Promise<string> {
     return this.evaluate(() => {
       return document.title;
     });
   }
-}
 
-/**
- * @internal
- */
-export function getBidiHandle(
-  context: BrowsingContext,
-  result: Bidi.CommonDataTypes.RemoteValue
-): JSHandle | ElementHandle<Node> {
-  if (result.type === 'node' || result.type === 'window') {
-    return new ElementHandle(context, result);
+  dispose(): void {
+    this.removeAllListeners();
+    this.connection.unregisterBrowsingContexts(this.#id);
   }
-  return new JSHandle(context, result);
 }
 
 /**

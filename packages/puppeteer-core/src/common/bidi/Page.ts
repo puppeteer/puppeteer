@@ -53,12 +53,13 @@ import {
 
 import {Browser} from './Browser.js';
 import {BrowserContext} from './BrowserContext.js';
-import {BrowsingContext, getBidiHandle} from './BrowsingContext.js';
+import {BrowsingContext} from './BrowsingContext.js';
 import {Connection} from './Connection.js';
 import {Frame} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {NetworkManager} from './NetworkManager.js';
+import {getBidiHandle} from './Realm.js';
 import {BidiSerializer} from './Serializer.js';
 
 /**
@@ -208,7 +209,13 @@ export class Page extends PageBase {
       );
       this.#connection.registerBrowsingContexts(context);
 
-      const frame = new Frame(this, context, info.parent);
+      const frame = new Frame(
+        this,
+        context,
+        this.#timeoutSettings,
+        info.parent
+      );
+      context.setFrame(frame);
 
       this.#frameTree.addFrame(frame);
       this.emit(FrameManagerEmittedEvents.FrameAttached, frame);
@@ -250,12 +257,13 @@ export class Page extends PageBase {
   }
 
   #onLogEntryAdded(event: Bidi.Log.LogEntry): void {
-    if (!this.frame(event.source.context)) {
+    const frame = this.frame(event.source.context);
+    if (!frame) {
       return;
     }
     if (isConsoleLogEntry(event)) {
       const args = event.args.map(arg => {
-        return getBidiHandle(this.mainFrame().context(), arg);
+        return getBidiHandle(frame.context(), arg, frame);
       });
 
       const text = args

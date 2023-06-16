@@ -35,7 +35,7 @@ import {
 import {dumpFrames, waitEvent} from './utils.js';
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
-const FIREFOX_TIMEOUT = 30 * 1000;
+const FIREFOX_TIMEOUT = 30_000;
 
 describe('Launcher specs', function () {
   setupTestBrowserHooks();

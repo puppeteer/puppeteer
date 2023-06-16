@@ -20,6 +20,7 @@ import {Page, WaitTimeoutOptions} from '../api/Page.js';
 import {CDPSession} from '../common/Connection.js';
 import {DeviceRequestPrompt} from '../common/DeviceRequestPrompt.js';
 import {ExecutionContext} from '../common/ExecutionContext.js';
+import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {
   IsolatedWorldChart,
   WaitForSelectorOptions,
@@ -29,10 +30,51 @@ import {
   EvaluateFunc,
   EvaluateFuncWith,
   HandleFor,
+  InnerLazyParams,
   NodeFor,
 } from '../common/types.js';
+import {TaskManager} from '../common/WaitTask.js';
 
+import {JSHandle} from './JSHandle.js';
 import {Locator} from './Locator.js';
+
+/**
+ * @internal
+ */
+export interface Realm {
+  taskManager: TaskManager;
+  waitForFunction<
+    Params extends unknown[],
+    Func extends EvaluateFunc<InnerLazyParams<Params>> = EvaluateFunc<
+      InnerLazyParams<Params>
+    >
+  >(
+    pageFunction: Func | string,
+    options: {
+      polling?: 'raf' | 'mutation' | number;
+      timeout?: number;
+      root?: ElementHandle<Node>;
+      signal?: AbortSignal;
+    },
+    ...args: Params
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
+  adoptHandle<T extends JSHandle<Node>>(handle: T): Promise<T>;
+  transferHandle<T extends JSHandle<Node>>(handle: T): Promise<T>;
+  evaluateHandle<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
+  evaluate<
+    Params extends unknown[],
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+  >(
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<Awaited<ReturnType<Func>>>;
+}
 
 /**
  * @public
@@ -308,6 +350,20 @@ export class Frame {
   }
 
   /**
+   * @internal
+   */
+  mainRealm(): Realm {
+    throw new Error('Not implemented');
+  }
+
+  /**
+   * @internal
+   */
+  isolatedRealm(): Realm {
+    throw new Error('Not implemented');
+  }
+
+  /**
    * Behaves identically to {@link Page.evaluateHandle} except it's run within
    * the context of this frame.
    *
@@ -529,12 +585,15 @@ export class Frame {
    */
   async waitForSelector<Selector extends string>(
     selector: Selector,
-    options?: WaitForSelectorOptions
-  ): Promise<ElementHandle<NodeFor<Selector>> | null>;
-  async waitForSelector<Selector extends string>(): Promise<ElementHandle<
-    NodeFor<Selector>
-  > | null> {
-    throw new Error('Not implemented');
+    options: WaitForSelectorOptions = {}
+  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
+    const {updatedSelector, QueryHandler} =
+      getQueryHandlerAndSelector(selector);
+    return (await QueryHandler.waitFor(
+      this,
+      updatedSelector,
+      options
+    )) as ElementHandle<NodeFor<Selector>> | null;
   }
 
   /**
@@ -561,10 +620,12 @@ export class Frame {
    */
   async waitForXPath(
     xpath: string,
-    options?: WaitForSelectorOptions
-  ): Promise<ElementHandle<Node> | null>;
-  async waitForXPath(): Promise<ElementHandle<Node> | null> {
-    throw new Error('Not implemented');
+    options: WaitForSelectorOptions = {}
+  ): Promise<ElementHandle<Node> | null> {
+    if (xpath.startsWith('//')) {
+      xpath = `.${xpath}`;
+    }
+    return this.waitForSelector(`xpath/${xpath}`, options);
   }
 
   /**
@@ -605,16 +666,15 @@ export class Frame {
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
   >(
     pageFunction: Func | string,
-    options?: FrameWaitForFunctionOptions,
+    options: FrameWaitForFunctionOptions = {},
     ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
-  waitForFunction<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
-  >(): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    throw new Error('Not implemented');
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    return this.mainRealm().waitForFunction(
+      pageFunction,
+      options,
+      ...args
+    ) as Promise<HandleFor<Awaited<ReturnType<Func>>>>;
   }
-
   /**
    * The full HTML contents of the frame, including the DOCTYPE.
    */

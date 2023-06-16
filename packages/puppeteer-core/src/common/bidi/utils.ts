@@ -19,7 +19,7 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {debug} from '../Debug.js';
 import {PuppeteerURL} from '../util.js';
 
-import {BrowsingContext} from './BrowsingContext.js';
+import {Realm} from './Realm.js';
 import {BidiSerializer} from './Serializer.js';
 
 /**
@@ -30,7 +30,7 @@ export const debugError = debug('puppeteer:error');
  * @internal
  */
 export async function releaseReference(
-  client: BrowsingContext,
+  client: Realm,
   remoteReference: Bidi.CommonDataTypes.RemoteReference
 ): Promise<void> {
   if (!remoteReference.handle) {
@@ -38,7 +38,7 @@ export async function releaseReference(
   }
   await client.connection
     .send('script.disown', {
-      target: {context: client.id},
+      target: client.target,
       handles: [remoteReference.handle],
     })
     .catch((error: any) => {
