@@ -29,6 +29,12 @@ import {
 
 import {BrowsingContext} from './BrowsingContext.js';
 
+const enum InputId {
+  Mouse = '__puppeteer_mouse',
+  Wheel = '__puppeteer_wheel',
+  Finger = '__puppeteer_finger',
+}
+
 /**
  * @internal
  */
@@ -101,7 +107,7 @@ export class Mouse extends BaseMouse {
       actions: [
         {
           type: Bidi.Input.SourceActionsType.Pointer,
-          id: 'main',
+          id: InputId.Mouse,
           actions: [
             {
               type: Bidi.Input.ActionType.PointerMove,
@@ -122,7 +128,7 @@ export class Mouse extends BaseMouse {
       actions: [
         {
           type: Bidi.Input.SourceActionsType.Pointer,
-          id: 'main',
+          id: InputId.Mouse,
           actions: [
             {
               type: Bidi.Input.ActionType.PointerDown,
@@ -140,7 +146,7 @@ export class Mouse extends BaseMouse {
       actions: [
         {
           type: Bidi.Input.SourceActionsType.Pointer,
-          id: 'main',
+          id: InputId.Mouse,
           actions: [
             {
               type: Bidi.Input.ActionType.PointerUp,
@@ -189,7 +195,7 @@ export class Mouse extends BaseMouse {
       actions: [
         {
           type: Bidi.Input.SourceActionsType.Pointer,
-          id: 'main',
+          id: InputId.Mouse,
           actions,
         },
       ],
@@ -204,7 +210,7 @@ export class Mouse extends BaseMouse {
       actions: [
         {
           type: Bidi.Input.SourceActionsType.Wheel,
-          id: 'main',
+          id: InputId.Wheel,
           actions: [
             {
               type: Bidi.Input.ActionType.Scroll,
@@ -255,7 +261,7 @@ export class Touchscreen extends BaseTouchscreen {
       actions: [
         {
           type: Bidi.Input.SourceActionsType.Pointer,
-          id: 'main',
+          id: InputId.Finger,
           parameters: {
             pointerType: Bidi.Input.PointerType.Touch,
           },
@@ -286,7 +292,7 @@ export class Touchscreen extends BaseTouchscreen {
       actions: [
         {
           type: Bidi.Input.SourceActionsType.Pointer,
-          id: 'main',
+          id: InputId.Finger,
           parameters: {
             pointerType: Bidi.Input.PointerType.Touch,
           },
@@ -309,7 +315,7 @@ export class Touchscreen extends BaseTouchscreen {
       actions: [
         {
           type: Bidi.Input.SourceActionsType.Pointer,
-          id: 'main',
+          id: InputId.Finger,
           parameters: {
             pointerType: Bidi.Input.PointerType.Touch,
           },

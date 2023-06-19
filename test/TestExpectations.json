@@ -1286,13 +1286,13 @@
   {
     "testIdPattern": "[browser.spec] Browser specs Browser.isConnected should set the browser connected state",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBidi"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[browser.spec] Browser specs Browser.process should not return child_process for remote browser",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBidi"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
@@ -1352,7 +1352,7 @@
   {
     "testIdPattern": "[click.spec] Page.click should click offscreen buttons",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBidi"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["TIMEOUT"]
   },
   {
@@ -1382,13 +1382,13 @@
   {
     "testIdPattern": "[click.spec] Page.click should double click the button",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBidi"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[click.spec] Page.click should not hang with touch-enabled viewports",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBidi"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
@@ -1766,7 +1766,7 @@
   {
     "testIdPattern": "[headful.spec] headful tests HEADFUL target.page() should return a DevTools page if custom isPageTarget is provided",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBidi"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
