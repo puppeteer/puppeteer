@@ -89,7 +89,9 @@ export class Deferred<T> {
     try {
       const promises = awaitables.map(value => {
         if (value instanceof Deferred) {
-          deferredWithTimeout.add(value);
+          if (value.#timeoutId) {
+            deferredWithTimeout.add(value);
+          }
 
           return value.valueOrThrow();
         }

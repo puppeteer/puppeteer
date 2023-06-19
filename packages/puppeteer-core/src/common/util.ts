@@ -383,7 +383,7 @@ export async function waitForEvent<T>(
   eventName: string | symbol,
   predicate: (event: T) => Promise<boolean> | boolean,
   timeout: number,
-  abortPromise: Promise<Error>
+  abortPromise: Promise<Error> | Deferred<Error>
 ): Promise<T> {
   const deferred = Deferred.create<T>({
     message: `Timeout exceeded while waiting for event ${String(eventName)}`,

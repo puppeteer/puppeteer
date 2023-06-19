@@ -1673,7 +1673,7 @@ export class Page extends EventEmitter {
           return false;
         },
         timeout,
-        abortDeferred.valueOrThrow()
+        abortDeferred
       );
     };
 
@@ -1685,7 +1685,11 @@ export class Page extends EventEmitter {
 
     evaluate();
 
-    await Deferred.race([idleDeferred, ...eventPromises, closedDeferred]).then(
+    // We don't want to reject the closed deferred when
+    // the race if finished so we pass the Promise instead
+    const closedPromise = closedDeferred.valueOrThrow();
+
+    await Deferred.race([idleDeferred, ...eventPromises, closedPromise]).then(
       r => {
         cleanup();
         return r;
