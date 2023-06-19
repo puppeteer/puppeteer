@@ -798,6 +798,18 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[locator.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[locator.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[navigation.spec] navigation \"after each\" hook for \"should work with both domcontentloaded and load\"",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1986,34 +1998,34 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[locator.spec] Locator Locator.click can be aborted",
+    "testIdPattern": "[locator.spec] Locator Locator.change should override pre-filled inputs",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[locator.spec] Locator Locator.click should retry clicks on errors",
+    "testIdPattern": "[locator.spec] Locator Locator.change should work for contenteditable",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[locator.spec] Locator Locator.click should time out",
+    "testIdPattern": "[locator.spec] Locator Locator.change should work for inputs",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[locator.spec] Locator Locator.race can be aborted",
+    "testIdPattern": "[locator.spec] Locator Locator.change should work for pre-filled inputs",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[locator.spec] Locator Locator.scroll should work",
+    "testIdPattern": "[locator.spec] Locator Locator.change should work if the input becomes enabled later",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[mouse.spec] Mouse should reset properly",
