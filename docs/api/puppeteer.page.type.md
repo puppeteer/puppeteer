@@ -15,18 +15,18 @@ class Page {
   type(
     selector: string,
     text: string,
-    options?: Readonly<TypeOptions>
+    options?: Readonly<KeyboardTypeOptions>
   ): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                      | Description                                                                                                                                                                              |
-| --------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| selector  | string                                                    | A [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) of an element to type into. If there are multiple elements satisfying the selector, the first will be used. |
-| text      | string                                                    | A text to type into a focused element.                                                                                                                                                   |
-| options   | Readonly&lt;[TypeOptions](./puppeteer.typeoptions.md)&gt; | _(Optional)_ have property <code>delay</code> which is the Time to wait between key presses in milliseconds. Defaults to <code>0</code>.                                                 |
+| Parameter | Type                                                                      | Description                                                                                                                                                                              |
+| --------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| selector  | string                                                                    | A [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) of an element to type into. If there are multiple elements satisfying the selector, the first will be used. |
+| text      | string                                                                    | A text to type into a focused element.                                                                                                                                                   |
+| options   | Readonly&lt;[KeyboardTypeOptions](./puppeteer.keyboardtypeoptions.md)&gt; | _(Optional)_ have property <code>delay</code> which is the Time to wait between key presses in milliseconds. Defaults to <code>0</code>.                                                 |
 
 **Returns:**
 

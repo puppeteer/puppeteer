@@ -24,21 +24,27 @@ import {Point} from './ElementHandle.js';
  * @public
  */
 export interface KeyDownOptions {
+  /**
+   * @deprecated Do not use. This is automatically handled.
+   */
   text?: string;
+  /**
+   * @deprecated Do not use. This is automatically handled.
+   */
   commands?: string[];
 }
 
 /**
  * @public
  */
-export interface TypeOptions {
+export interface KeyboardTypeOptions {
   delay?: number;
 }
 
 /**
  * @public
  */
-export type KeyPressOptions = KeyDownOptions & TypeOptions;
+export type KeyPressOptions = KeyDownOptions & KeyboardTypeOptions;
 
 /**
  * Keyboard provides an api for managing a virtual keyboard.
@@ -175,7 +181,10 @@ export class Keyboard {
    * if specified, is the time to wait between `keydown` and `keyup` in milliseconds.
    * Defaults to 0.
    */
-  async type(text: string, options?: Readonly<TypeOptions>): Promise<void>;
+  async type(
+    text: string,
+    options?: Readonly<KeyboardTypeOptions>
+  ): Promise<void>;
   async type(): Promise<void> {
     throw new Error('Not implemented');
   }

@@ -20,7 +20,9 @@ import {
   ElementHandle as BaseElementHandle,
   ClickOptions,
 } from '../../api/ElementHandle.js';
+import {KeyPressOptions, KeyboardTypeOptions} from '../../api/Input.js';
 import {assert} from '../../util/assert.js';
+import {KeyInput} from '../USKeyboardLayout.js';
 
 import {Frame} from './Frame.js';
 import {JSHandle} from './JSHandle.js';
@@ -142,5 +144,21 @@ export class ElementHandle<
   override async touchEnd(this: ElementHandle<Element>): Promise<void> {
     await this.scrollIntoViewIfNeeded();
     await this.#frame.page().touchscreen.touchEnd();
+  }
+
+  override async type(
+    text: string,
+    options?: Readonly<KeyboardTypeOptions>
+  ): Promise<void> {
+    await this.focus();
+    await this.#frame.page().keyboard.type(text, options);
+  }
+
+  override async press(
+    key: KeyInput,
+    options?: Readonly<KeyPressOptions>
+  ): Promise<void> {
+    await this.focus();
+    await this.#frame.page().keyboard.press(key, options);
   }
 }

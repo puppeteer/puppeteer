@@ -28,7 +28,7 @@ import {
   MouseOptions,
   MouseWheelOptions,
   Touchscreen,
-  TypeOptions,
+  KeyboardTypeOptions,
 } from '../api/Input.js';
 import {assert} from '../util/assert.js';
 
@@ -183,7 +183,7 @@ export class CDPKeyboard extends Keyboard {
 
   override async type(
     text: string,
-    options: Readonly<TypeOptions> = {}
+    options: Readonly<KeyboardTypeOptions> = {}
   ): Promise<void> {
     const delay = options.delay || undefined;
     for (const char of text) {

@@ -58,7 +58,7 @@ import {Connection} from './Connection.js';
 import {Frame} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
-import {Mouse, Touchscreen} from './Input.js';
+import {Keyboard, Mouse, Touchscreen} from './Input.js';
 import {NetworkManager} from './NetworkManager.js';
 import {getBidiHandle} from './Realm.js';
 import {BidiSerializer} from './Serializer.js';
@@ -130,6 +130,7 @@ export class Page extends PageBase {
   #emulationManager: EmulationManager;
   #mouse: Mouse;
   #touchscreen: Touchscreen;
+  #keyboard: Keyboard;
 
   constructor(browserContext: BrowserContext, info: {context: string}) {
     super();
@@ -162,6 +163,7 @@ export class Page extends PageBase {
     );
     this.#mouse = new Mouse(this.mainFrame().context());
     this.#touchscreen = new Touchscreen(this.mainFrame().context());
+    this.#keyboard = new Keyboard(this.mainFrame().context());
   }
 
   override get accessibility(): Accessibility {
@@ -182,6 +184,10 @@ export class Page extends PageBase {
 
   override get touchscreen(): Touchscreen {
     return this.#touchscreen;
+  }
+
+  override get keyboard(): Keyboard {
+    return this.#keyboard;
   }
 
   override browser(): Browser {

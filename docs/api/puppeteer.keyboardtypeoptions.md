@@ -1,13 +1,13 @@
 ---
-sidebar_label: TypeOptions
+sidebar_label: KeyboardTypeOptions
 ---
 
-# TypeOptions interface
+# KeyboardTypeOptions interface
 
 #### Signature:
 
 ```typescript
-export interface TypeOptions
+export interface KeyboardTypeOptions
 ```
 
 ## Properties

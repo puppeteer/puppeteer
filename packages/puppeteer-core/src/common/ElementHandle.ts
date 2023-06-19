@@ -24,7 +24,7 @@ import {
   Offset,
   Point,
 } from '../api/ElementHandle.js';
-import {KeyPressOptions, TypeOptions} from '../api/Input.js';
+import {KeyPressOptions, KeyboardTypeOptions} from '../api/Input.js';
 import {Page, ScreenshotOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 
@@ -447,7 +447,7 @@ export class CDPElementHandle<
 
   override async type(
     text: string,
-    options?: Readonly<TypeOptions>
+    options?: Readonly<KeyboardTypeOptions>
   ): Promise<void> {
     await this.focus();
     await this.#page.keyboard.type(text, options);
