@@ -127,6 +127,7 @@
   },
   "files": [
     "lib",
+    "src",
     "!*.tsbuildinfo"
   ],
   "author": "The Chromium Authors",

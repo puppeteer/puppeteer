@@ -94,6 +94,7 @@
   },
   "files": [
     "lib",
+    "src",
     "!*.tsbuildinfo"
   ],
   "dependencies": {
