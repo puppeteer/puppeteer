@@ -99,6 +99,15 @@ interface Commands {
     returnType: Bidi.BrowsingContext.CaptureScreenshotResult;
   };
 
+  'input.performActions': {
+    params: Bidi.Input.PerformActionsParameters;
+    returnType: Bidi.Message.EmptyResult;
+  };
+  'input.releaseActions': {
+    params: Bidi.Input.ReleaseActionsParameters;
+    returnType: Bidi.Message.EmptyResult;
+  };
+
   'session.new': {
     params: {
       // capabilities: session.CapabilitiesRequest

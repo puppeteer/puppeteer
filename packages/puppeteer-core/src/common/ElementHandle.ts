@@ -151,19 +151,6 @@ export class CDPElementHandle<
     }
   }
 
-  async #scrollIntoViewIfNeeded(
-    this: CDPElementHandle<Element>
-  ): Promise<void> {
-    if (
-      await this.isIntersectingViewport({
-        threshold: 1,
-      })
-    ) {
-      return;
-    }
-    await this.scrollIntoView();
-  }
-
   async #getOOPIFOffsets(
     frame: Frame
   ): Promise<{offsetX: number; offsetY: number}> {
@@ -300,7 +287,7 @@ export class CDPElementHandle<
    * If the element is detached from DOM, the method throws an error.
    */
   override async hover(this: CDPElementHandle<Element>): Promise<void> {
-    await this.#scrollIntoViewIfNeeded();
+    await this.scrollIntoViewIfNeeded();
     const {x, y} = await this.clickablePoint();
     await this.#page.mouse.move(x, y);
   }
@@ -314,7 +301,7 @@ export class CDPElementHandle<
     this: CDPElementHandle<Element>,
     options: Readonly<ClickOptions> = {}
   ): Promise<void> {
-    await this.#scrollIntoViewIfNeeded();
+    await this.scrollIntoViewIfNeeded();
     const {x, y} = await this.clickablePoint(options.offset);
     await this.#page.mouse.click(x, y, options);
   }
@@ -330,7 +317,7 @@ export class CDPElementHandle<
       this.#page.isDragInterceptionEnabled(),
       'Drag Interception is not enabled!'
     );
-    await this.#scrollIntoViewIfNeeded();
+    await this.scrollIntoViewIfNeeded();
     const start = await this.clickablePoint();
     return await this.#page.mouse.drag(start, target);
   }
@@ -339,7 +326,7 @@ export class CDPElementHandle<
     this: CDPElementHandle<Element>,
     data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
   ): Promise<void> {
-    await this.#scrollIntoViewIfNeeded();
+    await this.scrollIntoViewIfNeeded();
     const target = await this.clickablePoint();
     await this.#page.mouse.dragEnter(target, data);
   }
@@ -348,7 +335,7 @@ export class CDPElementHandle<
     this: CDPElementHandle<Element>,
     data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
   ): Promise<void> {
-    await this.#scrollIntoViewIfNeeded();
+    await this.scrollIntoViewIfNeeded();
     const target = await this.clickablePoint();
     await this.#page.mouse.dragOver(target, data);
   }
@@ -357,7 +344,7 @@ export class CDPElementHandle<
     this: CDPElementHandle<Element>,
     data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
   ): Promise<void> {
-    await this.#scrollIntoViewIfNeeded();
+    await this.scrollIntoViewIfNeeded();
     const destination = await this.clickablePoint();
     await this.#page.mouse.drop(destination, data);
   }
@@ -371,7 +358,7 @@ export class CDPElementHandle<
       this.#page.isDragInterceptionEnabled(),
       'Drag Interception is not enabled!'
     );
-    await this.#scrollIntoViewIfNeeded();
+    await this.scrollIntoViewIfNeeded();
     const startPoint = await this.clickablePoint();
     const targetPoint = await target.clickablePoint();
     await this.#page.mouse.dragAndDrop(startPoint, targetPoint, options);
@@ -435,26 +422,26 @@ export class CDPElementHandle<
   }
 
   override async tap(this: CDPElementHandle<Element>): Promise<void> {
-    await this.#scrollIntoViewIfNeeded();
+    await this.scrollIntoViewIfNeeded();
     const {x, y} = await this.clickablePoint();
     await this.#page.touchscreen.touchStart(x, y);
     await this.#page.touchscreen.touchEnd();
   }
 
   override async touchStart(this: CDPElementHandle<Element>): Promise<void> {
-    await this.#scrollIntoViewIfNeeded();
+    await this.scrollIntoViewIfNeeded();
     const {x, y} = await this.clickablePoint();
     await this.#page.touchscreen.touchStart(x, y);
   }
 
   override async touchMove(this: CDPElementHandle<Element>): Promise<void> {
-    await this.#scrollIntoViewIfNeeded();
+    await this.scrollIntoViewIfNeeded();
     const {x, y} = await this.clickablePoint();
     await this.#page.touchscreen.touchMove(x, y);
   }
 
   override async touchEnd(this: CDPElementHandle<Element>): Promise<void> {
-    await this.#scrollIntoViewIfNeeded();
+    await this.scrollIntoViewIfNeeded();
     await this.#page.touchscreen.touchEnd();
   }
 
@@ -552,7 +539,7 @@ export class CDPElementHandle<
       needsViewportReset = true;
     }
 
-    await this.#scrollIntoViewIfNeeded();
+    await this.scrollIntoViewIfNeeded();
 
     boundingBox = await this.boundingBox();
     assert(boundingBox, 'Node is either not visible or not an HTMLElement');

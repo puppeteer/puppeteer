@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import {ElementHandle} from '../../api/ElementHandle.js';
+import {ClickOptions, ElementHandle} from '../../api/ElementHandle.js';
 import {Realm as RealmBase} from '../../api/Frame.js';
+import {TypeOptions} from '../../api/Input.js';
 import {JSHandle as BaseJSHandle} from '../../api/JSHandle.js';
+import {assert} from '../../util/assert.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
 import {
   EvaluateFunc,
@@ -220,5 +222,58 @@ export class Sandbox implements RealmBase {
       ...args
     );
     return waitTask.result;
+  }
+
+  // ///////////////////
+  // // Input methods //
+  // ///////////////////
+  async click(
+    selector: string,
+    options?: Readonly<ClickOptions>
+  ): Promise<void> {
+    const handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.click(options);
+    await handle.dispose();
+  }
+
+  async focus(selector: string): Promise<void> {
+    const handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.focus();
+    await handle.dispose();
+  }
+
+  async hover(selector: string): Promise<void> {
+    const handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.hover();
+    await handle.dispose();
+  }
+
+  async select(selector: string, ...values: string[]): Promise<string[]> {
+    const handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    const result = await handle.select(...values);
+    await handle.dispose();
+    return result;
+  }
+
+  async tap(selector: string): Promise<void> {
+    const handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.tap();
+    await handle.dispose();
+  }
+
+  async type(
+    selector: string,
+    text: string,
+    options?: Readonly<TypeOptions>
+  ): Promise<void> {
+    const handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.type(text, options);
+    await handle.dispose();
   }
 }

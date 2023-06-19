@@ -58,6 +58,7 @@ import {Connection} from './Connection.js';
 import {Frame} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
+import {Mouse, Touchscreen} from './Input.js';
 import {NetworkManager} from './NetworkManager.js';
 import {getBidiHandle} from './Realm.js';
 import {BidiSerializer} from './Serializer.js';
@@ -127,6 +128,8 @@ export class Page extends PageBase {
   #tracing: Tracing;
   #coverage: Coverage;
   #emulationManager: EmulationManager;
+  #mouse: Mouse;
+  #touchscreen: Touchscreen;
 
   constructor(browserContext: BrowserContext, info: {context: string}) {
     super();
@@ -157,6 +160,8 @@ export class Page extends PageBase {
     this.#emulationManager = new EmulationManager(
       this.mainFrame().context().cdpSession
     );
+    this.#mouse = new Mouse(this.mainFrame().context());
+    this.#touchscreen = new Touchscreen(this.mainFrame().context());
   }
 
   override get accessibility(): Accessibility {
@@ -169,6 +174,14 @@ export class Page extends PageBase {
 
   override get coverage(): Coverage {
     return this.#coverage;
+  }
+
+  override get mouse(): Mouse {
+    return this.#mouse;
+  }
+
+  override get touchscreen(): Touchscreen {
+    return this.#touchscreen;
   }
 
   override browser(): Browser {
@@ -215,8 +228,6 @@ export class Page extends PageBase {
         this.#timeoutSettings,
         info.parent
       );
-      context.setFrame(frame);
-
       this.#frameTree.addFrame(frame);
       this.emit(FrameManagerEmittedEvents.FrameAttached, frame);
     }

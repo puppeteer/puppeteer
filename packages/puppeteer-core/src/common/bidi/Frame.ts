@@ -54,13 +54,14 @@ export class Frame extends BaseFrame {
     this._id = this.#context.id;
     this._parentId = parentId ?? undefined;
 
+    const puppeteerRealm = context.createSandboxRealm(UTILITY_WORLD_NAME);
     this.sandboxes = {
       [MAIN_SANDBOX]: new Sandbox(context, timeoutSettings),
-      [PUPPETEER_SANDBOX]: new Sandbox(
-        context.createSandboxRealm(UTILITY_WORLD_NAME),
-        timeoutSettings
-      ),
+      [PUPPETEER_SANDBOX]: new Sandbox(puppeteerRealm, timeoutSettings),
     };
+
+    puppeteerRealm.setFrame(this);
+    context.setFrame(this);
   }
 
   override mainRealm(): Sandbox {

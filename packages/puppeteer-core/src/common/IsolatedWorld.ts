@@ -18,6 +18,7 @@ import {Protocol} from 'devtools-protocol';
 
 import type {ClickOptions, ElementHandle} from '../api/ElementHandle.js';
 import {Realm} from '../api/Frame.js';
+import {TypeOptions} from '../api/Input.js';
 import {JSHandle} from '../api/JSHandle.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
@@ -309,7 +310,7 @@ export class IsolatedWorld implements Realm {
 
   async click(
     selector: string,
-    options: Readonly<ClickOptions> = {}
+    options?: Readonly<ClickOptions>
   ): Promise<void> {
     const handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);
@@ -349,7 +350,7 @@ export class IsolatedWorld implements Realm {
   async type(
     selector: string,
     text: string,
-    options?: {delay: number}
+    options?: Readonly<TypeOptions>
   ): Promise<void> {
     const handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);

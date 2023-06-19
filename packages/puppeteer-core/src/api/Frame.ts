@@ -35,6 +35,7 @@ import {
 } from '../common/types.js';
 import {TaskManager} from '../common/WaitTask.js';
 
+import {TypeOptions} from './Input.js';
 import {JSHandle} from './JSHandle.js';
 import {Locator} from './Locator.js';
 
@@ -74,6 +75,16 @@ export interface Realm {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
+  click(selector: string, options: Readonly<ClickOptions>): Promise<void>;
+  focus(selector: string): Promise<void>;
+  hover(selector: string): Promise<void>;
+  select(selector: string, ...values: string[]): Promise<string[]>;
+  tap(selector: string): Promise<void>;
+  type(
+    selector: string,
+    text: string,
+    options?: Readonly<TypeOptions>
+  ): Promise<void>;
 }
 
 /**
@@ -793,12 +804,8 @@ export class Frame {
    *
    * @param selector - The selector to query for.
    */
-  async click(
-    selector: string,
-    options?: Readonly<ClickOptions>
-  ): Promise<void>;
-  async click(): Promise<void> {
-    throw new Error('Not implemented');
+  click(selector: string, options: Readonly<ClickOptions> = {}): Promise<void> {
+    return this.isolatedRealm().click(selector, options);
   }
 
   /**
@@ -807,9 +814,8 @@ export class Frame {
    * @param selector - The selector to query for.
    * @throws Throws if there's no element matching `selector`.
    */
-  async focus(selector: string): Promise<void>;
-  async focus(): Promise<void> {
-    throw new Error('Not implemented');
+  async focus(selector: string): Promise<void> {
+    return this.isolatedRealm().focus(selector);
   }
 
   /**
@@ -819,9 +825,8 @@ export class Frame {
    * @param selector - The selector to query for.
    * @throws Throws if there's no element matching `selector`.
    */
-  async hover(selector: string): Promise<void>;
-  async hover(): Promise<void> {
-    throw new Error('Not implemented');
+  hover(selector: string): Promise<void> {
+    return this.isolatedRealm().hover(selector);
   }
 
   /**
@@ -842,9 +847,8 @@ export class Frame {
    * @returns the list of values that were successfully selected.
    * @throws Throws if there's no `<select>` matching `selector`.
    */
-  select(selector: string, ...values: string[]): Promise<string[]>;
-  select(): Promise<string[]> {
-    throw new Error('Not implemented');
+  select(selector: string, ...values: string[]): Promise<string[]> {
+    return this.isolatedRealm().select(selector, ...values);
   }
 
   /**
@@ -853,9 +857,8 @@ export class Frame {
    * @param selector - The selector to query for.
    * @throws Throws if there's no element matching `selector`.
    */
-  async tap(selector: string): Promise<void>;
-  async tap(): Promise<void> {
-    throw new Error('Not implemented');
+  tap(selector: string): Promise<void> {
+    return this.isolatedRealm().tap(selector);
   }
 
   /**
@@ -879,13 +882,12 @@ export class Frame {
    * @param options - takes one option, `delay`, which sets the time to wait
    * between key presses in milliseconds. Defaults to `0`.
    */
-  async type(
+  type(
     selector: string,
     text: string,
-    options?: {delay: number}
-  ): Promise<void>;
-  async type(): Promise<void> {
-    throw new Error('Not implemented');
+    options?: Readonly<TypeOptions>
+  ): Promise<void> {
+    return this.isolatedRealm().type(selector, text, options);
   }
 
   /**

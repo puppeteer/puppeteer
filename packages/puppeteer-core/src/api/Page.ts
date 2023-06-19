@@ -71,7 +71,7 @@ import type {
   FrameAddStyleTagOptions,
   FrameWaitForFunctionOptions,
 } from './Frame.js';
-import {Keyboard, Mouse, Touchscreen} from './Input.js';
+import {Keyboard, Mouse, Touchscreen, TypeOptions} from './Input.js';
 import type {JSHandle} from './JSHandle.js';
 import {Locator} from './Locator.js';
 
@@ -2445,9 +2445,8 @@ export class Page extends EventEmitter {
    * successfully clicked. The Promise will be rejected if there is no element
    * matching `selector`.
    */
-  click(selector: string, options?: Readonly<ClickOptions>): Promise<void>;
-  click(): Promise<void> {
-    throw new Error('Not implemented');
+  click(selector: string, options?: Readonly<ClickOptions>): Promise<void> {
+    return this.mainFrame().click(selector, options);
   }
 
   /**
@@ -2463,9 +2462,8 @@ export class Page extends EventEmitter {
    * @remarks
    * Shortcut for {@link Frame.focus | page.mainFrame().focus(selector)}.
    */
-  focus(selector: string): Promise<void>;
-  focus(): Promise<void> {
-    throw new Error('Not implemented');
+  focus(selector: string): Promise<void> {
+    return this.mainFrame().focus(selector);
   }
 
   /**
@@ -2483,9 +2481,8 @@ export class Page extends EventEmitter {
    * @remarks
    * Shortcut for {@link Page.hover | page.mainFrame().hover(selector)}.
    */
-  hover(selector: string): Promise<void>;
-  hover(): Promise<void> {
-    throw new Error('Not implemented');
+  hover(selector: string): Promise<void> {
+    return this.mainFrame().hover(selector);
   }
 
   /**
@@ -2511,9 +2508,8 @@ export class Page extends EventEmitter {
    * @remarks
    * Shortcut for {@link Frame.select | page.mainFrame().select()}
    */
-  select(selector: string, ...values: string[]): Promise<string[]>;
-  select(): Promise<string[]> {
-    throw new Error('Not implemented');
+  select(selector: string, ...values: string[]): Promise<string[]> {
+    return this.mainFrame().select(selector, ...values);
   }
 
   /**
@@ -2529,9 +2525,8 @@ export class Page extends EventEmitter {
    * @remarks
    * Shortcut for {@link Frame.tap | page.mainFrame().tap(selector)}.
    */
-  tap(selector: string): Promise<void>;
-  tap(): Promise<void> {
-    throw new Error('Not implemented');
+  tap(selector: string): Promise<void> {
+    return this.mainFrame().tap(selector);
   }
 
   /**
@@ -2561,10 +2556,9 @@ export class Page extends EventEmitter {
   type(
     selector: string,
     text: string,
-    options?: {delay: number}
-  ): Promise<void>;
-  type(): Promise<void> {
-    throw new Error('Not implemented');
+    options?: Readonly<TypeOptions>
+  ): Promise<void> {
+    return this.mainFrame().type(selector, text, options);
   }
 
   /**

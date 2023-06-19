@@ -20,7 +20,7 @@ import {Protocol} from 'devtools-protocol';
 
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
-import {ClickOptions, ElementHandle} from '../api/ElementHandle.js';
+import {ElementHandle} from '../api/ElementHandle.js';
 import {
   Frame,
   FrameAddScriptTagOptions,
@@ -33,13 +33,13 @@ import {
   GeolocationOptions,
   MediaFeature,
   Metrics,
+  NewDocumentScriptEvaluation,
   Page,
   PageEmittedEvents,
   ScreenshotClip,
   ScreenshotOptions,
   WaitForOptions,
   WaitTimeoutOptions,
-  NewDocumentScriptEvaluation,
 } from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
@@ -1397,37 +1397,6 @@ export class CDPPage extends Page {
 
   override get mouse(): CDPMouse {
     return this.#mouse;
-  }
-
-  override click(
-    selector: string,
-    options: Readonly<ClickOptions> = {}
-  ): Promise<void> {
-    return this.mainFrame().click(selector, options);
-  }
-
-  override focus(selector: string): Promise<void> {
-    return this.mainFrame().focus(selector);
-  }
-
-  override hover(selector: string): Promise<void> {
-    return this.mainFrame().hover(selector);
-  }
-
-  override select(selector: string, ...values: string[]): Promise<string[]> {
-    return this.mainFrame().select(selector, ...values);
-  }
-
-  override tap(selector: string): Promise<void> {
-    return this.mainFrame().tap(selector);
-  }
-
-  override type(
-    selector: string,
-    text: string,
-    options?: {delay: number}
-  ): Promise<void> {
-    return this.mainFrame().type(selector, text, options);
   }
 
   override waitForXPath(

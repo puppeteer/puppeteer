@@ -926,6 +926,22 @@ export class ElementHandle<
   }
 
   /**
+   * @internal
+   */
+  protected async scrollIntoViewIfNeeded(
+    this: ElementHandle<Element>
+  ): Promise<void> {
+    if (
+      await this.isIntersectingViewport({
+        threshold: 1,
+      })
+    ) {
+      return;
+    }
+    await this.scrollIntoView();
+  }
+
+  /**
    * Resolves to true if the element is visible in the current viewport. If an
    * element is an SVG, we check if the svg owner element is in the viewport
    * instead. See https://crbug.com/963246.

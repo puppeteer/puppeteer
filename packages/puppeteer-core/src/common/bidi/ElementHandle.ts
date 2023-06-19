@@ -16,7 +16,11 @@
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import {ElementHandle as BaseElementHandle} from '../../api/ElementHandle.js';
+import {
+  ElementHandle as BaseElementHandle,
+  ClickOptions,
+} from '../../api/ElementHandle.js';
+import {assert} from '../../util/assert.js';
 
 import {Frame} from './Frame.js';
 import {JSHandle} from './JSHandle.js';
@@ -62,5 +66,81 @@ export class ElementHandle<
   override assertElementHasWorld(): asserts this {
     // TODO: Should assert element has a Sandbox
     return;
+  }
+
+  // ///////////////////
+  // // Input methods //
+  // ///////////////////
+  override async click(
+    this: ElementHandle<Element>,
+    options?: Readonly<ClickOptions>
+  ): Promise<void> {
+    await this.scrollIntoViewIfNeeded();
+    const {x = 0, y = 0} = options?.offset ?? {};
+    const remoteValue = this.remoteValue();
+    assert('sharedId' in remoteValue);
+    return this.#frame.page().mouse.click(
+      x,
+      y,
+      Object.assign({}, options, {
+        origin: {
+          type: 'element' as const,
+          element: remoteValue as Bidi.CommonDataTypes.SharedReference,
+        },
+      })
+    );
+  }
+
+  override async hover(this: ElementHandle<Element>): Promise<void> {
+    await this.scrollIntoViewIfNeeded();
+    const remoteValue = this.remoteValue();
+    assert('sharedId' in remoteValue);
+    return this.#frame.page().mouse.move(0, 0, {
+      origin: {
+        type: 'element' as const,
+        element: remoteValue as Bidi.CommonDataTypes.SharedReference,
+      },
+    });
+  }
+
+  override async tap(this: ElementHandle<Element>): Promise<void> {
+    await this.scrollIntoViewIfNeeded();
+    const remoteValue = this.remoteValue();
+    assert('sharedId' in remoteValue);
+    return this.#frame.page().touchscreen.tap(0, 0, {
+      origin: {
+        type: 'element' as const,
+        element: remoteValue as Bidi.CommonDataTypes.SharedReference,
+      },
+    });
+  }
+
+  override async touchStart(this: ElementHandle<Element>): Promise<void> {
+    await this.scrollIntoViewIfNeeded();
+    const remoteValue = this.remoteValue();
+    assert('sharedId' in remoteValue);
+    return this.#frame.page().touchscreen.touchStart(0, 0, {
+      origin: {
+        type: 'element' as const,
+        element: remoteValue as Bidi.CommonDataTypes.SharedReference,
+      },
+    });
+  }
+
+  override async touchMove(this: ElementHandle<Element>): Promise<void> {
+    await this.scrollIntoViewIfNeeded();
+    const remoteValue = this.remoteValue();
+    assert('sharedId' in remoteValue);
+    return this.#frame.page().touchscreen.touchMove(0, 0, {
+      origin: {
+        type: 'element' as const,
+        element: remoteValue as Bidi.CommonDataTypes.SharedReference,
+      },
+    });
+  }
+
+  override async touchEnd(this: ElementHandle<Element>): Promise<void> {
+    await this.scrollIntoViewIfNeeded();
+    await this.#frame.page().touchscreen.touchEnd();
   }
 }
