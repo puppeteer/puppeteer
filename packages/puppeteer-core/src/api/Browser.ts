@@ -84,6 +84,7 @@ export const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map<
   ['accessibility-events', 'accessibilityEvents'],
   ['clipboard-read', 'clipboardReadWrite'],
   ['clipboard-write', 'clipboardReadWrite'],
+  ['clipboard-sanitized-write', 'clipboardSanitizedWrite'],
   ['payment-handler', 'paymentHandler'],
   ['persistent-storage', 'durableStorage'],
   ['idle-detection', 'idleDetection'],
@@ -108,6 +109,7 @@ export type Permission =
   | 'accessibility-events'
   | 'clipboard-read'
   | 'clipboard-write'
+  | 'clipboard-sanitized-write'
   | 'payment-handler'
   | 'persistent-storage'
   | 'idle-detection'
