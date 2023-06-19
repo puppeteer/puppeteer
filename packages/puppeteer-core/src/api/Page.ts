@@ -71,7 +71,7 @@ import type {
   FrameAddStyleTagOptions,
   FrameWaitForFunctionOptions,
 } from './Frame.js';
-import {Keyboard, Mouse, Touchscreen, TypeOptions} from './Input.js';
+import {Keyboard, Mouse, Touchscreen, KeyboardTypeOptions} from './Input.js';
 import type {JSHandle} from './JSHandle.js';
 import {Locator} from './Locator.js';
 
@@ -2556,7 +2556,7 @@ export class Page extends EventEmitter {
   type(
     selector: string,
     text: string,
-    options?: Readonly<TypeOptions>
+    options?: Readonly<KeyboardTypeOptions>
   ): Promise<void> {
     return this.mainFrame().type(selector, text, options);
   }

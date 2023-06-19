@@ -10,16 +10,16 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 
 ```typescript
 class Keyboard {
-  type(text: string, options?: Readonly<TypeOptions>): Promise<void>;
+  type(text: string, options?: Readonly<KeyboardTypeOptions>): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                      | Description                                                                                                                                                                   |
-| --------- | --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| text      | string                                                    | A text to type into a focused element.                                                                                                                                        |
-| options   | Readonly&lt;[TypeOptions](./puppeteer.typeoptions.md)&gt; | _(Optional)_ An object of options. Accepts delay which, if specified, is the time to wait between <code>keydown</code> and <code>keyup</code> in milliseconds. Defaults to 0. |
+| Parameter | Type                                                                      | Description                                                                                                                                                                   |
+| --------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| text      | string                                                                    | A text to type into a focused element.                                                                                                                                        |
+| options   | Readonly&lt;[KeyboardTypeOptions](./puppeteer.keyboardtypeoptions.md)&gt; | _(Optional)_ An object of options. Accepts delay which, if specified, is the time to wait between <code>keydown</code> and <code>keyup</code> in milliseconds. Defaults to 0. |
 
 **Returns:**
 

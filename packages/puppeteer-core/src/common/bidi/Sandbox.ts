@@ -16,7 +16,7 @@
 
 import {ClickOptions, ElementHandle} from '../../api/ElementHandle.js';
 import {Realm as RealmBase} from '../../api/Frame.js';
-import {TypeOptions} from '../../api/Input.js';
+import {KeyboardTypeOptions} from '../../api/Input.js';
 import {JSHandle as BaseJSHandle} from '../../api/JSHandle.js';
 import {assert} from '../../util/assert.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
@@ -269,7 +269,7 @@ export class Sandbox implements RealmBase {
   async type(
     selector: string,
     text: string,
-    options?: Readonly<TypeOptions>
+    options?: Readonly<KeyboardTypeOptions>
   ): Promise<void> {
     const handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);

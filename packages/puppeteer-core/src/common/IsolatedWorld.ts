@@ -18,7 +18,7 @@ import {Protocol} from 'devtools-protocol';
 
 import type {ClickOptions, ElementHandle} from '../api/ElementHandle.js';
 import {Realm} from '../api/Frame.js';
-import {TypeOptions} from '../api/Input.js';
+import {KeyboardTypeOptions} from '../api/Input.js';
 import {JSHandle} from '../api/JSHandle.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
@@ -350,7 +350,7 @@ export class IsolatedWorld implements Realm {
   async type(
     selector: string,
     text: string,
-    options?: Readonly<TypeOptions>
+    options?: Readonly<KeyboardTypeOptions>
   ): Promise<void> {
     const handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);

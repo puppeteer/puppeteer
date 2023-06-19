@@ -456,6 +456,18 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[click.spec] Page.click should select the text by triple clicking",
+    "platforms": ["linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[click.spec] Page.click should select the text by triple clicking",
+    "platforms": ["darwin"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[Connection.spec] WebDriver BiDi Connection should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -708,6 +720,66 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
+    "testIdPattern": "[keyboard.spec] Keyboard should move with the arrow keys",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should not type canceled events",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should press the meta key",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should press the metaKey",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should send a character with ElementHandle.press",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should send proper codes while typing",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should send proper codes while typing with shift",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should specify repeat property",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should type emoji",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should type into a textarea",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.disconnect should reject navigation when browser closes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -808,6 +880,36 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[locator.spec] Locator Locator.change should override pre-filled inputs",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[locator.spec] Locator Locator.change should work for contenteditable",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[locator.spec] Locator Locator.change should work for inputs",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[locator.spec] Locator Locator.change should work for pre-filled inputs",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[locator.spec] Locator Locator.change should work if the input becomes enabled later",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation \"after each\" hook for \"should work with both domcontentloaded and load\"",
@@ -1065,7 +1167,7 @@
     "testIdPattern": "[queryhandler.spec] Query handler tests Text selectors in Page should clear caches",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[requestinterception-experimental.spec] *",
@@ -1365,7 +1467,7 @@
     "testIdPattern": "[click.spec] Page.click should click offscreen buttons",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["TIMEOUT"]
+    "expectations": ["TIMEOUT", "FAIL"]
   },
   {
     "testIdPattern": "[click.spec] Page.click should click on checkbox label and toggle",
@@ -1414,6 +1516,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL", "PASS"]
+  },
+  {
+    "testIdPattern": "[click.spec] Page.click should select the text by triple clicking",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[cookies.spec] Cookie specs Page.cookies should get cookies from multiple urls",
@@ -1824,16 +1932,46 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[keyboard.spec] Keyboard should press the meta key",
+    "platforms": ["linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should press the meta key",
+    "platforms": ["darwin"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[keyboard.spec] Keyboard should press the metaKey",
     "platforms": ["linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[keyboard.spec] Keyboard should press the metaKey",
+    "platforms": ["linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should press the metaKey",
+    "platforms": ["darwin"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[keyboard.spec] Keyboard should report shiftKey",
     "platforms": ["darwin"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should report shiftKey",
+    "platforms": ["linux"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[keyboard.spec] Keyboard should send a character with sendCharacter",
@@ -1864,6 +2002,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[keyboard.spec] Keyboard should type all kinds of characters",
+    "platforms": ["linux"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[keyboard.spec] Keyboard should type emoji",
@@ -1996,36 +2140,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[locator.spec] Locator Locator.change should override pre-filled inputs",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[locator.spec] Locator Locator.change should work for contenteditable",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[locator.spec] Locator Locator.change should work for inputs",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[locator.spec] Locator Locator.change should work for pre-filled inputs",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[locator.spec] Locator Locator.change should work if the input becomes enabled later",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[mouse.spec] Mouse should reset properly",

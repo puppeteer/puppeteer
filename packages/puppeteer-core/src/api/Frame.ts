@@ -35,7 +35,7 @@ import {
 } from '../common/types.js';
 import {TaskManager} from '../common/WaitTask.js';
 
-import {TypeOptions} from './Input.js';
+import {KeyboardTypeOptions} from './Input.js';
 import {JSHandle} from './JSHandle.js';
 import {Locator} from './Locator.js';
 
@@ -83,7 +83,7 @@ export interface Realm {
   type(
     selector: string,
     text: string,
-    options?: Readonly<TypeOptions>
+    options?: Readonly<KeyboardTypeOptions>
   ): Promise<void>;
 }
 
@@ -885,7 +885,7 @@ export class Frame {
   type(
     selector: string,
     text: string,
-    options?: Readonly<TypeOptions>
+    options?: Readonly<KeyboardTypeOptions>
   ): Promise<void> {
     return this.isolatedRealm().type(selector, text, options);
   }

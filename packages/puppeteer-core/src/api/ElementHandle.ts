@@ -34,7 +34,11 @@ import {isString, withSourcePuppeteerURLIfNone} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 
-import {KeyPressOptions, MouseClickOptions, TypeOptions} from './Input.js';
+import {
+  KeyPressOptions,
+  MouseClickOptions,
+  KeyboardTypeOptions,
+} from './Input.js';
 import {JSHandle} from './JSHandle.js';
 import {ScreenshotOptions} from './Page.js';
 
@@ -844,7 +848,10 @@ export class ElementHandle<
    *
    * @param options - Delay in milliseconds. Defaults to 0.
    */
-  async type(text: string, options?: Readonly<TypeOptions>): Promise<void>;
+  async type(
+    text: string,
+    options?: Readonly<KeyboardTypeOptions>
+  ): Promise<void>;
   async type(): Promise<void> {
     throw new Error('Not implemented');
   }

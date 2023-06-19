@@ -13,18 +13,18 @@ class Frame {
   type(
     selector: string,
     text: string,
-    options?: Readonly<TypeOptions>
+    options?: Readonly<KeyboardTypeOptions>
   ): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                      | Description                                                                                                                                     |
-| --------- | --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| selector  | string                                                    | the selector for the element to type into. If there are multiple the first will be used.                                                        |
-| text      | string                                                    | text to type into the element                                                                                                                   |
-| options   | Readonly&lt;[TypeOptions](./puppeteer.typeoptions.md)&gt; | _(Optional)_ takes one option, <code>delay</code>, which sets the time to wait between key presses in milliseconds. Defaults to <code>0</code>. |
+| Parameter | Type                                                                      | Description                                                                                                                                     |
+| --------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| selector  | string                                                                    | the selector for the element to type into. If there are multiple the first will be used.                                                        |
+| text      | string                                                                    | text to type into the element                                                                                                                   |
+| options   | Readonly&lt;[KeyboardTypeOptions](./puppeteer.keyboardtypeoptions.md)&gt; | _(Optional)_ takes one option, <code>delay</code>, which sets the time to wait between key presses in milliseconds. Defaults to <code>0</code>. |
 
 **Returns:**
 
