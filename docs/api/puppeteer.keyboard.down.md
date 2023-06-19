@@ -10,22 +10,16 @@ Dispatches a `keydown` event.
 
 ```typescript
 class Keyboard {
-  down(
-    key: KeyInput,
-    options?: {
-      text?: string;
-      commands?: string[];
-    }
-  ): Promise<void>;
+  down(key: KeyInput, options?: Readonly<KeyDownOptions>): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                      | Description                                                                                                                                                                                                                                                                                                                                                                      |
-| --------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| key       | [KeyInput](./puppeteer.keyinput.md)       | Name of key to press, such as <code>ArrowLeft</code>. See [KeyInput](./puppeteer.keyinput.md) for a list of all key names.                                                                                                                                                                                                                                                       |
-| options   | { text?: string; commands?: string\[\]; } | _(Optional)_ An object of options. Accepts text which, if specified, generates an input event with this text. Accepts commands which, if specified, is the commands of keyboard shortcuts, see [Chromium Source Code](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h) for valid command names. |
+| Parameter | Type                                                            | Description                                                                                                                                                                                                                                                                                                                                                                      |
+| --------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| key       | [KeyInput](./puppeteer.keyinput.md)                             | Name of key to press, such as <code>ArrowLeft</code>. See [KeyInput](./puppeteer.keyinput.md) for a list of all key names.                                                                                                                                                                                                                                                       |
+| options   | Readonly&lt;[KeyDownOptions](./puppeteer.keydownoptions.md)&gt; | _(Optional)_ An object of options. Accepts text which, if specified, generates an input event with this text. Accepts commands which, if specified, is the commands of keyboard shortcuts, see [Chromium Source Code](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h) for valid command names. |
 
 **Returns:**
 

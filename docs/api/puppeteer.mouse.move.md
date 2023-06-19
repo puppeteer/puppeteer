@@ -10,17 +10,21 @@ Moves the mouse to the given coordinate.
 
 ```typescript
 class Mouse {
-  move(x: number, y: number, options?: MouseMoveOptions): Promise<void>;
+  move(
+    x: number,
+    y: number,
+    options?: Readonly<MouseMoveOptions>
+  ): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                | Description                                 |
-| --------- | --------------------------------------------------- | ------------------------------------------- |
-| x         | number                                              | Horizontal position of the mouse.           |
-| y         | number                                              | Vertical position of the mouse.             |
-| options   | [MouseMoveOptions](./puppeteer.mousemoveoptions.md) | _(Optional)_ Options to configure behavior. |
+| Parameter | Type                                                                | Description                                 |
+| --------- | ------------------------------------------------------------------- | ------------------------------------------- |
+| x         | number                                                              | Horizontal position of the mouse.           |
+| y         | number                                                              | Vertical position of the mouse.             |
+| options   | Readonly&lt;[MouseMoveOptions](./puppeteer.mousemoveoptions.md)&gt; | _(Optional)_ Options to configure behavior. |
 
 **Returns:**
 

@@ -20,7 +20,6 @@ import {Frame} from '../api/Frame.js';
 import {CDPSession} from '../common/Connection.js';
 import {ExecutionContext} from '../common/ExecutionContext.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
-import {MouseClickOptions} from '../common/Input.js';
 import {WaitForSelectorOptions} from '../common/IsolatedWorld.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {
@@ -35,6 +34,7 @@ import {isString, withSourcePuppeteerURLIfNone} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 
+import {KeyPressOptions, MouseClickOptions, TypeOptions} from './Input.js';
 import {JSHandle} from './JSHandle.js';
 import {ScreenshotOptions} from './Page.js';
 
@@ -86,20 +86,6 @@ export interface ClickOptions extends MouseClickOptions {
    * Offset for the clickable point relative to the top-left corner of the border box.
    */
   offset?: Offset;
-}
-
-/**
- * @public
- */
-export interface PressOptions {
-  /**
-   * Time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
-   */
-  delay?: number;
-  /**
-   * If specified, generates an input event with this text.
-   */
-  text?: string;
 }
 
 /**
@@ -858,7 +844,7 @@ export class ElementHandle<
    *
    * @param options - Delay in milliseconds. Defaults to 0.
    */
-  async type(text: string, options?: {delay: number}): Promise<void>;
+  async type(text: string, options?: Readonly<TypeOptions>): Promise<void>;
   async type(): Promise<void> {
     throw new Error('Not implemented');
   }
@@ -877,7 +863,10 @@ export class ElementHandle<
    * @param key - Name of key to press, such as `ArrowLeft`.
    * See {@link KeyInput} for a list of all key names.
    */
-  async press(key: KeyInput, options?: PressOptions): Promise<void>;
+  async press(
+    key: KeyInput,
+    options?: Readonly<KeyPressOptions>
+  ): Promise<void>;
   async press(): Promise<void> {
     throw new Error('Not implemented');
   }

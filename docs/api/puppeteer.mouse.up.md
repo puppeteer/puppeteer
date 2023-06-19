@@ -10,15 +10,15 @@ Releases the mouse.
 
 ```typescript
 class Mouse {
-  up(options?: MouseOptions): Promise<void>;
+  up(options?: Readonly<MouseOptions>): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                        | Description                                 |
-| --------- | ------------------------------------------- | ------------------------------------------- |
-| options   | [MouseOptions](./puppeteer.mouseoptions.md) | _(Optional)_ Options to configure behavior. |
+| Parameter | Type                                                        | Description                                 |
+| --------- | ----------------------------------------------------------- | ------------------------------------------- |
+| options   | Readonly&lt;[MouseOptions](./puppeteer.mouseoptions.md)&gt; | _(Optional)_ Options to configure behavior. |
 
 **Returns:**
 

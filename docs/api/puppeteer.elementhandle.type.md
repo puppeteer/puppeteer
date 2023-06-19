@@ -12,21 +12,16 @@ To press a special key, like `Control` or `ArrowDown`, use [ElementHandle.press(
 
 ```typescript
 class ElementHandle {
-  type(
-    text: string,
-    options?: {
-      delay: number;
-    }
-  ): Promise<void>;
+  type(text: string, options?: Readonly<TypeOptions>): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type               | Description                                        |
-| --------- | ------------------ | -------------------------------------------------- |
-| text      | string             |                                                    |
-| options   | { delay: number; } | _(Optional)_ Delay in milliseconds. Defaults to 0. |
+| Parameter | Type                                                      | Description                                        |
+| --------- | --------------------------------------------------------- | -------------------------------------------------- |
+| text      | string                                                    |                                                    |
+| options   | Readonly&lt;[TypeOptions](./puppeteer.typeoptions.md)&gt; | _(Optional)_ Delay in milliseconds. Defaults to 0. |
 
 **Returns:**
 

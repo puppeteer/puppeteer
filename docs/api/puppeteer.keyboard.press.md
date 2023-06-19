@@ -10,23 +10,16 @@ Shortcut for [Keyboard.down()](./puppeteer.keyboard.down.md) and [Keyboard.up()]
 
 ```typescript
 class Keyboard {
-  press(
-    key: KeyInput,
-    options?: {
-      delay?: number;
-      text?: string;
-      commands?: string[];
-    }
-  ): Promise<void>;
+  press(key: KeyInput, options?: Readonly<KeyPressOptions>): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                      | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| --------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| key       | [KeyInput](./puppeteer.keyinput.md)                       | Name of key to press, such as <code>ArrowLeft</code>. See [KeyInput](./puppeteer.keyinput.md) for a list of all key names.                                                                                                                                                                                                                                                                                                                                                                                                  |
-| options   | { delay?: number; text?: string; commands?: string\[\]; } | _(Optional)_ An object of options. Accepts text which, if specified, generates an input event with this text. Accepts delay which, if specified, is the time to wait between <code>keydown</code> and <code>keyup</code> in milliseconds. Defaults to 0. Accepts commands which, if specified, is the commands of keyboard shortcuts, see [Chromium Source Code](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h) for valid command names. |
+| Parameter | Type                                                              | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| --------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| key       | [KeyInput](./puppeteer.keyinput.md)                               | Name of key to press, such as <code>ArrowLeft</code>. See [KeyInput](./puppeteer.keyinput.md) for a list of all key names.                                                                                                                                                                                                                                                                                                                                                                                                  |
+| options   | Readonly&lt;[KeyPressOptions](./puppeteer.keypressoptions.md)&gt; | _(Optional)_ An object of options. Accepts text which, if specified, generates an input event with this text. Accepts delay which, if specified, is the time to wait between <code>keydown</code> and <code>keyup</code> in milliseconds. Defaults to 0. Accepts commands which, if specified, is the commands of keyboard shortcuts, see [Chromium Source Code](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h) for valid command names. |
 
 **Returns:**
 

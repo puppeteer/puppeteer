@@ -83,6 +83,11 @@ export type KeyPressOptions = KeyDownOptions & TypeOptions;
  */
 export class Keyboard {
   /**
+   * @internal
+   */
+  constructor() {}
+
+  /**
    * Dispatches a `keydown` event.
    *
    * @remarks
@@ -355,6 +360,11 @@ export type MouseButton = (typeof MouseButton)[keyof typeof MouseButton];
  */
 export class Mouse {
   /**
+   * @internal
+   */
+  constructor() {}
+
+  /**
    * Resets the mouse to the default state: No buttons pressed; position at
    * (0,0).
    */
@@ -504,6 +514,11 @@ export class Mouse {
  * @public
  */
 export class Touchscreen {
+  /**
+   * @internal
+   */
+  constructor() {}
+
   /**
    * Dispatches a `touchstart` and `touchend` event.
    * @param x - Horizontal position of the tap.
