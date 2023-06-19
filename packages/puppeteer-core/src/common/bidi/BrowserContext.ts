@@ -96,7 +96,10 @@ export class BrowserContext extends BrowserContextBase {
     const {result} = await this.#connection.send('browsingContext.create', {
       type: 'tab',
     });
-    const page = new Page(this, result);
+    const page = new Page(this, {
+      context: result.context,
+      children: [],
+    });
     if (this.#defaultViewport) {
       try {
         await page.setViewport(this.#defaultViewport);
@@ -112,6 +115,10 @@ export class BrowserContext extends BrowserContextBase {
 
   override async close(): Promise<void> {
     await this.#init.valueOrThrow();
+
+    if (this.#isDefault) {
+      throw new Error('Default context cannot be closed!');
+    }
 
     for (const page of this.#pages.values()) {
       await page?.close().catch(error => {

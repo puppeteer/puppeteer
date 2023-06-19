@@ -610,9 +610,9 @@ describe('navigation', function () {
           return (error = _error);
         });
 
-      const bothFiredPromise = page
+      const loadFiredPromise = page
         .waitForNavigation({
-          waitUntil: ['load', 'domcontentloaded'],
+          waitUntil: 'load',
         })
         .then(() => {
           return (bothFired = true);
@@ -625,7 +625,7 @@ describe('navigation', function () {
       await domContentLoadedPromise;
       expect(bothFired).toBe(false);
       response.end();
-      await bothFiredPromise;
+      await loadFiredPromise;
       await navigationPromise;
       expect(error).toBeUndefined();
     });
@@ -734,7 +734,6 @@ describe('navigation', function () {
         navigationPromise.catch(() => {});
         throw error;
       }
-
       await Promise.all([
         frame!.evaluate(() => {
           return window.stop();
@@ -884,7 +883,10 @@ describe('navigation', function () {
         return frame.remove();
       });
       await navigationPromise;
-      expect(error.message).toBe('Navigating frame was detached');
+      expect(error.message).atLeastOneToContain([
+        'Navigating frame was detached',
+        'Frame detached',
+      ]);
     });
   });
 

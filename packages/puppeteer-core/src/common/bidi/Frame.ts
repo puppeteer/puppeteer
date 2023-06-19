@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
+import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+
 import {ElementHandle} from '../../api/ElementHandle.js';
 import {Frame as BaseFrame} from '../../api/Frame.js';
+import {Deferred} from '../../util/Deferred.js';
 import {UTILITY_WORLD_NAME} from '../FrameManager.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
 import {EvaluateFunc, EvaluateFuncWith, HandleFor, NodeFor} from '../types.js';
-import {withSourcePuppeteerURLIfNone} from '../util.js';
+import {waitForEvent, withSourcePuppeteerURLIfNone} from '../util.js';
 
-import {BrowsingContext} from './BrowsingContext.js';
+import {
+  BrowsingContext,
+  getWaitUntilSingle,
+  lifeCycleToSubscribedEvent,
+} from './BrowsingContext.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {Page} from './Page.js';
 import {
@@ -39,6 +46,8 @@ import {
 export class Frame extends BaseFrame {
   #page: Page;
   #context: BrowsingContext;
+  #timeoutSettings: TimeoutSettings;
+  #abortDeferred = Deferred.create<Error>();
   sandboxes: SandboxChart;
   override _id: string;
 
@@ -51,6 +60,7 @@ export class Frame extends BaseFrame {
     super();
     this.#page = page;
     this.#context = context;
+    this.#timeoutSettings = timeoutSettings;
     this._id = this.#context.id;
     this._parentId = parentId ?? undefined;
 
@@ -114,17 +124,12 @@ export class Frame extends BaseFrame {
 
   override async goto(
     url: string,
-    options?:
-      | {
-          referer?: string | undefined;
-          referrerPolicy?: string | undefined;
-          timeout?: number | undefined;
-          waitUntil?:
-            | PuppeteerLifeCycleEvent
-            | PuppeteerLifeCycleEvent[]
-            | undefined;
-        }
-      | undefined
+    options?: {
+      referer?: string;
+      referrerPolicy?: string;
+      timeout?: number;
+      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
+    }
   ): Promise<HTTPResponse | null> {
     const navigationId = await this.#context.goto(url, options);
     return this.#page.getNavigationResponse(navigationId);
@@ -155,13 +160,13 @@ export class Frame extends BaseFrame {
   override $<Selector extends string>(
     selector: Selector
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    return this.sandboxes[MAIN_SANDBOX].$(selector);
+    return this.mainRealm().$(selector);
   }
 
   override $$<Selector extends string>(
     selector: Selector
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    return this.sandboxes[MAIN_SANDBOX].$$(selector);
+    return this.mainRealm().$$(selector);
   }
 
   override $eval<
@@ -177,7 +182,7 @@ export class Frame extends BaseFrame {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
-    return this.sandboxes[MAIN_SANDBOX].$eval(selector, pageFunction, ...args);
+    return this.mainRealm().$eval(selector, pageFunction, ...args);
   }
 
   override $$eval<
@@ -193,14 +198,54 @@ export class Frame extends BaseFrame {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
-    return this.sandboxes[MAIN_SANDBOX].$$eval(selector, pageFunction, ...args);
+    return this.mainRealm().$$eval(selector, pageFunction, ...args);
   }
 
   override $x(expression: string): Promise<Array<ElementHandle<Node>>> {
-    return this.sandboxes[MAIN_SANDBOX].$x(expression);
+    return this.mainRealm().$x(expression);
+  }
+
+  override async waitForNavigation(
+    options: {
+      timeout?: number;
+      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
+    } = {}
+  ): Promise<HTTPResponse | null> {
+    const {
+      waitUntil = 'load',
+      timeout = this.#timeoutSettings.navigationTimeout(),
+    } = options;
+
+    const waitUntilEvent = lifeCycleToSubscribedEvent.get(
+      getWaitUntilSingle(waitUntil)
+    ) as string;
+
+    const [info] = await Promise.all([
+      waitForEvent<Bidi.BrowsingContext.NavigationInfo>(
+        this.#context,
+        waitUntilEvent,
+        () => {
+          return true;
+        },
+        timeout,
+        this.#abortDeferred.valueOrThrow()
+      ),
+      waitForEvent(
+        this.#context,
+        Bidi.BrowsingContext.EventNames.FragmentNavigated,
+        () => {
+          return true;
+        },
+        timeout,
+        this.#abortDeferred.valueOrThrow()
+      ),
+    ]);
+
+    return this.#page.getNavigationResponse(info.navigation);
   }
 
   dispose(): void {
+    this.#abortDeferred.reject(new Error('Frame detached'));
     this.#context.dispose();
   }
 }
