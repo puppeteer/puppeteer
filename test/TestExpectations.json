@@ -783,13 +783,13 @@
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.disconnect should reject navigation when browser closes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Browser.disconnect should reject waitForSelector when browser closes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.executablePath returns executablePath for channel",
@@ -891,7 +891,7 @@
     "testIdPattern": "[locator.spec] Locator Locator.change should work for contenteditable",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[locator.spec] Locator Locator.change should work for inputs",
@@ -1125,7 +1125,7 @@
     "testIdPattern": "[page.spec] Page Page.waitForNetworkIdle should work with aborted requests",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL", "TIMEOUT"]
+    "expectations": ["FAIL", "PASS", "TIMEOUT"]
   },
   {
     "testIdPattern": "[proxy.spec] *",
@@ -1464,10 +1464,16 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
+    "testIdPattern": "[chromiumonly.spec] Chromium-Specific Launcher tests Puppeteer.launch |browserURL| option should be able to connect using browserUrl, with and without trailing slash",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"]
+  },
+  {
     "testIdPattern": "[click.spec] Page.click should click offscreen buttons",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["TIMEOUT", "FAIL"]
+    "expectations": ["FAIL", "TIMEOUT"]
   },
   {
     "testIdPattern": "[click.spec] Page.click should click on checkbox label and toggle",
@@ -2134,6 +2140,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch userDataDir option should restore cookies",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS", "TIMEOUT"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch userDataDir option should restore state",

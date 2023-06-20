@@ -600,7 +600,13 @@ function createProtocolErrorMessage(object: {
   error: {message: string; data: any; code: number};
 }): string {
   let message = `${object.error.message}`;
-  if ('data' in object.error) {
+  // TODO: remove the type checks when we stop connecting to BiDi with a CDP
+  // client.
+  if (
+    object.error &&
+    typeof object.error === 'object' &&
+    'data' in object.error
+  ) {
     message += ` ${object.error.data}`;
   }
   return message;
