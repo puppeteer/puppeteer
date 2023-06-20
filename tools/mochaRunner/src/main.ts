@@ -85,6 +85,12 @@ async function main() {
     }
   }
 
+  const minTestsIdx = process.argv.indexOf('--min-tests');
+  let minTests = 0;
+  if (minTestsIdx !== -1) {
+    minTests = Number(process.argv[minTestsIdx + 1]);
+  }
+
   const platform = zPlatform.parse(os.platform());
 
   const expectations = readJSON(
@@ -211,6 +217,7 @@ async function main() {
           platforms: [os.platform()],
           parameters,
         });
+        const totalTests = results.stats.tests;
         results.parameters = parameters;
         results.platform = platform;
         results.date = new Date().toISOString();
@@ -220,6 +227,14 @@ async function main() {
           results.updates = updates;
           writeJSON(tmpFilename, results);
         } else {
+          if (totalTests < minTests) {
+            fail = true;
+            console.log(
+              `Test run matches expectations but the number of discovered tests is too low (expected: ${minTests}, actual: ${totalTests}).`
+            );
+            writeJSON(tmpFilename, results);
+            continue;
+          }
           console.log('Test run matches expectations');
           writeJSON(tmpFilename, results);
           continue;

@@ -55,7 +55,7 @@ export type MochaTestResult = {
 };
 
 export type MochaResults = {
-  stats: unknown;
+  stats: {tests: number};
   pending: MochaTestResult[];
   passes: MochaTestResult[];
   failures: MochaTestResult[];
