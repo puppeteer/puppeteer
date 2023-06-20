@@ -8,6 +8,23 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.0.1 to 1.1.0
 
+## [20.7.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.7.2...puppeteer-core-v20.7.3) (2023-06-20)
+
+
+### Bug Fixes
+
+* add parenthesis to JS values in interpolateFunction ([#10426](https://github.com/puppeteer/puppeteer/issues/10426)) ([fbdcc0d](https://github.com/puppeteer/puppeteer/commit/fbdcc0d6469abe7115723347a9f161628074d41e))
+* added clipboard permission that was not exposed ([#10119](https://github.com/puppeteer/puppeteer/issues/10119)) ([c06e15f](https://github.com/puppeteer/puppeteer/commit/c06e15fb5bd7ec21db2d883ccf63ef8fe98c7f4d))
+* include src into published package ([#10415](https://github.com/puppeteer/puppeteer/issues/10415)) ([d1ffad0](https://github.com/puppeteer/puppeteer/commit/d1ffad059ae66104842b92dc814d362c123b9646))
+* WaitForNetworkIdle and Deferred.race ([#10411](https://github.com/puppeteer/puppeteer/issues/10411)) ([138cc5c](https://github.com/puppeteer/puppeteer/commit/138cc5c961da698bf7ca635c9947058df4b2ec72))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 1.4.1 to 1.4.2
+
 ## [20.7.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.7.1...puppeteer-core-v20.7.2) (2023-06-16)
 
 
