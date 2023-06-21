@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.2](https://github.com/puppeteer/puppeteer/compare/browsers-v1.4.1...browsers-v1.4.2) (2023-06-20)
+
+
+### Bug Fixes
+
+* include src into published package ([#10415](https://github.com/puppeteer/puppeteer/issues/10415)) ([d1ffad0](https://github.com/puppeteer/puppeteer/commit/d1ffad059ae66104842b92dc814d362c123b9646))
+
 ## [1.4.1](https://github.com/puppeteer/puppeteer/compare/browsers-v1.4.0...browsers-v1.4.1) (2023-05-31)
 
 
