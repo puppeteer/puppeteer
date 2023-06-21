@@ -45,4 +45,18 @@ describe('DeferredPromise', function () {
     }
     expect(caught).toBeTruthy();
   });
+  it('Deferred.race should cancel timeout', async function () {
+    const deferred = Deferred.create<void>();
+    const deferredTimeout = Deferred.create<void>({
+      message: 'Race did not stop timer',
+      timeout: this.timeout() + 50,
+    });
+    await Promise.all([
+      Deferred.race([deferred, deferredTimeout]),
+      deferred.resolve(),
+    ]);
+
+    expect(deferredTimeout.value()).toBeInstanceOf(Error);
+    expect(deferredTimeout.value()?.message).toContain('Timeout cleared');
+  });
 });
