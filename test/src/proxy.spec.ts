@@ -109,11 +109,11 @@ describe('request proxy', () => {
   });
 
   it('should proxy requests when configured', async () => {
-    const {defaultBrowserOptions, server} = getTestState();
+    const {server} = await getTestState({
+      skipLaunch: true,
+    });
     const emptyPageUrl = getEmptyPageUrl(server);
-
     const {browser, close} = await launch({
-      ...defaultBrowserOptions,
       args: [...defaultArgs, `--proxy-server=${proxyServerUrl}`],
     });
     try {
@@ -128,11 +128,11 @@ describe('request proxy', () => {
   });
 
   it('should respect proxy bypass list', async () => {
-    const {defaultBrowserOptions, server} = getTestState();
+    const {server} = await getTestState({
+      skipLaunch: true,
+    });
     const emptyPageUrl = getEmptyPageUrl(server);
-
     const {browser, close} = await launch({
-      ...defaultBrowserOptions,
       args: [
         ...defaultArgs,
         `--proxy-server=${proxyServerUrl}`,
@@ -152,11 +152,11 @@ describe('request proxy', () => {
 
   describe('in incognito browser context', () => {
     it('should proxy requests when configured at browser level', async () => {
-      const {defaultBrowserOptions, server} = getTestState();
+      const {server} = await getTestState({
+        skipLaunch: true,
+      });
       const emptyPageUrl = getEmptyPageUrl(server);
-
       const {browser, close} = await launch({
-        ...defaultBrowserOptions,
         args: [...defaultArgs, `--proxy-server=${proxyServerUrl}`],
       });
       try {
@@ -172,11 +172,11 @@ describe('request proxy', () => {
     });
 
     it('should respect proxy bypass list when configured at browser level', async () => {
-      const {defaultBrowserOptions, server} = getTestState();
+      const {server} = await getTestState({
+        skipLaunch: true,
+      });
       const emptyPageUrl = getEmptyPageUrl(server);
-
       const {browser, close} = await launch({
-        ...defaultBrowserOptions,
         args: [
           ...defaultArgs,
           `--proxy-server=${proxyServerUrl}`,
@@ -199,11 +199,11 @@ describe('request proxy', () => {
      * See issues #7873, #7719, and #7698.
      */
     it('should proxy requests when configured at context level', async () => {
-      const {defaultBrowserOptions, server} = getTestState();
+      const {server} = await getTestState({
+        skipLaunch: true,
+      });
       const emptyPageUrl = getEmptyPageUrl(server);
-
       const {browser, close} = await launch({
-        ...defaultBrowserOptions,
         args: defaultArgs,
       });
       try {
@@ -221,11 +221,11 @@ describe('request proxy', () => {
     });
 
     it('should respect proxy bypass list when configured at context level', async () => {
-      const {defaultBrowserOptions, server} = getTestState();
+      const {server} = await getTestState({
+        skipLaunch: true,
+      });
       const emptyPageUrl = getEmptyPageUrl(server);
-
       const {browser, close} = await launch({
-        ...defaultBrowserOptions,
         args: defaultArgs,
       });
       try {

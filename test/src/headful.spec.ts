@@ -58,8 +58,10 @@ describe('headful tests', function () {
   };
   const browsers: Array<() => Promise<void>> = [];
 
-  beforeEach(() => {
-    const {server, defaultBrowserOptions} = getTestState();
+  beforeEach(async () => {
+    const {server, defaultBrowserOptions} = await getTestState({
+      skipLaunch: true,
+    });
     headfulOptions = Object.assign({}, defaultBrowserOptions, {
       headless: false,
     });
@@ -122,9 +124,7 @@ describe('headful tests', function () {
       expect(backgroundPageTarget).toBeTruthy();
     });
     it('service_worker target type should be available', async () => {
-      const {defaultBrowserOptions} = getTestState();
       const browserWithExtension = await launchBrowser({
-        ...defaultBrowserOptions,
         headless: false,
         args: [
           `--disable-extensions-except=${serviceWorkerExtensionPath}`,
@@ -162,7 +162,7 @@ describe('headful tests', function () {
       await browserWithExtension.close();
     });
     it('target.page() should return a DevTools page if custom isPageTarget is provided', async function () {
-      const {puppeteer} = getTestState();
+      const {puppeteer} = await getTestState({skipLaunch: true});
       const originalBrowser = await launchBrowser(devtoolsOptions);
 
       const browserWSEndpoint = originalBrowser.wsEndpoint();
@@ -195,7 +195,7 @@ describe('headful tests', function () {
     });
     it('headless should be able to read cookies written by headful', async () => {
       /* Needs investigation into why but this fails consistently on Windows CI. */
-      const {server} = getTestState();
+      const {server} = await getTestState({skipLaunch: true});
 
       const userDataDir = await mkdtemp(TMP_FOLDER);
       // Write a cookie in headful chrome
@@ -227,7 +227,7 @@ describe('headful tests', function () {
     });
     // TODO: Support OOOPIF. @see https://github.com/puppeteer/puppeteer/issues/2548
     it.skip('OOPIF: should report google.com frame', async () => {
-      const {server} = getTestState();
+      const {server} = await getTestState({skipLaunch: true});
 
       // https://google.com is isolated by default in Chromium embedder.
       const browser = await launchBrowser(headfulOptions);
@@ -255,8 +255,7 @@ describe('headful tests', function () {
       expect(urls).toEqual([server.EMPTY_PAGE, 'https://google.com/']);
     });
     it('OOPIF: should expose events within OOPIFs', async () => {
-      const {server} = getTestState();
-
+      const {server} = await getTestState({skipLaunch: true});
       const browser = await launchBrowser(forcedOopifOptions);
       const page = await browser.newPage();
 
@@ -315,10 +314,10 @@ describe('headful tests', function () {
       expect(requests).toContain(`http://oopifdomain:${server.PORT}/fetch`);
     });
     it('should close browser with beforeunload page', async () => {
-      const {server} = getTestState();
-
+      const {server} = await getTestState({skipLaunch: true});
       const browser = await launchBrowser(headfulOptions);
       const page = await browser.newPage();
+
       await page.goto(server.PREFIX + '/beforeunload.html');
       // We have to interact with a page so that 'beforeunload' handlers
       // fire.
@@ -378,7 +377,7 @@ describe('headful tests', function () {
 
   describe('Page.screenshot', function () {
     it('should run in parallel in multiple pages', async () => {
-      const {server} = getTestState();
+      const {server} = await getTestState({skipLaunch: true});
       const browser = await launchBrowser(headfulOptions);
       const context = await browser.createIncognitoBrowserContext();
 

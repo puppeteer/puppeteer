@@ -18,21 +18,14 @@ import assert from 'assert';
 
 import expect from 'expect';
 
-import {
-  getTestState,
-  setupTestBrowserHooks,
-  setupTestPageAndContextHooks,
-} from './mocha-utils.js';
+import {getTestState} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
 
 const FILENAME = __filename.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
 
 describe('Stack trace', function () {
-  setupTestBrowserHooks();
-  setupTestPageAndContextHooks();
-
   it('should work', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     const error = (await page
       .evaluate(() => {
@@ -49,13 +42,13 @@ describe('Stack trace', function () {
     expect(error.stack.split('\n    at ').slice(0, 2)).toMatchObject({
       ...[
         'Error: Test',
-        'evaluate (evaluate at Context.<anonymous> (<filename>:32:14), <anonymous>:1:18)',
+        'evaluate (evaluate at Context.<anonymous> (<filename>:30:14), <anonymous>:1:18)',
       ],
     });
   });
 
   it('should work with handles', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     const error = (await page
       .evaluateHandle(() => {
@@ -72,13 +65,13 @@ describe('Stack trace', function () {
     expect(error.stack.split('\n    at ').slice(0, 2)).toMatchObject({
       ...[
         'Error: Test',
-        'evaluateHandle (evaluateHandle at Context.<anonymous> (<filename>:52:14), <anonymous>:1:18)',
+        'evaluateHandle (evaluateHandle at Context.<anonymous> (<filename>:50:14), <anonymous>:1:18)',
       ],
     });
   });
 
   it('should work with contiguous evaluation', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     const thrower = await page.evaluateHandle(() => {
       return () => {
@@ -100,14 +93,14 @@ describe('Stack trace', function () {
     expect(error.stack.split('\n    at ').slice(0, 3)).toMatchObject({
       ...[
         'Error: Test',
-        'evaluateHandle (evaluateHandle at Context.<anonymous> (<filename>:71:36), <anonymous>:2:22)',
-        'evaluate (evaluate at Context.<anonymous> (<filename>:77:14), <anonymous>:1:12)',
+        'evaluateHandle (evaluateHandle at Context.<anonymous> (<filename>:69:36), <anonymous>:2:22)',
+        'evaluate (evaluate at Context.<anonymous> (<filename>:75:14), <anonymous>:1:12)',
       ],
     });
   });
 
   it('should work with nested function calls', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     const error = (await page
       .evaluate(() => {
@@ -136,17 +129,17 @@ describe('Stack trace', function () {
     expect(error.stack.split('\n    at ').slice(0, 6)).toMatchObject({
       ...[
         'Error: Test',
-        'a (evaluate at Context.<anonymous> (<filename>:98:14), <anonymous>:2:22)',
-        'b (evaluate at Context.<anonymous> (<filename>:98:14), <anonymous>:5:16)',
-        'c (evaluate at Context.<anonymous> (<filename>:98:14), <anonymous>:8:16)',
-        'd (evaluate at Context.<anonymous> (<filename>:98:14), <anonymous>:11:16)',
-        'evaluate (evaluate at Context.<anonymous> (<filename>:98:14), <anonymous>:13:12)',
+        'a (evaluate at Context.<anonymous> (<filename>:96:14), <anonymous>:2:22)',
+        'b (evaluate at Context.<anonymous> (<filename>:96:14), <anonymous>:5:16)',
+        'c (evaluate at Context.<anonymous> (<filename>:96:14), <anonymous>:8:16)',
+        'd (evaluate at Context.<anonymous> (<filename>:96:14), <anonymous>:11:16)',
+        'evaluate (evaluate at Context.<anonymous> (<filename>:96:14), <anonymous>:13:12)',
       ],
     });
   });
 
   it('should work for none error objects', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     const [error] = await Promise.all([
       waitEvent<Error>(page, 'pageerror'),

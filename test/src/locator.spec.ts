@@ -22,18 +22,11 @@ import {
 } from 'puppeteer-core/internal/api/Locator.js';
 import sinon from 'sinon';
 
-import {
-  getTestState,
-  setupTestBrowserHooks,
-  setupTestPageAndContextHooks,
-} from './mocha-utils.js';
+import {getTestState} from './mocha-utils.js';
 
 describe('Locator', function () {
-  setupTestBrowserHooks();
-  setupTestPageAndContextHooks();
-
   it('should work with a frame', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     await page.setViewport({width: 500, height: 500});
     await page.setContent(`
@@ -56,7 +49,7 @@ describe('Locator', function () {
   });
 
   it('should work without preconditions', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     await page.setViewport({width: 500, height: 500});
     await page.setContent(`
@@ -84,7 +77,7 @@ describe('Locator', function () {
 
   describe('Locator.click', function () {
     it('should work', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
       await page.setContent(`
@@ -106,7 +99,7 @@ describe('Locator', function () {
     });
 
     it('should work for multiple selectors', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
       await page.setContent(`
@@ -128,7 +121,7 @@ describe('Locator', function () {
     });
 
     it('should work if the element is out of viewport', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
       await page.setContent(`
@@ -143,7 +136,7 @@ describe('Locator', function () {
     });
 
     it('should work if the element becomes visible later', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
       await page.setContent(`
@@ -176,7 +169,7 @@ describe('Locator', function () {
     });
 
     it('should work if the element becomes enabled later', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
       await page.setContent(`
@@ -201,7 +194,7 @@ describe('Locator', function () {
     });
 
     it('should work if multiple conditions are satisfied later', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
       await page.setContent(`
@@ -229,7 +222,7 @@ describe('Locator', function () {
     it('should time out', async () => {
       const clock = sinon.useFakeTimers();
       try {
-        const {page} = getTestState();
+        const {page} = await getTestState();
 
         page.setDefaultTimeout(5000);
         await page.setViewport({width: 500, height: 500});
@@ -247,7 +240,7 @@ describe('Locator', function () {
     });
 
     it('should retry clicks on errors', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
       const clock = sinon.useFakeTimers();
       try {
         page.setDefaultTimeout(5000);
@@ -266,7 +259,7 @@ describe('Locator', function () {
     });
 
     it('can be aborted', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
       const clock = sinon.useFakeTimers();
       try {
         page.setDefaultTimeout(5000);
@@ -290,7 +283,7 @@ describe('Locator', function () {
 
   describe('Locator.hover', function () {
     it('should work', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
       await page.setContent(`
@@ -314,7 +307,7 @@ describe('Locator', function () {
 
   describe('Locator.scroll', function () {
     it('should work', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
       await page.setContent(`
@@ -343,7 +336,7 @@ describe('Locator', function () {
 
   describe('Locator.change', function () {
     it('should work for selects', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent(`
         <select>
@@ -367,7 +360,7 @@ describe('Locator', function () {
     });
 
     it('should work for inputs', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
       await page.setContent(`
         <input>
       `);
@@ -380,7 +373,7 @@ describe('Locator', function () {
     });
 
     it('should work if the input becomes enabled later', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent(`
         <input disabled>
@@ -404,7 +397,7 @@ describe('Locator', function () {
     });
 
     it('should work for contenteditable', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
       await page.setContent(`
         <div contenteditable="true">
       `);
@@ -417,7 +410,7 @@ describe('Locator', function () {
     });
 
     it('should work for pre-filled inputs', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
       await page.setContent(`
         <input value="te">
       `);
@@ -430,7 +423,7 @@ describe('Locator', function () {
     });
 
     it('should override pre-filled inputs', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
       await page.setContent(`
         <input value="wrong prefix">
       `);
@@ -443,7 +436,7 @@ describe('Locator', function () {
     });
 
     it('should work for non-text inputs', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
       await page.setContent(`
         <input type="color">
       `);
@@ -458,7 +451,7 @@ describe('Locator', function () {
 
   describe('Locator.race', () => {
     it('races multiple locators', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setViewport({width: 500, height: 500});
       await page.setContent(`
@@ -480,7 +473,7 @@ describe('Locator', function () {
     });
 
     it('can be aborted', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
       const clock = sinon.useFakeTimers();
       try {
         await page.setViewport({width: 500, height: 500});

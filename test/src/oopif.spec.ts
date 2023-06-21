@@ -29,7 +29,7 @@ describeWithDebugLogs('OOPIF', function () {
   let page: Page;
 
   before(async () => {
-    const {puppeteer, defaultBrowserOptions} = getTestState();
+    const {puppeteer, defaultBrowserOptions} = await getTestState();
     // eslint-disable-next-line no-restricted-syntax
     browser = await puppeteer.launch(
       Object.assign({}, defaultBrowserOptions, {
@@ -56,7 +56,7 @@ describeWithDebugLogs('OOPIF', function () {
   });
 
   it('should treat OOP iframes and normal iframes the same', async () => {
-    const {server} = getTestState();
+    const {server} = await getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     const framePromise = page.waitForFrame(frame => {
@@ -72,7 +72,7 @@ describeWithDebugLogs('OOPIF', function () {
     expect(page.mainFrame().childFrames()).toHaveLength(2);
   });
   it('should track navigations within OOP iframes', async () => {
-    const {server} = getTestState();
+    const {server} = await getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     const framePromise = page.waitForFrame(frame => {
@@ -93,7 +93,7 @@ describeWithDebugLogs('OOPIF', function () {
     expect(frame.url()).toContain('/assets/frame.html');
   });
   it('should support OOP iframes becoming normal iframes again', async () => {
-    const {server} = getTestState();
+    const {server} = await getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     const framePromise = page.waitForFrame(frame => {
@@ -114,7 +114,7 @@ describeWithDebugLogs('OOPIF', function () {
     expect(page.frames()).toHaveLength(2);
   });
   it('should support frames within OOP frames', async () => {
-    const {server} = getTestState();
+    const {server} = await getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     const frame1Promise = page.waitForFrame(frame => {
@@ -143,7 +143,7 @@ describeWithDebugLogs('OOPIF', function () {
     ).toMatch(/frames\/frame\.html$/);
   });
   it('should support OOP iframes getting detached', async () => {
-    const {server} = getTestState();
+    const {server} = await getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     const framePromise = page.waitForFrame(frame => {
@@ -164,7 +164,7 @@ describeWithDebugLogs('OOPIF', function () {
   });
 
   it('should support wait for navigation for transitions from local to OOPIF', async () => {
-    const {server} = getTestState();
+    const {server} = await getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     const framePromise = page.waitForFrame(frame => {
@@ -187,7 +187,7 @@ describeWithDebugLogs('OOPIF', function () {
   });
 
   it('should keep track of a frames OOP state', async () => {
-    const {server} = getTestState();
+    const {server} = await getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     const framePromise = page.waitForFrame(frame => {
@@ -205,7 +205,7 @@ describeWithDebugLogs('OOPIF', function () {
   });
 
   it('should support evaluating in oop iframes', async () => {
-    const {server} = getTestState();
+    const {server} = await getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     const framePromise = page.waitForFrame(frame => {
@@ -230,7 +230,7 @@ describeWithDebugLogs('OOPIF', function () {
     expect(result).toBe('Test 123!');
   });
   it('should provide access to elements', async () => {
-    const {server, isHeadless, headless} = getTestState();
+    const {server, isHeadless, headless} = await getTestState();
 
     if (!isHeadless || headless === 'new') {
       // TODO: this test is partially blocked on crbug.com/1334119. Enable test once
@@ -276,7 +276,7 @@ describeWithDebugLogs('OOPIF', function () {
     await frame.waitForSelector('#clicked');
   });
   it('should report oopif frames', async () => {
-    const {server} = getTestState();
+    const {server} = await getTestState();
 
     const frame = page.waitForFrame(frame => {
       return frame.url().endsWith('/oopif.html');
@@ -288,7 +288,7 @@ describeWithDebugLogs('OOPIF', function () {
   });
 
   it('should wait for inner OOPIFs', async () => {
-    const {server} = getTestState();
+    const {server} = await getTestState();
     await page.goto(`http://mainframe:${server.PORT}/main-frame.html`);
     const frame2 = await page.waitForFrame(frame => {
       return frame.url().endsWith('inner-frame2.html');
@@ -307,7 +307,7 @@ describeWithDebugLogs('OOPIF', function () {
   });
 
   it('should load oopif iframes with subresources and request interception', async () => {
-    const {server} = getTestState();
+    const {server} = await getTestState();
 
     const frame = page.waitForFrame(frame => {
       return frame.url().endsWith('/oopif.html');
@@ -321,7 +321,7 @@ describeWithDebugLogs('OOPIF', function () {
     expect(oopifs(context)).toHaveLength(1);
   });
   it('should support frames within OOP iframes', async () => {
-    const {server} = getTestState();
+    const {server} = await getTestState();
 
     const oopIframePromise = page.waitForFrame(frame => {
       return frame.url().endsWith('/oopif.html');
@@ -352,7 +352,7 @@ describeWithDebugLogs('OOPIF', function () {
   });
 
   it('clickablePoint, boundingBox, boxModel should work for elements inside OOPIFs', async () => {
-    const {server} = getTestState();
+    const {server} = await getTestState();
     await page.goto(server.EMPTY_PAGE);
     const framePromise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 1;
@@ -398,7 +398,7 @@ describeWithDebugLogs('OOPIF', function () {
   });
 
   it('should detect existing OOPIFs when Puppeteer connects to an existing page', async () => {
-    const {server, puppeteer} = getTestState();
+    const {server, puppeteer} = await getTestState();
 
     const frame = page.waitForFrame(frame => {
       return frame.url().endsWith('/oopif.html');
@@ -418,7 +418,7 @@ describeWithDebugLogs('OOPIF', function () {
   });
 
   it('should support lazy OOP frames', async () => {
-    const {server} = getTestState();
+    const {server} = await getTestState();
 
     await page.goto(server.PREFIX + '/lazy-oopif-frame.html');
     await page.setViewport({width: 1000, height: 1000});
@@ -432,7 +432,7 @@ describeWithDebugLogs('OOPIF', function () {
 
   describe('waitForFrame', () => {
     it('should resolve immediately if the frame already exists', async () => {
-      const {server} = getTestState();
+      const {server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       await attachFrame(

@@ -16,17 +16,11 @@
 
 import expect from 'expect';
 
-import {
-  getTestState,
-  setupTestPageAndContextHooks,
-  setupTestBrowserHooks,
-} from './mocha-utils.js';
+import {getTestState} from './mocha-utils.js';
 
 describe('Input.drag', function () {
-  setupTestBrowserHooks();
-  setupTestPageAndContextHooks();
   it('should throw an exception if not enabled before usage', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
     const draggable = (await page.$('#drag'))!;
@@ -40,7 +34,7 @@ describe('Input.drag', function () {
     }
   });
   it('should emit a dragIntercepted event when dragged', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
     expect(page.isDragInterceptionEnabled()).toBe(false);
@@ -57,7 +51,7 @@ describe('Input.drag', function () {
     ).toBe(true);
   });
   it('should emit a dragEnter', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
     expect(page.isDragInterceptionEnabled()).toBe(false);
@@ -80,7 +74,7 @@ describe('Input.drag', function () {
     ).toBe(true);
   });
   it('should emit a dragOver event', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
     expect(page.isDragInterceptionEnabled()).toBe(false);
@@ -109,7 +103,7 @@ describe('Input.drag', function () {
     ).toBe(true);
   });
   it('can be dropped', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
     expect(page.isDragInterceptionEnabled()).toBe(false);
@@ -144,7 +138,7 @@ describe('Input.drag', function () {
     ).toBe(true);
   });
   it('can be dragged and dropped with a single function', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
     expect(page.isDragInterceptionEnabled()).toBe(false);
@@ -176,7 +170,7 @@ describe('Input.drag', function () {
     ).toBe(true);
   });
   it('can be disabled', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
     expect(page.isDragInterceptionEnabled()).toBe(false);

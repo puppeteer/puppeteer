@@ -62,7 +62,7 @@ npm run build --workspace=@puppeteer-test/test && npm test
 ```ts
   ...
   it.only('should work', async function() {
-    const {server, page} = getTestState();
+    const {server, page} = await getTestState();
     const response = await page.goto(server.EMPTY_PAGE);
     expect(response.ok).toBe(true);
   });
@@ -73,7 +73,7 @@ npm run build --workspace=@puppeteer-test/test && npm test
 ```ts
   ...
   it.skip('should work', async function({server, page}) {
-    const {server, page} = getTestState();
+    const {server, page} = await getTestState();
     const response = await page.goto(server.EMPTY_PAGE);
     expect(response.ok).toBe(true);
   });

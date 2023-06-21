@@ -17,18 +17,12 @@
 import expect from 'expect';
 import {KnownDevices} from 'puppeteer';
 
-import {
-  getTestState,
-  setupTestBrowserHooks,
-  setupTestPageAndContextHooks,
-} from './mocha-utils.js';
+import {getTestState} from './mocha-utils.js';
 import {attachFrame} from './utils.js';
 
 describe('Page.click', function () {
-  setupTestBrowserHooks();
-  setupTestPageAndContextHooks();
   it('should click the button', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/button.html');
     await page.click('button');
@@ -39,7 +33,7 @@ describe('Page.click', function () {
     ).toBe('Clicked');
   });
   it('should click svg', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     await page.setContent(`
         <svg height="100" width="100">
@@ -54,7 +48,7 @@ describe('Page.click', function () {
     ).toBe(42);
   });
   it('should click the button if window.Node is removed', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/button.html');
     await page.evaluate(() => {
@@ -70,7 +64,7 @@ describe('Page.click', function () {
   });
   // @see https://github.com/puppeteer/puppeteer/issues/4281
   it('should click on a span with an inline element inside', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     await page.setContent(`
         <style>
@@ -88,7 +82,7 @@ describe('Page.click', function () {
     ).toBe(42);
   });
   it('should not throw UnhandledPromiseRejection when page closes', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     const newPage = await page.browser().newPage();
     await Promise.all([newPage.close(), newPage.mouse.click(1, 2)]).catch(
@@ -96,7 +90,7 @@ describe('Page.click', function () {
     );
   });
   it('should click the button after navigation', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/button.html');
     await page.click('button');
@@ -109,7 +103,7 @@ describe('Page.click', function () {
     ).toBe('Clicked');
   });
   it('should click with disabled javascript', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.setJavaScriptEnabled(false);
     await page.goto(server.PREFIX + '/wrappedlink.html');
@@ -117,7 +111,7 @@ describe('Page.click', function () {
     expect(page.url()).toBe(server.PREFIX + '/wrappedlink.html#clicked');
   });
   it('should scroll and click with disabled javascript', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.setJavaScriptEnabled(false);
     await page.goto(server.PREFIX + '/wrappedlink.html');
@@ -129,7 +123,7 @@ describe('Page.click', function () {
     expect(page.url()).toBe(server.PREFIX + '/wrappedlink.html#clicked');
   });
   it('should click when one of inline box children is outside of viewport', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     await page.setContent(`
         <style>
@@ -148,7 +142,7 @@ describe('Page.click', function () {
     ).toBe(42);
   });
   it('should select the text by triple clicking', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
     await page.focus('textarea');
@@ -178,7 +172,7 @@ describe('Page.click', function () {
     ).toBe(text);
   });
   it('should click offscreen buttons', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/offscreenbuttons.html');
     const messages: any[] = [];
@@ -211,7 +205,7 @@ describe('Page.click', function () {
   });
 
   it('should click wrapped links', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/wrappedlink.html');
     await page.click('a');
@@ -223,7 +217,7 @@ describe('Page.click', function () {
   });
 
   it('should click on checkbox input and toggle', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/checkbox.html');
     expect(
@@ -260,7 +254,7 @@ describe('Page.click', function () {
   });
 
   it('should click on checkbox label and toggle', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/checkbox.html');
     expect(
@@ -288,7 +282,7 @@ describe('Page.click', function () {
   });
 
   it('should fail to click a missing button', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/button.html');
     let error!: Error;
@@ -301,7 +295,7 @@ describe('Page.click', function () {
   });
   // @see https://github.com/puppeteer/puppeteer/issues/161
   it('should not hang with touch-enabled viewports', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     await page.setViewport(KnownDevices['iPhone 6'].viewport);
     await page.mouse.down();
@@ -309,7 +303,7 @@ describe('Page.click', function () {
     await page.mouse.up();
   });
   it('should scroll and click the button', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.click('#button-5');
@@ -326,7 +320,7 @@ describe('Page.click', function () {
     ).toBe('clicked');
   });
   it('should double click the button', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/button.html');
     await page.evaluate(() => {
@@ -342,7 +336,7 @@ describe('Page.click', function () {
     expect(await page.evaluate('result')).toBe('Clicked');
   });
   it('should click a partially obscured button', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/button.html');
     await page.evaluate(() => {
@@ -359,7 +353,7 @@ describe('Page.click', function () {
     ).toBe('Clicked');
   });
   it('should click a rotated button', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/rotatedButton.html');
     await page.click('button');
@@ -370,7 +364,7 @@ describe('Page.click', function () {
     ).toBe('Clicked');
   });
   it('should fire contextmenu event on right click', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.click('#button-8', {button: 'right'});
@@ -381,7 +375,7 @@ describe('Page.click', function () {
     ).toBe('context menu');
   });
   it('should fire aux event on middle click', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.click('#button-8', {button: 'middle'});
@@ -392,7 +386,7 @@ describe('Page.click', function () {
     ).toBe('aux click');
   });
   it('should fire back click', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.click('#button-8', {button: 'back'});
@@ -403,7 +397,7 @@ describe('Page.click', function () {
     ).toBe('back click');
   });
   it('should fire forward click', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.click('#button-8', {button: 'forward'});
@@ -415,14 +409,14 @@ describe('Page.click', function () {
   });
   // @see https://github.com/puppeteer/puppeteer/issues/206
   it('should click links which cause navigation', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.setContent(`<a href="${server.EMPTY_PAGE}">empty.html</a>`);
     // This await should not hang.
     await page.click('a');
   });
   it('should click the button inside an iframe', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     await page.setContent('<div style="width:100px;height:100px">spacer</div>');
@@ -442,7 +436,7 @@ describe('Page.click', function () {
   });
   // @see https://github.com/puppeteer/puppeteer/issues/4110
   it('should click the button with fixed position inside an iframe', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     await page.setViewport({width: 500, height: 500});
@@ -466,7 +460,7 @@ describe('Page.click', function () {
     ).toBe('Clicked');
   });
   it('should click the button with deviceScaleFactor set', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.setViewport({width: 400, height: 400, deviceScaleFactor: 5});
     expect(
