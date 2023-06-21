@@ -102,7 +102,7 @@
     "extract-zip": "2.0.1",
     "progress": "2.0.3",
     "proxy-agent": "6.2.1",
-    "tar-fs": "3.0.2",
+    "tar-fs": "3.0.3",
     "unbzip2-stream": "1.4.3",
     "yargs": "17.7.1"
   },
