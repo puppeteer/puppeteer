@@ -25,7 +25,8 @@ import {waitEvent} from './utils.js';
 
 describe('Fixtures', function () {
   it('dumpio option should work with pipe option', async () => {
-    const {defaultBrowserOptions, puppeteerPath, headless} = getTestState();
+    const {defaultBrowserOptions, puppeteerPath, headless} =
+      await getTestState();
     if (headless === 'new') {
       // This test only works in the old headless mode.
       return;
@@ -52,7 +53,7 @@ describe('Fixtures', function () {
     expect(dumpioData).toContain('message from dumpio');
   });
   it('should dump browser process stderr', async () => {
-    const {defaultBrowserOptions, puppeteerPath} = getTestState();
+    const {defaultBrowserOptions, puppeteerPath} = await getTestState();
 
     let dumpioData = '';
     const {spawn} = await import('child_process');
@@ -71,7 +72,8 @@ describe('Fixtures', function () {
     expect(dumpioData).toContain('DevTools listening on ws://');
   });
   it('should close the browser when the node process closes', async () => {
-    const {defaultBrowserOptions, puppeteerPath, puppeteer} = getTestState();
+    const {defaultBrowserOptions, puppeteerPath, puppeteer} =
+      await getTestState();
 
     const {spawn, execSync} = await import('child_process');
     const options = Object.assign({}, defaultBrowserOptions, {

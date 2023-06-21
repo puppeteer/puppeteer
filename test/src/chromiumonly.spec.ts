@@ -17,12 +17,7 @@ import {IncomingMessage} from 'http';
 
 import expect from 'expect';
 
-import {
-  getTestState,
-  launch,
-  setupTestBrowserHooks,
-  setupTestPageAndContextHooks,
-} from './mocha-utils.js';
+import {getTestState, launch} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
 
 // TODO: rename this test suite to launch/connect test suite as it actually
@@ -30,13 +25,9 @@ import {waitEvent} from './utils.js';
 describe('Chromium-Specific Launcher tests', function () {
   describe('Puppeteer.launch |browserURL| option', function () {
     it('should be able to connect using browserUrl, with and without trailing slash', async () => {
-      const {defaultBrowserOptions, puppeteer} = getTestState();
-
-      const {close} = await launch(
-        Object.assign({}, defaultBrowserOptions, {
-          args: ['--remote-debugging-port=21222'],
-        })
-      );
+      const {close, puppeteer} = await launch({
+        args: ['--remote-debugging-port=21222'],
+      });
       try {
         const browserURL = 'http://127.0.0.1:21222';
 
@@ -64,13 +55,9 @@ describe('Chromium-Specific Launcher tests', function () {
       }
     });
     it('should throw when using both browserWSEndpoint and browserURL', async () => {
-      const {defaultBrowserOptions, puppeteer} = getTestState();
-
-      const {browser, close} = await launch(
-        Object.assign({}, defaultBrowserOptions, {
-          args: ['--remote-debugging-port=21222'],
-        })
-      );
+      const {browser, close, puppeteer} = await launch({
+        args: ['--remote-debugging-port=21222'],
+      });
       try {
         const browserURL = 'http://127.0.0.1:21222';
 
@@ -91,13 +78,9 @@ describe('Chromium-Specific Launcher tests', function () {
       }
     });
     it('should throw when trying to connect to non-existing browser', async () => {
-      const {defaultBrowserOptions, puppeteer} = getTestState();
-
-      const {close} = await launch(
-        Object.assign({}, defaultBrowserOptions, {
-          args: ['--remote-debugging-port=21222'],
-        })
-      );
+      const {close, puppeteer} = await launch({
+        args: ['--remote-debugging-port=21222'],
+      });
       try {
         const browserURL = 'http://127.0.0.1:32333';
 
@@ -116,9 +99,7 @@ describe('Chromium-Specific Launcher tests', function () {
 
   describe('Puppeteer.launch |pipe| option', function () {
     it('should support the pipe option', async () => {
-      const {defaultBrowserOptions} = getTestState();
-      const options = Object.assign({pipe: true}, defaultBrowserOptions);
-      const {browser, close} = await launch(options, {createPage: false});
+      const {browser, close} = await launch({pipe: true}, {createPage: false});
       try {
         expect(await browser.pages()).toHaveLength(1);
         expect(browser.wsEndpoint()).toBe('');
@@ -130,7 +111,7 @@ describe('Chromium-Specific Launcher tests', function () {
       }
     });
     it('should support the pipe argument', async () => {
-      const {defaultBrowserOptions} = getTestState();
+      const {defaultBrowserOptions} = await getTestState({skipLaunch: true});
       const options = Object.assign({}, defaultBrowserOptions);
       options.args = ['--remote-debugging-pipe'].concat(options.args || []);
       const {browser, close} = await launch(options);
@@ -144,9 +125,7 @@ describe('Chromium-Specific Launcher tests', function () {
       }
     });
     it('should fire "disconnected" when closing with pipe', async () => {
-      const {defaultBrowserOptions} = getTestState();
-      const options = Object.assign({pipe: true}, defaultBrowserOptions);
-      const {browser, close} = await launch(options);
+      const {browser, close} = await launch({pipe: true});
       try {
         const disconnectedEventPromise = waitEvent(browser, 'disconnected');
         // Emulate user exiting browser.
@@ -160,10 +139,8 @@ describe('Chromium-Specific Launcher tests', function () {
 });
 
 describe('Chromium-Specific Page Tests', function () {
-  setupTestBrowserHooks();
-  setupTestPageAndContextHooks();
   it('Page.setRequestInterception should work with intervention headers', async () => {
-    const {server, page} = getTestState();
+    const {server, page} = await getTestState();
 
     server.setRoute('/intervention', (_req, res) => {
       return res.end(`

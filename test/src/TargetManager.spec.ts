@@ -27,7 +27,9 @@ describe('TargetManager', () => {
   };
 
   beforeEach(async () => {
-    const {defaultBrowserOptions} = getTestState();
+    const {defaultBrowserOptions} = await getTestState({
+      skipLaunch: true,
+    });
     testState = (await launch(
       Object.assign({}, defaultBrowserOptions, {
         args: (defaultBrowserOptions.args || []).concat([

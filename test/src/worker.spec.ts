@@ -18,18 +18,12 @@ import expect from 'expect';
 import {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 import {WebWorker} from 'puppeteer-core/internal/common/WebWorker.js';
 
-import {
-  getTestState,
-  setupTestBrowserHooks,
-  setupTestPageAndContextHooks,
-} from './mocha-utils.js';
+import {getTestState} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
 
 describe('Workers', function () {
-  setupTestBrowserHooks();
-  setupTestPageAndContextHooks();
   it('Page.workers', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await Promise.all([
       waitEvent(page, 'workercreated'),
@@ -48,7 +42,7 @@ describe('Workers', function () {
     expect(page.workers()).toHaveLength(0);
   });
   it('should emit created and destroyed events', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     const workerCreatedPromise = waitEvent<WebWorker>(page, 'workercreated');
     const workerObj = await page.evaluateHandle(() => {
@@ -69,7 +63,7 @@ describe('Workers', function () {
     expect(error.message).toContain('Most likely the worker has been closed.');
   });
   it('should report console logs', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     const [message] = await Promise.all([
       waitEvent(page, 'console'),
@@ -85,7 +79,7 @@ describe('Workers', function () {
     });
   });
   it('should have JSHandles for console logs', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     const logPromise = waitEvent<ConsoleMessage>(page, 'console');
     await page.evaluate(() => {
@@ -99,7 +93,7 @@ describe('Workers', function () {
     );
   });
   it('should have an execution context', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     const workerCreatedPromise = waitEvent<WebWorker>(page, 'workercreated');
     await page.evaluate(() => {
@@ -109,7 +103,7 @@ describe('Workers', function () {
     expect(await (await worker.executionContext()).evaluate('1+1')).toBe(2);
   });
   it('should report errors', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     const errorPromise = waitEvent<Error>(page, 'pageerror');
     await page.evaluate(() => {

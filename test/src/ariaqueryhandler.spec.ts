@@ -20,26 +20,16 @@ import expect from 'expect';
 import {TimeoutError} from 'puppeteer';
 import type {ElementHandle} from 'puppeteer-core/internal/api/ElementHandle.js';
 
-import {
-  getTestState,
-  setupTestBrowserHooks,
-  setupTestPageAndContextHooks,
-} from './mocha-utils.js';
+import {getTestState} from './mocha-utils.js';
 import {attachFrame, detachFrame} from './utils.js';
 
 describe('AriaQueryHandler', () => {
-  setupTestBrowserHooks();
-  setupTestPageAndContextHooks();
-
   describe('parseAriaSelector', () => {
-    beforeEach(async () => {
-      const {page} = getTestState();
+    it('should find button', async () => {
+      const {page} = await getTestState();
       await page.setContent(
         '<button id="btn" role="button"> Submit  button   and some spaces  </button>'
       );
-    });
-    it('should find button', async () => {
-      const {page} = getTestState();
       const expectFound = async (button: ElementHandle | null) => {
         assert(button);
         const id = await button.evaluate((button: Element) => {
@@ -95,7 +85,7 @@ describe('AriaQueryHandler', () => {
 
   describe('queryOne', () => {
     it('should find button by role', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
       await page.setContent(
         '<div id="div"><button id="btn" role="button">Submit</button></div>'
       );
@@ -109,7 +99,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should find button by name and role', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
       await page.setContent(
         '<div id="div"><button id="btn" role="button">Submit</button></div>'
       );
@@ -123,7 +113,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should find first matching element', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
       await page.setContent(
         `
         <div role="menu" id="mnu1" aria-label="menu div"></div>
@@ -140,7 +130,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should find by name', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
       await page.setContent(
         `
         <div role="menu" id="mnu1" aria-label="menu-label1">menu div</div>
@@ -157,7 +147,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should find by name', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
       await page.setContent(
         `
         <div role="menu" id="mnu1" aria-label="menu-label1">menu div</div>
@@ -176,7 +166,7 @@ describe('AriaQueryHandler', () => {
 
   describe('queryAll', () => {
     it('should find menu by name', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
       await page.setContent(
         `
         <div role="menu" id="mnu1" aria-label="menu div"></div>
@@ -200,7 +190,7 @@ describe('AriaQueryHandler', () => {
     it('$$eval should handle many elements', async function () {
       this.timeout(25_000);
 
-      const {page} = getTestState();
+      const {page} = await getTestState();
       await page.setContent('');
       await page.evaluate(
         `
@@ -226,14 +216,14 @@ describe('AriaQueryHandler', () => {
     };
 
     it('should immediately resolve promise if node exists', async () => {
-      const {page, server} = getTestState();
+      const {page, server} = await getTestState();
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(addElement, 'button');
       await page.waitForSelector('aria/[role="button"]');
     });
 
     it('should work for ElementHandle.waitForSelector', async () => {
-      const {page, server} = getTestState();
+      const {page, server} = await getTestState();
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
         return (document.body.innerHTML = `<div><button>test</button></div>`);
@@ -243,7 +233,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should persist query handler bindings across reloads', async () => {
-      const {page, server} = getTestState();
+      const {page, server} = await getTestState();
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(addElement, 'button');
       await page.waitForSelector('aria/[role="button"]');
@@ -253,7 +243,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should persist query handler bindings across navigations', async () => {
-      const {page, server} = getTestState();
+      const {page, server} = await getTestState();
 
       // Reset page but make sure that execution context ids start with 1.
       await page.goto('data:text/html,');
@@ -269,7 +259,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should work independently of `exposeFunction`', async () => {
-      const {page, server} = getTestState();
+      const {page, server} = await getTestState();
       await page.goto(server.EMPTY_PAGE);
       await page.exposeFunction('ariaQuerySelector', (a: number, b: number) => {
         return a + b;
@@ -281,7 +271,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should work with removed MutationObserver', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.evaluate(() => {
         // @ts-expect-error This is the point of the test.
@@ -300,7 +290,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should resolve promise when node is added', async () => {
-      const {page, server} = getTestState();
+      const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       const frame = page.mainFrame();
@@ -315,7 +305,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should work when node is added through innerHTML', async () => {
-      const {page, server} = getTestState();
+      const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       const watchdog = page.waitForSelector('aria/name');
@@ -328,7 +318,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('Page.waitForSelector is shortcut for main frame', async () => {
-      const {page, server} = getTestState();
+      const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       await attachFrame(page, 'frame1', server.EMPTY_PAGE);
@@ -341,7 +331,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should run in specified frame', async () => {
-      const {page, server} = getTestState();
+      const {page, server} = await getTestState();
 
       await attachFrame(page, 'frame1', server.EMPTY_PAGE);
       await attachFrame(page, 'frame2', server.EMPTY_PAGE);
@@ -357,7 +347,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should throw when frame is detached', async () => {
-      const {page, server} = getTestState();
+      const {page, server} = await getTestState();
 
       await attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const frame = page.frames()[1];
@@ -376,7 +366,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should survive cross-process navigation', async () => {
-      const {page, server} = getTestState();
+      const {page, server} = await getTestState();
 
       let imgFound = false;
       const waitForSelector = page
@@ -394,7 +384,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should wait for visible', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       let divFound = false;
       const waitForSelector = page
@@ -420,7 +410,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should wait for visible recursively', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       let divVisible = false;
       const waitForSelector = page
@@ -449,7 +439,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('hidden should wait for visibility: hidden', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       let divHidden = false;
       await page.setContent(
@@ -475,7 +465,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('hidden should wait for display: none', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       let divHidden = false;
       await page.setContent(
@@ -501,7 +491,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('hidden should wait for removal', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent(`<div role='main'>text</div>`);
       let divRemoved = false;
@@ -523,7 +513,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should return null if waiting to hide non-existing element', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const handle = await page.waitForSelector('aria/non-existing', {
         hidden: true,
@@ -532,7 +522,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should respect timeout', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const error = await page
         .waitForSelector('aria/[role="button"]', {
@@ -548,7 +538,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should have an error message specifically for awaiting an element to be hidden', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent(`<div role='main'>text</div>`);
       const promise = page.waitForSelector('aria/[role="main"]', {
@@ -562,7 +552,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should respond to node attribute mutation', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       let divFound = false;
       const waitForSelector = page
@@ -584,7 +574,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should return the element handle', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const waitForSelector = page.waitForSelector('aria/zombo').catch(err => {
         return err;
@@ -598,7 +588,7 @@ describe('AriaQueryHandler', () => {
     });
 
     it('should have correct stack trace for timeout', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       let error!: Error;
       await page.waitForSelector('aria/zombo', {timeout: 10}).catch(error_ => {
@@ -611,9 +601,9 @@ describe('AriaQueryHandler', () => {
   });
 
   describe('queryOne (Chromium web test)', () => {
-    beforeEach(async () => {
-      const {page} = getTestState();
-      await page.setContent(
+    async function setupPage(): ReturnType<typeof getTestState> {
+      const state = await getTestState();
+      await state.page.setContent(
         `
           <h2 id="shown">title</h2>
           <h2 id="hidden" aria-hidden="true">title</h2>
@@ -658,7 +648,8 @@ describe('AriaQueryHandler', () => {
           <div aria-describedby="node30"></div>
           `
       );
-    });
+      return state;
+    }
     const getIds = async (elements: ElementHandle[]) => {
       return Promise.all(
         elements.map(element => {
@@ -669,25 +660,25 @@ describe('AriaQueryHandler', () => {
       );
     };
     it('should find by name "foo"', async () => {
-      const {page} = getTestState();
+      const {page} = await setupPage();
       const found = await page.$$('aria/foo');
       const ids = await getIds(found);
       expect(ids).toEqual(['node3', 'node5', 'node6']);
     });
     it('should find by name "bar"', async () => {
-      const {page} = getTestState();
+      const {page} = await setupPage();
       const found = await page.$$('aria/bar');
       const ids = await getIds(found);
       expect(ids).toEqual(['node1', 'node2', 'node8']);
     });
     it('should find treeitem by name', async () => {
-      const {page} = getTestState();
+      const {page} = await setupPage();
       const found = await page.$$('aria/item1 item2 item3');
       const ids = await getIds(found);
       expect(ids).toEqual(['node30']);
     });
     it('should find by role "button"', async () => {
-      const {page} = getTestState();
+      const {page} = await setupPage();
       const found = (await page.$$('aria/[role="button"]')) as Array<
         ElementHandle<HTMLButtonElement>
       >;
@@ -702,13 +693,13 @@ describe('AriaQueryHandler', () => {
       ]);
     });
     it('should find by role "heading"', async () => {
-      const {page} = getTestState();
+      const {page} = await setupPage();
       const found = await page.$$('aria/[role="heading"]');
       const ids = await getIds(found);
       expect(ids).toEqual(['shown', 'hidden', 'node11', 'node13']);
     });
     it('should find both ignored and unignored', async () => {
-      const {page} = getTestState();
+      const {page} = await setupPage();
       const found = await page.$$('aria/title');
       const ids = await getIds(found);
       expect(ids).toEqual(['shown']);

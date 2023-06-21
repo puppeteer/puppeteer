@@ -17,18 +17,12 @@ import expect from 'expect';
 import {Puppeteer} from 'puppeteer';
 import type {CustomQueryHandler} from 'puppeteer-core/internal/common/CustomQueryHandler.js';
 
-import {
-  getTestState,
-  setupTestBrowserHooks,
-  setupTestPageAndContextHooks,
-} from './mocha-utils.js';
+import {getTestState} from './mocha-utils.js';
 
 describe('querySelector', function () {
-  setupTestBrowserHooks();
-  setupTestPageAndContextHooks();
   describe('Page.$eval', function () {
     it('should work', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent('<section id="testAttribute">43543</section>');
       const idAttribute = await page.$eval('section', e => {
@@ -37,7 +31,7 @@ describe('querySelector', function () {
       expect(idAttribute).toBe('testAttribute');
     });
     it('should accept arguments', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent('<section>hello</section>');
       const text = await page.$eval(
@@ -50,7 +44,7 @@ describe('querySelector', function () {
       expect(text).toBe('hello world!');
     });
     it('should accept ElementHandles as arguments', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent('<section>hello</section><div> world</div>');
       const divHandle = (await page.$('div'))!;
@@ -64,7 +58,7 @@ describe('querySelector', function () {
       expect(text).toBe('hello world');
     });
     it('should throw error if no element is found', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       let error!: Error;
       await page
@@ -85,7 +79,7 @@ describe('querySelector', function () {
   // as opposed to NodeListOf<Element>.
   describe('Page.$$eval', function () {
     it('should work', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent(
         '<div>hello</div><div>beautiful</div><div>world!</div>'
@@ -96,7 +90,7 @@ describe('querySelector', function () {
       expect(divsCount).toBe(3);
     });
     it('should accept extra arguments', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
       await page.setContent(
         '<div>hello</div><div>beautiful</div><div>world!</div>'
       );
@@ -111,7 +105,7 @@ describe('querySelector', function () {
       expect(divsCountPlus5).toBe(8);
     });
     it('should accept ElementHandles as arguments', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
       await page.setContent(
         '<section>2</section><section>2</section><section>1</section><div>3</div>'
       );
@@ -132,7 +126,7 @@ describe('querySelector', function () {
     it('should handle many elements', async function () {
       this.timeout(25_000);
 
-      const {page} = getTestState();
+      const {page} = await getTestState();
       await page.evaluate(
         `
         for (var i = 0; i <= 1000; i++) {
@@ -153,14 +147,14 @@ describe('querySelector', function () {
 
   describe('Page.$', function () {
     it('should query existing element', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent('<section>test</section>');
       const element = (await page.$('section'))!;
       expect(element).toBeTruthy();
     });
     it('should return null for non-existing element', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const element = (await page.$('non-existing-element'))!;
       expect(element).toBe(null);
@@ -169,7 +163,7 @@ describe('querySelector', function () {
 
   describe('Page.$$', function () {
     it('should query existing elements', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent('<div>A</div><br/><div>B</div>');
       const elements = await page.$$('div');
@@ -182,7 +176,7 @@ describe('querySelector', function () {
       expect(await Promise.all(promises)).toEqual(['A', 'B']);
     });
     it('should return empty array if nothing is found', async () => {
-      const {page, server} = getTestState();
+      const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       const elements = await page.$$('div');
@@ -192,7 +186,7 @@ describe('querySelector', function () {
 
   describe('Page.$x', function () {
     it('should query existing element', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent('<section>test</section>');
       const elements = await page.$x('/html/body/section');
@@ -200,13 +194,13 @@ describe('querySelector', function () {
       expect(elements).toHaveLength(1);
     });
     it('should return empty array for non-existing element', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const element = await page.$x('/html/body/non-existing-element');
       expect(element).toEqual([]);
     });
     it('should return multiple elements', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent('<div></div><div></div>');
       const elements = await page.$x('/html/body/div');
@@ -216,7 +210,7 @@ describe('querySelector', function () {
 
   describe('ElementHandle.$', function () {
     it('should query existing element', async () => {
-      const {page, server} = getTestState();
+      const {page, server} = await getTestState();
 
       await page.goto(server.PREFIX + '/playground.html');
       await page.setContent(
@@ -232,7 +226,7 @@ describe('querySelector', function () {
     });
 
     it('should return null for non-existing element', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent(
         '<html><body><div class="second"><div class="inner">B</div></div></body></html>'
@@ -244,7 +238,7 @@ describe('querySelector', function () {
   });
   describe('ElementHandle.$eval', function () {
     it('should work', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent(
         '<html><body><div class="tweet"><div class="like">100</div><div class="retweets">10</div></div></body></html>'
@@ -257,7 +251,7 @@ describe('querySelector', function () {
     });
 
     it('should retrieve content from subtree', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const htmlContent =
         '<div class="a">not-a-child-div</div><div id="myId"><div class="a">a-child-div</div></div>';
@@ -270,7 +264,7 @@ describe('querySelector', function () {
     });
 
     it('should throw in case of missing selector', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const htmlContent =
         '<div class="a">not-a-child-div</div><div id="myId"></div>';
@@ -290,7 +284,7 @@ describe('querySelector', function () {
   });
   describe('ElementHandle.$$eval', function () {
     it('should work', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent(
         '<html><body><div class="tweet"><div class="like">100</div><div class="like">10</div></div></body></html>'
@@ -305,7 +299,7 @@ describe('querySelector', function () {
     });
 
     it('should retrieve content from subtree', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const htmlContent =
         '<div class="a">not-a-child-div</div><div id="myId"><div class="a">a1-child-div</div><div class="a">a2-child-div</div></div>';
@@ -320,7 +314,7 @@ describe('querySelector', function () {
     });
 
     it('should not throw in case of missing selector', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const htmlContent =
         '<div class="a">not-a-child-div</div><div id="myId"></div>';
@@ -335,7 +329,7 @@ describe('querySelector', function () {
 
   describe('ElementHandle.$$', function () {
     it('should query existing elements', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent(
         '<html><body><div>A</div><br/><div>B</div></body></html>'
@@ -352,7 +346,7 @@ describe('querySelector', function () {
     });
 
     it('should return empty array for non-existing elements', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent(
         '<html><body><span>A</span><br/><span>B</span></body></html>'
@@ -365,7 +359,7 @@ describe('querySelector', function () {
 
   describe('ElementHandle.$x', function () {
     it('should query existing element', async () => {
-      const {page, server} = getTestState();
+      const {page, server} = await getTestState();
 
       await page.goto(server.PREFIX + '/playground.html');
       await page.setContent(
@@ -381,7 +375,7 @@ describe('querySelector', function () {
     });
 
     it('should return null for non-existing element', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent(
         '<html><body><div class="second"><div class="inner">B</div></div></body></html>'
@@ -410,7 +404,7 @@ describe('querySelector', function () {
       ).toBeTruthy();
     });
     it('$$ should query existing elements', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent(
         '<html><body><div>A</div><br/><div>B</div></body></html>'
@@ -427,7 +421,7 @@ describe('querySelector', function () {
     });
 
     it('$$ should return empty array for non-existing elements', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent(
         '<html><body><span>A</span><br/><span>B</span></body></html>'
@@ -437,7 +431,7 @@ describe('querySelector', function () {
       expect(elements).toHaveLength(0);
     });
     it('$$eval should work', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent(
         '<div>hello</div><div>beautiful</div><div>world!</div>'
@@ -448,7 +442,7 @@ describe('querySelector', function () {
       expect(divsCount).toBe(3);
     });
     it('$$eval should accept extra arguments', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
       await page.setContent(
         '<div>hello</div><div>beautiful</div><div>world!</div>'
       );
@@ -463,7 +457,7 @@ describe('querySelector', function () {
       expect(divsCountPlus5).toBe(8);
     });
     it('$$eval should accept ElementHandles as arguments', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
       await page.setContent(
         '<section>2</section><section>2</section><section>1</section><div>3</div>'
       );
@@ -484,7 +478,7 @@ describe('querySelector', function () {
     it('$$eval should handle many elements', async function () {
       this.timeout(25_000);
 
-      const {page} = getTestState();
+      const {page} = await getTestState();
       await page.evaluate(
         `
         for (var i = 0; i <= 1000; i++) {

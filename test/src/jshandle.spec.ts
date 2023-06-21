@@ -16,19 +16,12 @@
 
 import expect from 'expect';
 
-import {
-  getTestState,
-  setupTestBrowserHooks,
-  setupTestPageAndContextHooks,
-} from './mocha-utils.js';
+import {getTestState} from './mocha-utils.js';
 
 describe('JSHandle', function () {
-  setupTestBrowserHooks();
-  setupTestPageAndContextHooks();
-
   describe('Page.evaluateHandle', function () {
     it('should work', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const windowHandle = await page.evaluateHandle(() => {
         return window;
@@ -36,7 +29,7 @@ describe('JSHandle', function () {
       expect(windowHandle).toBeTruthy();
     });
     it('should return the RemoteObject', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const windowHandle = await page.evaluateHandle(() => {
         return window;
@@ -44,7 +37,7 @@ describe('JSHandle', function () {
       expect(windowHandle.remoteObject()).toBeTruthy();
     });
     it('should accept object handle as an argument', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const navigatorHandle = await page.evaluateHandle(() => {
         return navigator;
@@ -55,7 +48,7 @@ describe('JSHandle', function () {
       expect(text).toContain('Mozilla');
     });
     it('should accept object handle to primitive types', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         return 5;
@@ -66,7 +59,7 @@ describe('JSHandle', function () {
       expect(isFive).toBeTruthy();
     });
     it('should warn about recursive objects', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const test: {obj?: unknown} = {};
       test.obj = test;
@@ -81,7 +74,7 @@ describe('JSHandle', function () {
       expect(error.message).toContain('Recursive objects are not allowed.');
     });
     it('should accept object handle to unserializable value', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         return Infinity;
@@ -93,7 +86,7 @@ describe('JSHandle', function () {
       ).toBe(true);
     });
     it('should use the same JS wrappers', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         (globalThis as any).FOO = 123;
@@ -109,7 +102,7 @@ describe('JSHandle', function () {
 
   describe('JSHandle.getProperty', function () {
     it('should work', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         return {
@@ -125,7 +118,7 @@ describe('JSHandle', function () {
 
   describe('JSHandle.jsonValue', function () {
     it('should work', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         return {foo: 'bar'};
@@ -135,7 +128,7 @@ describe('JSHandle', function () {
     });
 
     it('works with jsonValues that are not objects', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         return ['a', 'b'];
@@ -145,7 +138,7 @@ describe('JSHandle', function () {
     });
 
     it('works with jsonValues that are primitives', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         return 'foo';
@@ -159,7 +152,7 @@ describe('JSHandle', function () {
     });
 
     it('should work with dates', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const dateHandle = await page.evaluateHandle(() => {
         return new Date('2017-09-26T00:00:00.000Z');
@@ -168,7 +161,7 @@ describe('JSHandle', function () {
       expect(date.toISOString()).toEqual('2017-09-26T00:00:00.000Z');
     });
     it('should throw for circular objects', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const handle = await page.evaluateHandle(() => {
         const t: {t?: unknown; g: number} = {g: 1};
@@ -185,7 +178,7 @@ describe('JSHandle', function () {
 
   describe('JSHandle.getProperties', function () {
     it('should work', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         return {
@@ -198,7 +191,7 @@ describe('JSHandle', function () {
       expect(await foo.jsonValue()).toBe('bar');
     });
     it('should return even non-own properties', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         class A {
@@ -224,7 +217,7 @@ describe('JSHandle', function () {
 
   describe('JSHandle.asElement', function () {
     it('should work', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         return document.body;
@@ -233,7 +226,7 @@ describe('JSHandle', function () {
       expect(element).toBeTruthy();
     });
     it('should return null for non-elements', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         return 2;
@@ -242,7 +235,7 @@ describe('JSHandle', function () {
       expect(element).toBeFalsy();
     });
     it('should return ElementHandle for TextNodes', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       await page.setContent('<div>ee!</div>');
       const aHandle = await page.evaluateHandle(() => {
@@ -260,7 +253,7 @@ describe('JSHandle', function () {
 
   describe('JSHandle.toString', function () {
     it('should work for primitives', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const numberHandle = await page.evaluateHandle(() => {
         return 2;
@@ -272,7 +265,7 @@ describe('JSHandle', function () {
       expect(stringHandle.toString()).toBe('JSHandle:a');
     });
     it('should work for complicated objects', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         return window;
@@ -283,7 +276,7 @@ describe('JSHandle', function () {
       ]);
     });
     it('should work with different subtypes', async () => {
-      const {page} = getTestState();
+      const {page} = await getTestState();
 
       expect((await page.evaluateHandle('(function(){})')).toString()).toBe(
         'JSHandle@function'

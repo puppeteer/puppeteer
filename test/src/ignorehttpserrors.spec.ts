@@ -34,7 +34,7 @@ describe('ignoreHTTPSErrors', function () {
   let page!: Page;
 
   before(async () => {
-    const {defaultBrowserOptions, puppeteer} = getTestState();
+    const {defaultBrowserOptions, puppeteer} = await getTestState();
     const options = Object.assign(
       {ignoreHTTPSErrors: true},
       defaultBrowserOptions
@@ -58,7 +58,7 @@ describe('ignoreHTTPSErrors', function () {
 
   describe('Response.securityDetails', function () {
     it('should work', async () => {
-      const {httpsServer} = getTestState();
+      const {httpsServer} = await getTestState();
 
       const [serverRequest, response] = await Promise.all([
         httpsServer.waitForRequest('/empty.html'),
@@ -79,13 +79,13 @@ describe('ignoreHTTPSErrors', function () {
       ]);
     });
     it('should be |null| for non-secure requests', async () => {
-      const {server} = getTestState();
+      const {server} = await getTestState();
 
       const response = (await page.goto(server.EMPTY_PAGE))!;
       expect(response.securityDetails()).toBe(null);
     });
     it('Network redirects should report SecurityDetails', async () => {
-      const {httpsServer} = getTestState();
+      const {httpsServer} = await getTestState();
 
       httpsServer.setRedirect('/plzredirect', '/empty.html');
       const responses: HTTPResponse[] = [];
@@ -107,7 +107,7 @@ describe('ignoreHTTPSErrors', function () {
   });
 
   it('should work', async () => {
-    const {httpsServer} = getTestState();
+    const {httpsServer} = await getTestState();
 
     let error!: Error;
     const response = await page.goto(httpsServer.EMPTY_PAGE).catch(error_ => {
@@ -117,7 +117,7 @@ describe('ignoreHTTPSErrors', function () {
     expect(response.ok()).toBe(true);
   });
   it('should work with request interception', async () => {
-    const {httpsServer} = getTestState();
+    const {httpsServer} = await getTestState();
 
     await page.setRequestInterception(true);
     page.on('request', request => {
@@ -127,7 +127,7 @@ describe('ignoreHTTPSErrors', function () {
     expect(response.status()).toBe(200);
   });
   it('should work with mixed content', async () => {
-    const {server, httpsServer} = getTestState();
+    const {server, httpsServer} = await getTestState();
 
     httpsServer.setRoute('/mixedcontent.html', (_req, res) => {
       res.end(`<iframe src=${server.EMPTY_PAGE}></iframe>`);

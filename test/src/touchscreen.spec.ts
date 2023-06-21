@@ -17,18 +17,11 @@
 import expect from 'expect';
 import {KnownDevices, BoundingBox} from 'puppeteer';
 
-import {
-  getTestState,
-  setupTestBrowserHooks,
-  setupTestPageAndContextHooks,
-} from './mocha-utils.js';
+import {getTestState} from './mocha-utils.js';
 
 describe('Touchscreen', function () {
-  setupTestBrowserHooks();
-  setupTestPageAndContextHooks();
-
   it('should tap the button', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
     const iPhone = KnownDevices['iPhone 6']!;
     await page.emulate(iPhone);
     await page.goto(server.PREFIX + '/input/button.html');
@@ -41,7 +34,7 @@ describe('Touchscreen', function () {
   });
 
   it('should report touches', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
     const iPhone = KnownDevices['iPhone 6']!;
     await page.emulate(iPhone);
     await page.goto(server.PREFIX + '/input/touches.html');
@@ -55,7 +48,7 @@ describe('Touchscreen', function () {
   });
 
   it('should report touchMove', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
     const iPhone = KnownDevices['iPhone 6']!;
     await page.emulate(iPhone);
     await page.goto(server.PREFIX + '/input/touches-move.html');

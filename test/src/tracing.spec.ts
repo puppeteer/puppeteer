@@ -19,7 +19,7 @@ import path from 'path';
 
 import expect from 'expect';
 
-import {getTestState, launch} from './mocha-utils.js';
+import {launch} from './mocha-utils.js';
 
 describe('Tracing', function () {
   let outputFile!: string;
@@ -29,8 +29,7 @@ describe('Tracing', function () {
    * individual test, which isn't the default behaviour of getTestState()
    */
   beforeEach(async () => {
-    const {defaultBrowserOptions} = getTestState();
-    testState = await launch(defaultBrowserOptions);
+    testState = await launch({});
     outputFile = path.join(__dirname, 'trace.json');
   });
 

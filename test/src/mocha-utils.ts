@@ -39,6 +39,87 @@ import sinon from 'sinon';
 
 import {extendExpectWithToBeGolden} from './utils.js';
 
+let processVariables!: {
+  product: string;
+  alternativeInstall: string | boolean;
+  headless: 'true' | 'false' | 'new';
+  isHeadless: boolean;
+  isFirefox: boolean;
+  isChrome: boolean;
+  protocol: 'cdp' | 'webDriverBiDi';
+  defaultBrowserOptions: PuppeteerLaunchOptions;
+};
+async function setUpProcessVariables() {
+  const product =
+    process.env['PRODUCT'] || process.env['PUPPETEER_PRODUCT'] || 'chrome';
+
+  const alternativeInstall = process.env['PUPPETEER_ALT_INSTALL'] || false;
+
+  const headless = (process.env['HEADLESS'] || 'true').trim().toLowerCase() as
+    | 'true'
+    | 'false'
+    | 'new';
+  const isHeadless = headless === 'true' || headless === 'new';
+  const isFirefox = product === 'firefox';
+  const isChrome = product === 'chrome';
+  const protocol = (process.env['PUPPETEER_PROTOCOL'] || 'cdp') as
+    | 'cdp'
+    | 'webDriverBiDi';
+
+  let extraLaunchOptions = {};
+  try {
+    extraLaunchOptions = JSON.parse(
+      process.env['EXTRA_LAUNCH_OPTIONS'] || '{}'
+    );
+  } catch (error) {
+    if (isErrorLike(error)) {
+      console.warn(
+        `Error parsing EXTRA_LAUNCH_OPTIONS: ${error.message}. Skipping.`
+      );
+    } else {
+      throw error;
+    }
+  }
+
+  const defaultBrowserOptions = Object.assign(
+    {
+      handleSIGINT: true,
+      executablePath: process.env['BINARY'],
+      headless: headless === 'new' ? ('new' as const) : isHeadless,
+      dumpio: !!process.env['DUMPIO'],
+      protocol,
+    },
+    extraLaunchOptions
+  );
+
+  if (defaultBrowserOptions.executablePath) {
+    console.warn(
+      `WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}`
+    );
+  } else {
+    const executablePath = puppeteer.executablePath();
+    if (!fs.existsSync(executablePath)) {
+      throw new Error(
+        `Browser is not downloaded at ${executablePath}. Run 'npm install' and try to re-run tests`
+      );
+    }
+  }
+
+  processVariables = {
+    product,
+    alternativeInstall,
+    headless,
+    isHeadless,
+    isFirefox,
+    isChrome,
+    protocol,
+    defaultBrowserOptions,
+  };
+}
+(async (): Promise<void> => {
+  await setUpProcessVariables();
+})();
+
 const setupServer = async () => {
   const assetsPath = path.join(__dirname, '../assets');
   const cachedPath = path.join(__dirname, '../assets', 'cached');
@@ -62,65 +143,58 @@ const setupServer = async () => {
   return {server, httpsServer};
 };
 
-export const getTestState = (): PuppeteerTestState => {
+export const getTestState = async (
+  options: {
+    skipLaunch?: boolean;
+    skipContextCreation?: boolean;
+  } = {}
+): Promise<PuppeteerTestState> => {
+  const {skipLaunch = false, skipContextCreation = false} = options;
+
+  state.defaultBrowserOptions = JSON.parse(
+    JSON.stringify(processVariables.defaultBrowserOptions)
+  );
+
+  if (!state.puppeteer) {
+    const {server, httpsServer} = await setupServer();
+
+    state.puppeteer = puppeteer;
+    state.server = server;
+    state.httpsServer = httpsServer;
+    state.isFirefox = processVariables.isFirefox;
+    state.isChrome = processVariables.isChrome;
+    state.isHeadless = processVariables.isHeadless;
+    state.headless = processVariables.headless;
+    state.puppeteerPath = path.resolve(
+      path.join(__dirname, '..', '..', 'packages', 'puppeteer')
+    );
+  }
+
+  if (!state.browser && !skipLaunch) {
+    state.browser = await puppeteer.launch(
+      processVariables.defaultBrowserOptions
+    );
+  }
+
+  if (state.context) {
+    await state.context.close();
+    state.context = undefined;
+    state.page = undefined;
+  }
+
+  if (!skipLaunch && !skipContextCreation) {
+    state.context = await state.browser!.createIncognitoBrowserContext();
+    state.page = await state.context.newPage();
+  }
+
+  state.server?.reset();
+  state.httpsServer?.reset();
+
   return state as PuppeteerTestState;
 };
 
-const product =
-  process.env['PRODUCT'] || process.env['PUPPETEER_PRODUCT'] || 'chrome';
-
-const alternativeInstall = process.env['PUPPETEER_ALT_INSTALL'] || false;
-
-const headless = (process.env['HEADLESS'] || 'true').trim().toLowerCase() as
-  | 'true'
-  | 'false'
-  | 'new';
-const isHeadless = headless === 'true' || headless === 'new';
-const isFirefox = product === 'firefox';
-const isChrome = product === 'chrome';
-const protocol = process.env['PUPPETEER_PROTOCOL'] || 'cdp';
-
-let extraLaunchOptions = {};
-try {
-  extraLaunchOptions = JSON.parse(process.env['EXTRA_LAUNCH_OPTIONS'] || '{}');
-} catch (error) {
-  if (isErrorLike(error)) {
-    console.warn(
-      `Error parsing EXTRA_LAUNCH_OPTIONS: ${error.message}. Skipping.`
-    );
-  } else {
-    throw error;
-  }
-}
-
-const defaultBrowserOptions = Object.assign(
-  {
-    handleSIGINT: true,
-    executablePath: process.env['BINARY'],
-    headless: headless === 'new' ? ('new' as const) : isHeadless,
-    dumpio: !!process.env['DUMPIO'],
-    protocol: protocol as 'cdp' | 'webDriverBiDi',
-  },
-  extraLaunchOptions
-);
-
-(async (): Promise<void> => {
-  if (defaultBrowserOptions.executablePath) {
-    console.warn(
-      `WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}`
-    );
-  } else {
-    const executablePath = puppeteer.executablePath();
-    if (!fs.existsSync(executablePath)) {
-      throw new Error(
-        `Browser is not downloaded at ${executablePath}. Run 'npm install' and try to re-run tests`
-      );
-    }
-  }
-})();
-
 const setupGoldenAssertions = (): void => {
-  const suffix = product.toLowerCase();
+  const suffix = processVariables.product.toLowerCase();
   const GOLDEN_DIR = path.join(__dirname, `../golden-${suffix}`);
   const OUTPUT_DIR = path.join(__dirname, `../output-${suffix}`);
   if (fs.existsSync(OUTPUT_DIR)) {
@@ -151,7 +225,7 @@ export const itOnlyRegularInstall = (
   description: string,
   body: Mocha.AsyncFunc
 ): Mocha.Test => {
-  if (alternativeInstall || process.env['BINARY']) {
+  if (processVariables.alternativeInstall || process.env['BINARY']) {
     return it.skip(description, body);
   } else {
     return it(description, body);
@@ -164,14 +238,14 @@ if (
 ) {
   console.log(
     `Running unit tests with:
-  -> product: ${product}
+  -> product: ${processVariables.product}
   -> binary: ${
-    defaultBrowserOptions.executablePath ||
+    processVariables.defaultBrowserOptions.executablePath ||
     path.relative(process.cwd(), puppeteer.executablePath())
   }
   -> mode: ${
-    isHeadless
-      ? headless === 'new'
+    processVariables.isHeadless
+      ? processVariables.headless === 'new'
         ? '--headless=new'
         : '--headless'
       : 'headful'
@@ -183,69 +257,21 @@ process.on('unhandledRejection', reason => {
   throw reason;
 });
 
-export const setupTestBrowserHooks = (): void => {
-  before(async () => {
-    const browser = await puppeteer.launch(defaultBrowserOptions);
-    state.browser = browser;
-  });
-
-  after(async () => {
-    await state.browser?.close();
-    state.browser = undefined;
-  });
-};
-
-export const setupTestPageAndContextHooks = (): void => {
-  beforeEach(async () => {
-    state.context = await state.browser!.createIncognitoBrowserContext();
-    state.page = await state.context.newPage();
-  });
-
-  afterEach(async () => {
-    await state.context?.close();
-    state.context = undefined;
-    state.page = undefined;
-  });
-};
-
+const browserNotClosedError = new Error(
+  'A manually launched browser was not closed!'
+);
 export const mochaHooks = {
-  beforeAll: [
-    async (): Promise<void> => {
-      const {server, httpsServer} = await setupServer();
-
-      state.puppeteer = puppeteer;
-      state.defaultBrowserOptions = defaultBrowserOptions;
-      state.server = server;
-      state.httpsServer = httpsServer;
-      state.isFirefox = isFirefox;
-      state.isChrome = isChrome;
-      state.isHeadless = isHeadless;
-      state.headless = headless;
-      state.puppeteerPath = path.resolve(
-        path.join(__dirname, '..', '..', 'packages', 'puppeteer')
-      );
-    },
-  ],
-
-  beforeEach: async (): Promise<void> => {
-    state.server!.reset();
-    state.httpsServer!.reset();
+  async afterAll(): Promise<void> {
+    await state.browser?.close();
+    await state.server?.stop();
+    await state.httpsServer?.stop();
   },
 
-  afterAll: [
-    async (): Promise<void> => {
-      await state.server!.stop();
-      state.server = undefined;
-      await state.httpsServer!.stop();
-      state.httpsServer = undefined;
-    },
-  ],
-
-  afterEach: (): void => {
+  async afterEach(): Promise<void> {
     if (browserCleanups.length > 0) {
-      throw new Error('A manually launched browser was not closed!');
+      await closeLaunched();
+      (this as any).test.error(browserNotClosedError);
     }
-
     sinon.restore();
   },
 };
@@ -281,12 +307,11 @@ expect.extend({
   },
 });
 
-export const expectCookieEquals = (
+export const expectCookieEquals = async (
   cookies: Protocol.Network.Cookie[],
   expectedCookies: Array<Partial<Protocol.Network.Cookie>>
-): void => {
-  const {isChrome} = getTestState();
-  if (!isChrome) {
+): Promise<void> => {
+  if (!processVariables.isChrome) {
     // Only keep standard properties when testing on a browser other than Chrome.
     expectedCookies = expectedCookies.map(cookie => {
       return {
@@ -303,7 +328,7 @@ export const expectCookieEquals = (
     });
   }
 
-  expect(cookies.length).toBe(expectedCookies.length);
+  expect(cookies).toHaveLength(expectedCookies.length);
   for (let i = 0; i < cookies.length; i++) {
     expect(cookies[i]).toMatchObject(expectedCookies[i]!);
   }
@@ -366,6 +391,25 @@ export const createTimeout = <T>(
 
 let browserCleanups: Array<() => Promise<void>> = [];
 
+const closeLaunched = async () => {
+  let cleanup = browserCleanups.pop();
+  try {
+    while (cleanup) {
+      await cleanup();
+      cleanup = browserCleanups.pop();
+    }
+  } catch (error) {
+    // If the browser was closed by other mean swallow the error
+    // and mark he browser as closed
+    if ((error as any)?.message.includes('Connection closed')) {
+      browserCleanups = [];
+      return;
+    }
+
+    throw error;
+  }
+};
+
 export const launch = async (
   launchOptions: PuppeteerLaunchOptions,
   options: {
@@ -378,28 +422,13 @@ export const launch = async (
   }
 > => {
   const {createContext = true, createPage = true} = options;
-  const close = async () => {
-    let cleanup = browserCleanups.pop();
-    try {
-      while (cleanup) {
-        await cleanup();
-        cleanup = browserCleanups.pop();
-      }
-    } catch (error) {
-      // If the browser was closed by other mean swallow the error
-      // and mark he browser as closed
-      if ((error as any)?.message.includes('Connection closed')) {
-        browserCleanups = [];
-        return;
-      }
-
-      throw error;
-    }
-  };
+  const initState = await getTestState({
+    skipLaunch: true,
+  });
 
   try {
     const browser = await puppeteer.launch({
-      ...defaultBrowserOptions,
+      ...initState.defaultBrowserOptions,
       ...launchOptions,
     });
     browserCleanups.push(() => {
@@ -423,14 +452,14 @@ export const launch = async (
     }
 
     return {
-      ...getTestState(),
+      ...initState,
       browser,
       context: context!,
       page: page!,
-      close,
+      close: closeLaunched,
     };
   } catch (error) {
-    await close();
+    await closeLaunched();
 
     throw error;
   }

@@ -16,18 +16,11 @@
 import expect from 'expect';
 import sinon from 'sinon';
 
-import {
-  getTestState,
-  setupTestPageAndContextHooks,
-  setupTestBrowserHooks,
-} from './mocha-utils.js';
+import {getTestState} from './mocha-utils.js';
 
 describe('Page.Events.Dialog', function () {
-  setupTestBrowserHooks();
-  setupTestPageAndContextHooks();
-
   it('should fire', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     const onDialog = sinon.stub().callsFake(dialog => {
       dialog.accept();
@@ -46,7 +39,7 @@ describe('Page.Events.Dialog', function () {
   });
 
   it('should allow accepting prompts', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     const onDialog = sinon.stub().callsFake(dialog => {
       dialog.accept('answer!');
@@ -66,7 +59,7 @@ describe('Page.Events.Dialog', function () {
     expect(result).toBe('answer!');
   });
   it('should dismiss the prompt', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     page.on('dialog', dialog => {
       dialog.dismiss();

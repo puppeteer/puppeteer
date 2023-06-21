@@ -19,19 +19,12 @@ import os from 'os';
 import expect from 'expect';
 import {KeyInput} from 'puppeteer-core/internal/common/USKeyboardLayout.js';
 
-import {
-  getTestState,
-  setupTestBrowserHooks,
-  setupTestPageAndContextHooks,
-} from './mocha-utils.js';
+import {getTestState} from './mocha-utils.js';
 import {attachFrame} from './utils.js';
 
 describe('Keyboard', function () {
-  setupTestBrowserHooks();
-  setupTestPageAndContextHooks();
-
   it('should type into a textarea', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     await page.evaluate(() => {
       const textarea = document.createElement('textarea');
@@ -47,7 +40,7 @@ describe('Keyboard', function () {
     ).toBe(text);
   });
   it('should press the metaKey', async () => {
-    const {page, isFirefox} = getTestState();
+    const {page, isFirefox} = await getTestState();
 
     await page.evaluate(() => {
       (window as any).keyPromise = new Promise(resolve => {
@@ -62,7 +55,7 @@ describe('Keyboard', function () {
     );
   });
   it('should move with the arrow keys', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
     await page.type('textarea', 'Hello World!');
@@ -94,7 +87,7 @@ describe('Keyboard', function () {
   });
   // @see https://github.com/puppeteer/puppeteer/issues/1313
   it('should trigger commands of keyboard shortcuts', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
     const cmdKey = os.platform() !== 'darwin' ? 'Meta' : 'Control';
 
     await page.goto(server.PREFIX + '/input/textarea.html');
@@ -123,7 +116,7 @@ describe('Keyboard', function () {
     ).toBe('hellohello');
   });
   it('should send a character with ElementHandle.press', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
     const textarea = (await page.$('textarea'))!;
@@ -152,7 +145,7 @@ describe('Keyboard', function () {
     ).toBe('a');
   });
   it('ElementHandle.press should support |text| option', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
     const textarea = (await page.$('textarea'))!;
@@ -164,7 +157,7 @@ describe('Keyboard', function () {
     ).toBe('ё');
   });
   it('should send a character with sendCharacter', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
     await page.focus('textarea');
@@ -191,7 +184,7 @@ describe('Keyboard', function () {
     ).toBe('嗨a');
   });
   it('should report shiftKey', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/keyboard.html');
     const keyboard = page.keyboard;
@@ -262,7 +255,7 @@ describe('Keyboard', function () {
     }
   });
   it('should report multiple modifiers', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/keyboard.html');
     const keyboard = page.keyboard;
@@ -304,7 +297,7 @@ describe('Keyboard', function () {
     ).toBe('Keyup: Alt AltLeft 18 []');
   });
   it('should send proper codes while typing', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/keyboard.html');
     await page.keyboard.type('!');
@@ -333,7 +326,7 @@ describe('Keyboard', function () {
     );
   });
   it('should send proper codes while typing with shift', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/keyboard.html');
     const keyboard = page.keyboard;
@@ -354,7 +347,7 @@ describe('Keyboard', function () {
     await keyboard.up('Shift');
   });
   it('should not type canceled events', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
     await page.focus('textarea');
@@ -382,7 +375,7 @@ describe('Keyboard', function () {
     ).toBe('He Wrd!');
   });
   it('should specify repeat property', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
     await page.focus('textarea');
@@ -430,7 +423,7 @@ describe('Keyboard', function () {
     ).toBe(false);
   });
   it('should type all kinds of characters', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
     await page.focus('textarea');
@@ -439,7 +432,7 @@ describe('Keyboard', function () {
     expect(await page.evaluate('result')).toBe(text);
   });
   it('should specify location', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
     await page.evaluate(() => {
@@ -466,7 +459,7 @@ describe('Keyboard', function () {
     expect(await page.evaluate('keyLocation')).toBe(3);
   });
   it('should throw on unknown keys', async () => {
-    const {page} = getTestState();
+    const {page} = await getTestState();
 
     let error = await page.keyboard
       // @ts-expect-error bad input
@@ -489,7 +482,7 @@ describe('Keyboard', function () {
     expect(error && error.message).toBe('Unknown key: "😊"');
   });
   it('should type emoji', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
     await page.type('textarea', '👹 Tokyo street Japan 🇯🇵');
@@ -500,7 +493,7 @@ describe('Keyboard', function () {
     ).toBe('👹 Tokyo street Japan 🇯🇵');
   });
   it('should type emoji into an iframe', async () => {
-    const {page, server} = getTestState();
+    const {page, server} = await getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     await attachFrame(
@@ -518,7 +511,7 @@ describe('Keyboard', function () {
     ).toBe('👹 Tokyo street Japan 🇯🇵');
   });
   it('should press the meta key', async () => {
-    const {page, isFirefox} = getTestState();
+    const {page, isFirefox} = await getTestState();
 
     await page.evaluate(() => {
       (globalThis as any).result = null;
