@@ -16,6 +16,7 @@
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import Protocol from 'devtools-protocol';
 
+import {Frame} from '../../api/Frame.js';
 import {
   HTTPResponse as BaseHTTPResponse,
   RemoteAddress,
@@ -92,5 +93,9 @@ export class HTTPResponse extends BaseHTTPResponse {
 
   override timing(): Protocol.Network.ResourceTiming | null {
     return this.#timings as any;
+  }
+
+  override frame(): Frame | null {
+    return this.#request.frame();
   }
 }

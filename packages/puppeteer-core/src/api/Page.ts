@@ -1548,10 +1548,9 @@ export class Page extends EventEmitter {
    *   API usage, the navigation will resolve with `null`.
    */
   async waitForNavigation(
-    options?: WaitForOptions
-  ): Promise<HTTPResponse | null>;
-  async waitForNavigation(): Promise<HTTPResponse | null> {
-    throw new Error('Not implemented');
+    options: WaitForOptions = {}
+  ): Promise<HTTPResponse | null> {
+    return await this.mainFrame().waitForNavigation(options);
   }
 
   /**

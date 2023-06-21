@@ -35,7 +35,6 @@ import {Coverage} from '../Coverage.js';
 import {EmulationManager} from '../EmulationManager.js';
 import {TargetCloseError} from '../Errors.js';
 import {Handler} from '../EventEmitter.js';
-import {FrameManagerEmittedEvents} from '../FrameManager.js';
 import {FrameTree} from '../FrameTree.js';
 import {NetworkManagerEmittedEvents} from '../NetworkManager.js';
 import {PDFOptions} from '../PDFOptions.js';
@@ -77,17 +76,10 @@ export class Page extends PageBase {
   #closedDeferred = Deferred.create<TargetCloseError>();
   #subscribedEvents = new Map<string, Handler<any>>([
     ['log.entryAdded', this.#onLogEntryAdded.bind(this)],
-    [
-      'browsingContext.load',
-      () => {
-        return this.emit(PageEmittedEvents.Load);
-      },
-    ],
+    ['browsingContext.load', this.#onFrameLoaded.bind(this)],
     [
       'browsingContext.domContentLoaded',
-      () => {
-        return this.emit(PageEmittedEvents.DOMContentLoaded);
-      },
+      this.#onFrameDOMContentLoaded.bind(this),
     ],
     ['browsingContext.contextCreated', this.#onFrameAttached.bind(this)],
     ['browsingContext.contextDestroyed', this.#onFrameDetached.bind(this)],
@@ -96,33 +88,23 @@ export class Page extends PageBase {
   #networkManagerEvents = new Map<symbol, Handler<any>>([
     [
       NetworkManagerEmittedEvents.Request,
-      event => {
-        return this.emit(PageEmittedEvents.Request, event);
-      },
+      this.emit.bind(this, PageEmittedEvents.Request),
     ],
     [
       NetworkManagerEmittedEvents.RequestServedFromCache,
-      event => {
-        return this.emit(PageEmittedEvents.RequestServedFromCache, event);
-      },
+      this.emit.bind(this, PageEmittedEvents.RequestServedFromCache),
     ],
     [
       NetworkManagerEmittedEvents.RequestFailed,
-      event => {
-        return this.emit(PageEmittedEvents.RequestFailed, event);
-      },
+      this.emit.bind(this, PageEmittedEvents.RequestFailed),
     ],
     [
       NetworkManagerEmittedEvents.RequestFinished,
-      event => {
-        return this.emit(PageEmittedEvents.RequestFinished, event);
-      },
+      this.emit.bind(this, PageEmittedEvents.RequestFinished),
     ],
     [
       NetworkManagerEmittedEvents.Response,
-      event => {
-        return this.emit(PageEmittedEvents.Response, event);
-      },
+      this.emit.bind(this, PageEmittedEvents.Response),
     ],
   ]);
   #tracing: Tracing;
@@ -132,7 +114,12 @@ export class Page extends PageBase {
   #touchscreen: Touchscreen;
   #keyboard: Keyboard;
 
-  constructor(browserContext: BrowserContext, info: {context: string}) {
+  constructor(
+    browserContext: BrowserContext,
+    info: Omit<Bidi.BrowsingContext.Info, 'url'> & {
+      url?: string;
+    }
+  ) {
     super();
     this.#browserContext = browserContext;
     this.#connection = browserContext.connection;
@@ -140,8 +127,8 @@ export class Page extends PageBase {
     this.#networkManager = new NetworkManager(this.#connection, this);
     this.#onFrameAttached({
       ...info,
-      url: 'about:blank',
-      children: [],
+      url: info.url ?? 'about:blank',
+      children: info.children ?? [],
     });
 
     for (const [event, subscriber] of this.#subscribedEvents) {
@@ -216,6 +203,20 @@ export class Page extends PageBase {
     return this.#frameTree.childFrames(frameId);
   }
 
+  #onFrameLoaded(info: Bidi.BrowsingContext.NavigationInfo): void {
+    const frame = this.frame(info.context);
+    if (frame && this.mainFrame() === frame) {
+      this.emit(PageEmittedEvents.Load);
+    }
+  }
+
+  #onFrameDOMContentLoaded(info: Bidi.BrowsingContext.NavigationInfo): void {
+    const frame = this.frame(info.context);
+    if (frame && this.mainFrame() === frame) {
+      this.emit(PageEmittedEvents.DOMContentLoaded);
+    }
+  }
+
   #onFrameAttached(info: Bidi.BrowsingContext.Info): void {
     if (
       !this.frame(info.context) &&
@@ -235,7 +236,7 @@ export class Page extends PageBase {
         info.parent
       );
       this.#frameTree.addFrame(frame);
-      this.emit(FrameManagerEmittedEvents.FrameAttached, frame);
+      this.emit(PageEmittedEvents.FrameAttached, frame);
     }
   }
 
@@ -247,12 +248,8 @@ export class Page extends PageBase {
     let frame = this.frame(frameId);
     // Detach all child frames first.
     if (frame) {
-      for (const child of frame.childFrames()) {
-        this.#removeFramesRecursively(child);
-      }
-
       frame = await this.#frameTree.waitForFrame(frameId);
-      this.emit(FrameManagerEmittedEvents.FrameNavigated, frame);
+      this.emit(PageEmittedEvents.FrameNavigated, frame);
     }
   }
 
@@ -260,6 +257,9 @@ export class Page extends PageBase {
     const frame = this.frame(info.context);
 
     if (frame) {
+      if (frame === this.mainFrame()) {
+        this.emit(PageEmittedEvents.Close);
+      }
       this.#removeFramesRecursively(frame);
     }
   }
@@ -270,7 +270,7 @@ export class Page extends PageBase {
     }
     frame.dispose();
     this.#frameTree.removeFrame(frame);
-    this.emit(FrameManagerEmittedEvents.FrameDetached, frame);
+    this.emit(PageEmittedEvents.FrameDetached, frame);
   }
 
   #onLogEntryAdded(event: Bidi.Log.LogEntry): void {
@@ -337,12 +337,13 @@ export class Page extends PageBase {
       return;
     }
     this.#closedDeferred.resolve(new TargetCloseError('Page closed!'));
-    this.removeAllListeners();
     this.#networkManager.dispose();
 
     await this.#connection.send('browsingContext.close', {
       context: this.mainFrame()._id,
     });
+    this.emit(PageEmittedEvents.Close);
+    this.removeAllListeners();
   }
 
   override async evaluateHandle<

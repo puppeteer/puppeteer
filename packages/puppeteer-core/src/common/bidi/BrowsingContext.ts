@@ -17,7 +17,10 @@ import {Realm} from './Realm.js';
 /**
  * @internal
  */
-const lifeCycleToSubscribedEvent = new Map<PuppeteerLifeCycleEvent, string>([
+export const lifeCycleToSubscribedEvent = new Map<
+  PuppeteerLifeCycleEvent,
+  string
+>([
   ['load', 'browsingContext.load'],
   ['domcontentloaded', 'browsingContext.domContentLoaded'],
 ]);
@@ -87,7 +90,7 @@ export class CDPSessionWrapper extends EventEmitter implements CDPSession {
 export class BrowsingContext extends Realm {
   #timeoutSettings: TimeoutSettings;
   #id: string;
-  #url = 'about:blank';
+  #url: string;
   #cdpSession: CDPSession;
 
   constructor(
@@ -99,7 +102,15 @@ export class BrowsingContext extends Realm {
     this.connection = connection;
     this.#timeoutSettings = timeoutSettings;
     this.#id = info.context;
+    this.#url = info.url;
     this.#cdpSession = new CDPSessionWrapper(this);
+
+    this.on(
+      'browsingContext.fragmentNavigated',
+      (info: Bidi.BrowsingContext.NavigationInfo) => {
+        this.#url = info.url;
+      }
+    );
   }
 
   createSandboxRealm(sandbox: string): Realm {
@@ -116,6 +127,10 @@ export class BrowsingContext extends Realm {
 
   get cdpSession(): CDPSession {
     return this.#cdpSession;
+  }
+
+  navigated(url: string): void {
+    this.#url = url;
   }
 
   async goto(
