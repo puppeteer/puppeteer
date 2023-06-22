@@ -98,6 +98,7 @@ usually check through CI:
   [`tsd`](https://github.com/SamVerschueren/tsd).
 - `test:chrome:**` - Tests `puppeteer` on Chromium.
 - `test:firefox:**` - Tests `puppeteer` on Firefox.
+- `unit` - Runs unit tests.
 
 The default `npm test` runs `test:{chrome,firefox}:headless` which is generally
 sufficient.
@@ -107,6 +108,15 @@ Puppeteer uses a custom test runner on top of Mocha that consults the
 to see if a given test result is expected or not. See more info about the test
 runner in
 [`tools/mochaRunner`](https://github.com/puppeteer/puppeteer/tree/main/tools/mochaRunner).
+
+### Unit tests
+
+Tests that only test code (without the running browser) are put next to the classes they test
+and run using the Node test runner (requires Node 20+):
+
+```bash
+npm run unit
+```
 
 ## Code reviews
 

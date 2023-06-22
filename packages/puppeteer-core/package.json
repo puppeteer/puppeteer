@@ -42,7 +42,8 @@
     "clean": "tsc -b --clean && rm -rf lib src/generated",
     "generate:package-json": "wireit",
     "generate:sources": "wireit",
-    "prepack": "wireit"
+    "prepack": "wireit",
+    "unit": "wireit"
   },
   "wireit": {
     "prepack": {
@@ -123,11 +124,18 @@
       "dependencies": [
         "build:tsc"
       ]
+    },
+    "unit": {
+      "command": "node --test --test-reporter spec lib/cjs",
+      "dependencies": [
+        "build"
+      ]
     }
   },
   "files": [
     "lib",
     "src",
+    "!*.test.js",
     "!*.tsbuildinfo"
   ],
   "author": "The Chromium Authors",

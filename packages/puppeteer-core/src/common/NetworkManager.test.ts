@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
+import {describe, it} from 'node:test';
+
 import expect from 'expect';
-import {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
-import {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
-import {EventEmitter} from 'puppeteer-core/internal/common/EventEmitter.js';
-import {Frame} from 'puppeteer-core/internal/common/Frame.js';
-import {
-  NetworkManager,
-  NetworkManagerEmittedEvents,
-} from 'puppeteer-core/internal/common/NetworkManager.js';
+
+import {HTTPRequest} from '../api/HTTPRequest.js';
+import {HTTPResponse} from '../api/HTTPResponse.js';
+
+import {EventEmitter} from './EventEmitter.js';
+import {Frame} from './Frame.js';
+import {NetworkManager, NetworkManagerEmittedEvents} from './NetworkManager.js';
 
 // TODO: develop a helper to generate fake network events for attributes that
 // are not relevant for the network manager to make tests shorter.
@@ -477,13 +478,16 @@ describe('NetworkManager', () => {
         return null;
       },
     });
-    manager.setRequestInterception(true);
+    await manager.setRequestInterception(true);
 
     const requests: HTTPRequest[] = [];
-    manager.on(NetworkManagerEmittedEvents.Request, (request: HTTPRequest) => {
-      request.continue();
-      requests.push(request);
-    });
+    manager.on(
+      NetworkManagerEmittedEvents.Request,
+      async (request: HTTPRequest) => {
+        requests.push(request);
+        await request.continue();
+      }
+    );
 
     /**
      * This sequence was taken from an actual CDP session produced by the following
