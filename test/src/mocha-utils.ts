@@ -177,6 +177,7 @@ export const getTestState = async (
   }
 
   if (state.context) {
+    await state.page?.close();
     await state.context.close();
     state.context = undefined;
     state.page = undefined;
