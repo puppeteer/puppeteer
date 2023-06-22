@@ -474,7 +474,7 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[Deferred.spec] DeferredPromise should catch errors",
+    "testIdPattern": "[Deferred.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
