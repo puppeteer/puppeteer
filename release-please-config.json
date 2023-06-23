@@ -10,7 +10,7 @@
     },
     "packages/testserver": {},
     "packages/ng-schematics": {
-      "release-as": "0.2.0"
+      "release-as": "0.3.0"
     },
     "packages/browsers": {}
   },
