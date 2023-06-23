@@ -9,7 +9,9 @@ let page: puppeteer.Page;
 export function setupBrowserHooks(): void {
 <% if(testingFramework == 'jasmine' || testingFramework == 'jest') { %>
   beforeAll(async () => {
-    browser = await puppeteer.launch();
+    browser = await puppeteer.launch({
+      headless: 'new'
+    });
   });
 <% } %><% if(testingFramework == 'mocha' || testingFramework == 'node') { %>
   before(async () => {

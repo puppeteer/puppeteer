@@ -1,32 +1,18 @@
-import https from 'https';
-
 import expect from 'expect';
-import sinon from 'sinon';
 
 import {
   buildTestingTree,
   getAngularJsonScripts,
   getPackageJson,
   getProjectFile,
+  setupHttpHooks,
 } from './utils.js';
 
 describe('@puppeteer/ng-schematics: ng-add', () => {
-  // Stop outgoing Request for version fetching
-  before(() => {
-    const httpsGetStub = sinon.stub(https, 'get');
-    httpsGetStub.returns({
-      on: (_: any, callback: () => void) => {
-        callback();
-      },
-    } as any);
-  });
-
-  after(() => {
-    sinon.restore();
-  });
+  setupHttpHooks();
 
   it('should create base files and update to "package.json"', async () => {
-    const tree = await buildTestingTree();
+    const tree = await buildTestingTree('ng-add');
     const {devDependencies, scripts} = getPackageJson(tree);
     const {builder, configurations} = getAngularJsonScripts(tree);
 
@@ -44,7 +30,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
   });
 
   it('should update create proper "ng" command for non default tester', async () => {
-    const tree = await buildTestingTree({
+    const tree = await buildTestingTree('ng-add', {
       isDefaultTester: false,
     });
     const {scripts} = getPackageJson(tree);
@@ -55,7 +41,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
   });
 
   it('should create Puppeteer config', async () => {
-    const {files} = await buildTestingTree({
+    const {files} = await buildTestingTree('ng-add', {
       exportConfig: true,
     });
 
@@ -63,7 +49,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
   });
 
   it('should not create Puppeteer config', async () => {
-    const {files} = await buildTestingTree({
+    const {files} = await buildTestingTree('ng-add', {
       exportConfig: false,
     });
 
@@ -71,7 +57,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
   });
 
   it('should create Jasmine files and update "package.json"', async () => {
-    const tree = await buildTestingTree({
+    const tree = await buildTestingTree('ng-add', {
       testingFramework: 'jasmine',
     });
     const {devDependencies} = getPackageJson(tree);
@@ -89,7 +75,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
   });
 
   it('should create Jest files and update "package.json"', async () => {
-    const tree = await buildTestingTree({
+    const tree = await buildTestingTree('ng-add', {
       testingFramework: 'jest',
     });
     const {devDependencies} = getPackageJson(tree);
@@ -103,7 +89,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
   });
 
   it('should create Mocha files and update "package.json"', async () => {
-    const tree = await buildTestingTree({
+    const tree = await buildTestingTree('ng-add', {
       testingFramework: 'mocha',
     });
     const {devDependencies} = getPackageJson(tree);
@@ -121,8 +107,8 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     ]);
   });
 
-  it('should create Node files"', async () => {
-    const tree = await buildTestingTree({
+  it('should create Node files', async () => {
+    const tree = await buildTestingTree('ng-add', {
       testingFramework: 'node',
     });
     const {options} = getAngularJsonScripts(tree);
@@ -132,7 +118,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     expect(tree.files).toContain(getProjectFile('e2e/tests/app.test.ts'));
     expect(options['commands']).toEqual([
       [`tsc`, '-p', 'e2e/tsconfig.json'],
-      ['node', '--test', 'e2e/'],
+      ['node', '--test', 'e2e/build/'],
     ]);
   });
 });

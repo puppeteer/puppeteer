@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "Puppeteer",
+  "title": "Puppeteer Spec Schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "alias": "n",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "Name for spec to be created:"
+    },
+    "project": {
+      "type": "string",
+      "alias": "p"
+    }
+  },
+  "required": []
+}
