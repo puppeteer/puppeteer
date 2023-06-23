@@ -1,0 +1,22 @@
+<% if(testingFramework == 'node') { %>
+import * as assert from 'assert';
+import {describe, it} from 'node:test';
+<% } %><% if(testingFramework == 'mocha') { %>
+import * as assert from 'assert';
+<% } %>
+import {setupBrowserHooks, getBrowserState} from './utils';
+
+describe('App test', function () {
+  setupBrowserHooks();
+  it('is running', async function () {
+    const {page} = getBrowserState();
+    await page.goto('http://localhost:4200');
+    const element = await page.waitForSelector('text/sandbox app is running!');
+
+<% if(testingFramework == 'jasmine' || testingFramework == 'jest') { %>
+    expect(element).not.toBeNull();
+<% } %><% if(testingFramework == 'mocha' || testingFramework == 'node') { %>
+    assert.ok(element);
+<% } %>
+  });
+});

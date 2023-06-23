@@ -33,7 +33,11 @@ import {SchematicsOptions, TestingFramework} from './types.js';
 
 export interface FilesOptions {
   projects: any;
-  options: SchematicsOptions;
+  options: {
+    testingFramework: TestingFramework;
+    exportConfig?: boolean;
+    ext?: string;
+  };
   applyPath: string;
   relativeToWorkspacePath: string;
   movePath?: string;
