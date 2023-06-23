@@ -34,7 +34,7 @@ import {
   type NodePackage,
   updateAngularJsonScripts,
 } from '../utils/packages.js';
-import {type SchematicsOptions} from '../utils/types.js';
+import {TestingFramework, type SchematicsOptions} from '../utils/types.js';
 
 // You don't have to export the function as default. You can also have more than one rule
 // factory per file.
@@ -101,7 +101,11 @@ function addPuppeteerFiles(options: SchematicsOptions): Rule {
 
     return addBaseFiles(tree, context, {
       projects,
-      options,
+      options: {
+        ...options,
+        ext:
+          options.testingFramework === TestingFramework.Node ? 'test' : 'e2e',
+      },
     });
   };
 }

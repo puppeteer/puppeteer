@@ -1,15 +1,11 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "extends": "../tsconfig.json",
-  "compilerOptions": {
-<% if(testingFramework == 'jest') { %>
-    "esModuleInterop": true,
-<% } %><% if(testingFramework == 'node') { %>
+  "compilerOptions": {<% if(testingFramework == 'jest') { %>
+    "esModuleInterop": true,<% } %><% if(testingFramework == 'node') { %>
     "module": "CommonJS",
     "rootDir": "tests/",
-    "outDir": "test/",
-<% } %>
+    "outDir": "build/",<% } %>
     "types": ["<%= testingFramework %>"]
   },
-  "include": ["tests/**/*.e2e.ts"]
+  "include": ["tests/**/*.ts"]
 }
