@@ -180,6 +180,7 @@ export function updateAngularJsonScripts(
           options: {
             commands,
             devServerTarget: `${project}:serve`,
+            testingFramework: options.testingFramework,
           },
           configurations: {
             production: {

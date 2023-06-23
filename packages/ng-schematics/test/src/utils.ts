@@ -1,3 +1,4 @@
+import https from 'https';
 import {join} from 'path';
 
 import {JsonObject} from '@angular-devkit/core';
@@ -5,6 +6,7 @@ import {
   SchematicTestRunner,
   UnitTestTree,
 } from '@angular-devkit/schematics/testing';
+import sinon from 'sinon';
 
 const WORKSPACE_OPTIONS = {
   name: 'workspace',
@@ -15,6 +17,22 @@ const WORKSPACE_OPTIONS = {
 const APPLICATION_OPTIONS = {
   name: 'sandbox',
 };
+
+export function setupHttpHooks(): void {
+  // Stop outgoing Request for version fetching
+  before(() => {
+    const httpsGetStub = sinon.stub(https, 'get');
+    httpsGetStub.returns({
+      on: (_: any, callback: () => void) => {
+        callback();
+      },
+    } as any);
+  });
+
+  after(() => {
+    sinon.restore();
+  });
+}
 
 export function getProjectFile(file: string): string {
   return `/${WORKSPACE_OPTIONS.newProjectRoot}/${APPLICATION_OPTIONS.name}/${file}`;
@@ -49,6 +67,7 @@ export function getPackageJson(tree: UnitTestTree): {
 }
 
 export async function buildTestingTree(
+  command: 'ng-add' | 'test',
   userOptions?: Record<string, any>
 ): Promise<UnitTestTree> {
   const runner = new SchematicTestRunner(
@@ -77,5 +96,11 @@ export async function buildTestingTree(
     workingTree
   );
 
-  return await runner.runSchematic('ng-add', options, workingTree);
+  if (command !== 'ng-add') {
+    // We want to create update the proper files with `ng-add`
+    // First else the angular.json will have wrong data
+    workingTree = await runner.runSchematic('ng-add', options, workingTree);
+  }
+
+  return await runner.runSchematic(command, options, workingTree);
 }

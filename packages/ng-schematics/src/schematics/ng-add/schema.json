@@ -5,22 +5,22 @@
   "type": "object",
   "properties": {
     "isDefaultTester": {
-      "description": "",
       "type": "boolean",
       "default": true,
+      "alias": "d",
       "x-prompt": "Use Puppeteer as default `ng e2e` command?"
     },
     "exportConfig": {
-      "description": "",
       "type": "boolean",
       "default": false,
+      "alias": "c",
       "x-prompt": "Export default Puppeteer config file?"
     },
     "testingFramework": {
-      "description": "",
       "type": "string",
       "enum": ["jasmine", "jest", "mocha", "node"],
       "default": "jasmine",
+      "alias": "t",
       "x-prompt": {
         "message": "With what Testing Library do you wish to integrate?",
         "type": "list",

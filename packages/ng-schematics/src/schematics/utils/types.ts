@@ -26,3 +26,8 @@ export interface SchematicsOptions {
   exportConfig: boolean;
   testingFramework: TestingFramework;
 }
+
+export interface SchematicsSpec {
+  name: string;
+  project?: string;
+}

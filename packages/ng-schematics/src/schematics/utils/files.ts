@@ -32,9 +32,10 @@ import {
 import {SchematicsOptions, TestingFramework} from './types.js';
 
 export interface FilesOptions {
-  projects: any;
+  projects: Record<string, any>;
   options: {
     testingFramework: TestingFramework;
+    name?: string;
     exportConfig?: boolean;
     ext?: string;
   };
@@ -153,7 +154,7 @@ export function getScriptFromOptions(options: SchematicsOptions): string[][] {
     case TestingFramework.Node:
       return [
         [`tsc`, '-p', 'e2e/tsconfig.json'],
-        ['node', '--test', 'e2e/'],
+        ['node', '--test', 'e2e/build/'],
       ];
   }
 }

@@ -6,17 +6,10 @@ import * as assert from 'assert';
 <% } %>
 import {setupBrowserHooks, getBrowserState} from './utils';
 
-describe('App test', function () {
+describe('<%= classify(name) %>', function () {
   setupBrowserHooks();
-  it('is running', async function () {
+  it('', async function () {
     const {page} = getBrowserState();
     await page.goto('<%= baseUrl %>');
-    const element = await page.waitForSelector('text/sandbox app is running!');
-
-<% if(testingFramework == 'jasmine' || testingFramework == 'jest') { %>
-    expect(element).not.toBeNull();
-<% } %><% if(testingFramework == 'mocha' || testingFramework == 'node') { %>
-    assert.ok(element);
-<% } %>
   });
 });
