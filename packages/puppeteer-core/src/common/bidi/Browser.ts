@@ -36,11 +36,18 @@ import {debugError} from './utils.js';
  * @internal
  */
 export class Browser extends BrowserBase {
-  static readonly subscribeModules = [
+  static readonly subscribeModules: Bidi.Session.SubscriptionRequestEvent[] = [
     'browsingContext',
     'network',
     'log',
-    'cdp',
+  ];
+  static readonly subscribeCdpEvents: Bidi.CDP.EventNames[] = [
+    // Coverage
+    'cdp.Debugger.scriptParsed',
+    'cdp.CSS.styleSheetAdded',
+    'cdp.Runtime.executionContextsCleared',
+    // Tracing
+    'cdp.Tracing.tracingComplete',
   ];
 
   #browserName = '';
@@ -67,11 +74,9 @@ export class Browser extends BrowserBase {
     }
 
     await opts.connection.send('session.subscribe', {
-      events: (browserName.toLocaleLowerCase().includes('firefox')
-        ? Browser.subscribeModules.filter(module => {
-            return !['cdp'].includes(module);
-          })
-        : Browser.subscribeModules) as Bidi.Message.EventNames[],
+      events: browserName.toLocaleLowerCase().includes('firefox')
+        ? Browser.subscribeModules
+        : [...Browser.subscribeModules, ...Browser.subscribeCdpEvents],
     });
 
     return new Browser({

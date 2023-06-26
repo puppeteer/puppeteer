@@ -1740,31 +1740,13 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage includeRawScriptCoverage should include rawScriptCoverage field when enabled",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage includeRawScriptCoverage should not include rawScriptCoverage field when disabled",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should ignore pptr internal scripts if reportAnonymousScripts is true",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage shouldn't ignore eval() scripts if reportAnonymousScripts is true",
+    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should not ignore eval() scripts if reportAnonymousScripts is true",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL", "PASS"]
