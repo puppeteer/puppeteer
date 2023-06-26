@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
+import {describe, it} from 'node:test';
+
 import expect from 'expect';
-import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
+import sinon from 'sinon';
+
+import {Deferred} from './Deferred.js';
 
 describe('DeferredPromise', function () {
   it('should catch errors', async () => {
@@ -45,18 +49,30 @@ describe('DeferredPromise', function () {
     }
     expect(caught).toBeTruthy();
   });
-  it('Deferred.race should cancel timeout', async function () {
-    const deferred = Deferred.create<void>();
-    const deferredTimeout = Deferred.create<void>({
-      message: 'Race did not stop timer',
-      timeout: this.timeout() + 50,
-    });
-    await Promise.all([
-      Deferred.race([deferred, deferredTimeout]),
-      deferred.resolve(),
-    ]);
 
-    expect(deferredTimeout.value()).toBeInstanceOf(Error);
-    expect(deferredTimeout.value()?.message).toContain('Timeout cleared');
+  it('Deferred.race should cancel timeout', async function () {
+    const clock = sinon.useFakeTimers();
+
+    try {
+      const deferred = Deferred.create<void>();
+      const deferredTimeout = Deferred.create<void>({
+        message: 'Race did not stop timer',
+        timeout: 100,
+      });
+
+      clock.tick(50);
+
+      await Promise.all([
+        Deferred.race([deferred, deferredTimeout]),
+        deferred.resolve(),
+      ]);
+
+      clock.tick(150);
+
+      expect(deferredTimeout.value()).toBeInstanceOf(Error);
+      expect(deferredTimeout.value()?.message).toContain('Timeout cleared');
+    } finally {
+      clock.restore();
+    }
   });
 });
