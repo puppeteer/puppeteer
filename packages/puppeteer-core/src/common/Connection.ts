@@ -18,7 +18,7 @@ import {Protocol} from 'devtools-protocol';
 import {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 import {assert} from '../util/assert.js';
-import {Deferred} from '../util/util.js';
+import {Deferred} from '../util/Deferred.js';
 
 import {ConnectionTransport} from './ConnectionTransport.js';
 import {debug} from './Debug.js';
