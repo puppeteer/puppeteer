@@ -372,6 +372,27 @@ jobs:
         run: |
           docker run -i --init --cap-add=SYS_ADMIN --rm puppeteer-test-image node -e "`cat test/smoke-test.js`"
 
+  unit-tests:
+    name: '[Required] Unit tests'
+    runs-on: ubuntu-latest
+    needs: check-changes
+    if: ${{ contains(fromJSON(needs.check-changes.outputs.changes), 'puppeteer') }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - name: Set up Node.js
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
+        with:
+          cache: npm
+          node-version: lts/*
+      - name: Install dependencies
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: true
+      - name: Run unit tests
+        run: |
+          npm run unit --w puppeteer-core -w puppeteer --if-present
+
   ng-schematics-tests:
     name: '[Required] Test Angular Schematics'
     runs-on: ubuntu-latest

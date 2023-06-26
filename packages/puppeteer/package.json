@@ -115,6 +115,7 @@
     "lib",
     "src",
     "install.js",
+    "!*.test.js",
     "!*.tsbuildinfo"
   ],
   "author": "The Chromium Authors",

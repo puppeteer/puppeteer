@@ -98,7 +98,7 @@ module.exports = {
     'no-restricted-imports': [
       'error',
       {
-        patterns: ['*Events'],
+        patterns: ['*Events', '*.test.js'],
         paths: [
           {
             name: 'mitt',

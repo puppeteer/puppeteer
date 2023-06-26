@@ -12,6 +12,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[Deferred.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[DeviceRequestPrompt.spec] DeviceRequestPrompt *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -154,12 +160,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL", "TIMEOUT"]
-  },
-  {
-    "testIdPattern": "[NetworkManager.spec] NetworkManager *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.browser *",
@@ -471,12 +471,6 @@
     "testIdPattern": "[coverage.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[Deferred.spec] *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
