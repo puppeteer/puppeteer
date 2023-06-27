@@ -22,6 +22,7 @@ module.exports = {
         'guides/debugging',
       ],
     },
+    'ng-schematics',
     'chromium-support',
     'troubleshooting',
     'contributing',
