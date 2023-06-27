@@ -16,6 +16,8 @@
 
 import {SchematicsException, Tree} from '@angular-devkit/schematics';
 
+import {AngularJson} from './types.js';
+
 export function getJsonFileAsObject(
   tree: Tree,
   path: string
@@ -33,6 +35,6 @@ export function getObjectAsJson(object: Record<string, any>): string {
   return JSON.stringify(object, null, 2);
 }
 
-export function getAngularConfig(tree: Tree): Record<string, any> {
-  return getJsonFileAsObject(tree, './angular.json');
+export function getAngularConfig(tree: Tree): AngularJson {
+  return getJsonFileAsObject(tree, './angular.json') as AngularJson;
 }

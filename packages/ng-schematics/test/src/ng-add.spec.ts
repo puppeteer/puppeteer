@@ -121,4 +121,20 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       ['node', '--test', 'e2e/build/'],
     ]);
   });
+
+  it('should not create port option', async () => {
+    const tree = await buildTestingTree('ng-add');
+
+    const {options} = getAngularJsonScripts(tree);
+    expect(options['port']).toBeUndefined();
+  });
+  it('should create port option when specified', async () => {
+    const port = 8080;
+    const tree = await buildTestingTree('ng-add', {
+      port,
+    });
+
+    const {options} = getAngularJsonScripts(tree);
+    expect(options['port']).toBe(port);
+  });
 });

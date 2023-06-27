@@ -10,7 +10,6 @@ describe('App test', function () {
   setupBrowserHooks();
   it('is running', async function () {
     const {page} = getBrowserState();
-    await page.goto('<%= baseUrl %>');
     const element = await page.waitForSelector('text/sandbox app is running!');
 
 <% if(testingFramework == 'jasmine' || testingFramework == 'jest') { %>

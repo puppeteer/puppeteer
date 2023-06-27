@@ -16,6 +16,10 @@
     "devServerTarget": {
       "type": "string",
       "description": "Angular target that spawns the server."
+    },
+    "port": {
+      "type": ["number", "null"],
+      "description": "Port to run the test server on."
     }
   },
   "additionalProperties": true

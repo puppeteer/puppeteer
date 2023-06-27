@@ -21,4 +21,5 @@ type Command = [string, ...string[]];
 export interface PuppeteerBuilderOptions extends JsonObject {
   commands: Command[];
   devServerTarget: string;
+  port: number | null;
 }

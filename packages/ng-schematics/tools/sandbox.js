@@ -21,12 +21,21 @@ const {cwd} = require('process');
 
 const isInit = process.argv.indexOf('--init') !== -1;
 const isBuild = process.argv.indexOf('--build') !== -1;
+const isTest = process.argv.indexOf('--test') !== -1;
 const commands = {
   build: ['npm run build'],
   createSandbox: ['npx ng new sandbox --defaults'],
   runSchematics: [
     {
       command: 'npm run schematics',
+      options: {
+        cwd: join(cwd(), '/sandbox/'),
+      },
+    },
+  ],
+  runSchematicsTest: [
+    {
+      command: 'npm run schematics:test',
       options: {
         cwd: join(cwd(), '/sandbox/'),
       },
@@ -100,7 +109,9 @@ async function main() {
     if (isBuild) {
       await executeCommand(commands.build);
     }
-    await executeCommand(commands.runSchematics);
+    await executeCommand(
+      isTest ? commands.runSchematicsTest : commands.runSchematics
+    );
   }
 }
 

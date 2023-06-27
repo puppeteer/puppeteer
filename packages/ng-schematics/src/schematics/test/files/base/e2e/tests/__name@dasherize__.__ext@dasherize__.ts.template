@@ -10,6 +10,5 @@ describe('<%= classify(name) %>', function () {
   setupBrowserHooks();
   it('', async function () {
     const {page} = getBrowserState();
-    await page.goto('<%= baseUrl %>');
   });
 });

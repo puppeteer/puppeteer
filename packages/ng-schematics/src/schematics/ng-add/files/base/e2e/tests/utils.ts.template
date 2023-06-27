@@ -3,6 +3,7 @@ import {before, beforeEach, after, afterEach} from 'node:test';
 <% } %>
 import * as puppeteer from 'puppeteer';
 
+const baseUrl = '<%= baseUrl %>';
 let browser: puppeteer.Browser;
 let page: puppeteer.Page;
 
@@ -21,6 +22,7 @@ export function setupBrowserHooks(): void {
 
   beforeEach(async () => {
     page = await browser.newPage();
+    await page.goto(baseUrl);
   });
 
   afterEach(async () => {
@@ -41,6 +43,7 @@ export function setupBrowserHooks(): void {
 export function getBrowserState(): {
   browser: puppeteer.Browser;
   page: puppeteer.Page;
+  baseUrl: string;
 } {
   if (!browser) {
     throw new Error(
@@ -50,5 +53,6 @@ export function getBrowserState(): {
   return {
     browser,
     page,
+    baseUrl,
   };
 }
