@@ -22,9 +22,11 @@ import {
 } from 'puppeteer-core/internal/api/Locator.js';
 import sinon from 'sinon';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 
 describe('Locator', function () {
+  setupTestBrowserHooks();
+
   it('should work with a frame', async () => {
     const {page} = await getTestState();
 

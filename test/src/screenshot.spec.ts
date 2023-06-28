@@ -16,9 +16,11 @@
 
 import expect from 'expect';
 
-import {getTestState, launch} from './mocha-utils.js';
+import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
 
 describe('Screenshots', function () {
+  setupTestBrowserHooks();
+
   describe('Page.screenshot', function () {
     it('should work', async () => {
       const {page, server} = await getTestState();

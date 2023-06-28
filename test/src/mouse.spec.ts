@@ -20,7 +20,7 @@ import {MouseButton} from 'puppeteer-core/internal/api/Input.js';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
 import {KeyInput} from 'puppeteer-core/internal/common/USKeyboardLayout.js';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 
 interface ClickData {
   type: string;
@@ -50,6 +50,8 @@ function dimensions(): Dimensions {
 }
 
 describe('Mouse', function () {
+  setupTestBrowserHooks();
+
   it('should click the document', async () => {
     const {page} = await getTestState();
 

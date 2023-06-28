@@ -21,10 +21,12 @@ import {TimeoutError} from 'puppeteer';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
 import {Target} from 'puppeteer-core/internal/common/Target.js';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
 
 describe('Target', function () {
+  setupTestBrowserHooks();
+
   it('Browser.targets should return all of the targets', async () => {
     const {browser} = await getTestState();
 

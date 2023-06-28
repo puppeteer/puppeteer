@@ -18,10 +18,12 @@ import expect from 'expect';
 import {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 import {WebWorker} from 'puppeteer-core/internal/common/WebWorker.js';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
 
 describe('Workers', function () {
+  setupTestBrowserHooks();
+
   it('Page.workers', async () => {
     const {page, server} = await getTestState();
 

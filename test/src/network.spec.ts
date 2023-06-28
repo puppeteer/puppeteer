@@ -22,10 +22,12 @@ import expect from 'expect';
 import {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import {HTTPResponse} from 'puppeteer-core/internal/api/HTTPResponse.js';
 
-import {getTestState, launch} from './mocha-utils.js';
+import {getTestState, launch, setupTestBrowserHooks} from './mocha-utils.js';
 import {attachFrame, isFavicon, waitEvent} from './utils.js';
 
 describe('network', function () {
+  setupTestBrowserHooks();
+
   describe('Page.Events.Request', function () {
     it('should fire for navigation requests', async () => {
       const {page, server} = await getTestState();

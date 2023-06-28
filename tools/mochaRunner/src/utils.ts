@@ -135,12 +135,6 @@ export function getExpectationUpdates(
   const output: Map<string, RecommendedExpectation> = new Map();
 
   for (const pass of results.passes) {
-    // If an error occurs during a hook
-    // the error not have a file associated with it
-    if (!pass.file) {
-      continue;
-    }
-
     const expectationEntry = findEffectiveExpectationForTest(
       expectations,
       pass
@@ -171,6 +165,15 @@ export function getExpectationUpdates(
     // If an error occurs during a hook
     // the error not have a file associated with it
     if (!failure.file) {
+      addEntry({
+        expectation: {
+          testIdPattern: 'Hook failed!',
+          platforms: context.platforms,
+          parameters: context.parameters,
+          expectations: [],
+        },
+        action: 'add',
+      });
       continue;
     }
 

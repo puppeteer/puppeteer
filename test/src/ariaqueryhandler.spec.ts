@@ -20,10 +20,12 @@ import expect from 'expect';
 import {TimeoutError} from 'puppeteer';
 import type {ElementHandle} from 'puppeteer-core/internal/api/ElementHandle.js';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {attachFrame, detachFrame} from './utils.js';
 
 describe('AriaQueryHandler', () => {
+  setupTestBrowserHooks();
+
   describe('parseAriaSelector', () => {
     it('should find button', async () => {
       const {page} = await getTestState();

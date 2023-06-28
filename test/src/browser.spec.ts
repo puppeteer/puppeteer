@@ -16,9 +16,11 @@
 
 import expect from 'expect';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 
 describe('Browser specs', function () {
+  setupTestBrowserHooks();
+
   describe('Browser.version', function () {
     it('should return version', async () => {
       const {browser} = await getTestState();

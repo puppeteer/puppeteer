@@ -17,10 +17,12 @@
 import expect from 'expect';
 import {TimeoutError} from 'puppeteer';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
 
 describe('BrowserContext', function () {
+  setupTestBrowserHooks();
+
   it('should have default context', async () => {
     const {browser} = await getTestState({
       skipContextCreation: true,
@@ -240,7 +242,6 @@ describe('BrowserContext', function () {
     expect(browser.browserContexts()[0]!.id).toBeUndefined();
 
     const context = await browser.createIncognitoBrowserContext();
-    console.log('2');
     expect(browser.browserContexts()).toHaveLength(2);
     expect(browser.browserContexts()[1]!.id).toBeDefined();
     await context.close();

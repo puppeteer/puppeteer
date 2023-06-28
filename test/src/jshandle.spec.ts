@@ -16,9 +16,11 @@
 
 import expect from 'expect';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 
 describe('JSHandle', function () {
+  setupTestBrowserHooks();
+
   describe('Page.evaluateHandle', function () {
     it('should work', async () => {
       const {page} = await getTestState();
@@ -158,6 +160,7 @@ describe('JSHandle', function () {
         return new Date('2017-09-26T00:00:00.000Z');
       });
       const date = await dateHandle.jsonValue();
+      expect(date).toBeInstanceOf(Date);
       expect(date.toISOString()).toEqual('2017-09-26T00:00:00.000Z');
     });
     it('should throw for circular objects', async () => {

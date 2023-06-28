@@ -34,6 +34,7 @@ import {
   PuppeteerNode,
 } from 'puppeteer-core/internal/node/PuppeteerNode.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
+import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 import sinon from 'sinon';
 
@@ -135,6 +136,22 @@ const setupServer = async () => {
   return {server, httpsServer};
 };
 
+export const setupTestBrowserHooks = (): void => {
+  before(async function () {
+    try {
+      if (!state.browser) {
+        state.browser = await puppeteer.launch({
+          ...processVariables.defaultBrowserOptions,
+          timeout: this.timeout() - 1_000,
+        });
+      }
+    } catch {
+      // Intentionally empty as `getTestState` will throw
+      // if browser is not found
+    }
+  });
+};
+
 export const getTestState = async (
   options: {
     skipLaunch?: boolean;
@@ -147,25 +164,15 @@ export const getTestState = async (
     JSON.stringify(processVariables.defaultBrowserOptions)
   );
 
-  if (!state.puppeteer) {
-    const {server, httpsServer} = await setupServer();
+  state.server?.reset();
+  state.httpsServer?.reset();
 
-    state.puppeteer = puppeteer;
-    state.server = server;
-    state.httpsServer = httpsServer;
-    state.isFirefox = processVariables.isFirefox;
-    state.isChrome = processVariables.isChrome;
-    state.isHeadless = processVariables.isHeadless;
-    state.headless = processVariables.headless;
-    state.puppeteerPath = path.resolve(
-      path.join(__dirname, '..', '..', 'packages', 'puppeteer')
-    );
+  if (skipLaunch) {
+    return state as PuppeteerTestState;
   }
 
-  if (!state.browser && !skipLaunch) {
-    state.browser = await puppeteer.launch(
-      processVariables.defaultBrowserOptions
-    );
+  if (!state.browser) {
+    throw new Error('Browser was not set-up in time!');
   }
 
   if (state.context) {
@@ -174,14 +181,10 @@ export const getTestState = async (
     state.page = undefined;
   }
 
-  if (!skipLaunch && !skipContextCreation) {
+  if (!skipContextCreation) {
     state.context = await state.browser!.createIncognitoBrowserContext();
     state.page = await state.context.newPage();
   }
-
-  state.server?.reset();
-  state.httpsServer?.reset();
-
   return state as PuppeteerTestState;
 };
 
@@ -197,7 +200,7 @@ const setupGoldenAssertions = (): void => {
 
 setupGoldenAssertions();
 
-interface PuppeteerTestState {
+export interface PuppeteerTestState {
   browser: Browser;
   context: BrowserContext;
   page: Page;
@@ -253,16 +256,53 @@ const browserNotClosedError = new Error(
   'A manually launched browser was not closed!'
 );
 export const mochaHooks = {
+  async beforeAll(): Promise<void> {
+    const {server, httpsServer} = await setupServer();
+
+    state.puppeteer = puppeteer;
+    state.server = server;
+    state.httpsServer = httpsServer;
+    state.isFirefox = processVariables.isFirefox;
+    state.isChrome = processVariables.isChrome;
+    state.isHeadless = processVariables.isHeadless;
+    state.headless = processVariables.headless;
+    state.puppeteerPath = path.resolve(
+      path.join(__dirname, '..', '..', 'packages', 'puppeteer')
+    );
+  },
+
   async afterAll(): Promise<void> {
-    await state.browser?.close();
-    await state.server?.stop();
-    await state.httpsServer?.stop();
+    (this as any).timeout(0);
+    const lastTestFile = (this as any)?.test?.parent?.suites?.[0]?.file
+      ?.split('/')
+      ?.at(-1);
+    try {
+      await Promise.all([
+        state.server?.stop(),
+        state.httpsServer?.stop(),
+        state.browser?.close(),
+      ]);
+    } catch (error) {
+      throw new Error(
+        `Closing defaults (HTTP TestServer, HTTPS TestServer, Browser ) failed in ${lastTestFile}}`
+      );
+    }
+    if (browserCleanupsAfterAll.length > 0) {
+      await closeLaunched(browserCleanupsAfterAll)();
+      throw new Error(`Browser was not closed in ${lastTestFile}`);
+    }
   },
 
   async afterEach(): Promise<void> {
     if (browserCleanups.length > 0) {
-      await closeLaunched();
       (this as any).test.error(browserNotClosedError);
+      await Deferred.race([
+        closeLaunched(browserCleanups)(),
+        Deferred.create({
+          message: `Failed in after Hook`,
+          timeout: (this as any).timeout() - 1000,
+        }),
+      ]);
     }
     sinon.restore();
   },
@@ -381,30 +421,34 @@ export const createTimeout = <T>(
   });
 };
 
-let browserCleanups: Array<() => Promise<void>> = [];
+const browserCleanupsAfterAll: Array<() => Promise<void>> = [];
+const browserCleanups: Array<() => Promise<void>> = [];
 
-const closeLaunched = async () => {
-  let cleanup = browserCleanups.pop();
-  try {
-    while (cleanup) {
-      await cleanup();
-      cleanup = browserCleanups.pop();
-    }
-  } catch (error) {
-    // If the browser was closed by other mean swallow the error
-    // and mark he browser as closed
-    if ((error as any)?.message.includes('Connection closed')) {
-      browserCleanups = [];
-      return;
-    }
+const closeLaunched = (storage: Array<() => Promise<void>>) => {
+  return async () => {
+    let cleanup = storage.pop();
+    try {
+      while (cleanup) {
+        await cleanup();
+        cleanup = storage.pop();
+      }
+    } catch (error) {
+      // If the browser was closed by other means, swallow the error
+      // and mark the browser as closed.
+      if ((error as Error)?.message.includes('Connection closed')) {
+        storage.splice(0, storage.length);
+        return;
+      }
 
-    throw error;
-  }
+      throw error;
+    }
+  };
 };
 
 export const launch = async (
   launchOptions: PuppeteerLaunchOptions,
   options: {
+    after?: 'each' | 'all';
     createContext?: boolean;
     createPage?: boolean;
   } = {}
@@ -413,17 +457,18 @@ export const launch = async (
     close: () => Promise<void>;
   }
 > => {
-  const {createContext = true, createPage = true} = options;
+  const {after = 'each', createContext = true, createPage = true} = options;
   const initState = await getTestState({
     skipLaunch: true,
   });
-
+  const cleanupStorage =
+    after === 'each' ? browserCleanups : browserCleanupsAfterAll;
   try {
     const browser = await puppeteer.launch({
       ...initState.defaultBrowserOptions,
       ...launchOptions,
     });
-    browserCleanups.push(() => {
+    cleanupStorage.push(() => {
       return browser.close();
     });
 
@@ -431,13 +476,13 @@ export const launch = async (
     let page: Page;
     if (createContext) {
       context = await browser.createIncognitoBrowserContext();
-      browserCleanups.push(() => {
+      cleanupStorage.push(() => {
         return context.close();
       });
 
       if (createPage) {
         page = await context.newPage();
-        browserCleanups.push(() => {
+        cleanupStorage.push(() => {
           return page.close();
         });
       }
@@ -448,10 +493,10 @@ export const launch = async (
       browser,
       context: context!,
       page: page!,
-      close: closeLaunched,
+      close: closeLaunched(cleanupStorage),
     };
   } catch (error) {
-    await closeLaunched();
+    await closeLaunched(cleanupStorage)();
 
     throw error;
   }

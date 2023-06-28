@@ -15,9 +15,16 @@
  */
 import expect from 'expect';
 
-import {expectCookieEquals, getTestState, launch} from './mocha-utils.js';
+import {
+  expectCookieEquals,
+  getTestState,
+  launch,
+  setupTestBrowserHooks,
+} from './mocha-utils.js';
 
 describe('Cookie specs', () => {
+  setupTestBrowserHooks();
+
   describe('Page.cookies', function () {
     it('should return no cookies in pristine browser context', async () => {
       const {page, server} = await getTestState();

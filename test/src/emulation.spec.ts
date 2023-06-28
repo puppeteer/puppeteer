@@ -17,12 +17,14 @@
 import expect from 'expect';
 import {KnownDevices, PredefinedNetworkConditions} from 'puppeteer';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 
 const iPhone = KnownDevices['iPhone 6'];
 const iPhoneLandscape = KnownDevices['iPhone 6 landscape'];
 
 describe('Emulation', () => {
+  setupTestBrowserHooks();
+
   describe('Page.viewport', function () {
     it('should get the proper viewport size', async () => {
       const {page} = await getTestState();

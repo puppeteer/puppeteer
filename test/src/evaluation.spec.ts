@@ -16,10 +16,12 @@
 
 import expect from 'expect';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {attachFrame} from './utils.js';
 
 describe('Evaluation specs', function () {
+  setupTestBrowserHooks();
+
   describe('Page.evaluate', function () {
     it('should work', async () => {
       const {page} = await getTestState();

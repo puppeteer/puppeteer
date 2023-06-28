@@ -16,9 +16,11 @@
 
 import expect from 'expect';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 
 describe('Coverage specs', function () {
+  setupTestBrowserHooks();
+
   describe('JSCoverage', function () {
     it('should work', async () => {
       const {page, server} = await getTestState();
@@ -269,7 +271,6 @@ describe('Coverage specs', function () {
       await page.goto(server.PREFIX + '/csscoverage/media.html');
       const coverage = await page.coverage.stopCSSCoverage();
       expect(coverage).toHaveLength(1);
-      console.log(coverage);
       expect(coverage[0]!.url).toContain('/csscoverage/media.html');
       expect(coverage[0]!.ranges).toEqual([{start: 8, end: 40}]);
     });

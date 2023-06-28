@@ -19,12 +19,14 @@ import path from 'path';
 import expect from 'expect';
 import {TimeoutError} from 'puppeteer';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
 
 const FILE_TO_UPLOAD = path.join(__dirname, '/../assets/file-to-upload.txt');
 
 describe('input tests', function () {
+  setupTestBrowserHooks();
+
   describe('input', function () {
     it('should upload the file', async () => {
       const {page, server} = await getTestState();

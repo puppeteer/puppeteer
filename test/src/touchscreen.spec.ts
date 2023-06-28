@@ -17,9 +17,11 @@
 import expect from 'expect';
 import {KnownDevices, BoundingBox} from 'puppeteer';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 
 describe('Touchscreen', function () {
+  setupTestBrowserHooks();
+
   it('should tap the button', async () => {
     const {page, server} = await getTestState();
     const iPhone = KnownDevices['iPhone 6']!;

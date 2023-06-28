@@ -25,10 +25,12 @@ import {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 import {CDPPage} from 'puppeteer-core/internal/common/Page.js';
 import sinon from 'sinon';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {attachFrame, detachFrame, isFavicon, waitEvent} from './utils.js';
 
 describe('Page', function () {
+  setupTestBrowserHooks();
+
   describe('Page.close', function () {
     it('should reject all promises when page is closed', async () => {
       const {context} = await getTestState();
