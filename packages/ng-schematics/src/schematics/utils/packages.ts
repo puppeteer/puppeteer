@@ -170,6 +170,7 @@ export function updateAngularJsonScripts(
   const angularJson = getAngularConfig(tree);
   const commands = getScriptFromOptions(options);
   const name = getNgCommandName(options);
+  const port = options.port !== 4200 ? Number(options.port) : undefined;
 
   Object.keys(angularJson['projects']).forEach(project => {
     const e2eScript = [
@@ -181,6 +182,7 @@ export function updateAngularJsonScripts(
             commands,
             devServerTarget: `${project}:serve`,
             testingFramework: options.testingFramework,
+            port,
           },
           configurations: {
             production: {
@@ -192,7 +194,7 @@ export function updateAngularJsonScripts(
     ];
 
     updateJsonValues(
-      angularJson['projects'][project],
+      angularJson['projects'][project]!,
       'architect',
       e2eScript,
       overwrite

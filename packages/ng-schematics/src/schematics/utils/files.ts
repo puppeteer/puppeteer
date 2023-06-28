@@ -35,6 +35,7 @@ export interface FilesOptions {
   projects: Record<string, any>;
   options: {
     testingFramework: TestingFramework;
+    port: number;
     name?: string;
     exportConfig?: boolean;
     ext?: string;
@@ -70,7 +71,7 @@ export function addFiles(
         workspacePath
       );
 
-      const baseUrl = getProjectBaseUrl(project);
+      const baseUrl = getProjectBaseUrl(project, options.port);
 
       return mergeWith(
         apply(url(applyPath), [
@@ -95,13 +96,13 @@ export function addFiles(
   )(tree, context);
 }
 
-function getProjectBaseUrl(project: any): string {
-  let options = {protocol: 'http', port: 4200, host: 'localhost'};
+function getProjectBaseUrl(project: any, port: number): string {
+  let options = {protocol: 'http', port, host: 'localhost'};
 
   if (project.architect?.serve?.options) {
     const projectOptions = project.architect?.serve?.options;
-
-    options = {...options, ...projectOptions};
+    const projectPort = port !== 4200 ? port : projectOptions?.port ?? port;
+    options = {...options, ...projectOptions, port: projectPort};
     options.protocol = projectOptions.ssl ? 'https' : 'http';
   }
 

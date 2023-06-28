@@ -105,7 +105,7 @@ async function startServer(
   const overrides = {
     watch: false,
     host: defaultServerOptions['host'],
-    port: defaultServerOptions['port'],
+    port: options.port ?? defaultServerOptions['port'],
   } as JsonObject;
 
   message(' Spawning test server ⚙️ ... \n', context);
@@ -138,7 +138,7 @@ async function executeE2ETest(
     if (error instanceof Error) {
       return {success: false, error: error.message};
     }
-    return {success: false, error: error as any};
+    return {success: false, error: error as string};
   } finally {
     if (server) {
       await server.stop();
@@ -146,4 +146,4 @@ async function executeE2ETest(
   }
 }
 
-export default createBuilder<PuppeteerBuilderOptions>(executeE2ETest) as any;
+export default createBuilder<PuppeteerBuilderOptions>(executeE2ETest);

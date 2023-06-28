@@ -43,6 +43,12 @@
           }
         ]
       }
+    },
+    "port": {
+      "type": ["number"],
+      "default": 4200,
+      "alias": "p",
+      "x-prompt": "On which port to spawn test server on?"
     }
   },
   "required": []
