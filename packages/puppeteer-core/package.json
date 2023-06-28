@@ -141,7 +141,7 @@
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "dependencies": {
-    "chromium-bidi": "0.4.14",
+    "chromium-bidi": "0.4.15",
     "cross-fetch": "3.1.6",
     "debug": "4.3.4",
     "devtools-protocol": "0.0.1135028",
