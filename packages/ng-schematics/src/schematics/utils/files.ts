@@ -155,7 +155,7 @@ export function getScriptFromOptions(options: SchematicsOptions): string[][] {
     case TestingFramework.Node:
       return [
         [`tsc`, '-p', 'e2e/tsconfig.json'],
-        ['node', '--test', 'e2e/build/'],
+        ['node', '--test', '--test-reporter', 'spec', 'e2e/build/'],
       ];
   }
 }
