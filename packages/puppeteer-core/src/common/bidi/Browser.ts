@@ -41,7 +41,7 @@ export class Browser extends BrowserBase {
     'network',
     'log',
   ];
-  static readonly subscribeCdpEvents: Bidi.CDP.EventNames[] = [
+  static readonly subscribeCdpEvents: Bidi.Cdp.EventNames[] = [
     // Coverage
     'cdp.Debugger.scriptParsed',
     'cdp.CSS.styleSheetAdded',
