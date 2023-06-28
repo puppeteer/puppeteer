@@ -269,6 +269,7 @@ export class Page extends PageBase {
       this.#removeFramesRecursively(child);
     }
     frame.dispose();
+    this.#networkManager.clearMapAfterFrameDispose(frame);
     this.#frameTree.removeFrame(frame);
     this.emit(PageEmittedEvents.FrameDetached, frame);
   }
