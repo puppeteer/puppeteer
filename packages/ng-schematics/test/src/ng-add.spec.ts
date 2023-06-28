@@ -118,7 +118,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     expect(tree.files).toContain(getProjectFile('e2e/tests/app.test.ts'));
     expect(options['commands']).toEqual([
       [`tsc`, '-p', 'e2e/tsconfig.json'],
-      ['node', '--test', 'e2e/build/'],
+      ['node', '--test', '--test-reporter', 'spec', 'e2e/build/'],
     ]);
   });
 
