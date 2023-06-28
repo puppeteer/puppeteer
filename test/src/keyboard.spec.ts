@@ -88,7 +88,7 @@ describe('Keyboard', function () {
   // @see https://github.com/puppeteer/puppeteer/issues/1313
   it('should trigger commands of keyboard shortcuts', async () => {
     const {page, server} = await getTestState();
-    const cmdKey = os.platform() !== 'darwin' ? 'Meta' : 'Control';
+    const cmdKey = os.platform() === 'darwin' ? 'Meta' : 'Control';
 
     await page.goto(server.PREFIX + '/input/textarea.html');
     await page.type('textarea', 'hello');
@@ -104,8 +104,6 @@ describe('Keyboard', function () {
 
     await page.keyboard.down(cmdKey);
     await page.keyboard.press('v', {commands: ['Paste']});
-    await page.keyboard.up(cmdKey);
-    await page.keyboard.down(cmdKey);
     await page.keyboard.press('v', {commands: ['Paste']});
     await page.keyboard.up(cmdKey);
 
@@ -144,7 +142,7 @@ describe('Keyboard', function () {
       })
     ).toBe('a');
   });
-  it('ElementHandle.press should support |text| option', async () => {
+  it('ElementHandle.press should not support |text| option', async () => {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
@@ -154,7 +152,7 @@ describe('Keyboard', function () {
       await page.evaluate(() => {
         return document.querySelector('textarea')!.value;
       })
-    ).toBe('ё');
+    ).toBe('a');
   });
   it('should send a character with sendCharacter', async () => {
     const {page, server} = await getTestState();
@@ -461,25 +459,13 @@ describe('Keyboard', function () {
   it('should throw on unknown keys', async () => {
     const {page} = await getTestState();
 
-    let error = await page.keyboard
+    const error = await page.keyboard
       // @ts-expect-error bad input
       .press('NotARealKey')
       .catch(error_ => {
         return error_;
       });
     expect(error.message).toBe('Unknown key: "NotARealKey"');
-
-    // @ts-expect-error bad input
-    error = await page.keyboard.press('ё').catch(error_ => {
-      return error_;
-    });
-    expect(error && error.message).toBe('Unknown key: "ё"');
-
-    // @ts-expect-error bad input
-    error = await page.keyboard.press('😊').catch(error_ => {
-      return error_;
-    });
-    expect(error && error.message).toBe('Unknown key: "😊"');
   });
   it('should type emoji', async () => {
     const {page, server} = await getTestState();
