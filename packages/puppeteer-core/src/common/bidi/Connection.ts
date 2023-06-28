@@ -136,12 +136,12 @@ interface Commands {
     returnType: Bidi.Message.EmptyResult;
   };
   'cdp.sendCommand': {
-    params: Bidi.CDP.SendCommandParams;
-    returnType: Bidi.CDP.SendCommandResult;
+    params: Bidi.Cdp.SendCommandParams;
+    returnType: Bidi.Cdp.SendCommandResult;
   };
   'cdp.getSession': {
-    params: Bidi.CDP.GetSessionParams;
-    returnType: Bidi.CDP.GetSessionResult;
+    params: Bidi.Cdp.GetSessionParams;
+    returnType: Bidi.Cdp.GetSessionResult;
   };
 }
 
@@ -285,6 +285,6 @@ function createProtocolError(object: Bidi.Message.ErrorResult): string {
 
 function isCDPEvent(
   event: Bidi.Message.EventMessage
-): event is Bidi.CDP.EventReceivedEvent {
+): event is Bidi.Cdp.EventReceivedEvent {
   return event.method.startsWith('cdp.');
 }
