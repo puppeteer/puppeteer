@@ -51,7 +51,7 @@ export class CDPSessionWrapper extends EventEmitter implements CDPSession {
         context: context.id,
       })
       .then(session => {
-        this.#sessionId.resolve(session.result.cdpSession);
+        this.#sessionId.resolve(session.result.session!);
       })
       .catch(err => {
         this.#sessionId.reject(err);
@@ -65,11 +65,11 @@ export class CDPSessionWrapper extends EventEmitter implements CDPSession {
     method: T,
     ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
-    const cdpSession = await this.#sessionId.valueOrThrow();
+    const session = await this.#sessionId.valueOrThrow();
     const result = await this.#context.connection.send('cdp.sendCommand', {
-      cdpMethod: method,
-      cdpParams: paramArgs[0] || {},
-      cdpSession,
+      method: method,
+      params: paramArgs[0],
+      session,
     });
     return result.result;
   }

@@ -24,7 +24,7 @@ describe('Coverage specs', function () {
       const {page, server} = await getTestState();
       await page.coverage.startJSCoverage();
       await page.goto(server.PREFIX + '/jscoverage/simple.html', {
-        waitUntil: 'networkidle0',
+        waitUntil: 'load',
       });
       const coverage = await page.coverage.stopJSCoverage();
       expect(coverage).toHaveLength(1);
@@ -51,7 +51,7 @@ describe('Coverage specs', function () {
       const coverage = await page.coverage.stopJSCoverage();
       expect(coverage).toHaveLength(1);
     });
-    it("shouldn't ignore eval() scripts if reportAnonymousScripts is true", async () => {
+    it('should not ignore eval() scripts if reportAnonymousScripts is true', async () => {
       const {page, server} = await getTestState();
 
       await page.coverage.startJSCoverage({reportAnonymousScripts: true});
@@ -183,7 +183,7 @@ describe('Coverage specs', function () {
         const {page, server} = await getTestState();
         await page.coverage.startJSCoverage();
         await page.goto(server.PREFIX + '/jscoverage/simple.html', {
-          waitUntil: 'networkidle0',
+          waitUntil: 'load',
         });
         const coverage = await page.coverage.stopJSCoverage();
         expect(coverage).toHaveLength(1);
@@ -195,7 +195,7 @@ describe('Coverage specs', function () {
           includeRawScriptCoverage: true,
         });
         await page.goto(server.PREFIX + '/jscoverage/simple.html', {
-          waitUntil: 'networkidle0',
+          waitUntil: 'load',
         });
         const coverage = await page.coverage.stopJSCoverage();
         expect(coverage).toHaveLength(1);
@@ -269,6 +269,7 @@ describe('Coverage specs', function () {
       await page.goto(server.PREFIX + '/csscoverage/media.html');
       const coverage = await page.coverage.stopCSSCoverage();
       expect(coverage).toHaveLength(1);
+      console.log(coverage);
       expect(coverage[0]!.url).toContain('/csscoverage/media.html');
       expect(coverage[0]!.ranges).toEqual([{start: 8, end: 40}]);
     });
