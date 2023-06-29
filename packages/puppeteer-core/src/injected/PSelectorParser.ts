@@ -33,19 +33,15 @@ TOKENS['combinator'] = /\s*(>>>>?|[\s>+~])\s*/g;
 
 const ESCAPE_REGEXP = /\\[\s\S]/g;
 const unquote = (text: string): string => {
-  if (text.length > 1) {
-    for (const char of ['"', "'"]) {
-      if (!text.startsWith(char) || !text.endsWith(char)) {
-        continue;
-      }
-      return text
-        .slice(char.length, -char.length)
-        .replace(ESCAPE_REGEXP, match => {
-          return match.slice(1);
-        });
-    }
+  if (text.length <= 1) {
+    return text;
   }
-  return text;
+  if ((text[0] === '"' || text[0] === "'") && text.endsWith(text[0])) {
+    text = text.slice(1, -1);
+  }
+  return text.replace(ESCAPE_REGEXP, match => {
+    return match[1] as string;
+  });
 };
 
 export function parsePSelectors(
