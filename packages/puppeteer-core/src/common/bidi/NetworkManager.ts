@@ -20,6 +20,7 @@ import {EventEmitter, Handler} from '../EventEmitter.js';
 import {NetworkManagerEmittedEvents} from '../NetworkManager.js';
 
 import {Connection} from './Connection.js';
+import {Frame} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {Page} from './Page.js';
@@ -74,18 +75,20 @@ export class NetworkManager extends EventEmitter {
 
   #onResponseCompleted(event: Bidi.Network.ResponseCompletedParams): void {
     const request = this.#requestMap.get(event.request.request);
-    if (request) {
-      const response = new HTTPResponse(request, event);
-      request._response = response;
-      if (event.navigation) {
-        this.#navigationMap.set(event.navigation, response);
-      }
-      if (response.fromCache()) {
-        this.emit(NetworkManagerEmittedEvents.RequestServedFromCache, request);
-      }
-      this.emit(NetworkManagerEmittedEvents.Response, response);
-      this.emit(NetworkManagerEmittedEvents.RequestFinished, request);
+    if (!request) {
+      return;
     }
+    const response = new HTTPResponse(request, event);
+    request._response = response;
+    if (event.navigation) {
+      this.#navigationMap.set(event.navigation, response);
+    }
+    if (response.fromCache()) {
+      this.emit(NetworkManagerEmittedEvents.RequestServedFromCache, request);
+    }
+    this.emit(NetworkManagerEmittedEvents.Response, response);
+    this.emit(NetworkManagerEmittedEvents.RequestFinished, request);
+    this.#requestMap.delete(event.request.request);
   }
 
   #onFetchError(event: Bidi.Network.FetchErrorParams) {
@@ -95,10 +98,16 @@ export class NetworkManager extends EventEmitter {
     }
     request._failureText = event.errorText;
     this.emit(NetworkManagerEmittedEvents.RequestFailed, request);
+    this.#requestMap.delete(event.request.request);
   }
 
   getNavigationResponse(navigationId: string | null): HTTPResponse | null {
-    return this.#navigationMap.get(navigationId ?? '') ?? null;
+    if (!navigationId) {
+      return null;
+    }
+    const response = this.#navigationMap.get(navigationId);
+
+    return response ?? null;
   }
 
   inFlightRequestsCount(): number {
@@ -110,6 +119,20 @@ export class NetworkManager extends EventEmitter {
     }
 
     return inFlightRequestCounter;
+  }
+
+  clearMapAfterFrameDispose(frame: Frame): void {
+    for (const [id, request] of this.#requestMap.entries()) {
+      if (request.frame() === frame) {
+        this.#requestMap.delete(id);
+      }
+    }
+
+    for (const [id, response] of this.#navigationMap.entries()) {
+      if (response.frame() === frame) {
+        this.#requestMap.delete(id);
+      }
+    }
   }
 
   dispose(): void {
