@@ -368,7 +368,7 @@ export class Process {
     this.#clearListeners();
   }
 
-  waitForLineOutput(regex: RegExp, timeout?: number): Promise<string> {
+  waitForLineOutput(regex: RegExp, timeout = 0): Promise<string> {
     if (!this.#browserProcess.stderr) {
       throw new Error('`browserProcess` does not have stderr.');
     }
@@ -380,7 +380,8 @@ export class Process {
       rl.on('close', onClose);
       this.#browserProcess.on('exit', onClose);
       this.#browserProcess.on('error', onClose);
-      const timeoutId = timeout ? setTimeout(onTimeout, timeout) : 0;
+      const timeoutId =
+        timeout > 0 ? setTimeout(onTimeout, timeout) : undefined;
 
       const cleanup = (): void => {
         if (timeoutId) {
