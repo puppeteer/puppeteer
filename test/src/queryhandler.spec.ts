@@ -637,5 +637,26 @@ describe('Query handler tests', function () {
       const elements = await page.$$('::-p-text(world), button');
       expect(elements).toHaveLength(1);
     });
+
+    it.only('should handle escapes', async () => {
+      const {server, page} = await getTestState();
+      await page.goto(`${server.PREFIX}/p-selectors.html`);
+      let element = await page.$(
+        ':scope >>> ::-p-text(My name is Jun \\(pronounced like "June"\\))'
+      );
+      expect(element).toBeTruthy();
+      element = await page.$(
+        ':scope >>> ::-p-text("My name is Jun (pronounced like \\"June\\")")'
+      );
+      expect(element).toBeTruthy();
+      element = await page.$(
+        ':scope >>> ::-p-text(My name is Jun \\(pronounced like "June"\\)")'
+      );
+      expect(element).toBeFalsy();
+      element = await page.$(
+        ':scope >>> ::-p-text("My name is Jun \\(pronounced like "June"\\))'
+      );
+      expect(element).toBeFalsy();
+    });
   });
 });
