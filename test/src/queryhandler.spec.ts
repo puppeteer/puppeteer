@@ -638,7 +638,7 @@ describe('Query handler tests', function () {
       expect(elements).toHaveLength(1);
     });
 
-    it.only('should handle escapes', async () => {
+    it('should handle escapes', async () => {
       const {server, page} = await getTestState();
       await page.goto(`${server.PREFIX}/p-selectors.html`);
       let element = await page.$(
