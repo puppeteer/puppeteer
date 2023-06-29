@@ -32,8 +32,11 @@ body:
         (async () => {
           const browser = await puppeteer.launch();
           const page = await browser.newPage();
-          await page.goto('https://news.google.com/news/');
-          await page.screenshot({path: 'news.png', fullPage: true});
+          try {
+            // Do something.
+          } catch {
+            throw new Error('Something went wrong');
+          }
           await browser.close();
         })();
     validations:
@@ -57,7 +60,7 @@ body:
       description: >
         How does the bug behave? Does it happen very rarely (flaky)? If there is
         a PDF problem, make sure the script writes the PDF somewhere in the
-        current working directory. *Note: PDF implies no error.*
+        current working directory.
       options:
         - label: Flaky
         - label: PDF
@@ -95,14 +98,15 @@ body:
       label: Puppeteer configuration
       description: >
         Copy and paste your [configuration
-        file](https://pptr.dev/guides/configuration/) (if applicable). *No need
-        for backticks — this automatically gets formatted into code.*
+        file](https://pptr.dev/guides/configuration/) (if applicable).
+
+        *No need for backticks — this automatically gets formatted into code.*
       render: TypeScript
   - id: puppeteer-version
     type: input
     attributes:
       label: Puppeteer version
-      description: |
+      description: >
         What version of Puppeteer are you running? *This must be a valid semver
         tag.*
     validations:
@@ -111,7 +115,7 @@ body:
     type: input
     attributes:
       label: Node version
-      description: |
+      description: >
         What supported version of Node.js are you running? *This must be a valid
         semver tag.*
     validations:
@@ -131,7 +135,7 @@ body:
     type: input
     attributes:
       label: Package manager version
-      description: |
+      description: >
         What version of the package manager are you running? *This must be a
         valid semver tag.*
     validations:
