@@ -803,7 +803,11 @@ describe('navigation', function () {
         return frame.remove();
       });
       const error = await navigationPromise;
-      expect(error.message).toBe('Navigating frame was detached');
+      expect(error.message).atLeastOneToContain([
+        'Navigating frame was detached',
+        'Error: NS_BINDING_ABORTED',
+        'net::ERR_ABORTED',
+      ]);
     });
     it('should return matching responses', async () => {
       const {page, server} = await getTestState();

@@ -954,6 +954,12 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[navigation.spec] navigation Frame.goto should reject when frame detaches",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[navigation.spec] navigation Page.goto should fail when navigating to bad SSL",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox"],
@@ -2452,12 +2458,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Frame.goto should reject when frame detaches",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "chrome"],
-    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Frame.goto should reject when frame detaches",
