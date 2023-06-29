@@ -8,6 +8,21 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.0.1 to 1.1.0
 
+## [20.7.4](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.7.3...puppeteer-core-v20.7.4) (2023-06-29)
+
+
+### Bug Fixes
+
+* fix escaping algo for P selectors ([#10474](https://github.com/puppeteer/puppeteer/issues/10474)) ([84a956f](https://github.com/puppeteer/puppeteer/commit/84a956f56ba9ce74e9dd0f95ff40fdd14be87b1d))
+* fix the util import in Connection.ts ([#10450](https://github.com/puppeteer/puppeteer/issues/10450)) ([61f4525](https://github.com/puppeteer/puppeteer/commit/61f4525ae306810404af9083d2e7440403c02722))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 1.4.2 to 1.4.3
+
 ## [20.7.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.7.2...puppeteer-core-v20.7.3) (2023-06-20)
 
 

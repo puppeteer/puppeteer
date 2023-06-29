@@ -1,6 +1,6 @@
 {
   "name": "puppeteer-core",
-  "version": "20.7.3",
+  "version": "20.7.4",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "keywords": [
     "puppeteer",
@@ -146,7 +146,7 @@
     "debug": "4.3.4",
     "devtools-protocol": "0.0.1135028",
     "ws": "8.13.0",
-    "@puppeteer/browsers": "1.4.2"
+    "@puppeteer/browsers": "1.4.3"
   },
   "peerDependencies": {
     "typescript": ">= 4.7.4"

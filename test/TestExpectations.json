@@ -792,12 +792,6 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
-    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.executablePath returns executablePath for channel",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -2287,6 +2281,12 @@
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support ignoreHTTPSErrors option",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.connect should support targetFilter option",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
