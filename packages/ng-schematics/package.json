@@ -48,7 +48,7 @@
     "node": ">=16.3.0"
   },
   "dependencies": {
-    "@angular-devkit/architect": "^0.1601.1",
+    "@angular-devkit/architect": "^0.1601.3",
     "@angular-devkit/core": "^16.1.0",
     "@angular-devkit/schematics": "^16.1.1"
   },
