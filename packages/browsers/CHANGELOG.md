@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.3](https://github.com/puppeteer/puppeteer/compare/browsers-v1.4.2...browsers-v1.4.3) (2023-06-29)
+
+
+### Bug Fixes
+
+* negative timeout doesn't break launch ([#10480](https://github.com/puppeteer/puppeteer/issues/10480)) ([6a89a2a](https://github.com/puppeteer/puppeteer/commit/6a89a2aadcaf683fe57f1e0e13886f1fa937e194))
+
 ## [1.4.2](https://github.com/puppeteer/puppeteer/compare/browsers-v1.4.1...browsers-v1.4.2) (2023-06-20)
 
 

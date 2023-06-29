@@ -15,6 +15,21 @@ All notable changes to this project will be documented in this file. See [standa
     * puppeteer-core bumped from 20.1.1 to 20.1.2
     * @puppeteer/browsers bumped from 1.0.1 to 1.1.0
 
+## [20.7.4](https://github.com/puppeteer/puppeteer/compare/puppeteer-v20.7.3...puppeteer-v20.7.4) (2023-06-29)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 20.7.3 to 20.7.4
+    * @puppeteer/browsers bumped from 1.4.2 to 1.4.3
+
 ## [20.7.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-v20.7.2...puppeteer-v20.7.3) (2023-06-20)
 
 
