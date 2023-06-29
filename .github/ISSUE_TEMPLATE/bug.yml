@@ -11,35 +11,19 @@ body:
         **Before filling out this report**, please check our
         [Troubleshooting](https://pptr.dev/troubleshooting) guide for solutions
         to common issues.
-  - id: summary
-    type: textarea
-    attributes:
-      label: Bug expectation
-      description: What do you expect to happen? What actually happened instead?
-      placeholder: |
-        I expected ...
-
-        What happened instead was ...
-    validations:
-      required: true
-  - id: behavior
-    type: checkboxes
-    attributes:
-      label: Bug behavior
-      description: >
-        How does the bug behave? Does it happen very rarely (flaky)? If there is
-        a PDF problem, make sure the script writes the PDF somewhere in the
-        current working directory. *Note: PDF implies no error.*
-      options:
-        - label: Flaky
-        - label: PDF
   - id: mvce
     type: textarea
     attributes:
       label: Minimal, reproducible example
       description: >
         Provide a [minimal, reproducible
-        example](https://stackoverflow.com/help/minimal-reproducible-example).
+        example](https://stackoverflow.com/help/minimal-reproducible-example) of
+        the bug you are facing.
+
+        This must not include external libraries since we will run this in a
+        [hermetic](https://www.oreilly.com/library/view/selenium-design-patterns/9781783982707/ch03s03.html#:~:text=The%20Hermetic%20test%20pattern%20is,be%20avoided%20at%20all%20costs.)
+        environment. You may use Node.js modules.
+
         *No need for backticks — this automatically gets formatted into code.*
       render: TypeScript
       placeholder: |
@@ -60,9 +44,49 @@ body:
       label: Error string
       description: >
         Provide the bug's error. For example, `throw new Error('Something went
-        wrong')` would have the error `Something went wrong`. **If the script
-        does not throw**, write `no error` (case insensitive).
+        wrong')` would have the error `Something went wrong`.
+
+        **If the script does not throw**, write `no error` (case insensitive).
       placeholder: Something went wrong
+    validations:
+      required: true
+  - id: behavior
+    type: checkboxes
+    attributes:
+      label: Bug behavior
+      description: >
+        How does the bug behave? Does it happen very rarely (flaky)? If there is
+        a PDF problem, make sure the script writes the PDF somewhere in the
+        current working directory. *Note: PDF implies no error.*
+      options:
+        - label: Flaky
+        - label: PDF
+  - id: background
+    type: textarea
+    attributes:
+      label: Background
+      description: >
+        Optional. Briefly describe your use-case that led to this issue. This can help us
+        understand the general situation to provide better, higher quality
+        feedback and help others in similar situations.
+      placeholder: |
+        I've been trying to ...
+  - id: expectation
+    type: textarea
+    attributes:
+      label: Expectation
+      description: What are you expecting the code to do?
+      placeholder: |
+        I expected ...
+    validations:
+      required: true
+  - id: reality
+    type: textarea
+    attributes:
+      label: Reality
+      description: What actually happens?
+      placeholder: |
+        In reality, ...
     validations:
       required: true
   - id: puppeteer-configuration
