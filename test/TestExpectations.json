@@ -3375,7 +3375,7 @@
     "testIdPattern": "[page.spec] Page Page.title should return the page title",
     "platforms": ["linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS", "FAIL"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.waitForNetworkIdle should work",
