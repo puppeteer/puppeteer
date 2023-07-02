@@ -1267,6 +1267,7 @@ export class CDPPage extends Page {
 
     const result = await this.#client.send('Page.captureScreenshot', {
       format,
+      optimizeForSpeed: options.optimizeForSpeed,
       quality: options.quality,
       clip: clip && {
         ...clip,
