@@ -142,7 +142,7 @@ export const waitEvent = async <T = any>(
 ): Promise<T> => {
   const deferred = Deferred.create<T>({
     timeout: 5000,
-    message: 'Waiting for test event timed out.',
+    message: `Waiting for ${eventName} event timed out.`,
   });
   const handler = (event: T) => {
     if (!predicate(event)) {

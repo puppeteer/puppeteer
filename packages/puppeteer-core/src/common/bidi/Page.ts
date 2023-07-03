@@ -46,6 +46,7 @@ import {EvaluateFunc, HandleFor} from '../types.js';
 import {
   debugError,
   isString,
+  validateDialogType,
   waitForEvent,
   waitWithTimeout,
   withSourcePuppeteerURLIfNone,
@@ -59,6 +60,7 @@ import {
   CDPSessionWrapper,
 } from './BrowsingContext.js';
 import {Connection} from './Connection.js';
+import {Dialog} from './Dialog.js';
 import {Frame} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
@@ -89,6 +91,7 @@ export class Page extends PageBase {
       'browsingContext.navigationStarted',
       this.#onFrameNavigationStarted.bind(this),
     ],
+    ['browsingContext.userPromptOpened', this.#onDialog.bind(this)],
   ]);
   #networkManagerEvents = new Map<symbol, Handler<any>>([
     [
@@ -376,6 +379,17 @@ export class Page extends PageBase {
     }
   }
 
+  #onDialog(event: Bidi.BrowsingContext.UserPromptOpenedParameters): void {
+    const frame = this.frame(event.context);
+    if (!frame) {
+      return;
+    }
+    const type = validateDialogType(event.type);
+
+    const dialog = new Dialog(frame.context(), type, event.message);
+    this.emit(PageEmittedEvents.Dialog, dialog);
+  }
+
   getNavigationResponse(id: string | null): HTTPResponse | null {
     return this.#networkManager.getNavigationResponse(id);
   }
@@ -384,12 +398,14 @@ export class Page extends PageBase {
     if (this.#closedDeferred.finished()) {
       return;
     }
+
     this.#closedDeferred.resolve(new TargetCloseError('Page closed!'));
     this.#networkManager.dispose();
 
     await this.#connection.send('browsingContext.close', {
       context: this.mainFrame()._id,
     });
+
     this.emit(PageEmittedEvents.Close);
     this.removeAllListeners();
   }

@@ -647,3 +647,24 @@ export function getPageContent(): string {
 
   return content;
 }
+
+/**
+ * @internal
+ */
+export function validateDialogType(
+  type: string
+): 'alert' | 'confirm' | 'prompt' | 'beforeunload' {
+  let dialogType = null;
+  const validDialogTypes = new Set([
+    'alert',
+    'confirm',
+    'prompt',
+    'beforeunload',
+  ]);
+
+  if (validDialogTypes.has(type)) {
+    dialogType = type;
+  }
+  assert(dialogType, `Unknown javascript dialog type: ${type}`);
+  return dialogType as 'alert' | 'confirm' | 'prompt' | 'beforeunload';
+}

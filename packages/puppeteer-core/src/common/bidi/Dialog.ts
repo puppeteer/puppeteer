@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
+import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import {Dialog as BaseDialog} from '../api/Dialog.js';
+import {Dialog as BaseDialog} from '../../api/Dialog.js';
 
-import {CDPSession} from './Connection.js';
+import {BrowsingContext} from './BrowsingContext.js';
 
 /**
  * @internal
  */
-export class CDPDialog extends BaseDialog {
-  #client: CDPSession;
+export class Dialog extends BaseDialog {
+  #context: BrowsingContext;
 
   /**
    * @internal
    */
   constructor(
-    client: CDPSession,
-    type: Protocol.Page.DialogType,
+    context: BrowsingContext,
+    type: Bidi.BrowsingContext.UserPromptOpenedParameters['type'],
     message: string,
     defaultValue = ''
   ) {
     super(type, message, defaultValue);
-    this.#client = client;
+    this.#context = context;
   }
 
   /**
@@ -46,9 +46,10 @@ export class CDPDialog extends BaseDialog {
     accept: boolean;
     text?: string;
   }): Promise<void> {
-    await this.#client.send('Page.handleJavaScriptDialog', {
+    await this.#context.connection.send('browsingContext.handleUserPrompt', {
+      context: this.#context.id,
       accept: options.accept,
-      promptText: options.text,
+      userText: options.text,
     });
   }
 }
