@@ -34,7 +34,7 @@
     "test:firefox:headful": "wireit",
     "test:firefox:headless": "wireit",
     "test:firefox": "wireit",
-    "test": "cross-env PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 node tools/mochaRunner/lib/main.js --min-tests 1026",
+    "test": "cross-env PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 node tools/mochaRunner/lib/main.js --min-tests 1003",
     "validate-licenses": "tsx tools/third_party/validate-licenses.ts",
     "unit": "npm run unit --workspaces --if-present"
   },

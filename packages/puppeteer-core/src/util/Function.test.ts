@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import {describe, it} from 'node:test';
+
 import expect from 'expect';
-import {interpolateFunction} from 'puppeteer-core/internal/util/Function.js';
+
+import {interpolateFunction} from './Function.js';
 
 describe('Function', function () {
   describe('interpolateFunction', function () {
