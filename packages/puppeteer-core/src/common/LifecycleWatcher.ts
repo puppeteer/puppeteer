@@ -57,8 +57,6 @@ const puppeteerToProtocolLifecycle = new Map<
   ['networkidle2', 'networkAlmostIdle'],
 ]);
 
-const noop = (): void => {};
-
 /**
  * @internal
  */
@@ -71,14 +69,11 @@ export class LifecycleWatcher {
   #eventListeners: PuppeteerEventListener[];
   #initialLoaderId: string;
 
+  #terminationDeferred: Deferred<Error>;
   #sameDocumentNavigationDeferred = Deferred.create<undefined>();
   #lifecycleDeferred = Deferred.create<void>();
   #newDocumentNavigationDeferred = Deferred.create<undefined>();
-  #terminationDeferred = Deferred.create<Error>();
 
-  #timeoutPromise: Promise<TimeoutError | undefined>;
-
-  #maximumTimer?: NodeJS.Timeout;
   #hasSameDocumentNavigation?: boolean;
   #swapped?: boolean;
 
@@ -156,7 +151,11 @@ export class LifecycleWatcher {
       ),
     ];
 
-    this.#timeoutPromise = this.#createTimeoutPromise();
+    this.#terminationDeferred = Deferred.create<Error>({
+      timeout: this.#timeout,
+      message: `Navigation timeout of ${this.#timeout} ms exceeded`,
+    });
+
     this.#checkLifecycleComplete();
   }
 
@@ -221,20 +220,8 @@ export class LifecycleWatcher {
     return this.#lifecycleDeferred.valueOrThrow();
   }
 
-  timeoutOrTerminationPromise(): Promise<Error | TimeoutError | undefined> {
-    return Deferred.race([this.#timeoutPromise, this.#terminationDeferred]);
-  }
-
-  async #createTimeoutPromise(): Promise<TimeoutError | undefined> {
-    if (!this.#timeout) {
-      return new Promise(noop);
-    }
-    const errorMessage =
-      'Navigation timeout of ' + this.#timeout + ' ms exceeded';
-    await new Promise(fulfill => {
-      return (this.#maximumTimer = setTimeout(fulfill, this.#timeout));
-    });
-    return new TimeoutError(errorMessage);
+  terminationPromise(): Promise<Error | TimeoutError | undefined> {
+    return this.#terminationDeferred.valueOrThrow();
   }
 
   #navigatedWithinDocument(frame: Frame): void {
@@ -296,6 +283,6 @@ export class LifecycleWatcher {
 
   dispose(): void {
     removeEventListeners(this.#eventListeners);
-    clearTimeout(this.#maximumTimer);
+    this.#terminationDeferred.resolve(new Error('LifecycleWatcher disposed'));
   }
 }

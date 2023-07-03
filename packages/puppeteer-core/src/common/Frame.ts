@@ -126,11 +126,11 @@ export class Frame extends BaseFrame {
         referrerPolicy as Protocol.Page.ReferrerPolicy,
         this._id
       ),
-      watcher.timeoutOrTerminationPromise(),
+      watcher.terminationPromise(),
     ]);
     if (!error) {
       error = await Deferred.race([
-        watcher.timeoutOrTerminationPromise(),
+        watcher.terminationPromise(),
         ensureNewDocumentNavigation
           ? watcher.newDocumentNavigationPromise()
           : watcher.sameDocumentNavigationPromise(),
@@ -193,7 +193,7 @@ export class Frame extends BaseFrame {
       timeout
     );
     const error = await Deferred.race([
-      watcher.timeoutOrTerminationPromise(),
+      watcher.terminationPromise(),
       watcher.sameDocumentNavigationPromise(),
       watcher.newDocumentNavigationPromise(),
     ]);

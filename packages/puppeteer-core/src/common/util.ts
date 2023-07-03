@@ -513,9 +513,7 @@ export async function waitWithTimeout<T>(
     timeout,
   });
 
-  return await Deferred.race([promise, deferred]).finally(() => {
-    deferred.reject(new Error('Cleared'));
-  });
+  return await Deferred.race([promise, deferred]);
 }
 
 /**

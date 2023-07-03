@@ -299,7 +299,7 @@ export class IsolatedWorld implements Realm {
       timeout
     );
     const error = await Deferred.race<void | Error | undefined>([
-      watcher.timeoutOrTerminationPromise(),
+      watcher.terminationPromise(),
       watcher.lifecyclePromise(),
     ]);
     watcher.dispose();
