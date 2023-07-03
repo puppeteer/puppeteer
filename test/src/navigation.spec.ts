@@ -19,11 +19,14 @@ import {ServerResponse} from 'http';
 import expect from 'expect';
 import {Frame, TimeoutError} from 'puppeteer';
 import {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
+import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {attachFrame, isFavicon, waitEvent} from './utils.js';
 
 describe('navigation', function () {
+  setupTestBrowserHooks();
+
   describe('Page.goto', function () {
     it('should work', async () => {
       const {page, server} = await getTestState();
@@ -702,7 +705,7 @@ describe('navigation', function () {
       server.setRoute('/frames/style.css', () => {});
       let frame: Frame | undefined;
       let timeout: NodeJS.Timeout | undefined;
-      const eventPromises = Promise.race([
+      const eventPromises = Deferred.race([
         Promise.all([
           waitEvent(page, 'frameattached').then(_frame => {
             return (frame = _frame);
@@ -711,10 +714,9 @@ describe('navigation', function () {
             return f === frame;
           }),
         ]),
-        new Promise((_, rej) => {
-          timeout = setTimeout(() => {
-            return rej(new Error('Timeout'));
-          }, this.timeout());
+        Deferred.create({
+          message: `should work when subframe issues window.stop()`,
+          timeout: this.timeout() - 1000,
         }),
       ]);
       const navigationPromise = page.goto(

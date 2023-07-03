@@ -16,10 +16,10 @@
 import {IncomingMessage} from 'http';
 
 import expect from 'expect';
+import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 
-import {getTestState, launch} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks, launch} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
-
 // TODO: rename this test suite to launch/connect test suite as it actually
 // works across browsers.
 describe('Chromium-Specific Launcher tests', function () {
@@ -124,13 +124,19 @@ describe('Chromium-Specific Launcher tests', function () {
         await close();
       }
     });
-    it('should fire "disconnected" when closing with pipe', async () => {
+    it('should fire "disconnected" when closing with pipe', async function () {
       const {browser, close} = await launch({pipe: true});
       try {
         const disconnectedEventPromise = waitEvent(browser, 'disconnected');
         // Emulate user exiting browser.
         browser.process()!.kill();
-        await disconnectedEventPromise;
+        await Deferred.race([
+          disconnectedEventPromise,
+          Deferred.create({
+            message: `Failed in after Hook`,
+            timeout: this.timeout() - 1000,
+          }),
+        ]);
       } finally {
         await close();
       }
@@ -139,6 +145,8 @@ describe('Chromium-Specific Launcher tests', function () {
 });
 
 describe('Chromium-Specific Page Tests', function () {
+  setupTestBrowserHooks();
+
   it('Page.setRequestInterception should work with intervention headers', async () => {
     const {server, page} = await getTestState();
 

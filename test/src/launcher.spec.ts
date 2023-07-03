@@ -574,7 +574,9 @@ describe('Launcher specs', function () {
           ...defaultBrowserOptions,
           args: ['--no-startup-window'],
         };
-        const {browser, close} = await launch(options, {createContext: false});
+        const {browser, close} = await launch(options, {
+          createContext: false,
+        });
         try {
           const pages = await browser.pages();
           expect(pages).toHaveLength(0);

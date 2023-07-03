@@ -17,9 +17,11 @@ import expect from 'expect';
 import {Puppeteer} from 'puppeteer';
 import type {CustomQueryHandler} from 'puppeteer-core/internal/common/CustomQueryHandler.js';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 
 describe('querySelector', function () {
+  setupTestBrowserHooks();
+
   describe('Page.$eval', function () {
     it('should work', async () => {
       const {page} = await getTestState();

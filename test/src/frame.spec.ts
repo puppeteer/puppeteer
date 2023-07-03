@@ -18,7 +18,7 @@ import expect from 'expect';
 import {Frame} from 'puppeteer-core/internal/api/Frame.js';
 import {CDPSession} from 'puppeteer-core/internal/common/Connection.js';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {
   attachFrame,
   detachFrame,
@@ -28,6 +28,8 @@ import {
 } from './utils.js';
 
 describe('Frame specs', function () {
+  setupTestBrowserHooks();
+
   describe('Frame.executionContext', function () {
     it('should work', async () => {
       const {page, server} = await getTestState();

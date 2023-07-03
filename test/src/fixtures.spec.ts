@@ -20,10 +20,12 @@ import path from 'path';
 
 import expect from 'expect';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';
 
 describe('Fixtures', function () {
+  setupTestBrowserHooks();
+
   it('dumpio option should work with pipe option', async () => {
     const {defaultBrowserOptions, puppeteerPath, headless} =
       await getTestState();
@@ -49,7 +51,6 @@ describe('Fixtures', function () {
     await new Promise(resolve => {
       return res.on('close', resolve);
     });
-    console.log(dumpioData);
     expect(dumpioData).toContain('message from dumpio');
   });
   it('should dump browser process stderr', async () => {

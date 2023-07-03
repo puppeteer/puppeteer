@@ -15,48 +15,45 @@
  */
 
 import expect from 'expect';
-import {Browser} from 'puppeteer-core/internal/api/Browser.js';
 import {BrowserContext} from 'puppeteer-core/internal/api/BrowserContext.js';
-import {Page} from 'puppeteer-core/internal/api/Page.js';
 
-import {describeWithDebugLogs, getTestState} from './mocha-utils.js';
+import {describeWithDebugLogs, getTestState, launch} from './mocha-utils.js';
 import {attachFrame, detachFrame, navigateFrame} from './utils.js';
 
 describeWithDebugLogs('OOPIF', function () {
   /* We use a special browser for this test as we need the --site-per-process flag */
-  let browser: Browser;
-  let context: BrowserContext;
-  let page: Page;
+  let state: Awaited<ReturnType<typeof launch>>;
 
   before(async () => {
-    const {puppeteer, defaultBrowserOptions} = await getTestState();
-    // eslint-disable-next-line no-restricted-syntax
-    browser = await puppeteer.launch(
+    const {defaultBrowserOptions} = await getTestState({skipLaunch: true});
+
+    state = await launch(
       Object.assign({}, defaultBrowserOptions, {
         args: (defaultBrowserOptions.args || []).concat([
           '--site-per-process',
           '--remote-debugging-port=21222',
           '--host-rules=MAP * 127.0.0.1',
         ]),
-      })
+      }),
+      {after: 'all'}
     );
   });
 
   beforeEach(async () => {
-    context = await browser.createIncognitoBrowserContext();
-    page = await context.newPage();
+    state.context = await state.browser.createIncognitoBrowserContext();
+    state.page = await state.context.newPage();
   });
 
   afterEach(async () => {
-    await context.close();
+    await state.context.close();
   });
 
   after(async () => {
-    await browser.close();
+    await state.close();
   });
 
   it('should treat OOP iframes and normal iframes the same', async () => {
-    const {server} = await getTestState();
+    const {server, page} = state;
 
     await page.goto(server.EMPTY_PAGE);
     const framePromise = page.waitForFrame(frame => {
@@ -72,7 +69,7 @@ describeWithDebugLogs('OOPIF', function () {
     expect(page.mainFrame().childFrames()).toHaveLength(2);
   });
   it('should track navigations within OOP iframes', async () => {
-    const {server} = await getTestState();
+    const {server, page} = state;
 
     await page.goto(server.EMPTY_PAGE);
     const framePromise = page.waitForFrame(frame => {
@@ -93,7 +90,7 @@ describeWithDebugLogs('OOPIF', function () {
     expect(frame.url()).toContain('/assets/frame.html');
   });
   it('should support OOP iframes becoming normal iframes again', async () => {
-    const {server} = await getTestState();
+    const {server, page} = state;
 
     await page.goto(server.EMPTY_PAGE);
     const framePromise = page.waitForFrame(frame => {
@@ -114,7 +111,7 @@ describeWithDebugLogs('OOPIF', function () {
     expect(page.frames()).toHaveLength(2);
   });
   it('should support frames within OOP frames', async () => {
-    const {server} = await getTestState();
+    const {server, page} = state;
 
     await page.goto(server.EMPTY_PAGE);
     const frame1Promise = page.waitForFrame(frame => {
@@ -143,7 +140,7 @@ describeWithDebugLogs('OOPIF', function () {
     ).toMatch(/frames\/frame\.html$/);
   });
   it('should support OOP iframes getting detached', async () => {
-    const {server} = await getTestState();
+    const {server, page} = state;
 
     await page.goto(server.EMPTY_PAGE);
     const framePromise = page.waitForFrame(frame => {
@@ -164,7 +161,7 @@ describeWithDebugLogs('OOPIF', function () {
   });
 
   it('should support wait for navigation for transitions from local to OOPIF', async () => {
-    const {server} = await getTestState();
+    const {server, page} = state;
 
     await page.goto(server.EMPTY_PAGE);
     const framePromise = page.waitForFrame(frame => {
@@ -187,7 +184,7 @@ describeWithDebugLogs('OOPIF', function () {
   });
 
   it('should keep track of a frames OOP state', async () => {
-    const {server} = await getTestState();
+    const {server, page} = state;
 
     await page.goto(server.EMPTY_PAGE);
     const framePromise = page.waitForFrame(frame => {
@@ -205,7 +202,7 @@ describeWithDebugLogs('OOPIF', function () {
   });
 
   it('should support evaluating in oop iframes', async () => {
-    const {server} = await getTestState();
+    const {server, page} = state;
 
     await page.goto(server.EMPTY_PAGE);
     const framePromise = page.waitForFrame(frame => {
@@ -230,7 +227,7 @@ describeWithDebugLogs('OOPIF', function () {
     expect(result).toBe('Test 123!');
   });
   it('should provide access to elements', async () => {
-    const {server, isHeadless, headless} = await getTestState();
+    const {server, isHeadless, headless, page} = state;
 
     if (!isHeadless || headless === 'new') {
       // TODO: this test is partially blocked on crbug.com/1334119. Enable test once
@@ -276,7 +273,7 @@ describeWithDebugLogs('OOPIF', function () {
     await frame.waitForSelector('#clicked');
   });
   it('should report oopif frames', async () => {
-    const {server} = await getTestState();
+    const {server, page, context} = state;
 
     const frame = page.waitForFrame(frame => {
       return frame.url().endsWith('/oopif.html');
@@ -288,7 +285,7 @@ describeWithDebugLogs('OOPIF', function () {
   });
 
   it('should wait for inner OOPIFs', async () => {
-    const {server} = await getTestState();
+    const {server, page, context} = state;
     await page.goto(`http://mainframe:${server.PORT}/main-frame.html`);
     const frame2 = await page.waitForFrame(frame => {
       return frame.url().endsWith('inner-frame2.html');
@@ -307,7 +304,7 @@ describeWithDebugLogs('OOPIF', function () {
   });
 
   it('should load oopif iframes with subresources and request interception', async () => {
-    const {server} = await getTestState();
+    const {server, page, context} = state;
 
     const frame = page.waitForFrame(frame => {
       return frame.url().endsWith('/oopif.html');
@@ -321,7 +318,7 @@ describeWithDebugLogs('OOPIF', function () {
     expect(oopifs(context)).toHaveLength(1);
   });
   it('should support frames within OOP iframes', async () => {
-    const {server} = await getTestState();
+    const {server, page} = state;
 
     const oopIframePromise = page.waitForFrame(frame => {
       return frame.url().endsWith('/oopif.html');
@@ -352,7 +349,7 @@ describeWithDebugLogs('OOPIF', function () {
   });
 
   it('clickablePoint, boundingBox, boxModel should work for elements inside OOPIFs', async () => {
-    const {server} = await getTestState();
+    const {server, page} = state;
     await page.goto(server.EMPTY_PAGE);
     const framePromise = page.waitForFrame(frame => {
       return page.frames().indexOf(frame) === 1;
@@ -398,7 +395,7 @@ describeWithDebugLogs('OOPIF', function () {
   });
 
   it('should detect existing OOPIFs when Puppeteer connects to an existing page', async () => {
-    const {server, puppeteer} = await getTestState();
+    const {server, puppeteer, page, context} = state;
 
     const frame = page.waitForFrame(frame => {
       return frame.url().endsWith('/oopif.html');
@@ -418,7 +415,7 @@ describeWithDebugLogs('OOPIF', function () {
   });
 
   it('should support lazy OOP frames', async () => {
-    const {server} = await getTestState();
+    const {server, page} = state;
 
     await page.goto(server.PREFIX + '/lazy-oopif-frame.html');
     await page.setViewport({width: 1000, height: 1000});
@@ -432,7 +429,7 @@ describeWithDebugLogs('OOPIF', function () {
 
   describe('waitForFrame', () => {
     it('should resolve immediately if the frame already exists', async () => {
-      const {server} = await getTestState();
+      const {server, page} = state;
 
       await page.goto(server.EMPTY_PAGE);
       await attachFrame(

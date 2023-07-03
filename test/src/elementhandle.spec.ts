@@ -21,11 +21,14 @@ import sinon from 'sinon';
 
 import {
   getTestState,
+  setupTestBrowserHooks,
   shortWaitForArrayToHaveAtLeastNElements,
 } from './mocha-utils.js';
 import {attachFrame} from './utils.js';
 
 describe('ElementHandle specs', function () {
+  setupTestBrowserHooks();
+
   describe('ElementHandle.boundingBox', function () {
     it('should work', async () => {
       const {page, server} = await getTestState();

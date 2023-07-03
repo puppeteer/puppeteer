@@ -22,7 +22,7 @@ import {attachFrame} from './utils.js';
 
 describe('TargetManager', () => {
   /* We use a special browser for this test as we need the --site-per-process flag */
-  let testState: Awaited<ReturnType<typeof launch>> & {
+  let state: Awaited<ReturnType<typeof launch>> & {
     browser: CDPBrowser;
   };
 
@@ -30,7 +30,7 @@ describe('TargetManager', () => {
     const {defaultBrowserOptions} = await getTestState({
       skipLaunch: true,
     });
-    testState = (await launch(
+    state = (await launch(
       Object.assign({}, defaultBrowserOptions, {
         args: (defaultBrowserOptions.args || []).concat([
           '--site-per-process',
@@ -45,11 +45,11 @@ describe('TargetManager', () => {
   });
 
   afterEach(async () => {
-    await testState.close();
+    await state.close();
   });
 
   it('should handle targets', async () => {
-    const {server, context, browser} = testState;
+    const {server, context, browser} = state;
 
     const targetManager = browser._targetManager();
     expect(targetManager.getAvailableTargets().size).toBe(2);

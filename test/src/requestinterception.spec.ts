@@ -21,10 +21,12 @@ import expect from 'expect';
 import {HTTPRequest} from 'puppeteer-core/internal/api/HTTPRequest.js';
 import {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {isFavicon, waitEvent} from './utils.js';
 
 describe('request interception', function () {
+  setupTestBrowserHooks();
+
   describe('Page.setRequestInterception', function () {
     it('should intercept', async () => {
       const {page, server} = await getTestState();

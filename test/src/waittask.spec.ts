@@ -18,10 +18,16 @@ import expect from 'expect';
 import {TimeoutError, ElementHandle} from 'puppeteer';
 import {isErrorLike} from 'puppeteer-core/internal/util/ErrorLike.js';
 
-import {createTimeout, getTestState} from './mocha-utils.js';
+import {
+  createTimeout,
+  getTestState,
+  setupTestBrowserHooks,
+} from './mocha-utils.js';
 import {attachFrame, detachFrame} from './utils.js';
 
 describe('waittask specs', function () {
+  setupTestBrowserHooks();
+
   describe('Frame.waitForFunction', function () {
     it('should accept a string', async () => {
       const {page} = await getTestState();

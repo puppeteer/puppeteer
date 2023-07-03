@@ -16,9 +16,11 @@
 
 import expect from 'expect';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 
 describe('Input.drag', function () {
+  setupTestBrowserHooks();
+
   it('should throw an exception if not enabled before usage', async () => {
     const {page, server} = await getTestState();
 

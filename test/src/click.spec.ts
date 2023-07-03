@@ -17,10 +17,12 @@
 import expect from 'expect';
 import {KnownDevices} from 'puppeteer';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {attachFrame} from './utils.js';
 
 describe('Page.click', function () {
+  setupTestBrowserHooks();
+
   it('should click the button', async () => {
     const {page, server} = await getTestState();
 

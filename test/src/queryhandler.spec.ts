@@ -19,9 +19,11 @@ import expect from 'expect';
 import {Puppeteer} from 'puppeteer-core';
 import {ElementHandle} from 'puppeteer-core/internal/api/ElementHandle.js';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 
 describe('Query handler tests', function () {
+  setupTestBrowserHooks();
+
   describe('Pierce selectors', function () {
     async function setUpPage(): ReturnType<typeof getTestState> {
       const state = await getTestState();

@@ -19,9 +19,11 @@ import assert from 'assert';
 import expect from 'expect';
 import {SerializedAXNode} from 'puppeteer-core/internal/common/Accessibility.js';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 
 describe('Accessibility', function () {
+  setupTestBrowserHooks();
+
   it('should work', async () => {
     const {page, isFirefox} = await getTestState();
 

@@ -16,9 +16,11 @@
 import expect from 'expect';
 import sinon from 'sinon';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 
 describe('Page.Events.Dialog', function () {
+  setupTestBrowserHooks();
+
   it('should fire', async () => {
     const {page} = await getTestState();
 

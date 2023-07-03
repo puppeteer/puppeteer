@@ -18,9 +18,11 @@ import expect from 'expect';
 import {PUPPETEER_WORLD} from 'puppeteer-core/internal/common/IsolatedWorlds.js';
 import {LazyArg} from 'puppeteer-core/internal/common/LazyArg.js';
 
-import {getTestState} from './mocha-utils.js';
+import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 
 describe('PuppeteerUtil tests', function () {
+  setupTestBrowserHooks();
+
   it('should work', async () => {
     const {page} = await getTestState();
 
