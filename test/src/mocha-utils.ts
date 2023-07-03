@@ -39,7 +39,60 @@ import sinon from 'sinon';
 
 import {extendExpectWithToBeGolden} from './utils.js';
 
-let processVariables!: {
+const product =
+  process.env['PRODUCT'] || process.env['PUPPETEER_PRODUCT'] || 'chrome';
+
+const alternativeInstall = process.env['PUPPETEER_ALT_INSTALL'] || false;
+
+const headless = (process.env['HEADLESS'] || 'true').trim().toLowerCase() as
+  | 'true'
+  | 'false'
+  | 'new';
+const isHeadless = headless === 'true' || headless === 'new';
+const isFirefox = product === 'firefox';
+const isChrome = product === 'chrome';
+const protocol = (process.env['PUPPETEER_PROTOCOL'] || 'cdp') as
+  | 'cdp'
+  | 'webDriverBiDi';
+
+let extraLaunchOptions = {};
+try {
+  extraLaunchOptions = JSON.parse(process.env['EXTRA_LAUNCH_OPTIONS'] || '{}');
+} catch (error) {
+  if (isErrorLike(error)) {
+    console.warn(
+      `Error parsing EXTRA_LAUNCH_OPTIONS: ${error.message}. Skipping.`
+    );
+  } else {
+    throw error;
+  }
+}
+
+const defaultBrowserOptions = Object.assign(
+  {
+    handleSIGINT: true,
+    executablePath: process.env['BINARY'],
+    headless: headless === 'new' ? ('new' as const) : isHeadless,
+    dumpio: !!process.env['DUMPIO'],
+    protocol,
+  },
+  extraLaunchOptions
+);
+
+if (defaultBrowserOptions.executablePath) {
+  console.warn(
+    `WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}`
+  );
+} else {
+  const executablePath = puppeteer.executablePath();
+  if (!fs.existsSync(executablePath)) {
+    throw new Error(
+      `Browser is not downloaded at ${executablePath}. Run 'npm install' and try to re-run tests`
+    );
+  }
+}
+
+const processVariables: {
   product: string;
   alternativeInstall: string | boolean;
   headless: 'true' | 'false' | 'new';
@@ -48,77 +101,16 @@ let processVariables!: {
   isChrome: boolean;
   protocol: 'cdp' | 'webDriverBiDi';
   defaultBrowserOptions: PuppeteerLaunchOptions;
+} = {
+  product,
+  alternativeInstall,
+  headless,
+  isHeadless,
+  isFirefox,
+  isChrome,
+  protocol,
+  defaultBrowserOptions,
 };
-async function setUpProcessVariables() {
-  const product =
-    process.env['PRODUCT'] || process.env['PUPPETEER_PRODUCT'] || 'chrome';
-
-  const alternativeInstall = process.env['PUPPETEER_ALT_INSTALL'] || false;
-
-  const headless = (process.env['HEADLESS'] || 'true').trim().toLowerCase() as
-    | 'true'
-    | 'false'
-    | 'new';
-  const isHeadless = headless === 'true' || headless === 'new';
-  const isFirefox = product === 'firefox';
-  const isChrome = product === 'chrome';
-  const protocol = (process.env['PUPPETEER_PROTOCOL'] || 'cdp') as
-    | 'cdp'
-    | 'webDriverBiDi';
-
-  let extraLaunchOptions = {};
-  try {
-    extraLaunchOptions = JSON.parse(
-      process.env['EXTRA_LAUNCH_OPTIONS'] || '{}'
-    );
-  } catch (error) {
-    if (isErrorLike(error)) {
-      console.warn(
-        `Error parsing EXTRA_LAUNCH_OPTIONS: ${error.message}. Skipping.`
-      );
-    } else {
-      throw error;
-    }
-  }
-
-  const defaultBrowserOptions = Object.assign(
-    {
-      handleSIGINT: true,
-      executablePath: process.env['BINARY'],
-      headless: headless === 'new' ? ('new' as const) : isHeadless,
-      dumpio: !!process.env['DUMPIO'],
-      protocol,
-    },
-    extraLaunchOptions
-  );
-
-  if (defaultBrowserOptions.executablePath) {
-    console.warn(
-      `WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}`
-    );
-  } else {
-    const executablePath = puppeteer.executablePath();
-    if (!fs.existsSync(executablePath)) {
-      throw new Error(
-        `Browser is not downloaded at ${executablePath}. Run 'npm install' and try to re-run tests`
-      );
-    }
-  }
-
-  processVariables = {
-    product,
-    alternativeInstall,
-    headless,
-    isHeadless,
-    isFirefox,
-    isChrome,
-    protocol,
-    defaultBrowserOptions,
-  };
-}
-(async (): Promise<void> => {
-  await setUpProcessVariables();
-})();
 
 const setupServer = async () => {
   const assetsPath = path.join(__dirname, '../assets');
