@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
+import {describe, it} from 'node:test';
+
 import expect from 'expect';
-import {TimeoutError} from 'puppeteer';
+
 import {
   DeviceRequestPrompt,
   DeviceRequestPromptDevice,
   DeviceRequestPromptManager,
-} from 'puppeteer-core/internal/common/DeviceRequestPrompt.js';
-import {EventEmitter} from 'puppeteer-core/internal/common/EventEmitter.js';
-import {TimeoutSettings} from 'puppeteer-core/internal/common/TimeoutSettings.js';
+} from './DeviceRequestPrompt.js';
+import {TimeoutError} from './Errors.js';
+import {EventEmitter} from './EventEmitter.js';
+import {TimeoutSettings} from './TimeoutSettings.js';
 
 class MockCDPSession extends EventEmitter {
   async send(): Promise<any> {}
