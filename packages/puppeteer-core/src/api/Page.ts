@@ -171,6 +171,10 @@ export interface ScreenshotClip {
  */
 export interface ScreenshotOptions {
   /**
+   * @defaultValue `false`
+   */
+  optimizeForSpeed?: boolean;
+  /**
    * @defaultValue `png`
    */
   type?: 'png' | 'jpeg' | 'webp';
