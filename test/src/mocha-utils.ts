@@ -255,20 +255,33 @@ process.on('unhandledRejection', reason => {
 const browserNotClosedError = new Error(
   'A manually launched browser was not closed!'
 );
+
 export const mochaHooks = {
   async beforeAll(): Promise<void> {
-    const {server, httpsServer} = await setupServer();
+    async function setUpDefaultState() {
+      const {server, httpsServer} = await setupServer();
 
-    state.puppeteer = puppeteer;
-    state.server = server;
-    state.httpsServer = httpsServer;
-    state.isFirefox = processVariables.isFirefox;
-    state.isChrome = processVariables.isChrome;
-    state.isHeadless = processVariables.isHeadless;
-    state.headless = processVariables.headless;
-    state.puppeteerPath = path.resolve(
-      path.join(__dirname, '..', '..', 'packages', 'puppeteer')
-    );
+      state.puppeteer = puppeteer;
+      state.server = server;
+      state.httpsServer = httpsServer;
+      state.isFirefox = processVariables.isFirefox;
+      state.isChrome = processVariables.isChrome;
+      state.isHeadless = processVariables.isHeadless;
+      state.headless = processVariables.headless;
+      state.puppeteerPath = path.resolve(
+        path.join(__dirname, '..', '..', 'packages', 'puppeteer')
+      );
+    }
+
+    try {
+      await Deferred.race([
+        setUpDefaultState(),
+        Deferred.create({
+          message: `Failed in after Hook`,
+          timeout: (this as any).timeout() - 1000,
+        }),
+      ]);
+    } catch {}
   },
 
   async afterAll(): Promise<void> {

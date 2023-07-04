@@ -7,7 +7,7 @@ on:
     types: [opened, reopened, edited]
 
 concurrency:
-  group: ${{ format('issue-{0}', github.event.issue.number) }}
+  group: issue-${{ format('issue-{0}', github.event.issue.number) }}
   cancel-in-progress: true
 
 jobs:
