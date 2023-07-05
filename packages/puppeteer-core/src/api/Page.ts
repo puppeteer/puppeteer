@@ -836,6 +836,15 @@ export class Page extends EventEmitter {
   }
 
   /**
+   * A shortcut for {@link Locator.race} that does not require static imports.
+   *
+   * @internal
+   */
+  locatorRace(locators: Locator[]): Locator {
+    return Locator.race(locators);
+  }
+
+  /**
    * Runs `document.querySelector` within the page. If no element matches the
    * selector, the return value resolves to `null`.
    *
