@@ -32,8 +32,8 @@ const lifeCycleToReadinessState = new Map<
   PuppeteerLifeCycleEvent,
   Bidi.BrowsingContext.ReadinessState
 >([
-  ['load', 'complete'],
-  ['domcontentloaded', 'interactive'],
+  ['load', Bidi.BrowsingContext.ReadinessState.Complete],
+  ['domcontentloaded', Bidi.BrowsingContext.ReadinessState.Interactive],
 ]);
 
 /**
@@ -84,7 +84,7 @@ export class CDPSessionWrapper extends EventEmitter implements CDPSession {
       );
     }
     const session = await this.#sessionId.valueOrThrow();
-    const result = await this.#context.connection.send('cdp.sendCommand', {
+    const {result} = await this.#context.connection.send('cdp.sendCommand', {
       method: method,
       params: paramArgs[0],
       session,
@@ -140,12 +140,12 @@ export class BrowsingContext extends Realm {
     this.#parent = info.parent;
     this.#cdpSession = new CDPSessionWrapper(this);
 
-    this.on(
-      'browsingContext.fragmentNavigated',
-      (info: Bidi.BrowsingContext.NavigationInfo) => {
-        this.#url = info.url;
-      }
-    );
+    this.on('browsingContext.domContentLoaded', this.#updateUrl.bind(this));
+    this.on('browsingContext.load', this.#updateUrl.bind(this));
+  }
+
+  #updateUrl(info: Bidi.BrowsingContext.NavigationInfo) {
+    this.url = info.url;
   }
 
   createSandboxRealm(sandbox: string): Realm {

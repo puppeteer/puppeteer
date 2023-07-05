@@ -31,7 +31,7 @@ export const debugError = debug('puppeteer:error');
  */
 export async function releaseReference(
   client: Realm,
-  remoteReference: Bidi.CommonDataTypes.RemoteReference
+  remoteReference: Bidi.Script.RemoteReference
 ): Promise<void> {
   if (!remoteReference.handle) {
     return;

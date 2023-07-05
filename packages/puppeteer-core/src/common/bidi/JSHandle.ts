@@ -28,9 +28,9 @@ import {releaseReference} from './utils.js';
 export class JSHandle<T = unknown> extends BaseJSHandle<T> {
   #disposed = false;
   #realm: Realm;
-  #remoteValue;
+  #remoteValue: Bidi.Script.RemoteValue;
 
-  constructor(realm: Realm, remoteValue: Bidi.CommonDataTypes.RemoteValue) {
+  constructor(realm: Realm, remoteValue: Bidi.Script.RemoteValue) {
     super();
     this.#realm = realm;
     this.#remoteValue = remoteValue;
@@ -130,7 +130,10 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
     }
     this.#disposed = true;
     if ('handle' in this.#remoteValue) {
-      await releaseReference(this.#realm, this.#remoteValue);
+      await releaseReference(
+        this.#realm,
+        this.#remoteValue as Bidi.Script.RemoteReference
+      );
     }
   }
 
@@ -161,7 +164,7 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
     return 'handle' in this.#remoteValue ? this.#remoteValue.handle : undefined;
   }
 
-  remoteValue(): Bidi.CommonDataTypes.RemoteValue {
+  remoteValue(): Bidi.Script.RemoteValue {
     return this.#remoteValue;
   }
 }

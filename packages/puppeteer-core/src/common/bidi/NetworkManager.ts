@@ -36,7 +36,7 @@ export class NetworkManager extends EventEmitter {
     ['network.responseStarted', this.#onResponseStarted.bind(this)],
     ['network.responseCompleted', this.#onResponseCompleted.bind(this)],
     ['network.fetchError', this.#onFetchError.bind(this)],
-  ]) as Map<Bidi.Message.EventNames, Handler>;
+  ]) as Map<Bidi.Event['method'], Handler>;
 
   #requestMap = new Map<string, HTTPRequest>();
   #navigationMap = new Map<string, HTTPResponse>();
@@ -52,7 +52,7 @@ export class NetworkManager extends EventEmitter {
     }
   }
 
-  #onBeforeRequestSent(event: Bidi.Network.BeforeRequestSentParams): void {
+  #onBeforeRequestSent(event: Bidi.Network.BeforeRequestSentParameters): void {
     const frame = this.#page.frame(event.context ?? '');
     if (!frame) {
       return;
@@ -73,7 +73,7 @@ export class NetworkManager extends EventEmitter {
 
   #onResponseStarted(_event: any) {}
 
-  #onResponseCompleted(event: Bidi.Network.ResponseCompletedParams): void {
+  #onResponseCompleted(event: Bidi.Network.ResponseCompletedParameters): void {
     const request = this.#requestMap.get(event.request.request);
     if (!request) {
       return;
@@ -91,7 +91,7 @@ export class NetworkManager extends EventEmitter {
     this.#requestMap.delete(event.request.request);
   }
 
-  #onFetchError(event: Bidi.Network.FetchErrorParams) {
+  #onFetchError(event: Bidi.Network.FetchErrorParameters) {
     const request = this.#requestMap.get(event.request.request);
     if (!request) {
       return;

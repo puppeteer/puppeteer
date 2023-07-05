@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+
 import {BrowserContext as BrowserContextBase} from '../../api/BrowserContext.js';
 import {Page as PageBase} from '../../api/Page.js';
 import {Target} from '../../api/Target.js';
@@ -66,7 +68,7 @@ export class BrowserContext extends BrowserContextBase {
 
   override async newPage(): Promise<PageBase> {
     const {result} = await this.#connection.send('browsingContext.create', {
-      type: 'tab',
+      type: Bidi.BrowsingContext.CreateType.Tab,
     });
     const target = this.#browser._getTargetById(result.context);
 

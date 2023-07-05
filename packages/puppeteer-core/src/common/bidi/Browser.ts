@@ -49,7 +49,8 @@ import {debugError} from './utils.js';
  * @internal
  */
 export class Browser extends BrowserBase {
-  static readonly subscribeModules: Bidi.Session.SubscriptionRequestEvent[] = [
+  // TODO: Update generator to include fully module
+  static readonly subscribeModules: string[] = [
     'browsingContext',
     'network',
     'log',
@@ -114,12 +115,16 @@ export class Browser extends BrowserBase {
   #contexts: BrowserContext[] = [];
   #browserTarget: BiDiBrowserTarget;
 
-  #connectionEventHandlers = new Map<string, Handler<any>>([
+  #connectionEventHandlers = new Map<
+    Bidi.BrowsingContextEvent['method'],
+    Handler<any>
+  >([
     ['browsingContext.contextCreated', this.#onContextCreated.bind(this)],
     ['browsingContext.contextDestroyed', this.#onContextDestroyed.bind(this)],
+    ['browsingContext.domContentLoaded', this.#onContextDomLoaded.bind(this)],
     ['browsingContext.fragmentNavigated', this.#onContextNavigation.bind(this)],
     ['browsingContext.navigationStarted', this.#onContextNavigation.bind(this)],
-  ]) as Map<Bidi.BrowsingContext.EventNames, Handler>;
+  ]);
 
   constructor(
     opts: Options & {
@@ -151,6 +156,15 @@ export class Browser extends BrowserBase {
     }
   }
 
+  #onContextDomLoaded(event: Bidi.BrowsingContext.Info) {
+    const context = this.#connection.getBrowsingContext(event.context);
+    context.url = event.url;
+    const target = this.#targets.get(event.context);
+    if (target) {
+      this.emit(BrowserEmittedEvents.TargetChanged, target);
+    }
+  }
+
   #onContextNavigation(event: Bidi.BrowsingContext.NavigationInfo) {
     const context = this.#connection.getBrowsingContext(event.context);
     context.url = event.url;
@@ -163,7 +177,7 @@ export class Browser extends BrowserBase {
     }
   }
 
-  #onContextCreated(event: Bidi.BrowsingContext.ContextCreatedEvent['params']) {
+  #onContextCreated(event: Bidi.BrowsingContext.ContextCreated['params']) {
     const context = new BrowsingContext(this.#connection, event);
     this.#connection.registerBrowsingContexts(context);
     // TODO: once more browsing context types are supported, this should be
@@ -197,7 +211,7 @@ export class Browser extends BrowserBase {
   }
 
   async #onContextDestroyed(
-    event: Bidi.BrowsingContext.ContextDestroyedEvent['params']
+    event: Bidi.BrowsingContext.ContextDestroyed['params']
   ) {
     const context = this.#connection.getBrowsingContext(event.context);
     const topLevelContext = this.#connection.getTopLevelContext(event.context);

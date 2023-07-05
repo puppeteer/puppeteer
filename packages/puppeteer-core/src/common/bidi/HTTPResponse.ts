@@ -39,10 +39,9 @@ export class HTTPResponse extends BaseHTTPResponse {
 
   constructor(
     request: HTTPRequest,
-    responseEvent: Bidi.Network.ResponseCompletedParams
+    {response}: Bidi.Network.ResponseCompletedParameters
   ) {
     super();
-    const {response} = responseEvent;
     this.#request = request;
 
     this.#remoteAddress = {
@@ -54,12 +53,16 @@ export class HTTPResponse extends BaseHTTPResponse {
     this.#fromCache = response.fromCache;
     this.#status = response.status;
     this.#statusText = response.statusText;
-    // TODO: update once BiDi has types
-    this.#timings = (response as any).timings ?? null;
+    // TODO: File and issue with BiDi spec
+    this.#timings = null;
 
     // TODO: Removed once the Firefox implementation is compliant with https://w3c.github.io/webdriver-bidi/#get-the-response-data.
     for (const header of response.headers || []) {
-      this.#headers[header.name] = header.value ?? '';
+      // TODO: How to handle Binary Headers
+      // https://w3c.github.io/webdriver-bidi/#type-network-Header
+      if (header.value.type === 'string') {
+        this.#headers[header.name.toLowerCase()] = header.value.value;
+      }
     }
   }
 
