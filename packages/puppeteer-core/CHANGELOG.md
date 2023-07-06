@@ -8,6 +8,18 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.0.1 to 1.1.0
 
+## [20.8.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.7.4...puppeteer-core-v20.8.0) (2023-07-06)
+
+
+### Features
+
+* **screenshot:** enable optimizeForSpeed ([#10492](https://github.com/puppeteer/puppeteer/issues/10492)) ([87aaed4](https://github.com/puppeteer/puppeteer/commit/87aaed4807e5240dec7b25273e44c1ce5e884336))
+
+
+### Bug Fixes
+
+* add an internal page.locatorRace ([#10512](https://github.com/puppeteer/puppeteer/issues/10512)) ([56a97dd](https://github.com/puppeteer/puppeteer/commit/56a97dd2fb1cbf36e4f3344f7d22afd6e7ef2380))
+
 ## [20.7.4](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.7.3...puppeteer-core-v20.7.4) (2023-06-29)
 
 
