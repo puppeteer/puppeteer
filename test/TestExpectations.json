@@ -1668,16 +1668,46 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[CDPSession.spec] Target.createCDPSession should be able to detach session",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[CDPSession.spec] Target.createCDPSession should enable and disable domains independently",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[CDPSession.spec] Target.createCDPSession should enable and disable domains independently",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[CDPSession.spec] Target.createCDPSession should send events",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL", "PASS"]
+  },
+  {
+    "testIdPattern": "[CDPSession.spec] Target.createCDPSession should send events",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[CDPSession.spec] Target.createCDPSession should throw nice errors",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[CDPSession.spec] Target.createCDPSession should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[chromiumonly.spec] Chromium-Specific Launcher tests Puppeteer.launch |browserURL| option should be able to connect using browserUrl, with and without trailing slash",

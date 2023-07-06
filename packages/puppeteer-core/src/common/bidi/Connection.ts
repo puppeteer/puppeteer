@@ -21,7 +21,7 @@ import {ConnectionTransport} from '../ConnectionTransport.js';
 import {debug} from '../Debug.js';
 import {EventEmitter} from '../EventEmitter.js';
 
-import {BrowsingContext} from './BrowsingContext.js';
+import {BrowsingContext, cdpSessions} from './BrowsingContext.js';
 
 const debugProtocolSend = debug('puppeteer:webDriverBiDi:SEND ►');
 const debugProtocolReceive = debug('puppeteer:webDriverBiDi:RECV ◀');
@@ -235,15 +235,9 @@ export class Connection extends EventEmitter {
     } else if ('source' in event.params && event.params.source.context) {
       context = this.#browsingContexts.get(event.params.source.context);
     } else if (isCDPEvent(event)) {
-      // TODO: this is not a good solution and we need to find a better one.
-      // Perhaps we need to have a dedicated CDP event emitter or emulate
-      // the CDPSession interface with BiDi?.
-      const cdpSessionId = event.params.session;
-      for (const context of this.#browsingContexts.values()) {
-        if (context.cdpSession?.id() === cdpSessionId) {
-          context.cdpSession!.emit(event.params.event, event.params.params);
-        }
-      }
+      cdpSessions
+        .get(event.params.session)
+        ?.emit(event.params.event, event.params.params);
     }
     context?.emit(event.method, event.params);
   }

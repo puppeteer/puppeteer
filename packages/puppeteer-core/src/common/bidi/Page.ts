@@ -30,6 +30,7 @@ import {
 import {assert} from '../../util/assert.js';
 import {Deferred} from '../../util/Deferred.js';
 import {Accessibility} from '../Accessibility.js';
+import {CDPSession} from '../Connection.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
 import {Coverage} from '../Coverage.js';
 import {EmulationManager} from '../EmulationManager.js';
@@ -52,7 +53,7 @@ import {
 
 import {Browser} from './Browser.js';
 import {BrowserContext} from './BrowserContext.js';
-import {BrowsingContext} from './BrowsingContext.js';
+import {BrowsingContext, CDPSessionWrapper} from './BrowsingContext.js';
 import {Connection} from './Connection.js';
 import {Frame} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
@@ -631,6 +632,16 @@ export class Page extends PageBase {
 
   override title(): Promise<string> {
     return this.mainFrame().title();
+  }
+
+  override async createCDPSession(): Promise<CDPSession> {
+    const {sessionId} = await this.mainFrame()
+      .context()
+      .cdpSession.send('Target.attachToTarget', {
+        targetId: this.mainFrame()._id,
+        flatten: true,
+      });
+    return new CDPSessionWrapper(this.mainFrame().context(), sessionId);
   }
 }
 

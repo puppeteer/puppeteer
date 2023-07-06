@@ -21,6 +21,7 @@ import {Protocol} from 'devtools-protocol';
 import type {HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {Accessibility} from '../common/Accessibility.js';
+import type {CDPSession} from '../common/Connection.js';
 import type {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {Coverage} from '../common/Coverage.js';
 import {Device} from '../common/Device.js';
@@ -619,6 +620,13 @@ export class Page extends EventEmitter {
    * Page is guaranteed to have a main frame which persists during navigations.
    */
   mainFrame(): Frame {
+    throw new Error('Not implemented');
+  }
+
+  /**
+   * Creates a Chrome Devtools Protocol session attached to the page.
+   */
+  createCDPSession(): Promise<CDPSession> {
     throw new Error('Not implemented');
   }
 

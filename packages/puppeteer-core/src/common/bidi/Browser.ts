@@ -48,6 +48,9 @@ export class Browser extends BrowserBase {
     'cdp.Runtime.executionContextsCleared',
     // Tracing
     'cdp.Tracing.tracingComplete',
+    // TODO: subscribe to all CDP events in the future.
+    'cdp.Network.requestWillBeSent',
+    'cdp.Debugger.scriptParsed',
   ];
 
   #browserName = '';
