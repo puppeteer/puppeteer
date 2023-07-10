@@ -346,7 +346,7 @@ export class CDPPage extends Page {
   /**
    * @internal
    */
-  _client(): CDPSession {
+  getCDPSession(): CDPSession {
     return this.#client;
   }
 

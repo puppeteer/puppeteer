@@ -360,7 +360,7 @@ export class FrameManager extends EventEmitter {
     await Promise.all(
       this.frames()
         .filter(frame => {
-          return frame._client() === session;
+          return frame.getCDPSession() === session;
         })
         .map(frame => {
           // Frames might be removed before we send this, so we don't want to
@@ -415,7 +415,7 @@ export class FrameManager extends EventEmitter {
     let world: IsolatedWorld | undefined;
     if (frame) {
       // Only care about execution contexts created for the current session.
-      if (frame._client() !== session) {
+      if (frame.getCDPSession() !== session) {
         return;
       }
       if (contextPayload.auxData && contextPayload.auxData['isDefault']) {
@@ -431,7 +431,7 @@ export class FrameManager extends EventEmitter {
       }
     }
     const context = new ExecutionContext(
-      frame?._client() || this.#client,
+      frame?.getCDPSession() || this.#client,
       contextPayload,
       world
     );

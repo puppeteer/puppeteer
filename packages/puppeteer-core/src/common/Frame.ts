@@ -207,7 +207,7 @@ export class Frame extends BaseFrame {
     }
   }
 
-  override _client(): CDPSession {
+  override getCDPSession(): CDPSession {
     return this.#client;
   }
 

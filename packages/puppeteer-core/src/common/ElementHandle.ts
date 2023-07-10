@@ -163,10 +163,10 @@ export class CDPElementHandle<
         currentFrame = parent;
         continue;
       }
-      const {backendNodeId} = await parent._client().send('DOM.getFrameOwner', {
+      const {backendNodeId} = await parent.getCDPSession().send('DOM.getFrameOwner', {
         frameId: currentFrame._id,
       });
-      const result = await parent._client().send('DOM.getBoxModel', {
+      const result = await parent.getCDPSession().send('DOM.getBoxModel', {
         backendNodeId: backendNodeId,
       });
       if (!result) {
@@ -188,7 +188,7 @@ export class CDPElementHandle<
           objectId: this.id,
         })
         .catch(debugError),
-      (this.#page as CDPPage)._client().send('Page.getLayoutMetrics'),
+      (this.#page as CDPPage).getCDPSession().send('Page.getLayoutMetrics'),
     ]);
     if (!result || !result.quads.length) {
       throw new Error('Node is either not clickable or not an HTMLElement');

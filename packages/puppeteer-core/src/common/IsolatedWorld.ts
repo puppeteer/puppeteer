@@ -130,7 +130,7 @@ export class IsolatedWorld implements Realm {
   }
 
   get #client(): CDPSession {
-    return this.#frame._client();
+    return this.#frame.getCDPSession();
   }
 
   get #frameManager(): FrameManager {

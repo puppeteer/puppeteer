@@ -349,7 +349,7 @@ export class Frame {
   /**
    * @internal
    */
-  _client(): CDPSession {
+  getCDPSession(): CDPSession {
     throw new Error('Not implemented');
   }
 

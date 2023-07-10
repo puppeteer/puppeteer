@@ -2370,7 +2370,7 @@ describe('Page', function () {
   describe('Page.client', function () {
     it('should return the client instance', async () => {
       const {page} = await getTestState();
-      expect((page as CDPPage)._client()).toBeInstanceOf(CDPSession);
+      expect((page as CDPPage).getCDPSession()).toBeInstanceOf(CDPSession);
     });
   });
 });
