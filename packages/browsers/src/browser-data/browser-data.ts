@@ -68,7 +68,9 @@ export async function resolveBuildId(
         case BrowserTag.CANARY:
         case BrowserTag.DEV:
         case BrowserTag.STABLE:
-          throw new Error(`${tag} is not supported for ${browser}`);
+          throw new Error(
+            `${tag} is not supported for ${browser}. Use 'latest' instead.`
+          );
       }
     case Browser.CHROME:
       switch (tag as BrowserTag) {
@@ -113,26 +115,13 @@ export async function resolveBuildId(
     case Browser.CHROMIUM:
       switch (tag as BrowserTag) {
         case BrowserTag.LATEST:
-          return await chromium.resolveBuildId(platform, 'latest');
+          return await chromium.resolveBuildId(platform);
         case BrowserTag.BETA:
-          return await chromium.resolveBuildId(
-            platform,
-            ChromeReleaseChannel.BETA
-          );
         case BrowserTag.CANARY:
-          return await chromium.resolveBuildId(
-            platform,
-            ChromeReleaseChannel.CANARY
-          );
         case BrowserTag.DEV:
-          return await chromium.resolveBuildId(
-            platform,
-            ChromeReleaseChannel.DEV
-          );
         case BrowserTag.STABLE:
-          return await chromium.resolveBuildId(
-            platform,
-            ChromeReleaseChannel.STABLE
+          throw new Error(
+            `${tag} is not supported for ${browser}. Use 'latest' instead.`
           );
       }
   }
@@ -167,12 +156,11 @@ export function resolveSystemExecutablePath(
   switch (browser) {
     case Browser.CHROMEDRIVER:
     case Browser.FIREFOX:
+    case Browser.CHROMIUM:
       throw new Error(
         `System browser detection is not supported for ${browser} yet.`
       );
     case Browser.CHROME:
-      return chromium.resolveSystemExecutablePath(platform, channel);
-    case Browser.CHROMIUM:
       return chrome.resolveSystemExecutablePath(platform, channel);
   }
 }
