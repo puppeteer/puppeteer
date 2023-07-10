@@ -75,5 +75,15 @@ describe('Firefox CLI', function () {
       '--platform=linux',
       `--base-url=${getServerUrl()}`,
     ]);
+
+    await new CLI(tmpDir).run([
+      'npx',
+      '@puppeteer/browsers',
+      'install',
+      `firefox`,
+      `--path=${tmpDir}`,
+      '--platform=linux',
+      `--base-url=${getServerUrl()}`,
+    ]);
   });
 });
