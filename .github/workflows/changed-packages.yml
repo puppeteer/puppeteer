@@ -35,6 +35,7 @@ jobs:
           filters: |
             puppeteer:
               - '.github/workflows/ci.yml'
+              - 'packages/browsers/browser-data/firefox.ts'
               - 'packages/puppeteer/**'
               - 'packages/puppeteer-core/**'
               - 'docker/**'
