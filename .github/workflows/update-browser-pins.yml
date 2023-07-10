@@ -32,7 +32,7 @@ jobs:
           node --experimental-fetch tools/update_chrome_revision.mjs
       - name: Create Pull Request
         if: ${{ steps.update.outputs.commit }}
-        uses: peter-evans/create-pull-request@284f54f989303d2699d373481a0cfa13ad5a6666 # v5.0.1
+        uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38 # v5.0.2
         with:
           token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN }}
           branch: browser-automation-bot/update-browser-version
