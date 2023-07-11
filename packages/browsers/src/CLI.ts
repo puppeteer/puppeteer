@@ -274,7 +274,8 @@ export class CLI {
   }
 
   #parseBuildId(version: string): string {
-    return version.split('@').pop() ?? 'latest';
+    const parts = version.split('@');
+    return parts.length === 2 ? parts[1]! : 'latest';
   }
 }
 
