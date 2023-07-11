@@ -1,0 +1,4 @@
+name: Bug for @puppeteer/browsers
+description: File a bug report specifically about the `@puppeteer/browsers` package.
+title: '[Bug]: '
+labels: [bug, '@puppeteer/browsers']
