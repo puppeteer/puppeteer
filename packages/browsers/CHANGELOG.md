@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.4](https://github.com/puppeteer/puppeteer/compare/browsers-v1.4.3...browsers-v1.4.4) (2023-07-11)
+
+
+### Bug Fixes
+
+* correctly parse the default buildId ([#10535](https://github.com/puppeteer/puppeteer/issues/10535)) ([c308266](https://github.com/puppeteer/puppeteer/commit/c3082661113b4b55534f25da86e3b261d3952953))
+* remove Chromium channels ([#10536](https://github.com/puppeteer/puppeteer/issues/10536)) ([c0dc8ad](https://github.com/puppeteer/puppeteer/commit/c0dc8ad8a82446752e29f98d8eee617b9a67c942))
+
 ## [1.4.3](https://github.com/puppeteer/puppeteer/compare/browsers-v1.4.2...browsers-v1.4.3) (2023-06-29)
 
 
