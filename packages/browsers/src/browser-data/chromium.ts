@@ -18,10 +18,7 @@ import path from 'path';
 
 import {getText} from '../httpUtil.js';
 
-import {getLastKnownGoodReleaseForChannel} from './chrome.js';
-import {BrowserPlatform, ChromeReleaseChannel} from './types.js';
-
-export {resolveSystemExecutablePath} from './chrome.js';
+import {BrowserPlatform} from './types.js';
 
 function archive(platform: BrowserPlatform, buildId: string): string {
   switch (platform) {
@@ -89,17 +86,13 @@ export function relativeExecutablePath(
   }
 }
 export async function resolveBuildId(
-  platform: BrowserPlatform,
-  channel: ChromeReleaseChannel | 'latest' = 'latest'
+  platform: BrowserPlatform
 ): Promise<string> {
-  if (channel === 'latest') {
-    return await getText(
-      new URL(
-        `https://storage.googleapis.com/chromium-browser-snapshots/${folder(
-          platform
-        )}/LAST_CHANGE`
-      )
-    );
-  }
-  return (await getLastKnownGoodReleaseForChannel(channel)).revision;
+  return await getText(
+    new URL(
+      `https://storage.googleapis.com/chromium-browser-snapshots/${folder(
+        platform
+      )}/LAST_CHANGE`
+    )
+  );
 }
