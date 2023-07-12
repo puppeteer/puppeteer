@@ -100,14 +100,18 @@
   "dependencies": {
     "debug": "4.3.4",
     "extract-zip": "2.0.1",
+    "http-proxy-agent": "7.0.0",
+    "https-proxy-agent": "7.0.1",
     "progress": "2.0.3",
-    "proxy-agent": "6.2.1",
+    "proxy-from-env": "1.1.0",
+    "socks-proxy-agent": "8.0.1",
     "tar-fs": "3.0.4",
     "unbzip2-stream": "1.4.3",
     "yargs": "17.7.1"
   },
   "devDependencies": {
     "@types/node": "^16.11.7",
+    "@types/proxy-from-env": "1.0.1",
     "@types/yargs": "17.0.22"
   },
   "peerDependencies": {

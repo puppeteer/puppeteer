@@ -19,7 +19,10 @@ import * as http from 'http';
 import * as https from 'https';
 import {URL, urlToHttpOptions} from 'url';
 
-import {ProxyAgent} from 'proxy-agent';
+import {HttpProxyAgent} from 'http-proxy-agent';
+import {HttpsProxyAgent} from 'https-proxy-agent';
+import {getProxyForUrl} from 'proxy-from-env';
+import {SocksProxyAgent} from 'socks-proxy-agent';
 
 export function headHttpRequest(url: URL): Promise<boolean> {
   return new Promise(resolve => {
@@ -43,6 +46,20 @@ export function httpRequest(
   response: (x: http.IncomingMessage) => void,
   keepAlive = true
 ): http.ClientRequest {
+  const proxy = getProxyForUrl(url.toString());
+
+  let agent: http.Agent | undefined;
+  if (proxy) {
+    const proxyUrl = new URL(proxy);
+    if (proxyUrl.protocol === 'http:') {
+      agent = new HttpProxyAgent(proxyUrl);
+    } else if (proxyUrl.protocol === 'https:') {
+      agent = new HttpsProxyAgent(proxyUrl);
+    } else if (proxyUrl.protocol.startsWith('socks')) {
+      agent = new SocksProxyAgent(proxyUrl);
+    }
+  }
+
   const options: http.RequestOptions = {
     protocol: url.protocol,
     hostname: url.hostname,
@@ -51,7 +68,7 @@ export function httpRequest(
     method,
     headers: keepAlive ? {Connection: 'keep-alive'} : undefined,
     auth: urlToHttpOptions(url).auth,
-    agent: new ProxyAgent(),
+    agent,
   };
 
   const requestCallback = (res: http.IncomingMessage): void => {
