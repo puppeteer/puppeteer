@@ -108,7 +108,7 @@ body:
       label: Puppeteer version
       description: >
         What version of Puppeteer are you running? *This must be a valid semver
-        tag.*
+        tag, for example, `20.8.1`.*
     validations:
       required: true
   - id: node-version
@@ -117,7 +117,7 @@ body:
       label: Node version
       description: >
         What supported version of Node.js are you running? *This must be a valid
-        semver tag.*
+        semver tag, for example, `20.3.1`.*
     validations:
       required: true
   - id: pkg-mgr
@@ -137,7 +137,7 @@ body:
       label: Package manager version
       description: >
         What version of the package manager are you running? *This must be a
-        valid semver tag.*
+        valid semver tag, for example, `9.6.7`.*
     validations:
       required: true
   - id: operating-system
