@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.5](https://github.com/puppeteer/puppeteer/compare/browsers-v1.4.4...browsers-v1.4.5) (2023-07-13)
+
+
+### Bug Fixes
+
+* stop relying on vm2 (via proxy agent) ([#10548](https://github.com/puppeteer/puppeteer/issues/10548)) ([4070cd6](https://github.com/puppeteer/puppeteer/commit/4070cd68b6d01fb9a1643da2662ce0b6f53cf37d))
+
 ## [1.4.4](https://github.com/puppeteer/puppeteer/compare/browsers-v1.4.3...browsers-v1.4.4) (2023-07-11)
 
 
