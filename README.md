@@ -71,7 +71,7 @@ root of your application with the contents
 ```js
 const {join} = require('path');
 
-/**
+/*
  * @type {import("puppeteer").Configuration}
  */
 module.exports = {
@@ -143,9 +143,11 @@ The following example searches [developer.chrome.com](https://developer.chrome.c
 import puppeteer from 'puppeteer';
 
 (async () => {
+  // Setup browser
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
+  // Put webpage address
   await page.goto('https://developer.chrome.com/');
 
   // Set screen size
