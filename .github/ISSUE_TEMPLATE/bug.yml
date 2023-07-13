@@ -95,10 +95,10 @@ body:
   - id: puppeteer-configuration
     type: textarea
     attributes:
-      label: Puppeteer configuration
+      label: Puppeteer configuration file (if used)
       description: >
         Copy and paste your [configuration
-        file](https://pptr.dev/guides/configuration/) (if applicable).
+        file](https://pptr.dev/guides/configuration/) (if used).
 
         *No need for backticks — this automatically gets formatted into code.*
       render: TypeScript
