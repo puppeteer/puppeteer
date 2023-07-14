@@ -349,7 +349,7 @@ export class Page extends PageBase {
 
   override async evaluateHandle<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
@@ -363,7 +363,7 @@ export class Page extends PageBase {
 
   override async evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params

@@ -286,15 +286,18 @@ describe('headful tests', function () {
 
       // Navigate to the empty page and add an OOPIF iframe with at least one request.
       await page.goto(server.EMPTY_PAGE);
-      await page.evaluate((frameUrl: string) => {
-        const frame = document.createElement('iframe');
-        frame.setAttribute('src', frameUrl);
-        document.body.appendChild(frame);
-        return new Promise((x, y) => {
-          frame.onload = x;
-          frame.onerror = y;
-        });
-      }, server.PREFIX.replace('localhost', 'oopifdomain') + '/one-style.html');
+      await page.evaluate(
+        (frameUrl: string) => {
+          const frame = document.createElement('iframe');
+          frame.setAttribute('src', frameUrl);
+          document.body.appendChild(frame);
+          return new Promise((x, y) => {
+            frame.onload = x;
+            frame.onerror = y;
+          });
+        },
+        server.PREFIX.replace('localhost', 'oopifdomain') + '/one-style.html'
+      );
       await page.waitForSelector('iframe');
 
       // Ensure we found the iframe session.

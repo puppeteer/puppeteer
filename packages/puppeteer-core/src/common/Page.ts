@@ -495,7 +495,7 @@ export class CDPPage extends Page {
 
   override async evaluateHandle<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
@@ -1076,7 +1076,7 @@ export class CDPPage extends Page {
 
   override async evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
@@ -1090,7 +1090,7 @@ export class CDPPage extends Page {
 
   override async evaluateOnNewDocument<
     Params extends unknown[],
-    Func extends (...args: Params) => unknown = (...args: Params) => unknown
+    Func extends (...args: Params) => unknown = (...args: Params) => unknown,
   >(
     pageFunction: Func | string,
     ...args: Params

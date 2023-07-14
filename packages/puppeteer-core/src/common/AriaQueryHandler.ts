@@ -40,7 +40,10 @@ const queryAXTree = async (
   });
 };
 
-type ARIASelector = {name?: string; role?: string};
+interface ARIASelector {
+  name?: string;
+  role?: string;
+}
 
 const KNOWN_ATTRIBUTES = Object.freeze(['name', 'role']);
 const isKnownAttribute = (

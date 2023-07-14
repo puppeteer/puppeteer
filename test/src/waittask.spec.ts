@@ -715,9 +715,12 @@ describe('waittask specs', function () {
       const waitForSelector = page.waitForSelector('.zombo');
       await page.setContent(`<div class='zombo'>anything</div>`);
       expect(
-        await page.evaluate(x => {
-          return x?.textContent;
-        }, await waitForSelector)
+        await page.evaluate(
+          x => {
+            return x?.textContent;
+          },
+          await waitForSelector
+        )
       ).toBe('anything');
     });
     it('should have correct stack trace for timeout', async () => {
@@ -748,9 +751,12 @@ describe('waittask specs', function () {
         '//p[normalize-space(.)="hello world"]'
       );
       expect(
-        await page.evaluate(x => {
-          return x?.textContent;
-        }, await waitForXPath)
+        await page.evaluate(
+          x => {
+            return x?.textContent;
+          },
+          await waitForXPath
+        )
       ).toBe('hello  world  ');
     });
     it('should respect timeout', async () => {
@@ -836,9 +842,12 @@ describe('waittask specs', function () {
       const waitForXPath = page.waitForXPath('//*[@class="zombo"]');
       await page.setContent(`<div class='zombo'>anything</div>`);
       expect(
-        await page.evaluate(x => {
-          return x?.textContent;
-        }, await waitForXPath)
+        await page.evaluate(
+          x => {
+            return x?.textContent;
+          },
+          await waitForXPath
+        )
       ).toBe('anything');
     });
     it('should allow you to select a text node', async () => {
@@ -856,9 +865,12 @@ describe('waittask specs', function () {
       await page.setContent(`<div>some text</div>`);
       const waitForXPath = page.waitForXPath('/html/body/div');
       expect(
-        await page.evaluate(x => {
-          return x?.textContent;
-        }, await waitForXPath)
+        await page.evaluate(
+          x => {
+            return x?.textContent;
+          },
+          await waitForXPath
+        )
       ).toBe('some text');
     });
   });

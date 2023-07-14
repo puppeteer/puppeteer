@@ -32,7 +32,7 @@ import {Realm} from './Realm.js';
  * @internal
  */
 export class ElementHandle<
-  ElementType extends Node = Element
+  ElementType extends Node = Element,
 > extends BaseElementHandle<ElementType> {
   declare handle: JSHandle<ElementType>;
   #frame: Frame;

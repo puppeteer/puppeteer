@@ -135,7 +135,7 @@ export interface Point {
  */
 
 export class ElementHandle<
-  ElementType extends Node = Element
+  ElementType extends Node = Element,
 > extends JSHandle<ElementType> {
   /**
    * @internal
@@ -195,7 +195,7 @@ export class ElementHandle<
     Func extends EvaluateFuncWith<ElementType, Params> = EvaluateFuncWith<
       ElementType,
       Params
-    >
+    >,
   >(
     pageFunction: Func | string,
     ...args: Params
@@ -211,7 +211,7 @@ export class ElementHandle<
     Func extends EvaluateFuncWith<ElementType, Params> = EvaluateFuncWith<
       ElementType,
       Params
-    >
+    >,
   >(
     pageFunction: Func | string,
     ...args: Params
@@ -329,7 +329,7 @@ export class ElementHandle<
     Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
       NodeFor<Selector>,
       Params
-    >
+    >,
   >(
     selector: Selector,
     pageFunction: Func | string,
@@ -386,7 +386,7 @@ export class ElementHandle<
     Func extends EvaluateFuncWith<
       Array<NodeFor<Selector>>,
       Params
-    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>
+    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>,
   >(
     selector: Selector,
     pageFunction: Func | string,
@@ -394,9 +394,12 @@ export class ElementHandle<
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
     const results = await this.$$(selector);
-    const elements = await this.evaluateHandle((_, ...elements) => {
-      return elements;
-    }, ...results);
+    const elements = await this.evaluateHandle(
+      (_, ...elements) => {
+        return elements;
+      },
+      ...results
+    );
     const [result] = await Promise.all([
       elements.evaluate(pageFunction, ...args),
       ...results.map(results => {
@@ -606,7 +609,7 @@ export class ElementHandle<
    * automatically disposed.**
    */
   async toElement<
-    K extends keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap
+    K extends keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap,
   >(tagName: K): Promise<HandleFor<ElementFor<K>>> {
     const isMatchingTagName = await this.evaluate((node, tagName) => {
       return node.nodeName === tagName.toUpperCase();

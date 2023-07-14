@@ -57,12 +57,12 @@ export const isSuitableNodeForTextMatching = (node: Node): boolean => {
 /**
  * @internal
  */
-export type TextContent = {
+export interface TextContent {
   // Contains the full text of the node.
   full: string;
   // Contains the text immediately beneath the node.
   immediate: string[];
-};
+}
 
 /**
  * Maps {@link Node}s to their computed {@link TextContent}.

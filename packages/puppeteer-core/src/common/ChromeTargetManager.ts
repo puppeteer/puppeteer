@@ -50,17 +50,16 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
    *
    * `targetFilterCallback` has no effect on this map.
    */
-  #discoveredTargetsByTargetId: Map<string, Protocol.Target.TargetInfo> =
-    new Map();
+  #discoveredTargetsByTargetId = new Map<string, Protocol.Target.TargetInfo>();
   /**
    * A target is added to this map once ChromeTargetManager has created
    * a Target and attached at least once to it.
    */
-  #attachedTargetsByTargetId: Map<string, Target> = new Map();
+  #attachedTargetsByTargetId = new Map<string, Target>();
   /**
    * Tracks which sessions attach to which target.
    */
-  #attachedTargetsBySessionId: Map<string, Target> = new Map();
+  #attachedTargetsBySessionId = new Map<string, Target>();
   /**
    * If a target was filtered out by `targetFilterCallback`, we still receive
    * events about it from CDP, but we don't forward them to the rest of Puppeteer.
@@ -69,20 +68,22 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
   #targetFilterCallback: TargetFilterCallback | undefined;
   #targetFactory: TargetFactory;
 
-  #targetInterceptors: WeakMap<CDPSession | Connection, TargetInterceptor[]> =
-    new WeakMap();
+  #targetInterceptors = new WeakMap<
+    CDPSession | Connection,
+    TargetInterceptor[]
+  >();
 
-  #attachedToTargetListenersBySession: WeakMap<
+  #attachedToTargetListenersBySession = new WeakMap<
     CDPSession | Connection,
     (event: Protocol.Target.AttachedToTargetEvent) => Promise<void>
-  > = new WeakMap();
-  #detachedFromTargetListenersBySession: WeakMap<
+  >();
+  #detachedFromTargetListenersBySession = new WeakMap<
     CDPSession | Connection,
     (event: Protocol.Target.DetachedFromTargetEvent) => void
-  > = new WeakMap();
+  >();
 
   #initializeDeferred = Deferred.create<void>();
-  #targetsIdsForInit: Set<string> = new Set();
+  #targetsIdsForInit = new Set<string>();
 
   constructor(
     connection: Connection,

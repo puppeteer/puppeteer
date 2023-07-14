@@ -104,7 +104,7 @@ export class Frame extends BaseFrame {
 
   override async evaluateHandle<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
@@ -114,7 +114,7 @@ export class Frame extends BaseFrame {
 
   override async evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
@@ -175,7 +175,7 @@ export class Frame extends BaseFrame {
     Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
       NodeFor<Selector>,
       Params
-    >
+    >,
   >(
     selector: Selector,
     pageFunction: string | Func,
@@ -191,7 +191,7 @@ export class Frame extends BaseFrame {
     Func extends EvaluateFuncWith<
       Array<NodeFor<Selector>>,
       Params
-    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>
+    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>,
   >(
     selector: Selector,
     pageFunction: string | Func,

@@ -70,9 +70,7 @@ export async function resolveBuildId(
 ): Promise<string> {
   const versions = (await getJSON(
     new URL('https://product-details.mozilla.org/1.0/firefox_versions.json')
-  )) as {
-    [channel: string]: string;
-  };
+  )) as Record<string, string>;
   const version = versions[channel];
   if (!version) {
     throw new Error(`Channel ${channel} is not found.`);

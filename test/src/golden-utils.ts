@@ -92,14 +92,20 @@ const compareText = (
     return;
   }
   const result = diffLines(expected, actual);
-  const html = result.reduce((text, change) => {
-    text += change.added
-      ? `<span class='ins'>${change.value}</span>`
-      : change.removed
-      ? `<span class='del'>${change.value}</span>`
-      : change.value;
-    return text;
-  }, `<link rel="stylesheet" href="file://${path.join(__dirname, 'diffstyle.css')}">`);
+  const html = result.reduce(
+    (text, change) => {
+      text += change.added
+        ? `<span class='ins'>${change.value}</span>`
+        : change.removed
+        ? `<span class='del'>${change.value}</span>`
+        : change.value;
+      return text;
+    },
+    `<link rel="stylesheet" href="file://${path.join(
+      __dirname,
+      'diffstyle.css'
+    )}">`
+  );
   return {
     diff: html,
     ext: '.html',

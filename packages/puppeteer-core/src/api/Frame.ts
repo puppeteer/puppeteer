@@ -48,7 +48,7 @@ export interface Realm {
     Params extends unknown[],
     Func extends EvaluateFunc<InnerLazyParams<Params>> = EvaluateFunc<
       InnerLazyParams<Params>
-    >
+    >,
   >(
     pageFunction: Func | string,
     options: {
@@ -63,14 +63,14 @@ export interface Realm {
   transferHandle<T extends JSHandle<Node>>(handle: T): Promise<T>;
   evaluateHandle<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
   evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
@@ -382,14 +382,14 @@ export class Frame {
    */
   async evaluateHandle<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
   async evaluateHandle<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     throw new Error('Not implemented');
   }
@@ -402,14 +402,14 @@ export class Frame {
    */
   async evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
   async evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(): Promise<Awaited<ReturnType<Func>>> {
     throw new Error('Not implemented');
   }
@@ -484,7 +484,7 @@ export class Frame {
     Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
       NodeFor<Selector>,
       Params
-    >
+    >,
   >(
     selector: Selector,
     pageFunction: Func | string,
@@ -496,7 +496,7 @@ export class Frame {
     Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
       NodeFor<Selector>,
       Params
-    >
+    >,
   >(): Promise<Awaited<ReturnType<Func>>> {
     throw new Error('Not implemented');
   }
@@ -527,7 +527,7 @@ export class Frame {
     Func extends EvaluateFuncWith<
       Array<NodeFor<Selector>>,
       Params
-    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>
+    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>,
   >(
     selector: Selector,
     pageFunction: Func | string,
@@ -539,7 +539,7 @@ export class Frame {
     Func extends EvaluateFuncWith<
       Array<NodeFor<Selector>>,
       Params
-    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>
+    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>,
   >(): Promise<Awaited<ReturnType<Func>>> {
     throw new Error('Not implemented');
   }
@@ -674,7 +674,7 @@ export class Frame {
    */
   waitForFunction<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     options: FrameWaitForFunctionOptions = {},

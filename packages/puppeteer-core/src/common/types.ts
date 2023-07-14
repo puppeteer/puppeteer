@@ -22,7 +22,7 @@ import type {LazyArg} from './LazyArg.js';
 /**
  * @internal
  */
-export type BindingPayload = {
+export interface BindingPayload {
   type: string;
   name: string;
   seq: number;
@@ -31,7 +31,7 @@ export type BindingPayload = {
    * Determines whether the arguments of the payload are trivial.
    */
   isTrivial: boolean;
-};
+}
 
 /**
  * @internal
@@ -86,7 +86,7 @@ export type InnerParams<T extends unknown[]> = {
  * @public
  */
 export type ElementFor<
-  TagName extends keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap
+  TagName extends keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap,
 > = TagName extends keyof HTMLElementTagNameMap
   ? HTMLElementTagNameMap[TagName]
   : TagName extends keyof SVGElementTagNameMap
@@ -144,7 +144,7 @@ type TypeSelectorOfCompoundSelector<CompoundSelector extends string> =
 
 type Last<Arr extends NonEmptyReadonlyArray<unknown>> = Arr extends [
   infer Head,
-  ...infer Tail
+  ...infer Tail,
 ]
   ? Tail extends NonEmptyReadonlyArray<unknown>
     ? Last<Tail>
@@ -165,7 +165,7 @@ type CompoundSelectorsOfComplexSelector<ComplexSelector extends string> =
 
 type SplitWithDelemiters<
   Input extends string,
-  Delemiters extends readonly string[]
+  Delemiters extends readonly string[],
 > = Delemiters extends [infer FirstDelemiter, ...infer RestDelemiters]
   ? FirstDelemiter extends string
     ? RestDelemiters extends readonly string[]
@@ -181,7 +181,7 @@ type CombinatorTokens = [' ', '>', '+', '~', '|', '|'];
 type Drop<
   Arr extends readonly unknown[],
   Remove,
-  Acc extends unknown[] = []
+  Acc extends unknown[] = [],
 > = Arr extends [infer Head, ...infer Tail]
   ? Head extends Remove
     ? Drop<Tail, Remove>
@@ -191,7 +191,7 @@ type Drop<
 type FlatmapSplitWithDelemiters<
   Inputs extends readonly string[],
   Delemiters extends readonly string[],
-  Acc extends string[] = []
+  Acc extends string[] = [],
 > = Inputs extends [infer FirstInput, ...infer RestInputs]
   ? FirstInput extends string
     ? RestInputs extends readonly string[]
@@ -207,7 +207,7 @@ type FlatmapSplitWithDelemiters<
 type Split<
   Input extends string,
   Delimiter extends string,
-  Acc extends string[] = []
+  Acc extends string[] = [],
 > = Input extends `${infer Prefix}${Delimiter}${infer Suffix}`
   ? Split<Suffix, Delimiter, [...Acc, Prefix]>
   : [...Acc, Input];

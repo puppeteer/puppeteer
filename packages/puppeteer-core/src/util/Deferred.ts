@@ -85,7 +85,7 @@ export class Deferred<T> {
   static async race<R>(
     awaitables: Array<Promise<R> | Deferred<R>>
   ): Promise<R> {
-    const deferredWithTimeout: Set<Deferred<R>> = new Set();
+    const deferredWithTimeout = new Set<Deferred<R>>();
     try {
       const promises = awaitables.map(value => {
         if (value instanceof Deferred) {

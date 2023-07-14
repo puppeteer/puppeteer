@@ -500,7 +500,7 @@ export function headersArray(
  * List taken from {@link https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml}
  * with extra 306 and 418 codes.
  */
-export const STATUS_TEXTS: {[key: string]: string | undefined} = {
+export const STATUS_TEXTS: Record<string, string | undefined> = {
   '100': 'Continue',
   '101': 'Switching Protocols',
   '102': 'Processing',

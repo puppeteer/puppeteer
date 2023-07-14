@@ -37,7 +37,7 @@ import {
   launch,
 } from './launch.js';
 
-type InstallArgs = {
+interface InstallArgs {
   browser: {
     name: Browser;
     buildId: string;
@@ -45,9 +45,9 @@ type InstallArgs = {
   path?: string;
   platform?: BrowserPlatform;
   baseUrl?: string;
-};
+}
 
-type LaunchArgs = {
+interface LaunchArgs {
   browser: {
     name: Browser;
     buildId: string;
@@ -56,11 +56,11 @@ type LaunchArgs = {
   platform?: BrowserPlatform;
   detached: boolean;
   system: boolean;
-};
+}
 
-type ClearArgs = {
+interface ClearArgs {
   path?: string;
-};
+}
 
 /**
  * @public

@@ -491,7 +491,7 @@ export class MarkdownDocumenter {
           ]
         );
         let needsComma = false;
-        const visited: Set<string> = new Set();
+        const visited = new Set<string>();
         for (const ref of refs) {
           if (visited.has(ref.text)) {
             continue;

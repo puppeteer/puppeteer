@@ -116,7 +116,7 @@ export class Callback {
  * @internal
  */
 export class CallbackRegistry {
-  #callbacks: Map<number, Callback> = new Map();
+  #callbacks = new Map<number, Callback>();
   #idGenerator = createIncrementalIdGenerator();
 
   create(
@@ -197,7 +197,7 @@ export class Connection extends EventEmitter {
   #transport: ConnectionTransport;
   #delay: number;
   #timeout: number;
-  #sessions: Map<string, CDPSessionImpl> = new Map();
+  #sessions = new Map<string, CDPSessionImpl>();
   #closed = false;
   #manuallyAttached = new Set<string>();
   #callbacks = new CallbackRegistry();

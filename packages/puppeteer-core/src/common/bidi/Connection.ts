@@ -26,7 +26,7 @@ import {BrowsingContext} from './BrowsingContext.js';
 const debugProtocolSend = debug('puppeteer:webDriverBiDi:SEND ►');
 const debugProtocolReceive = debug('puppeteer:webDriverBiDi:RECV ◀');
 
-type Capability = {
+interface Capability {
   // session.CapabilityRequest = {
   //   ? acceptInsecureCerts: bool,
   //   ? browserName: text,
@@ -47,7 +47,7 @@ type Capability = {
   acceptInsecureCerts?: boolean;
   browserName?: string;
   browserVersion?: string;
-};
+}
 
 /**
  * @internal
@@ -155,7 +155,7 @@ export class Connection extends EventEmitter {
   #timeout? = 0;
   #closed = false;
   #callbacks = new CallbackRegistry();
-  #browsingContexts: Map<string, BrowsingContext> = new Map();
+  #browsingContexts = new Map<string, BrowsingContext>();
 
   constructor(
     url: string,

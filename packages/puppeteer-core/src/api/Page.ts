@@ -930,14 +930,14 @@ export class Page extends EventEmitter {
    */
   async evaluateHandle<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
   async evaluateHandle<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     throw new Error('Not implemented');
   }
@@ -1040,7 +1040,7 @@ export class Page extends EventEmitter {
     Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
       NodeFor<Selector>,
       Params
-    >
+    >,
   >(
     selector: Selector,
     pageFunction: Func | string,
@@ -1118,7 +1118,7 @@ export class Page extends EventEmitter {
     Func extends EvaluateFuncWith<
       Array<NodeFor<Selector>>,
       Params
-    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>
+    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>,
   >(
     selector: Selector,
     pageFunction: Func | string,
@@ -2167,14 +2167,14 @@ export class Page extends EventEmitter {
    */
   async evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
   async evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(): Promise<Awaited<ReturnType<Func>>> {
     throw new Error('Not implemented');
   }
@@ -2213,7 +2213,7 @@ export class Page extends EventEmitter {
    */
   async evaluateOnNewDocument<
     Params extends unknown[],
-    Func extends (...args: Params) => unknown = (...args: Params) => unknown
+    Func extends (...args: Params) => unknown = (...args: Params) => unknown,
   >(
     pageFunction: Func | string,
     ...args: Params
@@ -2773,7 +2773,7 @@ export class Page extends EventEmitter {
    */
   waitForFunction<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     options?: FrameWaitForFunctionOptions,

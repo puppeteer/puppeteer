@@ -105,9 +105,12 @@ export class ExecutionContext {
             selector: string
           ): Promise<JSHandle<Node[]>> => {
             const results = ARIAQueryHandler.queryAll(element, selector);
-            return element.executionContext().evaluateHandle((...elements) => {
-              return elements;
-            }, ...(await AsyncIterableUtil.collect(results)));
+            return element.executionContext().evaluateHandle(
+              (...elements) => {
+                return elements;
+              },
+              ...(await AsyncIterableUtil.collect(results))
+            );
           }) as (...args: unknown[]) => unknown)
         ),
       ]);
@@ -181,7 +184,7 @@ export class ExecutionContext {
    */
   async evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
@@ -240,7 +243,7 @@ export class ExecutionContext {
    */
   async evaluateHandle<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
@@ -250,7 +253,7 @@ export class ExecutionContext {
 
   async #evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     returnByValue: true,
     pageFunction: Func | string,
@@ -258,7 +261,7 @@ export class ExecutionContext {
   ): Promise<Awaited<ReturnType<Func>>>;
   async #evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     returnByValue: false,
     pageFunction: Func | string,
@@ -266,7 +269,7 @@ export class ExecutionContext {
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
   async #evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     returnByValue: boolean,
     pageFunction: Func | string,

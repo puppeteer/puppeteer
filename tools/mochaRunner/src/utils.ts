@@ -114,11 +114,11 @@ export function findEffectiveExpectationForTest(
   });
 }
 
-export type RecommendedExpectation = {
+export interface RecommendedExpectation {
   expectation: TestExpectation;
   action: 'remove' | 'add' | 'update';
   basedOn?: TestExpectation;
-};
+}
 
 export function isWildCardPattern(testIdPattern: string): boolean {
   return testIdPattern.includes('*');
@@ -132,7 +132,7 @@ export function getExpectationUpdates(
     parameters: string[];
   }
 ): RecommendedExpectation[] {
-  const output: Map<string, RecommendedExpectation> = new Map();
+  const output = new Map<string, RecommendedExpectation>();
 
   for (const pass of results.passes) {
     const expectationEntry = findEffectiveExpectationForTest(
