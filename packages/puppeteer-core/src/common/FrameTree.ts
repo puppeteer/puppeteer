@@ -69,7 +69,7 @@ export class FrameTree<Frame extends BaseFrame> {
         this.#childIds.set(frame._parentId, new Set());
       }
       this.#childIds.get(frame._parentId)!.add(frame._id);
-    } else {
+    } else if (!this.#mainFrame) {
       this.#mainFrame = frame;
     }
     this.#waitRequests.get(frame._id)?.forEach(request => {
