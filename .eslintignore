@@ -44,3 +44,5 @@ yarn-error.log*
 # ESLint ignores.
 assets/
 third_party/
+sandbox/
+ng-schematics/src/**/files/

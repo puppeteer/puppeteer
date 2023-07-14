@@ -134,6 +134,8 @@ module.exports = {
       extends: [
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
+        // 'plugin:@typescript-eslint/strict', TODO: See what errors come here
+        'plugin:@typescript-eslint/stylistic',
       ],
       plugins: ['eslint-plugin-tsdoc', 'local'],
       rules: {

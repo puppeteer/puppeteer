@@ -1,4 +1,5 @@
-const prettier = require('prettier');
+const prettier = require('@prettier/sync');
+const prettierConfig = require('./.prettierrc.cjs');
 
 const cleanupBlockComment = value => {
   return value
@@ -18,12 +19,13 @@ const cleanupBlockComment = value => {
     .trim();
 };
 
-const format = (value, offset, prettierOptions) => {
+const format = (value, offset) => {
   return prettier
     .format(value, {
-      ...prettierOptions,
+      ...prettierConfig,
+      parser: 'markdown',
       // This is the print width minus 3 (the length of ` * `) and the offset.
-      printWidth: prettierOptions.printWidth - (offset + 3),
+      printWidth: 80 - (offset + 3),
     })
     .trim();
 };
@@ -57,17 +59,12 @@ const rule = {
   },
 
   create(context) {
-    const prettierOptions = {
-      printWidth: 80,
-      ...prettier.resolveConfig.sync(context.getPhysicalFilename()),
-      parser: 'markdown',
-    };
-    for (const comment of context.getSourceCode().getAllComments()) {
+    for (const comment of context.sourceCode.getAllComments()) {
       switch (comment.type) {
         case 'Block': {
           const offset = comment.loc.start.column;
           const value = cleanupBlockComment(comment.value);
-          const formattedValue = format(value, offset, prettierOptions);
+          const formattedValue = format(value, offset);
           if (formattedValue !== value) {
             context.report({
               node: comment,
