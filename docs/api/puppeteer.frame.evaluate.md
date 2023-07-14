@@ -12,7 +12,7 @@ Behaves identically to [Page.evaluate()](./puppeteer.page.evaluate.md) except it
 class Frame {
   evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params

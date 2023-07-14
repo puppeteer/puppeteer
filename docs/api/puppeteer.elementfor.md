@@ -8,7 +8,7 @@ sidebar_label: ElementFor
 
 ```typescript
 export type ElementFor<
-  TagName extends keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap
+  TagName extends keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap,
 > = TagName extends keyof HTMLElementTagNameMap
   ? HTMLElementTagNameMap[TagName]
   : TagName extends keyof SVGElementTagNameMap

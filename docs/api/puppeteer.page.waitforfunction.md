@@ -12,7 +12,7 @@ Waits for a function to finish evaluating in the page's context.
 class Page {
   waitForFunction<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     options?: FrameWaitForFunctionOptions,

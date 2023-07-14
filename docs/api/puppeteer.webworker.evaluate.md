@@ -12,7 +12,7 @@ If the function passed to the `worker.evaluate` returns a Promise, then `worker.
 class WebWorker {
   evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params

@@ -14,7 +14,7 @@ If the function passed to `page.evaluate` returns a Promise, the function will w
 class Page {
   evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
