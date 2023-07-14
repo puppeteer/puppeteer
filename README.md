@@ -71,7 +71,7 @@ root of your application with the contents
 ```js
 const {join} = require('path');
 
-/*
+/**
  * @type {import("puppeteer").Configuration}
  */
 module.exports = {
