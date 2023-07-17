@@ -16,7 +16,7 @@
 import assert from 'node:assert/strict';
 import {describe, it} from 'node:test';
 
-import {TestExpectation} from './types.js';
+import {Platform, TestExpectation} from './types.js';
 import {
   filterByParameters,
   getTestResultForFailure,
