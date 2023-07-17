@@ -171,7 +171,7 @@ describe('getExpectationUpdates', () => {
       },
     ];
     const updates = getExpectationUpdates(mochaResults, expectations, {
-      platforms: [os.platform()],
+      platforms: ['darwin'] as Platform[],
       parameters: ['test'],
     });
     assert.deepEqual(updates, [
