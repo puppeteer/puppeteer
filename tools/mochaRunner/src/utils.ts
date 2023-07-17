@@ -134,6 +134,11 @@ export function getExpectationUpdates(
 ): RecommendedExpectation[] {
   const output = new Map<string, RecommendedExpectation>();
 
+  const passesByKey = results.passes.reduce((acc, pass) => {
+    acc.add(getTestId(pass.file, pass.fullTitle));
+    return acc;
+  }, new Set());
+
   for (const pass of results.passes) {
     const expectationEntry = findEffectiveExpectationForTest(
       expectations,
@@ -162,6 +167,9 @@ export function getExpectationUpdates(
   }
 
   for (const failure of results.failures) {
+    if (passesByKey.has(getTestId(failure.file, failure.fullTitle))) {
+      continue;
+    }
     // If an error occurs during a hook
     // the error not have a file associated with it
     if (!failure.file) {
