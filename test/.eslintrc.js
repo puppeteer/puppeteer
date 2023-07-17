@@ -14,6 +14,10 @@ module.exports = {
     {
       files: ['*.spec.ts'],
       rules: {
+        '@typescript-eslint/no-unused-vars': [
+          'error',
+          {argsIgnorePattern: '^_', varsIgnorePattern: '^_'},
+        ],
         'no-restricted-syntax': [
           'error',
           {

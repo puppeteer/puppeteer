@@ -2,17 +2,19 @@
 sidebar_label: InstalledBrowser
 ---
 
-# InstalledBrowser type
+# InstalledBrowser interface
 
 #### Signature:
 
 ```typescript
-export type InstalledBrowser = {
-  path: string;
-  browser: Browser;
-  buildId: string;
-  platform: BrowserPlatform;
-};
+export interface InstalledBrowser
 ```
 
-**References:** [Browser](./browsers.browser.md), [BrowserPlatform](./browsers.browserplatform.md)
+## Properties
+
+| Property | Modifiers | Type                                             | Description | Default |
+| -------- | --------- | ------------------------------------------------ | ----------- | ------- |
+| browser  |           | [Browser](./browsers.browser.md)                 |             |         |
+| buildId  |           | string                                           |             |         |
+| path     |           | string                                           |             |         |
+| platform |           | [BrowserPlatform](./browsers.browserplatform.md) |             |         |

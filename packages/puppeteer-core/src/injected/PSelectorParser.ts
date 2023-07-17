@@ -17,10 +17,10 @@
 import {Token, tokenize, TOKENS, stringify} from 'parsel-js';
 
 export type CSSSelector = string;
-export type PPseudoSelector = {
+export interface PPseudoSelector {
   name: string;
   value: string;
-};
+}
 export const enum PCombinator {
   Descendent = '>>>',
   Child = '>>>>',

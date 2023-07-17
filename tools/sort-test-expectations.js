@@ -19,7 +19,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const prettier = require('prettier');
+const prettier = require('@prettier/sync');
 
 const source = 'test/TestExpectations.json';
 

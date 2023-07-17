@@ -80,9 +80,7 @@ export async function getLastKnownGoodReleaseForChannel(
       'https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json'
     )
   )) as {
-    channels: {
-      [channel: string]: {version: string};
-    };
+    channels: Record<string, {version: string}>;
   };
 
   for (const channel of Object.keys(data.channels)) {

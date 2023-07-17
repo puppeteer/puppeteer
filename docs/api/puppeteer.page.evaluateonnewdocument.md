@@ -18,7 +18,7 @@ The function is invoked after the document was created but before any of its scr
 class Page {
   evaluateOnNewDocument<
     Params extends unknown[],
-    Func extends (...args: Params) => unknown = (...args: Params) => unknown
+    Func extends (...args: Params) => unknown = (...args: Params) => unknown,
   >(
     pageFunction: Func | string,
     ...args: Params

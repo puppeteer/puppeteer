@@ -79,7 +79,7 @@ function customBDDInterface(suite: Mocha.Suite) {
       };
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+      // @ts-expect-error
       context['describe'] = describe;
 
       function it(title: string, fn: Mocha.TestFunction, itOnly = false) {
@@ -90,7 +90,7 @@ function customBDDInterface(suite: Mocha.Suite) {
 
         const describeOnly = Boolean(
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
+          // @ts-expect-error
           suite.parent?._onlySuites.find(child => {
             return child === suite;
           })
@@ -119,7 +119,7 @@ function customBDDInterface(suite: Mocha.Suite) {
       };
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+      // @ts-expect-error
       context.it = it;
     }
   );

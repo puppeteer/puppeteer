@@ -59,19 +59,18 @@ export class FirefoxTargetManager
    *
    * `targetFilterCallback` has no effect on this map.
    */
-  #discoveredTargetsByTargetId: Map<string, Protocol.Target.TargetInfo> =
-    new Map();
+  #discoveredTargetsByTargetId = new Map<string, Protocol.Target.TargetInfo>();
   /**
    * Keeps track of targets that were created via 'Target.targetCreated'
    * and which one are not filtered out by `targetFilterCallback`.
    *
    * The target is removed from here once it's been destroyed.
    */
-  #availableTargetsByTargetId: Map<string, Target> = new Map();
+  #availableTargetsByTargetId = new Map<string, Target>();
   /**
    * Tracks which sessions attach to which target.
    */
-  #availableTargetsBySessionId: Map<string, Target> = new Map();
+  #availableTargetsBySessionId = new Map<string, Target>();
   /**
    * If a target was filtered out by `targetFilterCallback`, we still receive
    * events about it from CDP, but we don't forward them to the rest of Puppeteer.
@@ -80,16 +79,18 @@ export class FirefoxTargetManager
   #targetFilterCallback: TargetFilterCallback | undefined;
   #targetFactory: TargetFactory;
 
-  #targetInterceptors: WeakMap<CDPSession | Connection, TargetInterceptor[]> =
-    new WeakMap();
+  #targetInterceptors = new WeakMap<
+    CDPSession | Connection,
+    TargetInterceptor[]
+  >();
 
-  #attachedToTargetListenersBySession: WeakMap<
+  #attachedToTargetListenersBySession = new WeakMap<
     CDPSession | Connection,
     (event: Protocol.Target.AttachedToTargetEvent) => Promise<void>
-  > = new WeakMap();
+  >();
 
   #initializeDeferred = Deferred.create<void>();
-  #targetsIdsForInit: Set<string> = new Set();
+  #targetsIdsForInit = new Set<string>();
 
   constructor(
     connection: Connection,

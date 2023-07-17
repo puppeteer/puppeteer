@@ -134,6 +134,7 @@ module.exports = {
       extends: [
         'plugin:@typescript-eslint/eslint-recommended',
         'plugin:@typescript-eslint/recommended',
+        'plugin:@typescript-eslint/stylistic',
       ],
       plugins: ['eslint-plugin-tsdoc', 'local'],
       rules: {
@@ -211,6 +212,7 @@ module.exports = {
           'error',
           {ignoreVoid: true, ignoreIIFE: true},
         ],
+        '@typescript-eslint/prefer-ts-expect-error': 'error',
       },
     },
   ],

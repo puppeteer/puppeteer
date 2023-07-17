@@ -66,7 +66,7 @@ export class Realm extends EventEmitter {
 
   async evaluateHandle<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
@@ -76,7 +76,7 @@ export class Realm extends EventEmitter {
 
   async evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
@@ -86,7 +86,7 @@ export class Realm extends EventEmitter {
 
   async #evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     returnByValue: true,
     pageFunction: Func | string,
@@ -94,7 +94,7 @@ export class Realm extends EventEmitter {
   ): Promise<Awaited<ReturnType<Func>>>;
   async #evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     returnByValue: false,
     pageFunction: Func | string,
@@ -102,7 +102,7 @@ export class Realm extends EventEmitter {
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
   async #evaluate<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     returnByValue: boolean,
     pageFunction: Func | string,

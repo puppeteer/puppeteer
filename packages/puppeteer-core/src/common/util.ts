@@ -244,7 +244,7 @@ export const withSourcePuppeteerURLIfNone = <T extends NonNullable<unknown>>(
  * @internal
  */
 export const getSourcePuppeteerURLIfAvailable = <
-  T extends NonNullable<unknown>
+  T extends NonNullable<unknown>,
 >(
   object: T
 ): PuppeteerURL | undefined => {

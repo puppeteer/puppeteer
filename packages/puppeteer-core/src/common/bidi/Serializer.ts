@@ -247,7 +247,7 @@ export class BidiSerializer {
 
   static deserializeTuple([serializedKey, serializedValue]: [
     Bidi.CommonDataTypes.RemoteValue | string,
-    Bidi.CommonDataTypes.RemoteValue
+    Bidi.CommonDataTypes.RemoteValue,
   ]): {key: unknown; value: unknown} {
     const key =
       typeof serializedKey === 'string'

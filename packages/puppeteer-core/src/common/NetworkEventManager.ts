@@ -21,11 +21,11 @@ import {HTTPRequest} from './HTTPRequest.js';
 /**
  * @internal
  */
-export type QueuedEventGroup = {
+export interface QueuedEventGroup {
   responseReceivedEvent: Protocol.Network.ResponseReceivedEvent;
   loadingFinishedEvent?: Protocol.Network.LoadingFinishedEvent;
   loadingFailedEvent?: Protocol.Network.LoadingFailedEvent;
-};
+}
 
 /**
  * @internal
@@ -35,10 +35,10 @@ export type FetchRequestId = string;
 /**
  * @internal
  */
-export type RedirectInfo = {
+export interface RedirectInfo {
   event: Protocol.Network.RequestWillBeSentEvent;
   fetchRequestId?: FetchRequestId;
-};
+}
 type RedirectInfoList = RedirectInfo[];
 
 /**

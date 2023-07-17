@@ -583,9 +583,12 @@ describe('AriaQueryHandler', () => {
       });
       await page.setContent(`<div aria-label='zombo'>anything</div>`);
       expect(
-        await page.evaluate(x => {
-          return x?.textContent;
-        }, await waitForSelector)
+        await page.evaluate(
+          x => {
+            return x?.textContent;
+          },
+          await waitForSelector
+        )
       ).toBe('anything');
     });
 

@@ -57,7 +57,7 @@ const applyOffsetsToQuad = (
  * @internal
  */
 export class CDPElementHandle<
-  ElementType extends Node = Element
+  ElementType extends Node = Element,
 > extends ElementHandle<ElementType> {
   #frame: Frame;
   declare handle: CDPJSHandle<ElementType>;

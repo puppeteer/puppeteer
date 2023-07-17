@@ -22,12 +22,12 @@ import {Browser, BrowserPlatform} from './browser-data/browser-data.js';
 /**
  * @public
  */
-export type InstalledBrowser = {
+export interface InstalledBrowser {
   path: string;
   browser: Browser;
   buildId: string;
   platform: BrowserPlatform;
-};
+}
 
 /**
  * The cache used by Puppeteer relies on the following structure:

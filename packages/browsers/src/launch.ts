@@ -129,7 +129,7 @@ export function computeSystemExecutablePath(options: SystemOptions): string {
 /**
  * @public
  */
-export type LaunchOptions = {
+export interface LaunchOptions {
   executablePath: string;
   pipe?: boolean;
   dumpio?: boolean;
@@ -140,7 +140,7 @@ export type LaunchOptions = {
   handleSIGHUP?: boolean;
   detached?: boolean;
   onExit?: () => Promise<void>;
-};
+}
 
 /**
  * @public

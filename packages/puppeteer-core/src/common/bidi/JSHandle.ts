@@ -46,7 +46,7 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
 
   override async evaluate<
     Params extends unknown[],
-    Func extends EvaluateFuncWith<T, Params> = EvaluateFuncWith<T, Params>
+    Func extends EvaluateFuncWith<T, Params> = EvaluateFuncWith<T, Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
@@ -60,7 +60,7 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
 
   override async evaluateHandle<
     Params extends unknown[],
-    Func extends EvaluateFuncWith<T, Params> = EvaluateFuncWith<T, Params>
+    Func extends EvaluateFuncWith<T, Params> = EvaluateFuncWith<T, Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
@@ -97,7 +97,7 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
       }
       return enumerableKeys;
     });
-    const map: Map<string, BaseJSHandle> = new Map();
+    const map = new Map<string, BaseJSHandle>();
     const results = await Promise.all(
       keys.map(key => {
         return this.getProperty(key);

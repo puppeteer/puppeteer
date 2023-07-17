@@ -66,7 +66,7 @@ describe('Keyboard', function () {
         return document.querySelector('textarea')!.value;
       })
     ).toBe('Hello World!');
-    for (let i = 0; i < 'World!'.length; i++) {
+    for (const _ of 'World!') {
       page.keyboard.press('ArrowLeft');
     }
     await page.keyboard.type('inserted ');
@@ -76,7 +76,7 @@ describe('Keyboard', function () {
       })
     ).toBe('Hello inserted World!');
     page.keyboard.down('Shift');
-    for (let i = 0; i < 'inserted '.length; i++) {
+    for (const _ of 'inserted ') {
       page.keyboard.press('ArrowLeft');
     }
     page.keyboard.up('Shift');
@@ -515,7 +515,7 @@ describe('Keyboard', function () {
     const [key, code, metaKey] = (await page.evaluate('result')) as [
       string,
       string,
-      boolean
+      boolean,
     ];
     if (isFirefox && os.platform() !== 'darwin') {
       expect(key).toBe('OS');
