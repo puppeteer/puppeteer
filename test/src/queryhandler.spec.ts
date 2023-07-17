@@ -432,6 +432,18 @@ describe('Query handler tests', function () {
       ).toBeTruthy();
     });
 
+    it('should work with pierce selectors', async () => {
+      const {server, page} = await getTestState();
+      await page.goto(`${server.PREFIX}/p-selectors.html`);
+      const element = await page.$('::-p-pierce(#e)');
+      assert(element, 'Could not find element');
+      expect(
+        await element.evaluate(element => {
+          return element.id === 'e';
+        })
+      ).toBeTruthy();
+    });
+
     it('should work ARIA selectors', async () => {
       const {server, page} = await getTestState();
       await page.goto(`${server.PREFIX}/p-selectors.html`);

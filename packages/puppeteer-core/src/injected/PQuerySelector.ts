@@ -19,6 +19,7 @@ import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 
 import {ariaQuerySelectorAll} from './ARIAQuerySelector.js';
 import {customQuerySelectors} from './CustomQuerySelector.js';
+import {pierceQuerySelectorAll} from './PierceQuerySelector.js';
 import {
   ComplexPSelector,
   ComplexPSelectorList,
@@ -134,6 +135,9 @@ class PQueryEngine {
                 break;
               case 'aria':
                 yield* ariaQuerySelectorAll(element, selector.value);
+                break;
+              case 'pierce':
+                yield* pierceQuerySelectorAll(element, selector.value);
                 break;
               default:
                 const querySelector = customQuerySelectors.get(selector.name);
