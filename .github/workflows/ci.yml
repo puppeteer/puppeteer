@@ -220,7 +220,7 @@ jobs:
           # Disabled due to https://bugzilla.mozilla.org/show_bug.cgi?id=1843550
           # The first time the browsers launches it crashes.
           - os: macos-latest
-            suite: firefox-headless
+            suite: firefox-bidi
     steps:
       - name: Checkout
         uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
