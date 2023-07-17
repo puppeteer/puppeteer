@@ -166,7 +166,7 @@ describe('getExpectationUpdates', () => {
     const expectations = [
       {
         testIdPattern: '[page.spec] Page Page.setContent should work',
-        platforms: [os.platform()],
+        platforms: ['darwin'] as Platform[],
         parameters: ['test'],
         expectations: ['FAIL' as const],
       },
