@@ -49,7 +49,7 @@ const headless = (process.env['HEADLESS'] || 'true').trim().toLowerCase() as
   | 'true'
   | 'false'
   | 'new';
-const isHeadless = headless === 'true' || headless === 'new';
+export const isHeadless = headless === 'true' || headless === 'new';
 const isFirefox = product === 'firefox';
 const isChrome = product === 'chrome';
 const protocol = (process.env['PUPPETEER_PROTOCOL'] || 'cdp') as

@@ -22,7 +22,7 @@ import expect from 'expect';
 import {PuppeteerLaunchOptions} from 'puppeteer-core/internal/node/PuppeteerNode.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 
-import {getTestState, launch} from './mocha-utils.js';
+import {getTestState, isHeadless, launch} from './mocha-utils.js';
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 
@@ -35,7 +35,7 @@ const serviceWorkerExtensionPath = path.join(
   'extension'
 );
 
-describe('headful tests', function () {
+(!isHeadless ? describe : describe.skip)('headful tests', function () {
   /* These tests fire up an actual browser so let's
    * allow a higher timeout
    */
