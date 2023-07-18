@@ -22,7 +22,4 @@ export default {
     path: process.cwd(),
     filename: 'bundle.js',
   },
-  node: {
-    __dirname: true,
-  },
 };
