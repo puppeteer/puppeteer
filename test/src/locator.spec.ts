@@ -222,7 +222,9 @@ describe('Locator', function () {
     });
 
     it('should time out', async () => {
-      const clock = sinon.useFakeTimers();
+      const clock = sinon.useFakeTimers({
+        shouldClearNativeTimers: true,
+      });
       try {
         const {page} = await getTestState();
 
@@ -243,7 +245,9 @@ describe('Locator', function () {
 
     it('should retry clicks on errors', async () => {
       const {page} = await getTestState();
-      const clock = sinon.useFakeTimers();
+      const clock = sinon.useFakeTimers({
+        shouldClearNativeTimers: true,
+      });
       try {
         page.setDefaultTimeout(5000);
         await page.setViewport({width: 500, height: 500});
@@ -262,7 +266,9 @@ describe('Locator', function () {
 
     it('can be aborted', async () => {
       const {page} = await getTestState();
-      const clock = sinon.useFakeTimers();
+      const clock = sinon.useFakeTimers({
+        shouldClearNativeTimers: true,
+      });
       try {
         page.setDefaultTimeout(5000);
 
@@ -476,7 +482,9 @@ describe('Locator', function () {
 
     it('can be aborted', async () => {
       const {page} = await getTestState();
-      const clock = sinon.useFakeTimers();
+      const clock = sinon.useFakeTimers({
+        shouldClearNativeTimers: true,
+      });
       try {
         await page.setViewport({width: 500, height: 500});
         await page.setContent(`
@@ -497,6 +505,37 @@ describe('Locator', function () {
       } finally {
         clock.restore();
       }
+    });
+
+    it('should time out when all locators do not match', async () => {
+      const clock = sinon.useFakeTimers({
+        shouldClearNativeTimers: true,
+      });
+      try {
+        const {page} = await getTestState();
+        page.setDefaultTimeout(5000);
+        await page.setContent(`<button>test</button>`);
+        const result = Locator.race([
+          page.locator('not-found'),
+          page.locator('not-found'),
+        ]).click();
+        clock.tick(5100);
+        await expect(result).rejects.toEqual(
+          new TimeoutError('waitForFunction timed out. The timeout is 5000ms.')
+        );
+      } finally {
+        clock.restore();
+      }
+    });
+
+    it('should not time out when one of the locators matches', async () => {
+      const {page} = await getTestState();
+      await page.setContent(`<button>test</button>`);
+      const result = Locator.race([
+        page.locator('not-found'),
+        page.locator('button'),
+      ]).click();
+      await expect(result).resolves.toEqual(undefined);
     });
   });
 });

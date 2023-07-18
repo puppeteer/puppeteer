@@ -722,7 +722,7 @@ class RaceLocatorImpl extends Locator {
       return abortController;
     };
 
-    await Promise.allSettled(
+    const results = await Promise.allSettled(
       this.#locators.map(locator => {
         return action(
           locator.on(LocatorEmittedEvents.Action, handleLocatorAction(locator)),
@@ -732,6 +732,26 @@ class RaceLocatorImpl extends Locator {
     );
 
     options.signal?.throwIfAborted();
+
+    const rejected = results.filter(
+      (result): result is PromiseRejectedResult => {
+        return result.status === 'rejected';
+      }
+    );
+
+    // If some locators are fulfilled, do not throw.
+    if (rejected.length !== results.length) {
+      return;
+    }
+
+    for (const result of rejected) {
+      const reason = result.reason;
+      // AbortError is be an expected result of a race.
+      if (isErrorLike(reason) && reason.name === 'AbortError') {
+        continue;
+      }
+      throw reason;
+    }
   }
 
   override async click(
