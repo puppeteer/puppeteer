@@ -764,9 +764,64 @@ export class Frame {
    */
   async addScriptTag(
     options: FrameAddScriptTagOptions
-  ): Promise<ElementHandle<HTMLScriptElement>>;
-  async addScriptTag(): Promise<ElementHandle<HTMLScriptElement>> {
-    throw new Error('Not implemented');
+  ): Promise<ElementHandle<HTMLScriptElement>> {
+    let {content = '', type} = options;
+    const {path} = options;
+    if (+!!options.url + +!!path + +!!content !== 1) {
+      throw new Error(
+        'Exactly one of `url`, `path`, or `content` must be specified.'
+      );
+    }
+
+    if (path) {
+      const fs = await importFSPromises();
+      content = await fs.readFile(path, 'utf8');
+      content += `//# sourceURL=${path.replace(/\n/g, '')}`;
+    }
+
+    type = type ?? 'text/javascript';
+
+    return this.mainRealm().transferHandle(
+      await this.isolatedRealm().evaluateHandle(
+        async ({Deferred}, {url, id, type, content}) => {
+          const deferred = Deferred.create<void>();
+          const script = document.createElement('script');
+          script.type = type;
+          script.text = content;
+          if (url) {
+            script.src = url;
+            script.addEventListener(
+              'load',
+              () => {
+                return deferred.resolve();
+              },
+              {once: true}
+            );
+            script.addEventListener(
+              'error',
+              event => {
+                deferred.reject(
+                  new Error(event.message ?? 'Could not load script')
+                );
+              },
+              {once: true}
+            );
+          } else {
+            deferred.resolve();
+          }
+          if (id) {
+            script.id = id;
+          }
+          document.head.appendChild(script);
+          await deferred.valueOrThrow();
+          return script;
+        },
+        LazyArg.create(context => {
+          return context.puppeteerUtil;
+        }),
+        {...options, type, content}
+      )
+    );
   }
 
   /**

@@ -21,7 +21,7 @@ import {Protocol} from 'devtools-protocol';
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {ElementHandle} from '../api/ElementHandle.js';
-import {Frame, FrameAddScriptTagOptions} from '../api/Frame.js';
+import {Frame} from '../api/Frame.js';
 import {HTTPRequest} from '../api/HTTPRequest.js';
 import {HTTPResponse} from '../api/HTTPResponse.js';
 import {JSHandle} from '../api/JSHandle.js';
@@ -576,12 +576,6 @@ export class CDPPage extends Page {
     if (items.length) {
       await this.#client.send('Network.setCookies', {cookies: items});
     }
-  }
-
-  override async addScriptTag(
-    options: FrameAddScriptTagOptions
-  ): Promise<ElementHandle<HTMLScriptElement>> {
-    return this.mainFrame().addScriptTag(options);
   }
 
   override async exposeFunction(

@@ -17,7 +17,7 @@
 import {Protocol} from 'devtools-protocol';
 
 import {ElementHandle} from '../api/ElementHandle.js';
-import {Frame as BaseFrame, FrameAddScriptTagOptions} from '../api/Frame.js';
+import {Frame as BaseFrame} from '../api/Frame.js';
 import {HTTPResponse} from '../api/HTTPResponse.js';
 import {Page, WaitTimeoutOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
@@ -33,10 +33,9 @@ import {ExecutionContext} from './ExecutionContext.js';
 import {FrameManager} from './FrameManager.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
-import {LazyArg} from './LazyArg.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {EvaluateFunc, EvaluateFuncWith, HandleFor, NodeFor} from './types.js';
-import {importFSPromises, withSourcePuppeteerURLIfNone} from './util.js';
+import {withSourcePuppeteerURLIfNone} from './util.js';
 
 /**
  * @internal
@@ -331,68 +330,6 @@ export class Frame extends BaseFrame {
 
   override isDetached(): boolean {
     return this.#detached;
-  }
-
-  override async addScriptTag(
-    options: FrameAddScriptTagOptions
-  ): Promise<ElementHandle<HTMLScriptElement>> {
-    let {content = '', type} = options;
-    const {path} = options;
-    if (+!!options.url + +!!path + +!!content !== 1) {
-      throw new Error(
-        'Exactly one of `url`, `path`, or `content` must be specified.'
-      );
-    }
-
-    if (path) {
-      const fs = await importFSPromises();
-      content = await fs.readFile(path, 'utf8');
-      content += `//# sourceURL=${path.replace(/\n/g, '')}`;
-    }
-
-    type = type ?? 'text/javascript';
-
-    return this.mainRealm().transferHandle(
-      await this.isolatedRealm().evaluateHandle(
-        async ({Deferred}, {url, id, type, content}) => {
-          const deferred = Deferred.create<void>();
-          const script = document.createElement('script');
-          script.type = type;
-          script.text = content;
-          if (url) {
-            script.src = url;
-            script.addEventListener(
-              'load',
-              () => {
-                return deferred.resolve();
-              },
-              {once: true}
-            );
-            script.addEventListener(
-              'error',
-              event => {
-                deferred.reject(
-                  new Error(event.message ?? 'Could not load script')
-                );
-              },
-              {once: true}
-            );
-          } else {
-            deferred.resolve();
-          }
-          if (id) {
-            script.id = id;
-          }
-          document.head.appendChild(script);
-          await deferred.valueOrThrow();
-          return script;
-        },
-        LazyArg.create(context => {
-          return context.puppeteerUtil;
-        }),
-        {...options, type, content}
-      )
-    );
   }
 
   override async title(): Promise<string> {
