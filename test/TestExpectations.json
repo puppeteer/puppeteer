@@ -174,6 +174,12 @@
     "expectations": ["FAIL", "TIMEOUT"]
   },
   {
+    "testIdPattern": "[page.spec] Page Page.addStyleTag *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.browser *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1124,14 +1130,8 @@
   {
     "testIdPattern": "[page.spec] Page Page.addStyleTag should throw when added with content to the CSP page",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.addStyleTag should throw when added with URL to the CSP page",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.close should *not* run beforeunload by default",
@@ -1761,12 +1761,6 @@
     "testIdPattern": "[cookies.spec] Cookie specs Page.setCookie should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[coverage.spec] Coverage specs CSSCoverage should ignore injected stylesheets",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
@@ -3073,18 +3067,6 @@
   },
   {
     "testIdPattern": "[page.spec] Page Page.addScriptTag should throw when added with content to the CSP page",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.addStyleTag should throw an error if loading from url fail",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.addStyleTag should throw when added with content to the CSP page",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]

@@ -21,11 +21,7 @@ import {Protocol} from 'devtools-protocol';
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
 import {ElementHandle} from '../api/ElementHandle.js';
-import {
-  Frame,
-  FrameAddScriptTagOptions,
-  FrameAddStyleTagOptions,
-} from '../api/Frame.js';
+import {Frame, FrameAddScriptTagOptions} from '../api/Frame.js';
 import {HTTPRequest} from '../api/HTTPRequest.js';
 import {HTTPResponse} from '../api/HTTPResponse.js';
 import {JSHandle} from '../api/JSHandle.js';
@@ -587,18 +583,6 @@ export class CDPPage extends Page {
     options: FrameAddScriptTagOptions
   ): Promise<ElementHandle<HTMLScriptElement>> {
     return this.mainFrame().addScriptTag(options);
-  }
-
-  override async addStyleTag(
-    options: Omit<FrameAddStyleTagOptions, 'url'>
-  ): Promise<ElementHandle<HTMLStyleElement>>;
-  override async addStyleTag(
-    options: FrameAddStyleTagOptions
-  ): Promise<ElementHandle<HTMLLinkElement>>;
-  override async addStyleTag(
-    options: FrameAddStyleTagOptions
-  ): Promise<ElementHandle<HTMLStyleElement | HTMLLinkElement>> {
-    return this.mainFrame().addStyleTag(options);
   }
 
   override async exposeFunction(

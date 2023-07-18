@@ -25,6 +25,7 @@ import {
   IsolatedWorldChart,
   WaitForSelectorOptions,
 } from '../common/IsolatedWorld.js';
+import {LazyArg} from '../common/LazyArg.js';
 import {PuppeteerLifeCycleEvent} from '../common/LifecycleWatcher.js';
 import {
   EvaluateFunc,
@@ -33,6 +34,7 @@ import {
   InnerLazyParams,
   NodeFor,
 } from '../common/types.js';
+import {importFSPromises} from '../common/util.js';
 import {TaskManager} from '../common/WaitTask.js';
 
 import {KeyboardTypeOptions} from './Input.js';
@@ -780,10 +782,67 @@ export class Frame {
   async addStyleTag(
     options: FrameAddStyleTagOptions
   ): Promise<ElementHandle<HTMLLinkElement>>;
-  async addStyleTag(): Promise<
-    ElementHandle<HTMLStyleElement | HTMLLinkElement>
-  > {
-    throw new Error('Not implemented');
+  async addStyleTag(
+    options: FrameAddStyleTagOptions
+  ): Promise<ElementHandle<HTMLStyleElement | HTMLLinkElement>> {
+    let {content = ''} = options;
+    const {path} = options;
+    if (+!!options.url + +!!path + +!!content !== 1) {
+      throw new Error(
+        'Exactly one of `url`, `path`, or `content` must be specified.'
+      );
+    }
+
+    if (path) {
+      const fs = await importFSPromises();
+
+      content = await fs.readFile(path, 'utf8');
+      content += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
+      options.content = content;
+    }
+
+    return this.mainRealm().transferHandle(
+      await this.isolatedRealm().evaluateHandle(
+        async ({Deferred}, {url, content}) => {
+          const deferred = Deferred.create<void>();
+          let element: HTMLStyleElement | HTMLLinkElement;
+          if (!url) {
+            element = document.createElement('style');
+            element.appendChild(document.createTextNode(content!));
+          } else {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = url;
+            element = link;
+          }
+          element.addEventListener(
+            'load',
+            () => {
+              deferred.resolve();
+            },
+            {once: true}
+          );
+          element.addEventListener(
+            'error',
+            event => {
+              deferred.reject(
+                new Error(
+                  (event as ErrorEvent).message ?? 'Could not load style'
+                )
+              );
+            },
+            {once: true}
+          );
+          document.head.appendChild(element);
+          await deferred.valueOrThrow();
+          return element;
+        },
+        LazyArg.create(context => {
+          return context.puppeteerUtil;
+        }),
+        options
+      )
+    );
   }
 
   /**
