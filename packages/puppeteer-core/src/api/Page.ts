@@ -1206,11 +1206,8 @@ export class Page extends EventEmitter {
   ): Promise<ElementHandle<HTMLLinkElement>>;
   async addStyleTag(
     options: FrameAddStyleTagOptions
-  ): Promise<ElementHandle<HTMLStyleElement | HTMLLinkElement>>;
-  async addStyleTag(): Promise<
-    ElementHandle<HTMLStyleElement | HTMLLinkElement>
-  > {
-    throw new Error('Not implemented');
+  ): Promise<ElementHandle<HTMLStyleElement | HTMLLinkElement>> {
+    return this.mainFrame().addStyleTag(options);
   }
 
   /**

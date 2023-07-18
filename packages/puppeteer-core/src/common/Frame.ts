@@ -17,11 +17,7 @@
 import {Protocol} from 'devtools-protocol';
 
 import {ElementHandle} from '../api/ElementHandle.js';
-import {
-  Frame as BaseFrame,
-  FrameAddScriptTagOptions,
-  FrameAddStyleTagOptions,
-} from '../api/Frame.js';
+import {Frame as BaseFrame, FrameAddScriptTagOptions} from '../api/Frame.js';
 import {HTTPResponse} from '../api/HTTPResponse.js';
 import {Page, WaitTimeoutOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
@@ -397,75 +393,6 @@ export class Frame extends BaseFrame {
           return context.puppeteerUtil;
         }),
         {...options, type, content}
-      )
-    );
-  }
-
-  override async addStyleTag(
-    options: Omit<FrameAddStyleTagOptions, 'url'>
-  ): Promise<ElementHandle<HTMLStyleElement>>;
-  override async addStyleTag(
-    options: FrameAddStyleTagOptions
-  ): Promise<ElementHandle<HTMLLinkElement>>;
-  override async addStyleTag(
-    options: FrameAddStyleTagOptions
-  ): Promise<ElementHandle<HTMLStyleElement | HTMLLinkElement>> {
-    let {content = ''} = options;
-    const {path} = options;
-    if (+!!options.url + +!!path + +!!content !== 1) {
-      throw new Error(
-        'Exactly one of `url`, `path`, or `content` must be specified.'
-      );
-    }
-
-    if (path) {
-      const fs = await importFSPromises();
-
-      content = await fs.readFile(path, 'utf8');
-      content += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
-      options.content = content;
-    }
-
-    return this.mainRealm().transferHandle(
-      await this.isolatedRealm().evaluateHandle(
-        async ({Deferred}, {url, content}) => {
-          const deferred = Deferred.create<void>();
-          let element: HTMLStyleElement | HTMLLinkElement;
-          if (!url) {
-            element = document.createElement('style');
-            element.appendChild(document.createTextNode(content!));
-          } else {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = url;
-            element = link;
-          }
-          element.addEventListener(
-            'load',
-            () => {
-              deferred.resolve();
-            },
-            {once: true}
-          );
-          element.addEventListener(
-            'error',
-            event => {
-              deferred.reject(
-                new Error(
-                  (event as ErrorEvent).message ?? 'Could not load style'
-                )
-              );
-            },
-            {once: true}
-          );
-          document.head.appendChild(element);
-          await deferred.valueOrThrow();
-          return element;
-        },
-        LazyArg.create(context => {
-          return context.puppeteerUtil;
-        }),
-        options
       )
     );
   }
