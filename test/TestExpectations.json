@@ -12,18 +12,6 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[Deferred.spec] *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[DeviceRequestPrompt.spec] DeviceRequestPrompt *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs Custom queries *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -52,12 +40,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[EventEmitter.spec] EventEmitter *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[fixtures.spec] Fixtures *",
@@ -3820,18 +3802,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "new-headless"],
     "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[tracing.spec] Tracing \"after each\" hook for \"should output a trace\"",
-    "platforms": ["win32"],
-    "parameters": ["cdp", "chrome", "headless"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[tracing.spec] Tracing \"after each\" hook for \"should output a trace\"",
-    "platforms": ["win32"],
-    "parameters": ["cdp", "chrome", "headless"],
-    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[worker.spec] Workers Page.workers",
