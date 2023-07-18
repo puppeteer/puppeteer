@@ -30,17 +30,10 @@ import {
   withSourcePuppeteerURLIfNone,
 } from './util.js';
 
-declare const __JSHandleSymbol: unique symbol;
-
 /**
  * @internal
  */
 export class CDPJSHandle<T = unknown> extends JSHandle<T> {
-  /**
-   * Used for nominally typing {@link JSHandle}.
-   */
-  [__JSHandleSymbol]?: T;
-
   #disposed = false;
   #context: ExecutionContext;
   #remoteObject: Protocol.Runtime.RemoteObject;

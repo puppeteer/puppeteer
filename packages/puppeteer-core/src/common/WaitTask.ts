@@ -228,7 +228,6 @@ export class WaitTask<T = unknown> {
       return error;
     }
 
-    // @ts-expect-error TODO: uncomment once cause is supported in Node types.
     return new Error('WaitTask failed with an error', {
       cause: error,
     });
