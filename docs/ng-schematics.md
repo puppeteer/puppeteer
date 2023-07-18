@@ -19,7 +19,7 @@ Currently, this schematic supports the following test frameworks:
 - [**Jasmine**](https://jasmine.github.io/)
 - [**Jest**](https://jestjs.io/)
 - [**Mocha**](https://mochajs.org/)
-- [**Node Test Runner** _(Experimental)_](https://nodejs.org/api/test.html)
+- [**Node Test Runner**](https://nodejs.org/api/test.html)
 
 With the schematics installed you can run E2E tests:
 

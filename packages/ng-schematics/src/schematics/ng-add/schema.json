@@ -39,7 +39,7 @@
           },
           {
             "value": "node",
-            "label": "Use Node Test Runner (Experimental: Node v18) [https://nodejs.org/api/test.html]"
+            "label": "Use Node Test Runner [https://nodejs.org/api/test.html]"
           }
         ]
       }
