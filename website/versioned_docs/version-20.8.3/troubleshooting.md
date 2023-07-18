@@ -172,13 +172,13 @@ yum update nss -y
 
 ## Chrome headless disables GPU compositing
 
-Chrome/Chromium requires `--use-gl=egl` to
-[enable GPU acceleration in headless mode](https://github.com/chromium/chromium/commit/19671359ae25aa1e30bde90f8ff92453eeaac2ba).
+Chrome/Chromium requires `--enable-gpu` to
+[enable GPU acceleration in headless mode](https://crbug.com/1416283).
 
 ```ts
 const browser = await puppeteer.launch({
   headless: true,
-  args: ['--use-gl=egl'],
+  args: ['--enable-gpu'],
 });
 ```
 
