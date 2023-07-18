@@ -1,18 +1,18 @@
 ---
-sidebar_label: JSHandle.evaluate
+sidebar_label: Frame.evaluate
 ---
 
-# JSHandle.evaluate() method
+# Frame.evaluate() method
 
-Evaluates the given function with the current handle as its first argument.
+Behaves identically to [Page.evaluate()](./puppeteer.page.evaluate.md) except it's run within the the context of this frame.
 
 #### Signature:
 
 ```typescript
-class JSHandle {
+class Frame {
   evaluate<
     Params extends unknown[],
-    Func extends EvaluateFuncWith<T, Params> = EvaluateFuncWith<T, Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params

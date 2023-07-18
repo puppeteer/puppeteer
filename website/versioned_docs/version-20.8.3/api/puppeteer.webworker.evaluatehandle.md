@@ -12,7 +12,7 @@ The only difference between `worker.evaluate` and `worker.evaluateHandle` is tha
 class WebWorker {
   evaluateHandle<
     Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>
+    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
