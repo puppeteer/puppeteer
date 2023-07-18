@@ -22,8 +22,6 @@ import {EvaluateFuncWith, HandleFor, HandleOr} from '../common/types.js';
 
 import {ElementHandle} from './ElementHandle.js';
 
-declare const __JSHandleSymbol: unique symbol;
-
 /**
  * Represents a reference to a JavaScript object. Instances can be created using
  * {@link Page.evaluateHandle}.
@@ -49,7 +47,7 @@ export class JSHandle<T = unknown> {
   /**
    * Used for nominally typing {@link JSHandle}.
    */
-  [__JSHandleSymbol]?: T;
+  declare _?: T;
 
   /**
    * @internal

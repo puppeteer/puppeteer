@@ -31,7 +31,7 @@ import {
 } from './DeviceRequestPrompt.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {FrameManager} from './FrameManager.js';
-import {IsolatedWorld, IsolatedWorldChart} from './IsolatedWorld.js';
+import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {LazyArg} from './LazyArg.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
@@ -46,11 +46,9 @@ export class Frame extends BaseFrame {
   #detached = false;
   #client!: CDPSession;
 
-  override worlds!: IsolatedWorldChart;
   _frameManager: FrameManager;
   override _id: string;
   _loaderId = '';
-  override _name?: string;
   override _hasStartedLoading = false;
   _lifecycleEvents = new Set<string>();
   override _parentId?: string;
