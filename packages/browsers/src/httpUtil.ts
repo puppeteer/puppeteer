@@ -51,12 +51,16 @@ export function httpRequest(
   let agent: http.Agent | undefined;
   if (proxy) {
     const proxyUrl = new URL(proxy);
-    if (proxyUrl.protocol === 'http:') {
-      agent = new HttpProxyAgent(proxyUrl);
-    } else if (proxyUrl.protocol === 'https:') {
-      agent = new HttpsProxyAgent(proxyUrl);
-    } else if (proxyUrl.protocol.startsWith('socks')) {
+    if (proxyUrl.protocol.startsWith('socks')) {
       agent = new SocksProxyAgent(proxyUrl);
+    } else if (proxyUrl.protocol.startsWith('http')) {
+      // For http(s), the proxy agent is determined by the target URL. Even for
+      // HTTP proxies, HttpsProxyAgent agent has to be used if the target URL
+      // is https.
+      agent =
+        url.protocol === 'http:'
+          ? new HttpProxyAgent(proxyUrl)
+          : new HttpsProxyAgent(proxyUrl);
     }
   }
 
