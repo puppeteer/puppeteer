@@ -1776,18 +1776,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[coverage.spec] Coverage specs CSSCoverage should work with media queries",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should ignore pptr internal scripts if reportAnonymousScripts is true",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should not ignore eval() scripts if reportAnonymousScripts is true",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
