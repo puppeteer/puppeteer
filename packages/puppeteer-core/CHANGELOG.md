@@ -14,6 +14,14 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.4.4 to 1.4.5
 
+## [20.8.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.8.2...puppeteer-core-v20.8.3) (2023-07-18)
+
+
+### Bug Fixes
+
+* **locators:** reject the race if there are only failures ([#10567](https://github.com/puppeteer/puppeteer/issues/10567)) ([e3dd596](https://github.com/puppeteer/puppeteer/commit/e3dd5968cae196b64d958c161fed3d1b39aed3f6))
+* prevent erroneous new main frame ([#10549](https://github.com/puppeteer/puppeteer/issues/10549)) ([cb46413](https://github.com/puppeteer/puppeteer/commit/cb46413d87f10970f4088b7d58e02a65c5ccd27e))
+
 ## [20.8.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.8.0...puppeteer-core-v20.8.1) (2023-07-11)
 
 
