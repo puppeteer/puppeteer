@@ -2706,9 +2706,8 @@ export class Page extends EventEmitter {
   waitForXPath(
     xpath: string,
     options?: WaitForSelectorOptions
-  ): Promise<ElementHandle<Node> | null>;
-  waitForXPath(): Promise<ElementHandle<Node> | null> {
-    throw new Error('Not implemented');
+  ): Promise<ElementHandle<Node> | null> {
+    return this.mainFrame().waitForXPath(xpath, options);
   }
 
   /**

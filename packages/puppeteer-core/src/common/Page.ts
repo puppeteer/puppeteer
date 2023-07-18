@@ -57,7 +57,6 @@ import {TargetCloseError} from './Errors.js';
 import {FileChooser} from './FileChooser.js';
 import {FrameManager, FrameManagerEmittedEvents} from './FrameManager.js';
 import {CDPKeyboard, CDPMouse, CDPTouchscreen} from './Input.js';
-import {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
 import {
   Credentials,
@@ -1376,13 +1375,6 @@ export class CDPPage extends Page {
 
   override get mouse(): CDPMouse {
     return this.#mouse;
-  }
-
-  override waitForXPath(
-    xpath: string,
-    options: WaitForSelectorOptions = {}
-  ): Promise<ElementHandle<Node> | null> {
-    return this.mainFrame().waitForXPath(xpath, options);
   }
 
   /**
