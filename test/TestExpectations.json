@@ -270,6 +270,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForXPath *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[accessibility.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -1528,6 +1534,18 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForXPath should run in specified frame",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForXPath should throw when frame is detached",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Page.waitForTimeout waits for the given timeout before resolving",
