@@ -34,7 +34,7 @@
     "test:firefox:headful": "wireit",
     "test:firefox:headless": "wireit",
     "test:firefox": "wireit",
-    "test": "cross-env PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 node tools/mochaRunner/lib/main.js --min-tests 1003",
+    "test": "wireit",
     "validate-licenses": "tsx tools/third_party/validate-licenses.ts",
     "unit": "npm run unit --workspaces --if-present"
   },
@@ -58,52 +58,28 @@
       ]
     },
     "test:chrome:headful": {
-      "command": "npm test -- --test-suite chrome-headful",
-      "dependencies": [
-        "./test:build"
-      ]
+      "command": "npm test -- --test-suite chrome-headful"
     },
     "test:chrome:headless": {
-      "command": "npm test -- --test-suite chrome-headless",
-      "dependencies": [
-        "./test:build"
-      ]
+      "command": "npm test -- --test-suite chrome-headless"
     },
     "test:chrome:new-headless": {
-      "command": "npm test -- --test-suite chrome-new-headless",
-      "dependencies": [
-        "./test:build"
-      ]
+      "command": "npm test -- --test-suite chrome-new-headless"
     },
     "test:chrome:bidi": {
-      "command": "npm test -- --test-suite chrome-bidi",
-      "dependencies": [
-        "./test:build"
-      ]
+      "command": "npm test -- --test-suite chrome-bidi"
     },
     "test:chrome:bidi-local": {
-      "command": "PUPPETEER_EXECUTABLE_PATH=$(node tools/download_chrome_bidi.mjs ~/.cache/puppeteer/chrome-canary --shell) npm test -- --test-suite chrome-bidi",
-      "dependencies": [
-        "./test:build"
-      ]
+      "command": "PUPPETEER_EXECUTABLE_PATH=$(node tools/download_chrome_bidi.mjs ~/.cache/puppeteer/chrome-canary --shell) npm test -- --test-suite chrome-bidi"
     },
     "test:firefox:headful": {
-      "command": "npm test -- --test-suite firefox-headful",
-      "dependencies": [
-        "./test:build"
-      ]
+      "command": "npm test -- --test-suite firefox-headful"
     },
     "test:firefox:headless": {
-      "command": "npm test -- --test-suite firefox-headless",
-      "dependencies": [
-        "./test:build"
-      ]
+      "command": "npm test -- --test-suite firefox-headless"
     },
     "test:firefox:bidi": {
-      "command": "npm test -- --test-suite firefox-bidi",
-      "dependencies": [
-        "./test:build"
-      ]
+      "command": "npm test -- --test-suite firefox-bidi"
     },
     "test:chrome": {
       "dependencies": [
@@ -118,6 +94,12 @@
         "test:firefox:headful",
         "test:firefox:headless",
         "test:firefox:bidi"
+      ]
+    },
+    "test": {
+      "command": "cross-env PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT=20000 node tools/mochaRunner/lib/main.js --min-tests 1003",
+      "dependencies": [
+        "./test:build"
       ]
     }
   },
