@@ -336,6 +336,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[browsercontext.spec] BrowserContext should have default context",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[CDPSession.spec] Target.createCDPSession *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],

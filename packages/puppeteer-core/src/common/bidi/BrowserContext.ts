@@ -136,4 +136,8 @@ export class BrowserContext extends BrowserContextBase {
     await this.#init.valueOrThrow();
     return [...this.#pages.values()];
   }
+
+  override isIncognito(): boolean {
+    return false;
+  }
 }
