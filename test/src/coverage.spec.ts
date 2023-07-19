@@ -272,7 +272,10 @@ describe('Coverage specs', function () {
       const coverage = await page.coverage.stopCSSCoverage();
       expect(coverage).toHaveLength(1);
       expect(coverage[0]!.url).toContain('/csscoverage/media.html');
-      expect(coverage[0]!.ranges).toEqual([{start: 8, end: 40}]);
+      expect(coverage[0]!.ranges).toEqual([
+        {start: 8, end: 15},
+        {start: 17, end: 38},
+      ]);
     });
     it('should work with complicated usecases', async () => {
       const {page, server} = await getTestState();
