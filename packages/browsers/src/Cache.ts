@@ -23,6 +23,10 @@ import {Browser, BrowserPlatform} from './browser-data/browser-data.js';
  * @public
  */
 export interface InstalledBrowser {
+  /**
+   * Path to the root of the installation folder. Use
+   * {@link computeExecutablePath} to get the path to the executable binary.
+   */
   path: string;
   browser: Browser;
   buildId: string;
