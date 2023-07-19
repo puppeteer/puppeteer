@@ -19,6 +19,13 @@
       "require": "./lib/cjs/main.js"
     }
   },
+  "typesVersions": {
+    ">=4.7.4": {
+      ".": [
+        "./lib/types.d.ts"
+      ]
+    }
+  },
   "wireit": {
     "build": {
       "command": "tsc -b && tsx ../../tools/chmod.ts 755 lib/cjs/main-cli.js lib/esm/main-cli.js",
@@ -109,13 +116,5 @@
   "devDependencies": {
     "@types/node": "^16.11.7",
     "@types/yargs": "17.0.22"
-  },
-  "peerDependencies": {
-    "typescript": ">= 4.7.4"
-  },
-  "peerDependenciesMeta": {
-    "typescript": {
-      "optional": true
-    }
   }
 }

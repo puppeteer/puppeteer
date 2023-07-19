@@ -10,10 +10,8 @@
   ],
   "type": "commonjs",
   "main": "./lib/cjs/puppeteer/puppeteer-core.js",
-  "types": "./lib/types.d.ts",
   "exports": {
     ".": {
-      "types": "./lib/types.d.ts",
       "import": "./lib/esm/puppeteer/puppeteer-core.js",
       "require": "./lib/cjs/puppeteer/puppeteer-core.js"
     },
@@ -44,6 +42,13 @@
     "generate:sources": "wireit",
     "prepack": "wireit",
     "unit": "wireit"
+  },
+  "typesVersions": {
+    ">=4.7.4": {
+      ".": [
+        "./lib/types.d.ts"
+      ]
+    }
   },
   "wireit": {
     "prepack": {
@@ -150,14 +155,6 @@
     "devtools-protocol": "0.0.1147663",
     "ws": "8.13.0",
     "@puppeteer/browsers": "1.4.6"
-  },
-  "peerDependencies": {
-    "typescript": ">= 4.7.4"
-  },
-  "peerDependenciesMeta": {
-    "typescript": {
-      "optional": true
-    }
   },
   "devDependencies": {
     "mitt": "3.0.0",
