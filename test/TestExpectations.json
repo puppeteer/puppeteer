@@ -6,6 +6,18 @@
     "expectations": ["SKIP", "TIMEOUT"]
   },
   {
+    "testIdPattern": "[autofill.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[autofill.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[chromiumonly.spec] Chromium-Specific Launcher tests *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -298,6 +310,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[autofill.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "headless"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[browser.spec] Browser specs Browser.isConnected should set the browser connected state",

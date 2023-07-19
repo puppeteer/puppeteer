@@ -17,6 +17,7 @@
 import {Protocol} from 'devtools-protocol';
 
 import {
+  AutofillData,
   BoundingBox,
   BoxModel,
   ClickOptions,
@@ -570,6 +571,19 @@ export class CDPElementHandle<
     }
 
     return imageData;
+  }
+
+  override async autofill(data: AutofillData): Promise<void> {
+    const nodeInfo = await this.client.send('DOM.describeNode', {
+      objectId: this.handle.id,
+    });
+    const fieldId = nodeInfo.node.backendNodeId;
+    const frameId = this.#frame._id;
+    await this.client.send('Autofill.trigger', {
+      fieldId,
+      frameId,
+      card: data.creditCard,
+    });
   }
 }
 

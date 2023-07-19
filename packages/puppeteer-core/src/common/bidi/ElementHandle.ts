@@ -17,6 +17,7 @@
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {
+  AutofillData,
   ElementHandle as BaseElementHandle,
   ClickOptions,
 } from '../../api/ElementHandle.js';
@@ -68,6 +69,20 @@ export class ElementHandle<
   override assertElementHasWorld(): asserts this {
     // TODO: Should assert element has a Sandbox
     return;
+  }
+
+  override async autofill(data: AutofillData): Promise<void> {
+    const client = this.#frame.context().cdpSession;
+    const nodeInfo = await client.send('DOM.describeNode', {
+      objectId: this.handle.id,
+    });
+    const fieldId = nodeInfo.node.backendNodeId;
+    const frameId = this.#frame._id;
+    await client.send('Autofill.trigger', {
+      fieldId,
+      frameId,
+      card: data.creditCard,
+    });
   }
 
   // ///////////////////
