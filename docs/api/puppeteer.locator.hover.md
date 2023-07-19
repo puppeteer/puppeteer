@@ -8,15 +8,19 @@ sidebar_label: Locator.hover
 
 ```typescript
 class Locator {
-  abstract hover(hoverOptions?: {signal?: AbortSignal}): Promise<void>;
+  abstract hover<ElementType extends Element>(
+    this: Locator<ElementType>,
+    options?: Readonly<ActionOptions>
+  ): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter    | Type                      | Description  |
-| ------------ | ------------------------- | ------------ |
-| hoverOptions | { signal?: AbortSignal; } | _(Optional)_ |
+| Parameter | Type                                                          | Description  |
+| --------- | ------------------------------------------------------------- | ------------ |
+| this      | [Locator](./puppeteer.locator.md)&lt;ElementType&gt;          |              |
+| options   | Readonly&lt;[ActionOptions](./puppeteer.actionoptions.md)&gt; | _(Optional)_ |
 
 **Returns:**
 

@@ -424,7 +424,9 @@ export class Frame {
    * Locators API is experimental and we will not follow semver for breaking
    * change in the Locators API.
    */
-  locator(selector: string): Locator {
+  locator<Selector extends string>(
+    selector: Selector
+  ): Locator<NodeFor<Selector>> {
     return Locator.create(this, selector);
   }
 

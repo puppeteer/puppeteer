@@ -8,19 +8,19 @@ sidebar_label: Locator.scroll
 
 ```typescript
 class Locator {
-  abstract scroll(scrollOptions?: {
-    scrollTop?: number;
-    scrollLeft?: number;
-    signal?: AbortSignal;
-  }): Promise<void>;
+  abstract scroll<ElementType extends Element>(
+    this: Locator<ElementType>,
+    options?: Readonly<LocatorScrollOptions>
+  ): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter     | Type                                                               | Description  |
-| ------------- | ------------------------------------------------------------------ | ------------ |
-| scrollOptions | { scrollTop?: number; scrollLeft?: number; signal?: AbortSignal; } | _(Optional)_ |
+| Parameter | Type                                                                        | Description  |
+| --------- | --------------------------------------------------------------------------- | ------------ |
+| this      | [Locator](./puppeteer.locator.md)&lt;ElementType&gt;                        |              |
+| options   | Readonly&lt;[LocatorScrollOptions](./puppeteer.locatorscrolloptions.md)&gt; | _(Optional)_ |
 
 **Returns:**
 

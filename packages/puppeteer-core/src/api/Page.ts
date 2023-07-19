@@ -831,7 +831,9 @@ export class Page extends EventEmitter {
    * Locators API is experimental and we will not follow semver for breaking
    * change in the Locators API.
    */
-  locator(selector: string): Locator {
+  locator<Selector extends string>(
+    selector: Selector
+  ): Locator<NodeFor<Selector>> {
     return Locator.create(this, selector);
   }
 
@@ -840,7 +842,7 @@ export class Page extends EventEmitter {
    *
    * @internal
    */
-  locatorRace(locators: Locator[]): Locator {
+  locatorRace(locators: Array<Locator<Node>>): Locator<Node> {
     return Locator.race(locators);
   }
 
