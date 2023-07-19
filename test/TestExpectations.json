@@ -486,6 +486,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should ignore pptr internal scripts if reportAnonymousScripts is true",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"]
+  },
+  {
     "testIdPattern": "[drag-and-drop.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -616,6 +622,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[frame.spec] Frame specs Frame Management should support lazy frames",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame.evaluate allows readonly array to be an argument",
@@ -1108,6 +1120,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF should support lazy OOP frames",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome"],
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[page.spec] Page BrowserContext.overridePermissions should be prompt by default",
@@ -1773,7 +1791,7 @@
     "testIdPattern": "[coverage.spec] Coverage specs CSSCoverage should work with complicated usecases",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[coverage.spec] Coverage specs JSCoverage should not ignore eval() scripts if reportAnonymousScripts is true",
