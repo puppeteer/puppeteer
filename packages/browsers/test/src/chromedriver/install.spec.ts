@@ -98,5 +98,6 @@ describe('ChromeDriver install', () => {
     });
     assert.strictEqual(browser.path, expectedOutputPath);
     assert.ok(fs.existsSync(expectedOutputPath));
+    assert.ok(fs.existsSync(browser.executablePath));
   });
 });

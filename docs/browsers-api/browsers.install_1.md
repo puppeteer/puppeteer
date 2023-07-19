@@ -1,5 +1,5 @@
 ---
-sidebar_label: install
+sidebar_label: install_1
 ---
 
 # install() function
@@ -9,17 +9,17 @@ sidebar_label: install
 ```typescript
 export declare function install(
   options: InstallOptions & {
-    unpack?: true;
+    unpack: false;
   }
-): Promise<InstalledBrowser>;
+): Promise<string>;
 ```
 
 ## Parameters
 
 | Parameter | Type                                                                    | Description |
 | --------- | ----------------------------------------------------------------------- | ----------- |
-| options   | [InstallOptions](./browsers.installoptions.md) &amp; { unpack?: true; } |             |
+| options   | [InstallOptions](./browsers.installoptions.md) &amp; { unpack: false; } |             |
 
 **Returns:**
 
-Promise&lt;[InstalledBrowser](./browsers.installedbrowser.md)&gt;
+Promise&lt;string&gt;

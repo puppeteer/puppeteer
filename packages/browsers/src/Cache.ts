@@ -18,19 +18,53 @@ import fs from 'fs';
 import path from 'path';
 
 import {Browser, BrowserPlatform} from './browser-data/browser-data.js';
+import {computeExecutablePath} from './launch.js';
 
 /**
  * @public
  */
-export interface InstalledBrowser {
+export class InstalledBrowser {
+  browser: Browser;
+  buildId: string;
+  platform: BrowserPlatform;
+
+  #cache: Cache;
+
+  /**
+   * @internal
+   */
+  constructor(
+    cache: Cache,
+    browser: Browser,
+    buildId: string,
+    platform: BrowserPlatform
+  ) {
+    this.#cache = cache;
+    this.browser = browser;
+    this.buildId = buildId;
+    this.platform = platform;
+  }
+
   /**
    * Path to the root of the installation folder. Use
    * {@link computeExecutablePath} to get the path to the executable binary.
    */
-  path: string;
-  browser: Browser;
-  buildId: string;
-  platform: BrowserPlatform;
+  get path(): string {
+    return this.#cache.installationDir(
+      this.browser,
+      this.platform,
+      this.buildId
+    );
+  }
+
+  get executablePath(): string {
+    return computeExecutablePath({
+      cacheDir: this.#cache.rootDir,
+      platform: this.platform,
+      browser: this.browser,
+      buildId: this.buildId,
+    });
+  }
 }
 
 /**
@@ -52,6 +86,13 @@ export class Cache {
 
   constructor(rootDir: string) {
     this.#rootDir = rootDir;
+  }
+
+  /**
+   * @internal
+   */
+  get rootDir(): string {
+    return this.#rootDir;
   }
 
   browserRoot(browser: Browser): string {
@@ -106,14 +147,14 @@ export class Cache {
           if (!result) {
             return null;
           }
-          return {
-            path: path.join(this.browserRoot(browser), file),
+          return new InstalledBrowser(
+            this,
             browser,
-            platform: result.platform,
-            buildId: result.buildId,
-          };
+            result.buildId,
+            result.platform as BrowserPlatform
+          );
         })
-        .filter((item): item is InstalledBrowser => {
+        .filter((item: InstalledBrowser | null): item is InstalledBrowser => {
           return item !== null;
         });
     });

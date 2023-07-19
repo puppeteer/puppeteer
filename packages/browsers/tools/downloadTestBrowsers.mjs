@@ -59,7 +59,7 @@ for (const version of Object.keys(versions)) {
       continue;
     }
 
-    const result = await install({
+    const archivePath = await install({
       browser,
       buildId,
       platform,
@@ -70,7 +70,7 @@ for (const version of Object.keys(versions)) {
     fs.mkdirSync(path.dirname(targetPath), {
       recursive: true,
     });
-    fs.copyFileSync(result.path, targetPath);
+    fs.copyFileSync(archivePath, targetPath);
   }
 }
 

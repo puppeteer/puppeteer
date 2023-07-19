@@ -104,6 +104,10 @@ describe('Chrome install', () => {
     const cache = new Cache(tmpDir);
     const installed = cache.getInstalledBrowsers();
     assert.deepStrictEqual(browser, installed[0]);
+    assert.deepStrictEqual(
+      browser!.executablePath,
+      installed[0]?.executablePath
+    );
   });
 
   it('throws on invalid URL', async function () {
