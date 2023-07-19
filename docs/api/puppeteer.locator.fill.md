@@ -10,21 +10,21 @@ Fills out the input identified by the locator using the provided value. The type
 
 ```typescript
 class Locator {
-  abstract fill(
+  abstract fill<ElementType extends Element>(
+    this: Locator<ElementType>,
     value: string,
-    fillOptions?: {
-      signal?: AbortSignal;
-    }
+    options?: Readonly<ActionOptions>
   ): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter   | Type                      | Description  |
-| ----------- | ------------------------- | ------------ |
-| value       | string                    |              |
-| fillOptions | { signal?: AbortSignal; } | _(Optional)_ |
+| Parameter | Type                                                          | Description  |
+| --------- | ------------------------------------------------------------- | ------------ |
+| this      | [Locator](./puppeteer.locator.md)&lt;ElementType&gt;          |              |
+| value     | string                                                        |              |
+| options   | Readonly&lt;[ActionOptions](./puppeteer.actionoptions.md)&gt; | _(Optional)_ |
 
 **Returns:**
 

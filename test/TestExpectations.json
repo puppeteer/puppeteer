@@ -2400,6 +2400,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[locator.spec] Locator Locator.prototype.expect should resolve as soon as the predicate matches",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["TIMEOUT"]
+  },
+  {
     "testIdPattern": "[mouse.spec] Mouse should reset properly",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
