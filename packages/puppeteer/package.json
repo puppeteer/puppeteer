@@ -38,7 +38,7 @@
     "build:tsc": "wireit",
     "build:types": "wireit",
     "build": "wireit",
-    "clean": "tsc -b --clean && rm -rf lib",
+    "clean": "git clean -dXf .",
     "generate:package-json": "wireit",
     "postinstall": "node install.js",
     "prepack": "wireit"

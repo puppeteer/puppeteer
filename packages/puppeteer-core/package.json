@@ -39,7 +39,7 @@
     "build:types": "wireit",
     "build": "wireit",
     "check": "tsx tools/ensure-correct-devtools-protocol-package",
-    "clean": "tsc -b --clean && rm -rf lib src/generated",
+    "clean": "git clean -dXf .",
     "generate:package-json": "wireit",
     "generate:sources": "wireit",
     "prepack": "wireit",

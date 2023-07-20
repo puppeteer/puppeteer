@@ -4,7 +4,7 @@
   "description": "Puppeteer Angular schematics",
   "scripts": {
     "build": "wireit",
-    "clean": "tsc -b --clean && rm -rf lib && rm -rf test/build",
+    "clean": "git clean -dXf .",
     "dev:test": "npm run test --watch",
     "dev": "npm run build --watch",
     "test": "wireit",

@@ -6,7 +6,7 @@
     "build:docs": "wireit",
     "build": "wireit",
     "build:test": "wireit",
-    "clean": "tsc --build --clean && rm -rf lib",
+    "clean": "git clean -dXf .",
     "test": "wireit"
   },
   "bin": "lib/cjs/main-cli.js",

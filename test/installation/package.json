@@ -6,7 +6,7 @@
   "scripts": {
     "build": "wireit",
     "build:packages": "wireit",
-    "clean": "tsc -b --clean && rm -rf build",
+    "clean": "git clean -dXf .",
     "test": "mocha"
   },
   "wireit": {
