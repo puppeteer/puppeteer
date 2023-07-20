@@ -172,6 +172,13 @@ export abstract class Locator<T> extends EventEmitter {
 
   abstract setWaitForStableBoundingBox(value: boolean): this;
 
+  /**
+   * Waits for the locator to locate its object.
+   *
+   * @returns The serialized object.
+   */
+  abstract wait(options?: Readonly<ActionOptions>): Promise<T>;
+
   abstract click<ElementType extends Element>(
     this: Locator<ElementType>,
     options?: Readonly<LocatorClickOptions>

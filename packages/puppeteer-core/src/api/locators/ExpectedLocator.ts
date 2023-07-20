@@ -63,15 +63,17 @@ export class ExpectedLocator<From, To extends From> extends Locator<To> {
     );
   };
 
-  #insertFilterCondition<
-    FromElement extends Node,
-    ToElement extends FromElement,
-  >(this: ExpectedLocator<FromElement, ToElement>): void {
+  #insertFilterCondition(): void {
     const context = (LOCATOR_CONTEXTS.get(this.#base) ??
-      {}) as LocatorContext<FromElement>;
+      {}) as LocatorContext<To>;
     context.conditions ??= new Set();
     context.conditions.add(this.#condition);
     LOCATOR_CONTEXTS.set(this.#base, context);
+  }
+
+  override wait(options?: Readonly<ActionOptions>): Promise<To> {
+    this.#insertFilterCondition();
+    return this.#base.wait(options) as Promise<To>;
   }
 
   override click<FromElement extends Element, ToElement extends FromElement>(

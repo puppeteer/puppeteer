@@ -323,6 +323,28 @@ export class NodeLocator<T extends Node> extends Locator<T> {
     );
   }
 
+  override wait(
+    this: NodeLocator<T extends Element ? T : never>,
+    options?: Readonly<ActionOptions>
+  ): Promise<T> {
+    return this.#run(
+      async element => {
+        const value = await element.evaluate(object => {
+          return object;
+        });
+        void element.dispose().catch(debugError);
+        return value as unknown as T;
+      },
+      options?.signal,
+      [
+        this.#ensureElementIsInTheViewportIfNeeded,
+        this.#waitForVisibilityIfNeeded,
+        this.#waitForEnabledIfNeeded,
+        this.#waitForStableBoundingBoxIfNeeded,
+      ]
+    );
+  }
+
   async click<ElementType extends Element>(
     this: NodeLocator<ElementType>,
     options?: Readonly<LocatorClickOptions>

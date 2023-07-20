@@ -60,10 +60,10 @@ export class RaceLocator<T> extends Locator<T> {
     return this;
   }
 
-  async #run(
-    action: (locator: Locator<T>, signal: AbortSignal) => Promise<void>,
+  async #run<U>(
+    action: (locator: Locator<T>, signal: AbortSignal) => Promise<U>,
     signal?: AbortSignal
-  ) {
+  ): Promise<U> {
     const abortControllers = new WeakMap<Locator<T>, AbortController>();
 
     // Abort all locators if the user-provided signal aborts.
@@ -110,7 +110,13 @@ export class RaceLocator<T> extends Locator<T> {
 
     // If some locators are fulfilled, do not throw.
     if (rejected.length !== results.length) {
-      return;
+      // SAFETY: If there is no value, then U is undefined, so the `as` coercion
+      // holds.
+      return results.filter(
+        (result): result is PromiseFulfilledResult<Awaited<U>> => {
+          return result.status === 'fulfilled';
+        }
+      )[0]?.value as Awaited<U>;
     }
 
     for (const result of rejected) {
@@ -121,6 +127,26 @@ export class RaceLocator<T> extends Locator<T> {
       }
       throw reason;
     }
+
+    // SAFETY: If there is no value, then U is undefined, so the `as` coercion
+    // holds.
+    return results.filter(
+      (result): result is PromiseFulfilledResult<Awaited<U>> => {
+        return result.status === 'fulfilled';
+      }
+    )[0]?.value as Awaited<U>;
+  }
+
+  override wait(
+    this: RaceLocator<T>,
+    options?: Readonly<ActionOptions>
+  ): Promise<T> {
+    return this.#run(
+      (locator, signal) => {
+        return locator.wait({...options, signal});
+      },
+      options?.signal
+    );
   }
 
   async click<ElementType extends Element>(
