@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.6](https://github.com/puppeteer/puppeteer/compare/browsers-v1.4.5...browsers-v1.4.6) (2023-07-20)
+
+
+### Bug Fixes
+
+* restore proxy-agent ([#10569](https://github.com/puppeteer/puppeteer/issues/10569)) ([bf6304e](https://github.com/puppeteer/puppeteer/commit/bf6304e064eb52d39d7f993f1ea868da06f7f006))
+
 ## [1.4.5](https://github.com/puppeteer/puppeteer/compare/browsers-v1.4.4...browsers-v1.4.5) (2023-07-13)
 
 
