@@ -73,7 +73,7 @@ import type {
 } from './Frame.js';
 import {Keyboard, KeyboardTypeOptions, Mouse, Touchscreen} from './Input.js';
 import type {JSHandle} from './JSHandle.js';
-import {Locator, NodeLocator} from './locators/locators.js';
+import {Locator, NodeLocator, UnionLocatorOf} from './locators/locators.js';
 
 /**
  * @public
@@ -842,8 +842,10 @@ export class Page extends EventEmitter {
    *
    * @internal
    */
-  locatorRace(locators: Array<Locator<Node>>): Locator<Node> {
-    return Locator.race(locators);
+  locatorRace<Locators extends Array<Locator<unknown>>>(
+    locators: Locators
+  ): Locator<UnionLocatorOf<Locators>> {
+    return Locator.race(locators as Array<Locator<UnionLocatorOf<Locators>>>);
   }
 
   /**
