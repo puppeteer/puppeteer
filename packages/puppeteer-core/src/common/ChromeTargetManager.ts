@@ -227,6 +227,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
         return;
       }
       const target = this.#targetFactory(event.targetInfo, undefined);
+      target._initialize();
       this.#attachedTargetsByTargetId.set(event.targetInfo.targetId, target);
     }
   };
@@ -324,15 +325,9 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
         return;
       }
       const target = this.#targetFactory(targetInfo);
+      target._initialize();
       this.#attachedTargetsByTargetId.set(targetInfo.targetId, target);
       this.emit(TargetManagerEmittedEvents.TargetAvailable, target);
-      return;
-    }
-
-    if (this.#targetFilterCallback && !this.#targetFilterCallback(targetInfo)) {
-      this.#ignoredTargets.add(targetInfo.targetId);
-      this.#finishInitializationIfReady(targetInfo.targetId);
-      await silentDetach();
       return;
     }
 
@@ -343,6 +338,17 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
     const target = existingTarget
       ? this.#attachedTargetsByTargetId.get(targetInfo.targetId)!
       : this.#targetFactory(targetInfo, session);
+
+    if (this.#targetFilterCallback && !this.#targetFilterCallback(targetInfo)) {
+      this.#ignoredTargets.add(targetInfo.targetId);
+      this.#finishInitializationIfReady(targetInfo.targetId);
+      await silentDetach();
+      return;
+    }
+
+    if (!existingTarget) {
+      target._initialize();
+    }
 
     this.#setupAttachmentListeners(session);
 
