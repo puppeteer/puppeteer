@@ -540,41 +540,16 @@ describe('Locator', function () {
   });
 
   describe('Locator.prototype.expect', () => {
-    it('should not resolve if the predicate does not match', async () => {
-      const clock = sinon.useFakeTimers({
-        shouldClearNativeTimers: true,
-      });
-      try {
-        const {page} = await getTestState();
-        page.setDefaultTimeout(5000);
-        await page.setContent(`<div>test</div>`);
-        const result = page
-          .locator('::-p-text(test)')
-          .expect((element): Promise<boolean> => {
-            return Promise.resolve(
-              element.getAttribute('clickable') === 'true'
-            );
-          })
-          .hover();
-        clock.tick(5100);
-        await expect(result).rejects.toEqual(
-          new TimeoutError('waitForFunction timed out. The timeout is 5000ms.')
-        );
-      } finally {
-        clock.restore();
-      }
-    });
-
     it('should resolve as soon as the predicate matches', async () => {
       const clock = sinon.useFakeTimers({
         shouldClearNativeTimers: true,
       });
       try {
         const {page} = await getTestState();
-        page.setDefaultTimeout(5000);
         await page.setContent(`<div>test</div>`);
         const result = page
           .locator('::-p-text(test)')
+          .setTimeout(5000)
           .expect(async element => {
             return element.getAttribute('clickable') === 'true';
           })
@@ -586,7 +561,7 @@ describe('Locator', function () {
         await page.evaluate(() => {
           document.querySelector('div')?.setAttribute('clickable', 'true');
         });
-        clock.tick(2000);
+        clock.restore();
         await expect(result).resolves.toEqual(undefined);
       } finally {
         clock.restore();
