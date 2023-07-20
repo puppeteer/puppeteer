@@ -8,8 +8,6 @@ sidebar_label: launch
 
 ```typescript
 launch: (
-  options?:
-    | import('puppeteer-core/internal/puppeteer-core.js').PuppeteerLaunchOptions
-    | undefined
-) => Promise<import('puppeteer-core/internal/puppeteer-core.js').Browser>;
+  options?: import('puppeteer-core').PuppeteerLaunchOptions | undefined
+) => Promise<import('puppeteer-core').Browser>;
 ```
