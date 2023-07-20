@@ -51,16 +51,12 @@ export type BrowserCloseCallback = () => Promise<void> | void;
 /**
  * @public
  */
-export type TargetFilterCallback = (
-  target: Protocol.Target.TargetInfo
-) => boolean;
+export type TargetFilterCallback = (target: Target) => boolean;
 
 /**
  * @internal
  */
-export type IsPageTargetCallback = (
-  target: Protocol.Target.TargetInfo
-) => boolean;
+export type IsPageTargetCallback = (target: Target) => boolean;
 
 /**
  * @internal

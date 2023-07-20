@@ -7,7 +7,7 @@ sidebar_label: TargetFilterCallback
 #### Signature:
 
 ```typescript
-export type TargetFilterCallback = (
-  target: Protocol.Target.TargetInfo
-) => boolean;
+export type TargetFilterCallback = (target: Target) => boolean;
 ```
+
+**References:** [Target](./puppeteer.target.md)

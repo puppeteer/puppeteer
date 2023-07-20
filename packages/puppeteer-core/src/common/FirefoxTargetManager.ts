@@ -194,10 +194,7 @@ export class FirefoxTargetManager
     }
 
     const target = this.#targetFactory(event.targetInfo, undefined);
-    if (
-      this.#targetFilterCallback &&
-      !this.#targetFilterCallback(event.targetInfo)
-    ) {
+    if (this.#targetFilterCallback && !this.#targetFilterCallback(target)) {
       this.#ignoredTargets.add(event.targetInfo.targetId);
       this.#finishInitializationIfReady(event.targetInfo.targetId);
       return;

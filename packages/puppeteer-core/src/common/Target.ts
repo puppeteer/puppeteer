@@ -46,11 +46,13 @@ export enum InitializationStatus {
  * @public
  */
 export class Target {
-  #browserContext: BrowserContext;
+  #browserContext?: BrowserContext;
   #session?: CDPSession;
   #targetInfo: Protocol.Target.TargetInfo;
-  #targetManager: TargetManager;
-  #sessionFactory: (isAutoAttachEmulated: boolean) => Promise<CDPSession>;
+  #targetManager?: TargetManager;
+  #sessionFactory:
+    | ((isAutoAttachEmulated: boolean) => Promise<CDPSession>)
+    | undefined;
 
   /**
    * @internal
@@ -73,9 +75,11 @@ export class Target {
   constructor(
     targetInfo: Protocol.Target.TargetInfo,
     session: CDPSession | undefined,
-    browserContext: BrowserContext,
-    targetManager: TargetManager,
-    sessionFactory: (isAutoAttachEmulated: boolean) => Promise<CDPSession>
+    browserContext: BrowserContext | undefined,
+    targetManager: TargetManager | undefined,
+    sessionFactory:
+      | ((isAutoAttachEmulated: boolean) => Promise<CDPSession>)
+      | undefined
   ) {
     this.#session = session;
     this.#targetManager = targetManager;
@@ -98,6 +102,9 @@ export class Target {
   protected _sessionFactory(): (
     isAutoAttachEmulated: boolean
   ) => Promise<CDPSession> {
+    if (!this.#sessionFactory) {
+      throw new Error('sessionFactory is not initialized');
+    }
     return this.#sessionFactory;
   }
 
@@ -105,6 +112,9 @@ export class Target {
    * Creates a Chrome Devtools Protocol session attached to the target.
    */
   createCDPSession(): Promise<CDPSession> {
+    if (!this.#sessionFactory) {
+      throw new Error('sessionFactory is not initialized');
+    }
     return this.#sessionFactory(false);
   }
 
@@ -112,6 +122,9 @@ export class Target {
    * @internal
    */
   _targetManager(): TargetManager {
+    if (!this.#targetManager) {
+      throw new Error('targetManager is not initialized');
+    }
     return this.#targetManager;
   }
 
@@ -166,6 +179,9 @@ export class Target {
    * Get the browser the target belongs to.
    */
   browser(): Browser {
+    if (!this.#browserContext) {
+      throw new Error('browserContext is not initialised');
+    }
     return this.#browserContext.browser();
   }
 
@@ -173,6 +189,9 @@ export class Target {
    * Get the browser context the target belongs to.
    */
   browserContext(): BrowserContext {
+    if (!this.#browserContext) {
+      throw new Error('browserContext is not initialised');
+    }
     return this.#browserContext;
   }
 

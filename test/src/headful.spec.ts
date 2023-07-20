@@ -171,7 +171,7 @@ const serviceWorkerExtensionPath = path.join(
         browserWSEndpoint,
         _isPageTarget(target) {
           return (
-            target.type === 'other' && target.url.startsWith('devtools://')
+            target.type() === 'other' && target.url().startsWith('devtools://')
           );
         },
       });
