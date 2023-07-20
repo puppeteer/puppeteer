@@ -19,7 +19,7 @@ import {TimeoutError} from 'puppeteer-core';
 import {
   Locator,
   LocatorEmittedEvents,
-} from 'puppeteer-core/internal/api/Locator.js';
+} from 'puppeteer-core/internal/api/locators/locators.js';
 import sinon from 'sinon';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
