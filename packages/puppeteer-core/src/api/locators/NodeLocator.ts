@@ -277,11 +277,11 @@ export class NodeLocator<T extends Node> extends Locator<T> {
     }, signal);
   };
 
-  #run(
-    action: (el: HandleFor<T>) => Promise<void>,
+  #run<U>(
+    action: (el: HandleFor<T>) => Promise<U>,
     signal?: AbortSignal,
     conditions: Array<ActionCondition<T>> = []
-  ): Promise<HandleFor<T>> {
+  ): Promise<U> {
     const globalConditions = [
       ...(LOCATOR_CONTEXTS.get(this)?.conditions?.values() ?? []),
     ] as Array<ActionCondition<T>>;
@@ -311,8 +311,12 @@ export class NodeLocator<T extends Node> extends Locator<T> {
         signal?.throwIfAborted();
         // 3. Perform the action
         this.emit(LocatorEmittedEvents.Action);
-        await action(element);
-        return element;
+        try {
+          return await action(element);
+        } catch (error) {
+          void element.dispose().catch(debugError);
+          throw error;
+        }
       },
       signal,
       this.#timeout
@@ -326,6 +330,7 @@ export class NodeLocator<T extends Node> extends Locator<T> {
     await this.#run(
       async element => {
         await element.click(options);
+        void element.dispose().catch(debugError);
       },
       options?.signal,
       [
@@ -435,6 +440,7 @@ export class NodeLocator<T extends Node> extends Locator<T> {
           case 'unknown':
             throw new Error(`Element cannot be filled out.`);
         }
+        void element.dispose().catch(debugError);
       },
       options?.signal,
       [
@@ -453,6 +459,7 @@ export class NodeLocator<T extends Node> extends Locator<T> {
     await this.#run(
       async element => {
         await element.hover();
+        void element.dispose().catch(debugError);
       },
       options?.signal,
       [
@@ -481,6 +488,7 @@ export class NodeLocator<T extends Node> extends Locator<T> {
           options?.scrollTop,
           options?.scrollLeft
         );
+        void element.dispose().catch(debugError);
       },
       options?.signal,
       [
