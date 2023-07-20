@@ -14,6 +14,26 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.4.4 to 1.4.5
 
+## [20.9.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.8.3...puppeteer-core-v20.9.0) (2023-07-20)
+
+
+### Features
+
+* add autofill support ([#10565](https://github.com/puppeteer/puppeteer/issues/10565)) ([6c9306a](https://github.com/puppeteer/puppeteer/commit/6c9306a72e0f7195a4a6c300645f6089845c9abc))
+* roll to Chrome 115.0.5790.98 (r1148114) ([#10584](https://github.com/puppeteer/puppeteer/issues/10584)) ([830f926](https://github.com/puppeteer/puppeteer/commit/830f926d486675701720b5c147f597364f3e8f7b))
+
+
+### Bug Fixes
+
+* update the target to ES2022 ([#10574](https://github.com/puppeteer/puppeteer/issues/10574)) ([88439f9](https://github.com/puppeteer/puppeteer/commit/88439f913ed4159cdc8be573f2dbda0b1f615301))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 1.4.5 to 1.4.6
+
 ## [20.8.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.8.2...puppeteer-core-v20.8.3) (2023-07-18)
 
 

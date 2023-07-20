@@ -22,6 +22,21 @@ All notable changes to this project will be documented in this file. See [standa
     * puppeteer-core bumped from 20.8.1 to 20.8.2
     * @puppeteer/browsers bumped from 1.4.4 to 1.4.5
 
+## [20.9.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-v20.8.3...puppeteer-v20.9.0) (2023-07-20)
+
+
+### Miscellaneous Chores
+
+* **puppeteer:** Synchronize puppeteer versions
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * puppeteer-core bumped from 20.8.3 to 20.9.0
+    * @puppeteer/browsers bumped from 1.4.5 to 1.4.6
+
 ## [20.8.3](https://github.com/puppeteer/puppeteer/compare/puppeteer-v20.8.2...puppeteer-v20.8.3) (2023-07-18)
 
 
