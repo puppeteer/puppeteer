@@ -30,7 +30,7 @@ import {FrameTree} from './FrameTree.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {NetworkManager} from './NetworkManager.js';
-import {Target} from './Target.js';
+import {CDPTarget} from './Target.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {debugError, PuppeteerURL} from './util.js';
 
@@ -216,7 +216,7 @@ export class FrameManager extends EventEmitter {
     return this._frameTree.getById(frameId) || null;
   }
 
-  onAttachedToTarget(target: Target): void {
+  onAttachedToTarget(target: CDPTarget): void {
     if (target._getTargetInfo().type !== 'iframe') {
       return;
     }

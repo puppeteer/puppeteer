@@ -32,6 +32,7 @@ import {
 } from '../api/Browser.js';
 import {BrowserContext} from '../api/BrowserContext.js';
 import {Page} from '../api/Page.js';
+import {Target} from '../api/Target.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
@@ -43,7 +44,7 @@ import {
   InitializationStatus,
   OtherTarget,
   PageTarget,
-  Target,
+  CDPTarget,
   WorkerTarget,
 } from './Target.js';
 import {TargetManager, TargetManagerEmittedEvents} from './TargetManager.js';
@@ -97,7 +98,7 @@ export class CDPBrowser extends BrowserBase {
   /**
    * @internal
    */
-  override get _targets(): Map<string, Target> {
+  override get _targets(): Map<string, CDPTarget> {
     return this.#targetManager.getAvailableTargets();
   }
 
@@ -366,7 +367,7 @@ export class CDPBrowser extends BrowserBase {
     );
   };
 
-  #onAttachedToTarget = async (target: Target) => {
+  #onAttachedToTarget = async (target: CDPTarget) => {
     if (
       (await target._initializedDeferred.valueOrThrow()) ===
       InitializationStatus.SUCCESS
@@ -378,7 +379,7 @@ export class CDPBrowser extends BrowserBase {
     }
   };
 
-  #onDetachedFromTarget = async (target: Target): Promise<void> => {
+  #onDetachedFromTarget = async (target: CDPTarget): Promise<void> => {
     target._initializedDeferred.resolve(InitializationStatus.ABORTED);
     target._isClosedDeferred.resolve();
     if (
@@ -392,7 +393,7 @@ export class CDPBrowser extends BrowserBase {
     }
   };
 
-  #onTargetChanged = ({target}: {target: Target}): void => {
+  #onTargetChanged = ({target}: {target: CDPTarget}): void => {
     this.emit(BrowserEmittedEvents.TargetChanged, target);
     target
       .browserContext()
@@ -463,7 +464,7 @@ export class CDPBrowser extends BrowserBase {
    * All active targets inside the Browser. In case of multiple browser contexts, returns
    * an array with all the targets in all browser contexts.
    */
-  override targets(): Target[] {
+  override targets(): CDPTarget[] {
     return Array.from(
       this.#targetManager.getAvailableTargets().values()
     ).filter(target => {
@@ -476,7 +477,7 @@ export class CDPBrowser extends BrowserBase {
   /**
    * The target associated with the browser.
    */
-  override target(): Target {
+  override target(): CDPTarget {
     const browserTarget = this.targets().find(target => {
       return target.type() === 'browser';
     });
@@ -504,11 +505,13 @@ export class CDPBrowser extends BrowserBase {
    * ```
    */
   override async waitForTarget(
-    predicate: (x: Target) => boolean | Promise<boolean>,
+    predicate: (x: CDPTarget) => boolean | Promise<boolean>,
     options: WaitForTargetOptions = {}
-  ): Promise<Target> {
+  ): Promise<CDPTarget> {
     const {timeout = 30000} = options;
-    const targetDeferred = Deferred.create<Target | PromiseLike<Target>>();
+    const targetDeferred = Deferred.create<
+      CDPTarget | PromiseLike<CDPTarget>
+    >();
 
     this.on(BrowserEmittedEvents.TargetCreated, check);
     this.on(BrowserEmittedEvents.TargetChanged, check);
@@ -527,7 +530,7 @@ export class CDPBrowser extends BrowserBase {
       this.off(BrowserEmittedEvents.TargetChanged, check);
     }
 
-    async function check(target: Target): Promise<void> {
+    async function check(target: CDPTarget): Promise<void> {
       if ((await predicate(target)) && !targetDeferred.resolved()) {
         targetDeferred.resolve(target);
       }
@@ -596,7 +599,7 @@ export class CDPBrowserContext extends BrowserContext {
   /**
    * An array of all active targets inside the browser context.
    */
-  override targets(): Target[] {
+  override targets(): CDPTarget[] {
     return this.#browser.targets().filter(target => {
       return target.browserContext() === this;
     });
@@ -623,9 +626,9 @@ export class CDPBrowserContext extends BrowserContext {
    * that matches the `predicate` function.
    */
   override waitForTarget(
-    predicate: (x: Target) => boolean | Promise<boolean>,
+    predicate: (x: CDPTarget) => boolean | Promise<boolean>,
     options: {timeout?: number} = {}
-  ): Promise<Target> {
+  ): Promise<CDPTarget> {
     return this.#browser.waitForTarget(target => {
       return target.browserContext() === this && predicate(target);
     }, options);
@@ -636,7 +639,7 @@ export class CDPBrowserContext extends BrowserContext {
    *
    * @returns Promise which resolves to an array of all open pages.
    * Non visible pages, such as `"background_page"`, will not be listed here.
-   * You can find them using {@link Target.page | the target page}.
+   * You can find them using {@link CDPTarget.page | the target page}.
    */
   override async pages(): Promise<Page[]> {
     const pages = await Promise.all(

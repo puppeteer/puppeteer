@@ -10,20 +10,13 @@ Identifies what kind of target this is.
 
 ```typescript
 class Target {
-  type():
-    | 'page'
-    | 'background_page'
-    | 'service_worker'
-    | 'shared_worker'
-    | 'other'
-    | 'browser'
-    | 'webview';
+  type(): TargetType;
 }
 ```
 
 **Returns:**
 
-'page' \| 'background_page' \| 'service_worker' \| 'shared_worker' \| 'other' \| 'browser' \| 'webview'
+[TargetType](./puppeteer.targettype.md)
 
 ## Remarks
 

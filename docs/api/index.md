@@ -52,6 +52,7 @@ sidebar_label: API
 | [InterceptResolutionAction](./puppeteer.interceptresolutionaction.md)     |                                                                       |
 | [LocatorEmittedEvents](./puppeteer.locatoremittedevents.md)               | All the events that a locator instance may emit.                      |
 | [PageEmittedEvents](./puppeteer.pageemittedevents.md)                     | All the events that a page instance may emit.                         |
+| [TargetType](./puppeteer.targettype.md)                                   |                                                                       |
 
 ## Functions
 
