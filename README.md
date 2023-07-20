@@ -59,6 +59,8 @@ include `$HOME/.cache` into the project's deployment.
 For a version of Puppeteer without the browser installation, see
 [`puppeteer-core`](#puppeteer-core).
 
+If used with TypeScript, the minimum supported TypeScript version is `4.7.4`.
+
 #### Configuration
 
 Puppeteer uses several defaults that can be customized through configuration

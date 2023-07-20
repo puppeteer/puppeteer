@@ -45,13 +45,6 @@
     "prepack": "wireit",
     "unit": "wireit"
   },
-  "typesVersions": {
-    ">=4.7.4": {
-      ".": [
-        "./lib/types.d.ts"
-      ]
-    }
-  },
   "wireit": {
     "prepack": {
       "command": "tsx ../../tools/cp.ts ../../README.md README.md",
