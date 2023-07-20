@@ -19,7 +19,6 @@ import os from 'os';
 import path from 'path';
 import {TLSSocket} from 'tls';
 
-import {Protocol} from 'devtools-protocol';
 import expect from 'expect';
 import {TimeoutError} from 'puppeteer';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
@@ -709,7 +708,7 @@ describe('Launcher specs', function () {
         const {browser, close} = await launch(
           {
             targetFilter: target => {
-              return target.type !== 'page';
+              return target.type() !== 'page';
             },
             waitForInitialPage: false,
           },
@@ -746,8 +745,8 @@ describe('Launcher specs', function () {
 
           const remoteBrowser = await puppeteer.connect({
             browserWSEndpoint,
-            targetFilter: (targetInfo: Protocol.Target.TargetInfo) => {
-              return !targetInfo.url?.includes('should-be-ignored');
+            targetFilter: target => {
+              return !target.url().includes('should-be-ignored');
             },
           });
 

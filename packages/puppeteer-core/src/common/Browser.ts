@@ -226,11 +226,11 @@ export class CDPBrowser extends BrowserBase {
   #setIsPageTargetCallback(isPageTargetCallback?: IsPageTargetCallback): void {
     this.#isPageTargetCallback =
       isPageTargetCallback ||
-      ((target: Protocol.Target.TargetInfo): boolean => {
+      ((target: Target): boolean => {
         return (
-          target.type === 'page' ||
-          target.type === 'background_page' ||
-          target.type === 'webview'
+          target.type() === 'page' ||
+          target.type() === 'background_page' ||
+          target.type() === 'webview'
         );
       });
   }
@@ -326,7 +326,14 @@ export class CDPBrowser extends BrowserBase {
     const createSession = (isAutoAttachEmulated: boolean) => {
       return this.#connection._createSession(targetInfo, isAutoAttachEmulated);
     };
-    if (this.#isPageTargetCallback(targetInfo)) {
+    const targetForFilter = new OtherTarget(
+      targetInfo,
+      session,
+      context,
+      this.#targetManager,
+      createSession
+    );
+    if (this.#isPageTargetCallback(targetForFilter)) {
       return new PageTarget(
         targetInfo,
         session,
@@ -638,9 +645,7 @@ export class CDPBrowserContext extends BrowserContext {
           return (
             target.type() === 'page' ||
             (target.type() === 'other' &&
-              this.#browser._getIsPageTargetCallback()?.(
-                target._getTargetInfo()
-              ))
+              this.#browser._getIsPageTargetCallback()?.(target))
           );
         })
         .map(target => {

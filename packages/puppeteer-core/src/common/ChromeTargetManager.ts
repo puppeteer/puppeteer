@@ -115,9 +115,16 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
       targetId,
       targetInfo,
     ] of this.#discoveredTargetsByTargetId.entries()) {
+      const targetForFilter = new Target(
+        targetInfo,
+        undefined,
+        undefined,
+        this,
+        undefined
+      );
       if (
         (!this.#targetFilterCallback ||
-          this.#targetFilterCallback(targetInfo)) &&
+          this.#targetFilterCallback(targetForFilter)) &&
         targetInfo.type !== 'browser'
       ) {
         this.#targetsIdsForInit.add(targetId);
@@ -339,7 +346,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
       ? this.#attachedTargetsByTargetId.get(targetInfo.targetId)!
       : this.#targetFactory(targetInfo, session);
 
-    if (this.#targetFilterCallback && !this.#targetFilterCallback(targetInfo)) {
+    if (this.#targetFilterCallback && !this.#targetFilterCallback(target)) {
       this.#ignoredTargets.add(targetInfo.targetId);
       this.#finishInitializationIfReady(targetInfo.targetId);
       await silentDetach();
