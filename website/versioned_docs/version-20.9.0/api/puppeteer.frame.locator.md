@@ -10,19 +10,21 @@ Creates a locator for the provided `selector`. See [Locator](./puppeteer.locator
 
 ```typescript
 class Frame {
-  locator(selector: string): Locator;
+  locator<Selector extends string>(
+    selector: Selector
+  ): Locator<NodeFor<Selector>>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type   | Description |
-| --------- | ------ | ----------- |
-| selector  | string |             |
+| Parameter | Type     | Description |
+| --------- | -------- | ----------- |
+| selector  | Selector |             |
 
 **Returns:**
 
-[Locator](./puppeteer.locator.md)
+[Locator](./puppeteer.locator.md)&lt;[NodeFor](./puppeteer.nodefor.md)&lt;Selector&gt;&gt;
 
 ## Remarks
 

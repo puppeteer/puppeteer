@@ -9,23 +9,29 @@ Locators describe a strategy of locating elements and performing an action on th
 #### Signature:
 
 ```typescript
-export declare abstract class Locator extends EventEmitter
+export declare abstract class Locator<T> extends EventEmitter
 ```
 
 **Extends:** [EventEmitter](./puppeteer.eventemitter.md)
+
+## Properties
+
+| Property | Modifiers             | Type | Description                                                  |
+| -------- | --------------------- | ---- | ------------------------------------------------------------ |
+| \_       | <code>optional</code> | T    | Used for nominally typing [Locator](./puppeteer.locator.md). |
 
 ## Methods
 
 | Method                                                                                           | Modifiers           | Description                                                                                                                                                                                                                              |
 | ------------------------------------------------------------------------------------------------ | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [click(clickOptions)](./puppeteer.locator.click.md)                                              |                     |                                                                                                                                                                                                                                          |
-| [fill(value, fillOptions)](./puppeteer.locator.fill.md)                                          |                     | Fills out the input identified by the locator using the provided value. The type of the input is determined at runtime and the appropriate fill-out method is chosen based on the type. contenteditable, selector, inputs are supported. |
-| [hover(hoverOptions)](./puppeteer.locator.hover.md)                                              |                     |                                                                                                                                                                                                                                          |
+| [click(this, options)](./puppeteer.locator.click.md)                                             |                     |                                                                                                                                                                                                                                          |
+| [fill(this, value, options)](./puppeteer.locator.fill.md)                                        |                     | Fills out the input identified by the locator using the provided value. The type of the input is determined at runtime and the appropriate fill-out method is chosen based on the type. contenteditable, selector, inputs are supported. |
+| [hover(this, options)](./puppeteer.locator.hover.md)                                             |                     |                                                                                                                                                                                                                                          |
 | [off(eventName, handler)](./puppeteer.locator.off.md)                                            |                     |                                                                                                                                                                                                                                          |
 | [on(eventName, handler)](./puppeteer.locator.on.md)                                              |                     |                                                                                                                                                                                                                                          |
 | [once(eventName, handler)](./puppeteer.locator.once.md)                                          |                     |                                                                                                                                                                                                                                          |
 | [race(locators)](./puppeteer.locator.race.md)                                                    | <code>static</code> | Creates a race between multiple locators but ensures that only a single one acts.                                                                                                                                                        |
-| [scroll(scrollOptions)](./puppeteer.locator.scroll.md)                                           |                     |                                                                                                                                                                                                                                          |
+| [scroll(this, options)](./puppeteer.locator.scroll.md)                                           |                     |                                                                                                                                                                                                                                          |
 | [setEnsureElementIsInTheViewport(value)](./puppeteer.locator.setensureelementisintheviewport.md) |                     |                                                                                                                                                                                                                                          |
 | [setTimeout(timeout)](./puppeteer.locator.settimeout.md)                                         |                     |                                                                                                                                                                                                                                          |
 | [setVisibility(visibility)](./puppeteer.locator.setvisibility.md)                                |                     |                                                                                                                                                                                                                                          |
