@@ -7,6 +7,7 @@ sidebar_label: connect
 #### Signature:
 
 ```typescript
-connect: (options: import('puppeteer-core').ConnectOptions) =>
-  Promise<import('puppeteer-core').Browser>;
+connect: (
+  options: import('puppeteer-core/internal/puppeteer-core.js').ConnectOptions
+) => Promise<import('puppeteer-core/internal/puppeteer-core.js').Browser>;
 ```
