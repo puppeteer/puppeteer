@@ -33,11 +33,12 @@ The programmatic API allows installing and launching browsers from your code. Se
 
 ## Classes
 
-| Class                                      | Description |
-| ------------------------------------------ | ----------- |
-| [CLI](./browsers.cli.md)                   |             |
-| [Process](./browsers.process.md)           |             |
-| [TimeoutError](./browsers.timeouterror.md) |             |
+| Class                                              | Description |
+| -------------------------------------------------- | ----------- |
+| [CLI](./browsers.cli.md)                           |             |
+| [InstalledBrowser](./browsers.installedbrowser.md) |             |
+| [Process](./browsers.process.md)                   |             |
+| [TimeoutError](./browsers.timeouterror.md)         |             |
 
 ## Enumerations
 
@@ -58,6 +59,7 @@ The programmatic API allows installing and launching browsers from your code. Se
 | [detectBrowserPlatform()](./browsers.detectbrowserplatform.md)                    |                                                                   |
 | [getInstalledBrowsers(options)](./browsers.getinstalledbrowsers.md)               | Returns metadata about browsers installed in the cache directory. |
 | [install(options)](./browsers.install.md)                                         |                                                                   |
+| [install(options)](./browsers.install_1.md)                                       |                                                                   |
 | [launch(opts)](./browsers.launch.md)                                              |                                                                   |
 | [makeProgressCallback(browser, buildId)](./browsers.makeprogresscallback.md)      |                                                                   |
 | [resolveBuildId(browser, platform, tag)](./browsers.resolvebuildid.md)            |                                                                   |
@@ -68,7 +70,6 @@ The programmatic API allows installing and launching browsers from your code. Se
 | Interface                                                                | Description |
 | ------------------------------------------------------------------------ | ----------- |
 | [GetInstalledBrowsersOptions](./browsers.getinstalledbrowsersoptions.md) |             |
-| [InstalledBrowser](./browsers.installedbrowser.md)                       |             |
 | [InstallOptions](./browsers.installoptions.md)                           |             |
 | [LaunchOptions](./browsers.launchoptions.md)                             |             |
 | [Options](./browsers.options.md)                                         |             |
