@@ -39,7 +39,7 @@ import {TaskManager} from '../common/WaitTask.js';
 
 import {KeyboardTypeOptions} from './Input.js';
 import {JSHandle} from './JSHandle.js';
-import {Locator} from './Locator.js';
+import {Locator, NodeLocator} from './locators/locators.js';
 
 /**
  * @internal
@@ -427,7 +427,7 @@ export class Frame {
   locator<Selector extends string>(
     selector: Selector
   ): Locator<NodeFor<Selector>> {
-    return Locator.create(this, selector);
+    return NodeLocator.create(this, selector);
   }
 
   /**

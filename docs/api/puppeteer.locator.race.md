@@ -24,4 +24,4 @@ class Locator {
 
 **Returns:**
 
-[Locator](./puppeteer.locator.md)&lt;UnionLocatorOf&lt;Locators&gt;&gt;
+[Locator](./puppeteer.locator.md)&lt;[UnionLocatorOf](./puppeteer.unionlocatorof.md)&lt;Locators&gt;&gt;

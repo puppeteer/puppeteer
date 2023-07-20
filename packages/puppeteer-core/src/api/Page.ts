@@ -71,9 +71,9 @@ import type {
   FrameAddStyleTagOptions,
   FrameWaitForFunctionOptions,
 } from './Frame.js';
-import {Keyboard, Mouse, Touchscreen, KeyboardTypeOptions} from './Input.js';
+import {Keyboard, KeyboardTypeOptions, Mouse, Touchscreen} from './Input.js';
 import type {JSHandle} from './JSHandle.js';
-import {Locator} from './Locator.js';
+import {Locator, NodeLocator} from './locators/locators.js';
 
 /**
  * @public
@@ -834,7 +834,7 @@ export class Page extends EventEmitter {
   locator<Selector extends string>(
     selector: Selector
   ): Locator<NodeFor<Selector>> {
-    return Locator.create(this, selector);
+    return NodeLocator.create(this, selector);
   }
 
   /**

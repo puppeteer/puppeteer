@@ -1,75 +1,20 @@
-/**
- * Copyright 2023 Google Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+import {TimeoutError} from '../../common/Errors.js';
+import {HandleFor, NodeFor} from '../../common/types.js';
+import {debugError} from '../../common/util.js';
+import {isErrorLike} from '../../util/ErrorLike.js';
+import {BoundingBox, ElementHandle} from '../ElementHandle.js';
+import type {Frame} from '../Frame.js';
+import type {Page} from '../Page.js';
 
-import {TimeoutError} from '../common/Errors.js';
-import {EventEmitter} from '../common/EventEmitter.js';
-import {Awaitable, HandleFor, NodeFor} from '../common/types.js';
-import {debugError} from '../common/util.js';
-import {isErrorLike} from '../util/ErrorLike.js';
-
-import {BoundingBox, ClickOptions, ElementHandle} from './ElementHandle.js';
-import type {Frame} from './Frame.js';
-import type {Page} from './Page.js';
-
-interface LocatorContext<T> {
-  conditions?: Set<ActionCondition<T>>;
-}
-
-const LOCATOR_CONTEXTS = new WeakMap<Locator<unknown>, LocatorContext<never>>();
-
-/**
- * @public
- */
-export type VisibilityOption = 'hidden' | 'visible' | null;
-
-/**
- * @public
- */
-export interface LocatorOptions {
-  /**
-   * Whether to wait for the element to be `visible` or `hidden`. `null` to
-   * disable visibility checks.
-   */
-  visibility: VisibilityOption;
-  /**
-   * Total timeout for the entire locator operation.
-   *
-   * Pass `0` to disable timeout.
-   *
-   * @defaultValue `Page.getDefaultTimeout()`
-   */
-  timeout: number;
-  /**
-   * Whether to scroll the element into viewport if not in the viewprot already.
-   * @defaultValue `true`
-   */
-  ensureElementIsInTheViewport: boolean;
-  /**
-   * Whether to wait for input elements to become enabled before the action.
-   * Applicable to `click` and `fill` actions.
-   * @defaultValue `true`
-   */
-  waitForEnabled: boolean;
-  /**
-   * Whether to wait for the element's bounding box to be same between two
-   * animation frames.
-   * @defaultValue `true`
-   */
-  waitForStableBoundingBox: boolean;
-}
+import {
+  ActionOptions,
+  LOCATOR_CONTEXTS,
+  Locator,
+  LocatorClickOptions,
+  LocatorEmittedEvents,
+  LocatorScrollOptions,
+  VisibilityOption,
+} from './locators.js';
 
 /**
  * Timeout for individual operations inside the locator. On errors the
@@ -77,7 +22,7 @@ export interface LocatorOptions {
  * exceeded. This timeout should be generally much lower as locating an
  * element means multiple asynchronious operations.
  */
-const CONDITION_TIMEOUT = 1_000;
+const CONDITION_TIMEOUT = 1000;
 const WAIT_FOR_FUNCTION_DELAY = 100;
 
 /**
@@ -89,67 +34,9 @@ export type ActionCondition<T> = (
 ) => Promise<void>;
 
 /**
- * @public
+ * @internal
  */
-export type Predicate<From, To extends From = From> =
-  | ((value: From) => value is To)
-  | ((value: From) => Awaitable<boolean>);
-
-/**
- * @public
- */
-export interface ActionOptions {
-  signal?: AbortSignal;
-}
-
-/**
- * @public
- */
-export type LocatorClickOptions = ClickOptions & ActionOptions;
-
-/**
- * @public
- */
-export interface LocatorScrollOptions extends ActionOptions {
-  scrollTop?: number;
-  scrollLeft?: number;
-}
-
-/**
- * All the events that a locator instance may emit.
- *
- * @public
- */
-export enum LocatorEmittedEvents {
-  /**
-   * Emitted every time before the locator performs an action on the located element(s).
-   */
-  Action = 'action',
-}
-
-/**
- * @public
- */
-export interface LocatorEventObject {
-  [LocatorEmittedEvents.Action]: never;
-}
-
-type UnionLocatorOf<T> = T extends Array<Locator<infer S>> ? S : never;
-
-/**
- * Locators describe a strategy of locating elements and performing an action on
- * them. If the action fails because the element is not ready for the action,
- * the whole operation is retried. Various preconditions for a successful action
- * are checked automatically.
- *
- * @public
- */
-export abstract class Locator<T> extends EventEmitter {
-  /**
-   * Used for nominally typing {@link Locator}.
-   */
-  declare _?: T;
-
+export class NodeLocator<T extends Node> extends Locator<T> {
   /**
    * @internal
    */
@@ -164,96 +51,10 @@ export abstract class Locator<T> extends EventEmitter {
     );
   }
 
-  /**
-   * Creates a race between multiple locators but ensures that only a single one
-   * acts.
-   */
-  static race<Locators extends Array<Locator<unknown>>>(
-    locators: Locators
-  ): Locator<UnionLocatorOf<Locators>> {
-    return new RaceLocator(
-      locators as Array<Locator<UnionLocatorOf<Locators>>>
-    );
-  }
-
-  /**
-   * Creates an expectation that is evaluated against located values.
-   *
-   * If the expectations do not match, then the locator will retry.
-   *
-   * @internal
-   */
-  expect<S extends T>(predicate: Predicate<T, S>): Locator<S> {
-    return new ExpectedLocator(this, predicate);
-  }
-
-  override on<K extends keyof LocatorEventObject>(
-    eventName: K,
-    handler: (event: LocatorEventObject[K]) => void
-  ): this {
-    return super.on(eventName, handler);
-  }
-
-  override once<K extends keyof LocatorEventObject>(
-    eventName: K,
-    handler: (event: LocatorEventObject[K]) => void
-  ): this {
-    return super.once(eventName, handler);
-  }
-
-  override off<K extends keyof LocatorEventObject>(
-    eventName: K,
-    handler: (event: LocatorEventObject[K]) => void
-  ): this {
-    return super.off(eventName, handler);
-  }
-
-  abstract setVisibility(visibility: VisibilityOption): this;
-
-  abstract setTimeout(timeout: number): this;
-
-  abstract setEnsureElementIsInTheViewport(value: boolean): this;
-
-  abstract setWaitForEnabled(value: boolean): this;
-
-  abstract setWaitForStableBoundingBox(value: boolean): this;
-
-  abstract click<ElementType extends Element>(
-    this: Locator<ElementType>,
-    options?: Readonly<LocatorClickOptions>
-  ): Promise<void>;
-
-  /**
-   * Fills out the input identified by the locator using the provided value. The
-   * type of the input is determined at runtime and the appropriate fill-out
-   * method is chosen based on the type. contenteditable, selector, inputs are
-   * supported.
-   */
-  abstract fill<ElementType extends Element>(
-    this: Locator<ElementType>,
-    value: string,
-    options?: Readonly<ActionOptions>
-  ): Promise<void>;
-
-  abstract hover<ElementType extends Element>(
-    this: Locator<ElementType>,
-    options?: Readonly<ActionOptions>
-  ): Promise<void>;
-
-  abstract scroll<ElementType extends Element>(
-    this: Locator<ElementType>,
-    options?: Readonly<LocatorScrollOptions>
-  ): Promise<void>;
-}
-
-/**
- * @internal
- */
-export class NodeLocator<T extends Node> extends Locator<T> {
   #pageOrFrame: Page | Frame;
   #selector: string;
   #visibility: VisibilityOption = 'visible';
-  #timeout = 30_000;
+  #timeout = 30000;
   #ensureElementIsInTheViewport = true;
   #waitForEnabled = true;
   #waitForStableBoundingBox = true;
@@ -691,248 +492,6 @@ export class NodeLocator<T extends Node> extends Locator<T> {
         this.#waitForVisibilityIfNeeded,
         this.#waitForStableBoundingBoxIfNeeded,
       ]
-    );
-  }
-}
-
-class ExpectedLocator<From, To extends From> extends Locator<To> {
-  #base: Locator<From>;
-  #predicate: Predicate<From, To>;
-
-  constructor(base: Locator<From>, predicate: Predicate<From, To>) {
-    super();
-
-    this.#base = base;
-    this.#predicate = predicate;
-  }
-
-  override setVisibility(visibility: VisibilityOption): this {
-    this.#base.setVisibility(visibility);
-    return this;
-  }
-  override setTimeout(timeout: number): this {
-    this.#base.setTimeout(timeout);
-    return this;
-  }
-  override setEnsureElementIsInTheViewport(value: boolean): this {
-    this.#base.setEnsureElementIsInTheViewport(value);
-    return this;
-  }
-  override setWaitForEnabled(value: boolean): this {
-    this.#base.setWaitForEnabled(value);
-    return this;
-  }
-  override setWaitForStableBoundingBox(value: boolean): this {
-    this.#base.setWaitForStableBoundingBox(value);
-    return this;
-  }
-
-  #condition: ActionCondition<From> = async (handle, signal) => {
-    // TODO(jrandolf): We should remove this once JSHandle has waitForFunction.
-    await (handle as ElementHandle<Node>).frame.waitForFunction(
-      this.#predicate,
-      {signal},
-      handle
-    );
-  };
-
-  #insertFilterCondition<
-    FromElement extends Node,
-    ToElement extends FromElement,
-  >(this: ExpectedLocator<FromElement, ToElement>): void {
-    const context = (LOCATOR_CONTEXTS.get(this.#base) ??
-      {}) as LocatorContext<FromElement>;
-    context.conditions ??= new Set();
-    context.conditions.add(this.#condition);
-    LOCATOR_CONTEXTS.set(this.#base, context);
-  }
-
-  override click<FromElement extends Element, ToElement extends FromElement>(
-    this: ExpectedLocator<FromElement, ToElement>,
-    options?: Readonly<LocatorClickOptions>
-  ): Promise<void> {
-    this.#insertFilterCondition();
-    return this.#base.click(options);
-  }
-  override fill<FromElement extends Element, ToElement extends FromElement>(
-    this: ExpectedLocator<FromElement, ToElement>,
-    value: string,
-    options?: Readonly<ActionOptions>
-  ): Promise<void> {
-    this.#insertFilterCondition();
-    return this.#base.fill(value, options);
-  }
-  override hover<FromElement extends Element, ToElement extends FromElement>(
-    this: ExpectedLocator<FromElement, ToElement>,
-    options?: Readonly<ActionOptions>
-  ): Promise<void> {
-    this.#insertFilterCondition();
-    return this.#base.hover(options);
-  }
-  override scroll<FromElement extends Element, ToElement extends FromElement>(
-    this: ExpectedLocator<FromElement, ToElement>,
-    options?: Readonly<LocatorScrollOptions>
-  ): Promise<void> {
-    this.#insertFilterCondition();
-    return this.#base.scroll(options);
-  }
-}
-
-/**
- * @internal
- */
-class RaceLocator<T> extends Locator<T> {
-  #locators: Array<Locator<T>>;
-
-  constructor(locators: Array<Locator<T>>) {
-    super();
-    this.#locators = locators;
-  }
-
-  override setVisibility(visibility: VisibilityOption): this {
-    for (const locator of this.#locators) {
-      locator.setVisibility(visibility);
-    }
-    return this;
-  }
-
-  override setTimeout(timeout: number): this {
-    for (const locator of this.#locators) {
-      locator.setTimeout(timeout);
-    }
-    return this;
-  }
-
-  override setEnsureElementIsInTheViewport(value: boolean): this {
-    for (const locator of this.#locators) {
-      locator.setEnsureElementIsInTheViewport(value);
-    }
-    return this;
-  }
-
-  override setWaitForEnabled(value: boolean): this {
-    for (const locator of this.#locators) {
-      locator.setWaitForEnabled(value);
-    }
-    return this;
-  }
-
-  override setWaitForStableBoundingBox(value: boolean): this {
-    for (const locator of this.#locators) {
-      locator.setWaitForStableBoundingBox(value);
-    }
-    return this;
-  }
-
-  async #run(
-    action: (locator: Locator<T>, signal: AbortSignal) => Promise<void>,
-    signal?: AbortSignal
-  ) {
-    const abortControllers = new WeakMap<Locator<T>, AbortController>();
-
-    // Abort all locators if the user-provided signal aborts.
-    signal?.addEventListener('abort', () => {
-      for (const locator of this.#locators) {
-        abortControllers.get(locator)?.abort();
-      }
-    });
-
-    const handleLocatorAction = (locator: Locator<T>): (() => void) => {
-      return () => {
-        // When one locator is ready to act, we will abort other locators.
-        for (const other of this.#locators) {
-          if (other !== locator) {
-            abortControllers.get(other)?.abort();
-          }
-        }
-        this.emit(LocatorEmittedEvents.Action);
-      };
-    };
-
-    const createAbortController = (locator: Locator<T>): AbortController => {
-      const abortController = new AbortController();
-      abortControllers.set(locator, abortController);
-      return abortController;
-    };
-
-    const results = await Promise.allSettled(
-      this.#locators.map(locator => {
-        return action(
-          locator.on(LocatorEmittedEvents.Action, handleLocatorAction(locator)),
-          createAbortController(locator).signal
-        );
-      })
-    );
-
-    signal?.throwIfAborted();
-
-    const rejected = results.filter(
-      (result): result is PromiseRejectedResult => {
-        return result.status === 'rejected';
-      }
-    );
-
-    // If some locators are fulfilled, do not throw.
-    if (rejected.length !== results.length) {
-      return;
-    }
-
-    for (const result of rejected) {
-      const reason = result.reason;
-      // AbortError is be an expected result of a race.
-      if (isErrorLike(reason) && reason.name === 'AbortError') {
-        continue;
-      }
-      throw reason;
-    }
-  }
-
-  async click<ElementType extends Element>(
-    this: RaceLocator<ElementType>,
-    options?: Readonly<LocatorClickOptions>
-  ): Promise<void> {
-    return await this.#run(
-      (locator, signal) => {
-        return locator.click({...options, signal});
-      },
-      options?.signal
-    );
-  }
-
-  async fill<ElementType extends Element>(
-    this: RaceLocator<ElementType>,
-    value: string,
-    options?: Readonly<ActionOptions>
-  ): Promise<void> {
-    return await this.#run(
-      (locator, signal) => {
-        return locator.fill(value, {...options, signal});
-      },
-      options?.signal
-    );
-  }
-
-  async hover<ElementType extends Element>(
-    this: RaceLocator<ElementType>,
-    options?: Readonly<ActionOptions>
-  ): Promise<void> {
-    return await this.#run(
-      (locator, signal) => {
-        return locator.hover({...options, signal});
-      },
-      options?.signal
-    );
-  }
-
-  async scroll<ElementType extends Element>(
-    this: RaceLocator<ElementType>,
-    options?: Readonly<LocatorScrollOptions>
-  ): Promise<void> {
-    return await this.#run(
-      (locator, signal) => {
-        return locator.scroll({...options, signal});
-      },
-      options?.signal
     );
   }
 }

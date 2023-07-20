@@ -23,4 +23,4 @@ export * from './Input.js';
 export * from './Frame.js';
 export * from './HTTPResponse.js';
 export * from './HTTPRequest.js';
-export * from './Locator.js';
+export * from './locators/locators.js';
