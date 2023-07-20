@@ -22,6 +22,11 @@ import type {LazyArg} from './LazyArg.js';
 /**
  * @internal
  */
+export type Maybe<T> = T | undefined;
+
+/**
+ * @internal
+ */
 export interface BindingPayload {
   type: string;
   name: string;
