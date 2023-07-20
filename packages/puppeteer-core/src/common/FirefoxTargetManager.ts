@@ -187,11 +187,13 @@ export class FirefoxTargetManager
 
     if (event.targetInfo.type === 'browser' && event.targetInfo.attached) {
       const target = this.#targetFactory(event.targetInfo, undefined);
+      target._initialize();
       this.#availableTargetsByTargetId.set(event.targetInfo.targetId, target);
       this.#finishInitializationIfReady(target._targetId);
       return;
     }
 
+    const target = this.#targetFactory(event.targetInfo, undefined);
     if (
       this.#targetFilterCallback &&
       !this.#targetFilterCallback(event.targetInfo)
@@ -200,8 +202,7 @@ export class FirefoxTargetManager
       this.#finishInitializationIfReady(event.targetInfo.targetId);
       return;
     }
-
-    const target = this.#targetFactory(event.targetInfo, undefined);
+    target._initialize();
     this.#availableTargetsByTargetId.set(event.targetInfo.targetId, target);
     this.emit(TargetManagerEmittedEvents.TargetAvailable, target);
     this.#finishInitializationIfReady(target._targetId);

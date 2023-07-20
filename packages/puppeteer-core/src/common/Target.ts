@@ -66,6 +66,8 @@ export class Target {
   _targetId: string;
 
   /**
+   * To initialize the target for use, call initialize.
+   *
    * @internal
    */
   constructor(
@@ -81,7 +83,6 @@ export class Target {
     this.#browserContext = browserContext;
     this._targetId = targetInfo.targetId;
     this.#sessionFactory = sessionFactory;
-    this._initialize();
   }
 
   /**
@@ -197,7 +198,7 @@ export class Target {
   /**
    * @internal
    */
-  protected _initialize(): void {
+  _initialize(): void {
     this._initializedDeferred.resolve(InitializationStatus.SUCCESS);
   }
 
@@ -247,7 +248,7 @@ export class PageTarget extends Target {
     this.#screenshotTaskQueue = screenshotTaskQueue;
   }
 
-  protected override _initialize(): void {
+  override _initialize(): void {
     this._initializedDeferred
       .valueOrThrow()
       .then(async result => {
