@@ -1,5 +1,5 @@
 import {TimeoutError} from '../../common/Errors.js';
-import {HandleFor, NodeFor} from '../../common/types.js';
+import {Awaitable, HandleFor, NodeFor} from '../../common/types.js';
 import {debugError} from '../../common/util.js';
 import {isErrorLike} from '../../util/ErrorLike.js';
 import {BoundingBox, ElementHandle} from '../ElementHandle.js';
@@ -93,11 +93,11 @@ export class NodeLocator<T extends Node> extends Locator<T> {
   /**
    * Retries the `fn` until a truthy result is returned.
    */
-  async #waitForFunction(
-    fn: (signal: AbortSignal) => unknown,
+  async #waitForFunction<T>(
+    fn: (signal: AbortSignal) => Awaitable<T>,
     signal?: AbortSignal,
     timeout = CONDITION_TIMEOUT
-  ): Promise<void> {
+  ): Promise<T> {
     let isActive = true;
     let controller: AbortController;
     // If the loop times out, we abort only the last iteration's controller.
@@ -121,10 +121,8 @@ export class NodeLocator<T extends Node> extends Locator<T> {
       controller = new AbortController();
       try {
         const result = await fn(controller.signal);
-        if (result) {
-          clearTimeout(timeoutId);
-          return;
-        }
+        clearTimeout(timeoutId);
+        return result;
       } catch (err) {
         if (isErrorLike(err)) {
           debugError(err);
@@ -277,11 +275,11 @@ export class NodeLocator<T extends Node> extends Locator<T> {
     }, signal);
   };
 
-  #run(
-    action: (el: HandleFor<T>) => Promise<void>,
+  #run<U>(
+    action: (el: HandleFor<T>) => Promise<U>,
     signal?: AbortSignal,
     conditions: Array<ActionCondition<T>> = []
-  ) {
+  ): Promise<U> {
     const globalConditions = [
       ...(LOCATOR_CONTEXTS.get(this)?.conditions?.values() ?? []),
     ] as Array<ActionCondition<T>>;
@@ -299,23 +297,23 @@ export class NodeLocator<T extends Node> extends Locator<T> {
         )) as HandleFor<T> | null;
         // Retry if no element is found.
         if (!element) {
-          return false;
+          throw new Error('No element found');
         }
+        signal?.throwIfAborted();
+        // 2. Perform action specific checks.
+        await Promise.all(
+          allConditions.map(check => {
+            return check(element, signal);
+          })
+        );
+        signal?.throwIfAborted();
+        // 3. Perform the action
+        this.emit(LocatorEmittedEvents.Action);
         try {
-          signal?.throwIfAborted();
-          // 2. Perform action specific checks.
-          await Promise.all(
-            allConditions.map(check => {
-              return check(element, signal);
-            })
-          );
-          signal?.throwIfAborted();
-          // 3. Perform the action
-          this.emit(LocatorEmittedEvents.Action);
-          await action(element);
-          return true;
-        } finally {
+          return await action(element);
+        } catch (error) {
           void element.dispose().catch(debugError);
+          throw error;
         }
       },
       signal,
@@ -327,9 +325,10 @@ export class NodeLocator<T extends Node> extends Locator<T> {
     this: NodeLocator<ElementType>,
     options?: Readonly<LocatorClickOptions>
   ): Promise<void> {
-    return await this.#run(
+    await this.#run(
       async element => {
         await element.click(options);
+        void element.dispose().catch(debugError);
       },
       options?.signal,
       [
@@ -347,12 +346,12 @@ export class NodeLocator<T extends Node> extends Locator<T> {
    * method is chosen based on the type. contenteditable, selector, inputs are
    * supported.
    */
-  fill<ElementType extends Element>(
+  async fill<ElementType extends Element>(
     this: NodeLocator<ElementType>,
     value: string,
     options?: Readonly<ActionOptions>
   ): Promise<void> {
-    return this.#run(
+    await this.#run(
       async element => {
         const input = element as unknown as ElementHandle<HTMLElement>;
         const inputType = await input.evaluate(el => {
@@ -439,6 +438,7 @@ export class NodeLocator<T extends Node> extends Locator<T> {
           case 'unknown':
             throw new Error(`Element cannot be filled out.`);
         }
+        void element.dispose().catch(debugError);
       },
       options?.signal,
       [
@@ -450,13 +450,14 @@ export class NodeLocator<T extends Node> extends Locator<T> {
     );
   }
 
-  hover<ElementType extends Element>(
+  async hover<ElementType extends Element>(
     this: NodeLocator<ElementType>,
     options?: Readonly<ActionOptions>
   ): Promise<void> {
-    return this.#run(
+    await this.#run(
       async element => {
         await element.hover();
+        void element.dispose().catch(debugError);
       },
       options?.signal,
       [
@@ -467,11 +468,11 @@ export class NodeLocator<T extends Node> extends Locator<T> {
     );
   }
 
-  scroll<ElementType extends Element>(
+  async scroll<ElementType extends Element>(
     this: NodeLocator<ElementType>,
     options?: Readonly<LocatorScrollOptions>
   ): Promise<void> {
-    return this.#run(
+    await this.#run(
       async element => {
         await element.evaluate(
           (el, scrollTop, scrollLeft) => {
@@ -485,6 +486,7 @@ export class NodeLocator<T extends Node> extends Locator<T> {
           options?.scrollTop,
           options?.scrollLeft
         );
+        void element.dispose().catch(debugError);
       },
       options?.signal,
       [
