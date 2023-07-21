@@ -109,13 +109,5 @@
   "devDependencies": {
     "@types/node": "^16.11.7",
     "@types/yargs": "17.0.22"
-  },
-  "peerDependencies": {
-    "typescript": ">= 4.7.4"
-  },
-  "peerDependenciesMeta": {
-    "typescript": {
-      "optional": true
-    }
   }
 }

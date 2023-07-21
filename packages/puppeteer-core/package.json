@@ -151,14 +151,6 @@
     "ws": "8.13.0",
     "@puppeteer/browsers": "1.4.6"
   },
-  "peerDependencies": {
-    "typescript": ">= 4.7.4"
-  },
-  "peerDependenciesMeta": {
-    "typescript": {
-      "optional": true
-    }
-  },
   "devDependencies": {
     "mitt": "3.0.0",
     "parsel-js": "1.1.0"
