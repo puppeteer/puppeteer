@@ -10,9 +10,9 @@ Creates a race between multiple locators but ensures that only a single one acts
 
 ```typescript
 class Locator {
-  static race<Locators extends Array<Locator<unknown>>>(
+  static race<Locators extends readonly unknown[] | []>(
     locators: Locators
-  ): Locator<UnionLocatorOf<Locators>>;
+  ): Locator<AwaitedLocator<Locators[number]>>;
 }
 ```
 
@@ -24,4 +24,4 @@ class Locator {
 
 **Returns:**
 
-[Locator](./puppeteer.locator.md)&lt;[UnionLocatorOf](./puppeteer.unionlocatorof.md)&lt;Locators&gt;&gt;
+[Locator](./puppeteer.locator.md)&lt;[AwaitedLocator](./puppeteer.awaitedlocator.md)&lt;Locators\[number\]&gt;&gt;

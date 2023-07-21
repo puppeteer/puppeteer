@@ -236,7 +236,7 @@ describe('Locator', function () {
         const result = page.locator('button').click();
         clock.tick(5100);
         await expect(result).rejects.toEqual(
-          new TimeoutError('waitForFunction timed out. The timeout is 5000ms.')
+          new TimeoutError('Timed out after waiting 5000ms')
         );
       } finally {
         clock.restore();
@@ -257,7 +257,7 @@ describe('Locator', function () {
         const result = page.locator('button').click();
         clock.tick(5100);
         await expect(result).rejects.toEqual(
-          new TimeoutError('waitForFunction timed out. The timeout is 5000ms.')
+          new TimeoutError('Timed out after waiting 5000ms')
         );
       } finally {
         clock.restore();
@@ -513,15 +513,16 @@ describe('Locator', function () {
       });
       try {
         const {page} = await getTestState();
-        page.setDefaultTimeout(5000);
         await page.setContent(`<button>test</button>`);
         const result = Locator.race([
           page.locator('not-found'),
           page.locator('not-found'),
-        ]).click();
+        ])
+          .setTimeout(5000)
+          .click();
         clock.tick(5100);
         await expect(result).rejects.toEqual(
-          new TimeoutError('waitForFunction timed out. The timeout is 5000ms.')
+          new TimeoutError('Timed out after waiting 5000ms')
         );
       } finally {
         clock.restore();

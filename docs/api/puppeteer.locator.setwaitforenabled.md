@@ -8,16 +8,20 @@ sidebar_label: Locator.setWaitForEnabled
 
 ```typescript
 class Locator {
-  abstract setWaitForEnabled(value: boolean): this;
+  setWaitForEnabled<NodeType extends Node>(
+    this: Locator<NodeType>,
+    value: boolean
+  ): Locator<NodeType>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type    | Description |
-| --------- | ------- | ----------- |
-| value     | boolean |             |
+| Parameter | Type                                              | Description |
+| --------- | ------------------------------------------------- | ----------- |
+| this      | [Locator](./puppeteer.locator.md)&lt;NodeType&gt; |             |
+| value     | boolean                                           |             |
 
 **Returns:**
 
-this
+[Locator](./puppeteer.locator.md)&lt;NodeType&gt;

@@ -1,17 +1,14 @@
 ---
-sidebar_label: Locator.hover
+sidebar_label: Locator.wait
 ---
 
-# Locator.hover() method
+# Locator.wait() method
 
 #### Signature:
 
 ```typescript
 class Locator {
-  hover<ElementType extends Element>(
-    this: Locator<ElementType>,
-    options?: Readonly<ActionOptions>
-  ): Promise<void>;
+  wait(options?: Readonly<ActionOptions>): Promise<T>;
 }
 ```
 
@@ -19,9 +16,8 @@ class Locator {
 
 | Parameter | Type                                                          | Description  |
 | --------- | ------------------------------------------------------------- | ------------ |
-| this      | [Locator](./puppeteer.locator.md)&lt;ElementType&gt;          |              |
 | options   | Readonly&lt;[ActionOptions](./puppeteer.actionoptions.md)&gt; | _(Optional)_ |
 
 **Returns:**
 
-Promise&lt;void&gt;
+Promise&lt;T&gt;

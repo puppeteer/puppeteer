@@ -152,6 +152,7 @@
     "@puppeteer/browsers": "1.4.6"
   },
   "devDependencies": {
+    "rxjs": "7.8.1",
     "mitt": "3.0.0",
     "parsel-js": "1.1.0"
   }

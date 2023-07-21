@@ -1,16 +1,16 @@
-import {Awaitable} from '../../common/common.js';
+import {
+  Observable,
+  from,
+  map,
+  mergeMap,
+  throwIfEmpty,
+} from '../../../third_party/rxjs/rxjs.js';
+import {Awaitable, HandleFor} from '../../common/common.js';
 import {ElementHandle} from '../ElementHandle.js';
 
-import {
-  ActionOptions,
-  LOCATOR_CONTEXTS,
-  Locator,
-  LocatorClickOptions,
-  LocatorContext,
-  LocatorScrollOptions,
-  VisibilityOption,
-  type ActionCondition,
-} from './locators.js';
+import {ActionOptions, Locator, VisibilityOption} from './locators.js';
+
+const EXPECTED_TIMEOUT = 1000;
 
 /**
  * @public
@@ -31,76 +31,77 @@ export class ExpectedLocator<From, To extends From> extends Locator<To> {
 
     this.#base = base;
     this.#predicate = predicate;
+
+    this.copyOptions(this.#base);
   }
 
-  override setVisibility(visibility: VisibilityOption): this {
-    this.#base.setVisibility(visibility);
-    return this;
-  }
   override setTimeout(timeout: number): this {
+    super.setTimeout(timeout);
     this.#base.setTimeout(timeout);
     return this;
   }
-  override setEnsureElementIsInTheViewport(value: boolean): this {
-    this.#base.setEnsureElementIsInTheViewport(value);
+
+  override setVisibility<FromNode extends Node, ToNode extends FromNode>(
+    this: ExpectedLocator<FromNode, ToNode>,
+    visibility: VisibilityOption
+  ): Locator<ToNode> {
+    super.setVisibility(visibility);
+    this.#base.setVisibility(visibility);
     return this;
   }
-  override setWaitForEnabled(value: boolean): this {
+
+  override setWaitForEnabled<FromNode extends Node, ToNode extends FromNode>(
+    this: ExpectedLocator<FromNode, ToNode>,
+    value: boolean
+  ): Locator<ToNode> {
+    super.setWaitForEnabled(value);
     this.#base.setWaitForEnabled(value);
     return this;
   }
-  override setWaitForStableBoundingBox(value: boolean): this {
+
+  override setEnsureElementIsInTheViewport<
+    FromElement extends Element,
+    ToElement extends FromElement,
+  >(
+    this: ExpectedLocator<FromElement, ToElement>,
+    value: boolean
+  ): Locator<ToElement> {
+    super.setEnsureElementIsInTheViewport(value);
+    this.#base.setEnsureElementIsInTheViewport(value);
+    return this;
+  }
+
+  override setWaitForStableBoundingBox<
+    FromElement extends Element,
+    ToElement extends FromElement,
+  >(
+    this: ExpectedLocator<FromElement, ToElement>,
+    value: boolean
+  ): Locator<ToElement> {
+    super.setWaitForStableBoundingBox(value);
     this.#base.setWaitForStableBoundingBox(value);
     return this;
   }
 
-  #condition: ActionCondition<From> = async (handle, signal) => {
-    // TODO(jrandolf): We should remove this once JSHandle has waitForFunction.
-    await (handle as ElementHandle<Node>).frame.waitForFunction(
-      this.#predicate,
-      {signal},
-      handle
+  override waitImpl(
+    options?: Readonly<ActionOptions>
+  ): Observable<HandleFor<To>> {
+    return this.#base.waitImpl(options).pipe(
+      mergeMap((handle: HandleFor<From>) => {
+        return from(
+          (handle as ElementHandle<Node>).frame.waitForFunction(
+            this.#predicate,
+            {signal: options?.signal, timeout: EXPECTED_TIMEOUT},
+            handle
+          )
+        ).pipe(
+          map(() => {
+            return handle as HandleFor<To>;
+          })
+        );
+      }),
+      throwIfEmpty(),
+      this.operators.retryAndRaceWithSignalAndTimer(options?.signal)
     );
-  };
-
-  #insertFilterCondition<
-    FromElement extends Node,
-    ToElement extends FromElement,
-  >(this: ExpectedLocator<FromElement, ToElement>): void {
-    const context = (LOCATOR_CONTEXTS.get(this.#base) ??
-      {}) as LocatorContext<FromElement>;
-    context.conditions ??= new Set();
-    context.conditions.add(this.#condition);
-    LOCATOR_CONTEXTS.set(this.#base, context);
-  }
-
-  override click<FromElement extends Element, ToElement extends FromElement>(
-    this: ExpectedLocator<FromElement, ToElement>,
-    options?: Readonly<LocatorClickOptions>
-  ): Promise<void> {
-    this.#insertFilterCondition();
-    return this.#base.click(options);
-  }
-  override fill<FromElement extends Element, ToElement extends FromElement>(
-    this: ExpectedLocator<FromElement, ToElement>,
-    value: string,
-    options?: Readonly<ActionOptions>
-  ): Promise<void> {
-    this.#insertFilterCondition();
-    return this.#base.fill(value, options);
-  }
-  override hover<FromElement extends Element, ToElement extends FromElement>(
-    this: ExpectedLocator<FromElement, ToElement>,
-    options?: Readonly<ActionOptions>
-  ): Promise<void> {
-    this.#insertFilterCondition();
-    return this.#base.hover(options);
-  }
-  override scroll<FromElement extends Element, ToElement extends FromElement>(
-    this: ExpectedLocator<FromElement, ToElement>,
-    options?: Readonly<LocatorScrollOptions>
-  ): Promise<void> {
-    this.#insertFilterCondition();
-    return this.#base.scroll(options);
   }
 }
