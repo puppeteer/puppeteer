@@ -43,7 +43,6 @@ import {
   PDFOptions,
 } from '../common/PDFOptions.js';
 import type {Viewport} from '../common/PuppeteerViewport.js';
-import type {Target} from '../common/Target.js';
 import type {Tracing} from '../common/Tracing.js';
 import type {
   EvaluateFunc,
@@ -74,6 +73,7 @@ import type {
 import {Keyboard, KeyboardTypeOptions, Mouse, Touchscreen} from './Input.js';
 import type {JSHandle} from './JSHandle.js';
 import {Locator, NodeLocator, UnionLocatorOf} from './locators/locators.js';
+import type {Target} from './Target.js';
 
 /**
  * @public

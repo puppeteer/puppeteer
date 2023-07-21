@@ -15,10 +15,10 @@
  */
 
 import {EventEmitter} from '../common/EventEmitter.js';
-import {Target} from '../common/Target.js';
 
 import type {Permission, Browser} from './Browser.js';
 import {Page} from './Page.js';
+import type {Target} from './Target.js';
 
 /**
  * BrowserContexts provide a way to operate multiple independent browser

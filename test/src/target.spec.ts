@@ -17,9 +17,8 @@
 import {ServerResponse} from 'http';
 
 import expect from 'expect';
-import {TimeoutError} from 'puppeteer';
+import {TimeoutError, Target} from 'puppeteer';
 import {Page} from 'puppeteer-core/internal/api/Page.js';
-import {Target} from 'puppeteer-core/internal/common/Target.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {waitEvent} from './utils.js';

@@ -22,7 +22,7 @@ import {Deferred} from '../util/Deferred.js';
 
 import {CDPSession, Connection} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
-import {Target} from './Target.js';
+import {CDPTarget} from './Target.js';
 import {
   TargetFactory,
   TargetInterceptor,
@@ -66,11 +66,11 @@ export class FirefoxTargetManager
    *
    * The target is removed from here once it's been destroyed.
    */
-  #availableTargetsByTargetId = new Map<string, Target>();
+  #availableTargetsByTargetId = new Map<string, CDPTarget>();
   /**
    * Tracks which sessions attach to which target.
    */
-  #availableTargetsBySessionId = new Map<string, Target>();
+  #availableTargetsBySessionId = new Map<string, CDPTarget>();
   /**
    * If a target was filtered out by `targetFilterCallback`, we still receive
    * events about it from CDP, but we don't forward them to the rest of Puppeteer.
@@ -155,7 +155,7 @@ export class FirefoxTargetManager
     }
   }
 
-  getAvailableTargets(): Map<string, Target> {
+  getAvailableTargets(): Map<string, CDPTarget> {
     return this.#availableTargetsByTargetId;
   }
 

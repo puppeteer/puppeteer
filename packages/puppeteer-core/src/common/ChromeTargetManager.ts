@@ -22,7 +22,7 @@ import {Deferred} from '../util/Deferred.js';
 
 import {CDPSession, Connection} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
-import {InitializationStatus, Target} from './Target.js';
+import {InitializationStatus, CDPTarget} from './Target.js';
 import {
   TargetInterceptor,
   TargetFactory,
@@ -55,11 +55,11 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
    * A target is added to this map once ChromeTargetManager has created
    * a Target and attached at least once to it.
    */
-  #attachedTargetsByTargetId = new Map<string, Target>();
+  #attachedTargetsByTargetId = new Map<string, CDPTarget>();
   /**
    * Tracks which sessions attach to which target.
    */
-  #attachedTargetsBySessionId = new Map<string, Target>();
+  #attachedTargetsBySessionId = new Map<string, CDPTarget>();
   /**
    * If a target was filtered out by `targetFilterCallback`, we still receive
    * events about it from CDP, but we don't forward them to the rest of Puppeteer.
@@ -115,7 +115,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
       targetId,
       targetInfo,
     ] of this.#discoveredTargetsByTargetId.entries()) {
-      const targetForFilter = new Target(
+      const targetForFilter = new CDPTarget(
         targetInfo,
         undefined,
         undefined,
@@ -151,7 +151,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
     this.#removeAttachmentListeners(this.#connection);
   }
 
-  getAvailableTargets(): Map<string, Target> {
+  getAvailableTargets(): Map<string, CDPTarget> {
     return this.#attachedTargetsByTargetId;
   }
 

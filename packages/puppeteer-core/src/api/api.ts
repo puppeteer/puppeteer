@@ -24,3 +24,4 @@ export * from './Frame.js';
 export * from './HTTPResponse.js';
 export * from './HTTPRequest.js';
 export * from './locators/locators.js';
+export * from './Target.js';
