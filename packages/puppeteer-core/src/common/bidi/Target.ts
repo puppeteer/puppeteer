@@ -17,30 +17,29 @@
 import {Target, TargetType} from '../../api/Target.js';
 import {CDPSession} from '../Connection.js';
 import type {WebWorker} from '../WebWorker.js';
+
 import {Browser} from './Browser.js';
 import {BrowserContext} from './BrowserContext.js';
-import {BrowsingContext} from './BrowsingContext.js';
+import {BrowsingContext, CDPSessionWrapper} from './BrowsingContext.js';
 import {Page} from './Page.js';
 
 export class BiDiTarget extends Target {
   #browsingContext: BrowsingContext;
+  #page: Page;
 
-  constructor(browsingContext: BrowsingContext) {
+  constructor(browsingContext: BrowsingContext, page: Page) {
     super();
 
     this.#browsingContext = browsingContext;
+    this.#page = page;
   }
 
   override async worker(): Promise<WebWorker | null> {
     return null;
   }
 
-  /**
-   * If the target is not of type `"page"`, `"webview"` or `"background_page"`,
-   * returns `null`.
-   */
   override async page(): Promise<Page | null> {
-    return null;
+    return this.#page;
   }
 
   override url(): string {
@@ -50,8 +49,15 @@ export class BiDiTarget extends Target {
   /**
    * Creates a Chrome Devtools Protocol session attached to the target.
    */
-  override createCDPSession(): Promise<CDPSession> {
-    throw new Error('Not implemented');
+  override async createCDPSession(): Promise<CDPSession> {
+    const {sessionId} = await this.#browsingContext.cdpSession.send(
+      'Target.attachToTarget',
+      {
+        targetId: this.#page.mainFrame()._id,
+        flatten: true,
+      }
+    );
+    return new CDPSessionWrapper(this.#browsingContext, sessionId);
   }
 
   /**
@@ -69,20 +75,20 @@ export class BiDiTarget extends Target {
    * Get the browser the target belongs to.
    */
   override browser(): Browser {
-    throw new Error('No implemented');
+    throw new Error('Not implemented');
   }
 
   /**
    * Get the browser context the target belongs to.
    */
   override browserContext(): BrowserContext {
-    throw new Error('not implemented');
+    throw new Error('Not implemented');
   }
 
   /**
    * Get the target that opened this target. Top-level targets return `null`.
    */
   override opener(): Target | undefined {
-    throw new Error('not implemented');
+    throw new Error('Not implemented');
   }
 }

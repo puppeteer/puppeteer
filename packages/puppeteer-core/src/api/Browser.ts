@@ -21,6 +21,8 @@ import {ChildProcess} from 'child_process';
 import {Protocol} from 'devtools-protocol';
 
 import {EventEmitter} from '../common/EventEmitter.js';
+import {waitWithTimeout} from '../common/util.js';
+import {Deferred} from '../util/Deferred.js';
 
 import type {BrowserContext} from './BrowserContext.js';
 import type {Page} from './Page.js';
@@ -376,12 +378,35 @@ export class Browser extends EventEmitter {
    * );
    * ```
    */
-  waitForTarget(
+  async waitForTarget(
     predicate: (x: Target) => boolean | Promise<boolean>,
-    options?: WaitForTargetOptions
-  ): Promise<Target>;
-  waitForTarget(): Promise<Target> {
-    throw new Error('Not implemented');
+    options: WaitForTargetOptions = {}
+  ): Promise<Target> {
+    const {timeout = 30000} = options;
+    const targetDeferred = Deferred.create<Target | PromiseLike<Target>>();
+
+    this.on(BrowserEmittedEvents.TargetCreated, check);
+    this.on(BrowserEmittedEvents.TargetChanged, check);
+    try {
+      this.targets().forEach(check);
+      if (!timeout) {
+        return await targetDeferred.valueOrThrow();
+      }
+      return await waitWithTimeout(
+        targetDeferred.valueOrThrow(),
+        'target',
+        timeout
+      );
+    } finally {
+      this.off(BrowserEmittedEvents.TargetCreated, check);
+      this.off(BrowserEmittedEvents.TargetChanged, check);
+    }
+
+    async function check(target: Target): Promise<void> {
+      if ((await predicate(target)) && !targetDeferred.resolved()) {
+        targetDeferred.resolve(target);
+      }
+    }
   }
 
   /**

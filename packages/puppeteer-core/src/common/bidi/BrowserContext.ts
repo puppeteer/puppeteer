@@ -18,12 +18,14 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {BrowserContext as BrowserContextBase} from '../../api/BrowserContext.js';
 import {Page as PageBase} from '../../api/Page.js';
+import {Target} from '../../api/Target.js';
 import {Deferred} from '../../util/Deferred.js';
 import {Viewport} from '../PuppeteerViewport.js';
 
 import {Browser} from './Browser.js';
 import {Connection} from './Connection.js';
 import {Page} from './Page.js';
+import {BiDiTarget} from './Target.js';
 import {debugError} from './utils.js';
 
 interface BrowserContextOptions {
@@ -38,7 +40,7 @@ export class BrowserContext extends BrowserContextBase {
   #browser: Browser;
   #connection: Connection;
   #defaultViewport: Viewport | null;
-  #pages = new Map<string, Page>();
+  #targets = new Map<string, BiDiTarget>();
   #onContextDestroyedBind = this.#onContextDestroyed.bind(this);
   #init = Deferred.create<void>();
   #isDefault = false;
@@ -54,6 +56,21 @@ export class BrowserContext extends BrowserContextBase {
     );
     this.#isDefault = options.isDefault;
     this.#getTree().catch(debugError);
+  }
+
+  override targets(): Target[] {
+    return this.#browser.targets().filter(target => {
+      return target.browserContext() === this;
+    });
+  }
+
+  override waitForTarget(
+    predicate: (x: Target) => boolean | Promise<boolean>,
+    options: {timeout?: number} = {}
+  ): Promise<Target> {
+    return this.#browser.waitForTarget(target => {
+      return target.browserContext() === this && predicate(target);
+    }, options);
   }
 
   get connection(): Connection {
@@ -72,7 +89,8 @@ export class BrowserContext extends BrowserContextBase {
       );
       for (const context of result.contexts) {
         const page = new Page(this, context);
-        this.#pages.set(context.context, page);
+        const target = new BiDiTarget(page.mainFrame().context(), page);
+        this.#targets.set(context.context, target);
       }
       this.#init.resolve();
     } catch (err) {
@@ -83,11 +101,12 @@ export class BrowserContext extends BrowserContextBase {
   async #onContextDestroyed(
     event: Bidi.BrowsingContext.ContextDestroyedEvent['params']
   ) {
-    const page = this.#pages.get(event.context);
+    const target = this.#targets.get(event.context);
+    const page = await target?.page();
     await page?.close().catch(error => {
       debugError(error);
     });
-    this.#pages.delete(event.context);
+    this.#targets.delete(event.context);
   }
 
   override async newPage(): Promise<PageBase> {
@@ -100,6 +119,7 @@ export class BrowserContext extends BrowserContextBase {
       context: result.context,
       children: [],
     });
+    const target = new BiDiTarget(page.mainFrame().context(), page);
     if (this.#defaultViewport) {
       try {
         await page.setViewport(this.#defaultViewport);
@@ -108,7 +128,7 @@ export class BrowserContext extends BrowserContextBase {
       }
     }
 
-    this.#pages.set(result.context, page);
+    this.#targets.set(result.context, target);
 
     return page;
   }
@@ -120,12 +140,13 @@ export class BrowserContext extends BrowserContextBase {
       throw new Error('Default context cannot be closed!');
     }
 
-    for (const page of this.#pages.values()) {
+    for (const target of this.#targets.values()) {
+      const page = await target?.page();
       await page?.close().catch(error => {
         debugError(error);
       });
     }
-    this.#pages.clear();
+    this.#targets.clear();
   }
 
   override browser(): Browser {
@@ -134,7 +155,14 @@ export class BrowserContext extends BrowserContextBase {
 
   override async pages(): Promise<PageBase[]> {
     await this.#init.valueOrThrow();
-    return [...this.#pages.values()];
+    const results = await Promise.all(
+      [...this.#targets.values()].map(t => {
+        return t.page();
+      })
+    );
+    return results.filter((p): p is Page => {
+      return p !== null;
+    });
   }
 
   override isIncognito(): boolean {

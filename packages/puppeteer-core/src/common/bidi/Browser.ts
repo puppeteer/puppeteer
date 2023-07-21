@@ -26,6 +26,7 @@ import {
 } from '../../api/Browser.js';
 import {BrowserContext as BrowserContextBase} from '../../api/BrowserContext.js';
 import {Page} from '../../api/Page.js';
+import {Target} from '../../puppeteer-core.js';
 import {Viewport} from '../PuppeteerViewport.js';
 
 import {BrowserContext} from './BrowserContext.js';
@@ -177,6 +178,12 @@ export class Browser extends BrowserBase {
 
   override newPage(): Promise<Page> {
     return this.#defaultContext.newPage();
+  }
+
+  override targets(): Target[] {
+    return this.browserContexts().flatMap(c => {
+      return c.targets();
+    });
   }
 }
 
