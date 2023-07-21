@@ -862,6 +862,10 @@ export class CDPPage extends Page {
     return result[0];
   }
 
+  override async createCDPSession(): Promise<CDPSession> {
+    return await this.target().createCDPSession();
+  }
+
   override async waitForRequest(
     urlOrPredicate: string | ((req: HTTPRequest) => boolean | Promise<boolean>),
     options: {timeout?: number} = {}
