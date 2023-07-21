@@ -94,7 +94,7 @@ export class CDPSessionWrapper extends EventEmitter implements CDPSession {
   }
 
   async detach(): Promise<void> {
-    cdpSessions.set(this.id(), this);
+    cdpSessions.delete(this.id());
     await this.#context.cdpSession.send('Target.detachFromTarget', {
       sessionId: this.id(),
     });
