@@ -1,36 +1,26 @@
-import {
-  Observable,
-  from,
-  map,
-  mergeMap,
-  throwIfEmpty,
-} from '../../../third_party/rxjs/rxjs.js';
+import {Observable, from, mergeMap} from '../../../third_party/rxjs/rxjs.js';
 import {Awaitable, HandleFor} from '../../common/common.js';
-import {ElementHandle} from '../ElementHandle.js';
+import {JSHandle} from '../JSHandle.js';
 
 import {ActionOptions, Locator, VisibilityOption} from './locators.js';
-
-const EXPECTED_TIMEOUT = 1000;
 
 /**
  * @public
  */
-export type Predicate<From, To extends From = From> =
-  | ((value: From) => value is To)
-  | ((value: From) => Awaitable<boolean>);
+export type Mapper<From, To> = (value: From) => Awaitable<To>;
 
 /**
  * @internal
  */
-export class ExpectedLocator<From, To extends From> extends Locator<To> {
+export class MappedLocator<From, To> extends Locator<To> {
   #base: Locator<From>;
-  #predicate: Predicate<From, To>;
+  #mapper: Mapper<From, To>;
 
-  constructor(base: Locator<From>, predicate: Predicate<From, To>) {
+  constructor(base: Locator<From>, mapper: Mapper<From, To>) {
     super();
 
     this.#base = base;
-    this.#predicate = predicate;
+    this.#mapper = mapper;
 
     this.copyOptions(this.#base);
   }
@@ -42,7 +32,7 @@ export class ExpectedLocator<From, To extends From> extends Locator<To> {
   }
 
   override setVisibility<FromNode extends Node, ToNode extends FromNode>(
-    this: ExpectedLocator<FromNode, ToNode>,
+    this: MappedLocator<FromNode, ToNode>,
     visibility: VisibilityOption
   ): Locator<ToNode> {
     super.setVisibility(visibility);
@@ -51,7 +41,7 @@ export class ExpectedLocator<From, To extends From> extends Locator<To> {
   }
 
   override setWaitForEnabled<FromNode extends Node, ToNode extends FromNode>(
-    this: ExpectedLocator<FromNode, ToNode>,
+    this: MappedLocator<FromNode, ToNode>,
     value: boolean
   ): Locator<ToNode> {
     super.setWaitForEnabled(value);
@@ -63,7 +53,7 @@ export class ExpectedLocator<From, To extends From> extends Locator<To> {
     FromElement extends Element,
     ToElement extends FromElement,
   >(
-    this: ExpectedLocator<FromElement, ToElement>,
+    this: MappedLocator<FromElement, ToElement>,
     value: boolean
   ): Locator<ToElement> {
     super.setEnsureElementIsInTheViewport(value);
@@ -75,7 +65,7 @@ export class ExpectedLocator<From, To extends From> extends Locator<To> {
     FromElement extends Element,
     ToElement extends FromElement,
   >(
-    this: ExpectedLocator<FromElement, ToElement>,
+    this: MappedLocator<FromElement, ToElement>,
     value: boolean
   ): Locator<ToElement> {
     super.setWaitForStableBoundingBox(value);
@@ -88,19 +78,8 @@ export class ExpectedLocator<From, To extends From> extends Locator<To> {
   ): Observable<HandleFor<To>> {
     return this.#base.waitImpl(options).pipe(
       mergeMap(handle => {
-        return from(
-          (handle as ElementHandle<Node>).frame.waitForFunction(
-            this.#predicate,
-            {signal: options?.signal, timeout: EXPECTED_TIMEOUT},
-            handle
-          )
-        ).pipe(
-          map(() => {
-            return handle as HandleFor<To>;
-          })
-        );
+        return from((handle as JSHandle<From>).evaluateHandle(this.#mapper));
       }),
-      throwIfEmpty(),
       this.operators.retryAndRaceWithSignalAndTimer(options?.signal)
     );
   }

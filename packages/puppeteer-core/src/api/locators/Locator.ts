@@ -32,6 +32,8 @@ import {
   Action,
   AwaitedLocator,
   ExpectedLocator,
+  MappedLocator,
+  Mapper,
   Predicate,
   RaceLocator,
 } from './locators.js';
@@ -630,6 +632,15 @@ export abstract class Locator<T> extends EventEmitter {
   abstract waitImpl(
     options?: Readonly<ActionOptions>
   ): Observable<HandleFor<T>>;
+
+  /**
+   * Maps the locator using the provided mapper.
+   *
+   * @internal
+   */
+  map<To>(mapper: Mapper<T, To>): Locator<To> {
+    return new MappedLocator(this, mapper);
+  }
 
   /**
    * Creates an expectation that is evaluated against located values.
