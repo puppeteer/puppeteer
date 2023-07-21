@@ -13,23 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {nodeResolve} from '@rollup/plugin-node-resolve';
-import terser from '@rollup/plugin-terser';
-import {globSync} from 'glob';
-
-export default ['cjs', 'esm'].flatMap(outputType => {
-  const configs = [];
-  // Note we don't use path.join here. We cannot since `glob` does not support
-  // the backslash path separator.
-  for (const file of globSync(`lib/${outputType}/third_party/**/*.js`)) {
-    configs.push({
-      input: file,
-      output: {
-        file,
-        format: outputType,
-      },
-      plugins: [terser(), nodeResolve()],
-    });
-  }
-  return configs;
-});
+export {
+  catchError,
+  defaultIfEmpty,
+  filter,
+  first,
+  ignoreElements,
+  map,
+  mergeMap,
+  raceWith,
+  retry,
+  tap,
+  throwIfEmpty,
+  firstValueFrom,
+  defer,
+  EMPTY,
+  from,
+  fromEvent,
+  merge,
+  race,
+  timer,
+  OperatorFunction,
+  identity,
+  noop,
+  pipe,
+  Observable,
+} from 'rxjs';

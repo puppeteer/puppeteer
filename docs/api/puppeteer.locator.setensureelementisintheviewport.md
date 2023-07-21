@@ -8,16 +8,20 @@ sidebar_label: Locator.setEnsureElementIsInTheViewport
 
 ```typescript
 class Locator {
-  abstract setEnsureElementIsInTheViewport(value: boolean): this;
+  setEnsureElementIsInTheViewport<ElementType extends Element>(
+    this: Locator<ElementType>,
+    value: boolean
+  ): Locator<ElementType>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type    | Description |
-| --------- | ------- | ----------- |
-| value     | boolean |             |
+| Parameter | Type                                                 | Description |
+| --------- | ---------------------------------------------------- | ----------- |
+| this      | [Locator](./puppeteer.locator.md)&lt;ElementType&gt; |             |
+| value     | boolean                                              |             |
 
 **Returns:**
 
-this
+[Locator](./puppeteer.locator.md)&lt;ElementType&gt;

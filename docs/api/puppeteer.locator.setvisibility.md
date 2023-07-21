@@ -8,7 +8,10 @@ sidebar_label: Locator.setVisibility
 
 ```typescript
 class Locator {
-  abstract setVisibility(visibility: VisibilityOption): this;
+  setVisibility<NodeType extends Node>(
+    this: Locator<NodeType>,
+    visibility: VisibilityOption
+  ): Locator<NodeType>;
 }
 ```
 
@@ -16,8 +19,9 @@ class Locator {
 
 | Parameter  | Type                                                | Description |
 | ---------- | --------------------------------------------------- | ----------- |
+| this       | [Locator](./puppeteer.locator.md)&lt;NodeType&gt;   |             |
 | visibility | [VisibilityOption](./puppeteer.visibilityoption.md) |             |
 
 **Returns:**
 
-this
+[Locator](./puppeteer.locator.md)&lt;NodeType&gt;

@@ -10,7 +10,7 @@ Fills out the input identified by the locator using the provided value. The type
 
 ```typescript
 class Locator {
-  abstract fill<ElementType extends Element>(
+  fill<ElementType extends Element>(
     this: Locator<ElementType>,
     value: string,
     options?: Readonly<ActionOptions>
