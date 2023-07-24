@@ -223,11 +223,7 @@ export class Page extends PageBase {
       !this.frame(info.context) &&
       (this.frame(info.parent ?? '') || !this.#frameTree.getMainFrame())
     ) {
-      const context = new BrowsingContext(
-        this.#connection,
-        this.#timeoutSettings,
-        info
-      );
+      const context = new BrowsingContext(this.#connection, info);
       this.#connection.registerBrowsingContexts(context);
 
       const frame = new Frame(
@@ -396,7 +392,13 @@ export class Page extends PageBase {
           response.url() === this.url()
         );
       }),
-      this.mainFrame().context().reload(options),
+      this.mainFrame()
+        .context()
+        .reload({
+          ...options,
+          timeout:
+            options?.timeout ?? this.#timeoutSettings.navigationTimeout(),
+        }),
     ]);
 
     return response;

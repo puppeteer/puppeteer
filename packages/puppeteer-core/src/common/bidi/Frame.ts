@@ -131,7 +131,10 @@ export class Frame extends BaseFrame {
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
     }
   ): Promise<HTTPResponse | null> {
-    const navigationId = await this.#context.goto(url, options);
+    const navigationId = await this.#context.goto(url, {
+      ...options,
+      timeout: options?.timeout ?? this.#timeoutSettings.navigationTimeout(),
+    });
     return this.#page.getNavigationResponse(navigationId);
   }
 
@@ -142,7 +145,10 @@ export class Frame extends BaseFrame {
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
     }
   ): Promise<void> {
-    return this.#context.setContent(html, options);
+    return this.#context.setContent(html, {
+      ...options,
+      timeout: options?.timeout ?? this.#timeoutSettings.navigationTimeout(),
+    });
   }
 
   override content(): Promise<string> {
