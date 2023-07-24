@@ -26,11 +26,14 @@ import {
 } from '../../api/Browser.js';
 import {BrowserContext as BrowserContextBase} from '../../api/BrowserContext.js';
 import {Page} from '../../api/Page.js';
-import {Target} from '../../puppeteer-core.js';
+import {Target} from '../../api/Target.js';
+import {Deferred} from '../../util/Deferred.js';
 import {Viewport} from '../PuppeteerViewport.js';
 
 import {BrowserContext} from './BrowserContext.js';
+import {BrowsingContext} from './BrowsingContext.js';
 import {Connection} from './Connection.js';
+import {BiDiPageTarget, BiDiTarget} from './Target.js';
 import {debugError} from './utils.js';
 
 /**
@@ -53,9 +56,6 @@ export class Browser extends BrowserBase {
     'cdp.Network.requestWillBeSent',
     'cdp.Debugger.scriptParsed',
   ];
-
-  #browserName = '';
-  #browserVersion = '';
 
   static async create(opts: Options): Promise<Browser> {
     let browserName = '';
@@ -83,18 +83,27 @@ export class Browser extends BrowserBase {
         : [...Browser.subscribeModules, ...Browser.subscribeCdpEvents],
     });
 
-    return new Browser({
+    const browser = new Browser({
       ...opts,
       browserName,
       browserVersion,
     });
+
+    await browser._init.valueOrThrow();
+
+    return browser;
   }
 
+  #browserName = '';
+  #browserVersion = '';
   #process?: ChildProcess;
   #closeCallback?: BrowserCloseCallback;
   #connection: Connection;
   #defaultViewport: Viewport | null;
   #defaultContext: BrowserContext;
+  #targets = new Map<string, BiDiTarget>();
+
+  protected _init = Deferred.create<void>();
 
   constructor(
     opts: Options & {
@@ -118,7 +127,49 @@ export class Browser extends BrowserBase {
       defaultViewport: this.#defaultViewport,
       isDefault: true,
     });
+    this.#connection.on(
+      'browsingContext.contextCreated',
+      this.#onContextCreated
+    );
+    this.#connection.on(
+      'browsingContext.contextDestroyed',
+      this.#onContextDestroyed
+    );
+    this.#getTree().catch(debugError);
   }
+
+  #onContextCreated = (
+    event: Bidi.BrowsingContext.ContextCreatedEvent['params']
+  ) => {
+    const context = new BrowsingContext(this.#connection, event);
+    this.#connection.registerBrowsingContexts(context);
+    const target = !context.parent
+      ? new BiDiPageTarget(this.defaultBrowserContext(), context)
+      : new BiDiTarget(this.defaultBrowserContext(), context);
+    this.#targets.set(event.context, target);
+
+    if (context.parent) {
+      const topLevel = this.#connection.getTopLevelContext(context.parent);
+      topLevel.emit('childContextAttached', context);
+    }
+  };
+
+  async #getTree(): Promise<void> {
+    const {result} = await this.#connection.send('browsingContext.getTree', {});
+    for (const context of result.contexts) {
+      this.#onContextCreated(context);
+    }
+    this._init.resolve();
+  }
+
+  #onContextDestroyed = async (
+    event: Bidi.BrowsingContext.ContextDestroyedEvent['params']
+  ) => {
+    const target = this.#targets.get(event.context);
+    const page = await target?.page();
+    await page?.close().catch(debugError);
+    this.#targets.delete(event.context);
+  };
 
   get connection(): Connection {
     return this.#connection;
@@ -129,6 +180,14 @@ export class Browser extends BrowserBase {
   }
 
   override async close(): Promise<void> {
+    this.#connection.off(
+      'browsingContext.contextDestroyed',
+      this.#onContextDestroyed
+    );
+    this.#connection.off(
+      'browsingContext.contextCreated',
+      this.#onContextCreated
+    );
     if (this.#connection.closed) {
       return;
     }
@@ -181,9 +240,15 @@ export class Browser extends BrowserBase {
   }
 
   override targets(): Target[] {
-    return this.browserContexts().flatMap(c => {
-      return c.targets();
-    });
+    return Array.from(this.#targets.values());
+  }
+
+  _getTargetById(id: string): BiDiTarget {
+    const target = this.#targets.get(id);
+    if (!target) {
+      throw new Error('Target not found');
+    }
+    return target;
   }
 }
 

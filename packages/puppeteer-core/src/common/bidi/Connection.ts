@@ -246,6 +246,13 @@ export class Connection extends EventEmitter {
     this.#browsingContexts.set(context.id, context);
   }
 
+  getTopLevelContext(contextId: string): BrowsingContext {
+    while (this.#browsingContexts.get(contextId)?.parent) {
+      contextId = this.#browsingContexts.get(contextId)!.parent as string;
+    }
+    return this.#browsingContexts.get(contextId)!;
+  }
+
   unregisterBrowsingContexts(id: string): void {
     this.#browsingContexts.delete(id);
   }

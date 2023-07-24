@@ -69,7 +69,6 @@ import {BidiSerializer} from './Serializer.js';
 export class Page extends PageBase {
   #accessibility: Accessibility;
   #timeoutSettings = new TimeoutSettings();
-  #browserContext: BrowserContext;
   #connection: Connection;
   #frameTree = new FrameTree<Frame>();
   #networkManager: NetworkManager;
@@ -82,7 +81,7 @@ export class Page extends PageBase {
       'browsingContext.domContentLoaded',
       this.#onFrameDOMContentLoaded.bind(this),
     ],
-    ['browsingContext.contextCreated', this.#onFrameAttached.bind(this)],
+    // ['browsingContext.contextCreated', this.#onFrameAttached.bind(this)],
     ['browsingContext.contextDestroyed', this.#onFrameDetached.bind(this)],
     ['browsingContext.fragmentNavigated', this.#onFrameNavigated.bind(this)],
   ]) as Map<Bidi.Session.SubscriptionRequestEvent, Handler>;
@@ -114,23 +113,24 @@ export class Page extends PageBase {
   #mouse: Mouse;
   #touchscreen: Touchscreen;
   #keyboard: Keyboard;
+  #browsingContext: BrowsingContext;
+  #browserContext: BrowserContext;
 
   constructor(
-    browserContext: BrowserContext,
-    info: Omit<Bidi.BrowsingContext.Info, 'url'> & {
-      url?: string;
-    }
+    browsingContext: BrowsingContext,
+    browserContext: BrowserContext
   ) {
     super();
+    this.#browsingContext = browsingContext;
     this.#browserContext = browserContext;
-    this.#connection = browserContext.connection;
+    this.#connection = browsingContext.connection;
+
+    this.#browsingContext.on(
+      'childContextAttached',
+      this.#onNewContext.bind(this)
+    );
 
     this.#networkManager = new NetworkManager(this.#connection, this);
-    this.#onFrameAttached({
-      ...info,
-      url: info.url ?? 'about:blank',
-      children: info.children ?? [],
-    });
 
     for (const [event, subscriber] of this.#subscribedEvents) {
       this.#connection.on(event, subscriber);
@@ -139,6 +139,15 @@ export class Page extends PageBase {
     for (const [event, subscriber] of this.#networkManagerEvents) {
       this.#networkManager.on(event, subscriber);
     }
+
+    const frame = new Frame(
+      this,
+      this.#browsingContext,
+      this.#timeoutSettings,
+      this.#browsingContext.parent
+    );
+    this.#frameTree.addFrame(frame);
+    this.emit(PageEmittedEvents.FrameAttached, frame);
 
     // TODO: https://github.com/w3c/webdriver-bidi/issues/443
     this.#accessibility = new Accessibility(
@@ -152,6 +161,10 @@ export class Page extends PageBase {
     this.#mouse = new Mouse(this.mainFrame().context());
     this.#touchscreen = new Touchscreen(this.mainFrame().context());
     this.#keyboard = new Keyboard(this.mainFrame().context());
+  }
+
+  _setBrowserContext(browserContext: BrowserContext): void {
+    this.#browserContext = browserContext;
   }
 
   override get accessibility(): Accessibility {
@@ -179,7 +192,7 @@ export class Page extends PageBase {
   }
 
   override browser(): Browser {
-    return this.#browserContext.browser();
+    return this.browserContext().browser();
   }
 
   override browserContext(): BrowserContext {
@@ -218,19 +231,16 @@ export class Page extends PageBase {
     }
   }
 
-  #onFrameAttached(info: Bidi.BrowsingContext.Info): void {
+  #onNewContext(context: BrowsingContext): void {
     if (
-      !this.frame(info.context) &&
-      (this.frame(info.parent ?? '') || !this.#frameTree.getMainFrame())
+      !this.frame(context.id) &&
+      (this.frame(context.parent ?? '') || !this.#frameTree.getMainFrame())
     ) {
-      const context = new BrowsingContext(this.#connection, info);
-      this.#connection.registerBrowsingContexts(context);
-
       const frame = new Frame(
         this,
         context,
         this.#timeoutSettings,
-        info.parent
+        context.parent
       );
       this.#frameTree.addFrame(frame);
       this.emit(PageEmittedEvents.FrameAttached, frame);
