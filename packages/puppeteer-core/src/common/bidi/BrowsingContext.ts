@@ -8,7 +8,6 @@ import type {CDPSession, Connection as CDPConnection} from '../Connection.js';
 import {ProtocolError, TargetCloseError, TimeoutError} from '../Errors.js';
 import {EventEmitter} from '../EventEmitter.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
-import {TimeoutSettings} from '../TimeoutSettings.js';
 import {getPageContent, setPageContent, waitWithTimeout} from '../util.js';
 
 import {Connection} from './Connection.js';
@@ -111,19 +110,13 @@ export class CDPSessionWrapper extends EventEmitter implements CDPSession {
  * @internal
  */
 export class BrowsingContext extends Realm {
-  #timeoutSettings: TimeoutSettings;
   #id: string;
   #url: string;
   #cdpSession: CDPSession;
 
-  constructor(
-    connection: Connection,
-    timeoutSettings: TimeoutSettings,
-    info: Bidi.BrowsingContext.Info
-  ) {
+  constructor(connection: Connection, info: Bidi.BrowsingContext.Info) {
     super(connection, info.context);
     this.connection = connection;
-    this.#timeoutSettings = timeoutSettings;
     this.#id = info.context;
     this.#url = info.url;
     this.#cdpSession = new CDPSessionWrapper(this);
@@ -161,14 +154,11 @@ export class BrowsingContext extends Realm {
     options: {
       referer?: string;
       referrerPolicy?: string;
-      timeout?: number;
+      timeout: number;
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    } = {}
+    }
   ): Promise<string | null> {
-    const {
-      waitUntil = 'load',
-      timeout = this.#timeoutSettings.navigationTimeout(),
-    } = options;
+    const {waitUntil = 'load', timeout} = options;
 
     const readinessState = lifeCycleToReadinessState.get(
       getWaitUntilSingle(waitUntil)
@@ -197,11 +187,8 @@ export class BrowsingContext extends Realm {
     }
   }
 
-  async reload(options: WaitForOptions = {}): Promise<void> {
-    const {
-      waitUntil = 'load',
-      timeout = this.#timeoutSettings.navigationTimeout(),
-    } = options;
+  async reload(options: WaitForOptions & {timeout: number}): Promise<void> {
+    const {waitUntil = 'load', timeout} = options;
 
     const readinessState = lifeCycleToReadinessState.get(
       getWaitUntilSingle(waitUntil)
@@ -220,14 +207,11 @@ export class BrowsingContext extends Realm {
   async setContent(
     html: string,
     options: {
-      timeout?: number;
+      timeout: number;
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
     }
   ): Promise<void> {
-    const {
-      waitUntil = 'load',
-      timeout = this.#timeoutSettings.navigationTimeout(),
-    } = options;
+    const {waitUntil = 'load', timeout} = options;
 
     const waitUntilEvent = lifeCycleToSubscribedEvent.get(
       getWaitUntilSingle(waitUntil)
