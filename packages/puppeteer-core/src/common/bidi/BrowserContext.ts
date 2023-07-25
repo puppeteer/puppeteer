@@ -69,9 +69,13 @@ export class BrowserContext extends BrowserContextBase {
     const {result} = await this.#connection.send('browsingContext.create', {
       type: 'tab',
     });
-
     const target = this.#browser._getTargetById(result.context);
 
+    // TODO: once BiDi has some concept matching BrowserContext, the newly
+    // created contexts should get automatically assigned to the right
+    // BrowserContext. For now, we assume that only explicitly created pages go
+    // to the current BrowserContext. Otherwise, the contexts get assigned to
+    // the default BrowserContext by the Browser.
     target._setBrowserContext(this);
 
     const page = await target.page();

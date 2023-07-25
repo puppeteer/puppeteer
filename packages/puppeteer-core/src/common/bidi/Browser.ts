@@ -31,7 +31,10 @@ import {Deferred} from '../../util/Deferred.js';
 import {Viewport} from '../PuppeteerViewport.js';
 
 import {BrowserContext} from './BrowserContext.js';
-import {BrowsingContext} from './BrowsingContext.js';
+import {
+  BrowsingContext,
+  BrowsingContextEmittedEvents,
+} from './BrowsingContext.js';
 import {Connection} from './Connection.js';
 import {BiDiPageTarget, BiDiTarget} from './Target.js';
 import {debugError} from './utils.js';
@@ -89,7 +92,7 @@ export class Browser extends BrowserBase {
       browserVersion,
     });
 
-    await browser._init.valueOrThrow();
+    await browser.#getTree();
 
     return browser;
   }
@@ -135,7 +138,6 @@ export class Browser extends BrowserBase {
       'browsingContext.contextDestroyed',
       this.#onContextDestroyed
     );
-    this.#getTree().catch(debugError);
   }
 
   #onContextCreated = (
@@ -143,6 +145,9 @@ export class Browser extends BrowserBase {
   ) => {
     const context = new BrowsingContext(this.#connection, event);
     this.#connection.registerBrowsingContexts(context);
+    // TODO: once more browsing context types are supported, this should be
+    // updated to support those. Currently, all top-level contexts are treated
+    // as pages.
     const target = !context.parent
       ? new BiDiPageTarget(this.defaultBrowserContext(), context)
       : new BiDiTarget(this.defaultBrowserContext(), context);
@@ -150,7 +155,7 @@ export class Browser extends BrowserBase {
 
     if (context.parent) {
       const topLevel = this.#connection.getTopLevelContext(context.parent);
-      topLevel.emit('childContextAttached', context);
+      topLevel.emit(BrowsingContextEmittedEvents.Created, context);
     }
   };
 
@@ -159,12 +164,14 @@ export class Browser extends BrowserBase {
     for (const context of result.contexts) {
       this.#onContextCreated(context);
     }
-    this._init.resolve();
   }
 
   #onContextDestroyed = async (
     event: Bidi.BrowsingContext.ContextDestroyedEvent['params']
   ) => {
+    const context = this.#connection.getBrowsingContext(event.context);
+    const topLevelContext = this.#connection.getTopLevelContext(event.context);
+    topLevelContext.emit(BrowsingContextEmittedEvents.Destroyed, context);
     const target = this.#targets.get(event.context);
     const page = await target?.page();
     await page?.close().catch(debugError);

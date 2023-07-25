@@ -53,7 +53,11 @@ import {
 
 import {Browser} from './Browser.js';
 import {BrowserContext} from './BrowserContext.js';
-import {BrowsingContext, CDPSessionWrapper} from './BrowsingContext.js';
+import {
+  BrowsingContext,
+  BrowsingContextEmittedEvents,
+  CDPSessionWrapper,
+} from './BrowsingContext.js';
 import {Connection} from './Connection.js';
 import {Frame} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
@@ -81,8 +85,6 @@ export class Page extends PageBase {
       'browsingContext.domContentLoaded',
       this.#onFrameDOMContentLoaded.bind(this),
     ],
-    // ['browsingContext.contextCreated', this.#onFrameAttached.bind(this)],
-    ['browsingContext.contextDestroyed', this.#onFrameDetached.bind(this)],
     ['browsingContext.fragmentNavigated', this.#onFrameNavigated.bind(this)],
   ]) as Map<Bidi.Session.SubscriptionRequestEvent, Handler>;
   #networkManagerEvents = new Map<symbol, Handler<any>>([
@@ -107,6 +109,14 @@ export class Page extends PageBase {
       this.emit.bind(this, PageEmittedEvents.Response),
     ],
   ]);
+
+  #browsingContextEvents = new Map<symbol, Handler<any>>([
+    [BrowsingContextEmittedEvents.Created, this.#onContextCreated.bind(this)],
+    [
+      BrowsingContextEmittedEvents.Destroyed,
+      this.#onContextDestroyed.bind(this),
+    ],
+  ]);
   #tracing: Tracing;
   #coverage: Coverage;
   #emulationManager: EmulationManager;
@@ -125,10 +135,9 @@ export class Page extends PageBase {
     this.#browserContext = browserContext;
     this.#connection = browsingContext.connection;
 
-    this.#browsingContext.on(
-      'childContextAttached',
-      this.#onNewContext.bind(this)
-    );
+    for (const [event, subscriber] of this.#browsingContextEvents) {
+      this.#browsingContext.on(event, subscriber);
+    }
 
     this.#networkManager = new NetworkManager(this.#connection, this);
 
@@ -231,7 +240,7 @@ export class Page extends PageBase {
     }
   }
 
-  #onNewContext(context: BrowsingContext): void {
+  #onContextCreated(context: BrowsingContext): void {
     if (
       !this.frame(context.id) &&
       (this.frame(context.parent ?? '') || !this.#frameTree.getMainFrame())
@@ -260,8 +269,8 @@ export class Page extends PageBase {
     }
   }
 
-  #onFrameDetached(info: Bidi.BrowsingContext.Info): void {
-    const frame = this.frame(info.context);
+  #onContextDestroyed(context: BrowsingContext): void {
+    const frame = this.frame(context.id);
 
     if (frame) {
       if (frame === this.mainFrame()) {

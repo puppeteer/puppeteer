@@ -246,11 +246,27 @@ export class Connection extends EventEmitter {
     this.#browsingContexts.set(context.id, context);
   }
 
-  getTopLevelContext(contextId: string): BrowsingContext {
-    while (this.#browsingContexts.get(contextId)?.parent) {
-      contextId = this.#browsingContexts.get(contextId)!.parent as string;
+  getBrowsingContext(contextId: string): BrowsingContext {
+    const currentContext = this.#browsingContexts.get(contextId);
+    if (!currentContext) {
+      throw new Error(`BrowsingContext ${contextId} does not exist.`);
     }
-    return this.#browsingContexts.get(contextId)!;
+    return currentContext;
+  }
+
+  getTopLevelContext(contextId: string): BrowsingContext {
+    let currentContext = this.#browsingContexts.get(contextId);
+    if (!currentContext) {
+      throw new Error(`BrowsingContext ${contextId} does not exist.`);
+    }
+    while (currentContext.parent) {
+      contextId = currentContext.parent;
+      currentContext = this.#browsingContexts.get(contextId);
+      if (!currentContext) {
+        throw new Error(`BrowsingContext ${contextId} does not exist.`);
+      }
+    }
+    return currentContext;
   }
 
   unregisterBrowsingContexts(id: string): void {

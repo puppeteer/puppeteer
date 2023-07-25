@@ -80,6 +80,20 @@ export class BiDiTarget extends Target {
   _setBrowserContext(browserContext: BrowserContext): void {
     this._browserContext = browserContext;
   }
+
+  /**
+   * Creates a Chrome Devtools Protocol session attached to the target.
+   */
+  override async createCDPSession(): Promise<CDPSession> {
+    const {sessionId} = await this._browsingContext.cdpSession.send(
+      'Target.attachToTarget',
+      {
+        targetId: this._browsingContext.id,
+        flatten: true,
+      }
+    );
+    return new CDPSessionWrapper(this._browsingContext, sessionId);
+  }
 }
 
 /**
@@ -99,20 +113,6 @@ export class BiDiPageTarget extends BiDiTarget {
 
   override async page(): Promise<Page | null> {
     return this.#page;
-  }
-
-  /**
-   * Creates a Chrome Devtools Protocol session attached to the target.
-   */
-  override async createCDPSession(): Promise<CDPSession> {
-    const {sessionId} = await this._browsingContext.cdpSession.send(
-      'Target.attachToTarget',
-      {
-        targetId: this.#page.mainFrame()._id,
-        flatten: true,
-      }
-    );
-    return new CDPSessionWrapper(this._browsingContext, sessionId);
   }
 
   override _setBrowserContext(browserContext: BrowserContext): void {
