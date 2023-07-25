@@ -24,40 +24,25 @@ import {BrowsingContext, CDPSessionWrapper} from './BrowsingContext.js';
 import {Page} from './Page.js';
 
 export class BiDiTarget extends Target {
-  #browsingContext: BrowsingContext;
-  #page: Page;
+  protected _browserContext: BrowserContext;
+  protected _browsingContext: BrowsingContext;
 
-  constructor(browsingContext: BrowsingContext, page: Page) {
+  constructor(
+    browserContext: BrowserContext,
+    browsingContext: BrowsingContext
+  ) {
     super();
 
-    this.#browsingContext = browsingContext;
-    this.#page = page;
+    this._browserContext = browserContext;
+    this._browsingContext = browsingContext;
   }
 
   override async worker(): Promise<WebWorker | null> {
     return null;
   }
 
-  override async page(): Promise<Page | null> {
-    return this.#page;
-  }
-
   override url(): string {
-    return this.#browsingContext.url;
-  }
-
-  /**
-   * Creates a Chrome Devtools Protocol session attached to the target.
-   */
-  override async createCDPSession(): Promise<CDPSession> {
-    const {sessionId} = await this.#browsingContext.cdpSession.send(
-      'Target.attachToTarget',
-      {
-        targetId: this.#page.mainFrame()._id,
-        flatten: true,
-      }
-    );
-    return new CDPSessionWrapper(this.#browsingContext, sessionId);
+    return this._browsingContext.url;
   }
 
   /**
@@ -82,7 +67,7 @@ export class BiDiTarget extends Target {
    * Get the browser context the target belongs to.
    */
   override browserContext(): BrowserContext {
-    throw new Error('Not implemented');
+    return this._browserContext;
   }
 
   /**
@@ -90,5 +75,48 @@ export class BiDiTarget extends Target {
    */
   override opener(): Target | undefined {
     throw new Error('Not implemented');
+  }
+
+  _setBrowserContext(browserContext: BrowserContext): void {
+    this._browserContext = browserContext;
+  }
+
+  /**
+   * Creates a Chrome Devtools Protocol session attached to the target.
+   */
+  override async createCDPSession(): Promise<CDPSession> {
+    const {sessionId} = await this._browsingContext.cdpSession.send(
+      'Target.attachToTarget',
+      {
+        targetId: this._browsingContext.id,
+        flatten: true,
+      }
+    );
+    return new CDPSessionWrapper(this._browsingContext, sessionId);
+  }
+}
+
+/**
+ * @internal
+ */
+export class BiDiPageTarget extends BiDiTarget {
+  #page: Page;
+
+  constructor(
+    browserContext: BrowserContext,
+    browsingContext: BrowsingContext
+  ) {
+    super(browserContext, browsingContext);
+
+    this.#page = new Page(browsingContext, browserContext);
+  }
+
+  override async page(): Promise<Page | null> {
+    return this.#page;
+  }
+
+  override _setBrowserContext(browserContext: BrowserContext): void {
+    super._setBrowserContext(browserContext);
+    this.#page._setBrowserContext(browserContext);
   }
 }

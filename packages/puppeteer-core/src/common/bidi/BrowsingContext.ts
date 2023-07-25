@@ -107,18 +107,37 @@ export class CDPSessionWrapper extends EventEmitter implements CDPSession {
 }
 
 /**
+ * Internal events that the BrowsingContext class emits.
+ *
+ * @internal
+ */
+export const BrowsingContextEmittedEvents = {
+  /**
+   * Emitted on the top-level context, when a descendant context is created.
+   */
+  Created: Symbol('BrowsingContext.created'),
+  /**
+   * Emitted on the top-level context, when a descendant context or the
+   * top-level context itself is destroyed.
+   */
+  Destroyed: Symbol('BrowsingContext.destroyed'),
+} as const;
+
+/**
  * @internal
  */
 export class BrowsingContext extends Realm {
   #id: string;
   #url: string;
   #cdpSession: CDPSession;
+  #parent?: string | null;
 
   constructor(connection: Connection, info: Bidi.BrowsingContext.Info) {
     super(connection, info.context);
     this.connection = connection;
     this.#id = info.context;
     this.#url = info.url;
+    this.#parent = info.parent;
     this.#cdpSession = new CDPSessionWrapper(this);
 
     this.on(
@@ -139,6 +158,10 @@ export class BrowsingContext extends Realm {
 
   get id(): string {
     return this.#id;
+  }
+
+  get parent(): string | undefined | null {
+    return this.#parent;
   }
 
   get cdpSession(): CDPSession {
