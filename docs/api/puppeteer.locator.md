@@ -4,7 +4,7 @@ sidebar_label: Locator
 
 # Locator class
 
-Locators describe a strategy of locating elements and performing an action on them. If the action fails because the element is not ready for the action, the whole operation is retried. Various preconditions for a successful action are checked automatically.
+Locators describe a strategy of locating objects and performing an action on them. If the action fails because the object is not ready for the action, the whole operation is retried. Various preconditions for a successful action are checked automatically.
 
 #### Signature:
 

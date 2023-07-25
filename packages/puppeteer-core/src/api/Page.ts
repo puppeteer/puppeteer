@@ -46,6 +46,7 @@ import {
 import type {Viewport} from '../common/PuppeteerViewport.js';
 import type {Tracing} from '../common/Tracing.js';
 import type {
+  Awaitable,
   EvaluateFunc,
   EvaluateFuncWith,
   HandleFor,
@@ -73,7 +74,12 @@ import type {
 } from './Frame.js';
 import {Keyboard, KeyboardTypeOptions, Mouse, Touchscreen} from './Input.js';
 import type {JSHandle} from './JSHandle.js';
-import {AwaitedLocator, Locator, NodeLocator} from './locators/locators.js';
+import {
+  AwaitedLocator,
+  FunctionLocator,
+  Locator,
+  NodeLocator,
+} from './locators/locators.js';
 import type {Target} from './Target.js';
 
 /**
@@ -832,7 +838,7 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * Creates a locator for the provided `selector`. See {@link Locator} for
+   * Creates a locator for the provided function. See {@link Locator} for
    * details and supported actions.
    *
    * @remarks
@@ -841,8 +847,25 @@ export class Page extends EventEmitter {
    */
   locator<Selector extends string>(
     selector: Selector
-  ): Locator<NodeFor<Selector>> {
-    return NodeLocator.create(this, selector);
+  ): Locator<NodeFor<Selector>>;
+
+  /**
+   * Creates a locator for the provided function. See {@link Locator} for
+   * details and supported actions.
+   *
+   * @remarks
+   * Locators API is experimental and we will not follow semver for breaking
+   * change in the Locators API.
+   */
+  locator<Ret>(func: () => Awaitable<Ret>): Locator<Ret>;
+  locator<Selector extends string, Ret>(
+    selectorOrFunc: Selector | (() => Awaitable<Ret>)
+  ): Locator<NodeFor<Selector>> | Locator<Ret> {
+    if (typeof selectorOrFunc === 'string') {
+      return NodeLocator.create(this, selectorOrFunc);
+    } else {
+      return FunctionLocator.create(this, selectorOrFunc);
+    }
   }
 
   /**
