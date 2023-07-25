@@ -830,8 +830,8 @@ describe('Page', function () {
     it('should fire when expected', async () => {
       const {page} = await getTestState();
 
-      page.goto('about:blank');
-      await waitEvent(page, 'domcontentloaded');
+      const navigate = page.goto('about:blank');
+      await Promise.all([waitEvent(page, 'domcontentloaded'), navigate]);
     });
   });
 
