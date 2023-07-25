@@ -27,7 +27,6 @@ import {
 import {BrowserContext as BrowserContextBase} from '../../api/BrowserContext.js';
 import {Page} from '../../api/Page.js';
 import {Target} from '../../api/Target.js';
-import {Deferred} from '../../util/Deferred.js';
 import {Viewport} from '../PuppeteerViewport.js';
 
 import {BrowserContext} from './BrowserContext.js';
@@ -105,8 +104,6 @@ export class Browser extends BrowserBase {
   #defaultViewport: Viewport | null;
   #defaultContext: BrowserContext;
   #targets = new Map<string, BiDiTarget>();
-
-  protected _init = Deferred.create<void>();
 
   constructor(
     opts: Options & {
