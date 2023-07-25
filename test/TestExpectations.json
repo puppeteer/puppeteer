@@ -216,12 +216,6 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[page.spec] Page Page.pdf should respect timeout",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
     "testIdPattern": "[page.spec] Page Page.setContent *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -684,30 +678,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[headful.spec] headful tests HEADFUL headless should be able to read cookies written by headful",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi", "headful"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[headful.spec] headful tests HEADFUL should close browser with beforeunload page",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi", "headful"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[headful.spec] headful tests HEADFUL should have default url when launching browser",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi", "headful"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[headful.spec] headful tests HEADFUL target.page() should return a DevTools page if custom isPageTarget is provided",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
     "testIdPattern": "[idle_override.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -842,14 +812,14 @@
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.executablePath returns executablePath for channel",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.executablePath should work",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.executablePath when executable path is configured its value is used",
@@ -866,8 +836,8 @@
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should be able to launch Chrome",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should be able to launch Firefox",
@@ -1234,6 +1204,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.pdf should respect timeout",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.select should deselect all options when passed no values for a multiple select",
@@ -2160,6 +2136,24 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[headful.spec] headful tests HEADFUL headless should be able to read cookies written by headful",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["headful", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[headful.spec] headful tests HEADFUL should close browser with beforeunload page",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["headful", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[headful.spec] headful tests HEADFUL should have default url when launching browser",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["headful", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[headful.spec] headful tests HEADFUL target.page() should return a background_page",
     "platforms": ["darwin", "win32"],
     "parameters": ["cdp", "chrome"],
@@ -2168,8 +2162,8 @@
   {
     "testIdPattern": "[headful.spec] headful tests HEADFUL target.page() should return a DevTools page if custom isPageTarget is provided",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi", "headful"],
-    "expectations": ["FAIL"]
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[ignorehttpserrors.spec] ignoreHTTPSErrors Response.securityDetails Network redirects should report SecurityDetails",
@@ -2384,20 +2378,20 @@
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.executablePath returns executablePath for channel",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.executablePath should work",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should be able to launch Chrome",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox"],
-    "expectations": ["SKIP"]
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[launcher.spec] Launcher specs Puppeteer Puppeteer.launch should be able to launch Firefox",
@@ -3748,6 +3742,12 @@
     "platforms": ["linux"],
     "parameters": ["cdp", "chrome", "headless"],
     "expectations": ["FAIL", "PASS"]
+  },
+  {
+    "testIdPattern": "[headful.spec] headful tests HEADFUL target.page() should return a DevTools page if custom isPageTarget is provided",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "headful", "webDriverBiDi"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation \"after all\" hook in \"navigation\"",
