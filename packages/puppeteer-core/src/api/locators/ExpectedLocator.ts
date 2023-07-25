@@ -24,7 +24,8 @@ import {
 import {Awaitable, HandleFor} from '../../common/common.js';
 import {ElementHandle} from '../ElementHandle.js';
 
-import {ActionOptions, Locator, VisibilityOption} from './locators.js';
+import {DelegatedLocator} from './DelegatedLocator.js';
+import {ActionOptions, Locator} from './locators.js';
 
 /**
  * @public
@@ -36,69 +37,19 @@ export type Predicate<From, To extends From = From> =
 /**
  * @internal
  */
-export class ExpectedLocator<From, To extends From> extends Locator<To> {
-  #base: Locator<From>;
+export class ExpectedLocator<From, To extends From> extends DelegatedLocator<
+  From,
+  To
+> {
   #predicate: Predicate<From, To>;
 
   constructor(base: Locator<From>, predicate: Predicate<From, To>) {
-    super();
-
-    this.#base = base;
+    super(base);
     this.#predicate = predicate;
-
-    this.copyOptions(this.#base);
-  }
-
-  override setTimeout(timeout: number): this {
-    super.setTimeout(timeout);
-    this.#base.setTimeout(timeout);
-    return this;
-  }
-
-  override setVisibility<FromNode extends Node, ToNode extends FromNode>(
-    this: ExpectedLocator<FromNode, ToNode>,
-    visibility: VisibilityOption
-  ): Locator<ToNode> {
-    super.setVisibility(visibility);
-    this.#base.setVisibility(visibility);
-    return this;
-  }
-
-  override setWaitForEnabled<FromNode extends Node, ToNode extends FromNode>(
-    this: ExpectedLocator<FromNode, ToNode>,
-    value: boolean
-  ): Locator<ToNode> {
-    super.setWaitForEnabled(value);
-    this.#base.setWaitForEnabled(value);
-    return this;
-  }
-
-  override setEnsureElementIsInTheViewport<
-    FromElement extends Element,
-    ToElement extends FromElement,
-  >(
-    this: ExpectedLocator<FromElement, ToElement>,
-    value: boolean
-  ): Locator<ToElement> {
-    super.setEnsureElementIsInTheViewport(value);
-    this.#base.setEnsureElementIsInTheViewport(value);
-    return this;
-  }
-
-  override setWaitForStableBoundingBox<
-    FromElement extends Element,
-    ToElement extends FromElement,
-  >(
-    this: ExpectedLocator<FromElement, ToElement>,
-    value: boolean
-  ): Locator<ToElement> {
-    super.setWaitForStableBoundingBox(value);
-    this.#base.setWaitForStableBoundingBox(value);
-    return this;
   }
 
   override _wait(options?: Readonly<ActionOptions>): Observable<HandleFor<To>> {
-    return this.#base._wait(options).pipe(
+    return this.delegate._wait(options).pipe(
       mergeMap(handle => {
         return from(
           (handle as ElementHandle<Node>).frame.waitForFunction(

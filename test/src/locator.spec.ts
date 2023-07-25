@@ -540,6 +540,67 @@ describe('Locator', function () {
     });
   });
 
+  describe('Locator.prototype.map', () => {
+    it('should work', async () => {
+      const {page} = await getTestState();
+      await page.setContent(`<div>test</div>`);
+      await expect(
+        page
+          .locator('::-p-text(test)')
+          .map(element => {
+            return element.getAttribute('clickable');
+          })
+          .wait()
+      ).resolves.toEqual(null);
+      await page.evaluate(() => {
+        document.querySelector('div')?.setAttribute('clickable', 'true');
+      });
+      await expect(
+        page
+          .locator('::-p-text(test)')
+          .map(element => {
+            return element.getAttribute('clickable');
+          })
+          .wait()
+      ).resolves.toEqual('true');
+    });
+    it('should work with throws', async () => {
+      const {page} = await getTestState();
+      await page.setContent(`<div>test</div>`);
+      const result = page
+        .locator('::-p-text(test)')
+        .map(element => {
+          const clickable = element.getAttribute('clickable');
+          if (!clickable) {
+            throw new Error('Missing `clickable` as an attribute');
+          }
+          return clickable;
+        })
+        .wait();
+      await page.evaluate(() => {
+        document.querySelector('div')?.setAttribute('clickable', 'true');
+      });
+      await expect(result).resolves.toEqual('true');
+    });
+    it('should work with expect', async () => {
+      const {page} = await getTestState();
+      await page.setContent(`<div>test</div>`);
+      const result = page
+        .locator('::-p-text(test)')
+        .expect(element => {
+          return element.getAttribute('clickable') !== null;
+        })
+        .map(element => {
+          return element.getAttribute('clickable');
+        })
+        .wait();
+      await page.evaluate(() => {
+        document.querySelector('div')?.setAttribute('clickable', 'true');
+      });
+      await expect(result).resolves.toEqual('true');
+    });
+  });
+
   describe('Locator.prototype.expect', () => {
     it('should resolve as soon as the predicate matches', async () => {
       const clock = sinon.useFakeTimers({
