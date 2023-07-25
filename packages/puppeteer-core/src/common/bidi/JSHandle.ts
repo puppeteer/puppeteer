@@ -115,12 +115,9 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
   }
 
   override async jsonValue(): Promise<T> {
-    const value = BidiSerializer.deserialize(this.#remoteValue);
-
-    if (this.#remoteValue.type !== 'undefined' && value === undefined) {
-      throw new Error('Could not serialize referenced object');
-    }
-    return value;
+    return await this.evaluate(value => {
+      return value;
+    });
   }
 
   override asElement(): ElementHandle<Node> | null {

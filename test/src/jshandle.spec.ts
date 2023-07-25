@@ -163,7 +163,7 @@ describe('JSHandle', function () {
       expect(date).toBeInstanceOf(Date);
       expect(date.toISOString()).toEqual('2017-09-26T00:00:00.000Z');
     });
-    it('should throw for circular objects', async () => {
+    it('should not throw for circular objects', async () => {
       const {page} = await getTestState();
 
       const handle = await page.evaluateHandle(() => {
@@ -171,11 +171,7 @@ describe('JSHandle', function () {
         t.t = t;
         return t;
       });
-      let error!: Error;
-      await handle.jsonValue().catch(error_ => {
-        return (error = error_);
-      });
-      expect(error.message).toContain('Could not serialize referenced object');
+      await handle.jsonValue();
     });
   });
 

@@ -636,6 +636,26 @@ export abstract class Locator<T> extends EventEmitter {
   abstract _wait(options?: Readonly<ActionOptions>): Observable<HandleFor<T>>;
 
   /**
+   * Waits for the locator to get the serialized value from the page.
+   *
+   * Note this requires the value to be JSON-serializable.
+   *
+   * @public
+   */
+  async wait(options?: Readonly<ActionOptions>): Promise<T> {
+    const handle = await firstValueFrom(
+      this._wait(options).pipe(
+        this.operators.retryAndRaceWithSignalAndTimer(options?.signal)
+      )
+    );
+    try {
+      return await handle.jsonValue();
+    } finally {
+      void handle.dispose().catch(debugError);
+    }
+  }
+
+  /**
    * Creates an expectation that is evaluated against located values.
    *
    * If the expectations do not match, then the locator will retry.
