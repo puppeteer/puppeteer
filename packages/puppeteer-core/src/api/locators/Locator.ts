@@ -48,6 +48,8 @@ import {
   Action,
   AwaitedLocator,
   ExpectedLocator,
+  MappedLocator,
+  Mapper,
   Predicate,
   RaceLocator,
 } from './locators.js';
@@ -653,6 +655,15 @@ export abstract class Locator<T> extends EventEmitter {
     } finally {
       void handle.dispose().catch(debugError);
     }
+  }
+
+  /**
+   * Maps the locator using the provided mapper.
+   *
+   * @public
+   */
+  map<To>(mapper: Mapper<T, To>): Locator<To> {
+    return new MappedLocator(this, mapper);
   }
 
   /**
