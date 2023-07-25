@@ -569,4 +569,21 @@ describe('Locator', function () {
       }
     });
   });
+
+  describe('Locator.prototype.wait', () => {
+    it('should work', async () => {
+      const {page} = await getTestState();
+      page.setContent(`
+        <script>
+          setTimeout(() => {
+            const element = document.createElement("div");
+            element.innerText = "test2"
+            document.body.append(element);
+          }, 50);
+        </script>
+      `);
+      // This shouldn't throw.
+      await page.locator('div').wait();
+    });
+  });
 });

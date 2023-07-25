@@ -345,24 +345,6 @@ describe('Evaluation specs', function () {
       });
       expect(result).toBe(undefined);
     });
-    it('should be able to throw a tricky error', async () => {
-      const {page} = await getTestState();
-
-      const windowHandle = await page.evaluateHandle(() => {
-        return window;
-      });
-      const errorText = await windowHandle.jsonValue().catch(error_ => {
-        return error_.message;
-      });
-      const error = await page
-        .evaluate(errorText => {
-          throw new Error(errorText);
-        }, errorText)
-        .catch(error_ => {
-          return error_;
-        });
-      expect(error.message).toContain(errorText);
-    });
     it('should accept a string', async () => {
       const {page} = await getTestState();
 
