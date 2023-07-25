@@ -4,7 +4,7 @@ sidebar_label: Frame.locator
 
 # Frame.locator() method
 
-Creates a locator for the provided `selector`. See [Locator](./puppeteer.locator.md) for details and supported actions.
+Creates a locator for the provided function. See [Locator](./puppeteer.locator.md) for details and supported actions.
 
 #### Signature:
 

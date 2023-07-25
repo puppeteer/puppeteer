@@ -647,4 +647,34 @@ describe('Locator', function () {
       await page.locator('div').wait();
     });
   });
+
+  describe('FunctionLocator', () => {
+    it('should work', async () => {
+      const {page} = await getTestState();
+      const result = page
+        .locator(() => {
+          return new Promise<boolean>(resolve => {
+            return setTimeout(() => {
+              return resolve(true);
+            }, 100);
+          });
+        })
+        .wait();
+      await expect(result).resolves.toEqual(true);
+    });
+    it('should work with actions', async () => {
+      const {page} = await getTestState();
+      await page.setContent(`<div onclick="window.clicked = true">test</div>`);
+      await page
+        .locator(() => {
+          return document.getElementsByTagName('div')[0] as HTMLDivElement;
+        })
+        .click();
+      await expect(
+        page.evaluate(() => {
+          return (window as unknown as {clicked: boolean}).clicked;
+        })
+      ).resolves.toEqual(true);
+    });
+  });
 });

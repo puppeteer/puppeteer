@@ -20,3 +20,4 @@ export * from './FilteredLocator.js';
 export * from './RaceLocator.js';
 export * from './DelegatedLocator.js';
 export * from './MappedLocator.js';
+export * from './FunctionLocator.js';
