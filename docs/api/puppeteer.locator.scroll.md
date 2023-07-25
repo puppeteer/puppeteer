@@ -8,7 +8,7 @@ sidebar_label: Locator.scroll
 
 ```typescript
 class Locator {
-  abstract scroll<ElementType extends Element>(
+  scroll<ElementType extends Element>(
     this: Locator<ElementType>,
     options?: Readonly<LocatorScrollOptions>
   ): Promise<void>;

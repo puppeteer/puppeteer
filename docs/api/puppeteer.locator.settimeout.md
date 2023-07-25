@@ -8,7 +8,7 @@ sidebar_label: Locator.setTimeout
 
 ```typescript
 class Locator {
-  abstract setTimeout(timeout: number): this;
+  setTimeout(timeout: number): this;
 }
 ```
 

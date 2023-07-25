@@ -8,16 +8,20 @@ sidebar_label: Locator.setWaitForStableBoundingBox
 
 ```typescript
 class Locator {
-  abstract setWaitForStableBoundingBox(value: boolean): this;
+  setWaitForStableBoundingBox<ElementType extends Element>(
+    this: Locator<ElementType>,
+    value: boolean
+  ): Locator<ElementType>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type    | Description |
-| --------- | ------- | ----------- |
-| value     | boolean |             |
+| Parameter | Type                                                 | Description |
+| --------- | ---------------------------------------------------- | ----------- |
+| this      | [Locator](./puppeteer.locator.md)&lt;ElementType&gt; |             |
+| value     | boolean                                              |             |
 
 **Returns:**
 
-this
+[Locator](./puppeteer.locator.md)&lt;ElementType&gt;

@@ -8,7 +8,7 @@ sidebar_label: Locator.click
 
 ```typescript
 class Locator {
-  abstract click<ElementType extends Element>(
+  click<ElementType extends Element>(
     this: Locator<ElementType>,
     options?: Readonly<LocatorClickOptions>
   ): Promise<void>;

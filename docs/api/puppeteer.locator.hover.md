@@ -8,7 +8,7 @@ sidebar_label: Locator.hover
 
 ```typescript
 class Locator {
-  abstract hover<ElementType extends Element>(
+  hover<ElementType extends Element>(
     this: Locator<ElementType>,
     options?: Readonly<ActionOptions>
   ): Promise<void>;

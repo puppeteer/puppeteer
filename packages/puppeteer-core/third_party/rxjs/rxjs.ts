@@ -13,8 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export * from './Locator.js';
-export * from './NodeLocator.js';
-export * from './ExpectedLocator.js';
-export * from './RaceLocator.js';
+export {
+  catchError,
+  defaultIfEmpty,
+  filter,
+  first,
+  ignoreElements,
+  map,
+  mergeMap,
+  raceWith,
+  retry,
+  tap,
+  throwIfEmpty,
+  firstValueFrom,
+  defer,
+  EMPTY,
+  from,
+  fromEvent,
+  merge,
+  race,
+  timer,
+  OperatorFunction,
+  identity,
+  noop,
+  pipe,
+  Observable,
+} from 'rxjs';
