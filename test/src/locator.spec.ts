@@ -647,4 +647,29 @@ describe('Locator', function () {
       await page.locator('div').wait();
     });
   });
+
+  describe('Locator.prototype.clone', () => {
+    it('should work', async () => {
+      const {page} = await getTestState();
+      const locator = page.locator('div');
+      const clone = locator.clone();
+      expect(locator).not.toStrictEqual(clone);
+    });
+    it('should work internally with delegated locators', async () => {
+      const {page} = await getTestState();
+      const locator = page.locator('div');
+      const delegatedLocators = [
+        locator.map(div => {
+          return div.textContent;
+        }),
+        locator.filter(div => {
+          return div.textContent?.length === 0;
+        }),
+      ];
+      for (let delegatedLocator of delegatedLocators) {
+        delegatedLocator = delegatedLocator.setTimeout(500);
+        expect(delegatedLocator.timeout).not.toStrictEqual(locator.timeout);
+      }
+    });
+  });
 });

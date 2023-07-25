@@ -36,6 +36,12 @@ export class MappedLocator<From, To> extends DelegatedLocator<From, To> {
     this.#mapper = mapper;
   }
 
+  override _clone(): MappedLocator<From, To> {
+    return new MappedLocator(this.delegate.clone(), this.#mapper).copyOptions(
+      this
+    );
+  }
+
   override _wait(options?: Readonly<ActionOptions>): Observable<HandleFor<To>> {
     return this.delegate._wait(options).pipe(
       mergeMap(handle => {
