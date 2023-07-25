@@ -21,12 +21,14 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {
   Browser as BrowserBase,
   BrowserCloseCallback,
+  BrowserContextEmittedEvents,
   BrowserContextOptions,
   BrowserEmittedEvents,
 } from '../../api/Browser.js';
 import {BrowserContext as BrowserContextBase} from '../../api/BrowserContext.js';
 import {Page} from '../../api/Page.js';
 import {Target} from '../../api/Target.js';
+import {Handler} from '../EventEmitter.js';
 import {Viewport} from '../PuppeteerViewport.js';
 
 import {BrowserContext} from './BrowserContext.js';
@@ -104,6 +106,14 @@ export class Browser extends BrowserBase {
   #defaultViewport: Viewport | null;
   #defaultContext: BrowserContext;
   #targets = new Map<string, BiDiTarget>();
+  #contexts: BrowserContext[] = [];
+
+  #connectionEventHandlers = new Map<string, Handler<any>>([
+    ['browsingContext.contextCreated', this.#onContextCreated.bind(this)],
+    ['browsingContext.contextDestroyed', this.#onContextDestroyed.bind(this)],
+    ['browsingContext.fragmentNavigated', this.#onContextNavigation.bind(this)],
+    ['browsingContext.navigationStarted', this.#onContextNavigation.bind(this)],
+  ]) as Map<Bidi.BrowsingContext.EventNames, Handler>;
 
   constructor(
     opts: Options & {
@@ -127,34 +137,50 @@ export class Browser extends BrowserBase {
       defaultViewport: this.#defaultViewport,
       isDefault: true,
     });
-    this.#connection.on(
-      'browsingContext.contextCreated',
-      this.#onContextCreated
-    );
-    this.#connection.on(
-      'browsingContext.contextDestroyed',
-      this.#onContextDestroyed
-    );
+    this.#contexts.push(this.#defaultContext);
+
+    for (const [eventName, handler] of this.#connectionEventHandlers) {
+      this.#connection.on(eventName, handler);
+    }
   }
 
-  #onContextCreated = (
-    event: Bidi.BrowsingContext.ContextCreatedEvent['params']
-  ) => {
+  #onContextNavigation(event: Bidi.BrowsingContext.NavigationInfo) {
+    const context = this.#connection.getBrowsingContext(event.context);
+    context.url = event.url;
+    const target = this.#targets.get(event.context);
+    if (target) {
+      this.emit(BrowserEmittedEvents.TargetChanged, target);
+      target
+        .browserContext()
+        .emit(BrowserContextEmittedEvents.TargetChanged, target);
+    }
+  }
+
+  #onContextCreated(event: Bidi.BrowsingContext.ContextCreatedEvent['params']) {
     const context = new BrowsingContext(this.#connection, event);
     this.#connection.registerBrowsingContexts(context);
     // TODO: once more browsing context types are supported, this should be
     // updated to support those. Currently, all top-level contexts are treated
     // as pages.
+    const browserContext = this.browserContexts().at(-1);
+    if (!browserContext) {
+      throw new Error('Missing browser contexts');
+    }
     const target = !context.parent
-      ? new BiDiPageTarget(this.defaultBrowserContext(), context)
-      : new BiDiTarget(this.defaultBrowserContext(), context);
+      ? new BiDiPageTarget(browserContext, context)
+      : new BiDiTarget(browserContext, context);
     this.#targets.set(event.context, target);
+
+    this.emit(BrowserEmittedEvents.TargetCreated, target);
+    target
+      .browserContext()
+      .emit(BrowserContextEmittedEvents.TargetCreated, target);
 
     if (context.parent) {
       const topLevel = this.#connection.getTopLevelContext(context.parent);
       topLevel.emit(BrowsingContextEmittedEvents.Created, context);
     }
-  };
+  }
 
   async #getTree(): Promise<void> {
     const {result} = await this.#connection.send('browsingContext.getTree', {});
@@ -163,9 +189,9 @@ export class Browser extends BrowserBase {
     }
   }
 
-  #onContextDestroyed = async (
+  async #onContextDestroyed(
     event: Bidi.BrowsingContext.ContextDestroyedEvent['params']
-  ) => {
+  ) {
     const context = this.#connection.getBrowsingContext(event.context);
     const topLevelContext = this.#connection.getTopLevelContext(event.context);
     topLevelContext.emit(BrowsingContextEmittedEvents.Destroyed, context);
@@ -173,7 +199,13 @@ export class Browser extends BrowserBase {
     const page = await target?.page();
     await page?.close().catch(debugError);
     this.#targets.delete(event.context);
-  };
+    if (target) {
+      this.emit(BrowserEmittedEvents.TargetDestroyed, target);
+      target
+        .browserContext()
+        .emit(BrowserContextEmittedEvents.TargetDestroyed, target);
+    }
+  }
 
   get connection(): Connection {
     return this.#connection;
@@ -184,14 +216,9 @@ export class Browser extends BrowserBase {
   }
 
   override async close(): Promise<void> {
-    this.#connection.off(
-      'browsingContext.contextDestroyed',
-      this.#onContextDestroyed
-    );
-    this.#connection.off(
-      'browsingContext.contextCreated',
-      this.#onContextCreated
-    );
+    for (const [eventName, handler] of this.#connectionEventHandlers) {
+      this.#connection.off(eventName, handler);
+    }
     if (this.#connection.closed) {
       return;
     }
@@ -213,10 +240,12 @@ export class Browser extends BrowserBase {
     _options?: BrowserContextOptions
   ): Promise<BrowserContextBase> {
     // TODO: implement incognito context https://github.com/w3c/webdriver-bidi/issues/289.
-    return new BrowserContext(this, {
+    const context = new BrowserContext(this, {
       defaultViewport: this.#defaultViewport,
       isDefault: false,
     });
+    this.#contexts.push(context);
+    return context;
   }
 
   override async version(): Promise<string> {
@@ -229,7 +258,19 @@ export class Browser extends BrowserBase {
    */
   override browserContexts(): BrowserContext[] {
     // TODO: implement incognito context https://github.com/w3c/webdriver-bidi/issues/289.
-    return [this.#defaultContext];
+    return this.#contexts;
+  }
+
+  async _closeContext(browserContext: BrowserContext): Promise<void> {
+    this.#contexts = this.#contexts.filter(c => {
+      return c !== browserContext;
+    });
+    for (const target of browserContext.targets()) {
+      const page = await target?.page();
+      await page?.close().catch(error => {
+        debugError(error);
+      });
+    }
   }
 
   /**

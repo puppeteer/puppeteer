@@ -24,12 +24,6 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[jshandle.spec] JSHandle JSHandle.jsonValue should not throw for circular objects",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs Custom queries *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -694,6 +688,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[jshandle.spec] JSHandle JSHandle.jsonValue should not throw for circular objects",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[jshandle.spec] JSHandle JSHandle.jsonValue should work with dates",

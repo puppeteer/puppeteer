@@ -156,6 +156,10 @@ export class BrowsingContext extends Realm {
     return this.#url;
   }
 
+  set url(value: string) {
+    this.#url = value;
+  }
+
   get id(): string {
     return this.#id;
   }
