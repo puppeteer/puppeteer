@@ -838,7 +838,7 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * Creates a locator for the provided function. See {@link Locator} for
+   * Creates a locator for the provided selector. See {@link Locator} for
    * details and supported actions.
    *
    * @remarks
