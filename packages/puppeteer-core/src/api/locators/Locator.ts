@@ -47,7 +47,7 @@ import {BoundingBox, ClickOptions, ElementHandle} from '../ElementHandle.js';
 import {
   Action,
   AwaitedLocator,
-  ExpectedLocator,
+  FilteredLocator,
   MappedLocator,
   Mapper,
   Predicate,
@@ -671,10 +671,10 @@ export abstract class Locator<T> extends EventEmitter {
    *
    * If the expectations do not match, then the locator will retry.
    *
-   * @internal
+   * @public
    */
-  expect<S extends T>(predicate: Predicate<T, S>): Locator<S> {
-    return new ExpectedLocator(this, predicate);
+  filter<S extends T>(predicate: Predicate<T, S>): Locator<S> {
+    return new FilteredLocator(this, predicate);
   }
 
   click<ElementType extends Element>(

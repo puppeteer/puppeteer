@@ -587,7 +587,7 @@ describe('Locator', function () {
       await page.setContent(`<div>test</div>`);
       const result = page
         .locator('::-p-text(test)')
-        .expect(element => {
+        .filter(element => {
           return element.getAttribute('clickable') !== null;
         })
         .map(element => {
@@ -601,7 +601,7 @@ describe('Locator', function () {
     });
   });
 
-  describe('Locator.prototype.expect', () => {
+  describe('Locator.prototype.filter', () => {
     it('should resolve as soon as the predicate matches', async () => {
       const clock = sinon.useFakeTimers({
         shouldClearNativeTimers: true,
@@ -612,10 +612,10 @@ describe('Locator', function () {
         const result = page
           .locator('::-p-text(test)')
           .setTimeout(5000)
-          .expect(async element => {
+          .filter(async element => {
             return element.getAttribute('clickable') === 'true';
           })
-          .expect(element => {
+          .filter(element => {
             return element.getAttribute('clickable') === 'true';
           })
           .hover();
