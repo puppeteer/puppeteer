@@ -1,9 +1,9 @@
 # Locators
 
-Locators is a new experimental API that combines `waitForSelector` and element
-actions in a single unit. In combination with additional precondition checks
-this allows locators to retry failed actions automatically leading to less flaky
-automation scripts.
+Locators is an innovative, experimental API that combines the functionalities of
+waiting and actions into a unified unit. With additional precondition checks, it
+enables automatic retries for failed actions, resulting in more reliable and
+less flaky automation scripts.
 
 :::note
 
@@ -12,7 +12,30 @@ in the Locators API.
 
 :::
 
-## Clicking an element
+## Use cases
+
+### Waiting for an element
+
+```ts
+await page.locator('button').wait();
+```
+
+The following preconditions are automatically checked:
+
+- Waits for the element to become
+  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible/) or hidden.
+
+### Waiting for a function
+
+```ts
+await page
+  .locator(() => {
+    return new Promise(resolve => setTimeout(resolve, 500));
+  })
+  .wait();
+```
+
+### Clicking an element
 
 ```ts
 await page.locator('button').click();
@@ -27,7 +50,25 @@ The following preconditions are automatically checked:
 - Waits for the element to have a stable bounding box over two consecutive
   animation frames.
 
-## Filling out an input
+### Clicking an element matching a criteria
+
+```ts
+await page
+  .locator('button')
+  .filter(button => !button.disabled)
+  .click();
+```
+
+The following preconditions are automatically checked:
+
+- Ensures the element is in the viewport.
+- Waits for the element to become
+  [visible](https://pptr.dev/api/puppeteer.elementhandle.isvisible/) or hidden.
+- Waits for the element to become enabled.
+- Waits for the element to have a stable bounding box over two consecutive
+  animation frames.
+
+### Filling out an input
 
 ```ts
 await page.locator('input').fill('value');
@@ -44,7 +85,16 @@ The following preconditions are automatically checked:
 - Waits for the element to have a stable bounding box over two consecutive
   animation frames.
 
-## Hover over an element
+### Retrieving an element property
+
+```ts
+const enabled = await page
+  .locator('button')
+  .map(button => !button.disabled)
+  .wait();
+```
+
+### Hover over an element
 
 ```ts
 await page.locator('div').hover();
@@ -58,7 +108,7 @@ The following preconditions are automatically checked:
 - Waits for the element to have a stable bounding box over two consecutive
   animation frames.
 
-## Scroll an element
+### Scroll an element
 
 ```ts
 await page.locator('div').scroll({
