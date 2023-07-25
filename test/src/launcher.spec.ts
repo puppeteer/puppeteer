@@ -25,7 +25,12 @@ import {Page} from 'puppeteer-core/internal/api/Page.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 import sinon from 'sinon';
 
-import {getTestState, itOnlyRegularInstall, launch} from './mocha-utils.js';
+import {
+  getTestState,
+  itOnlyRegularInstall,
+  launch,
+  isHeadless,
+} from './mocha-utils.js';
 import {dumpFrames, waitEvent} from './utils.js';
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
@@ -331,7 +336,9 @@ describe('Launcher specs', function () {
         } catch {}
       });
       it('should return the default arguments', async () => {
-        const {isChrome, isFirefox, puppeteer} = await getTestState();
+        const {isChrome, isFirefox, puppeteer} = await getTestState({
+          skipLaunch: true,
+        });
 
         if (isChrome) {
           expect(puppeteer.defaultArgs()).toContain('--no-first-run');
@@ -371,7 +378,9 @@ describe('Launcher specs', function () {
         }
       });
       it('should report the correct product', async () => {
-        const {isChrome, isFirefox, puppeteer} = await getTestState();
+        const {isChrome, isFirefox, puppeteer} = await getTestState({
+          skipLaunch: true,
+        });
         if (isChrome) {
           expect(puppeteer.product).toBe('chrome');
         } else if (isFirefox) {
@@ -476,10 +485,9 @@ describe('Launcher specs', function () {
         }
       });
       it('should pass the timeout parameter to browser.waitForTarget', async () => {
-        const {defaultBrowserOptions} = await getTestState();
-        const options = Object.assign({}, defaultBrowserOptions, {
+        const options = {
           timeout: 1,
-        });
+        };
         let error!: Error;
         await launch(options).catch(error_ => {
           return (error = error_);
@@ -547,42 +555,42 @@ describe('Launcher specs', function () {
         }
       });
       it('should not allow setting debuggingPort and pipe', async () => {
-        const {defaultBrowserOptions} = await getTestState();
-
-        const options = Object.assign({}, defaultBrowserOptions, {
+        const options = {
           defaultViewport: null,
           debuggingPort: 9999,
           pipe: true,
-        });
-
+        };
         let error!: Error;
         await launch(options).catch(error_ => {
           return (error = error_);
         });
         expect(error.message).toContain('either pipe or debugging port');
       });
-      it('should launch Chrome properly with --no-startup-window and waitForInitialPage=false', async () => {
-        const {defaultBrowserOptions} = await getTestState({
-          skipLaunch: true,
-        });
-        const options = {
-          waitForInitialPage: false,
-          // This is needed to prevent Puppeteer from adding an initial blank page.
-          // See also https://github.com/puppeteer/puppeteer/blob/ad6b736039436fcc5c0a262e5b575aa041427be3/src/node/Launcher.ts#L200
-          ignoreDefaultArgs: true,
-          ...defaultBrowserOptions,
-          args: ['--no-startup-window'],
-        };
-        const {browser, close} = await launch(options, {
-          createContext: false,
-        });
-        try {
-          const pages = await browser.pages();
-          expect(pages).toHaveLength(0);
-        } finally {
-          await close();
+      (!isHeadless ? it : it.skip)(
+        'should launch Chrome properly with --no-startup-window and waitForInitialPage=false',
+        async () => {
+          const {defaultBrowserOptions} = await getTestState({
+            skipLaunch: true,
+          });
+          const options = {
+            waitForInitialPage: false,
+            // This is needed to prevent Puppeteer from adding an initial blank page.
+            // See also https://github.com/puppeteer/puppeteer/blob/ad6b736039436fcc5c0a262e5b575aa041427be3/src/node/Launcher.ts#L200
+            ignoreDefaultArgs: true,
+            ...defaultBrowserOptions,
+            args: ['--no-startup-window'],
+          };
+          const {browser, close} = await launch(options, {
+            createContext: false,
+          });
+          try {
+            const pages = await browser.pages();
+            expect(pages).toHaveLength(0);
+          } finally {
+            await close();
+          }
         }
-      });
+      );
     });
 
     describe('Puppeteer.launch', function () {
@@ -861,14 +869,18 @@ describe('Launcher specs', function () {
     });
     describe('Puppeteer.executablePath', function () {
       itOnlyRegularInstall('should work', async () => {
-        const {puppeteer} = await getTestState();
+        const {puppeteer} = await getTestState({
+          skipLaunch: true,
+        });
 
         const executablePath = puppeteer.executablePath();
         expect(fs.existsSync(executablePath)).toBe(true);
         expect(fs.realpathSync(executablePath)).toBe(executablePath);
       });
       it('returns executablePath for channel', async () => {
-        const {puppeteer} = await getTestState();
+        const {puppeteer} = await getTestState({
+          skipLaunch: true,
+        });
 
         const executablePath = puppeteer.executablePath('chrome');
         expect(executablePath).toBeTruthy();
@@ -877,7 +889,9 @@ describe('Launcher specs', function () {
         const sandbox = sinon.createSandbox();
 
         beforeEach(async () => {
-          const {puppeteer} = await getTestState();
+          const {puppeteer} = await getTestState({
+            skipLaunch: true,
+          });
           sandbox
             .stub(puppeteer.configuration, 'executablePath')
             .value('SOME_CUSTOM_EXECUTABLE');
@@ -888,7 +902,9 @@ describe('Launcher specs', function () {
         });
 
         it('its value is used', async () => {
-          const {puppeteer} = await getTestState();
+          const {puppeteer} = await getTestState({
+            skipLaunch: true,
+          });
           try {
             puppeteer.executablePath();
           } catch (error) {
