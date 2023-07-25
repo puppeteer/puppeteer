@@ -37,7 +37,7 @@ export type Predicate<From, To extends From = From> =
 /**
  * @internal
  */
-export class ExpectedLocator<From, To extends From> extends DelegatedLocator<
+export class FilteredLocator<From, To extends From> extends DelegatedLocator<
   From,
   To
 > {
