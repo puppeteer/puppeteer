@@ -25,42 +25,21 @@ import {Page} from './Page.js';
 
 export class BiDiTarget extends Target {
   protected _browserContext: BrowserContext;
-  protected _browsingContext: BrowsingContext;
 
-  constructor(
-    browserContext: BrowserContext,
-    browsingContext: BrowsingContext
-  ) {
+  constructor(browserContext: BrowserContext) {
     super();
-
     this._browserContext = browserContext;
-    this._browsingContext = browsingContext;
   }
 
   override async worker(): Promise<WebWorker | null> {
     return null;
   }
 
-  override url(): string {
-    return this._browsingContext.url;
-  }
-
-  /**
-   * Identifies what kind of target this is.
-   *
-   * @remarks
-   *
-   * See {@link https://developer.chrome.com/extensions/background_pages | docs} for more info about background pages.
-   */
-  override type(): TargetType {
-    return TargetType.PAGE;
-  }
-
   /**
    * Get the browser the target belongs to.
    */
   override browser(): Browser {
-    throw new Error('Not implemented');
+    return this._browserContext.browser();
   }
 
   /**
@@ -80,6 +59,39 @@ export class BiDiTarget extends Target {
   _setBrowserContext(browserContext: BrowserContext): void {
     this._browserContext = browserContext;
   }
+}
+
+/**
+ * @internal
+ */
+export class BiDiBrowserTarget extends BiDiTarget {
+  override url(): string {
+    return '';
+  }
+
+  override type(): TargetType {
+    return TargetType.BROWSER;
+  }
+}
+
+/**
+ * @internal
+ */
+export class BiDiBrowsingContextTarget extends BiDiTarget {
+  protected _browsingContext: BrowsingContext;
+
+  constructor(
+    browserContext: BrowserContext,
+    browsingContext: BrowsingContext
+  ) {
+    super(browserContext);
+
+    this._browsingContext = browsingContext;
+  }
+
+  override url(): string {
+    return this._browsingContext.url;
+  }
 
   /**
    * Creates a Chrome Devtools Protocol session attached to the target.
@@ -94,12 +106,23 @@ export class BiDiTarget extends Target {
     );
     return new CDPSessionWrapper(this._browsingContext, sessionId);
   }
+
+  /**
+   * Identifies what kind of target this is.
+   *
+   * @remarks
+   *
+   * See {@link https://developer.chrome.com/extensions/background_pages | docs} for more info about background pages.
+   */
+  override type(): TargetType {
+    return TargetType.PAGE;
+  }
 }
 
 /**
  * @internal
  */
-export class BiDiPageTarget extends BiDiTarget {
+export class BiDiPageTarget extends BiDiBrowsingContextTarget {
   #page: Page;
 
   constructor(
