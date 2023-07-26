@@ -22,7 +22,6 @@ import {Viewport} from '../PuppeteerViewport.js';
 import {Browser} from './Browser.js';
 import {Connection} from './Connection.js';
 import {Page} from './Page.js';
-import {debugError} from './utils.js';
 
 interface BrowserContextOptions {
   defaultViewport: Viewport | null;
@@ -98,12 +97,7 @@ export class BrowserContext extends BrowserContextBase {
       throw new Error('Default context cannot be closed!');
     }
 
-    for (const target of this.targets()) {
-      const page = await target?.page();
-      await page?.close().catch(error => {
-        debugError(error);
-      });
-    }
+    await this.#browser._closeContext(this);
   }
 
   override browser(): Browser {
@@ -122,6 +116,6 @@ export class BrowserContext extends BrowserContextBase {
   }
 
   override isIncognito(): boolean {
-    return false;
+    return !this.#isDefault;
   }
 }
