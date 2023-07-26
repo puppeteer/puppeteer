@@ -48,13 +48,20 @@ export class FilteredLocator<From, To extends From> extends DelegatedLocator<
     this.#predicate = predicate;
   }
 
+  override _clone(): FilteredLocator<From, To> {
+    return new FilteredLocator(
+      this.delegate.clone(),
+      this.#predicate
+    ).copyOptions(this);
+  }
+
   override _wait(options?: Readonly<ActionOptions>): Observable<HandleFor<To>> {
     return this.delegate._wait(options).pipe(
       mergeMap(handle => {
         return from(
           (handle as ElementHandle<Node>).frame.waitForFunction(
             this.#predicate,
-            {signal: options?.signal, timeout: this.timeout},
+            {signal: options?.signal, timeout: this._timeout},
             handle
           )
         ).pipe(

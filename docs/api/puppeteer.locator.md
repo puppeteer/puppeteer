@@ -16,15 +16,17 @@ export declare abstract class Locator<T> extends EventEmitter
 
 ## Properties
 
-| Property | Modifiers             | Type | Description                                                  |
-| -------- | --------------------- | ---- | ------------------------------------------------------------ |
-| \_       | <code>optional</code> | T    | Used for nominally typing [Locator](./puppeteer.locator.md). |
+| Property | Modifiers             | Type   | Description                                                  |
+| -------- | --------------------- | ------ | ------------------------------------------------------------ |
+| \_       | <code>optional</code> | T      | Used for nominally typing [Locator](./puppeteer.locator.md). |
+| timeout  | <code>readonly</code> | number |                                                              |
 
 ## Methods
 
 | Method                                                                                                 | Modifiers           | Description                                                                                                                                                                                                                              |
 | ------------------------------------------------------------------------------------------------------ | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [click(this, options)](./puppeteer.locator.click.md)                                                   |                     |                                                                                                                                                                                                                                          |
+| [clone()](./puppeteer.locator.clone.md)                                                                |                     | Clones the locator.                                                                                                                                                                                                                      |
 | [fill(this, value, options)](./puppeteer.locator.fill.md)                                              |                     | Fills out the input identified by the locator using the provided value. The type of the input is determined at runtime and the appropriate fill-out method is chosen based on the type. contenteditable, selector, inputs are supported. |
 | [filter(predicate)](./puppeteer.locator.filter.md)                                                     |                     | <p>Creates an expectation that is evaluated against located values.</p><p>If the expectations do not match, then the locator will retry.</p>                                                                                             |
 | [hover(this, options)](./puppeteer.locator.hover.md)                                                   |                     |                                                                                                                                                                                                                                          |

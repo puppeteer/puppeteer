@@ -178,7 +178,7 @@ export abstract class Locator<T> extends EventEmitter {
   /**
    * @internal
    */
-  protected timeout = 30_000;
+  protected _timeout = 30_000;
   #ensureElementIsInTheViewport = true;
   #waitForEnabled = true;
   #waitForStableBoundingBox = true;
@@ -212,12 +212,12 @@ export abstract class Locator<T> extends EventEmitter {
           )
         );
       }
-      if (this.timeout > 0) {
+      if (this._timeout > 0) {
         candidates.push(
-          timer(this.timeout).pipe(
+          timer(this._timeout).pipe(
             map(() => {
               throw new TimeoutError(
-                `Timed out after waiting ${this.timeout}ms`
+                `Timed out after waiting ${this._timeout}ms`
               );
             })
           )
@@ -229,6 +229,11 @@ export abstract class Locator<T> extends EventEmitter {
       );
     },
   };
+
+  // Determines when the locator will timeout for actions.
+  get timeout(): number {
+    return this._timeout;
+  }
 
   override on<K extends keyof LocatorEventObject>(
     eventName: K,
@@ -251,48 +256,53 @@ export abstract class Locator<T> extends EventEmitter {
     return super.off(eventName, handler);
   }
 
-  setTimeout(timeout: number): this {
-    this.timeout = timeout;
-    return this;
+  setTimeout(timeout: number): Locator<T> {
+    const locator = this._clone();
+    locator._timeout = timeout;
+    return locator;
   }
 
   setVisibility<NodeType extends Node>(
     this: Locator<NodeType>,
     visibility: VisibilityOption
   ): Locator<NodeType> {
-    this.visibility = visibility;
-    return this;
+    const locator = this._clone();
+    locator.visibility = visibility;
+    return locator;
   }
 
   setWaitForEnabled<NodeType extends Node>(
     this: Locator<NodeType>,
     value: boolean
   ): Locator<NodeType> {
-    this.#waitForEnabled = value;
-    return this;
+    const locator = this._clone();
+    locator.#waitForEnabled = value;
+    return locator;
   }
 
   setEnsureElementIsInTheViewport<ElementType extends Element>(
     this: Locator<ElementType>,
     value: boolean
   ): Locator<ElementType> {
-    this.#ensureElementIsInTheViewport = value;
-    return this;
+    const locator = this._clone();
+    locator.#ensureElementIsInTheViewport = value;
+    return locator;
   }
 
   setWaitForStableBoundingBox<ElementType extends Element>(
     this: Locator<ElementType>,
     value: boolean
   ): Locator<ElementType> {
-    this.#waitForStableBoundingBox = value;
-    return this;
+    const locator = this._clone();
+    locator.#waitForStableBoundingBox = value;
+    return locator;
   }
 
   /**
    * @internal
    */
-  copyOptions(locator: Locator<any>): this {
-    this.timeout = locator.timeout;
+  copyOptions<T>(locator: Locator<T>): this {
+    this._timeout = locator._timeout;
     this.visibility = locator.visibility;
     this.#waitForEnabled = locator.#waitForEnabled;
     this.#ensureElementIsInTheViewport = locator.#ensureElementIsInTheViewport;
@@ -320,7 +330,7 @@ export abstract class Locator<T> extends EventEmitter {
           return true;
         },
         {
-          timeout: this.timeout,
+          timeout: this._timeout,
           signal,
         },
         handle
@@ -635,7 +645,19 @@ export abstract class Locator<T> extends EventEmitter {
   /**
    * @internal
    */
+  abstract _clone(): Locator<T>;
+
+  /**
+   * @internal
+   */
   abstract _wait(options?: Readonly<ActionOptions>): Observable<HandleFor<T>>;
+
+  /**
+   * Clones the locator.
+   */
+  clone(): Locator<T> {
+    return this._clone();
+  }
 
   /**
    * Waits for the locator to get the serialized value from the page.
@@ -663,7 +685,7 @@ export abstract class Locator<T> extends EventEmitter {
    * @public
    */
   map<To>(mapper: Mapper<T, To>): Locator<To> {
-    return new MappedLocator(this, mapper);
+    return new MappedLocator(this._clone(), mapper);
   }
 
   /**
@@ -674,7 +696,7 @@ export abstract class Locator<T> extends EventEmitter {
    * @public
    */
   filter<S extends T>(predicate: Predicate<T, S>): Locator<S> {
-    return new FilteredLocator(this, predicate);
+    return new FilteredLocator(this._clone(), predicate);
   }
 
   click<ElementType extends Element>(

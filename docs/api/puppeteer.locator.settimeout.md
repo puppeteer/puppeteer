@@ -8,7 +8,7 @@ sidebar_label: Locator.setTimeout
 
 ```typescript
 class Locator {
-  setTimeout(timeout: number): this;
+  setTimeout(timeout: number): Locator<T>;
 }
 ```
 
@@ -20,4 +20,4 @@ class Locator {
 
 **Returns:**
 
-this
+[Locator](./puppeteer.locator.md)&lt;T&gt;

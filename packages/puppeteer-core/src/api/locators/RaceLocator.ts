@@ -53,6 +53,14 @@ export class RaceLocator<T> extends Locator<T> {
     this.#locators = locators;
   }
 
+  override _clone(): RaceLocator<T> {
+    return new RaceLocator<T>(
+      this.#locators.map(locator => {
+        return locator.clone();
+      })
+    ).copyOptions(this);
+  }
+
   override _wait(options?: Readonly<ActionOptions>): Observable<HandleFor<T>> {
     return race(
       ...this.#locators.map(locator => {

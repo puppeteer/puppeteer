@@ -90,13 +90,19 @@ export class NodeLocator<T extends Node> extends Locator<T> {
     })().pipe(first(identity), retry({delay: RETRY_DELAY}), ignoreElements());
   };
 
-  _wait(options?: Readonly<ActionOptions>): Observable<HandleFor<T>> {
+  override _clone(): NodeLocator<T> {
+    return new NodeLocator<T>(this.#pageOrFrame, this.#selector).copyOptions(
+      this
+    );
+  }
+
+  override _wait(options?: Readonly<ActionOptions>): Observable<HandleFor<T>> {
     const signal = options?.signal;
     return defer(() => {
       return from(
         this.#pageOrFrame.waitForSelector(this.#selector, {
           visible: false,
-          timeout: this.timeout,
+          timeout: this._timeout,
           signal,
         }) as Promise<HandleFor<T> | null>
       );

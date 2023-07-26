@@ -22,7 +22,7 @@ import {Locator, VisibilityOption} from './locators.js';
 /**
  * @internal
  */
-export class DelegatedLocator<T, U> extends Locator<U> {
+export abstract class DelegatedLocator<T, U> extends Locator<U> {
   #delegate: Locator<T>;
 
   constructor(delegate: Locator<T>) {
@@ -36,49 +36,62 @@ export class DelegatedLocator<T, U> extends Locator<U> {
     return this.#delegate;
   }
 
-  override setTimeout(timeout: number): this {
-    super.setTimeout(timeout);
-    this.#delegate.setTimeout(timeout);
-    return this;
+  override setTimeout(timeout: number): DelegatedLocator<T, U> {
+    const locator = super.setTimeout(timeout) as DelegatedLocator<T, U>;
+    locator.#delegate = this.#delegate.setTimeout(timeout);
+    return locator;
   }
 
-  override setVisibility<T extends Node, U extends T>(
-    this: DelegatedLocator<T, U>,
+  override setVisibility<ValueType extends Node, NodeType extends Node>(
+    this: DelegatedLocator<ValueType, NodeType>,
     visibility: VisibilityOption
-  ): Locator<U> {
-    super.setVisibility(visibility);
-    this.#delegate.setVisibility(visibility);
-    return this;
+  ): DelegatedLocator<ValueType, NodeType> {
+    const locator = super.setVisibility<NodeType>(
+      visibility
+    ) as DelegatedLocator<ValueType, NodeType>;
+    locator.#delegate = locator.#delegate.setVisibility<ValueType>(visibility);
+    return locator;
   }
 
-  override setWaitForEnabled<T extends Node, U extends T>(
-    this: DelegatedLocator<T, U>,
+  override setWaitForEnabled<ValueType extends Node, NodeType extends Node>(
+    this: DelegatedLocator<ValueType, NodeType>,
     value: boolean
-  ): Locator<U> {
-    super.setWaitForEnabled(value);
-    this.#delegate.setWaitForEnabled(value);
-    return this;
+  ): DelegatedLocator<ValueType, NodeType> {
+    const locator = super.setWaitForEnabled<NodeType>(
+      value
+    ) as DelegatedLocator<ValueType, NodeType>;
+    locator.#delegate = this.#delegate.setWaitForEnabled(value);
+    return locator;
   }
 
-  override setEnsureElementIsInTheViewport<T extends Element, U extends T>(
-    this: DelegatedLocator<T, U>,
+  override setEnsureElementIsInTheViewport<
+    ValueType extends Element,
+    ElementType extends Element,
+  >(
+    this: DelegatedLocator<ValueType, ElementType>,
     value: boolean
-  ): Locator<U> {
-    super.setEnsureElementIsInTheViewport(value);
-    this.#delegate.setEnsureElementIsInTheViewport(value);
-    return this;
+  ): DelegatedLocator<ValueType, ElementType> {
+    const locator = super.setEnsureElementIsInTheViewport<ElementType>(
+      value
+    ) as DelegatedLocator<ValueType, ElementType>;
+    locator.#delegate = this.#delegate.setEnsureElementIsInTheViewport(value);
+    return locator;
   }
 
-  override setWaitForStableBoundingBox<T extends Element, U extends T>(
-    this: DelegatedLocator<T, U>,
+  override setWaitForStableBoundingBox<
+    ValueType extends Element,
+    ElementType extends Element,
+  >(
+    this: DelegatedLocator<ValueType, ElementType>,
     value: boolean
-  ): Locator<U> {
-    super.setWaitForStableBoundingBox(value);
-    this.#delegate.setWaitForStableBoundingBox(value);
-    return this;
+  ): DelegatedLocator<ValueType, ElementType> {
+    const locator = super.setWaitForStableBoundingBox<ElementType>(
+      value
+    ) as DelegatedLocator<ValueType, ElementType>;
+    locator.#delegate = this.#delegate.setWaitForStableBoundingBox(value);
+    return locator;
   }
 
-  override _wait(): Observable<HandleFor<U>> {
-    throw new Error('Not implemented');
-  }
+  abstract override _clone(): DelegatedLocator<T, U>;
+  abstract override _wait(): Observable<HandleFor<U>>;
 }
