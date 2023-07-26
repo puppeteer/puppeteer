@@ -156,9 +156,8 @@ function defaultProfilePreferences(
     // Do not warn when multiple tabs will be opened
     'browser.tabs.warnOnOpen': false,
 
-    // Disable page translations, which can cause issues with tests.
-    // See https://bugzilla.mozilla.org/show_bug.cgi?id=1836093.
-    'browser.translations.enable': false,
+    // Do not automatically offer translations, as tests do not expect this.
+    'browser.translations.automaticallyPopup': false,
 
     // Disable the UI tour.
     'browser.uitour.enabled': false,
