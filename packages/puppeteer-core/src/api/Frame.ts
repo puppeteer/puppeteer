@@ -28,6 +28,7 @@ import {
 import {LazyArg} from '../common/LazyArg.js';
 import {PuppeteerLifeCycleEvent} from '../common/LifecycleWatcher.js';
 import {
+  Awaitable,
   EvaluateFunc,
   EvaluateFuncWith,
   HandleFor,
@@ -39,7 +40,7 @@ import {TaskManager} from '../common/WaitTask.js';
 
 import {KeyboardTypeOptions} from './Input.js';
 import {JSHandle} from './JSHandle.js';
-import {Locator, NodeLocator} from './locators/locators.js';
+import {Locator, FunctionLocator, NodeLocator} from './locators/locators.js';
 
 /**
  * @internal
@@ -417,7 +418,7 @@ export class Frame {
   }
 
   /**
-   * Creates a locator for the provided `selector`. See {@link Locator} for
+   * Creates a locator for the provided selector. See {@link Locator} for
    * details and supported actions.
    *
    * @remarks
@@ -426,10 +427,26 @@ export class Frame {
    */
   locator<Selector extends string>(
     selector: Selector
-  ): Locator<NodeFor<Selector>> {
-    return NodeLocator.create(this, selector);
-  }
+  ): Locator<NodeFor<Selector>>;
 
+  /**
+   * Creates a locator for the provided function. See {@link Locator} for
+   * details and supported actions.
+   *
+   * @remarks
+   * Locators API is experimental and we will not follow semver for breaking
+   * change in the Locators API.
+   */
+  locator<Ret>(func: () => Awaitable<Ret>): Locator<Ret>;
+  locator<Selector extends string, Ret>(
+    selectorOrFunc: Selector | (() => Awaitable<Ret>)
+  ): Locator<NodeFor<Selector>> | Locator<Ret> {
+    if (typeof selectorOrFunc === 'string') {
+      return NodeLocator.create(this, selectorOrFunc);
+    } else {
+      return FunctionLocator.create(this, selectorOrFunc);
+    }
+  }
   /**
    * Queries the frame for an element matching the given selector.
    *
