@@ -648,6 +648,22 @@ describe('Locator', function () {
     });
   });
 
+  describe('Locator.prototype.waitHandle', () => {
+    it('should work', async () => {
+      const {page} = await getTestState();
+      page.setContent(`
+        <script>
+          setTimeout(() => {
+            const element = document.createElement("div");
+            element.innerText = "test2"
+            document.body.append(element);
+          }, 50);
+        </script>
+      `);
+      await expect(page.locator('div').waitHandle()).resolves.toBeDefined();
+    });
+  });
+
   describe('Locator.prototype.clone', () => {
     it('should work', async () => {
       const {page} = await getTestState();
