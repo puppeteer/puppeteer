@@ -324,10 +324,18 @@ export abstract class Locator<T> extends EventEmitter {
     return from(
       handle.frame.page().waitForFunction(
         element => {
-          if ('disabled' in element && typeof element.disabled === 'boolean') {
-            return !element.disabled;
+          if (!(element instanceof HTMLElement)) {
+            return true;
           }
-          return true;
+          const isNativeFormControl = [
+            'BUTTON',
+            'INPUT',
+            'SELECT',
+            'TEXTAREA',
+            'OPTION',
+            'OPTGROUP',
+          ].includes(element.nodeName);
+          return !isNativeFormControl || !element.hasAttribute('disabled');
         },
         {
           timeout: this._timeout,
