@@ -460,12 +460,15 @@ export class Page extends PageBase {
     options?: WaitForOptions
   ): Promise<HTTPResponse | null> {
     const [response] = await Promise.all([
-      this.waitForResponse(response => {
-        return (
-          response.request().isNavigationRequest() &&
-          response.url() === this.url()
-        );
-      }),
+      // TODO: not all reloads trigger a network request.
+      this.url() !== 'about:blank'
+        ? this.waitForResponse(response => {
+            return (
+              response.request().isNavigationRequest() &&
+              response.url() === this.url()
+            );
+          })
+        : null,
       this.mainFrame()
         .context()
         .reload({
@@ -552,8 +555,7 @@ export class Page extends PageBase {
     const needsReload = await this.#emulationManager.emulateViewport(viewport);
     this.#viewport = viewport;
     if (needsReload) {
-      // TODO: reload seems to hang in BiDi.
-      // await this.reload();
+      await this.reload();
     }
   }
 

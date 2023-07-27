@@ -18,6 +18,12 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[autofill.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["headless"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[chromiumonly.spec] Chromium-Specific Launcher tests *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -2052,12 +2058,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[emulation.spec] Emulation Page.viewport should detect touch when applying viewport with touches",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[emulation.spec] Emulation Page.viewport should get the proper viewport size",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
@@ -2073,7 +2073,7 @@
     "testIdPattern": "[emulation.spec] Emulation Page.viewport should support touch emulation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs \"after each\" hook for \"should transfer 100Mb of data from page to node.js\"",
