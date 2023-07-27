@@ -37,7 +37,12 @@ import {
   BrowsingContextEmittedEvents,
 } from './BrowsingContext.js';
 import {Connection} from './Connection.js';
-import {BiDiPageTarget, BiDiTarget} from './Target.js';
+import {
+  BiDiBrowserTarget,
+  BiDiBrowsingContextTarget,
+  BiDiPageTarget,
+  BiDiTarget,
+} from './Target.js';
 import {debugError} from './utils.js';
 
 /**
@@ -107,6 +112,7 @@ export class Browser extends BrowserBase {
   #defaultContext: BrowserContext;
   #targets = new Map<string, BiDiTarget>();
   #contexts: BrowserContext[] = [];
+  #browserTarget: BiDiBrowserTarget;
 
   #connectionEventHandlers = new Map<string, Handler<any>>([
     ['browsingContext.contextCreated', this.#onContextCreated.bind(this)],
@@ -137,6 +143,7 @@ export class Browser extends BrowserBase {
       defaultViewport: this.#defaultViewport,
       isDefault: true,
     });
+    this.#browserTarget = new BiDiBrowserTarget(this.#defaultContext);
     this.#contexts.push(this.#defaultContext);
 
     for (const [eventName, handler] of this.#connectionEventHandlers) {
@@ -168,7 +175,7 @@ export class Browser extends BrowserBase {
     }
     const target = !context.parent
       ? new BiDiPageTarget(browserContext, context)
-      : new BiDiTarget(browserContext, context);
+      : new BiDiBrowsingContextTarget(browserContext, context);
     this.#targets.set(event.context, target);
 
     this.emit(BrowserEmittedEvents.TargetCreated, target);
@@ -285,7 +292,7 @@ export class Browser extends BrowserBase {
   }
 
   override targets(): Target[] {
-    return Array.from(this.#targets.values());
+    return [this.#browserTarget, ...Array.from(this.#targets.values())];
   }
 
   _getTargetById(id: string): BiDiTarget {
@@ -294,6 +301,10 @@ export class Browser extends BrowserBase {
       throw new Error('Target not found');
     }
     return target;
+  }
+
+  override target(): Target {
+    return this.#browserTarget;
   }
 }
 

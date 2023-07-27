@@ -79,11 +79,16 @@ describe('Target', function () {
 
     const [otherPage] = await Promise.all([
       context
-        .waitForTarget(target => {
-          return target.page().then(page => {
-            return page!.url() === server.CROSS_PROCESS_PREFIX + '/empty.html';
-          });
-        })
+        .waitForTarget(
+          target => {
+            return target.page().then(page => {
+              return (
+                page!.url() === server.CROSS_PROCESS_PREFIX + '/empty.html'
+              );
+            });
+          },
+          {timeout: 3000}
+        )
         .then(target => {
           return target.page();
         }),
@@ -101,9 +106,12 @@ describe('Target', function () {
 
     const [otherPage] = await Promise.all([
       context
-        .waitForTarget(target => {
-          return target.url() === server.CROSS_PROCESS_PREFIX + '/empty.html';
-        })
+        .waitForTarget(
+          target => {
+            return target.url() === server.CROSS_PROCESS_PREFIX + '/empty.html';
+          },
+          {timeout: 3000}
+        )
         .then(target => {
           return target.page();
         }),
@@ -167,10 +175,14 @@ describe('Target', function () {
 
     await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
 
-    const target = await context.waitForTarget(target => {
-      return target.type() === 'service_worker';
-    });
+    const target = await context.waitForTarget(
+      target => {
+        return target.type() === 'service_worker';
+      },
+      {timeout: 3000}
+    );
     const worker = (await target.worker())!;
+
     expect(
       await worker.evaluate(() => {
         return self.toString();
@@ -184,9 +196,12 @@ describe('Target', function () {
     await page.evaluate(() => {
       new SharedWorker('data:text/javascript,console.log("hi")');
     });
-    const target = await context.waitForTarget(target => {
-      return target.type() === 'shared_worker';
-    });
+    const target = await context.waitForTarget(
+      target => {
+        return target.type() === 'shared_worker';
+      },
+      {timeout: 3000}
+    );
     const worker = (await target.worker())!;
     expect(
       await worker.evaluate(() => {
@@ -246,9 +261,12 @@ describe('Target', function () {
       server.waitForRequest('/one-style.css'),
     ]);
     // Connect to the opened page.
-    const target = await context.waitForTarget(target => {
-      return target.url().includes('one-style.html');
-    });
+    const target = await context.waitForTarget(
+      target => {
+        return target.url().includes('one-style.html');
+      },
+      {timeout: 3000}
+    );
     const newPage = (await target.page())!;
     // Issue a redirect.
     serverResponse.writeHead(302, {location: '/injectedstyle.css'});
@@ -278,9 +296,12 @@ describe('Target', function () {
       const {browser, server} = await getTestState();
 
       let resolved = false;
-      const targetPromise = browser.waitForTarget(target => {
-        return target.url() === server.EMPTY_PAGE;
-      });
+      const targetPromise = browser.waitForTarget(
+        target => {
+          return target.url() === server.EMPTY_PAGE;
+        },
+        {timeout: 3000}
+      );
       targetPromise
         .then(() => {
           return (resolved = true);

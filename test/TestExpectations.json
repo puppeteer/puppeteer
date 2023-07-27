@@ -3582,10 +3582,40 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[target.spec] Target Browser.targets should return all of the targets",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[target.spec] Target Browser.waitForTarget should timeout waiting for a non-existent target",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[target.spec] Target Browser.waitForTarget should wait for a target",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[target.spec] Target Browser.waitForTarget should wait for a target",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[target.spec] Target should be able to use async waitForTarget",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[target.spec] Target should contain browser target",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[target.spec] Target should create a worker from a service worker",
