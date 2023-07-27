@@ -35,23 +35,14 @@ export class BiDiTarget extends Target {
     return null;
   }
 
-  /**
-   * Get the browser the target belongs to.
-   */
   override browser(): Browser {
     return this._browserContext.browser();
   }
 
-  /**
-   * Get the browser context the target belongs to.
-   */
   override browserContext(): BrowserContext {
     return this._browserContext;
   }
 
-  /**
-   * Get the target that opened this target. Top-level targets return `null`.
-   */
   override opener(): Target | undefined {
     throw new Error('Not implemented');
   }
@@ -93,9 +84,6 @@ export class BiDiBrowsingContextTarget extends BiDiTarget {
     return this._browsingContext.url;
   }
 
-  /**
-   * Creates a Chrome Devtools Protocol session attached to the target.
-   */
   override async createCDPSession(): Promise<CDPSession> {
     const {sessionId} = await this._browsingContext.cdpSession.send(
       'Target.attachToTarget',
@@ -107,13 +95,6 @@ export class BiDiBrowsingContextTarget extends BiDiTarget {
     return new CDPSessionWrapper(this._browsingContext, sessionId);
   }
 
-  /**
-   * Identifies what kind of target this is.
-   *
-   * @remarks
-   *
-   * See {@link https://developer.chrome.com/extensions/background_pages | docs} for more info about background pages.
-   */
   override type(): TargetType {
     return TargetType.PAGE;
   }
