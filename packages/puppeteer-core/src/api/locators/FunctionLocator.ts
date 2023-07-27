@@ -51,6 +51,10 @@ export class FunctionLocator<T> extends Locator<T> {
     this.#func = func;
   }
 
+  override _clone(): FunctionLocator<T> {
+    return new FunctionLocator(this.#pageOrFrame, this.#func);
+  }
+
   _wait(options?: Readonly<ActionOptions>): Observable<HandleFor<T>> {
     const signal = options?.signal;
     return defer(() => {

@@ -1,7 +1,7 @@
 # Locators
 
-Locators is an innovative, experimental API that combines the functionalities of
-waiting and actions into a unified unit. With additional precondition checks, it
+Locators is a new, experimental API that combines the functionalities of
+waiting and actions. With additional precondition checks, it
 enables automatic retries for failed actions, resulting in more reliable and
 less flaky automation scripts.
 
@@ -30,7 +30,19 @@ The following preconditions are automatically checked:
 ```ts
 await page
   .locator(() => {
-    return new Promise(resolve => setTimeout(resolve, 500));
+    let resolve!: (node: HTMLCanvasElement) => void;
+    const promise = new Promise(res => {
+      return (resolve = res);
+    });
+    const observer = new MutationObserver(records => {
+      for (const record of records) {
+        if (record.target instanceof HTMLCanvasElement) {
+          resolve(record.target);
+        }
+      }
+    });
+    observer.observe(document);
+    return promise;
   })
   .wait();
 ```
