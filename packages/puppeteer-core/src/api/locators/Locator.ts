@@ -668,6 +668,19 @@ export abstract class Locator<T> extends EventEmitter {
   }
 
   /**
+   * Waits for the locator to get a handle from the page.
+   *
+   * @public
+   */
+  async waitHandle(options?: Readonly<ActionOptions>): Promise<HandleFor<T>> {
+    return await firstValueFrom(
+      this._wait(options).pipe(
+        this.operators.retryAndRaceWithSignalAndTimer(options?.signal)
+      )
+    );
+  }
+
+  /**
    * Waits for the locator to get the serialized value from the page.
    *
    * Note this requires the value to be JSON-serializable.
@@ -675,11 +688,7 @@ export abstract class Locator<T> extends EventEmitter {
    * @public
    */
   async wait(options?: Readonly<ActionOptions>): Promise<T> {
-    const handle = await firstValueFrom(
-      this._wait(options).pipe(
-        this.operators.retryAndRaceWithSignalAndTimer(options?.signal)
-      )
-    );
+    const handle = await this.waitHandle(options);
     try {
       return await handle.jsonValue();
     } finally {
