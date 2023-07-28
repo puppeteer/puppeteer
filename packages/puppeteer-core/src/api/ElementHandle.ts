@@ -1074,6 +1074,9 @@ export class ElementHandle<
   }
 }
 
+/**
+ * @public
+ */
 export interface AutofillData {
   creditCard: {
     // See https://chromedevtools.github.io/devtools-protocol/tot/Autofill/#type-CreditCard.

@@ -25,6 +25,7 @@ const FILENAME = __filename.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
 const parseStackTrace = (stack: string): string => {
   stack = stack.replace(new RegExp(FILENAME, 'g'), '<filename>');
   stack = stack.replace(/<filename>:(\d+):(\d+)/g, '<filename>:<line>:<col>');
+  stack = stack.replace(/<anonymous>:(\d+):(\d+)/g, '<anonymous>:<line>:<col>');
   return stack;
 };
 
@@ -51,7 +52,7 @@ describe('Stack trace', function () {
     ).toMatchObject({
       ...[
         'Error: Test',
-        'evaluate (evaluate at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:1:18)',
+        'evaluate (evaluate at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:<line>:<col>)',
       ],
     });
   });
@@ -75,7 +76,7 @@ describe('Stack trace', function () {
     ).toMatchObject({
       ...[
         'Error: Test',
-        'evaluateHandle (evaluateHandle at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:1:18)',
+        'evaluateHandle (evaluateHandle at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:<line>:<col>)',
       ],
     });
   });
@@ -104,8 +105,8 @@ describe('Stack trace', function () {
     ).toMatchObject({
       ...[
         'Error: Test',
-        'evaluateHandle (evaluateHandle at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:2:22)',
-        'evaluate (evaluate at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:1:12)',
+        'evaluateHandle (evaluateHandle at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:<line>:<col>)',
+        'evaluate (evaluate at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:<line>:<col>)',
       ],
     });
   });
@@ -141,11 +142,11 @@ describe('Stack trace', function () {
     ).toMatchObject({
       ...[
         'Error: Test',
-        'a (evaluate at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:2:22)',
-        'b (evaluate at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:5:16)',
-        'c (evaluate at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:8:16)',
-        'd (evaluate at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:11:16)',
-        'evaluate (evaluate at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:13:12)',
+        'a (evaluate at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:<line>:<col>)',
+        'b (evaluate at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:<line>:<col>)',
+        'c (evaluate at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:<line>:<col>)',
+        'd (evaluate at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:<line>:<col>)',
+        'evaluate (evaluate at Context.<anonymous> (<filename>:<line>:<col>), <anonymous>:<line>:<col>)',
       ],
     });
   });

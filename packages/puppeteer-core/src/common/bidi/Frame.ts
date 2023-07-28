@@ -227,6 +227,8 @@ export class Frame extends BaseFrame {
     ) as string;
 
     const [info] = await Promise.all([
+      // TODO(lightning00blade): Should also keep tack of
+      // navigationAborted and navigationFailed
       waitForEvent<Bidi.BrowsingContext.NavigationInfo>(
         this.#context,
         waitUntilEvent,
@@ -236,15 +238,26 @@ export class Frame extends BaseFrame {
         timeout,
         this.#abortDeferred.valueOrThrow()
       ),
-      waitForEvent(
-        this.#context,
-        Bidi.BrowsingContext.EventNames.FragmentNavigated,
-        () => {
-          return true;
-        },
-        timeout,
-        this.#abortDeferred.valueOrThrow()
-      ),
+      Deferred.race([
+        waitForEvent(
+          this.#context,
+          Bidi.ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+          () => {
+            return true;
+          },
+          timeout,
+          this.#abortDeferred.valueOrThrow()
+        ),
+        waitForEvent(
+          this.#context,
+          Bidi.ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
+          () => {
+            return true;
+          },
+          timeout,
+          this.#abortDeferred.valueOrThrow()
+        ),
+      ]),
     ]);
 
     return this.#page.getNavigationResponse(info.navigation);

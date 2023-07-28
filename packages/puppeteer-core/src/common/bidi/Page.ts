@@ -78,15 +78,18 @@ export class Page extends PageBase {
   #networkManager: NetworkManager;
   #viewport: Viewport | null = null;
   #closedDeferred = Deferred.create<TargetCloseError>();
-  #subscribedEvents = new Map<string, Handler<any>>([
+  #subscribedEvents = new Map<Bidi.Event['method'], Handler<any>>([
     ['log.entryAdded', this.#onLogEntryAdded.bind(this)],
     ['browsingContext.load', this.#onFrameLoaded.bind(this)],
     [
       'browsingContext.domContentLoaded',
       this.#onFrameDOMContentLoaded.bind(this),
     ],
-    ['browsingContext.fragmentNavigated', this.#onFrameNavigated.bind(this)],
-  ]) as Map<Bidi.Session.SubscriptionRequestEvent, Handler>;
+    [
+      'browsingContext.navigationStarted',
+      this.#onFrameNavigationStarted.bind(this),
+    ],
+  ]);
   #networkManagerEvents = new Map<symbol, Handler<any>>([
     [
       NetworkManagerEmittedEvents.Request,
@@ -252,19 +255,47 @@ export class Page extends PageBase {
         context.parent
       );
       this.#frameTree.addFrame(frame);
-      this.emit(PageEmittedEvents.FrameAttached, frame);
+      if (frame !== this.mainFrame()) {
+        this.emit(PageEmittedEvents.FrameAttached, frame);
+      }
     }
   }
 
-  async #onFrameNavigated(
+  async #onFrameNavigationStarted(
     info: Bidi.BrowsingContext.NavigationInfo
   ): Promise<void> {
     const frameId = info.context;
 
-    let frame = this.frame(frameId);
-    // Detach all child frames first.
+    const frame = this.frame(frameId);
+
     if (frame) {
-      frame = await this.#frameTree.waitForFrame(frameId);
+      // TODO: Investigate if a navigationCompleted event should be in Spec
+      const predicate = (
+        event: Bidi.BrowsingContext.DomContentLoaded['params']
+      ) => {
+        if (event.context === frame?._id) {
+          return true;
+        }
+        return false;
+      };
+
+      await Deferred.race([
+        waitForEvent(
+          this.#connection,
+          'browsingContext.domContentLoaded',
+          predicate,
+          0,
+          this.#closedDeferred.valueOrThrow()
+        ).catch(debugError),
+        waitForEvent(
+          this.#connection,
+          'browsingContext.fragmentNavigated',
+          predicate,
+          0,
+          this.#closedDeferred.valueOrThrow()
+        ).catch(debugError),
+      ]);
+
       this.emit(PageEmittedEvents.FrameNavigated, frame);
     }
   }
@@ -290,7 +321,7 @@ export class Page extends PageBase {
     this.emit(PageEmittedEvents.FrameDetached, frame);
   }
 
-  #onLogEntryAdded(event: Bidi.Log.LogEntry): void {
+  #onLogEntryAdded(event: Bidi.Log.Entry): void {
     const frame = this.frame(event.source.context);
     if (!frame) {
       return;
@@ -514,11 +545,12 @@ export class Page extends PageBase {
       landscape,
       width,
       height,
-      pageRanges,
+      pageRanges: ranges,
       scale,
       preferCSSPageSize,
       timeout,
     } = this._getPDFOptions(options, 'cm');
+    const pageRanges = ranges ? ranges.split(', ') : [];
     const {result} = await waitWithTimeout(
       this.#connection.send('browsingContext.print', {
         context: this.mainFrame()._id,
@@ -529,7 +561,7 @@ export class Page extends PageBase {
           width,
           height,
         },
-        pageRanges: pageRanges.split(', '),
+        pageRanges,
         scale,
         shrinkToFit: !preferCSSPageSize,
       }),
@@ -667,13 +699,13 @@ export class Page extends PageBase {
 }
 
 function isConsoleLogEntry(
-  event: Bidi.Log.LogEntry
+  event: Bidi.Log.Entry
 ): event is Bidi.Log.ConsoleLogEntry {
   return event.type === 'console';
 }
 
 function isJavaScriptLogEntry(
-  event: Bidi.Log.LogEntry
+  event: Bidi.Log.Entry
 ): event is Bidi.Log.JavascriptLogEntry {
   return event.type === 'javascript';
 }

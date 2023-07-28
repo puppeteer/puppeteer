@@ -145,7 +145,8 @@ export const setupTestBrowserHooks = (): void => {
           timeout: this.timeout() - 1_000,
         });
       }
-    } catch {
+    } catch (error) {
+      console.error(error);
       // Intentionally empty as `getTestState` will throw
       // if browser is not found
     }
@@ -459,7 +460,7 @@ const closeLaunched = (storage: Array<() => Promise<void>>) => {
 };
 
 export const launch = async (
-  launchOptions: PuppeteerLaunchOptions,
+  launchOptions: Readonly<PuppeteerLaunchOptions>,
   options: {
     after?: 'each' | 'all';
     createContext?: boolean;

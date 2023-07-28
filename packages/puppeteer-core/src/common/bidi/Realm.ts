@@ -114,7 +114,9 @@ export class Realm extends EventEmitter {
     );
 
     let responsePromise;
-    const resultOwnership = returnByValue ? 'none' : 'root';
+    const resultOwnership = returnByValue
+      ? Bidi.Script.ResultOwnership.None
+      : Bidi.Script.ResultOwnership.Root;
     if (isString(pageFunction)) {
       const expression = SOURCE_URL_REGEX.test(pageFunction)
         ? pageFunction
@@ -161,7 +163,7 @@ export class Realm extends EventEmitter {
  */
 export function getBidiHandle(
   realmOrContext: Realm,
-  result: Bidi.CommonDataTypes.RemoteValue,
+  result: Bidi.Script.RemoteValue,
   frame: Frame
 ): JSHandle | ElementHandle<Node> {
   if (result.type === 'node' || result.type === 'window') {

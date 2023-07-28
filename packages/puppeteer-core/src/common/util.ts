@@ -394,19 +394,19 @@ export async function waitForEvent<T>(
       deferred.resolve(event);
     }
   });
-  return Deferred.race<T | Error>([deferred, abortPromise]).then(
-    r => {
-      removeEventListeners([listener]);
-      if (isErrorLike(r)) {
-        throw r;
-      }
-      return r;
-    },
-    error => {
-      removeEventListeners([listener]);
-      throw error;
+
+  try {
+    const response = await Deferred.race<T | Error>([deferred, abortPromise]);
+    if (isErrorLike(response)) {
+      throw response;
     }
-  );
+
+    return response;
+  } catch (error) {
+    throw error;
+  } finally {
+    removeEventListeners([listener]);
+  }
 }
 
 /**

@@ -167,9 +167,6 @@ export function getExpectationUpdates(
   }
 
   for (const failure of results.failures) {
-    if (passesByKey.has(getTestId(failure.file, failure.fullTitle))) {
-      continue;
-    }
     // If an error occurs during a hook
     // the error not have a file associated with it
     if (!failure.file) {
@@ -182,6 +179,10 @@ export function getExpectationUpdates(
         },
         action: 'add',
       });
+      continue;
+    }
+
+    if (passesByKey.has(getTestId(failure.file, failure.fullTitle))) {
       continue;
     }
 

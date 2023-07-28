@@ -704,7 +704,6 @@ describe('navigation', function () {
 
       server.setRoute('/frames/style.css', () => {});
       let frame: Frame | undefined;
-      let timeout: NodeJS.Timeout | undefined;
       const eventPromises = Deferred.race([
         Promise.all([
           waitEvent(page, 'frameattached').then(_frame => {
@@ -724,7 +723,6 @@ describe('navigation', function () {
       );
       try {
         await eventPromises;
-        clearTimeout(timeout);
       } catch (error) {
         navigationPromise.catch(() => {});
         throw error;

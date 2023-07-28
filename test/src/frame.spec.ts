@@ -213,6 +213,7 @@ describe('Frame specs', function () {
         return navigatedFrames.push(frame);
       });
       await page.goto(server.PREFIX + '/frames/nested-frames.html');
+
       expect(attachedFrames).toHaveLength(4);
       expect(detachedFrames).toHaveLength(0);
       expect(navigatedFrames).toHaveLength(5);

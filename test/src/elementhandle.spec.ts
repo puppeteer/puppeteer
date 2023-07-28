@@ -295,7 +295,7 @@ describe('ElementHandle specs', function () {
       });
       expect(error.message).atLeastOneToContain([
         'Node is either not clickable or not an HTMLElement',
-        'no such node',
+        'no such element',
       ]);
     });
     it('should throw for recursively hidden nodes', async () => {
@@ -311,7 +311,7 @@ describe('ElementHandle specs', function () {
       });
       expect(error.message).atLeastOneToContain([
         'Node is either not clickable or not an HTMLElement',
-        'no such node',
+        'no such element',
       ]);
     });
     it('should throw for <br> elements', async () => {

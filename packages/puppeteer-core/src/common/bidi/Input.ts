@@ -41,6 +41,23 @@ const enum InputId {
   Finger = '__puppeteer_finger',
 }
 
+enum SourceActionsType {
+  None = 'none',
+  Key = 'key',
+  Pointer = 'pointer',
+  Wheel = 'wheel',
+}
+
+enum ActionType {
+  Pause = 'pause',
+  KeyDown = 'keyDown',
+  KeyUp = 'keyUp',
+  PointerUp = 'pointerUp',
+  PointerDown = 'pointerDown',
+  PointerMove = 'pointerMove',
+  Scroll = 'scroll',
+}
+
 const getBidiKeyValue = (key: KeyInput) => {
   switch (key) {
     case '\r':
@@ -286,11 +303,11 @@ export class Keyboard extends BaseKeyboard {
       context: this.#context.id,
       actions: [
         {
-          type: Bidi.Input.SourceActionsType.Key,
+          type: SourceActionsType.Key,
           id: InputId.Keyboard,
           actions: [
             {
-              type: Bidi.Input.ActionType.KeyDown,
+              type: ActionType.KeyDown,
               value: getBidiKeyValue(key),
             },
           ],
@@ -304,11 +321,11 @@ export class Keyboard extends BaseKeyboard {
       context: this.#context.id,
       actions: [
         {
-          type: Bidi.Input.SourceActionsType.Key,
+          type: SourceActionsType.Key,
           id: InputId.Keyboard,
           actions: [
             {
-              type: Bidi.Input.ActionType.KeyUp,
+              type: ActionType.KeyUp,
               value: getBidiKeyValue(key),
             },
           ],
@@ -324,25 +341,25 @@ export class Keyboard extends BaseKeyboard {
     const {delay = 0} = options;
     const actions: Bidi.Input.KeySourceAction[] = [
       {
-        type: Bidi.Input.ActionType.KeyDown,
+        type: ActionType.KeyDown,
         value: getBidiKeyValue(key),
       },
     ];
     if (delay > 0) {
       actions.push({
-        type: Bidi.Input.ActionType.Pause,
+        type: ActionType.Pause,
         duration: delay,
       });
     }
     actions.push({
-      type: Bidi.Input.ActionType.KeyUp,
+      type: ActionType.KeyUp,
       value: getBidiKeyValue(key),
     });
     await this.#context.connection.send('input.performActions', {
       context: this.#context.id,
       actions: [
         {
-          type: Bidi.Input.SourceActionsType.Key,
+          type: SourceActionsType.Key,
           id: InputId.Keyboard,
           actions,
         },
@@ -363,11 +380,11 @@ export class Keyboard extends BaseKeyboard {
       for (const value of values) {
         actions.push(
           {
-            type: Bidi.Input.ActionType.KeyDown,
+            type: ActionType.KeyDown,
             value,
           },
           {
-            type: Bidi.Input.ActionType.KeyUp,
+            type: ActionType.KeyUp,
             value,
           }
         );
@@ -376,15 +393,15 @@ export class Keyboard extends BaseKeyboard {
       for (const value of values) {
         actions.push(
           {
-            type: Bidi.Input.ActionType.KeyDown,
+            type: ActionType.KeyDown,
             value,
           },
           {
-            type: Bidi.Input.ActionType.Pause,
+            type: ActionType.Pause,
             duration: delay,
           },
           {
-            type: Bidi.Input.ActionType.KeyUp,
+            type: ActionType.KeyUp,
             value,
           }
         );
@@ -394,7 +411,7 @@ export class Keyboard extends BaseKeyboard {
       context: this.#context.id,
       actions: [
         {
-          type: Bidi.Input.SourceActionsType.Key,
+          type: SourceActionsType.Key,
           id: InputId.Keyboard,
           actions,
         },
@@ -474,11 +491,11 @@ export class Mouse extends BaseMouse {
       context: this.#context.id,
       actions: [
         {
-          type: Bidi.Input.SourceActionsType.Pointer,
+          type: SourceActionsType.Pointer,
           id: InputId.Mouse,
           actions: [
             {
-              type: Bidi.Input.ActionType.PointerMove,
+              type: ActionType.PointerMove,
               x,
               y,
               duration: (options.steps ?? 0) * 50,
@@ -495,11 +512,11 @@ export class Mouse extends BaseMouse {
       context: this.#context.id,
       actions: [
         {
-          type: Bidi.Input.SourceActionsType.Pointer,
+          type: SourceActionsType.Pointer,
           id: InputId.Mouse,
           actions: [
             {
-              type: Bidi.Input.ActionType.PointerDown,
+              type: ActionType.PointerDown,
               button: getBidiButton(options.button ?? MouseButton.Left),
             },
           ],
@@ -513,11 +530,11 @@ export class Mouse extends BaseMouse {
       context: this.#context.id,
       actions: [
         {
-          type: Bidi.Input.SourceActionsType.Pointer,
+          type: SourceActionsType.Pointer,
           id: InputId.Mouse,
           actions: [
             {
-              type: Bidi.Input.ActionType.PointerUp,
+              type: ActionType.PointerUp,
               button: getBidiButton(options.button ?? MouseButton.Left),
             },
           ],
@@ -533,18 +550,18 @@ export class Mouse extends BaseMouse {
   ): Promise<void> {
     const actions: Bidi.Input.PointerSourceAction[] = [
       {
-        type: Bidi.Input.ActionType.PointerMove,
+        type: ActionType.PointerMove,
         x,
         y,
         origin: options.origin,
       },
     ];
     const pointerDownAction = {
-      type: Bidi.Input.ActionType.PointerDown,
+      type: ActionType.PointerDown,
       button: getBidiButton(options.button ?? MouseButton.Left),
     } as const;
     const pointerUpAction = {
-      type: Bidi.Input.ActionType.PointerUp,
+      type: ActionType.PointerUp,
       button: pointerDownAction.button,
     } as const;
     for (let i = 1; i < (options.count ?? 1); ++i) {
@@ -553,7 +570,7 @@ export class Mouse extends BaseMouse {
     actions.push(pointerDownAction);
     if (options.delay) {
       actions.push({
-        type: Bidi.Input.ActionType.Pause,
+        type: ActionType.Pause,
         duration: options.delay,
       });
     }
@@ -562,7 +579,7 @@ export class Mouse extends BaseMouse {
       context: this.#context.id,
       actions: [
         {
-          type: Bidi.Input.SourceActionsType.Pointer,
+          type: SourceActionsType.Pointer,
           id: InputId.Mouse,
           actions,
         },
@@ -577,11 +594,11 @@ export class Mouse extends BaseMouse {
       context: this.#context.id,
       actions: [
         {
-          type: Bidi.Input.SourceActionsType.Wheel,
+          type: SourceActionsType.Wheel,
           id: InputId.Wheel,
           actions: [
             {
-              type: Bidi.Input.ActionType.Scroll,
+              type: ActionType.Scroll,
               ...(this.#lastMovePoint ?? {
                 x: 0,
                 y: 0,
@@ -628,20 +645,20 @@ export class Touchscreen extends BaseTouchscreen {
       context: this.#context.id,
       actions: [
         {
-          type: Bidi.Input.SourceActionsType.Pointer,
+          type: SourceActionsType.Pointer,
           id: InputId.Finger,
           parameters: {
             pointerType: Bidi.Input.PointerType.Touch,
           },
           actions: [
             {
-              type: Bidi.Input.ActionType.PointerMove,
+              type: ActionType.PointerMove,
               x,
               y,
               origin: options.origin,
             },
             {
-              type: Bidi.Input.ActionType.PointerDown,
+              type: ActionType.PointerDown,
               button: 0,
             },
           ],
@@ -659,14 +676,14 @@ export class Touchscreen extends BaseTouchscreen {
       context: this.#context.id,
       actions: [
         {
-          type: Bidi.Input.SourceActionsType.Pointer,
+          type: SourceActionsType.Pointer,
           id: InputId.Finger,
           parameters: {
             pointerType: Bidi.Input.PointerType.Touch,
           },
           actions: [
             {
-              type: Bidi.Input.ActionType.PointerMove,
+              type: ActionType.PointerMove,
               x,
               y,
               origin: options.origin,
@@ -682,14 +699,14 @@ export class Touchscreen extends BaseTouchscreen {
       context: this.#context.id,
       actions: [
         {
-          type: Bidi.Input.SourceActionsType.Pointer,
+          type: SourceActionsType.Pointer,
           id: InputId.Finger,
           parameters: {
             pointerType: Bidi.Input.PointerType.Touch,
           },
           actions: [
             {
-              type: Bidi.Input.ActionType.PointerUp,
+              type: ActionType.PointerUp,
               button: 0,
             },
           ],
