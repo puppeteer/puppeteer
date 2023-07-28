@@ -19,6 +19,7 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {
   AutofillData,
   ElementHandle as BaseElementHandle,
+  BoundingBox,
   ClickOptions,
 } from '../../api/ElementHandle.js';
 import {KeyPressOptions, KeyboardTypeOptions} from '../../api/Input.js';
@@ -83,6 +84,28 @@ export class ElementHandle<
       frameId,
       card: data.creditCard,
     });
+  }
+
+  override async boundingBox(): Promise<BoundingBox | null> {
+    if (this.frame.parentFrame()) {
+      throw new Error(
+        'Elements within nested iframes are currently not supported.'
+      );
+    }
+    const box = await this.frame.isolatedRealm().evaluate(element => {
+      const rect = (element as unknown as Element).getBoundingClientRect();
+      if (!rect.left && !rect.top && !rect.width && !rect.height) {
+        // TODO(jrandolf): Detect if the element is truly not visible.
+        return null;
+      }
+      return {
+        x: rect.left,
+        y: rect.top,
+        width: rect.width,
+        height: rect.height,
+      };
+    }, this);
+    return box;
   }
 
   // ///////////////////
