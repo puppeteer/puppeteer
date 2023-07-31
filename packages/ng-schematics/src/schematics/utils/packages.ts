@@ -168,11 +168,14 @@ export function updateAngularJsonScripts(
   overwrite = true
 ): Tree {
   const angularJson = getAngularConfig(tree);
-  const commands = getScriptFromOptions(options);
   const name = getNgCommandName(options);
   const port = options.port !== 4200 ? Number(options.port) : undefined;
 
   Object.keys(angularJson['projects']).forEach(project => {
+    const commands = getScriptFromOptions(
+      options,
+      angularJson['projects'][project]!.root
+    );
     const e2eScript = [
       {
         name,

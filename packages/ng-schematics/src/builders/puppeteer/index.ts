@@ -32,28 +32,25 @@ function getExecutable(command: string[]) {
   const executable = command.shift()!;
   const error = getError(executable, command);
 
-  if (executable === 'node') {
-    return {
-      executable: executable,
-      args: command,
-      error,
-    };
-  }
-
   return {
-    executable: `./node_modules/.bin/${executable}`,
+    executable,
     args: command,
     error,
   };
 }
 
 async function executeCommand(context: BuilderContext, command: string[]) {
-  await new Promise((resolve, reject) => {
+  await new Promise(async (resolve, reject) => {
     context.logger.debug(`Trying to execute command - ${command.join(' ')}.`);
     const {executable, args, error} = getExecutable(command);
+    let path = context.workspaceRoot;
+    if (context.target) {
+      const project = await context.getProjectMetadata(context.target.project);
+      path = `${path}/${project['root']}`;
+    }
 
     const child = spawn(executable, args, {
-      cwd: context.workspaceRoot,
+      cwd: path,
       stdio: 'inherit',
     });
 
