@@ -29,7 +29,7 @@ import {
   url,
 } from '@angular-devkit/schematics';
 
-import {SchematicsOptions, TestingFramework} from './types.js';
+import {AngularProject, SchematicsOptions, TestingFramework} from './types.js';
 
 export interface FilesOptions {
   projects: Record<string, any>;
@@ -62,7 +62,7 @@ export function addFiles(
 ): any {
   return chain(
     Object.keys(projects).map(name => {
-      const project = projects[name];
+      const project = projects[name] as AngularProject;
       const projectPath = resolve(getSystemPath(normalize(project.root)));
       const workspacePath = resolve(getSystemPath(normalize('')));
 
@@ -72,6 +72,7 @@ export function addFiles(
       );
 
       const baseUrl = getProjectBaseUrl(project, options.port);
+      const tsConfigPath = getTsConfigPath(project);
 
       return mergeWith(
         apply(url(applyPath), [
@@ -87,6 +88,7 @@ export function addFiles(
             ...strings,
             root: project.root ? `${project.root}/` : project.root,
             baseUrl,
+            tsConfigPath,
             project: name,
             relativeToWorkspace,
           }),
@@ -107,6 +109,13 @@ function getProjectBaseUrl(project: any, port: number): string {
   }
 
   return `${options.protocol}://${options.host}:${options.port}`;
+}
+
+function getTsConfigPath(project: AngularProject): string {
+  if (!project.root) {
+    return '../tsconfig.json';
+  }
+  return `../tsconfig.app.json`;
 }
 
 export function addBaseFiles(
@@ -144,17 +153,33 @@ export function addFrameworkFiles(
   return addFiles(tree, context, options);
 }
 
-export function getScriptFromOptions(options: SchematicsOptions): string[][] {
+export function getScriptFromOptions(
+  options: SchematicsOptions,
+  root?: string
+): string[][] {
+  let path = 'node_modules/.bin';
+  if (root && root !== '') {
+    const nested = root
+      .split('/')
+      .map(() => {
+        return '../';
+      })
+      .join('');
+    path = `${nested}${path}`;
+  } else {
+    path = `./${path}`;
+  }
+
   switch (options.testingFramework) {
     case TestingFramework.Jasmine:
-      return [[`jasmine`, '--config=./e2e/support/jasmine.json']];
+      return [[`${path}/jasmine`, '--config=./e2e/support/jasmine.json']];
     case TestingFramework.Jest:
-      return [[`jest`, '-c', 'e2e/jest.config.js']];
+      return [[`${path}/jest`, '-c', 'e2e/jest.config.js']];
     case TestingFramework.Mocha:
-      return [[`mocha`, '--config=./e2e/.mocharc.js']];
+      return [[`${path}/mocha`, '--config=./e2e/.mocharc.js']];
     case TestingFramework.Node:
       return [
-        [`tsc`, '-p', 'e2e/tsconfig.json'],
+        [`${path}/tsc`, '-p', 'e2e/tsconfig.json'],
         ['node', '--test', '--test-reporter', 'spec', 'e2e/build/'],
       ];
   }

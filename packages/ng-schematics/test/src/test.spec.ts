@@ -1,6 +1,6 @@
 import expect from 'expect';
 
-import {buildTestingTree, getProjectFile, setupHttpHooks} from './utils.js';
+import {buildTestingTree, setupHttpHooks} from './utils.js';
 
 describe('@puppeteer/ng-schematics: test', () => {
   setupHttpHooks();
@@ -9,10 +9,8 @@ describe('@puppeteer/ng-schematics: test', () => {
     const tree = await buildTestingTree('test', {
       name: 'myTest',
     });
-    expect(tree.files).toContain(getProjectFile('e2e/tests/my-test.e2e.ts'));
-    expect(tree.files).not.toContain(
-      getProjectFile('e2e/tests/my-test.test.ts')
-    );
+    expect(tree.files).toContain('/e2e/tests/my-test.e2e.ts');
+    expect(tree.files).not.toContain('/e2e/tests/my-test.test.ts');
   });
 
   it('should create Node file', async () => {
@@ -20,9 +18,7 @@ describe('@puppeteer/ng-schematics: test', () => {
       name: 'myTest',
       testingFramework: 'node',
     });
-    expect(tree.files).not.toContain(
-      getProjectFile('e2e/tests/my-test.e2e.ts')
-    );
-    expect(tree.files).toContain(getProjectFile('e2e/tests/my-test.test.ts'));
+    expect(tree.files).not.toContain('/e2e/tests/my-test.e2e.ts');
+    expect(tree.files).toContain('/e2e/tests/my-test.test.ts');
   });
 });
