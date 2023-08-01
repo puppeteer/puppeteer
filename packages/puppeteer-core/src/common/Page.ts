@@ -51,7 +51,7 @@ import {
 import {ConsoleMessage, ConsoleMessageType} from './ConsoleMessage.js';
 import {Coverage} from './Coverage.js';
 import {DeviceRequestPrompt} from './DeviceRequestPrompt.js';
-import {Dialog} from './Dialog.js';
+import {CDPDialog} from './Dialog.js';
 import {EmulationManager} from './EmulationManager.js';
 import {TargetCloseError} from './Errors.js';
 import {FileChooser} from './FileChooser.js';
@@ -81,6 +81,7 @@ import {
   isString,
   pageBindingInitString,
   releaseObject,
+  validateDialogType,
   valueFromRemoteObject,
   waitForEvent,
   waitWithTimeout,
@@ -807,22 +808,10 @@ export class CDPPage extends Page {
   }
 
   #onDialog(event: Protocol.Page.JavascriptDialogOpeningEvent): void {
-    let dialogType = null;
-    const validDialogTypes = new Set<Protocol.Page.DialogType>([
-      'alert',
-      'confirm',
-      'prompt',
-      'beforeunload',
-    ]);
-
-    if (validDialogTypes.has(event.type)) {
-      dialogType = event.type as Protocol.Page.DialogType;
-    }
-    assert(dialogType, 'Unknown javascript dialog type: ' + event.type);
-
-    const dialog = new Dialog(
+    const type = validateDialogType(event.type);
+    const dialog = new CDPDialog(
       this.#client,
-      dialogType,
+      type,
       event.message,
       event.defaultPrompt
     );

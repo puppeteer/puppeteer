@@ -76,6 +76,10 @@ interface Commands {
     params: Bidi.BrowsingContext.CaptureScreenshotParameters;
     returnType: Bidi.BrowsingContext.CaptureScreenshotResult;
   };
+  'browsingContext.handleUserPrompt': {
+    params: Bidi.BrowsingContext.HandleUserPromptParameters;
+    returnType: Bidi.EmptyResult;
+  };
 
   'input.performActions': {
     params: Bidi.Input.PerformActionsParameters;
