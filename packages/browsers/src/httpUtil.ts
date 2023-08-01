@@ -27,6 +27,8 @@ export function headHttpRequest(url: URL): Promise<boolean> {
       url,
       'HEAD',
       response => {
+        // consume response data free node process
+        response.resume();
         resolve(response.statusCode === 200);
       },
       false
