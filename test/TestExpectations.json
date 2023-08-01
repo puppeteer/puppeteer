@@ -2103,7 +2103,7 @@
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work right after framenavigated",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[fixtures.spec] Fixtures should close the browser when the node process closes",
@@ -2163,7 +2163,7 @@
     "testIdPattern": "[frame.spec] Frame specs Frame Management should support framesets",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should support lazy frames",
@@ -2703,7 +2703,7 @@
     "testIdPattern": "[navigation.spec] navigation Page.goto should not leak listeners during navigation of 11 pages",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["SKIP"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should return last response in redirect chain",
