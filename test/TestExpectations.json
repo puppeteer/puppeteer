@@ -1056,30 +1056,6 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with clicking on anchor links",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["TIMEOUT"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with DOM history.back()/history.forward()",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL", "TIMEOUT"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with history.pushState()",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["TIMEOUT"]
-  },
-  {
-    "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with history.replaceState()",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["TIMEOUT"]
-  },
-  {
     "testIdPattern": "[network.spec] network Network Events Page.Events.RequestFinished",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1896,15 +1872,15 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox should force a layout",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[dialog.spec] Page.Events.Dialog should allow accepting prompts",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox should force a layout",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
@@ -2814,10 +2790,22 @@
     "expectations": ["TIMEOUT"]
   },
   {
+    "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with clicking on anchor links",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with DOM history.back()/history.forward()",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with DOM history.back()/history.forward()",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with history.pushState()",
@@ -2826,9 +2814,21 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with history.pushState()",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with history.replaceState()",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[navigation.spec] navigation Page.waitForNavigation should work with history.replaceState()",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["SKIP"]
   },
   {
@@ -3190,6 +3190,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.close should run beforeunload if asked for",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.close should terminate network waiters",
@@ -3952,11 +3958,5 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headless"],
     "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[page.spec] Page Page.close should run beforeunload if asked for",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
   }
 ]
