@@ -19,7 +19,10 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
+import sinon from 'sinon';
+
 import {CLI} from '../../../lib/cjs/CLI.js';
+import * as httpUtil from '../../../lib/cjs/httpUtil.js';
 import {
   createMockedReadlineInterface,
   getServerUrl,
@@ -46,6 +49,8 @@ describe('Firefox CLI', function () {
       `--path=${tmpDir}`,
       `--base-url=${getServerUrl()}`,
     ]);
+
+    sinon.restore();
   });
 
   it('should download Firefox binaries', async () => {
@@ -66,6 +71,9 @@ describe('Firefox CLI', function () {
   });
 
   it('should download latest Firefox binaries', async () => {
+    sinon
+      .stub(httpUtil, 'getJSON')
+      .returns(Promise.resolve({FIREFOX_NIGHTLY: testFirefoxBuildId}));
     await new CLI(tmpDir).run([
       'npx',
       '@puppeteer/browsers',

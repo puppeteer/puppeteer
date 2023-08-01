@@ -19,12 +19,13 @@
  * mirrors the structure of the download server.
  */
 
-import {BrowserPlatform, install} from '@puppeteer/browsers';
-import path from 'path';
-import fs from 'fs';
+import {existsSync, mkdirSync, copyFileSync, rmSync} from 'fs';
+import {normalize, join, dirname} from 'path';
 
-import * as versions from '../test/build/versions.js';
+import {BrowserPlatform, install} from '@puppeteer/browsers';
+
 import {downloadPaths} from '../lib/esm/browser-data/browser-data.js';
+import * as versions from '../test/build/versions.js';
 
 function getBrowser(str) {
   const regex = /test(.+)BuildId/;
@@ -37,7 +38,7 @@ function getBrowser(str) {
   }
 }
 
-const cacheDir = path.normalize(path.join('.', 'test', 'cache'));
+const cacheDir = normalize(join('.', 'test', 'cache'));
 
 for (const version of Object.keys(versions)) {
   const browser = getBrowser(version);
@@ -49,13 +50,13 @@ for (const version of Object.keys(versions)) {
   const buildId = versions[version];
 
   for (const platform of Object.values(BrowserPlatform)) {
-    const targetPath = path.join(
+    const targetPath = join(
       cacheDir,
       'server',
       ...downloadPaths[browser](platform, buildId)
     );
 
-    if (fs.existsSync(targetPath)) {
+    if (existsSync(targetPath)) {
       continue;
     }
 
@@ -63,18 +64,18 @@ for (const version of Object.keys(versions)) {
       browser,
       buildId,
       platform,
-      cacheDir: path.join(cacheDir, 'tmp'),
+      cacheDir: join(cacheDir, 'tmp'),
       unpack: false,
     });
 
-    fs.mkdirSync(path.dirname(targetPath), {
+    mkdirSync(dirname(targetPath), {
       recursive: true,
     });
-    fs.copyFileSync(archivePath, targetPath);
+    copyFileSync(archivePath, targetPath);
   }
 }
 
-fs.rmSync(path.join(cacheDir, 'tmp'), {
+rmSync(join(cacheDir, 'tmp'), {
   recursive: true,
   force: true,
   maxRetries: 10,
