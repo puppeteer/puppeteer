@@ -10,7 +10,7 @@ describe('App test', function () {
   setupBrowserHooks();
   it('is running', async function () {
     const {page} = getBrowserState();
-    const element = await page.waitForSelector('text/sandbox app is running!');
+    const element = await page.waitForSelector('text/<%= project %> app is running!');
 
 <% if(testingFramework == 'jasmine' || testingFramework == 'jest') { %>
     expect(element).not.toBeNull();

@@ -4,7 +4,6 @@ import {
   buildTestingTree,
   getAngularJsonScripts,
   getPackageJson,
-  getProjectFile,
   setupHttpHooks,
 } from './utils.js';
 
@@ -16,9 +15,9 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     const {devDependencies, scripts} = getPackageJson(tree);
     const {builder, configurations} = getAngularJsonScripts(tree);
 
-    expect(tree.files).toContain(getProjectFile('e2e/tsconfig.json'));
-    expect(tree.files).toContain(getProjectFile('e2e/tests/app.e2e.ts'));
-    expect(tree.files).toContain(getProjectFile('e2e/tests/utils.ts'));
+    expect(tree.files).toContain('/e2e/tsconfig.json');
+    expect(tree.files).toContain('/e2e/tests/app.e2e.ts');
+    expect(tree.files).toContain('/e2e/tests/utils.ts');
     expect(devDependencies).toContain('puppeteer');
     expect(scripts['e2e']).toBe('ng e2e');
     expect(builder).toBe('@puppeteer/ng-schematics:puppeteer');
@@ -45,7 +44,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       exportConfig: true,
     });
 
-    expect(files).toContain(getProjectFile('.puppeteerrc.cjs'));
+    expect(files).toContain('/.puppeteerrc.cjs');
   });
 
   it('should not create Puppeteer config', async () => {
@@ -53,7 +52,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       exportConfig: false,
     });
 
-    expect(files).not.toContain(getProjectFile('.puppeteerrc.cjs'));
+    expect(files).not.toContain('/.puppeteerrc.cjs');
   });
 
   it('should create Jasmine files and update "package.json"', async () => {
@@ -63,14 +62,14 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     const {devDependencies} = getPackageJson(tree);
     const {options} = getAngularJsonScripts(tree);
 
-    expect(tree.files).toContain(getProjectFile('e2e/support/jasmine.json'));
-    expect(tree.files).toContain(getProjectFile('e2e/helpers/babel.js'));
+    expect(tree.files).toContain('/e2e/support/jasmine.json');
+    expect(tree.files).toContain('/e2e/helpers/babel.js');
     expect(devDependencies).toContain('jasmine');
     expect(devDependencies).toContain('@babel/core');
     expect(devDependencies).toContain('@babel/register');
     expect(devDependencies).toContain('@babel/preset-typescript');
     expect(options['commands']).toEqual([
-      [`jasmine`, '--config=./e2e/support/jasmine.json'],
+      [`./node_modules/.bin/jasmine`, '--config=./e2e/support/jasmine.json'],
     ]);
   });
 
@@ -81,11 +80,13 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     const {devDependencies} = getPackageJson(tree);
     const {options} = getAngularJsonScripts(tree);
 
-    expect(tree.files).toContain(getProjectFile('e2e/jest.config.js'));
+    expect(tree.files).toContain('/e2e/jest.config.js');
     expect(devDependencies).toContain('jest');
     expect(devDependencies).toContain('@types/jest');
     expect(devDependencies).toContain('ts-jest');
-    expect(options['commands']).toEqual([[`jest`, '-c', 'e2e/jest.config.js']]);
+    expect(options['commands']).toEqual([
+      [`./node_modules/.bin/jest`, '-c', 'e2e/jest.config.js'],
+    ]);
   });
 
   it('should create Mocha files and update "package.json"', async () => {
@@ -95,15 +96,15 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     const {devDependencies} = getPackageJson(tree);
     const {options} = getAngularJsonScripts(tree);
 
-    expect(tree.files).toContain(getProjectFile('e2e/.mocharc.js'));
-    expect(tree.files).toContain(getProjectFile('e2e/babel.js'));
+    expect(tree.files).toContain('/e2e/.mocharc.js');
+    expect(tree.files).toContain('/e2e/babel.js');
     expect(devDependencies).toContain('mocha');
     expect(devDependencies).toContain('@types/mocha');
     expect(devDependencies).toContain('@babel/core');
     expect(devDependencies).toContain('@babel/register');
     expect(devDependencies).toContain('@babel/preset-typescript');
     expect(options['commands']).toEqual([
-      [`mocha`, '--config=./e2e/.mocharc.js'],
+      [`./node_modules/.bin/mocha`, '--config=./e2e/.mocharc.js'],
     ]);
   });
 
@@ -113,11 +114,11 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     });
     const {options} = getAngularJsonScripts(tree);
 
-    expect(tree.files).toContain(getProjectFile('e2e/.gitignore'));
-    expect(tree.files).not.toContain(getProjectFile('e2e/tests/app.e2e.ts'));
-    expect(tree.files).toContain(getProjectFile('e2e/tests/app.test.ts'));
+    expect(tree.files).toContain('/e2e/.gitignore');
+    expect(tree.files).not.toContain('/e2e/tests/app.e2e.ts');
+    expect(tree.files).toContain('/e2e/tests/app.test.ts');
     expect(options['commands']).toEqual([
-      [`tsc`, '-p', 'e2e/tsconfig.json'],
+      [`./node_modules/.bin/tsc`, '-p', 'e2e/tsconfig.json'],
       ['node', '--test', '--test-reporter', 'spec', 'e2e/build/'],
     ]);
   });

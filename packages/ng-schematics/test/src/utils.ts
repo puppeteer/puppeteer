@@ -8,14 +8,11 @@ import {
 } from '@angular-devkit/schematics/testing';
 import sinon from 'sinon';
 
-const WORKSPACE_OPTIONS = {
-  name: 'workspace',
-  newProjectRoot: 'projects',
-  version: '14.0.0',
-};
-
 const APPLICATION_OPTIONS = {
   name: 'sandbox',
+  directory: '.',
+  createApplication: true,
+  version: '14.0.0',
 };
 
 export function setupHttpHooks(): void {
@@ -32,10 +29,6 @@ export function setupHttpHooks(): void {
   after(() => {
     sinon.restore();
   });
-}
-
-export function getProjectFile(file: string): string {
-  return `/${WORKSPACE_OPTIONS.newProjectRoot}/${APPLICATION_OPTIONS.name}/${file}`;
 }
 
 export function getAngularJsonScripts(
@@ -85,15 +78,8 @@ export async function buildTestingTree(
   // Build workspace
   workingTree = await runner.runExternalSchematic(
     '@schematics/angular',
-    'workspace',
-    WORKSPACE_OPTIONS
-  );
-  // Build dummy application
-  workingTree = await runner.runExternalSchematic(
-    '@schematics/angular',
-    'application',
-    APPLICATION_OPTIONS,
-    workingTree
+    'ng-new',
+    APPLICATION_OPTIONS
   );
 
   if (command !== 'ng-add') {

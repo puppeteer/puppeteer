@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "<%= tsConfigPath %>",
   "compilerOptions": {<% if(testingFramework == 'jest') { %>
     "esModuleInterop": true,<% } %><% if(testingFramework == 'node') { %>
     "module": "CommonJS",
