@@ -98,6 +98,12 @@ To run the creating of single test schematic:
 npm run sandbox:test
 ```
 
+To create a multi project workspace use the following command
+
+```bash
+npm run sandbox -- --init --multi
+```
+
 ### Unit Testing
 
 The schematics utilize `@angular-devkit/schematics/testing` for verifying correct file creation and `package.json` updates. To execute the test suit:

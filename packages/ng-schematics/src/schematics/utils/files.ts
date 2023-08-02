@@ -23,7 +23,6 @@ import {
   apply,
   applyTemplates,
   chain,
-  filter,
   mergeWith,
   move,
   url,
@@ -32,7 +31,6 @@ import {
 import {AngularProject, SchematicsOptions, TestingFramework} from './types.js';
 
 export interface FilesOptions {
-  projects: Record<string, any>;
   options: {
     testingFramework: TestingFramework;
     port: number;
@@ -43,59 +41,59 @@ export interface FilesOptions {
   applyPath: string;
   relativeToWorkspacePath: string;
   movePath?: string;
-  filterPredicate?: (path: string) => boolean;
 }
 
-const PUPPETEER_CONFIG_TEMPLATE = '.puppeteerrc.cjs.template';
-
-export function addFiles(
+export function addFilesToProjects(
   tree: Tree,
   context: SchematicContext,
-  {
-    projects,
-    options,
-    applyPath,
-    movePath,
-    relativeToWorkspacePath,
-    filterPredicate,
-  }: FilesOptions
+  projects: Record<string, AngularProject>,
+  options: FilesOptions
 ): any {
   return chain(
     Object.keys(projects).map(name => {
-      const project = projects[name] as AngularProject;
-      const projectPath = resolve(getSystemPath(normalize(project.root)));
-      const workspacePath = resolve(getSystemPath(normalize('')));
-
-      const relativeToWorkspace = relative(
-        `${projectPath}${relativeToWorkspacePath}`,
-        workspacePath
-      );
-
-      const baseUrl = getProjectBaseUrl(project, options.port);
-      const tsConfigPath = getTsConfigPath(project);
-
-      return mergeWith(
-        apply(url(applyPath), [
-          filter(
-            filterPredicate ??
-              (() => {
-                return true;
-              })
-          ),
-          move(movePath ? `${project.root}${movePath}` : project.root),
-          applyTemplates({
-            ...options,
-            ...strings,
-            root: project.root ? `${project.root}/` : project.root,
-            baseUrl,
-            tsConfigPath,
-            project: name,
-            relativeToWorkspace,
-          }),
-        ])
+      return addFilesSingle(
+        tree,
+        context,
+        name,
+        projects[name] as AngularProject,
+        options
       );
     })
   )(tree, context);
+}
+
+export function addFilesSingle(
+  _tree: Tree,
+  _context: SchematicContext,
+  name: string,
+  project: AngularProject,
+  {options, applyPath, movePath, relativeToWorkspacePath}: FilesOptions
+): any {
+  const projectPath = resolve(getSystemPath(normalize(project.root)));
+  const workspacePath = resolve(getSystemPath(normalize('')));
+
+  const relativeToWorkspace = relative(
+    `${projectPath}${relativeToWorkspacePath}`,
+    workspacePath
+  );
+
+  const baseUrl = getProjectBaseUrl(project, options.port);
+  const tsConfigPath = getTsConfigPath(project);
+
+  return mergeWith(
+    apply(url(applyPath), [
+      move(movePath ? `${project.root}${movePath}` : project.root),
+      applyTemplates({
+        ...options,
+        ...strings,
+        root: project.root ? `${project.root}/` : project.root,
+        baseUrl,
+        tsConfigPath,
+        project: name,
+        relativeToWorkspace,
+      }),
+    ])
+  );
 }
 
 function getProjectBaseUrl(project: any, port: number): string {
@@ -118,29 +116,25 @@ function getTsConfigPath(project: AngularProject): string {
   return `../tsconfig.app.json`;
 }
 
-export function addBaseFiles(
+export function addCommonFiles(
   tree: Tree,
   context: SchematicContext,
+  projects: Record<string, AngularProject>,
   filesOptions: Omit<FilesOptions, 'applyPath' | 'relativeToWorkspacePath'>
 ): any {
   const options: FilesOptions = {
     ...filesOptions,
-    applyPath: './files/base',
+    applyPath: './files/common',
     relativeToWorkspacePath: `/`,
-    filterPredicate: path => {
-      return path.includes(PUPPETEER_CONFIG_TEMPLATE) &&
-        !filesOptions.options.exportConfig
-        ? false
-        : true;
-    },
   };
 
-  return addFiles(tree, context, options);
+  return addFilesToProjects(tree, context, projects, options);
 }
 
 export function addFrameworkFiles(
   tree: Tree,
   context: SchematicContext,
+  projects: Record<string, AngularProject>,
   filesOptions: Omit<FilesOptions, 'applyPath' | 'relativeToWorkspacePath'>
 ): any {
   const testingFramework = filesOptions.options.testingFramework;
@@ -150,7 +144,7 @@ export function addFrameworkFiles(
     relativeToWorkspacePath: `/`,
   };
 
-  return addFiles(tree, context, options);
+  return addFilesToProjects(tree, context, projects, options);
 }
 
 export function getScriptFromOptions(

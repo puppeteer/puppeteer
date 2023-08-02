@@ -20,7 +20,8 @@ import {of} from 'rxjs';
 import {concatMap, map, scan} from 'rxjs/operators';
 
 import {
-  addBaseFiles,
+  addCommonFiles as addCommonFilesHelper,
+  addFilesSingle,
   addFrameworkFiles,
   getNgCommandName,
 } from '../utils/files.js';
@@ -34,20 +35,53 @@ import {
   type NodePackage,
   updateAngularJsonScripts,
 } from '../utils/packages.js';
-import {TestingFramework, type SchematicsOptions} from '../utils/types.js';
+import {
+  TestingFramework,
+  type SchematicsOptions,
+  AngularProject,
+} from '../utils/types.js';
 
 // You don't have to export the function as default. You can also have more than one rule
 // factory per file.
-export function ngAdd(options: SchematicsOptions): Rule {
+export function ngAdd(userArgs: Record<string, string>): Rule {
+  const options = parseUserAddArgs(userArgs);
+
   return (tree: Tree, context: SchematicContext) => {
     return chain([
       addDependencies(options),
-      addPuppeteerFiles(options),
+      addPuppeteerConfig(options),
+      addCommonFiles(options),
       addOtherFiles(options),
       updateScripts(options),
       updateAngularConfig(options),
     ])(tree, context);
   };
+}
+
+function parseUserAddArgs(userArgs: Record<string, string>): SchematicsOptions {
+  const options: Partial<SchematicsOptions> = {
+    ...userArgs,
+  };
+  if ('p' in userArgs) {
+    options['port'] = Number(userArgs['p']);
+  }
+  if ('t' in userArgs) {
+    options['testingFramework'] = userArgs['t'] as TestingFramework;
+  }
+  if ('c' in userArgs) {
+    options['exportConfig'] =
+      typeof userArgs['c'] === 'string'
+        ? userArgs['c'] === 'true'
+        : userArgs['c'];
+  }
+  if ('d' in userArgs) {
+    options['isDefaultTester'] =
+      typeof userArgs['d'] === 'string'
+        ? userArgs['d'] === 'true'
+        : userArgs['d'];
+  }
+
+  return options as SchematicsOptions;
 }
 
 function addDependencies(options: SchematicsOptions): Rule {
@@ -94,13 +128,28 @@ function updateScripts(options: SchematicsOptions): Rule {
   };
 }
 
-function addPuppeteerFiles(options: SchematicsOptions): Rule {
+function addPuppeteerConfig(options: SchematicsOptions): Rule {
+  return (tree: Tree, context: SchematicContext) => {
+    context.logger.debug('Adding Puppeteer config file.');
+
+    if (options.exportConfig) {
+      return addFilesSingle(tree, context, '', {root: ''} as AngularProject, {
+        options: options,
+        applyPath: './files/base',
+        relativeToWorkspacePath: `/`,
+      });
+    }
+
+    return tree;
+  };
+}
+
+function addCommonFiles(options: SchematicsOptions): Rule {
   return (tree: Tree, context: SchematicContext) => {
     context.logger.debug('Adding Puppeteer base files.');
     const {projects} = getAngularConfig(tree);
 
-    return addBaseFiles(tree, context, {
-      projects,
+    return addCommonFilesHelper(tree, context, projects, {
       options: {
         ...options,
         ext:
@@ -115,8 +164,7 @@ function addOtherFiles(options: SchematicsOptions): Rule {
     context.logger.debug('Adding Puppeteer additional files.');
     const {projects} = getAngularConfig(tree);
 
-    return addFrameworkFiles(tree, context, {
-      projects,
+    return addFrameworkFiles(tree, context, projects, {
       options,
     });
   };

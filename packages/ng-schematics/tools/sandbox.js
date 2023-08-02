@@ -20,11 +20,29 @@ const {join} = require('path');
 const {cwd} = require('process');
 
 const isInit = process.argv.indexOf('--init') !== -1;
+const isMulti = process.argv.indexOf('--multi') !== -1;
 const isBuild = process.argv.indexOf('--build') !== -1;
 const isTest = process.argv.indexOf('--test') !== -1;
 const commands = {
   build: ['npm run build'],
   createSandbox: ['npx ng new sandbox --defaults'],
+  createMultiWorkspace: [
+    'ng new sandbox --create-application=false --directory=multi',
+  ],
+  createMultiProjects: [
+    {
+      command: 'ng generate application core --style=css --routing=false',
+      options: {
+        cwd: join(cwd(), '/multi/'),
+      },
+    },
+    {
+      command: 'ng generate application admin --style=css --routing=false',
+      options: {
+        cwd: join(cwd(), '/multi/'),
+      },
+    },
+  ],
   runSchematics: [
     {
       command: 'npm run schematics',
@@ -51,7 +69,7 @@ const scripts = {
   // Runs the Puppeteer Ng-Schematics against the sandbox
   schematics:
     'npm run delete:file && npm run build:schematics && schematics ../:ng-add --dry-run=false',
-  'schematics:spec':
+  'schematics:test':
     'npm run build:schematics && schematics ../:test --dry-run=false',
 };
 /**
@@ -79,7 +97,7 @@ async function executeCommand(commands) {
       });
 
       createProcess.on('error', message => {
-        console.error(message);
+        console.error(`Running ${toExecute} exited with error:`, message);
         reject(message);
       });
 
@@ -96,9 +114,16 @@ async function executeCommand(commands) {
 
 async function main() {
   if (isInit) {
-    await executeCommand(commands.createSandbox);
+    if (isMulti) {
+      await executeCommand(commands.createMultiWorkspace);
+      await executeCommand(commands.createMultiProjects);
+    } else {
+      await executeCommand(commands.createSandbox);
+    }
 
-    const packageJsonFile = join(cwd(), '/sandbox/package.json');
+    const directory = isMulti ? 'multi' : 'sandbox';
+
+    const packageJsonFile = join(cwd(), `/${directory}/package.json`);
     const packageJson = JSON.parse(await readFile(packageJsonFile));
     packageJson['scripts'] = {
       ...packageJson['scripts'],

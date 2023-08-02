@@ -16,7 +16,7 @@
 
 import {SchematicsException, Tree} from '@angular-devkit/schematics';
 
-import {AngularJson} from './types.js';
+import type {AngularJson} from './types.js';
 
 export function getJsonFileAsObject(
   tree: Tree,
