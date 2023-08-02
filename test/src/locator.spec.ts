@@ -287,6 +287,31 @@ describe('Locator', function () {
         clock.restore();
       }
     });
+
+    it('should work with a OOPIF', async () => {
+      const {page} = await getTestState();
+
+      await page.setViewport({width: 500, height: 500});
+      await page.setContent(`
+        <iframe src="data:text/html,<button onclick=&quot;this.innerText = 'clicked';&quot;>test</button>"></iframe>
+      `);
+      const frame = await page.waitForFrame(frame => {
+        return frame.url().startsWith('data');
+      });
+      let willClick = false;
+      await frame
+        .locator('button')
+        .on(LocatorEmittedEvents.Action, () => {
+          willClick = true;
+        })
+        .click();
+      const button = await frame.$('button');
+      const text = await button?.evaluate(el => {
+        return el.innerText;
+      });
+      expect(text).toBe('clicked');
+      expect(willClick).toBe(true);
+    });
   });
 
   describe('Locator.hover', function () {
