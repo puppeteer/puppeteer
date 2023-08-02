@@ -945,7 +945,7 @@
     "testIdPattern": "[locator.spec] Locator Locator.change should work for contenteditable",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL", "PASS"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[locator.spec] Locator Locator.change should work for inputs",
