@@ -14,6 +14,41 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.4.4 to 1.4.5
 
+## [21.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.9.0...puppeteer-core-v21.0.0) (2023-08-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* use Target for filters ([#10601](https://github.com/puppeteer/puppeteer/issues/10601))
+
+### Features
+
+* add page.createCDPSession method ([#10515](https://github.com/puppeteer/puppeteer/issues/10515)) ([d0c5b8e](https://github.com/puppeteer/puppeteer/commit/d0c5b8e08905f3802705a1a90d7cc8fa04bc82db))
+* implement `Locator.prototype.filter` ([#10631](https://github.com/puppeteer/puppeteer/issues/10631)) ([e73d35d](https://github.com/puppeteer/puppeteer/commit/e73d35def0718468fe854ac2ef5f4a8beafb2fb3))
+* implement `Locator.prototype.map` ([#10630](https://github.com/puppeteer/puppeteer/issues/10630)) ([47eecf5](https://github.com/puppeteer/puppeteer/commit/47eecf5bb11daba0114ad04282beb01c85eb9405))
+* implement `Locator.prototype.wait` ([#10629](https://github.com/puppeteer/puppeteer/issues/10629)) ([5d34d42](https://github.com/puppeteer/puppeteer/commit/5d34d42d1536cbe7cf2ba1aa8670d909c4e6a6fc))
+* implement `Locator.prototype.waitHandle` ([#10650](https://github.com/puppeteer/puppeteer/issues/10650)) ([fdada74](https://github.com/puppeteer/puppeteer/commit/fdada74ba7265b3571ebdf60ae301b64d13a8226))
+* implement function locators ([#10632](https://github.com/puppeteer/puppeteer/issues/10632)) ([6ad92f7](https://github.com/puppeteer/puppeteer/commit/6ad92f7f84f477b22674f52f0a145a500c3aa152))
+* implement immutable locator operations ([#10638](https://github.com/puppeteer/puppeteer/issues/10638)) ([34be28d](https://github.com/puppeteer/puppeteer/commit/34be28db5d9971cf16d9741b0141357df3cbf74c))
+
+
+### Bug Fixes
+
+* remove typescript from peer dependencies ([#10593](https://github.com/puppeteer/puppeteer/issues/10593)) ([c60572a](https://github.com/puppeteer/puppeteer/commit/c60572a1ca36ea5946d287bd629ac31798d84cb0))
+* roll to Chrome 115.0.5790.102 (r1148114) ([#10608](https://github.com/puppeteer/puppeteer/issues/10608)) ([8649c53](https://github.com/puppeteer/puppeteer/commit/8649c53a706e5a09ae5e16849eb29a793cec5bec))
+
+
+### Code Refactoring
+
+* use Target for filters ([#10601](https://github.com/puppeteer/puppeteer/issues/10601)) ([44712d1](https://github.com/puppeteer/puppeteer/commit/44712d1e6efcb3fa49c27b1195d17c0c1c92a0ca))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 1.4.6 to 1.5.0
+
 ## [20.9.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.8.3...puppeteer-core-v20.9.0) (2023-07-20)
 
 
