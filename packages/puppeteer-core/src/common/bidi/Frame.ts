@@ -226,19 +226,19 @@ export class Frame extends BaseFrame {
       getWaitUntilSingle(waitUntil)
     ) as string;
 
-    const [info] = await Promise.all([
+    const [info] = await Deferred.race([
       // TODO(lightning00blade): Should also keep tack of
       // navigationAborted and navigationFailed
-      waitForEvent<Bidi.BrowsingContext.NavigationInfo>(
-        this.#context,
-        waitUntilEvent,
-        () => {
-          return true;
-        },
-        timeout,
-        this.#abortDeferred.valueOrThrow()
-      ),
-      Deferred.race([
+      Promise.all([
+        waitForEvent<Bidi.BrowsingContext.NavigationInfo>(
+          this.#context,
+          waitUntilEvent,
+          () => {
+            return true;
+          },
+          timeout,
+          this.#abortDeferred.valueOrThrow()
+        ),
         waitForEvent(
           this.#context,
           Bidi.ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
@@ -248,16 +248,18 @@ export class Frame extends BaseFrame {
           timeout,
           this.#abortDeferred.valueOrThrow()
         ),
-        waitForEvent(
-          this.#context,
-          Bidi.ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
-          () => {
-            return true;
-          },
-          timeout,
-          this.#abortDeferred.valueOrThrow()
-        ),
       ]),
+      waitForEvent<Bidi.BrowsingContext.NavigationInfo>(
+        this.#context,
+        Bidi.ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
+        () => {
+          return true;
+        },
+        timeout,
+        this.#abortDeferred.valueOrThrow()
+      ).then(info => {
+        return [info, undefined];
+      }),
     ]);
 
     return this.#page.getNavigationResponse(info.navigation);
