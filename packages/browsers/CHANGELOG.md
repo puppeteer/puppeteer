@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.5.0](https://github.com/puppeteer/puppeteer/compare/browsers-v1.4.6...browsers-v1.5.0) (2023-08-02)
+
+
+### Features
+
+* add executablePath to InstalledBrowser ([#10594](https://github.com/puppeteer/puppeteer/issues/10594)) ([87522e7](https://github.com/puppeteer/puppeteer/commit/87522e778a6487111931458755e701f1c4b717d9))
+
+
+### Bug Fixes
+
+* clear pending TLS socket handle ([#10667](https://github.com/puppeteer/puppeteer/issues/10667)) ([87bd791](https://github.com/puppeteer/puppeteer/commit/87bd791ddc10c247bf154bbac2aa912327a4cf20))
+* remove typescript from peer dependencies ([#10593](https://github.com/puppeteer/puppeteer/issues/10593)) ([c60572a](https://github.com/puppeteer/puppeteer/commit/c60572a1ca36ea5946d287bd629ac31798d84cb0))
+
 ## [1.4.6](https://github.com/puppeteer/puppeteer/compare/browsers-v1.4.5...browsers-v1.4.6) (2023-07-20)
 
 

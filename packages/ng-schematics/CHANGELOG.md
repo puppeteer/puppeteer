@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.3.0...ng-schematics-v0.3.0) (2023-08-02)
+
+
+### Features
+
+* support for multi projects repos ([#10665](https://github.com/puppeteer/puppeteer/issues/10665)) ([6bca1db](https://github.com/puppeteer/puppeteer/commit/6bca1db956c44358716d52f0b9f3c012ba0b482d))
+
 ## [0.3.0](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.2.0...ng-schematics-v0.3.0) (2023-06-29)
 
 
