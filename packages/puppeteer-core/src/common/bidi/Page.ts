@@ -712,6 +712,12 @@ export class Page extends PageBase {
       });
     return new CDPSessionWrapper(this.mainFrame().context(), sessionId);
   }
+
+  override async bringToFront(): Promise<void> {
+    await this.#connection.send('browsingContext.activate', {
+      context: this.mainFrame()._id,
+    });
+  }
 }
 
 function isConsoleLogEntry(
