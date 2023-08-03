@@ -251,7 +251,7 @@ jobs:
         run: npm run test -- --test-suite ${{ matrix.suite }} --save-stats-to /tmp/artifacts/${{ github.event_name }}_INSERTID.json
         env:
           MOZ_PROFILER_STARTUP: 1
-          MOZ_PROFILER_SHUTDOWN: /tmp/artifacts/firefox-profiling
+          MOZ_PROFILER_SHUTDOWN: /tmp/artifacts/firefox-profiling.json
       # - name: Install linux dependencies.
       #   if: ${{ matrix.os == 'ubuntu-latest' }}
       #   run: sudo apt-get install xvfb
