@@ -8,7 +8,17 @@ import {
 } from '@angular-devkit/schematics/testing';
 import sinon from 'sinon';
 
-const APPLICATION_OPTIONS = {
+const WORKSPACE_OPTIONS = {
+  name: 'workspace',
+  newProjectRoot: 'projects',
+  version: '14.0.0',
+};
+
+const MULTI_APPLICATION_OPTIONS = {
+  name: 'sandbox',
+};
+
+const SINGLE_APPLICATION_OPTIONS = {
   name: 'sandbox',
   directory: '.',
   createApplication: true,
@@ -41,9 +51,9 @@ export function getAngularJsonScripts(
 } {
   const angularJson = tree.readJson('angular.json') as any;
   const e2eScript = isDefault ? 'e2e' : 'puppeteer';
-  return angularJson['projects']?.[APPLICATION_OPTIONS.name]?.['architect'][
-    e2eScript
-  ];
+  return angularJson['projects']?.[SINGLE_APPLICATION_OPTIONS.name]?.[
+    'architect'
+  ][e2eScript];
 }
 
 export function getPackageJson(tree: UnitTestTree): {
@@ -59,8 +69,13 @@ export function getPackageJson(tree: UnitTestTree): {
   };
 }
 
+export function getMultiProjectFile(file: string): string {
+  return `/${WORKSPACE_OPTIONS.newProjectRoot}/${MULTI_APPLICATION_OPTIONS.name}/${file}`;
+}
+
 export async function buildTestingTree(
   command: 'ng-add' | 'test',
+  type: 'single' | 'multi' = 'single',
   userOptions?: Record<string, any>
 ): Promise<UnitTestTree> {
   const runner = new SchematicTestRunner(
@@ -76,11 +91,27 @@ export async function buildTestingTree(
   let workingTree: UnitTestTree;
 
   // Build workspace
-  workingTree = await runner.runExternalSchematic(
-    '@schematics/angular',
-    'ng-new',
-    APPLICATION_OPTIONS
-  );
+  if (type === 'single') {
+    workingTree = await runner.runExternalSchematic(
+      '@schematics/angular',
+      'ng-new',
+      SINGLE_APPLICATION_OPTIONS
+    );
+  } else {
+    // Build workspace
+    workingTree = await runner.runExternalSchematic(
+      '@schematics/angular',
+      'workspace',
+      WORKSPACE_OPTIONS
+    );
+    // Build dummy application
+    workingTree = await runner.runExternalSchematic(
+      '@schematics/angular',
+      'application',
+      MULTI_APPLICATION_OPTIONS,
+      workingTree
+    );
+  }
 
   if (command !== 'ng-add') {
     // We want to create update the proper files with `ng-add`

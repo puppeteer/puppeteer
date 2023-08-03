@@ -15,6 +15,10 @@
     },
     "project": {
       "type": "string",
+      "$default": {
+        "$source": "argv",
+        "index": 1
+      },
       "alias": "p"
     }
   },

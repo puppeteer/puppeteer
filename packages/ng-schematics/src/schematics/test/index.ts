@@ -22,7 +22,7 @@ import {
   Tree,
 } from '@angular-devkit/schematics';
 
-import {addBaseFiles} from '../utils/files.js';
+import {addCommonFiles} from '../utils/files.js';
 import {getAngularConfig} from '../utils/json.js';
 import {
   TestingFramework,
@@ -33,10 +33,26 @@ import {
 
 // You don't have to export the function as default. You can also have more than one rule
 // factory per file.
-export function test(options: SchematicsSpec): Rule {
+export function test(userArgs: Record<string, string>): Rule {
+  const options = parseUserTestArgs(userArgs);
+
   return (tree: Tree, context: SchematicContext) => {
     return chain([addSpecFile(options)])(tree, context);
   };
+}
+
+function parseUserTestArgs(userArgs: Record<string, string>): SchematicsSpec {
+  const options: Partial<SchematicsSpec> = {
+    ...userArgs,
+  };
+  if ('p' in userArgs) {
+    options['project'] = userArgs['p'];
+  }
+  if ('n' in userArgs) {
+    options['name'] = userArgs['n'];
+  }
+
+  return options as SchematicsSpec;
 }
 
 function findTestingOption<Property extends keyof SchematicsOptions>(
@@ -76,7 +92,7 @@ function addSpecFile(options: SchematicsSpec): Rule {
           });
     if (!foundProject) {
       throw new SchematicsException(
-        `Project not found! Please use -p to specify in which project to run.`
+        `Project not found! Please run "ng generate @puppeteer/ng-schematics:test <Test> <Project>"`
       );
     }
 
@@ -88,16 +104,20 @@ function addSpecFile(options: SchematicsSpec): Rule {
 
     context.logger.debug('Creating Spec file.');
 
-    return addBaseFiles(tree, context, {
-      projects: {[foundProject[0]]: foundProject[1]},
-      options: {
-        name: options.name,
-        testingFramework,
-        // Node test runner does not support glob patterns
-        // It looks for files `*.test.js`
-        ext: testingFramework === TestingFramework.Node ? 'test' : 'e2e',
-        port,
-      },
-    });
+    return addCommonFiles(
+      tree,
+      context,
+      {[foundProject[0]]: foundProject[1]} as Record<string, AngularProject>,
+      {
+        options: {
+          name: options.name,
+          testingFramework,
+          // Node test runner does not support glob patterns
+          // It looks for files `*.test.js`
+          ext: testingFramework === TestingFramework.Node ? 'test' : 'e2e',
+          port,
+        },
+      }
+    );
   };
 }
