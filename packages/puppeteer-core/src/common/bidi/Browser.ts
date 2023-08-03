@@ -244,7 +244,7 @@ export class Browser extends BrowserBase {
       return;
     }
     // TODO: implement browser.close.
-    // await this.#connection.send('browser.close', {});
+    await this.#connection.send('browser.close' as any, {});
     this.#connection.dispose();
     await this.#closeCallback?.call(null);
   }
