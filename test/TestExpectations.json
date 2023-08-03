@@ -3964,5 +3964,11 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headless"],
     "expectations": ["FAIL", "PASS"]
+  },
+  {
+    "testIdPattern": "[injected.spec] PuppeteerUtil tests *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
   }
 ]
