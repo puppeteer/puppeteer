@@ -14,6 +14,13 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.4.4 to 1.4.5
 
+## [21.0.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.0.0...puppeteer-core-v21.0.1) (2023-08-03)
+
+
+### Bug Fixes
+
+* use handle frame instead of page ([#10676](https://github.com/puppeteer/puppeteer/issues/10676)) ([1b44b91](https://github.com/puppeteer/puppeteer/commit/1b44b911d3633df89bd6106aaf7accb49230934d))
+
 ## [21.0.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v20.9.0...puppeteer-core-v21.0.0) (2023-08-02)
 
 
