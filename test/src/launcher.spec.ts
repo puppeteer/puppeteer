@@ -107,7 +107,10 @@ describe('Launcher specs', function () {
           ]);
           for (let i = 0; i < 2; i++) {
             const message = results[i].message;
-            expect(message).toContain('Target closed');
+            expect(message).atLeastOneToContain([
+              'Target closed',
+              'Page closed!',
+            ]);
             expect(message).not.toContain('Timeout');
           }
         } finally {

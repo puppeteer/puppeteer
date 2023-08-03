@@ -72,6 +72,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[injected.spec] PuppeteerUtil tests *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[jshandle.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1177,6 +1183,18 @@
   },
   {
     "testIdPattern": "[page.spec] Page Page.close should reject all promises when page is closed",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.close should set the page close state",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.close should terminate network waiters",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
@@ -3964,11 +3982,5 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headless"],
     "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[injected.spec] PuppeteerUtil tests *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
   }
 ]
