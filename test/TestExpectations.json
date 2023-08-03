@@ -966,6 +966,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[locator.spec] Locator Locator.click should work with a OOPIF",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[mouse.spec] Mouse should click the document",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],

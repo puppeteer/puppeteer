@@ -322,7 +322,7 @@ export abstract class Locator<T> extends EventEmitter {
       return EMPTY;
     }
     return from(
-      handle.frame.page().waitForFunction(
+      handle.frame.waitForFunction(
         element => {
           if (!(element instanceof HTMLElement)) {
             return true;
