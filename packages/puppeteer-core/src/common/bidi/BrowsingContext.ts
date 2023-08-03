@@ -4,9 +4,8 @@ import ProtocolMapping from 'devtools-protocol/types/protocol-mapping.js';
 import {WaitForOptions} from '../../api/Page.js';
 import {assert} from '../../util/assert.js';
 import {Deferred} from '../../util/Deferred.js';
-import type {CDPSession, Connection as CDPConnection} from '../Connection.js';
+import {CDPSession, Connection as CDPConnection} from '../Connection.js';
 import {ProtocolError, TargetCloseError, TimeoutError} from '../Errors.js';
-import {EventEmitter} from '../EventEmitter.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
 import {getPageContent, setPageContent, waitWithTimeout} from '../util.js';
 
@@ -44,7 +43,7 @@ export const cdpSessions = new Map<string, CDPSessionWrapper>();
 /**
  * @internal
  */
-export class CDPSessionWrapper extends EventEmitter implements CDPSession {
+export class CDPSessionWrapper extends CDPSession {
   #context: BrowsingContext;
   #sessionId = Deferred.create<string>();
   #detached = false;
@@ -70,11 +69,11 @@ export class CDPSessionWrapper extends EventEmitter implements CDPSession {
     }
   }
 
-  connection(): CDPConnection | undefined {
+  override connection(): CDPConnection | undefined {
     return undefined;
   }
 
-  async send<T extends keyof ProtocolMapping.Commands>(
+  override async send<T extends keyof ProtocolMapping.Commands>(
     method: T,
     ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
@@ -92,7 +91,7 @@ export class CDPSessionWrapper extends EventEmitter implements CDPSession {
     return result.result;
   }
 
-  async detach(): Promise<void> {
+  override async detach(): Promise<void> {
     cdpSessions.delete(this.id());
     await this.#context.cdpSession.send('Target.detachFromTarget', {
       sessionId: this.id(),
@@ -100,7 +99,7 @@ export class CDPSessionWrapper extends EventEmitter implements CDPSession {
     this.#detached = true;
   }
 
-  id(): string {
+  override id(): string {
     const val = this.#sessionId.value();
     return val instanceof Error || val === undefined ? '' : val;
   }

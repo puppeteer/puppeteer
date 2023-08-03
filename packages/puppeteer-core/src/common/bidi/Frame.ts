@@ -19,6 +19,7 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {ElementHandle} from '../../api/ElementHandle.js';
 import {Frame as BaseFrame} from '../../api/Frame.js';
 import {Deferred} from '../../util/Deferred.js';
+import {CDPSession} from '../Connection.js';
 import {UTILITY_WORLD_NAME} from '../FrameManager.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
@@ -72,6 +73,10 @@ export class Frame extends BaseFrame {
 
     puppeteerRealm.setFrame(this);
     context.setFrame(this);
+  }
+
+  override _client(): CDPSession {
+    return this.context().cdpSession;
   }
 
   override mainRealm(): Sandbox {
