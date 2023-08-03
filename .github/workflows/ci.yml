@@ -262,7 +262,7 @@ jobs:
         if: always()
         with:
           name: test-results
-          path: /tmp/artifacts/*.json
+          path: /tmp/artifacts/*
 
   firefox-tests-required:
     name: '[Required] Firefox tests'
