@@ -222,10 +222,6 @@ jobs:
             suite: firefox-headful
           - os: macos-latest
             suite: firefox-headless
-          # Disabled due to https://bugzilla.mozilla.org/show_bug.cgi?id=1843550
-          # The first time the browsers launches it crashes.
-          - os: macos-latest
-            suite: firefox-bidi
     steps:
       - name: Checkout
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
@@ -316,7 +312,7 @@ jobs:
           - macos-latest
           - windows-latest
         node:
-          - 18
+          - lts/*
         pkg_manager:
           - npm
     steps:
