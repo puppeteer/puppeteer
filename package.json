@@ -105,9 +105,9 @@
   },
   "devDependencies": {
     "@actions/core": "1.10.0",
-    "@microsoft/api-documenter": "7.22.27",
-    "@microsoft/api-extractor": "7.36.2",
-    "@microsoft/api-extractor-model": "7.27.4",
+    "@microsoft/api-documenter": "7.22.32",
+    "@microsoft/api-extractor": "7.36.3",
+    "@microsoft/api-extractor-model": "7.27.5",
     "@pptr/testserver": "file:packages/testserver",
     "@prettier/sync": "0.2.1",
     "@rollup/plugin-node-resolve": "15.1.0",
