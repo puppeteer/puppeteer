@@ -1194,6 +1194,18 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[page.spec] Page Page.close should set the page close state",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.close should terminate network waiters",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[page.spec] Page Page.close should terminate network waiters",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -2173,6 +2185,12 @@
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should support url fragment",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[frame.spec] Frame specs Frame.client should return the client instance",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
@@ -3202,6 +3220,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.client should return the client instance",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.close should not be visible in browser.pages",

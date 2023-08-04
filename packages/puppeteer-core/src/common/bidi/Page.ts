@@ -132,6 +132,10 @@ export class Page extends PageBase {
   #browsingContext: BrowsingContext;
   #browserContext: BrowserContext;
 
+  _client(): CDPSession {
+    return this.mainFrame().context().cdpSession;
+  }
+
   constructor(
     browsingContext: BrowsingContext,
     browserContext: BrowserContext
