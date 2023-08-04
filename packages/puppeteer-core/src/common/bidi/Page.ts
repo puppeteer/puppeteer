@@ -394,6 +394,10 @@ export class Page extends PageBase {
     return this.#networkManager.getNavigationResponse(id);
   }
 
+  override isClosed(): boolean {
+    return this.#closedDeferred.finished();
+  }
+
   override async close(): Promise<void> {
     if (this.#closedDeferred.finished()) {
       return;
