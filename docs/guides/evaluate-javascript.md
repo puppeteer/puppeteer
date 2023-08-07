@@ -80,7 +80,7 @@ const body = await page.evaluateHandle(() => {
 console.log(body instanceof ElementHandle); // true
 ```
 
-The returned object is either a `JSHandle` or a `ElementHandle`. `ElementHandle` extends `JSONHandle` and it is only created for DOM elements.
+The returned object is either a `JSHandle` or a `ElementHandle`. `ElementHandle` extends `JSHandle` and it is only created for DOM elements.
 
 See the [API documentation](https://pptr.dev/api) for more details about what methods are available for handles.
 
