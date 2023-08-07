@@ -60,7 +60,6 @@ export interface SandboxChart {
  * @internal
  */
 export class Sandbox implements RealmBase {
-  #document?: ElementHandle<Document>;
   #realm: Realm;
 
   #timeoutSettings: TimeoutSettings;
@@ -76,13 +75,11 @@ export class Sandbox implements RealmBase {
   }
 
   async document(): Promise<ElementHandle<Document>> {
-    if (this.#document) {
-      return this.#document;
-    }
-    this.#document = await this.#realm.evaluateHandle(() => {
+    // TODO(jrandolf): We should try to cache this because we need to dispose
+    // this when it's unused.
+    return await this.#realm.evaluateHandle(() => {
       return document;
     });
-    return this.#document;
   }
 
   async $<Selector extends string>(

@@ -7,6 +7,7 @@ import {scriptInjector} from '../ScriptInjector.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
 import {
   PuppeteerURL,
+  debugError,
   getSourcePuppeteerURLIfAvailable,
   isString,
 } from '../util.js';
@@ -46,6 +47,22 @@ export class Realm extends EventEmitter {
 
   setFrame(frame: Frame): void {
     this.#frame = frame;
+
+    // TODO(jrandolf): We should try to find a less brute-force way of doing
+    // this.
+    this.connection.on(
+      Bidi.ChromiumBidi.Script.EventNames.RealmDestroyed,
+      async () => {
+        const promise = this.internalPuppeteerUtil;
+        this.internalPuppeteerUtil = undefined;
+        try {
+          const util = await promise;
+          await util?.dispose();
+        } catch (error) {
+          debugError(error);
+        }
+      }
+    );
   }
 
   protected internalPuppeteerUtil?: Promise<JSHandle<PuppeteerUtil>>;
