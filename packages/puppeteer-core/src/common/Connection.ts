@@ -24,6 +24,7 @@ import {ConnectionTransport} from './ConnectionTransport.js';
 import {debug} from './Debug.js';
 import {TargetCloseError, ProtocolError} from './Errors.js';
 import {EventEmitter} from './EventEmitter.js';
+import {CDPTarget} from './Target.js';
 import {debugError} from './util.js';
 
 const debugProtocolSend = debug('puppeteer:protocol:SEND ►');
@@ -307,6 +308,7 @@ export class Connection extends EventEmitter {
     const object = JSON.parse(message);
     if (object.method === 'Target.attachedToTarget') {
       const sessionId = object.params.sessionId;
+      const parentSession = this.#sessions.get(object.sessionId);
       const session = new CDPSessionImpl(
         this,
         object.params.targetInfo.type,
@@ -315,7 +317,6 @@ export class Connection extends EventEmitter {
       );
       this.#sessions.set(sessionId, session);
       this.emit('sessionattached', session);
-      const parentSession = this.#sessions.get(object.sessionId);
       if (parentSession) {
         parentSession.emit('sessionattached', session);
       }
@@ -515,6 +516,7 @@ export class CDPSessionImpl extends CDPSession {
   #callbacks = new CallbackRegistry();
   #connection?: Connection;
   #parentSessionId?: string;
+  #target?: CDPTarget;
 
   /**
    * @internal
@@ -530,6 +532,20 @@ export class CDPSessionImpl extends CDPSession {
     this.#targetType = targetType;
     this.#sessionId = sessionId;
     this.#parentSessionId = parentSessionId;
+  }
+
+  /**
+   * @internal
+   */
+  _setTarget(target: CDPTarget): void {
+    this.#target = target;
+  }
+
+  /**
+   * @internal
+   */
+  _target(): CDPTarget | undefined {
+    return this.#target;
   }
 
   override connection(): Connection | undefined {

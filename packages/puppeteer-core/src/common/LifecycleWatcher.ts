@@ -119,6 +119,11 @@ export class LifecycleWatcher {
       ),
       addEventListener(
         frame,
+        FrameEmittedEvents.FrameSwappedByActivation,
+        this.#frameSwappedByActivation.bind(this)
+      ),
+      addEventListener(
+        frame,
         FrameEmittedEvents.FrameDetached,
         this.#onFrameDetached.bind(this)
       ),
@@ -218,6 +223,11 @@ export class LifecycleWatcher {
   }
 
   #frameSwapped(): void {
+    this.#swapped = true;
+    this.#checkLifecycleComplete();
+  }
+
+  #frameSwappedByActivation(): void {
     this.#swapped = true;
     this.#checkLifecycleComplete();
   }

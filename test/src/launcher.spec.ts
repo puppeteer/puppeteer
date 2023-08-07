@@ -82,7 +82,7 @@ describe('Launcher specs', function () {
             });
           remote.disconnect();
           const error = await watchdog;
-          expect(error.message).toContain('frame got detached');
+          expect(error.message).toContain('Session closed.');
         } finally {
           await close();
         }

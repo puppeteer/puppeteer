@@ -108,6 +108,13 @@ export class FirefoxTargetManager
     this.setupAttachmentListeners(this.#connection);
   }
 
+  /**
+   * @internal
+   */
+  _tabTargetBySession(_session?: CDPSession): CDPSession | undefined {
+    return undefined;
+  }
+
   addTargetInterceptor(
     client: CDPSession | Connection,
     interceptor: TargetInterceptor

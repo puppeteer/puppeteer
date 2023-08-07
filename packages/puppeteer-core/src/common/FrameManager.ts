@@ -18,11 +18,13 @@ import {Protocol} from 'devtools-protocol';
 
 import {Page} from '../api/Page.js';
 import {assert} from '../util/assert.js';
+import {Deferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {
   CDPSession,
   CDPSessionEmittedEvents,
+  CDPSessionImpl,
   isTargetClosedError,
 } from './Connection.js';
 import {DeviceRequestPromptManager} from './DeviceRequestPrompt.js';
@@ -112,12 +114,45 @@ export class FrameManager extends EventEmitter {
     this.#networkManager = new NetworkManager(client, ignoreHTTPSErrors, this);
     this.#timeoutSettings = timeoutSettings;
     this.setupEventListeners(this.#client);
-    client.once(CDPSessionEmittedEvents.Disconnected, () => {
+    client.once(CDPSessionEmittedEvents.Disconnected, async () => {
       const mainFrame = this._frameTree.getMainFrame();
-      if (mainFrame) {
-        this.#removeFramesRecursively(mainFrame);
+      if (!mainFrame) {
+        return;
+      }
+      const swapped = Deferred.create<void>({
+        timeout: 100,
+        message: 'Frame was not swapped',
+      });
+      mainFrame.once(FrameEmittedEvents.FrameSwappedByActivation, () => {
+        swapped.resolve();
+      });
+      try {
+        await swapped.valueOrThrow();
+        for (const child of mainFrame.childFrames()) {
+          this.#removeFramesRecursively(child);
+        }
+      } catch (err) {
+        if (mainFrame) {
+          this.#removeFramesRecursively(mainFrame);
+        }
       }
     });
+  }
+
+  async swapFrameTree(client: CDPSession): Promise<void> {
+    this.#onExecutionContextsCleared(this.#client);
+
+    this.#client = client;
+    const frame = this._frameTree.getMainFrame();
+    if (frame) {
+      this._frameTree.removeFrame(frame);
+      frame.updateId((this.#client as CDPSessionImpl)._target()!._targetId);
+    }
+    this.setupEventListeners(client);
+    await this.initialize(client);
+    if (frame) {
+      frame.emit(FrameEmittedEvents.FrameSwappedByActivation);
+    }
   }
 
   private setupEventListeners(session: CDPSession) {

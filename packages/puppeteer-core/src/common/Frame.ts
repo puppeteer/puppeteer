@@ -49,6 +49,7 @@ export const FrameEmittedEvents = {
   LifecycleEvent: Symbol('Frame.LifecycleEvent'),
   FrameNavigatedWithinDocument: Symbol('Frame.FrameNavigatedWithinDocument'),
   FrameDetached: Symbol('Frame.FrameDetached'),
+  FrameSwappedByActivation: Symbol('Frame.FrameSwappedByActivation'),
 };
 
 /**
@@ -82,6 +83,15 @@ export class Frame extends BaseFrame {
     this._loaderId = '';
 
     this.updateClient(client);
+
+    this.on(FrameEmittedEvents.FrameSwappedByActivation, () => {
+      this._onLoadingStarted();
+      this._onLoadingStopped();
+    });
+  }
+
+  updateId(id: string): void {
+    this._id = id;
   }
 
   updateClient(client: CDPSession): void {
