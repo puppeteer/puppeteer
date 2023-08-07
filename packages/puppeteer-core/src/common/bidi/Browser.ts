@@ -54,6 +54,7 @@ export class Browser extends BrowserBase {
     'browsingContext',
     'network',
     'log',
+    'script',
   ];
   static readonly subscribeCdpEvents: Bidi.Cdp.EventNames[] = [
     // Coverage
