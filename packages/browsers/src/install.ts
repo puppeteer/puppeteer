@@ -126,7 +126,7 @@ export async function install(
   assert(fileName, `A malformed download URL was found: ${url}.`);
   const cache = new Cache(options.cacheDir);
   const browserRoot = cache.browserRoot(options.browser);
-  const archivePath = path.join(browserRoot, fileName);
+  const archivePath = path.join(browserRoot, `${options.buildId}-${fileName}`);
   if (!existsSync(browserRoot)) {
     await mkdir(browserRoot, {recursive: true});
   }
