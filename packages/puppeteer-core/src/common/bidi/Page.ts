@@ -30,6 +30,7 @@ import {
 } from '../../api/Page.js';
 import {assert} from '../../util/assert.js';
 import {Deferred} from '../../util/Deferred.js';
+import {interpolateFunction, stringifyFunction} from '../../util/Function.js';
 import {Accessibility} from '../Accessibility.js';
 import {CDPSession} from '../Connection.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
@@ -43,7 +44,7 @@ import {PDFOptions} from '../PDFOptions.js';
 import {Viewport} from '../PuppeteerViewport.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
 import {Tracing} from '../Tracing.js';
-import {EvaluateFunc, HandleFor} from '../types.js';
+import {Awaitable, EvaluateFunc, FlattenHandle, HandleFor} from '../types.js';
 import {
   debugError,
   evaluationString,
@@ -568,6 +569,242 @@ export class Page extends PageBase {
     }
   }
 
+  // TODO(jrandolf): Refactor this once we start implementing `unexposeFunction`.
+  #bindings = new Set<string>();
+  override async exposeFunction<Args extends unknown[], Ret>(
+    name: string,
+    fn:
+      | ((...args: Args) => Awaitable<Ret>)
+      | {default: (...args: Args) => Awaitable<Ret>}
+  ): Promise<void> {
+    if (this.#bindings.has(name)) {
+      throw new Error(
+        `Failed to add page binding with name ${name}: globalThis['${name}'] already exists!`
+      );
+    }
+    this.#bindings.add(name);
+
+    if ('default' in fn) {
+      fn = fn.default;
+    }
+    const func = fn;
+
+    const argsChannel = `__puppeteer__${
+      this.#browsingContext.id
+    }_page_exposeFunction_${name}_args`;
+    const resolveChannel = `__puppeteer__${
+      this.#browsingContext.id
+    }_page_exposeFunction_${name}_resolve`;
+    const rejectChannel = `__puppeteer__${
+      this.#browsingContext.id
+    }_page_exposeFunction_${name}_reject`;
+
+    type SendArgsChannel = (value: [id: number, args: Args]) => void;
+    type SendResolveChannel = (
+      value: [id: number, resolve: (ret: FlattenHandle<Awaited<Ret>>) => void]
+    ) => void;
+    type SendRejectChannel = (
+      value: [id: number, reject: (error: unknown) => void]
+    ) => void;
+
+    interface RemotePromiseCallbacks {
+      resolve: Deferred<Bidi.Script.RemoteValue>;
+      reject: Deferred<Bidi.Script.RemoteValue>;
+    }
+
+    const bindingMaps = new Map<string, Map<number, RemotePromiseCallbacks>>();
+
+    const handleArgumentsMessage = async (
+      params: Bidi.Script.MessageParameters
+    ) => {
+      if (params.channel !== argsChannel) {
+        return;
+      }
+      const {callbacks, remoteValue} = getCallbacksAndRemoteValue(params);
+      const args = remoteValue.value?.[1];
+      assert(args);
+      try {
+        const result = await func(...BidiSerializer.deserialize(args));
+        await this.#connection.send('script.callFunction', {
+          functionDeclaration: stringifyFunction(
+            ([_, resolve]: any, result) => {
+              resolve(result);
+            }
+          ),
+          arguments: [
+            (await callbacks.resolve.valueOrThrow()) as Bidi.Script.LocalValue,
+            BidiSerializer.serializeRemoteValue(result),
+          ],
+          awaitPromise: false,
+          target: params.source,
+        });
+      } catch (error) {
+        try {
+          if (error instanceof Error) {
+            await this.#connection.send('script.callFunction', {
+              functionDeclaration: stringifyFunction(
+                (
+                  [_, reject]: any,
+                  name: string,
+                  message: string,
+                  stack?: string
+                ) => {
+                  const error = new Error(message);
+                  error.name = name;
+                  if (stack) {
+                    error.stack = stack;
+                  }
+                  reject(error);
+                }
+              ),
+              arguments: [
+                (await callbacks.reject.valueOrThrow()) as Bidi.Script.LocalValue,
+                BidiSerializer.serializeRemoteValue(error.name),
+                BidiSerializer.serializeRemoteValue(error.message),
+                BidiSerializer.serializeRemoteValue(error.stack),
+              ],
+              awaitPromise: false,
+              target: params.source,
+            });
+          } else {
+            await this.#connection.send('script.callFunction', {
+              functionDeclaration: stringifyFunction(
+                ([_, reject]: any, error: unknown) => {
+                  reject(error);
+                }
+              ),
+              arguments: [
+                (await callbacks.reject.valueOrThrow()) as Bidi.Script.LocalValue,
+                BidiSerializer.serializeRemoteValue(error),
+              ],
+              awaitPromise: false,
+              target: params.source,
+            });
+          }
+        } catch (error) {
+          debugError(error);
+        }
+      }
+    };
+
+    const handleResolveMessage = (params: Bidi.Script.MessageParameters) => {
+      if (params.channel !== resolveChannel) {
+        return;
+      }
+      const {callbacks, remoteValue} = getCallbacksAndRemoteValue(params);
+      callbacks.resolve.resolve(remoteValue);
+    };
+
+    const handleRejectMessage = (params: Bidi.Script.MessageParameters) => {
+      if (params.channel !== rejectChannel) {
+        return;
+      }
+      const {callbacks, remoteValue} = getCallbacksAndRemoteValue(params);
+      callbacks.reject.resolve(remoteValue);
+    };
+
+    // TODO(jrandolf): Implement cleanup with removePreloadScript.
+    this.#connection.on(
+      Bidi.ChromiumBidi.Script.EventNames.MessageEvent,
+      handleArgumentsMessage
+    );
+    this.#connection.on(
+      Bidi.ChromiumBidi.Script.EventNames.MessageEvent,
+      handleResolveMessage
+    );
+    this.#connection.on(
+      Bidi.ChromiumBidi.Script.EventNames.MessageEvent,
+      handleRejectMessage
+    );
+
+    const functionDeclaration = stringifyFunction(
+      interpolateFunction(
+        (
+          sendArgs: SendArgsChannel,
+          sendResolve: SendResolveChannel,
+          sendReject: SendRejectChannel
+        ) => {
+          let id = 0;
+          Object.assign(globalThis, {
+            [PLACEHOLDER('name') as string]: function (...args: Args) {
+              return new Promise<FlattenHandle<Awaited<Ret>>>(
+                (resolve, reject) => {
+                  sendArgs([id, args]);
+                  sendResolve([id, resolve]);
+                  sendReject([id, reject]);
+                  ++id;
+                }
+              );
+            },
+          });
+        },
+        {name: `"${name}"`}
+      )
+    );
+    const channelArguments = [
+      {
+        type: 'channel' as const,
+        value: {
+          channel: argsChannel,
+          ownership: Bidi.Script.ResultOwnership.Root,
+        },
+      },
+      {
+        type: 'channel' as const,
+        value: {
+          channel: resolveChannel,
+          ownership: Bidi.Script.ResultOwnership.Root,
+        },
+      },
+      {
+        type: 'channel' as const,
+        value: {
+          channel: rejectChannel,
+          ownership: Bidi.Script.ResultOwnership.Root,
+        },
+      },
+    ];
+
+    await this.#connection.send('script.addPreloadScript', {
+      functionDeclaration,
+      arguments: channelArguments,
+    });
+
+    await this.#connection.send('script.callFunction', {
+      functionDeclaration,
+      arguments: channelArguments,
+      awaitPromise: false,
+      target: this.#browsingContext.target,
+    });
+
+    function getCallbacksAndRemoteValue(params: Bidi.Script.MessageParameters) {
+      const {data, source} = params;
+      assert(data.type === 'array');
+      assert(data.value);
+
+      const callerIdRemote = data.value[0];
+      assert(callerIdRemote);
+      assert(callerIdRemote.type === 'number');
+      assert(typeof callerIdRemote.value === 'number');
+
+      let bindingMap = bindingMaps.get(source.realm);
+      if (!bindingMap) {
+        bindingMap = new Map();
+        bindingMaps.set(source.realm, bindingMap);
+      }
+
+      const callerId = callerIdRemote.value;
+      let callbacks = bindingMap.get(callerId);
+      if (!callbacks) {
+        callbacks = {
+          resolve: new Deferred(),
+          reject: new Deferred(),
+        };
+        bindingMap.set(callerId, callbacks);
+      }
+      return {callbacks, remoteValue: data};
+    }
+  }
   override viewport(): Viewport | null {
     return this.#viewport;
   }

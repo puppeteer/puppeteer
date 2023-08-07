@@ -58,7 +58,7 @@ export class BidiSerializer {
       };
     } else if (Array.isArray(arg)) {
       const parsedArray = arg.map(subArg => {
-        return BidiSerializer.serializeRemoveValue(subArg);
+        return BidiSerializer.serializeRemoteValue(subArg);
       });
 
       return {
@@ -81,8 +81,8 @@ export class BidiSerializer {
       const parsedObject: Bidi.Script.MappingLocalValue = [];
       for (const key in arg) {
         parsedObject.push([
-          BidiSerializer.serializeRemoveValue(key),
-          BidiSerializer.serializeRemoveValue(arg[key]),
+          BidiSerializer.serializeRemoteValue(key),
+          BidiSerializer.serializeRemoteValue(arg[key]),
         ]);
       }
 
@@ -110,14 +110,13 @@ export class BidiSerializer {
     );
   }
 
-  static serializeRemoveValue(arg: unknown): Bidi.Script.LocalValue {
+  static serializeRemoteValue(arg: unknown): Bidi.Script.LocalValue {
     switch (typeof arg) {
       case 'symbol':
       case 'function':
         throw new UnserializableError(`Unable to serializable ${typeof arg}`);
       case 'object':
         return BidiSerializer.serializeObject(arg);
-
       case 'undefined':
         return {
           type: 'undefined',
@@ -168,7 +167,7 @@ export class BidiSerializer {
       return objectHandle.remoteValue() as Bidi.Script.RemoteReference;
     }
 
-    return BidiSerializer.serializeRemoveValue(arg);
+    return BidiSerializer.serializeRemoteValue(arg);
   }
 
   static deserializeNumber(value: Bidi.Script.SpecialNumber | number): number {
