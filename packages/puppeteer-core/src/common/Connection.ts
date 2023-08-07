@@ -67,10 +67,12 @@ export class Callback {
   #deferred = Deferred.create<unknown>();
   #timer?: ReturnType<typeof setTimeout>;
   #label: string;
+  #metadata?: unknown;
 
-  constructor(id: number, label: string, timeout?: number) {
+  constructor(id: number, label: string, timeout?: number, metadata?: unknown) {
     this.#id = id;
     this.#label = label;
+    this.#metadata = metadata;
     if (timeout) {
       this.#timer = setTimeout(() => {
         this.#deferred.reject(
@@ -90,6 +92,7 @@ export class Callback {
 
   reject(error: Error): void {
     clearTimeout(this.#timer);
+    debugError(this.#metadata);
     this.#deferred.reject(error);
   }
 
@@ -122,9 +125,15 @@ export class CallbackRegistry {
   create(
     label: string,
     timeout: number | undefined,
-    request: (id: number) => void
+    request: (id: number) => void,
+    metadata?: unknown
   ): Promise<unknown> {
-    const callback = new Callback(this.#idGenerator(), label, timeout);
+    const callback = new Callback(
+      this.#idGenerator(),
+      label,
+      timeout,
+      metadata
+    );
     this.#callbacks.set(callback.id, callback);
     try {
       request(callback.id);

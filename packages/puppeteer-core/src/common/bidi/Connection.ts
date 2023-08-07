@@ -160,15 +160,24 @@ export class Connection extends EventEmitter {
     method: T,
     params: Commands[T]['params']
   ): Promise<{result: Commands[T]['returnType']}> {
-    return this.#callbacks.create(method, this.#timeout, id => {
-      const stringifiedMessage = JSON.stringify({
-        id,
+    return this.#callbacks.create(
+      method,
+      this.#timeout,
+      id => {
+        const stringifiedMessage = JSON.stringify({
+          id,
+          method,
+          params,
+        } as Bidi.Command);
+        debugProtocolSend(stringifiedMessage);
+        this.#transport.send(stringifiedMessage);
+      },
+      {
         method,
         params,
-      } as Bidi.Command);
-      debugProtocolSend(stringifiedMessage);
-      this.#transport.send(stringifiedMessage);
-    }) as Promise<{result: Commands[T]['returnType']}>;
+        stack: new Error().stack,
+      }
+    ) as Promise<{result: Commands[T]['returnType']}>;
   }
 
   /**
