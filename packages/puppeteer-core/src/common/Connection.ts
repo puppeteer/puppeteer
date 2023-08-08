@@ -310,7 +310,8 @@ export class Connection extends EventEmitter {
       const session = new CDPSessionImpl(
         this,
         object.params.targetInfo.type,
-        sessionId
+        sessionId,
+        object.sessionId
       );
       this.#sessions.set(sessionId, session);
       this.emit('sessionattached', session);
@@ -470,6 +471,15 @@ export class CDPSession extends EventEmitter {
     throw new Error('Not implemented');
   }
 
+  /**
+   * Parent session in terms of CDP's auto-attach mechanism.
+   *
+   * @internal
+   */
+  parentSession(): CDPSession | undefined {
+    return undefined;
+  }
+
   send<T extends keyof ProtocolMapping.Commands>(
     method: T,
     ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
@@ -504,19 +514,34 @@ export class CDPSessionImpl extends CDPSession {
   #targetType: string;
   #callbacks = new CallbackRegistry();
   #connection?: Connection;
+  #parentSessionId?: string;
 
   /**
    * @internal
    */
-  constructor(connection: Connection, targetType: string, sessionId: string) {
+  constructor(
+    connection: Connection,
+    targetType: string,
+    sessionId: string,
+    parentSessionId: string | undefined
+  ) {
     super();
     this.#connection = connection;
     this.#targetType = targetType;
     this.#sessionId = sessionId;
+    this.#parentSessionId = parentSessionId;
   }
 
   override connection(): Connection | undefined {
     return this.#connection;
+  }
+
+  override parentSession(): CDPSession | undefined {
+    if (!this.#parentSessionId) {
+      return;
+    }
+    const parent = this.#connection?.session(this.#parentSessionId);
+    return parent ?? undefined;
   }
 
   override send<T extends keyof ProtocolMapping.Commands>(

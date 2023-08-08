@@ -2649,7 +2649,7 @@
     "testIdPattern": "[mouse.spec] Mouse should resize the textarea",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS", "FAIL"]
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[mouse.spec] Mouse should select the text with mouse",
