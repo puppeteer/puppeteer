@@ -38,6 +38,20 @@ import {EvaluateFunc, EvaluateFuncWith, HandleFor, NodeFor} from './types.js';
 import {withSourcePuppeteerURLIfNone} from './util.js';
 
 /**
+ * We use symbols to prevent external parties listening to these events.
+ * They are internal to Puppeteer.
+ *
+ * @internal
+ */
+export const FrameEmittedEvents = {
+  FrameNavigated: Symbol('Frame.FrameNavigated'),
+  FrameSwapped: Symbol('Frame.FrameSwapped'),
+  LifecycleEvent: Symbol('Frame.LifecycleEvent'),
+  FrameNavigatedWithinDocument: Symbol('Frame.FrameNavigatedWithinDocument'),
+  FrameDetached: Symbol('Frame.FrameDetached'),
+};
+
+/**
  * @internal
  */
 export class Frame extends BaseFrame {
@@ -106,7 +120,7 @@ export class Frame extends BaseFrame {
 
     let ensureNewDocumentNavigation = false;
     const watcher = new LifecycleWatcher(
-      this._frameManager,
+      this._frameManager.networkManager,
       this,
       waitUntil,
       timeout
@@ -180,7 +194,7 @@ export class Frame extends BaseFrame {
       timeout = this._frameManager.timeoutSettings.navigationTimeout(),
     } = options;
     const watcher = new LifecycleWatcher(
-      this._frameManager,
+      this._frameManager.networkManager,
       this,
       waitUntil,
       timeout

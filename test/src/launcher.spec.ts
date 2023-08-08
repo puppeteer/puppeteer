@@ -59,7 +59,7 @@ describe('Launcher specs', function () {
           const error = await navigationPromise;
           expect(
             [
-              'Navigation failed because browser has disconnected!',
+              'Navigating frame was detached',
               'Protocol error (Page.navigate): Target closed.',
             ].includes(error.message)
           ).toBeTruthy();
@@ -82,7 +82,7 @@ describe('Launcher specs', function () {
             });
           remote.disconnect();
           const error = await watchdog;
-          expect(error.message).toContain('Protocol error');
+          expect(error.message).toContain('frame got detached');
         } finally {
           await close();
         }
@@ -766,11 +766,6 @@ describe('Launcher specs', function () {
 
           const pages = await remoteBrowser.pages();
 
-          await page2.close();
-          await page1.close();
-          remoteBrowser.disconnect();
-          await browser.close();
-
           expect(
             pages
               .map((p: Page) => {
@@ -778,6 +773,11 @@ describe('Launcher specs', function () {
               })
               .sort()
           ).toEqual(['about:blank', server.EMPTY_PAGE]);
+
+          await page2.close();
+          await page1.close();
+          remoteBrowser.disconnect();
+          await browser.close();
         } finally {
           await close();
         }

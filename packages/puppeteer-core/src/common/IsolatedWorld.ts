@@ -293,7 +293,7 @@ export class IsolatedWorld implements Realm {
     await setPageContent(this, html);
 
     const watcher = new LifecycleWatcher(
-      this.#frameManager,
+      this.#frameManager.networkManager,
       this.#frame,
       waitUntil,
       timeout

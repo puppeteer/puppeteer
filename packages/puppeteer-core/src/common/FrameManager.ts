@@ -20,12 +20,15 @@ import {Page} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
-import {CDPSession, isTargetClosedError} from './Connection.js';
+import {
+  CDPSession,
+  CDPSessionEmittedEvents,
+  isTargetClosedError,
+} from './Connection.js';
 import {DeviceRequestPromptManager} from './DeviceRequestPrompt.js';
 import {EventEmitter} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {Frame} from './Frame.js';
-import {Frame as CDPFrame} from './Frame.js';
+import {Frame, FrameEmittedEvents} from './Frame.js';
 import {FrameTree} from './FrameTree.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
@@ -54,8 +57,6 @@ export const FrameManagerEmittedEvents = {
   FrameNavigatedWithinDocument: Symbol(
     'FrameManager.FrameNavigatedWithinDocument'
   ),
-  ExecutionContextCreated: Symbol('FrameManager.ExecutionContextCreated'),
-  ExecutionContextDestroyed: Symbol('FrameManager.ExecutionContextDestroyed'),
 };
 
 /**
@@ -111,6 +112,12 @@ export class FrameManager extends EventEmitter {
     this.#networkManager = new NetworkManager(client, ignoreHTTPSErrors, this);
     this.#timeoutSettings = timeoutSettings;
     this.setupEventListeners(this.#client);
+    client.once(CDPSessionEmittedEvents.Disconnected, () => {
+      const mainFrame = this._frameTree.getMainFrame();
+      if (mainFrame) {
+        this.#removeFramesRecursively(mainFrame);
+      }
+    });
   }
 
   private setupEventListeners(session: CDPSession) {
@@ -248,6 +255,7 @@ export class FrameManager extends EventEmitter {
     }
     frame._onLifecycleEvent(event.loaderId, event.name);
     this.emit(FrameManagerEmittedEvents.LifecycleEvent, frame);
+    frame.emit(FrameEmittedEvents.LifecycleEvent);
   }
 
   #onFrameStartedLoading(frameId: string): void {
@@ -265,6 +273,7 @@ export class FrameManager extends EventEmitter {
     }
     frame._onLoadingStopped();
     this.emit(FrameManagerEmittedEvents.LifecycleEvent, frame);
+    frame.emit(FrameEmittedEvents.LifecycleEvent);
   }
 
   #handleFrameTree(
@@ -309,7 +318,7 @@ export class FrameManager extends EventEmitter {
       return;
     }
 
-    frame = new CDPFrame(this, frameId, parentFrameId, session);
+    frame = new Frame(this, frameId, parentFrameId, session);
     this._frameTree.addFrame(frame);
     this.emit(FrameManagerEmittedEvents.FrameAttached, frame);
   }
@@ -335,7 +344,7 @@ export class FrameManager extends EventEmitter {
         frame._id = frameId;
       } else {
         // Initial main frame navigation.
-        frame = new CDPFrame(this, frameId, undefined, this.#client);
+        frame = new Frame(this, frameId, undefined, this.#client);
       }
       this._frameTree.addFrame(frame);
     }
@@ -343,6 +352,7 @@ export class FrameManager extends EventEmitter {
     frame = await this._frameTree.waitForFrame(frameId);
     frame._navigated(framePayload);
     this.emit(FrameManagerEmittedEvents.FrameNavigated, frame);
+    frame.emit(FrameEmittedEvents.FrameNavigated);
   }
 
   async #createIsolatedWorld(session: CDPSession, name: string): Promise<void> {
@@ -385,7 +395,9 @@ export class FrameManager extends EventEmitter {
     }
     frame._navigatedWithinDocument(url);
     this.emit(FrameManagerEmittedEvents.FrameNavigatedWithinDocument, frame);
+    frame.emit(FrameEmittedEvents.FrameNavigatedWithinDocument);
     this.emit(FrameManagerEmittedEvents.FrameNavigated, frame);
+    frame.emit(FrameEmittedEvents.FrameNavigated);
   }
 
   #onFrameDetached(
@@ -402,6 +414,7 @@ export class FrameManager extends EventEmitter {
       }
     } else if (reason === 'swap') {
       this.emit(FrameManagerEmittedEvents.FrameSwapped, frame);
+      frame?.emit(FrameEmittedEvents.FrameSwapped);
     }
   }
 
@@ -478,5 +491,6 @@ export class FrameManager extends EventEmitter {
     frame._detach();
     this._frameTree.removeFrame(frame);
     this.emit(FrameManagerEmittedEvents.FrameDetached, frame);
+    frame.emit(FrameEmittedEvents.FrameDetached, frame);
   }
 }
