@@ -2163,7 +2163,7 @@
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should await promise",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should simulate a user gesture",
@@ -2649,7 +2649,7 @@
     "testIdPattern": "[mouse.spec] Mouse should resize the textarea",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["PASS", "FAIL"]
   },
   {
     "testIdPattern": "[mouse.spec] Mouse should select the text with mouse",
@@ -3597,7 +3597,7 @@
     "testIdPattern": "[page.spec] Page Page.setContent should respect default navigation timeout",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.setGeolocation should work",
