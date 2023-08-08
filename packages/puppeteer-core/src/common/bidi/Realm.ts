@@ -144,6 +144,7 @@ export class Realm extends EventEmitter {
         target: this.target,
         resultOwnership,
         awaitPromise: true,
+        userActivation: true,
       });
     } else {
       let functionDeclaration = stringifyFunction(pageFunction);
@@ -160,6 +161,7 @@ export class Realm extends EventEmitter {
         target: this.target,
         resultOwnership,
         awaitPromise: true,
+        userActivation: true,
       });
     }
 
