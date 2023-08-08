@@ -22,6 +22,7 @@ import Protocol from 'devtools-protocol';
 import {
   GeolocationOptions,
   MediaFeature,
+  NewDocumentScriptEvaluation,
   Page as PageBase,
   PageEmittedEvents,
   ScreenshotOptions,
@@ -45,6 +46,7 @@ import {Tracing} from '../Tracing.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
 import {
   debugError,
+  evaluationString,
   isString,
   validateDialogType,
   waitForEvent,
@@ -726,6 +728,31 @@ export class Page extends PageBase {
       context: this.mainFrame()._id,
     });
   }
+
+  override async evaluateOnNewDocument<
+    Params extends unknown[],
+    Func extends (...args: Params) => unknown = (...args: Params) => unknown,
+  >(
+    pageFunction: Func | string,
+    ...args: Params
+  ): Promise<NewDocumentScriptEvaluation> {
+    const expression = evaluationExpression(pageFunction, ...args);
+    const {result} = await this.#connection.send('script.addPreloadScript', {
+      functionDeclaration: expression,
+      // TODO: should change spec to accept browsingContext
+    });
+
+    return {identifier: result.script};
+  }
+
+  override async removeScriptToEvaluateOnNewDocument(
+    script: string
+  ): Promise<void> {
+    await this.#connection.send('script.removePreloadScript', {
+      script,
+      // TODO: should change spec to accept browsingContext
+    });
+  }
 }
 
 function isConsoleLogEntry(
@@ -754,4 +781,8 @@ function getStackTraceLocations(
     }
   }
   return stackTraceLocations;
+}
+
+function evaluationExpression(fun: Function | string, ...args: unknown[]) {
+  return `() => {${evaluationString(fun, ...args)}}`;
 }
