@@ -746,11 +746,10 @@ export class Page extends PageBase {
   }
 
   override async removeScriptToEvaluateOnNewDocument(
-    script: string
+    id: string
   ): Promise<void> {
     await this.#connection.send('script.removePreloadScript', {
-      script,
-      // TODO: should change spec to accept browsingContext
+      script: id,
     });
   }
 }
