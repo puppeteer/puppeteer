@@ -36,6 +36,9 @@ class MockCDPSession extends EventEmitter {
   id() {
     return '1';
   }
+  parentSession() {
+    return undefined;
+  }
 }
 
 describe('DeviceRequestPrompt', function () {
