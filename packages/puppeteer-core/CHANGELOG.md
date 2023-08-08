@@ -14,6 +14,21 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.4.4 to 1.4.5
 
+## [21.0.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.0.1...puppeteer-core-v21.0.2) (2023-08-08)
+
+
+### Bug Fixes
+
+* destroy puppeteer utility on context destruction ([#10672](https://github.com/puppeteer/puppeteer/issues/10672)) ([8b8770c](https://github.com/puppeteer/puppeteer/commit/8b8770c004ba842496e0ca4845642fe82a211051))
+* roll to Chrome 115.0.5790.170 (r1148114) ([#10677](https://github.com/puppeteer/puppeteer/issues/10677)) ([e5af57e](https://github.com/puppeteer/puppeteer/commit/e5af57ebd0187c296bc44426c1b931f57442732e))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 1.5.0 to 1.5.1
+
 ## [21.0.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.0.0...puppeteer-core-v21.0.1) (2023-08-03)
 
 

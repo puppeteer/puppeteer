@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/puppeteer/puppeteer/compare/browsers-v1.5.0...browsers-v1.5.1) (2023-08-08)
+
+
+### Bug Fixes
+
+* add buildId to archive path ([#10699](https://github.com/puppeteer/puppeteer/issues/10699)) ([21461b0](https://github.com/puppeteer/puppeteer/commit/21461b02c65062f5ed240e8ea357e9b7f2d26b32))
+
 ## [1.5.0](https://github.com/puppeteer/puppeteer/compare/browsers-v1.4.6...browsers-v1.5.0) (2023-08-02)
 
 
