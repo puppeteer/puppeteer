@@ -133,10 +133,10 @@ export class FrameManager extends EventEmitter {
         );
       }
     );
-    session.on('Page.frameStartedLoading', event => {
+    session.off('Page.frameStartedLoading', event => {
       this.#onFrameStartedLoading(event.frameId);
     });
-    session.on('Page.frameStoppedLoading', event => {
+    session.off('Page.frameStoppedLoading', event => {
       this.#onFrameStoppedLoading(event.frameId);
     });
     session.on('Runtime.executionContextCreated', event => {
