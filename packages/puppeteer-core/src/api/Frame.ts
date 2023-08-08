@@ -19,6 +19,7 @@ import {HTTPResponse} from '../api/HTTPResponse.js';
 import {Page, WaitTimeoutOptions} from '../api/Page.js';
 import {CDPSession} from '../common/Connection.js';
 import {DeviceRequestPrompt} from '../common/DeviceRequestPrompt.js';
+import {EventEmitter} from '../common/EventEmitter.js';
 import {ExecutionContext} from '../common/ExecutionContext.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {
@@ -223,7 +224,7 @@ export interface FrameAddStyleTagOptions {
  *
  * @public
  */
-export class Frame {
+export class Frame extends EventEmitter {
   /**
    * @internal
    */
@@ -251,7 +252,9 @@ export class Frame {
   /**
    * @internal
    */
-  constructor() {}
+  constructor() {
+    super();
+  }
 
   /**
    * The page associated with the frame.

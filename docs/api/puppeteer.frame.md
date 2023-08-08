@@ -11,8 +11,10 @@ To understand frames, you can think of frames as `<iframe>` elements. Just like 
 #### Signature:
 
 ```typescript
-export declare class Frame
+export declare class Frame extends EventEmitter
 ```
+
+**Extends:** [EventEmitter](./puppeteer.eventemitter.md)
 
 ## Remarks
 

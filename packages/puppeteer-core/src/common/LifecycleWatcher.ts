@@ -18,12 +18,10 @@ import {HTTPResponse} from '../api/HTTPResponse.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
-import {CDPSessionEmittedEvents} from './Connection.js';
 import {TimeoutError} from './Errors.js';
-import {Frame} from './Frame.js';
-import {FrameManager, FrameManagerEmittedEvents} from './FrameManager.js';
+import {Frame, FrameEmittedEvents} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
-import {NetworkManagerEmittedEvents} from './NetworkManager.js';
+import {NetworkManager, NetworkManagerEmittedEvents} from './NetworkManager.js';
 import {
   addEventListener,
   PuppeteerEventListener,
@@ -62,7 +60,6 @@ const puppeteerToProtocolLifecycle = new Map<
  */
 export class LifecycleWatcher {
   #expectedLifecycle: ProtocolLifeCycleEvent[];
-  #frameManager: FrameManager;
   #frame: Frame;
   #timeout: number;
   #navigationRequest: HTTPRequest | null = null;
@@ -80,7 +77,7 @@ export class LifecycleWatcher {
   #navigationResponseReceived?: Deferred<void>;
 
   constructor(
-    frameManager: FrameManager,
+    networkManager: NetworkManager,
     frame: Frame,
     waitUntil: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[],
     timeout: number
@@ -97,55 +94,46 @@ export class LifecycleWatcher {
       return protocolEvent as ProtocolLifeCycleEvent;
     });
 
-    this.#frameManager = frameManager;
     this.#frame = frame;
     this.#timeout = timeout;
     this.#eventListeners = [
       addEventListener(
-        frameManager.client,
-        CDPSessionEmittedEvents.Disconnected,
-        this.#terminate.bind(
-          this,
-          new Error('Navigation failed because browser has disconnected!')
-        )
-      ),
-      addEventListener(
-        this.#frameManager,
-        FrameManagerEmittedEvents.LifecycleEvent,
+        frame,
+        FrameEmittedEvents.LifecycleEvent,
         this.#checkLifecycleComplete.bind(this)
       ),
       addEventListener(
-        this.#frameManager,
-        FrameManagerEmittedEvents.FrameNavigatedWithinDocument,
+        frame,
+        FrameEmittedEvents.FrameNavigatedWithinDocument,
         this.#navigatedWithinDocument.bind(this)
       ),
       addEventListener(
-        this.#frameManager,
-        FrameManagerEmittedEvents.FrameNavigated,
+        frame,
+        FrameEmittedEvents.FrameNavigated,
         this.#navigated.bind(this)
       ),
       addEventListener(
-        this.#frameManager,
-        FrameManagerEmittedEvents.FrameSwapped,
+        frame,
+        FrameEmittedEvents.FrameSwapped,
         this.#frameSwapped.bind(this)
       ),
       addEventListener(
-        this.#frameManager,
-        FrameManagerEmittedEvents.FrameDetached,
+        frame,
+        FrameEmittedEvents.FrameDetached,
         this.#onFrameDetached.bind(this)
       ),
       addEventListener(
-        this.#frameManager.networkManager,
+        networkManager,
         NetworkManagerEmittedEvents.Request,
         this.#onRequest.bind(this)
       ),
       addEventListener(
-        this.#frameManager.networkManager,
+        networkManager,
         NetworkManagerEmittedEvents.Response,
         this.#onResponse.bind(this)
       ),
       addEventListener(
-        this.#frameManager.networkManager,
+        networkManager,
         NetworkManagerEmittedEvents.RequestFailed,
         this.#onRequestFailed.bind(this)
       ),
@@ -204,10 +192,6 @@ export class LifecycleWatcher {
     return this.#navigationRequest ? this.#navigationRequest.response() : null;
   }
 
-  #terminate(error: Error): void {
-    this.#terminationDeferred.resolve(error);
-  }
-
   sameDocumentNavigationPromise(): Promise<Error | undefined> {
     return this.#sameDocumentNavigationDeferred.valueOrThrow();
   }
@@ -224,25 +208,16 @@ export class LifecycleWatcher {
     return this.#terminationDeferred.valueOrThrow();
   }
 
-  #navigatedWithinDocument(frame: Frame): void {
-    if (frame !== this.#frame) {
-      return;
-    }
+  #navigatedWithinDocument(): void {
     this.#hasSameDocumentNavigation = true;
     this.#checkLifecycleComplete();
   }
 
-  #navigated(frame: Frame): void {
-    if (frame !== this.#frame) {
-      return;
-    }
+  #navigated(): void {
     this.#checkLifecycleComplete();
   }
 
-  #frameSwapped(frame: Frame): void {
-    if (frame !== this.#frame) {
-      return;
-    }
+  #frameSwapped(): void {
     this.#swapped = true;
     this.#checkLifecycleComplete();
   }
