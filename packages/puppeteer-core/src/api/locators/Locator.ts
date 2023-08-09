@@ -48,6 +48,7 @@ import {
   Action,
   AwaitedLocator,
   FilteredLocator,
+  HandleMapper,
   MappedLocator,
   Mapper,
   Predicate,
@@ -702,7 +703,10 @@ export abstract class Locator<T> extends EventEmitter {
    * @public
    */
   map<To>(mapper: Mapper<T, To>): Locator<To> {
-    return new MappedLocator(this._clone(), mapper);
+    return new MappedLocator(this._clone(), handle => {
+      // SAFETY: TypeScript cannot deduce the type.
+      return (handle as any).evaluateHandle(mapper);
+    });
   }
 
   /**
@@ -713,7 +717,36 @@ export abstract class Locator<T> extends EventEmitter {
    * @public
    */
   filter<S extends T>(predicate: Predicate<T, S>): Locator<S> {
+    return new FilteredLocator(this._clone(), async (handle, signal) => {
+      await (handle as ElementHandle<Node>).frame.waitForFunction(
+        predicate,
+        {signal, timeout: this._timeout},
+        handle
+      );
+      return true;
+    });
+  }
+
+  /**
+   * Creates an expectation that is evaluated against located handles.
+   *
+   * If the expectations do not match, then the locator will retry.
+   *
+   * @internal
+   */
+  filterHandle<S extends T>(
+    predicate: Predicate<HandleFor<T>, HandleFor<S>>
+  ): Locator<S> {
     return new FilteredLocator(this._clone(), predicate);
+  }
+
+  /**
+   * Maps the locator using the provided mapper.
+   *
+   * @internal
+   */
+  mapHandle<To>(mapper: HandleMapper<T, To>): Locator<To> {
+    return new MappedLocator(this._clone(), mapper);
   }
 
   click<ElementType extends Element>(

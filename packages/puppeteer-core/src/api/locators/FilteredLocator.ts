@@ -16,13 +16,13 @@
 
 import {
   Observable,
+  filter,
   from,
   map,
   mergeMap,
   throwIfEmpty,
 } from '../../../third_party/rxjs/rxjs.js';
 import {Awaitable, HandleFor} from '../../common/common.js';
-import {ElementHandle} from '../ElementHandle.js';
 
 import {DelegatedLocator} from './DelegatedLocator.js';
 import {ActionOptions, Locator} from './locators.js';
@@ -37,13 +37,20 @@ export type Predicate<From, To extends From = From> =
 /**
  * @internal
  */
+export type HandlePredicate<From, To extends From = From> =
+  | ((value: HandleFor<From>, signal?: AbortSignal) => value is HandleFor<To>)
+  | ((value: HandleFor<From>, signal?: AbortSignal) => Awaitable<boolean>);
+
+/**
+ * @internal
+ */
 export class FilteredLocator<From, To extends From> extends DelegatedLocator<
   From,
   To
 > {
-  #predicate: Predicate<From, To>;
+  #predicate: HandlePredicate<From, To>;
 
-  constructor(base: Locator<From>, predicate: Predicate<From, To>) {
+  constructor(base: Locator<From>, predicate: HandlePredicate<From, To>) {
     super(base);
     this.#predicate = predicate;
   }
@@ -59,12 +66,11 @@ export class FilteredLocator<From, To extends From> extends DelegatedLocator<
     return this.delegate._wait(options).pipe(
       mergeMap(handle => {
         return from(
-          (handle as ElementHandle<Node>).frame.waitForFunction(
-            this.#predicate,
-            {signal: options?.signal, timeout: this._timeout},
-            handle
-          )
+          Promise.resolve(this.#predicate(handle, options?.signal))
         ).pipe(
+          filter(value => {
+            return value;
+          }),
           map(() => {
             // SAFETY: It passed the predicate, so this is correct.
             return handle as HandleFor<To>;
