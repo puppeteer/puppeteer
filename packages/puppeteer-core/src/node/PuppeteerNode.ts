@@ -296,7 +296,7 @@ export class PuppeteerNode extends Puppeteer {
 
     const cacheDir =
       this.configuration.downloadPath ?? this.configuration.cacheDirectory!;
-    const installedBrowsers = await getInstalledBrowsers({
+    const installedBrowsers = getInstalledBrowsers({
       cacheDir,
     });
 
