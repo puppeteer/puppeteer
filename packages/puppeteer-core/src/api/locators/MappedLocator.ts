@@ -16,7 +16,6 @@
 
 import {Observable, from, mergeMap} from '../../../third_party/rxjs/rxjs.js';
 import {Awaitable, HandleFor} from '../../common/common.js';
-import {JSHandle} from '../JSHandle.js';
 
 import {ActionOptions, DelegatedLocator, Locator} from './locators.js';
 
@@ -28,10 +27,18 @@ export type Mapper<From, To> = (value: From) => Awaitable<To>;
 /**
  * @internal
  */
-export class MappedLocator<From, To> extends DelegatedLocator<From, To> {
-  #mapper: Mapper<From, To>;
+export type HandleMapper<From, To> = (
+  value: HandleFor<From>,
+  signal?: AbortSignal
+) => Awaitable<HandleFor<To>>;
 
-  constructor(base: Locator<From>, mapper: Mapper<From, To>) {
+/**
+ * @internal
+ */
+export class MappedLocator<From, To> extends DelegatedLocator<From, To> {
+  #mapper: HandleMapper<From, To>;
+
+  constructor(base: Locator<From>, mapper: HandleMapper<From, To>) {
     super(base);
     this.#mapper = mapper;
   }
@@ -45,7 +52,7 @@ export class MappedLocator<From, To> extends DelegatedLocator<From, To> {
   override _wait(options?: Readonly<ActionOptions>): Observable<HandleFor<To>> {
     return this.delegate._wait(options).pipe(
       mergeMap(handle => {
-        return from((handle as JSHandle<From>).evaluateHandle(this.#mapper));
+        return from(Promise.resolve(this.#mapper(handle, options?.signal)));
       })
     );
   }
