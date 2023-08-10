@@ -21,6 +21,7 @@ import {BrowserPlatform} from '../../../lib/cjs/browser-data/browser-data.js';
 import {
   resolveDownloadUrl,
   relativeExecutablePath,
+  resolveBuildId,
 } from '../../../lib/cjs/browser-data/chromedriver.js';
 
 describe('ChromeDriver', () => {
@@ -45,6 +46,14 @@ describe('ChromeDriver', () => {
       resolveDownloadUrl(BrowserPlatform.WIN64, '115.0.5763.0'),
       'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/115.0.5763.0/win64/chromedriver-win64.zip'
     );
+  });
+
+  it('should resolve milestones', async () => {
+    assert.strictEqual(await resolveBuildId('115'), '115.0.5790.170');
+  });
+
+  it('should resolve build prefix', async () => {
+    assert.strictEqual(await resolveBuildId('115.0.5790'), '115.0.5790.170');
   });
 
   it('should resolve executable paths', () => {

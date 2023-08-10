@@ -25,6 +25,7 @@ import {
   resolveDownloadUrl,
   relativeExecutablePath,
   resolveSystemExecutablePath,
+  resolveBuildId,
 } from '../../../lib/cjs/browser-data/chrome.js';
 
 describe('Chrome', () => {
@@ -116,5 +117,13 @@ describe('Chrome', () => {
         path.join('chrome-linux', 'chrome')
       );
     }, new Error(`Unable to detect browser executable path for 'canary' on linux.`));
+  });
+
+  it('should resolve milestones', async () => {
+    assert.strictEqual(await resolveBuildId('115'), '115.0.5790.170');
+  });
+
+  it('should resolve build prefix', async () => {
+    assert.strictEqual(await resolveBuildId('115.0.5790'), '115.0.5790.170');
   });
 });

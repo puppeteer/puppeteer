@@ -72,36 +72,28 @@ export async function resolveBuildId(
             `${tag} is not supported for ${browser}. Use 'latest' instead.`
           );
       }
-    case Browser.CHROME:
+    case Browser.CHROME: {
       switch (tag as BrowserTag) {
         case BrowserTag.LATEST:
-          return await chrome.resolveBuildId(
-            platform,
-            ChromeReleaseChannel.CANARY
-          );
+          return await chrome.resolveBuildId(ChromeReleaseChannel.CANARY);
         case BrowserTag.BETA:
-          return await chrome.resolveBuildId(
-            platform,
-            ChromeReleaseChannel.BETA
-          );
+          return await chrome.resolveBuildId(ChromeReleaseChannel.BETA);
         case BrowserTag.CANARY:
-          return await chrome.resolveBuildId(
-            platform,
-            ChromeReleaseChannel.CANARY
-          );
+          return await chrome.resolveBuildId(ChromeReleaseChannel.CANARY);
         case BrowserTag.DEV:
-          return await chrome.resolveBuildId(
-            platform,
-            ChromeReleaseChannel.DEV
-          );
+          return await chrome.resolveBuildId(ChromeReleaseChannel.DEV);
         case BrowserTag.STABLE:
-          return await chrome.resolveBuildId(
-            platform,
-            ChromeReleaseChannel.STABLE
-          );
+          return await chrome.resolveBuildId(ChromeReleaseChannel.STABLE);
+        default:
+          const result = await chrome.resolveBuildId(tag);
+          if (result) {
+            return result;
+          }
       }
-    case Browser.CHROMEDRIVER:
-      switch (tag as BrowserTag) {
+      return tag;
+    }
+    case Browser.CHROMEDRIVER: {
+      switch (tag) {
         case BrowserTag.LATEST:
         case BrowserTag.CANARY:
           return await chromedriver.resolveBuildId(ChromeReleaseChannel.CANARY);
@@ -111,7 +103,14 @@ export async function resolveBuildId(
           return await chromedriver.resolveBuildId(ChromeReleaseChannel.DEV);
         case BrowserTag.STABLE:
           return await chromedriver.resolveBuildId(ChromeReleaseChannel.STABLE);
+        default:
+          const result = await chromedriver.resolveBuildId(tag);
+          if (result) {
+            return result;
+          }
       }
+      return tag;
+    }
     case Browser.CHROMIUM:
       switch (tag as BrowserTag) {
         case BrowserTag.LATEST:
