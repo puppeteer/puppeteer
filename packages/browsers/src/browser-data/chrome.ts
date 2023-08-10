@@ -97,11 +97,66 @@ export async function getLastKnownGoodReleaseForChannel(
   ).channels[channel];
 }
 
+export async function getLastKnownGoodReleaseForMilestone(
+  milestone: string
+): Promise<{version: string; revision: string} | undefined> {
+  const data = (await getJSON(
+    new URL(
+      'https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json'
+    )
+  )) as {
+    milestones: Record<string, {version: string; revision: string}>;
+  };
+  return data.milestones[milestone] as
+    | {version: string; revision: string}
+    | undefined;
+}
+
+export async function getLastKnownGoodReleaseForBuild(
+  /**
+   * @example `112.0.23`,
+   */
+  buildPrefix: string
+): Promise<{version: string; revision: string} | undefined> {
+  const data = (await getJSON(
+    new URL(
+      'https://googlechromelabs.github.io/chrome-for-testing/latest-patch-versions-per-build.json'
+    )
+  )) as {
+    builds: Record<string, {version: string; revision: string}>;
+  };
+  return data.builds[buildPrefix] as
+    | {version: string; revision: string}
+    | undefined;
+}
+
 export async function resolveBuildId(
-  _platform: BrowserPlatform,
   channel: ChromeReleaseChannel
-): Promise<string> {
-  return (await getLastKnownGoodReleaseForChannel(channel)).version;
+): Promise<string>;
+export async function resolveBuildId(
+  channel: string
+): Promise<string | undefined>;
+export async function resolveBuildId(
+  channel: ChromeReleaseChannel | string
+): Promise<string | undefined> {
+  if (
+    Object.values(ChromeReleaseChannel).includes(
+      channel as ChromeReleaseChannel
+    )
+  ) {
+    return (
+      await getLastKnownGoodReleaseForChannel(channel as ChromeReleaseChannel)
+    ).version;
+  }
+  if (channel.match(/^\d+$/)) {
+    // Potentially a milestone.
+    return (await getLastKnownGoodReleaseForMilestone(channel))?.version;
+  }
+  if (channel.match(/^\d+\.\d+\.\d+$/)) {
+    // Potentially a build prefix without the patch version.
+    return (await getLastKnownGoodReleaseForBuild(channel))?.version;
+  }
+  return;
 }
 
 export function resolveSystemExecutablePath(

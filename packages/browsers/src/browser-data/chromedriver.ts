@@ -15,8 +15,7 @@
  */
 import path from 'path';
 
-import {getLastKnownGoodReleaseForChannel} from './chrome.js';
-import {BrowserPlatform, ChromeReleaseChannel} from './types.js';
+import {BrowserPlatform} from './types.js';
 
 function folder(platform: BrowserPlatform): string {
   switch (platform) {
@@ -63,8 +62,5 @@ export function relativeExecutablePath(
       return path.join('chromedriver-' + folder(platform), 'chromedriver.exe');
   }
 }
-export async function resolveBuildId(
-  channel: ChromeReleaseChannel
-): Promise<string> {
-  return (await getLastKnownGoodReleaseForChannel(channel)).version;
-}
+
+export {resolveBuildId} from './chrome.js';
