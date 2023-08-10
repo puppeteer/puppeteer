@@ -14,6 +14,12 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.4.4 to 1.4.5
 
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
+
 ## [21.0.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.0.1...puppeteer-core-v21.0.2) (2023-08-08)
 
 
