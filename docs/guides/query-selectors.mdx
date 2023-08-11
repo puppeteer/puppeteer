@@ -133,10 +133,81 @@ const node = await page.waitForSelector(
 
 Puppeteer provides users the ability to add their own query selectors to Puppeteer using [Puppeteer.registerCustomQueryHandler](../api/puppeteer.registercustomqueryhandler.md). This is useful for creating custom selectors based on framework objects or other vendor-specific objects.
 
-#### Example
+#### Custom Selectors
 
-Suppose you register a custom selector called `lit`. You can use it like so:
+You can register a custom query handler that allows you to create custom selectors. For example, define a query handler for `getById` selectors:
 
 ```ts
-const node = await page.waitForSelector('::-p-lit(LitElement)');
+Puppeteer.registerCustomQueryHandler('getById', {
+  queryOne: (elementOrDocument, selector) => {
+    return elementOrDocument.querySelector(`[id="${CSS.escape(selector)}"]`);
+  },
+  // Note: for demonstation perpose only `id` should be page unique
+  queryAll: (elementOrDocument, selector) => {
+    return elementOrDocument.querySelectorAll(`[id="${CSS.escape(selector)}"]`);
+  },
+});
+```
+
+You can now use it as following:
+
+```ts
+const node = await page.waitForSelector('::-p-getById(elementId)');
+// OR used in conjunction with other selectors
+const moreSpecificNode = await page.waitForSelector(
+  '.side-bar ::-p-getById(elementId)'
+);
+```
+
+#### Custom framework components selector
+
+:::caution
+
+Be careful when relying on internal APIs of libraries or frameworks. They can change at any time.
+
+:::
+
+Find Vue components by name by using Vue internals for querying:
+
+```ts
+Puppeteer.registerCustomQueryHandler('vue', {
+  queryOne: (element, name) => {
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_ELEMENT);
+    do {
+      const currentNode = walker.currentNode;
+      if (
+        currentNode.__vnode?.ctx?.type?.name.toLowerCase() ===
+        name.toLocaleLowerCase()
+      ) {
+        return currentNode;
+      }
+    } while (walker.nextNode());
+
+    return null;
+  },
+});
+```
+
+Query the Vue component as following:
+
+```ts
+const element = await page.$('::-p-vue(MyComponent)');
+```
+
+#### Web Components
+
+Web Components create their own tag so you can query them by the tag name:
+
+```ts
+const element = await page.$('my-web-component');
+```
+
+Extend `HTMLElementTagNameMap` to define types for custom tags. This allows Puppeteer to infer the return type for the ElementHandle:
+
+```ts
+declare global {
+  interface HTMLElementTagNameMap {
+    'my-web-component': MyWebComponent;
+  }
+}
 ```
