@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/puppeteer/puppeteer/compare/browsers-v1.5.1...browsers-v1.6.0) (2023-08-10)
+
+
+### Features
+
+* allow installing chrome/chromedriver by milestone and version prefix ([#10720](https://github.com/puppeteer/puppeteer/issues/10720)) ([bec2357](https://github.com/puppeteer/puppeteer/commit/bec2357aeedda42cfaf3096c6293c2f49ceb825e))
+
 ## [1.5.1](https://github.com/puppeteer/puppeteer/compare/browsers-v1.5.0...browsers-v1.5.1) (2023-08-08)
 
 
