@@ -179,7 +179,11 @@ export class Browser extends BrowserBase {
   }
 
   #onContextCreated(event: Bidi.BrowsingContext.ContextCreated['params']) {
-    const context = new BrowsingContext(this.#connection, event);
+    const context = new BrowsingContext(
+      this.#connection,
+      event,
+      this.#browserName
+    );
     this.#connection.registerBrowsingContexts(context);
     // TODO: once more browsing context types are supported, this should be
     // updated to support those. Currently, all top-level contexts are treated
