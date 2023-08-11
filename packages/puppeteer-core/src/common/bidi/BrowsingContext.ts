@@ -51,6 +51,9 @@ export class CDPSessionWrapper extends CDPSession {
   constructor(context: BrowsingContext, sessionId?: string) {
     super();
     this.#context = context;
+    if (!this.#context.supportsCDP()) {
+      return;
+    }
     if (sessionId) {
       this.#sessionId.resolve(sessionId);
       cdpSessions.set(sessionId, this);
@@ -77,6 +80,11 @@ export class CDPSessionWrapper extends CDPSession {
     method: T,
     ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
+    if (!this.#context.supportsCDP()) {
+      throw new Error(
+        'CDP support is required for this feature. The current browser does not support CDP.'
+      );
+    }
     if (this.#detached) {
       throw new TargetCloseError(
         `Protocol error (${method}): Session closed. Most likely the page has been closed.`
@@ -93,9 +101,11 @@ export class CDPSessionWrapper extends CDPSession {
 
   override async detach(): Promise<void> {
     cdpSessions.delete(this.id());
-    await this.#context.cdpSession.send('Target.detachFromTarget', {
-      sessionId: this.id(),
-    });
+    if (this.#context.supportsCDP()) {
+      await this.#context.cdpSession.send('Target.detachFromTarget', {
+        sessionId: this.id(),
+      });
+    }
     this.#detached = true;
   }
 
@@ -130,17 +140,27 @@ export class BrowsingContext extends Realm {
   #url: string;
   #cdpSession: CDPSession;
   #parent?: string | null;
+  #browserName = '';
 
-  constructor(connection: Connection, info: Bidi.BrowsingContext.Info) {
+  constructor(
+    connection: Connection,
+    info: Bidi.BrowsingContext.Info,
+    browserName: string
+  ) {
     super(connection, info.context);
     this.connection = connection;
     this.#id = info.context;
     this.#url = info.url;
     this.#parent = info.parent;
-    this.#cdpSession = new CDPSessionWrapper(this);
+    this.#browserName = browserName;
+    this.#cdpSession = new CDPSessionWrapper(this, undefined);
 
     this.on('browsingContext.domContentLoaded', this.#updateUrl.bind(this));
     this.on('browsingContext.load', this.#updateUrl.bind(this));
+  }
+
+  supportsCDP(): boolean {
+    return !this.#browserName.toLowerCase().includes('firefox');
   }
 
   #updateUrl(info: Bidi.BrowsingContext.NavigationInfo) {
