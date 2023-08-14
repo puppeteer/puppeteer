@@ -18,6 +18,7 @@ import {homedir} from 'os';
 import {join} from 'path';
 
 import {cosmiconfigSync} from 'cosmiconfig';
+import {CosmiconfigResult} from 'cosmiconfig/dist/types';
 import {Configuration, Product} from 'puppeteer-core';
 
 /**
@@ -37,7 +38,21 @@ function isSupportedProduct(product: unknown): product is Product {
  * @internal
  */
 export const getConfiguration = (): Configuration => {
-  const result = cosmiconfigSync('puppeteer').search();
+  let result: CosmiconfigResult;
+  try {
+    // Recursively walks up directory tree, looking for .config/puppeteerrc
+    result = cosmiconfigSync('puppeteer').search();
+  } catch (error: any) {
+    if (error instanceof Error && 'code' in error && error.code === 'ENOTDIR') {
+      // Workaround for issue #10728
+      // Some parent directory may contain a file named .config, in this case
+      // just use the home directory
+      result = cosmiconfigSync('puppeteer').search(homedir());
+    } else {
+      // If all else fails, rethrow the original error
+      throw error;
+    }
+  }
   const configuration: Configuration = result ? result.config : {};
 
   configuration.logLevel = (process.env['PUPPETEER_LOGLEVEL'] ??
