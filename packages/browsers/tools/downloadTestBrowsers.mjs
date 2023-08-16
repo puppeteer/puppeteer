@@ -32,7 +32,11 @@ function getBrowser(str) {
   const match = str.match(regex);
 
   if (match && match[1]) {
-    return match[1].toLowerCase();
+    const lowercased = match[1].toLowerCase();
+    if (lowercased === 'chromeheadlessshell') {
+      return 'chrome-headless-shell';
+    }
+    return lowercased;
   } else {
     return null;
   }
@@ -42,7 +46,6 @@ const cacheDir = normalize(join('.', 'test', 'cache'));
 
 for (const version of Object.keys(versions)) {
   const browser = getBrowser(version);
-
   if (!browser) {
     continue;
   }

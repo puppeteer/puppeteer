@@ -153,6 +153,18 @@ export class CLI {
             'Install the latest available patch (115.0.5790.X) build for ChromeDriver.'
           );
           yargs.example(
+            '$0 install chrome-headless-shell',
+            'Install the latest available chrome-headless-shell build.'
+          );
+          yargs.example(
+            '$0 install chrome-headless-shell@beta',
+            'Install the latest available chrome-headless-shell build corresponding to the Beta channel.'
+          );
+          yargs.example(
+            '$0 install chrome-headless-shell@118',
+            'Install the latest available chrome-headless-shell 118 build.'
+          );
+          yargs.example(
             '$0 install chromium@1083080',
             'Install the revision 1083080 of the Chromium browser.'
           );
