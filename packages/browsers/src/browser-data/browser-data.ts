@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as chromeHeadlessShell from './chrome-headless-shell.js';
 import * as chrome from './chrome.js';
 import * as chromedriver from './chromedriver.js';
 import * as chromium from './chromium.js';
@@ -30,6 +31,7 @@ export {ProfileOptions};
 
 export const downloadUrls = {
   [Browser.CHROMEDRIVER]: chromedriver.resolveDownloadUrl,
+  [Browser.CHROMEHEADLESSSHELL]: chromeHeadlessShell.resolveDownloadUrl,
   [Browser.CHROME]: chrome.resolveDownloadUrl,
   [Browser.CHROMIUM]: chromium.resolveDownloadUrl,
   [Browser.FIREFOX]: firefox.resolveDownloadUrl,
@@ -37,6 +39,7 @@ export const downloadUrls = {
 
 export const downloadPaths = {
   [Browser.CHROMEDRIVER]: chromedriver.resolveDownloadPath,
+  [Browser.CHROMEHEADLESSSHELL]: chromeHeadlessShell.resolveDownloadPath,
   [Browser.CHROME]: chrome.resolveDownloadPath,
   [Browser.CHROMIUM]: chromium.resolveDownloadPath,
   [Browser.FIREFOX]: firefox.resolveDownloadPath,
@@ -44,6 +47,7 @@ export const downloadPaths = {
 
 export const executablePathByBrowser = {
   [Browser.CHROMEDRIVER]: chromedriver.relativeExecutablePath,
+  [Browser.CHROMEHEADLESSSHELL]: chromeHeadlessShell.relativeExecutablePath,
   [Browser.CHROME]: chrome.relativeExecutablePath,
   [Browser.CHROMIUM]: chromium.relativeExecutablePath,
   [Browser.FIREFOX]: firefox.relativeExecutablePath,
@@ -111,6 +115,33 @@ export async function resolveBuildId(
       }
       return tag;
     }
+    case Browser.CHROMEHEADLESSSHELL: {
+      switch (tag) {
+        case BrowserTag.LATEST:
+        case BrowserTag.CANARY:
+          return await chromeHeadlessShell.resolveBuildId(
+            ChromeReleaseChannel.CANARY
+          );
+        case BrowserTag.BETA:
+          return await chromeHeadlessShell.resolveBuildId(
+            ChromeReleaseChannel.BETA
+          );
+        case BrowserTag.DEV:
+          return await chromeHeadlessShell.resolveBuildId(
+            ChromeReleaseChannel.DEV
+          );
+        case BrowserTag.STABLE:
+          return await chromeHeadlessShell.resolveBuildId(
+            ChromeReleaseChannel.STABLE
+          );
+        default:
+          const result = await chromeHeadlessShell.resolveBuildId(tag);
+          if (result) {
+            return result;
+          }
+      }
+      return tag;
+    }
     case Browser.CHROMIUM:
       switch (tag as BrowserTag) {
         case BrowserTag.LATEST:
@@ -154,6 +185,7 @@ export function resolveSystemExecutablePath(
 ): string {
   switch (browser) {
     case Browser.CHROMEDRIVER:
+    case Browser.CHROMEHEADLESSSHELL:
     case Browser.FIREFOX:
     case Browser.CHROMIUM:
       throw new Error(

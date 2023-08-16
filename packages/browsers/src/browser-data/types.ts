@@ -24,6 +24,7 @@ import * as firefox from './firefox.js';
  */
 export enum Browser {
   CHROME = 'chrome',
+  CHROMEHEADLESSSHELL = 'chrome-headless-shell',
   CHROMIUM = 'chromium',
   FIREFOX = 'firefox',
   CHROMEDRIVER = 'chromedriver',
