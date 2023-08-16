@@ -111,3 +111,48 @@ The schematics utilize `@angular-devkit/schematics/testing` for verifying correc
 ```bash
 npm run test
 ```
+
+## Migrating from Protractor
+
+### Browser
+
+Puppeteer has its own [`browser`](https://pptr.dev/api/puppeteer.browser) that exposes different API compared to the one exposed by Protractor.
+
+```ts
+import puppeteer from 'puppeteer';
+
+(async () => {
+  const browser = await puppeteer.launch();
+
+  it('should work', () => {
+    const page = await browser.newPage();
+
+    // Query elements
+    const element = await page.$('my-component');
+
+    // Do actions
+    await element.click();
+  });
+
+  await browser.close();
+})();
+```
+
+### Query Selectors
+
+Puppeteer supports multiple types of selectors, namely, the CSS, ARIA, text, XPath and pierce selectors.
+The following table shows Puppeteer's equivalents to [Protractor By](https://www.protractortest.org/#/api?view=ProtractorBy).
+
+> For improved reliability and reduced flakiness try our
+> **Experimental** [Locators API](https://pptr.dev/guides/locators)
+
+| By                | Protractor code                                                   | Puppeteer querySelector                                      |
+| ----------------- | ----------------------------------------------------------------- | ------------------------------------------------------------ |
+| CSS               | Single: `$(by.css('<CSS>'))` <br> Multiple: `$$(by.css('<CSS>'))` | Single: `page.$('<CSS>')` <br> Multiple: `page.$$('<CSS>')`  |
+| Id                | `$(by.id('<ID>'))`                                                | `page.$('#<ID>')`                                            |
+| CssContainingText | `$(by.cssContainingText('<CSS>', '<TEXT>'))`                      | `page.$('<CSS> ::-p-text(<TEXT>)')` `                        |
+| DeepCss           | `$(by.deepCss('<CSS>'))`                                          | `page.$(':scope >>> <CSS>')`                                 |
+| XPath             | `$(by.xpath('<XPATH>'))`                                          | `page.$('::-p-xpath(<XPATH>)')`                              |
+| JS                | `$(by.js('document.querySelector("<CSS>")'))`                     | `page.evaluateHandle(() => document.querySelector('<CSS>'))` |
+
+> For advanced use cases such as Protractor's `by.addLocator` you can check Puppeteer's [Custom selectors](https://pptr.dev/guides/query-selectors#custom-selectors).
