@@ -370,7 +370,28 @@ describe('Locator', function () {
     });
   });
 
-  describe('Locator.change', function () {
+  describe('Locator.fill', function () {
+    it('should work for textarea', async () => {
+      const {page} = await getTestState();
+
+      await page.setContent(`
+        <textarea>
+      `);
+      let filled = false;
+      await page
+        .locator('textarea')
+        .on(LocatorEmittedEvents.Action, () => {
+          filled = true;
+        })
+        .fill('test');
+      expect(
+        await page.evaluate(() => {
+          return document.querySelector('textarea')?.value === 'test';
+        })
+      ).toBe(true);
+      expect(filled).toBe(true);
+    });
+
     it('should work for selects', async () => {
       const {page} = await getTestState();
 
