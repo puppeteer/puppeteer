@@ -375,7 +375,7 @@ describe('Locator', function () {
       const {page} = await getTestState();
 
       await page.setContent(`
-        <textarea>
+        <textarea></textarea>
       `);
       let filled = false;
       await page
