@@ -51,9 +51,11 @@ export class NodeWebSocketTransport implements ConnectionTransport {
   constructor(ws: NodeWebSocket) {
     this.#ws = ws;
     this.#ws.addEventListener('message', event => {
-      if (this.onmessage) {
-        this.onmessage.call(null, event.data);
-      }
+      setImmediate(() => {
+        if (this.onmessage) {
+          this.onmessage.call(null, event.data);
+        }
+      });
     });
     this.#ws.addEventListener('close', () => {
       if (this.onclose) {

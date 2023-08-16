@@ -2652,6 +2652,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[locator.spec] Locator Locator.race races multiple locators",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["cdp", "firefox"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[mouse.spec] Mouse should reset properly",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
