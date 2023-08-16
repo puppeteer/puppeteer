@@ -5,6 +5,7 @@ import {
   getAngularJsonScripts,
   getMultiProjectFile,
   getPackageJson,
+  runSchematic,
   setupHttpHooks,
 } from './utils.js';
 
@@ -30,26 +31,17 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       });
     });
     it('should update create proper "ng" command for non default tester', async () => {
-      const tree = await buildTestingTree('ng-add', 'single', {
-        isDefaultTester: false,
-      });
+      let tree = await buildTestingTree('ng-add', 'single');
+      // Re-run schematic to have e2e populated
+      tree = await runSchematic(tree, 'ng-add');
       const {scripts} = getPackageJson(tree);
       const {builder} = getAngularJsonScripts(tree, false);
 
       expect(scripts['puppeteer']).toBe('ng run sandbox:puppeteer');
       expect(builder).toBe('@puppeteer/ng-schematics:puppeteer');
     });
-    it('should create Puppeteer config', async () => {
-      const {files} = await buildTestingTree('ng-add', 'single', {
-        exportConfig: true,
-      });
-
-      expect(files).toContain('/.puppeteerrc.cjs');
-    });
     it('should not create Puppeteer config', async () => {
-      const {files} = await buildTestingTree('ng-add', 'single', {
-        exportConfig: false,
-      });
+      const {files} = await buildTestingTree('ng-add', 'single');
 
       expect(files).not.toContain('/.puppeteerrc.cjs');
     });
@@ -117,20 +109,11 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
         ['node', '--test', '--test-reporter', 'spec', 'e2e/build/'],
       ]);
     });
-    it('should not create port option', async () => {
+    it('should create port with default value', async () => {
       const tree = await buildTestingTree('ng-add');
 
       const {options} = getAngularJsonScripts(tree);
-      expect(options['port']).toBeUndefined();
-    });
-    it('should create port option when specified', async () => {
-      const port = 8080;
-      const tree = await buildTestingTree('ng-add', 'single', {
-        port,
-      });
-
-      const {options} = getAngularJsonScripts(tree);
-      expect(options['port']).toBe(port);
+      expect(options['port']).toBe(4200);
     });
   });
 
@@ -153,26 +136,17 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       });
     });
     it('should update create proper "ng" command for non default tester', async () => {
-      const tree = await buildTestingTree('ng-add', 'multi', {
-        isDefaultTester: false,
-      });
+      let tree = await buildTestingTree('ng-add', 'multi');
+      // Re-run schematic to have e2e populated
+      tree = await runSchematic(tree, 'ng-add');
       const {scripts} = getPackageJson(tree);
       const {builder} = getAngularJsonScripts(tree, false);
 
       expect(scripts['puppeteer']).toBe('ng run sandbox:puppeteer');
       expect(builder).toBe('@puppeteer/ng-schematics:puppeteer');
     });
-    it('should create Puppeteer config', async () => {
-      const {files} = await buildTestingTree('ng-add', 'multi', {
-        exportConfig: true,
-      });
-
-      expect(files).toContain('/.puppeteerrc.cjs');
-    });
     it('should not create Puppeteer config', async () => {
-      const {files} = await buildTestingTree('ng-add', 'multi', {
-        exportConfig: false,
-      });
+      const {files} = await buildTestingTree('ng-add', 'multi');
 
       expect(files).not.toContain(getMultiProjectFile('.puppeteerrc.cjs'));
       expect(files).not.toContain('/.puppeteerrc.cjs');
@@ -250,20 +224,11 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
         ['node', '--test', '--test-reporter', 'spec', 'e2e/build/'],
       ]);
     });
-    it('should not create port option', async () => {
+    it('should create port with default value', async () => {
       const tree = await buildTestingTree('ng-add');
 
       const {options} = getAngularJsonScripts(tree);
-      expect(options['port']).toBeUndefined();
-    });
-    it('should create port option when specified', async () => {
-      const port = 8080;
-      const tree = await buildTestingTree('ng-add', 'multi', {
-        port,
-      });
-
-      const {options} = getAngularJsonScripts(tree);
-      expect(options['port']).toBe(port);
+      expect(options['port']).toBe(4200);
     });
   });
 });

@@ -168,8 +168,8 @@ export function updateAngularJsonScripts(
   overwrite = true
 ): Tree {
   const angularJson = getAngularConfig(tree);
-  const name = getNgCommandName(options);
-  const port = options.port !== 4200 ? Number(options.port) : undefined;
+  const name = getNgCommandName(angularJson.projects);
+  const port = 4200;
 
   Object.keys(angularJson['projects']).forEach(project => {
     const commands = getScriptFromOptions(

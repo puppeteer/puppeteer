@@ -179,8 +179,18 @@ export function getScriptFromOptions(
   }
 }
 
-export function getNgCommandName(options: SchematicsOptions): string {
-  if (options.isDefaultTester) {
+export function hasE2ETester(
+  projects: Record<string, AngularProject>
+): boolean {
+  return Object.values(projects).some((project: AngularProject) => {
+    return Boolean(project.architect?.e2e);
+  });
+}
+
+export function getNgCommandName(
+  projects: Record<string, AngularProject>
+): string {
+  if (!hasE2ETester(projects)) {
     return 'e2e';
   }
   return 'puppeteer';

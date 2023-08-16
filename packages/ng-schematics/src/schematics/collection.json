@@ -10,6 +10,11 @@
       "description": "Create a single test file",
       "factory": "./test/index#test",
       "schema": "./test/schema.json"
+    },
+    "config": {
+      "description": "Eject Puppeteer config file",
+      "factory": "./config/index#config",
+      "schema": "./config/schema.json"
     }
   }
 }

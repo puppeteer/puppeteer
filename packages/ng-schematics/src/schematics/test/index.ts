@@ -27,8 +27,8 @@ import {getAngularConfig} from '../utils/json.js';
 import {
   TestingFramework,
   SchematicsSpec,
-  SchematicsOptions,
   AngularProject,
+  PuppeteerSchematicsConfig,
 } from '../utils/types.js';
 
 // You don't have to export the function as default. You can also have more than one rule
@@ -55,10 +55,12 @@ function parseUserTestArgs(userArgs: Record<string, string>): SchematicsSpec {
   return options as SchematicsSpec;
 }
 
-function findTestingOption<Property extends keyof SchematicsOptions>(
+function findTestingOption<
+  Property extends keyof PuppeteerSchematicsConfig['options'],
+>(
   [name, project]: [string, AngularProject | undefined],
   property: Property
-): SchematicsOptions[Property] {
+): PuppeteerSchematicsConfig['options'][Property] {
   if (!project) {
     throw new Error(`Project "${name}" not found.`);
   }

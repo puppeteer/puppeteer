@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/schema",
   "$id": "Puppeteer",
-  "title": "Puppeteer Spec Schema",
+  "title": "Puppeteer Test Schema",
   "type": "object",
   "properties": {
     "name": {

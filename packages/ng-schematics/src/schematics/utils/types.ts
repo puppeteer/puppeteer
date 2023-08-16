@@ -22,15 +22,15 @@ export enum TestingFramework {
 }
 
 export interface SchematicsOptions {
-  isDefaultTester: boolean;
-  exportConfig: boolean;
   testingFramework: TestingFramework;
-  port: number;
 }
 
 export interface PuppeteerSchematicsConfig {
   builder: string;
-  options: SchematicsOptions;
+  options: {
+    port: number;
+    testingFramework: TestingFramework;
+  };
 }
 export interface AngularProject {
   root: string;
