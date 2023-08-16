@@ -224,6 +224,7 @@ describe('Locator', function () {
     it('should time out', async () => {
       const clock = sinon.useFakeTimers({
         shouldClearNativeTimers: true,
+        shouldAdvanceTime: true,
       });
       try {
         const {page} = await getTestState();
@@ -247,6 +248,7 @@ describe('Locator', function () {
       const {page} = await getTestState();
       const clock = sinon.useFakeTimers({
         shouldClearNativeTimers: true,
+        shouldAdvanceTime: true,
       });
       try {
         page.setDefaultTimeout(5000);
@@ -268,6 +270,7 @@ describe('Locator', function () {
       const {page} = await getTestState();
       const clock = sinon.useFakeTimers({
         shouldClearNativeTimers: true,
+        shouldAdvanceTime: true,
       });
       try {
         page.setDefaultTimeout(5000);
@@ -509,6 +512,7 @@ describe('Locator', function () {
       const {page} = await getTestState();
       const clock = sinon.useFakeTimers({
         shouldClearNativeTimers: true,
+        shouldAdvanceTime: true,
       });
       try {
         await page.setViewport({width: 500, height: 500});
@@ -535,6 +539,7 @@ describe('Locator', function () {
     it('should time out when all locators do not match', async () => {
       const clock = sinon.useFakeTimers({
         shouldClearNativeTimers: true,
+        shouldAdvanceTime: true,
       });
       try {
         const {page} = await getTestState();
@@ -630,6 +635,7 @@ describe('Locator', function () {
     it('should resolve as soon as the predicate matches', async () => {
       const clock = sinon.useFakeTimers({
         shouldClearNativeTimers: true,
+        shouldAdvanceTime: true,
       });
       try {
         const {page} = await getTestState();
