@@ -35,6 +35,10 @@ export class EmulationManager {
     this.#client = client;
   }
 
+  updateClient(client: CDPSession): void {
+    this.#client = client;
+  }
+
   get javascriptEnabled(): boolean {
     return this.#javascriptEnabled;
   }

@@ -430,6 +430,7 @@ export interface CDPSessionOnMessageObject {
  */
 export const CDPSessionEmittedEvents = {
   Disconnected: Symbol('CDPSession.Disconnected'),
+  Swapped: Symbol('CDPSession.Swapped'),
 } as const;
 
 /**

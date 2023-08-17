@@ -17,10 +17,11 @@
 import {Protocol} from 'devtools-protocol';
 
 import {TargetFilterCallback} from '../api/Browser.js';
+import {TargetType} from '../api/Target.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
-import {CDPSession, Connection} from './Connection.js';
+import {CDPSession, CDPSessionEmittedEvents, Connection} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
 import {InitializationStatus, CDPTarget} from './Target.js';
 import {
@@ -32,7 +33,7 @@ import {
 import {debugError} from './util.js';
 
 function isTargetExposed(target: CDPTarget): boolean {
-  return target.type() !== 'tab' && !target._subtype();
+  return target.type() !== TargetType.TAB && !target._subtype();
 }
 
 function isPageTargetBecomingPrimary(
@@ -324,7 +325,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
         session,
         'Target that is being activated is missing a CDPSession.'
       );
-      session.parentSession()?.emit('sessionswapped', session);
+      session.parentSession()?.emit(CDPSessionEmittedEvents.Swapped, session);
     }
 
     target._targetInfoChanged(event.targetInfo);

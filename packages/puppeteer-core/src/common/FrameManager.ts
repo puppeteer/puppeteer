@@ -144,9 +144,7 @@ export class FrameManager extends EventEmitter {
         this.#removeFramesRecursively(child);
       }
     } catch (err) {
-      if (mainFrame) {
-        this.#removeFramesRecursively(mainFrame);
-      }
+      this.#removeFramesRecursively(mainFrame);
     }
   }
 
@@ -173,6 +171,7 @@ export class FrameManager extends EventEmitter {
       this.#onClientDisconnect().catch(debugError);
     });
     await this.initialize(client);
+    await this.#networkManager.updateClient(client);
     if (frame) {
       frame.emit(FrameEmittedEvents.FrameSwappedByActivation);
     }

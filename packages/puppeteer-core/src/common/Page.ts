@@ -311,7 +311,7 @@ export class CDPPage extends Page {
 
     this.#setupEventListeners();
 
-    this.#tabSession?.on('sessionswapped', async newSession => {
+    this.#tabSession?.on(CDPSessionEmittedEvents.Swapped, async newSession => {
       this.#client = newSession;
       assert(
         this.#client instanceof CDPSessionImpl,
@@ -319,7 +319,13 @@ export class CDPPage extends Page {
       );
       this.#target = this.#client._target();
       assert(this.#target, 'Missing target on swap');
-      // TODO: swap the session for other members.
+      this.#keyboard.updateClient(newSession);
+      this.#mouse.updateClient(newSession);
+      this.#touchscreen.updateClient(newSession);
+      this.#accessibility.updateClient(newSession);
+      this.#emulationManager.updateClient(newSession);
+      this.#tracing.updateClient(newSession);
+      this.#coverage.updateClient(newSession);
       await this.#frameManager.swapFrameTree(newSession);
       this.#setupEventListeners();
     });
