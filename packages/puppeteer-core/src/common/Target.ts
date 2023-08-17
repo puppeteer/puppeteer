@@ -84,7 +84,9 @@ export class CDPTarget extends Target {
     this.#browserContext = browserContext;
     this._targetId = targetInfo.targetId;
     this.#sessionFactory = sessionFactory;
-    (this.#session as CDPSessionImpl | undefined)?._setTarget(this);
+    if (this.#session && this.#session instanceof CDPSessionImpl) {
+      this.#session._setTarget(this);
+    }
   }
 
   /**

@@ -313,8 +313,13 @@ export class CDPPage extends Page {
 
     this.#tabSession?.on('sessionswapped', async newSession => {
       this.#client = newSession;
-      this.#target = (this.#client as CDPSessionImpl)._target()!;
+      assert(
+        this.#client instanceof CDPSessionImpl,
+        'CDPSession is not instance of CDPSessionImpl'
+      );
+      this.#target = this.#client._target();
       assert(this.#target, 'Missing target on swap');
+      // TODO: swap the session for other members.
       await this.#frameManager.swapFrameTree(newSession);
       this.#setupEventListeners();
     });

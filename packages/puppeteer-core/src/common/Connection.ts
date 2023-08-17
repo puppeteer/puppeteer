@@ -308,7 +308,6 @@ export class Connection extends EventEmitter {
     const object = JSON.parse(message);
     if (object.method === 'Target.attachedToTarget') {
       const sessionId = object.params.sessionId;
-      const parentSession = this.#sessions.get(object.sessionId);
       const session = new CDPSessionImpl(
         this,
         object.params.targetInfo.type,
@@ -317,6 +316,7 @@ export class Connection extends EventEmitter {
       );
       this.#sessions.set(sessionId, session);
       this.emit('sessionattached', session);
+      const parentSession = this.#sessions.get(object.sessionId);
       if (parentSession) {
         parentSession.emit('sessionattached', session);
       }
@@ -535,6 +535,8 @@ export class CDPSessionImpl extends CDPSession {
   }
 
   /**
+   * Sets the CDPTarget associated with the session instance.
+   *
    * @internal
    */
   _setTarget(target: CDPTarget): void {
@@ -542,9 +544,12 @@ export class CDPSessionImpl extends CDPSession {
   }
 
   /**
+   * Gets the CDPTarget associated with the session instance.
+   *
    * @internal
    */
-  _target(): CDPTarget | undefined {
+  _target(): CDPTarget {
+    assert(this.#target, 'Target must exist');
     return this.#target;
   }
 

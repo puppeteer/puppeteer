@@ -120,7 +120,7 @@ export class LifecycleWatcher {
       addEventListener(
         frame,
         FrameEmittedEvents.FrameSwappedByActivation,
-        this.#frameSwappedByActivation.bind(this)
+        this.#frameSwapped.bind(this)
       ),
       addEventListener(
         frame,
@@ -223,11 +223,6 @@ export class LifecycleWatcher {
   }
 
   #frameSwapped(): void {
-    this.#swapped = true;
-    this.#checkLifecycleComplete();
-  }
-
-  #frameSwappedByActivation(): void {
     this.#swapped = true;
     this.#checkLifecycleComplete();
   }
