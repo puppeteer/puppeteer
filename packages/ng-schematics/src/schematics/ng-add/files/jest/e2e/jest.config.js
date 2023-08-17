@@ -5,6 +5,6 @@
 
 /** @type {import('jest').Config} */
 module.exports = {
-  testMatch: ['<rootDir>/tests/**/?(*.)+(e2e).[tj]s?(x)'],
+  testMatch: ['<rootDir>/tests/**/?(*.)+(e2e).js?(x)'],
   testEnvironment: 'node',
 };

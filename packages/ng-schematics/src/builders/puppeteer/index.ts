@@ -9,6 +9,8 @@ import {
 } from '@angular-devkit/architect';
 import {JsonObject} from '@angular-devkit/core';
 
+import {TestRunner} from '../../schematics/utils/types.js';
+
 import {PuppeteerBuilderOptions} from './types.js';
 
 const terminalStyles = {
@@ -39,13 +41,37 @@ function getExecutable(command: string[]) {
   };
 }
 
+function updateExecutablePath(command: string, root?: string) {
+  let path = 'node_modules/.bin/';
+  if (root && root !== '' && command === TestRunner.Node) {
+    const nested = root
+      .split('/')
+      .map(() => {
+        return '../';
+      })
+      .join('');
+    path = `${nested}${path}${command}`;
+  } else {
+    path = `./${path}${command}`;
+  }
+
+  return path;
+}
+
 async function executeCommand(context: BuilderContext, command: string[]) {
+  let project: JsonObject;
+  if (context.target) {
+    project = await context.getProjectMetadata(context.target.project);
+    command[0] = updateExecutablePath(command[0]!, String(project['root']));
+  }
+
+  console.log(command);
+
   await new Promise(async (resolve, reject) => {
     context.logger.debug(`Trying to execute command - ${command.join(' ')}.`);
     const {executable, args, error} = getExecutable(command);
     let path = context.workspaceRoot;
     if (context.target) {
-      const project = await context.getProjectMetadata(context.target.project);
       path = `${path}/${project['root']}`;
     }
 
@@ -123,8 +149,13 @@ async function executeE2ETest(
   try {
     server = await startServer(options, context);
 
+    const commands = options.commands;
+
+    message('\n Building tests 🛠️ ... \n', context);
+    await executeCommand(context, [`tsc`, '-p', 'e2e/tsconfig.json']);
+
     message('\n Running tests 🧪 ... \n', context);
-    for (const command of options.commands) {
+    for (const command of commands) {
       await executeCommand(context, command);
     }
 

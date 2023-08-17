@@ -165,10 +165,7 @@ export function updateAngularJsonScripts(
   const name = getNgCommandName(angularJson.projects);
 
   Object.keys(angularJson['projects']).forEach(project => {
-    const commands = getScriptFromOptions(
-      options,
-      angularJson['projects'][project]!.root
-    );
+    const commands = getScriptFromOptions(options);
     const e2eScript = [
       {
         name,

@@ -148,35 +148,16 @@ export function addFrameworkFiles(
   return addFilesToProjects(tree, context, projects, options);
 }
 
-export function getScriptFromOptions(
-  options: SchematicsOptions,
-  root?: string
-): string[][] {
-  let path = 'node_modules/.bin';
-  if (root && root !== '') {
-    const nested = root
-      .split('/')
-      .map(() => {
-        return '../';
-      })
-      .join('');
-    path = `${nested}${path}`;
-  } else {
-    path = `./${path}`;
-  }
-
+export function getScriptFromOptions(options: SchematicsOptions): string[][] {
   switch (options.testRunner) {
     case TestRunner.Jasmine:
-      return [[`${path}/jasmine`, '--config=./e2e/support/jasmine.json']];
+      return [[`jasmine`, '--config=./e2e/support/jasmine.json']];
     case TestRunner.Jest:
-      return [[`${path}/jest`, '-c', 'e2e/jest.config.js']];
+      return [[`jest`, '-c', 'e2e/jest.config.js']];
     case TestRunner.Mocha:
-      return [[`${path}/mocha`, '--config=./e2e/.mocharc.js']];
+      return [[`mocha`, '--config=./e2e/.mocharc.js']];
     case TestRunner.Node:
-      return [
-        [`${path}/tsc`, '-p', 'e2e/tsconfig.json'],
-        ['node', '--test', '--test-reporter', 'spec', 'e2e/build/'],
-      ];
+      return [['node', '--test', '--test-reporter', 'spec', 'e2e/build/']];
   }
 }
 
