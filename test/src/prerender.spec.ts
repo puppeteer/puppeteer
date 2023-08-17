@@ -21,7 +21,7 @@ import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 describe('Prerender', function () {
   setupTestBrowserHooks();
 
-  it('can navigate to a prerendered page', async () => {
+  it('can navigate to a prerendered page via input', async () => {
     const {page, server} = await getTestState();
     await page.goto(server.PREFIX + '/prerender/index.html');
 
@@ -30,6 +30,21 @@ describe('Prerender', function () {
 
     const link = await page.waitForSelector('a');
     await Promise.all([page.waitForNavigation(), link?.click()]);
+    expect(
+      await page.evaluate(() => {
+        return document.body.innerText;
+      })
+    ).toBe('target');
+  });
+
+  it('can navigate to a prerendered page via Puppeteer', async () => {
+    const {page, server} = await getTestState();
+    await page.goto(server.PREFIX + '/prerender/index.html');
+
+    const button = await page.waitForSelector('button');
+    await button?.click();
+
+    await page.goto(server.PREFIX + '/prerender/target.html');
     expect(
       await page.evaluate(() => {
         return document.body.innerText;
