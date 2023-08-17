@@ -1,4 +1,4 @@
-<% if(testingFramework == 'node') { %>
+<% if(testRunner == 'node') { %>
 import {before, beforeEach, after, afterEach} from 'node:test';
 <% } %>
 import * as puppeteer from 'puppeteer';
@@ -8,15 +8,17 @@ let browser: puppeteer.Browser;
 let page: puppeteer.Page;
 
 export function setupBrowserHooks(): void {
-<% if(testingFramework == 'jasmine' || testingFramework == 'jest') { %>
+<% if(testRunner == 'jasmine' || testRunner == 'jest') { %>
   beforeAll(async () => {
     browser = await puppeteer.launch({
       headless: 'new'
     });
   });
-<% } %><% if(testingFramework == 'mocha' || testingFramework == 'node') { %>
+<% } %><% if(testRunner == 'mocha' || testRunner == 'node') { %>
   before(async () => {
-    browser = await puppeteer.launch();
+    browser = await puppeteer.launch({
+      headless: 'new'
+    });
   });
 <% } %>
 
@@ -29,11 +31,11 @@ export function setupBrowserHooks(): void {
     await page.close();
   });
 
-<% if(testingFramework == 'jasmine' || testingFramework == 'jest') { %>
+<% if(testRunner == 'jasmine' || testRunner == 'jest') { %>
   afterAll(async () => {
     await browser.close();
   });
-<% } %><% if(testingFramework == 'mocha' || testingFramework == 'node') { %>
+<% } %><% if(testRunner == 'mocha' || testRunner == 'node') { %>
   after(async () => {
     await browser.close();
   });

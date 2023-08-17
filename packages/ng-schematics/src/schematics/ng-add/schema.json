@@ -4,13 +4,13 @@
   "title": "Puppeteer Install Schema",
   "type": "object",
   "properties": {
-    "testingFramework": {
+    "testRunner": {
       "type": "string",
       "enum": ["jasmine", "jest", "mocha", "node"],
       "default": "jasmine",
       "alias": "t",
       "x-prompt": {
-        "message": "With what testing library do you wish to integrate?",
+        "message": "Which test runners do you wish to use?",
         "type": "list",
         "items": [
           {

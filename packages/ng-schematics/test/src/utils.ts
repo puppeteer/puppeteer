@@ -83,7 +83,7 @@ export async function buildTestingTree(
     join(__dirname, '../../lib/schematics/collection.json')
   );
   const options = {
-    testingFramework: 'jasmine',
+    testRunner: 'jasmine',
     ...userOptions,
   };
   let workingTree: UnitTestTree;

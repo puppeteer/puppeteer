@@ -1,7 +1,7 @@
-<% if(testingFramework == 'node') { %>
+<% if(testRunner == 'node') { %>
 import * as assert from 'assert';
 import {describe, it} from 'node:test';
-<% } %><% if(testingFramework == 'mocha') { %>
+<% } %><% if(testRunner == 'mocha') { %>
 import * as assert from 'assert';
 <% } %>
 import {setupBrowserHooks, getBrowserState} from './utils';

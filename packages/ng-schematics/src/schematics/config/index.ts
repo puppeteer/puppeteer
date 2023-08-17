@@ -17,7 +17,7 @@
 import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 
 import {addFilesSingle} from '../utils/files.js';
-import {TestingFramework, AngularProject} from '../utils/types.js';
+import {TestRunner, AngularProject} from '../utils/types.js';
 
 // You don't have to export the function as default. You can also have more than one rule
 // factory per file.
@@ -34,7 +34,7 @@ function addPuppeteerConfig(): Rule {
     return addFilesSingle(tree, context, '', {root: ''} as AngularProject, {
       // No-op here to fill types
       options: {
-        testingFramework: TestingFramework.Jasmine,
+        testRunner: TestRunner.Jasmine,
         port: 4200,
       },
       applyPath: './files',

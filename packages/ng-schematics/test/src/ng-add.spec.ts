@@ -47,7 +47,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     });
     it('should create Jasmine files and update "package.json"', async () => {
       const tree = await buildTestingTree('ng-add', 'single', {
-        testingFramework: 'jasmine',
+        testRunner: 'jasmine',
       });
       const {devDependencies} = getPackageJson(tree);
       const {options} = getAngularJsonScripts(tree);
@@ -64,7 +64,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     });
     it('should create Jest files and update "package.json"', async () => {
       const tree = await buildTestingTree('ng-add', 'single', {
-        testingFramework: 'jest',
+        testRunner: 'jest',
       });
       const {devDependencies} = getPackageJson(tree);
       const {options} = getAngularJsonScripts(tree);
@@ -79,7 +79,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     });
     it('should create Mocha files and update "package.json"', async () => {
       const tree = await buildTestingTree('ng-add', 'single', {
-        testingFramework: 'mocha',
+        testRunner: 'mocha',
       });
       const {devDependencies} = getPackageJson(tree);
       const {options} = getAngularJsonScripts(tree);
@@ -97,7 +97,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     });
     it('should create Node files', async () => {
       const tree = await buildTestingTree('ng-add', 'single', {
-        testingFramework: 'node',
+        testRunner: 'node',
       });
       const {options} = getAngularJsonScripts(tree);
 
@@ -109,11 +109,11 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
         ['node', '--test', '--test-reporter', 'spec', 'e2e/build/'],
       ]);
     });
-    it('should create port with default value', async () => {
+    it('should not create port value', async () => {
       const tree = await buildTestingTree('ng-add');
 
       const {options} = getAngularJsonScripts(tree);
-      expect(options['port']).toBe(4200);
+      expect(options['port']).toBeUndefined();
     });
   });
 
@@ -153,7 +153,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     });
     it('should create Jasmine files and update "package.json"', async () => {
       const tree = await buildTestingTree('ng-add', 'multi', {
-        testingFramework: 'jasmine',
+        testRunner: 'jasmine',
       });
       const {devDependencies} = getPackageJson(tree);
       const {options} = getAngularJsonScripts(tree);
@@ -175,7 +175,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     });
     it('should create Jest files and update "package.json"', async () => {
       const tree = await buildTestingTree('ng-add', 'multi', {
-        testingFramework: 'jest',
+        testRunner: 'jest',
       });
       const {devDependencies} = getPackageJson(tree);
       const {options} = getAngularJsonScripts(tree);
@@ -190,7 +190,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     });
     it('should create Mocha files and update "package.json"', async () => {
       const tree = await buildTestingTree('ng-add', 'multi', {
-        testingFramework: 'mocha',
+        testRunner: 'mocha',
       });
       const {devDependencies} = getPackageJson(tree);
       const {options} = getAngularJsonScripts(tree);
@@ -208,7 +208,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     });
     it('should create Node files', async () => {
       const tree = await buildTestingTree('ng-add', 'multi', {
-        testingFramework: 'node',
+        testRunner: 'node',
       });
       const {options} = getAngularJsonScripts(tree);
 
@@ -224,11 +224,11 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
         ['node', '--test', '--test-reporter', 'spec', 'e2e/build/'],
       ]);
     });
-    it('should create port with default value', async () => {
+    it('should not create port value', async () => {
       const tree = await buildTestingTree('ng-add');
 
       const {options} = getAngularJsonScripts(tree);
-      expect(options['port']).toBe(4200);
+      expect(options['port']).toBeUndefined();
     });
   });
 });

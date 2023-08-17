@@ -35,7 +35,7 @@ import {
   type NodePackage,
   updateAngularJsonScripts,
 } from '../utils/packages.js';
-import {TestingFramework, type SchematicsOptions} from '../utils/types.js';
+import {TestRunner, type SchematicsOptions} from '../utils/types.js';
 
 const DEFAULT_PORT = 4200;
 
@@ -106,8 +106,7 @@ function addCommonFiles(options: SchematicsOptions): Rule {
       options: {
         ...options,
         port: DEFAULT_PORT,
-        ext:
-          options.testingFramework === TestingFramework.Node ? 'test' : 'e2e',
+        ext: options.testRunner === TestRunner.Node ? 'test' : 'e2e',
       },
     });
   };

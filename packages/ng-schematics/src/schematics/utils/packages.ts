@@ -24,7 +24,7 @@ import {
   getJsonFileAsObject,
   getObjectAsJson,
 } from './json.js';
-import {SchematicsOptions, TestingFramework} from './types.js';
+import {SchematicsOptions, TestRunner} from './types.js';
 export interface NodePackage {
   name: string;
   version: string;
@@ -122,17 +122,17 @@ export function getDependenciesFromOptions(
     '@babel/preset-typescript',
   ];
 
-  switch (options.testingFramework) {
-    case TestingFramework.Jasmine:
+  switch (options.testRunner) {
+    case TestRunner.Jasmine:
       dependencies.push('jasmine', ...babelPackages);
       break;
-    case TestingFramework.Jest:
+    case TestRunner.Jest:
       dependencies.push('jest', '@types/jest', 'ts-jest');
       break;
-    case TestingFramework.Mocha:
+    case TestRunner.Mocha:
       dependencies.push('mocha', '@types/mocha', ...babelPackages);
       break;
-    case TestingFramework.Node:
+    case TestRunner.Node:
       dependencies.push('@types/node');
       break;
   }
@@ -169,7 +169,6 @@ export function updateAngularJsonScripts(
 ): Tree {
   const angularJson = getAngularConfig(tree);
   const name = getNgCommandName(angularJson.projects);
-  const port = 4200;
 
   Object.keys(angularJson['projects']).forEach(project => {
     const commands = getScriptFromOptions(
@@ -184,8 +183,7 @@ export function updateAngularJsonScripts(
           options: {
             commands,
             devServerTarget: `${project}:serve`,
-            testingFramework: options.testingFramework,
-            port,
+            testRunner: options.testRunner,
           },
           configurations: {
             production: {

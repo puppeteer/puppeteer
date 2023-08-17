@@ -25,7 +25,7 @@ import {
 import {addCommonFiles} from '../utils/files.js';
 import {getAngularConfig} from '../utils/json.js';
 import {
-  TestingFramework,
+  TestRunner,
   SchematicsSpec,
   AngularProject,
   PuppeteerSchematicsConfig,
@@ -98,10 +98,7 @@ function addSpecFile(options: SchematicsSpec): Rule {
       );
     }
 
-    const testingFramework = findTestingOption(
-      foundProject,
-      'testingFramework'
-    );
+    const testRunner = findTestingOption(foundProject, 'testRunner');
     const port = findTestingOption(foundProject, 'port');
 
     context.logger.debug('Creating Spec file.');
@@ -113,10 +110,10 @@ function addSpecFile(options: SchematicsSpec): Rule {
       {
         options: {
           name: options.name,
-          testingFramework,
+          testRunner,
           // Node test runner does not support glob patterns
           // It looks for files `*.test.js`
-          ext: testingFramework === TestingFramework.Node ? 'test' : 'e2e',
+          ext: testRunner === TestRunner.Node ? 'test' : 'e2e',
           port,
         },
       }

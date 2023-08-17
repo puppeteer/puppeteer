@@ -28,11 +28,11 @@ import {
   url,
 } from '@angular-devkit/schematics';
 
-import {AngularProject, SchematicsOptions, TestingFramework} from './types.js';
+import {AngularProject, SchematicsOptions, TestRunner} from './types.js';
 
 export interface FilesOptions {
   options: {
-    testingFramework: TestingFramework;
+    testRunner: TestRunner;
     port: number;
     name?: string;
     exportConfig?: boolean;
@@ -137,10 +137,10 @@ export function addFrameworkFiles(
   projects: Record<string, AngularProject>,
   filesOptions: Omit<FilesOptions, 'applyPath' | 'relativeToWorkspacePath'>
 ): any {
-  const testingFramework = filesOptions.options.testingFramework;
+  const testRunner = filesOptions.options.testRunner;
   const options: FilesOptions = {
     ...filesOptions,
-    applyPath: `./files/${testingFramework}`,
+    applyPath: `./files/${testRunner}`,
     relativeToWorkspacePath: `/`,
   };
 
@@ -164,14 +164,14 @@ export function getScriptFromOptions(
     path = `./${path}`;
   }
 
-  switch (options.testingFramework) {
-    case TestingFramework.Jasmine:
+  switch (options.testRunner) {
+    case TestRunner.Jasmine:
       return [[`${path}/jasmine`, '--config=./e2e/support/jasmine.json']];
-    case TestingFramework.Jest:
+    case TestRunner.Jest:
       return [[`${path}/jest`, '-c', 'e2e/jest.config.js']];
-    case TestingFramework.Mocha:
+    case TestRunner.Mocha:
       return [[`${path}/mocha`, '--config=./e2e/.mocharc.js']];
-    case TestingFramework.Node:
+    case TestRunner.Node:
       return [
         [`${path}/tsc`, '-p', 'e2e/tsconfig.json'],
         ['node', '--test', '--test-reporter', 'spec', 'e2e/build/'],
