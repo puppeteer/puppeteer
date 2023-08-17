@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/schema",
   "$id": "Puppeteer",
-  "title": "Puppeteer Test Schema",
+  "title": "Puppeteer E2E Schema",
   "type": "object",
   "properties": {
     "name": {
@@ -20,6 +20,14 @@
         "index": 1
       },
       "alias": "p"
+    },
+    "route": {
+      "type": "string",
+      "$default": {
+        "$source": "argv",
+        "index": 1
+      },
+      "alias": "r"
     }
   },
   "required": []

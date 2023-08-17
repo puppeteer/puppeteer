@@ -51,6 +51,9 @@ function parseUserTestArgs(userArgs: Record<string, string>): SchematicsSpec {
   if ('n' in userArgs) {
     options['name'] = userArgs['n'];
   }
+  if ('r' in userArgs) {
+    options['route'] = userArgs['n'];
+  }
 
   return options as SchematicsSpec;
 }
@@ -110,7 +113,7 @@ function addE2EFile(options: SchematicsSpec): Rule {
       {
         options: {
           name: options.name,
-          route: undefined,
+          route: options.route,
           testRunner,
           // Node test runner does not support glob patterns
           // It looks for files `*.test.js`

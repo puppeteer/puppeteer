@@ -65,8 +65,6 @@ async function executeCommand(context: BuilderContext, command: string[]) {
     command[0] = updateExecutablePath(command[0]!, String(project['root']));
   }
 
-  console.log(command);
-
   await new Promise(async (resolve, reject) => {
     context.logger.debug(`Trying to execute command - ${command.join(' ')}.`);
     const {executable, args, error} = getExecutable(command);

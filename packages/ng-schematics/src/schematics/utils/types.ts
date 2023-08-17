@@ -46,4 +46,5 @@ export interface AngularJson {
 export interface SchematicsSpec {
   name: string;
   project?: string;
+  route?: string;
 }
