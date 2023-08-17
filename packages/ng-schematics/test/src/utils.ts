@@ -110,7 +110,6 @@ export async function buildTestingTree(
       workingTree
     );
   }
-  workingTree;
 
   if (command !== 'ng-add') {
     // We want to create update the proper files with `ng-add`
