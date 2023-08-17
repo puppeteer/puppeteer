@@ -83,9 +83,6 @@ export class CustomQueryHandlerRegistry {
    * @internal
    */
   register(name: string, handler: CustomQueryHandler): void {
-    if (this.#handlers.has(name)) {
-      throw new Error(`Cannot register over existing handler: ${name}`);
-    }
     assert(
       !this.#handlers.has(name),
       `Cannot register over existing handler: ${name}`
