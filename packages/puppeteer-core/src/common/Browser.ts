@@ -583,11 +583,7 @@ export class CDPBrowserContext extends BrowserContext {
     options: {timeout?: number} = {}
   ): Promise<Target> {
     return this.#browser.waitForTarget(target => {
-      return (
-        target.browserContext() === this &&
-        target.type() !== 'tab' &&
-        predicate(target)
-      );
+      return target.browserContext() === this && predicate(target);
     }, options);
   }
 
