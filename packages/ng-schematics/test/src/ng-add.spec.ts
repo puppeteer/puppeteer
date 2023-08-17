@@ -55,7 +55,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       expect(tree.files).toContain('/e2e/support/jasmine.json');
       expect(devDependencies).toContain('jasmine');
       expect(options['commands']).toEqual([
-        [`./node_modules/.bin/jasmine`, '--config=./e2e/support/jasmine.json'],
+        [`jasmine`, '--config=./e2e/support/jasmine.json'],
       ]);
     });
     it('should create Jest files and update "package.json"', async () => {
@@ -69,7 +69,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       expect(devDependencies).toContain('jest');
       expect(devDependencies).toContain('@types/jest');
       expect(options['commands']).toEqual([
-        [`./node_modules/.bin/jest`, '-c', 'e2e/jest.config.js'],
+        [`jest`, '-c', 'e2e/jest.config.js'],
       ]);
     });
     it('should create Mocha files and update "package.json"', async () => {
@@ -83,7 +83,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       expect(devDependencies).toContain('mocha');
       expect(devDependencies).toContain('@types/mocha');
       expect(options['commands']).toEqual([
-        [`./node_modules/.bin/mocha`, '--config=./e2e/.mocharc.js'],
+        [`mocha`, '--config=./e2e/.mocharc.js'],
       ]);
     });
     it('should create Node files', async () => {
@@ -96,7 +96,6 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       expect(tree.files).not.toContain('/e2e/tests/app.e2e.ts');
       expect(tree.files).toContain('/e2e/tests/app.test.ts');
       expect(options['commands']).toEqual([
-        [`./node_modules/.bin/tsc`, '-p', 'e2e/tsconfig.json'],
         ['node', '--test', '--test-reporter', 'spec', 'e2e/build/'],
       ]);
     });
@@ -154,10 +153,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       );
       expect(devDependencies).toContain('jasmine');
       expect(options['commands']).toEqual([
-        [
-          `../../node_modules/.bin/jasmine`,
-          '--config=./e2e/support/jasmine.json',
-        ],
+        [`jasmine`, '--config=./e2e/support/jasmine.json'],
       ]);
     });
     it('should create Jest files and update "package.json"', async () => {
@@ -171,7 +167,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       expect(devDependencies).toContain('jest');
       expect(devDependencies).toContain('@types/jest');
       expect(options['commands']).toEqual([
-        [`../../node_modules/.bin/jest`, '-c', 'e2e/jest.config.js'],
+        [`jest`, '-c', 'e2e/jest.config.js'],
       ]);
     });
     it('should create Mocha files and update "package.json"', async () => {
@@ -185,7 +181,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       expect(devDependencies).toContain('mocha');
       expect(devDependencies).toContain('@types/mocha');
       expect(options['commands']).toEqual([
-        [`../../node_modules/.bin/mocha`, '--config=./e2e/.mocharc.js'],
+        [`mocha`, '--config=./e2e/.mocharc.js'],
       ]);
     });
     it('should create Node files', async () => {
@@ -202,7 +198,6 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
         getMultiProjectFile('e2e/tests/app.test.ts')
       );
       expect(options['commands']).toEqual([
-        [`../../node_modules/.bin/tsc`, '-p', 'e2e/tsconfig.json'],
         ['node', '--test', '--test-reporter', 'spec', 'e2e/build/'],
       ]);
     });
