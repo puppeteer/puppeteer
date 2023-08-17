@@ -31,6 +31,17 @@ import {
 } from './TargetManager.js';
 import {debugError} from './util.js';
 
+function isTargetExposed(target: CDPTarget): boolean {
+  return target.type() !== 'tab' && !target._subtype();
+}
+
+function isPageTargetBecomingPrimary(
+  target: CDPTarget,
+  newTargetInfo: Protocol.Target.TargetInfo
+): boolean {
+  return Boolean(target._subtype()) && !newTargetInfo.subtype;
+}
+
 /**
  * ChromeTargetManager uses the CDP's auto-attach mechanism to intercept
  * new targets and allow the rest of Puppeteer to configure listeners while
@@ -86,6 +97,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
   #targetsIdsForInit = new Set<string>();
   #waitForInitiallyDiscoveredTargets = true;
 
+  // TODO: remove the flag once the testing/rollout is done.
   #tabMode = true;
   #discoveryFilter = this.#tabMode ? [{}] : [{type: 'tab', exclude: true}, {}];
 
@@ -172,7 +184,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
   getAvailableTargets(): Map<string, CDPTarget> {
     const result = new Map<string, CDPTarget>();
     for (const [id, target] of this.#attachedTargetsByTargetId.entries()) {
-      if (target.type() !== 'tab' && !target._subtype()) {
+      if (isTargetExposed(target)) {
         result.set(id, target);
       }
     }
@@ -303,14 +315,16 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
     const wasInitialized =
       target._initializedDeferred.value() === InitializationStatus.SUCCESS;
 
-    if (target._subtype() && !event.targetInfo.subtype) {
+    if (isPageTargetBecomingPrimary(target, event.targetInfo)) {
       const target = this.#attachedTargetsByTargetId.get(
         event.targetInfo.targetId
       );
       const session = target?._session();
-      if (session) {
-        session.parentSession()?.emit('sessionswapped', session);
-      }
+      assert(
+        session,
+        'Target that is being activated is missing a CDPSession.'
+      );
+      session.parentSession()?.emit('sessionswapped', session);
     }
 
     target._targetInfoChanged(event.targetInfo);
@@ -423,7 +437,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
     }
 
     this.#targetsIdsForInit.delete(target._targetId);
-    if (!existingTarget && target.type() !== 'tab' && !target._subtype()) {
+    if (!existingTarget && isTargetExposed(target)) {
       this.emit(TargetManagerEmittedEvents.TargetAvailable, target);
     }
     this.#finishInitializationIfReady();
@@ -461,7 +475,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
     }
 
     this.#attachedTargetsByTargetId.delete(target._targetId);
-    if (target.type() !== 'tab') {
+    if (isTargetExposed(target)) {
       this.emit(TargetManagerEmittedEvents.TargetGone, target);
     }
   };
