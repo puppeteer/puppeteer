@@ -64,7 +64,8 @@ export class CDPBrowser extends BrowserBase {
     process?: ChildProcess,
     closeCallback?: BrowserCloseCallback,
     targetFilterCallback?: TargetFilterCallback,
-    isPageTargetCallback?: IsPageTargetCallback
+    isPageTargetCallback?: IsPageTargetCallback,
+    waitForInitiallyDiscoveredTargets = true
   ): Promise<CDPBrowser> {
     const browser = new CDPBrowser(
       product,
@@ -75,7 +76,8 @@ export class CDPBrowser extends BrowserBase {
       process,
       closeCallback,
       targetFilterCallback,
-      isPageTargetCallback
+      isPageTargetCallback,
+      waitForInitiallyDiscoveredTargets
     );
     await browser._attach();
     return browser;
@@ -111,7 +113,8 @@ export class CDPBrowser extends BrowserBase {
     process?: ChildProcess,
     closeCallback?: BrowserCloseCallback,
     targetFilterCallback?: TargetFilterCallback,
-    isPageTargetCallback?: IsPageTargetCallback
+    isPageTargetCallback?: IsPageTargetCallback,
+    waitForInitiallyDiscoveredTargets = true
   ) {
     super();
     product = product || 'chrome';
@@ -137,7 +140,8 @@ export class CDPBrowser extends BrowserBase {
       this.#targetManager = new ChromeTargetManager(
         connection,
         this.#createTarget,
-        this.#targetFilterCallback
+        this.#targetFilterCallback,
+        waitForInitiallyDiscoveredTargets
       );
     }
     this.#defaultContext = new CDPBrowserContext(this.#connection, this);
