@@ -84,16 +84,19 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
 
   #initializeDeferred = Deferred.create<void>();
   #targetsIdsForInit = new Set<string>();
+  #waitForInitiallyDiscoveredTargets = true;
 
   constructor(
     connection: Connection,
     targetFactory: TargetFactory,
-    targetFilterCallback?: TargetFilterCallback
+    targetFilterCallback?: TargetFilterCallback,
+    waitForInitiallyDiscoveredTargets = true
   ) {
     super();
     this.#connection = connection;
     this.#targetFilterCallback = targetFilterCallback;
     this.#targetFactory = targetFactory;
+    this.#waitForInitiallyDiscoveredTargets = waitForInitiallyDiscoveredTargets;
 
     this.#connection.on('Target.targetCreated', this.#onTargetCreated);
     this.#connection.on('Target.targetDestroyed', this.#onTargetDestroyed);
@@ -111,6 +114,9 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
   }
 
   #storeExistingTargetsForInit = () => {
+    if (!this.#waitForInitiallyDiscoveredTargets) {
+      return;
+    }
     for (const [
       targetId,
       targetInfo,
