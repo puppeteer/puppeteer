@@ -37,6 +37,7 @@ export interface FilesOptions {
     name?: string;
     exportConfig?: boolean;
     ext?: string;
+    route?: string;
   };
   applyPath: string;
   relativeToWorkspacePath: string;

@@ -53,11 +53,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       const {options} = getAngularJsonScripts(tree);
 
       expect(tree.files).toContain('/e2e/support/jasmine.json');
-      expect(tree.files).toContain('/e2e/helpers/babel.js');
       expect(devDependencies).toContain('jasmine');
-      expect(devDependencies).toContain('@babel/core');
-      expect(devDependencies).toContain('@babel/register');
-      expect(devDependencies).toContain('@babel/preset-typescript');
       expect(options['commands']).toEqual([
         [`./node_modules/.bin/jasmine`, '--config=./e2e/support/jasmine.json'],
       ]);
@@ -72,7 +68,6 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       expect(tree.files).toContain('/e2e/jest.config.js');
       expect(devDependencies).toContain('jest');
       expect(devDependencies).toContain('@types/jest');
-      expect(devDependencies).toContain('ts-jest');
       expect(options['commands']).toEqual([
         [`./node_modules/.bin/jest`, '-c', 'e2e/jest.config.js'],
       ]);
@@ -85,12 +80,8 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       const {options} = getAngularJsonScripts(tree);
 
       expect(tree.files).toContain('/e2e/.mocharc.js');
-      expect(tree.files).toContain('/e2e/babel.js');
       expect(devDependencies).toContain('mocha');
       expect(devDependencies).toContain('@types/mocha');
-      expect(devDependencies).toContain('@babel/core');
-      expect(devDependencies).toContain('@babel/register');
-      expect(devDependencies).toContain('@babel/preset-typescript');
       expect(options['commands']).toEqual([
         [`./node_modules/.bin/mocha`, '--config=./e2e/.mocharc.js'],
       ]);
@@ -161,11 +152,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       expect(tree.files).toContain(
         getMultiProjectFile('e2e/support/jasmine.json')
       );
-      expect(tree.files).toContain(getMultiProjectFile('e2e/helpers/babel.js'));
       expect(devDependencies).toContain('jasmine');
-      expect(devDependencies).toContain('@babel/core');
-      expect(devDependencies).toContain('@babel/register');
-      expect(devDependencies).toContain('@babel/preset-typescript');
       expect(options['commands']).toEqual([
         [
           `../../node_modules/.bin/jasmine`,
@@ -183,7 +170,6 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       expect(tree.files).toContain(getMultiProjectFile('e2e/jest.config.js'));
       expect(devDependencies).toContain('jest');
       expect(devDependencies).toContain('@types/jest');
-      expect(devDependencies).toContain('ts-jest');
       expect(options['commands']).toEqual([
         [`../../node_modules/.bin/jest`, '-c', 'e2e/jest.config.js'],
       ]);
@@ -196,12 +182,8 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       const {options} = getAngularJsonScripts(tree);
 
       expect(tree.files).toContain(getMultiProjectFile('e2e/.mocharc.js'));
-      expect(tree.files).toContain(getMultiProjectFile('e2e/babel.js'));
       expect(devDependencies).toContain('mocha');
       expect(devDependencies).toContain('@types/mocha');
-      expect(devDependencies).toContain('@babel/core');
-      expect(devDependencies).toContain('@babel/register');
-      expect(devDependencies).toContain('@babel/preset-typescript');
       expect(options['commands']).toEqual([
         [`../../node_modules/.bin/mocha`, '--config=./e2e/.mocharc.js'],
       ]);

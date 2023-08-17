@@ -33,11 +33,11 @@ import {
 
 // You don't have to export the function as default. You can also have more than one rule
 // factory per file.
-export function test(userArgs: Record<string, string>): Rule {
+export function e2e(userArgs: Record<string, string>): Rule {
   const options = parseUserTestArgs(userArgs);
 
   return (tree: Tree, context: SchematicContext) => {
-    return chain([addSpecFile(options)])(tree, context);
+    return chain([addE2EFile(options)])(tree, context);
   };
 }
 
@@ -78,7 +78,7 @@ function findTestingOption<
   throw new Error(`Can't find property "${property}" for project "${name}".`);
 }
 
-function addSpecFile(options: SchematicsSpec): Rule {
+function addE2EFile(options: SchematicsSpec): Rule {
   return async (tree: Tree, context: SchematicContext) => {
     context.logger.debug('Adding Spec file.');
 
@@ -110,6 +110,7 @@ function addSpecFile(options: SchematicsSpec): Rule {
       {
         options: {
           name: options.name,
+          route: undefined,
           testRunner,
           // Node test runner does not support glob patterns
           // It looks for files `*.test.js`

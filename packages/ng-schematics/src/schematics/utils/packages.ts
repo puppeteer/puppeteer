@@ -115,22 +115,16 @@ export function getDependenciesFromOptions(
   options: SchematicsOptions
 ): string[] {
   const dependencies = ['puppeteer'];
-  const babelPackages = [
-    '@babel/core',
-    '@babel/register',
-    '@babel/preset-env',
-    '@babel/preset-typescript',
-  ];
 
   switch (options.testRunner) {
     case TestRunner.Jasmine:
-      dependencies.push('jasmine', ...babelPackages);
+      dependencies.push('jasmine');
       break;
     case TestRunner.Jest:
-      dependencies.push('jest', '@types/jest', 'ts-jest');
+      dependencies.push('jest', '@types/jest');
       break;
     case TestRunner.Mocha:
-      dependencies.push('mocha', '@types/mocha', ...babelPackages);
+      dependencies.push('mocha', '@types/mocha');
       break;
     case TestRunner.Node:
       dependencies.push('@types/node');

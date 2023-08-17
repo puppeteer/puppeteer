@@ -74,7 +74,7 @@ export function getMultiProjectFile(file: string): string {
 }
 
 export async function buildTestingTree(
-  command: 'ng-add' | 'test' | 'config',
+  command: 'ng-add' | 'e2e' | 'config',
   type: 'single' | 'multi' = 'single',
   userOptions?: Record<string, any>
 ): Promise<UnitTestTree> {

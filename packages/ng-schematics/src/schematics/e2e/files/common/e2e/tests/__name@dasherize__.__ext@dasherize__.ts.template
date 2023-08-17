@@ -7,7 +7,11 @@ import * as assert from 'assert';
 import {setupBrowserHooks, getBrowserState} from './utils';
 
 describe('<%= classify(name) %>', function () {
+  <% if(route) { %>
+  setupBrowserHooks('<%= route %>');
+  <% } else { %>
   setupBrowserHooks();
+  <% } %>
   it('', async function () {
     const {page} = getBrowserState();
   });
