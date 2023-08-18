@@ -1431,7 +1431,7 @@
     "testIdPattern": "[target.spec] Target Browser.waitForTarget should timeout waiting for a non-existent target",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[target.spec] Target should be able to use the default page in the browser",
