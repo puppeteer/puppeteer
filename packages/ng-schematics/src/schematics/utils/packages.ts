@@ -18,7 +18,7 @@ import {get} from 'https';
 
 import {Tree} from '@angular-devkit/schematics';
 
-import {getNgCommandName, getScriptFromOptions} from './files.js';
+import {getNgCommandName} from './files.js';
 import {
   getAngularConfig,
   getJsonFileAsObject,
@@ -165,14 +165,12 @@ export function updateAngularJsonScripts(
   const name = getNgCommandName(angularJson.projects);
 
   Object.keys(angularJson['projects']).forEach(project => {
-    const commands = getScriptFromOptions(options);
     const e2eScript = [
       {
         name,
         value: {
           builder: '@puppeteer/ng-schematics:puppeteer',
           options: {
-            commands,
             devServerTarget: `${project}:serve`,
             testRunner: options.testRunner,
           },
