@@ -48,8 +48,9 @@ describe('chrome-headless-shell', () => {
     );
   });
 
+  // TODO: once no new releases happen for the milestone, we can use the exact match.
   it('should resolve milestones', async () => {
-    assert.strictEqual(await resolveBuildId('118'), '118.0.5950.0');
+    assert((await resolveBuildId('118'))?.startsWith('118.0'));
   });
 
   it('should resolve build prefix', async () => {
