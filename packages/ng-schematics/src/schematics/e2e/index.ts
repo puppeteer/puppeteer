@@ -55,6 +55,10 @@ function parseUserTestArgs(userArgs: Record<string, string>): SchematicsSpec {
     options['route'] = userArgs['n'];
   }
 
+  if (options['route'] && !options['route'].startsWith('/')) {
+    options['route'] = `/${options['route']}`;
+  }
+
   return options as SchematicsSpec;
 }
 

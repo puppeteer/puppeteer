@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-const {spawn} = require('child_process');
-const {readFile, writeFile} = require('fs/promises');
-const {join} = require('path');
-const {cwd} = require('process');
+import {spawn} from 'child_process';
+import {readFile, writeFile} from 'fs/promises';
+import {join} from 'path';
+import {cwd} from 'process';
 
 const isInit = process.argv.indexOf('--init') !== -1;
 const isMulti = process.argv.indexOf('--multi') !== -1;
 const isBuild = process.argv.indexOf('--build') !== -1;
-const isTest = process.argv.indexOf('--test') !== -1;
+const isE2E = process.argv.indexOf('--e2e') !== -1;
+const isConfig = process.argv.indexOf('--config') !== -1;
 const commands = {
   build: ['npm run build'],
   createSandbox: ['npx ng new sandbox --defaults'],
@@ -51,9 +52,17 @@ const commands = {
       },
     },
   ],
-  runSchematicsTest: [
+  runSchematicsE2E: [
     {
-      command: 'npm run schematics:test',
+      command: 'npm run schematics:e2e',
+      options: {
+        cwd: join(cwd(), '/sandbox/'),
+      },
+    },
+  ],
+  runSchematicsConfig: [
+    {
+      command: 'npm run schematics:config',
       options: {
         cwd: join(cwd(), '/sandbox/'),
       },
@@ -69,8 +78,10 @@ const scripts = {
   // Runs the Puppeteer Ng-Schematics against the sandbox
   schematics:
     'npm run delete:file && npm run build:schematics && schematics ../:ng-add --dry-run=false',
-  'schematics:test':
-    'npm run build:schematics && schematics ../:test --dry-run=false',
+  'schematics:e2e':
+    'npm run build:schematics && schematics ../:e2e --dry-run=false',
+  'schematics:config':
+    'npm run build:schematics && schematics ../:config --dry-run=false',
 };
 /**
  *
@@ -134,9 +145,13 @@ async function main() {
     if (isBuild) {
       await executeCommand(commands.build);
     }
-    await executeCommand(
-      isTest ? commands.runSchematicsTest : commands.runSchematics
-    );
+    if (isE2E) {
+      await executeCommand(commands.runSchematicsE2E);
+    } else if (isConfig) {
+      await executeCommand(commands.runSchematicsConfig);
+    } else {
+      await executeCommand(commands.runSchematics);
+    }
   }
 }
 
