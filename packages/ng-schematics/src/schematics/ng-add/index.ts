@@ -25,7 +25,7 @@ import {
   getNgCommandName,
   hasE2ETester,
 } from '../utils/files.js';
-import {getAngularConfig} from '../utils/json.js';
+import {getApplicationProjects} from '../utils/json.js';
 import {
   addPackageJsonDependencies,
   addPackageJsonScripts,
@@ -80,7 +80,7 @@ function addDependencies(options: SchematicsOptions): Rule {
 function updateScripts(): Rule {
   return (tree: Tree, context: SchematicContext): Tree => {
     context.logger.debug('Updating "package.json" scripts');
-    const {projects} = getAngularConfig(tree);
+    const projects = getApplicationProjects(tree);
     const projectsKeys = Object.keys(projects);
 
     if (projectsKeys.length === 1) {
@@ -100,7 +100,7 @@ function updateScripts(): Rule {
 function addCommonFiles(options: SchematicsOptions): Rule {
   return (tree: Tree, context: SchematicContext) => {
     context.logger.debug('Adding Puppeteer base files.');
-    const {projects} = getAngularConfig(tree);
+    const projects = getApplicationProjects(tree);
 
     return addCommonFilesHelper(tree, context, projects, {
       options: {
@@ -115,7 +115,7 @@ function addCommonFiles(options: SchematicsOptions): Rule {
 function addOtherFiles(options: SchematicsOptions): Rule {
   return (tree: Tree, context: SchematicContext) => {
     context.logger.debug('Adding Puppeteer additional files.');
-    const {projects} = getAngularConfig(tree);
+    const projects = getApplicationProjects(tree);
 
     return addFrameworkFiles(tree, context, projects, {
       options: {

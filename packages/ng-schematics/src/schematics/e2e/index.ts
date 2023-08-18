@@ -23,7 +23,7 @@ import {
 } from '@angular-devkit/schematics';
 
 import {addCommonFiles} from '../utils/files.js';
-import {getAngularConfig} from '../utils/json.js';
+import {getApplicationProjects} from '../utils/json.js';
 import {
   TestRunner,
   SchematicsSpec,
@@ -89,7 +89,7 @@ function addE2EFile(options: SchematicsSpec): Rule {
   return async (tree: Tree, context: SchematicContext) => {
     context.logger.debug('Adding Spec file.');
 
-    const {projects} = getAngularConfig(tree);
+    const projects = getApplicationProjects(tree);
     const projectNames = Object.keys(projects) as [string, ...string[]];
     const foundProject: [string, AngularProject | undefined] | undefined =
       projectNames.length === 1
