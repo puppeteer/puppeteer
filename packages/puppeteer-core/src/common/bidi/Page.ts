@@ -34,7 +34,7 @@ import {Accessibility} from '../Accessibility.js';
 import {CDPSession} from '../Connection.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
 import {Coverage} from '../Coverage.js';
-import {EmulationManager} from '../EmulationManager.js';
+import {EmulationManager as CDPEmulationManager} from '../EmulationManager.js';
 import {TargetCloseError} from '../Errors.js';
 import {Handler} from '../EventEmitter.js';
 import {FrameTree} from '../FrameTree.js';
@@ -63,6 +63,7 @@ import {
 } from './BrowsingContext.js';
 import {Connection} from './Connection.js';
 import {Dialog} from './Dialog.js';
+import {EmulationManager} from './EmulationManager.js';
 import {Frame} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
@@ -127,6 +128,7 @@ export class Page extends PageBase {
   ]);
   #tracing: Tracing;
   #coverage: Coverage;
+  #cdpEmulationManager: CDPEmulationManager;
   #emulationManager: EmulationManager;
   #mouse: Mouse;
   #touchscreen: Touchscreen;
@@ -176,9 +178,10 @@ export class Page extends PageBase {
     );
     this.#tracing = new Tracing(this.mainFrame().context().cdpSession);
     this.#coverage = new Coverage(this.mainFrame().context().cdpSession);
-    this.#emulationManager = new EmulationManager(
+    this.#cdpEmulationManager = new CDPEmulationManager(
       this.mainFrame().context().cdpSession
     );
+    this.#emulationManager = new EmulationManager(browsingContext);
     this.#mouse = new Mouse(this.mainFrame().context());
     this.#touchscreen = new Touchscreen(this.mainFrame().context());
     this.#keyboard = new Keyboard(this.mainFrame().context());
@@ -508,50 +511,57 @@ export class Page extends PageBase {
   }
 
   override isJavaScriptEnabled(): boolean {
-    return this.#emulationManager.javascriptEnabled;
+    return this.#cdpEmulationManager.javascriptEnabled;
   }
 
   override async setGeolocation(options: GeolocationOptions): Promise<void> {
-    return await this.#emulationManager.setGeolocation(options);
+    return await this.#cdpEmulationManager.setGeolocation(options);
   }
 
   override async setJavaScriptEnabled(enabled: boolean): Promise<void> {
-    return await this.#emulationManager.setJavaScriptEnabled(enabled);
+    return await this.#cdpEmulationManager.setJavaScriptEnabled(enabled);
   }
 
   override async emulateMediaType(type?: string): Promise<void> {
-    return await this.#emulationManager.emulateMediaType(type);
+    return await this.#cdpEmulationManager.emulateMediaType(type);
   }
 
   override async emulateCPUThrottling(factor: number | null): Promise<void> {
-    return await this.#emulationManager.emulateCPUThrottling(factor);
+    return await this.#cdpEmulationManager.emulateCPUThrottling(factor);
   }
 
   override async emulateMediaFeatures(
     features?: MediaFeature[]
   ): Promise<void> {
-    return await this.#emulationManager.emulateMediaFeatures(features);
+    return await this.#cdpEmulationManager.emulateMediaFeatures(features);
   }
 
   override async emulateTimezone(timezoneId?: string): Promise<void> {
-    return await this.#emulationManager.emulateTimezone(timezoneId);
+    return await this.#cdpEmulationManager.emulateTimezone(timezoneId);
   }
 
   override async emulateIdleState(overrides?: {
     isUserActive: boolean;
     isScreenUnlocked: boolean;
   }): Promise<void> {
-    return await this.#emulationManager.emulateIdleState(overrides);
+    return await this.#cdpEmulationManager.emulateIdleState(overrides);
   }
 
   override async emulateVisionDeficiency(
     type?: Protocol.Emulation.SetEmulatedVisionDeficiencyRequest['type']
   ): Promise<void> {
-    return await this.#emulationManager.emulateVisionDeficiency(type);
+    return await this.#cdpEmulationManager.emulateVisionDeficiency(type);
   }
 
   override async setViewport(viewport: Viewport): Promise<void> {
-    const needsReload = await this.#emulationManager.emulateViewport(viewport);
+    if (!this.#browsingContext.supportsCDP()) {
+      await this.#emulationManager.emulateViewport(viewport);
+      this.#viewport = viewport;
+      return;
+    }
+    const needsReload = await this.#cdpEmulationManager.emulateViewport(
+      viewport
+    );
     this.#viewport = viewport;
     if (needsReload) {
       // TODO: reload seems to hang in BiDi.
