@@ -1,11 +1,10 @@
 {
   "extends": "<%= tsConfigPath %>",
-  "compilerOptions": {<% if(testingFramework == 'jest') { %>
-    "esModuleInterop": true,<% } %><% if(testingFramework == 'node') { %>
+  "compilerOptions": {
     "module": "CommonJS",
     "rootDir": "tests/",
-    "outDir": "build/",<% } %>
-    "types": ["<%= testingFramework %>"]
+    "outDir": "build/",
+    "types": ["<%= testRunner %>"]
   },
   "include": ["tests/**/*.ts"]
 }

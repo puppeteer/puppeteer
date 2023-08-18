@@ -25,19 +25,19 @@ import {
 import {addCommonFiles} from '../utils/files.js';
 import {getAngularConfig} from '../utils/json.js';
 import {
-  TestingFramework,
+  TestRunner,
   SchematicsSpec,
-  SchematicsOptions,
   AngularProject,
+  PuppeteerSchematicsConfig,
 } from '../utils/types.js';
 
 // You don't have to export the function as default. You can also have more than one rule
 // factory per file.
-export function test(userArgs: Record<string, string>): Rule {
+export function e2e(userArgs: Record<string, string>): Rule {
   const options = parseUserTestArgs(userArgs);
 
   return (tree: Tree, context: SchematicContext) => {
-    return chain([addSpecFile(options)])(tree, context);
+    return chain([addE2EFile(options)])(tree, context);
   };
 }
 
@@ -51,14 +51,19 @@ function parseUserTestArgs(userArgs: Record<string, string>): SchematicsSpec {
   if ('n' in userArgs) {
     options['name'] = userArgs['n'];
   }
+  if ('r' in userArgs) {
+    options['route'] = userArgs['n'];
+  }
 
   return options as SchematicsSpec;
 }
 
-function findTestingOption<Property extends keyof SchematicsOptions>(
+function findTestingOption<
+  Property extends keyof PuppeteerSchematicsConfig['options'],
+>(
   [name, project]: [string, AngularProject | undefined],
   property: Property
-): SchematicsOptions[Property] {
+): PuppeteerSchematicsConfig['options'][Property] {
   if (!project) {
     throw new Error(`Project "${name}" not found.`);
   }
@@ -76,7 +81,7 @@ function findTestingOption<Property extends keyof SchematicsOptions>(
   throw new Error(`Can't find property "${property}" for project "${name}".`);
 }
 
-function addSpecFile(options: SchematicsSpec): Rule {
+function addE2EFile(options: SchematicsSpec): Rule {
   return async (tree: Tree, context: SchematicContext) => {
     context.logger.debug('Adding Spec file.');
 
@@ -96,10 +101,7 @@ function addSpecFile(options: SchematicsSpec): Rule {
       );
     }
 
-    const testingFramework = findTestingOption(
-      foundProject,
-      'testingFramework'
-    );
+    const testRunner = findTestingOption(foundProject, 'testRunner');
     const port = findTestingOption(foundProject, 'port');
 
     context.logger.debug('Creating Spec file.');
@@ -111,10 +113,11 @@ function addSpecFile(options: SchematicsSpec): Rule {
       {
         options: {
           name: options.name,
-          testingFramework,
+          route: options.route,
+          testRunner,
           // Node test runner does not support glob patterns
           // It looks for files `*.test.js`
-          ext: testingFramework === TestingFramework.Node ? 'test' : 'e2e',
+          ext: testRunner === TestRunner.Node ? 'test' : 'e2e',
           port,
         },
       }

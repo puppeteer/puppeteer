@@ -74,7 +74,7 @@ export function getMultiProjectFile(file: string): string {
 }
 
 export async function buildTestingTree(
-  command: 'ng-add' | 'test',
+  command: 'ng-add' | 'e2e' | 'config',
   type: 'single' | 'multi' = 'single',
   userOptions?: Record<string, any>
 ): Promise<UnitTestTree> {
@@ -83,9 +83,7 @@ export async function buildTestingTree(
     join(__dirname, '../../lib/schematics/collection.json')
   );
   const options = {
-    isDefaultTester: true,
-    exportConfig: false,
-    testingFramework: 'jasmine',
+    testRunner: 'jasmine',
     ...userOptions,
   };
   let workingTree: UnitTestTree;
@@ -120,4 +118,16 @@ export async function buildTestingTree(
   }
 
   return await runner.runSchematic(command, options, workingTree);
+}
+
+export async function runSchematic(
+  tree: UnitTestTree,
+  command: 'ng-add' | 'test',
+  options?: Record<string, any>
+): Promise<UnitTestTree> {
+  const runner = new SchematicTestRunner(
+    'schematics',
+    join(__dirname, '../../lib/schematics/collection.json')
+  );
+  return await runner.runSchematic(command, options, tree);
 }

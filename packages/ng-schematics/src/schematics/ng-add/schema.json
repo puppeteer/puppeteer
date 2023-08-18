@@ -4,25 +4,13 @@
   "title": "Puppeteer Install Schema",
   "type": "object",
   "properties": {
-    "isDefaultTester": {
-      "type": "boolean",
-      "default": true,
-      "alias": "d",
-      "x-prompt": "Use Puppeteer as default `ng e2e` command?"
-    },
-    "exportConfig": {
-      "type": "boolean",
-      "default": false,
-      "alias": "c",
-      "x-prompt": "Export default Puppeteer config file?"
-    },
-    "testingFramework": {
+    "testRunner": {
       "type": "string",
       "enum": ["jasmine", "jest", "mocha", "node"],
       "default": "jasmine",
       "alias": "t",
       "x-prompt": {
-        "message": "With what Testing Library do you wish to integrate?",
+        "message": "Which test runners do you wish to use?",
         "type": "list",
         "items": [
           {
@@ -43,12 +31,6 @@
           }
         ]
       }
-    },
-    "port": {
-      "type": ["number"],
-      "default": 4200,
-      "alias": "p",
-      "x-prompt": "On which port to spawn test server on?"
     }
   },
   "required": []

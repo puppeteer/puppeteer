@@ -6,10 +6,15 @@
       "factory": "./ng-add/index#ngAdd",
       "schema": "./ng-add/schema.json"
     },
-    "test": {
+    "e2e": {
       "description": "Create a single test file",
-      "factory": "./test/index#test",
-      "schema": "./test/schema.json"
+      "factory": "./e2e/index#e2e",
+      "schema": "./e2e/schema.json"
+    },
+    "config": {
+      "description": "Eject Puppeteer config file",
+      "factory": "./config/index#config",
+      "schema": "./config/schema.json"
     }
   }
 }

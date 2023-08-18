@@ -28,15 +28,16 @@ import {
   url,
 } from '@angular-devkit/schematics';
 
-import {AngularProject, SchematicsOptions, TestingFramework} from './types.js';
+import {AngularProject, SchematicsOptions, TestRunner} from './types.js';
 
 export interface FilesOptions {
   options: {
-    testingFramework: TestingFramework;
+    testRunner: TestRunner;
     port: number;
     name?: string;
     exportConfig?: boolean;
     ext?: string;
+    route?: string;
   };
   applyPath: string;
   relativeToWorkspacePath: string;
@@ -137,50 +138,41 @@ export function addFrameworkFiles(
   projects: Record<string, AngularProject>,
   filesOptions: Omit<FilesOptions, 'applyPath' | 'relativeToWorkspacePath'>
 ): any {
-  const testingFramework = filesOptions.options.testingFramework;
+  const testRunner = filesOptions.options.testRunner;
   const options: FilesOptions = {
     ...filesOptions,
-    applyPath: `./files/${testingFramework}`,
+    applyPath: `./files/${testRunner}`,
     relativeToWorkspacePath: `/`,
   };
 
   return addFilesToProjects(tree, context, projects, options);
 }
 
-export function getScriptFromOptions(
-  options: SchematicsOptions,
-  root?: string
-): string[][] {
-  let path = 'node_modules/.bin';
-  if (root && root !== '') {
-    const nested = root
-      .split('/')
-      .map(() => {
-        return '../';
-      })
-      .join('');
-    path = `${nested}${path}`;
-  } else {
-    path = `./${path}`;
-  }
-
-  switch (options.testingFramework) {
-    case TestingFramework.Jasmine:
-      return [[`${path}/jasmine`, '--config=./e2e/support/jasmine.json']];
-    case TestingFramework.Jest:
-      return [[`${path}/jest`, '-c', 'e2e/jest.config.js']];
-    case TestingFramework.Mocha:
-      return [[`${path}/mocha`, '--config=./e2e/.mocharc.js']];
-    case TestingFramework.Node:
-      return [
-        [`${path}/tsc`, '-p', 'e2e/tsconfig.json'],
-        ['node', '--test', '--test-reporter', 'spec', 'e2e/build/'],
-      ];
+export function getScriptFromOptions(options: SchematicsOptions): string[][] {
+  switch (options.testRunner) {
+    case TestRunner.Jasmine:
+      return [[`jasmine`, '--config=./e2e/support/jasmine.json']];
+    case TestRunner.Jest:
+      return [[`jest`, '-c', 'e2e/jest.config.js']];
+    case TestRunner.Mocha:
+      return [[`mocha`, '--config=./e2e/.mocharc.js']];
+    case TestRunner.Node:
+      return [['node', '--test', '--test-reporter', 'spec', 'e2e/build/']];
   }
 }
 
-export function getNgCommandName(options: SchematicsOptions): string {
-  if (options.isDefaultTester) {
+export function hasE2ETester(
+  projects: Record<string, AngularProject>
+): boolean {
+  return Object.values(projects).some((project: AngularProject) => {
+    return Boolean(project.architect?.e2e);
+  });
+}
+
+export function getNgCommandName(
+  projects: Record<string, AngularProject>
+): string {
+  if (!hasE2ETester(projects)) {
     return 'e2e';
   }
   return 'puppeteer';

@@ -21,9 +21,9 @@ import {concatMap, map, scan} from 'rxjs/operators';
 
 import {
   addCommonFiles as addCommonFilesHelper,
-  addFilesSingle,
   addFrameworkFiles,
   getNgCommandName,
+  hasE2ETester,
 } from '../utils/files.js';
 import {getAngularConfig} from '../utils/json.js';
 import {
@@ -35,53 +35,22 @@ import {
   type NodePackage,
   updateAngularJsonScripts,
 } from '../utils/packages.js';
-import {
-  TestingFramework,
-  type SchematicsOptions,
-  AngularProject,
-} from '../utils/types.js';
+import {TestRunner, type SchematicsOptions} from '../utils/types.js';
+
+const DEFAULT_PORT = 4200;
 
 // You don't have to export the function as default. You can also have more than one rule
 // factory per file.
-export function ngAdd(userArgs: Record<string, string>): Rule {
-  const options = parseUserAddArgs(userArgs);
-
+export function ngAdd(options: SchematicsOptions): Rule {
   return (tree: Tree, context: SchematicContext) => {
     return chain([
       addDependencies(options),
-      addPuppeteerConfig(options),
       addCommonFiles(options),
       addOtherFiles(options),
-      updateScripts(options),
+      updateScripts(),
       updateAngularConfig(options),
     ])(tree, context);
   };
-}
-
-function parseUserAddArgs(userArgs: Record<string, string>): SchematicsOptions {
-  const options: Partial<SchematicsOptions> = {
-    ...userArgs,
-  };
-  if ('p' in userArgs) {
-    options['port'] = Number(userArgs['p']);
-  }
-  if ('t' in userArgs) {
-    options['testingFramework'] = userArgs['t'] as TestingFramework;
-  }
-  if ('c' in userArgs) {
-    options['exportConfig'] =
-      typeof userArgs['c'] === 'string'
-        ? userArgs['c'] === 'true'
-        : userArgs['c'];
-  }
-  if ('d' in userArgs) {
-    options['isDefaultTester'] =
-      typeof userArgs['d'] === 'string'
-        ? userArgs['d'] === 'true'
-        : userArgs['d'];
-  }
-
-  return options as SchematicsOptions;
 }
 
 function addDependencies(options: SchematicsOptions): Rule {
@@ -108,15 +77,15 @@ function addDependencies(options: SchematicsOptions): Rule {
   };
 }
 
-function updateScripts(options: SchematicsOptions): Rule {
+function updateScripts(): Rule {
   return (tree: Tree, context: SchematicContext): Tree => {
     context.logger.debug('Updating "package.json" scripts');
-    const angularJson = getAngularConfig(tree);
-    const projects = Object.keys(angularJson['projects']);
+    const {projects} = getAngularConfig(tree);
+    const projectsKeys = Object.keys(projects);
 
-    if (projects.length === 1) {
-      const name = getNgCommandName(options);
-      const prefix = options.isDefaultTester ? '' : `run ${projects[0]}:`;
+    if (projectsKeys.length === 1) {
+      const name = getNgCommandName(projects);
+      const prefix = hasE2ETester(projects) ? `run ${projectsKeys[0]}:` : '';
       return addPackageJsonScripts(tree, [
         {
           name,
@@ -124,22 +93,6 @@ function updateScripts(options: SchematicsOptions): Rule {
         },
       ]);
     }
-    return tree;
-  };
-}
-
-function addPuppeteerConfig(options: SchematicsOptions): Rule {
-  return (tree: Tree, context: SchematicContext) => {
-    context.logger.debug('Adding Puppeteer config file.');
-
-    if (options.exportConfig) {
-      return addFilesSingle(tree, context, '', {root: ''} as AngularProject, {
-        options: options,
-        applyPath: './files/base',
-        relativeToWorkspacePath: `/`,
-      });
-    }
-
     return tree;
   };
 }
@@ -152,8 +105,8 @@ function addCommonFiles(options: SchematicsOptions): Rule {
     return addCommonFilesHelper(tree, context, projects, {
       options: {
         ...options,
-        ext:
-          options.testingFramework === TestingFramework.Node ? 'test' : 'e2e',
+        port: DEFAULT_PORT,
+        ext: options.testRunner === TestRunner.Node ? 'test' : 'e2e',
       },
     });
   };
@@ -165,7 +118,10 @@ function addOtherFiles(options: SchematicsOptions): Rule {
     const {projects} = getAngularConfig(tree);
 
     return addFrameworkFiles(tree, context, projects, {
-      options,
+      options: {
+        ...options,
+        port: DEFAULT_PORT,
+      },
     });
   };
 }

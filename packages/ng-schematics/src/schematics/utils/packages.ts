@@ -24,7 +24,7 @@ import {
   getJsonFileAsObject,
   getObjectAsJson,
 } from './json.js';
-import {SchematicsOptions, TestingFramework} from './types.js';
+import {SchematicsOptions, TestRunner} from './types.js';
 export interface NodePackage {
   name: string;
   version: string;
@@ -115,24 +115,18 @@ export function getDependenciesFromOptions(
   options: SchematicsOptions
 ): string[] {
   const dependencies = ['puppeteer'];
-  const babelPackages = [
-    '@babel/core',
-    '@babel/register',
-    '@babel/preset-env',
-    '@babel/preset-typescript',
-  ];
 
-  switch (options.testingFramework) {
-    case TestingFramework.Jasmine:
-      dependencies.push('jasmine', ...babelPackages);
+  switch (options.testRunner) {
+    case TestRunner.Jasmine:
+      dependencies.push('jasmine');
       break;
-    case TestingFramework.Jest:
-      dependencies.push('jest', '@types/jest', 'ts-jest');
+    case TestRunner.Jest:
+      dependencies.push('jest', '@types/jest');
       break;
-    case TestingFramework.Mocha:
-      dependencies.push('mocha', '@types/mocha', ...babelPackages);
+    case TestRunner.Mocha:
+      dependencies.push('mocha', '@types/mocha');
       break;
-    case TestingFramework.Node:
+    case TestRunner.Node:
       dependencies.push('@types/node');
       break;
   }
@@ -168,14 +162,10 @@ export function updateAngularJsonScripts(
   overwrite = true
 ): Tree {
   const angularJson = getAngularConfig(tree);
-  const name = getNgCommandName(options);
-  const port = options.port !== 4200 ? Number(options.port) : undefined;
+  const name = getNgCommandName(angularJson.projects);
 
   Object.keys(angularJson['projects']).forEach(project => {
-    const commands = getScriptFromOptions(
-      options,
-      angularJson['projects'][project]!.root
-    );
+    const commands = getScriptFromOptions(options);
     const e2eScript = [
       {
         name,
@@ -184,8 +174,7 @@ export function updateAngularJsonScripts(
           options: {
             commands,
             devServerTarget: `${project}:serve`,
-            testingFramework: options.testingFramework,
-            port,
+            testRunner: options.testRunner,
           },
           configurations: {
             production: {

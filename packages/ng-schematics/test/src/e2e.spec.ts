@@ -6,12 +6,12 @@ import {
   setupHttpHooks,
 } from './utils.js';
 
-describe('@puppeteer/ng-schematics: test', () => {
+describe('@puppeteer/ng-schematics: e2e', () => {
   setupHttpHooks();
 
   describe('Single Project', () => {
     it('should create default file', async () => {
-      const tree = await buildTestingTree('test', 'single', {
+      const tree = await buildTestingTree('e2e', 'single', {
         name: 'myTest',
       });
       expect(tree.files).toContain('/e2e/tests/my-test.e2e.ts');
@@ -19,9 +19,9 @@ describe('@puppeteer/ng-schematics: test', () => {
     });
 
     it('should create Node file', async () => {
-      const tree = await buildTestingTree('test', 'single', {
+      const tree = await buildTestingTree('e2e', 'single', {
         name: 'myTest',
-        testingFramework: 'node',
+        testRunner: 'node',
       });
       expect(tree.files).not.toContain('/e2e/tests/my-test.e2e.ts');
       expect(tree.files).toContain('/e2e/tests/my-test.test.ts');
@@ -30,7 +30,7 @@ describe('@puppeteer/ng-schematics: test', () => {
 
   describe('Multi projects', () => {
     it('should create default file', async () => {
-      const tree = await buildTestingTree('test', 'multi', {
+      const tree = await buildTestingTree('e2e', 'multi', {
         name: 'myTest',
       });
       expect(tree.files).toContain(
@@ -42,9 +42,9 @@ describe('@puppeteer/ng-schematics: test', () => {
     });
 
     it('should create Node file', async () => {
-      const tree = await buildTestingTree('test', 'multi', {
+      const tree = await buildTestingTree('e2e', 'multi', {
         name: 'myTest',
-        testingFramework: 'node',
+        testRunner: 'node',
       });
       expect(tree.files).not.toContain(
         getMultiProjectFile('e2e/tests/my-test.e2e.ts')

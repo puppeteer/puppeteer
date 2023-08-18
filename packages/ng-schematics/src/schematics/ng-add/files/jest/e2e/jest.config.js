@@ -3,9 +3,8 @@
  * https://jestjs.io/docs/configuration
  */
 
-/** @type {import('ts-jest').JestConfigWithTsJest} */
+/** @type {import('jest').Config} */
 module.exports = {
-  testMatch: ['<rootDir>/tests/**/?(*.)+(e2e).[tj]s?(x)'],
-  preset: 'ts-jest',
+  testMatch: ['<rootDir>/tests/**/?(*.)+(e2e).js?(x)'],
   testEnvironment: 'node',
 };
