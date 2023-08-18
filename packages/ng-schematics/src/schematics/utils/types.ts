@@ -33,6 +33,7 @@ export interface PuppeteerSchematicsConfig {
   };
 }
 export interface AngularProject {
+  projectType: 'application' | 'library';
   root: string;
   architect: {
     e2e?: PuppeteerSchematicsConfig;

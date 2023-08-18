@@ -1,9 +1,11 @@
 import expect from 'expect';
 
 import {
+  MULTI_LIBRARY_OPTIONS,
   buildTestingTree,
   getAngularJsonScripts,
-  getMultiProjectFile,
+  getMultiApplicationFile,
+  getMultiLibraryFile,
   getPackageJson,
   runSchematic,
   setupHttpHooks,
@@ -99,15 +101,21 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     });
   });
 
-  describe('Multi projects', () => {
+  describe('Multi projects Application', () => {
     it('should create base files and update to "package.json"', async () => {
       const tree = await buildTestingTree('ng-add', 'multi');
       const {devDependencies, scripts} = getPackageJson(tree);
       const {builder, configurations} = getAngularJsonScripts(tree);
 
-      expect(tree.files).toContain(getMultiProjectFile('e2e/tsconfig.json'));
-      expect(tree.files).toContain(getMultiProjectFile('e2e/tests/app.e2e.ts'));
-      expect(tree.files).toContain(getMultiProjectFile('e2e/tests/utils.ts'));
+      expect(tree.files).toContain(
+        getMultiApplicationFile('e2e/tsconfig.json')
+      );
+      expect(tree.files).toContain(
+        getMultiApplicationFile('e2e/tests/app.e2e.ts')
+      );
+      expect(tree.files).toContain(
+        getMultiApplicationFile('e2e/tests/utils.ts')
+      );
       expect(devDependencies).toContain('puppeteer');
       expect(scripts['e2e']).toBe('ng e2e');
       expect(builder).toBe('@puppeteer/ng-schematics:puppeteer');
@@ -130,7 +138,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
     it('should not create Puppeteer config', async () => {
       const {files} = await buildTestingTree('ng-add', 'multi');
 
-      expect(files).not.toContain(getMultiProjectFile('.puppeteerrc.cjs'));
+      expect(files).not.toContain(getMultiApplicationFile('.puppeteerrc.cjs'));
       expect(files).not.toContain('/.puppeteerrc.cjs');
     });
     it('should create Jasmine files and update "package.json"', async () => {
@@ -140,7 +148,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       const {devDependencies} = getPackageJson(tree);
       const {options} = getAngularJsonScripts(tree);
 
-      expect(tree.files).toContain(getMultiProjectFile('e2e/jasmine.json'));
+      expect(tree.files).toContain(getMultiApplicationFile('e2e/jasmine.json'));
       expect(devDependencies).toContain('jasmine');
       expect(options['testRunner']).toBe('jasmine');
     });
@@ -151,7 +159,9 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       const {devDependencies} = getPackageJson(tree);
       const {options} = getAngularJsonScripts(tree);
 
-      expect(tree.files).toContain(getMultiProjectFile('e2e/jest.config.js'));
+      expect(tree.files).toContain(
+        getMultiApplicationFile('e2e/jest.config.js')
+      );
       expect(devDependencies).toContain('jest');
       expect(devDependencies).toContain('@types/jest');
       expect(options['testRunner']).toBe('jest');
@@ -163,7 +173,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       const {devDependencies} = getPackageJson(tree);
       const {options} = getAngularJsonScripts(tree);
 
-      expect(tree.files).toContain(getMultiProjectFile('e2e/.mocharc.js'));
+      expect(tree.files).toContain(getMultiApplicationFile('e2e/.mocharc.js'));
       expect(devDependencies).toContain('mocha');
       expect(devDependencies).toContain('@types/mocha');
       expect(options['testRunner']).toBe('mocha');
@@ -174,12 +184,12 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       });
       const {options} = getAngularJsonScripts(tree);
 
-      expect(tree.files).toContain(getMultiProjectFile('e2e/.gitignore'));
+      expect(tree.files).toContain(getMultiApplicationFile('e2e/.gitignore'));
       expect(tree.files).not.toContain(
-        getMultiProjectFile('e2e/tests/app.e2e.ts')
+        getMultiApplicationFile('e2e/tests/app.e2e.ts')
       );
       expect(tree.files).toContain(
-        getMultiProjectFile('e2e/tests/app.test.ts')
+        getMultiApplicationFile('e2e/tests/app.test.ts')
       );
       expect(options['testRunner']).toBe('node');
     });
@@ -188,6 +198,35 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
 
       const {options} = getAngularJsonScripts(tree);
       expect(options['port']).toBeUndefined();
+    });
+  });
+
+  describe('Multi projects Library', () => {
+    it('should create base files and update to "package.json"', async () => {
+      const tree = await buildTestingTree('ng-add', 'multi');
+      const config = getAngularJsonScripts(
+        tree,
+        true,
+        MULTI_LIBRARY_OPTIONS.name
+      );
+
+      expect(tree.files).not.toContain(
+        getMultiLibraryFile('e2e/tsconfig.json')
+      );
+      expect(tree.files).not.toContain(
+        getMultiLibraryFile('e2e/tests/app.e2e.ts')
+      );
+      expect(tree.files).not.toContain(
+        getMultiLibraryFile('e2e/tests/utils.ts')
+      );
+      expect(config).toBeUndefined();
+    });
+
+    it('should not create Puppeteer config', async () => {
+      const {files} = await buildTestingTree('ng-add', 'multi');
+
+      expect(files).not.toContain(getMultiLibraryFile('.puppeteerrc.cjs'));
+      expect(files).not.toContain('/.puppeteerrc.cjs');
     });
   });
 });

@@ -2,7 +2,7 @@ import expect from 'expect';
 
 import {
   buildTestingTree,
-  getMultiProjectFile,
+  getMultiApplicationFile,
   setupHttpHooks,
 } from './utils.js';
 
@@ -58,10 +58,10 @@ describe('@puppeteer/ng-schematics: e2e', () => {
         name: 'myTest',
       });
       expect(tree.files).toContain(
-        getMultiProjectFile('e2e/tests/my-test.e2e.ts')
+        getMultiApplicationFile('e2e/tests/my-test.e2e.ts')
       );
       expect(tree.files).not.toContain(
-        getMultiProjectFile('e2e/tests/my-test.test.ts')
+        getMultiApplicationFile('e2e/tests/my-test.test.ts')
       );
     });
 
@@ -71,10 +71,10 @@ describe('@puppeteer/ng-schematics: e2e', () => {
         testRunner: 'node',
       });
       expect(tree.files).not.toContain(
-        getMultiProjectFile('e2e/tests/my-test.e2e.ts')
+        getMultiApplicationFile('e2e/tests/my-test.e2e.ts')
       );
       expect(tree.files).toContain(
-        getMultiProjectFile('e2e/tests/my-test.test.ts')
+        getMultiApplicationFile('e2e/tests/my-test.test.ts')
       );
     });
 
@@ -85,10 +85,10 @@ describe('@puppeteer/ng-schematics: e2e', () => {
         route,
       });
       expect(tree.files).toContain(
-        getMultiProjectFile('e2e/tests/my-test.e2e.ts')
+        getMultiApplicationFile('e2e/tests/my-test.e2e.ts')
       );
       expect(
-        tree.readContent(getMultiProjectFile('e2e/tests/my-test.e2e.ts'))
+        tree.readContent(getMultiApplicationFile('e2e/tests/my-test.e2e.ts'))
       ).toContain(`setupBrowserHooks('/${route}');`);
     });
 
@@ -99,10 +99,10 @@ describe('@puppeteer/ng-schematics: e2e', () => {
         route,
       });
       expect(tree.files).toContain(
-        getMultiProjectFile('e2e/tests/my-test.e2e.ts')
+        getMultiApplicationFile('e2e/tests/my-test.e2e.ts')
       );
       expect(
-        tree.readContent(getMultiProjectFile('e2e/tests/my-test.e2e.ts'))
+        tree.readContent(getMultiApplicationFile('e2e/tests/my-test.e2e.ts'))
       ).toContain(`setupBrowserHooks('${route}');`);
     });
   });

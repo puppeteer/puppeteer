@@ -14,15 +14,19 @@ const WORKSPACE_OPTIONS = {
   version: '14.0.0',
 };
 
-const MULTI_APPLICATION_OPTIONS = {
-  name: 'sandbox',
-};
-
 const SINGLE_APPLICATION_OPTIONS = {
   name: 'sandbox',
   directory: '.',
   createApplication: true,
   version: '14.0.0',
+};
+
+const MULTI_APPLICATION_OPTIONS = {
+  name: SINGLE_APPLICATION_OPTIONS.name,
+};
+
+export const MULTI_LIBRARY_OPTIONS = {
+  name: 'components',
 };
 
 export function setupHttpHooks(): void {
@@ -43,7 +47,8 @@ export function setupHttpHooks(): void {
 
 export function getAngularJsonScripts(
   tree: UnitTestTree,
-  isDefault = true
+  isDefault = true,
+  name = SINGLE_APPLICATION_OPTIONS.name
 ): {
   builder: string;
   configurations: Record<string, any>;
@@ -51,9 +56,7 @@ export function getAngularJsonScripts(
 } {
   const angularJson = tree.readJson('angular.json') as any;
   const e2eScript = isDefault ? 'e2e' : 'puppeteer';
-  return angularJson['projects']?.[SINGLE_APPLICATION_OPTIONS.name]?.[
-    'architect'
-  ][e2eScript];
+  return angularJson['projects']?.[name]?.['architect'][e2eScript];
 }
 
 export function getPackageJson(tree: UnitTestTree): {
@@ -69,8 +72,11 @@ export function getPackageJson(tree: UnitTestTree): {
   };
 }
 
-export function getMultiProjectFile(file: string): string {
+export function getMultiApplicationFile(file: string): string {
   return `/${WORKSPACE_OPTIONS.newProjectRoot}/${MULTI_APPLICATION_OPTIONS.name}/${file}`;
+}
+export function getMultiLibraryFile(file: string): string {
+  return `/${WORKSPACE_OPTIONS.newProjectRoot}/${MULTI_LIBRARY_OPTIONS.name}/${file}`;
 }
 
 export async function buildTestingTree(
@@ -107,6 +113,13 @@ export async function buildTestingTree(
       '@schematics/angular',
       'application',
       MULTI_APPLICATION_OPTIONS,
+      workingTree
+    );
+    // Build dummy library
+    workingTree = await runner.runExternalSchematic(
+      '@schematics/angular',
+      'library',
+      MULTI_LIBRARY_OPTIONS,
       workingTree
     );
   }

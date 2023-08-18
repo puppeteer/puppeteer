@@ -21,6 +21,7 @@ import {Tree} from '@angular-devkit/schematics';
 import {getNgCommandName} from './files.js';
 import {
   getAngularConfig,
+  getApplicationProjects,
   getJsonFileAsObject,
   getObjectAsJson,
 } from './json.js';
@@ -162,9 +163,10 @@ export function updateAngularJsonScripts(
   overwrite = true
 ): Tree {
   const angularJson = getAngularConfig(tree);
-  const name = getNgCommandName(angularJson.projects);
+  const projects = getApplicationProjects(tree);
+  const name = getNgCommandName(projects);
 
-  Object.keys(angularJson['projects']).forEach(project => {
+  Object.keys(projects).forEach(project => {
     const e2eScript = [
       {
         name,
