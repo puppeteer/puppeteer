@@ -52,7 +52,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       const {devDependencies} = getPackageJson(tree);
       const {options} = getAngularJsonScripts(tree);
 
-      expect(tree.files).toContain('/e2e/support/jasmine.json');
+      expect(tree.files).toContain('/e2e/jasmine.json');
       expect(devDependencies).toContain('jasmine');
       expect(options['testRunner']).toBe('jasmine');
     });
@@ -140,9 +140,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       const {devDependencies} = getPackageJson(tree);
       const {options} = getAngularJsonScripts(tree);
 
-      expect(tree.files).toContain(
-        getMultiProjectFile('e2e/support/jasmine.json')
-      );
+      expect(tree.files).toContain(getMultiProjectFile('e2e/jasmine.json'));
       expect(devDependencies).toContain('jasmine');
       expect(options['testRunner']).toBe('jasmine');
     });
