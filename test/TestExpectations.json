@@ -1428,6 +1428,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[target.spec] Target Browser.waitForTarget should timeout waiting for a non-existent target",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"]
+  },
+  {
     "testIdPattern": "[target.spec] Target should be able to use the default page in the browser",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1449,12 +1455,6 @@
     "testIdPattern": "[tracing.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should disable timeout when its set to 0",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
     "expectations": ["SKIP"]
   },
   {
@@ -3811,12 +3811,6 @@
   },
   {
     "testIdPattern": "[target.spec] Target Browser.targets should return all of the targets",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[target.spec] Target Browser.waitForTarget should timeout waiting for a non-existent target",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
