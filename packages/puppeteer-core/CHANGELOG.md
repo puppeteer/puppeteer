@@ -20,6 +20,26 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.1.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.0.3...puppeteer-core-v21.1.0) (2023-08-18)
+
+
+### Features
+
+* roll to Chrome 116.0.5845.96 (r1160321) ([#10735](https://github.com/puppeteer/puppeteer/issues/10735)) ([e12b558](https://github.com/puppeteer/puppeteer/commit/e12b558f505aab13f38030a7b748261bdeadc48b))
+
+
+### Bug Fixes
+
+* locator.fill should work for textareas ([#10737](https://github.com/puppeteer/puppeteer/issues/10737)) ([fc08a7d](https://github.com/puppeteer/puppeteer/commit/fc08a7dd54226878300f3a4b52fb16aeb5cc93e8))
+* relative ordering of events and command responses should be ensured ([#10725](https://github.com/puppeteer/puppeteer/issues/10725)) ([81ecb60](https://github.com/puppeteer/puppeteer/commit/81ecb60190f89389abb6d8834158f38ff7317ec8))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * @puppeteer/browsers bumped from 1.6.0 to 1.7.0
+
 ## [21.0.2](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.0.1...puppeteer-core-v21.0.2) (2023-08-08)
 
 

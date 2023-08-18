@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/puppeteer/puppeteer/compare/browsers-v1.6.0...browsers-v1.7.0) (2023-08-18)
+
+
+### Features
+
+* support chrome-headless-shell ([#10739](https://github.com/puppeteer/puppeteer/issues/10739)) ([416843b](https://github.com/puppeteer/puppeteer/commit/416843ba68aaab7ae14bbc74c2ac705e877e91a7))
+
 ## [1.6.0](https://github.com/puppeteer/puppeteer/compare/browsers-v1.5.1...browsers-v1.6.0) (2023-08-10)
 
 
