@@ -1,3 +1,3 @@
 module.exports = {
-  spec: './e2e/tests/**/*.e2e.js',
+  spec: './e2e/build/**/*.e2e.js',
 };

@@ -25,7 +25,7 @@ const terminalStyles = {
 export function getCommandForRunner(runner: TestRunner): [string, ...string[]] {
   switch (runner) {
     case TestRunner.Jasmine:
-      return [`jasmine`, '--config=./e2e/support/jasmine.json'];
+      return [`jasmine`, '--config=./e2e/jasmine.json'];
     case TestRunner.Jest:
       return [`jest`, '-c', 'e2e/jest.config.js'];
     case TestRunner.Mocha:
@@ -37,28 +37,27 @@ export function getCommandForRunner(runner: TestRunner): [string, ...string[]] {
   throw new Error(`Unknown test runner ${runner}!`);
 }
 
-function getError(executable: string, args: string[]) {
-  return (
-    `Error running '${executable}' with arguments '${args.join(' ')}'.` +
-    `\n` +
-    'Please look at the output above to determine the issue!'
-  );
-}
-
 function getExecutable(command: string[]) {
   const executable = command.shift()!;
-  const error = getError(executable, command);
+  const debugError = `Error running '${executable}' with arguments '${command.join(
+    ' '
+  )}'.`;
 
   return {
     executable,
     args: command,
-    error,
+    debugError,
+    error: 'Please look at the output above to determine the issue!',
   };
 }
 
 function updateExecutablePath(command: string, root?: string) {
+  if (command === TestRunner.Node) {
+    return command;
+  }
+
   let path = 'node_modules/.bin/';
-  if (root && root !== '' && command === TestRunner.Node) {
+  if (root && root !== '') {
     const nested = root
       .split('/')
       .map(() => {
@@ -82,7 +81,7 @@ async function executeCommand(context: BuilderContext, command: string[]) {
 
   await new Promise(async (resolve, reject) => {
     context.logger.debug(`Trying to execute command - ${command.join(' ')}.`);
-    const {executable, args, error} = getExecutable(command);
+    const {executable, args, debugError, error} = getExecutable(command);
     let path = context.workspaceRoot;
     if (context.target) {
       path = `${path}/${project['root']}`;
@@ -94,6 +93,7 @@ async function executeCommand(context: BuilderContext, command: string[]) {
     });
 
     child.on('error', message => {
+      context.logger.debug(debugError);
       console.log(message);
       reject(error);
     });
@@ -160,10 +160,10 @@ async function executeE2ETest(
 ): Promise<BuilderOutput> {
   let server: BuilderRun | null = null;
   try {
-    server = await startServer(options, context);
-
     message('\n Building tests 🛠️ ... \n', context);
     await executeCommand(context, [`tsc`, '-p', 'e2e/tsconfig.json']);
+
+    server = await startServer(options, context);
 
     message('\n Running tests 🧪 ... \n', context);
     const testRunnerCommand = getCommandForRunner(options.testRunner);
