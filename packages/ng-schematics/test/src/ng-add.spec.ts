@@ -54,9 +54,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
 
       expect(tree.files).toContain('/e2e/support/jasmine.json');
       expect(devDependencies).toContain('jasmine');
-      expect(options['commands']).toEqual([
-        [`jasmine`, '--config=./e2e/support/jasmine.json'],
-      ]);
+      expect(options['testRunner']).toBe('jasmine');
     });
     it('should create Jest files and update "package.json"', async () => {
       const tree = await buildTestingTree('ng-add', 'single', {
@@ -68,9 +66,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       expect(tree.files).toContain('/e2e/jest.config.js');
       expect(devDependencies).toContain('jest');
       expect(devDependencies).toContain('@types/jest');
-      expect(options['commands']).toEqual([
-        [`jest`, '-c', 'e2e/jest.config.js'],
-      ]);
+      expect(options['testRunner']).toBe('jest');
     });
     it('should create Mocha files and update "package.json"', async () => {
       const tree = await buildTestingTree('ng-add', 'single', {
@@ -82,9 +78,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       expect(tree.files).toContain('/e2e/.mocharc.js');
       expect(devDependencies).toContain('mocha');
       expect(devDependencies).toContain('@types/mocha');
-      expect(options['commands']).toEqual([
-        [`mocha`, '--config=./e2e/.mocharc.js'],
-      ]);
+      expect(options['testRunner']).toBe('mocha');
     });
     it('should create Node files', async () => {
       const tree = await buildTestingTree('ng-add', 'single', {
@@ -95,9 +89,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       expect(tree.files).toContain('/e2e/.gitignore');
       expect(tree.files).not.toContain('/e2e/tests/app.e2e.ts');
       expect(tree.files).toContain('/e2e/tests/app.test.ts');
-      expect(options['commands']).toEqual([
-        ['node', '--test', '--test-reporter', 'spec', 'e2e/build/'],
-      ]);
+      expect(options['testRunner']).toBe('node');
     });
     it('should not create port value', async () => {
       const tree = await buildTestingTree('ng-add');
@@ -152,9 +144,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
         getMultiProjectFile('e2e/support/jasmine.json')
       );
       expect(devDependencies).toContain('jasmine');
-      expect(options['commands']).toEqual([
-        [`jasmine`, '--config=./e2e/support/jasmine.json'],
-      ]);
+      expect(options['testRunner']).toBe('jasmine');
     });
     it('should create Jest files and update "package.json"', async () => {
       const tree = await buildTestingTree('ng-add', 'multi', {
@@ -166,9 +156,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       expect(tree.files).toContain(getMultiProjectFile('e2e/jest.config.js'));
       expect(devDependencies).toContain('jest');
       expect(devDependencies).toContain('@types/jest');
-      expect(options['commands']).toEqual([
-        [`jest`, '-c', 'e2e/jest.config.js'],
-      ]);
+      expect(options['testRunner']).toBe('jest');
     });
     it('should create Mocha files and update "package.json"', async () => {
       const tree = await buildTestingTree('ng-add', 'multi', {
@@ -180,9 +168,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       expect(tree.files).toContain(getMultiProjectFile('e2e/.mocharc.js'));
       expect(devDependencies).toContain('mocha');
       expect(devDependencies).toContain('@types/mocha');
-      expect(options['commands']).toEqual([
-        [`mocha`, '--config=./e2e/.mocharc.js'],
-      ]);
+      expect(options['testRunner']).toBe('mocha');
     });
     it('should create Node files', async () => {
       const tree = await buildTestingTree('ng-add', 'multi', {
@@ -197,9 +183,7 @@ describe('@puppeteer/ng-schematics: ng-add', () => {
       expect(tree.files).toContain(
         getMultiProjectFile('e2e/tests/app.test.ts')
       );
-      expect(options['commands']).toEqual([
-        ['node', '--test', '--test-reporter', 'spec', 'e2e/build/'],
-      ]);
+      expect(options['testRunner']).toBe('node');
     });
     it('should not create port value', async () => {
       const tree = await buildTestingTree('ng-add');

@@ -16,10 +16,10 @@
 
 import {JsonObject} from '@angular-devkit/core';
 
-type Command = [string, ...string[]];
+import {TestRunner} from '../../schematics/utils/types.js';
 
 export interface PuppeteerBuilderOptions extends JsonObject {
-  commands: Command[];
+  testRunner: TestRunner;
   devServerTarget: string;
   port: number | null;
 }

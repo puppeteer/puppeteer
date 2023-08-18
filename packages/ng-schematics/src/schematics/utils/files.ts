@@ -28,7 +28,7 @@ import {
   url,
 } from '@angular-devkit/schematics';
 
-import {AngularProject, SchematicsOptions, TestRunner} from './types.js';
+import {AngularProject, TestRunner} from './types.js';
 
 export interface FilesOptions {
   options: {
@@ -146,19 +146,6 @@ export function addFrameworkFiles(
   };
 
   return addFilesToProjects(tree, context, projects, options);
-}
-
-export function getScriptFromOptions(options: SchematicsOptions): string[][] {
-  switch (options.testRunner) {
-    case TestRunner.Jasmine:
-      return [[`jasmine`, '--config=./e2e/support/jasmine.json']];
-    case TestRunner.Jest:
-      return [[`jest`, '-c', 'e2e/jest.config.js']];
-    case TestRunner.Mocha:
-      return [[`mocha`, '--config=./e2e/.mocharc.js']];
-    case TestRunner.Node:
-      return [['node', '--test', '--test-reporter', 'spec', 'e2e/build/']];
-  }
 }
 
 export function hasE2ETester(

@@ -22,6 +22,21 @@ const terminalStyles = {
   clear: '\u001b[0m',
 };
 
+export function getCommandForRunner(runner: TestRunner): [string, ...string[]] {
+  switch (runner) {
+    case TestRunner.Jasmine:
+      return [`jasmine`, '--config=./e2e/support/jasmine.json'];
+    case TestRunner.Jest:
+      return [`jest`, '-c', 'e2e/jest.config.js'];
+    case TestRunner.Mocha:
+      return [`mocha`, '--config=./e2e/.mocharc.js'];
+    case TestRunner.Node:
+      return ['node', '--test', '--test-reporter', 'spec', 'e2e/build/'];
+  }
+
+  throw new Error(`Unknown test runner ${runner}!`);
+}
+
 function getError(executable: string, args: string[]) {
   return (
     `Error running '${executable}' with arguments '${args.join(' ')}'.` +
@@ -147,15 +162,12 @@ async function executeE2ETest(
   try {
     server = await startServer(options, context);
 
-    const commands = options.commands;
-
     message('\n Building tests 🛠️ ... \n', context);
     await executeCommand(context, [`tsc`, '-p', 'e2e/tsconfig.json']);
 
     message('\n Running tests 🧪 ... \n', context);
-    for (const command of commands) {
-      await executeCommand(context, command);
-    }
+    const testRunnerCommand = getCommandForRunner(options.testRunner);
+    await executeCommand(context, testRunnerCommand);
 
     message('\n 🚀 Test ran successfully! 🚀 ', context, 'success');
     return {success: true};
