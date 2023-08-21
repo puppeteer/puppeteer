@@ -442,9 +442,9 @@ export abstract class Locator<T> extends EventEmitter {
       }),
       mergeMap(handle => {
         return from(handle.click(options)).pipe(
-          catchError((_, caught) => {
+          catchError(err => {
             void handle.dispose().catch(debugError);
-            return caught;
+            throw err;
           })
         );
       }),
@@ -575,9 +575,9 @@ export abstract class Locator<T> extends EventEmitter {
             })
           )
           .pipe(
-            catchError((_, caught) => {
+            catchError(err => {
               void handle.dispose().catch(debugError);
-              return caught;
+              throw err;
             })
           );
       }),
@@ -603,9 +603,9 @@ export abstract class Locator<T> extends EventEmitter {
       }),
       mergeMap(handle => {
         return from(handle.hover()).pipe(
-          catchError((_, caught) => {
+          catchError(err => {
             void handle.dispose().catch(debugError);
-            return caught;
+            throw err;
           })
         );
       }),
@@ -644,9 +644,9 @@ export abstract class Locator<T> extends EventEmitter {
             options?.scrollLeft
           )
         ).pipe(
-          catchError((_, caught) => {
+          catchError(err => {
             void handle.dispose().catch(debugError);
-            return caught;
+            throw err;
           })
         );
       }),
