@@ -599,9 +599,8 @@ export class ElementHandle<
    *   '.class-name-of-anchor'
    * );
    * // DO NOT DISPOSE `element`, this will be always be the same handle.
-   * const anchor: ElementHandle<HTMLAnchorElement> = await element.toElement(
-   *   'a'
-   * );
+   * const anchor: ElementHandle<HTMLAnchorElement> =
+   *   await element.toElement('a');
    * ```
    *
    * @param tagName - The tag name of the desired element type.

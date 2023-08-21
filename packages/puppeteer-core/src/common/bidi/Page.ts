@@ -559,9 +559,8 @@ export class Page extends PageBase {
       this.#viewport = viewport;
       return;
     }
-    const needsReload = await this.#cdpEmulationManager.emulateViewport(
-      viewport
-    );
+    const needsReload =
+      await this.#cdpEmulationManager.emulateViewport(viewport);
     this.#viewport = viewport;
     if (needsReload) {
       // TODO: reload seems to hang in BiDi.

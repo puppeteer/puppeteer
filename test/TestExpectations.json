@@ -3972,6 +3972,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[accessibility.spec] Accessibility filtering children of leaf nodes rich text editable fields should have children",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
     "testIdPattern": "[CDPSession.spec] Target.createCDPSession should send events",
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome", "new-headless"],
