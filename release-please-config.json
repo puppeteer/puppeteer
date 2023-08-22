@@ -10,7 +10,8 @@
     },
     "packages/testserver": {},
     "packages/ng-schematics": {
-      "release-as": "0.4.0"
+      "bump-minor-pre-major": true,
+      "separate-pull-requests": true
     },
     "packages/browsers": {}
   },
