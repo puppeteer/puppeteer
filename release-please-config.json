@@ -1,6 +1,5 @@
 {
   "last-release-sha": "30e5b1a58edb8b1d94acdff00d64c76e76cf02a3",
-  "prerelease": true,
   "packages": {
     "packages/puppeteer": {
       "component": "puppeteer"
