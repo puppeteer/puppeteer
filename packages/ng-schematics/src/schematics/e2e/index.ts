@@ -52,7 +52,7 @@ function parseUserTestArgs(userArgs: Record<string, string>): SchematicsSpec {
     options['name'] = userArgs['n'];
   }
   if ('r' in userArgs) {
-    options['route'] = userArgs['n'];
+    options['route'] = userArgs['r'];
   }
 
   if (options['route'] && !options['route'].startsWith('/')) {
