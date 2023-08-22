@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.0](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.4.0...ng-schematics-v0.5.0) (2023-08-22)
+
+
+### Features
+
+* **ng-schematics:** reduce the user options and better defaults ([35dc2d8](https://github.com/puppeteer/puppeteer/commit/35dc2d884052b27a3f9c70b8646f95743be7b84d))
+* **ng-schematics:** release version 0.5.0 ([#10768](https://github.com/puppeteer/puppeteer/issues/10768)) ([42fdd0a](https://github.com/puppeteer/puppeteer/commit/42fdd0a733acb2a9af3878bfa8927252f68ed465))
+
+
+### Bug Fixes
+
+* **ng-schematics:** builder is responsible for resolving commands ([683e181](https://github.com/puppeteer/puppeteer/commit/683e18189c0aedad7deb9007055a1a38801bbf08))
+* **ng-schematics:** don't install for library projects ([1376b77](https://github.com/puppeteer/puppeteer/commit/1376b77a7ab2260c2fd236c3cf31abbd544193e8))
+
 ## [0.4.0](https://github.com/puppeteer/puppeteer/compare/ng-schematics-v0.3.0...ng-schematics-v0.4.0) (2023-08-08)
 
 
