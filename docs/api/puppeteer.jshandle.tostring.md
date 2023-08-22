@@ -10,7 +10,7 @@ Returns a string representation of the JSHandle.
 
 ```typescript
 class JSHandle {
-  toString(): string;
+  abstract toString(): string;
 }
 ```
 

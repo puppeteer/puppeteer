@@ -67,7 +67,7 @@ export class ElementHandle<
   /**
    * @internal
    */
-  override assertElementHasWorld(): asserts this {
+  assertElementHasWorld(): asserts this {
     // TODO: Should assert element has a Sandbox
     return;
   }

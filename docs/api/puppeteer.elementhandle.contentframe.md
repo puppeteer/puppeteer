@@ -4,13 +4,13 @@ sidebar_label: ElementHandle.contentFrame
 
 # ElementHandle.contentFrame() method
 
-Resolves the frame associated with the element.
+Resolves the frame associated with the element, if any. Always exists for HTMLIFrameElements.
 
 #### Signature:
 
 ```typescript
 class ElementHandle {
-  contentFrame(this: ElementHandle<HTMLIFrameElement>): Promise<Frame>;
+  abstract contentFrame(this: ElementHandle<HTMLIFrameElement>): Promise<Frame>;
 }
 ```
 

@@ -105,12 +105,14 @@ export class ExecutionContext {
             selector: string
           ): Promise<JSHandle<Node[]>> => {
             const results = ARIAQueryHandler.queryAll(element, selector);
-            return element.executionContext().evaluateHandle(
-              (...elements) => {
-                return elements;
-              },
-              ...(await AsyncIterableUtil.collect(results))
-            );
+            return (element as unknown as CDPJSHandle<Node>)
+              .executionContext()
+              .evaluateHandle(
+                (...elements) => {
+                  return elements;
+                },
+                ...(await AsyncIterableUtil.collect(results))
+              );
           }) as (...args: unknown[]) => unknown)
         ),
       ]);

@@ -51,11 +51,11 @@ export class CDPJSHandle<T = unknown> extends JSHandle<T> {
     this.#remoteObject = remoteObject;
   }
 
-  override executionContext(): ExecutionContext {
+  executionContext(): ExecutionContext {
     return this.#context;
   }
 
-  override get client(): CDPSession {
+  get client(): CDPSession {
     return this.#context._client;
   }
 

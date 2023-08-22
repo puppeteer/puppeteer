@@ -76,14 +76,14 @@ export class CDPElementHandle<
   /**
    * @internal
    */
-  override executionContext(): ExecutionContext {
+  executionContext(): ExecutionContext {
     return this.handle.executionContext();
   }
 
   /**
    * @internal
    */
-  override get client(): CDPSession {
+  get client(): CDPSession {
     return this.handle.client;
   }
 
@@ -526,6 +526,10 @@ export class CDPElementHandle<
       frameId,
       card: data.creditCard,
     });
+  }
+
+  override assertElementHasWorld(): asserts this {
+    assert(this.executionContext()._world);
   }
 }
 

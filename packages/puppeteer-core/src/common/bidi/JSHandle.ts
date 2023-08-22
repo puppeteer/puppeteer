@@ -15,6 +15,7 @@
  */
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import Protocol from 'devtools-protocol';
 
 import {ElementHandle} from '../../api/ElementHandle.js';
 import {JSHandle as BaseJSHandle} from '../../api/JSHandle.js';
@@ -166,5 +167,9 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
 
   remoteValue(): Bidi.Script.RemoteValue {
     return this.#remoteValue;
+  }
+
+  override remoteObject(): Protocol.Runtime.RemoteObject {
+    throw new Error('Not available in WebDriver BiDi');
   }
 }

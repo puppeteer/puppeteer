@@ -13,7 +13,7 @@ Handles can be used as arguments for any evaluation function such as [Page.$eval
 #### Signature:
 
 ```typescript
-export declare class JSHandle<T = unknown>
+export declare abstract class JSHandle<T = unknown>
 ```
 
 ## Remarks
@@ -43,7 +43,6 @@ const windowHandle = await page.evaluateHandle(() => window);
 | [getProperties()](./puppeteer.jshandle.getproperties.md)                     |           | Gets a map of handles representing the properties of the current handle.                                                                                       |
 | [getProperty(propertyName)](./puppeteer.jshandle.getproperty.md)             |           | Fetches a single property from the referenced object.                                                                                                          |
 | [getProperty(propertyName)](./puppeteer.jshandle.getproperty_1.md)           |           |                                                                                                                                                                |
-| [getProperty(propertyName)](./puppeteer.jshandle.getproperty_2.md)           |           |                                                                                                                                                                |
 | [jsonValue()](./puppeteer.jshandle.jsonvalue.md)                             |           | A vanilla object representing the serializable portions of the referenced object.                                                                              |
 | [remoteObject()](./puppeteer.jshandle.remoteobject.md)                       |           | Provides access to the [Protocol.Runtime.RemoteObject](https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-RemoteObject) backing this handle. |
 | [toString()](./puppeteer.jshandle.tostring.md)                               |           | Returns a string representation of the JSHandle.                                                                                                               |
