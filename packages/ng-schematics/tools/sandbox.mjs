@@ -32,7 +32,7 @@ const commands = {
   ],
   createMultiProjects: [
     {
-      command: 'ng generate application core --style=css --routing=false',
+      command: 'ng generate application core --style=css --routing=true',
       options: {
         cwd: join(cwd(), '/multi/'),
       },
