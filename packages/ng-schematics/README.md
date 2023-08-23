@@ -143,13 +143,14 @@ The following table shows Puppeteer's equivalents to [Protractor By](https://www
 > For improved reliability and reduced flakiness try our
 > **Experimental** [Locators API](https://pptr.dev/guides/locators)
 
-| By                | Protractor code                                                   | Puppeteer querySelector                                      |
-| ----------------- | ----------------------------------------------------------------- | ------------------------------------------------------------ |
-| CSS               | Single: `$(by.css('<CSS>'))` <br> Multiple: `$$(by.css('<CSS>'))` | Single: `page.$('<CSS>')` <br> Multiple: `page.$$('<CSS>')`  |
-| Id                | `$(by.id('<ID>'))`                                                | `page.$('#<ID>')`                                            |
-| CssContainingText | `$(by.cssContainingText('<CSS>', '<TEXT>'))`                      | `page.$('<CSS> ::-p-text(<TEXT>)')` `                        |
-| DeepCss           | `$(by.deepCss('<CSS>'))`                                          | `page.$(':scope >>> <CSS>')`                                 |
-| XPath             | `$(by.xpath('<XPATH>'))`                                          | `page.$('::-p-xpath(<XPATH>)')`                              |
-| JS                | `$(by.js('document.querySelector("<CSS>")'))`                     | `page.evaluateHandle(() => document.querySelector('<CSS>'))` |
+| By                | Protractor code                               | Puppeteer querySelector                                      |
+| ----------------- | --------------------------------------------- | ------------------------------------------------------------ |
+| CSS (Single)      | `$(by.css('<CSS>'))`                          | `page.$('<CSS>')`                                            |
+| CSS (Multiple)    | `$$(by.css('<CSS>'))`                         | `page.$$('<CSS>')`                                           |
+| Id                | `$(by.id('<ID>'))`                            | `page.$('#<ID>')`                                            |
+| CssContainingText | `$(by.cssContainingText('<CSS>', '<TEXT>'))`  | `page.$('<CSS> ::-p-text(<TEXT>)')` `                        |
+| DeepCss           | `$(by.deepCss('<CSS>'))`                      | `page.$(':scope >>> <CSS>')`                                 |
+| XPath             | `$(by.xpath('<XPATH>'))`                      | `page.$('::-p-xpath(<XPATH>)')`                              |
+| JS                | `$(by.js('document.querySelector("<CSS>")'))` | `page.evaluateHandle(() => document.querySelector('<CSS>'))` |
 
 > For advanced use cases such as Protractor's `by.addLocator` you can check Puppeteer's [Custom selectors](https://pptr.dev/guides/query-selectors#custom-selectors).
