@@ -30,7 +30,11 @@ import {
   NodeFor,
 } from '../common/types.js';
 import {KeyInput} from '../common/USKeyboardLayout.js';
-import {isString, withSourcePuppeteerURLIfNone} from '../common/util.js';
+import {
+  debugError,
+  isString,
+  withSourcePuppeteerURLIfNone,
+} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 
@@ -45,11 +49,16 @@ import {ScreenshotOptions} from './Page.js';
 /**
  * @public
  */
+export type Quad = [Point, Point, Point, Point];
+
+/**
+ * @public
+ */
 export interface BoxModel {
-  content: Point[];
-  padding: Point[];
-  border: Point[];
-  margin: Point[];
+  content: Quad;
+  padding: Quad;
+  border: Quad;
+  margin: Quad;
   width: number;
   height: number;
 }
@@ -620,9 +629,10 @@ export class ElementHandle<
   }
 
   /**
-   * Resolves to the content frame for element handles referencing
-   * iframe nodes, or null otherwise
+   * Resolves the frame associated with the element.
    */
+  async contentFrame(this: ElementHandle<HTMLIFrameElement>): Promise<Frame>;
+  async contentFrame(): Promise<Frame | null>;
   async contentFrame(): Promise<Frame | null> {
     throw new Error('Not implemented');
   }
@@ -885,7 +895,72 @@ export class ElementHandle<
    * or `null` if the element is not visible.
    */
   async boundingBox(): Promise<BoundingBox | null> {
-    throw new Error('Not implemented');
+    const adoptedThis = await this.frame.isolatedRealm().adoptHandle(this);
+    const box = await adoptedThis.evaluate(element => {
+      if (!(element instanceof Element)) {
+        return null;
+      }
+      // Element is not visible.
+      if (element.getClientRects().length === 0) {
+        return null;
+      }
+      const rect = element.getBoundingClientRect();
+      return {
+        x: rect.left,
+        y: rect.top,
+        width: rect.width,
+        height: rect.height,
+      };
+    });
+    void adoptedThis.dispose().catch(debugError);
+    if (!box) {
+      return null;
+    }
+    const offset = await this.#getTopLeftCornerOfFrame();
+    if (!offset) {
+      return null;
+    }
+    box.x += offset.x;
+    box.y += offset.y;
+    return box;
+  }
+
+  async #getTopLeftCornerOfFrame() {
+    const point = {x: 0, y: 0};
+    let frame: Frame | null | undefined = this.frame;
+    let element: HandleFor<HTMLIFrameElement> | null | undefined;
+    while ((element = await frame?.frameElement())) {
+      try {
+        element = await element.frame.isolatedRealm().transferHandle(element);
+        const parentBox = await element.evaluate(element => {
+          // Element is not visible.
+          if (element.getClientRects().length === 0) {
+            return null;
+          }
+          const rect = element.getBoundingClientRect();
+          const style = window.getComputedStyle(element);
+          return {
+            left:
+              rect.left +
+              parseInt(style.paddingLeft, 10) +
+              parseInt(style.borderLeftWidth, 10),
+            top:
+              rect.top +
+              parseInt(style.paddingTop, 10) +
+              parseInt(style.borderTopWidth, 10),
+          };
+        });
+        if (!parentBox) {
+          return null;
+        }
+        point.x += parentBox.left;
+        point.y += parentBox.top;
+        frame = frame?.parentFrame();
+      } finally {
+        void element.dispose().catch(debugError);
+      }
+    }
+    return point;
   }
 
   /**
@@ -897,7 +972,99 @@ export class ElementHandle<
    * Each Point is an object `{x, y}`. Box points are sorted clock-wise.
    */
   async boxModel(): Promise<BoxModel | null> {
-    throw new Error('Not implemented');
+    const adoptedThis = await this.frame.isolatedRealm().adoptHandle(this);
+    const model = await adoptedThis.evaluate(element => {
+      if (!(element instanceof Element)) {
+        return null;
+      }
+      // Element is not visible.
+      if (element.getClientRects().length === 0) {
+        return null;
+      }
+      const rect = element.getBoundingClientRect();
+      const style = window.getComputedStyle(element);
+      const offsets = {
+        padding: {
+          left: parseInt(style.paddingLeft, 10),
+          top: parseInt(style.paddingTop, 10),
+          right: parseInt(style.paddingRight, 10),
+          bottom: parseInt(style.paddingBottom, 10),
+        },
+        margin: {
+          left: -parseInt(style.marginLeft, 10),
+          top: -parseInt(style.marginTop, 10),
+          right: -parseInt(style.marginRight, 10),
+          bottom: -parseInt(style.marginBottom, 10),
+        },
+        border: {
+          left: parseInt(style.borderLeft, 10),
+          top: parseInt(style.borderTop, 10),
+          right: parseInt(style.borderRight, 10),
+          bottom: parseInt(style.borderBottom, 10),
+        },
+      };
+      const border: Quad = [
+        {x: rect.left, y: rect.top},
+        {x: rect.left + rect.width, y: rect.top},
+        {x: rect.left + rect.width, y: rect.top + rect.bottom},
+        {x: rect.left, y: rect.top + rect.bottom},
+      ];
+      const padding = transformQuadWithOffsets(border, offsets.border);
+      const content = transformQuadWithOffsets(padding, offsets.padding);
+      const margin = transformQuadWithOffsets(border, offsets.margin);
+      return {
+        content,
+        padding,
+        border,
+        margin,
+        width: rect.width,
+        height: rect.height,
+      };
+
+      function transformQuadWithOffsets(
+        quad: Quad,
+        offsets: {top: number; left: number; right: number; bottom: number}
+      ): Quad {
+        return [
+          {
+            x: quad[0].x + offsets.left,
+            y: quad[0].y + offsets.top,
+          },
+          {
+            x: quad[1].x - offsets.right,
+            y: quad[1].y + offsets.top,
+          },
+          {
+            x: quad[2].x - offsets.right,
+            y: quad[2].y - offsets.bottom,
+          },
+          {
+            x: quad[3].x + offsets.left,
+            y: quad[3].y - offsets.bottom,
+          },
+        ];
+      }
+    });
+    void adoptedThis.dispose().catch(debugError);
+    if (!model) {
+      return null;
+    }
+    const offset = await this.#getTopLeftCornerOfFrame();
+    if (!offset) {
+      return null;
+    }
+    for (const attribute of [
+      'content',
+      'padding',
+      'border',
+      'margin',
+    ] as const) {
+      for (const point of model[attribute]) {
+        point.x += offset.x;
+        point.y += offset.y;
+      }
+    }
+    return model;
   }
 
   /**

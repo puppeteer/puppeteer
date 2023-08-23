@@ -12,11 +12,11 @@ export interface BoxModel
 
 ## Properties
 
-| Property | Modifiers | Type                              | Description | Default |
-| -------- | --------- | --------------------------------- | ----------- | ------- |
-| border   |           | [Point](./puppeteer.point.md)\[\] |             |         |
-| content  |           | [Point](./puppeteer.point.md)\[\] |             |         |
-| height   |           | number                            |             |         |
-| margin   |           | [Point](./puppeteer.point.md)\[\] |             |         |
-| padding  |           | [Point](./puppeteer.point.md)\[\] |             |         |
-| width    |           | number                            |             |         |
+| Property | Modifiers | Type                        | Description | Default |
+| -------- | --------- | --------------------------- | ----------- | ------- |
+| border   |           | [Quad](./puppeteer.quad.md) |             |         |
+| content  |           | [Quad](./puppeteer.quad.md) |             |         |
+| height   |           | number                      |             |         |
+| margin   |           | [Quad](./puppeteer.quad.md) |             |         |
+| padding  |           | [Quad](./puppeteer.quad.md) |             |         |
+| width    |           | number                      |             |         |

@@ -145,7 +145,7 @@ describe('ElementHandle specs', function () {
         y: 2 + 5,
       });
       expect(box.content[0]).toEqual({
-        x: 1 + 4 + 3 + 1 + 2, // frame.left + div.left + div.marginLeft + div.borderLeft + dif.paddingLeft
+        x: 1 + 4 + 3 + 1 + 2, // frame.left + div.left + div.marginLeft + div.borderLeft + div.paddingLeft
         y: 2 + 5,
       });
     });
