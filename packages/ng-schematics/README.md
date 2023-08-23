@@ -1,4 +1,4 @@
-# Angular Schematic
+# Puppeteer Angular Schematic
 
 Adds Puppeteer-based e2e tests to your Angular project.
 

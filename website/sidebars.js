@@ -31,7 +31,13 @@ module.exports = {
         keywords: ['integrations'],
       },
       collapsed: false,
-      items: ['integrations/ng-schematics'],
+      items: [
+        {
+          type: 'doc',
+          label: 'Angular Schematics',
+          id: 'integrations/ng-schematics',
+        },
+      ],
     },
     'chromium-support',
     'troubleshooting',
