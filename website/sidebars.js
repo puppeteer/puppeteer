@@ -22,7 +22,17 @@ module.exports = {
         'guides/debugging',
       ],
     },
-    'ng-schematics',
+    {
+      type: 'category',
+      label: 'Integrations',
+      link: {
+        type: 'generated-index',
+        title: 'Puppeteer Integrations',
+        keywords: ['integrations'],
+      },
+      collapsed: false,
+      items: ['integrations/ng-schematics'],
+    },
     'chromium-support',
     'troubleshooting',
     'contributing',

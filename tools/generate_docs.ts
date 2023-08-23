@@ -122,7 +122,7 @@ function spliceIntoSection(
     }
   )
     .inputs(['packages/ng-schematics/README.md'])
-    .outputs(['docs/ng-schematics.md'])
+    .outputs(['docs/integrations/ng-schematics.md'])
     .build();
 
   await Promise.all([copyMain, updateSupportedList, copyNgSchematics]);
