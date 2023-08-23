@@ -8,7 +8,7 @@ sidebar_label: ElementHandle.contentFrame_1
 
 ```typescript
 class ElementHandle {
-  contentFrame(): Promise<Frame | null>;
+  abstract contentFrame(): Promise<Frame | null>;
 }
 ```
 

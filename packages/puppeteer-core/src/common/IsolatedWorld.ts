@@ -29,6 +29,7 @@ import {ExecutionContext} from './ExecutionContext.js';
 import {Frame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
+import {CDPJSHandle} from './JSHandle.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {
@@ -500,7 +501,7 @@ export class IsolatedWorld implements Realm {
   async adoptHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
     const context = await this.executionContext();
     assert(
-      handle.executionContext() !== context,
+      (handle as unknown as CDPJSHandle<Node>).executionContext() !== context,
       'Cannot adopt handle that already belongs to this execution context'
     );
     const nodeInfo = await this.#client.send('DOM.describeNode', {
@@ -511,7 +512,9 @@ export class IsolatedWorld implements Realm {
 
   async transferHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
     const context = await this.executionContext();
-    if (handle.executionContext() === context) {
+    if (
+      (handle as unknown as CDPJSHandle<Node>).executionContext() === context
+    ) {
       return handle;
     }
     const info = await this.#client.send('DOM.describeNode', {

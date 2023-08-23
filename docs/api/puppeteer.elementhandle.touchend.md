@@ -8,7 +8,7 @@ sidebar_label: ElementHandle.touchEnd
 
 ```typescript
 class ElementHandle {
-  touchEnd(this: ElementHandle<Element>): Promise<void>;
+  abstract touchEnd(this: ElementHandle<Element>): Promise<void>;
 }
 ```
 

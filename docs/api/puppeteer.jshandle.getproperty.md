@@ -10,7 +10,7 @@ Fetches a single property from the referenced object.
 
 ```typescript
 class JSHandle {
-  getProperty<K extends keyof T>(
+  abstract getProperty<K extends keyof T>(
     propertyName: HandleOr<K>
   ): Promise<HandleFor<T[K]>>;
 }

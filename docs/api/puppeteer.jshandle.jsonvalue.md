@@ -10,7 +10,7 @@ A vanilla object representing the serializable portions of the referenced object
 
 ```typescript
 class JSHandle {
-  jsonValue(): Promise<T>;
+  abstract jsonValue(): Promise<T>;
 }
 ```
 

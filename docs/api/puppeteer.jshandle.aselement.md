@@ -10,7 +10,7 @@ Either `null` or the handle itself if the handle is an instance of [ElementHandl
 
 ```typescript
 class JSHandle {
-  asElement(): ElementHandle<Node> | null;
+  abstract asElement(): ElementHandle<Node> | null;
 }
 ```
 

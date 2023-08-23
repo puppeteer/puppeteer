@@ -16,8 +16,6 @@
 
 import Protocol from 'devtools-protocol';
 
-import {CDPSession} from '../common/Connection.js';
-import {ExecutionContext} from '../common/ExecutionContext.js';
 import {EvaluateFuncWith, HandleFor, HandleOr} from '../common/types.js';
 
 import {ElementHandle} from './ElementHandle.js';
@@ -43,7 +41,7 @@ import {ElementHandle} from './ElementHandle.js';
  *
  * @public
  */
-export class JSHandle<T = unknown> {
+export abstract class JSHandle<T = unknown> {
   /**
    * Used for nominally typing {@link JSHandle}.
    */
@@ -62,61 +60,35 @@ export class JSHandle<T = unknown> {
   }
 
   /**
-   * @internal
-   */
-  executionContext(): ExecutionContext {
-    throw new Error('Not implemented');
-  }
-
-  /**
-   * @internal
-   */
-  get client(): CDPSession {
-    throw new Error('Not implemented');
-  }
-
-  /**
    * Evaluates the given function with the current handle as its first argument.
    */
-  async evaluate<
+  abstract evaluate<
     Params extends unknown[],
     Func extends EvaluateFuncWith<T, Params> = EvaluateFuncWith<T, Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
-  async evaluate(): Promise<unknown> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * Evaluates the given function with the current handle as its first argument.
    *
    */
-  async evaluateHandle<
+  abstract evaluateHandle<
     Params extends unknown[],
     Func extends EvaluateFuncWith<T, Params> = EvaluateFuncWith<T, Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
-  async evaluateHandle(): Promise<HandleFor<unknown>> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * Fetches a single property from the referenced object.
    */
-  async getProperty<K extends keyof T>(
+  abstract getProperty<K extends keyof T>(
     propertyName: HandleOr<K>
   ): Promise<HandleFor<T[K]>>;
-  async getProperty(propertyName: string): Promise<JSHandle<unknown>>;
-  async getProperty<K extends keyof T>(
-    propertyName: HandleOr<K>
-  ): Promise<HandleFor<T[K]>>;
-  async getProperty<K extends keyof T>(): Promise<HandleFor<T[K]>> {
-    throw new Error('Not implemented');
-  }
+  abstract getProperty(propertyName: string): Promise<JSHandle<unknown>>;
 
   /**
    * Gets a map of handles representing the properties of the current handle.
@@ -136,9 +108,7 @@ export class JSHandle<T = unknown> {
    * children; // holds elementHandles to all children of document.body
    * ```
    */
-  async getProperties(): Promise<Map<string, JSHandle>> {
-    throw new Error('Not implemented');
-  }
+  abstract getProperties(): Promise<Map<string, JSHandle<unknown>>>;
 
   /**
    * A vanilla object representing the serializable portions of the
@@ -148,24 +118,18 @@ export class JSHandle<T = unknown> {
    * @remarks
    * If the object has a `toJSON` function, it **will not** be called.
    */
-  async jsonValue(): Promise<T> {
-    throw new Error('Not implemented');
-  }
+  abstract jsonValue(): Promise<T>;
 
   /**
    * Either `null` or the handle itself if the handle is an
    * instance of {@link ElementHandle}.
    */
-  asElement(): ElementHandle<Node> | null {
-    throw new Error('Not implemented');
-  }
+  abstract asElement(): ElementHandle<Node> | null;
 
   /**
    * Releases the object referenced by the handle for garbage collection.
    */
-  async dispose(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract dispose(): Promise<void>;
 
   /**
    * Returns a string representation of the JSHandle.
@@ -173,23 +137,17 @@ export class JSHandle<T = unknown> {
    * @remarks
    * Useful during debugging.
    */
-  toString(): string {
-    throw new Error('Not implemented');
-  }
+  abstract toString(): string;
 
   /**
    * @internal
    */
-  get id(): string | undefined {
-    throw new Error('Not implemented');
-  }
+  abstract get id(): string | undefined;
 
   /**
    * Provides access to the
    * {@link https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-RemoteObject | Protocol.Runtime.RemoteObject}
    * backing this handle.
    */
-  remoteObject(): Protocol.Runtime.RemoteObject {
-    throw new Error('Not implemented');
-  }
+  abstract remoteObject(): Protocol.Runtime.RemoteObject;
 }

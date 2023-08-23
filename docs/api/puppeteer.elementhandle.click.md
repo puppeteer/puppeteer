@@ -10,7 +10,10 @@ This method scrolls element into view if needed, and then uses [Page.mouse](./pu
 
 ```typescript
 class ElementHandle {
-  click(this: ElementHandle<Element>, options?: ClickOptions): Promise<void>;
+  abstract click(
+    this: ElementHandle<Element>,
+    options?: ClickOptions
+  ): Promise<void>;
 }
 ```
 

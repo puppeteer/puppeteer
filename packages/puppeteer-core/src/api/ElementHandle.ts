@@ -17,8 +17,6 @@
 import {Protocol} from 'devtools-protocol';
 
 import {Frame} from '../api/Frame.js';
-import {CDPSession} from '../common/Connection.js';
-import {ExecutionContext} from '../common/ExecutionContext.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {WaitForSelectorOptions} from '../common/IsolatedWorld.js';
 import {LazyArg} from '../common/LazyArg.js';
@@ -39,9 +37,9 @@ import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 
 import {
+  KeyboardTypeOptions,
   KeyPressOptions,
   MouseClickOptions,
-  KeyboardTypeOptions,
 } from './Input.js';
 import {JSHandle} from './JSHandle.js';
 import {ScreenshotOptions} from './Page.js';
@@ -143,7 +141,7 @@ export interface Point {
  * @public
  */
 
-export class ElementHandle<
+export abstract class ElementHandle<
   ElementType extends Node = Element,
 > extends JSHandle<ElementType> {
   /**
@@ -245,6 +243,13 @@ export class ElementHandle<
   /**
    * @internal
    */
+  override remoteObject(): Protocol.Runtime.RemoteObject {
+    return this.handle.remoteObject();
+  }
+
+  /**
+   * @internal
+   */
   override async dispose(): Promise<void> {
     return await this.handle.dispose();
   }
@@ -254,22 +259,9 @@ export class ElementHandle<
   }
 
   /**
-   * @internal
+   * Frame corresponding to the current handle.
    */
-  override executionContext(): ExecutionContext {
-    throw new Error('Not implemented');
-  }
-
-  /**
-   * @internal
-   */
-  override get client(): CDPSession {
-    throw new Error('Not implemented');
-  }
-
-  get frame(): Frame {
-    throw new Error('Not implemented');
-  }
+  abstract get frame(): Frame;
 
   /**
    * Queries the current element for an element matching the given selector.
@@ -629,13 +621,11 @@ export class ElementHandle<
   }
 
   /**
-   * Resolves the frame associated with the element.
+   * Resolves the frame associated with the element, if any. Always exists for
+   * HTMLIFrameElements.
    */
-  async contentFrame(this: ElementHandle<HTMLIFrameElement>): Promise<Frame>;
-  async contentFrame(): Promise<Frame | null>;
-  async contentFrame(): Promise<Frame | null> {
-    throw new Error('Not implemented');
-  }
+  abstract contentFrame(this: ElementHandle<HTMLIFrameElement>): Promise<Frame>;
+  abstract contentFrame(): Promise<Frame | null>;
 
   /**
    * Returns the middle point within an element unless a specific offset is provided.
@@ -650,22 +640,17 @@ export class ElementHandle<
    * uses {@link Page} to hover over the center of the element.
    * If the element is detached from DOM, the method throws an error.
    */
-  async hover(this: ElementHandle<Element>): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract hover(this: ElementHandle<Element>): Promise<void>;
 
   /**
    * This method scrolls element into view if needed, and then
    * uses {@link Page | Page.mouse} to click in the center of the element.
    * If the element is detached from DOM, the method throws an error.
    */
-  async click(
+  abstract click(
     this: ElementHandle<Element>,
     options?: ClickOptions
   ): Promise<void>;
-  async click(this: ElementHandle<Element>): Promise<void> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * This method creates and captures a dragevent from the element.
@@ -807,21 +792,13 @@ export class ElementHandle<
    * {@link Touchscreen.tap} to tap in the center of the element.
    * If the element is detached from DOM, the method throws an error.
    */
-  async tap(this: ElementHandle<Element>): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract tap(this: ElementHandle<Element>): Promise<void>;
 
-  async touchStart(this: ElementHandle<Element>): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract touchStart(this: ElementHandle<Element>): Promise<void>;
 
-  async touchMove(this: ElementHandle<Element>): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract touchMove(this: ElementHandle<Element>): Promise<void>;
 
-  async touchEnd(this: ElementHandle<Element>): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract touchEnd(this: ElementHandle<Element>): Promise<void>;
 
   /**
    * Calls {@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus | focus} on the element.
@@ -860,13 +837,10 @@ export class ElementHandle<
    *
    * @param options - Delay in milliseconds. Defaults to 0.
    */
-  async type(
+  abstract type(
     text: string,
     options?: Readonly<KeyboardTypeOptions>
   ): Promise<void>;
-  async type(): Promise<void> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * Focuses the element, and then uses {@link Keyboard.down} and {@link Keyboard.up}.
@@ -882,13 +856,10 @@ export class ElementHandle<
    * @param key - Name of key to press, such as `ArrowLeft`.
    * See {@link KeyInput} for a list of all key names.
    */
-  async press(
+  abstract press(
     key: KeyInput,
     options?: Readonly<KeyPressOptions>
   ): Promise<void>;
-  async press(): Promise<void> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * This method returns the bounding box of the element (relative to the main frame),
@@ -1205,9 +1176,7 @@ export class ElementHandle<
   /**
    * @internal
    */
-  assertElementHasWorld(): asserts this {
-    assert(this.executionContext()._world);
-  }
+  abstract assertElementHasWorld(): asserts this;
 
   /**
    * If the element is a form input, you can use {@link ElementHandle.autofill}
@@ -1234,10 +1203,7 @@ export class ElementHandle<
    * });
    * ```
    */
-  autofill(data: AutofillData): Promise<void>;
-  autofill(): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  abstract autofill(data: AutofillData): Promise<void>;
 }
 
 /**

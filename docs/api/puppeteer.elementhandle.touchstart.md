@@ -8,7 +8,7 @@ sidebar_label: ElementHandle.touchStart
 
 ```typescript
 class ElementHandle {
-  touchStart(this: ElementHandle<Element>): Promise<void>;
+  abstract touchStart(this: ElementHandle<Element>): Promise<void>;
 }
 ```
 

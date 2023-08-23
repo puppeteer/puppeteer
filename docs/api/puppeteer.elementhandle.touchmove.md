@@ -8,7 +8,7 @@ sidebar_label: ElementHandle.touchMove
 
 ```typescript
 class ElementHandle {
-  touchMove(this: ElementHandle<Element>): Promise<void>;
+  abstract touchMove(this: ElementHandle<Element>): Promise<void>;
 }
 ```
 
