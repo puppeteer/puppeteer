@@ -294,7 +294,7 @@ describe('ElementHandle specs', function () {
         return error_;
       });
       expect(error.message).atLeastOneToContain([
-        'Node is either not clickable or not an HTMLElement',
+        'Node is either not clickable or not an Element',
         'no such element',
       ]);
     });
@@ -310,7 +310,7 @@ describe('ElementHandle specs', function () {
         return error_;
       });
       expect(error.message).atLeastOneToContain([
-        'Node is either not clickable or not an HTMLElement',
+        'Node is either not clickable or not an Element',
         'no such element',
       ]);
     });
@@ -323,7 +323,7 @@ describe('ElementHandle specs', function () {
         return error_;
       });
       expect(error.message).atLeastOneToContain([
-        'Node is either not clickable or not an HTMLElement',
+        'Node is either not clickable or not an Element',
         'no such node',
       ]);
     });
@@ -359,6 +359,58 @@ describe('ElementHandle specs', function () {
         x: 30 + 10, // margin + offset
         y: 30 + 15, // margin + offset
       });
+    });
+
+    it('should not work if the click box is not visible', async () => {
+      const {page} = await getTestState();
+
+      await page.setContent(
+        '<button style="width: 10px; height: 10px; position: absolute; left: -20px"></button>'
+      );
+      const handle = await page.locator('button').waitHandle();
+      await expect(handle.clickablePoint()).rejects.toBeInstanceOf(Error);
+
+      await page.setContent(
+        '<button style="width: 10px; height: 10px; position: absolute; right: -20px"></button>'
+      );
+      const handle2 = await page.locator('button').waitHandle();
+      await expect(handle2.clickablePoint()).rejects.toBeInstanceOf(Error);
+
+      await page.setContent(
+        '<button style="width: 10px; height: 10px; position: absolute; top: -20px"></button>'
+      );
+      const handle3 = await page.locator('button').waitHandle();
+      await expect(handle3.clickablePoint()).rejects.toBeInstanceOf(Error);
+
+      await page.setContent(
+        '<button style="width: 10px; height: 10px; position: absolute; bottom: -20px"></button>'
+      );
+      const handle4 = await page.locator('button').waitHandle();
+      await expect(handle4.clickablePoint()).rejects.toBeInstanceOf(Error);
+    });
+
+    it('should not work if the click box is not visible due to the iframe', async () => {
+      const {page} = await getTestState();
+
+      await page.setContent(
+        `<iframe name='frame' style='position: absolute; left: -100px' srcdoc="<button style='width: 10px; height: 10px;'></button>"></iframe>`
+      );
+      const frame = await page.waitForFrame(frame => {
+        return frame.name() === 'frame';
+      });
+
+      const handle = await frame.locator('button').waitHandle();
+      await expect(handle.clickablePoint()).rejects.toBeInstanceOf(Error);
+
+      await page.setContent(
+        `<iframe name='frame2' style='position: absolute; top: -100px' srcdoc="<button style='width: 10px; height: 10px;'></button>"></iframe>`
+      );
+      const frame2 = await page.waitForFrame(frame => {
+        return frame.name() === 'frame2';
+      });
+
+      const handle2 = await frame2.locator('button').waitHandle();
+      await expect(handle2.clickablePoint()).rejects.toBeInstanceOf(Error);
     });
 
     it('should work for iframes', async () => {

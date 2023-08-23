@@ -500,10 +500,16 @@ export class IsolatedWorld implements Realm {
 
   async adoptHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
     const context = await this.executionContext();
-    assert(
-      (handle as unknown as CDPJSHandle<Node>).executionContext() !== context,
-      'Cannot adopt handle that already belongs to this execution context'
-    );
+    if (
+      (handle as unknown as CDPJSHandle<Node>).executionContext() === context
+    ) {
+      // If the context has already adopted this handle, clone it so downstream
+      // disposal doesn't become an issue.
+      return (await handle.evaluateHandle(value => {
+        return value;
+        // SAFETY: We know the
+      })) as unknown as T;
+    }
     const nodeInfo = await this.#client.send('DOM.describeNode', {
       objectId: handle.id,
     });
