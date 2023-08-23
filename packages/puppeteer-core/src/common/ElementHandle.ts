@@ -18,14 +18,13 @@ import {Protocol} from 'devtools-protocol';
 
 import {
   AutofillData,
-  BoundingBox,
-  BoxModel,
   ClickOptions,
   ElementHandle,
   Offset,
   Point,
+  Quad,
 } from '../api/ElementHandle.js';
-import {KeyPressOptions, KeyboardTypeOptions} from '../api/Input.js';
+import {KeyboardTypeOptions, KeyPressOptions} from '../api/Input.js';
 import {Page, ScreenshotOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 
@@ -45,9 +44,11 @@ const applyOffsetsToQuad = (
   offsetX: number,
   offsetY: number
 ) => {
+  assert(quad.length === 4);
   return quad.map(part => {
     return {x: part.x + offsetX, y: part.y + offsetY};
-  });
+    // SAFETY: We know this is a quad from the length check.
+  }) as Quad;
 };
 
 /**
@@ -127,6 +128,9 @@ export class CDPElementHandle<
     > | null;
   }
 
+  override async contentFrame(
+    this: ElementHandle<HTMLIFrameElement>
+  ): Promise<Frame>;
   override async contentFrame(): Promise<Frame | null> {
     const nodeInfo = await this.client.send('DOM.describeNode', {
       objectId: this.id,
@@ -249,15 +253,6 @@ export class CDPElementHandle<
       x: x / 4,
       y: y / 4,
     };
-  }
-
-  #getBoxModel(): Promise<void | Protocol.DOM.GetBoxModelResponse> {
-    const params: Protocol.DOM.GetBoxModelRequest = {
-      objectId: this.id,
-    };
-    return this.client.send('DOM.getBoxModel', params).catch(error => {
-      return debugError(error);
-    });
   }
 
   #fromProtocolQuad(quad: number[]): Point[] {
@@ -460,59 +455,6 @@ export class CDPElementHandle<
   ): Promise<void> {
     await this.focus();
     await this.#page.keyboard.press(key, options);
-  }
-
-  override async boundingBox(): Promise<BoundingBox | null> {
-    const result = await this.#getBoxModel();
-
-    if (!result) {
-      return null;
-    }
-
-    const {offsetX, offsetY} = await this.#getOOPIFOffsets(this.#frame);
-    const quad = result.model.border;
-    const x = Math.min(quad[0]!, quad[2]!, quad[4]!, quad[6]!);
-    const y = Math.min(quad[1]!, quad[3]!, quad[5]!, quad[7]!);
-    const width = Math.max(quad[0]!, quad[2]!, quad[4]!, quad[6]!) - x;
-    const height = Math.max(quad[1]!, quad[3]!, quad[5]!, quad[7]!) - y;
-
-    return {x: x + offsetX, y: y + offsetY, width, height};
-  }
-
-  override async boxModel(): Promise<BoxModel | null> {
-    const result = await this.#getBoxModel();
-
-    if (!result) {
-      return null;
-    }
-
-    const {offsetX, offsetY} = await this.#getOOPIFOffsets(this.#frame);
-
-    const {content, padding, border, margin, width, height} = result.model;
-    return {
-      content: applyOffsetsToQuad(
-        this.#fromProtocolQuad(content),
-        offsetX,
-        offsetY
-      ),
-      padding: applyOffsetsToQuad(
-        this.#fromProtocolQuad(padding),
-        offsetX,
-        offsetY
-      ),
-      border: applyOffsetsToQuad(
-        this.#fromProtocolQuad(border),
-        offsetX,
-        offsetY
-      ),
-      margin: applyOffsetsToQuad(
-        this.#fromProtocolQuad(margin),
-        offsetX,
-        offsetY
-      ),
-      width,
-      height,
-    };
   }
 
   override async screenshot(

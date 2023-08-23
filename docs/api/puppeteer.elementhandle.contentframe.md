@@ -4,16 +4,22 @@ sidebar_label: ElementHandle.contentFrame
 
 # ElementHandle.contentFrame() method
 
-Resolves to the content frame for element handles referencing iframe nodes, or null otherwise
+Resolves the frame associated with the element.
 
 #### Signature:
 
 ```typescript
 class ElementHandle {
-  contentFrame(): Promise<Frame | null>;
+  contentFrame(this: ElementHandle<HTMLIFrameElement>): Promise<Frame>;
 }
 ```
 
+## Parameters
+
+| Parameter | Type                                                                   | Description |
+| --------- | ---------------------------------------------------------------------- | ----------- |
+| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLIFrameElement&gt; |             |
+
 **Returns:**
 
-Promise&lt;[Frame](./puppeteer.frame.md) \| null&gt;
+Promise&lt;[Frame](./puppeteer.frame.md)&gt;

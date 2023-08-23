@@ -36,8 +36,8 @@ import {Page} from './Page.js';
 import {
   MAIN_SANDBOX,
   PUPPETEER_SANDBOX,
-  SandboxChart,
   Sandbox,
+  SandboxChart,
 } from './Sandbox.js';
 
 /**
