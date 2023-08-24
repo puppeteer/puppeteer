@@ -135,7 +135,7 @@ export class IntervalPoller<T> implements Poller<T> {
   #fn: () => Promise<T>;
   #ms: number;
 
-  #interval?: NodeJS.Timer;
+  #interval?: NodeJS.Timeout;
   #deferred?: Deferred<T>;
   constructor(fn: () => Promise<T>, ms: number) {
     this.#fn = fn;
