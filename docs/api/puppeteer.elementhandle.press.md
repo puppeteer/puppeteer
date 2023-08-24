@@ -10,10 +10,7 @@ Focuses the element, and then uses [Keyboard.down()](./puppeteer.keyboard.down.m
 
 ```typescript
 class ElementHandle {
-  abstract press(
-    key: KeyInput,
-    options?: Readonly<KeyPressOptions>
-  ): Promise<void>;
+  press(key: KeyInput, options?: Readonly<KeyPressOptions>): Promise<void>;
 }
 ```
 

@@ -652,17 +652,25 @@ export abstract class ElementHandle<
    * uses {@link Page} to hover over the center of the element.
    * If the element is detached from DOM, the method throws an error.
    */
-  abstract hover(this: ElementHandle<Element>): Promise<void>;
+  async hover(this: ElementHandle<Element>): Promise<void> {
+    await this.scrollIntoViewIfNeeded();
+    const {x, y} = await this.clickablePoint();
+    await this.frame.page().mouse.move(x, y);
+  }
 
   /**
    * This method scrolls element into view if needed, and then
    * uses {@link Page | Page.mouse} to click in the center of the element.
    * If the element is detached from DOM, the method throws an error.
    */
-  abstract click(
+  async click(
     this: ElementHandle<Element>,
-    options?: ClickOptions
-  ): Promise<void>;
+    options: Readonly<ClickOptions> = {}
+  ): Promise<void> {
+    await this.scrollIntoViewIfNeeded();
+    const {x, y} = await this.clickablePoint(options.offset);
+    await this.frame.page().mouse.click(x, y, options);
+  }
 
   /**
    * This method creates and captures a dragevent from the element.
@@ -804,13 +812,29 @@ export abstract class ElementHandle<
    * {@link Touchscreen.tap} to tap in the center of the element.
    * If the element is detached from DOM, the method throws an error.
    */
-  abstract tap(this: ElementHandle<Element>): Promise<void>;
+  async tap(this: ElementHandle<Element>): Promise<void> {
+    await this.scrollIntoViewIfNeeded();
+    const {x, y} = await this.clickablePoint();
+    await this.frame.page().touchscreen.touchStart(x, y);
+    await this.frame.page().touchscreen.touchEnd();
+  }
 
-  abstract touchStart(this: ElementHandle<Element>): Promise<void>;
+  async touchStart(this: ElementHandle<Element>): Promise<void> {
+    await this.scrollIntoViewIfNeeded();
+    const {x, y} = await this.clickablePoint();
+    await this.frame.page().touchscreen.touchStart(x, y);
+  }
 
-  abstract touchMove(this: ElementHandle<Element>): Promise<void>;
+  async touchMove(this: ElementHandle<Element>): Promise<void> {
+    await this.scrollIntoViewIfNeeded();
+    const {x, y} = await this.clickablePoint();
+    await this.frame.page().touchscreen.touchMove(x, y);
+  }
 
-  abstract touchEnd(this: ElementHandle<Element>): Promise<void>;
+  async touchEnd(this: ElementHandle<Element>): Promise<void> {
+    await this.scrollIntoViewIfNeeded();
+    await this.frame.page().touchscreen.touchEnd();
+  }
 
   /**
    * Calls {@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus | focus} on the element.
@@ -849,10 +873,13 @@ export abstract class ElementHandle<
    *
    * @param options - Delay in milliseconds. Defaults to 0.
    */
-  abstract type(
+  async type(
     text: string,
     options?: Readonly<KeyboardTypeOptions>
-  ): Promise<void>;
+  ): Promise<void> {
+    await this.focus();
+    await this.frame.page().keyboard.type(text, options);
+  }
 
   /**
    * Focuses the element, and then uses {@link Keyboard.down} and {@link Keyboard.up}.
@@ -868,26 +895,29 @@ export abstract class ElementHandle<
    * @param key - Name of key to press, such as `ArrowLeft`.
    * See {@link KeyInput} for a list of all key names.
    */
-  abstract press(
+  async press(
     key: KeyInput,
     options?: Readonly<KeyPressOptions>
-  ): Promise<void>;
+  ): Promise<void> {
+    await this.focus();
+    await this.frame.page().keyboard.press(key, options);
+  }
 
   async #clickableBox(): Promise<BoundingBox | null> {
     const adoptedThis = await this.frame.isolatedRealm().adoptHandle(this);
-    const rects = await adoptedThis.evaluate(element => {
+    const boxes = await adoptedThis.evaluate(element => {
       if (!(element instanceof Element)) {
         return null;
       }
       return [...element.getClientRects()].map(rect => {
-        return rect.toJSON();
-      }) as DOMRect[];
+        return {x: rect.x, y: rect.y, width: rect.width, height: rect.height};
+      });
     });
     void adoptedThis.dispose().catch(debugError);
-    if (!rects?.length) {
+    if (!boxes?.length) {
       return null;
     }
-    await this.#intersectBoundingBoxesWithFrame(rects);
+    await this.#intersectBoundingBoxesWithFrame(boxes);
     let frame: Frame | null | undefined = this.frame;
     let element: HandleFor<HTMLIFrameElement> | null | undefined;
     while ((element = await frame?.frameElement())) {
@@ -914,27 +944,27 @@ export abstract class ElementHandle<
         if (!parentBox) {
           return null;
         }
-        for (const box of rects) {
+        for (const box of boxes) {
           box.x += parentBox.left;
           box.y += parentBox.top;
         }
-        await element.#intersectBoundingBoxesWithFrame(rects);
+        await element.#intersectBoundingBoxesWithFrame(boxes);
         frame = frame?.parentFrame();
       } finally {
         void element.dispose().catch(debugError);
       }
     }
-    const rect = rects.find(box => {
+    const box = boxes.find(box => {
       return box.width >= 1 && box.height >= 1;
     });
-    if (!rect) {
+    if (!box) {
       return null;
     }
     return {
-      x: rect.x,
-      y: rect.y,
-      height: rect.height,
-      width: rect.width,
+      x: box.x,
+      y: box.y,
+      height: box.height,
+      width: box.width,
     };
   }
 
@@ -967,7 +997,7 @@ export abstract class ElementHandle<
         return null;
       }
       const rect = element.getBoundingClientRect();
-      return rect.toJSON() as DOMRect;
+      return {x: rect.x, y: rect.y, width: rect.width, height: rect.height};
     });
     void adoptedThis.dispose().catch(debugError);
     if (!box) {
@@ -977,11 +1007,9 @@ export abstract class ElementHandle<
     if (!offset) {
       return null;
     }
-    box.x += offset.x;
-    box.y += offset.y;
     return {
-      x: box.x,
-      y: box.y,
+      x: box.x + offset.x,
+      y: box.y + offset.y,
       height: box.height,
       width: box.width,
     };

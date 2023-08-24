@@ -16,13 +16,7 @@
 
 import {Protocol} from 'devtools-protocol';
 
-import {
-  AutofillData,
-  ClickOptions,
-  ElementHandle,
-  Point,
-} from '../api/ElementHandle.js';
-import {KeyboardTypeOptions, KeyPressOptions} from '../api/Input.js';
+import {AutofillData, ElementHandle, Point} from '../api/ElementHandle.js';
 import {Page, ScreenshotOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 
@@ -33,7 +27,6 @@ import {FrameManager} from './FrameManager.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {CDPJSHandle} from './JSHandle.js';
 import {NodeFor} from './types.js';
-import {KeyInput} from './USKeyboardLayout.js';
 import {debugError} from './util.js';
 
 /**
@@ -139,31 +132,6 @@ export class CDPElementHandle<
       // Fallback to Element.scrollIntoView if DOM.scrollIntoViewIfNeeded is not supported
       await super.scrollIntoView();
     }
-  }
-
-  /**
-   * This method scrolls element into view if needed, and then
-   * uses {@link Page.mouse} to hover over the center of the element.
-   * If the element is detached from DOM, the method throws an error.
-   */
-  override async hover(this: CDPElementHandle<Element>): Promise<void> {
-    await this.scrollIntoViewIfNeeded();
-    const {x, y} = await this.clickablePoint();
-    await this.#page.mouse.move(x, y);
-  }
-
-  /**
-   * This method scrolls element into view if needed, and then
-   * uses {@link Page.mouse} to click in the center of the element.
-   * If the element is detached from DOM, the method throws an error.
-   */
-  override async click(
-    this: CDPElementHandle<Element>,
-    options: Readonly<ClickOptions> = {}
-  ): Promise<void> {
-    await this.scrollIntoViewIfNeeded();
-    const {x, y} = await this.clickablePoint(options.offset);
-    await this.#page.mouse.click(x, y, options);
   }
 
   /**
@@ -279,46 +247,6 @@ export class CDPElementHandle<
         backendNodeId,
       });
     }
-  }
-
-  override async tap(this: CDPElementHandle<Element>): Promise<void> {
-    await this.scrollIntoViewIfNeeded();
-    const {x, y} = await this.clickablePoint();
-    await this.#page.touchscreen.touchStart(x, y);
-    await this.#page.touchscreen.touchEnd();
-  }
-
-  override async touchStart(this: CDPElementHandle<Element>): Promise<void> {
-    await this.scrollIntoViewIfNeeded();
-    const {x, y} = await this.clickablePoint();
-    await this.#page.touchscreen.touchStart(x, y);
-  }
-
-  override async touchMove(this: CDPElementHandle<Element>): Promise<void> {
-    await this.scrollIntoViewIfNeeded();
-    const {x, y} = await this.clickablePoint();
-    await this.#page.touchscreen.touchMove(x, y);
-  }
-
-  override async touchEnd(this: CDPElementHandle<Element>): Promise<void> {
-    await this.scrollIntoViewIfNeeded();
-    await this.#page.touchscreen.touchEnd();
-  }
-
-  override async type(
-    text: string,
-    options?: Readonly<KeyboardTypeOptions>
-  ): Promise<void> {
-    await this.focus();
-    await this.#page.keyboard.type(text, options);
-  }
-
-  override async press(
-    key: KeyInput,
-    options?: Readonly<KeyPressOptions>
-  ): Promise<void> {
-    await this.focus();
-    await this.#page.keyboard.press(key, options);
   }
 
   override async screenshot(

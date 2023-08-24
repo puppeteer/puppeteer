@@ -18,6 +18,18 @@ import type {Readable} from 'stream';
 
 import {Protocol} from 'devtools-protocol';
 
+import {
+  filterAsync,
+  first,
+  firstValueFrom,
+  from,
+  fromEvent,
+  map,
+  merge,
+  Observable,
+  raceWith,
+  timer,
+} from '../../third_party/rxjs/rxjs.js';
 import type {HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {Accessibility} from '../common/Accessibility.js';
@@ -26,7 +38,7 @@ import type {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {Coverage} from '../common/Coverage.js';
 import {Device} from '../common/Device.js';
 import {DeviceRequestPrompt} from '../common/DeviceRequestPrompt.js';
-import {TargetCloseError} from '../common/Errors.js';
+import {TargetCloseError, TimeoutError} from '../common/Errors.js';
 import {EventEmitter, Handler} from '../common/EventEmitter.js';
 import type {FileChooser} from '../common/FileChooser.js';
 import type {WaitForSelectorOptions} from '../common/IsolatedWorld.js';
@@ -1745,9 +1757,8 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @param urlOrPredicate - A URL or predicate to wait for.
-   * @param options - Optional waiting parameters
-   * @returns Promise which resolves to the matched frame.
+   * Waits for a frame matching the given conditions to appear.
+   *
    * @example
    *
    * ```ts
@@ -1755,20 +1766,41 @@ export class Page extends EventEmitter {
    *   return frame.name() === 'Test';
    * });
    * ```
-   *
-   * @remarks
-   * Optional Parameter have:
-   *
-   * - `timeout`: Maximum wait time in milliseconds, defaults to `30` seconds,
-   *   pass `0` to disable the timeout. The default value can be changed by using
-   *   the {@link Page.setDefaultTimeout} method.
    */
   async waitForFrame(
-    urlOrPredicate: string | ((frame: Frame) => boolean | Promise<boolean>),
-    options?: {timeout?: number}
-  ): Promise<Frame>;
-  async waitForFrame(): Promise<Frame> {
-    throw new Error('Not implemented');
+    urlOrPredicate: string | ((frame: Frame) => Awaitable<boolean>),
+    options: WaitTimeoutOptions = {}
+  ): Promise<Frame> {
+    const {timeout: ms = this.getDefaultTimeout()} = options;
+
+    if (isString(urlOrPredicate)) {
+      urlOrPredicate = (frame: Frame) => {
+        return urlOrPredicate === frame.url();
+      };
+    }
+
+    return firstValueFrom(
+      merge(
+        fromEvent(this, PageEmittedEvents.FrameAttached) as Observable<Frame>,
+        fromEvent(this, PageEmittedEvents.FrameNavigated) as Observable<Frame>,
+        from(this.frames())
+      ).pipe(
+        filterAsync(urlOrPredicate),
+        first(),
+        raceWith(
+          timer(ms === 0 ? Infinity : ms).pipe(
+            map(() => {
+              throw new TimeoutError(`Timed out after waiting ${ms}ms`);
+            })
+          ),
+          fromEvent(this, PageEmittedEvents.Close).pipe(
+            map(() => {
+              throw new TargetCloseError('Page closed.');
+            })
+          )
+        )
+      )
+    );
   }
 
   /**

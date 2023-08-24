@@ -10,7 +10,7 @@ This method scrolls element into view if needed, and then uses [Touchscreen.tap(
 
 ```typescript
 class ElementHandle {
-  abstract tap(this: ElementHandle<Element>): Promise<void>;
+  tap(this: ElementHandle<Element>): Promise<void>;
 }
 ```
 

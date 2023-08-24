@@ -10,9 +10,9 @@ This method scrolls element into view if needed, and then uses [Page.mouse](./pu
 
 ```typescript
 class ElementHandle {
-  abstract click(
+  click(
     this: ElementHandle<Element>,
-    options?: ClickOptions
+    options?: Readonly<ClickOptions>
   ): Promise<void>;
 }
 ```
@@ -22,7 +22,7 @@ class ElementHandle {
 | Parameter | Type                                                         | Description  |
 | --------- | ------------------------------------------------------------ | ------------ |
 | this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |              |
-| options   | [ClickOptions](./puppeteer.clickoptions.md)                  | _(Optional)_ |
+| options   | Readonly&lt;[ClickOptions](./puppeteer.clickoptions.md)&gt;  | _(Optional)_ |
 
 **Returns:**
 
