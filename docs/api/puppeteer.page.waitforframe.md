@@ -4,37 +4,29 @@ sidebar_label: Page.waitForFrame
 
 # Page.waitForFrame() method
 
+Waits for a frame matching the given conditions to appear.
+
 #### Signature:
 
 ```typescript
 class Page {
   waitForFrame(
-    urlOrPredicate: string | ((frame: Frame) => boolean | Promise<boolean>),
-    options?: {
-      timeout?: number;
-    }
+    urlOrPredicate: string | ((frame: Frame) => Awaitable<boolean>),
+    options?: WaitTimeoutOptions
   ): Promise<Frame>;
 }
 ```
 
 ## Parameters
 
-| Parameter      | Type                                                                                       | Description                              |
-| -------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------- |
-| urlOrPredicate | string \| ((frame: [Frame](./puppeteer.frame.md)) =&gt; boolean \| Promise&lt;boolean&gt;) | A URL or predicate to wait for.          |
-| options        | { timeout?: number; }                                                                      | _(Optional)_ Optional waiting parameters |
+| Parameter      | Type                                                                                                          | Description  |
+| -------------- | ------------------------------------------------------------------------------------------------------------- | ------------ |
+| urlOrPredicate | string \| ((frame: [Frame](./puppeteer.frame.md)) =&gt; [Awaitable](./puppeteer.awaitable.md)&lt;boolean&gt;) |              |
+| options        | [WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md)                                                       | _(Optional)_ |
 
 **Returns:**
 
 Promise&lt;[Frame](./puppeteer.frame.md)&gt;
-
-Promise which resolves to the matched frame.
-
-## Remarks
-
-Optional Parameter have:
-
-- `timeout`: Maximum wait time in milliseconds, defaults to `30` seconds, pass `0` to disable the timeout. The default value can be changed by using the [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) method.
 
 ## Example
 

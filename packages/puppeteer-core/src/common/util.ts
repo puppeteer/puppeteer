@@ -32,6 +32,7 @@ import {CDPElementHandle} from './ElementHandle.js';
 import type {CommonEventEmitter} from './EventEmitter.js';
 import type {ExecutionContext} from './ExecutionContext.js';
 import {CDPJSHandle} from './JSHandle.js';
+import {Awaitable} from './types.js';
 
 /**
  * @internal
@@ -381,7 +382,7 @@ export const isDate = (obj: unknown): obj is Date => {
 export async function waitForEvent<T>(
   emitter: CommonEventEmitter,
   eventName: string | symbol,
-  predicate: (event: T) => Promise<boolean> | boolean,
+  predicate: (event: T) => Awaitable<boolean>,
   timeout: number,
   abortPromise: Promise<Error> | Deferred<Error>
 ): Promise<T> {

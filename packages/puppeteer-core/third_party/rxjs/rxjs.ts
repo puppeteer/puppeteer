@@ -39,3 +39,20 @@ export {
   pipe,
   Observable,
 } from 'rxjs';
+
+import {mergeMap, from, filter, map, type Observable} from 'rxjs';
+
+export function filterAsync<T>(
+  predicate: (value: T) => boolean | PromiseLike<boolean>
+) {
+  return mergeMap<T, Observable<T>>(value => {
+    return from(Promise.resolve(predicate(value))).pipe(
+      filter(isMatch => {
+        return isMatch;
+      }),
+      map(() => {
+        return value;
+      })
+    );
+  });
+}

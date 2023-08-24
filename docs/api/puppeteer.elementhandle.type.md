@@ -12,10 +12,7 @@ To press a special key, like `Control` or `ArrowDown`, use [ElementHandle.press(
 
 ```typescript
 class ElementHandle {
-  abstract type(
-    text: string,
-    options?: Readonly<KeyboardTypeOptions>
-  ): Promise<void>;
+  type(text: string, options?: Readonly<KeyboardTypeOptions>): Promise<void>;
 }
 ```
 

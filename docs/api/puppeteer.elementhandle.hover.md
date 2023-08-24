@@ -10,7 +10,7 @@ This method scrolls element into view if needed, and then uses [Page](./puppetee
 
 ```typescript
 class ElementHandle {
-  abstract hover(this: ElementHandle<Element>): Promise<void>;
+  hover(this: ElementHandle<Element>): Promise<void>;
 }
 ```
 
