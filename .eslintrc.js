@@ -214,6 +214,19 @@ module.exports = {
         ],
         '@typescript-eslint/prefer-ts-expect-error': 'error',
       },
+      overrides: [
+        {
+          files: [
+            'packages/puppeteer-core/src/**/*.test.ts',
+            'tools/mochaRunner/src/test.ts',
+          ],
+          rules: {
+            // With the Node.js test runner, `describe` and `it` are technically
+            // promises, but we don't need to await them.
+            '@typescript-eslint/no-floating-promises': 'off',
+          },
+        },
+      ],
     },
   ],
 };
