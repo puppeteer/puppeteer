@@ -630,9 +630,21 @@ export abstract class ElementHandle<
   /**
    * Returns the middle point within an element unless a specific offset is provided.
    */
-  async clickablePoint(offset?: Offset): Promise<Point>;
-  async clickablePoint(): Promise<Point> {
-    throw new Error('Not implemented');
+  async clickablePoint(offset?: Offset): Promise<Point> {
+    const box = await this.#clickableBox();
+    if (!box) {
+      throw new Error('Node is either not clickable or not an Element');
+    }
+    if (offset !== undefined) {
+      return {
+        x: box.x + offset.x,
+        y: box.y + offset.y,
+      };
+    }
+    return {
+      x: box.x + box.width / 2,
+      y: box.y + box.height / 2,
+    };
   }
 
   /**
@@ -861,43 +873,21 @@ export abstract class ElementHandle<
     options?: Readonly<KeyPressOptions>
   ): Promise<void>;
 
-  /**
-   * This method returns the bounding box of the element (relative to the main frame),
-   * or `null` if the element is not visible.
-   */
-  async boundingBox(): Promise<BoundingBox | null> {
+  async #clickableBox(): Promise<BoundingBox | null> {
     const adoptedThis = await this.frame.isolatedRealm().adoptHandle(this);
-    const box = await adoptedThis.evaluate(element => {
+    const rects = await adoptedThis.evaluate(element => {
       if (!(element instanceof Element)) {
         return null;
       }
-      // Element is not visible.
-      if (element.getClientRects().length === 0) {
-        return null;
-      }
-      const rect = element.getBoundingClientRect();
-      return {
-        x: rect.left,
-        y: rect.top,
-        width: rect.width,
-        height: rect.height,
-      };
+      return [...element.getClientRects()].map(rect => {
+        return rect.toJSON();
+      }) as DOMRect[];
     });
     void adoptedThis.dispose().catch(debugError);
-    if (!box) {
+    if (!rects?.length) {
       return null;
     }
-    const offset = await this.#getTopLeftCornerOfFrame();
-    if (!offset) {
-      return null;
-    }
-    box.x += offset.x;
-    box.y += offset.y;
-    return box;
-  }
-
-  async #getTopLeftCornerOfFrame() {
-    const point = {x: 0, y: 0};
+    await this.#intersectBoundingBoxesWithFrame(rects);
     let frame: Frame | null | undefined = this.frame;
     let element: HandleFor<HTMLIFrameElement> | null | undefined;
     while ((element = await frame?.frameElement())) {
@@ -924,14 +914,77 @@ export abstract class ElementHandle<
         if (!parentBox) {
           return null;
         }
-        point.x += parentBox.left;
-        point.y += parentBox.top;
+        for (const box of rects) {
+          box.x += parentBox.left;
+          box.y += parentBox.top;
+        }
+        await element.#intersectBoundingBoxesWithFrame(rects);
         frame = frame?.parentFrame();
       } finally {
         void element.dispose().catch(debugError);
       }
     }
-    return point;
+    const rect = rects.find(box => {
+      return box.width >= 1 && box.height >= 1;
+    });
+    if (!rect) {
+      return null;
+    }
+    return {
+      x: rect.x,
+      y: rect.y,
+      height: rect.height,
+      width: rect.width,
+    };
+  }
+
+  async #intersectBoundingBoxesWithFrame(boxes: BoundingBox[]) {
+    const {documentWidth, documentHeight} = await this.frame
+      .isolatedRealm()
+      .evaluate(() => {
+        return {
+          documentWidth: document.documentElement.clientWidth,
+          documentHeight: document.documentElement.clientHeight,
+        };
+      });
+    for (const box of boxes) {
+      intersectBoundingBox(box, documentWidth, documentHeight);
+    }
+  }
+
+  /**
+   * This method returns the bounding box of the element (relative to the main frame),
+   * or `null` if the element is not visible.
+   */
+  async boundingBox(): Promise<BoundingBox | null> {
+    const adoptedThis = await this.frame.isolatedRealm().adoptHandle(this);
+    const box = await adoptedThis.evaluate(element => {
+      if (!(element instanceof Element)) {
+        return null;
+      }
+      // Element is not visible.
+      if (element.getClientRects().length === 0) {
+        return null;
+      }
+      const rect = element.getBoundingClientRect();
+      return rect.toJSON() as DOMRect;
+    });
+    void adoptedThis.dispose().catch(debugError);
+    if (!box) {
+      return null;
+    }
+    const offset = await this.#getTopLeftCornerOfFrame();
+    if (!offset) {
+      return null;
+    }
+    box.x += offset.x;
+    box.y += offset.y;
+    return {
+      x: box.x,
+      y: box.y,
+      height: box.height,
+      width: box.width,
+    };
   }
 
   /**
@@ -1036,6 +1089,44 @@ export abstract class ElementHandle<
       }
     }
     return model;
+  }
+
+  async #getTopLeftCornerOfFrame() {
+    const point = {x: 0, y: 0};
+    let frame: Frame | null | undefined = this.frame;
+    let element: HandleFor<HTMLIFrameElement> | null | undefined;
+    while ((element = await frame?.frameElement())) {
+      try {
+        element = await element.frame.isolatedRealm().transferHandle(element);
+        const parentBox = await element.evaluate(element => {
+          // Element is not visible.
+          if (element.getClientRects().length === 0) {
+            return null;
+          }
+          const rect = element.getBoundingClientRect();
+          const style = window.getComputedStyle(element);
+          return {
+            left:
+              rect.left +
+              parseInt(style.paddingLeft, 10) +
+              parseInt(style.borderLeftWidth, 10),
+            top:
+              rect.top +
+              parseInt(style.paddingTop, 10) +
+              parseInt(style.borderTopWidth, 10),
+          };
+        });
+        if (!parentBox) {
+          return null;
+        }
+        point.x += parentBox.left;
+        point.y += parentBox.top;
+        frame = frame?.parentFrame();
+      } finally {
+        void element.dispose().catch(debugError);
+      }
+    }
+    return point;
   }
 
   /**
@@ -1218,4 +1309,23 @@ export interface AutofillData {
     expiryYear: string;
     cvc: string;
   };
+}
+
+function intersectBoundingBox(
+  box: BoundingBox,
+  width: number,
+  height: number
+): void {
+  box.width = Math.max(
+    box.x >= 0
+      ? Math.min(width - box.x, box.width)
+      : Math.min(width, box.width + box.x),
+    0
+  );
+  box.height = Math.max(
+    box.y >= 0
+      ? Math.min(height - box.y, box.height)
+      : Math.min(height, box.height + box.y),
+    0
+  );
 }

@@ -20,9 +20,7 @@ import {
   AutofillData,
   ClickOptions,
   ElementHandle,
-  Offset,
   Point,
-  Quad,
 } from '../api/ElementHandle.js';
 import {KeyboardTypeOptions, KeyPressOptions} from '../api/Input.js';
 import {Page, ScreenshotOptions} from '../api/Page.js';
@@ -34,22 +32,9 @@ import {Frame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {CDPJSHandle} from './JSHandle.js';
-import {CDPPage} from './Page.js';
 import {NodeFor} from './types.js';
 import {KeyInput} from './USKeyboardLayout.js';
 import {debugError} from './util.js';
-
-const applyOffsetsToQuad = (
-  quad: Point[],
-  offsetX: number,
-  offsetY: number
-) => {
-  assert(quad.length === 4);
-  return quad.map(part => {
-    return {x: part.x + offsetX, y: part.y + offsetY};
-    // SAFETY: We know this is a quad from the length check.
-  }) as Quad;
-};
 
 /**
  * The CDPElementHandle extends ElementHandle now to keep compatibility
@@ -154,127 +139,6 @@ export class CDPElementHandle<
       // Fallback to Element.scrollIntoView if DOM.scrollIntoViewIfNeeded is not supported
       await super.scrollIntoView();
     }
-  }
-
-  async #getOOPIFOffsets(
-    frame: Frame
-  ): Promise<{offsetX: number; offsetY: number}> {
-    let offsetX = 0;
-    let offsetY = 0;
-    let currentFrame: Frame | null = frame;
-    while (currentFrame && currentFrame.parentFrame()) {
-      const parent = currentFrame.parentFrame();
-      if (!currentFrame.isOOPFrame() || !parent) {
-        currentFrame = parent;
-        continue;
-      }
-      const {backendNodeId} = await parent._client().send('DOM.getFrameOwner', {
-        frameId: currentFrame._id,
-      });
-      const result = await parent._client().send('DOM.getBoxModel', {
-        backendNodeId: backendNodeId,
-      });
-      if (!result) {
-        break;
-      }
-      const contentBoxQuad = result.model.content;
-      const topLeftCorner = this.#fromProtocolQuad(contentBoxQuad)[0];
-      offsetX += topLeftCorner!.x;
-      offsetY += topLeftCorner!.y;
-      currentFrame = parent;
-    }
-    return {offsetX, offsetY};
-  }
-
-  override async clickablePoint(offset?: Offset): Promise<Point> {
-    const [result, layoutMetrics] = await Promise.all([
-      this.client
-        .send('DOM.getContentQuads', {
-          objectId: this.id,
-        })
-        .catch(debugError),
-      (this.#page as CDPPage)._client().send('Page.getLayoutMetrics'),
-    ]);
-    if (!result || !result.quads.length) {
-      throw new Error('Node is either not clickable or not an HTMLElement');
-    }
-    // Filter out quads that have too small area to click into.
-    // Fallback to `layoutViewport` in case of using Firefox.
-    const {clientWidth, clientHeight} =
-      layoutMetrics.cssLayoutViewport || layoutMetrics.layoutViewport;
-    const {offsetX, offsetY} = await this.#getOOPIFOffsets(this.#frame);
-    const quads = result.quads
-      .map(quad => {
-        return this.#fromProtocolQuad(quad);
-      })
-      .map(quad => {
-        return applyOffsetsToQuad(quad, offsetX, offsetY);
-      })
-      .map(quad => {
-        return this.#intersectQuadWithViewport(quad, clientWidth, clientHeight);
-      })
-      .filter(quad => {
-        return computeQuadArea(quad) > 1;
-      });
-    if (!quads.length) {
-      throw new Error('Node is either not clickable or not an HTMLElement');
-    }
-    const quad = quads[0]!;
-    if (offset) {
-      // Return the point of the first quad identified by offset.
-      let minX = Number.MAX_SAFE_INTEGER;
-      let minY = Number.MAX_SAFE_INTEGER;
-      for (const point of quad) {
-        if (point.x < minX) {
-          minX = point.x;
-        }
-        if (point.y < minY) {
-          minY = point.y;
-        }
-      }
-      if (
-        minX !== Number.MAX_SAFE_INTEGER &&
-        minY !== Number.MAX_SAFE_INTEGER
-      ) {
-        return {
-          x: minX + offset.x,
-          y: minY + offset.y,
-        };
-      }
-    }
-    // Return the middle point of the first quad.
-    let x = 0;
-    let y = 0;
-    for (const point of quad) {
-      x += point.x;
-      y += point.y;
-    }
-    return {
-      x: x / 4,
-      y: y / 4,
-    };
-  }
-
-  #fromProtocolQuad(quad: number[]): Point[] {
-    return [
-      {x: quad[0]!, y: quad[1]!},
-      {x: quad[2]!, y: quad[3]!},
-      {x: quad[4]!, y: quad[5]!},
-      {x: quad[6]!, y: quad[7]!},
-    ];
-  }
-
-  #intersectQuadWithViewport(
-    quad: Point[],
-    width: number,
-    height: number
-  ): Point[] {
-    return quad.map(point => {
-      return {
-        x: Math.min(Math.max(point.x, 0), width),
-        y: Math.min(Math.max(point.y, 0), height),
-      };
-    });
   }
 
   /**
@@ -531,17 +395,4 @@ export class CDPElementHandle<
   override assertElementHasWorld(): asserts this {
     assert(this.executionContext()._world);
   }
-}
-
-function computeQuadArea(quad: Point[]): number {
-  /* Compute sum of all directed areas of adjacent triangles
-     https://en.wikipedia.org/wiki/Polygon#Simple_polygons
-   */
-  let area = 0;
-  for (let i = 0; i < quad.length; ++i) {
-    const p1 = quad[i]!;
-    const p2 = quad[(i + 1) % quad.length]!;
-    area += (p1.x * p2.y - p2.x * p1.y) / 2;
-  }
-  return Math.abs(area);
 }

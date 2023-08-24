@@ -624,6 +624,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox should work",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox"],
+    "expectations": ["FAIL", "PASS"]
+  },
+  {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox should work with SVG nodes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -661,6 +667,12 @@
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.click should work for Shadow DOM v1",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.clickablePoint should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
@@ -2076,18 +2088,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
-    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox should work",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL", "PASS"]
-  },
-  {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boxModel should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -2107,6 +2107,12 @@
   },
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.click should throw for recursively hidden nodes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.clickablePoint should work for iframes",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
@@ -2140,6 +2146,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.clickablePoint should not work if the click box is not visible",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[emulation.spec] Emulation Page.emulateMediaFeatures should throw in case of bad argument",
