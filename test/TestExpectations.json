@@ -24,6 +24,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[dialog.spec] Page.Events.Dialog *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs Custom queries *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -564,10 +570,10 @@
     "expectations": ["FAIL", "PASS"]
   },
   {
-    "testIdPattern": "[dialog.spec] Page.Events.Dialog *",
+    "testIdPattern": "[dialog.spec] Page.Events.Dialog should allow accepting prompts",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["FAIL"]
   },
   {
     "testIdPattern": "[drag-and-drop.spec] *",
@@ -1242,12 +1248,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[network.spec] network Response.fromServiceWorker should return |false| for non-service-worker content",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[network.spec] network Response.timing returns timing information",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1608,30 +1608,6 @@
     "expectations": ["SKIP"]
   },
   {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should survive cross-process navigation",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should survive navigations",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work when resolved right before execution context disposal",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work with strict CSP policy",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
-  },
-  {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should be cancellable",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -1711,12 +1687,6 @@
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should wait for element to be visible (bounding box)",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["PASS"]
-  },
-  {
-    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should wait for element to be visible (display)",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
     "expectations": ["PASS"]
@@ -2100,12 +2070,6 @@
     "expectations": ["FAIL"]
   },
   {
-    "testIdPattern": "[dialog.spec] Page.Events.Dialog should allow accepting prompts",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.boundingBox should handle nested frames",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
@@ -2340,6 +2304,12 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[frame.spec] Frame specs Frame Management should report different frame instance when frame re-attaches",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should report frame from-inside shadow DOM",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
@@ -2380,6 +2350,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[frame.spec] Frame specs Frame Management should send events when frames are manipulated dynamically",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[frame.spec] Frame specs Frame Management should support framesets",
@@ -2443,6 +2419,12 @@
   },
   {
     "testIdPattern": "[headful.spec] headful tests HEADFUL target.page() should return a DevTools page if custom isPageTarget is provided",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[headful.spec] headful tests Page.bringToFront should work",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
@@ -3162,6 +3144,12 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[network.spec] network Network Events Page.Events.RequestServedFromCache",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL", "PASS"]
+  },
+  {
     "testIdPattern": "[network.spec] network Network Events Page.Events.Response",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
@@ -3444,10 +3432,58 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF clickablePoint, boundingBox, boxModel should work for elements inside OOPIFs",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF should provide access to elements",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF should support evaluating in oop iframes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF should support frames within OOP frames",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF should support frames within OOP iframes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF should support wait for navigation for transitions from local to OOPIF",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome"],
     "expectations": ["PASS", "TIMEOUT"]
+  },
+  {
+    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF should track navigations within OOP iframes",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF should treat OOP iframes and normal iframes the same",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF waitForFrame should resolve immediately if the frame already exists",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[page.spec] Page \"after all\" hook in \"Page\"",
@@ -4166,8 +4202,38 @@
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should survive cross-process navigation",
     "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should survive cross-process navigation",
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL", "PASS"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should survive cross-process navigation",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should survive navigations",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should survive navigations",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work when resolved right before execution context disposal",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work when resolved right before execution context disposal",
@@ -4178,7 +4244,19 @@
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work with strict CSP policy",
     "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work with strict CSP policy",
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
+    "expectations": ["FAIL"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work with strict CSP policy",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
     "expectations": ["FAIL"]
   },
   {
@@ -4188,10 +4266,22 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector Page.waitForSelector is shortcut for main frame",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should run in specified frame",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should run in specified frame",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should survive cross-process navigation",
@@ -4204,6 +4294,18 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should throw when frame is detached",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should wait for element to be visible (display)",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForSelector should work with removed MutationObserver",
@@ -4258,12 +4360,6 @@
     "platforms": ["win32"],
     "parameters": ["cdp", "chrome", "new-headless"],
     "expectations": ["FAIL", "PASS"]
-  },
-  {
-    "testIdPattern": "[click.spec] Page.click should click the button after navigation",
-    "platforms": ["darwin"],
-    "parameters": ["chrome", "headless", "webDriverBiDi"],
-    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[click.spec] Page.click should click the button with fixed position inside an iframe",
@@ -4324,6 +4420,24 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headful"],
     "expectations": ["FAIL", "PASS"]
+  },
+  {
+    "testIdPattern": "[oopif.spec] OOPIF-debug OOPIF should support lazy OOP frames",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "headless", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[prerender.spec] Prerender can navigate to a prerendered page via Puppeteer",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "headless", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[prerender.spec] Prerender via frame can navigate to a prerendered page via Puppeteer",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "headless", "webDriverBiDi"],
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[requestinterception.spec] request interception Page.setRequestInterception should be abortable",

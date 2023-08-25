@@ -49,6 +49,7 @@ export class Frame extends BaseFrame {
   #context: BrowsingContext;
   #timeoutSettings: TimeoutSettings;
   #abortDeferred = Deferred.create<Error>();
+  #detached = false;
   sandboxes: SandboxChart;
   override _id: string;
 
@@ -270,8 +271,15 @@ export class Frame extends BaseFrame {
     return this.#page.getNavigationResponse(info.navigation);
   }
 
+  override isDetached(): boolean {
+    return this.#detached;
+  }
+
   dispose(): void {
+    this.#detached = true;
     this.#abortDeferred.reject(new Error('Frame detached'));
     this.#context.dispose();
+    this.sandboxes[MAIN_SANDBOX].dispose();
+    this.sandboxes[PUPPETEER_SANDBOX].dispose();
   }
 }

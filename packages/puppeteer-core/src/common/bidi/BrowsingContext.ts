@@ -101,7 +101,7 @@ export class CDPSessionWrapper extends CDPSession {
 
   override async detach(): Promise<void> {
     cdpSessions.delete(this.id());
-    if (this.#context.supportsCDP()) {
+    if (!this.#detached && this.#context.supportsCDP()) {
       await this.#context.cdpSession.send('Target.detachFromTarget', {
         sessionId: this.id(),
       });
