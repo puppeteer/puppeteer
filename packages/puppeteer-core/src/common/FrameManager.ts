@@ -131,6 +131,9 @@ export class FrameManager extends EventEmitter {
     if (!mainFrame) {
       return;
     }
+    for (const child of mainFrame.childFrames()) {
+      this.#removeFramesRecursively(child);
+    }
     const swapped = Deferred.create<void>({
       timeout: TIME_FOR_WAITING_FOR_SWAP,
       message: 'Frame was not swapped',
@@ -140,9 +143,6 @@ export class FrameManager extends EventEmitter {
     });
     try {
       await swapped.valueOrThrow();
-      for (const child of mainFrame.childFrames()) {
-        this.#removeFramesRecursively(child);
-      }
     } catch (err) {
       this.#removeFramesRecursively(mainFrame);
     }
