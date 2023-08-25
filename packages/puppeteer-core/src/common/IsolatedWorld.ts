@@ -124,9 +124,11 @@ export class IsolatedWorld implements Realm {
   }
 
   constructor(frame: Frame) {
-    // Keep own reference to client because it might differ from the FrameManager's
-    // client for OOP iframes.
     this.#frame = frame;
+    this.frameUpdated();
+  }
+
+  frameUpdated(): void {
     this.#client.on('Runtime.bindingCalled', this.#onBindingCalled);
   }
 

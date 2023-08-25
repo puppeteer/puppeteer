@@ -51,4 +51,42 @@ describe('Prerender', function () {
       })
     ).toBe('target');
   });
+
+  describe('via frame', () => {
+    it('can navigate to a prerendered page via input', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.PREFIX + '/prerender/index.html');
+
+      const button = await page.waitForSelector('button');
+      await button?.click();
+
+      const mainFrame = page.mainFrame();
+      const link = await mainFrame.waitForSelector('a');
+      await Promise.all([mainFrame.waitForNavigation(), link?.click()]);
+      expect(mainFrame).toBe(page.mainFrame());
+      expect(
+        await mainFrame.evaluate(() => {
+          return document.body.innerText;
+        })
+      ).toBe('target');
+      expect(mainFrame).toBe(page.mainFrame());
+    });
+
+    it('can navigate to a prerendered page via Puppeteer', async () => {
+      const {page, server} = await getTestState();
+      await page.goto(server.PREFIX + '/prerender/index.html');
+
+      const button = await page.waitForSelector('button');
+      await button?.click();
+
+      const mainFrame = page.mainFrame();
+      await mainFrame.goto(server.PREFIX + '/prerender/target.html');
+      expect(
+        await mainFrame.evaluate(() => {
+          return document.body.innerText;
+        })
+      ).toBe('target');
+      expect(mainFrame).toBe(page.mainFrame());
+    });
+  });
 });

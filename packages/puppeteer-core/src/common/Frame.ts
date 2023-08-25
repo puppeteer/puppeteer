@@ -99,12 +99,17 @@ export class Frame extends BaseFrame {
     this._id = id;
   }
 
-  updateClient(client: CDPSession): void {
+  updateClient(client: CDPSession, keepWorlds = false): void {
     this.#client = client;
-    this.worlds = {
-      [MAIN_WORLD]: new IsolatedWorld(this),
-      [PUPPETEER_WORLD]: new IsolatedWorld(this),
-    };
+    if (!keepWorlds) {
+      this.worlds = {
+        [MAIN_WORLD]: new IsolatedWorld(this),
+        [PUPPETEER_WORLD]: new IsolatedWorld(this),
+      };
+    } else {
+      this.worlds[MAIN_WORLD].frameUpdated();
+      this.worlds[PUPPETEER_WORLD].frameUpdated();
+    }
   }
 
   override page(): Page {
