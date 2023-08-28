@@ -14,7 +14,7 @@ ng add @puppeteer/ng-schematics
 
 Or you can use the same command followed by the [options](#options) below.
 
-Currently, this schematic supports the following test frameworks:
+Currently, this schematic supports the following test runners:
 
 - [**Jasmine**](https://jasmine.github.io/)
 - [**Jest**](https://jestjs.io/)
@@ -31,12 +31,9 @@ ng e2e
 
 When adding schematics to your project you can to provide following options:
 
-| Option               | Description                                                                                                             | Value                                      | Required |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | -------- |
-| `--isDefaultTester`  | When true, replaces default `ng e2e` command.                                                                           | `boolean`                                  | `true`   |
-| `--exportConfig`     | When true, creates an empty [Puppeteer configuration](https://pptr.dev/guides/configuration) file. (`.puppeteerrc.cjs`) | `boolean`                                  | `true`   |
-| `--testingFramework` | The testing framework to install along side Puppeteer.                                                                  | `"jasmine"`, `"jest"`, `"mocha"`, `"node"` | `true`   |
-| `--port`             | The port to spawn server for E2E. If default is used `ng serve` and `ng e2e` will not run side-by-side.                 | `number`                                   | `4200`   |
+| Option         | Description                                            | Value                                      | Required |
+| -------------- | ------------------------------------------------------ | ------------------------------------------ | -------- |
+| `--testRunner` | The testing framework to install along side Puppeteer. | `"jasmine"`, `"jest"`, `"mocha"`, `"node"` | `true`   |
 
 ## Creating a single test file
 
@@ -59,7 +56,7 @@ Update either `e2e` or `puppeteer` (depending on the initial setup) to:
     "options": {
       "commands": [...],
       "devServerTarget": "sandbox:serve",
-      "testingFramework": "<TestingFramework>",
+      "testRunner": "<TestRunner>",
       "port": 8080
     },
     ...

@@ -8,7 +8,7 @@ sidebar_label: JSHandle.getProperty_1
 
 ```typescript
 class JSHandle {
-  getProperty(propertyName: string): Promise<JSHandle<unknown>>;
+  abstract getProperty(propertyName: string): Promise<JSHandle<unknown>>;
 }
 ```
 

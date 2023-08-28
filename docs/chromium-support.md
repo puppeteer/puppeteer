@@ -4,7 +4,7 @@ The following versions of Chromium are supported, mapped to Puppeteer version:
 
 <!-- version-start -->
 
-- Chromium 116.0.5845.96 - [Puppeteer v21.1.0](https://pptr.dev/21.1.0)
+- [Chrome for Testing](https://goo.gle/chrome-for-testing) 116.0.5845.96 - [Puppeteer v21.1.0](https://pptr.dev/21.1.0)
 - [Chrome for Testing](https://goo.gle/chrome-for-testing) 115.0.5790.170 - [Puppeteer v21.0.2](https://pptr.dev/21.0.2)
 - [Chrome for Testing](https://goo.gle/chrome-for-testing) 115.0.5790.102 - [Puppeteer v21.0.0](https://pptr.dev/21.0.0)
 - [Chrome for Testing](https://goo.gle/chrome-for-testing) 115.0.5790.98 - [Puppeteer v20.9.0](https://pptr.dev/20.9.0)

@@ -10,7 +10,7 @@ Evaluates the given function with the current handle as its first argument.
 
 ```typescript
 class JSHandle {
-  evaluate<
+  abstract evaluate<
     Params extends unknown[],
     Func extends EvaluateFuncWith<T, Params> = EvaluateFuncWith<T, Params>,
   >(
