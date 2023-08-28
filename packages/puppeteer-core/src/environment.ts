@@ -27,3 +27,13 @@ export const DEFERRED_PROMISE_DEBUG_TIMEOUT =
   typeof process.env['PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT'] !== 'undefined'
     ? Number(process.env['PUPPETEER_DEFERRED_PROMISE_DEBUG_TIMEOUT'])
     : -1;
+
+/**
+ * Only used for internal testing.
+ *
+ * @internal
+ */
+export const USE_TAB_TARGET =
+  typeof process !== 'undefined'
+    ? process.env['PUPPETEER_INTERNAL_TAB_TARGET'] === 'true'
+    : false;

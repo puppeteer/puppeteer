@@ -99,16 +99,21 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
   #waitForInitiallyDiscoveredTargets = true;
 
   // TODO: remove the flag once the testing/rollout is done.
-  #tabMode = false;
-  #discoveryFilter = this.#tabMode ? [{}] : [{type: 'tab', exclude: true}, {}];
+  #tabMode: boolean;
+  #discoveryFilter: Protocol.Target.FilterEntry[];
 
   constructor(
     connection: Connection,
     targetFactory: TargetFactory,
     targetFilterCallback?: TargetFilterCallback,
-    waitForInitiallyDiscoveredTargets = true
+    waitForInitiallyDiscoveredTargets = true,
+    useTabTarget = false
   ) {
     super();
+    this.#tabMode = useTabTarget;
+    this.#discoveryFilter = this.#tabMode
+      ? [{}]
+      : [{type: 'tab', exclude: true}, {}];
     this.#connection = connection;
     this.#targetFilterCallback = targetFilterCallback;
     this.#targetFactory = targetFactory;
