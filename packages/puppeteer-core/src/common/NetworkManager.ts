@@ -17,11 +17,9 @@
 import {Protocol} from 'devtools-protocol';
 
 import {assert} from '../util/assert.js';
-import {createDebuggableDeferred} from '../util/DebuggableDeferred.js';
-import {Deferred} from '../util/Deferred.js';
 
-import {CDPSession} from './Connection.js';
-import {EventEmitter, Handler} from './EventEmitter.js';
+import {CDPSession, CDPSessionEmittedEvents} from './Connection.js';
+import {EventEmitter} from './EventEmitter.js';
 import {FrameManager} from './FrameManager.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
@@ -68,13 +66,14 @@ export const NetworkManagerEmittedEvents = {
   RequestFinished: Symbol('NetworkManager.RequestFinished'),
 } as const;
 
+type FrameProvider = Pick<FrameManager, 'frame'>;
+
 /**
  * @internal
  */
 export class NetworkManager extends EventEmitter {
-  #client: CDPSession;
   #ignoreHTTPSErrors: boolean;
-  #frameManager: Pick<FrameManager, 'frame'>;
+  #frameManager: FrameProvider;
   #networkEventManager = new NetworkEventManager();
   #extraHTTPHeaders: Record<string, string> = {};
   #credentials?: Credentials;
@@ -88,82 +87,69 @@ export class NetworkManager extends EventEmitter {
     download: -1,
     latency: 0,
   };
-  #deferredInit?: Deferred<void>;
+  #userAgent?: string;
+  #userAgentMetadata?: Protocol.Emulation.UserAgentMetadata;
 
-  #handlers = new Map<string, Handler<any>>([
-    ['Fetch.requestPaused', this.#onRequestPaused.bind(this)],
-    ['Fetch.authRequired', this.#onAuthRequired.bind(this)],
-    ['Network.requestWillBeSent', this.#onRequestWillBeSent.bind(this)],
-    [
-      'Network.requestServedFromCache',
-      this.#onRequestServedFromCache.bind(this),
-    ],
-    ['Network.responseReceived', this.#onResponseReceived.bind(this)],
-    ['Network.loadingFinished', this.#onLoadingFinished.bind(this)],
-    ['Network.loadingFailed', this.#onLoadingFailed.bind(this)],
-    [
-      'Network.responseReceivedExtraInfo',
-      this.#onResponseReceivedExtraInfo.bind(this),
-    ],
+  #handlers = new Map<string, Function>([
+    ['Fetch.requestPaused', this.#onRequestPaused],
+    ['Fetch.authRequired', this.#onAuthRequired],
+    ['Network.requestWillBeSent', this.#onRequestWillBeSent],
+    ['Network.requestServedFromCache', this.#onRequestServedFromCache],
+    ['Network.responseReceived', this.#onResponseReceived],
+    ['Network.loadingFinished', this.#onLoadingFinished],
+    ['Network.loadingFailed', this.#onLoadingFailed],
+    ['Network.responseReceivedExtraInfo', this.#onResponseReceivedExtraInfo],
   ]);
 
-  constructor(
-    client: CDPSession,
-    ignoreHTTPSErrors: boolean,
-    frameManager: Pick<FrameManager, 'frame'>
-  ) {
+  #clients = new Set<CDPSession>();
+
+  constructor(ignoreHTTPSErrors: boolean, frameManager: FrameProvider) {
     super();
-    this.#client = client;
     this.#ignoreHTTPSErrors = ignoreHTTPSErrors;
     this.#frameManager = frameManager;
-
-    for (const [event, handler] of this.#handlers) {
-      this.#client.on(event, handler);
-    }
   }
 
-  async updateClient(client: CDPSession): Promise<void> {
-    this.#client = client;
+  async addClient(client: CDPSession): Promise<void> {
+    if (this.#clients.has(client)) {
+      return;
+    }
+    this.#clients.add(client);
     for (const [event, handler] of this.#handlers) {
-      this.#client.on(event, handler);
+      client.on(event, handler.bind(this, client));
     }
-    this.#deferredInit = undefined;
-    await this.initialize();
-  }
-
-  /**
-   * Initialize calls should avoid async dependencies between CDP calls as those
-   * might not resolve until after the target is resumed causing a deadlock.
-   */
-  initialize(): Promise<void> {
-    if (this.#deferredInit) {
-      return this.#deferredInit.valueOrThrow();
-    }
-    this.#deferredInit = createDebuggableDeferred(
-      'NetworkManager initialization timed out'
+    client.on(
+      CDPSessionEmittedEvents.Disconnected,
+      this.#removeClient.bind(this, client)
     );
-    const init = Promise.all([
+    await Promise.all([
       this.#ignoreHTTPSErrors
-        ? this.#client.send('Security.setIgnoreCertificateErrors', {
+        ? client.send('Security.setIgnoreCertificateErrors', {
             ignore: true,
           })
         : null,
-      this.#client.send('Network.enable'),
+      client.send('Network.enable'),
+      this.#applyExtraHTTPHeaders(client),
+      this.#applyNetworkConditions(client),
+      this.#applyProtocolCacheDisabled(client),
+      this.#applyProtocolRequestInterception(client),
+      this.#applyUserAgent(client),
     ]);
-    const deferredInitPromise = this.#deferredInit;
-    init
-      .then(() => {
-        deferredInitPromise.resolve();
-      })
-      .catch(err => {
-        deferredInitPromise.reject(err);
-      });
-    return this.#deferredInit.valueOrThrow();
+  }
+
+  async #removeClient(client: CDPSession) {
+    this.#clients.delete(client);
   }
 
   async authenticate(credentials?: Credentials): Promise<void> {
     this.#credentials = credentials;
-    await this.#updateProtocolRequestInterception();
+    const enabled = this.#userRequestInterceptionEnabled || !!this.#credentials;
+    if (enabled === this.#protocolRequestInterceptionEnabled) {
+      return;
+    }
+    this.#protocolRequestInterceptionEnabled = enabled;
+    await this.#applyToAllClients(
+      this.#applyProtocolRequestInterception.bind(this)
+    );
   }
 
   async setExtraHTTPHeaders(
@@ -178,7 +164,12 @@ export class NetworkManager extends EventEmitter {
       );
       this.#extraHTTPHeaders[key.toLowerCase()] = value;
     }
-    await this.#client.send('Network.setExtraHTTPHeaders', {
+
+    await this.#applyToAllClients(this.#applyExtraHTTPHeaders.bind(this));
+  }
+
+  async #applyExtraHTTPHeaders(client: CDPSession) {
+    await client.send('Network.setExtraHTTPHeaders', {
       headers: this.#extraHTTPHeaders,
     });
   }
@@ -193,7 +184,7 @@ export class NetworkManager extends EventEmitter {
 
   async setOfflineMode(value: boolean): Promise<void> {
     this.#emulatedNetworkConditions.offline = value;
-    await this.#updateNetworkConditions();
+    await this.#applyToAllClients(this.#applyNetworkConditions.bind(this));
   }
 
   async emulateNetworkConditions(
@@ -209,11 +200,19 @@ export class NetworkManager extends EventEmitter {
       ? networkConditions.latency
       : 0;
 
-    await this.#updateNetworkConditions();
+    await this.#applyToAllClients(this.#applyNetworkConditions.bind(this));
   }
 
-  async #updateNetworkConditions(): Promise<void> {
-    await this.#client.send('Network.emulateNetworkConditions', {
+  async #applyToAllClients(fn: (client: CDPSession) => Promise<unknown>) {
+    await Promise.all(
+      Array.from(this.#clients).map(client => {
+        return fn(client);
+      })
+    );
+  }
+
+  async #applyNetworkConditions(client: CDPSession): Promise<void> {
+    await client.send('Network.emulateNetworkConditions', {
       offline: this.#emulatedNetworkConditions.offline,
       latency: this.#emulatedNetworkConditions.latency,
       uploadThroughput: this.#emulatedNetworkConditions.upload,
@@ -225,40 +224,51 @@ export class NetworkManager extends EventEmitter {
     userAgent: string,
     userAgentMetadata?: Protocol.Emulation.UserAgentMetadata
   ): Promise<void> {
-    await this.#client.send('Network.setUserAgentOverride', {
-      userAgent: userAgent,
-      userAgentMetadata: userAgentMetadata,
+    this.#userAgent = userAgent;
+    this.#userAgentMetadata = userAgentMetadata;
+    await this.#applyToAllClients(this.#applyUserAgent.bind(this));
+  }
+
+  async #applyUserAgent(client: CDPSession) {
+    if (this.#userAgent === undefined) {
+      return;
+    }
+    await client.send('Network.setUserAgentOverride', {
+      userAgent: this.#userAgent,
+      userAgentMetadata: this.#userAgentMetadata,
     });
   }
 
   async setCacheEnabled(enabled: boolean): Promise<void> {
     this.#userCacheDisabled = !enabled;
-    await this.#updateProtocolCacheDisabled();
+    await this.#applyToAllClients(this.#applyProtocolCacheDisabled.bind(this));
   }
 
   async setRequestInterception(value: boolean): Promise<void> {
     this.#userRequestInterceptionEnabled = value;
-    await this.#updateProtocolRequestInterception();
-  }
-
-  async #updateProtocolRequestInterception(): Promise<void> {
     const enabled = this.#userRequestInterceptionEnabled || !!this.#credentials;
     if (enabled === this.#protocolRequestInterceptionEnabled) {
       return;
     }
     this.#protocolRequestInterceptionEnabled = enabled;
-    if (enabled) {
+    await this.#applyToAllClients(
+      this.#applyProtocolRequestInterception.bind(this)
+    );
+  }
+
+  async #applyProtocolRequestInterception(client: CDPSession): Promise<void> {
+    if (this.#protocolRequestInterceptionEnabled) {
       await Promise.all([
-        this.#updateProtocolCacheDisabled(),
-        this.#client.send('Fetch.enable', {
+        this.#applyProtocolCacheDisabled(client),
+        client.send('Fetch.enable', {
           handleAuthRequests: true,
           patterns: [{urlPattern: '*'}],
         }),
       ]);
     } else {
       await Promise.all([
-        this.#updateProtocolCacheDisabled(),
-        this.#client.send('Fetch.disable'),
+        this.#applyProtocolCacheDisabled(client),
+        client.send('Fetch.disable'),
       ]);
     }
   }
@@ -267,13 +277,16 @@ export class NetworkManager extends EventEmitter {
     return this.#userCacheDisabled;
   }
 
-  async #updateProtocolCacheDisabled(): Promise<void> {
-    await this.#client.send('Network.setCacheDisabled', {
+  async #applyProtocolCacheDisabled(client: CDPSession): Promise<void> {
+    await client.send('Network.setCacheDisabled', {
       cacheDisabled: this.#cacheDisabled(),
     });
   }
 
-  #onRequestWillBeSent(event: Protocol.Network.RequestWillBeSentEvent): void {
+  #onRequestWillBeSent(
+    client: CDPSession,
+    event: Protocol.Network.RequestWillBeSentEvent
+  ): void {
     // Request interception doesn't happen for data URLs with Network Service.
     if (
       this.#userRequestInterceptionEnabled &&
@@ -291,16 +304,19 @@ export class NetworkManager extends EventEmitter {
       if (requestPausedEvent) {
         const {requestId: fetchRequestId} = requestPausedEvent;
         this.#patchRequestEventHeaders(event, requestPausedEvent);
-        this.#onRequest(event, fetchRequestId);
+        this.#onRequest(client, event, fetchRequestId);
         this.#networkEventManager.forgetRequestPaused(networkRequestId);
       }
 
       return;
     }
-    this.#onRequest(event, undefined);
+    this.#onRequest(client, event, undefined);
   }
 
-  #onAuthRequired(event: Protocol.Fetch.AuthRequiredEvent): void {
+  #onAuthRequired(
+    client: CDPSession,
+    event: Protocol.Fetch.AuthRequiredEvent
+  ): void {
     let response: Protocol.Fetch.AuthChallengeResponse['response'] = 'Default';
     if (this.#attemptedAuthentications.has(event.requestId)) {
       response = 'CancelAuth';
@@ -312,7 +328,7 @@ export class NetworkManager extends EventEmitter {
       username: undefined,
       password: undefined,
     };
-    this.#client
+    client
       .send('Fetch.continueWithAuth', {
         requestId: event.requestId,
         authChallengeResponse: {response, username, password},
@@ -327,12 +343,15 @@ export class NetworkManager extends EventEmitter {
    * CDP may send multiple Fetch.requestPaused
    * for the same Network.requestWillBeSent.
    */
-  #onRequestPaused(event: Protocol.Fetch.RequestPausedEvent): void {
+  #onRequestPaused(
+    client: CDPSession,
+    event: Protocol.Fetch.RequestPausedEvent
+  ): void {
     if (
       !this.#userRequestInterceptionEnabled &&
       this.#protocolRequestInterceptionEnabled
     ) {
-      this.#client
+      client
         .send('Fetch.continueRequest', {
           requestId: event.requestId,
         })
@@ -342,7 +361,7 @@ export class NetworkManager extends EventEmitter {
     const {networkId: networkRequestId, requestId: fetchRequestId} = event;
 
     if (!networkRequestId) {
-      this.#onRequestWithoutNetworkInstrumentation(event);
+      this.#onRequestWithoutNetworkInstrumentation(client, event);
       return;
     }
 
@@ -364,7 +383,7 @@ export class NetworkManager extends EventEmitter {
 
     if (requestWillBeSentEvent) {
       this.#patchRequestEventHeaders(requestWillBeSentEvent, event);
-      this.#onRequest(requestWillBeSentEvent, fetchRequestId);
+      this.#onRequest(client, requestWillBeSentEvent, fetchRequestId);
     } else {
       this.#networkEventManager.storeRequestPaused(networkRequestId, event);
     }
@@ -382,6 +401,7 @@ export class NetworkManager extends EventEmitter {
   }
 
   #onRequestWithoutNetworkInstrumentation(
+    client: CDPSession,
     event: Protocol.Fetch.RequestPausedEvent
   ): void {
     // If an event has no networkId it should not have any network events. We
@@ -391,7 +411,7 @@ export class NetworkManager extends EventEmitter {
       : null;
 
     const request = new HTTPRequest(
-      this.#client,
+      client,
       frame,
       event.requestId,
       this.#userRequestInterceptionEnabled,
@@ -403,6 +423,7 @@ export class NetworkManager extends EventEmitter {
   }
 
   #onRequest(
+    client: CDPSession,
     event: Protocol.Network.RequestWillBeSentEvent,
     fetchRequestId?: FetchRequestId
   ): void {
@@ -434,6 +455,7 @@ export class NetworkManager extends EventEmitter {
       // requestWillBeSent event.
       if (request) {
         this.#handleRequestRedirect(
+          client,
           request,
           event.redirectResponse,
           redirectResponseExtraInfo
@@ -446,7 +468,7 @@ export class NetworkManager extends EventEmitter {
       : null;
 
     const request = new HTTPRequest(
-      this.#client,
+      client,
       frame,
       fetchRequestId,
       this.#userRequestInterceptionEnabled,
@@ -459,6 +481,7 @@ export class NetworkManager extends EventEmitter {
   }
 
   #onRequestServedFromCache(
+    _client: CDPSession,
     event: Protocol.Network.RequestServedFromCacheEvent
   ): void {
     const request = this.#networkEventManager.getRequest(event.requestId);
@@ -469,12 +492,13 @@ export class NetworkManager extends EventEmitter {
   }
 
   #handleRequestRedirect(
+    client: CDPSession,
     request: HTTPRequest,
     responsePayload: Protocol.Network.Response,
     extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null
   ): void {
     const response = new HTTPResponse(
-      this.#client,
+      client,
       request,
       responsePayload,
       extraInfo
@@ -490,6 +514,7 @@ export class NetworkManager extends EventEmitter {
   }
 
   #emitResponseEvent(
+    client: CDPSession,
     responseReceived: Protocol.Network.ResponseReceivedEvent,
     extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null
   ): void {
@@ -521,7 +546,7 @@ export class NetworkManager extends EventEmitter {
     }
 
     const response = new HTTPResponse(
-      this.#client,
+      client,
       request,
       responseReceived.response,
       extraInfo
@@ -530,7 +555,10 @@ export class NetworkManager extends EventEmitter {
     this.emit(NetworkManagerEmittedEvents.Response, response);
   }
 
-  #onResponseReceived(event: Protocol.Network.ResponseReceivedEvent): void {
+  #onResponseReceived(
+    client: CDPSession,
+    event: Protocol.Network.ResponseReceivedEvent
+  ): void {
     const request = this.#networkEventManager.getRequest(event.requestId);
     let extraInfo = null;
     if (request && !request._fromMemoryCache && event.hasExtraInfo) {
@@ -545,10 +573,11 @@ export class NetworkManager extends EventEmitter {
         return;
       }
     }
-    this.#emitResponseEvent(event, extraInfo);
+    this.#emitResponseEvent(client, event, extraInfo);
   }
 
   #onResponseReceivedExtraInfo(
+    client: CDPSession,
     event: Protocol.Network.ResponseReceivedExtraInfoEvent
   ): void {
     // We may have skipped a redirect response/request pair due to waiting for
@@ -559,7 +588,7 @@ export class NetworkManager extends EventEmitter {
     );
     if (redirectInfo) {
       this.#networkEventManager.responseExtraInfo(event.requestId).push(event);
-      this.#onRequest(redirectInfo.event, redirectInfo.fetchRequestId);
+      this.#onRequest(client, redirectInfo.event, redirectInfo.fetchRequestId);
       return;
     }
 
@@ -570,7 +599,11 @@ export class NetworkManager extends EventEmitter {
     );
     if (queuedEvents) {
       this.#networkEventManager.forgetQueuedEventGroup(event.requestId);
-      this.#emitResponseEvent(queuedEvents.responseReceivedEvent, event);
+      this.#emitResponseEvent(
+        client,
+        queuedEvents.responseReceivedEvent,
+        event
+      );
       if (queuedEvents.loadingFinishedEvent) {
         this.#emitLoadingFinished(queuedEvents.loadingFinishedEvent);
       }
@@ -597,7 +630,10 @@ export class NetworkManager extends EventEmitter {
     }
   }
 
-  #onLoadingFinished(event: Protocol.Network.LoadingFinishedEvent): void {
+  #onLoadingFinished(
+    _client: CDPSession,
+    event: Protocol.Network.LoadingFinishedEvent
+  ): void {
     // If the response event for this request is still waiting on a
     // corresponding ExtraInfo event, then wait to emit this event too.
     const queuedEvents = this.#networkEventManager.getQueuedEventGroup(
@@ -627,7 +663,10 @@ export class NetworkManager extends EventEmitter {
     this.emit(NetworkManagerEmittedEvents.RequestFinished, request);
   }
 
-  #onLoadingFailed(event: Protocol.Network.LoadingFailedEvent): void {
+  #onLoadingFailed(
+    _client: CDPSession,
+    event: Protocol.Network.LoadingFailedEvent
+  ): void {
     // If the response event for this request is still waiting on a
     // corresponding ExtraInfo event, then wait to emit this event too.
     const queuedEvents = this.#networkEventManager.getQueuedEventGroup(

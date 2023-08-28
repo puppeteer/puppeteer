@@ -399,7 +399,7 @@ export class CDPPage extends Page {
   async #initialize(): Promise<void> {
     try {
       await Promise.all([
-        this.#frameManager.initialize(),
+        this.#frameManager.initialize(this.#client),
         this.#client.send('Performance.enable'),
         this.#client.send('Log.enable'),
       ]);
