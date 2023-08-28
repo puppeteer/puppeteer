@@ -10,7 +10,7 @@ If the element is a form input, you can use [ElementHandle.autofill()](./puppete
 
 ```typescript
 class ElementHandle {
-  autofill(data: AutofillData): Promise<void>;
+  abstract autofill(data: AutofillData): Promise<void>;
 }
 ```
 
