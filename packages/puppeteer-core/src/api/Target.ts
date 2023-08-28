@@ -31,6 +31,10 @@ export enum TargetType {
   BROWSER = 'browser',
   WEBVIEW = 'webview',
   OTHER = 'other',
+  /**
+   * @internal
+   */
+  TAB = 'tab',
 }
 
 /**

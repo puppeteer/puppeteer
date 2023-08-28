@@ -142,6 +142,13 @@ export class Accessibility {
   }
 
   /**
+   * @internal
+   */
+  updateClient(client: CDPSession): void {
+    this.#client = client;
+  }
+
+  /**
    * Captures the current state of the accessibility tree.
    * The returned object represents the root accessible node of the page.
    *

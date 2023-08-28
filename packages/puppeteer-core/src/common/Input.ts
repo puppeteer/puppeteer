@@ -59,6 +59,13 @@ export class CDPKeyboard extends Keyboard {
     this.#client = client;
   }
 
+  /**
+   * @internal
+   */
+  updateClient(client: CDPSession): void {
+    this.#client = client;
+  }
+
   override async down(
     key: KeyInput,
     options: Readonly<KeyDownOptions> = {
@@ -288,6 +295,13 @@ export class CDPMouse extends Mouse {
     super();
     this.#client = client;
     this.#keyboard = keyboard;
+  }
+
+  /**
+   * @internal
+   */
+  updateClient(client: CDPSession): void {
+    this.#client = client;
   }
 
   #_state: Readonly<MouseState> = {
@@ -569,6 +583,13 @@ export class CDPTouchscreen extends Touchscreen {
     super();
     this.#client = client;
     this.#keyboard = keyboard;
+  }
+
+  /**
+   * @internal
+   */
+  updateClient(client: CDPSession): void {
+    this.#client = client;
   }
 
   override async tap(x: number, y: number): Promise<void> {

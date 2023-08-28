@@ -24,6 +24,7 @@ import {ConnectionTransport} from './ConnectionTransport.js';
 import {debug} from './Debug.js';
 import {TargetCloseError, ProtocolError} from './Errors.js';
 import {EventEmitter} from './EventEmitter.js';
+import {CDPTarget} from './Target.js';
 import {debugError} from './util.js';
 
 const debugProtocolSend = debug('puppeteer:protocol:SEND ►');
@@ -429,6 +430,7 @@ export interface CDPSessionOnMessageObject {
  */
 export const CDPSessionEmittedEvents = {
   Disconnected: Symbol('CDPSession.Disconnected'),
+  Swapped: Symbol('CDPSession.Swapped'),
 } as const;
 
 /**
@@ -515,6 +517,7 @@ export class CDPSessionImpl extends CDPSession {
   #callbacks = new CallbackRegistry();
   #connection?: Connection;
   #parentSessionId?: string;
+  #target?: CDPTarget;
 
   /**
    * @internal
@@ -530,6 +533,25 @@ export class CDPSessionImpl extends CDPSession {
     this.#targetType = targetType;
     this.#sessionId = sessionId;
     this.#parentSessionId = parentSessionId;
+  }
+
+  /**
+   * Sets the CDPTarget associated with the session instance.
+   *
+   * @internal
+   */
+  _setTarget(target: CDPTarget): void {
+    this.#target = target;
+  }
+
+  /**
+   * Gets the CDPTarget associated with the session instance.
+   *
+   * @internal
+   */
+  _target(): CDPTarget {
+    assert(this.#target, 'Target must exist');
+    return this.#target;
   }
 
   override connection(): Connection | undefined {

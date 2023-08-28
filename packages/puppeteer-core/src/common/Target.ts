@@ -22,7 +22,7 @@ import {Page, PageEmittedEvents} from '../api/Page.js';
 import {Target, TargetType} from '../api/Target.js';
 import {Deferred} from '../util/Deferred.js';
 
-import {CDPSession} from './Connection.js';
+import {CDPSession, CDPSessionImpl} from './Connection.js';
 import {CDPPage} from './Page.js';
 import {Viewport} from './PuppeteerViewport.js';
 import {TargetManager} from './TargetManager.js';
@@ -84,6 +84,16 @@ export class CDPTarget extends Target {
     this.#browserContext = browserContext;
     this._targetId = targetInfo.targetId;
     this.#sessionFactory = sessionFactory;
+    if (this.#session && this.#session instanceof CDPSessionImpl) {
+      this.#session._setTarget(this);
+    }
+  }
+
+  /**
+   * @internal
+   */
+  _subtype(): string | undefined {
+    return this.#targetInfo.subtype;
   }
 
   /**
@@ -109,7 +119,10 @@ export class CDPTarget extends Target {
     if (!this.#sessionFactory) {
       throw new Error('sessionFactory is not initialized');
     }
-    return this.#sessionFactory(false);
+    return this.#sessionFactory(false).then(session => {
+      (session as CDPSessionImpl)._setTarget(this);
+      return session;
+    });
   }
 
   override url(): string {
@@ -131,6 +144,8 @@ export class CDPTarget extends Target {
         return TargetType.BROWSER;
       case 'webview':
         return TargetType.WEBVIEW;
+      case 'tab':
+        return TargetType.TAB;
       default:
         return TargetType.OTHER;
     }

@@ -21,7 +21,7 @@ import {createDebuggableDeferred} from '../util/DebuggableDeferred.js';
 import {Deferred} from '../util/Deferred.js';
 
 import {CDPSession} from './Connection.js';
-import {EventEmitter} from './EventEmitter.js';
+import {EventEmitter, Handler} from './EventEmitter.js';
 import {FrameManager} from './FrameManager.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
@@ -90,6 +90,23 @@ export class NetworkManager extends EventEmitter {
   };
   #deferredInit?: Deferred<void>;
 
+  #handlers = new Map<string, Handler<any>>([
+    ['Fetch.requestPaused', this.#onRequestPaused.bind(this)],
+    ['Fetch.authRequired', this.#onAuthRequired.bind(this)],
+    ['Network.requestWillBeSent', this.#onRequestWillBeSent.bind(this)],
+    [
+      'Network.requestServedFromCache',
+      this.#onRequestServedFromCache.bind(this),
+    ],
+    ['Network.responseReceived', this.#onResponseReceived.bind(this)],
+    ['Network.loadingFinished', this.#onLoadingFinished.bind(this)],
+    ['Network.loadingFailed', this.#onLoadingFailed.bind(this)],
+    [
+      'Network.responseReceivedExtraInfo',
+      this.#onResponseReceivedExtraInfo.bind(this),
+    ],
+  ]);
+
   constructor(
     client: CDPSession,
     ignoreHTTPSErrors: boolean,
@@ -100,29 +117,18 @@ export class NetworkManager extends EventEmitter {
     this.#ignoreHTTPSErrors = ignoreHTTPSErrors;
     this.#frameManager = frameManager;
 
-    this.#client.on('Fetch.requestPaused', this.#onRequestPaused.bind(this));
-    this.#client.on('Fetch.authRequired', this.#onAuthRequired.bind(this));
-    this.#client.on(
-      'Network.requestWillBeSent',
-      this.#onRequestWillBeSent.bind(this)
-    );
-    this.#client.on(
-      'Network.requestServedFromCache',
-      this.#onRequestServedFromCache.bind(this)
-    );
-    this.#client.on(
-      'Network.responseReceived',
-      this.#onResponseReceived.bind(this)
-    );
-    this.#client.on(
-      'Network.loadingFinished',
-      this.#onLoadingFinished.bind(this)
-    );
-    this.#client.on('Network.loadingFailed', this.#onLoadingFailed.bind(this));
-    this.#client.on(
-      'Network.responseReceivedExtraInfo',
-      this.#onResponseReceivedExtraInfo.bind(this)
-    );
+    for (const [event, handler] of this.#handlers) {
+      this.#client.on(event, handler);
+    }
+  }
+
+  async updateClient(client: CDPSession): Promise<void> {
+    this.#client = client;
+    for (const [event, handler] of this.#handlers) {
+      this.#client.on(event, handler);
+    }
+    this.#deferredInit = undefined;
+    await this.initialize();
   }
 
   /**

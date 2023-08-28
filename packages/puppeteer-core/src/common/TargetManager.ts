@@ -25,7 +25,8 @@ import {CDPTarget} from './Target.js';
  */
 export type TargetFactory = (
   targetInfo: Protocol.Target.TargetInfo,
-  session?: CDPSession
+  session?: CDPSession,
+  parentSession?: CDPSession
 ) => CDPTarget;
 
 /**

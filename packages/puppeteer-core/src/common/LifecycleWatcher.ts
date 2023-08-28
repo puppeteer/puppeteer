@@ -119,6 +119,11 @@ export class LifecycleWatcher {
       ),
       addEventListener(
         frame,
+        FrameEmittedEvents.FrameSwappedByActivation,
+        this.#frameSwapped.bind(this)
+      ),
+      addEventListener(
+        frame,
         FrameEmittedEvents.FrameDetached,
         this.#onFrameDetached.bind(this)
       ),

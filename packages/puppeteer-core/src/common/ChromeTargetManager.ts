@@ -17,10 +17,11 @@
 import {Protocol} from 'devtools-protocol';
 
 import {TargetFilterCallback} from '../api/Browser.js';
+import {TargetType} from '../api/Target.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
-import {CDPSession, Connection} from './Connection.js';
+import {CDPSession, CDPSessionEmittedEvents, Connection} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
 import {InitializationStatus, CDPTarget} from './Target.js';
 import {
@@ -30,6 +31,17 @@ import {
   TargetManagerEmittedEvents,
 } from './TargetManager.js';
 import {debugError} from './util.js';
+
+function isTargetExposed(target: CDPTarget): boolean {
+  return target.type() !== TargetType.TAB && !target._subtype();
+}
+
+function isPageTargetBecomingPrimary(
+  target: CDPTarget,
+  newTargetInfo: Protocol.Target.TargetInfo
+): boolean {
+  return Boolean(target._subtype()) && !newTargetInfo.subtype;
+}
 
 /**
  * ChromeTargetManager uses the CDP's auto-attach mechanism to intercept
@@ -86,6 +98,10 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
   #targetsIdsForInit = new Set<string>();
   #waitForInitiallyDiscoveredTargets = true;
 
+  // TODO: remove the flag once the testing/rollout is done.
+  #tabMode = false;
+  #discoveryFilter = this.#tabMode ? [{}] : [{type: 'tab', exclude: true}, {}];
+
   constructor(
     connection: Connection,
     targetFactory: TargetFactory,
@@ -107,7 +123,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
     this.#connection
       .send('Target.setDiscoverTargets', {
         discover: true,
-        filter: [{type: 'tab', exclude: true}, {}],
+        filter: this.#discoveryFilter,
       })
       .then(this.#storeExistingTargetsForInit)
       .catch(debugError);
@@ -143,6 +159,15 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
       waitForDebuggerOnStart: true,
       flatten: true,
       autoAttach: true,
+      filter: this.#tabMode
+        ? [
+            {
+              type: 'page',
+              exclude: true,
+            },
+            ...this.#discoveryFilter,
+          ]
+        : this.#discoveryFilter,
     });
     this.#finishInitializationIfReady();
     await this.#initializeDeferred.valueOrThrow();
@@ -158,7 +183,13 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
   }
 
   getAvailableTargets(): Map<string, CDPTarget> {
-    return this.#attachedTargetsByTargetId;
+    const result = new Map<string, CDPTarget>();
+    for (const [id, target] of this.#attachedTargetsByTargetId.entries()) {
+      if (isTargetExposed(target)) {
+        result.set(id, target);
+      }
+    }
+    return result;
   }
 
   addTargetInterceptor(
@@ -285,6 +316,18 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
     const wasInitialized =
       target._initializedDeferred.value() === InitializationStatus.SUCCESS;
 
+    if (isPageTargetBecomingPrimary(target, event.targetInfo)) {
+      const target = this.#attachedTargetsByTargetId.get(
+        event.targetInfo.targetId
+      );
+      const session = target?._session();
+      assert(
+        session,
+        'Target that is being activated is missing a CDPSession.'
+      );
+      session.parentSession()?.emit(CDPSessionEmittedEvents.Swapped, session);
+    }
+
     target._targetInfoChanged(event.targetInfo);
 
     if (wasInitialized && previousURL !== target.url()) {
@@ -350,7 +393,11 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
 
     const target = existingTarget
       ? this.#attachedTargetsByTargetId.get(targetInfo.targetId)!
-      : this.#targetFactory(targetInfo, session);
+      : this.#targetFactory(
+          targetInfo,
+          session,
+          parentSession instanceof CDPSession ? parentSession : undefined
+        );
 
     if (this.#targetFilterCallback && !this.#targetFilterCallback(target)) {
       this.#ignoredTargets.add(targetInfo.targetId);
@@ -391,7 +438,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
     }
 
     this.#targetsIdsForInit.delete(target._targetId);
-    if (!existingTarget) {
+    if (!existingTarget && isTargetExposed(target)) {
       this.emit(TargetManagerEmittedEvents.TargetAvailable, target);
     }
     this.#finishInitializationIfReady();
@@ -403,6 +450,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
         waitForDebuggerOnStart: true,
         flatten: true,
         autoAttach: true,
+        filter: this.#discoveryFilter,
       }),
       session.send('Runtime.runIfWaitingForDebugger'),
     ]).catch(debugError);
@@ -428,6 +476,8 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
     }
 
     this.#attachedTargetsByTargetId.delete(target._targetId);
-    this.emit(TargetManagerEmittedEvents.TargetGone, target);
+    if (isTargetExposed(target)) {
+      this.emit(TargetManagerEmittedEvents.TargetGone, target);
+    }
   };
 }

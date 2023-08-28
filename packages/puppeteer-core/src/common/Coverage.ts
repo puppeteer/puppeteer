@@ -145,6 +145,14 @@ export class Coverage {
   }
 
   /**
+   * @internal
+   */
+  updateClient(client: CDPSession): void {
+    this.#jsCoverage.updateClient(client);
+    this.#cssCoverage.updateClient(client);
+  }
+
+  /**
    * @param options - Set of configurable options for coverage defaults to
    * `resetOnNavigation : true, reportAnonymousScripts : false,`
    * `includeRawScriptCoverage : false, useBlockCoverage : true`
@@ -209,6 +217,13 @@ export class JSCoverage {
   #includeRawScriptCoverage = false;
 
   constructor(client: CDPSession) {
+    this.#client = client;
+  }
+
+  /**
+   * @internal
+   */
+  updateClient(client: CDPSession): void {
     this.#client = client;
   }
 
@@ -339,6 +354,13 @@ export class CSSCoverage {
   #resetOnNavigation = false;
 
   constructor(client: CDPSession) {
+    this.#client = client;
+  }
+
+  /**
+   * @internal
+   */
+  updateClient(client: CDPSession): void {
     this.#client = client;
   }
 
