@@ -20,6 +20,13 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.1.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.1.0...puppeteer-core-v21.1.1) (2023-08-28)
+
+
+### Bug Fixes
+
+* **locators:** do not retry via catchError ([#10762](https://github.com/puppeteer/puppeteer/issues/10762)) ([8f9388f](https://github.com/puppeteer/puppeteer/commit/8f9388f2ce5220ad9b3c05fb3f3d9a86fac894dc))
+
 ## [21.1.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.0.3...puppeteer-core-v21.1.0) (2023-08-18)
 
 
