@@ -187,7 +187,7 @@ describe('input tests', function () {
       const {page} = await getTestState();
 
       await page.setContent(`<input type=file>`);
-      page.waitForFileChooser().then(chooser => {
+      void page.waitForFileChooser().then(chooser => {
         return chooser.accept([FILE_TO_UPLOAD]);
       });
       expect(
@@ -212,7 +212,7 @@ describe('input tests', function () {
       const {page} = await getTestState();
 
       await page.setContent(`<input type=file>`);
-      page.waitForFileChooser().then(chooser => {
+      void page.waitForFileChooser().then(chooser => {
         return chooser.accept([FILE_TO_UPLOAD]);
       });
       expect(
@@ -225,7 +225,7 @@ describe('input tests', function () {
           return pick.files!.length;
         })
       ).toBe(1);
-      page.waitForFileChooser().then(chooser => {
+      void page.waitForFileChooser().then(chooser => {
         return chooser.accept([]);
       });
       expect(
@@ -279,7 +279,7 @@ describe('input tests', function () {
       const {page} = await getTestState();
 
       await page.setContent(`<input type=file>`);
-      page.waitForFileChooser().then(chooser => {
+      void page.waitForFileChooser().then(chooser => {
         return chooser.accept(['file-does-not-exist.txt']);
       });
       expect(

@@ -3,7 +3,8 @@
   "compilerOptions": {
     "allowJs": true,
     "composite": true,
-    "module": "CommonJS",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "outDir": "lib",
     "rootDir": "src"
   },

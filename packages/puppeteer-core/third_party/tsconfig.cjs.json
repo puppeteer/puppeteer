@@ -1,8 +1,10 @@
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "declarationMap": false,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "outDir": "../lib/cjs/third_party",
+    "declarationMap": false,
     "sourceMap": false
   }
 }

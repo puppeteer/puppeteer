@@ -1,7 +1,6 @@
 {
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "../lib/esm/puppeteer",
-    "moduleResolution": "NodeNext"
+    "outDir": "../lib/esm/puppeteer"
   }
 }

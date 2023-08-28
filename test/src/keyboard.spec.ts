@@ -67,7 +67,7 @@ describe('Keyboard', function () {
       })
     ).toBe('Hello World!');
     for (const _ of 'World!') {
-      page.keyboard.press('ArrowLeft');
+      await page.keyboard.press('ArrowLeft');
     }
     await page.keyboard.type('inserted ');
     expect(
@@ -75,11 +75,11 @@ describe('Keyboard', function () {
         return document.querySelector('textarea')!.value;
       })
     ).toBe('Hello inserted World!');
-    page.keyboard.down('Shift');
+    await page.keyboard.down('Shift');
     for (const _ of 'inserted ') {
-      page.keyboard.press('ArrowLeft');
+      await page.keyboard.press('ArrowLeft');
     }
-    page.keyboard.up('Shift');
+    await page.keyboard.up('Shift');
     await page.keyboard.press('Backspace');
     expect(
       await page.evaluate(() => {

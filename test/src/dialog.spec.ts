@@ -64,7 +64,7 @@ describe('Page.Events.Dialog', function () {
     const {page} = await getTestState();
 
     page.on('dialog', dialog => {
-      dialog.dismiss();
+      void dialog.dismiss();
     });
     const result = await page.evaluate(() => {
       return prompt('question?');

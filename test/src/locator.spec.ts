@@ -686,7 +686,7 @@ describe('Locator', function () {
   describe('Locator.prototype.wait', () => {
     it('should work', async () => {
       const {page} = await getTestState();
-      page.setContent(`
+      void page.setContent(`
         <script>
           setTimeout(() => {
             const element = document.createElement("div");
@@ -703,7 +703,7 @@ describe('Locator', function () {
   describe('Locator.prototype.waitHandle', () => {
     it('should work', async () => {
       const {page} = await getTestState();
-      page.setContent(`
+      void page.setContent(`
         <script>
           setTimeout(() => {
             const element = document.createElement("div");
