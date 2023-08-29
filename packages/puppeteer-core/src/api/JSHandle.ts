@@ -16,7 +16,9 @@
 
 import Protocol from 'devtools-protocol';
 
+import {Symbol} from '../../third_party/disposablestack/disposablestack.js';
 import {EvaluateFuncWith, HandleFor, HandleOr} from '../common/types.js';
+import {debugError} from '../common/util.js';
 
 import {ElementHandle} from './ElementHandle.js';
 
@@ -41,7 +43,9 @@ import {ElementHandle} from './ElementHandle.js';
  *
  * @public
  */
-export abstract class JSHandle<T = unknown> {
+export abstract class JSHandle<T = unknown>
+  implements Disposable, AsyncDisposable
+{
   /**
    * Used for nominally typing {@link JSHandle}.
    */
@@ -150,4 +154,12 @@ export abstract class JSHandle<T = unknown> {
    * backing this handle.
    */
   abstract remoteObject(): Protocol.Runtime.RemoteObject;
+
+  [Symbol.dispose](): void {
+    return void this.dispose().catch(debugError);
+  }
+
+  [Symbol.asyncDispose](): Promise<void> {
+    return this.dispose();
+  }
 }
