@@ -113,7 +113,7 @@ export class FrameManager extends EventEmitter {
     super();
     this.#client = client;
     this.#page = page;
-    this.#networkManager = new NetworkManager(client, ignoreHTTPSErrors, this);
+    this.#networkManager = new NetworkManager(ignoreHTTPSErrors, this);
     this.#timeoutSettings = timeoutSettings;
     this.setupEventListeners(this.#client);
     client.once(CDPSessionEmittedEvents.Disconnected, () => {
@@ -176,10 +176,14 @@ export class FrameManager extends EventEmitter {
       this.#onClientDisconnect().catch(debugError);
     });
     await this.initialize(client);
-    await this.#networkManager.updateClient(client);
+    await this.#networkManager.addClient(client);
     if (frame) {
       frame.emit(FrameEmittedEvents.FrameSwappedByActivation);
     }
+  }
+
+  async registerSecondaryPage(client: CDPSessionImpl): Promise<void> {
+    await this.#networkManager.addClient(client);
   }
 
   private setupEventListeners(session: CDPSession) {
@@ -222,13 +226,13 @@ export class FrameManager extends EventEmitter {
     });
   }
 
-  async initialize(client: CDPSession = this.#client): Promise<void> {
+  async initialize(client: CDPSession): Promise<void> {
     try {
+      const networkInit = this.#networkManager.addClient(client);
       const result = await Promise.all([
         client.send('Page.enable'),
         client.send('Page.getFrameTree'),
       ]);
-
       const {frameTree} = result[1];
       this.#handleFrameTree(client, frameTree);
       await Promise.all([
@@ -236,10 +240,7 @@ export class FrameManager extends EventEmitter {
         client.send('Runtime.enable').then(() => {
           return this.#createIsolatedWorld(client, UTILITY_WORLD_NAME);
         }),
-        // TODO: Network manager is not aware of OOP iframes yet.
-        client === this.#client
-          ? this.#networkManager.initialize()
-          : Promise.resolve(),
+        networkInit,
       ]);
     } catch (error) {
       // The target might have been closed before the initialization finished.
@@ -295,7 +296,7 @@ export class FrameManager extends EventEmitter {
       frame.updateClient(target._session()!);
     }
     this.setupEventListeners(target._session()!);
-    void this.initialize(target._session());
+    void this.initialize(target._session()!);
   }
 
   /**

@@ -89,4 +89,44 @@ describe('Prerender', function () {
       expect(mainFrame).toBe(page.mainFrame());
     });
   });
+
+  describe('with network requests', () => {
+    it('can receive requests from the prerendered page', async () => {
+      const {page, server} = await getTestState();
+
+      const urls: string[] = [];
+      page.on('request', request => {
+        urls.push(request.url());
+      });
+
+      await page.goto(server.PREFIX + '/prerender/index.html');
+      const button = await page.waitForSelector('button');
+      await button?.click();
+      const mainFrame = page.mainFrame();
+      const link = await mainFrame.waitForSelector('a');
+      await Promise.all([mainFrame.waitForNavigation(), link?.click()]);
+      expect(mainFrame).toBe(page.mainFrame());
+      expect(
+        await mainFrame.evaluate(() => {
+          return document.body.innerText;
+        })
+      ).toBe('target');
+      expect(mainFrame).toBe(page.mainFrame());
+      expect(
+        urls.find(url => {
+          return url.endsWith('prerender/target.html');
+        })
+      ).toBeTruthy();
+      expect(
+        urls.find(url => {
+          return url.includes('prerender/index.html');
+        })
+      ).toBeTruthy();
+      expect(
+        urls.find(url => {
+          return url.includes('prerender/target.html?fromPrerendered');
+        })
+      ).toBeTruthy();
+    });
+  });
 });

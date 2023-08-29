@@ -329,6 +329,15 @@ export class CDPPage extends Page {
       await this.#frameManager.swapFrameTree(newSession);
       this.#setupEventListeners();
     });
+    this.#tabSession?.on(
+      CDPSessionEmittedEvents.Ready,
+      (session: CDPSessionImpl) => {
+        if (session._target()._subtype() !== 'prerender') {
+          return;
+        }
+        this.#frameManager.registerSecondaryPage(session).catch(debugError);
+      }
+    );
   }
 
   #setupEventListeners() {
@@ -399,7 +408,7 @@ export class CDPPage extends Page {
   async #initialize(): Promise<void> {
     try {
       await Promise.all([
-        this.#frameManager.initialize(),
+        this.#frameManager.initialize(this.#client),
         this.#client.send('Performance.enable'),
         this.#client.send('Log.enable'),
       ]);
