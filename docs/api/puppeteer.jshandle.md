@@ -13,10 +13,10 @@ Handles can be used as arguments for any evaluation function such as [Page.$eval
 #### Signature:
 
 ```typescript
-export declare abstract class JSHandle<T = unknown> implements Disposable, AsyncDisposable
+export declare abstract class JSHandle<T = unknown> implements Disposable, AsyncDisposable, Moveable
 ```
 
-**Implements:** Disposable, AsyncDisposable
+**Implements:** Disposable, AsyncDisposable, [Moveable](./puppeteer.moveable.md)
 
 ## Remarks
 
@@ -30,9 +30,10 @@ const windowHandle = await page.evaluateHandle(() => window);
 
 ## Properties
 
-| Property | Modifiers             | Type | Description                                                    |
-| -------- | --------------------- | ---- | -------------------------------------------------------------- |
-| \_       | <code>optional</code> | T    | Used for nominally typing [JSHandle](./puppeteer.jshandle.md). |
+| Property | Modifiers             | Type          | Description                                                    |
+| -------- | --------------------- | ------------- | -------------------------------------------------------------- |
+| \_       | <code>optional</code> | T             | Used for nominally typing [JSHandle](./puppeteer.jshandle.md). |
+| move     |                       | () =&gt; this |                                                                |
 
 ## Methods
 

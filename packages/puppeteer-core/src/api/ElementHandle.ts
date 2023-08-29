@@ -140,7 +140,6 @@ export interface Point {
  *
  * @public
  */
-
 export abstract class ElementHandle<
   ElementType extends Node = Element,
 > extends JSHandle<ElementType> {
@@ -1323,14 +1322,6 @@ export abstract class ElementHandle<
    * ```
    */
   abstract autofill(data: AutofillData): Promise<void>;
-
-  override [Symbol.dispose](): void {
-    return void this.dispose().catch(debugError);
-  }
-
-  override [Symbol.asyncDispose](): Promise<void> {
-    return this.dispose();
-  }
 }
 
 /**

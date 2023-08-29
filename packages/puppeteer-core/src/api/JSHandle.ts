@@ -17,8 +17,14 @@
 import Protocol from 'devtools-protocol';
 
 import {Symbol} from '../../third_party/disposablestack/disposablestack.js';
-import {EvaluateFuncWith, HandleFor, HandleOr} from '../common/types.js';
+import {
+  EvaluateFuncWith,
+  HandleFor,
+  HandleOr,
+  Moveable,
+} from '../common/types.js';
 import {debugError} from '../common/util.js';
+import {moveable} from '../util/decorators.js';
 
 import {ElementHandle} from './ElementHandle.js';
 
@@ -43,9 +49,12 @@ import {ElementHandle} from './ElementHandle.js';
  *
  * @public
  */
+@moveable
 export abstract class JSHandle<T = unknown>
-  implements Disposable, AsyncDisposable
+  implements Disposable, AsyncDisposable, Moveable
 {
+  declare move: () => this;
+
   /**
    * Used for nominally typing {@link JSHandle}.
    */

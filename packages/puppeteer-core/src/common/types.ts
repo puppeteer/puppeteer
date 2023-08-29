@@ -20,6 +20,16 @@ import type {JSHandle} from '../api/JSHandle.js';
 import type {LazyArg} from './LazyArg.js';
 
 /**
+ * @public
+ */
+export interface Moveable {
+  /**
+   * Moves the resource when 'using'.
+   */
+  move(): this;
+}
+
+/**
  * @internal
  */
 export interface BindingPayload {

@@ -904,13 +904,56 @@ describe('ElementHandle specs', function () {
     });
   });
 
-  describe('Element.toElement', () => {
+  describe('ElementHandle.toElement', () => {
     it('should work', async () => {
       const {page} = await getTestState();
       await page.setContent('<div class="foo">Foo1</div>');
       const element = await page.$('.foo');
       const div = await element?.toElement('div');
       expect(div).toBeDefined();
+    });
+  });
+
+  describe('ElementHandle[Symbol.dispose]', () => {
+    it('should work', async () => {
+      const {page} = await getTestState();
+      const handle = await page.evaluateHandle('document');
+      const spy = sinon.spy(handle, Symbol.dispose);
+      {
+        using _ = handle;
+      }
+      expect(handle).toBeInstanceOf(ElementHandle);
+      expect(spy.calledOnce).toBeTruthy();
+      expect(handle.disposed).toBeTruthy();
+    });
+  });
+
+  describe('ElementHandle[Symbol.asyncDispose]', () => {
+    it('should work', async () => {
+      const {page} = await getTestState();
+      const handle = await page.evaluateHandle('document');
+      const spy = sinon.spy(handle, Symbol.asyncDispose);
+      {
+        await using _ = handle;
+      }
+      expect(handle).toBeInstanceOf(ElementHandle);
+      expect(spy.calledOnce).toBeTruthy();
+      expect(handle.disposed).toBeTruthy();
+    });
+  });
+
+  describe('ElementHandle.move', () => {
+    it('should work', async () => {
+      const {page} = await getTestState();
+      const handle = await page.evaluateHandle('document');
+      const spy = sinon.spy(handle, Symbol.dispose);
+      {
+        using _ = handle;
+        handle.move();
+      }
+      expect(handle).toBeInstanceOf(ElementHandle);
+      expect(spy.calledOnce).toBeTruthy();
+      expect(handle.disposed).toBeFalsy();
     });
   });
 });
