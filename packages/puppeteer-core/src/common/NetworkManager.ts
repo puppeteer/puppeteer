@@ -20,7 +20,7 @@ import {Frame} from '../api/Frame.js';
 import {assert} from '../util/assert.js';
 
 import {CDPSession, CDPSessionEmittedEvents} from './Connection.js';
-import {EventEmitter} from './EventEmitter.js';
+import {EventEmitter, Handler} from './EventEmitter.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {FetchRequestId, NetworkEventManager} from './NetworkEventManager.js';
@@ -101,7 +101,10 @@ export class NetworkManager extends EventEmitter {
     ['Network.responseReceivedExtraInfo', this.#onResponseReceivedExtraInfo],
   ]);
 
-  #clients = new Set<CDPSession>();
+  #clients = new Map<
+    CDPSession,
+    Array<{event: string | symbol; handler: Handler}>
+  >();
 
   constructor(ignoreHTTPSErrors: boolean, frameManager: FrameProvider) {
     super();
@@ -113,14 +116,20 @@ export class NetworkManager extends EventEmitter {
     if (this.#clients.has(client)) {
       return;
     }
-    this.#clients.add(client);
+    const listeners: Array<{event: string | symbol; handler: Handler}> = [];
+    this.#clients.set(client, listeners);
     for (const [event, handler] of this.#handlers) {
-      client.on(event, handler.bind(this, client));
+      listeners.push({
+        event,
+        handler: handler.bind(this, client),
+      });
+      client.on(event, listeners.at(-1)!.handler);
     }
-    client.on(
-      CDPSessionEmittedEvents.Disconnected,
-      this.#removeClient.bind(this, client)
-    );
+    listeners.push({
+      event: CDPSessionEmittedEvents.Disconnected,
+      handler: this.#removeClient.bind(this, client),
+    });
+    client.on(CDPSessionEmittedEvents.Disconnected, listeners.at(-1)!.handler);
     await Promise.all([
       this.#ignoreHTTPSErrors
         ? client.send('Security.setIgnoreCertificateErrors', {
@@ -137,6 +146,10 @@ export class NetworkManager extends EventEmitter {
   }
 
   async #removeClient(client: CDPSession) {
+    const listeners = this.#clients.get(client);
+    for (const {event, handler} of listeners || []) {
+      client.off(event, handler);
+    }
     this.#clients.delete(client);
   }
 
@@ -224,7 +237,7 @@ export class NetworkManager extends EventEmitter {
 
   async #applyToAllClients(fn: (client: CDPSession) => Promise<unknown>) {
     await Promise.all(
-      Array.from(this.#clients).map(client => {
+      Array.from(this.#clients.keys()).map(client => {
         return fn(client);
       })
     );
