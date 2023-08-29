@@ -1,3 +1,6 @@
+const rulesDirPlugin = require('eslint-plugin-rulesdir');
+rulesDirPlugin.RULES_DIR = 'tools/eslint/lib';
+
 module.exports = {
   root: true,
   env: {
@@ -136,10 +139,12 @@ module.exports = {
         'plugin:@typescript-eslint/recommended',
         'plugin:@typescript-eslint/stylistic',
       ],
-      plugins: ['eslint-plugin-tsdoc', 'local'],
+      plugins: ['eslint-plugin-tsdoc', 'rulesdir'],
       rules: {
         // Keeps comments formatted.
-        'local/prettier-comments': 'error',
+        'rulesdir/prettier-comments': 'error',
+        // Enforces clean up of used resources.
+        'rulesdir/use-using': 'off',
         // Brackets keep code readable.
         curly: ['error', 'all'],
         // Brackets keep code readable and `return` intentions clear.

@@ -22,6 +22,7 @@
     "lint:prettier": "prettier --check .",
     "lint": "run-s lint:prettier lint:eslint",
     "postinstall": "npm run postinstall --workspaces --if-present",
+    "prepare": "npm run prepare --workspaces --if-present",
     "test-install": "npm run test --workspace @puppeteer-test/installation",
     "test-types": "tsd -t packages/puppeteer",
     "test:chrome:headful": "wireit",
@@ -137,7 +138,7 @@
     "eslint-config-prettier": "9.0.0",
     "eslint-formatter-codeframe": "7.32.1",
     "eslint-plugin-import": "2.28.1",
-    "eslint-plugin-local": "1.0.0",
+    "eslint-plugin-rulesdir": "0.2.2",
     "eslint-plugin-mocha": "10.1.0",
     "eslint-plugin-prettier": "5.0.0",
     "eslint-plugin-tsdoc": "0.2.17",
@@ -174,6 +175,7 @@
   "workspaces": [
     "packages/*",
     "test",
-    "test/installation"
+    "test/installation",
+    "tools/eslint"
   ]
 }
