@@ -20,8 +20,9 @@ import {ChildProcess} from 'child_process';
 
 import {Protocol} from 'devtools-protocol';
 
+import {Symbol} from '../../third_party/disposablestack/disposablestack.js';
 import {EventEmitter} from '../common/EventEmitter.js';
-import {waitWithTimeout} from '../common/util.js';
+import {debugError, waitWithTimeout} from '../common/util.js';
 import {Deferred} from '../util/Deferred.js';
 
 import type {BrowserContext} from './BrowserContext.js';
@@ -217,7 +218,10 @@ export const enum BrowserEmittedEvents {
  *
  * @public
  */
-export class Browser extends EventEmitter {
+export class Browser
+  extends EventEmitter
+  implements AsyncDisposable, Disposable
+{
   /**
    * @internal
    */
@@ -477,6 +481,14 @@ export class Browser extends EventEmitter {
    */
   isConnected(): boolean {
     throw new Error('Not implemented');
+  }
+
+  [Symbol.dispose](): void {
+    return void this.close().catch(debugError);
+  }
+
+  [Symbol.asyncDispose](): Promise<void> {
+    return this.close();
   }
 }
 /**
