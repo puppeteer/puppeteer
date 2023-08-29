@@ -3912,6 +3912,12 @@
     "expectations": ["SKIP"]
   },
   {
+    "testIdPattern": "[prerender.spec] Prerender with emulation can configure viewport for prerendered pages",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[prerender.spec] Prerender with network requests can receive requests from the prerendered page",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
