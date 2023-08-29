@@ -20,12 +20,11 @@ import {TargetFilterCallback} from '../api/Browser.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
-import {CDPSession, Connection} from './Connection.js';
+import {CDPSession, CDPSessionEmittedEvents, Connection} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
 import {CDPTarget} from './Target.js';
 import {
   TargetFactory,
-  TargetInterceptor,
   TargetManagerEmittedEvents,
   TargetManager,
 } from './TargetManager.js';
@@ -79,11 +78,6 @@ export class FirefoxTargetManager
   #targetFilterCallback: TargetFilterCallback | undefined;
   #targetFactory: TargetFactory;
 
-  #targetInterceptors = new WeakMap<
-    CDPSession | Connection,
-    TargetInterceptor[]
-  >();
-
   #attachedToTargetListenersBySession = new WeakMap<
     CDPSession | Connection,
     (event: Protocol.Target.AttachedToTargetEvent) => Promise<void>
@@ -108,28 +102,6 @@ export class FirefoxTargetManager
     this.setupAttachmentListeners(this.#connection);
   }
 
-  addTargetInterceptor(
-    client: CDPSession | Connection,
-    interceptor: TargetInterceptor
-  ): void {
-    const interceptors = this.#targetInterceptors.get(client) || [];
-    interceptors.push(interceptor);
-    this.#targetInterceptors.set(client, interceptors);
-  }
-
-  removeTargetInterceptor(
-    client: CDPSession | Connection,
-    interceptor: TargetInterceptor
-  ): void {
-    const interceptors = this.#targetInterceptors.get(client) || [];
-    this.#targetInterceptors.set(
-      client,
-      interceptors.filter(currentInterceptor => {
-        return currentInterceptor !== interceptor;
-      })
-    );
-  }
-
   setupAttachmentListeners(session: CDPSession | Connection): void {
     const listener = (event: Protocol.Target.AttachedToTargetEvent) => {
       return this.#onAttachedToTarget(session, event);
@@ -141,7 +113,6 @@ export class FirefoxTargetManager
 
   #onSessionDetached = (session: CDPSession) => {
     this.removeSessionListeners(session);
-    this.#targetInterceptors.delete(session);
     this.#availableTargetsBySessionId.delete(session.id());
   };
 
@@ -236,17 +207,7 @@ export class FirefoxTargetManager
       this.#availableTargetsByTargetId.get(targetInfo.targetId)!
     );
 
-    for (const hook of this.#targetInterceptors.get(parentSession) || []) {
-      if (!(parentSession instanceof Connection)) {
-        assert(this.#availableTargetsBySessionId.has(parentSession.id()));
-      }
-      await hook(
-        target,
-        parentSession instanceof Connection
-          ? null
-          : this.#availableTargetsBySessionId.get(parentSession.id())!
-      );
-    }
+    parentSession.emit(CDPSessionEmittedEvents.Ready, session);
   };
 
   #finishInitializationIfReady(targetId: string): void {

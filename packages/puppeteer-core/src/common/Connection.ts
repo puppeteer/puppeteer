@@ -431,6 +431,11 @@ export interface CDPSessionOnMessageObject {
 export const CDPSessionEmittedEvents = {
   Disconnected: Symbol('CDPSession.Disconnected'),
   Swapped: Symbol('CDPSession.Swapped'),
+  /**
+   * Emitted when the session is ready to be configured during the auto-attach
+   * process. Right after the event is handled, the session will be resumed.
+   */
+  Ready: Symbol('CDPSession.Ready'),
 } as const;
 
 /**
