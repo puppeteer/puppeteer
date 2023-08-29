@@ -15,6 +15,8 @@
  */
 
 import expect from 'expect';
+import {JSHandle} from 'puppeteer-core/internal/api/JSHandle.js';
+import sinon from 'sinon';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 
@@ -329,6 +331,49 @@ describe('JSHandle', function () {
       expect((await page.evaluateHandle('new Proxy({}, {})')).toString()).toBe(
         'JSHandle@proxy'
       );
+    });
+  });
+
+  describe('JSHandle[Symbol.dispose]', () => {
+    it('should work', async () => {
+      const {page} = await getTestState();
+      const handle = await page.evaluateHandle('new Set()');
+      const spy = sinon.spy(handle, Symbol.dispose);
+      {
+        using _ = handle;
+      }
+      expect(handle).toBeInstanceOf(JSHandle);
+      expect(spy.calledOnce).toBeTruthy();
+      expect(handle.disposed).toBeTruthy();
+    });
+  });
+
+  describe('JSHandle[Symbol.asyncDispose]', () => {
+    it('should work', async () => {
+      const {page} = await getTestState();
+      const handle = await page.evaluateHandle('new Set()');
+      const spy = sinon.spy(handle, Symbol.asyncDispose);
+      {
+        await using _ = handle;
+      }
+      expect(handle).toBeInstanceOf(JSHandle);
+      expect(spy.calledOnce).toBeTruthy();
+      expect(handle.disposed).toBeTruthy();
+    });
+  });
+
+  describe('JSHandle.move', () => {
+    it('should work', async () => {
+      const {page} = await getTestState();
+      const handle = await page.evaluateHandle('new Set()');
+      const spy = sinon.spy(handle, Symbol.dispose);
+      {
+        using _ = handle;
+        handle.move();
+      }
+      expect(handle).toBeInstanceOf(JSHandle);
+      expect(spy.calledOnce).toBeTruthy();
+      expect(handle.disposed).toBeFalsy();
     });
   });
 });
