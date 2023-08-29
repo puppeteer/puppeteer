@@ -38,7 +38,7 @@ export type ConsoleAPICalledCallback = (
  * @internal
  */
 export type ExceptionThrownCallback = (
-  details: Protocol.Runtime.ExceptionDetails
+  event: Protocol.Runtime.ExceptionThrownEvent
 ) => void;
 
 /**
@@ -69,7 +69,6 @@ export type ExceptionThrownCallback = (
  */
 export class WebWorker extends EventEmitter {
   #executionContext = Deferred.create<ExecutionContext>();
-
   #client: CDPSession;
   #url: string;
 
@@ -104,9 +103,7 @@ export class WebWorker extends EventEmitter {
         debugError(err);
       }
     });
-    this.#client.on('Runtime.exceptionThrown', exception => {
-      return exceptionThrown(exception.exceptionDetails);
-    });
+    this.#client.on('Runtime.exceptionThrown', exceptionThrown);
 
     // This might fail if the target is closed before we receive all execution contexts.
     this.#client.send('Runtime.enable').catch(debugError);

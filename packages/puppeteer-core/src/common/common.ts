@@ -16,6 +16,7 @@
 
 export * from './Accessibility.js';
 export * from './AriaQueryHandler.js';
+export * from './Binding.js';
 export * from './Browser.js';
 export * from './BrowserConnector.js';
 export * from './BrowserWebSocketTransport.js';
