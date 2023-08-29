@@ -10,7 +10,7 @@ The parent frame, if any. Detached and main frames return `null`.
 
 ```typescript
 class Frame {
-  parentFrame(): Frame | null;
+  abstract parentFrame(): Frame | null;
 }
 ```
 

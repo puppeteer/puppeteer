@@ -10,7 +10,7 @@ The page associated with the frame.
 
 ```typescript
 class Frame {
-  page(): Page;
+  abstract page(): Page;
 }
 ```
 

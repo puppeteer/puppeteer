@@ -10,7 +10,7 @@ An array of child frames.
 
 ```typescript
 class Frame {
-  childFrames(): Frame[];
+  abstract childFrames(): Frame[];
 }
 ```
 

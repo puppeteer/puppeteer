@@ -16,15 +16,13 @@
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import {ElementHandle} from '../../api/ElementHandle.js';
 import {Frame as BaseFrame} from '../../api/Frame.js';
 import {Deferred} from '../../util/Deferred.js';
 import {CDPSession} from '../Connection.js';
 import {UTILITY_WORLD_NAME} from '../FrameManager.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
-import {EvaluateFunc, EvaluateFuncWith, HandleFor, NodeFor} from '../types.js';
-import {waitForEvent, withSourcePuppeteerURLIfNone} from '../util.js';
+import {waitForEvent} from '../util.js';
 
 import {
   BrowsingContext,
@@ -92,10 +90,6 @@ export class Frame extends BaseFrame {
     return this.#page;
   }
 
-  override name(): string {
-    return this._name || '';
-  }
-
   override url(): string {
     return this.#context.url;
   }
@@ -106,26 +100,6 @@ export class Frame extends BaseFrame {
 
   override childFrames(): Frame[] {
     return this.#page.childFrames(this.#context.id);
-  }
-
-  override async evaluateHandle<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    return this.#context.evaluateHandle(pageFunction, ...args);
-  }
-
-  override async evaluate<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    return this.#context.evaluate(pageFunction, ...args);
   }
 
   override async goto(
@@ -157,64 +131,8 @@ export class Frame extends BaseFrame {
     });
   }
 
-  override content(): Promise<string> {
-    return this.#context.content();
-  }
-
-  override title(): Promise<string> {
-    return this.#context.title();
-  }
-
   context(): BrowsingContext {
     return this.#context;
-  }
-
-  override $<Selector extends string>(
-    selector: Selector
-  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    return this.mainRealm().$(selector);
-  }
-
-  override $$<Selector extends string>(
-    selector: Selector
-  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    return this.mainRealm().$$(selector);
-  }
-
-  override $eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
-      NodeFor<Selector>,
-      Params
-    >,
-  >(
-    selector: Selector,
-    pageFunction: string | Func,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
-    return this.mainRealm().$eval(selector, pageFunction, ...args);
-  }
-
-  override $$eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<
-      Array<NodeFor<Selector>>,
-      Params
-    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>,
-  >(
-    selector: Selector,
-    pageFunction: string | Func,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
-    return this.mainRealm().$$eval(selector, pageFunction, ...args);
-  }
-
-  override $x(expression: string): Promise<Array<ElementHandle<Node>>> {
-    return this.mainRealm().$x(expression);
   }
 
   override async waitForNavigation(
@@ -275,7 +193,7 @@ export class Frame extends BaseFrame {
     return this.#detached;
   }
 
-  dispose(): void {
+  [Symbol.dispose](): void {
     this.#detached = true;
     this.#abortDeferred.reject(new Error('Frame detached'));
     this.#context.dispose();

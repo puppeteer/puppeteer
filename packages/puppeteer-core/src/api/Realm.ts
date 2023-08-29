@@ -130,6 +130,12 @@ export abstract class Realm implements Disposable {
     return await this.evaluate(getPageContent);
   }
 
+  async title(): Promise<string> {
+    return this.evaluate(() => {
+      return document.title;
+    });
+  }
+
   waitForFunction<
     Params extends unknown[],
     Func extends EvaluateFunc<InnerLazyParams<Params>> = EvaluateFunc<

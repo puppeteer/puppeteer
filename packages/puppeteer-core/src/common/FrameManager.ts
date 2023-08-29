@@ -551,7 +551,7 @@ export class FrameManager extends EventEmitter {
     for (const child of frame.childFrames()) {
       this.#removeFramesRecursively(child);
     }
-    frame._detach();
+    frame[Symbol.dispose]();
     this._frameTree.removeFrame(frame);
     this.emit(FrameManagerEmittedEvents.FrameDetached, frame);
     frame.emit(FrameEmittedEvents.FrameDetached, frame);

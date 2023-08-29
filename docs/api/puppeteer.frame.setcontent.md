@@ -10,7 +10,7 @@ Set the content of the frame.
 
 ```typescript
 class Frame {
-  setContent(
+  abstract setContent(
     html: string,
     options?: {
       timeout?: number;

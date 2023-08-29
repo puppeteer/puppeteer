@@ -10,7 +10,7 @@ The frame's URL.
 
 ```typescript
 class Frame {
-  url(): string;
+  abstract url(): string;
 }
 ```
 

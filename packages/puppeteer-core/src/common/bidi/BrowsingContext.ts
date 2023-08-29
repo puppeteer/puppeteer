@@ -4,10 +4,10 @@ import ProtocolMapping from 'devtools-protocol/types/protocol-mapping.js';
 import {WaitForOptions} from '../../api/Page.js';
 import {assert} from '../../util/assert.js';
 import {Deferred} from '../../util/Deferred.js';
-import {CDPSession, Connection as CDPConnection} from '../Connection.js';
+import {Connection as CDPConnection, CDPSession} from '../Connection.js';
 import {ProtocolError, TargetCloseError, TimeoutError} from '../Errors.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
-import {getPageContent, setPageContent, waitWithTimeout} from '../util.js';
+import {setPageContent, waitWithTimeout} from '../util.js';
 
 import {Connection} from './Connection.js';
 import {Realm} from './Realm.js';
@@ -275,10 +275,6 @@ export class BrowsingContext extends Realm {
         timeout
       ),
     ]);
-  }
-
-  async content(): Promise<string> {
-    return await this.evaluate(getPageContent);
   }
 
   async sendCDPCommand<T extends keyof ProtocolMapping.Commands>(

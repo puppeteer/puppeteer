@@ -36,7 +36,10 @@ import {
   HandleFor,
   NodeFor,
 } from '../common/types.js';
-import {importFSPromises} from '../common/util.js';
+import {
+  importFSPromises,
+  withSourcePuppeteerURLIfNone,
+} from '../common/util.js';
 
 import {KeyboardTypeOptions} from './Input.js';
 import {FunctionLocator, Locator, NodeLocator} from './locators/locators.js';
@@ -175,7 +178,7 @@ export interface FrameAddStyleTagOptions {
  *
  * @public
  */
-export class Frame extends EventEmitter {
+export abstract class Frame extends EventEmitter {
   /**
    * @internal
    */
@@ -210,9 +213,7 @@ export class Frame extends EventEmitter {
   /**
    * The page associated with the frame.
    */
-  page(): Page {
-    throw new Error('Not implemented');
-  }
+  abstract page(): Page;
 
   /**
    * Is `true` if the frame is an out-of-process (OOP) frame. Otherwise,
@@ -259,7 +260,7 @@ export class Frame extends EventEmitter {
    * Server Error". The status code for such responses can be retrieved by
    * calling {@link HTTPResponse.status}.
    */
-  async goto(
+  abstract goto(
     url: string,
     options?: {
       referer?: string;
@@ -268,9 +269,6 @@ export class Frame extends EventEmitter {
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
     }
   ): Promise<HTTPResponse | null>;
-  async goto(): Promise<HTTPResponse | null> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * Waits for the frame to navigate. It is useful for when you run code which
@@ -295,20 +293,15 @@ export class Frame extends EventEmitter {
    * finished.
    * @returns a promise that resolves when the frame navigates to a new URL.
    */
-  async waitForNavigation(options?: {
+  abstract waitForNavigation(options?: {
     timeout?: number;
     waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
   }): Promise<HTTPResponse | null>;
-  async waitForNavigation(): Promise<HTTPResponse | null> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * @internal
    */
-  _client(): CDPSession {
-    throw new Error('Not implemented');
-  }
+  abstract _client(): CDPSession;
 
   /**
    * @internal
@@ -320,16 +313,12 @@ export class Frame extends EventEmitter {
   /**
    * @internal
    */
-  mainRealm(): Realm {
-    throw new Error('Not implemented');
-  }
+  abstract mainRealm(): Realm;
 
   /**
    * @internal
    */
-  isolatedRealm(): Realm {
-    throw new Error('Not implemented');
-  }
+  abstract isolatedRealm(): Realm;
 
   /**
    * @internal
@@ -363,12 +352,12 @@ export class Frame extends EventEmitter {
   >(
     pageFunction: Func | string,
     ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
-  async evaluateHandle<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    throw new Error('Not implemented');
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluateHandle.name,
+      pageFunction
+    );
+    return this.mainRealm().evaluateHandle(pageFunction, ...args);
   }
 
   /**
@@ -383,12 +372,12 @@ export class Frame extends EventEmitter {
   >(
     pageFunction: Func | string,
     ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async evaluate<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(): Promise<Awaited<ReturnType<Func>>> {
-    throw new Error('Not implemented');
+  ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluate.name,
+      pageFunction
+    );
+    return this.mainRealm().evaluate(pageFunction, ...args);
   }
 
   /**
@@ -430,11 +419,8 @@ export class Frame extends EventEmitter {
    */
   async $<Selector extends string>(
     selector: Selector
-  ): Promise<ElementHandle<NodeFor<Selector>> | null>;
-  async $<Selector extends string>(): Promise<ElementHandle<
-    NodeFor<Selector>
-  > | null> {
-    throw new Error('Not implemented');
+  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
+    return this.mainRealm().$(selector);
   }
 
   /**
@@ -446,11 +432,8 @@ export class Frame extends EventEmitter {
    */
   async $$<Selector extends string>(
     selector: Selector
-  ): Promise<Array<ElementHandle<NodeFor<Selector>>>>;
-  async $$<Selector extends string>(): Promise<
-    Array<ElementHandle<NodeFor<Selector>>>
-  > {
-    throw new Error('Not implemented');
+  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
+    return this.mainRealm().$$(selector);
   }
 
   /**
@@ -473,7 +456,7 @@ export class Frame extends EventEmitter {
    * @param args - Additional arguments to pass to `pageFunction`.
    * @returns A promise to the result of the function.
    */
-  async $eval<
+  $eval<
     Selector extends string,
     Params extends unknown[],
     Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
@@ -482,18 +465,11 @@ export class Frame extends EventEmitter {
     >,
   >(
     selector: Selector,
-    pageFunction: Func | string,
+    pageFunction: string | Func,
     ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async $eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
-      NodeFor<Selector>,
-      Params
-    >,
-  >(): Promise<Awaited<ReturnType<Func>>> {
-    throw new Error('Not implemented');
+  ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
+    return this.mainRealm().$eval(selector, pageFunction, ...args);
   }
 
   /**
@@ -516,7 +492,7 @@ export class Frame extends EventEmitter {
    * @param args - Additional arguments to pass to `pageFunction`.
    * @returns A promise to the result of the function.
    */
-  async $$eval<
+  $$eval<
     Selector extends string,
     Params extends unknown[],
     Func extends EvaluateFuncWith<
@@ -525,18 +501,11 @@ export class Frame extends EventEmitter {
     > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>,
   >(
     selector: Selector,
-    pageFunction: Func | string,
+    pageFunction: string | Func,
     ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async $$eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<
-      Array<NodeFor<Selector>>,
-      Params
-    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>,
-  >(): Promise<Awaited<ReturnType<Func>>> {
-    throw new Error('Not implemented');
+  ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
+    return this.mainRealm().$$eval(selector, pageFunction, ...args);
   }
 
   /**
@@ -549,9 +518,8 @@ export class Frame extends EventEmitter {
    * automatically.
    * @param expression - the XPath expression to evaluate.
    */
-  async $x(expression: string): Promise<Array<ElementHandle<Node>>>;
-  async $x(): Promise<Array<ElementHandle<Node>>> {
-    throw new Error('Not implemented');
+  $x(expression: string): Promise<Array<ElementHandle<Node>>> {
+    return this.mainRealm().$x(expression);
   }
 
   /**
@@ -684,8 +652,8 @@ export class Frame extends EventEmitter {
   /**
    * The full HTML contents of the frame, including the DOCTYPE.
    */
-  async content(): Promise<string> {
-    throw new Error('Not implemented');
+  content(): Promise<string> {
+    return this.isolatedRealm().content();
   }
 
   /**
@@ -695,16 +663,13 @@ export class Frame extends EventEmitter {
    * @param options - Options to configure how long before timing out and at
    * what point to consider the content setting successful.
    */
-  async setContent(
+  abstract setContent(
     html: string,
     options?: {
       timeout?: number;
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
     }
   ): Promise<void>;
-  async setContent(): Promise<void> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * The frame's `name` attribute as specified in the tag.
@@ -723,30 +688,22 @@ export class Frame extends EventEmitter {
   /**
    * The frame's URL.
    */
-  url(): string {
-    throw new Error('Not implemented');
-  }
+  abstract url(): string;
 
   /**
    * The parent frame, if any. Detached and main frames return `null`.
    */
-  parentFrame(): Frame | null {
-    throw new Error('Not implemented');
-  }
+  abstract parentFrame(): Frame | null;
 
   /**
    * An array of child frames.
    */
-  childFrames(): Frame[] {
-    throw new Error('Not implemented');
-  }
+  abstract childFrames(): Frame[];
 
   /**
    * Is`true` if the frame has been detached. Otherwise, `false`.
    */
-  isDetached(): boolean {
-    throw new Error('Not implemented');
-  }
+  abstract isDetached(): boolean;
 
   /**
    * Adds a `<script>` tag into the page with the desired url or content.
@@ -1026,8 +983,8 @@ export class Frame extends EventEmitter {
   /**
    * The frame's title.
    */
-  async title(): Promise<string> {
-    throw new Error('Not implemented');
+  title(): Promise<string> {
+    return this.isolatedRealm().title();
   }
 
   /**

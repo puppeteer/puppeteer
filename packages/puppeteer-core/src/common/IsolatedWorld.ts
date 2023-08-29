@@ -293,12 +293,6 @@ export class IsolatedWorld extends Realm {
     }
   };
 
-  async title(): Promise<string> {
-    return this.evaluate(() => {
-      return document.title;
-    });
-  }
-
   async adoptBackendNode(
     backendNodeId?: Protocol.DOM.BackendNodeId
   ): Promise<JSHandle<Node>> {

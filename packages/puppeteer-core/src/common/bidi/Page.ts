@@ -330,7 +330,7 @@ export class Page extends PageBase {
     for (const child of frame.childFrames()) {
       this.#removeFramesRecursively(child);
     }
-    frame.dispose();
+    frame[Symbol.dispose]();
     this.#networkManager.clearMapAfterFrameDispose(frame);
     this.#frameTree.removeFrame(frame);
     this.emit(PageEmittedEvents.FrameDetached, frame);
