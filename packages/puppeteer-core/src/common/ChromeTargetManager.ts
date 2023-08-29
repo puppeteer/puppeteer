@@ -25,7 +25,6 @@ import {CDPSession, CDPSessionEmittedEvents, Connection} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
 import {InitializationStatus, CDPTarget} from './Target.js';
 import {
-  TargetInterceptor,
   TargetFactory,
   TargetManager,
   TargetManagerEmittedEvents,
@@ -79,11 +78,6 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
   #ignoredTargets = new Set<string>();
   #targetFilterCallback: TargetFilterCallback | undefined;
   #targetFactory: TargetFactory;
-
-  #targetInterceptors = new WeakMap<
-    CDPSession | Connection,
-    TargetInterceptor[]
-  >();
 
   #attachedToTargetListenersBySession = new WeakMap<
     CDPSession | Connection,
@@ -197,28 +191,6 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
     return result;
   }
 
-  addTargetInterceptor(
-    session: CDPSession | Connection,
-    interceptor: TargetInterceptor
-  ): void {
-    const interceptors = this.#targetInterceptors.get(session) || [];
-    interceptors.push(interceptor);
-    this.#targetInterceptors.set(session, interceptors);
-  }
-
-  removeTargetInterceptor(
-    client: CDPSession | Connection,
-    interceptor: TargetInterceptor
-  ): void {
-    const interceptors = this.#targetInterceptors.get(client) || [];
-    this.#targetInterceptors.set(
-      client,
-      interceptors.filter(currentInterceptor => {
-        return currentInterceptor !== interceptor;
-      })
-    );
-  }
-
   #setupAttachmentListeners(session: CDPSession | Connection): void {
     const listener = (event: Protocol.Target.AttachedToTargetEvent) => {
       return this.#onAttachedToTarget(session, event);
@@ -257,7 +229,6 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
 
   #onSessionDetached = (session: CDPSession) => {
     this.#removeAttachmentListeners(session);
-    this.#targetInterceptors.delete(session);
   };
 
   #onTargetCreated = async (event: Protocol.Target.TargetCreatedEvent) => {
@@ -392,11 +363,11 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
       return;
     }
 
-    const existingTarget = this.#attachedTargetsByTargetId.has(
+    const isExistingTarget = this.#attachedTargetsByTargetId.has(
       targetInfo.targetId
     );
 
-    const target = existingTarget
+    const target = isExistingTarget
       ? this.#attachedTargetsByTargetId.get(targetInfo.targetId)!
       : this.#targetFactory(
           targetInfo,
@@ -411,13 +382,13 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
       return;
     }
 
-    if (!existingTarget) {
+    if (!isExistingTarget) {
       target._initialize();
     }
 
     this.#setupAttachmentListeners(session);
 
-    if (existingTarget) {
+    if (isExistingTarget) {
       this.#attachedTargetsBySessionId.set(
         session.id(),
         this.#attachedTargetsByTargetId.get(targetInfo.targetId)!
@@ -427,23 +398,10 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
       this.#attachedTargetsBySessionId.set(session.id(), target);
     }
 
-    for (const interceptor of this.#targetInterceptors.get(parentSession) ||
-      []) {
-      if (!(parentSession instanceof Connection)) {
-        // Sanity check: if parent session is not a connection, it should be
-        // present in #attachedTargetsBySessionId.
-        assert(this.#attachedTargetsBySessionId.has(parentSession.id()));
-      }
-      interceptor(
-        target,
-        parentSession instanceof Connection
-          ? null
-          : this.#attachedTargetsBySessionId.get(parentSession.id())!
-      );
-    }
+    parentSession.emit(CDPSessionEmittedEvents.Ready, session);
 
     this.#targetsIdsForInit.delete(target._targetId);
-    if (!existingTarget && isTargetExposed(target)) {
+    if (!isExistingTarget && isTargetExposed(target)) {
       this.emit(TargetManagerEmittedEvents.TargetAvailable, target);
     }
     this.#finishInitializationIfReady();

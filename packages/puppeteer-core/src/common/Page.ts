@@ -332,9 +332,7 @@ export class CDPPage extends Page {
   }
 
   #setupEventListeners() {
-    this.#target
-      ._targetManager()
-      .addTargetInterceptor(this.#client, this.#onAttachedToTarget);
+    this.#client.on(CDPSessionEmittedEvents.Ready, this.#onAttachedToTarget);
 
     this.#target
       ._targetManager()
@@ -355,9 +353,10 @@ export class CDPPage extends Page {
     this.#target._isClosedDeferred
       .valueOrThrow()
       .then(() => {
-        this.#target
-          ._targetManager()
-          .removeTargetInterceptor(this.#client, this.#onAttachedToTarget);
+        this.#client.off(
+          CDPSessionEmittedEvents.Ready,
+          this.#onAttachedToTarget
+        );
 
         this.#target
           ._targetManager()
@@ -382,28 +381,19 @@ export class CDPPage extends Page {
     this.emit(PageEmittedEvents.WorkerDestroyed, worker);
   };
 
-  #onAttachedToTarget = (createdTarget: CDPTarget) => {
-    this.#frameManager.onAttachedToTarget(createdTarget);
-    if (createdTarget._getTargetInfo().type === 'worker') {
-      const session = createdTarget._session();
-      assert(session);
+  #onAttachedToTarget = (session: CDPSessionImpl) => {
+    this.#frameManager.onAttachedToTarget(session._target());
+    if (session._target()._getTargetInfo().type === 'worker') {
       const worker = new WebWorker(
         session,
-        createdTarget.url(),
+        session._target().url(),
         this.#addConsoleMessage.bind(this),
         this.#handleException.bind(this)
       );
       this.#workers.set(session.id(), worker);
       this.emit(PageEmittedEvents.WorkerCreated, worker);
     }
-    if (createdTarget._session()) {
-      this.#target
-        ._targetManager()
-        .addTargetInterceptor(
-          createdTarget._session()!,
-          this.#onAttachedToTarget
-        );
-    }
+    session.on(CDPSessionEmittedEvents.Ready, this.#onAttachedToTarget);
   };
 
   async #initialize(): Promise<void> {
