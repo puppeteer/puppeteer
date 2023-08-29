@@ -43,7 +43,7 @@ export class HTTPRequest extends BaseHTTPRequest {
   constructor(
     event: Bidi.Network.BeforeRequestSentParameters,
     frame: Frame | null,
-    redirectChain: HTTPRequest[]
+    redirectChain: HTTPRequest[] = []
   ) {
     super();
 
@@ -55,7 +55,7 @@ export class HTTPRequest extends BaseHTTPRequest {
     this.#frame = frame;
 
     this._requestId = event.request.request;
-    this._redirectChain = redirectChain ?? [];
+    this._redirectChain = redirectChain;
     this._navigationId = event.navigation;
 
     for (const header of event.request.headers) {

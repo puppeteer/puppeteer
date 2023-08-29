@@ -63,7 +63,6 @@ export class Frame extends BaseFrame {
   _frameManager: FrameManager;
   override _id: string;
   _loaderId = '';
-  override _hasStartedLoading = false;
   _lifecycleEvents = new Set<string>();
   override _parentId?: string;
 

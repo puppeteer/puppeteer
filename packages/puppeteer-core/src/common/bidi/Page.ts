@@ -250,8 +250,11 @@ export class Page extends PageBase {
 
   #onFrameDOMContentLoaded(info: Bidi.BrowsingContext.NavigationInfo): void {
     const frame = this.frame(info.context);
-    if (frame && this.mainFrame() === frame) {
-      this.emit(PageEmittedEvents.DOMContentLoaded);
+    if (frame) {
+      frame._hasStartedLoading = true;
+      if (this.mainFrame() === frame) {
+        this.emit(PageEmittedEvents.DOMContentLoaded);
+      }
     }
   }
 

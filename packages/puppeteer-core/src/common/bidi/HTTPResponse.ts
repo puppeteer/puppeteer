@@ -101,4 +101,8 @@ export class HTTPResponse extends BaseHTTPResponse {
   override frame(): Frame | null {
     return this.#request.frame();
   }
+
+  override fromServiceWorker(): boolean {
+    return false;
+  }
 }

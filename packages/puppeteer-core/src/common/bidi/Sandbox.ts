@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+
 import {ClickOptions, ElementHandle} from '../../api/ElementHandle.js';
 import {Realm as RealmBase} from '../../api/Frame.js';
 import {KeyboardTypeOptions} from '../../api/Input.js';
@@ -30,6 +32,7 @@ import {
 import {withSourcePuppeteerURLIfNone} from '../util.js';
 import {TaskManager, WaitTask} from '../WaitTask.js';
 
+import {BrowsingContext} from './BrowsingContext.js';
 import {JSHandle} from './JSHandle.js';
 import {Realm} from './Realm.js';
 /**
@@ -65,9 +68,27 @@ export class Sandbox implements RealmBase {
   #timeoutSettings: TimeoutSettings;
   #taskManager = new TaskManager();
 
-  constructor(context: Realm, timeoutSettings: TimeoutSettings) {
-    this.#realm = context;
+  constructor(
+    // TODO: We should split the Realm and BrowsingContext
+    realm: Realm | BrowsingContext,
+    timeoutSettings: TimeoutSettings
+  ) {
+    this.#realm = realm;
     this.#timeoutSettings = timeoutSettings;
+
+    // TODO: Tack correct realm similar to BrowsingContexts
+    this.#realm.connection.on(
+      Bidi.ChromiumBidi.Script.EventNames.RealmCreated,
+      () => {
+        void this.#taskManager.rerunAll();
+      }
+    );
+  }
+
+  dispose(): void {
+    this.#taskManager.terminateAll(
+      new Error('waitForFunction failed: frame got detached.')
+    );
   }
 
   get taskManager(): TaskManager {
