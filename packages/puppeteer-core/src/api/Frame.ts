@@ -34,63 +34,13 @@ import {
   EvaluateFunc,
   EvaluateFuncWith,
   HandleFor,
-  InnerLazyParams,
   NodeFor,
 } from '../common/types.js';
 import {importFSPromises} from '../common/util.js';
-import {TaskManager} from '../common/WaitTask.js';
 
 import {KeyboardTypeOptions} from './Input.js';
-import {JSHandle} from './JSHandle.js';
 import {FunctionLocator, Locator, NodeLocator} from './locators/locators.js';
-
-/**
- * @internal
- */
-export interface Realm {
-  taskManager: TaskManager;
-  waitForFunction<
-    Params extends unknown[],
-    Func extends EvaluateFunc<InnerLazyParams<Params>> = EvaluateFunc<
-      InnerLazyParams<Params>
-    >,
-  >(
-    pageFunction: Func | string,
-    options: {
-      polling?: 'raf' | 'mutation' | number;
-      timeout?: number;
-      root?: ElementHandle<Node>;
-      signal?: AbortSignal;
-    },
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
-  adoptHandle<T extends JSHandle<Node>>(handle: T): Promise<T>;
-  transferHandle<T extends JSHandle<Node>>(handle: T): Promise<T>;
-  evaluateHandle<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
-  evaluate<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  click(selector: string, options: Readonly<ClickOptions>): Promise<void>;
-  focus(selector: string): Promise<void>;
-  hover(selector: string): Promise<void>;
-  select(selector: string, ...values: string[]): Promise<string[]>;
-  tap(selector: string): Promise<void>;
-  type(
-    selector: string,
-    text: string,
-    options?: Readonly<KeyboardTypeOptions>
-  ): Promise<void>;
-}
+import {Realm} from './Realm.js';
 
 /**
  * @public
