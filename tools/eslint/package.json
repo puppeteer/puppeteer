@@ -1,0 +1,34 @@
+{
+  "name": "@puppeteer/eslint",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/puppeteer/puppeteer/tree/main/tools/eslint"
+  },
+  "scripts": {
+    "build": "wireit",
+    "prepare": "wireit"
+  },
+  "wireit": {
+    "build": {
+      "command": "tsc -b",
+      "clean": "if-file-deleted",
+      "files": [
+        "src/**"
+      ],
+      "output": [
+        "lib/**",
+        "tsconfig.tsbuildinfo"
+      ]
+    },
+    "prepare": {
+      "dependencies": [
+        "build"
+      ]
+    }
+  },
+  "author": "The Chromium Authors",
+  "license": "Apache-2.0"
+}
