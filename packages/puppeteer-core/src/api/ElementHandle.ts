@@ -250,8 +250,8 @@ export abstract class ElementHandle<
   /**
    * @internal
    */
-  override async dispose(): Promise<void> {
-    return await this.handle.dispose();
+  override dispose(): Promise<void> {
+    return this.handle.dispose();
   }
 
   override asElement(): ElementHandle<ElementType> {
@@ -1323,6 +1323,14 @@ export abstract class ElementHandle<
    * ```
    */
   abstract autofill(data: AutofillData): Promise<void>;
+
+  override [Symbol.dispose](): void {
+    return void this.dispose().catch(debugError);
+  }
+
+  override [Symbol.asyncDispose](): Promise<void> {
+    return this.dispose();
+  }
 }
 
 /**
