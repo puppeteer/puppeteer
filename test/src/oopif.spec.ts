@@ -311,7 +311,7 @@ describeWithDebugLogs('OOPIF', function () {
       return frame.url().endsWith('/oopif.html');
     });
     page.on('request', request => {
-      request.continue();
+      void request.continue();
     });
     await page.setRequestInterception(true);
     const requestPromise = page.waitForRequest(request => {

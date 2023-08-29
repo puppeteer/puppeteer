@@ -182,6 +182,10 @@ export class FrameManager extends EventEmitter {
     }
   }
 
+  async registerSecondaryPage(client: CDPSessionImpl): Promise<void> {
+    await this.#networkManager.addClient(client);
+  }
+
   private setupEventListeners(session: CDPSession) {
     session.on('Page.frameAttached', event => {
       this.#onFrameAttached(session, event.frameId, event.parentFrameId);

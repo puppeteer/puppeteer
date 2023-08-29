@@ -329,6 +329,15 @@ export class CDPPage extends Page {
       await this.#frameManager.swapFrameTree(newSession);
       this.#setupEventListeners();
     });
+    this.#tabSession?.on(
+      CDPSessionEmittedEvents.Ready,
+      (session: CDPSessionImpl) => {
+        if (session._target()._subtype() !== 'prerender') {
+          return;
+        }
+        this.#frameManager.registerSecondaryPage(session).catch(debugError);
+      }
+    );
   }
 
   #setupEventListeners() {

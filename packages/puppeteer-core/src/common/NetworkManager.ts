@@ -16,11 +16,11 @@
 
 import {Protocol} from 'devtools-protocol';
 
+import {Frame} from '../api/Frame.js';
 import {assert} from '../util/assert.js';
 
 import {CDPSession, CDPSessionEmittedEvents} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
-import {FrameManager} from './FrameManager.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {FetchRequestId, NetworkEventManager} from './NetworkEventManager.js';
@@ -66,7 +66,12 @@ export const NetworkManagerEmittedEvents = {
   RequestFinished: Symbol('NetworkManager.RequestFinished'),
 } as const;
 
-type FrameProvider = Pick<FrameManager, 'frame'>;
+/**
+ * @internal
+ */
+interface FrameProvider {
+  frame(id: string): Frame | null;
+}
 
 /**
  * @internal
@@ -75,18 +80,13 @@ export class NetworkManager extends EventEmitter {
   #ignoreHTTPSErrors: boolean;
   #frameManager: FrameProvider;
   #networkEventManager = new NetworkEventManager();
-  #extraHTTPHeaders: Record<string, string> = {};
+  #extraHTTPHeaders?: Record<string, string>;
   #credentials?: Credentials;
   #attemptedAuthentications = new Set<string>();
   #userRequestInterceptionEnabled = false;
   #protocolRequestInterceptionEnabled = false;
-  #userCacheDisabled = false;
-  #emulatedNetworkConditions: InternalNetworkConditions = {
-    offline: false,
-    upload: -1,
-    download: -1,
-    latency: 0,
-  };
+  #userCacheDisabled?: boolean;
+  #emulatedNetworkConditions?: InternalNetworkConditions;
   #userAgent?: string;
   #userAgentMetadata?: Protocol.Emulation.UserAgentMetadata;
 
@@ -169,6 +169,9 @@ export class NetworkManager extends EventEmitter {
   }
 
   async #applyExtraHTTPHeaders(client: CDPSession) {
+    if (this.#extraHTTPHeaders === undefined) {
+      return;
+    }
     await client.send('Network.setExtraHTTPHeaders', {
       headers: this.#extraHTTPHeaders,
     });
@@ -183,6 +186,14 @@ export class NetworkManager extends EventEmitter {
   }
 
   async setOfflineMode(value: boolean): Promise<void> {
+    if (!this.#emulatedNetworkConditions) {
+      this.#emulatedNetworkConditions = {
+        offline: false,
+        upload: -1,
+        download: -1,
+        latency: 0,
+      };
+    }
     this.#emulatedNetworkConditions.offline = value;
     await this.#applyToAllClients(this.#applyNetworkConditions.bind(this));
   }
@@ -190,6 +201,14 @@ export class NetworkManager extends EventEmitter {
   async emulateNetworkConditions(
     networkConditions: NetworkConditions | null
   ): Promise<void> {
+    if (!this.#emulatedNetworkConditions) {
+      this.#emulatedNetworkConditions = {
+        offline: false,
+        upload: -1,
+        download: -1,
+        latency: 0,
+      };
+    }
     this.#emulatedNetworkConditions.upload = networkConditions
       ? networkConditions.upload
       : -1;
@@ -212,6 +231,9 @@ export class NetworkManager extends EventEmitter {
   }
 
   async #applyNetworkConditions(client: CDPSession): Promise<void> {
+    if (this.#emulatedNetworkConditions === undefined) {
+      return;
+    }
     await client.send('Network.emulateNetworkConditions', {
       offline: this.#emulatedNetworkConditions.offline,
       latency: this.#emulatedNetworkConditions.latency,
@@ -257,6 +279,9 @@ export class NetworkManager extends EventEmitter {
   }
 
   async #applyProtocolRequestInterception(client: CDPSession): Promise<void> {
+    if (this.#userCacheDisabled === undefined) {
+      this.#userCacheDisabled = false;
+    }
     if (this.#protocolRequestInterceptionEnabled) {
       await Promise.all([
         this.#applyProtocolCacheDisabled(client),
@@ -273,13 +298,12 @@ export class NetworkManager extends EventEmitter {
     }
   }
 
-  #cacheDisabled(): boolean {
-    return this.#userCacheDisabled;
-  }
-
   async #applyProtocolCacheDisabled(client: CDPSession): Promise<void> {
+    if (this.#userCacheDisabled === undefined) {
+      return;
+    }
     await client.send('Network.setCacheDisabled', {
-      cacheDisabled: this.#cacheDisabled(),
+      cacheDisabled: this.#userCacheDisabled,
     });
   }
 
