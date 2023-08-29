@@ -264,6 +264,12 @@
     "expectations": ["PASS"]
   },
   {
+    "testIdPattern": "[prerender.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
     "testIdPattern": "[queryhandler.spec] *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -3892,6 +3898,18 @@
     "platforms": ["linux"],
     "parameters": ["firefox", "headful"],
     "expectations": ["PASS", "TIMEOUT"]
+  },
+  {
+    "testIdPattern": "[prerender.spec] Prerender can navigate to a prerendered page via input",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[prerender.spec] Prerender via frame can navigate to a prerendered page via input",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[proxy.spec] request proxy in incognito browser context should proxy requests when configured at browser level",
