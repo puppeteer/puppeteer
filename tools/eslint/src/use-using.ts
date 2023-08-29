@@ -15,10 +15,6 @@
  */
 
 import {ESLintUtils, TSESTree} from '@typescript-eslint/utils';
-import type {
-  RuleListener,
-  RuleModule,
-} from '@typescript-eslint/utils/ts-eslint';
 
 const usingSymbols = ['ElementHandle', 'JSHandle'];
 
@@ -26,18 +22,17 @@ const createRule = ESLintUtils.RuleCreator(name => {
   return `https://github.com/puppeteer/puppeteer/tree/main/tools/eslint/${name}.js`;
 });
 
-const useUsingRule: RuleModule<'useUsing', [], RuleListener> = createRule<
-  [],
-  'useUsing'
->({
+const useUsingRule = createRule<[], 'useUsing' | 'useUsingFix'>({
   name: 'use-using',
   meta: {
     docs: {
       description: "Requires 'using' for element/JS handles.",
       requiresTypeChecking: true,
     },
+    hasSuggestions: true,
     messages: {
       useUsing: "Use 'using'.",
+      useUsingFix: "Replace with 'using' to ignore.",
     },
     schema: [],
     type: 'problem',
@@ -49,7 +44,7 @@ const useUsingRule: RuleModule<'useUsing', [], RuleListener> = createRule<
 
     return {
       VariableDeclaration(node): void {
-        if (['using', 'await using'].includes(node.kind)) {
+        if (['using', 'await using'].includes(node.kind) || node.declare) {
           return;
         }
         for (const declaration of node.declarations) {
@@ -77,6 +72,17 @@ const useUsingRule: RuleModule<'useUsing', [], RuleListener> = createRule<
               context.report({
                 node: declaration.id,
                 messageId: 'useUsing',
+                suggest: [
+                  {
+                    messageId: 'useUsingFix',
+                    fix(fixer) {
+                      return fixer.replaceTextRange(
+                        [node.range[0], node.range[0] + node.kind.length],
+                        'using'
+                      );
+                    },
+                  },
+                ],
               });
             }
           }
