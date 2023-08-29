@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import commonjs from '@rollup/plugin-commonjs';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
 import {globSync} from 'glob';
+import nodePolyfills from 'rollup-plugin-polyfill-node';
 
 const configs = [];
 
@@ -34,7 +36,16 @@ for (const file of globSync(`lib/esm/third_party/**/*.js`)) {
         format: 'cjs',
       },
     ],
-    plugins: [terser(), nodeResolve()],
+    plugins: [
+      terser(),
+      nodeResolve(),
+      // This is used internally within the polyfill. It gets ignored for the
+      // most part via this plugin.
+      nodePolyfills({include: ['util']}),
+      commonjs({
+        transformMixedEsModules: true,
+      }),
+    ],
   });
 }
 
