@@ -45,6 +45,7 @@ import {
   PageTarget,
   CDPTarget,
   WorkerTarget,
+  DevToolsTarget,
 } from './Target.js';
 import {TargetManager, TargetManagerEmittedEvents} from './TargetManager.js';
 import {TaskQueue} from './TaskQueue.js';
@@ -340,6 +341,18 @@ export class CDPBrowser extends BrowserBase {
       this.#targetManager,
       createSession
     );
+    if (targetInfo.url?.startsWith('devtools://')) {
+      return new DevToolsTarget(
+        targetInfo,
+        session,
+        context,
+        this.#targetManager,
+        createSession,
+        this.#ignoreHTTPSErrors,
+        this.#defaultViewport ?? null,
+        this.#screenshotTaskQueue
+      );
+    }
     if (this.#isPageTargetCallback(targetForFilter)) {
       return new PageTarget(
         targetInfo,

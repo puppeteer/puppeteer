@@ -302,6 +302,11 @@ export class PageTarget extends CDPTarget {
 /**
  * @internal
  */
+export class DevToolsTarget extends PageTarget {}
+
+/**
+ * @internal
+ */
 export class WorkerTarget extends CDPTarget {
   #workerPromise?: Promise<WebWorker>;
 
