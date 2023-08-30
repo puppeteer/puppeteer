@@ -336,6 +336,7 @@ export class CDPPage extends Page {
           return;
         }
         this.#frameManager.registerSecondaryPage(session).catch(debugError);
+        this.#emulationManager.registerSecondaryPage(session).catch(debugError);
       }
     );
   }

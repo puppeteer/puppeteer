@@ -19,7 +19,7 @@ import {GeolocationOptions, MediaFeature} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
-import {CDPSession} from './Connection.js';
+import {CDPSession, CDPSessionEmittedEvents} from './Connection.js';
 import {Viewport} from './PuppeteerViewport.js';
 
 /**
@@ -31,12 +31,24 @@ export class EmulationManager {
   #hasTouch = false;
   #javascriptEnabled = true;
 
+  #viewport?: Viewport;
+  #secondaryClients = new Set<CDPSession>();
+
   constructor(client: CDPSession) {
     this.#client = client;
   }
 
   updateClient(client: CDPSession): void {
     this.#client = client;
+    this.#secondaryClients.delete(client);
+  }
+
+  async registerSecondaryPage(client: CDPSession): Promise<void> {
+    this.#secondaryClients.add(client);
+    await this.#applyViewport(client);
+    client.once(CDPSessionEmittedEvents.Disconnected, () => {
+      return this.#secondaryClients.delete(client);
+    });
   }
 
   get javascriptEnabled(): boolean {
@@ -44,6 +56,33 @@ export class EmulationManager {
   }
 
   async emulateViewport(viewport: Viewport): Promise<boolean> {
+    this.#viewport = viewport;
+
+    await this.#applyViewport(this.#client);
+
+    const mobile = viewport.isMobile || false;
+    const hasTouch = viewport.hasTouch || false;
+    const reloadNeeded =
+      this.#emulatingMobile !== mobile || this.#hasTouch !== hasTouch;
+    this.#emulatingMobile = mobile;
+    this.#hasTouch = hasTouch;
+
+    if (!reloadNeeded) {
+      // If the page will be reloaded, no need to adjust secondary clients.
+      await Promise.all(
+        Array.from(this.#secondaryClients).map(client => {
+          return this.#applyViewport(client);
+        })
+      );
+    }
+    return reloadNeeded;
+  }
+
+  async #applyViewport(client: CDPSession): Promise<void> {
+    const viewport = this.#viewport;
+    if (!viewport) {
+      return;
+    }
     const mobile = viewport.isMobile || false;
     const width = viewport.width;
     const height = viewport.height;
@@ -55,23 +94,17 @@ export class EmulationManager {
     const hasTouch = viewport.hasTouch || false;
 
     await Promise.all([
-      this.#client.send('Emulation.setDeviceMetricsOverride', {
+      client.send('Emulation.setDeviceMetricsOverride', {
         mobile,
         width,
         height,
         deviceScaleFactor,
         screenOrientation,
       }),
-      this.#client.send('Emulation.setTouchEmulationEnabled', {
+      client.send('Emulation.setTouchEmulationEnabled', {
         enabled: hasTouch,
       }),
     ]);
-
-    const reloadNeeded =
-      this.#emulatingMobile !== mobile || this.#hasTouch !== hasTouch;
-    this.#emulatingMobile = mobile;
-    this.#hasTouch = hasTouch;
-    return reloadNeeded;
   }
 
   async emulateIdleState(overrides?: {

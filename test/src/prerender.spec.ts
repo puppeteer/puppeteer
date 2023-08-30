@@ -129,4 +129,33 @@ describe('Prerender', function () {
       ).toBeTruthy();
     });
   });
+
+  describe('with emulation', () => {
+    it('can configure viewport for prerendered pages', async () => {
+      const {page, server} = await getTestState();
+      await page.setViewport({
+        width: 300,
+        height: 400,
+      });
+      await page.goto(server.PREFIX + '/prerender/index.html');
+      const button = await page.waitForSelector('button');
+      await button?.click();
+      const link = await page.waitForSelector('a');
+      await Promise.all([page.waitForNavigation(), link?.click()]);
+      const result = await page.evaluate(() => {
+        return {
+          width: document.documentElement.clientWidth,
+          height: document.documentElement.clientHeight,
+          dpr: window.devicePixelRatio,
+        };
+      });
+      expect({
+        width: result.width,
+        height: result.height,
+      }).toStrictEqual({
+        width: 300 * result.dpr,
+        height: 400 * result.dpr,
+      });
+    });
+  });
 });
