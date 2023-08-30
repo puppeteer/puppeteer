@@ -30,6 +30,7 @@ import {CDPJSHandle} from './JSHandle.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {BindingPayload, EvaluateFunc, HandleFor} from './types.js';
 import {
+  Mutex,
   addPageBinding,
   createJSHandle,
   debugError,
@@ -222,7 +223,8 @@ export class IsolatedWorld extends Realm {
       return;
     }
 
-    await this.#mutex.acquire();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    using _ = await this.#mutex.acquire();
     try {
       await context._client.send(
         'Runtime.addBinding',
@@ -256,8 +258,6 @@ export class IsolatedWorld extends Realm {
       }
 
       debugError(error);
-    } finally {
-      this.#mutex.release();
     }
   }
 
@@ -342,30 +342,5 @@ export class IsolatedWorld extends Realm {
   [Symbol.dispose](): void {
     super[Symbol.dispose]();
     this.#client.off('Runtime.bindingCalled', this.#onBindingCalled);
-  }
-}
-
-class Mutex {
-  #locked = false;
-  #acquirers: Array<() => void> = [];
-
-  // This is FIFO.
-  acquire(): Promise<void> {
-    if (!this.#locked) {
-      this.#locked = true;
-      return Promise.resolve();
-    }
-    const deferred = Deferred.create<void>();
-    this.#acquirers.push(deferred.resolve.bind(deferred));
-    return deferred.valueOrThrow();
-  }
-
-  release(): void {
-    const resolve = this.#acquirers.shift();
-    if (!resolve) {
-      this.#locked = false;
-      return;
-    }
-    resolve();
   }
 }
