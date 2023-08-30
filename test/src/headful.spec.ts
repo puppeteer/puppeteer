@@ -340,6 +340,26 @@ const serviceWorkerExtensionPath = path.join(
       ]);
       await browser.close();
     });
+    it('should expose DevTools as a page', async () => {
+      const browser = await launchBrowser(
+        Object.assign({devtools: true}, headfulOptions)
+      );
+      const context = await browser.createIncognitoBrowserContext();
+      const [target] = await Promise.all([
+        browser.waitForTarget((target: {url: () => string | string[]}) => {
+          return target.url().includes('devtools://');
+        }),
+        context.newPage(),
+      ]);
+      const page = await target.page();
+      expect(
+        await page?.evaluate(() => {
+          // @ts-expect-error wrong context.
+          return Boolean(DevToolsAPI);
+        })
+      ).toBe(true);
+      await browser.close();
+    });
   });
 
   describe('Page.bringToFront', function () {
