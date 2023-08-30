@@ -24,7 +24,7 @@ describe('Autofill', function () {
     it('should fill out a credit card', async () => {
       const {page, server} = await getTestState();
       await page.goto(server.PREFIX + '/credit-card.html');
-      const name = await page.waitForSelector('#name');
+      using name = await page.waitForSelector('#name');
       await name!.autofill({
         creditCard: {
           number: '4444444444444444',

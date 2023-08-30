@@ -24,7 +24,7 @@ describe('Emulate idle state', () => {
   setupTestBrowserHooks();
 
   async function getIdleState(page: Page) {
-    const stateElement = (await page.$('#state')) as ElementHandle<HTMLElement>;
+    using stateElement = (await page.$('#state')) as ElementHandle<HTMLElement>;
     return await page.evaluate(element => {
       return element.innerText;
     }, stateElement);

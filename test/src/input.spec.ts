@@ -33,7 +33,7 @@ describe('input tests', function () {
 
       await page.goto(server.PREFIX + '/input/fileupload.html');
       const filePath = path.relative(process.cwd(), FILE_TO_UPLOAD);
-      const input = (await page.$('input'))!;
+      using input = (await page.$('input'))!;
       await page.evaluate((e: HTMLElement) => {
         (globalThis as any)._inputEvents = [];
         e.addEventListener('change', ev => {

@@ -25,7 +25,7 @@ describe('Input.drag', function () {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
-    const draggable = (await page.$('#drag'))!;
+    using draggable = (await page.$('#drag'))!;
 
     try {
       await draggable!.drag({x: 1, y: 1});
@@ -42,7 +42,7 @@ describe('Input.drag', function () {
     expect(page.isDragInterceptionEnabled()).toBe(false);
     await page.setDragInterception(true);
     expect(page.isDragInterceptionEnabled()).toBe(true);
-    const draggable = (await page.$('#drag'))!;
+    using draggable = (await page.$('#drag'))!;
     const data = await draggable.drag({x: 1, y: 1});
 
     expect(data.items).toHaveLength(1);
@@ -59,9 +59,9 @@ describe('Input.drag', function () {
     expect(page.isDragInterceptionEnabled()).toBe(false);
     await page.setDragInterception(true);
     expect(page.isDragInterceptionEnabled()).toBe(true);
-    const draggable = (await page.$('#drag'))!;
+    using draggable = (await page.$('#drag'))!;
     const data = await draggable.drag({x: 1, y: 1});
-    const dropzone = (await page.$('#drop'))!;
+    using dropzone = (await page.$('#drop'))!;
     await dropzone.dragEnter(data);
 
     expect(
@@ -82,9 +82,9 @@ describe('Input.drag', function () {
     expect(page.isDragInterceptionEnabled()).toBe(false);
     await page.setDragInterception(true);
     expect(page.isDragInterceptionEnabled()).toBe(true);
-    const draggable = (await page.$('#drag'))!;
+    using draggable = (await page.$('#drag'))!;
     const data = await draggable.drag({x: 1, y: 1});
-    const dropzone = (await page.$('#drop'))!;
+    using dropzone = (await page.$('#drop'))!;
     await dropzone.dragEnter(data);
     await dropzone.dragOver(data);
 
@@ -111,8 +111,8 @@ describe('Input.drag', function () {
     expect(page.isDragInterceptionEnabled()).toBe(false);
     await page.setDragInterception(true);
     expect(page.isDragInterceptionEnabled()).toBe(true);
-    const draggable = (await page.$('#drag'))!;
-    const dropzone = (await page.$('#drop'))!;
+    using draggable = (await page.$('#drag'))!;
+    using dropzone = (await page.$('#drop'))!;
     const data = await draggable.drag({x: 1, y: 1});
     await dropzone.dragEnter(data);
     await dropzone.dragOver(data);
@@ -146,8 +146,8 @@ describe('Input.drag', function () {
     expect(page.isDragInterceptionEnabled()).toBe(false);
     await page.setDragInterception(true);
     expect(page.isDragInterceptionEnabled()).toBe(true);
-    const draggable = (await page.$('#drag'))!;
-    const dropzone = (await page.$('#drop'))!;
+    using draggable = (await page.$('#drag'))!;
+    using dropzone = (await page.$('#drop'))!;
     await draggable.dragAndDrop(dropzone);
 
     expect(
@@ -178,7 +178,7 @@ describe('Input.drag', function () {
     expect(page.isDragInterceptionEnabled()).toBe(false);
     await page.setDragInterception(true);
     expect(page.isDragInterceptionEnabled()).toBe(true);
-    const draggable = (await page.$('#drag'))!;
+    using draggable = (await page.$('#drag'))!;
     await draggable.drag({x: 1, y: 1});
     await page.setDragInterception(false);
 

@@ -167,7 +167,7 @@ describe('Emulation', () => {
 
       await page.emulate(iPhone);
       await page.goto(server.PREFIX + '/input/button.html');
-      const button = (await page.$('button'))!;
+      using button = (await page.$('button'))!;
       await page.evaluate((button: HTMLElement) => {
         return (button.style.marginTop = '200px');
       }, button);

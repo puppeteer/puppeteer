@@ -200,7 +200,7 @@ describe('Accessibility', function () {
     async function getAccessibleName(page: any, element: any) {
       return (await page.accessibility.snapshot({root: element})).name;
     }
-    const button = await page.$('button');
+    using button = await page.$('button');
     expect(await getAccessibleName(page, button)).toEqual('Show');
     await button?.click();
     await page.waitForSelector('aria/Hide');
@@ -483,7 +483,7 @@ describe('Accessibility', function () {
 
         await page.setContent(`<button>My Button</button>`);
 
-        const button = (await page.$('button'))!;
+        using button = (await page.$('button'))!;
         expect(await page.accessibility.snapshot({root: button})).toEqual({
           role: 'button',
           name: 'My Button',
@@ -494,7 +494,7 @@ describe('Accessibility', function () {
 
         await page.setContent(`<input title="My Input" value="My Value">`);
 
-        const input = (await page.$('input'))!;
+        using input = (await page.$('input'))!;
         expect(await page.accessibility.snapshot({root: input})).toEqual({
           role: 'textbox',
           name: 'My Input',
@@ -512,7 +512,7 @@ describe('Accessibility', function () {
             </div>
           `);
 
-        const menu = (await page.$('div[role="menu"]'))!;
+        using menu = (await page.$('div[role="menu"]'))!;
         expect(await page.accessibility.snapshot({root: menu})).toEqual({
           role: 'menu',
           name: 'My Menu',
@@ -528,7 +528,7 @@ describe('Accessibility', function () {
         const {page} = await getTestState();
 
         await page.setContent(`<button>My Button</button>`);
-        const button = (await page.$('button'))!;
+        using button = (await page.$('button'))!;
         await page.$eval('button', button => {
           return button.remove();
         });
@@ -538,7 +538,7 @@ describe('Accessibility', function () {
         const {page} = await getTestState();
 
         await page.setContent(`<div><button>My Button</button></div>`);
-        const div = (await page.$('div'))!;
+        using div = (await page.$('div'))!;
         expect(await page.accessibility.snapshot({root: div})).toEqual(null);
         expect(
           await page.accessibility.snapshot({

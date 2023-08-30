@@ -863,10 +863,9 @@ describe('Launcher specs', function () {
             return page.url() === server.EMPTY_PAGE;
           })!;
           await pageTwo.reload();
-          const bodyHandle = await pageTwo.waitForSelector('body', {
+          using _ = await pageTwo.waitForSelector('body', {
             timeout: 10000,
           });
-          await bodyHandle!.dispose();
           await browserTwo.close();
         } finally {
           await close();

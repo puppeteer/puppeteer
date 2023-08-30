@@ -25,10 +25,10 @@ describe('Prerender', function () {
     const {page, server} = await getTestState();
     await page.goto(server.PREFIX + '/prerender/index.html');
 
-    const button = await page.waitForSelector('button');
+    using button = await page.waitForSelector('button');
     await button?.click();
 
-    const link = await page.waitForSelector('a');
+    using link = await page.waitForSelector('a');
     await Promise.all([page.waitForNavigation(), link?.click()]);
     expect(
       await page.evaluate(() => {
@@ -41,7 +41,7 @@ describe('Prerender', function () {
     const {page, server} = await getTestState();
     await page.goto(server.PREFIX + '/prerender/index.html');
 
-    const button = await page.waitForSelector('button');
+    using button = await page.waitForSelector('button');
     await button?.click();
 
     await page.goto(server.PREFIX + '/prerender/target.html');
@@ -57,11 +57,11 @@ describe('Prerender', function () {
       const {page, server} = await getTestState();
       await page.goto(server.PREFIX + '/prerender/index.html');
 
-      const button = await page.waitForSelector('button');
+      using button = await page.waitForSelector('button');
       await button?.click();
 
       const mainFrame = page.mainFrame();
-      const link = await mainFrame.waitForSelector('a');
+      using link = await mainFrame.waitForSelector('a');
       await Promise.all([mainFrame.waitForNavigation(), link?.click()]);
       expect(mainFrame).toBe(page.mainFrame());
       expect(
@@ -76,7 +76,7 @@ describe('Prerender', function () {
       const {page, server} = await getTestState();
       await page.goto(server.PREFIX + '/prerender/index.html');
 
-      const button = await page.waitForSelector('button');
+      using button = await page.waitForSelector('button');
       await button?.click();
 
       const mainFrame = page.mainFrame();
@@ -100,10 +100,10 @@ describe('Prerender', function () {
       });
 
       await page.goto(server.PREFIX + '/prerender/index.html');
-      const button = await page.waitForSelector('button');
+      using button = await page.waitForSelector('button');
       await button?.click();
       const mainFrame = page.mainFrame();
-      const link = await mainFrame.waitForSelector('a');
+      using link = await mainFrame.waitForSelector('a');
       await Promise.all([mainFrame.waitForNavigation(), link?.click()]);
       expect(mainFrame).toBe(page.mainFrame());
       expect(
@@ -138,9 +138,9 @@ describe('Prerender', function () {
         height: 400,
       });
       await page.goto(server.PREFIX + '/prerender/index.html');
-      const button = await page.waitForSelector('button');
+      using button = await page.waitForSelector('button');
       await button?.click();
-      const link = await page.waitForSelector('a');
+      using link = await page.waitForSelector('a');
       await Promise.all([page.waitForNavigation(), link?.click()]);
       const result = await page.evaluate(() => {
         return {

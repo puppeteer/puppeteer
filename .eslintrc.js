@@ -144,7 +144,7 @@ module.exports = {
         // Keeps comments formatted.
         'rulesdir/prettier-comments': 'error',
         // Enforces clean up of used resources.
-        'rulesdir/use-using': 'off',
+        'rulesdir/use-using': 'error',
         // Brackets keep code readable.
         curly: ['error', 'all'],
         // Brackets keep code readable and `return` intentions clear.

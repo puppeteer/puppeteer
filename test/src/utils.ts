@@ -73,7 +73,7 @@ export const attachFrame = async (
   frameId: string,
   url: string
 ): Promise<Frame | undefined> => {
-  const handle = await pageOrFrame.evaluateHandle(attachFrame, frameId, url);
+  using handle = await pageOrFrame.evaluateHandle(attachFrame, frameId, url);
   return (await handle.asElement()?.contentFrame()) ?? undefined;
 
   async function attachFrame(frameId: string, url: string) {

@@ -692,12 +692,8 @@ export abstract class Locator<T> extends EventEmitter {
    * @public
    */
   async wait(options?: Readonly<ActionOptions>): Promise<T> {
-    const handle = await this.waitHandle(options);
-    try {
-      return await handle.jsonValue();
-    } finally {
-      void handle.dispose().catch(debugError);
-    }
+    using handle = await this.waitHandle(options);
+    return await handle.jsonValue();
   }
 
   /**

@@ -28,11 +28,7 @@ import {
   NodeFor,
 } from '../common/types.js';
 import {KeyInput} from '../common/USKeyboardLayout.js';
-import {
-  debugError,
-  isString,
-  withSourcePuppeteerURLIfNone,
-} from '../common/util.js';
+import {isString, withSourcePuppeteerURLIfNone} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 
@@ -336,15 +332,13 @@ export abstract class ElementHandle<
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
-    const elementHandle = await this.$(selector);
+    using elementHandle = await this.$(selector);
     if (!elementHandle) {
       throw new Error(
         `Error: failed to find element matching selector "${selector}"`
       );
     }
-    const result = await elementHandle.evaluate(pageFunction, ...args);
-    await elementHandle.dispose();
-    return result;
+    return await elementHandle.evaluate(pageFunction, ...args);
   }
 
   /**
@@ -394,7 +388,7 @@ export abstract class ElementHandle<
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
     const results = await this.$$(selector);
-    const elements = await this.evaluateHandle(
+    using elements = await this.evaluateHandle(
       (_, ...elements) => {
         return elements;
       },
@@ -406,7 +400,6 @@ export abstract class ElementHandle<
         return results.dispose();
       }),
     ]);
-    await elements.dispose();
     return result;
   }
 
@@ -480,21 +473,17 @@ export abstract class ElementHandle<
   }
 
   async #checkVisibility(visibility: boolean): Promise<boolean> {
-    const element = await this.frame.isolatedRealm().adoptHandle(this);
-    try {
-      return await this.frame.isolatedRealm().evaluate(
-        async (PuppeteerUtil, element, visibility) => {
-          return Boolean(PuppeteerUtil.checkVisibility(element, visibility));
-        },
-        LazyArg.create(context => {
-          return context.puppeteerUtil;
-        }),
-        element,
-        visibility
-      );
-    } finally {
-      await element.dispose();
-    }
+    using element = await this.frame.isolatedRealm().adoptHandle(this);
+    return await this.frame.isolatedRealm().evaluate(
+      async (PuppeteerUtil, element, visibility) => {
+        return Boolean(PuppeteerUtil.checkVisibility(element, visibility));
+      },
+      LazyArg.create(context => {
+        return context.puppeteerUtil;
+      }),
+      element,
+      visibility
+    );
   }
 
   /**
@@ -630,7 +619,8 @@ export abstract class ElementHandle<
    * Returns the middle point within an element unless a specific offset is provided.
    */
   async clickablePoint(offset?: Offset): Promise<Point> {
-    const box = await this.#clickableBox();
+    using adoptedThis = await this.frame.isolatedRealm().adoptHandle(this);
+    const box = await adoptedThis.#clickableBox();
     if (!box) {
       throw new Error('Node is either not clickable or not an Element');
     }
@@ -903,8 +893,7 @@ export abstract class ElementHandle<
   }
 
   async #clickableBox(): Promise<BoundingBox | null> {
-    const adoptedThis = await this.frame.isolatedRealm().adoptHandle(this);
-    const boxes = await adoptedThis.evaluate(element => {
+    const boxes = await this.evaluate(element => {
       if (!(element instanceof Element)) {
         return null;
       }
@@ -912,46 +901,44 @@ export abstract class ElementHandle<
         return {x: rect.x, y: rect.y, width: rect.width, height: rect.height};
       });
     });
-    void adoptedThis.dispose().catch(debugError);
     if (!boxes?.length) {
       return null;
     }
     await this.#intersectBoundingBoxesWithFrame(boxes);
-    let frame: Frame | null | undefined = this.frame;
-    let element: HandleFor<HTMLIFrameElement> | null | undefined;
-    while ((element = await frame?.frameElement())) {
-      try {
-        element = await element.frame.isolatedRealm().transferHandle(element);
-        const parentBox = await element.evaluate(element => {
-          // Element is not visible.
-          if (element.getClientRects().length === 0) {
-            return null;
-          }
-          const rect = element.getBoundingClientRect();
-          const style = window.getComputedStyle(element);
-          return {
-            left:
-              rect.left +
-              parseInt(style.paddingLeft, 10) +
-              parseInt(style.borderLeftWidth, 10),
-            top:
-              rect.top +
-              parseInt(style.paddingTop, 10) +
-              parseInt(style.borderTopWidth, 10),
-          };
-        });
-        if (!parentBox) {
+    let frame = this.frame;
+    let parentFrame: Frame | null | undefined;
+    while ((parentFrame = frame?.parentFrame())) {
+      using handle = await frame.frameElement();
+      if (!handle) {
+        throw new Error('Unsupported frame type');
+      }
+      const parentBox = await handle.evaluate(element => {
+        // Element is not visible.
+        if (element.getClientRects().length === 0) {
           return null;
         }
-        for (const box of boxes) {
-          box.x += parentBox.left;
-          box.y += parentBox.top;
-        }
-        await element.#intersectBoundingBoxesWithFrame(boxes);
-        frame = frame?.parentFrame();
-      } finally {
-        void element.dispose().catch(debugError);
+        const rect = element.getBoundingClientRect();
+        const style = window.getComputedStyle(element);
+        return {
+          left:
+            rect.left +
+            parseInt(style.paddingLeft, 10) +
+            parseInt(style.borderLeftWidth, 10),
+          top:
+            rect.top +
+            parseInt(style.paddingTop, 10) +
+            parseInt(style.borderTopWidth, 10),
+        };
+      });
+      if (!parentBox) {
+        return null;
       }
+      for (const box of boxes) {
+        box.x += parentBox.left;
+        box.y += parentBox.top;
+      }
+      await handle.#intersectBoundingBoxesWithFrame(boxes);
+      frame = parentFrame;
     }
     const box = boxes.find(box => {
       return box.width >= 1 && box.height >= 1;
@@ -986,7 +973,7 @@ export abstract class ElementHandle<
    * or `null` if the element is not visible.
    */
   async boundingBox(): Promise<BoundingBox | null> {
-    const adoptedThis = await this.frame.isolatedRealm().adoptHandle(this);
+    using adoptedThis = await this.frame.isolatedRealm().adoptHandle(this);
     const box = await adoptedThis.evaluate(element => {
       if (!(element instanceof Element)) {
         return null;
@@ -998,11 +985,10 @@ export abstract class ElementHandle<
       const rect = element.getBoundingClientRect();
       return {x: rect.x, y: rect.y, width: rect.width, height: rect.height};
     });
-    void adoptedThis.dispose().catch(debugError);
     if (!box) {
       return null;
     }
-    const offset = await this.#getTopLeftCornerOfFrame();
+    const offset = await adoptedThis.#getTopLeftCornerOfFrame();
     if (!offset) {
       return null;
     }
@@ -1023,80 +1009,81 @@ export abstract class ElementHandle<
    * Each Point is an object `{x, y}`. Box points are sorted clock-wise.
    */
   async boxModel(): Promise<BoxModel | null> {
-    const adoptedThis = await this.frame.isolatedRealm().adoptHandle(this);
-    const model = await adoptedThis.evaluate(element => {
-      if (!(element instanceof Element)) {
-        return null;
-      }
-      // Element is not visible.
-      if (element.getClientRects().length === 0) {
-        return null;
-      }
-      const rect = element.getBoundingClientRect();
-      const style = window.getComputedStyle(element);
-      const offsets = {
-        padding: {
-          left: parseInt(style.paddingLeft, 10),
-          top: parseInt(style.paddingTop, 10),
-          right: parseInt(style.paddingRight, 10),
-          bottom: parseInt(style.paddingBottom, 10),
-        },
-        margin: {
-          left: -parseInt(style.marginLeft, 10),
-          top: -parseInt(style.marginTop, 10),
-          right: -parseInt(style.marginRight, 10),
-          bottom: -parseInt(style.marginBottom, 10),
-        },
-        border: {
-          left: parseInt(style.borderLeft, 10),
-          top: parseInt(style.borderTop, 10),
-          right: parseInt(style.borderRight, 10),
-          bottom: parseInt(style.borderBottom, 10),
-        },
-      };
-      const border: Quad = [
-        {x: rect.left, y: rect.top},
-        {x: rect.left + rect.width, y: rect.top},
-        {x: rect.left + rect.width, y: rect.top + rect.bottom},
-        {x: rect.left, y: rect.top + rect.bottom},
-      ];
-      const padding = transformQuadWithOffsets(border, offsets.border);
-      const content = transformQuadWithOffsets(padding, offsets.padding);
-      const margin = transformQuadWithOffsets(border, offsets.margin);
-      return {
-        content,
-        padding,
-        border,
-        margin,
-        width: rect.width,
-        height: rect.height,
-      };
-
-      function transformQuadWithOffsets(
-        quad: Quad,
-        offsets: {top: number; left: number; right: number; bottom: number}
-      ): Quad {
-        return [
-          {
-            x: quad[0].x + offsets.left,
-            y: quad[0].y + offsets.top,
+    const model = await (async () => {
+      using adoptedThis = await this.frame.isolatedRealm().adoptHandle(this);
+      return await adoptedThis.evaluate(element => {
+        if (!(element instanceof Element)) {
+          return null;
+        }
+        // Element is not visible.
+        if (element.getClientRects().length === 0) {
+          return null;
+        }
+        const rect = element.getBoundingClientRect();
+        const style = window.getComputedStyle(element);
+        const offsets = {
+          padding: {
+            left: parseInt(style.paddingLeft, 10),
+            top: parseInt(style.paddingTop, 10),
+            right: parseInt(style.paddingRight, 10),
+            bottom: parseInt(style.paddingBottom, 10),
           },
-          {
-            x: quad[1].x - offsets.right,
-            y: quad[1].y + offsets.top,
+          margin: {
+            left: -parseInt(style.marginLeft, 10),
+            top: -parseInt(style.marginTop, 10),
+            right: -parseInt(style.marginRight, 10),
+            bottom: -parseInt(style.marginBottom, 10),
           },
-          {
-            x: quad[2].x - offsets.right,
-            y: quad[2].y - offsets.bottom,
+          border: {
+            left: parseInt(style.borderLeft, 10),
+            top: parseInt(style.borderTop, 10),
+            right: parseInt(style.borderRight, 10),
+            bottom: parseInt(style.borderBottom, 10),
           },
-          {
-            x: quad[3].x + offsets.left,
-            y: quad[3].y - offsets.bottom,
-          },
+        };
+        const border: Quad = [
+          {x: rect.left, y: rect.top},
+          {x: rect.left + rect.width, y: rect.top},
+          {x: rect.left + rect.width, y: rect.top + rect.bottom},
+          {x: rect.left, y: rect.top + rect.bottom},
         ];
-      }
-    });
-    void adoptedThis.dispose().catch(debugError);
+        const padding = transformQuadWithOffsets(border, offsets.border);
+        const content = transformQuadWithOffsets(padding, offsets.padding);
+        const margin = transformQuadWithOffsets(border, offsets.margin);
+        return {
+          content,
+          padding,
+          border,
+          margin,
+          width: rect.width,
+          height: rect.height,
+        };
+
+        function transformQuadWithOffsets(
+          quad: Quad,
+          offsets: {top: number; left: number; right: number; bottom: number}
+        ): Quad {
+          return [
+            {
+              x: quad[0].x + offsets.left,
+              y: quad[0].y + offsets.top,
+            },
+            {
+              x: quad[1].x - offsets.right,
+              y: quad[1].y + offsets.top,
+            },
+            {
+              x: quad[2].x - offsets.right,
+              y: quad[2].y - offsets.bottom,
+            },
+            {
+              x: quad[3].x + offsets.left,
+              y: quad[3].y - offsets.bottom,
+            },
+          ];
+        }
+      });
+    })();
     if (!model) {
       return null;
     }
@@ -1120,38 +1107,37 @@ export abstract class ElementHandle<
 
   async #getTopLeftCornerOfFrame() {
     const point = {x: 0, y: 0};
-    let frame: Frame | null | undefined = this.frame;
-    let element: HandleFor<HTMLIFrameElement> | null | undefined;
-    while ((element = await frame?.frameElement())) {
-      try {
-        element = await element.frame.isolatedRealm().transferHandle(element);
-        const parentBox = await element.evaluate(element => {
-          // Element is not visible.
-          if (element.getClientRects().length === 0) {
-            return null;
-          }
-          const rect = element.getBoundingClientRect();
-          const style = window.getComputedStyle(element);
-          return {
-            left:
-              rect.left +
-              parseInt(style.paddingLeft, 10) +
-              parseInt(style.borderLeftWidth, 10),
-            top:
-              rect.top +
-              parseInt(style.paddingTop, 10) +
-              parseInt(style.borderTopWidth, 10),
-          };
-        });
-        if (!parentBox) {
+    let frame = this.frame;
+    let parentFrame: Frame | null | undefined;
+    while ((parentFrame = frame?.parentFrame())) {
+      using handle = await frame.frameElement();
+      if (!handle) {
+        throw new Error('Unsupported frame type');
+      }
+      const parentBox = await handle.evaluate(element => {
+        // Element is not visible.
+        if (element.getClientRects().length === 0) {
           return null;
         }
-        point.x += parentBox.left;
-        point.y += parentBox.top;
-        frame = frame?.parentFrame();
-      } finally {
-        void element.dispose().catch(debugError);
+        const rect = element.getBoundingClientRect();
+        const style = window.getComputedStyle(element);
+        return {
+          left:
+            rect.left +
+            parseInt(style.paddingLeft, 10) +
+            parseInt(style.borderLeftWidth, 10),
+          top:
+            rect.top +
+            parseInt(style.paddingTop, 10) +
+            parseInt(style.borderTopWidth, 10),
+        };
+      });
+      if (!parentBox) {
+        return null;
       }
+      point.x += parentBox.left;
+      point.y += parentBox.top;
+      frame = parentFrame;
     }
     return point;
   }
@@ -1173,17 +1159,15 @@ export abstract class ElementHandle<
    * @internal
    */
   protected async assertConnectedElement(): Promise<void> {
-    const error = await this.evaluate(
-      async (element): Promise<string | undefined> => {
-        if (!element.isConnected) {
-          return 'Node is detached from document';
-        }
-        if (element.nodeType !== Node.ELEMENT_NODE) {
-          return 'Node is not of type HTMLElement';
-        }
-        return;
+    const error = await this.evaluate(async element => {
+      if (!element.isConnected) {
+        return 'Node is detached from document';
       }
-    );
+      if (element.nodeType !== Node.ELEMENT_NODE) {
+        return 'Node is not of type HTMLElement';
+      }
+      return;
+    });
 
     if (error) {
       throw new Error(error);
@@ -1216,20 +1200,16 @@ export abstract class ElementHandle<
    */
   async isIntersectingViewport(
     this: ElementHandle<Element>,
-    options?: {
+    options: {
       threshold?: number;
-    }
+    } = {}
   ): Promise<boolean> {
     await this.assertConnectedElement();
-
-    const {threshold = 0} = options ?? {};
-    const svgHandle = await this.#asSVGElementHandle(this);
-    const intersectionTarget: ElementHandle<Element> = svgHandle
-      ? await this.#getOwnerSVGElement(svgHandle)
-      : this;
-
-    try {
-      return await intersectionTarget.evaluate(async (element, threshold) => {
+    // eslint-disable-next-line rulesdir/use-using -- Returns `this`.
+    const handle = await this.#asSVGElementHandle();
+    using target = handle && (await handle.#getOwnerSVGElement());
+    return await ((target ?? this) as ElementHandle<Element>).evaluate(
+      async (element, threshold) => {
         const visibleRatio = await new Promise<number>(resolve => {
           const observer = new IntersectionObserver(entries => {
             resolve(entries[0]!.intersectionRatio);
@@ -1238,12 +1218,9 @@ export abstract class ElementHandle<
           observer.observe(element);
         });
         return threshold === 1 ? visibleRatio === 1 : visibleRatio > threshold;
-      }, threshold);
-    } finally {
-      if (intersectionTarget !== this) {
-        await intersectionTarget.dispose();
-      }
-    }
+      },
+      options.threshold ?? 0
+    );
   }
 
   /**
@@ -1251,8 +1228,9 @@ export abstract class ElementHandle<
    * or by calling element.scrollIntoView.
    */
   async scrollIntoView(this: ElementHandle<Element>): Promise<void> {
-    await this.assertConnectedElement();
-    await this.evaluate(async (element): Promise<void> => {
+    using adoptedThis = await this.frame.isolatedRealm().adoptHandle(this);
+    await adoptedThis.assertConnectedElement();
+    await adoptedThis.evaluate(async (element): Promise<void> => {
       element.scrollIntoView({
         block: 'center',
         inline: 'center',
@@ -1266,24 +1244,24 @@ export abstract class ElementHandle<
    * etc.).
    */
   async #asSVGElementHandle(
-    handle: ElementHandle<Element>
+    this: ElementHandle<Element>
   ): Promise<ElementHandle<SVGElement> | null> {
     if (
-      await handle.evaluate(element => {
+      await this.evaluate(element => {
         return element instanceof SVGElement;
       })
     ) {
-      return handle as ElementHandle<SVGElement>;
+      return this as ElementHandle<SVGElement>;
     } else {
       return null;
     }
   }
 
   async #getOwnerSVGElement(
-    handle: ElementHandle<SVGElement>
+    this: ElementHandle<SVGElement>
   ): Promise<ElementHandle<SVGSVGElement>> {
     // SVGSVGElement.ownerSVGElement === null.
-    return await handle.evaluateHandle(element => {
+    return await this.evaluateHandle(element => {
       if (element instanceof SVGSVGElement) {
         return element;
       }

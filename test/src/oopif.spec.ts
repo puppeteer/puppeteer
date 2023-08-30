@@ -378,7 +378,7 @@ describeWithDebugLogs('OOPIF', function () {
       button.innerText = 'click';
       document.body.appendChild(button);
     });
-    const button = (await frame.waitForSelector('#test-button', {
+    using button = (await frame.waitForSelector('#test-button', {
       visible: true,
     }))!;
     const result = await button.clickablePoint();

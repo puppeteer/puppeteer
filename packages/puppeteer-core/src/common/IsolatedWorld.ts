@@ -104,7 +104,6 @@ export interface IsolatedWorldChart {
  */
 export class IsolatedWorld implements Realm {
   #frame: Frame;
-  #document?: ElementHandle<Document>;
   #context = Deferred.create<ExecutionContext>();
   #detached = false;
 
@@ -149,7 +148,6 @@ export class IsolatedWorld implements Realm {
   }
 
   clearContext(): void {
-    this.#document = undefined;
     this.#context = Deferred.create();
   }
 
@@ -216,31 +214,27 @@ export class IsolatedWorld implements Realm {
   async $<Selector extends string>(
     selector: Selector
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    const document = await this.document();
-    return document.$(selector);
+    using document = await this.document();
+    return await document.$(selector);
   }
 
   async $$<Selector extends string>(
     selector: Selector
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    const document = await this.document();
-    return document.$$(selector);
+    using document = await this.document();
+    return await document.$$(selector);
   }
 
   async document(): Promise<ElementHandle<Document>> {
-    if (this.#document) {
-      return this.#document;
-    }
-    const context = await this.executionContext();
-    this.#document = await context.evaluateHandle(() => {
+    // TODO(#10813): Implement document caching.
+    return await this.evaluateHandle(() => {
       return document;
     });
-    return this.#document;
   }
 
   async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
-    const document = await this.document();
-    return document.$x(expression);
+    using document = await this.document();
+    return await document.$x(expression);
   }
 
   async $eval<
@@ -256,8 +250,8 @@ export class IsolatedWorld implements Realm {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
-    const document = await this.document();
-    return document.$eval(selector, pageFunction, ...args);
+    using document = await this.document();
+    return await document.$eval(selector, pageFunction, ...args);
   }
 
   async $$eval<
@@ -273,8 +267,8 @@ export class IsolatedWorld implements Realm {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
-    const document = await this.document();
-    return document.$$eval(selector, pageFunction, ...args);
+    using document = await this.document();
+    return await document.$$eval(selector, pageFunction, ...args);
   }
 
   async content(): Promise<string> {
@@ -315,39 +309,34 @@ export class IsolatedWorld implements Realm {
     selector: string,
     options?: Readonly<ClickOptions>
   ): Promise<void> {
-    const handle = await this.$(selector);
+    using handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);
     await handle.click(options);
     await handle.dispose();
   }
 
   async focus(selector: string): Promise<void> {
-    const handle = await this.$(selector);
+    using handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);
     await handle.focus();
-    await handle.dispose();
   }
 
   async hover(selector: string): Promise<void> {
-    const handle = await this.$(selector);
+    using handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);
     await handle.hover();
-    await handle.dispose();
   }
 
   async select(selector: string, ...values: string[]): Promise<string[]> {
-    const handle = await this.$(selector);
+    using handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);
-    const result = await handle.select(...values);
-    await handle.dispose();
-    return result;
+    return await handle.select(...values);
   }
 
   async tap(selector: string): Promise<void> {
-    const handle = await this.$(selector);
+    using handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);
     await handle.tap();
-    await handle.dispose();
   }
 
   async type(
@@ -355,10 +344,9 @@ export class IsolatedWorld implements Realm {
     text: string,
     options?: Readonly<KeyboardTypeOptions>
   ): Promise<void> {
-    const handle = await this.$(selector);
+    using handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);
     await handle.type(text, options);
-    await handle.dispose();
   }
 
   // If multiple waitFor are set up asynchronously, we need to wait for the

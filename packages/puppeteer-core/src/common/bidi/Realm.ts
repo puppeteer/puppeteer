@@ -56,8 +56,7 @@ export class Realm extends EventEmitter {
         const promise = this.internalPuppeteerUtil;
         this.internalPuppeteerUtil = undefined;
         try {
-          const util = await promise;
-          await util?.dispose();
+          await (await promise)?.dispose();
         } catch (error) {
           debugError(error);
         }
