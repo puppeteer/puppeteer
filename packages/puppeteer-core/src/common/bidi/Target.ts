@@ -18,15 +18,15 @@ import {Target, TargetType} from '../../api/Target.js';
 import {CDPSession} from '../Connection.js';
 import type {WebWorker} from '../WebWorker.js';
 
-import {Browser} from './Browser.js';
-import {BrowserContext} from './BrowserContext.js';
+import {BidiBrowser} from './Browser.js';
+import {BidiBrowserContext} from './BrowserContext.js';
 import {BrowsingContext, CDPSessionWrapper} from './BrowsingContext.js';
-import {Page} from './Page.js';
+import {BidiPage} from './Page.js';
 
-export class BiDiTarget extends Target {
-  protected _browserContext: BrowserContext;
+export class BidiTarget extends Target {
+  protected _browserContext: BidiBrowserContext;
 
-  constructor(browserContext: BrowserContext) {
+  constructor(browserContext: BidiBrowserContext) {
     super();
     this._browserContext = browserContext;
   }
@@ -35,11 +35,11 @@ export class BiDiTarget extends Target {
     return null;
   }
 
-  override browser(): Browser {
+  override browser(): BidiBrowser {
     return this._browserContext.browser();
   }
 
-  override browserContext(): BrowserContext {
+  override browserContext(): BidiBrowserContext {
     return this._browserContext;
   }
 
@@ -47,7 +47,7 @@ export class BiDiTarget extends Target {
     throw new Error('Not implemented');
   }
 
-  _setBrowserContext(browserContext: BrowserContext): void {
+  _setBrowserContext(browserContext: BidiBrowserContext): void {
     this._browserContext = browserContext;
   }
 }
@@ -55,7 +55,7 @@ export class BiDiTarget extends Target {
 /**
  * @internal
  */
-export class BiDiBrowserTarget extends BiDiTarget {
+export class BiDiBrowserTarget extends BidiTarget {
   override url(): string {
     return '';
   }
@@ -68,11 +68,11 @@ export class BiDiBrowserTarget extends BiDiTarget {
 /**
  * @internal
  */
-export class BiDiBrowsingContextTarget extends BiDiTarget {
+export class BiDiBrowsingContextTarget extends BidiTarget {
   protected _browsingContext: BrowsingContext;
 
   constructor(
-    browserContext: BrowserContext,
+    browserContext: BidiBrowserContext,
     browsingContext: BrowsingContext
   ) {
     super(browserContext);
@@ -104,22 +104,22 @@ export class BiDiBrowsingContextTarget extends BiDiTarget {
  * @internal
  */
 export class BiDiPageTarget extends BiDiBrowsingContextTarget {
-  #page: Page;
+  #page: BidiPage;
 
   constructor(
-    browserContext: BrowserContext,
+    browserContext: BidiBrowserContext,
     browsingContext: BrowsingContext
   ) {
     super(browserContext, browsingContext);
 
-    this.#page = new Page(browsingContext, browserContext);
+    this.#page = new BidiPage(browsingContext, browserContext);
   }
 
-  override async page(): Promise<Page | null> {
+  override async page(): Promise<BidiPage | null> {
     return this.#page;
   }
 
-  override _setBrowserContext(browserContext: BrowserContext): void {
+  override _setBrowserContext(browserContext: BidiBrowserContext): void {
     super._setBrowserContext(browserContext);
     this.#page._setBrowserContext(browserContext);
   }

@@ -16,34 +16,31 @@
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import {
-  AutofillData,
-  ElementHandle as BaseElementHandle,
-} from '../../api/ElementHandle.js';
+import {AutofillData, ElementHandle} from '../../api/ElementHandle.js';
 
-import {Frame} from './Frame.js';
-import {JSHandle as BidiJSHandle, JSHandle} from './JSHandle.js';
+import {BidiFrame} from './Frame.js';
+import {BidiJSHandle} from './JSHandle.js';
 import {Realm} from './Realm.js';
 
 /**
  * @internal
  */
-export class ElementHandle<
+export class BidiElementHandle<
   ElementType extends Node = Element,
-> extends BaseElementHandle<ElementType> {
-  declare handle: JSHandle<ElementType>;
-  #frame: Frame;
+> extends ElementHandle<ElementType> {
+  declare handle: BidiJSHandle<ElementType>;
+  #frame: BidiFrame;
 
   constructor(
     realm: Realm,
     remoteValue: Bidi.Script.RemoteValue,
-    frame: Frame
+    frame: BidiFrame
   ) {
-    super(new JSHandle(realm, remoteValue));
+    super(new BidiJSHandle(realm, remoteValue));
     this.#frame = frame;
   }
 
-  override get frame(): Frame {
+  override get frame(): BidiFrame {
     return this.#frame;
   }
 
@@ -82,9 +79,9 @@ export class ElementHandle<
   }
 
   override async contentFrame(
-    this: ElementHandle<HTMLIFrameElement>
-  ): Promise<Frame>;
-  override async contentFrame(): Promise<Frame | null> {
+    this: BidiElementHandle<HTMLIFrameElement>
+  ): Promise<BidiFrame>;
+  override async contentFrame(): Promise<BidiFrame | null> {
     using adoptedThis = await this.frame.isolatedRealm().adoptHandle(this);
     using handle = (await adoptedThis.evaluateHandle(element => {
       if (element instanceof HTMLIFrameElement) {

@@ -23,7 +23,7 @@ import {
   GeolocationOptions,
   MediaFeature,
   NewDocumentScriptEvaluation,
-  Page as PageBase,
+  Page,
   PageEmittedEvents,
   ScreenshotOptions,
   WaitForOptions,
@@ -54,17 +54,17 @@ import {
   withSourcePuppeteerURLIfNone,
 } from '../util.js';
 
-import {Browser} from './Browser.js';
-import {BrowserContext} from './BrowserContext.js';
+import {BidiBrowser} from './Browser.js';
+import {BidiBrowserContext} from './BrowserContext.js';
 import {
   BrowsingContext,
   BrowsingContextEmittedEvents,
   CDPSessionWrapper,
 } from './BrowsingContext.js';
 import {Connection} from './Connection.js';
-import {Dialog} from './Dialog.js';
+import {BidiDialog} from './Dialog.js';
 import {EmulationManager} from './EmulationManager.js';
-import {Frame} from './Frame.js';
+import {BidiFrame} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {Keyboard, Mouse, Touchscreen} from './Input.js';
@@ -75,11 +75,11 @@ import {BidiSerializer} from './Serializer.js';
 /**
  * @internal
  */
-export class Page extends PageBase {
+export class BidiPage extends Page {
   #accessibility: Accessibility;
   #timeoutSettings = new TimeoutSettings();
   #connection: Connection;
-  #frameTree = new FrameTree<Frame>();
+  #frameTree = new FrameTree<BidiFrame>();
   #networkManager: NetworkManager;
   #viewport: Viewport | null = null;
   #closedDeferred = Deferred.create<TargetCloseError>();
@@ -134,7 +134,7 @@ export class Page extends PageBase {
   #touchscreen: Touchscreen;
   #keyboard: Keyboard;
   #browsingContext: BrowsingContext;
-  #browserContext: BrowserContext;
+  #browserContext: BidiBrowserContext;
 
   _client(): CDPSession {
     return this.mainFrame().context().cdpSession;
@@ -142,7 +142,7 @@ export class Page extends PageBase {
 
   constructor(
     browsingContext: BrowsingContext,
-    browserContext: BrowserContext
+    browserContext: BidiBrowserContext
   ) {
     super();
     this.#browsingContext = browsingContext;
@@ -163,7 +163,7 @@ export class Page extends PageBase {
       this.#networkManager.on(event, subscriber);
     }
 
-    const frame = new Frame(
+    const frame = new BidiFrame(
       this,
       this.#browsingContext,
       this.#timeoutSettings,
@@ -187,7 +187,7 @@ export class Page extends PageBase {
     this.#keyboard = new Keyboard(this.mainFrame().context());
   }
 
-  _setBrowserContext(browserContext: BrowserContext): void {
+  _setBrowserContext(browserContext: BidiBrowserContext): void {
     this.#browserContext = browserContext;
   }
 
@@ -215,29 +215,29 @@ export class Page extends PageBase {
     return this.#keyboard;
   }
 
-  override browser(): Browser {
+  override browser(): BidiBrowser {
     return this.browserContext().browser();
   }
 
-  override browserContext(): BrowserContext {
+  override browserContext(): BidiBrowserContext {
     return this.#browserContext;
   }
 
-  override mainFrame(): Frame {
+  override mainFrame(): BidiFrame {
     const mainFrame = this.#frameTree.getMainFrame();
     assert(mainFrame, 'Requesting main frame too early!');
     return mainFrame;
   }
 
-  override frames(): Frame[] {
+  override frames(): BidiFrame[] {
     return Array.from(this.#frameTree.frames());
   }
 
-  frame(frameId?: string): Frame | null {
+  frame(frameId?: string): BidiFrame | null {
     return this.#frameTree.getById(frameId ?? '') || null;
   }
 
-  childFrames(frameId: string): Frame[] {
+  childFrames(frameId: string): BidiFrame[] {
     return this.#frameTree.childFrames(frameId);
   }
 
@@ -263,7 +263,7 @@ export class Page extends PageBase {
       !this.frame(context.id) &&
       (this.frame(context.parent ?? '') || !this.#frameTree.getMainFrame())
     ) {
-      const frame = new Frame(
+      const frame = new BidiFrame(
         this,
         context,
         this.#timeoutSettings,
@@ -326,7 +326,7 @@ export class Page extends PageBase {
     }
   }
 
-  #removeFramesRecursively(frame: Frame): void {
+  #removeFramesRecursively(frame: BidiFrame): void {
     for (const child of frame.childFrames()) {
       this.#removeFramesRecursively(child);
     }
@@ -398,7 +398,7 @@ export class Page extends PageBase {
     }
     const type = validateDialogType(event.type);
 
-    const dialog = new Dialog(frame.context(), type, event.message);
+    const dialog = new BidiDialog(frame.context(), type, event.message);
     this.emit(PageEmittedEvents.Dialog, dialog);
   }
 

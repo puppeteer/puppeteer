@@ -17,7 +17,7 @@
 import {Protocol} from 'devtools-protocol';
 
 import {ElementHandle} from '../api/ElementHandle.js';
-import {Frame as BaseFrame} from '../api/Frame.js';
+import {Frame} from '../api/Frame.js';
 import {HTTPResponse} from '../api/HTTPResponse.js';
 import {Page, WaitTimeoutOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
@@ -54,7 +54,7 @@ export const FrameEmittedEvents = {
 /**
  * @internal
  */
-export class Frame extends BaseFrame {
+export class CDPFrame extends Frame {
   #url = '';
   #detached = false;
   #client!: CDPSession;
@@ -280,11 +280,11 @@ export class Frame extends BaseFrame {
     return this.#url;
   }
 
-  override parentFrame(): Frame | null {
+  override parentFrame(): CDPFrame | null {
     return this._frameManager._frameTree.parentFrame(this._id) || null;
   }
 
-  override childFrames(): Frame[] {
+  override childFrames(): CDPFrame[] {
     return this._frameManager._frameTree.childFrames(this._id);
   }
 

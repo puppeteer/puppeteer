@@ -16,14 +16,14 @@
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import {BrowserContext as BrowserContextBase} from '../../api/BrowserContext.js';
-import {Page as PageBase} from '../../api/Page.js';
+import {BrowserContext} from '../../api/BrowserContext.js';
+import {Page} from '../../api/Page.js';
 import {Target} from '../../api/Target.js';
 import {Viewport} from '../PuppeteerViewport.js';
 
-import {Browser} from './Browser.js';
+import {BidiBrowser} from './Browser.js';
 import {Connection} from './Connection.js';
-import {Page} from './Page.js';
+import {BidiPage} from './Page.js';
 
 interface BrowserContextOptions {
   defaultViewport: Viewport | null;
@@ -33,13 +33,13 @@ interface BrowserContextOptions {
 /**
  * @internal
  */
-export class BrowserContext extends BrowserContextBase {
-  #browser: Browser;
+export class BidiBrowserContext extends BrowserContext {
+  #browser: BidiBrowser;
   #connection: Connection;
   #defaultViewport: Viewport | null;
   #isDefault = false;
 
-  constructor(browser: Browser, options: BrowserContextOptions) {
+  constructor(browser: BidiBrowser, options: BrowserContextOptions) {
     super();
     this.#browser = browser;
     this.#connection = this.#browser.connection;
@@ -66,7 +66,7 @@ export class BrowserContext extends BrowserContextBase {
     return this.#connection;
   }
 
-  override async newPage(): Promise<PageBase> {
+  override async newPage(): Promise<Page> {
     const {result} = await this.#connection.send('browsingContext.create', {
       type: Bidi.BrowsingContext.CreateType.Tab,
     });
@@ -102,17 +102,17 @@ export class BrowserContext extends BrowserContextBase {
     await this.#browser._closeContext(this);
   }
 
-  override browser(): Browser {
+  override browser(): BidiBrowser {
     return this.#browser;
   }
 
-  override async pages(): Promise<PageBase[]> {
+  override async pages(): Promise<BidiPage[]> {
     const results = await Promise.all(
       [...this.targets()].map(t => {
         return t.page();
       })
     );
-    return results.filter((p): p is Page => {
+    return results.filter((p): p is BidiPage => {
       return p !== null;
     });
   }

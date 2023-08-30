@@ -20,17 +20,17 @@ import {EventEmitter, Handler} from '../EventEmitter.js';
 import {NetworkManagerEmittedEvents} from '../NetworkManager.js';
 
 import {Connection} from './Connection.js';
-import {Frame} from './Frame.js';
+import {BidiFrame} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
-import {Page} from './Page.js';
+import {BidiPage} from './Page.js';
 
 /**
  * @internal
  */
 export class NetworkManager extends EventEmitter {
   #connection: Connection;
-  #page: Page;
+  #page: BidiPage;
   #subscribedEvents = new Map<string, Handler<any>>([
     ['network.beforeRequestSent', this.#onBeforeRequestSent.bind(this)],
     ['network.responseStarted', this.#onResponseStarted.bind(this)],
@@ -41,7 +41,7 @@ export class NetworkManager extends EventEmitter {
   #requestMap = new Map<string, HTTPRequest>();
   #navigationMap = new Map<string, HTTPResponse>();
 
-  constructor(connection: Connection, page: Page) {
+  constructor(connection: Connection, page: BidiPage) {
     super();
     this.#connection = connection;
     this.#page = page;
@@ -121,7 +121,7 @@ export class NetworkManager extends EventEmitter {
     return inFlightRequestCounter;
   }
 
-  clearMapAfterFrameDispose(frame: Frame): void {
+  clearMapAfterFrameDispose(frame: BidiFrame): void {
     for (const [id, request] of this.#requestMap.entries()) {
       if (request.frame() === frame) {
         this.#requestMap.delete(id);

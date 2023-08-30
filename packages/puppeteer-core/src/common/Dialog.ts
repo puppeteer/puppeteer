@@ -16,14 +16,14 @@
 
 import {Protocol} from 'devtools-protocol';
 
-import {Dialog as BaseDialog} from '../api/Dialog.js';
+import {Dialog} from '../api/Dialog.js';
 
 import {CDPSession} from './Connection.js';
 
 /**
  * @internal
  */
-export class CDPDialog extends BaseDialog {
+export class CDPDialog extends Dialog {
   #client: CDPSession;
 
   /**

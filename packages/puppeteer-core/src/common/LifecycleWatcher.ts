@@ -19,7 +19,7 @@ import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
 import {TimeoutError} from './Errors.js';
-import {Frame, FrameEmittedEvents} from './Frame.js';
+import {CDPFrame, FrameEmittedEvents} from './Frame.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {NetworkManager, NetworkManagerEmittedEvents} from './NetworkManager.js';
 import {
@@ -60,7 +60,7 @@ const puppeteerToProtocolLifecycle = new Map<
  */
 export class LifecycleWatcher {
   #expectedLifecycle: ProtocolLifeCycleEvent[];
-  #frame: Frame;
+  #frame: CDPFrame;
   #timeout: number;
   #navigationRequest: HTTPRequest | null = null;
   #eventListeners: PuppeteerEventListener[];
@@ -78,7 +78,7 @@ export class LifecycleWatcher {
 
   constructor(
     networkManager: NetworkManager,
-    frame: Frame,
+    frame: CDPFrame,
     waitUntil: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[],
     timeout: number
   ) {
@@ -181,7 +181,7 @@ export class LifecycleWatcher {
     this.#navigationResponseReceived?.resolve();
   }
 
-  #onFrameDetached(frame: Frame): void {
+  #onFrameDetached(frame: CDPFrame): void {
     if (this.#frame === frame) {
       this.#terminationDeferred.resolve(
         new Error('Navigating frame was detached')
@@ -241,7 +241,7 @@ export class LifecycleWatcher {
     }
 
     function checkLifecycle(
-      frame: Frame,
+      frame: CDPFrame,
       expectedLifecycle: ProtocolLifeCycleEvent[]
     ): boolean {
       for (const event of expectedLifecycle) {

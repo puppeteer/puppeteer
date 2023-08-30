@@ -30,7 +30,7 @@ import {
 import {DeviceRequestPromptManager} from './DeviceRequestPrompt.js';
 import {EventEmitter} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {Frame, FrameEmittedEvents} from './Frame.js';
+import {CDPFrame, FrameEmittedEvents} from './Frame.js';
 import {FrameTree} from './FrameTree.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
@@ -78,7 +78,7 @@ export class FrameManager extends EventEmitter {
   /**
    * @internal
    */
-  _frameTree = new FrameTree<Frame>();
+  _frameTree = new FrameTree<CDPFrame>();
 
   /**
    * Set of frame IDs stored to indicate if a frame has received a
@@ -272,17 +272,17 @@ export class FrameManager extends EventEmitter {
     return this.#page;
   }
 
-  mainFrame(): Frame {
+  mainFrame(): CDPFrame {
     const mainFrame = this._frameTree.getMainFrame();
     assert(mainFrame, 'Requesting main frame too early!');
     return mainFrame;
   }
 
-  frames(): Frame[] {
+  frames(): CDPFrame[] {
     return Array.from(this._frameTree.frames());
   }
 
-  frame(frameId: string): Frame | null {
+  frame(frameId: string): CDPFrame | null {
     return this._frameTree.getById(frameId) || null;
   }
 
@@ -381,7 +381,7 @@ export class FrameManager extends EventEmitter {
       return;
     }
 
-    frame = new Frame(this, frameId, parentFrameId, session);
+    frame = new CDPFrame(this, frameId, parentFrameId, session);
     this._frameTree.addFrame(frame);
     this.emit(FrameManagerEmittedEvents.FrameAttached, frame);
   }
@@ -407,7 +407,7 @@ export class FrameManager extends EventEmitter {
         frame._id = frameId;
       } else {
         // Initial main frame navigation.
-        frame = new Frame(this, frameId, undefined, this.#client);
+        frame = new CDPFrame(this, frameId, undefined, this.#client);
       }
       this._frameTree.addFrame(frame);
     }
@@ -547,7 +547,7 @@ export class FrameManager extends EventEmitter {
     }
   }
 
-  #removeFramesRecursively(frame: Frame): void {
+  #removeFramesRecursively(frame: CDPFrame): void {
     for (const child of frame.childFrames()) {
       this.#removeFramesRecursively(child);
     }

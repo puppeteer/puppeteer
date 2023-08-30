@@ -16,7 +16,7 @@
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import {Frame as BaseFrame} from '../../api/Frame.js';
+import {Frame} from '../../api/Frame.js';
 import {Deferred} from '../../util/Deferred.js';
 import {CDPSession} from '../Connection.js';
 import {UTILITY_WORLD_NAME} from '../FrameManager.js';
@@ -30,7 +30,7 @@ import {
   lifeCycleToSubscribedEvent,
 } from './BrowsingContext.js';
 import {HTTPResponse} from './HTTPResponse.js';
-import {Page} from './Page.js';
+import {BidiPage} from './Page.js';
 import {
   MAIN_SANDBOX,
   PUPPETEER_SANDBOX,
@@ -42,8 +42,8 @@ import {
  * Puppeteer's Frame class could be viewed as a BiDi BrowsingContext implementation
  * @internal
  */
-export class Frame extends BaseFrame {
-  #page: Page;
+export class BidiFrame extends Frame {
+  #page: BidiPage;
   #context: BrowsingContext;
   #timeoutSettings: TimeoutSettings;
   #abortDeferred = Deferred.create<Error>();
@@ -52,7 +52,7 @@ export class Frame extends BaseFrame {
   override _id: string;
 
   constructor(
-    page: Page,
+    page: BidiPage,
     context: BrowsingContext,
     timeoutSettings: TimeoutSettings,
     parentId?: string | null
@@ -86,7 +86,7 @@ export class Frame extends BaseFrame {
     return this.sandboxes[PUPPETEER_SANDBOX];
   }
 
-  override page(): Page {
+  override page(): BidiPage {
     return this.#page;
   }
 
@@ -94,11 +94,11 @@ export class Frame extends BaseFrame {
     return this.#context.url;
   }
 
-  override parentFrame(): Frame | null {
+  override parentFrame(): BidiFrame | null {
     return this.#page.frame(this._parentId ?? '');
   }
 
-  override childFrames(): Frame[] {
+  override childFrames(): BidiFrame[] {
     return this.#page.childFrames(this.#context.id);
   }
 
