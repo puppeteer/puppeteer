@@ -34,8 +34,7 @@ import {FrameManager} from './FrameManager.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
-import {EvaluateFunc, EvaluateFuncWith, HandleFor, NodeFor} from './types.js';
-import {withSourcePuppeteerURLIfNone} from './util.js';
+import {NodeFor} from './types.js';
 
 /**
  * We use symbols to prevent external parties listening to these events.
@@ -255,34 +254,6 @@ export class Frame extends BaseFrame {
     return this.worlds[PUPPETEER_WORLD];
   }
 
-  override async evaluateHandle<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(
-      this.evaluateHandle.name,
-      pageFunction
-    );
-    return this.mainRealm().evaluateHandle(pageFunction, ...args);
-  }
-
-  override async evaluate<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(
-      this.evaluate.name,
-      pageFunction
-    );
-    return this.mainRealm().evaluate(pageFunction, ...args);
-  }
-
   override async $<Selector extends string>(
     selector: Selector
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
@@ -295,46 +266,6 @@ export class Frame extends BaseFrame {
     return this.mainRealm().$$(selector);
   }
 
-  override async $eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
-      NodeFor<Selector>,
-      Params
-    >,
-  >(
-    selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
-    return this.mainRealm().$eval(selector, pageFunction, ...args);
-  }
-
-  override async $$eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<
-      Array<NodeFor<Selector>>,
-      Params
-    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>,
-  >(
-    selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
-    return this.mainRealm().$$eval(selector, pageFunction, ...args);
-  }
-
-  override async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
-    return this.mainRealm().$x(expression);
-  }
-
-  override async content(): Promise<string> {
-    return this.isolatedRealm().content();
-  }
-
   override async setContent(
     html: string,
     options: {
@@ -343,10 +274,6 @@ export class Frame extends BaseFrame {
     } = {}
   ): Promise<void> {
     return this.isolatedRealm().setContent(html, options);
-  }
-
-  override name(): string {
-    return this._name || '';
   }
 
   override url(): string {
@@ -365,23 +292,19 @@ export class Frame extends BaseFrame {
     return this.#detached;
   }
 
-  override async title(): Promise<string> {
-    return this.isolatedRealm().title();
-  }
-
-  _deviceRequestPromptManager(): DeviceRequestPromptManager {
+  #deviceRequestPromptManager(): DeviceRequestPromptManager {
     if (this.isOOPFrame()) {
       return this._frameManager._deviceRequestPromptManager(this.#client);
     }
     const parentFrame = this.parentFrame();
     assert(parentFrame !== null);
-    return parentFrame._deviceRequestPromptManager();
+    return parentFrame.#deviceRequestPromptManager();
   }
 
   override waitForDevicePrompt(
     options: WaitTimeoutOptions = {}
   ): Promise<DeviceRequestPrompt> {
-    return this._deviceRequestPromptManager().waitForDevicePrompt(options);
+    return this.#deviceRequestPromptManager().waitForDevicePrompt(options);
   }
 
   _navigated(framePayload: Protocol.Page.Frame): void {
@@ -410,7 +333,7 @@ export class Frame extends BaseFrame {
     this._hasStartedLoading = true;
   }
 
-  _detach(): void {
+  [Symbol.dispose](): void {
     this.#detached = true;
     this.worlds[MAIN_WORLD][Symbol.dispose]();
     this.worlds[PUPPETEER_WORLD][Symbol.dispose]();

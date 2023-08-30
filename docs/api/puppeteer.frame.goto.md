@@ -10,7 +10,7 @@ Navigates a frame to the given url.
 
 ```typescript
 class Frame {
-  goto(
+  abstract goto(
     url: string,
     options?: {
       referer?: string;

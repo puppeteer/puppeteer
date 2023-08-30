@@ -12,7 +12,7 @@ Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/Hist
 
 ```typescript
 class Frame {
-  waitForNavigation(options?: {
+  abstract waitForNavigation(options?: {
     timeout?: number;
     waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
   }): Promise<HTTPResponse | null>;

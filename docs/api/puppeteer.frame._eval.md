@@ -21,7 +21,7 @@ class Frame {
     >,
   >(
     selector: Selector,
-    pageFunction: Func | string,
+    pageFunction: string | Func,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
 }
@@ -32,7 +32,7 @@ class Frame {
 | Parameter    | Type           | Description                                                                                                                                        |
 | ------------ | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | selector     | Selector       | The selector to query for.                                                                                                                         |
-| pageFunction | Func \| string | The function to be evaluated in the frame's context. The first element matching the selector will be passed to the function as its first argument. |
+| pageFunction | string \| Func | The function to be evaluated in the frame's context. The first element matching the selector will be passed to the function as its first argument. |
 | args         | Params         | Additional arguments to pass to <code>pageFunction</code>.                                                                                         |
 
 **Returns:**

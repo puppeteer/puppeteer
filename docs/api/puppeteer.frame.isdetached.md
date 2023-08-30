@@ -10,7 +10,7 @@ Is`true` if the frame has been detached. Otherwise, `false`.
 
 ```typescript
 class Frame {
-  isDetached(): boolean;
+  abstract isDetached(): boolean;
 }
 ```
 
