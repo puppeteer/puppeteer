@@ -152,54 +152,38 @@ export class CDPPage extends Page {
   #frameManagerHandlers = new Map<symbol, Handler<any>>([
     [
       FrameManagerEmittedEvents.FrameAttached,
-      event => {
-        return this.emit(PageEmittedEvents.FrameAttached, event);
-      },
+      this.emit.bind(this, PageEmittedEvents.FrameAttached),
     ],
     [
       FrameManagerEmittedEvents.FrameDetached,
-      event => {
-        return this.emit(PageEmittedEvents.FrameDetached, event);
-      },
+      this.emit.bind(this, PageEmittedEvents.FrameDetached),
     ],
     [
       FrameManagerEmittedEvents.FrameNavigated,
-      event => {
-        return this.emit(PageEmittedEvents.FrameNavigated, event);
-      },
+      this.emit.bind(this, PageEmittedEvents.FrameNavigated),
     ],
   ]);
 
   #networkManagerHandlers = new Map<symbol, Handler<any>>([
     [
       NetworkManagerEmittedEvents.Request,
-      event => {
-        return this.emit(PageEmittedEvents.Request, event);
-      },
+      this.emit.bind(this, PageEmittedEvents.Request),
     ],
     [
       NetworkManagerEmittedEvents.RequestServedFromCache,
-      event => {
-        return this.emit(PageEmittedEvents.RequestServedFromCache, event);
-      },
+      this.emit.bind(this, PageEmittedEvents.RequestServedFromCache),
     ],
     [
       NetworkManagerEmittedEvents.Response,
-      event => {
-        return this.emit(PageEmittedEvents.Response, event);
-      },
+      this.emit.bind(this, PageEmittedEvents.Response),
     ],
     [
       NetworkManagerEmittedEvents.RequestFailed,
-      event => {
-        return this.emit(PageEmittedEvents.RequestFailed, event);
-      },
+      this.emit.bind(this, PageEmittedEvents.RequestFailed),
     ],
     [
       NetworkManagerEmittedEvents.RequestFinished,
-      event => {
-        return this.emit(PageEmittedEvents.RequestFinished, event);
-      },
+      this.emit.bind(this, PageEmittedEvents.RequestFinished),
     ],
   ]);
 
@@ -214,70 +198,17 @@ export class CDPPage extends Page {
     ],
     [
       'Page.domContentEventFired',
-      () => {
-        return this.emit(PageEmittedEvents.DOMContentLoaded);
-      },
+      this.emit.bind(this, PageEmittedEvents.DOMContentLoaded),
     ],
-    [
-      'Page.loadEventFired',
-      () => {
-        return this.emit(PageEmittedEvents.Load);
-      },
-    ],
-    [
-      'Page.loadEventFired',
-      () => {
-        return this.emit(PageEmittedEvents.Load);
-      },
-    ],
-    [
-      'Runtime.consoleAPICalled',
-      event => {
-        return this.#onConsoleAPI(event);
-      },
-    ],
-    [
-      'Runtime.bindingCalled',
-      event => {
-        return this.#onBindingCalled(event);
-      },
-    ],
-    [
-      'Page.javascriptDialogOpening',
-      event => {
-        return this.#onDialog(event);
-      },
-    ],
-    [
-      'Runtime.exceptionThrown',
-      exception => {
-        return this.#handleException(exception.exceptionDetails);
-      },
-    ],
-    [
-      'Inspector.targetCrashed',
-      () => {
-        return this.#onTargetCrashed();
-      },
-    ],
-    [
-      'Performance.metrics',
-      event => {
-        return this.#emitMetrics(event);
-      },
-    ],
-    [
-      'Log.entryAdded',
-      event => {
-        return this.#onLogEntryAdded(event);
-      },
-    ],
-    [
-      'Page.fileChooserOpened',
-      event => {
-        return this.#onFileChooser(event);
-      },
-    ],
+    ['Page.loadEventFired', this.emit.bind(this, PageEmittedEvents.Load)],
+    ['Runtime.consoleAPICalled', this.#onConsoleAPI.bind(this)],
+    ['Runtime.bindingCalled', this.#onBindingCalled.bind(this)],
+    ['Page.javascriptDialogOpening', this.#onDialog.bind(this)],
+    ['Runtime.exceptionThrown', this.#handleException.bind(this)],
+    ['Inspector.targetCrashed', this.#onTargetCrashed.bind(this)],
+    ['Performance.metrics', this.#emitMetrics.bind(this)],
+    ['Log.entryAdded', this.#onLogEntryAdded.bind(this)],
+    ['Page.fileChooserOpened', this.#onFileChooser.bind(this)],
   ]);
 
   /**
@@ -802,8 +733,11 @@ export class CDPPage extends Page {
     return result;
   }
 
-  #handleException(exceptionDetails: Protocol.Runtime.ExceptionDetails): void {
-    this.emit(PageEmittedEvents.PageError, createClientError(exceptionDetails));
+  #handleException(exception: Protocol.Runtime.ExceptionThrownEvent): void {
+    this.emit(
+      PageEmittedEvents.PageError,
+      createClientError(exception.exceptionDetails)
+    );
   }
 
   async #onConsoleAPI(
