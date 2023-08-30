@@ -37,12 +37,12 @@ import {
   InnerLazyParams,
   NodeFor,
 } from '../common/types.js';
-import {debugError, importFSPromises} from '../common/util.js';
+import {importFSPromises} from '../common/util.js';
 import {TaskManager} from '../common/WaitTask.js';
 
 import {KeyboardTypeOptions} from './Input.js';
 import {JSHandle} from './JSHandle.js';
-import {Locator, FunctionLocator, NodeLocator} from './locators/locators.js';
+import {FunctionLocator, Locator, NodeLocator} from './locators/locators.js';
 
 /**
  * @internal
@@ -389,15 +389,14 @@ export class Frame extends EventEmitter {
     if (!parentFrame) {
       return null;
     }
-    const list = await parentFrame.isolatedRealm().evaluateHandle(() => {
+    using list = await parentFrame.isolatedRealm().evaluateHandle(() => {
       return document.querySelectorAll('iframe');
     });
-    for await (const iframe of transposeIterableHandle(list)) {
+    for await (using iframe of transposeIterableHandle(list)) {
       const frame = await iframe.contentFrame();
       if (frame._id === this._id) {
-        return iframe;
+        return iframe.move();
       }
-      void iframe.dispose().catch(debugError);
     }
     return null;
   }

@@ -96,8 +96,7 @@ export class Sandbox implements RealmBase {
   }
 
   async document(): Promise<ElementHandle<Document>> {
-    // TODO(jrandolf): We should try to cache this because we need to dispose
-    // this when it's unused.
+    // TODO(#10813): Implement document caching.
     return await this.#realm.evaluateHandle(() => {
       return document;
     });
@@ -106,15 +105,15 @@ export class Sandbox implements RealmBase {
   async $<Selector extends string>(
     selector: Selector
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    const document = await this.document();
-    return document.$(selector);
+    using document = await this.document();
+    return await document.$(selector);
   }
 
   async $$<Selector extends string>(
     selector: Selector
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    const document = await this.document();
-    return document.$$(selector);
+    using document = await this.document();
+    return await document.$$(selector);
   }
 
   async $eval<
@@ -130,8 +129,8 @@ export class Sandbox implements RealmBase {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
-    const document = await this.document();
-    return document.$eval(selector, pageFunction, ...args);
+    using document = await this.document();
+    return await document.$eval(selector, pageFunction, ...args);
   }
 
   async $$eval<
@@ -147,13 +146,13 @@ export class Sandbox implements RealmBase {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
-    const document = await this.document();
-    return document.$$eval(selector, pageFunction, ...args);
+    using document = await this.document();
+    return await document.$$eval(selector, pageFunction, ...args);
   }
 
   async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
-    const document = await this.document();
-    return document.$x(expression);
+    using document = await this.document();
+    return await document.$x(expression);
   }
 
   async evaluateHandle<
@@ -249,39 +248,34 @@ export class Sandbox implements RealmBase {
     selector: string,
     options?: Readonly<ClickOptions>
   ): Promise<void> {
-    const handle = await this.$(selector);
+    using handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);
     await handle.click(options);
-    await handle.dispose();
   }
 
   async focus(selector: string): Promise<void> {
-    const handle = await this.$(selector);
+    using handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);
     await handle.focus();
-    await handle.dispose();
   }
 
   async hover(selector: string): Promise<void> {
-    const handle = await this.$(selector);
+    using handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);
     await handle.hover();
-    await handle.dispose();
   }
 
   async select(selector: string, ...values: string[]): Promise<string[]> {
-    const handle = await this.$(selector);
+    using handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);
     const result = await handle.select(...values);
-    await handle.dispose();
     return result;
   }
 
   async tap(selector: string): Promise<void> {
-    const handle = await this.$(selector);
+    using handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);
     await handle.tap();
-    await handle.dispose();
   }
 
   async type(
@@ -289,9 +283,8 @@ export class Sandbox implements RealmBase {
     text: string,
     options?: Readonly<KeyboardTypeOptions>
   ): Promise<void> {
-    const handle = await this.$(selector);
+    using handle = await this.$(selector);
     assert(handle, `No element found for selector: ${selector}`);
     await handle.type(text, options);
-    await handle.dispose();
   }
 }

@@ -367,7 +367,7 @@ describe('Evaluation specs', function () {
       const {page} = await getTestState();
 
       await page.setContent('<section>42</section>');
-      const element = (await page.$('section'))!;
+      using element = (await page.$('section'))!;
       const text = await page.evaluate(e => {
         return e.textContent;
       }, element);
@@ -377,8 +377,9 @@ describe('Evaluation specs', function () {
       const {page} = await getTestState();
 
       await page.setContent('<section>39</section>');
-      const element = (await page.$('section'))!;
+      using element = (await page.$('section'))!;
       expect(element).toBeTruthy();
+      // We want to dispose early.
       await element.dispose();
       let error!: Error;
       await page
@@ -394,7 +395,7 @@ describe('Evaluation specs', function () {
       const {page, server} = await getTestState();
 
       await attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      const bodyHandle = await page.frames()[1]!.$('body');
+      using bodyHandle = await page.frames()[1]!.$('body');
       let error!: Error;
       await page
         .evaluate(body => {

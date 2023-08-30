@@ -84,7 +84,7 @@ describe('Stack trace', function () {
   it('should work with contiguous evaluation', async () => {
     const {page} = await getTestState();
 
-    const thrower = await page.evaluateHandle(() => {
+    using thrower = await page.evaluateHandle(() => {
       return () => {
         throw new Error('Test');
       };

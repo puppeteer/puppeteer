@@ -42,7 +42,7 @@ describe('Locator', function () {
         willClick = true;
       })
       .click();
-    const button = await page.$('button');
+    using button = await page.$('button');
     const text = await button?.evaluate(el => {
       return el.innerText;
     });
@@ -69,7 +69,7 @@ describe('Locator', function () {
         willClick = true;
       })
       .click();
-    const button = await page.$('button');
+    using button = await page.$('button');
     const text = await button?.evaluate(el => {
       return el.innerText;
     });
@@ -92,7 +92,7 @@ describe('Locator', function () {
           willClick = true;
         })
         .click();
-      const button = await page.$('button');
+      using button = await page.$('button');
       const text = await button?.evaluate(el => {
         return el.innerText;
       });
@@ -114,7 +114,7 @@ describe('Locator', function () {
           clicked = true;
         })
         .click();
-      const button = await page.$('button');
+      using button = await page.$('button');
       const text = await button?.evaluate(el => {
         return el.innerText;
       });
@@ -130,7 +130,7 @@ describe('Locator', function () {
         <button style="margin-top: 600px;" onclick="this.innerText = 'clicked';">test</button>
       `);
       await page.locator('button').click();
-      const button = await page.$('button');
+      using button = await page.$('button');
       const text = await button?.evaluate(el => {
         return el.innerText;
       });
@@ -144,7 +144,7 @@ describe('Locator', function () {
       await page.setContent(`
         <button style="display: none;" onclick="this.innerText = 'clicked';">test</button>
       `);
-      const button = await page.$('button');
+      using button = await page.$('button');
       const result = page
         .locator('button')
         .click()
@@ -177,7 +177,7 @@ describe('Locator', function () {
       await page.setContent(`
         <button disabled onclick="this.innerText = 'clicked';">test</button>
       `);
-      const button = await page.$('button');
+      using button = await page.$('button');
       const result = page.locator('button').click();
       expect(
         await button?.evaluate(el => {
@@ -202,7 +202,7 @@ describe('Locator', function () {
       await page.setContent(`
         <button style="margin-top: 600px;" style="display: none;" disabled onclick="this.innerText = 'clicked';">test</button>
       `);
-      const button = await page.$('button');
+      using button = await page.$('button');
       const result = page.locator('button').click();
       expect(
         await button?.evaluate(el => {
@@ -308,7 +308,7 @@ describe('Locator', function () {
           willClick = true;
         })
         .click();
-      const button = await frame.$('button');
+      using button = await frame.$('button');
       const text = await button?.evaluate(el => {
         return el.innerText;
       });
@@ -332,7 +332,7 @@ describe('Locator', function () {
           hovered = true;
         })
         .hover();
-      const button = await page.$('button');
+      using button = await page.$('button');
       const text = await button?.evaluate(el => {
         return el.innerText;
       });
@@ -361,7 +361,7 @@ describe('Locator', function () {
           scrollTop: 500,
           scrollLeft: 500,
         });
-      const scrollable = await page.$('div');
+      using scrollable = await page.$('div');
       const scroll = await scrollable?.evaluate(el => {
         return el.scrollTop + ' ' + el.scrollLeft;
       });
@@ -435,7 +435,7 @@ describe('Locator', function () {
       await page.setContent(`
         <input disabled>
       `);
-      const input = await page.$('input');
+      using input = await page.$('input');
       const result = page.locator('input').fill('test');
       expect(
         await input?.evaluate(el => {

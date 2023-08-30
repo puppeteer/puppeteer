@@ -530,7 +530,7 @@ describe('Page', function () {
       const {page} = await getTestState();
 
       // Create a custom class
-      const classHandle = await page.evaluateHandle(() => {
+      using classHandle = await page.evaluateHandle(() => {
         return class CustomClass {};
       });
 
@@ -541,10 +541,10 @@ describe('Page', function () {
       }, classHandle);
 
       // Validate only one has been added.
-      const prototypeHandle = await page.evaluateHandle(CustomClass => {
+      using prototypeHandle = await page.evaluateHandle(CustomClass => {
         return CustomClass.prototype;
       }, classHandle);
-      const objectsHandle = await page.queryObjects(prototypeHandle);
+      using objectsHandle = await page.queryObjects(prototypeHandle);
       await expect(
         page.evaluate(objects => {
           return objects.length;
@@ -564,7 +564,7 @@ describe('Page', function () {
       await page.goto(server.EMPTY_PAGE);
 
       // Create a custom class
-      const classHandle = await page.evaluateHandle(() => {
+      using classHandle = await page.evaluateHandle(() => {
         return class CustomClass {};
       });
 
@@ -575,10 +575,10 @@ describe('Page', function () {
       }, classHandle);
 
       // Validate only one has been added.
-      const prototypeHandle = await page.evaluateHandle(CustomClass => {
+      using prototypeHandle = await page.evaluateHandle(CustomClass => {
         return CustomClass.prototype;
       }, classHandle);
-      const objectsHandle = await page.queryObjects(prototypeHandle);
+      using objectsHandle = await page.queryObjects(prototypeHandle);
       await expect(
         page.evaluate(objects => {
           return objects.length;
@@ -596,9 +596,10 @@ describe('Page', function () {
     it('should fail for disposed handles', async () => {
       const {page} = await getTestState();
 
-      const prototypeHandle = await page.evaluateHandle(() => {
+      using prototypeHandle = await page.evaluateHandle(() => {
         return HTMLBodyElement.prototype;
       });
+      // We want to dispose early.
       await prototypeHandle.dispose();
       let error!: Error;
       await page.queryObjects(prototypeHandle).catch(error_ => {
@@ -609,7 +610,7 @@ describe('Page', function () {
     it('should fail primitive values as prototypes', async () => {
       const {page} = await getTestState();
 
-      const prototypeHandle = await page.evaluateHandle(() => {
+      using prototypeHandle = await page.evaluateHandle(() => {
         return 42;
       });
       let error!: Error;
@@ -1160,7 +1161,7 @@ describe('Page', function () {
 
       await page.goto(server.PREFIX + '/abort-request.html');
 
-      const element = await page.$(`#abort`);
+      using element = await page.$(`#abort`);
       await element!.click();
 
       let error = false;
@@ -1733,7 +1734,7 @@ describe('Page', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      const scriptHandle = await page.addScriptTag({url: '/injectedfile.js'});
+      using scriptHandle = await page.addScriptTag({url: '/injectedfile.js'});
       expect(scriptHandle.asElement()).not.toBeNull();
       expect(
         await page.evaluate(() => {
@@ -1811,7 +1812,7 @@ describe('Page', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      const scriptHandle = await page.addScriptTag({
+      using scriptHandle = await page.addScriptTag({
         path: path.join(__dirname, '../assets/injectedfile.js'),
       });
       expect(scriptHandle.asElement()).not.toBeNull();
@@ -1839,7 +1840,7 @@ describe('Page', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      const scriptHandle = await page.addScriptTag({
+      using scriptHandle = await page.addScriptTag({
         content: 'window.__injected = 35;',
       });
       expect(scriptHandle.asElement()).not.toBeNull();
@@ -1907,7 +1908,7 @@ describe('Page', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      const styleHandle = await page.addStyleTag({url: '/injectedstyle.css'});
+      using styleHandle = await page.addStyleTag({url: '/injectedstyle.css'});
       expect(styleHandle.asElement()).not.toBeNull();
       expect(
         await page.evaluate(
@@ -1937,7 +1938,7 @@ describe('Page', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      const styleHandle = await page.addStyleTag({
+      using styleHandle = await page.addStyleTag({
         path: path.join(__dirname, '../assets/injectedstyle.css'),
       });
       expect(styleHandle.asElement()).not.toBeNull();
@@ -1955,7 +1956,7 @@ describe('Page', function () {
       await page.addStyleTag({
         path: path.join(__dirname, '../assets/injectedstyle.css'),
       });
-      const styleHandle = (await page.$('style'))!;
+      using styleHandle = (await page.$('style'))!;
       const styleContent = await page.evaluate((style: HTMLStyleElement) => {
         return style.innerHTML;
       }, styleHandle);
@@ -1966,7 +1967,7 @@ describe('Page', function () {
       const {page, server} = await getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      const styleHandle = await page.addStyleTag({
+      using styleHandle = await page.addStyleTag({
         content: 'body { background-color: green; }',
       });
       expect(styleHandle.asElement()).not.toBeNull();

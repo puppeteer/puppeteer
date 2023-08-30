@@ -433,11 +433,11 @@ export class CDPPage extends Page {
     assert(frame, 'This should never happen.');
 
     // This is guaranteed to be an HTMLInputElement handle by the event.
-    const handle = (await frame.worlds[MAIN_WORLD].adoptBackendNode(
+    using handle = (await frame.worlds[MAIN_WORLD].adoptBackendNode(
       event.backendNodeId
     )) as ElementHandle<HTMLInputElement>;
 
-    const fileChooser = new FileChooser(handle, event);
+    const fileChooser = new FileChooser(handle.move(), event);
     for (const promise of this.#fileChooserDeferreds) {
       promise.resolve(fileChooser);
     }
@@ -885,6 +885,8 @@ export class CDPPage extends Page {
       return;
     }
     const textTokens = [];
+    // eslint-disable-next-line max-len -- The comment is long.
+    // eslint-disable-next-line rulesdir/use-using -- These are not owned by this function.
     for (const arg of args) {
       const remoteObject = arg.remoteObject();
       if (remoteObject.objectId) {

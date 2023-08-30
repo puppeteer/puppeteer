@@ -119,7 +119,7 @@ describe('Keyboard', function () {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
-    const textarea = (await page.$('textarea'))!;
+    using textarea = (await page.$('textarea'))!;
     await textarea.press('a');
     expect(
       await page.evaluate(() => {
@@ -148,7 +148,7 @@ describe('Keyboard', function () {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
-    const textarea = (await page.$('textarea'))!;
+    using textarea = (await page.$('textarea'))!;
     await textarea.press('a', {text: 'ё'});
     expect(
       await page.evaluate(() => {
@@ -444,7 +444,7 @@ describe('Keyboard', function () {
         true
       );
     });
-    const textarea = (await page.$('textarea'))!;
+    using textarea = (await page.$('textarea'))!;
 
     await textarea.press('Digit5');
     expect(await page.evaluate('keyLocation')).toBe(0);
@@ -490,7 +490,7 @@ describe('Keyboard', function () {
       server.PREFIX + '/input/textarea.html'
     );
     const frame = page.frames()[1]!;
-    const textarea = (await frame.$('textarea'))!;
+    using textarea = (await frame.$('textarea'))!;
     await textarea.type('👹 Tokyo street Japan 🇯🇵');
     expect(
       await frame.$eval('textarea', textarea => {

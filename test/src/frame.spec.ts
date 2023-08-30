@@ -73,7 +73,7 @@ describe('Frame specs', function () {
 
       await page.goto(server.EMPTY_PAGE);
       const mainFrame = page.mainFrame();
-      const windowHandle = await mainFrame.evaluateHandle(() => {
+      using windowHandle = await mainFrame.evaluateHandle(() => {
         return window;
       });
       expect(windowHandle).toBeTruthy();

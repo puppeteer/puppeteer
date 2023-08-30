@@ -149,6 +149,7 @@ export class BidiSerializer {
     if (arg instanceof LazyArg) {
       arg = await arg.get(context);
     }
+    // eslint-disable-next-line rulesdir/use-using -- We want this to continue living.
     const objectHandle =
       arg && (arg instanceof JSHandle || arg instanceof ElementHandle)
         ? arg

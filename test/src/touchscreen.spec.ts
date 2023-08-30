@@ -40,7 +40,7 @@ describe('Touchscreen', function () {
     const iPhone = KnownDevices['iPhone 6']!;
     await page.emulate(iPhone);
     await page.goto(server.PREFIX + '/input/touches.html');
-    const button = (await page.$('button'))!;
+    using button = (await page.$('button'))!;
     await button.tap();
     expect(
       await page.evaluate(() => {
@@ -54,7 +54,7 @@ describe('Touchscreen', function () {
     const iPhone = KnownDevices['iPhone 6']!;
     await page.emulate(iPhone);
     await page.goto(server.PREFIX + '/input/touches-move.html');
-    const touch = (await page.$('#touch'))!;
+    using touch = (await page.$('#touch'))!;
     const touchObj = (await touch.boundingBox()) as BoundingBox;
     await page.touchscreen.touchStart(touchObj.x, touchObj.y);
     const movePosx = 100;

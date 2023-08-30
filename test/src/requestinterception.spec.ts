@@ -868,7 +868,7 @@ describe('request interception', function () {
           return (img.onload = fulfill);
         });
       }, server.PREFIX);
-      const img = (await page.$('img'))!;
+      using img = (await page.$('img'))!;
       expect(await img.screenshot()).toBeGolden('mock-binary-response.png');
     });
     it('should stringify intercepted request response headers', async () => {

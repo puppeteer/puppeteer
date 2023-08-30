@@ -212,7 +212,7 @@ describe('Mouse', function () {
     const {page, server} = await getTestState();
 
     await page.goto(server.PREFIX + '/input/wheel.html');
-    const elem = (await page.$('div'))!;
+    using elem = (await page.$('div'))!;
     const boundingBoxBefore = (await elem.boundingBox())!;
     expect(boundingBoxBefore).toMatchObject({
       width: 115,

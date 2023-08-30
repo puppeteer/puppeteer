@@ -117,7 +117,7 @@ describe('Page.click', function () {
 
     await page.setJavaScriptEnabled(false);
     await page.goto(server.PREFIX + '/wrappedlink.html');
-    const body = await page.waitForSelector('body');
+    using body = await page.waitForSelector('body');
     await body!.evaluate(el => {
       el.style.paddingTop = '3000px';
     });
@@ -332,7 +332,7 @@ describe('Page.click', function () {
         (globalThis as any).double = true;
       });
     });
-    const button = (await page.$('button'))!;
+    using button = (await page.$('button'))!;
     await button!.click({count: 2});
     expect(await page.evaluate('double')).toBe(true);
     expect(await page.evaluate('result')).toBe('Clicked');
@@ -428,7 +428,7 @@ describe('Page.click', function () {
       server.PREFIX + '/input/button.html'
     );
     const frame = page.frames()[1];
-    const button = await frame!.$('button');
+    using button = await frame!.$('button');
     await button!.click();
     expect(
       await frame!.evaluate(() => {
@@ -477,7 +477,7 @@ describe('Page.click', function () {
       server.PREFIX + '/input/button.html'
     );
     const frame = page.frames()[1];
-    const button = await frame!.$('button');
+    using button = await frame!.$('button');
     await button!.click();
     expect(
       await frame!.evaluate(() => {

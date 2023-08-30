@@ -47,11 +47,11 @@ describe('Workers', function () {
     const {page} = await getTestState();
 
     const workerCreatedPromise = waitEvent<WebWorker>(page, 'workercreated');
-    const workerObj = await page.evaluateHandle(() => {
+    using workerObj = await page.evaluateHandle(() => {
       return new Worker('data:text/javascript,1');
     });
     const worker = await workerCreatedPromise;
-    const workerThisObj = await worker.evaluateHandle(() => {
+    using workerThisObj = await worker.evaluateHandle(() => {
       return this;
     });
     const workerDestroyedPromise = waitEvent(page, 'workerdestroyed');

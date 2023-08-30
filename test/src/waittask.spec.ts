@@ -221,11 +221,11 @@ describe('waittask specs', function () {
       const {page} = await getTestState();
 
       await page.setContent('<div></div>');
-      const div = (await page.$('div'))!;
+      using div = (await page.$('div'))!;
       let resolved = false;
       const waitForFunction = page
         .waitForFunction(
-          (element: Element) => {
+          element => {
             return element.localName === 'div' && !element.parentElement;
           },
           {},
@@ -432,7 +432,7 @@ describe('waittask specs', function () {
       const watchdog = frame.waitForSelector('div');
       await frame.evaluate(addElement, 'br');
       await frame.evaluate(addElement, 'div');
-      const eHandle = (await watchdog)!;
+      using eHandle = (await watchdog)!;
       const tagName = await (await eHandle.getProperty('tagName')).jsonValue();
       expect(tagName).toBe('DIV');
     });
@@ -459,7 +459,7 @@ describe('waittask specs', function () {
       const watchdog = page.waitForSelector('div');
       await otherFrame.evaluate(addElement, 'div');
       await page.evaluate(addElement, 'div');
-      const eHandle = await watchdog;
+      using eHandle = await watchdog;
       expect(eHandle?.frame).toBe(page.mainFrame());
     });
 
@@ -473,7 +473,7 @@ describe('waittask specs', function () {
       const waitForSelectorPromise = frame2.waitForSelector('div');
       await frame1.evaluate(addElement, 'div');
       await frame2.evaluate(addElement, 'div');
-      const eHandle = await waitForSelectorPromise;
+      using eHandle = await waitForSelectorPromise;
       expect(eHandle?.frame).toBe(frame2);
     });
 
@@ -513,7 +513,7 @@ describe('waittask specs', function () {
 
       const promise = page.waitForSelector('div', {visible: true});
       await page.setContent('<div style="display: none">text</div>');
-      const element = await page.evaluateHandle(() => {
+      using element = await page.evaluateHandle(() => {
         return document.getElementsByTagName('div')[0]!;
       });
       await expect(
@@ -529,7 +529,7 @@ describe('waittask specs', function () {
 
       const promise = page.waitForSelector('div', {visible: true});
       await page.setContent('<div style="visibility: hidden">text</div>');
-      const element = await page.evaluateHandle(() => {
+      using element = await page.evaluateHandle(() => {
         return document.getElementsByTagName('div')[0]!;
       });
       await expect(
@@ -551,7 +551,7 @@ describe('waittask specs', function () {
 
       const promise = page.waitForSelector('div', {visible: true});
       await page.setContent('<div style="width: 0">text</div>');
-      const element = await page.evaluateHandle(() => {
+      using element = await page.evaluateHandle(() => {
         return document.getElementsByTagName('div')[0]!;
       });
       await expect(
@@ -578,7 +578,7 @@ describe('waittask specs', function () {
       await page.setContent(
         `<div style='display: none; visibility: hidden;'><div id="inner">hi</div></div>`
       );
-      const element = await page.evaluateHandle(() => {
+      using element = await page.evaluateHandle(() => {
         return document.getElementsByTagName('div')[0]!;
       });
       await expect(
@@ -600,7 +600,7 @@ describe('waittask specs', function () {
 
       const promise = page.waitForSelector('div', {hidden: true});
       await page.setContent(`<div style='display: block;'>text</div>`);
-      const element = await page.evaluateHandle(() => {
+      using element = await page.evaluateHandle(() => {
         return document.getElementsByTagName('div')[0]!;
       });
       await expect(
@@ -616,7 +616,7 @@ describe('waittask specs', function () {
 
       const promise = page.waitForSelector('div', {hidden: true});
       await page.setContent(`<div style='display: block;'>text</div>`);
-      const element = await page.evaluateHandle(() => {
+      using element = await page.evaluateHandle(() => {
         return document.getElementsByTagName('div')[0]!;
       });
       await expect(
@@ -632,7 +632,7 @@ describe('waittask specs', function () {
 
       const promise = page.waitForSelector('div', {hidden: true});
       await page.setContent('<div>text</div>');
-      const element = await page.evaluateHandle(() => {
+      using element = await page.evaluateHandle(() => {
         return document.getElementsByTagName('div')[0]!;
       });
       await expect(
@@ -648,7 +648,7 @@ describe('waittask specs', function () {
 
       const promise = page.waitForSelector('div', {hidden: true});
       await page.setContent(`<div>text</div>`);
-      const element = await page.evaluateHandle(() => {
+      using element = await page.evaluateHandle(() => {
         return document.getElementsByTagName('div')[0]!;
       });
       await expect(
@@ -662,7 +662,7 @@ describe('waittask specs', function () {
     it('should return null if waiting to hide non-existing element', async () => {
       const {page} = await getTestState();
 
-      const handle = await page.waitForSelector('non-existing', {
+      using handle = await page.waitForSelector('non-existing', {
         hidden: true,
       });
       expect(handle).toBe(null);
@@ -779,7 +779,7 @@ describe('waittask specs', function () {
       const waitForXPathPromise = frame2.waitForXPath('//div');
       await frame1.evaluate(addElement, 'div');
       await frame2.evaluate(addElement, 'div');
-      const eHandle = await waitForXPathPromise;
+      using eHandle = await waitForXPathPromise;
       expect(eHandle?.frame).toBe(frame2);
     });
     it('should throw when frame is detached', async () => {
@@ -823,7 +823,7 @@ describe('waittask specs', function () {
     it('hidden should return null if the element is not found', async () => {
       const {page} = await getTestState();
 
-      const waitForXPath = await page.waitForXPath('//div', {hidden: true});
+      using waitForXPath = await page.waitForXPath('//div', {hidden: true});
 
       expect(waitForXPath).toBe(null);
     });
@@ -832,7 +832,7 @@ describe('waittask specs', function () {
 
       await page.setContent(`<div style='display: none;'>text</div>`);
 
-      const waitForXPath = await page.waitForXPath('//div', {hidden: true});
+      using waitForXPath = await page.waitForXPath('//div', {hidden: true});
 
       expect(waitForXPath).toBeInstanceOf(ElementHandle);
     });
@@ -854,7 +854,7 @@ describe('waittask specs', function () {
       const {page} = await getTestState();
 
       await page.setContent(`<div>some text</div>`);
-      const text = await page.waitForXPath('//div/text()');
+      using text = await page.waitForXPath('//div/text()');
       expect(await (await text!.getProperty('nodeType')!).jsonValue()).toBe(
         3 /* Node.TEXT_NODE */
       );
