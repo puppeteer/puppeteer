@@ -182,7 +182,7 @@ export class FrameManager extends EventEmitter {
     }
   }
 
-  async registerSecondaryPage(client: CDPSessionImpl): Promise<void> {
+  async registerSpeculativeSession(client: CDPSessionImpl): Promise<void> {
     await this.#networkManager.addClient(client);
   }
 
