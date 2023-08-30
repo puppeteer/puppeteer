@@ -64,6 +64,7 @@ import type {
   NodeFor,
 } from '../common/types.js';
 import {
+  debugError,
   importFSPromises,
   isNumber,
   isString,
@@ -477,7 +478,7 @@ export interface NewDocumentScriptEvaluation {
  *
  * @public
  */
-export class Page extends EventEmitter {
+export class Page extends EventEmitter implements AsyncDisposable, Disposable {
   #handlerMap = new WeakMap<Handler<any>, Handler<any>>();
 
   /**
@@ -2872,6 +2873,14 @@ export class Page extends EventEmitter {
   ): Promise<DeviceRequestPrompt>;
   waitForDevicePrompt(): Promise<DeviceRequestPrompt> {
     throw new Error('Not implemented');
+  }
+
+  [Symbol.dispose](): void {
+    return void this.close().catch(debugError);
+  }
+
+  [Symbol.asyncDispose](): Promise<void> {
+    return this.close();
   }
 }
 
