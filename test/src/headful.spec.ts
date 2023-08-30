@@ -352,12 +352,10 @@ const serviceWorkerExtensionPath = path.join(
         context.newPage(),
       ]);
       const page = await target.page();
-      expect(
-        await page?.evaluate(() => {
-          // @ts-expect-error wrong context.
-          return Boolean(DevToolsAPI);
-        })
-      ).toBe(true);
+      await page!.waitForFunction(() => {
+        // @ts-expect-error wrong context.
+        return Boolean(DevToolsAPI);
+      });
       await browser.close();
     });
   });
