@@ -43,7 +43,7 @@ export class EmulationManager {
     this.#secondaryClients.delete(client);
   }
 
-  async registerSecondaryPage(client: CDPSession): Promise<void> {
+  async registerSpeculativeSession(client: CDPSession): Promise<void> {
     this.#secondaryClients.add(client);
     await this.#applyViewport(client);
     client.once(CDPSessionEmittedEvents.Disconnected, () => {

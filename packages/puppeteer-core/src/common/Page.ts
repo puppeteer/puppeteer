@@ -266,8 +266,12 @@ export class CDPPage extends Page {
         if (session._target()._subtype() !== 'prerender') {
           return;
         }
-        this.#frameManager.registerSecondaryPage(session).catch(debugError);
-        this.#emulationManager.registerSecondaryPage(session).catch(debugError);
+        this.#frameManager
+          .registerSpeculativeSession(session)
+          .catch(debugError);
+        this.#emulationManager
+          .registerSpeculativeSession(session)
+          .catch(debugError);
       }
     );
   }
