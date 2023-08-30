@@ -23,7 +23,7 @@ import {Deferred} from '../util/Deferred.js';
 import {Binding} from './Binding.js';
 import {CDPSession} from './Connection.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {Frame} from './Frame.js';
+import {CDPFrame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {CDPJSHandle} from './JSHandle.js';
@@ -90,7 +90,7 @@ export interface IsolatedWorldChart {
  * @internal
  */
 export class IsolatedWorld extends Realm {
-  #frame: Frame;
+  #frame: CDPFrame;
   #context = Deferred.create<ExecutionContext>();
 
   // Set of bindings that have been registered in the current context.
@@ -103,7 +103,7 @@ export class IsolatedWorld extends Realm {
     return this.#bindings;
   }
 
-  constructor(frame: Frame) {
+  constructor(frame: CDPFrame) {
     super(frame._frameManager.timeoutSettings);
     this.#frame = frame;
     this.frameUpdated();
@@ -121,7 +121,7 @@ export class IsolatedWorld extends Realm {
     return this.#frame._frameManager;
   }
 
-  frame(): Frame {
+  frame(): CDPFrame {
     return this.#frame;
   }
 

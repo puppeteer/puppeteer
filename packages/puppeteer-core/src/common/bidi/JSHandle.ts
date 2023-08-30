@@ -18,7 +18,7 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import Protocol from 'devtools-protocol';
 
 import {ElementHandle} from '../../api/ElementHandle.js';
-import {JSHandle as BaseJSHandle} from '../../api/JSHandle.js';
+import {JSHandle} from '../../api/JSHandle.js';
 import {EvaluateFuncWith, HandleFor, HandleOr} from '../../common/types.js';
 import {withSourcePuppeteerURLIfNone} from '../util.js';
 
@@ -26,7 +26,7 @@ import {Realm} from './Realm.js';
 import {BidiSerializer} from './Serializer.js';
 import {releaseReference} from './utils.js';
 
-export class JSHandle<T = unknown> extends BaseJSHandle<T> {
+export class BidiJSHandle<T = unknown> extends JSHandle<T> {
   #disposed = false;
   #realm: Realm;
   #remoteValue: Bidi.Script.RemoteValue;
@@ -85,7 +85,7 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
     }, propertyName);
   }
 
-  override async getProperties(): Promise<Map<string, BaseJSHandle>> {
+  override async getProperties(): Promise<Map<string, BidiJSHandle>> {
     // TODO(lightning00blade): Either include return of depth Handles in RemoteValue
     // or new BiDi command that returns array of remote value
     const keys = await this.evaluate(object => {
@@ -98,7 +98,7 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
       }
       return enumerableKeys;
     });
-    const map = new Map<string, BaseJSHandle>();
+    const map = new Map<string, BidiJSHandle>();
     const results = await Promise.all(
       keys.map(key => {
         return this.getProperty(key);
@@ -108,7 +108,7 @@ export class JSHandle<T = unknown> extends BaseJSHandle<T> {
     for (const [key, value] of Object.entries(keys)) {
       using handle = results[key as any];
       if (handle) {
-        map.set(value, handle.move());
+        map.set(value, handle.move() as BidiJSHandle);
       }
     }
 

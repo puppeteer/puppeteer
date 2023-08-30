@@ -13,9 +13,9 @@ import {
 } from '../util.js';
 
 import {Connection} from './Connection.js';
-import {ElementHandle} from './ElementHandle.js';
-import {Frame} from './Frame.js';
-import {JSHandle} from './JSHandle.js';
+import {BidiElementHandle} from './ElementHandle.js';
+import {BidiFrame} from './Frame.js';
+import {BidiJSHandle} from './JSHandle.js';
 import {BidiSerializer} from './Serializer.js';
 import {createEvaluationError} from './utils.js';
 
@@ -27,7 +27,7 @@ export const getSourceUrlComment = (url: string): string => {
 
 export class Realm extends EventEmitter {
   connection: Connection;
-  #frame!: Frame;
+  #frame!: BidiFrame;
   #id: string;
   #sandbox?: string;
 
@@ -45,7 +45,7 @@ export class Realm extends EventEmitter {
     };
   }
 
-  setFrame(frame: Frame): void {
+  setFrame(frame: BidiFrame): void {
     this.#frame = frame;
 
     // TODO(jrandolf): We should try to find a less brute-force way of doing
@@ -64,8 +64,8 @@ export class Realm extends EventEmitter {
     );
   }
 
-  protected internalPuppeteerUtil?: Promise<JSHandle<PuppeteerUtil>>;
-  get puppeteerUtil(): Promise<JSHandle<PuppeteerUtil>> {
+  protected internalPuppeteerUtil?: Promise<BidiJSHandle<PuppeteerUtil>>;
+  get puppeteerUtil(): Promise<BidiJSHandle<PuppeteerUtil>> {
     const promise = Promise.resolve() as Promise<unknown>;
     scriptInjector.inject(script => {
       if (this.internalPuppeteerUtil) {
@@ -74,10 +74,12 @@ export class Realm extends EventEmitter {
         });
       }
       this.internalPuppeteerUtil = promise.then(() => {
-        return this.evaluateHandle(script) as Promise<JSHandle<PuppeteerUtil>>;
+        return this.evaluateHandle(script) as Promise<
+          BidiJSHandle<PuppeteerUtil>
+        >;
       });
     }, !this.internalPuppeteerUtil);
-    return this.internalPuppeteerUtil as Promise<JSHandle<PuppeteerUtil>>;
+    return this.internalPuppeteerUtil as Promise<BidiJSHandle<PuppeteerUtil>>;
   }
 
   async evaluateHandle<
@@ -182,10 +184,10 @@ export class Realm extends EventEmitter {
 export function getBidiHandle(
   realmOrContext: Realm,
   result: Bidi.Script.RemoteValue,
-  frame: Frame
-): JSHandle | ElementHandle<Node> {
+  frame: BidiFrame
+): BidiJSHandle | BidiElementHandle<Node> {
   if (result.type === 'node' || result.type === 'window') {
-    return new ElementHandle(realmOrContext, result, frame);
+    return new BidiElementHandle(realmOrContext, result, frame);
   }
-  return new JSHandle(realmOrContext, result);
+  return new BidiJSHandle(realmOrContext, result);
 }

@@ -22,7 +22,7 @@ import {assert} from '../util/assert.js';
 
 import {CDPSession} from './Connection.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {Frame} from './Frame.js';
+import {CDPFrame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {CDPJSHandle} from './JSHandle.js';
@@ -39,13 +39,13 @@ import {debugError} from './util.js';
 export class CDPElementHandle<
   ElementType extends Node = Element,
 > extends ElementHandle<ElementType> {
-  #frame: Frame;
+  #frame: CDPFrame;
   declare handle: CDPJSHandle<ElementType>;
 
   constructor(
     context: ExecutionContext,
     remoteObject: Protocol.Runtime.RemoteObject,
-    frame: Frame
+    frame: CDPFrame
   ) {
     super(new CDPJSHandle(context, remoteObject));
     this.#frame = frame;
@@ -77,7 +77,7 @@ export class CDPElementHandle<
     return this.#frame.page();
   }
 
-  override get frame(): Frame {
+  override get frame(): CDPFrame {
     return this.#frame;
   }
 
@@ -108,8 +108,8 @@ export class CDPElementHandle<
 
   override async contentFrame(
     this: ElementHandle<HTMLIFrameElement>
-  ): Promise<Frame>;
-  override async contentFrame(): Promise<Frame | null> {
+  ): Promise<CDPFrame>;
+  override async contentFrame(): Promise<CDPFrame | null> {
     const nodeInfo = await this.client.send('DOM.describeNode', {
       objectId: this.id,
     });

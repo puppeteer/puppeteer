@@ -16,15 +16,15 @@
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import {JSHandle as BaseJSHandle} from '../../api/JSHandle.js';
-import {Realm as RealmApi} from '../../api/Realm.js';
+import {JSHandle} from '../../api/JSHandle.js';
+import {Realm} from '../../api/Realm.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
 import {withSourcePuppeteerURLIfNone} from '../util.js';
 
 import {BrowsingContext} from './BrowsingContext.js';
-import {JSHandle} from './JSHandle.js';
-import {Realm} from './Realm.js';
+import {BidiJSHandle} from './JSHandle.js';
+import {Realm as BidiRealm} from './Realm.js';
 /**
  * A unique key for {@link SandboxChart} to denote the default world.
  * Realms are automatically created in the default sandbox.
@@ -52,12 +52,12 @@ export interface SandboxChart {
 /**
  * @internal
  */
-export class Sandbox extends RealmApi {
-  #realm: Realm;
+export class Sandbox extends Realm {
+  #realm: BidiRealm;
 
   constructor(
     // TODO: We should split the Realm and BrowsingContext
-    realm: Realm | BrowsingContext,
+    realm: BidiRealm | BrowsingContext,
     timeoutSettings: TimeoutSettings
   ) {
     super(timeoutSettings);
@@ -100,14 +100,14 @@ export class Sandbox extends RealmApi {
     return this.#realm.evaluate(pageFunction, ...args);
   }
 
-  async adoptHandle<T extends BaseJSHandle<Node>>(handle: T): Promise<T> {
+  async adoptHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
     return (await this.evaluateHandle(node => {
       return node;
     }, handle)) as unknown as T;
   }
 
-  async transferHandle<T extends BaseJSHandle<Node>>(handle: T): Promise<T> {
-    if ((handle as unknown as JSHandle).context() === this.#realm) {
+  async transferHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
+    if ((handle as unknown as BidiJSHandle).context() === this.#realm) {
       return handle;
     }
     const transferredHandle = await this.evaluateHandle(node => {

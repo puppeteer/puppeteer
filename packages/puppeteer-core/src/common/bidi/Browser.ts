@@ -19,19 +19,18 @@ import {ChildProcess} from 'child_process';
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {
-  Browser as BrowserBase,
+  Browser,
   BrowserCloseCallback,
   BrowserContextEmittedEvents,
   BrowserContextOptions,
   BrowserEmittedEvents,
 } from '../../api/Browser.js';
-import {BrowserContext as BrowserContextBase} from '../../api/BrowserContext.js';
 import {Page} from '../../api/Page.js';
 import {Target} from '../../api/Target.js';
 import {Handler} from '../EventEmitter.js';
 import {Viewport} from '../PuppeteerViewport.js';
 
-import {BrowserContext} from './BrowserContext.js';
+import {BidiBrowserContext} from './BrowserContext.js';
 import {
   BrowsingContext,
   BrowsingContextEmittedEvents,
@@ -41,14 +40,14 @@ import {
   BiDiBrowserTarget,
   BiDiBrowsingContextTarget,
   BiDiPageTarget,
-  BiDiTarget,
+  BidiTarget,
 } from './Target.js';
 import {debugError} from './utils.js';
 
 /**
  * @internal
  */
-export class Browser extends BrowserBase {
+export class BidiBrowser extends Browser {
   // TODO: Update generator to include fully module
   static readonly subscribeModules: string[] = [
     'browsingContext',
@@ -68,7 +67,7 @@ export class Browser extends BrowserBase {
     'cdp.Debugger.scriptParsed',
   ];
 
-  static async create(opts: Options): Promise<Browser> {
+  static async create(opts: Options): Promise<BidiBrowser> {
     let browserName = '';
     let browserVersion = '';
 
@@ -90,11 +89,11 @@ export class Browser extends BrowserBase {
 
     await opts.connection.send('session.subscribe', {
       events: browserName.toLocaleLowerCase().includes('firefox')
-        ? Browser.subscribeModules
-        : [...Browser.subscribeModules, ...Browser.subscribeCdpEvents],
+        ? BidiBrowser.subscribeModules
+        : [...BidiBrowser.subscribeModules, ...BidiBrowser.subscribeCdpEvents],
     });
 
-    const browser = new Browser({
+    const browser = new BidiBrowser({
       ...opts,
       browserName,
       browserVersion,
@@ -111,9 +110,9 @@ export class Browser extends BrowserBase {
   #closeCallback?: BrowserCloseCallback;
   #connection: Connection;
   #defaultViewport: Viewport | null;
-  #defaultContext: BrowserContext;
-  #targets = new Map<string, BiDiTarget>();
-  #contexts: BrowserContext[] = [];
+  #defaultContext: BidiBrowserContext;
+  #targets = new Map<string, BidiTarget>();
+  #contexts: BidiBrowserContext[] = [];
   #browserTarget: BiDiBrowserTarget;
 
   #connectionEventHandlers = new Map<
@@ -145,7 +144,7 @@ export class Browser extends BrowserBase {
       this.#connection.dispose();
       this.emit(BrowserEmittedEvents.Disconnected);
     });
-    this.#defaultContext = new BrowserContext(this, {
+    this.#defaultContext = new BidiBrowserContext(this, {
       defaultViewport: this.#defaultViewport,
       isDefault: true,
     });
@@ -264,9 +263,9 @@ export class Browser extends BrowserBase {
 
   override async createIncognitoBrowserContext(
     _options?: BrowserContextOptions
-  ): Promise<BrowserContextBase> {
+  ): Promise<BidiBrowserContext> {
     // TODO: implement incognito context https://github.com/w3c/webdriver-bidi/issues/289.
-    const context = new BrowserContext(this, {
+    const context = new BidiBrowserContext(this, {
       defaultViewport: this.#defaultViewport,
       isDefault: false,
     });
@@ -280,14 +279,14 @@ export class Browser extends BrowserBase {
 
   /**
    * Returns an array of all open browser contexts. In a newly created browser, this will
-   * return a single instance of {@link BrowserContext}.
+   * return a single instance of {@link BidiBrowserContext}.
    */
-  override browserContexts(): BrowserContext[] {
+  override browserContexts(): BidiBrowserContext[] {
     // TODO: implement incognito context https://github.com/w3c/webdriver-bidi/issues/289.
     return this.#contexts;
   }
 
-  async _closeContext(browserContext: BrowserContext): Promise<void> {
+  async _closeContext(browserContext: BidiBrowserContext): Promise<void> {
     this.#contexts = this.#contexts.filter(c => {
       return c !== browserContext;
     });
@@ -302,7 +301,7 @@ export class Browser extends BrowserBase {
   /**
    * Returns the default browser context. The default browser context cannot be closed.
    */
-  override defaultBrowserContext(): BrowserContext {
+  override defaultBrowserContext(): BidiBrowserContext {
     return this.#defaultContext;
   }
 
@@ -314,7 +313,7 @@ export class Browser extends BrowserBase {
     return [this.#browserTarget, ...Array.from(this.#targets.values())];
   }
 
-  _getTargetById(id: string): BiDiTarget {
+  _getTargetById(id: string): BidiTarget {
     const target = this.#targets.get(id);
     if (!target) {
       throw new Error('Target not found');

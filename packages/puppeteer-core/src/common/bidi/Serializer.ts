@@ -20,8 +20,8 @@ import {LazyArg} from '../LazyArg.js';
 import {debugError, isDate, isPlainObject, isRegExp} from '../util.js';
 
 import {BrowsingContext} from './BrowsingContext.js';
-import {ElementHandle} from './ElementHandle.js';
-import {JSHandle} from './JSHandle.js';
+import {BidiElementHandle} from './ElementHandle.js';
+import {BidiJSHandle} from './JSHandle.js';
 
 /**
  * @internal
@@ -151,7 +151,7 @@ export class BidiSerializer {
     }
     // eslint-disable-next-line rulesdir/use-using -- We want this to continue living.
     const objectHandle =
-      arg && (arg instanceof JSHandle || arg instanceof ElementHandle)
+      arg && (arg instanceof BidiJSHandle || arg instanceof BidiElementHandle)
         ? arg
         : null;
     if (objectHandle) {
