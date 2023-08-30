@@ -192,7 +192,7 @@ export class FrameManager extends EventEmitter {
     });
     session.on('Page.frameNavigated', event => {
       this.#frameNavigatedReceived.add(event.frame.id);
-      void this.#onFrameNavigated(event.frame);
+      void this.#onFrameNavigated(event.frame, event.type);
     });
     session.on('Page.navigatedWithinDocument', event => {
       this.#onFrameNavigatedWithinDocument(event.frameId, event.url);
@@ -351,7 +351,7 @@ export class FrameManager extends EventEmitter {
       );
     }
     if (!this.#frameNavigatedReceived.has(frameTree.frame.id)) {
-      void this.#onFrameNavigated(frameTree.frame);
+      void this.#onFrameNavigated(frameTree.frame, 'Navigation');
     } else {
       this.#frameNavigatedReceived.delete(frameTree.frame.id);
     }
@@ -386,7 +386,10 @@ export class FrameManager extends EventEmitter {
     this.emit(FrameManagerEmittedEvents.FrameAttached, frame);
   }
 
-  async #onFrameNavigated(framePayload: Protocol.Page.Frame): Promise<void> {
+  async #onFrameNavigated(
+    framePayload: Protocol.Page.Frame,
+    navigationType: Protocol.Page.NavigationType
+  ): Promise<void> {
     const frameId = framePayload.id;
     const isMainFrame = !framePayload.parentId;
 
@@ -415,7 +418,7 @@ export class FrameManager extends EventEmitter {
     frame = await this._frameTree.waitForFrame(frameId);
     frame._navigated(framePayload);
     this.emit(FrameManagerEmittedEvents.FrameNavigated, frame);
-    frame.emit(FrameEmittedEvents.FrameNavigated);
+    frame.emit(FrameEmittedEvents.FrameNavigated, navigationType);
   }
 
   async #createIsolatedWorld(session: CDPSession, name: string): Promise<void> {

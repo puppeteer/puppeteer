@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import Protocol from 'devtools-protocol';
+
 import {HTTPResponse} from '../api/HTTPResponse.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
@@ -218,7 +220,10 @@ export class LifecycleWatcher {
     this.#checkLifecycleComplete();
   }
 
-  #navigated(): void {
+  #navigated(navigationType: Protocol.Page.NavigationType): void {
+    if (navigationType === 'BackForwardCacheRestore') {
+      return this.#frameSwapped();
+    }
     this.#checkLifecycleComplete();
   }
 

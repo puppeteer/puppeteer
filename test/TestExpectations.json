@@ -3900,6 +3900,12 @@
     "expectations": ["PASS", "TIMEOUT"]
   },
   {
+    "testIdPattern": "[bfcache.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[prerender.spec] Prerender can navigate to a prerendered page via input",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
