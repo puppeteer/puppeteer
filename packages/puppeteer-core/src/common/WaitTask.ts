@@ -15,8 +15,8 @@
  */
 
 import {ElementHandle} from '../api/ElementHandle.js';
-import {Realm} from '../api/Frame.js';
 import {JSHandle} from '../api/JSHandle.js';
+import {Realm} from '../api/Realm.js';
 import type {Poller} from '../injected/Poller.js';
 import {Deferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';

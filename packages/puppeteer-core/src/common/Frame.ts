@@ -412,7 +412,7 @@ export class Frame extends BaseFrame {
 
   _detach(): void {
     this.#detached = true;
-    this.worlds[MAIN_WORLD]._detach();
-    this.worlds[PUPPETEER_WORLD]._detach();
+    this.worlds[MAIN_WORLD][Symbol.dispose]();
+    this.worlds[PUPPETEER_WORLD][Symbol.dispose]();
   }
 }

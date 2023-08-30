@@ -16,11 +16,8 @@
 
 import {Protocol} from 'devtools-protocol';
 
-import type {ClickOptions, ElementHandle} from '../api/ElementHandle.js';
-import {Realm} from '../api/Frame.js';
-import {KeyboardTypeOptions} from '../api/Input.js';
 import {JSHandle} from '../api/JSHandle.js';
-import {assert} from '../util/assert.js';
+import {Realm} from '../api/Realm.js';
 import {Deferred} from '../util/Deferred.js';
 
 import {Binding} from './Binding.js';
@@ -31,24 +28,14 @@ import {FrameManager} from './FrameManager.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {CDPJSHandle} from './JSHandle.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
-import {TimeoutSettings} from './TimeoutSettings.js';
-import {
-  BindingPayload,
-  EvaluateFunc,
-  EvaluateFuncWith,
-  HandleFor,
-  InnerLazyParams,
-  NodeFor,
-} from './types.js';
+import {BindingPayload, EvaluateFunc, HandleFor} from './types.js';
 import {
   addPageBinding,
   createJSHandle,
   debugError,
-  getPageContent,
   setPageContent,
   withSourcePuppeteerURLIfNone,
 } from './util.js';
-import {TaskManager, WaitTask} from './WaitTask.js';
 
 /**
  * @public
@@ -102,27 +89,22 @@ export interface IsolatedWorldChart {
 /**
  * @internal
  */
-export class IsolatedWorld implements Realm {
+export class IsolatedWorld extends Realm {
   #frame: Frame;
   #context = Deferred.create<ExecutionContext>();
-  #detached = false;
 
   // Set of bindings that have been registered in the current context.
   #contextBindings = new Set<string>();
 
   // Contains mapping from functions that should be bound to Puppeteer functions.
   #bindings = new Map<string, Binding>();
-  #taskManager = new TaskManager();
-
-  get taskManager(): TaskManager {
-    return this.#taskManager;
-  }
 
   get _bindings(): Map<string, Binding> {
     return this.#bindings;
   }
 
   constructor(frame: Frame) {
+    super(frame._frameManager.timeoutSettings);
     this.#frame = frame;
     this.frameUpdated();
   }
@@ -139,10 +121,6 @@ export class IsolatedWorld implements Realm {
     return this.#frame._frameManager;
   }
 
-  get #timeoutSettings(): TimeoutSettings {
-    return this.#frameManager.timeoutSettings;
-  }
-
   frame(): Frame {
     return this.#frame;
   }
@@ -154,23 +132,15 @@ export class IsolatedWorld implements Realm {
   setContext(context: ExecutionContext): void {
     this.#contextBindings.clear();
     this.#context.resolve(context);
-    void this.#taskManager.rerunAll();
+    void this.taskManager.rerunAll();
   }
 
   hasContext(): boolean {
     return this.#context.resolved();
   }
 
-  _detach(): void {
-    this.#detached = true;
-    this.#client.off('Runtime.bindingCalled', this.#onBindingCalled);
-    this.#taskManager.terminateAll(
-      new Error('waitForFunction failed: frame got detached.')
-    );
-  }
-
   executionContext(): Promise<ExecutionContext> {
-    if (this.#detached) {
+    if (this.disposed) {
       throw new Error(
         `Execution context is not available in detached frame "${this.#frame.url()}" (are you trying to evaluate?)`
       );
@@ -211,70 +181,6 @@ export class IsolatedWorld implements Realm {
     return context.evaluate(pageFunction, ...args);
   }
 
-  async $<Selector extends string>(
-    selector: Selector
-  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    using document = await this.document();
-    return await document.$(selector);
-  }
-
-  async $$<Selector extends string>(
-    selector: Selector
-  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    using document = await this.document();
-    return await document.$$(selector);
-  }
-
-  async document(): Promise<ElementHandle<Document>> {
-    // TODO(#10813): Implement document caching.
-    return await this.evaluateHandle(() => {
-      return document;
-    });
-  }
-
-  async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
-    using document = await this.document();
-    return await document.$x(expression);
-  }
-
-  async $eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
-      NodeFor<Selector>,
-      Params
-    >,
-  >(
-    selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
-    using document = await this.document();
-    return await document.$eval(selector, pageFunction, ...args);
-  }
-
-  async $$eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<
-      Array<NodeFor<Selector>>,
-      Params
-    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>,
-  >(
-    selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
-    using document = await this.document();
-    return await document.$$eval(selector, pageFunction, ...args);
-  }
-
-  async content(): Promise<string> {
-    return await this.evaluate(getPageContent);
-  }
-
   async setContent(
     html: string,
     options: {
@@ -284,7 +190,7 @@ export class IsolatedWorld implements Realm {
   ): Promise<void> {
     const {
       waitUntil = ['load'],
-      timeout = this.#timeoutSettings.navigationTimeout(),
+      timeout = this.timeoutSettings.navigationTimeout(),
     } = options;
 
     await setPageContent(this, html);
@@ -303,50 +209,6 @@ export class IsolatedWorld implements Realm {
     if (error) {
       throw error;
     }
-  }
-
-  async click(
-    selector: string,
-    options?: Readonly<ClickOptions>
-  ): Promise<void> {
-    using handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    await handle.click(options);
-    await handle.dispose();
-  }
-
-  async focus(selector: string): Promise<void> {
-    using handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    await handle.focus();
-  }
-
-  async hover(selector: string): Promise<void> {
-    using handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    await handle.hover();
-  }
-
-  async select(selector: string, ...values: string[]): Promise<string[]> {
-    using handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    return await handle.select(...values);
-  }
-
-  async tap(selector: string): Promise<void> {
-    using handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    await handle.tap();
-  }
-
-  async type(
-    selector: string,
-    text: string,
-    options?: Readonly<KeyboardTypeOptions>
-  ): Promise<void> {
-    using handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    await handle.type(text, options);
   }
 
   // If multiple waitFor are set up asynchronously, we need to wait for the
@@ -431,46 +293,6 @@ export class IsolatedWorld implements Realm {
     }
   };
 
-  waitForFunction<
-    Params extends unknown[],
-    Func extends EvaluateFunc<InnerLazyParams<Params>> = EvaluateFunc<
-      InnerLazyParams<Params>
-    >,
-  >(
-    pageFunction: Func | string,
-    options: {
-      polling?: 'raf' | 'mutation' | number;
-      timeout?: number;
-      root?: ElementHandle<Node>;
-      signal?: AbortSignal;
-    } = {},
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    const {
-      polling = 'raf',
-      timeout = this.#timeoutSettings.timeout(),
-      root,
-      signal,
-    } = options;
-    if (typeof polling === 'number' && polling < 0) {
-      throw new Error('Cannot poll with non-positive interval');
-    }
-    const waitTask = new WaitTask(
-      this,
-      {
-        polling,
-        root,
-        timeout,
-        signal,
-      },
-      pageFunction as unknown as
-        | ((...args: unknown[]) => Promise<Awaited<ReturnType<Func>>>)
-        | string,
-      ...args
-    );
-    return waitTask.result;
-  }
-
   async title(): Promise<string> {
     return this.evaluate(() => {
       return document.title;
@@ -521,6 +343,11 @@ export class IsolatedWorld implements Realm {
     )) as T;
     await handle.dispose();
     return newHandle;
+  }
+
+  [Symbol.dispose](): void {
+    super[Symbol.dispose]();
+    this.#client.off('Runtime.bindingCalled', this.#onBindingCalled);
   }
 }
 
