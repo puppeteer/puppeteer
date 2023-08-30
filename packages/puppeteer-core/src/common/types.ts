@@ -32,6 +32,13 @@ export interface Moveable {
 /**
  * @internal
  */
+export interface Disposed {
+  get disposed(): boolean;
+}
+
+/**
+ * @internal
+ */
 export interface BindingPayload {
   type: string;
   name: string;
