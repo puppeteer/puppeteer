@@ -16,7 +16,7 @@
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import {Frame} from '../../api/Frame.js';
+import {Frame, throwIfDetached} from '../../api/Frame.js';
 import {Deferred} from '../../util/Deferred.js';
 import {CDPSession} from '../Connection.js';
 import {UTILITY_WORLD_NAME} from '../FrameManager.js';
@@ -47,7 +47,7 @@ export class BidiFrame extends Frame {
   #context: BrowsingContext;
   #timeoutSettings: TimeoutSettings;
   #abortDeferred = Deferred.create<Error>();
-  #detached = false;
+  #disposed = false;
   sandboxes: SandboxChart;
   override _id: string;
 
@@ -102,6 +102,7 @@ export class BidiFrame extends Frame {
     return this.#page.childFrames(this.#context.id);
   }
 
+  @throwIfDetached
   override async goto(
     url: string,
     options?: {
@@ -118,6 +119,7 @@ export class BidiFrame extends Frame {
     return this.#page.getNavigationResponse(navigationId);
   }
 
+  @throwIfDetached
   override setContent(
     html: string,
     options: {
@@ -135,6 +137,7 @@ export class BidiFrame extends Frame {
     return this.#context;
   }
 
+  @throwIfDetached
   override async waitForNavigation(
     options: {
       timeout?: number;
@@ -189,12 +192,15 @@ export class BidiFrame extends Frame {
     return this.#page.getNavigationResponse(info.navigation);
   }
 
-  override isDetached(): boolean {
-    return this.#detached;
+  override get detached(): boolean {
+    return this.#disposed;
   }
 
   [Symbol.dispose](): void {
-    this.#detached = true;
+    if (this.#disposed) {
+      return;
+    }
+    this.#disposed = true;
     this.#abortDeferred.reject(new Error('Frame detached'));
     this.#context.dispose();
     this.sandboxes[MAIN_SANDBOX][Symbol.dispose]();

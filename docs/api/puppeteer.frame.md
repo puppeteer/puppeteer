@@ -61,6 +61,12 @@ const text = await frame.$eval('.selector', element => element.textContent);
 console.log(text);
 ```
 
+## Properties
+
+| Property | Modifiers             | Type    | Description |
+| -------- | --------------------- | ------- | ----------- |
+| detached | <code>readonly</code> | boolean |             |
+
 ## Methods
 
 | Method                                                                               | Modifiers | Description                                                                                                                                                                                                                                                                |
@@ -71,8 +77,8 @@ console.log(text);
 | [$eval(selector, pageFunction, args)](./puppeteer.frame._eval.md)                    |           | <p>Runs the given function on the first element matching the given selector in the frame.</p><p>If the given function returns a promise, then this method will wait till the promise resolves.</p>                                                                         |
 | [$x(expression)](./puppeteer.frame._x.md)                                            |           |                                                                                                                                                                                                                                                                            |
 | [addScriptTag(options)](./puppeteer.frame.addscripttag.md)                           |           | Adds a <code>&lt;script&gt;</code> tag into the page with the desired url or content.                                                                                                                                                                                      |
-| [addStyleTag(options)](./puppeteer.frame.addstyletag.md)                             |           | Adds a <code>&lt;link rel=&quot;stylesheet&quot;&gt;</code> tag into the page with the desired URL or a <code>&lt;style type=&quot;text/css&quot;&gt;</code> tag with the content.                                                                                         |
-| [addStyleTag(options)](./puppeteer.frame.addstyletag_1.md)                           |           |                                                                                                                                                                                                                                                                            |
+| [addStyleTag(options)](./puppeteer.frame.addstyletag.md)                             |           | Adds a <code>HTMLStyleElement</code> into the frame with the desired URL                                                                                                                                                                                                   |
+| [addStyleTag(options)](./puppeteer.frame.addstyletag_1.md)                           |           | Adds a <code>HTMLLinkElement</code> into the frame with the desired URL                                                                                                                                                                                                    |
 | [childFrames()](./puppeteer.frame.childframes.md)                                    |           | An array of child frames.                                                                                                                                                                                                                                                  |
 | [click(selector, options)](./puppeteer.frame.click.md)                               |           | Clicks the first element found that matches <code>selector</code>.                                                                                                                                                                                                         |
 | [content()](./puppeteer.frame.content.md)                                            |           | The full HTML contents of the frame, including the DOCTYPE.                                                                                                                                                                                                                |

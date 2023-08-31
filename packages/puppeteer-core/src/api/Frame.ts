@@ -40,6 +40,7 @@ import {
   importFSPromises,
   withSourcePuppeteerURLIfNone,
 } from '../common/util.js';
+import {throwIfDisposed} from '../util/decorators.js';
 
 import {KeyboardTypeOptions} from './Input.js';
 import {FunctionLocator, Locator, NodeLocator} from './locators/locators.js';
@@ -124,6 +125,13 @@ export interface FrameAddStyleTagOptions {
    */
   content?: string;
 }
+
+/**
+ * @internal
+ */
+export const throwIfDetached = throwIfDisposed<Frame>(frame => {
+  return `Attempted to use detached Frame '${frame._id}'.`;
+});
 
 /**
  * Represents a DOM frame.
@@ -323,6 +331,7 @@ export abstract class Frame extends EventEmitter {
   /**
    * @internal
    */
+  @throwIfDetached
   async frameElement(): Promise<HandleFor<HTMLIFrameElement> | null> {
     const parentFrame = this.parentFrame();
     if (!parentFrame) {
@@ -346,6 +355,7 @@ export abstract class Frame extends EventEmitter {
    *
    * @see {@link Page.evaluateHandle} for details.
    */
+  @throwIfDetached
   async evaluateHandle<
     Params extends unknown[],
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
@@ -366,6 +376,7 @@ export abstract class Frame extends EventEmitter {
    *
    * @see {@link Page.evaluate} for details.
    */
+  @throwIfDetached
   async evaluate<
     Params extends unknown[],
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
@@ -401,6 +412,11 @@ export abstract class Frame extends EventEmitter {
    * change in the Locators API.
    */
   locator<Ret>(func: () => Awaitable<Ret>): Locator<Ret>;
+
+  /**
+   * @internal
+   */
+  @throwIfDetached
   locator<Selector extends string, Ret>(
     selectorOrFunc: Selector | (() => Awaitable<Ret>)
   ): Locator<NodeFor<Selector>> | Locator<Ret> {
@@ -417,6 +433,7 @@ export abstract class Frame extends EventEmitter {
    * @returns A {@link ElementHandle | element handle} to the first element
    * matching the given selector. Otherwise, `null`.
    */
+  @throwIfDetached
   async $<Selector extends string>(
     selector: Selector
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
@@ -430,6 +447,7 @@ export abstract class Frame extends EventEmitter {
    * @returns An array of {@link ElementHandle | element handles} that point to
    * elements matching the given selector.
    */
+  @throwIfDetached
   async $$<Selector extends string>(
     selector: Selector
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
@@ -456,6 +474,7 @@ export abstract class Frame extends EventEmitter {
    * @param args - Additional arguments to pass to `pageFunction`.
    * @returns A promise to the result of the function.
    */
+  @throwIfDetached
   $eval<
     Selector extends string,
     Params extends unknown[],
@@ -492,6 +511,7 @@ export abstract class Frame extends EventEmitter {
    * @param args - Additional arguments to pass to `pageFunction`.
    * @returns A promise to the result of the function.
    */
+  @throwIfDetached
   $$eval<
     Selector extends string,
     Params extends unknown[],
@@ -518,6 +538,7 @@ export abstract class Frame extends EventEmitter {
    * automatically.
    * @param expression - the XPath expression to evaluate.
    */
+  @throwIfDetached
   $x(expression: string): Promise<Array<ElementHandle<Node>>> {
     return this.mainRealm().$x(expression);
   }
@@ -557,6 +578,7 @@ export abstract class Frame extends EventEmitter {
    * @returns An element matching the given selector.
    * @throws Throws if an element matching the given selector doesn't appear.
    */
+  @throwIfDetached
   async waitForSelector<Selector extends string>(
     selector: Selector,
     options: WaitForSelectorOptions = {}
@@ -592,6 +614,7 @@ export abstract class Frame extends EventEmitter {
    * @param options - options to configure the visibility of the element and how
    * long to wait before timing out.
    */
+  @throwIfDetached
   async waitForXPath(
     xpath: string,
     options: WaitForSelectorOptions = {}
@@ -635,6 +658,7 @@ export abstract class Frame extends EventEmitter {
    * @param args - arguments to pass to the `pageFunction`.
    * @returns the promise which resolve when the `pageFunction` returns a truthy value.
    */
+  @throwIfDetached
   waitForFunction<
     Params extends unknown[],
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
@@ -652,6 +676,7 @@ export abstract class Frame extends EventEmitter {
   /**
    * The full HTML contents of the frame, including the DOCTYPE.
    */
+  @throwIfDetached
   content(): Promise<string> {
     return this.isolatedRealm().content();
   }
@@ -701,9 +726,25 @@ export abstract class Frame extends EventEmitter {
   abstract childFrames(): Frame[];
 
   /**
-   * Is`true` if the frame has been detached. Otherwise, `false`.
+   * @returns `true` if the frame has detached. `false` otherwise.
    */
-  abstract isDetached(): boolean;
+  abstract get detached(): boolean;
+
+  /**
+   * Is`true` if the frame has been detached. Otherwise, `false`.
+   *
+   * @deprecated Use the `detached` getter.
+   */
+  isDetached(): boolean {
+    return this.detached;
+  }
+
+  /**
+   * @internal
+   */
+  get disposed(): boolean {
+    return this.detached;
+  }
 
   /**
    * Adds a `<script>` tag into the page with the desired url or content.
@@ -712,6 +753,7 @@ export abstract class Frame extends EventEmitter {
    * @returns An {@link ElementHandle | element handle} to the injected
    * `<script>` element.
    */
+  @throwIfDetached
   async addScriptTag(
     options: FrameAddScriptTagOptions
   ): Promise<ElementHandle<HTMLScriptElement>> {
@@ -775,18 +817,29 @@ export abstract class Frame extends EventEmitter {
   }
 
   /**
-   * Adds a `<link rel="stylesheet">` tag into the page with the desired URL or
-   * a `<style type="text/css">` tag with the content.
+   * Adds a `HTMLStyleElement` into the frame with the desired URL
    *
-   * @returns An {@link ElementHandle | element handle} to the loaded `<link>`
-   * or `<style>` element.
+   * @returns An {@link ElementHandle | element handle} to the loaded `<style>`
+   * element.
    */
   async addStyleTag(
     options: Omit<FrameAddStyleTagOptions, 'url'>
   ): Promise<ElementHandle<HTMLStyleElement>>;
+
+  /**
+   * Adds a `HTMLLinkElement` into the frame with the desired URL
+   *
+   * @returns An {@link ElementHandle | element handle} to the loaded `<link>`
+   * element.
+   */
   async addStyleTag(
     options: FrameAddStyleTagOptions
   ): Promise<ElementHandle<HTMLLinkElement>>;
+
+  /**
+   * @internal
+   */
+  @throwIfDetached
   async addStyleTag(
     options: FrameAddStyleTagOptions
   ): Promise<ElementHandle<HTMLStyleElement | HTMLLinkElement>> {
@@ -868,6 +921,7 @@ export abstract class Frame extends EventEmitter {
    *
    * @param selector - The selector to query for.
    */
+  @throwIfDetached
   click(selector: string, options: Readonly<ClickOptions> = {}): Promise<void> {
     return this.isolatedRealm().click(selector, options);
   }
@@ -878,7 +932,8 @@ export abstract class Frame extends EventEmitter {
    * @param selector - The selector to query for.
    * @throws Throws if there's no element matching `selector`.
    */
-  async focus(selector: string): Promise<void> {
+  @throwIfDetached
+  focus(selector: string): Promise<void> {
     return this.isolatedRealm().focus(selector);
   }
 
@@ -889,6 +944,7 @@ export abstract class Frame extends EventEmitter {
    * @param selector - The selector to query for.
    * @throws Throws if there's no element matching `selector`.
    */
+  @throwIfDetached
   hover(selector: string): Promise<void> {
     return this.isolatedRealm().hover(selector);
   }
@@ -911,6 +967,7 @@ export abstract class Frame extends EventEmitter {
    * @returns the list of values that were successfully selected.
    * @throws Throws if there's no `<select>` matching `selector`.
    */
+  @throwIfDetached
   select(selector: string, ...values: string[]): Promise<string[]> {
     return this.isolatedRealm().select(selector, ...values);
   }
@@ -921,6 +978,7 @@ export abstract class Frame extends EventEmitter {
    * @param selector - The selector to query for.
    * @throws Throws if there's no element matching `selector`.
    */
+  @throwIfDetached
   tap(selector: string): Promise<void> {
     return this.isolatedRealm().tap(selector);
   }
@@ -946,6 +1004,7 @@ export abstract class Frame extends EventEmitter {
    * @param options - takes one option, `delay`, which sets the time to wait
    * between key presses in milliseconds. Defaults to `0`.
    */
+  @throwIfDetached
   type(
     selector: string,
     text: string,
@@ -983,6 +1042,7 @@ export abstract class Frame extends EventEmitter {
   /**
    * The frame's title.
    */
+  @throwIfDetached
   title(): Promise<string> {
     return this.isolatedRealm().title();
   }
@@ -1013,6 +1073,10 @@ export abstract class Frame extends EventEmitter {
   waitForDevicePrompt(
     options?: WaitTimeoutOptions
   ): Promise<DeviceRequestPrompt>;
+
+  /**
+   * @internal
+   */
   waitForDevicePrompt(): Promise<DeviceRequestPrompt> {
     throw new Error('Not implemented');
   }
