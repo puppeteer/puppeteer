@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "wireit",
-    "clean": "tsc -b --clean && rm -rf lib"
+    "clean": "git clean -Xdf -e '!node_modules' ."
   },
   "wireit": {
     "build": {

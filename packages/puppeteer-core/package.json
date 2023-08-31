@@ -35,13 +35,9 @@
   },
   "scripts": {
     "build:docs": "wireit",
-    "build:tsc": "wireit",
-    "build:types": "wireit",
     "build": "wireit",
     "check": "tsx tools/ensure-correct-devtools-protocol-package",
-    "clean": "tsc -b --clean && rm -rf lib src/generated",
-    "generate:package-json": "wireit",
-    "generate:sources": "wireit",
+    "clean": "git clean -Xdf -e '!node_modules' .",
     "prepack": "wireit",
     "unit": "wireit"
   },
