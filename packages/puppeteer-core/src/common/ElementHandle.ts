@@ -19,6 +19,7 @@ import {Protocol} from 'devtools-protocol';
 import {AutofillData, ElementHandle, Point} from '../api/ElementHandle.js';
 import {Page, ScreenshotOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
+import {throwIfDisposed} from '../util/decorators.js';
 
 import {CDPSession} from './Connection.js';
 import {ExecutionContext} from './ExecutionContext.js';
@@ -81,6 +82,7 @@ export class CDPElementHandle<
     return this.#frame;
   }
 
+  @throwIfDisposed()
   override async $<Selector extends string>(
     selector: Selector
   ): Promise<CDPElementHandle<NodeFor<Selector>> | null> {
@@ -89,6 +91,7 @@ export class CDPElementHandle<
     > | null>;
   }
 
+  @throwIfDisposed()
   override async $$<Selector extends string>(
     selector: Selector
   ): Promise<Array<CDPElementHandle<NodeFor<Selector>>>> {
@@ -97,6 +100,7 @@ export class CDPElementHandle<
     >;
   }
 
+  @throwIfDisposed()
   override async waitForSelector<Selector extends string>(
     selector: Selector,
     options?: WaitForSelectorOptions
@@ -109,6 +113,7 @@ export class CDPElementHandle<
   override async contentFrame(
     this: ElementHandle<HTMLIFrameElement>
   ): Promise<CDPFrame>;
+  @throwIfDisposed()
   override async contentFrame(): Promise<CDPFrame | null> {
     const nodeInfo = await this.client.send('DOM.describeNode', {
       objectId: this.id,
@@ -119,6 +124,7 @@ export class CDPElementHandle<
     return this.#frameManager.frame(nodeInfo.node.frameId);
   }
 
+  @throwIfDisposed()
   override async scrollIntoView(
     this: CDPElementHandle<Element>
   ): Promise<void> {
@@ -137,6 +143,7 @@ export class CDPElementHandle<
   /**
    * This method creates and captures a dragevent from the element.
    */
+  @throwIfDisposed()
   override async drag(
     this: CDPElementHandle<Element>,
     target: Point
@@ -150,6 +157,7 @@ export class CDPElementHandle<
     return await this.#page.mouse.drag(start, target);
   }
 
+  @throwIfDisposed()
   override async dragEnter(
     this: CDPElementHandle<Element>,
     data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
@@ -159,6 +167,7 @@ export class CDPElementHandle<
     await this.#page.mouse.dragEnter(target, data);
   }
 
+  @throwIfDisposed()
   override async dragOver(
     this: CDPElementHandle<Element>,
     data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
@@ -168,6 +177,7 @@ export class CDPElementHandle<
     await this.#page.mouse.dragOver(target, data);
   }
 
+  @throwIfDisposed()
   override async drop(
     this: CDPElementHandle<Element>,
     data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
@@ -177,6 +187,7 @@ export class CDPElementHandle<
     await this.#page.mouse.drop(destination, data);
   }
 
+  @throwIfDisposed()
   override async dragAndDrop(
     this: CDPElementHandle<Element>,
     target: CDPElementHandle<Node>,
@@ -192,6 +203,7 @@ export class CDPElementHandle<
     await this.#page.mouse.dragAndDrop(startPoint, targetPoint, options);
   }
 
+  @throwIfDisposed()
   override async uploadFile(
     this: CDPElementHandle<HTMLInputElement>,
     ...filePaths: string[]
@@ -249,6 +261,7 @@ export class CDPElementHandle<
     }
   }
 
+  @throwIfDisposed()
   override async screenshot(
     this: CDPElementHandle<Element>,
     options: ScreenshotOptions = {}
@@ -307,6 +320,7 @@ export class CDPElementHandle<
     return imageData;
   }
 
+  @throwIfDisposed()
   override async autofill(data: AutofillData): Promise<void> {
     const nodeInfo = await this.client.send('DOM.describeNode', {
       objectId: this.handle.id,

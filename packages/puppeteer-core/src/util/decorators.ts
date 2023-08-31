@@ -15,7 +15,7 @@
  */
 
 import {Symbol} from '../../third_party/disposablestack/disposablestack.js';
-import {Moveable} from '../common/types.js';
+import {Disposed, Moveable} from '../common/types.js';
 
 const instances = new WeakSet<object>();
 
@@ -56,4 +56,20 @@ export function moveable<
     };
   }
   return Class;
+}
+
+export function throwIfDisposed(message?: string) {
+  return <This extends Disposed, Args extends unknown[], Ret>(
+    target: (this: This, ...args: Args) => Ret,
+    _: unknown
+  ) => {
+    return function (this: This, ...args: Args): Ret {
+      if (this.disposed) {
+        throw new Error(
+          message ?? `Attempted to use disposed ${this.constructor.name}.`
+        );
+      }
+      return target.call(this, ...args);
+    };
+  };
 }

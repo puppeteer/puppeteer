@@ -18,6 +18,12 @@
     "expectations": ["FAIL"]
   },
   {
+    "testIdPattern": "[bfcache.spec] *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["webDriverBiDi"],
+    "expectations": ["SKIP"]
+  },
+  {
     "testIdPattern": "[chromiumonly.spec] Chromium-Specific Launcher tests *",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -3898,12 +3904,6 @@
     "platforms": ["linux"],
     "parameters": ["firefox", "headful"],
     "expectations": ["PASS", "TIMEOUT"]
-  },
-  {
-    "testIdPattern": "[bfcache.spec] *",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["SKIP"]
   },
   {
     "testIdPattern": "[prerender.spec] Prerender can navigate to a prerendered page via input",
