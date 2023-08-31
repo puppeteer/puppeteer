@@ -66,7 +66,6 @@ export class CDPElementHandle<
     return this.handle.client;
   }
 
-  @throwIfDisposed()
   override remoteObject(): Protocol.Runtime.RemoteObject {
     return this.handle.remoteObject();
   }
@@ -114,6 +113,7 @@ export class CDPElementHandle<
   override async contentFrame(
     this: ElementHandle<HTMLIFrameElement>
   ): Promise<CDPFrame>;
+  @throwIfDisposed()
   override async contentFrame(): Promise<CDPFrame | null> {
     const nodeInfo = await this.client.send('DOM.describeNode', {
       objectId: this.id,

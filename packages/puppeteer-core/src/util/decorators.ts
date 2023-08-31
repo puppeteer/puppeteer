@@ -66,7 +66,7 @@ export function throwIfDisposed(message?: string) {
     return function (this: This, ...args: Args): Ret {
       if (this.disposed) {
         throw new Error(
-          message ?? `${this.constructor.name} is already disposed.`
+          message ?? `Attempted to use disposed ${this.constructor.name}.`
         );
       }
       return target.call(this, ...args);
