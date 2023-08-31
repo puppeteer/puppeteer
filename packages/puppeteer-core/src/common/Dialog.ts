@@ -26,9 +26,6 @@ import {CDPSession} from './Connection.js';
 export class CDPDialog extends Dialog {
   #client: CDPSession;
 
-  /**
-   * @internal
-   */
   constructor(
     client: CDPSession,
     type: Protocol.Page.DialogType,
@@ -39,9 +36,6 @@ export class CDPDialog extends Dialog {
     this.#client = client;
   }
 
-  /**
-   * @internal
-   */
   override async sendCommand(options: {
     accept: boolean;
     text?: string;

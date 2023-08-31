@@ -95,9 +95,6 @@ import {WebWorker} from './WebWorker.js';
  * @internal
  */
 export class CDPPage extends Page {
-  /**
-   * @internal
-   */
   static async _create(
     client: CDPSession,
     target: CDPTarget,
@@ -211,9 +208,6 @@ export class CDPPage extends Page {
     ['Page.fileChooserOpened', this.#onFileChooser.bind(this)],
   ]);
 
-  /**
-   * @internal
-   */
   constructor(
     client: CDPSession,
     target: CDPTarget,
@@ -379,9 +373,6 @@ export class CDPPage extends Page {
     this.#fileChooserDeferreds.clear();
   }
 
-  /**
-   * @internal
-   */
   _client(): CDPSession {
     return this.#client;
   }

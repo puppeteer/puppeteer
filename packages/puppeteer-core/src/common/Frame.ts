@@ -240,16 +240,10 @@ export class CDPFrame extends Frame {
     return this.worlds[MAIN_WORLD].executionContext();
   }
 
-  /**
-   * @internal
-   */
   override mainRealm(): IsolatedWorld {
     return this.worlds[MAIN_WORLD];
   }
 
-  /**
-   * @internal
-   */
   override isolatedRealm(): IsolatedWorld {
     return this.worlds[PUPPETEER_WORLD];
   }

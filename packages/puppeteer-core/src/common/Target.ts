@@ -50,17 +50,8 @@ export class CDPTarget extends Target {
     | ((isAutoAttachEmulated: boolean) => Promise<CDPSession>)
     | undefined;
 
-  /**
-   * @internal
-   */
   _initializedDeferred = Deferred.create<InitializationStatus>();
-  /**
-   * @internal
-   */
   _isClosedDeferred = Deferred.create<void>();
-  /**
-   * @internal
-   */
   _targetId: string;
 
   /**
@@ -89,23 +80,14 @@ export class CDPTarget extends Target {
     }
   }
 
-  /**
-   * @internal
-   */
   _subtype(): string | undefined {
     return this.#targetInfo.subtype;
   }
 
-  /**
-   * @internal
-   */
   _session(): CDPSession | undefined {
     return this.#session;
   }
 
-  /**
-   * @internal
-   */
   protected _sessionFactory(): (
     isAutoAttachEmulated: boolean
   ) => Promise<CDPSession> {
@@ -151,9 +133,6 @@ export class CDPTarget extends Target {
     }
   }
 
-  /**
-   * @internal
-   */
   _targetManager(): TargetManager {
     if (!this.#targetManager) {
       throw new Error('targetManager is not initialized');
@@ -161,9 +140,6 @@ export class CDPTarget extends Target {
     return this.#targetManager;
   }
 
-  /**
-   * @internal
-   */
   _getTargetInfo(): Protocol.Target.TargetInfo {
     return this.#targetInfo;
   }
@@ -190,24 +166,15 @@ export class CDPTarget extends Target {
     return this.browser()._targets.get(openerId);
   }
 
-  /**
-   * @internal
-   */
   _targetInfoChanged(targetInfo: Protocol.Target.TargetInfo): void {
     this.#targetInfo = targetInfo;
     this._checkIfInitialized();
   }
 
-  /**
-   * @internal
-   */
   _initialize(): void {
     this._initializedDeferred.resolve(InitializationStatus.SUCCESS);
   }
 
-  /**
-   * @internal
-   */
   protected _checkIfInitialized(): void {
     if (!this._initializedDeferred.resolved()) {
       this._initializedDeferred.resolve(InitializationStatus.SUCCESS);
@@ -224,9 +191,6 @@ export class PageTarget extends CDPTarget {
   #screenshotTaskQueue: TaskQueue;
   #ignoreHTTPSErrors: boolean;
 
-  /**
-   * @internal
-   */
   constructor(
     targetInfo: Protocol.Target.TargetInfo,
     session: CDPSession | undefined,

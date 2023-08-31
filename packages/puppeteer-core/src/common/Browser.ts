@@ -54,9 +54,6 @@ import {TaskQueue} from './TaskQueue.js';
  * @internal
  */
 export class CDPBrowser extends BrowserBase {
-  /**
-   * @internal
-   */
   static async _create(
     product: 'firefox' | 'chrome' | undefined,
     connection: Connection,
@@ -98,16 +95,10 @@ export class CDPBrowser extends BrowserBase {
   #screenshotTaskQueue: TaskQueue;
   #targetManager: TargetManager;
 
-  /**
-   * @internal
-   */
   override get _targets(): Map<string, CDPTarget> {
     return this.#targetManager.getAvailableTargets();
   }
 
-  /**
-   * @internal
-   */
   constructor(
     product: 'chrome' | 'firefox' | undefined,
     connection: Connection,
@@ -163,9 +154,6 @@ export class CDPBrowser extends BrowserBase {
     this.emit(BrowserEmittedEvents.Disconnected);
   };
 
-  /**
-   * @internal
-   */
   override async _attach(): Promise<void> {
     this.#connection.on(
       ConnectionEmittedEvents.Disconnected,
@@ -190,9 +178,6 @@ export class CDPBrowser extends BrowserBase {
     await this.#targetManager.initialize();
   }
 
-  /**
-   * @internal
-   */
   override _detach(): void {
     this.#connection.off(
       ConnectionEmittedEvents.Disconnected,
@@ -224,9 +209,6 @@ export class CDPBrowser extends BrowserBase {
     return this.#process ?? null;
   }
 
-  /**
-   * @internal
-   */
   _targetManager(): TargetManager {
     return this.#targetManager;
   }
@@ -243,9 +225,6 @@ export class CDPBrowser extends BrowserBase {
       });
   }
 
-  /**
-   * @internal
-   */
   override _getIsPageTargetCallback(): IsPageTargetCallback | undefined {
     return this.#isPageTargetCallback;
   }
@@ -304,9 +283,6 @@ export class CDPBrowser extends BrowserBase {
     return this.#defaultContext;
   }
 
-  /**
-   * @internal
-   */
   override async _disposeContext(contextId?: string): Promise<void> {
     if (!contextId) {
       return;
@@ -452,9 +428,6 @@ export class CDPBrowser extends BrowserBase {
     return this.#defaultContext.newPage();
   }
 
-  /**
-   * @internal
-   */
   override async _createPageInContext(contextId?: string): Promise<Page> {
     const {targetId} = await this.#connection.send('Target.createTarget', {
       url: 'about:blank',
@@ -553,9 +526,6 @@ export class CDPBrowserContext extends BrowserContext {
   #browser: CDPBrowser;
   #id?: string;
 
-  /**
-   * @internal
-   */
   constructor(connection: Connection, browser: CDPBrowser, contextId?: string) {
     super();
     this.#connection = connection;

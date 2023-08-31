@@ -52,16 +52,10 @@ export class CDPElementHandle<
     this.#frame = frame;
   }
 
-  /**
-   * @internal
-   */
   executionContext(): ExecutionContext {
     return this.handle.executionContext();
   }
 
-  /**
-   * @internal
-   */
   get client(): CDPSession {
     return this.handle.client;
   }
