@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "wireit",
-    "clean": "tsc -b --clean && rm -rf build"
+    "clean": "git clean -Xdf -e '!node_modules' ."
   },
   "wireit": {
     "build": {

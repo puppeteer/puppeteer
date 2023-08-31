@@ -35,11 +35,8 @@
   },
   "scripts": {
     "build:docs": "wireit",
-    "build:tsc": "wireit",
-    "build:types": "wireit",
     "build": "wireit",
-    "clean": "tsc -b --clean && rm -rf lib",
-    "generate:package-json": "wireit",
+    "clean": "git clean -Xdf -e '!node_modules' .",
     "postinstall": "node install.js",
     "prepack": "wireit"
   },

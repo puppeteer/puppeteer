@@ -4,12 +4,12 @@
   "description": "Puppeteer Angular schematics",
   "scripts": {
     "build": "wireit",
-    "clean": "tsc -b --clean && rm -rf lib && rm -rf test/build",
+    "clean": "git clean -Xdf -e '!node_modules' .",
     "dev:test": "npm run test --watch",
     "dev": "npm run build --watch",
-    "test": "wireit",
+    "sandbox:test": "node tools/sandbox.js --test",
     "sandbox": "node tools/sandbox.js",
-    "sandbox:test": "node tools/sandbox.js --test"
+    "test": "wireit"
   },
   "wireit": {
     "build": {
