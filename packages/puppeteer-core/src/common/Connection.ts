@@ -160,9 +160,16 @@ export class CallbackRegistry {
     errorMessage: string | ProtocolError,
     originalMessage?: string
   ): void {
-    const isError = errorMessage instanceof ProtocolError;
-    const message = isError ? errorMessage.message : errorMessage;
-    const error = isError ? errorMessage : callback.error;
+    let error: ProtocolError;
+    let message: string;
+    if (errorMessage instanceof ProtocolError) {
+      error = errorMessage;
+      message = errorMessage.message;
+      error.cause = callback.error;
+    } else {
+      error = callback.error;
+      message = errorMessage;
+    }
 
     callback.reject(
       rewriteError(
