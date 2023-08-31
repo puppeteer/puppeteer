@@ -16,8 +16,7 @@
 
 import {Protocol} from 'devtools-protocol';
 
-import {ElementHandle} from '../api/ElementHandle.js';
-import {Frame} from '../api/Frame.js';
+import {Frame, throwIfDetached} from '../api/Frame.js';
 import {HTTPResponse} from '../api/HTTPResponse.js';
 import {Page, WaitTimeoutOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
@@ -34,7 +33,6 @@ import {FrameManager} from './FrameManager.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
-import {NodeFor} from './types.js';
 
 /**
  * We use symbols to prevent external parties listening to these events.
@@ -118,6 +116,7 @@ export class CDPFrame extends Frame {
     return this.#client !== this._frameManager.client;
   }
 
+  @throwIfDetached
   override async goto(
     url: string,
     options: {
@@ -201,6 +200,7 @@ export class CDPFrame extends Frame {
     }
   }
 
+  @throwIfDetached
   override async waitForNavigation(
     options: {
       timeout?: number;
@@ -254,18 +254,7 @@ export class CDPFrame extends Frame {
     return this.worlds[PUPPETEER_WORLD];
   }
 
-  override async $<Selector extends string>(
-    selector: Selector
-  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    return this.mainRealm().$(selector);
-  }
-
-  override async $$<Selector extends string>(
-    selector: Selector
-  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    return this.mainRealm().$$(selector);
-  }
-
+  @throwIfDetached
   override async setContent(
     html: string,
     options: {
@@ -288,10 +277,6 @@ export class CDPFrame extends Frame {
     return this._frameManager._frameTree.childFrames(this._id);
   }
 
-  override isDetached(): boolean {
-    return this.#detached;
-  }
-
   #deviceRequestPromptManager(): DeviceRequestPromptManager {
     if (this.isOOPFrame()) {
       return this._frameManager._deviceRequestPromptManager(this.#client);
@@ -301,6 +286,7 @@ export class CDPFrame extends Frame {
     return parentFrame.#deviceRequestPromptManager();
   }
 
+  @throwIfDetached
   override waitForDevicePrompt(
     options: WaitTimeoutOptions = {}
   ): Promise<DeviceRequestPrompt> {
@@ -333,7 +319,14 @@ export class CDPFrame extends Frame {
     this._hasStartedLoading = true;
   }
 
+  override get detached(): boolean {
+    return this.#detached;
+  }
+
   [Symbol.dispose](): void {
+    if (this.#detached) {
+      return;
+    }
     this.#detached = true;
     this.worlds[MAIN_WORLD][Symbol.dispose]();
     this.worlds[PUPPETEER_WORLD][Symbol.dispose]();

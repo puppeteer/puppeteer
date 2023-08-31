@@ -4,7 +4,7 @@ sidebar_label: Frame.addStyleTag
 
 # Frame.addStyleTag() method
 
-Adds a `<link rel="stylesheet">` tag into the page with the desired URL or a `<style type="text/css">` tag with the content.
+Adds a `HTMLStyleElement` into the frame with the desired URL
 
 #### Signature:
 
@@ -26,4 +26,4 @@ class Frame {
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)&lt;HTMLStyleElement&gt;&gt;
 
-An [element handle](./puppeteer.elementhandle.md) to the loaded `<link>` or `<style>` element.
+An [element handle](./puppeteer.elementhandle.md) to the loaded `<style>` element.

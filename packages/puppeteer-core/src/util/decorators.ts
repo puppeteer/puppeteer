@@ -58,16 +58,15 @@ export function moveable<
   return Class;
 }
 
-export function throwIfDisposed(message?: string) {
-  return <This extends Disposed, Args extends unknown[], Ret>(
-    target: (this: This, ...args: Args) => Ret,
-    _: unknown
-  ) => {
-    return function (this: This, ...args: Args): Ret {
+export function throwIfDisposed<This extends Disposed>(
+  message: (value: This) => string = value => {
+    return `Attempted to use disposed ${value.constructor.name}.`;
+  }
+) {
+  return (target: (this: This, ...args: any[]) => any, _: unknown) => {
+    return function (this: This, ...args: any[]): any {
       if (this.disposed) {
-        throw new Error(
-          message ?? `Attempted to use disposed ${this.constructor.name}.`
-        );
+        throw new Error(message(this));
       }
       return target.call(this, ...args);
     };
