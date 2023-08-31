@@ -46,22 +46,13 @@ export class CDPKeyboard extends Keyboard {
   #client: CDPSession;
   #pressedKeys = new Set<string>();
 
-  /**
-   * @internal
-   */
   _modifiers = 0;
 
-  /**
-   * @internal
-   */
   constructor(client: CDPSession) {
     super();
     this.#client = client;
   }
 
-  /**
-   * @internal
-   */
   updateClient(client: CDPSession): void {
     this.#client = client;
   }
@@ -288,18 +279,12 @@ export class CDPMouse extends Mouse {
   #client: CDPSession;
   #keyboard: CDPKeyboard;
 
-  /**
-   * @internal
-   */
   constructor(client: CDPSession, keyboard: CDPKeyboard) {
     super();
     this.#client = client;
     this.#keyboard = keyboard;
   }
 
-  /**
-   * @internal
-   */
   updateClient(client: CDPSession): void {
     this.#client = client;
   }
@@ -576,18 +561,12 @@ export class CDPTouchscreen extends Touchscreen {
   #client: CDPSession;
   #keyboard: CDPKeyboard;
 
-  /**
-   * @internal
-   */
   constructor(client: CDPSession, keyboard: CDPKeyboard) {
     super();
     this.#client = client;
     this.#keyboard = keyboard;
   }
 
-  /**
-   * @internal
-   */
   updateClient(client: CDPSession): void {
     this.#client = client;
   }

@@ -75,9 +75,7 @@ export class FrameManager extends EventEmitter {
   #contextIdToContext = new Map<string, ExecutionContext>();
   #isolatedWorlds = new Set<string>();
   #client: CDPSession;
-  /**
-   * @internal
-   */
+
   _frameTree = new FrameTree<CDPFrame>();
 
   /**
@@ -299,9 +297,6 @@ export class FrameManager extends EventEmitter {
     void this.initialize(target._session()!);
   }
 
-  /**
-   * @internal
-   */
   _deviceRequestPromptManager(client: CDPSession): DeviceRequestPromptManager {
     let manager = this.#deviceRequestPromptManagerMap.get(client);
     if (manager === undefined) {

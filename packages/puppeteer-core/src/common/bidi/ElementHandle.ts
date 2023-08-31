@@ -56,9 +56,6 @@ export class BidiElementHandle<
     return this.handle.remoteValue();
   }
 
-  /**
-   * @internal
-   */
   assertElementHasWorld(): asserts this {
     // TODO: Should assert element has a Sandbox
     return;

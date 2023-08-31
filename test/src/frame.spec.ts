@@ -86,17 +86,15 @@ describe('Frame specs', function () {
 
       const frame1 = (await attachFrame(page, 'frame1', server.EMPTY_PAGE))!;
       await detachFrame(page, 'frame1');
-      let error!: Error;
-      await frame1
-        .evaluate(() => {
+      let error: Error | undefined;
+      try {
+        await frame1.evaluate(() => {
           return 7 * 8;
-        })
-        .catch(error_ => {
-          return (error = error_);
         });
-      expect(error.message).toContain(
-        'Execution context is not available in detached frame'
-      );
+      } catch (err) {
+        error = err as Error;
+      }
+      expect(error?.message).toContain('Attempted to use detached Frame');
     });
 
     it('allows readonly array to be an argument', async () => {

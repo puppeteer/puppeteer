@@ -53,9 +53,6 @@ export class CustomQueryHandlerRegistry {
     [registerScript: string, Handler: typeof QueryHandler]
   >();
 
-  /**
-   * @internal
-   */
   get(name: string): typeof QueryHandler | undefined {
     const handler = this.#handlers.get(name);
     return handler ? handler[1] : undefined;
@@ -79,8 +76,6 @@ export class CustomQueryHandlerRegistry {
    * @param name - Name to register under.
    * @param queryHandler - {@link CustomQueryHandler | Custom query handler} to
    * register.
-   *
-   * @internal
    */
   register(name: string, handler: CustomQueryHandler): void {
     assert(
@@ -141,8 +136,6 @@ export class CustomQueryHandlerRegistry {
    * given name.
    *
    * @throws `Error` if there is no handler under the given name.
-   *
-   * @internal
    */
   unregister(name: string): void {
     const handler = this.#handlers.get(name);
@@ -155,8 +148,6 @@ export class CustomQueryHandlerRegistry {
 
   /**
    * Gets the names of all {@link CustomQueryHandler | custom query handlers}.
-   *
-   * @internal
    */
   names(): string[] {
     return [...this.#handlers.keys()];
@@ -164,8 +155,6 @@ export class CustomQueryHandlerRegistry {
 
   /**
    * Unregisters all custom query handlers.
-   *
-   * @internal
    */
   clear(): void {
     for (const [registerScript] of this.#handlers) {
