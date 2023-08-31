@@ -164,8 +164,8 @@ export class CallbackRegistry {
     let message: string;
     if (errorMessage instanceof ProtocolError) {
       error = errorMessage;
-      message = errorMessage.message;
       error.cause = callback.error;
+      message = errorMessage.message;
     } else {
       error = callback.error;
       message = errorMessage;
