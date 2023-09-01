@@ -70,7 +70,7 @@ export class BidiJSHandle<T = unknown> extends JSHandle<T> {
       this.evaluateHandle.name,
       pageFunction
     );
-    return this.context().evaluateHandle(pageFunction, this, ...args);
+    return await this.context().evaluateHandle(pageFunction, this, ...args);
   }
 
   override async getProperty<K extends keyof T>(

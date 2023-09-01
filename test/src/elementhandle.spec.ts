@@ -341,7 +341,7 @@ describe('ElementHandle specs', function () {
         `;
       });
       await page.evaluate(async () => {
-        return new Promise(resolve => {
+        return await new Promise(resolve => {
           return window.requestAnimationFrame(resolve);
         });
       });
@@ -423,7 +423,7 @@ describe('ElementHandle specs', function () {
         `;
       });
       await page.evaluate(async () => {
-        return new Promise(resolve => {
+        return await new Promise(resolve => {
           return window.requestAnimationFrame(resolve);
         });
       });

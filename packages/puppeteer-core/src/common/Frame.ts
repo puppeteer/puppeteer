@@ -256,7 +256,7 @@ export class CDPFrame extends Frame {
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
     } = {}
   ): Promise<void> {
-    return this.isolatedRealm().setContent(html, options);
+    return await this.isolatedRealm().setContent(html, options);
   }
 
   override url(): string {

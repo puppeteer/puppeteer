@@ -99,7 +99,7 @@ export class ARIAQueryHandler extends QueryHandler {
     selector,
     {ariaQuerySelector}
   ) => {
-    return ariaQuerySelector(node, selector);
+    return await ariaQuerySelector(node, selector);
   };
 
   static override async *queryAll(

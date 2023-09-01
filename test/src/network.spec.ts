@@ -231,7 +231,7 @@ describe('network', function () {
         waitUntil: 'networkidle2',
       });
       await page.evaluate(async () => {
-        return await (globalThis as any).activationPromise;
+        return (globalThis as any).activationPromise;
       });
       await page.reload();
 
@@ -871,7 +871,7 @@ describe('network', function () {
         waitUntil: 'networkidle2',
       });
       await page.evaluate(async () => {
-        return await (globalThis as any).activationPromise;
+        return (globalThis as any).activationPromise;
       });
       await page.reload({
         waitUntil: 'networkidle2',

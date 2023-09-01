@@ -281,7 +281,7 @@ export class BrowsingContext extends Realm {
     method: T,
     ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
-    return this.#cdpSession.send(method, ...paramArgs);
+    return await this.#cdpSession.send(method, ...paramArgs);
   }
 
   title(): Promise<string> {

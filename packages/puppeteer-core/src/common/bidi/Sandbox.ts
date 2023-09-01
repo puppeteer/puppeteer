@@ -83,7 +83,7 @@ export class Sandbox extends Realm {
       this.evaluateHandle.name,
       pageFunction
     );
-    return this.#realm.evaluateHandle(pageFunction, ...args);
+    return await this.#realm.evaluateHandle(pageFunction, ...args);
   }
 
   async evaluate<
@@ -97,7 +97,7 @@ export class Sandbox extends Realm {
       this.evaluate.name,
       pageFunction
     );
-    return this.#realm.evaluate(pageFunction, ...args);
+    return await this.#realm.evaluate(pageFunction, ...args);
   }
 
   async adoptHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {

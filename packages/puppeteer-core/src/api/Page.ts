@@ -903,7 +903,7 @@ export class Page extends EventEmitter implements AsyncDisposable, Disposable {
   async $<Selector extends string>(
     selector: Selector
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    return this.mainFrame().$(selector);
+    return await this.mainFrame().$(selector);
   }
 
   /**
@@ -916,7 +916,7 @@ export class Page extends EventEmitter implements AsyncDisposable, Disposable {
   async $$<Selector extends string>(
     selector: Selector
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    return this.mainFrame().$$(selector);
+    return await this.mainFrame().$$(selector);
   }
 
   /**
@@ -1095,7 +1095,7 @@ export class Page extends EventEmitter implements AsyncDisposable, Disposable {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
-    return this.mainFrame().$eval(selector, pageFunction, ...args);
+    return await this.mainFrame().$eval(selector, pageFunction, ...args);
   }
 
   /**
@@ -1173,7 +1173,7 @@ export class Page extends EventEmitter implements AsyncDisposable, Disposable {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
-    return this.mainFrame().$$eval(selector, pageFunction, ...args);
+    return await this.mainFrame().$$eval(selector, pageFunction, ...args);
   }
 
   /**
@@ -1187,7 +1187,7 @@ export class Page extends EventEmitter implements AsyncDisposable, Disposable {
    * @param expression - Expression to evaluate
    */
   async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
-    return this.mainFrame().$x(expression);
+    return await this.mainFrame().$x(expression);
   }
 
   /**
@@ -1232,7 +1232,7 @@ export class Page extends EventEmitter implements AsyncDisposable, Disposable {
   async addScriptTag(
     options: FrameAddScriptTagOptions
   ): Promise<ElementHandle<HTMLScriptElement>> {
-    return this.mainFrame().addScriptTag(options);
+    return await this.mainFrame().addScriptTag(options);
   }
 
   /**
@@ -1254,7 +1254,7 @@ export class Page extends EventEmitter implements AsyncDisposable, Disposable {
   async addStyleTag(
     options: FrameAddStyleTagOptions
   ): Promise<ElementHandle<HTMLStyleElement | HTMLLinkElement>> {
-    return this.mainFrame().addStyleTag(options);
+    return await this.mainFrame().addStyleTag(options);
   }
 
   /**
@@ -1780,7 +1780,7 @@ export class Page extends EventEmitter implements AsyncDisposable, Disposable {
       };
     }
 
-    return firstValueFrom(
+    return await firstValueFrom(
       merge(
         fromEvent(this, PageEmittedEvents.FrameAttached) as Observable<Frame>,
         fromEvent(this, PageEmittedEvents.FrameNavigated) as Observable<Frame>,

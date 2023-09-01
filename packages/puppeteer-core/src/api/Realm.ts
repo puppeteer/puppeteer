@@ -131,7 +131,7 @@ export abstract class Realm implements Disposable {
   }
 
   async title(): Promise<string> {
-    return this.evaluate(() => {
+    return await this.evaluate(() => {
       return document.title;
     });
   }

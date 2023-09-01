@@ -291,7 +291,7 @@ export class WorkerTarget extends CDPTarget {
         );
       });
     }
-    return this.#workerPromise;
+    return await this.#workerPromise;
   }
 }
 

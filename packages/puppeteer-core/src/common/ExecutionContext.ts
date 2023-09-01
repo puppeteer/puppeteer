@@ -105,7 +105,7 @@ export class ExecutionContext {
             selector: string
           ): Promise<JSHandle<Node[]>> => {
             const results = ARIAQueryHandler.queryAll(element, selector);
-            return (element as unknown as CDPJSHandle<Node>)
+            return await (element as unknown as CDPJSHandle<Node>)
               .executionContext()
               .evaluateHandle(
                 (...elements) => {
@@ -250,7 +250,7 @@ export class ExecutionContext {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    return this.#evaluate(false, pageFunction, ...args);
+    return await this.#evaluate(false, pageFunction, ...args);
   }
 
   async #evaluate<

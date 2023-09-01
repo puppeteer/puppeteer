@@ -179,14 +179,14 @@ export abstract class ElementHandle<
   override async getProperty<K extends keyof ElementType>(
     propertyName: HandleOr<K>
   ): Promise<HandleFor<ElementType[K]>> {
-    return this.handle.getProperty(propertyName);
+    return await this.handle.getProperty(propertyName);
   }
 
   /**
    * @internal
    */
   override async getProperties(): Promise<Map<string, JSHandle>> {
-    return this.handle.getProperties();
+    return await this.handle.getProperties();
   }
 
   /**
@@ -202,7 +202,7 @@ export abstract class ElementHandle<
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
-    return this.handle.evaluate(pageFunction, ...args);
+    return await this.handle.evaluate(pageFunction, ...args);
   }
 
   /**
@@ -225,7 +225,7 @@ export abstract class ElementHandle<
    * @internal
    */
   override async jsonValue(): Promise<ElementType> {
-    return this.handle.jsonValue();
+    return await this.handle.jsonValue();
   }
 
   /**
@@ -288,9 +288,9 @@ export abstract class ElementHandle<
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
     const {updatedSelector, QueryHandler} =
       getQueryHandlerAndSelector(selector);
-    return AsyncIterableUtil.collect(
+    return await (AsyncIterableUtil.collect(
       QueryHandler.queryAll(this, updatedSelector)
-    ) as Promise<Array<ElementHandle<NodeFor<Selector>>>>;
+    ) as Promise<Array<ElementHandle<NodeFor<Selector>>>>);
   }
 
   /**
@@ -419,7 +419,7 @@ export abstract class ElementHandle<
     if (expression.startsWith('//')) {
       expression = `.${expression}`;
     }
-    return this.$$(`xpath/${expression}`);
+    return await this.$$(`xpath/${expression}`);
   }
 
   /**
@@ -491,7 +491,7 @@ export abstract class ElementHandle<
    * {@link ElementHandle.waitForSelector}.
    */
   async isVisible(): Promise<boolean> {
-    return this.#checkVisibility(true);
+    return await this.#checkVisibility(true);
   }
 
   /**
@@ -499,7 +499,7 @@ export abstract class ElementHandle<
    * {@link ElementHandle.waitForSelector}.
    */
   async isHidden(): Promise<boolean> {
-    return this.#checkVisibility(false);
+    return await this.#checkVisibility(false);
   }
 
   /**
@@ -575,7 +575,7 @@ export abstract class ElementHandle<
     if (xpath.startsWith('//')) {
       xpath = `.${xpath}`;
     }
-    return this.waitForSelector(`xpath/${xpath}`, options);
+    return await this.waitForSelector(`xpath/${xpath}`, options);
   }
 
   /**
@@ -745,7 +745,7 @@ export abstract class ElementHandle<
       );
     }
 
-    return this.evaluate((element, vals): string[] => {
+    return await this.evaluate((element, vals): string[] => {
       const values = new Set(vals);
       if (!(element instanceof HTMLSelectElement)) {
         throw new Error('Element is not a <select> element.');

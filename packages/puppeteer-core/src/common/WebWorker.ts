@@ -113,7 +113,7 @@ export class WebWorker extends EventEmitter {
    * @internal
    */
   async executionContext(): Promise<ExecutionContext> {
-    return this.#executionContext.valueOrThrow();
+    return await this.#executionContext.valueOrThrow();
   }
 
   /**
@@ -156,7 +156,7 @@ export class WebWorker extends EventEmitter {
       pageFunction
     );
     const context = await this.#executionContext.valueOrThrow();
-    return context.evaluate(pageFunction, ...args);
+    return await context.evaluate(pageFunction, ...args);
   }
 
   /**
@@ -183,6 +183,6 @@ export class WebWorker extends EventEmitter {
       pageFunction
     );
     const context = await this.#executionContext.valueOrThrow();
-    return context.evaluateHandle(pageFunction, ...args);
+    return await context.evaluateHandle(pageFunction, ...args);
   }
 }

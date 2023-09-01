@@ -164,7 +164,7 @@ export class IsolatedWorld extends Realm {
       pageFunction
     );
     const context = await this.executionContext();
-    return context.evaluateHandle(pageFunction, ...args);
+    return await context.evaluateHandle(pageFunction, ...args);
   }
 
   async evaluate<
@@ -179,7 +179,7 @@ export class IsolatedWorld extends Realm {
       pageFunction
     );
     const context = await this.executionContext();
-    return context.evaluate(pageFunction, ...args);
+    return await context.evaluate(pageFunction, ...args);
   }
 
   async setContent(

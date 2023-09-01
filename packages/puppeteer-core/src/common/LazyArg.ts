@@ -42,6 +42,6 @@ export class LazyArg<T, Context = PuppeteerUtilWrapper> {
   }
 
   async get(context: Context): Promise<T> {
-    return this.#get(context);
+    return await this.#get(context);
   }
 }

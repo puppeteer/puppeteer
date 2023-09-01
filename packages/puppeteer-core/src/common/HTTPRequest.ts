@@ -170,14 +170,14 @@ export class HTTPRequest extends BaseHTTPRequest {
     const {action} = this.interceptResolutionState();
     switch (action) {
       case 'abort':
-        return this.#abort(this.#abortErrorReason);
+        return await this.#abort(this.#abortErrorReason);
       case 'respond':
         if (this.#responseForRequest === null) {
           throw new Error('Response is missing for the interception');
         }
-        return this.#respond(this.#responseForRequest);
+        return await this.#respond(this.#responseForRequest);
       case 'continue':
-        return this.#continue(this.#continueRequestOverrides);
+        return await this.#continue(this.#continueRequestOverrides);
     }
   }
 
@@ -237,7 +237,7 @@ export class HTTPRequest extends BaseHTTPRequest {
     assert(this.#allowInterception, 'Request Interception is not enabled!');
     assert(!this.#interceptionHandled, 'Request is already handled!');
     if (priority === undefined) {
-      return this.#continue(overrides);
+      return await this.#continue(overrides);
     }
     this.#continueRequestOverrides = overrides;
     if (
@@ -301,7 +301,7 @@ export class HTTPRequest extends BaseHTTPRequest {
     assert(this.#allowInterception, 'Request Interception is not enabled!');
     assert(!this.#interceptionHandled, 'Request is already handled!');
     if (priority === undefined) {
-      return this.#respond(response);
+      return await this.#respond(response);
     }
     this.#responseForRequest = response;
     if (
@@ -384,7 +384,7 @@ export class HTTPRequest extends BaseHTTPRequest {
     assert(this.#allowInterception, 'Request Interception is not enabled!');
     assert(!this.#interceptionHandled, 'Request is already handled!');
     if (priority === undefined) {
-      return this.#abort(errorReason);
+      return await this.#abort(errorReason);
     }
     this.#abortErrorReason = errorReason;
     if (

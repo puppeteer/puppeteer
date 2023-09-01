@@ -195,7 +195,7 @@ describe('Evaluation specs', function () {
         }
       );
       const result = await page.evaluate(async function () {
-        return await (globalThis as any).callController(9, 3);
+        return (globalThis as any).callController(9, 3);
       });
       expect(result).toBe(27);
     });
