@@ -30,43 +30,6 @@ import {
 describe('Frame specs', function () {
   setupTestBrowserHooks();
 
-  describe('Frame.executionContext', function () {
-    it('should work', async () => {
-      const {page, server} = await getTestState();
-
-      await page.goto(server.EMPTY_PAGE);
-      await attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      expect(page.frames()).toHaveLength(2);
-      const [frame1, frame2] = page.frames();
-      const context1 = await frame1!.executionContext();
-      const context2 = await frame2!.executionContext();
-      expect(context1).toBeTruthy();
-      expect(context2).toBeTruthy();
-      expect(context1 !== context2).toBeTruthy();
-      expect(context1._world?.frame()).toBe(frame1);
-      expect(context2._world?.frame()).toBe(frame2);
-
-      await Promise.all([
-        context1.evaluate(() => {
-          return ((globalThis as any).a = 1);
-        }),
-        context2.evaluate(() => {
-          return ((globalThis as any).a = 2);
-        }),
-      ]);
-      const [a1, a2] = await Promise.all([
-        context1.evaluate(() => {
-          return (globalThis as any).a;
-        }),
-        context2.evaluate(() => {
-          return (globalThis as any).a;
-        }),
-      ]);
-      expect(a1).toBe(1);
-      expect(a2).toBe(2);
-    });
-  });
-
   describe('Frame.evaluateHandle', function () {
     it('should work', async () => {
       const {page, server} = await getTestState();
@@ -338,7 +301,7 @@ describe('Frame specs', function () {
   describe('Frame.client', function () {
     it('should return the client instance', async () => {
       const {page} = await getTestState();
-      expect(page.mainFrame()._client()).toBeInstanceOf(CDPSession);
+      expect(page.mainFrame().client).toBeInstanceOf(CDPSession);
     });
   });
 });

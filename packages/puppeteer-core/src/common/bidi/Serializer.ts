@@ -19,9 +19,9 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {LazyArg} from '../LazyArg.js';
 import {debugError, isDate, isPlainObject, isRegExp} from '../util.js';
 
-import {BrowsingContext} from './BrowsingContext.js';
 import {BidiElementHandle} from './ElementHandle.js';
 import {BidiJSHandle} from './JSHandle.js';
+import {Sandbox} from './Sandbox.js';
 
 /**
  * @internal
@@ -58,7 +58,7 @@ export class BidiSerializer {
       };
     } else if (Array.isArray(arg)) {
       const parsedArray = arg.map(subArg => {
-        return BidiSerializer.serializeRemoveValue(subArg);
+        return BidiSerializer.serializeRemoteValue(subArg);
       });
 
       return {
@@ -81,8 +81,8 @@ export class BidiSerializer {
       const parsedObject: Bidi.Script.MappingLocalValue = [];
       for (const key in arg) {
         parsedObject.push([
-          BidiSerializer.serializeRemoveValue(key),
-          BidiSerializer.serializeRemoveValue(arg[key]),
+          BidiSerializer.serializeRemoteValue(key),
+          BidiSerializer.serializeRemoteValue(arg[key]),
         ]);
       }
 
@@ -110,7 +110,7 @@ export class BidiSerializer {
     );
   }
 
-  static serializeRemoveValue(arg: unknown): Bidi.Script.LocalValue {
+  static serializeRemoteValue(arg: unknown): Bidi.Script.LocalValue {
     switch (typeof arg) {
       case 'symbol':
       case 'function':
@@ -143,11 +143,11 @@ export class BidiSerializer {
   }
 
   static async serialize(
-    arg: unknown,
-    context: BrowsingContext
+    sandbox: Sandbox,
+    arg: unknown
   ): Promise<Bidi.Script.LocalValue> {
     if (arg instanceof LazyArg) {
-      arg = await arg.get(context);
+      arg = await arg.get(sandbox.realm);
     }
     // eslint-disable-next-line rulesdir/use-using -- We want this to continue living.
     const objectHandle =
@@ -156,7 +156,7 @@ export class BidiSerializer {
         : null;
     if (objectHandle) {
       if (
-        objectHandle.context() !== context &&
+        objectHandle.realm !== sandbox &&
         !('sharedId' in objectHandle.remoteValue())
       ) {
         throw new Error(
@@ -169,7 +169,7 @@ export class BidiSerializer {
       return objectHandle.remoteValue() as Bidi.Script.RemoteReference;
     }
 
-    return BidiSerializer.serializeRemoveValue(arg);
+    return BidiSerializer.serializeRemoteValue(arg);
   }
 
   static deserializeNumber(value: Bidi.Script.SpecialNumber | number): number {

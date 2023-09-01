@@ -756,12 +756,6 @@
     "expectations": ["PASS"]
   },
   {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw a nice error after a navigation",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
-  },
-  {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw if elementHandles are from other frames",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
@@ -2266,12 +2260,6 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
-  },
-  {
-    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw a nice error after a navigation",
-    "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["cdp", "firefox"],
-    "expectations": ["FAIL", "TIMEOUT"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should throw when evaluation triggers reload",

@@ -17,114 +17,39 @@
 import {Protocol} from 'devtools-protocol';
 
 import {JSHandle} from '../api/JSHandle.js';
-import {assert} from '../util/assert.js';
 
 import {CDPSession} from './Connection.js';
 import type {CDPElementHandle} from './ElementHandle.js';
-import {ExecutionContext} from './ExecutionContext.js';
-import {EvaluateFuncWith, HandleFor, HandleOr} from './types.js';
-import {
-  createJSHandle,
-  releaseObject,
-  valueFromRemoteObject,
-  withSourcePuppeteerURLIfNone,
-} from './util.js';
+import {IsolatedWorld} from './IsolatedWorld.js';
+import {releaseObject, valueFromRemoteObject} from './util.js';
 
 /**
  * @internal
  */
 export class CDPJSHandle<T = unknown> extends JSHandle<T> {
   #disposed = false;
-  #context: ExecutionContext;
-  #remoteObject: Protocol.Runtime.RemoteObject;
+  readonly #remoteObject: Protocol.Runtime.RemoteObject;
+  readonly #world: IsolatedWorld;
+
+  constructor(
+    world: IsolatedWorld,
+    remoteObject: Protocol.Runtime.RemoteObject
+  ) {
+    super();
+    this.#world = world;
+    this.#remoteObject = remoteObject;
+  }
 
   override get disposed(): boolean {
     return this.#disposed;
   }
 
-  constructor(
-    context: ExecutionContext,
-    remoteObject: Protocol.Runtime.RemoteObject
-  ) {
-    super();
-    this.#context = context;
-    this.#remoteObject = remoteObject;
-  }
-
-  executionContext(): ExecutionContext {
-    return this.#context;
+  override get realm(): IsolatedWorld {
+    return this.#world;
   }
 
   get client(): CDPSession {
-    return this.#context._client;
-  }
-
-  /**
-   * @see {@link ExecutionContext.evaluate} for more details.
-   */
-  override async evaluate<
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<T, Params> = EvaluateFuncWith<T, Params>,
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(
-      this.evaluate.name,
-      pageFunction
-    );
-    return await this.executionContext().evaluate(pageFunction, this, ...args);
-  }
-
-  /**
-   * @see {@link ExecutionContext.evaluateHandle} for more details.
-   */
-  override async evaluateHandle<
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<T, Params> = EvaluateFuncWith<T, Params>,
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(
-      this.evaluateHandle.name,
-      pageFunction
-    );
-    return await this.executionContext().evaluateHandle(
-      pageFunction,
-      this,
-      ...args
-    );
-  }
-
-  override async getProperty<K extends keyof T>(
-    propertyName: HandleOr<K>
-  ): Promise<HandleFor<T[K]>>;
-  override async getProperty(propertyName: string): Promise<JSHandle<unknown>>;
-  override async getProperty<K extends keyof T>(
-    propertyName: HandleOr<K>
-  ): Promise<HandleFor<T[K]>> {
-    return await this.evaluateHandle((object, propertyName) => {
-      return object[propertyName as K];
-    }, propertyName);
-  }
-
-  override async getProperties(): Promise<Map<string, JSHandle>> {
-    assert(this.#remoteObject.objectId);
-    // We use Runtime.getProperties rather than iterative building because the
-    // iterative approach might create a distorted snapshot.
-    const response = await this.client.send('Runtime.getProperties', {
-      objectId: this.#remoteObject.objectId,
-      ownProperties: true,
-    });
-    const result = new Map<string, JSHandle>();
-    for (const property of response.result) {
-      if (!property.enumerable || !property.value) {
-        continue;
-      }
-      result.set(property.name, createJSHandle(this.#context, property.value));
-    }
-    return result;
+    return this.realm.environment.client;
   }
 
   override async jsonValue(): Promise<T> {

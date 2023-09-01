@@ -419,26 +419,6 @@ describe('Evaluation specs', function () {
       });
       expect(result).toBe(true);
     });
-    it('should throw a nice error after a navigation', async () => {
-      const {page} = await getTestState();
-
-      const executionContext = await page.mainFrame().executionContext();
-
-      await Promise.all([
-        page.waitForNavigation(),
-        executionContext.evaluate(() => {
-          return window.location.reload();
-        }),
-      ]);
-      const error = await executionContext
-        .evaluate(() => {
-          return null;
-        })
-        .catch(error_ => {
-          return error_;
-        });
-      expect((error as Error).message).toContain('navigation');
-    });
     it('should not throw an error when evaluation does a navigation', async () => {
       const {page, server} = await getTestState();
 

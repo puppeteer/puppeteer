@@ -30,7 +30,7 @@ import type {CDPSession} from './Connection.js';
 import {debug} from './Debug.js';
 import {CDPElementHandle} from './ElementHandle.js';
 import type {CommonEventEmitter} from './EventEmitter.js';
-import type {ExecutionContext} from './ExecutionContext.js';
+import {IsolatedWorld} from './IsolatedWorld.js';
 import {CDPJSHandle} from './JSHandle.js';
 import {Awaitable} from './types.js';
 
@@ -413,14 +413,14 @@ export async function waitForEvent<T>(
 /**
  * @internal
  */
-export function createJSHandle(
-  context: ExecutionContext,
+export function createCdpHandle(
+  realm: IsolatedWorld,
   remoteObject: Protocol.Runtime.RemoteObject
 ): JSHandle | ElementHandle<Node> {
-  if (remoteObject.subtype === 'node' && context._world) {
-    return new CDPElementHandle(context, remoteObject, context._world.frame());
+  if (remoteObject.subtype === 'node') {
+    return new CDPElementHandle(realm, remoteObject);
   }
-  return new CDPJSHandle(context, remoteObject);
+  return new CDPJSHandle(realm, remoteObject);
 }
 
 /**

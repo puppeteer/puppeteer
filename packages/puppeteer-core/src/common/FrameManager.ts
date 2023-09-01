@@ -431,7 +431,7 @@ export class FrameManager extends EventEmitter {
     await Promise.all(
       this.frames()
         .filter(frame => {
-          return frame._client() === session;
+          return frame.client === session;
         })
         .map(frame => {
           // Frames might be removed before we send this, so we don't want to
@@ -489,7 +489,7 @@ export class FrameManager extends EventEmitter {
     let world: IsolatedWorld | undefined;
     if (frame) {
       // Only care about execution contexts created for the current session.
-      if (frame._client() !== session) {
+      if (frame.client !== session) {
         return;
       }
       if (contextPayload.auxData && contextPayload.auxData['isDefault']) {
@@ -504,8 +504,12 @@ export class FrameManager extends EventEmitter {
         world = frame.worlds[PUPPETEER_WORLD];
       }
     }
+    // If there is no world, the context is not meant to be handled by us.
+    if (!world) {
+      return;
+    }
     const context = new ExecutionContext(
-      frame?._client() || this.#client,
+      frame?.client || this.#client,
       contextPayload,
       world
     );

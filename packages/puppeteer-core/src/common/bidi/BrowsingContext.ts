@@ -148,7 +148,6 @@ export class BrowsingContext extends Realm {
     browserName: string
   ) {
     super(connection, info.context);
-    this.connection = connection;
     this.#id = info.context;
     this.#url = info.url;
     this.#parent = info.parent;
@@ -167,8 +166,8 @@ export class BrowsingContext extends Realm {
     this.url = info.url;
   }
 
-  createSandboxRealm(sandbox: string): Realm {
-    return new Realm(this.connection, this.#id, sandbox);
+  createRealmForSandbox(): Realm {
+    return new Realm(this.connection, this.#id);
   }
 
   get url(): string {

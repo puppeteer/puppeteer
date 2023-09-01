@@ -69,7 +69,7 @@ import {HTTPRequest} from './HTTPRequest.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {Keyboard, Mouse, Touchscreen} from './Input.js';
 import {NetworkManager} from './NetworkManager.js';
-import {getBidiHandle} from './Realm.js';
+import {createBidiHandle} from './Realm.js';
 import {BidiSerializer} from './Serializer.js';
 
 /**
@@ -343,7 +343,7 @@ export class BidiPage extends Page {
     }
     if (isConsoleLogEntry(event)) {
       const args = event.args.map(arg => {
-        return getBidiHandle(frame.context(), arg, frame);
+        return createBidiHandle(frame.mainRealm(), arg);
       });
 
       const text = args
@@ -662,12 +662,12 @@ export class BidiPage extends Page {
     return buffer;
   }
 
-  override waitForRequest(
+  override async waitForRequest(
     urlOrPredicate: string | ((req: HTTPRequest) => boolean | Promise<boolean>),
     options: {timeout?: number} = {}
   ): Promise<HTTPRequest> {
     const {timeout = this.#timeoutSettings.timeout()} = options;
-    return waitForEvent(
+    return await waitForEvent(
       this.#networkManager,
       NetworkManagerEmittedEvents.Request,
       async request => {
@@ -684,14 +684,14 @@ export class BidiPage extends Page {
     );
   }
 
-  override waitForResponse(
+  override async waitForResponse(
     urlOrPredicate:
       | string
       | ((res: HTTPResponse) => boolean | Promise<boolean>),
     options: {timeout?: number} = {}
   ): Promise<HTTPResponse> {
     const {timeout = this.#timeoutSettings.timeout()} = options;
-    return waitForEvent(
+    return await waitForEvent(
       this.#networkManager,
       NetworkManagerEmittedEvents.Response,
       async response => {

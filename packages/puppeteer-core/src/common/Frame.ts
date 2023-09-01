@@ -28,7 +28,6 @@ import {
   DeviceRequestPrompt,
   DeviceRequestPromptManager,
 } from './DeviceRequestPrompt.js';
-import {ExecutionContext} from './ExecutionContext.js';
 import {FrameManager} from './FrameManager.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
@@ -99,8 +98,14 @@ export class CDPFrame extends Frame {
     this.#client = client;
     if (!keepWorlds) {
       this.worlds = {
-        [MAIN_WORLD]: new IsolatedWorld(this),
-        [PUPPETEER_WORLD]: new IsolatedWorld(this),
+        [MAIN_WORLD]: new IsolatedWorld(
+          this,
+          this._frameManager.timeoutSettings
+        ),
+        [PUPPETEER_WORLD]: new IsolatedWorld(
+          this,
+          this._frameManager.timeoutSettings
+        ),
       };
     } else {
       this.worlds[MAIN_WORLD].frameUpdated();
@@ -232,12 +237,8 @@ export class CDPFrame extends Frame {
     }
   }
 
-  override _client(): CDPSession {
+  override get client(): CDPSession {
     return this.#client;
-  }
-
-  override executionContext(): Promise<ExecutionContext> {
-    return this.worlds[MAIN_WORLD].executionContext();
   }
 
   override mainRealm(): IsolatedWorld {
@@ -281,10 +282,12 @@ export class CDPFrame extends Frame {
   }
 
   @throwIfDetached
-  override waitForDevicePrompt(
+  override async waitForDevicePrompt(
     options: WaitTimeoutOptions = {}
   ): Promise<DeviceRequestPrompt> {
-    return this.#deviceRequestPromptManager().waitForDevicePrompt(options);
+    return await this.#deviceRequestPromptManager().waitForDevicePrompt(
+      options
+    );
   }
 
   _navigated(framePayload: Protocol.Page.Frame): void {

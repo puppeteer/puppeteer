@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
-
 import {JSHandle} from '../../api/JSHandle.js';
 import {Realm} from '../../api/Realm.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
@@ -23,7 +21,7 @@ import {EvaluateFunc, HandleFor} from '../types.js';
 import {withSourcePuppeteerURLIfNone} from '../util.js';
 
 import {BrowsingContext} from './BrowsingContext.js';
-import {BidiJSHandle} from './JSHandle.js';
+import {BidiFrame} from './Frame.js';
 import {Realm as BidiRealm} from './Realm.js';
 /**
  * A unique key for {@link SandboxChart} to denote the default world.
@@ -53,23 +51,26 @@ export interface SandboxChart {
  * @internal
  */
 export class Sandbox extends Realm {
-  #realm: BidiRealm;
+  readonly name: string | undefined;
+  readonly realm: BidiRealm;
+  #frame: BidiFrame;
 
   constructor(
+    name: string | undefined,
+    frame: BidiFrame,
     // TODO: We should split the Realm and BrowsingContext
     realm: BidiRealm | BrowsingContext,
     timeoutSettings: TimeoutSettings
   ) {
     super(timeoutSettings);
-    this.#realm = realm;
+    this.name = name;
+    this.realm = realm;
+    this.#frame = frame;
+    this.realm.setSandbox(this);
+  }
 
-    // TODO: Tack correct realm similar to BrowsingContexts
-    this.#realm.connection.on(
-      Bidi.ChromiumBidi.Script.EventNames.RealmCreated,
-      () => {
-        void this.taskManager.rerunAll();
-      }
-    );
+  override get environment(): BidiFrame {
+    return this.#frame;
   }
 
   async evaluateHandle<
@@ -83,7 +84,7 @@ export class Sandbox extends Realm {
       this.evaluateHandle.name,
       pageFunction
     );
-    return await this.#realm.evaluateHandle(pageFunction, ...args);
+    return await this.realm.evaluateHandle(pageFunction, ...args);
   }
 
   async evaluate<
@@ -97,7 +98,7 @@ export class Sandbox extends Realm {
       this.evaluate.name,
       pageFunction
     );
-    return await this.#realm.evaluate(pageFunction, ...args);
+    return await this.realm.evaluate(pageFunction, ...args);
   }
 
   async adoptHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
@@ -107,7 +108,7 @@ export class Sandbox extends Realm {
   }
 
   async transferHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
-    if ((handle as unknown as BidiJSHandle).context() === this.#realm) {
+    if (handle.realm === this) {
       return handle;
     }
     const transferredHandle = await this.evaluateHandle(node => {

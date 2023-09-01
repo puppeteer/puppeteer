@@ -106,7 +106,6 @@ export class QueryHandler {
     element: ElementHandle<Node>,
     selector: string
   ): AwaitableIterable<ElementHandle<Node>> {
-    element.assertElementHasWorld();
     using handle = await element.evaluateHandle(
       this._querySelectorAll,
       selector,
@@ -126,7 +125,6 @@ export class QueryHandler {
     element: ElementHandle<Node>,
     selector: string
   ): Promise<ElementHandle<Node> | null> {
-    element.assertElementHasWorld();
     using result = await element.evaluateHandle(
       this._querySelector,
       selector,
