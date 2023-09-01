@@ -89,7 +89,7 @@ export class Realm extends EventEmitter {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    return this.#evaluate(false, pageFunction, ...args);
+    return await this.#evaluate(false, pageFunction, ...args);
   }
 
   async evaluate<
@@ -99,7 +99,7 @@ export class Realm extends EventEmitter {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
-    return this.#evaluate(true, pageFunction, ...args);
+    return await this.#evaluate(true, pageFunction, ...args);
   }
 
   async #evaluate<

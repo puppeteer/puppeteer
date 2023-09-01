@@ -425,7 +425,7 @@ export class CDPBrowser extends BrowserBase {
    * a default browser context.
    */
   override async newPage(): Promise<Page> {
-    return this.#defaultContext.newPage();
+    return await this.#defaultContext.newPage();
   }
 
   override async _createPageInContext(contextId?: string): Promise<Page> {

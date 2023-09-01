@@ -218,6 +218,8 @@ module.exports = {
           {ignoreVoid: true, ignoreIIFE: true},
         ],
         '@typescript-eslint/prefer-ts-expect-error': 'error',
+        // This is more performant; see https://v8.dev/blog/fast-async.
+        '@typescript-eslint/return-await': ['error', 'always'],
       },
       overrides: [
         {

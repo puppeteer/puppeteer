@@ -305,7 +305,7 @@ export class Process {
     if (!this.#exited) {
       this.kill();
     }
-    return this.#browserProcessExiting;
+    return await this.#browserProcessExiting;
   }
 
   hasClosed(): Promise<void> {

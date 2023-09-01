@@ -367,7 +367,7 @@ export abstract class Frame extends EventEmitter {
       this.evaluateHandle.name,
       pageFunction
     );
-    return this.mainRealm().evaluateHandle(pageFunction, ...args);
+    return await this.mainRealm().evaluateHandle(pageFunction, ...args);
   }
 
   /**
@@ -388,7 +388,7 @@ export abstract class Frame extends EventEmitter {
       this.evaluate.name,
       pageFunction
     );
-    return this.mainRealm().evaluate(pageFunction, ...args);
+    return await this.mainRealm().evaluate(pageFunction, ...args);
   }
 
   /**
@@ -437,7 +437,7 @@ export abstract class Frame extends EventEmitter {
   async $<Selector extends string>(
     selector: Selector
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    return this.mainRealm().$(selector);
+    return await this.mainRealm().$(selector);
   }
 
   /**
@@ -451,7 +451,7 @@ export abstract class Frame extends EventEmitter {
   async $$<Selector extends string>(
     selector: Selector
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    return this.mainRealm().$$(selector);
+    return await this.mainRealm().$$(selector);
   }
 
   /**
@@ -622,7 +622,7 @@ export abstract class Frame extends EventEmitter {
     if (xpath.startsWith('//')) {
       xpath = `.${xpath}`;
     }
-    return this.waitForSelector(`xpath/${xpath}`, options);
+    return await this.waitForSelector(`xpath/${xpath}`, options);
   }
 
   /**
@@ -773,7 +773,7 @@ export abstract class Frame extends EventEmitter {
 
     type = type ?? 'text/javascript';
 
-    return this.mainRealm().transferHandle(
+    return await this.mainRealm().transferHandle(
       await this.isolatedRealm().evaluateHandle(
         async ({Deferred}, {url, id, type, content}) => {
           const deferred = Deferred.create<void>();
@@ -859,7 +859,7 @@ export abstract class Frame extends EventEmitter {
       options.content = content;
     }
 
-    return this.mainRealm().transferHandle(
+    return await this.mainRealm().transferHandle(
       await this.isolatedRealm().evaluateHandle(
         async ({Deferred}, {url, content}) => {
           const deferred = Deferred.create<void>();

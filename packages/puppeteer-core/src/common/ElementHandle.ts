@@ -80,18 +80,18 @@ export class CDPElementHandle<
   override async $<Selector extends string>(
     selector: Selector
   ): Promise<CDPElementHandle<NodeFor<Selector>> | null> {
-    return super.$(selector) as Promise<CDPElementHandle<
+    return await (super.$(selector) as Promise<CDPElementHandle<
       NodeFor<Selector>
-    > | null>;
+    > | null>);
   }
 
   @throwIfDisposed()
   override async $$<Selector extends string>(
     selector: Selector
   ): Promise<Array<CDPElementHandle<NodeFor<Selector>>>> {
-    return super.$$(selector) as Promise<
+    return await (super.$$(selector) as Promise<
       Array<CDPElementHandle<NodeFor<Selector>>>
-    >;
+    >);
   }
 
   @throwIfDisposed()

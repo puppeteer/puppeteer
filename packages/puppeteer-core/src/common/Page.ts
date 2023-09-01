@@ -483,17 +483,19 @@ export class CDPPage extends Page {
   }
 
   override async setRequestInterception(value: boolean): Promise<void> {
-    return this.#frameManager.networkManager.setRequestInterception(value);
+    return await this.#frameManager.networkManager.setRequestInterception(
+      value
+    );
   }
 
   override async setBypassServiceWorker(bypass: boolean): Promise<void> {
     this.#serviceWorkerBypassed = bypass;
-    return this.#client.send('Network.setBypassServiceWorker', {bypass});
+    return await this.#client.send('Network.setBypassServiceWorker', {bypass});
   }
 
   override async setDragInterception(enabled: boolean): Promise<void> {
     this.#userDragInterceptionEnabled = enabled;
-    return this.#client.send('Input.setInterceptDrags', {enabled});
+    return await this.#client.send('Input.setInterceptDrags', {enabled});
   }
 
   override setOfflineMode(enabled: boolean): Promise<void> {
@@ -532,7 +534,7 @@ export class CDPPage extends Page {
       pageFunction
     );
     const context = await this.mainFrame().executionContext();
-    return context.evaluateHandle(pageFunction, ...args);
+    return await context.evaluateHandle(pageFunction, ...args);
   }
 
   override async queryObjects<Prototype>(
@@ -684,20 +686,20 @@ export class CDPPage extends Page {
   }
 
   override async authenticate(credentials: Credentials): Promise<void> {
-    return this.#frameManager.networkManager.authenticate(credentials);
+    return await this.#frameManager.networkManager.authenticate(credentials);
   }
 
   override async setExtraHTTPHeaders(
     headers: Record<string, string>
   ): Promise<void> {
-    return this.#frameManager.networkManager.setExtraHTTPHeaders(headers);
+    return await this.#frameManager.networkManager.setExtraHTTPHeaders(headers);
   }
 
   override async setUserAgent(
     userAgent: string,
     userAgentMetadata?: Protocol.Emulation.UserAgentMetadata
   ): Promise<void> {
-    return this.#frameManager.networkManager.setUserAgent(
+    return await this.#frameManager.networkManager.setUserAgent(
       userAgent,
       userAgentMetadata
     );
@@ -896,7 +898,7 @@ export class CDPPage extends Page {
     options: {timeout?: number} = {}
   ): Promise<HTTPRequest> {
     const {timeout = this.#timeoutSettings.timeout()} = options;
-    return waitForEvent(
+    return await waitForEvent(
       this.#frameManager.networkManager,
       NetworkManagerEmittedEvents.Request,
       async request => {
@@ -920,7 +922,7 @@ export class CDPPage extends Page {
     options: {timeout?: number} = {}
   ): Promise<HTTPResponse> {
     const {timeout = this.#timeoutSettings.timeout()} = options;
-    return waitForEvent(
+    return await waitForEvent(
       this.#frameManager.networkManager,
       NetworkManagerEmittedEvents.Response,
       async response => {
@@ -953,13 +955,13 @@ export class CDPPage extends Page {
   override async goBack(
     options: WaitForOptions = {}
   ): Promise<HTTPResponse | null> {
-    return this.#go(-1, options);
+    return await this.#go(-1, options);
   }
 
   override async goForward(
     options: WaitForOptions = {}
   ): Promise<HTTPResponse | null> {
-    return this.#go(+1, options);
+    return await this.#go(+1, options);
   }
 
   async #go(
@@ -1044,7 +1046,7 @@ export class CDPPage extends Page {
       this.evaluate.name,
       pageFunction
     );
-    return this.mainFrame().evaluate(pageFunction, ...args);
+    return await this.mainFrame().evaluate(pageFunction, ...args);
   }
 
   override async evaluateOnNewDocument<
@@ -1173,7 +1175,7 @@ export class CDPPage extends Page {
         'Expected options.clip.height not to be 0.'
       );
     }
-    return this.#screenshotTaskQueue.postTask(() => {
+    return await this.#screenshotTaskQueue.postTask(() => {
       return this.#screenshotTask(screenshotType, options);
     });
   }
@@ -1311,7 +1313,7 @@ export class CDPPage extends Page {
     }
 
     assert(result.stream, '`stream` is missing from `Page.printToPDF');
-    return getReadableFromProtocolStream(this.#client, result.stream);
+    return await getReadableFromProtocolStream(this.#client, result.stream);
   }
 
   override async pdf(options: PDFOptions = {}): Promise<Buffer> {
@@ -1323,7 +1325,7 @@ export class CDPPage extends Page {
   }
 
   override async title(): Promise<string> {
-    return this.mainFrame().title();
+    return await this.mainFrame().title();
   }
 
   override async close(

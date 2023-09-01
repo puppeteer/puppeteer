@@ -202,7 +202,7 @@ describe('input tests', function () {
             return (reader.onload = fulfill);
           });
           reader.readAsText(pick.files![0]!);
-          return promise.then(() => {
+          return await promise.then(() => {
             return reader.result;
           });
         })
@@ -294,7 +294,7 @@ describe('input tests', function () {
             return (reader.onerror = fulfill);
           });
           reader.readAsText(pick.files![0]!);
-          return promise.then(() => {
+          return await promise.then(() => {
             return false;
           });
         })

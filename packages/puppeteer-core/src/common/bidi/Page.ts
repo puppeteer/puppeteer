@@ -437,7 +437,7 @@ export class BidiPage extends Page {
       this.evaluateHandle.name,
       pageFunction
     );
-    return this.mainFrame().evaluateHandle(pageFunction, ...args);
+    return await this.mainFrame().evaluateHandle(pageFunction, ...args);
   }
 
   override async evaluate<
@@ -451,7 +451,7 @@ export class BidiPage extends Page {
       this.evaluate.name,
       pageFunction
     );
-    return this.mainFrame().evaluate(pageFunction, ...args);
+    return await this.mainFrame().evaluate(pageFunction, ...args);
   }
 
   override async goto(
@@ -461,7 +461,7 @@ export class BidiPage extends Page {
       referrerPolicy?: string | undefined;
     }
   ): Promise<HTTPResponse | null> {
-    return this.mainFrame().goto(url, options);
+    return await this.mainFrame().goto(url, options);
   }
 
   override async reload(
@@ -510,7 +510,7 @@ export class BidiPage extends Page {
   }
 
   override async content(): Promise<string> {
-    return this.mainFrame().content();
+    return await this.mainFrame().content();
   }
 
   override isJavaScriptEnabled(): boolean {

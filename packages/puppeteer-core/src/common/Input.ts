@@ -493,7 +493,7 @@ export class CDPMouse extends Mouse {
     await this.move(start.x, start.y);
     await this.down();
     await this.move(target.x, target.y);
-    return promise;
+    return await promise;
   }
 
   override async dragEnter(

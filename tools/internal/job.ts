@@ -62,28 +62,28 @@ class JobBuilder {
     console.log(`Running job ${this.#name}...`);
     // For debugging.
     if (this.#force) {
-      return this.#run();
+      return await this.#run();
     }
     // In case we deleted an output file on purpose.
     if (!this.getOutputStats()) {
-      return this.#run();
+      return await this.#run();
     }
     // Run if the job has a value, but it changes.
     if (this.#value) {
       if (!(await this.isValueDifferent())) {
         return;
       }
-      return this.#run();
+      return await this.#run();
     }
     // Always run when there is no output.
     if (!this.#outputs.length) {
-      return this.#run();
+      return await this.#run();
     }
     // Make-like comparator.
     if (!(await this.areInputsNewer())) {
       return;
     }
-    return this.#run();
+    return await this.#run();
   }
 
   async isValueDifferent(): Promise<boolean> {

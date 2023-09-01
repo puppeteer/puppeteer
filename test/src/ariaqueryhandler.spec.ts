@@ -674,7 +674,7 @@ describe('AriaQueryHandler', () => {
       return state;
     }
     const getIds = async (elements: ElementHandle[]) => {
-      return Promise.all(
+      return await Promise.all(
         elements.map(element => {
           return element.evaluate((element: Element) => {
             return element.id;

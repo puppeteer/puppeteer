@@ -623,7 +623,7 @@ export async function setPageContent(
 ): Promise<void> {
   // We rely upon the fact that document.open() will reset frame lifecycle with "init"
   // lifecycle event. @see https://crrev.com/608658
-  return page.evaluate(html => {
+  return await page.evaluate(html => {
     document.open();
     document.write(html);
     document.close();
