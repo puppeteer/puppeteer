@@ -27,6 +27,7 @@ import {TaskManager, WaitTask} from '../common/WaitTask.js';
 import {assert} from '../util/assert.js';
 
 import {ClickOptions, ElementHandle} from './ElementHandle.js';
+import {Environment} from './Environment.js';
 import {KeyboardTypeOptions} from './Input.js';
 import {JSHandle} from './JSHandle.js';
 
@@ -34,20 +35,14 @@ import {JSHandle} from './JSHandle.js';
  * @internal
  */
 export abstract class Realm implements Disposable {
-  #timeoutSettings: TimeoutSettings;
-  #taskManager = new TaskManager();
+  protected readonly timeoutSettings: TimeoutSettings;
+  readonly taskManager = new TaskManager();
 
   constructor(timeoutSettings: TimeoutSettings) {
-    this.#timeoutSettings = timeoutSettings;
+    this.timeoutSettings = timeoutSettings;
   }
 
-  protected get timeoutSettings(): TimeoutSettings {
-    return this.#timeoutSettings;
-  }
-
-  get taskManager(): TaskManager {
-    return this.#taskManager;
-  }
+  abstract get environment(): Environment;
 
   abstract adoptHandle<T extends JSHandle<Node>>(handle: T): Promise<T>;
   abstract transferHandle<T extends JSHandle<Node>>(handle: T): Promise<T>;
@@ -136,7 +131,7 @@ export abstract class Realm implements Disposable {
     });
   }
 
-  waitForFunction<
+  async waitForFunction<
     Params extends unknown[],
     Func extends EvaluateFunc<InnerLazyParams<Params>> = EvaluateFunc<
       InnerLazyParams<Params>
@@ -153,7 +148,7 @@ export abstract class Realm implements Disposable {
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
     const {
       polling = 'raf',
-      timeout = this.#timeoutSettings.timeout(),
+      timeout = this.timeoutSettings.timeout(),
       root,
       signal,
     } = options;
@@ -173,7 +168,7 @@ export abstract class Realm implements Disposable {
         | string,
       ...args
     );
-    return waitTask.result;
+    return await waitTask.result;
   }
 
   async click(

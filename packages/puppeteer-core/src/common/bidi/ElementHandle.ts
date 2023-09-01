@@ -21,6 +21,7 @@ import {AutofillData, ElementHandle} from '../../api/ElementHandle.js';
 import {BidiFrame} from './Frame.js';
 import {BidiJSHandle} from './JSHandle.js';
 import {Realm} from './Realm.js';
+import {Sandbox} from './Sandbox.js';
 
 /**
  * @internal
@@ -29,19 +30,17 @@ export class BidiElementHandle<
   ElementType extends Node = Element,
 > extends ElementHandle<ElementType> {
   declare handle: BidiJSHandle<ElementType>;
-  #frame: BidiFrame;
 
-  constructor(
-    realm: Realm,
-    remoteValue: Bidi.Script.RemoteValue,
-    frame: BidiFrame
-  ) {
-    super(new BidiJSHandle(realm, remoteValue));
-    this.#frame = frame;
+  constructor(sandbox: Sandbox, remoteValue: Bidi.Script.RemoteValue) {
+    super(new BidiJSHandle(sandbox, remoteValue));
+  }
+
+  override get realm(): Sandbox {
+    return this.handle.realm;
   }
 
   override get frame(): BidiFrame {
-    return this.#frame;
+    return this.realm.environment;
   }
 
   context(): Realm {
@@ -62,12 +61,12 @@ export class BidiElementHandle<
   }
 
   override async autofill(data: AutofillData): Promise<void> {
-    const client = this.#frame.context().cdpSession;
+    const client = this.frame.client;
     const nodeInfo = await client.send('DOM.describeNode', {
       objectId: this.handle.id,
     });
     const fieldId = nodeInfo.node.backendNodeId;
-    const frameId = this.#frame._id;
+    const frameId = this.frame._id;
     await client.send('Autofill.trigger', {
       fieldId,
       frameId,

@@ -10,13 +10,13 @@ Gets a map of handles representing the properties of the current handle.
 
 ```typescript
 class JSHandle {
-  abstract getProperties(): Promise<Map<string, JSHandle<unknown>>>;
+  getProperties(): Promise<Map<string, JSHandle>>;
 }
 ```
 
 **Returns:**
 
-Promise&lt;Map&lt;string, [JSHandle](./puppeteer.jshandle.md)&lt;unknown&gt;&gt;&gt;
+Promise&lt;Map&lt;string, [JSHandle](./puppeteer.jshandle.md)&gt;&gt;
 
 ## Example
 

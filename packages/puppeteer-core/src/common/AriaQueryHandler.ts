@@ -21,7 +21,7 @@ import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 
 import {CDPSession} from './Connection.js';
-import {CDPJSHandle} from './JSHandle.js';
+import {IsolatedWorld} from './IsolatedWorld.js';
 import {QueryHandler, QuerySelector} from './QueryHandler.js';
 import {AwaitableIterable} from './types.js';
 
@@ -106,16 +106,17 @@ export class ARIAQueryHandler extends QueryHandler {
     element: ElementHandle<Node>,
     selector: string
   ): AwaitableIterable<ElementHandle<Node>> {
-    const context = (
-      element as unknown as CDPJSHandle<Node>
-    ).executionContext();
     const {name, role} = parseARIASelector(selector);
-    const results = await queryAXTree(context._client, element, name, role);
-    const world = context._world!;
+    const results = await queryAXTree(
+      element.realm.environment.client,
+      element,
+      name,
+      role
+    );
     yield* AsyncIterableUtil.map(results, node => {
-      return world.adoptBackendNode(node.backendDOMNodeId) as Promise<
-        ElementHandle<Node>
-      >;
+      return (element.realm as IsolatedWorld).adoptBackendNode(
+        node.backendDOMNodeId
+      ) as Promise<ElementHandle<Node>>;
     });
   }
 

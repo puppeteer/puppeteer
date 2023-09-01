@@ -34,7 +34,7 @@ import {EvaluateFunc, HandleFor} from './types.js';
 import {
   PuppeteerURL,
   createEvaluationError,
-  createJSHandle,
+  createCdpHandle,
   getSourcePuppeteerURLIfAvailable,
   isString,
   valueFromRemoteObject,
@@ -70,14 +70,14 @@ const getSourceUrlComment = (url: string) => {
  */
 export class ExecutionContext {
   _client: CDPSession;
-  _world?: IsolatedWorld;
+  _world: IsolatedWorld;
   _contextId: number;
   _contextName?: string;
 
   constructor(
     client: CDPSession,
     contextPayload: Protocol.Runtime.ExecutionContextDescription,
-    world?: IsolatedWorld
+    world: IsolatedWorld
   ) {
     this._client = client;
     this._world = world;
@@ -105,14 +105,12 @@ export class ExecutionContext {
             selector: string
           ): Promise<JSHandle<Node[]>> => {
             const results = ARIAQueryHandler.queryAll(element, selector);
-            return await (element as unknown as CDPJSHandle<Node>)
-              .executionContext()
-              .evaluateHandle(
-                (...elements) => {
-                  return elements;
-                },
-                ...(await AsyncIterableUtil.collect(results))
-              );
+            return await element.realm.evaluateHandle(
+              (...elements) => {
+                return elements;
+              },
+              ...(await AsyncIterableUtil.collect(results))
+            );
           }) as (...args: unknown[]) => unknown)
         ),
       ]);
@@ -305,7 +303,7 @@ export class ExecutionContext {
 
       return returnByValue
         ? valueFromRemoteObject(remoteObject)
-        : createJSHandle(this, remoteObject);
+        : createCdpHandle(this._world, remoteObject);
     }
 
     const functionDeclaration = stringifyFunction(pageFunction);
@@ -340,7 +338,7 @@ export class ExecutionContext {
     }
     return returnByValue
       ? valueFromRemoteObject(remoteObject)
-      : createJSHandle(this, remoteObject);
+      : createCdpHandle(this._world, remoteObject);
 
     async function convertArgument(
       this: ExecutionContext,
@@ -370,7 +368,7 @@ export class ExecutionContext {
           ? arg
           : null;
       if (objectHandle) {
-        if (objectHandle.executionContext() !== this) {
+        if (objectHandle.realm !== this._world) {
           throw new Error(
             'JSHandles can be evaluated only in the context they were created!'
           );

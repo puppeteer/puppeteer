@@ -57,6 +57,7 @@ import {EmulationManager} from './EmulationManager.js';
 import {TargetCloseError} from './Errors.js';
 import {Handler} from './EventEmitter.js';
 import {FileChooser} from './FileChooser.js';
+import {CDPFrame} from './Frame.js';
 import {FrameManager, FrameManagerEmittedEvents} from './FrameManager.js';
 import {CDPKeyboard, CDPMouse, CDPTouchscreen} from './Input.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
@@ -74,8 +75,8 @@ import {TimeoutSettings} from './TimeoutSettings.js';
 import {Tracing} from './Tracing.js';
 import {BindingPayload, EvaluateFunc, HandleFor} from './types.js';
 import {
+  createCdpHandle,
   createClientError,
-  createJSHandle,
   debugError,
   evaluationString,
   getReadableAsBuffer,
@@ -389,7 +390,7 @@ export class CDPPage extends Page {
     return this.#emulationManager.javascriptEnabled;
   }
 
-  override waitForFileChooser(
+  override async waitForFileChooser(
     options: WaitTimeoutOptions = {}
   ): Promise<FileChooser> {
     const needsEnable = this.#fileChooserDeferreds.size === 0;
@@ -405,14 +406,16 @@ export class CDPPage extends Page {
         enabled: true,
       });
     }
-    return Promise.all([deferred.valueOrThrow(), enablePromise])
-      .then(([result]) => {
-        return result;
-      })
-      .catch(error => {
-        this.#fileChooserDeferreds.delete(deferred);
-        throw error;
-      });
+    try {
+      const [result] = await Promise.all([
+        deferred.valueOrThrow(),
+        enablePromise,
+      ]);
+      return result;
+    } catch (error) {
+      this.#fileChooserDeferreds.delete(deferred);
+      throw error;
+    }
   }
 
   override async setGeolocation(options: GeolocationOptions): Promise<void> {
@@ -450,7 +453,7 @@ export class CDPPage extends Page {
     }
   }
 
-  override mainFrame(): Frame {
+  override mainFrame(): CDPFrame {
     return this.#frameManager.mainFrame();
   }
 
@@ -498,14 +501,14 @@ export class CDPPage extends Page {
     return await this.#client.send('Input.setInterceptDrags', {enabled});
   }
 
-  override setOfflineMode(enabled: boolean): Promise<void> {
-    return this.#frameManager.networkManager.setOfflineMode(enabled);
+  override async setOfflineMode(enabled: boolean): Promise<void> {
+    return await this.#frameManager.networkManager.setOfflineMode(enabled);
   }
 
-  override emulateNetworkConditions(
+  override async emulateNetworkConditions(
     networkConditions: NetworkConditions | null
   ): Promise<void> {
-    return this.#frameManager.networkManager.emulateNetworkConditions(
+    return await this.#frameManager.networkManager.emulateNetworkConditions(
       networkConditions
     );
   }
@@ -533,23 +536,27 @@ export class CDPPage extends Page {
       this.evaluateHandle.name,
       pageFunction
     );
-    const context = await this.mainFrame().executionContext();
-    return await context.evaluateHandle(pageFunction, ...args);
+    return await this.mainFrame().evaluateHandle(pageFunction, ...args);
   }
 
   override async queryObjects<Prototype>(
     prototypeHandle: JSHandle<Prototype>
   ): Promise<JSHandle<Prototype[]>> {
-    const context = await this.mainFrame().executionContext();
     assert(!prototypeHandle.disposed, 'Prototype JSHandle is disposed!');
     assert(
       prototypeHandle.id,
       'Prototype JSHandle must not be referencing primitive value'
     );
-    const response = await context._client.send('Runtime.queryObjects', {
-      prototypeObjectId: prototypeHandle.id,
-    });
-    return createJSHandle(context, response.objects) as HandleFor<Prototype[]>;
+    const response = await this.mainFrame().client.send(
+      'Runtime.queryObjects',
+      {
+        prototypeObjectId: prototypeHandle.id,
+      }
+    );
+    return createCdpHandle(
+      this.mainFrame().mainRealm(),
+      response.objects
+    ) as HandleFor<Prototype[]>;
   }
 
   override async cookies(
@@ -771,7 +778,7 @@ export class CDPPage extends Page {
       return;
     }
     const values = event.args.map(arg => {
-      return createJSHandle(context, arg);
+      return createCdpHandle(context._world, arg);
     });
     this.#addConsoleMessage(event.type, values, event.stackTrace);
   }
@@ -1378,10 +1385,10 @@ export class CDPPage extends Page {
    * );
    * ```
    */
-  override waitForDevicePrompt(
+  override async waitForDevicePrompt(
     options: WaitTimeoutOptions = {}
   ): Promise<DeviceRequestPrompt> {
-    return this.mainFrame().waitForDevicePrompt(options);
+    return await this.mainFrame().waitForDevicePrompt(options);
   }
 }
 

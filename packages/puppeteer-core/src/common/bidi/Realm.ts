@@ -14,8 +14,8 @@ import {
 
 import {Connection} from './Connection.js';
 import {BidiElementHandle} from './ElementHandle.js';
-import {BidiFrame} from './Frame.js';
 import {BidiJSHandle} from './JSHandle.js';
+import {Sandbox} from './Sandbox.js';
 import {BidiSerializer} from './Serializer.js';
 import {createEvaluationError} from './utils.js';
 
@@ -26,28 +26,31 @@ export const getSourceUrlComment = (url: string): string => {
 };
 
 export class Realm extends EventEmitter {
-  connection: Connection;
-  #frame!: BidiFrame;
-  #id: string;
-  #sandbox?: string;
+  readonly connection: Connection;
+  readonly #id: string;
 
-  constructor(connection: Connection, id: string, sandbox?: string) {
+  #sandbox!: Sandbox;
+
+  constructor(connection: Connection, id: string) {
     super();
     this.connection = connection;
     this.#id = id;
-    this.#sandbox = sandbox;
   }
 
   get target(): Bidi.Script.Target {
     return {
       context: this.#id,
-      sandbox: this.#sandbox,
+      sandbox: this.#sandbox.name,
     };
   }
 
-  setFrame(frame: BidiFrame): void {
-    this.#frame = frame;
+  setSandbox(sandbox: Sandbox): void {
+    this.#sandbox = sandbox;
 
+    // TODO: Tack correct realm similar to BrowsingContexts
+    this.connection.on(Bidi.ChromiumBidi.Script.EventNames.RealmCreated, () => {
+      void this.#sandbox.taskManager.rerunAll();
+    });
     // TODO(jrandolf): We should try to find a less brute-force way of doing
     // this.
     this.connection.on(
@@ -131,6 +134,8 @@ export class Realm extends EventEmitter {
         PuppeteerURL.INTERNAL_URL
     );
 
+    const sandbox = this.#sandbox;
+
     let responsePromise;
     const resultOwnership = returnByValue
       ? Bidi.Script.ResultOwnership.None
@@ -156,7 +161,7 @@ export class Realm extends EventEmitter {
         functionDeclaration,
         arguments: await Promise.all(
           args.map(arg => {
-            return BidiSerializer.serialize(arg, this as any);
+            return BidiSerializer.serialize(sandbox, arg);
           })
         ),
         target: this.target,
@@ -174,20 +179,19 @@ export class Realm extends EventEmitter {
 
     return returnByValue
       ? BidiSerializer.deserialize(result.result)
-      : getBidiHandle(this as any, result.result, this.#frame);
+      : createBidiHandle(sandbox, result.result);
   }
 }
 
 /**
  * @internal
  */
-export function getBidiHandle(
-  realmOrContext: Realm,
-  result: Bidi.Script.RemoteValue,
-  frame: BidiFrame
-): BidiJSHandle | BidiElementHandle<Node> {
+export function createBidiHandle(
+  sandbox: Sandbox,
+  result: Bidi.Script.RemoteValue
+): BidiJSHandle<unknown> | BidiElementHandle<Node> {
   if (result.type === 'node' || result.type === 'window') {
-    return new BidiElementHandle(realmOrContext, result, frame);
+    return new BidiElementHandle(sandbox, result);
   }
-  return new BidiJSHandle(realmOrContext, result);
+  return new BidiJSHandle(sandbox, result);
 }

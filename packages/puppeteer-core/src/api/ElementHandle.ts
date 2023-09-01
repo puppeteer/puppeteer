@@ -142,7 +142,7 @@ export abstract class ElementHandle<
   /**
    * @internal
    */
-  protected handle;
+  protected readonly handle;
 
   /**
    * @internal
@@ -208,7 +208,7 @@ export abstract class ElementHandle<
   /**
    * @internal
    */
-  override evaluateHandle<
+  override async evaluateHandle<
     Params extends unknown[],
     Func extends EvaluateFuncWith<ElementType, Params> = EvaluateFuncWith<
       ElementType,
@@ -218,7 +218,7 @@ export abstract class ElementHandle<
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    return this.handle.evaluateHandle(pageFunction, ...args);
+    return await this.handle.evaluateHandle(pageFunction, ...args);
   }
 
   /**
@@ -1268,11 +1268,6 @@ export abstract class ElementHandle<
       return element.ownerSVGElement!;
     });
   }
-
-  /**
-   * @internal
-   */
-  abstract assertElementHasWorld(): asserts this;
 
   /**
    * If the element is a form input, you can use {@link ElementHandle.autofill}

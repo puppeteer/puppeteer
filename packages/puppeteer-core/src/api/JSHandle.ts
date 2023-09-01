@@ -23,10 +23,11 @@ import {
   HandleOr,
   Moveable,
 } from '../common/types.js';
-import {debugError} from '../common/util.js';
+import {debugError, withSourcePuppeteerURLIfNone} from '../common/util.js';
 import {moveable} from '../util/decorators.js';
 
 import {ElementHandle} from './ElementHandle.js';
+import {Realm} from './Realm.js';
 
 /**
  * Represents a reference to a JavaScript object. Instances can be created using
@@ -68,6 +69,11 @@ export abstract class JSHandle<T = unknown>
   /**
    * @internal
    */
+  abstract get realm(): Realm;
+
+  /**
+   * @internal
+   */
   get disposed(): boolean {
     throw new Error('Not implemented');
   }
@@ -75,33 +81,56 @@ export abstract class JSHandle<T = unknown>
   /**
    * Evaluates the given function with the current handle as its first argument.
    */
-  abstract evaluate<
+  async evaluate<
     Params extends unknown[],
     Func extends EvaluateFuncWith<T, Params> = EvaluateFuncWith<T, Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
+  ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluate.name,
+      pageFunction
+    );
+    return await this.realm.evaluate(pageFunction, this, ...args);
+  }
 
   /**
    * Evaluates the given function with the current handle as its first argument.
    *
    */
-  abstract evaluateHandle<
+  async evaluateHandle<
     Params extends unknown[],
     Func extends EvaluateFuncWith<T, Params> = EvaluateFuncWith<T, Params>,
   >(
     pageFunction: Func | string,
     ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluateHandle.name,
+      pageFunction
+    );
+    return await this.realm.evaluateHandle(pageFunction, this, ...args);
+  }
 
   /**
    * Fetches a single property from the referenced object.
    */
-  abstract getProperty<K extends keyof T>(
+  getProperty<K extends keyof T>(
     propertyName: HandleOr<K>
   ): Promise<HandleFor<T[K]>>;
-  abstract getProperty(propertyName: string): Promise<JSHandle<unknown>>;
+  getProperty(propertyName: string): Promise<JSHandle<unknown>>;
+
+  /**
+   * @internal
+   */
+  async getProperty<K extends keyof T>(
+    propertyName: HandleOr<K>
+  ): Promise<HandleFor<T[K]>> {
+    return await this.evaluateHandle((object, propertyName) => {
+      return object[propertyName as K];
+    }, propertyName);
+  }
 
   /**
    * Gets a map of handles representing the properties of the current handle.
@@ -121,7 +150,31 @@ export abstract class JSHandle<T = unknown>
    * children; // holds elementHandles to all children of document.body
    * ```
    */
-  abstract getProperties(): Promise<Map<string, JSHandle<unknown>>>;
+  async getProperties(): Promise<Map<string, JSHandle>> {
+    const propertyNames = await this.evaluate(object => {
+      const enumerableProperties = [];
+      const descriptors = Object.getOwnPropertyDescriptors(object);
+      for (const propertyName in descriptors) {
+        if (descriptors[propertyName]?.enumerable) {
+          enumerableProperties.push(propertyName);
+        }
+      }
+      return enumerableProperties;
+    });
+    const map = new Map<string, JSHandle>();
+    const results = await Promise.all(
+      propertyNames.map(key => {
+        return this.getProperty(key);
+      })
+    );
+    for (const [key, value] of Object.entries(propertyNames)) {
+      using handle = results[key as any];
+      if (handle) {
+        map.set(value, handle.move());
+      }
+    }
+    return map;
+  }
 
   /**
    * A vanilla object representing the serializable portions of the

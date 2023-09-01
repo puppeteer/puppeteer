@@ -18,25 +18,26 @@ import {Protocol} from 'devtools-protocol';
 
 import {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
+import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
 import {Binding} from './Binding.js';
 import {CDPSession} from './Connection.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {CDPFrame} from './Frame.js';
-import {FrameManager} from './FrameManager.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
-import {CDPJSHandle} from './JSHandle.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
+import {TimeoutSettings} from './TimeoutSettings.js';
 import {BindingPayload, EvaluateFunc, HandleFor} from './types.js';
 import {
-  Mutex,
   addPageBinding,
-  createJSHandle,
+  createCdpHandle,
   debugError,
+  Mutex,
   setPageContent,
   withSourcePuppeteerURLIfNone,
 } from './util.js';
+import {WebWorker} from './WebWorker.js';
 
 /**
  * @public
@@ -91,7 +92,6 @@ export interface IsolatedWorldChart {
  * @internal
  */
 export class IsolatedWorld extends Realm {
-  #frame: CDPFrame;
   #context = Deferred.create<ExecutionContext>();
 
   // Set of bindings that have been registered in the current context.
@@ -104,26 +104,32 @@ export class IsolatedWorld extends Realm {
     return this.#bindings;
   }
 
-  constructor(frame: CDPFrame) {
-    super(frame._frameManager.timeoutSettings);
-    this.#frame = frame;
+  readonly #frameOrWorker: CDPFrame | WebWorker;
+
+  constructor(
+    frameOrWorker: CDPFrame | WebWorker,
+    timeoutSettings: TimeoutSettings
+  ) {
+    super(timeoutSettings);
+    this.#frameOrWorker = frameOrWorker;
     this.frameUpdated();
   }
 
+  get environment(): CDPFrame | WebWorker {
+    return this.#frameOrWorker;
+  }
+
   frameUpdated(): void {
-    this.#client.on('Runtime.bindingCalled', this.#onBindingCalled);
+    this.client.on('Runtime.bindingCalled', this.#onBindingCalled);
   }
 
-  get #client(): CDPSession {
-    return this.#frame._client();
+  get client(): CDPSession {
+    return this.#frameOrWorker.client;
   }
 
-  get #frameManager(): FrameManager {
-    return this.#frame._frameManager;
-  }
-
-  frame(): CDPFrame {
-    return this.#frame;
+  get #frame(): CDPFrame {
+    assert(this.#frameOrWorker instanceof CDPFrame);
+    return this.#frameOrWorker;
   }
 
   clearContext(): void {
@@ -140,10 +146,10 @@ export class IsolatedWorld extends Realm {
     return this.#context.resolved();
   }
 
-  executionContext(): Promise<ExecutionContext> {
+  #executionContext(): Promise<ExecutionContext> {
     if (this.disposed) {
       throw new Error(
-        `Execution context is not available in detached frame "${this.#frame.url()}" (are you trying to evaluate?)`
+        `Execution context is not available in detached frame "${this.environment.url()}" (are you trying to evaluate?)`
       );
     }
     if (this.#context === null) {
@@ -163,7 +169,7 @@ export class IsolatedWorld extends Realm {
       this.evaluateHandle.name,
       pageFunction
     );
-    const context = await this.executionContext();
+    const context = await this.#executionContext();
     return await context.evaluateHandle(pageFunction, ...args);
   }
 
@@ -178,7 +184,7 @@ export class IsolatedWorld extends Realm {
       this.evaluate.name,
       pageFunction
     );
-    const context = await this.executionContext();
+    const context = await this.#executionContext();
     return await context.evaluate(pageFunction, ...args);
   }
 
@@ -197,7 +203,7 @@ export class IsolatedWorld extends Realm {
     await setPageContent(this, html);
 
     const watcher = new LifecycleWatcher(
-      this.#frameManager.networkManager,
+      this.#frame._frameManager.networkManager,
       this.#frame,
       waitUntil,
       timeout
@@ -296,40 +302,33 @@ export class IsolatedWorld extends Realm {
   async adoptBackendNode(
     backendNodeId?: Protocol.DOM.BackendNodeId
   ): Promise<JSHandle<Node>> {
-    const executionContext = await this.executionContext();
-    const {object} = await this.#client.send('DOM.resolveNode', {
+    const executionContext = await this.#executionContext();
+    const {object} = await this.client.send('DOM.resolveNode', {
       backendNodeId: backendNodeId,
       executionContextId: executionContext._contextId,
     });
-    return createJSHandle(executionContext, object) as JSHandle<Node>;
+    return createCdpHandle(this, object) as JSHandle<Node>;
   }
 
   async adoptHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
-    const context = await this.executionContext();
-    if (
-      (handle as unknown as CDPJSHandle<Node>).executionContext() === context
-    ) {
+    if (handle.realm === this) {
       // If the context has already adopted this handle, clone it so downstream
       // disposal doesn't become an issue.
       return (await handle.evaluateHandle(value => {
         return value;
-        // SAFETY: We know the
       })) as unknown as T;
     }
-    const nodeInfo = await this.#client.send('DOM.describeNode', {
+    const nodeInfo = await this.client.send('DOM.describeNode', {
       objectId: handle.id,
     });
     return (await this.adoptBackendNode(nodeInfo.node.backendNodeId)) as T;
   }
 
   async transferHandle<T extends JSHandle<Node>>(handle: T): Promise<T> {
-    const context = await this.executionContext();
-    if (
-      (handle as unknown as CDPJSHandle<Node>).executionContext() === context
-    ) {
+    if (handle.realm === this) {
       return handle;
     }
-    const info = await this.#client.send('DOM.describeNode', {
+    const info = await this.client.send('DOM.describeNode', {
       objectId: handle.remoteObject().objectId,
     });
     const newHandle = (await this.adoptBackendNode(
@@ -341,6 +340,6 @@ export class IsolatedWorld extends Realm {
 
   [Symbol.dispose](): void {
     super[Symbol.dispose]();
-    this.#client.off('Runtime.bindingCalled', this.#onBindingCalled);
+    this.client.off('Runtime.bindingCalled', this.#onBindingCalled);
   }
 }

@@ -20,7 +20,6 @@ import {Page, WaitTimeoutOptions} from '../api/Page.js';
 import {CDPSession} from '../common/Connection.js';
 import {DeviceRequestPrompt} from '../common/DeviceRequestPrompt.js';
 import {EventEmitter} from '../common/EventEmitter.js';
-import {ExecutionContext} from '../common/ExecutionContext.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {transposeIterableHandle} from '../common/HandleIterator.js';
 import {
@@ -309,14 +308,7 @@ export abstract class Frame extends EventEmitter {
   /**
    * @internal
    */
-  abstract _client(): CDPSession;
-
-  /**
-   * @internal
-   */
-  executionContext(): Promise<ExecutionContext> {
-    throw new Error('Not implemented');
-  }
+  abstract get client(): CDPSession;
 
   /**
    * @internal
@@ -475,7 +467,7 @@ export abstract class Frame extends EventEmitter {
    * @returns A promise to the result of the function.
    */
   @throwIfDetached
-  $eval<
+  async $eval<
     Selector extends string,
     Params extends unknown[],
     Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
@@ -488,7 +480,7 @@ export abstract class Frame extends EventEmitter {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
-    return this.mainRealm().$eval(selector, pageFunction, ...args);
+    return await this.mainRealm().$eval(selector, pageFunction, ...args);
   }
 
   /**
@@ -512,7 +504,7 @@ export abstract class Frame extends EventEmitter {
    * @returns A promise to the result of the function.
    */
   @throwIfDetached
-  $$eval<
+  async $$eval<
     Selector extends string,
     Params extends unknown[],
     Func extends EvaluateFuncWith<
@@ -525,7 +517,7 @@ export abstract class Frame extends EventEmitter {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
-    return this.mainRealm().$$eval(selector, pageFunction, ...args);
+    return await this.mainRealm().$$eval(selector, pageFunction, ...args);
   }
 
   /**
@@ -539,8 +531,8 @@ export abstract class Frame extends EventEmitter {
    * @param expression - the XPath expression to evaluate.
    */
   @throwIfDetached
-  $x(expression: string): Promise<Array<ElementHandle<Node>>> {
-    return this.mainRealm().$x(expression);
+  async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
+    return await this.mainRealm().$x(expression);
   }
 
   /**
@@ -659,7 +651,7 @@ export abstract class Frame extends EventEmitter {
    * @returns the promise which resolve when the `pageFunction` returns a truthy value.
    */
   @throwIfDetached
-  waitForFunction<
+  async waitForFunction<
     Params extends unknown[],
     Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
   >(
@@ -667,18 +659,18 @@ export abstract class Frame extends EventEmitter {
     options: FrameWaitForFunctionOptions = {},
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    return this.mainRealm().waitForFunction(
+    return await (this.mainRealm().waitForFunction(
       pageFunction,
       options,
       ...args
-    ) as Promise<HandleFor<Awaited<ReturnType<Func>>>>;
+    ) as Promise<HandleFor<Awaited<ReturnType<Func>>>>);
   }
   /**
    * The full HTML contents of the frame, including the DOCTYPE.
    */
   @throwIfDetached
-  content(): Promise<string> {
-    return this.isolatedRealm().content();
+  async content(): Promise<string> {
+    return await this.isolatedRealm().content();
   }
 
   /**
@@ -922,8 +914,11 @@ export abstract class Frame extends EventEmitter {
    * @param selector - The selector to query for.
    */
   @throwIfDetached
-  click(selector: string, options: Readonly<ClickOptions> = {}): Promise<void> {
-    return this.isolatedRealm().click(selector, options);
+  async click(
+    selector: string,
+    options: Readonly<ClickOptions> = {}
+  ): Promise<void> {
+    return await this.isolatedRealm().click(selector, options);
   }
 
   /**
@@ -933,8 +928,8 @@ export abstract class Frame extends EventEmitter {
    * @throws Throws if there's no element matching `selector`.
    */
   @throwIfDetached
-  focus(selector: string): Promise<void> {
-    return this.isolatedRealm().focus(selector);
+  async focus(selector: string): Promise<void> {
+    return await this.isolatedRealm().focus(selector);
   }
 
   /**
@@ -945,8 +940,8 @@ export abstract class Frame extends EventEmitter {
    * @throws Throws if there's no element matching `selector`.
    */
   @throwIfDetached
-  hover(selector: string): Promise<void> {
-    return this.isolatedRealm().hover(selector);
+  async hover(selector: string): Promise<void> {
+    return await this.isolatedRealm().hover(selector);
   }
 
   /**
@@ -968,8 +963,8 @@ export abstract class Frame extends EventEmitter {
    * @throws Throws if there's no `<select>` matching `selector`.
    */
   @throwIfDetached
-  select(selector: string, ...values: string[]): Promise<string[]> {
-    return this.isolatedRealm().select(selector, ...values);
+  async select(selector: string, ...values: string[]): Promise<string[]> {
+    return await this.isolatedRealm().select(selector, ...values);
   }
 
   /**
@@ -979,8 +974,8 @@ export abstract class Frame extends EventEmitter {
    * @throws Throws if there's no element matching `selector`.
    */
   @throwIfDetached
-  tap(selector: string): Promise<void> {
-    return this.isolatedRealm().tap(selector);
+  async tap(selector: string): Promise<void> {
+    return await this.isolatedRealm().tap(selector);
   }
 
   /**
@@ -1005,12 +1000,12 @@ export abstract class Frame extends EventEmitter {
    * between key presses in milliseconds. Defaults to `0`.
    */
   @throwIfDetached
-  type(
+  async type(
     selector: string,
     text: string,
     options?: Readonly<KeyboardTypeOptions>
   ): Promise<void> {
-    return this.isolatedRealm().type(selector, text, options);
+    return await this.isolatedRealm().type(selector, text, options);
   }
 
   /**
@@ -1033,8 +1028,8 @@ export abstract class Frame extends EventEmitter {
    *
    * @param milliseconds - the number of milliseconds to wait.
    */
-  waitForTimeout(milliseconds: number): Promise<void> {
-    return new Promise(resolve => {
+  async waitForTimeout(milliseconds: number): Promise<void> {
+    return await new Promise(resolve => {
       setTimeout(resolve, milliseconds);
     });
   }
@@ -1043,8 +1038,8 @@ export abstract class Frame extends EventEmitter {
    * The frame's title.
    */
   @throwIfDetached
-  title(): Promise<string> {
-    return this.isolatedRealm().title();
+  async title(): Promise<string> {
+    return await this.isolatedRealm().title();
   }
 
   /**
