@@ -328,6 +328,10 @@ export class IsolatedWorld extends Realm {
     if (handle.realm === this) {
       return handle;
     }
+    // Implies it's a primitive value, probably.
+    if (handle.remoteObject().objectId === undefined) {
+      return handle;
+    }
     const info = await this.client.send('DOM.describeNode', {
       objectId: handle.remoteObject().objectId,
     });
