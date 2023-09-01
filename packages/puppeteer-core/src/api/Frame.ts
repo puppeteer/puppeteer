@@ -36,9 +36,11 @@ import {
   NodeFor,
 } from '../common/types.js';
 import {
+  getPageContent,
   importFSPromises,
   withSourcePuppeteerURLIfNone,
 } from '../common/util.js';
+import {assert} from '../util/assert.js';
 import {throwIfDisposed} from '../util/decorators.js';
 
 import {KeyboardTypeOptions} from './Input.js';
@@ -323,6 +325,16 @@ export abstract class Frame extends EventEmitter {
   /**
    * @internal
    */
+  async document(): Promise<ElementHandle<Document>> {
+    // TODO(#10813): Implement document caching.
+    return await this.evaluateHandle(() => {
+      return document;
+    });
+  }
+
+  /**
+   * @internal
+   */
   @throwIfDetached
   async frameElement(): Promise<HandleFor<HTMLIFrameElement> | null> {
     const parentFrame = this.parentFrame();
@@ -429,7 +441,8 @@ export abstract class Frame extends EventEmitter {
   async $<Selector extends string>(
     selector: Selector
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    return await this.mainRealm().$(selector);
+    using document = await this.document();
+    return await document.$(selector);
   }
 
   /**
@@ -443,7 +456,8 @@ export abstract class Frame extends EventEmitter {
   async $$<Selector extends string>(
     selector: Selector
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    return await this.mainRealm().$$(selector);
+    using document = await this.document();
+    return await document.$$(selector);
   }
 
   /**
@@ -480,7 +494,8 @@ export abstract class Frame extends EventEmitter {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
-    return await this.mainRealm().$eval(selector, pageFunction, ...args);
+    using document = await this.document();
+    return await document.$eval(selector, pageFunction, ...args);
   }
 
   /**
@@ -517,7 +532,8 @@ export abstract class Frame extends EventEmitter {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
-    return await this.mainRealm().$$eval(selector, pageFunction, ...args);
+    using document = await this.document();
+    return await document.$$eval(selector, pageFunction, ...args);
   }
 
   /**
@@ -532,7 +548,8 @@ export abstract class Frame extends EventEmitter {
    */
   @throwIfDetached
   async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
-    return await this.mainRealm().$x(expression);
+    using document = await this.document();
+    return await document.$x(expression);
   }
 
   /**
@@ -670,7 +687,7 @@ export abstract class Frame extends EventEmitter {
    */
   @throwIfDetached
   async content(): Promise<string> {
-    return await this.isolatedRealm().content();
+    return await this.evaluate(getPageContent);
   }
 
   /**
@@ -918,7 +935,10 @@ export abstract class Frame extends EventEmitter {
     selector: string,
     options: Readonly<ClickOptions> = {}
   ): Promise<void> {
-    return await this.isolatedRealm().click(selector, options);
+    using handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.click(options);
+    await handle.dispose();
   }
 
   /**
@@ -929,7 +949,9 @@ export abstract class Frame extends EventEmitter {
    */
   @throwIfDetached
   async focus(selector: string): Promise<void> {
-    return await this.isolatedRealm().focus(selector);
+    using handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.focus();
   }
 
   /**
@@ -941,7 +963,9 @@ export abstract class Frame extends EventEmitter {
    */
   @throwIfDetached
   async hover(selector: string): Promise<void> {
-    return await this.isolatedRealm().hover(selector);
+    using handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.hover();
   }
 
   /**
@@ -964,7 +988,9 @@ export abstract class Frame extends EventEmitter {
    */
   @throwIfDetached
   async select(selector: string, ...values: string[]): Promise<string[]> {
-    return await this.isolatedRealm().select(selector, ...values);
+    using handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    return await handle.select(...values);
   }
 
   /**
@@ -975,7 +1001,9 @@ export abstract class Frame extends EventEmitter {
    */
   @throwIfDetached
   async tap(selector: string): Promise<void> {
-    return await this.isolatedRealm().tap(selector);
+    using handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.tap();
   }
 
   /**
@@ -1005,7 +1033,9 @@ export abstract class Frame extends EventEmitter {
     text: string,
     options?: Readonly<KeyboardTypeOptions>
   ): Promise<void> {
-    return await this.isolatedRealm().type(selector, text, options);
+    using handle = await this.$(selector);
+    assert(handle, `No element found for selector: ${selector}`);
+    await handle.type(text, options);
   }
 
   /**
@@ -1039,7 +1069,9 @@ export abstract class Frame extends EventEmitter {
    */
   @throwIfDetached
   async title(): Promise<string> {
-    return await this.isolatedRealm().title();
+    return await this.isolatedRealm().evaluate(() => {
+      return document.title;
+    });
   }
 
   /**

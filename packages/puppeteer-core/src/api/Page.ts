@@ -982,12 +982,12 @@ export class Page extends EventEmitter implements AsyncDisposable, Disposable {
   >(
     pageFunction: Func | string,
     ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>>;
-  async evaluateHandle<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    throw new Error('Not implemented');
+  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluateHandle.name,
+      pageFunction
+    );
+    return await this.mainFrame().evaluateHandle(pageFunction, ...args);
   }
 
   /**
@@ -1440,14 +1440,14 @@ export class Page extends EventEmitter implements AsyncDisposable, Disposable {
    * {@link Frame.url | page.mainFrame().url()}.
    */
   url(): string {
-    throw new Error('Not implemented');
+    return this.mainFrame().url();
   }
 
   /**
    * The full HTML contents of the page, including the DOCTYPE.
    */
   async content(): Promise<string> {
-    throw new Error('Not implemented');
+    return await this.mainFrame().content();
   }
 
   /**
@@ -1476,9 +1476,8 @@ export class Page extends EventEmitter implements AsyncDisposable, Disposable {
    * - `networkidle2` : consider setting content to be finished when there are
    *   no more than 2 network connections for at least `500` ms.
    */
-  async setContent(html: string, options?: WaitForOptions): Promise<void>;
-  async setContent(): Promise<void> {
-    throw new Error('Not implemented');
+  async setContent(html: string, options?: WaitForOptions): Promise<void> {
+    await this.mainFrame().setContent(html, options);
   }
 
   /**
@@ -1541,9 +1540,8 @@ export class Page extends EventEmitter implements AsyncDisposable, Disposable {
   async goto(
     url: string,
     options?: WaitForOptions & {referer?: string; referrerPolicy?: string}
-  ): Promise<HTTPResponse | null>;
-  async goto(): Promise<HTTPResponse | null> {
-    throw new Error('Not implemented');
+  ): Promise<HTTPResponse | null> {
+    return await this.mainFrame().goto(url, options);
   }
 
   /**
@@ -2235,12 +2233,12 @@ export class Page extends EventEmitter implements AsyncDisposable, Disposable {
   >(
     pageFunction: Func | string,
     ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>>;
-  async evaluate<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(): Promise<Awaited<ReturnType<Func>>> {
-    throw new Error('Not implemented');
+  ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluate.name,
+      pageFunction
+    );
+    return await this.mainFrame().evaluate(pageFunction, ...args);
   }
 
   /**
@@ -2473,7 +2471,7 @@ export class Page extends EventEmitter implements AsyncDisposable, Disposable {
    * Shortcut for {@link Frame.title | page.mainFrame().title()}.
    */
   async title(): Promise<string> {
-    throw new Error('Not implemented');
+    return await this.mainFrame().title();
   }
 
   async close(options?: {runBeforeUnload?: boolean}): Promise<void>;

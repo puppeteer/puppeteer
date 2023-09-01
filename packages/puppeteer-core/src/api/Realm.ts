@@ -15,20 +15,11 @@
  */
 
 import {TimeoutSettings} from '../common/TimeoutSettings.js';
-import {
-  EvaluateFunc,
-  EvaluateFuncWith,
-  HandleFor,
-  InnerLazyParams,
-  NodeFor,
-} from '../common/types.js';
-import {getPageContent, withSourcePuppeteerURLIfNone} from '../common/util.js';
+import {EvaluateFunc, HandleFor, InnerLazyParams} from '../common/types.js';
 import {TaskManager, WaitTask} from '../common/WaitTask.js';
-import {assert} from '../util/assert.js';
 
-import {ClickOptions, ElementHandle} from './ElementHandle.js';
+import {ElementHandle} from './ElementHandle.js';
 import {Environment} from './Environment.js';
-import {KeyboardTypeOptions} from './Input.js';
 import {JSHandle} from './JSHandle.js';
 
 /**
@@ -60,76 +51,6 @@ export abstract class Realm implements Disposable {
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>>;
-
-  async document(): Promise<ElementHandle<Document>> {
-    // TODO(#10813): Implement document caching.
-    return await this.evaluateHandle(() => {
-      return document;
-    });
-  }
-
-  async $<Selector extends string>(
-    selector: Selector
-  ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    using document = await this.document();
-    return await document.$(selector);
-  }
-
-  async $$<Selector extends string>(
-    selector: Selector
-  ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    using document = await this.document();
-    return await document.$$(selector);
-  }
-
-  async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
-    using document = await this.document();
-    return await document.$x(expression);
-  }
-
-  async $eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<NodeFor<Selector>, Params> = EvaluateFuncWith<
-      NodeFor<Selector>,
-      Params
-    >,
-  >(
-    selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
-    using document = await this.document();
-    return await document.$eval(selector, pageFunction, ...args);
-  }
-
-  async $$eval<
-    Selector extends string,
-    Params extends unknown[],
-    Func extends EvaluateFuncWith<
-      Array<NodeFor<Selector>>,
-      Params
-    > = EvaluateFuncWith<Array<NodeFor<Selector>>, Params>,
-  >(
-    selector: Selector,
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
-    using document = await this.document();
-    return await document.$$eval(selector, pageFunction, ...args);
-  }
-
-  async content(): Promise<string> {
-    return await this.evaluate(getPageContent);
-  }
-
-  async title(): Promise<string> {
-    return await this.evaluate(() => {
-      return document.title;
-    });
-  }
 
   async waitForFunction<
     Params extends unknown[],
@@ -169,50 +90,6 @@ export abstract class Realm implements Disposable {
       ...args
     );
     return await waitTask.result;
-  }
-
-  async click(
-    selector: string,
-    options?: Readonly<ClickOptions>
-  ): Promise<void> {
-    using handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    await handle.click(options);
-    await handle.dispose();
-  }
-
-  async focus(selector: string): Promise<void> {
-    using handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    await handle.focus();
-  }
-
-  async hover(selector: string): Promise<void> {
-    using handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    await handle.hover();
-  }
-
-  async select(selector: string, ...values: string[]): Promise<string[]> {
-    using handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    return await handle.select(...values);
-  }
-
-  async tap(selector: string): Promise<void> {
-    using handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    await handle.tap();
-  }
-
-  async type(
-    selector: string,
-    text: string,
-    options?: Readonly<KeyboardTypeOptions>
-  ): Promise<void> {
-    using handle = await this.$(selector);
-    assert(handle, `No element found for selector: ${selector}`);
-    await handle.type(text, options);
   }
 
   get disposed(): boolean {
