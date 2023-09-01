@@ -55,11 +55,6 @@ export class BidiElementHandle<
     return this.handle.remoteValue();
   }
 
-  assertElementHasWorld(): asserts this {
-    // TODO: Should assert element has a Sandbox
-    return;
-  }
-
   override async autofill(data: AutofillData): Promise<void> {
     const client = this.frame.client;
     const nodeInfo = await client.send('DOM.describeNode', {
@@ -77,9 +72,9 @@ export class BidiElementHandle<
   override async contentFrame(
     this: BidiElementHandle<HTMLIFrameElement>
   ): Promise<BidiFrame>;
+  @ElementHandle.bindIsolatedHandle
   override async contentFrame(): Promise<BidiFrame | null> {
-    using adoptedThis = await this.frame.isolatedRealm().adoptHandle(this);
-    using handle = (await adoptedThis.evaluateHandle(element => {
+    using handle = (await this.evaluateHandle(element => {
       if (element instanceof HTMLIFrameElement) {
         return element.contentWindow;
       }

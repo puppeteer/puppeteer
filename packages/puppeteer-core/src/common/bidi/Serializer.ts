@@ -156,7 +156,8 @@ export class BidiSerializer {
         : null;
     if (objectHandle) {
       if (
-        objectHandle.realm !== sandbox &&
+        objectHandle.realm.environment.context() !==
+          sandbox.environment.context() &&
         !('sharedId' in objectHandle.remoteValue())
       ) {
         throw new Error(

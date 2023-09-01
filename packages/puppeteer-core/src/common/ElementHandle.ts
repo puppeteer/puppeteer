@@ -87,6 +87,7 @@ export class CDPElementHandle<
   }
 
   @throwIfDisposed()
+  @ElementHandle.bindIsolatedHandle
   override async scrollIntoView(
     this: CDPElementHandle<Element>
   ): Promise<void> {
@@ -106,6 +107,7 @@ export class CDPElementHandle<
    * This method creates and captures a dragevent from the element.
    */
   @throwIfDisposed()
+  @ElementHandle.bindIsolatedHandle
   override async drag(
     this: CDPElementHandle<Element>,
     target: Point
@@ -120,6 +122,7 @@ export class CDPElementHandle<
   }
 
   @throwIfDisposed()
+  @ElementHandle.bindIsolatedHandle
   override async dragEnter(
     this: CDPElementHandle<Element>,
     data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
@@ -130,6 +133,7 @@ export class CDPElementHandle<
   }
 
   @throwIfDisposed()
+  @ElementHandle.bindIsolatedHandle
   override async dragOver(
     this: CDPElementHandle<Element>,
     data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
@@ -140,6 +144,7 @@ export class CDPElementHandle<
   }
 
   @throwIfDisposed()
+  @ElementHandle.bindIsolatedHandle
   override async drop(
     this: CDPElementHandle<Element>,
     data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
@@ -150,6 +155,7 @@ export class CDPElementHandle<
   }
 
   @throwIfDisposed()
+  @ElementHandle.bindIsolatedHandle
   override async dragAndDrop(
     this: CDPElementHandle<Element>,
     target: CDPElementHandle<Node>,
@@ -166,6 +172,7 @@ export class CDPElementHandle<
   }
 
   @throwIfDisposed()
+  @ElementHandle.bindIsolatedHandle
   override async uploadFile(
     this: CDPElementHandle<HTMLInputElement>,
     ...filePaths: string[]
@@ -224,6 +231,7 @@ export class CDPElementHandle<
   }
 
   @throwIfDisposed()
+  @ElementHandle.bindIsolatedHandle
   override async screenshot(
     this: CDPElementHandle<Element>,
     options: ScreenshotOptions = {}

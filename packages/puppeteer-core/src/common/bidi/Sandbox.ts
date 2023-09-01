@@ -114,7 +114,6 @@ export class Sandbox extends Realm {
     const transferredHandle = await this.evaluateHandle(node => {
       return node;
     }, handle);
-
     await handle.dispose();
     return transferredHandle as unknown as T;
   }
