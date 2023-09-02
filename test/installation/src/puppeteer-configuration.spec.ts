@@ -22,27 +22,60 @@ import {configureSandbox} from './sandbox.js';
 import {readAsset} from './util.js';
 
 describe('`puppeteer` with configuration', () => {
-  configureSandbox({
-    dependencies: ['@puppeteer/browsers', 'puppeteer-core', 'puppeteer'],
-    env: cwd => {
-      return {
-        PUPPETEER_CACHE_DIR: join(cwd, '.cache', 'puppeteer'),
-      };
-    },
-    before: async cwd => {
-      await writeFile(
-        join(cwd, '.puppeteerrc.cjs'),
-        await readAsset('puppeteer', 'configuration', '.puppeteerrc.cjs')
-      );
-    },
+  describe('cjs', () => {
+    configureSandbox({
+      dependencies: ['@puppeteer/browsers', 'puppeteer-core', 'puppeteer'],
+      env: cwd => {
+        return {
+          PUPPETEER_CACHE_DIR: join(cwd, '.cache', 'puppeteer'),
+        };
+      },
+      before: async cwd => {
+        await writeFile(
+          join(cwd, '.puppeteerrc.cjs'),
+          await readAsset('puppeteer', 'configuration', '.puppeteerrc.cjs')
+        );
+      },
+    });
+
+    it('evaluates', async function () {
+      const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));
+      assert.equal(files.length, 1);
+      assert.equal(files[0], 'chrome');
+
+      const script = await readAsset('puppeteer', 'basic.js');
+      await this.runScript(script, 'mjs');
+    });
   });
 
-  it('evaluates', async function () {
-    const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));
-    assert.equal(files.length, 1);
-    assert.equal(files[0], 'chrome');
+  describe('ts', () => {
+    configureSandbox({
+      dependencies: [
+        '@puppeteer/browsers',
+        'puppeteer-core',
+        'puppeteer',
+        'typescript',
+      ],
+      env: cwd => {
+        return {
+          PUPPETEER_CACHE_DIR: join(cwd, '.cache', 'puppeteer'),
+        };
+      },
+      before: async cwd => {
+        await writeFile(
+          join(cwd, 'puppeteer.config.ts'),
+          await readAsset('puppeteer', 'configuration', 'puppeteer.config.ts')
+        );
+      },
+    });
 
-    const script = await readAsset('puppeteer', 'basic.js');
-    await this.runScript(script, 'mjs');
+    it('evaluates', async function () {
+      const files = await readdir(join(this.sandbox, '.cache', 'puppeteer'));
+      assert.equal(files.length, 1);
+      assert.equal(files[0], 'chrome');
+
+      const script = await readAsset('puppeteer', 'basic.js');
+      await this.runScript(script, 'mjs');
+    });
   });
 });

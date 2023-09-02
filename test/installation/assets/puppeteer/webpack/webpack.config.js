@@ -18,6 +18,7 @@ export default {
   mode: 'production',
   entry: './index.js',
   target: 'node',
+  externals: 'typescript',
   output: {
     path: process.cwd(),
     filename: 'bundle.js',
