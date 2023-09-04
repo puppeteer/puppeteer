@@ -22,6 +22,7 @@ import {Deferred} from '../util/Deferred.js';
 
 import {TimeoutError} from './Errors.js';
 import {CDPFrame, FrameEmittedEvents} from './Frame.js';
+import {FrameManagerEmittedEvents} from './FrameManager.js';
 import {HTTPRequest} from './HTTPRequest.js';
 import {NetworkManager, NetworkManagerEmittedEvents} from './NetworkManager.js';
 import {
@@ -100,8 +101,9 @@ export class LifecycleWatcher {
     this.#timeout = timeout;
     this.#eventListeners = [
       addEventListener(
-        frame,
-        FrameEmittedEvents.LifecycleEvent,
+        // Revert if TODO #1 is done
+        frame._frameManager,
+        FrameManagerEmittedEvents.LifecycleEvent,
         this.#checkLifecycleComplete.bind(this)
       ),
       addEventListener(
@@ -254,6 +256,10 @@ export class LifecycleWatcher {
           return false;
         }
       }
+      // TODO(#1): Its possible we don't need this check
+      // CDP provided the correct order for Loading Events
+      // And NetworkIdle is a global state
+      // Consider removing
       for (const child of frame.childFrames()) {
         if (
           child._hasStartedLoading &&

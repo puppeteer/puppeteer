@@ -129,6 +129,17 @@ describe('navigation', function () {
       });
       expect(response!.status()).toBe(200);
     });
+    it('should navigate to page with iframe and networkidle0', async () => {
+      const {page, server} = await getTestState();
+
+      const response = await page.goto(
+        server.PREFIX + '/frames/one-frame.html',
+        {
+          waitUntil: 'networkidle0',
+        }
+      );
+      expect(response!.status()).toBe(200);
+    });
     it('should navigate to empty page with networkidle2', async () => {
       const {page, server} = await getTestState();
 
