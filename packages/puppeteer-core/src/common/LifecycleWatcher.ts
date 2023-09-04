@@ -256,10 +256,10 @@ export class LifecycleWatcher {
           return false;
         }
       }
-      // TODO #1: Given order of event is now insured form CDP
-      // We should fix the networkIdle one to have correct order
-      // Child Idle Event -> Parent Idle Event
-      // And remove this check all together
+      // TODO(#1): Its possible we don't need this check
+      // CDP provided the correct order for Loading Events
+      // And NetworkIdle is a global state
+      // Consider removing
       for (const child of frame.childFrames()) {
         if (
           child._hasStartedLoading &&
