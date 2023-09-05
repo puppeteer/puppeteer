@@ -72,3 +72,36 @@ export function throwIfDisposed<This extends Disposed>(
     };
   };
 }
+
+export function invokeAtMostOnceForArguments(
+  target: (this: unknown, ...args: any[]) => any,
+  _: unknown
+): typeof target {
+  const cache = new WeakMap();
+  let cacheDepth = -1;
+  return function (this: unknown, ...args: unknown[]) {
+    if (cacheDepth === -1) {
+      cacheDepth = args.length;
+    }
+    if (cacheDepth !== args.length) {
+      throw new Error(
+        'Memoized method was called with the wrong number of arguments'
+      );
+    }
+    let freshArguments = false;
+    let cacheIterator = cache;
+    for (const arg of args) {
+      if (cacheIterator.has(arg as object)) {
+        cacheIterator = cacheIterator.get(arg as object)!;
+      } else {
+        freshArguments = true;
+        cacheIterator.set(arg as object, new WeakMap());
+        cacheIterator = cacheIterator.get(arg as object)!;
+      }
+    }
+    if (!freshArguments) {
+      return;
+    }
+    return target.call(this, ...args);
+  };
+}
