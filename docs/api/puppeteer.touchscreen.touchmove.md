@@ -24,3 +24,7 @@ class Touchscreen {
 **Returns:**
 
 Promise&lt;void&gt;
+
+## Remarks
+
+Not every `touchMove` call results in a `touchmove` event being emitted, depending on the browser's optimizations. For example, Chrome [throttles](https://developer.chrome.com/blog/a-more-compatible-smoother-touch/#chromes-new-model-the-throttled-async-touchmove-model) touch move events.
