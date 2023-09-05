@@ -69,7 +69,7 @@ export const NetworkManagerEmittedEvents = {
 /**
  * @internal
  */
-interface FrameProvider {
+export interface FrameProvider {
   frame(id: string): Frame | null;
 }
 

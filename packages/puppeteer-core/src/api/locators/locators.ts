@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-export * from './Locator.js';
-export * from './NodeLocator.js';
-export * from './FilteredLocator.js';
-export * from './RaceLocator.js';
 export * from './DelegatedLocator.js';
-export * from './MappedLocator.js';
+export * from './FilteredLocator.js';
 export * from './FunctionLocator.js';
+export * from './Locator.js';
+export * from './MappedLocator.js';
+export * from './NodeLocator.js';
+export * from './RaceLocator.js';

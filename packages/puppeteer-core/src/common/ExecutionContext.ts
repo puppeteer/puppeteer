@@ -54,7 +54,7 @@ const getSourceUrlComment = (url: string) => {
  *
  * - Each {@link Frame} of a {@link Page | page} has a "default" execution
  *   context that is always created after frame is attached to DOM. This context
- *   is returned by the {@link Frame.executionContext} method.
+ *   is returned by the {@link Frame.realm} method.
  * - Each {@link https://developer.chrome.com/extensions | Chrome extensions}
  *   creates additional execution contexts to isolate their code.
  *
