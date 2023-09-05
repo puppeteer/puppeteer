@@ -26,6 +26,9 @@ jobs:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: Install dependencies
         run: npm ci
+      - name: Build all packages
+        run: |
+          npm run build
       - name: Build
         env:
           PUBLISH: 1
