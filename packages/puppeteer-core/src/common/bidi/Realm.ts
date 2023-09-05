@@ -140,6 +140,12 @@ export class Realm extends EventEmitter {
     const resultOwnership = returnByValue
       ? Bidi.Script.ResultOwnership.None
       : Bidi.Script.ResultOwnership.Root;
+    const serializationOptions: Bidi.Script.SerializationOptions = returnByValue
+      ? {}
+      : {
+          maxObjectDepth: 0,
+          maxDomDepth: 0,
+        };
     if (isString(pageFunction)) {
       const expression = SOURCE_URL_REGEX.test(pageFunction)
         ? pageFunction
@@ -151,6 +157,7 @@ export class Realm extends EventEmitter {
         resultOwnership,
         awaitPromise: true,
         userActivation: true,
+        serializationOptions,
       });
     } else {
       let functionDeclaration = stringifyFunction(pageFunction);
@@ -168,6 +175,7 @@ export class Realm extends EventEmitter {
         resultOwnership,
         awaitPromise: true,
         userActivation: true,
+        serializationOptions,
       });
     }
 
