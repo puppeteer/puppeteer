@@ -182,21 +182,6 @@ const browser = await puppeteer.launch({
 });
 ```
 
-## Chrome is downloaded but fails to launch on Node.js 14
-
-If you get an error that looks like this when trying to launch Chromium:
-
-```
-(node:15505) UnhandledPromiseRejectionWarning: Error: Failed to launch the browser process!
-spawn /Users/.../node_modules/puppeteer/.local-chromium/mac-756035/chrome-mac/Chromium.app/Contents/MacOS/Chromium ENOENT
-```
-
-This means that the browser was downloaded but failed to be extracted correctly.
-The most common cause is a bug in Node.js v14.0.0 which broke `extract-zip`, the
-module Puppeteer uses to extract browser downloads into the right place. The bug
-was fixed in Node.js v14.1.0, so please make sure you're running that version or
-higher.
-
 ## Setting Up Chrome Linux Sandbox
 
 In order to protect the host environment from untrusted web content, Chrome uses

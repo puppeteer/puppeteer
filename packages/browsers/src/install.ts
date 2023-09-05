@@ -103,6 +103,9 @@ export interface InstallOptions {
 export function install(
   options: InstallOptions & {unpack?: true}
 ): Promise<InstalledBrowser>;
+/**
+ * @public
+ */
 export function install(
   options: InstallOptions & {unpack: false}
 ): Promise<string>;
