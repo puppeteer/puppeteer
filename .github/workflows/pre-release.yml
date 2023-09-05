@@ -29,7 +29,7 @@ jobs:
       - name: Build all packages
         run: |
           npm run build
-      - name: Build
+      - name: Build docs
         env:
           PUBLISH: 1
         run: |
