@@ -32,6 +32,7 @@ import {FrameManager} from './FrameManager.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
+import {setPageContent} from './util.js';
 
 /**
  * We use symbols to prevent external parties listening to these events.
@@ -257,7 +258,27 @@ export class CDPFrame extends Frame {
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
     } = {}
   ): Promise<void> {
-    return await this.isolatedRealm().setContent(html, options);
+    const {
+      waitUntil = ['load'],
+      timeout = this._frameManager.timeoutSettings.navigationTimeout(),
+    } = options;
+
+    await setPageContent(this.isolatedRealm(), html);
+
+    const watcher = new LifecycleWatcher(
+      this._frameManager.networkManager,
+      this,
+      waitUntil,
+      timeout
+    );
+    const error = await Deferred.race<void | Error | undefined>([
+      watcher.terminationPromise(),
+      watcher.lifecyclePromise(),
+    ]);
+    watcher.dispose();
+    if (error) {
+      throw error;
+    }
   }
 
   override url(): string {

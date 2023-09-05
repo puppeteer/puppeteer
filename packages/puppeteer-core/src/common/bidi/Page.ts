@@ -43,7 +43,6 @@ import {PDFOptions} from '../PDFOptions.js';
 import {Viewport} from '../PuppeteerViewport.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
 import {Tracing} from '../Tracing.js';
-import {EvaluateFunc, HandleFor} from '../types.js';
 import {
   debugError,
   evaluationString,
@@ -51,7 +50,6 @@ import {
   validateDialogType,
   waitForEvent,
   waitWithTimeout,
-  withSourcePuppeteerURLIfNone,
 } from '../util.js';
 
 import {BidiBrowser} from './Browser.js';
@@ -426,44 +424,6 @@ export class BidiPage extends Page {
     this.removeAllListeners();
   }
 
-  override async evaluateHandle<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(
-      this.evaluateHandle.name,
-      pageFunction
-    );
-    return await this.mainFrame().evaluateHandle(pageFunction, ...args);
-  }
-
-  override async evaluate<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(
-      this.evaluate.name,
-      pageFunction
-    );
-    return await this.mainFrame().evaluate(pageFunction, ...args);
-  }
-
-  override async goto(
-    url: string,
-    options?: WaitForOptions & {
-      referer?: string | undefined;
-      referrerPolicy?: string | undefined;
-    }
-  ): Promise<HTTPResponse | null> {
-    return await this.mainFrame().goto(url, options);
-  }
-
   override async reload(
     options?: WaitForOptions
   ): Promise<HTTPResponse | null> {
@@ -486,10 +446,6 @@ export class BidiPage extends Page {
     return response;
   }
 
-  override url(): string {
-    return this.mainFrame().url();
-  }
-
   override setDefaultNavigationTimeout(timeout: number): void {
     this.#timeoutSettings.setDefaultNavigationTimeout(timeout);
   }
@@ -500,17 +456,6 @@ export class BidiPage extends Page {
 
   override getDefaultTimeout(): number {
     return this.#timeoutSettings.timeout();
-  }
-
-  override async setContent(
-    html: string,
-    options: WaitForOptions = {}
-  ): Promise<void> {
-    await this.mainFrame().setContent(html, options);
-  }
-
-  override async content(): Promise<string> {
-    return await this.mainFrame().content();
   }
 
   override isJavaScriptEnabled(): boolean {
@@ -719,10 +664,6 @@ export class BidiPage extends Page {
       timeout,
       this.#closedDeferred
     );
-  }
-
-  override title(): Promise<string> {
-    return this.mainFrame().title();
   }
 
   override async createCDPSession(): Promise<CDPSession> {

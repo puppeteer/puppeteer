@@ -18,7 +18,6 @@ import {Protocol} from 'devtools-protocol';
 
 import {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
-import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
 import {Binding} from './Binding.js';
@@ -26,7 +25,6 @@ import {CDPSession} from './Connection.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {CDPFrame} from './Frame.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
-import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {BindingPayload, EvaluateFunc, HandleFor} from './types.js';
 import {
@@ -34,7 +32,6 @@ import {
   createCdpHandle,
   debugError,
   Mutex,
-  setPageContent,
   withSourcePuppeteerURLIfNone,
 } from './util.js';
 import {WebWorker} from './WebWorker.js';
@@ -127,11 +124,6 @@ export class IsolatedWorld extends Realm {
     return this.#frameOrWorker.client;
   }
 
-  get #frame(): CDPFrame {
-    assert(this.#frameOrWorker instanceof CDPFrame);
-    return this.#frameOrWorker;
-  }
-
   clearContext(): void {
     this.#context = Deferred.create();
   }
@@ -186,36 +178,6 @@ export class IsolatedWorld extends Realm {
     );
     const context = await this.#executionContext();
     return await context.evaluate(pageFunction, ...args);
-  }
-
-  async setContent(
-    html: string,
-    options: {
-      timeout?: number;
-      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    } = {}
-  ): Promise<void> {
-    const {
-      waitUntil = ['load'],
-      timeout = this.timeoutSettings.navigationTimeout(),
-    } = options;
-
-    await setPageContent(this, html);
-
-    const watcher = new LifecycleWatcher(
-      this.#frame._frameManager.networkManager,
-      this.#frame,
-      waitUntil,
-      timeout
-    );
-    const error = await Deferred.race<void | Error | undefined>([
-      watcher.terminationPromise(),
-      watcher.lifecyclePromise(),
-    ]);
-    watcher.dispose();
-    if (error) {
-      throw error;
-    }
   }
 
   // If multiple waitFor are set up asynchronously, we need to wait for the

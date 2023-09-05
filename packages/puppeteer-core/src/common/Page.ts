@@ -73,7 +73,7 @@ import {TargetManagerEmittedEvents} from './TargetManager.js';
 import {TaskQueue} from './TaskQueue.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {Tracing} from './Tracing.js';
-import {BindingPayload, EvaluateFunc, HandleFor} from './types.js';
+import {BindingPayload, HandleFor} from './types.js';
 import {
   createCdpHandle,
   createClientError,
@@ -88,7 +88,6 @@ import {
   valueFromRemoteObject,
   waitForEvent,
   waitWithTimeout,
-  withSourcePuppeteerURLIfNone,
 } from './util.js';
 import {WebWorker} from './WebWorker.js';
 
@@ -525,20 +524,6 @@ export class CDPPage extends Page {
     return this.#timeoutSettings.timeout();
   }
 
-  override async evaluateHandle<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(
-      this.evaluateHandle.name,
-      pageFunction
-    );
-    return await this.mainFrame().evaluateHandle(pageFunction, ...args);
-  }
-
   override async queryObjects<Prototype>(
     prototypeHandle: JSHandle<Prototype>
   ): Promise<JSHandle<Prototype[]>> {
@@ -863,28 +848,6 @@ export class CDPPage extends Page {
     this.emit(PageEmittedEvents.Dialog, dialog);
   }
 
-  override url(): string {
-    return this.mainFrame().url();
-  }
-
-  override async content(): Promise<string> {
-    return await this.mainFrame().content();
-  }
-
-  override async setContent(
-    html: string,
-    options: WaitForOptions = {}
-  ): Promise<void> {
-    await this.mainFrame().setContent(html, options);
-  }
-
-  override async goto(
-    url: string,
-    options: WaitForOptions & {referer?: string; referrerPolicy?: string} = {}
-  ): Promise<HTTPResponse | null> {
-    return await this.mainFrame().goto(url, options);
-  }
-
   override async reload(
     options?: WaitForOptions
   ): Promise<HTTPResponse | null> {
@@ -1040,20 +1003,6 @@ export class CDPPage extends Page {
 
   override viewport(): Viewport | null {
     return this.#viewport;
-  }
-
-  override async evaluate<
-    Params extends unknown[],
-    Func extends EvaluateFunc<Params> = EvaluateFunc<Params>,
-  >(
-    pageFunction: Func | string,
-    ...args: Params
-  ): Promise<Awaited<ReturnType<Func>>> {
-    pageFunction = withSourcePuppeteerURLIfNone(
-      this.evaluate.name,
-      pageFunction
-    );
-    return await this.mainFrame().evaluate(pageFunction, ...args);
   }
 
   override async evaluateOnNewDocument<
@@ -1329,10 +1278,6 @@ export class CDPPage extends Page {
     const buffer = await getReadableAsBuffer(readable, path);
     assert(buffer, 'Could not create buffer');
     return buffer;
-  }
-
-  override async title(): Promise<string> {
-    return await this.mainFrame().title();
   }
 
   override async close(
