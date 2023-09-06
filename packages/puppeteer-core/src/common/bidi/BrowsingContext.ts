@@ -147,7 +147,7 @@ export class BrowsingContext extends Realm {
     info: Bidi.BrowsingContext.Info,
     browserName: string
   ) {
-    super(connection, info.context);
+    super(connection);
     this.#id = info.context;
     this.#url = info.url;
     this.#parent = info.parent;
@@ -167,7 +167,7 @@ export class BrowsingContext extends Realm {
   }
 
   createRealmForSandbox(): Realm {
-    return new Realm(this.connection, this.#id);
+    return new Realm(this.connection);
   }
 
   get url(): string {
