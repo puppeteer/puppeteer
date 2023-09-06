@@ -100,7 +100,7 @@
     "debug": "4.3.4",
     "extract-zip": "2.0.1",
     "progress": "2.0.3",
-    "proxy-agent": "6.3.0",
+    "proxy-agent": "6.3.1",
     "tar-fs": "3.0.4",
     "unbzip2-stream": "1.4.3",
     "yargs": "17.7.1"
