@@ -336,7 +336,7 @@ describe('Target', function () {
       await browser
         .waitForTarget(
           target => {
-            return target.url() === server.EMPTY_PAGE;
+            return target.url() === server.PREFIX + '/does-not-exist.html';
           },
           {
             timeout: 1,
