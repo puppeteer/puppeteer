@@ -73,6 +73,14 @@ export function throwIfDisposed<This extends Disposed>(
   };
 }
 
+/**
+ * The decorator only invokes the target if the target has not been invoked with
+ * the same arguments before. The decorated method throws an error if it's
+ * invoked with a different number of elements: if you decorate a method, it
+ * should have the same number of arguments
+ *
+ * @internal
+ */
 export function invokeAtMostOnceForArguments(
   target: (this: unknown, ...args: any[]) => any,
   _: unknown
