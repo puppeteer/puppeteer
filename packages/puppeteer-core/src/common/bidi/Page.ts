@@ -366,7 +366,12 @@ export class BidiPage extends Page {
     }
     const type = validateDialogType(event.type);
 
-    const dialog = new BidiDialog(frame.context(), type, event.message);
+    const dialog = new BidiDialog(
+      frame.context(),
+      type,
+      event.message,
+      event.defaultValue
+    );
     this.emit(PageEmittedEvents.Dialog, dialog);
   }
 

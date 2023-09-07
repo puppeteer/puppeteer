@@ -33,7 +33,7 @@ export class BidiDialog extends Dialog {
     context: BrowsingContext,
     type: Bidi.BrowsingContext.UserPromptOpenedParameters['type'],
     message: string,
-    defaultValue = ''
+    defaultValue?: string
   ) {
     super(type, message, defaultValue);
     this.#context = context;
