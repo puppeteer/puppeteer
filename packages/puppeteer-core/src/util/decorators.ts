@@ -72,3 +72,44 @@ export function throwIfDisposed<This extends Disposed>(
     };
   };
 }
+
+/**
+ * The decorator only invokes the target if the target has not been invoked with
+ * the same arguments before. The decorated method throws an error if it's
+ * invoked with a different number of elements: if you decorate a method, it
+ * should have the same number of arguments
+ *
+ * @internal
+ */
+export function invokeAtMostOnceForArguments(
+  target: (this: unknown, ...args: any[]) => any,
+  _: unknown
+): typeof target {
+  const cache = new WeakMap();
+  let cacheDepth = -1;
+  return function (this: unknown, ...args: unknown[]) {
+    if (cacheDepth === -1) {
+      cacheDepth = args.length;
+    }
+    if (cacheDepth !== args.length) {
+      throw new Error(
+        'Memoized method was called with the wrong number of arguments'
+      );
+    }
+    let freshArguments = false;
+    let cacheIterator = cache;
+    for (const arg of args) {
+      if (cacheIterator.has(arg as object)) {
+        cacheIterator = cacheIterator.get(arg as object)!;
+      } else {
+        freshArguments = true;
+        cacheIterator.set(arg as object, new WeakMap());
+        cacheIterator = cacheIterator.get(arg as object)!;
+      }
+    }
+    if (!freshArguments) {
+      return;
+    }
+    return target.call(this, ...args);
+  };
+}

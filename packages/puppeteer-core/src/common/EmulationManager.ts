@@ -17,10 +17,24 @@ import {Protocol} from 'devtools-protocol';
 
 import {GeolocationOptions, MediaFeature} from '../api/Page.js';
 import {assert} from '../util/assert.js';
+import {invokeAtMostOnceForArguments} from '../util/decorators.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {CDPSession, CDPSessionEmittedEvents} from './Connection.js';
 import {Viewport} from './PuppeteerViewport.js';
+import {debugError} from './util.js';
+
+interface ViewportState {
+  viewport?: Viewport;
+}
+
+interface IdleOverridesState {
+  overrides?: {
+    isUserActive: boolean;
+    isScreenUnlocked: boolean;
+  };
+  active: boolean;
+}
 
 /**
  * @internal
@@ -31,7 +45,10 @@ export class EmulationManager {
   #hasTouch = false;
   #javascriptEnabled = true;
 
-  #viewport?: Viewport;
+  #viewportState: ViewportState = {};
+  #idleOverridesState: IdleOverridesState = {
+    active: false,
+  };
   #secondaryClients = new Set<CDPSession>();
 
   constructor(client: CDPSession) {
@@ -45,10 +62,11 @@ export class EmulationManager {
 
   async registerSpeculativeSession(client: CDPSession): Promise<void> {
     this.#secondaryClients.add(client);
-    await this.#applyViewport(client);
     client.once(CDPSessionEmittedEvents.Disconnected, () => {
       return this.#secondaryClients.delete(client);
     });
+    void this.#syncViewport().catch(debugError);
+    void this.#syncIdleState().catch(debugError);
   }
 
   get javascriptEnabled(): boolean {
@@ -56,9 +74,11 @@ export class EmulationManager {
   }
 
   async emulateViewport(viewport: Viewport): Promise<boolean> {
-    this.#viewport = viewport;
+    this.#viewportState = {
+      viewport,
+    };
 
-    await this.#applyViewport(this.#client);
+    await this.#syncViewport();
 
     const mobile = viewport.isMobile || false;
     const hasTouch = viewport.hasTouch || false;
@@ -67,22 +87,27 @@ export class EmulationManager {
     this.#emulatingMobile = mobile;
     this.#hasTouch = hasTouch;
 
-    if (!reloadNeeded) {
-      // If the page will be reloaded, no need to adjust secondary clients.
-      await Promise.all(
-        Array.from(this.#secondaryClients).map(client => {
-          return this.#applyViewport(client);
-        })
-      );
-    }
     return reloadNeeded;
   }
 
-  async #applyViewport(client: CDPSession): Promise<void> {
-    const viewport = this.#viewport;
-    if (!viewport) {
+  async #syncViewport() {
+    await Promise.all([
+      this.#applyViewport(this.#client, this.#viewportState),
+      ...Array.from(this.#secondaryClients).map(client => {
+        return this.#applyViewport(client, this.#viewportState);
+      }),
+    ]);
+  }
+
+  @invokeAtMostOnceForArguments
+  async #applyViewport(
+    client: CDPSession,
+    viewportState: ViewportState
+  ): Promise<void> {
+    if (!viewportState.viewport) {
       return;
     }
+    const {viewport} = viewportState;
     const mobile = viewport.isMobile || false;
     const width = viewport.width;
     const height = viewport.height;
@@ -111,13 +136,37 @@ export class EmulationManager {
     isUserActive: boolean;
     isScreenUnlocked: boolean;
   }): Promise<void> {
-    if (overrides) {
-      await this.#client.send('Emulation.setIdleOverride', {
-        isUserActive: overrides.isUserActive,
-        isScreenUnlocked: overrides.isScreenUnlocked,
+    this.#idleOverridesState = {
+      active: true,
+      overrides,
+    };
+    await this.#syncIdleState();
+  }
+
+  async #syncIdleState() {
+    await Promise.all([
+      this.#emulateIdleState(this.#client, this.#idleOverridesState),
+      ...Array.from(this.#secondaryClients).map(client => {
+        return this.#emulateIdleState(client, this.#idleOverridesState);
+      }),
+    ]);
+  }
+
+  @invokeAtMostOnceForArguments
+  async #emulateIdleState(
+    client: CDPSession,
+    idleStateState: IdleOverridesState
+  ): Promise<void> {
+    if (!idleStateState.active) {
+      return;
+    }
+    if (idleStateState.overrides) {
+      await client.send('Emulation.setIdleOverride', {
+        isUserActive: idleStateState.overrides.isUserActive,
+        isScreenUnlocked: idleStateState.overrides.isScreenUnlocked,
       });
     } else {
-      await this.#client.send('Emulation.clearIdleOverride');
+      await client.send('Emulation.clearIdleOverride');
     }
   }
 
