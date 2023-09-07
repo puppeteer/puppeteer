@@ -36,6 +36,11 @@ interface IdleOverridesState {
   active: boolean;
 }
 
+interface TimezoneState {
+  timezoneId?: string;
+  active: boolean;
+}
+
 /**
  * @internal
  */
@@ -47,6 +52,9 @@ export class EmulationManager {
 
   #viewportState: ViewportState = {};
   #idleOverridesState: IdleOverridesState = {
+    active: false,
+  };
+  #timezoneState: TimezoneState = {
     active: false,
   };
   #secondaryClients = new Set<CDPSession>();
@@ -65,8 +73,11 @@ export class EmulationManager {
     client.once(CDPSessionEmittedEvents.Disconnected, () => {
       return this.#secondaryClients.delete(client);
     });
+    // We don't await here because we want to register all state changes before
+    // the target is unpaused.
     void this.#syncViewport().catch(debugError);
     void this.#syncIdleState().catch(debugError);
+    void this.#syncTimezoneState().catch(debugError);
   }
 
   get javascriptEnabled(): boolean {
@@ -170,17 +181,40 @@ export class EmulationManager {
     }
   }
 
-  async emulateTimezone(timezoneId?: string): Promise<void> {
+  async #emulateTimezone(
+    client: CDPSession,
+    timezoneState: TimezoneState
+  ): Promise<void> {
+    if (!timezoneState.active) {
+      return;
+    }
     try {
-      await this.#client.send('Emulation.setTimezoneOverride', {
-        timezoneId: timezoneId || '',
+      await client.send('Emulation.setTimezoneOverride', {
+        timezoneId: timezoneState.timezoneId || '',
       });
     } catch (error) {
       if (isErrorLike(error) && error.message.includes('Invalid timezone')) {
-        throw new Error(`Invalid timezone ID: ${timezoneId}`);
+        throw new Error(`Invalid timezone ID: ${timezoneState.timezoneId}`);
       }
       throw error;
     }
+  }
+
+  async #syncTimezoneState() {
+    await Promise.all([
+      this.#emulateTimezone(this.#client, this.#timezoneState),
+      ...Array.from(this.#secondaryClients).map(client => {
+        return this.#emulateTimezone(client, this.#timezoneState);
+      }),
+    ]);
+  }
+
+  async emulateTimezone(timezoneId?: string): Promise<void> {
+    this.#timezoneState = {
+      timezoneId,
+      active: true,
+    };
+    await this.#syncTimezoneState();
   }
 
   async emulateVisionDeficiency(
