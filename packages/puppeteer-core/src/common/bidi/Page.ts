@@ -85,12 +85,12 @@ export class BidiPage extends Page {
     ['log.entryAdded', this.#onLogEntryAdded.bind(this)],
     ['browsingContext.load', this.#onFrameLoaded.bind(this)],
     [
-      'browsingContext.domContentLoaded',
-      this.#onFrameDOMContentLoaded.bind(this),
+      'browsingContext.fragmentNavigated',
+      this.#onFrameFragmentNavigated.bind(this),
     ],
     [
-      'browsingContext.navigationStarted',
-      this.#onFrameNavigationStarted.bind(this),
+      'browsingContext.domContentLoaded',
+      this.#onFrameDOMContentLoaded.bind(this),
     ],
     ['browsingContext.userPromptOpened', this.#onDialog.bind(this)],
   ]);
@@ -246,6 +246,13 @@ export class BidiPage extends Page {
     }
   }
 
+  #onFrameFragmentNavigated(info: Bidi.BrowsingContext.NavigationInfo): void {
+    const frame = this.frame(info.context);
+    if (frame) {
+      this.emit(PageEmittedEvents.FrameNavigated, frame);
+    }
+  }
+
   #onFrameDOMContentLoaded(info: Bidi.BrowsingContext.NavigationInfo): void {
     const frame = this.frame(info.context);
     if (frame) {
@@ -253,6 +260,7 @@ export class BidiPage extends Page {
       if (this.mainFrame() === frame) {
         this.emit(PageEmittedEvents.DOMContentLoaded);
       }
+      this.emit(PageEmittedEvents.FrameNavigated, frame);
     }
   }
 
@@ -271,45 +279,6 @@ export class BidiPage extends Page {
       if (frame !== this.mainFrame()) {
         this.emit(PageEmittedEvents.FrameAttached, frame);
       }
-    }
-  }
-
-  async #onFrameNavigationStarted(
-    info: Bidi.BrowsingContext.NavigationInfo
-  ): Promise<void> {
-    const frameId = info.context;
-
-    const frame = this.frame(frameId);
-
-    if (frame) {
-      // TODO: Investigate if a navigationCompleted event should be in Spec
-      const predicate = (
-        event: Bidi.BrowsingContext.DomContentLoaded['params']
-      ) => {
-        if (event.context === frame?._id) {
-          return true;
-        }
-        return false;
-      };
-
-      await Deferred.race([
-        waitForEvent(
-          this.#connection,
-          'browsingContext.domContentLoaded',
-          predicate,
-          0,
-          this.#closedDeferred.valueOrThrow()
-        ).catch(debugError),
-        waitForEvent(
-          this.#connection,
-          'browsingContext.fragmentNavigated',
-          predicate,
-          0,
-          this.#closedDeferred.valueOrThrow()
-        ).catch(debugError),
-      ]);
-
-      this.emit(PageEmittedEvents.FrameNavigated, frame);
     }
   }
 

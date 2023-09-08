@@ -155,6 +155,7 @@ export class BrowsingContext extends Realm {
     this.#cdpSession = new CDPSessionWrapper(this, undefined);
 
     this.on('browsingContext.domContentLoaded', this.#updateUrl.bind(this));
+    this.on('browsingContext.fragmentNavigated', this.#updateUrl.bind(this));
     this.on('browsingContext.load', this.#updateUrl.bind(this));
   }
 
@@ -163,7 +164,7 @@ export class BrowsingContext extends Realm {
   }
 
   #updateUrl(info: Bidi.BrowsingContext.NavigationInfo) {
-    this.url = info.url;
+    this.#url = info.url;
   }
 
   createRealmForSandbox(): Realm {
@@ -172,10 +173,6 @@ export class BrowsingContext extends Realm {
 
   get url(): string {
     return this.#url;
-  }
-
-  set url(value: string) {
-    this.#url = value;
   }
 
   get id(): string {
@@ -188,10 +185,6 @@ export class BrowsingContext extends Realm {
 
   get cdpSession(): CDPSession {
     return this.#cdpSession;
-  }
-
-  navigated(url: string): void {
-    this.#url = url;
   }
 
   async goto(

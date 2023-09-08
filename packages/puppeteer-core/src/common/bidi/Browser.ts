@@ -157,8 +157,6 @@ export class BidiBrowser extends Browser {
   }
 
   #onContextDomLoaded(event: Bidi.BrowsingContext.Info) {
-    const context = this.#connection.getBrowsingContext(event.context);
-    context.url = event.url;
     const target = this.#targets.get(event.context);
     if (target) {
       this.emit(BrowserEmittedEvents.TargetChanged, target);
@@ -166,8 +164,6 @@ export class BidiBrowser extends Browser {
   }
 
   #onContextNavigation(event: Bidi.BrowsingContext.NavigationInfo) {
-    const context = this.#connection.getBrowsingContext(event.context);
-    context.url = event.url;
     const target = this.#targets.get(event.context);
     if (target) {
       this.emit(BrowserEmittedEvents.TargetChanged, target);
