@@ -200,6 +200,7 @@ export class ChromeLauncher extends ProductLauncher {
       '--no-first-run',
       '--password-store=basic',
       '--use-mock-keychain',
+      '--disable-search-engine-choice-screen',
     ];
     const {
       devtools = false,
