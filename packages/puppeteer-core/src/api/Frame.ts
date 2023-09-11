@@ -322,14 +322,31 @@ export abstract class Frame extends EventEmitter {
    */
   abstract isolatedRealm(): Realm;
 
+  #_document: Promise<ElementHandle<Document>> | undefined;
+
   /**
    * @internal
    */
-  async document(): Promise<ElementHandle<Document>> {
-    // TODO(#10813): Implement document caching.
-    return await this.evaluateHandle(() => {
-      return document;
-    });
+  #document(): Promise<ElementHandle<Document>> {
+    if (!this.#_document) {
+      this.#_document = this.isolatedRealm()
+        .evaluateHandle(() => {
+          return document;
+        })
+        .then(handle => {
+          return this.mainRealm().transferHandle(handle);
+        });
+    }
+    return this.#_document;
+  }
+
+  /**
+   * Used to clear the document handle that has been destroyed.
+   *
+   * @internal
+   */
+  clearDocumentHandle(): void {
+    this.#_document = undefined;
   }
 
   /**
@@ -441,7 +458,8 @@ export abstract class Frame extends EventEmitter {
   async $<Selector extends string>(
     selector: Selector
   ): Promise<ElementHandle<NodeFor<Selector>> | null> {
-    using document = await this.document();
+    // eslint-disable-next-line rulesdir/use-using -- This is cached.
+    const document = await this.#document();
     return await document.$(selector);
   }
 
@@ -456,7 +474,8 @@ export abstract class Frame extends EventEmitter {
   async $$<Selector extends string>(
     selector: Selector
   ): Promise<Array<ElementHandle<NodeFor<Selector>>>> {
-    using document = await this.document();
+    // eslint-disable-next-line rulesdir/use-using -- This is cached.
+    const document = await this.#document();
     return await document.$$(selector);
   }
 
@@ -494,7 +513,8 @@ export abstract class Frame extends EventEmitter {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$eval.name, pageFunction);
-    using document = await this.document();
+    // eslint-disable-next-line rulesdir/use-using -- This is cached.
+    const document = await this.#document();
     return await document.$eval(selector, pageFunction, ...args);
   }
 
@@ -532,7 +552,8 @@ export abstract class Frame extends EventEmitter {
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
     pageFunction = withSourcePuppeteerURLIfNone(this.$$eval.name, pageFunction);
-    using document = await this.document();
+    // eslint-disable-next-line rulesdir/use-using -- This is cached.
+    const document = await this.#document();
     return await document.$$eval(selector, pageFunction, ...args);
   }
 
@@ -548,7 +569,8 @@ export abstract class Frame extends EventEmitter {
    */
   @throwIfDetached
   async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
-    using document = await this.document();
+    // eslint-disable-next-line rulesdir/use-using -- This is cached.
+    const document = await this.#document();
     return await document.$x(expression);
   }
 
