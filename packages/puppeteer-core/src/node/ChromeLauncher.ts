@@ -188,6 +188,7 @@ export class ChromeLauncher extends ProductLauncher {
       '--disable-popup-blocking',
       '--disable-prompt-on-repost',
       '--disable-renderer-backgrounding',
+      '--disable-search-engine-choice-screen',
       '--disable-sync',
       '--enable-automation',
       // TODO(sadym): remove '--enable-blink-features=IdleDetection' once
