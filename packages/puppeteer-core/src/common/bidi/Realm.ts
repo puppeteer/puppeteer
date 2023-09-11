@@ -49,6 +49,7 @@ export class Realm extends EventEmitter {
       // Note: The Realm is destroyed, so in theory the handle should be as
       // well.
       this.internalPuppeteerUtil = undefined;
+      this.#sandbox.environment.clearDocumentHandle();
     }
   };
 

@@ -126,6 +126,9 @@ export class IsolatedWorld extends Realm {
 
   clearContext(): void {
     this.#context = Deferred.create();
+    if (this.#frameOrWorker instanceof CDPFrame) {
+      this.#frameOrWorker.clearDocumentHandle();
+    }
   }
 
   setContext(context: ExecutionContext): void {
