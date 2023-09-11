@@ -357,7 +357,7 @@ export class PuppeteerNode extends Puppeteer {
       }
 
       await uninstall({
-        browser: SupportedBrowser.CHROME,
+        browser: installedBrowser.browser,
         platform,
         cacheDir,
         buildId: installedBrowser.buildId,
