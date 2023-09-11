@@ -18,7 +18,7 @@ Functions installed via `page.exposeFunction` survive navigations.
 
 ```typescript
 class Page {
-  exposeFunction(
+  abstract exposeFunction(
     name: string,
     pptrFunction:
       | Function

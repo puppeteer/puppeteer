@@ -15,7 +15,7 @@ One Browser instance might have multiple Page instances.
 #### Signature:
 
 ```typescript
-export declare class Page extends EventEmitter implements AsyncDisposable, Disposable
+export declare abstract class Page extends EventEmitter implements AsyncDisposable, Disposable
 ```
 
 **Extends:** [EventEmitter](./puppeteer.eventemitter.md)
