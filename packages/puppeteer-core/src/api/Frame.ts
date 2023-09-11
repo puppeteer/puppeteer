@@ -1107,4 +1107,15 @@ export abstract class Frame extends EventEmitter {
   waitForDevicePrompt(): Promise<DeviceRequestPrompt> {
     throw new Error('Not implemented');
   }
+
+  /**
+   * @internal
+   */
+  exposeFunction<Args extends unknown[], Ret>(
+    name: string,
+    fn: (...args: Args) => Awaitable<Ret>
+  ): Promise<void>;
+  exposeFunction(): Promise<void> {
+    throw new Error('Not implemented');
+  }
 }

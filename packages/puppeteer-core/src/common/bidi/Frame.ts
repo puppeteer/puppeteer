@@ -22,6 +22,7 @@ import {CDPSession} from '../Connection.js';
 import {UTILITY_WORLD_NAME} from '../FrameManager.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
+import {Awaitable} from '../types.js';
 import {waitForEvent} from '../util.js';
 
 import {
@@ -29,6 +30,7 @@ import {
   getWaitUntilSingle,
   lifeCycleToSubscribedEvent,
 } from './BrowsingContext.js';
+import {ExposeableFunction} from './ExposedFunction.js';
 import {HTTPResponse} from './HTTPResponse.js';
 import {BidiPage} from './Page.js';
 import {
@@ -206,5 +208,25 @@ export class BidiFrame extends Frame {
     this.#context.dispose();
     this.sandboxes[MAIN_SANDBOX][Symbol.dispose]();
     this.sandboxes[PUPPETEER_SANDBOX][Symbol.dispose]();
+  }
+
+  #exposedFunctions = new Map<string, ExposeableFunction<never[], unknown>>();
+  override async exposeFunction<Args extends unknown[], Ret>(
+    name: string,
+    apply: (...args: Args) => Awaitable<Ret>
+  ): Promise<void> {
+    if (this.#exposedFunctions.has(name)) {
+      throw new Error(
+        `Failed to add page binding with name ${name}: globalThis['${name}'] already exists!`
+      );
+    }
+    const exposeable = new ExposeableFunction(this, name, apply);
+    this.#exposedFunctions.set(name, exposeable);
+    try {
+      await exposeable.expose();
+    } catch (error) {
+      this.#exposedFunctions.delete(name);
+      throw error;
+    }
   }
 }

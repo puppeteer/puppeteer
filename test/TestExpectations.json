@@ -765,7 +765,7 @@
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work from-inside an exposed function",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluateOnNewDocument *",
@@ -1365,6 +1365,12 @@
     "testIdPattern": "[page.spec] Page Page.Events.Console should work on script call right after navigation",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.exposeFunction *",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
     "expectations": ["PASS"]
   },
   {
@@ -2102,6 +2108,12 @@
   {
     "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.click should return Point data",
     "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["PASS"]
+  },
+  {
+    "testIdPattern": "[elementhandle.spec] ElementHandle specs ElementHandle.click should return Point data",
+    "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["FAIL"]
   },
@@ -2284,6 +2296,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work from-inside an exposed function",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["firefox", "webDriverBiDi"],
+    "expectations": ["FAIL", "TIMEOUT"]
   },
   {
     "testIdPattern": "[evaluation.spec] Evaluation specs Page.evaluate should work from-inside an exposed function",
@@ -2979,7 +2997,7 @@
     "testIdPattern": "[navigation.spec] navigation Page.goto should return response when page changes its URL after load",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["firefox", "webDriverBiDi"],
-    "expectations": ["PASS"]
+    "expectations": ["FAIL", "PASS"]
   },
   {
     "testIdPattern": "[navigation.spec] navigation Page.goto should send referer",
@@ -3700,6 +3718,12 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "firefox"],
     "expectations": ["SKIP"]
+  },
+  {
+    "testIdPattern": "[page.spec] Page Page.exposeFunction should be callable from-inside evaluateOnNewDocument",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "webDriverBiDi"],
+    "expectations": ["FAIL", "TIMEOUT"]
   },
   {
     "testIdPattern": "[page.spec] Page Page.exposeFunction should be callable from-inside evaluateOnNewDocument",

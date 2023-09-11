@@ -478,7 +478,10 @@ export interface NewDocumentScriptEvaluation {
  *
  * @public
  */
-export class Page extends EventEmitter implements AsyncDisposable, Disposable {
+export abstract class Page
+  extends EventEmitter
+  implements AsyncDisposable, Disposable
+{
   #handlerMap = new WeakMap<Handler<any>, Handler<any>>();
 
   /**
@@ -1327,13 +1330,10 @@ export class Page extends EventEmitter implements AsyncDisposable, Disposable {
    * @param pptrFunction - Callback function which will be called in Puppeteer's
    * context.
    */
-  async exposeFunction(
+  abstract exposeFunction(
     name: string,
     pptrFunction: Function | {default: Function}
   ): Promise<void>;
-  async exposeFunction(): Promise<void> {
-    throw new Error('Not implemented');
-  }
 
   /**
    * The method removes a previously added function via ${@link Page.exposeFunction}

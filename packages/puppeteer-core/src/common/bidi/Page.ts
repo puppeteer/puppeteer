@@ -43,6 +43,7 @@ import {PDFOptions} from '../PDFOptions.js';
 import {Viewport} from '../PuppeteerViewport.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
 import {Tracing} from '../Tracing.js';
+import {Awaitable} from '../types.js';
 import {
   debugError,
   evaluationString,
@@ -673,6 +674,18 @@ export class BidiPage extends Page {
     await this.#connection.send('script.removePreloadScript', {
       script: id,
     });
+  }
+
+  override async exposeFunction<Args extends unknown[], Ret>(
+    name: string,
+    pptrFunction:
+      | ((...args: Args) => Awaitable<Ret>)
+      | {default: (...args: Args) => Awaitable<Ret>}
+  ): Promise<void> {
+    return await this.mainFrame().exposeFunction(
+      name,
+      'default' in pptrFunction ? pptrFunction.default : pptrFunction
+    );
   }
 }
 
