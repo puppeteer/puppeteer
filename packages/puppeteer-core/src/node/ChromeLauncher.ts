@@ -166,6 +166,20 @@ export class ChromeLauncher extends ProductLauncher {
 
   override defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
     // See https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md
+
+    const disabledFeatures = [
+      'Translate',
+      // AcceptCHFrame disabled because of crbug.com/1348106.
+      'AcceptCHFrame',
+      'MediaRouter',
+      'OptimizationHints',
+    ];
+
+    if (!USE_TAB_TARGET) {
+      disabledFeatures.push('Prerender2');
+      disabledFeatures.push('BackForwardCache');
+    }
+
     const chromeArguments = [
       '--allow-pre-commit-input',
       '--disable-background-networking',
@@ -178,11 +192,7 @@ export class ChromeLauncher extends ProductLauncher {
       '--disable-default-apps',
       '--disable-dev-shm-usage',
       '--disable-extensions',
-      // AcceptCHFrame disabled because of crbug.com/1348106.
-      '--disable-features=Translate,AcceptCHFrame,MediaRouter,OptimizationHints',
-      ...(USE_TAB_TARGET
-        ? []
-        : ['--disable-features=Prerender2,BackForwardCache']),
+      `--disable-features=${disabledFeatures.join(',')}`,
       '--disable-hang-monitor',
       '--disable-ipc-flooding-protection',
       '--disable-popup-blocking',
