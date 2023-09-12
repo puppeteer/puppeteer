@@ -18,6 +18,7 @@ import type {Readable} from 'stream';
 
 import type {Protocol} from 'devtools-protocol';
 
+import {map, NEVER, Observable, timer} from '../../third_party/rxjs/rxjs.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {Page} from '../api/Page.js';
@@ -29,6 +30,7 @@ import {isErrorLike} from '../util/ErrorLike.js';
 import type {CDPSession} from './Connection.js';
 import {debug} from './Debug.js';
 import {CDPElementHandle} from './ElementHandle.js';
+import {TimeoutError} from './Errors.js';
 import type {CommonEventEmitter} from './EventEmitter.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {CDPJSHandle} from './JSHandle.js';
@@ -707,4 +709,17 @@ export class Mutex {
     }
     resolve();
   }
+}
+
+/**
+ * @internal
+ */
+export function timeout(ms: number): Observable<never> {
+  return ms === 0
+    ? NEVER
+    : timer(ms).pipe(
+        map(() => {
+          throw new TimeoutError(`Timed out after waiting ${ms}ms`);
+        })
+      );
 }

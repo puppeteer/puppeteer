@@ -28,7 +28,11 @@ import {
   merge,
   Observable,
   raceWith,
-  timer,
+  delay,
+  filter,
+  of,
+  switchMap,
+  startWith,
 } from '../../third_party/rxjs/rxjs.js';
 import type {HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
@@ -38,7 +42,7 @@ import type {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {Coverage} from '../common/Coverage.js';
 import {Device} from '../common/Device.js';
 import {DeviceRequestPrompt} from '../common/DeviceRequestPrompt.js';
-import {TargetCloseError, TimeoutError} from '../common/Errors.js';
+import {TargetCloseError} from '../common/Errors.js';
 import {EventEmitter, Handler} from '../common/EventEmitter.js';
 import type {FileChooser} from '../common/FileChooser.js';
 import type {WaitForSelectorOptions} from '../common/IsolatedWorld.js';
@@ -68,7 +72,7 @@ import {
   importFSPromises,
   isNumber,
   isString,
-  waitForEvent,
+  timeout,
   withSourcePuppeteerURLIfNone,
 } from '../common/util.js';
 import type {WebWorker} from '../common/WebWorker.js';
@@ -1696,62 +1700,33 @@ export abstract class Page
       inFlightRequestsCount: () => number;
     },
     idleTime: number,
-    timeout: number,
+    ms: number,
     closedDeferred: Deferred<TargetCloseError>
   ): Promise<void> {
-    const idleDeferred = Deferred.create<void>();
-    const abortDeferred = Deferred.create<Error>();
-
-    let idleTimer: NodeJS.Timeout | undefined;
-    const cleanup = () => {
-      clearTimeout(idleTimer);
-      abortDeferred.reject(new Error('abort'));
-    };
-
-    const evaluate = () => {
-      clearTimeout(idleTimer);
-
-      if (networkManager.inFlightRequestsCount() === 0) {
-        idleTimer = setTimeout(() => {
-          return idleDeferred.resolve();
-        }, idleTime);
-      }
-    };
-
-    const listenToEvent = (event: symbol) => {
-      return waitForEvent(
-        networkManager,
-        event,
-        () => {
-          evaluate();
-          return false;
-        },
-        timeout,
-        abortDeferred
-      );
-    };
-
-    const eventPromises = [
-      listenToEvent(NetworkManagerEmittedEvents.Request),
-      listenToEvent(NetworkManagerEmittedEvents.Response),
-      listenToEvent(NetworkManagerEmittedEvents.RequestFailed),
-    ];
-
-    evaluate();
-
-    // We don't want to reject the closed deferred when
-    // the race if finished so we pass the Promise instead
-    const closedPromise = closedDeferred.valueOrThrow();
-
-    await Deferred.race([idleDeferred, ...eventPromises, closedPromise]).then(
-      r => {
-        cleanup();
-        return r;
-      },
-      error => {
-        cleanup();
-        throw error;
-      }
+    await firstValueFrom(
+      merge(
+        fromEvent(
+          networkManager,
+          NetworkManagerEmittedEvents.Request as unknown as string
+        ),
+        fromEvent(
+          networkManager,
+          NetworkManagerEmittedEvents.Response as unknown as string
+        ),
+        fromEvent(
+          networkManager,
+          NetworkManagerEmittedEvents.RequestFailed as unknown as string
+        )
+      ).pipe(
+        startWith(null),
+        filter(() => {
+          return networkManager.inFlightRequestsCount() === 0;
+        }),
+        switchMap(v => {
+          return of(v).pipe(delay(idleTime));
+        }),
+        raceWith(timeout(ms), from(closedDeferred.valueOrThrow()))
+      )
     );
   }
 
@@ -1787,11 +1762,7 @@ export abstract class Page
         filterAsync(urlOrPredicate),
         first(),
         raceWith(
-          timer(ms === 0 ? Infinity : ms).pipe(
-            map(() => {
-              throw new TimeoutError(`Timed out after waiting ${ms}ms`);
-            })
-          ),
+          timeout(ms),
           fromEvent(this, PageEmittedEvents.Close).pipe(
             map(() => {
               throw new TargetCloseError('Page closed.');
