@@ -20,6 +20,25 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.2.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.1.1...puppeteer-core-v21.2.0) (2023-09-12)
+
+
+### Features
+
+* expose DevTools as a target ([#10812](https://github.com/puppeteer/puppeteer/issues/10812)) ([a540085](https://github.com/puppeteer/puppeteer/commit/a540085176d92bd160a12ebc54606dbacd064979))
+
+
+### Bug Fixes
+
+* add --disable-search-engine-choice-screen to default arguments ([#10880](https://github.com/puppeteer/puppeteer/issues/10880)) ([d08ad5f](https://github.com/puppeteer/puppeteer/commit/d08ad5fbbe3be4349dd6132c209895f8436ae9e6))
+* apply viewport emulation to prerender targets ([#10804](https://github.com/puppeteer/puppeteer/issues/10804)) ([14f0ab7](https://github.com/puppeteer/puppeteer/commit/14f0ab7397053db5591823c716e142c684f25b44))
+* implement `throwIfDetached` ([#10826](https://github.com/puppeteer/puppeteer/issues/10826)) ([538bb73](https://github.com/puppeteer/puppeteer/commit/538bb73ea7e280cacf15fc1d2100251d8e17f906))
+* LifecycleWatcher sub frames handling ([#10841](https://github.com/puppeteer/puppeteer/issues/10841)) ([06c1588](https://github.com/puppeteer/puppeteer/commit/06c1588016e1ebef5ed8f079dc34507f6d781e07))
+* make network manager multi session ([#10793](https://github.com/puppeteer/puppeteer/issues/10793)) ([085936b](https://github.com/puppeteer/puppeteer/commit/085936bd7e17ed5a8085311f5b212c7b9ca96a0d))
+* make page.goBack work with bfcache in tab mode ([#10818](https://github.com/puppeteer/puppeteer/issues/10818)) ([22daf18](https://github.com/puppeteer/puppeteer/commit/22daf1861fc358acf4d84c360049736c22249f92))
+* only a single disable features flag is allowed ([#10887](https://github.com/puppeteer/puppeteer/issues/10887)) ([4852e22](https://github.com/puppeteer/puppeteer/commit/4852e222b771ed9b95596657f70e45c1d5b9790d))
+* trimCache should remove Firefox too ([#10872](https://github.com/puppeteer/puppeteer/issues/10872)) ([acdd7d3](https://github.com/puppeteer/puppeteer/commit/acdd7d3cd5529bc934edbb8479bdb950cc7d8a6a))
+
 ## [21.1.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.1.0...puppeteer-core-v21.1.1) (2023-08-28)
 
 
