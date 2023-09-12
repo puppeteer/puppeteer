@@ -42,7 +42,7 @@ import {assert} from '../util/assert.js';
  *
  * @public
  */
-export class Dialog {
+export abstract class Dialog {
   #type: Protocol.Page.DialogType;
   #message: string;
   #defaultValue: string;
@@ -86,9 +86,10 @@ export class Dialog {
   /**
    * @internal
    */
-  sendCommand(_options: {accept: boolean; text?: string}): Promise<void> {
-    throw new Error('Not implemented');
-  }
+  protected abstract sendCommand(options: {
+    accept: boolean;
+    text?: string;
+  }): Promise<void>;
 
   /**
    * A promise that resolves when the dialog has been accepted.

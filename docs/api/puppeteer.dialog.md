@@ -9,7 +9,7 @@ Dialog instances are dispatched by the [Page](./puppeteer.page.md) via the `dial
 #### Signature:
 
 ```typescript
-export declare class Dialog
+export declare abstract class Dialog
 ```
 
 ## Remarks
