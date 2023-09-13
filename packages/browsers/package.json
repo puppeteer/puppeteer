@@ -106,7 +106,6 @@
     "yargs": "17.7.1"
   },
   "devDependencies": {
-    "@types/node": "^16.11.7",
     "@types/yargs": "17.0.22"
   }
 }
