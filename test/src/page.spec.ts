@@ -1365,8 +1365,8 @@ describe('Page', function () {
       const {page, server} = await getTestState();
 
       const [error] = await Promise.all([
-        waitEvent<Error>(page, 'pageerror', _error => {
-          return _error.message.includes('Fancy');
+        waitEvent<Error>(page, 'pageerror', err => {
+          return err.message.includes('Fancy');
         }),
         page.goto(server.PREFIX + '/error.html'),
       ]);
