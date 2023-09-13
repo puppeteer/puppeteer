@@ -27,6 +27,7 @@
     "test-types": "tsd -t packages/puppeteer",
     "test:chrome:headful": "wireit",
     "test:chrome:new-headless": "wireit",
+    "test:chrome:new-headless-tab": "wireit",
     "test:chrome:headless": "wireit",
     "test:chrome:bidi": "wireit",
     "test:chrome:bidi-local": "wireit",
@@ -66,6 +67,9 @@
     },
     "test:chrome:new-headless": {
       "command": "npm test -- --test-suite chrome-new-headless"
+    },
+    "test:chrome:new-headless-tab": {
+      "command": "npm test -- --test-suite chrome-new-headless-tab"
     },
     "test:chrome:bidi": {
       "command": "npm test -- --test-suite chrome-bidi"

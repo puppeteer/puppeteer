@@ -4084,5 +4084,11 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headless"],
     "expectations": ["FAIL", "PASS"]
+  },
+  {
+    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage resetOnNavigation should report scripts across navigations when disabled",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "new-headless", "cdp", "tabTarget"],
+    "expectations": ["FAIL"]
   }
 ]
