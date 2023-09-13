@@ -20,6 +20,19 @@ All notable changes to this project will be documented in this file. See [standa
   * dependencies
     * @puppeteer/browsers bumped from 1.5.1 to 1.6.0
 
+## [21.3.0](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.2.1...puppeteer-core-v21.3.0) (2023-09-13)
+
+
+### Features
+
+* implement typed events ([#10889](https://github.com/puppeteer/puppeteer/issues/10889)) ([9b6f1de](https://github.com/puppeteer/puppeteer/commit/9b6f1de8b99445c661c5aebcf041fe90daf469b9))
+* roll to Chrome 117.0.5938.62 (r1181205) ([#10893](https://github.com/puppeteer/puppeteer/issues/10893)) ([4b8d20d](https://github.com/puppeteer/puppeteer/commit/4b8d20d0edeccaa3028e0c1c0b63c022cfabcee2))
+
+
+### Bug Fixes
+
+* handle frame manager init without unhandled rejection ([#10902](https://github.com/puppeteer/puppeteer/issues/10902)) ([ea14834](https://github.com/puppeteer/puppeteer/commit/ea14834fdf1c7c1afa45bdd1fb5339380f4631a2))
+
 ## [21.2.1](https://github.com/puppeteer/puppeteer/compare/puppeteer-core-v21.2.0...puppeteer-core-v21.2.1) (2023-09-13)
 
 
