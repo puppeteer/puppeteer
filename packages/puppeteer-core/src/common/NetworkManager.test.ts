@@ -675,7 +675,6 @@ describe('NetworkManager', () => {
       requestId: '1360.2',
       timestamp: 10959.060708,
       encodedDataLength: 85928,
-      shouldReportCorbBlocking: false,
     });
 
     expect(requests).toHaveLength(1);
@@ -802,7 +801,6 @@ describe('NetworkManager', () => {
       requestId: 'LOADERID',
       timestamp: 671.234448,
       encodedDataLength: 197,
-      shouldReportCorbBlocking: false,
     });
 
     expect(pendingRequests).toHaveLength(1);
@@ -1115,7 +1113,6 @@ describe('NetworkManager', () => {
       requestId: 'E18BEB94B486CA8771F9AFA2030FEA37',
       timestamp: 510294.113383,
       encodedDataLength: 197,
-      shouldReportCorbBlocking: false,
     });
     mockCDPSession.emit('Network.responseReceivedExtraInfo', {
       requestId: 'E18BEB94B486CA8771F9AFA2030FEA37',
@@ -1283,7 +1280,6 @@ describe('NetworkManager', () => {
       requestId: '6D76C8ACAECE880C722FA515AD380015',
       timestamp: 31949.963861,
       encodedDataLength: 847,
-      shouldReportCorbBlocking: false,
     });
 
     mockCDPSession.emit('Network.requestWillBeSent', {
@@ -1534,7 +1530,6 @@ describe('NetworkManager', () => {
       requestId: '4C2CC44FB6A6CAC5BE2780BCC9313105',
       timestamp: 31949.989412,
       encodedDataLength: 0,
-      shouldReportCorbBlocking: false,
     });
     expect(
       responses.map(r => {

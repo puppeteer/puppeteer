@@ -17,6 +17,7 @@
 const versionsPerRelease = new Map([
   // This is a mapping from Chrome version => Puppeteer version.
   // In Chrome roll patches, use `NEXT` for the Puppeteer version.
+  ['117.0.5938.62', 'NEXT'],
   ['116.0.5845.96', 'v21.1.0'],
   ['115.0.5790.170', 'v21.0.2'],
   ['115.0.5790.102', 'v21.0.0'],
@@ -65,7 +66,7 @@ const versionsPerRelease = new Map([
 ]);
 
 // Should not be more than 2 major versions behind Chrome Stable (https://chromestatus.com/roadmap).
-const lastMaintainedChromeVersion = '114.0.5735.90';
+const lastMaintainedChromeVersion = '114.0.5735.133';
 
 if (!versionsPerRelease.has(lastMaintainedChromeVersion)) {
   throw new Error(

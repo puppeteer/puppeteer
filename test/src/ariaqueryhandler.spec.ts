@@ -390,7 +390,7 @@ describe('AriaQueryHandler', () => {
 
       let imgFound = false;
       const waitForSelector = page
-        .waitForSelector('aria/[role="img"]')
+        .waitForSelector('aria/[role="image"]')
         .then(() => {
           return (imgFound = true);
         });

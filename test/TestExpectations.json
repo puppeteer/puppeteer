@@ -1347,7 +1347,7 @@
     "testIdPattern": "[accessibility.spec] Accessibility filtering children of leaf nodes rich text editable fields should have children",
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["chrome", "webDriverBiDi"],
-    "expectations": ["FAIL"]
+    "expectations": ["PASS"]
   },
   {
     "testIdPattern": "[accessibility.spec] Accessibility get snapshots while the tree is re-calculated",
@@ -4084,5 +4084,11 @@
     "platforms": ["darwin", "linux", "win32"],
     "parameters": ["cdp", "chrome", "headless"],
     "expectations": ["FAIL", "PASS"]
+  },
+  {
+    "testIdPattern": "[coverage.spec] Coverage specs JSCoverage resetOnNavigation should report scripts across navigations when disabled",
+    "platforms": ["darwin", "linux", "win32"],
+    "parameters": ["chrome", "new-headless", "cdp", "tabTarget"],
+    "expectations": ["FAIL"]
   }
 ]

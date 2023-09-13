@@ -338,7 +338,7 @@ describe('Accessibility', function () {
                 name: 'Edit this image: ',
               },
               {
-                role: 'img',
+                role: 'image',
                 name: 'my fake image',
               },
             ],
