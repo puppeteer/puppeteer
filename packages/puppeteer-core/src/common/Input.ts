@@ -42,7 +42,7 @@ type KeyDescription = Required<
 /**
  * @internal
  */
-export class CDPKeyboard extends Keyboard {
+export class CdpKeyboard extends Keyboard {
   #client: CDPSession;
   #pressedKeys = new Set<string>();
 
@@ -275,11 +275,11 @@ interface MouseState {
 /**
  * @internal
  */
-export class CDPMouse extends Mouse {
+export class CdpMouse extends Mouse {
   #client: CDPSession;
-  #keyboard: CDPKeyboard;
+  #keyboard: CdpKeyboard;
 
-  constructor(client: CDPSession, keyboard: CDPKeyboard) {
+  constructor(client: CDPSession, keyboard: CdpKeyboard) {
     super();
     this.#client = client;
     this.#keyboard = keyboard;
@@ -557,11 +557,11 @@ export class CDPMouse extends Mouse {
 /**
  * @internal
  */
-export class CDPTouchscreen extends Touchscreen {
+export class CdpTouchscreen extends Touchscreen {
   #client: CDPSession;
-  #keyboard: CDPKeyboard;
+  #keyboard: CdpKeyboard;
 
-  constructor(client: CDPSession, keyboard: CDPKeyboard) {
+  constructor(client: CDPSession, keyboard: CdpKeyboard) {
     super();
     this.#client = client;
     this.#keyboard = keyboard;

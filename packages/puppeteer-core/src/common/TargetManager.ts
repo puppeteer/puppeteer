@@ -19,7 +19,7 @@ import {Protocol} from 'devtools-protocol';
 import {CDPSession} from '../api/CDPSession.js';
 
 import {EventEmitter, EventType} from './EventEmitter.js';
-import {CDPTarget} from './Target.js';
+import {CdpTarget} from './Target.js';
 
 /**
  * @internal
@@ -28,7 +28,7 @@ export type TargetFactory = (
   targetInfo: Protocol.Target.TargetInfo,
   session?: CDPSession,
   parentSession?: CDPSession
-) => CDPTarget;
+) => CdpTarget;
 
 /**
  * @internal
@@ -47,11 +47,11 @@ export const enum TargetManagerEvent {
  * @internal
  */
 export interface TargetManagerEvents extends Record<EventType, unknown> {
-  [TargetManagerEvent.TargetAvailable]: CDPTarget;
+  [TargetManagerEvent.TargetAvailable]: CdpTarget;
   [TargetManagerEvent.TargetDiscovered]: Protocol.Target.TargetInfo;
-  [TargetManagerEvent.TargetGone]: CDPTarget;
+  [TargetManagerEvent.TargetGone]: CdpTarget;
   [TargetManagerEvent.TargetChanged]: {
-    target: CDPTarget;
+    target: CdpTarget;
     wasInitialized: true;
     previousURL: string;
   };
@@ -69,7 +69,7 @@ export interface TargetManagerEvents extends Record<EventType, unknown> {
  * @internal
  */
 export interface TargetManager extends EventEmitter<TargetManagerEvents> {
-  getAvailableTargets(): Map<string, CDPTarget>;
+  getAvailableTargets(): Map<string, CdpTarget>;
   initialize(): Promise<void>;
   dispose(): void;
 }

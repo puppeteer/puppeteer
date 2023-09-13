@@ -34,7 +34,7 @@ import {Deferred} from '../../util/Deferred.js';
 import {Accessibility} from '../Accessibility.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
 import {Coverage} from '../Coverage.js';
-import {EmulationManager as CDPEmulationManager} from '../EmulationManager.js';
+import {EmulationManager as CdpEmulationManager} from '../EmulationManager.js';
 import {TargetCloseError} from '../Errors.js';
 import {Handler} from '../EventEmitter.js';
 import {FrameTree} from '../FrameTree.js';
@@ -58,7 +58,7 @@ import {BidiBrowserContext} from './BrowserContext.js';
 import {
   BrowsingContext,
   BrowsingContextEvent,
-  CDPSessionWrapper,
+  CdpSessionWrapper,
 } from './BrowsingContext.js';
 import {BidiConnection} from './Connection.js';
 import {BidiDialog} from './Dialog.js';
@@ -134,7 +134,7 @@ export class BidiPage extends Page {
   ]);
   #tracing: Tracing;
   #coverage: Coverage;
-  #cdpEmulationManager: CDPEmulationManager;
+  #cdpEmulationManager: CdpEmulationManager;
   #emulationManager: EmulationManager;
   #mouse: Mouse;
   #touchscreen: Touchscreen;
@@ -185,7 +185,7 @@ export class BidiPage extends Page {
     );
     this.#tracing = new Tracing(this.mainFrame().context().cdpSession);
     this.#coverage = new Coverage(this.mainFrame().context().cdpSession);
-    this.#cdpEmulationManager = new CDPEmulationManager(
+    this.#cdpEmulationManager = new CdpEmulationManager(
       this.mainFrame().context().cdpSession
     );
     this.#emulationManager = new EmulationManager(browsingContext);
@@ -485,7 +485,7 @@ export class BidiPage extends Page {
   }
 
   override async setViewport(viewport: Viewport): Promise<void> {
-    if (!this.#browsingContext.supportsCDP()) {
+    if (!this.#browsingContext.supportsCdp()) {
       await this.#emulationManager.emulateViewport(viewport);
       this.#viewport = viewport;
       return;
@@ -658,7 +658,7 @@ export class BidiPage extends Page {
         targetId: this.mainFrame()._id,
         flatten: true,
       });
-    return new CDPSessionWrapper(this.mainFrame().context(), sessionId);
+    return new CdpSessionWrapper(this.mainFrame().context(), sessionId);
   }
 
   override async bringToFront(): Promise<void> {

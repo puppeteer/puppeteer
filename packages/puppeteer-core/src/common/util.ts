@@ -29,11 +29,11 @@ import {Deferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {debug} from './Debug.js';
-import {CDPElementHandle} from './ElementHandle.js';
+import {CdpElementHandle} from './ElementHandle.js';
 import {TimeoutError} from './Errors.js';
 import {EventSubscription} from './EventEmitter.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
-import {CDPJSHandle} from './JSHandle.js';
+import {CdpJSHandle} from './JSHandle.js';
 import {Awaitable} from './types.js';
 
 /**
@@ -382,9 +382,9 @@ export function createCdpHandle(
   remoteObject: Protocol.Runtime.RemoteObject
 ): JSHandle | ElementHandle<Node> {
   if (remoteObject.subtype === 'node') {
-    return new CDPElementHandle(realm, remoteObject);
+    return new CdpElementHandle(realm, remoteObject);
   }
-  return new CDPJSHandle(realm, remoteObject);
+  return new CdpJSHandle(realm, remoteObject);
 }
 
 /**
@@ -415,7 +415,7 @@ export function evaluationString(
 export function addPageBinding(type: string, name: string): void {
   // This is the CDP binding.
   // @ts-expect-error: In a different context.
-  const callCDP = globalThis[name];
+  const callCdp = globalThis[name];
 
   // We replace the CDP binding with a Puppeteer binding.
   Object.assign(globalThis, {
@@ -430,7 +430,7 @@ export function addPageBinding(type: string, name: string): void {
       callPuppeteer.lastSeq = seq;
       callPuppeteer.args.set(seq, args);
 
-      callCDP(
+      callCdp(
         JSON.stringify({
           type,
           name,

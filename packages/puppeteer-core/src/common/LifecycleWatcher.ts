@@ -23,9 +23,9 @@ import {Deferred} from '../util/Deferred.js';
 
 import {TimeoutError} from './Errors.js';
 import {EventSubscription} from './EventEmitter.js';
-import {CDPFrame} from './Frame.js';
+import {CdpFrame} from './Frame.js';
 import {FrameManagerEvent} from './FrameManager.js';
-import {CDPHTTPRequest} from './HTTPRequest.js';
+import {CdpHTTPRequest} from './HTTPRequest.js';
 import {NetworkManager, NetworkManagerEvent} from './NetworkManager.js';
 /**
  * @public
@@ -60,9 +60,9 @@ const puppeteerToProtocolLifecycle = new Map<
  */
 export class LifecycleWatcher {
   #expectedLifecycle: ProtocolLifeCycleEvent[];
-  #frame: CDPFrame;
+  #frame: CdpFrame;
   #timeout: number;
-  #navigationRequest: CDPHTTPRequest | null = null;
+  #navigationRequest: CdpHTTPRequest | null = null;
   #subscriptions = new DisposableStack();
   #initialLoaderId: string;
 
@@ -78,7 +78,7 @@ export class LifecycleWatcher {
 
   constructor(
     networkManager: NetworkManager,
-    frame: CDPFrame,
+    frame: CdpFrame,
     waitUntil: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[],
     timeout: number
   ) {
@@ -168,7 +168,7 @@ export class LifecycleWatcher {
     this.#checkLifecycleComplete();
   }
 
-  #onRequest(request: CDPHTTPRequest): void {
+  #onRequest(request: CdpHTTPRequest): void {
     if (request.frame() !== this.#frame || !request.isNavigationRequest()) {
       return;
     }
@@ -183,7 +183,7 @@ export class LifecycleWatcher {
     }
   }
 
-  #onRequestFailed(request: CDPHTTPRequest): void {
+  #onRequestFailed(request: CdpHTTPRequest): void {
     if (this.#navigationRequest?._requestId !== request._requestId) {
       return;
     }
@@ -260,7 +260,7 @@ export class LifecycleWatcher {
     }
 
     function checkLifecycle(
-      frame: CDPFrame,
+      frame: CdpFrame,
       expectedLifecycle: ProtocolLifeCycleEvent[]
     ): boolean {
       for (const event of expectedLifecycle) {

@@ -20,7 +20,7 @@ import type {WebWorker} from '../WebWorker.js';
 
 import {BidiBrowser} from './Browser.js';
 import {BidiBrowserContext} from './BrowserContext.js';
-import {BrowsingContext, CDPSessionWrapper} from './BrowsingContext.js';
+import {BrowsingContext, CdpSessionWrapper} from './BrowsingContext.js';
 import {BidiPage} from './Page.js';
 
 /**
@@ -95,7 +95,7 @@ export class BiDiBrowsingContextTarget extends BidiTarget {
         flatten: true,
       }
     );
-    return new CDPSessionWrapper(this._browsingContext, sessionId);
+    return new CdpSessionWrapper(this._browsingContext, sessionId);
   }
 
   override type(): TargetType {

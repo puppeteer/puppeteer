@@ -19,14 +19,14 @@ import {Protocol} from 'devtools-protocol';
 import {CDPSession} from '../api/CDPSession.js';
 import {JSHandle} from '../api/JSHandle.js';
 
-import type {CDPElementHandle} from './ElementHandle.js';
+import type {CdpElementHandle} from './ElementHandle.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {releaseObject, valueFromRemoteObject} from './util.js';
 
 /**
  * @internal
  */
-export class CDPJSHandle<T = unknown> extends JSHandle<T> {
+export class CdpJSHandle<T = unknown> extends JSHandle<T> {
   #disposed = false;
   readonly #remoteObject: Protocol.Runtime.RemoteObject;
   readonly #world: IsolatedWorld;
@@ -69,7 +69,7 @@ export class CDPJSHandle<T = unknown> extends JSHandle<T> {
    * Either `null` or the handle itself if the handle is an
    * instance of {@link ElementHandle}.
    */
-  override asElement(): CDPElementHandle<Node> | null {
+  override asElement(): CdpElementHandle<Node> | null {
     return null;
   }
 

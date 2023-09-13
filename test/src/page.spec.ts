@@ -23,7 +23,7 @@ import {KnownDevices, TimeoutError} from 'puppeteer';
 import {CDPSession} from 'puppeteer-core/internal/api/CDPSession.js';
 import {Metrics, Page} from 'puppeteer-core/internal/api/Page.js';
 import {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
-import {CDPPage} from 'puppeteer-core/internal/common/Page.js';
+import {CdpPage} from 'puppeteer-core/internal/common/Page.js';
 import sinon from 'sinon';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
@@ -2376,7 +2376,7 @@ describe('Page', function () {
   describe('Page.client', function () {
     it('should return the client instance', async () => {
       const {page} = await getTestState();
-      expect((page as CDPPage)._client()).toBeInstanceOf(CDPSession);
+      expect((page as CdpPage)._client()).toBeInstanceOf(CDPSession);
     });
   });
 });

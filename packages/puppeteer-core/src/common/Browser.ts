@@ -40,7 +40,7 @@ import {Connection} from './Connection.js';
 import {FirefoxTargetManager} from './FirefoxTargetManager.js';
 import {Viewport} from './PuppeteerViewport.js';
 import {
-  CDPTarget,
+  CdpTarget,
   DevToolsTarget,
   InitializationStatus,
   OtherTarget,
@@ -53,7 +53,7 @@ import {TaskQueue} from './TaskQueue.js';
 /**
  * @internal
  */
-export class CDPBrowser extends BrowserBase {
+export class CdpBrowser extends BrowserBase {
   static async _create(
     product: 'firefox' | 'chrome' | undefined,
     connection: Connection,
@@ -66,8 +66,8 @@ export class CDPBrowser extends BrowserBase {
     isPageTargetCallback?: IsPageTargetCallback,
     waitForInitiallyDiscoveredTargets = true,
     useTabTarget = USE_TAB_TARGET
-  ): Promise<CDPBrowser> {
-    const browser = new CDPBrowser(
+  ): Promise<CdpBrowser> {
+    const browser = new CdpBrowser(
       product,
       connection,
       contextIds,
@@ -90,12 +90,12 @@ export class CDPBrowser extends BrowserBase {
   #closeCallback: BrowserCloseCallback;
   #targetFilterCallback: TargetFilterCallback;
   #isPageTargetCallback!: IsPageTargetCallback;
-  #defaultContext: CDPBrowserContext;
-  #contexts = new Map<string, CDPBrowserContext>();
+  #defaultContext: CdpBrowserContext;
+  #contexts = new Map<string, CdpBrowserContext>();
   #screenshotTaskQueue: TaskQueue;
   #targetManager: TargetManager;
 
-  override get _targets(): Map<string, CDPTarget> {
+  override get _targets(): Map<string, CdpTarget> {
     return this.#targetManager.getAvailableTargets();
   }
 
@@ -141,11 +141,11 @@ export class CDPBrowser extends BrowserBase {
         useTabTarget
       );
     }
-    this.#defaultContext = new CDPBrowserContext(this.#connection, this);
+    this.#defaultContext = new CdpBrowserContext(this.#connection, this);
     for (const contextId of contextIds) {
       this.#contexts.set(
         contextId,
-        new CDPBrowserContext(this.#connection, this, contextId)
+        new CdpBrowserContext(this.#connection, this, contextId)
       );
     }
   }
@@ -243,7 +243,7 @@ export class CDPBrowser extends BrowserBase {
    */
   override async createIncognitoBrowserContext(
     options: BrowserContextOptions = {}
-  ): Promise<CDPBrowserContext> {
+  ): Promise<CdpBrowserContext> {
     const {proxyServer, proxyBypassList} = options;
 
     const {browserContextId} = await this.#connection.send(
@@ -253,7 +253,7 @@ export class CDPBrowser extends BrowserBase {
         proxyBypassList: proxyBypassList && proxyBypassList.join(','),
       }
     );
-    const context = new CDPBrowserContext(
+    const context = new CdpBrowserContext(
       this.#connection,
       this,
       browserContextId
@@ -266,14 +266,14 @@ export class CDPBrowser extends BrowserBase {
    * Returns an array of all open browser contexts. In a newly created browser, this will
    * return a single instance of {@link BrowserContext}.
    */
-  override browserContexts(): CDPBrowserContext[] {
+  override browserContexts(): CdpBrowserContext[] {
     return [this.#defaultContext, ...Array.from(this.#contexts.values())];
   }
 
   /**
    * Returns the default browser context. The default browser context cannot be closed.
    */
-  override defaultBrowserContext(): CDPBrowserContext {
+  override defaultBrowserContext(): CdpBrowserContext {
     return this.#defaultContext;
   }
 
@@ -356,7 +356,7 @@ export class CDPBrowser extends BrowserBase {
     );
   };
 
-  #onAttachedToTarget = async (target: CDPTarget) => {
+  #onAttachedToTarget = async (target: CdpTarget) => {
     if (
       (await target._initializedDeferred.valueOrThrow()) ===
       InitializationStatus.SUCCESS
@@ -366,7 +366,7 @@ export class CDPBrowser extends BrowserBase {
     }
   };
 
-  #onDetachedFromTarget = async (target: CDPTarget): Promise<void> => {
+  #onDetachedFromTarget = async (target: CdpTarget): Promise<void> => {
     target._initializedDeferred.resolve(InitializationStatus.ABORTED);
     target._isClosedDeferred.resolve();
     if (
@@ -378,7 +378,7 @@ export class CDPBrowser extends BrowserBase {
     }
   };
 
-  #onTargetChanged = ({target}: {target: CDPTarget}): void => {
+  #onTargetChanged = ({target}: {target: CdpTarget}): void => {
     this.emit(BrowserEvent.TargetChanged, target);
     target.browserContext().emit(BrowserContextEvent.TargetChanged, target);
   };
@@ -422,8 +422,8 @@ export class CDPBrowser extends BrowserBase {
       browserContextId: contextId || undefined,
     });
     const target = (await this.waitForTarget(t => {
-      return (t as CDPTarget)._targetId === targetId;
-    })) as CDPTarget;
+      return (t as CdpTarget)._targetId === targetId;
+    })) as CdpTarget;
     if (!target) {
       throw new Error(`Missing target for page (id = ${targetId})`);
     }
@@ -446,7 +446,7 @@ export class CDPBrowser extends BrowserBase {
    * All active targets inside the Browser. In case of multiple browser contexts, returns
    * an array with all the targets in all browser contexts.
    */
-  override targets(): CDPTarget[] {
+  override targets(): CdpTarget[] {
     return Array.from(
       this.#targetManager.getAvailableTargets().values()
     ).filter(target => {
@@ -459,7 +459,7 @@ export class CDPBrowser extends BrowserBase {
   /**
    * The target associated with the browser.
    */
-  override target(): CDPTarget {
+  override target(): CdpTarget {
     const browserTarget = this.targets().find(target => {
       return target.type() === 'browser';
     });
@@ -509,12 +509,12 @@ export class CDPBrowser extends BrowserBase {
 /**
  * @internal
  */
-export class CDPBrowserContext extends BrowserContext {
+export class CdpBrowserContext extends BrowserContext {
   #connection: Connection;
-  #browser: CDPBrowser;
+  #browser: CdpBrowser;
   #id?: string;
 
-  constructor(connection: Connection, browser: CDPBrowser, contextId?: string) {
+  constructor(connection: Connection, browser: CdpBrowser, contextId?: string) {
     super();
     this.#connection = connection;
     this.#browser = browser;
@@ -528,7 +528,7 @@ export class CDPBrowserContext extends BrowserContext {
   /**
    * An array of all active targets inside the browser context.
    */
-  override targets(): CDPTarget[] {
+  override targets(): CdpTarget[] {
     return this.#browser.targets().filter(target => {
       return target.browserContext() === this;
     });
@@ -661,7 +661,7 @@ export class CDPBrowserContext extends BrowserContext {
   /**
    * The browser this browser context belongs to.
    */
-  override browser(): CDPBrowser {
+  override browser(): CdpBrowser {
     return this.#browser;
   }
 

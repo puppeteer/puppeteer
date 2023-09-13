@@ -24,7 +24,7 @@ import {Deferred} from '../util/Deferred.js';
 
 import {Connection} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
-import {CDPTarget, InitializationStatus} from './Target.js';
+import {CdpTarget, InitializationStatus} from './Target.js';
 import {
   TargetFactory,
   TargetManager,
@@ -33,12 +33,12 @@ import {
 } from './TargetManager.js';
 import {debugError} from './util.js';
 
-function isTargetExposed(target: CDPTarget): boolean {
+function isTargetExposed(target: CdpTarget): boolean {
   return target.type() !== TargetType.TAB && !target._subtype();
 }
 
 function isPageTargetBecomingPrimary(
-  target: CDPTarget,
+  target: CdpTarget,
   newTargetInfo: Protocol.Target.TargetInfo
 ): boolean {
   return Boolean(target._subtype()) && !newTargetInfo.subtype;
@@ -71,11 +71,11 @@ export class ChromeTargetManager
    * A target is added to this map once ChromeTargetManager has created
    * a Target and attached at least once to it.
    */
-  #attachedTargetsByTargetId = new Map<string, CDPTarget>();
+  #attachedTargetsByTargetId = new Map<string, CdpTarget>();
   /**
    * Tracks which sessions attach to which target.
    */
-  #attachedTargetsBySessionId = new Map<string, CDPTarget>();
+  #attachedTargetsBySessionId = new Map<string, CdpTarget>();
   /**
    * If a target was filtered out by `targetFilterCallback`, we still receive
    * events about it from CDP, but we don't forward them to the rest of Puppeteer.
@@ -144,7 +144,7 @@ export class ChromeTargetManager
       targetId,
       targetInfo,
     ] of this.#discoveredTargetsByTargetId.entries()) {
-      const targetForFilter = new CDPTarget(
+      const targetForFilter = new CdpTarget(
         targetInfo,
         undefined,
         undefined,
@@ -192,8 +192,8 @@ export class ChromeTargetManager
     this.#removeAttachmentListeners(this.#connection);
   }
 
-  getAvailableTargets(): Map<string, CDPTarget> {
-    const result = new Map<string, CDPTarget>();
+  getAvailableTargets(): Map<string, CdpTarget> {
+    const result = new Map<string, CdpTarget>();
     for (const [id, target] of this.#attachedTargetsByTargetId.entries()) {
       if (isTargetExposed(target)) {
         result.set(id, target);

@@ -19,7 +19,7 @@ import {isNode} from '../environment.js';
 import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
-import {CDPBrowser} from './Browser.js';
+import {CdpBrowser} from './Browser.js';
 import {Connection} from './Connection.js';
 import {ConnectionTransport} from './ConnectionTransport.js';
 import {getFetch} from './fetch.js';
@@ -80,9 +80,9 @@ const getWebSocketTransportClass = async () => {
  *
  * @internal
  */
-export async function _connectToCDPBrowser(
+export async function _connectToCdpBrowser(
   options: BrowserConnectOptions & ConnectOptions
-): Promise<CDPBrowser> {
+): Promise<CdpBrowser> {
   const {
     browserWSEndpoint,
     browserURL,
@@ -136,7 +136,7 @@ export async function _connectToCDPBrowser(
   const {browserContextIds} = await connection.send(
     'Target.getBrowserContexts'
   );
-  const browser = await CDPBrowser._create(
+  const browser = await CdpBrowser._create(
     product || 'chrome',
     connection,
     browserContextIds,

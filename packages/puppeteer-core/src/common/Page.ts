@@ -44,18 +44,18 @@ import {isErrorLike} from '../util/ErrorLike.js';
 
 import {Accessibility} from './Accessibility.js';
 import {Binding} from './Binding.js';
-import {CDPCDPSession} from './CDPSession.js';
+import {CdpCDPSession} from './CDPSession.js';
 import {isTargetClosedError} from './Connection.js';
 import {ConsoleMessage, ConsoleMessageType} from './ConsoleMessage.js';
 import {Coverage} from './Coverage.js';
 import {DeviceRequestPrompt} from './DeviceRequestPrompt.js';
-import {CDPDialog} from './Dialog.js';
+import {CdpDialog} from './Dialog.js';
 import {EmulationManager} from './EmulationManager.js';
 import {TargetCloseError} from './Errors.js';
 import {FileChooser} from './FileChooser.js';
-import {CDPFrame} from './Frame.js';
+import {CdpFrame} from './Frame.js';
 import {FrameManager, FrameManagerEvent} from './FrameManager.js';
-import {CDPKeyboard, CDPMouse, CDPTouchscreen} from './Input.js';
+import {CdpKeyboard, CdpMouse, CdpTouchscreen} from './Input.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
 import {
   Credentials,
@@ -64,7 +64,7 @@ import {
 } from './NetworkManager.js';
 import {PDFOptions} from './PDFOptions.js';
 import {Viewport} from './PuppeteerViewport.js';
-import {CDPTarget} from './Target.js';
+import {CdpTarget} from './Target.js';
 import {TargetManagerEvent} from './TargetManager.js';
 import {TaskQueue} from './TaskQueue.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
@@ -90,15 +90,15 @@ import {WebWorker} from './WebWorker.js';
 /**
  * @internal
  */
-export class CDPPage extends Page {
+export class CdpPage extends Page {
   static async _create(
     client: CDPSession,
-    target: CDPTarget,
+    target: CdpTarget,
     ignoreHTTPSErrors: boolean,
     defaultViewport: Viewport | null,
     screenshotTaskQueue: TaskQueue
-  ): Promise<CDPPage> {
-    const page = new CDPPage(
+  ): Promise<CdpPage> {
+    const page = new CdpPage(
       client,
       target,
       ignoreHTTPSErrors,
@@ -122,11 +122,11 @@ export class CDPPage extends Page {
   #closed = false;
   #client: CDPSession;
   #tabSession: CDPSession | undefined;
-  #target: CDPTarget;
-  #keyboard: CDPKeyboard;
-  #mouse: CDPMouse;
+  #target: CdpTarget;
+  #keyboard: CdpKeyboard;
+  #mouse: CdpMouse;
   #timeoutSettings = new TimeoutSettings();
-  #touchscreen: CDPTouchscreen;
+  #touchscreen: CdpTouchscreen;
   #accessibility: Accessibility;
   #frameManager: FrameManager;
   #emulationManager: EmulationManager;
@@ -145,19 +145,19 @@ export class CDPPage extends Page {
   #frameManagerHandlers = Object.freeze([
     [
       FrameManagerEvent.FrameAttached,
-      (frame: CDPFrame) => {
+      (frame: CdpFrame) => {
         this.emit(PageEvent.FrameAttached, frame);
       },
     ],
     [
       FrameManagerEvent.FrameDetached,
-      (frame: CDPFrame) => {
+      (frame: CdpFrame) => {
         this.emit(PageEvent.FrameDetached, frame);
       },
     ],
     [
       FrameManagerEvent.FrameNavigated,
-      (frame: CDPFrame) => {
+      (frame: CdpFrame) => {
         this.emit(PageEvent.FrameNavigated, frame);
       },
     ],
@@ -229,7 +229,7 @@ export class CDPPage extends Page {
 
   constructor(
     client: CDPSession,
-    target: CDPTarget,
+    target: CdpTarget,
     ignoreHTTPSErrors: boolean,
     screenshotTaskQueue: TaskQueue
   ) {
@@ -237,9 +237,9 @@ export class CDPPage extends Page {
     this.#client = client;
     this.#tabSession = client.parentSession();
     this.#target = target;
-    this.#keyboard = new CDPKeyboard(client);
-    this.#mouse = new CDPMouse(client, this.#keyboard);
-    this.#touchscreen = new CDPTouchscreen(client, this.#keyboard);
+    this.#keyboard = new CdpKeyboard(client);
+    this.#mouse = new CdpMouse(client, this.#keyboard);
+    this.#touchscreen = new CdpTouchscreen(client, this.#keyboard);
     this.#accessibility = new Accessibility(client);
     this.#frameManager = new FrameManager(
       client,
@@ -258,7 +258,7 @@ export class CDPPage extends Page {
     this.#tabSession?.on(CDPSessionEvent.Swapped, async newSession => {
       this.#client = newSession;
       assert(
-        this.#client instanceof CDPCDPSession,
+        this.#client instanceof CdpCDPSession,
         'CDPSession is not instance of CDPSessionImpl'
       );
       this.#target = this.#client._target();
@@ -274,7 +274,7 @@ export class CDPPage extends Page {
       this.#setupEventListeners();
     });
     this.#tabSession?.on(CDPSessionEvent.Ready, session => {
-      assert(session instanceof CDPCDPSession);
+      assert(session instanceof CdpCDPSession);
       if (session._target()._subtype() !== 'prerender') {
         return;
       }
@@ -321,7 +321,7 @@ export class CDPPage extends Page {
       .catch(debugError);
   }
 
-  #onDetachedFromTarget = (target: CDPTarget) => {
+  #onDetachedFromTarget = (target: CdpTarget) => {
     const sessionId = target._session()?.id();
     const worker = this.#workers.get(sessionId!);
     if (!worker) {
@@ -332,7 +332,7 @@ export class CDPPage extends Page {
   };
 
   #onAttachedToTarget = (session: CDPSession) => {
-    assert(session instanceof CDPCDPSession);
+    assert(session instanceof CdpCDPSession);
     this.#frameManager.onAttachedToTarget(session._target());
     if (session._target()._getTargetInfo().type === 'worker') {
       const worker = new WebWorker(
@@ -433,7 +433,7 @@ export class CDPPage extends Page {
     return await this.#emulationManager.setGeolocation(options);
   }
 
-  override target(): CDPTarget {
+  override target(): CdpTarget {
     return this.#target;
   }
 
@@ -464,15 +464,15 @@ export class CDPPage extends Page {
     }
   }
 
-  override mainFrame(): CDPFrame {
+  override mainFrame(): CdpFrame {
     return this.#frameManager.mainFrame();
   }
 
-  override get keyboard(): CDPKeyboard {
+  override get keyboard(): CdpKeyboard {
     return this.#keyboard;
   }
 
-  override get touchscreen(): CDPTouchscreen {
+  override get touchscreen(): CdpTouchscreen {
     return this.#touchscreen;
   }
 
@@ -851,7 +851,7 @@ export class CDPPage extends Page {
 
   #onDialog(event: Protocol.Page.JavascriptDialogOpeningEvent): void {
     const type = validateDialogType(event.type);
-    const dialog = new CDPDialog(
+    const dialog = new CdpDialog(
       this.#client,
       type,
       event.message,
@@ -1315,7 +1315,7 @@ export class CDPPage extends Page {
     return this.#closed;
   }
 
-  override get mouse(): CDPMouse {
+  override get mouse(): CdpMouse {
     return this.#mouse;
   }
 

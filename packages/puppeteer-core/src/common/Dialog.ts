@@ -22,7 +22,7 @@ import {Dialog} from '../api/Dialog.js';
 /**
  * @internal
  */
-export class CDPDialog extends Dialog {
+export class CdpDialog extends Dialog {
   #client: CDPSession;
 
   constructor(

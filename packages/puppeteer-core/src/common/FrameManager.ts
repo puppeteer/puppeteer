@@ -23,17 +23,17 @@ import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
-import {CDPCDPSession} from './CDPSession.js';
+import {CdpCDPSession} from './CDPSession.js';
 import {isTargetClosedError} from './Connection.js';
 import {DeviceRequestPromptManager} from './DeviceRequestPrompt.js';
 import {EventEmitter, EventType} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {CDPFrame} from './Frame.js';
+import {CdpFrame} from './Frame.js';
 import {FrameTree} from './FrameTree.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {NetworkManager} from './NetworkManager.js';
-import {CDPTarget} from './Target.js';
+import {CdpTarget} from './Target.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {debugError, PuppeteerURL} from './util.js';
 
@@ -65,12 +65,12 @@ export namespace FrameManagerEvent {
  */
 
 export interface FrameManagerEvents extends Record<EventType, unknown> {
-  [FrameManagerEvent.FrameAttached]: CDPFrame;
-  [FrameManagerEvent.FrameNavigated]: CDPFrame;
-  [FrameManagerEvent.FrameDetached]: CDPFrame;
-  [FrameManagerEvent.FrameSwapped]: CDPFrame;
-  [FrameManagerEvent.LifecycleEvent]: CDPFrame;
-  [FrameManagerEvent.FrameNavigatedWithinDocument]: CDPFrame;
+  [FrameManagerEvent.FrameAttached]: CdpFrame;
+  [FrameManagerEvent.FrameNavigated]: CdpFrame;
+  [FrameManagerEvent.FrameDetached]: CdpFrame;
+  [FrameManagerEvent.FrameSwapped]: CdpFrame;
+  [FrameManagerEvent.LifecycleEvent]: CdpFrame;
+  [FrameManagerEvent.FrameNavigatedWithinDocument]: CdpFrame;
 }
 
 const TIME_FOR_WAITING_FOR_SWAP = 100; // ms.
@@ -88,7 +88,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
   #isolatedWorlds = new Set<string>();
   #client: CDPSession;
 
-  _frameTree = new FrameTree<CDPFrame>();
+  _frameTree = new FrameTree<CdpFrame>();
 
   /**
    * Set of frame IDs stored to indicate if a frame has received a
@@ -168,7 +168,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
 
     this.#client = client;
     assert(
-      this.#client instanceof CDPCDPSession,
+      this.#client instanceof CdpCDPSession,
       'CDPSession is not an instance of CDPSessionImpl.'
     );
     const frame = this._frameTree.getMainFrame();
@@ -192,7 +192,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     }
   }
 
-  async registerSpeculativeSession(client: CDPCDPSession): Promise<void> {
+  async registerSpeculativeSession(client: CdpCDPSession): Promise<void> {
     await this.#networkManager.addClient(client);
   }
 
@@ -279,21 +279,21 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     return this.#page;
   }
 
-  mainFrame(): CDPFrame {
+  mainFrame(): CdpFrame {
     const mainFrame = this._frameTree.getMainFrame();
     assert(mainFrame, 'Requesting main frame too early!');
     return mainFrame;
   }
 
-  frames(): CDPFrame[] {
+  frames(): CdpFrame[] {
     return Array.from(this._frameTree.frames());
   }
 
-  frame(frameId: string): CDPFrame | null {
+  frame(frameId: string): CdpFrame | null {
     return this._frameTree.getById(frameId) || null;
   }
 
-  onAttachedToTarget(target: CDPTarget): void {
+  onAttachedToTarget(target: CdpTarget): void {
     if (target._getTargetInfo().type !== 'iframe') {
       return;
     }
@@ -385,7 +385,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
       return;
     }
 
-    frame = new CDPFrame(this, frameId, parentFrameId, session);
+    frame = new CdpFrame(this, frameId, parentFrameId, session);
     this._frameTree.addFrame(frame);
     this.emit(FrameManagerEvent.FrameAttached, frame);
   }
@@ -414,7 +414,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
         frame._id = frameId;
       } else {
         // Initial main frame navigation.
-        frame = new CDPFrame(this, frameId, undefined, this.#client);
+        frame = new CdpFrame(this, frameId, undefined, this.#client);
       }
       this._frameTree.addFrame(frame);
     }
@@ -562,7 +562,7 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
     }
   }
 
-  #removeFramesRecursively(frame: CDPFrame): void {
+  #removeFramesRecursively(frame: CdpFrame): void {
     for (const child of frame.childFrames()) {
       this.#removeFramesRecursively(child);
     }
