@@ -15,11 +15,11 @@
  */
 import {Protocol} from 'devtools-protocol';
 
+import {CDPSession} from '../api/CDPSession.js';
 import {Realm} from '../api/Realm.js';
 
-import {CDPSession} from './Connection.js';
 import {ConsoleMessageType} from './ConsoleMessage.js';
-import {EventEmitter} from './EventEmitter.js';
+import {EventEmitter, EventType} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {CDPJSHandle} from './JSHandle.js';
@@ -33,7 +33,7 @@ import {debugError, withSourcePuppeteerURLIfNone} from './util.js';
 export type ConsoleAPICalledCallback = (
   eventType: ConsoleMessageType,
   handles: CDPJSHandle[],
-  trace: Protocol.Runtime.StackTrace
+  trace?: Protocol.Runtime.StackTrace
 ) => void;
 
 /**
@@ -69,7 +69,7 @@ export type ExceptionThrownCallback = (
  *
  * @public
  */
-export class WebWorker extends EventEmitter {
+export class WebWorker extends EventEmitter<Record<EventType, unknown>> {
   /**
    * @internal
    */

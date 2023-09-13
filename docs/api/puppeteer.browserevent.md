@@ -1,15 +1,15 @@
 ---
-sidebar_label: BrowserEmittedEvents
+sidebar_label: BrowserEvent
 ---
 
-# BrowserEmittedEvents enum
+# BrowserEvent enum
 
 All the events a [browser instance](./puppeteer.browser.md) may emit.
 
 #### Signature:
 
 ```typescript
-export declare const enum BrowserEmittedEvents
+export declare const enum BrowserEvent
 ```
 
 ## Enumeration Members

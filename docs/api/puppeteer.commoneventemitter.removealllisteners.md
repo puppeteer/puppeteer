@@ -8,15 +8,15 @@ sidebar_label: CommonEventEmitter.removeAllListeners
 
 ```typescript
 interface CommonEventEmitter {
-  removeAllListeners(event?: EventType): this;
+  removeAllListeners(event?: keyof Events): this;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                  | Description  |
-| --------- | ------------------------------------- | ------------ |
-| event     | [EventType](./puppeteer.eventtype.md) | _(Optional)_ |
+| Parameter | Type         | Description  |
+| --------- | ------------ | ------------ |
+| event     | keyof Events | _(Optional)_ |
 
 **Returns:**
 

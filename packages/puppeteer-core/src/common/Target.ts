@@ -18,11 +18,12 @@ import {Protocol} from 'devtools-protocol';
 
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
-import {Page, PageEmittedEvents} from '../api/Page.js';
+import {CDPSession} from '../api/CDPSession.js';
+import {Page, PageEvent} from '../api/Page.js';
 import {Target, TargetType} from '../api/Target.js';
 import {Deferred} from '../util/Deferred.js';
 
-import {CDPSession, CDPSessionImpl} from './Connection.js';
+import {CDPCDPSession} from './CDPSession.js';
 import {CDPPage} from './Page.js';
 import {Viewport} from './PuppeteerViewport.js';
 import {TargetManager} from './TargetManager.js';
@@ -75,7 +76,7 @@ export class CDPTarget extends Target {
     this.#browserContext = browserContext;
     this._targetId = targetInfo.targetId;
     this.#sessionFactory = sessionFactory;
-    if (this.#session && this.#session instanceof CDPSessionImpl) {
+    if (this.#session && this.#session instanceof CDPCDPSession) {
       this.#session._setTarget(this);
     }
   }
@@ -102,7 +103,7 @@ export class CDPTarget extends Target {
       throw new Error('sessionFactory is not initialized');
     }
     return this.#sessionFactory(false).then(session => {
-      (session as CDPSessionImpl)._setTarget(this);
+      (session as CDPCDPSession)._setTarget(this);
       return session;
     });
   }
@@ -222,11 +223,11 @@ export class PageTarget extends CDPTarget {
           return true;
         }
         const openerPage = await opener.pagePromise;
-        if (!openerPage.listenerCount(PageEmittedEvents.Popup)) {
+        if (!openerPage.listenerCount(PageEvent.Popup)) {
           return true;
         }
         const popupPage = await this.page();
-        openerPage.emit(PageEmittedEvents.Popup, popupPage);
+        openerPage.emit(PageEvent.Popup, popupPage);
         return true;
       })
       .catch(debugError);

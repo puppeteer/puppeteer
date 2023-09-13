@@ -14,11 +14,53 @@
  * limitations under the License.
  */
 
-import {EventEmitter} from '../common/EventEmitter.js';
+import {EventEmitter, EventType} from '../common/EventEmitter.js';
 
-import type {Permission, Browser} from './Browser.js';
+import type {Browser, Permission} from './Browser.js';
 import {Page} from './Page.js';
 import type {Target} from './Target.js';
+
+/**
+ * @public
+ */
+export const enum BrowserContextEvent {
+  /**
+   * Emitted when the url of a target inside the browser context changes.
+   * Contains a {@link Target} instance.
+   */
+  TargetChanged = 'targetchanged',
+
+  /**
+   * Emitted when a target is created within the browser context, for example
+   * when a new page is opened by
+   * {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/open | window.open}
+   * or by {@link BrowserContext.newPage | browserContext.newPage}
+   *
+   * Contains a {@link Target} instance.
+   */
+  TargetCreated = 'targetcreated',
+  /**
+   * Emitted when a target is destroyed within the browser context, for example
+   * when a page is closed. Contains a {@link Target} instance.
+   */
+  TargetDestroyed = 'targetdestroyed',
+}
+
+export {
+  /**
+   * @deprecated Use {@link BrowserContextEvent}
+   */
+  BrowserContextEvent as BrowserContextEmittedEvents,
+};
+
+/**
+ * @public
+ */
+export interface BrowserContextEvents extends Record<EventType, unknown> {
+  [BrowserContextEvent.TargetChanged]: Target;
+  [BrowserContextEvent.TargetCreated]: Target;
+  [BrowserContextEvent.TargetDestroyed]: Target;
+}
 
 /**
  * BrowserContexts provide a way to operate multiple independent browser
@@ -30,7 +72,7 @@ import type {Target} from './Target.js';
  *
  * The Browser class extends from Puppeteer's {@link EventEmitter} class and
  * will emit various events which are documented in the
- * {@link BrowserContextEmittedEvents} enum.
+ * {@link BrowserContextEvents} enum.
  *
  * If a page opens another page, e.g. with a `window.open` call, the popup will
  * belong to the parent page's browser context.
@@ -55,7 +97,7 @@ import type {Target} from './Target.js';
  * @public
  */
 
-export class BrowserContext extends EventEmitter {
+export class BrowserContext extends EventEmitter<BrowserContextEvents> {
   /**
    * @internal
    */

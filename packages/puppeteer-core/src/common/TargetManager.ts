@@ -16,8 +16,9 @@
 
 import {Protocol} from 'devtools-protocol';
 
-import {CDPSession} from './Connection.js';
-import {EventEmitter} from './EventEmitter.js';
+import {CDPSession} from '../api/CDPSession.js';
+
+import {EventEmitter, EventType} from './EventEmitter.js';
 import {CDPTarget} from './Target.js';
 
 /**
@@ -30,6 +31,33 @@ export type TargetFactory = (
 ) => CDPTarget;
 
 /**
+ * @internal
+ */
+export const enum TargetManagerEvent {
+  TargetDiscovered = 'targetDiscovered',
+  TargetAvailable = 'targetAvailable',
+  TargetGone = 'targetGone',
+  /**
+   * Emitted after a target has been initialized and whenever its URL changes.
+   */
+  TargetChanged = 'targetChanged',
+}
+
+/**
+ * @internal
+ */
+export interface TargetManagerEvents extends Record<EventType, unknown> {
+  [TargetManagerEvent.TargetAvailable]: CDPTarget;
+  [TargetManagerEvent.TargetDiscovered]: Protocol.Target.TargetInfo;
+  [TargetManagerEvent.TargetGone]: CDPTarget;
+  [TargetManagerEvent.TargetChanged]: {
+    target: CDPTarget;
+    wasInitialized: true;
+    previousURL: string;
+  };
+}
+
+/**
  * TargetManager encapsulates all interactions with CDP targets and is
  * responsible for coordinating the configuration of targets with the rest of
  * Puppeteer. Code outside of this class should not subscribe `Target.*` events
@@ -40,21 +68,8 @@ export type TargetFactory = (
  *
  * @internal
  */
-export interface TargetManager extends EventEmitter {
+export interface TargetManager extends EventEmitter<TargetManagerEvents> {
   getAvailableTargets(): Map<string, CDPTarget>;
   initialize(): Promise<void>;
   dispose(): void;
-}
-
-/**
- * @internal
- */
-export const enum TargetManagerEmittedEvents {
-  TargetDiscovered = 'targetDiscovered',
-  TargetAvailable = 'targetAvailable',
-  TargetGone = 'targetGone',
-  /**
-   * Emitted after a target has been initialized and whenever its URL changes.
-   */
-  TargetChanged = 'targetChanged',
 }

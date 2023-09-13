@@ -18,4 +18,5 @@ export * from './BidiOverCDP.js';
 export * from './Browser.js';
 export * from './BrowserContext.js';
 export * from './Connection.js';
+export * from './NetworkManager.js';
 export * from './Page.js';

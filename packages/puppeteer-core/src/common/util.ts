@@ -19,6 +19,7 @@ import type {Readable} from 'stream';
 import type {Protocol} from 'devtools-protocol';
 
 import {map, NEVER, Observable, timer} from '../../third_party/rxjs/rxjs.js';
+import type {CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
 import {Page} from '../api/Page.js';
@@ -27,11 +28,10 @@ import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
-import type {CDPSession} from './Connection.js';
 import {debug} from './Debug.js';
 import {CDPElementHandle} from './ElementHandle.js';
 import {TimeoutError} from './Errors.js';
-import type {CommonEventEmitter} from './EventEmitter.js';
+import {EventSubscription} from './EventEmitter.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {CDPJSHandle} from './JSHandle.js';
 import {Awaitable} from './types.js';
@@ -107,7 +107,7 @@ export function createEvaluationError(
  */
 export function createClientError(
   details: Protocol.Runtime.ExceptionDetails
-): unknown {
+): Error {
   let name: string;
   let message: string;
   if (!details.exception) {
@@ -309,43 +309,6 @@ export async function releaseObject(
 /**
  * @internal
  */
-export interface PuppeteerEventListener {
-  emitter: CommonEventEmitter;
-  eventName: string | symbol;
-  handler: (...args: any[]) => void;
-}
-
-/**
- * @internal
- */
-export function addEventListener(
-  emitter: CommonEventEmitter,
-  eventName: string | symbol,
-  handler: (...args: any[]) => void
-): PuppeteerEventListener {
-  emitter.on(eventName, handler);
-  return {emitter, eventName, handler};
-}
-
-/**
- * @internal
- */
-export function removeEventListeners(
-  listeners: Array<{
-    emitter: CommonEventEmitter;
-    eventName: string | symbol;
-    handler: (...args: any[]) => void;
-  }>
-): void {
-  for (const listener of listeners) {
-    listener.emitter.removeListener(listener.eventName, listener.handler);
-  }
-  listeners.length = 0;
-}
-
-/**
- * @internal
- */
 export const isString = (obj: unknown): obj is string => {
   return typeof obj === 'string' || obj instanceof String;
 };
@@ -382,7 +345,8 @@ export const isDate = (obj: unknown): obj is Date => {
  * @internal
  */
 export async function waitForEvent<T>(
-  emitter: CommonEventEmitter,
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  emitter: any,
   eventName: string | symbol,
   predicate: (event: T) => Awaitable<boolean>,
   timeout: number,
@@ -392,7 +356,8 @@ export async function waitForEvent<T>(
     message: `Timeout exceeded while waiting for event ${String(eventName)}`,
     timeout,
   });
-  const listener = addEventListener(emitter, eventName, async event => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  using _ = new EventSubscription(emitter, eventName, async (event: any) => {
     if (await predicate(event)) {
       deferred.resolve(event);
     }
@@ -403,12 +368,9 @@ export async function waitForEvent<T>(
     if (isErrorLike(response)) {
       throw response;
     }
-
     return response;
   } catch (error) {
     throw error;
-  } finally {
-    removeEventListeners([listener]);
   }
 }
 

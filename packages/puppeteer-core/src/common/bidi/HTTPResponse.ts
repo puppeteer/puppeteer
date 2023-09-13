@@ -18,17 +18,17 @@ import Protocol from 'devtools-protocol';
 
 import {Frame} from '../../api/Frame.js';
 import {
-  HTTPResponse as BaseHTTPResponse,
+  HTTPResponse as HTTPResponse,
   RemoteAddress,
 } from '../../api/HTTPResponse.js';
 
-import {HTTPRequest} from './HTTPRequest.js';
+import {BidiHTTPRequest} from './HTTPRequest.js';
 
 /**
  * @internal
  */
-export class HTTPResponse extends BaseHTTPResponse {
-  #request: HTTPRequest;
+export class BidiHTTPResponse extends HTTPResponse {
+  #request: BidiHTTPRequest;
   #remoteAddress: RemoteAddress;
   #status: number;
   #statusText: string;
@@ -38,7 +38,7 @@ export class HTTPResponse extends BaseHTTPResponse {
   #timings: Record<string, string> | null;
 
   constructor(
-    request: HTTPRequest,
+    request: BidiHTTPRequest,
     {response}: Bidi.Network.ResponseCompletedParameters
   ) {
     super();
@@ -86,7 +86,7 @@ export class HTTPResponse extends BaseHTTPResponse {
     return this.#headers;
   }
 
-  override request(): HTTPRequest {
+  override request(): BidiHTTPRequest {
     return this.#request;
   }
 

@@ -17,17 +17,19 @@
 import {Protocol} from 'devtools-protocol';
 
 import {TargetFilterCallback} from '../api/Browser.js';
+import {CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {TargetType} from '../api/Target.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
-import {CDPSession, CDPSessionEmittedEvents, Connection} from './Connection.js';
+import {Connection} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
-import {InitializationStatus, CDPTarget} from './Target.js';
+import {CDPTarget, InitializationStatus} from './Target.js';
 import {
   TargetFactory,
   TargetManager,
-  TargetManagerEmittedEvents,
+  TargetManagerEvent,
+  TargetManagerEvents,
 } from './TargetManager.js';
 import {debugError} from './util.js';
 
@@ -49,7 +51,10 @@ function isPageTargetBecomingPrimary(
  *
  * @internal
  */
-export class ChromeTargetManager extends EventEmitter implements TargetManager {
+export class ChromeTargetManager
+  extends EventEmitter<TargetManagerEvents>
+  implements TargetManager
+{
   #connection: Connection;
   /**
    * Keeps track of the following events: 'Target.targetCreated',
@@ -81,7 +86,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
 
   #attachedToTargetListenersBySession = new WeakMap<
     CDPSession | Connection,
-    (event: Protocol.Target.AttachedToTargetEvent) => Promise<void>
+    (event: Protocol.Target.AttachedToTargetEvent) => void
   >();
   #detachedFromTargetListenersBySession = new WeakMap<
     CDPSession | Connection,
@@ -116,7 +121,10 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
     this.#connection.on('Target.targetCreated', this.#onTargetCreated);
     this.#connection.on('Target.targetDestroyed', this.#onTargetDestroyed);
     this.#connection.on('Target.targetInfoChanged', this.#onTargetInfoChanged);
-    this.#connection.on('sessiondetached', this.#onSessionDetached);
+    this.#connection.on(
+      CDPSessionEvent.SessionDetached,
+      this.#onSessionDetached
+    );
     this.#setupAttachmentListeners(this.#connection);
 
     this.#connection
@@ -176,7 +184,10 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
     this.#connection.off('Target.targetCreated', this.#onTargetCreated);
     this.#connection.off('Target.targetDestroyed', this.#onTargetDestroyed);
     this.#connection.off('Target.targetInfoChanged', this.#onTargetInfoChanged);
-    this.#connection.off('sessiondetached', this.#onSessionDetached);
+    this.#connection.off(
+      CDPSessionEvent.SessionDetached,
+      this.#onSessionDetached
+    );
 
     this.#removeAttachmentListeners(this.#connection);
   }
@@ -193,7 +204,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
 
   #setupAttachmentListeners(session: CDPSession | Connection): void {
     const listener = (event: Protocol.Target.AttachedToTargetEvent) => {
-      return this.#onAttachedToTarget(session, event);
+      void this.#onAttachedToTarget(session, event);
     };
     assert(!this.#attachedToTargetListenersBySession.has(session));
     this.#attachedToTargetListenersBySession.set(session, listener);
@@ -210,11 +221,9 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
   }
 
   #removeAttachmentListeners(session: CDPSession | Connection): void {
-    if (this.#attachedToTargetListenersBySession.has(session)) {
-      session.off(
-        'Target.attachedToTarget',
-        this.#attachedToTargetListenersBySession.get(session)!
-      );
+    const listener = this.#attachedToTargetListenersBySession.get(session);
+    if (listener) {
+      session.off('Target.attachedToTarget', listener);
       this.#attachedToTargetListenersBySession.delete(session);
     }
 
@@ -237,7 +246,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
       event.targetInfo
     );
 
-    this.emit(TargetManagerEmittedEvents.TargetDiscovered, event.targetInfo);
+    this.emit(TargetManagerEvent.TargetDiscovered, event.targetInfo);
 
     // The connection is already attached to the browser target implicitly,
     // therefore, no new CDPSession is created and we have special handling
@@ -263,8 +272,10 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
       // Special case for service workers: report TargetGone event when
       // the worker is destroyed.
       const target = this.#attachedTargetsByTargetId.get(event.targetId);
-      this.emit(TargetManagerEmittedEvents.TargetGone, target);
-      this.#attachedTargetsByTargetId.delete(event.targetId);
+      if (target) {
+        this.emit(TargetManagerEvent.TargetGone, target);
+        this.#attachedTargetsByTargetId.delete(event.targetId);
+      }
     }
   };
 
@@ -301,14 +312,14 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
         session,
         'Target that is being activated is missing a CDPSession.'
       );
-      session.parentSession()?.emit(CDPSessionEmittedEvents.Swapped, session);
+      session.parentSession()?.emit(CDPSessionEvent.Swapped, session);
     }
 
     target._targetInfoChanged(event.targetInfo);
 
     if (wasInitialized && previousURL !== target.url()) {
-      this.emit(TargetManagerEmittedEvents.TargetChanged, {
-        target: target,
+      this.emit(TargetManagerEvent.TargetChanged, {
+        target,
         wasInitialized,
         previousURL,
       });
@@ -359,7 +370,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
       const target = this.#targetFactory(targetInfo);
       target._initialize();
       this.#attachedTargetsByTargetId.set(targetInfo.targetId, target);
-      this.emit(TargetManagerEmittedEvents.TargetAvailable, target);
+      this.emit(TargetManagerEvent.TargetAvailable, target);
       return;
     }
 
@@ -398,11 +409,15 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
       this.#attachedTargetsBySessionId.set(session.id(), target);
     }
 
-    parentSession.emit(CDPSessionEmittedEvents.Ready, session);
+    if (parentSession instanceof CDPSession) {
+      parentSession.emit(CDPSessionEvent.Ready, session);
+    } else {
+      parentSession.emit(CDPSessionEvent.Ready, session);
+    }
 
     this.#targetsIdsForInit.delete(target._targetId);
     if (!isExistingTarget && isTargetExposed(target)) {
-      this.emit(TargetManagerEmittedEvents.TargetAvailable, target);
+      this.emit(TargetManagerEvent.TargetAvailable, target);
     }
     this.#finishInitializationIfReady();
 
@@ -440,7 +455,7 @@ export class ChromeTargetManager extends EventEmitter implements TargetManager {
 
     this.#attachedTargetsByTargetId.delete(target._targetId);
     if (isTargetExposed(target)) {
-      this.emit(TargetManagerEmittedEvents.TargetGone, target);
+      this.emit(TargetManagerEvent.TargetGone, target);
     }
   };
 }

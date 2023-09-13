@@ -22,7 +22,7 @@ import {Target} from '../../api/Target.js';
 import {Viewport} from '../PuppeteerViewport.js';
 
 import {BidiBrowser} from './Browser.js';
-import {Connection} from './Connection.js';
+import {BidiConnection} from './Connection.js';
 import {BidiPage} from './Page.js';
 
 interface BrowserContextOptions {
@@ -35,7 +35,7 @@ interface BrowserContextOptions {
  */
 export class BidiBrowserContext extends BrowserContext {
   #browser: BidiBrowser;
-  #connection: Connection;
+  #connection: BidiConnection;
   #defaultViewport: Viewport | null;
   #isDefault = false;
 
@@ -62,7 +62,7 @@ export class BidiBrowserContext extends BrowserContext {
     }, options);
   }
 
-  get connection(): Connection {
+  get connection(): BidiConnection {
     return this.#connection;
   }
 

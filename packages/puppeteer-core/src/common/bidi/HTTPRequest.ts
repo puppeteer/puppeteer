@@ -16,19 +16,16 @@
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {Frame} from '../../api/Frame.js';
-import {
-  HTTPRequest as BaseHTTPRequest,
-  ResourceType,
-} from '../../api/HTTPRequest.js';
+import {HTTPRequest, ResourceType} from '../../api/HTTPRequest.js';
 
-import {HTTPResponse} from './HTTPResponse.js';
+import {BidiHTTPResponse} from './HTTPResponse.js';
 
 /**
  * @internal
  */
-export class HTTPRequest extends BaseHTTPRequest {
-  override _response: HTTPResponse | null = null;
-  override _redirectChain: HTTPRequest[];
+export class BidiHTTPRequest extends HTTPRequest {
+  override _response: BidiHTTPResponse | null = null;
+  override _redirectChain: BidiHTTPRequest[];
   _navigationId: string | null;
 
   #url: string;
@@ -43,7 +40,7 @@ export class HTTPRequest extends BaseHTTPRequest {
   constructor(
     event: Bidi.Network.BeforeRequestSentParameters,
     frame: Frame | null,
-    redirectChain: HTTPRequest[] = []
+    redirectChain: BidiHTTPRequest[] = []
   ) {
     super();
 
@@ -87,7 +84,7 @@ export class HTTPRequest extends BaseHTTPRequest {
     return this.#headers;
   }
 
-  override response(): HTTPResponse | null {
+  override response(): BidiHTTPResponse | null {
     return this._response;
   }
 
@@ -99,7 +96,7 @@ export class HTTPRequest extends BaseHTTPRequest {
     return this.#initiator;
   }
 
-  override redirectChain(): HTTPRequest[] {
+  override redirectChain(): BidiHTTPRequest[] {
     return this._redirectChain.slice();
   }
 

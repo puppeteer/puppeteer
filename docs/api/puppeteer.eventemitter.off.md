@@ -10,16 +10,19 @@ Remove an event listener from firing.
 
 ```typescript
 class EventEmitter {
-  off(event: EventType, handler: Handler<any>): this;
+  off<Key extends keyof EventsWithWildcard<Events>>(
+    type: Key,
+    handler?: Handler<EventsWithWildcard<Events>[Key]>
+  ): this;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                         | Description                                     |
-| --------- | -------------------------------------------- | ----------------------------------------------- |
-| event     | [EventType](./puppeteer.eventtype.md)        | the event type you'd like to stop listening to. |
-| handler   | [Handler](./puppeteer.handler.md)&lt;any&gt; | the function that should be removed.            |
+| Parameter | Type                                                                                                                  | Description                                       |
+| --------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| type      | Key                                                                                                                   | the event type you'd like to stop listening to.   |
+| handler   | [Handler](./puppeteer.handler.md)&lt;[EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt;\[Key\]&gt; | _(Optional)_ the function that should be removed. |
 
 **Returns:**
 

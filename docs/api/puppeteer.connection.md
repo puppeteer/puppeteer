@@ -7,10 +7,10 @@ sidebar_label: Connection
 #### Signature:
 
 ```typescript
-export declare class Connection extends EventEmitter
+export declare class Connection extends EventEmitter<CDPSessionEvents>
 ```
 
-**Extends:** [EventEmitter](./puppeteer.eventemitter.md)
+**Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;[CDPSessionEvents](./puppeteer.cdpsessionevents.md)&gt;
 
 ## Constructors
 

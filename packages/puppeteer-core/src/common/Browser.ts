@@ -21,33 +21,33 @@ import {Protocol} from 'devtools-protocol';
 import {
   Browser as BrowserBase,
   BrowserCloseCallback,
-  TargetFilterCallback,
-  IsPageTargetCallback,
-  BrowserEmittedEvents,
-  BrowserContextEmittedEvents,
   BrowserContextOptions,
-  WEB_PERMISSION_TO_PROTOCOL_PERMISSION,
+  BrowserEvent,
+  IsPageTargetCallback,
   Permission,
+  TargetFilterCallback,
+  WEB_PERMISSION_TO_PROTOCOL_PERMISSION,
 } from '../api/Browser.js';
-import {BrowserContext} from '../api/BrowserContext.js';
+import {BrowserContext, BrowserContextEvent} from '../api/BrowserContext.js';
+import {CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {Page} from '../api/Page.js';
 import {Target} from '../api/Target.js';
 import {USE_TAB_TARGET} from '../environment.js';
 import {assert} from '../util/assert.js';
 
 import {ChromeTargetManager} from './ChromeTargetManager.js';
-import {CDPSession, Connection, ConnectionEmittedEvents} from './Connection.js';
+import {Connection} from './Connection.js';
 import {FirefoxTargetManager} from './FirefoxTargetManager.js';
 import {Viewport} from './PuppeteerViewport.js';
 import {
+  CDPTarget,
+  DevToolsTarget,
   InitializationStatus,
   OtherTarget,
   PageTarget,
-  CDPTarget,
   WorkerTarget,
-  DevToolsTarget,
 } from './Target.js';
-import {TargetManager, TargetManagerEmittedEvents} from './TargetManager.js';
+import {TargetManager, TargetManagerEvent} from './TargetManager.js';
 import {TaskQueue} from './TaskQueue.js';
 
 /**
@@ -151,52 +151,46 @@ export class CDPBrowser extends BrowserBase {
   }
 
   #emitDisconnected = () => {
-    this.emit(BrowserEmittedEvents.Disconnected);
+    this.emit(BrowserEvent.Disconnected, undefined);
   };
 
   override async _attach(): Promise<void> {
-    this.#connection.on(
-      ConnectionEmittedEvents.Disconnected,
-      this.#emitDisconnected
-    );
+    this.#connection.on(CDPSessionEvent.Disconnected, this.#emitDisconnected);
     this.#targetManager.on(
-      TargetManagerEmittedEvents.TargetAvailable,
+      TargetManagerEvent.TargetAvailable,
       this.#onAttachedToTarget
     );
     this.#targetManager.on(
-      TargetManagerEmittedEvents.TargetGone,
+      TargetManagerEvent.TargetGone,
       this.#onDetachedFromTarget
     );
     this.#targetManager.on(
-      TargetManagerEmittedEvents.TargetChanged,
+      TargetManagerEvent.TargetChanged,
       this.#onTargetChanged
     );
     this.#targetManager.on(
-      TargetManagerEmittedEvents.TargetDiscovered,
+      TargetManagerEvent.TargetDiscovered,
       this.#onTargetDiscovered
     );
     await this.#targetManager.initialize();
   }
 
   override _detach(): void {
-    this.#connection.off(
-      ConnectionEmittedEvents.Disconnected,
-      this.#emitDisconnected
-    );
+    this.#connection.off(CDPSessionEvent.Disconnected, this.#emitDisconnected);
     this.#targetManager.off(
-      TargetManagerEmittedEvents.TargetAvailable,
+      TargetManagerEvent.TargetAvailable,
       this.#onAttachedToTarget
     );
     this.#targetManager.off(
-      TargetManagerEmittedEvents.TargetGone,
+      TargetManagerEvent.TargetGone,
       this.#onDetachedFromTarget
     );
     this.#targetManager.off(
-      TargetManagerEmittedEvents.TargetChanged,
+      TargetManagerEvent.TargetChanged,
       this.#onTargetChanged
     );
     this.#targetManager.off(
-      TargetManagerEmittedEvents.TargetDiscovered,
+      TargetManagerEvent.TargetDiscovered,
       this.#onTargetDiscovered
     );
   }
@@ -367,10 +361,8 @@ export class CDPBrowser extends BrowserBase {
       (await target._initializedDeferred.valueOrThrow()) ===
       InitializationStatus.SUCCESS
     ) {
-      this.emit(BrowserEmittedEvents.TargetCreated, target);
-      target
-        .browserContext()
-        .emit(BrowserContextEmittedEvents.TargetCreated, target);
+      this.emit(BrowserEvent.TargetCreated, target);
+      target.browserContext().emit(BrowserContextEvent.TargetCreated, target);
     }
   };
 
@@ -381,22 +373,18 @@ export class CDPBrowser extends BrowserBase {
       (await target._initializedDeferred.valueOrThrow()) ===
       InitializationStatus.SUCCESS
     ) {
-      this.emit(BrowserEmittedEvents.TargetDestroyed, target);
-      target
-        .browserContext()
-        .emit(BrowserContextEmittedEvents.TargetDestroyed, target);
+      this.emit(BrowserEvent.TargetDestroyed, target);
+      target.browserContext().emit(BrowserContextEvent.TargetDestroyed, target);
     }
   };
 
   #onTargetChanged = ({target}: {target: CDPTarget}): void => {
-    this.emit(BrowserEmittedEvents.TargetChanged, target);
-    target
-      .browserContext()
-      .emit(BrowserContextEmittedEvents.TargetChanged, target);
+    this.emit(BrowserEvent.TargetChanged, target);
+    target.browserContext().emit(BrowserContextEvent.TargetChanged, target);
   };
 
   #onTargetDiscovered = (targetInfo: Protocol.Target.TargetInfo): void => {
-    this.emit('targetdiscovered', targetInfo);
+    this.emit(BrowserEvent.TargetDiscovered, targetInfo);
   };
 
   /**

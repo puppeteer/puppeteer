@@ -21,7 +21,7 @@ import {Deferred} from '../../util/Deferred.js';
 import {interpolateFunction, stringifyFunction} from '../../util/Function.js';
 import {Awaitable, FlattenHandle} from '../types.js';
 
-import {Connection} from './Connection.js';
+import {BidiConnection} from './Connection.js';
 import {BidiFrame} from './Frame.js';
 import {BidiSerializer} from './Serializer.js';
 import {debugError} from './utils.js';
@@ -39,6 +39,9 @@ interface RemotePromiseCallbacks {
   reject: Deferred<Bidi.Script.RemoteValue>;
 }
 
+/**
+ * @internal
+ */
 export class ExposeableFunction<Args extends unknown[], Ret> {
   readonly #frame;
 
@@ -200,7 +203,7 @@ export class ExposeableFunction<Args extends unknown[], Ret> {
     }
   };
 
-  get #connection(): Connection {
+  get #connection(): BidiConnection {
     return this.#frame.context().connection;
   }
 

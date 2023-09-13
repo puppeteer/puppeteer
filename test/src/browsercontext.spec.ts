@@ -82,13 +82,13 @@ describe('BrowserContext', function () {
 
     const events: any[] = [];
     context.on('targetcreated', target => {
-      return events.push('CREATED: ' + target.url());
+      events.push('CREATED: ' + target.url());
     });
     context.on('targetchanged', target => {
-      return events.push('CHANGED: ' + target.url());
+      events.push('CHANGED: ' + target.url());
     });
     context.on('targetdestroyed', target => {
-      return events.push('DESTROYED: ' + target.url());
+      events.push('DESTROYED: ' + target.url());
     });
     const page = await context.newPage();
     await page.goto(server.EMPTY_PAGE);

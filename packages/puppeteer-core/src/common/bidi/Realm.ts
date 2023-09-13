@@ -2,7 +2,7 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import PuppeteerUtil from '../../injected/injected.js';
 import {stringifyFunction} from '../../util/Function.js';
-import {EventEmitter} from '../EventEmitter.js';
+import {EventEmitter, EventType} from '../EventEmitter.js';
 import {scriptInjector} from '../ScriptInjector.js';
 import {EvaluateFunc, HandleFor} from '../types.js';
 import {
@@ -11,7 +11,7 @@ import {
   isString,
 } from '../util.js';
 
-import {Connection} from './Connection.js';
+import {BidiConnection} from './Connection.js';
 import {BidiElementHandle} from './ElementHandle.js';
 import {BidiJSHandle} from './JSHandle.js';
 import {Sandbox} from './Sandbox.js';
@@ -24,13 +24,16 @@ export const getSourceUrlComment = (url: string): string => {
   return `//# sourceURL=${url}`;
 };
 
-export class Realm extends EventEmitter {
-  readonly connection: Connection;
+/**
+ * @internal
+ */
+export class Realm extends EventEmitter<Record<EventType, any>> {
+  readonly connection: BidiConnection;
 
   #id!: string;
   #sandbox!: Sandbox;
 
-  constructor(connection: Connection) {
+  constructor(connection: BidiConnection) {
     super();
     this.connection = connection;
   }

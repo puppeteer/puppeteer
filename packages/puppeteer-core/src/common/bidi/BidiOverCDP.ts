@@ -18,22 +18,19 @@ import * as BidiMapper from 'chromium-bidi/lib/cjs/bidiMapper/bidiMapper.js';
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
-import {CDPSession, Connection as CDPPPtrConnection} from '../Connection.js';
+import {CDPEvents, CDPSession} from '../../api/CDPSession.js';
+import {Connection as CDPConnection} from '../Connection.js';
 import {TargetCloseError} from '../Errors.js';
-import {EventEmitter, Handler} from '../EventEmitter.js';
+import {Handler} from '../EventEmitter.js';
 
-import {Connection as BidiPPtrConnection} from './Connection.js';
-
-type CdpEvents = {
-  [Property in keyof ProtocolMapping.Events]: ProtocolMapping.Events[Property][0];
-};
+import {BidiConnection} from './Connection.js';
 
 /**
  * @internal
  */
 export async function connectBidiOverCDP(
-  cdp: CDPPPtrConnection
-): Promise<BidiPPtrConnection> {
+  cdp: CDPConnection
+): Promise<BidiConnection> {
   const transportBiDi = new NoOpTransport();
   const cdpConnectionAdapter = new CDPConnectionAdapter(cdp);
   const pptrTransport = {
@@ -53,7 +50,7 @@ export async function connectBidiOverCDP(
     // Forwards a BiDi event sent by BidiServer to Puppeteer.
     pptrTransport.onmessage(JSON.stringify(message));
   });
-  const pptrBiDiConnection = new BidiPPtrConnection(cdp.url(), pptrTransport);
+  const pptrBiDiConnection = new BidiConnection(cdp.url(), pptrTransport);
   const bidiServer = await BidiMapper.BidiServer.createAndStart(
     transportBiDi,
     cdpConnectionAdapter,
@@ -67,16 +64,16 @@ export async function connectBidiOverCDP(
  * @internal
  */
 class CDPConnectionAdapter {
-  #cdp: CDPPPtrConnection;
+  #cdp: CDPConnection;
   #adapters = new Map<CDPSession, CDPClientAdapter<CDPSession>>();
-  #browser: CDPClientAdapter<CDPPPtrConnection>;
+  #browser: CDPClientAdapter<CDPConnection>;
 
-  constructor(cdp: CDPPPtrConnection) {
+  constructor(cdp: CDPConnection) {
     this.#cdp = cdp;
     this.#browser = new CDPClientAdapter(cdp);
   }
 
-  browserClient(): CDPClientAdapter<CDPPPtrConnection> {
+  browserClient(): CDPClientAdapter<CDPConnection> {
     return this.#browser;
   }
 
@@ -107,8 +104,8 @@ class CDPConnectionAdapter {
  *
  * @internal
  */
-class CDPClientAdapter<T extends EventEmitter & Pick<CDPPPtrConnection, 'send'>>
-  extends BidiMapper.EventEmitter<CdpEvents>
+class CDPClientAdapter<T extends CDPSession | CDPConnection>
+  extends BidiMapper.EventEmitter<CDPEvents>
   implements BidiMapper.CdpClient
 {
   #closed = false;
@@ -132,9 +129,9 @@ class CDPClientAdapter<T extends EventEmitter & Pick<CDPPPtrConnection, 'send'>>
     return this.#browserClient!;
   }
 
-  #forwardMessage = <T extends keyof CdpEvents>(
+  #forwardMessage = <T extends keyof CDPEvents>(
     method: T,
-    event: CdpEvents[T]
+    event: CDPEvents[T]
   ) => {
     this.emit(method, event);
   };

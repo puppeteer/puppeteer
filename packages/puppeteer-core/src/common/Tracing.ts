@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {CDPSession} from '../api/CDPSession.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
-import {CDPSession} from './Connection.js';
 import {getReadableAsBuffer, getReadableFromProtocolStream} from './util.js';
 
 /**
@@ -126,6 +126,7 @@ export class Tracing {
     const contentDeferred = Deferred.create<Buffer | undefined>();
     this.#client.once('Tracing.tracingComplete', async event => {
       try {
+        assert(event.stream, 'Missing "stream"');
         const readable = await getReadableFromProtocolStream(
           this.#client,
           event.stream

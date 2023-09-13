@@ -16,21 +16,11 @@
 
 import {Protocol} from 'devtools-protocol';
 
+import {CDPSession} from '../api/CDPSession.js';
 import {assert} from '../util/assert.js';
 
-import {CDPSession} from './Connection.js';
-import {
-  addEventListener,
-  debugError,
-  PuppeteerEventListener,
-  PuppeteerURL,
-  removeEventListeners,
-} from './util.js';
-
-/**
- * @internal
- */
-export {PuppeteerEventListener};
+import {EventSubscription} from './EventEmitter.js';
+import {debugError, PuppeteerURL} from './util.js';
 
 /**
  * The CoverageEntry class represents one entry of the coverage report.
@@ -211,7 +201,7 @@ export class JSCoverage {
   #enabled = false;
   #scriptURLs = new Map<string, string>();
   #scriptSources = new Map<string, string>();
-  #eventListeners: PuppeteerEventListener[] = [];
+  #subscriptions?: DisposableStack;
   #resetOnNavigation = false;
   #reportAnonymousScripts = false;
   #includeRawScriptCoverage = false;
@@ -248,18 +238,21 @@ export class JSCoverage {
     this.#enabled = true;
     this.#scriptURLs.clear();
     this.#scriptSources.clear();
-    this.#eventListeners = [
-      addEventListener(
+    this.#subscriptions = new DisposableStack();
+    this.#subscriptions.use(
+      new EventSubscription(
         this.#client,
         'Debugger.scriptParsed',
         this.#onScriptParsed.bind(this)
-      ),
-      addEventListener(
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
         this.#client,
         'Runtime.executionContextsCleared',
         this.#onExecutionContextsCleared.bind(this)
-      ),
-    ];
+      )
+    );
     await Promise.all([
       this.#client.send('Profiler.enable'),
       this.#client.send('Profiler.startPreciseCoverage', {
@@ -313,7 +306,7 @@ export class JSCoverage {
       this.#client.send('Debugger.disable'),
     ]);
 
-    removeEventListeners(this.#eventListeners);
+    this.#subscriptions?.dispose();
 
     const coverage = [];
     const profileResponse = result[0];
@@ -350,7 +343,7 @@ export class CSSCoverage {
   #enabled = false;
   #stylesheetURLs = new Map<string, string>();
   #stylesheetSources = new Map<string, string>();
-  #eventListeners: PuppeteerEventListener[] = [];
+  #eventListeners?: DisposableStack;
   #resetOnNavigation = false;
 
   constructor(client: CDPSession) {
@@ -371,18 +364,21 @@ export class CSSCoverage {
     this.#enabled = true;
     this.#stylesheetURLs.clear();
     this.#stylesheetSources.clear();
-    this.#eventListeners = [
-      addEventListener(
+    this.#eventListeners = new DisposableStack();
+    this.#eventListeners.use(
+      new EventSubscription(
         this.#client,
         'CSS.styleSheetAdded',
         this.#onStyleSheet.bind(this)
-      ),
-      addEventListener(
+      )
+    );
+    this.#eventListeners.use(
+      new EventSubscription(
         this.#client,
         'Runtime.executionContextsCleared',
         this.#onExecutionContextsCleared.bind(this)
-      ),
-    ];
+      )
+    );
     await Promise.all([
       this.#client.send('DOM.enable'),
       this.#client.send('CSS.enable'),
@@ -426,7 +422,7 @@ export class CSSCoverage {
       this.#client.send('CSS.disable'),
       this.#client.send('DOM.disable'),
     ]);
-    removeEventListeners(this.#eventListeners);
+    this.#eventListeners?.dispose();
 
     // aggregate by styleSheetId
     const styleSheetIdToCoverage = new Map();

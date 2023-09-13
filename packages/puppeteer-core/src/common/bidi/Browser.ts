@@ -21,21 +21,18 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {
   Browser,
   BrowserCloseCallback,
-  BrowserContextEmittedEvents,
   BrowserContextOptions,
-  BrowserEmittedEvents,
+  BrowserEvent,
 } from '../../api/Browser.js';
+import {BrowserContextEvent} from '../../api/BrowserContext.js';
 import {Page} from '../../api/Page.js';
 import {Target} from '../../api/Target.js';
 import {Handler} from '../EventEmitter.js';
 import {Viewport} from '../PuppeteerViewport.js';
 
 import {BidiBrowserContext} from './BrowserContext.js';
-import {
-  BrowsingContext,
-  BrowsingContextEmittedEvents,
-} from './BrowsingContext.js';
-import {Connection} from './Connection.js';
+import {BrowsingContext, BrowsingContextEvent} from './BrowsingContext.js';
+import {BidiConnection} from './Connection.js';
 import {
   BiDiBrowserTarget,
   BiDiBrowsingContextTarget,
@@ -43,6 +40,17 @@ import {
   BidiTarget,
 } from './Target.js';
 import {debugError} from './utils.js';
+
+/**
+ * @internal
+ */
+interface Options {
+  process?: ChildProcess;
+  closeCallback?: BrowserCloseCallback;
+  connection: BidiConnection;
+  defaultViewport: Viewport | null;
+  ignoreHTTPSErrors?: boolean;
+}
 
 /**
  * @internal
@@ -108,7 +116,7 @@ export class BidiBrowser extends Browser {
   #browserVersion = '';
   #process?: ChildProcess;
   #closeCallback?: BrowserCloseCallback;
-  #connection: Connection;
+  #connection: BidiConnection;
   #defaultViewport: Viewport | null;
   #defaultContext: BidiBrowserContext;
   #targets = new Map<string, BidiTarget>();
@@ -142,7 +150,7 @@ export class BidiBrowser extends Browser {
 
     this.#process?.once('close', () => {
       this.#connection.dispose();
-      this.emit(BrowserEmittedEvents.Disconnected);
+      this.emit(BrowserEvent.Disconnected, undefined);
     });
     this.#defaultContext = new BidiBrowserContext(this, {
       defaultViewport: this.#defaultViewport,
@@ -159,17 +167,15 @@ export class BidiBrowser extends Browser {
   #onContextDomLoaded(event: Bidi.BrowsingContext.Info) {
     const target = this.#targets.get(event.context);
     if (target) {
-      this.emit(BrowserEmittedEvents.TargetChanged, target);
+      this.emit(BrowserEvent.TargetChanged, target);
     }
   }
 
   #onContextNavigation(event: Bidi.BrowsingContext.NavigationInfo) {
     const target = this.#targets.get(event.context);
     if (target) {
-      this.emit(BrowserEmittedEvents.TargetChanged, target);
-      target
-        .browserContext()
-        .emit(BrowserContextEmittedEvents.TargetChanged, target);
+      this.emit(BrowserEvent.TargetChanged, target);
+      target.browserContext().emit(BrowserContextEvent.TargetChanged, target);
     }
   }
 
@@ -192,14 +198,12 @@ export class BidiBrowser extends Browser {
       : new BiDiBrowsingContextTarget(browserContext, context);
     this.#targets.set(event.context, target);
 
-    this.emit(BrowserEmittedEvents.TargetCreated, target);
-    target
-      .browserContext()
-      .emit(BrowserContextEmittedEvents.TargetCreated, target);
+    this.emit(BrowserEvent.TargetCreated, target);
+    target.browserContext().emit(BrowserContextEvent.TargetCreated, target);
 
     if (context.parent) {
       const topLevel = this.#connection.getTopLevelContext(context.parent);
-      topLevel.emit(BrowsingContextEmittedEvents.Created, context);
+      topLevel.emit(BrowsingContextEvent.Created, context);
     }
   }
 
@@ -215,20 +219,18 @@ export class BidiBrowser extends Browser {
   ) {
     const context = this.#connection.getBrowsingContext(event.context);
     const topLevelContext = this.#connection.getTopLevelContext(event.context);
-    topLevelContext.emit(BrowsingContextEmittedEvents.Destroyed, context);
+    topLevelContext.emit(BrowsingContextEvent.Destroyed, context);
     const target = this.#targets.get(event.context);
     const page = await target?.page();
     await page?.close().catch(debugError);
     this.#targets.delete(event.context);
     if (target) {
-      this.emit(BrowserEmittedEvents.TargetDestroyed, target);
-      target
-        .browserContext()
-        .emit(BrowserContextEmittedEvents.TargetDestroyed, target);
+      this.emit(BrowserEvent.TargetDestroyed, target);
+      target.browserContext().emit(BrowserContextEvent.TargetDestroyed, target);
     }
   }
 
-  get connection(): Connection {
+  get connection(): BidiConnection {
     return this.#connection;
   }
 
@@ -320,12 +322,4 @@ export class BidiBrowser extends Browser {
   override target(): Target {
     return this.#browserTarget;
   }
-}
-
-interface Options {
-  process?: ChildProcess;
-  closeCallback?: BrowserCloseCallback;
-  connection: Connection;
-  defaultViewport: Viewport | null;
-  ignoreHTTPSErrors?: boolean;
 }

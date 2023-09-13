@@ -10,15 +10,15 @@ Removes all listeners. If given an event argument, it will remove only listeners
 
 ```typescript
 class EventEmitter {
-  removeAllListeners(event?: EventType): this;
+  removeAllListeners(type?: keyof EventsWithWildcard<Events>): this;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                  | Description                                     |
-| --------- | ------------------------------------- | ----------------------------------------------- |
-| event     | [EventType](./puppeteer.eventtype.md) | _(Optional)_ the event to remove listeners for. |
+| Parameter | Type                                                                        | Description                                     |
+| --------- | --------------------------------------------------------------------------- | ----------------------------------------------- |
+| type      | keyof [EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt; | _(Optional)_ the event to remove listeners for. |
 
 **Returns:**
 

@@ -8,16 +8,19 @@ sidebar_label: CommonEventEmitter.off
 
 ```typescript
 interface CommonEventEmitter {
-  off(event: EventType, handler: Handler): this;
+  off<Key extends keyof Events>(
+    type: Key,
+    handler?: Handler<Events[Key]>
+  ): this;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                  | Description |
-| --------- | ------------------------------------- | ----------- |
-| event     | [EventType](./puppeteer.eventtype.md) |             |
-| handler   | [Handler](./puppeteer.handler.md)     |             |
+| Parameter | Type                                                   | Description  |
+| --------- | ------------------------------------------------------ | ------------ |
+| type      | Key                                                    |              |
+| handler   | [Handler](./puppeteer.handler.md)&lt;Events\[Key\]&gt; | _(Optional)_ |
 
 **Returns:**
 

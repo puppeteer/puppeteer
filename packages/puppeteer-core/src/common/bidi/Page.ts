@@ -19,26 +19,26 @@ import type {Readable} from 'stream';
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import Protocol from 'devtools-protocol';
 
+import {CDPSession} from '../../api/CDPSession.js';
 import {
   GeolocationOptions,
   MediaFeature,
   NewDocumentScriptEvaluation,
   Page,
-  PageEmittedEvents,
+  PageEvent,
   ScreenshotOptions,
   WaitForOptions,
 } from '../../api/Page.js';
 import {assert} from '../../util/assert.js';
 import {Deferred} from '../../util/Deferred.js';
 import {Accessibility} from '../Accessibility.js';
-import {CDPSession} from '../Connection.js';
 import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
 import {Coverage} from '../Coverage.js';
 import {EmulationManager as CDPEmulationManager} from '../EmulationManager.js';
 import {TargetCloseError} from '../Errors.js';
 import {Handler} from '../EventEmitter.js';
 import {FrameTree} from '../FrameTree.js';
-import {NetworkManagerEmittedEvents} from '../NetworkManager.js';
+import {NetworkManagerEvent} from '../NetworkManager.js';
 import {PDFOptions} from '../PDFOptions.js';
 import {Viewport} from '../PuppeteerViewport.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
@@ -57,17 +57,17 @@ import {BidiBrowser} from './Browser.js';
 import {BidiBrowserContext} from './BrowserContext.js';
 import {
   BrowsingContext,
-  BrowsingContextEmittedEvents,
+  BrowsingContextEvent,
   CDPSessionWrapper,
 } from './BrowsingContext.js';
-import {Connection} from './Connection.js';
+import {BidiConnection} from './Connection.js';
 import {BidiDialog} from './Dialog.js';
 import {EmulationManager} from './EmulationManager.js';
 import {BidiFrame} from './Frame.js';
-import {HTTPRequest} from './HTTPRequest.js';
-import {HTTPResponse} from './HTTPResponse.js';
+import {BidiHTTPRequest} from './HTTPRequest.js';
+import {BidiHTTPResponse} from './HTTPResponse.js';
 import {Keyboard, Mouse, Touchscreen} from './Input.js';
-import {NetworkManager} from './NetworkManager.js';
+import {BidiNetworkManager} from './NetworkManager.js';
 import {createBidiHandle} from './Realm.js';
 import {BidiSerializer} from './Serializer.js';
 
@@ -77,9 +77,9 @@ import {BidiSerializer} from './Serializer.js';
 export class BidiPage extends Page {
   #accessibility: Accessibility;
   #timeoutSettings = new TimeoutSettings();
-  #connection: Connection;
+  #connection: BidiConnection;
   #frameTree = new FrameTree<BidiFrame>();
-  #networkManager: NetworkManager;
+  #networkManager: BidiNetworkManager;
   #viewport: Viewport | null = null;
   #closedDeferred = Deferred.create<TargetCloseError>();
   #subscribedEvents = new Map<Bidi.Event['method'], Handler<any>>([
@@ -95,35 +95,42 @@ export class BidiPage extends Page {
     ],
     ['browsingContext.userPromptOpened', this.#onDialog.bind(this)],
   ]);
-  #networkManagerEvents = new Map<symbol, Handler<any>>([
+  #networkManagerEvents = Object.freeze([
     [
-      NetworkManagerEmittedEvents.Request,
-      this.emit.bind(this, PageEmittedEvents.Request),
+      NetworkManagerEvent.Request,
+      (request: BidiHTTPRequest) => {
+        this.emit(PageEvent.Request, request);
+      },
     ],
     [
-      NetworkManagerEmittedEvents.RequestServedFromCache,
-      this.emit.bind(this, PageEmittedEvents.RequestServedFromCache),
+      NetworkManagerEvent.RequestServedFromCache,
+      (request: BidiHTTPRequest) => {
+        this.emit(PageEvent.RequestServedFromCache, request);
+      },
     ],
     [
-      NetworkManagerEmittedEvents.RequestFailed,
-      this.emit.bind(this, PageEmittedEvents.RequestFailed),
+      NetworkManagerEvent.RequestFailed,
+      (request: BidiHTTPRequest) => {
+        this.emit(PageEvent.RequestFailed, request);
+      },
     ],
     [
-      NetworkManagerEmittedEvents.RequestFinished,
-      this.emit.bind(this, PageEmittedEvents.RequestFinished),
+      NetworkManagerEvent.RequestFinished,
+      (request: BidiHTTPRequest) => {
+        this.emit(PageEvent.RequestFinished, request);
+      },
     ],
     [
-      NetworkManagerEmittedEvents.Response,
-      this.emit.bind(this, PageEmittedEvents.Response),
+      NetworkManagerEvent.Response,
+      (response: BidiHTTPResponse) => {
+        this.emit(PageEvent.Response, response);
+      },
     ],
-  ]);
+  ] as const);
 
   #browsingContextEvents = new Map<symbol, Handler<any>>([
-    [BrowsingContextEmittedEvents.Created, this.#onContextCreated.bind(this)],
-    [
-      BrowsingContextEmittedEvents.Destroyed,
-      this.#onContextDestroyed.bind(this),
-    ],
+    [BrowsingContextEvent.Created, this.#onContextCreated.bind(this)],
+    [BrowsingContextEvent.Destroyed, this.#onContextDestroyed.bind(this)],
   ]);
   #tracing: Tracing;
   #coverage: Coverage;
@@ -152,14 +159,15 @@ export class BidiPage extends Page {
       this.#browsingContext.on(event, subscriber);
     }
 
-    this.#networkManager = new NetworkManager(this.#connection, this);
+    this.#networkManager = new BidiNetworkManager(this.#connection, this);
 
     for (const [event, subscriber] of this.#subscribedEvents) {
       this.#connection.on(event, subscriber);
     }
 
     for (const [event, subscriber] of this.#networkManagerEvents) {
-      this.#networkManager.on(event, subscriber);
+      // TODO: remove any
+      this.#networkManager.on(event, subscriber as any);
     }
 
     const frame = new BidiFrame(
@@ -169,7 +177,7 @@ export class BidiPage extends Page {
       this.#browsingContext.parent
     );
     this.#frameTree.addFrame(frame);
-    this.emit(PageEmittedEvents.FrameAttached, frame);
+    this.emit(PageEvent.FrameAttached, frame);
 
     // TODO: https://github.com/w3c/webdriver-bidi/issues/443
     this.#accessibility = new Accessibility(
@@ -243,14 +251,14 @@ export class BidiPage extends Page {
   #onFrameLoaded(info: Bidi.BrowsingContext.NavigationInfo): void {
     const frame = this.frame(info.context);
     if (frame && this.mainFrame() === frame) {
-      this.emit(PageEmittedEvents.Load);
+      this.emit(PageEvent.Load, undefined);
     }
   }
 
   #onFrameFragmentNavigated(info: Bidi.BrowsingContext.NavigationInfo): void {
     const frame = this.frame(info.context);
     if (frame) {
-      this.emit(PageEmittedEvents.FrameNavigated, frame);
+      this.emit(PageEvent.FrameNavigated, frame);
     }
   }
 
@@ -259,9 +267,9 @@ export class BidiPage extends Page {
     if (frame) {
       frame._hasStartedLoading = true;
       if (this.mainFrame() === frame) {
-        this.emit(PageEmittedEvents.DOMContentLoaded);
+        this.emit(PageEvent.DOMContentLoaded, undefined);
       }
-      this.emit(PageEmittedEvents.FrameNavigated, frame);
+      this.emit(PageEvent.FrameNavigated, frame);
     }
   }
 
@@ -278,7 +286,7 @@ export class BidiPage extends Page {
       );
       this.#frameTree.addFrame(frame);
       if (frame !== this.mainFrame()) {
-        this.emit(PageEmittedEvents.FrameAttached, frame);
+        this.emit(PageEvent.FrameAttached, frame);
       }
     }
   }
@@ -288,7 +296,7 @@ export class BidiPage extends Page {
 
     if (frame) {
       if (frame === this.mainFrame()) {
-        this.emit(PageEmittedEvents.Close);
+        this.emit(PageEvent.Close, undefined);
       }
       this.#removeFramesRecursively(frame);
     }
@@ -301,7 +309,7 @@ export class BidiPage extends Page {
     frame[Symbol.dispose]();
     this.#networkManager.clearMapAfterFrameDispose(frame);
     this.#frameTree.removeFrame(frame);
-    this.emit(PageEmittedEvents.FrameDetached, frame);
+    this.emit(PageEvent.FrameDetached, frame);
   }
 
   #onLogEntryAdded(event: Bidi.Log.Entry): void {
@@ -324,7 +332,7 @@ export class BidiPage extends Page {
         .slice(1);
 
       this.emit(
-        PageEmittedEvents.Console,
+        PageEvent.Console,
         new ConsoleMessage(
           event.method as any,
           text,
@@ -351,7 +359,7 @@ export class BidiPage extends Page {
       const error = new Error(message);
       error.stack = ''; // Don't capture Puppeteer stacktrace.
 
-      this.emit(PageEmittedEvents.PageError, error);
+      this.emit(PageEvent.PageError, error);
     } else {
       debugError(
         `Unhandled LogEntry with type "${event.type}", text "${event.text}" and level "${event.level}"`
@@ -372,10 +380,10 @@ export class BidiPage extends Page {
       event.message,
       event.defaultValue
     );
-    this.emit(PageEmittedEvents.Dialog, dialog);
+    this.emit(PageEvent.Dialog, dialog);
   }
 
-  getNavigationResponse(id: string | null): HTTPResponse | null {
+  getNavigationResponse(id: string | null): BidiHTTPResponse | null {
     return this.#networkManager.getNavigationResponse(id);
   }
 
@@ -395,13 +403,13 @@ export class BidiPage extends Page {
       context: this.mainFrame()._id,
     });
 
-    this.emit(PageEmittedEvents.Close);
+    this.emit(PageEvent.Close, undefined);
     this.removeAllListeners();
   }
 
   override async reload(
     options?: WaitForOptions
-  ): Promise<HTTPResponse | null> {
+  ): Promise<BidiHTTPResponse | null> {
     const [response] = await Promise.all([
       this.waitForResponse(response => {
         return (
@@ -583,13 +591,15 @@ export class BidiPage extends Page {
   }
 
   override async waitForRequest(
-    urlOrPredicate: string | ((req: HTTPRequest) => boolean | Promise<boolean>),
+    urlOrPredicate:
+      | string
+      | ((req: BidiHTTPRequest) => boolean | Promise<boolean>),
     options: {timeout?: number} = {}
-  ): Promise<HTTPRequest> {
+  ): Promise<BidiHTTPRequest> {
     const {timeout = this.#timeoutSettings.timeout()} = options;
     return await waitForEvent(
       this.#networkManager,
-      NetworkManagerEmittedEvents.Request,
+      NetworkManagerEvent.Request,
       async request => {
         if (isString(urlOrPredicate)) {
           return urlOrPredicate === request.url();
@@ -607,13 +617,13 @@ export class BidiPage extends Page {
   override async waitForResponse(
     urlOrPredicate:
       | string
-      | ((res: HTTPResponse) => boolean | Promise<boolean>),
+      | ((res: BidiHTTPResponse) => boolean | Promise<boolean>),
     options: {timeout?: number} = {}
-  ): Promise<HTTPResponse> {
+  ): Promise<BidiHTTPResponse> {
     const {timeout = this.#timeoutSettings.timeout()} = options;
     return await waitForEvent(
       this.#networkManager,
-      NetworkManagerEmittedEvents.Response,
+      NetworkManagerEvent.Response,
       async response => {
         if (isString(urlOrPredicate)) {
           return urlOrPredicate === response.url();

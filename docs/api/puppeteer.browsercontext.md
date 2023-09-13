@@ -9,14 +9,14 @@ BrowserContexts provide a way to operate multiple independent browser sessions. 
 #### Signature:
 
 ```typescript
-export declare class BrowserContext extends EventEmitter
+export declare class BrowserContext extends EventEmitter<BrowserContextEvents>
 ```
 
-**Extends:** [EventEmitter](./puppeteer.eventemitter.md)
+**Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;[BrowserContextEvents](./puppeteer.browsercontextevents.md)&gt;
 
 ## Remarks
 
-The Browser class extends from Puppeteer's [EventEmitter](./puppeteer.eventemitter.md) class and will emit various events which are documented in the [BrowserContextEmittedEvents](./puppeteer.browsercontextemittedevents.md) enum.
+The Browser class extends from Puppeteer's [EventEmitter](./puppeteer.eventemitter.md) class and will emit various events which are documented in the [BrowserContextEvents](./puppeteer.browsercontextevents.md) enum.
 
 If a page opens another page, e.g. with a `window.open` call, the popup will belong to the parent page's browser context.
 

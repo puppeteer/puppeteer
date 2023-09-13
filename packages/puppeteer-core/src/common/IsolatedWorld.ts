@@ -16,12 +16,12 @@
 
 import {Protocol} from 'devtools-protocol';
 
+import {CDPSession} from '../api/CDPSession.js';
 import {JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
 import {Deferred} from '../util/Deferred.js';
 
 import {Binding} from './Binding.js';
-import {CDPSession} from './Connection.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {CDPFrame} from './Frame.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';

@@ -16,9 +16,8 @@
 
 import {Protocol} from 'devtools-protocol';
 
+import {CDPSession} from '../api/CDPSession.js';
 import {Dialog} from '../api/Dialog.js';
-
-import {CDPSession} from './Connection.js';
 
 /**
  * @internal

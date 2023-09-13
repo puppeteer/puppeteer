@@ -9,10 +9,10 @@ Locators describe a strategy of locating objects and performing an action on the
 #### Signature:
 
 ```typescript
-export declare abstract class Locator<T> extends EventEmitter
+export declare abstract class Locator<T> extends EventEmitter<LocatorEvents>
 ```
 
-**Extends:** [EventEmitter](./puppeteer.eventemitter.md)
+**Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;[LocatorEvents](./puppeteer.locatorevents.md)&gt;
 
 ## Properties
 
@@ -31,9 +31,6 @@ export declare abstract class Locator<T> extends EventEmitter
 | [filter(predicate)](./puppeteer.locator.filter.md)                                                     |                     | <p>Creates an expectation that is evaluated against located values.</p><p>If the expectations do not match, then the locator will retry.</p>                                                                                             |
 | [hover(this, options)](./puppeteer.locator.hover.md)                                                   |                     |                                                                                                                                                                                                                                          |
 | [map(mapper)](./puppeteer.locator.map.md)                                                              |                     | Maps the locator using the provided mapper.                                                                                                                                                                                              |
-| [off(eventName, handler)](./puppeteer.locator.off.md)                                                  |                     |                                                                                                                                                                                                                                          |
-| [on(eventName, handler)](./puppeteer.locator.on.md)                                                    |                     |                                                                                                                                                                                                                                          |
-| [once(eventName, handler)](./puppeteer.locator.once.md)                                                |                     |                                                                                                                                                                                                                                          |
 | [race(locators)](./puppeteer.locator.race.md)                                                          | <code>static</code> | Creates a race between multiple locators but ensures that only a single one acts.                                                                                                                                                        |
 | [scroll(this, options)](./puppeteer.locator.scroll.md)                                                 |                     |                                                                                                                                                                                                                                          |
 | [setEnsureElementIsInTheViewport(this, value)](./puppeteer.locator.setensureelementisintheviewport.md) |                     |                                                                                                                                                                                                                                          |

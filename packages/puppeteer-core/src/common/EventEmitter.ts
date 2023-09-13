@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-import mitt, {Emitter, EventHandlerMap} from '../../third_party/mitt/index.js';
+import {Symbol} from '../../third_party/disposablestack/disposablestack.js';
+import mitt, {
+  Emitter,
+  EventHandlerMap,
+  EventType,
+} from '../../third_party/mitt/index.js';
 
-/**
- * @public
- */
-export type EventType = string | symbol;
+export {
+  /**
+   * @public
+   */
+  EventType,
+} from '../../third_party/mitt/index.js';
+
 /**
  * @public
  */
@@ -28,21 +36,41 @@ export type Handler<T = unknown> = (event: T) => void;
 /**
  * @public
  */
-export interface CommonEventEmitter {
-  on(event: EventType, handler: Handler): this;
-  off(event: EventType, handler: Handler): this;
+export interface CommonEventEmitter<Events extends Record<EventType, unknown>> {
+  on<Key extends keyof Events>(type: Key, handler: Handler<Events[Key]>): this;
+  off<Key extends keyof Events>(
+    type: Key,
+    handler?: Handler<Events[Key]>
+  ): this;
+  emit<Key extends keyof Events>(type: Key, event: Events[Key]): boolean;
   /* To maintain parity with the built in NodeJS event emitter which uses removeListener
    * rather than `off`.
    * If you're implementing new code you should use `off`.
    */
-  addListener(event: EventType, handler: Handler): this;
-  removeListener(event: EventType, handler: Handler): this;
-  emit(event: EventType, eventData?: unknown): boolean;
-  once(event: EventType, handler: Handler): this;
-  listenerCount(event: string): number;
+  addListener<Key extends keyof Events>(
+    type: Key,
+    handler: Handler<Events[Key]>
+  ): this;
+  removeListener<Key extends keyof Events>(
+    type: Key,
+    handler: Handler<Events[Key]>
+  ): this;
+  once<Key extends keyof Events>(
+    type: Key,
+    handler: Handler<Events[Key]>
+  ): this;
+  listenerCount(event: keyof Events): number;
 
-  removeAllListeners(event?: EventType): this;
+  removeAllListeners(event?: keyof Events): this;
 }
+
+/**
+ * @public
+ */
+export type EventsWithWildcard<Events extends Record<EventType, unknown>> =
+  Events & {
+    '*': Events[keyof Events];
+  };
 
 /**
  * The EventEmitter class that many Puppeteer classes extend.
@@ -56,110 +84,153 @@ export interface CommonEventEmitter {
  *
  * @public
  */
-export class EventEmitter implements CommonEventEmitter {
-  private emitter: Emitter<Record<string | symbol, any>>;
-  private eventsMap: EventHandlerMap<Record<string | symbol, any>> = new Map();
+export class EventEmitter<Events extends Record<EventType, unknown>>
+  implements CommonEventEmitter<EventsWithWildcard<Events>>
+{
+  #emitter: Emitter<Events & {'*': Events[keyof Events]}>;
+  #handlers: EventHandlerMap<Events & {'*': Events[keyof Events]}> = new Map();
 
   /**
    * @internal
    */
   constructor() {
-    this.emitter = mitt(this.eventsMap);
+    this.#emitter = mitt(this.#handlers);
   }
 
   /**
    * Bind an event listener to fire when an event occurs.
-   * @param event - the event type you'd like to listen to. Can be a string or symbol.
+   * @param type - the event type you'd like to listen to. Can be a string or symbol.
    * @param handler - the function to be called when the event occurs.
    * @returns `this` to enable you to chain method calls.
    */
-  on(event: EventType, handler: Handler<any>): this {
-    this.emitter.on(event, handler);
+  on<Key extends keyof EventsWithWildcard<Events>>(
+    type: Key,
+    handler: Handler<EventsWithWildcard<Events>[Key]>
+  ): this {
+    this.#emitter.on(type, handler);
     return this;
   }
 
   /**
    * Remove an event listener from firing.
-   * @param event - the event type you'd like to stop listening to.
+   * @param type - the event type you'd like to stop listening to.
    * @param handler - the function that should be removed.
    * @returns `this` to enable you to chain method calls.
    */
-  off(event: EventType, handler: Handler<any>): this {
-    this.emitter.off(event, handler);
+  off<Key extends keyof EventsWithWildcard<Events>>(
+    type: Key,
+    handler?: Handler<EventsWithWildcard<Events>[Key]>
+  ): this {
+    this.#emitter.off(type, handler);
     return this;
   }
 
   /**
    * Remove an event listener.
+   *
    * @deprecated please use {@link EventEmitter.off} instead.
    */
-  removeListener(event: EventType, handler: Handler<any>): this {
-    this.off(event, handler);
+  removeListener<Key extends keyof EventsWithWildcard<Events>>(
+    type: Key,
+    handler: Handler<EventsWithWildcard<Events>[Key]>
+  ): this {
+    this.off(type, handler);
     return this;
   }
 
   /**
    * Add an event listener.
+   *
    * @deprecated please use {@link EventEmitter.on} instead.
    */
-  addListener(event: EventType, handler: Handler<any>): this {
-    this.on(event, handler);
+  addListener<Key extends keyof EventsWithWildcard<Events>>(
+    type: Key,
+    handler: Handler<EventsWithWildcard<Events>[Key]>
+  ): this {
+    this.on(type, handler);
     return this;
   }
 
   /**
    * Emit an event and call any associated listeners.
    *
-   * @param event - the event you'd like to emit
+   * @param type - the event you'd like to emit
    * @param eventData - any data you'd like to emit with the event
    * @returns `true` if there are any listeners, `false` if there are not.
    */
-  emit(event: EventType, eventData?: unknown): boolean {
-    this.emitter.emit(event, eventData);
-    return this.eventListenersCount(event) > 0;
+  emit<Key extends keyof EventsWithWildcard<Events>>(
+    type: Key,
+    event: EventsWithWildcard<Events>[Key]
+  ): boolean {
+    this.#emitter.emit(type, event);
+    return this.listenerCount(type) > 0;
   }
 
   /**
    * Like `on` but the listener will only be fired once and then it will be removed.
-   * @param event - the event you'd like to listen to
+   * @param type - the event you'd like to listen to
    * @param handler - the handler function to run when the event occurs
    * @returns `this` to enable you to chain method calls.
    */
-  once(event: EventType, handler: Handler<any>): this {
-    const onceHandler: Handler<any> = eventData => {
+  once<Key extends keyof EventsWithWildcard<Events>>(
+    type: Key,
+    handler: Handler<EventsWithWildcard<Events>[Key]>
+  ): this {
+    const onceHandler: Handler<EventsWithWildcard<Events>[Key]> = eventData => {
       handler(eventData);
-      this.off(event, onceHandler);
+      this.off(type, onceHandler);
     };
 
-    return this.on(event, onceHandler);
+    return this.on(type, onceHandler);
   }
 
   /**
    * Gets the number of listeners for a given event.
    *
-   * @param event - the event to get the listener count for
+   * @param type - the event to get the listener count for
    * @returns the number of listeners bound to the given event
    */
-  listenerCount(event: EventType): number {
-    return this.eventListenersCount(event);
+  listenerCount(type: keyof EventsWithWildcard<Events>): number {
+    return this.#handlers.get(type)?.length || 0;
   }
 
   /**
    * Removes all listeners. If given an event argument, it will remove only
    * listeners for that event.
-   * @param event - the event to remove listeners for.
+   *
+   * @param type - the event to remove listeners for.
    * @returns `this` to enable you to chain method calls.
    */
-  removeAllListeners(event?: EventType): this {
-    if (event) {
-      this.eventsMap.delete(event);
+  removeAllListeners(type?: keyof EventsWithWildcard<Events>): this {
+    if (type === undefined || type === '*') {
+      this.#handlers.clear();
     } else {
-      this.eventsMap.clear();
+      this.#handlers.delete(type);
     }
     return this;
   }
+}
 
-  private eventListenersCount(event: EventType): number {
-    return this.eventsMap.get(event)?.length || 0;
+/**
+ * @internal
+ */
+export class EventSubscription<
+  Target extends CommonEventEmitter<Record<Type, Event>>,
+  Type extends EventType = EventType,
+  Event = unknown,
+> {
+  #target: Target;
+  #type: Type;
+  #handler: Handler<Event>;
+
+  constructor(target: Target, type: Type, handler: Handler<Event>) {
+    this.#target = target;
+    this.#type = type;
+    this.#handler = handler;
+    this.#target.on(this.#type, this.#handler);
+  }
+
+  [Symbol.dispose](): void {
+    this.#target.off(this.#type, this.#handler);
   }
 }

@@ -16,11 +16,11 @@
 
 import Protocol from 'devtools-protocol';
 
+import {CDPSession} from '../api/CDPSession.js';
 import {WaitTimeoutOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
-import {CDPSession} from './Connection.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 
 /**

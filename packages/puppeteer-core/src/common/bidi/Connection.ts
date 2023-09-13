@@ -127,7 +127,17 @@ interface Commands {
 /**
  * @internal
  */
-export class Connection extends EventEmitter {
+export type BidiEvents = {
+  [K in Bidi.ChromiumBidi.Event['method']]: Extract<
+    Bidi.ChromiumBidi.Event,
+    {method: K}
+  >['params'];
+};
+
+/**
+ * @internal
+ */
+export class BidiConnection extends EventEmitter<BidiEvents> {
   #url: string;
   #transport: ConnectionTransport;
   #delay: number;
@@ -185,35 +195,45 @@ export class Connection extends EventEmitter {
       });
     }
     debugProtocolReceive(message);
-    const object = JSON.parse(message) as Bidi.ChromiumBidi.Message;
-
-    if ('id' in object && object.id) {
-      if ('error' in object) {
-        this.#callbacks.reject(
-          object.id,
-          createProtocolError(object as Bidi.ErrorResponse),
-          object.message
-        );
-      } else {
-        this.#callbacks.resolve(object.id, object);
-      }
-    } else {
-      if ('error' in object || 'id' in object || 'launched' in object) {
-        debugError(object);
-      } else {
-        this.#maybeEmitOnContext(object);
-        this.emit(object.method, object.params);
+    const object: Bidi.ChromiumBidi.Message = JSON.parse(message);
+    if ('type' in object) {
+      switch (object.type) {
+        case 'success':
+          this.#callbacks.resolve(object.id, object);
+          return;
+        case 'error':
+          if (object.id === null) {
+            break;
+          }
+          this.#callbacks.reject(
+            object.id,
+            createProtocolError(object),
+            object.message
+          );
+          return;
+        case 'event':
+          this.#maybeEmitOnContext(object);
+          // SAFETY: We know the method and parameter still match here.
+          this.emit(
+            object.method,
+            object.params as BidiEvents[keyof BidiEvents]
+          );
+          return;
       }
     }
+    debugError(object);
   }
 
   #maybeEmitOnContext(event: Bidi.ChromiumBidi.Event) {
     let context: BrowsingContext | undefined;
     // Context specific events
-    if ('context' in event.params && event.params.context) {
+    if ('context' in event.params && event.params.context !== null) {
       context = this.#browsingContexts.get(event.params.context);
       // `log.entryAdded` specific context
-    } else if ('source' in event.params && event.params.source.context) {
+    } else if (
+      'source' in event.params &&
+      event.params.source.context !== undefined
+    ) {
       context = this.#browsingContexts.get(event.params.source.context);
     } else if (isCDPEvent(event)) {
       cdpSessions

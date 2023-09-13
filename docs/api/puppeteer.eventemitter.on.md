@@ -10,16 +10,19 @@ Bind an event listener to fire when an event occurs.
 
 ```typescript
 class EventEmitter {
-  on(event: EventType, handler: Handler<any>): this;
+  on<Key extends keyof EventsWithWildcard<Events>>(
+    type: Key,
+    handler: Handler<EventsWithWildcard<Events>[Key]>
+  ): this;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                         | Description                                                        |
-| --------- | -------------------------------------------- | ------------------------------------------------------------------ |
-| event     | [EventType](./puppeteer.eventtype.md)        | the event type you'd like to listen to. Can be a string or symbol. |
-| handler   | [Handler](./puppeteer.handler.md)&lt;any&gt; | the function to be called when the event occurs.                   |
+| Parameter | Type                                                                                                                  | Description                                                        |
+| --------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| type      | Key                                                                                                                   | the event type you'd like to listen to. Can be a string or symbol. |
+| handler   | [Handler](./puppeteer.handler.md)&lt;[EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt;\[Key\]&gt; | the function to be called when the event occurs.                   |
 
 **Returns:**
 

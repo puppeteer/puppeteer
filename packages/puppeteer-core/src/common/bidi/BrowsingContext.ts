@@ -1,15 +1,17 @@
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import ProtocolMapping from 'devtools-protocol/types/protocol-mapping.js';
 
+import {CDPSession} from '../../api/CDPSession.js';
 import {WaitForOptions} from '../../api/Page.js';
 import {assert} from '../../util/assert.js';
 import {Deferred} from '../../util/Deferred.js';
-import {Connection as CDPConnection, CDPSession} from '../Connection.js';
+import {Connection as CDPConnection} from '../Connection.js';
 import {ProtocolError, TargetCloseError, TimeoutError} from '../Errors.js';
+import {EventType} from '../EventEmitter.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
 import {setPageContent, waitWithTimeout} from '../util.js';
 
-import {Connection} from './Connection.js';
+import {BidiConnection} from './Connection.js';
 import {Realm} from './Realm.js';
 import {debugError} from './utils.js';
 
@@ -120,17 +122,26 @@ export class CDPSessionWrapper extends CDPSession {
  *
  * @internal
  */
-export const BrowsingContextEmittedEvents = {
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace BrowsingContextEvent {
   /**
    * Emitted on the top-level context, when a descendant context is created.
    */
-  Created: Symbol('BrowsingContext.created'),
+  export const Created = Symbol('BrowsingContext.created');
   /**
    * Emitted on the top-level context, when a descendant context or the
    * top-level context itself is destroyed.
    */
-  Destroyed: Symbol('BrowsingContext.destroyed'),
-} as const;
+  export const Destroyed = Symbol('BrowsingContext.destroyed');
+}
+
+/**
+ * @internal
+ */
+export interface BrowsingContextEvents extends Record<EventType, unknown> {
+  [BrowsingContextEvent.Created]: BrowsingContext;
+  [BrowsingContextEvent.Destroyed]: BrowsingContext;
+}
 
 /**
  * @internal
@@ -143,7 +154,7 @@ export class BrowsingContext extends Realm {
   #browserName = '';
 
   constructor(
-    connection: Connection,
+    connection: BidiConnection,
     info: Bidi.BrowsingContext.Info,
     browserName: string
   ) {

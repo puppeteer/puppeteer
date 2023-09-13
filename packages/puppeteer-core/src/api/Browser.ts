@@ -21,7 +21,7 @@ import {ChildProcess} from 'child_process';
 import {Protocol} from 'devtools-protocol';
 
 import {Symbol} from '../../third_party/disposablestack/disposablestack.js';
-import {EventEmitter} from '../common/EventEmitter.js';
+import {EventEmitter, EventType} from '../common/EventEmitter.js';
 import {debugError, waitWithTimeout} from '../common/util.js';
 import {Deferred} from '../util/Deferred.js';
 
@@ -130,7 +130,7 @@ export interface WaitForTargetOptions {
  *
  * @public
  */
-export const enum BrowserEmittedEvents {
+export const enum BrowserEvent {
   /**
    * Emitted when Puppeteer gets disconnected from the browser instance. This
    * might happen because of one of the following:
@@ -140,7 +140,6 @@ export const enum BrowserEmittedEvents {
    * - The {@link Browser.disconnect | browser.disconnect } method was called.
    */
   Disconnected = 'disconnected',
-
   /**
    * Emitted when the url of a target changes. Contains a {@link Target} instance.
    *
@@ -149,7 +148,6 @@ export const enum BrowserEmittedEvents {
    * Note that this includes target changes in incognito browser contexts.
    */
   TargetChanged = 'targetchanged',
-
   /**
    * Emitted when a target is created, for example when a new page is opened by
    * {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/open | window.open}
@@ -171,6 +169,31 @@ export const enum BrowserEmittedEvents {
    * Note that this includes target destructions in incognito browser contexts.
    */
   TargetDestroyed = 'targetdestroyed',
+  /**
+   * @internal
+   */
+  TargetDiscovered = 'targetdiscovered',
+}
+
+export {
+  /**
+   * @deprecated Use {@link BrowserEvent}.
+   */
+  BrowserEvent as BrowserEmittedEvents,
+};
+
+/**
+ * @public
+ */
+export interface BrowserEvents extends Record<EventType, unknown> {
+  [BrowserEvent.Disconnected]: undefined;
+  [BrowserEvent.TargetCreated]: Target;
+  [BrowserEvent.TargetDestroyed]: Target;
+  [BrowserEvent.TargetChanged]: Target;
+  /**
+   * @internal
+   */
+  [BrowserEvent.TargetDiscovered]: Protocol.Target.TargetInfo;
 }
 
 /**
@@ -180,7 +203,7 @@ export const enum BrowserEmittedEvents {
  * @remarks
  *
  * The Browser class extends from Puppeteer's {@link EventEmitter} class and will
- * emit various events which are documented in the {@link BrowserEmittedEvents} enum.
+ * emit various events which are documented in the {@link BrowserEvent} enum.
  *
  * @example
  * An example of using a {@link Browser} to create a {@link Page}:
@@ -219,7 +242,7 @@ export const enum BrowserEmittedEvents {
  * @public
  */
 export class Browser
-  extends EventEmitter
+  extends EventEmitter<BrowserEvents>
   implements AsyncDisposable, Disposable
 {
   /**
@@ -389,8 +412,8 @@ export class Browser
     const {timeout = 30000} = options;
     const targetDeferred = Deferred.create<Target | PromiseLike<Target>>();
 
-    this.on(BrowserEmittedEvents.TargetCreated, check);
-    this.on(BrowserEmittedEvents.TargetChanged, check);
+    this.on(BrowserEvent.TargetCreated, check);
+    this.on(BrowserEvent.TargetChanged, check);
     try {
       this.targets().forEach(check);
       if (!timeout) {
@@ -402,8 +425,8 @@ export class Browser
         timeout
       );
     } finally {
-      this.off(BrowserEmittedEvents.TargetCreated, check);
-      this.off(BrowserEmittedEvents.TargetChanged, check);
+      this.off(BrowserEvent.TargetCreated, check);
+      this.off(BrowserEvent.TargetChanged, check);
     }
 
     async function check(target: Target): Promise<void> {
@@ -490,29 +513,4 @@ export class Browser
   [Symbol.asyncDispose](): Promise<void> {
     return this.close();
   }
-}
-/**
- * @public
- */
-export const enum BrowserContextEmittedEvents {
-  /**
-   * Emitted when the url of a target inside the browser context changes.
-   * Contains a {@link Target} instance.
-   */
-  TargetChanged = 'targetchanged',
-
-  /**
-   * Emitted when a target is created within the browser context, for example
-   * when a new page is opened by
-   * {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/open | window.open}
-   * or by {@link BrowserContext.newPage | browserContext.newPage}
-   *
-   * Contains a {@link Target} instance.
-   */
-  TargetCreated = 'targetcreated',
-  /**
-   * Emitted when a target is destroyed within the browser context, for example
-   * when a page is closed. Contains a {@link Target} instance.
-   */
-  TargetDestroyed = 'targetdestroyed',
 }
