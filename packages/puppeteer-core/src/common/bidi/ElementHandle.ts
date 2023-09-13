@@ -17,6 +17,7 @@
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {AutofillData, ElementHandle} from '../../api/ElementHandle.js';
+import {throwIfDisposed} from '../../util/decorators.js';
 
 import {BidiFrame} from './Frame.js';
 import {BidiJSHandle} from './JSHandle.js';
@@ -55,6 +56,7 @@ export class BidiElementHandle<
     return this.handle.remoteValue();
   }
 
+  @throwIfDisposed()
   override async autofill(data: AutofillData): Promise<void> {
     const client = this.frame.client;
     const nodeInfo = await client.send('DOM.describeNode', {
@@ -72,6 +74,7 @@ export class BidiElementHandle<
   override async contentFrame(
     this: BidiElementHandle<HTMLIFrameElement>
   ): Promise<BidiFrame>;
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   override async contentFrame(): Promise<BidiFrame | null> {
     using handle = (await this.evaluateHandle(element => {

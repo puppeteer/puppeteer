@@ -222,16 +222,7 @@ export abstract class ElementHandle<
   /**
    * @internal
    */
-  override async getProperty<K extends keyof ElementType>(
-    propertyName: HandleOr<K>
-  ): Promise<HandleFor<ElementType[K]>>;
-  /**
-   * @internal
-   */
-  override async getProperty(propertyName: string): Promise<JSHandle<unknown>>;
-  /**
-   * @internal
-   */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   override async getProperty<K extends keyof ElementType>(
     propertyName: HandleOr<K>
@@ -242,6 +233,7 @@ export abstract class ElementHandle<
   /**
    * @internal
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   override async getProperties(): Promise<Map<string, JSHandle>> {
     return await this.handle.getProperties();
@@ -260,6 +252,10 @@ export abstract class ElementHandle<
     pageFunction: Func | string,
     ...args: Params
   ): Promise<Awaited<ReturnType<Func>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluate.name,
+      pageFunction
+    );
     return await this.handle.evaluate(pageFunction, ...args);
   }
 
@@ -276,12 +272,17 @@ export abstract class ElementHandle<
     pageFunction: Func | string,
     ...args: Params
   ): Promise<HandleFor<Awaited<ReturnType<Func>>>> {
+    pageFunction = withSourcePuppeteerURLIfNone(
+      this.evaluateHandle.name,
+      pageFunction
+    );
     return await this.handle.evaluateHandle(pageFunction, ...args);
   }
 
   /**
    * @internal
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   override async jsonValue(): Promise<ElementType> {
     return await this.handle.jsonValue();
@@ -327,6 +328,7 @@ export abstract class ElementHandle<
    * @returns A {@link ElementHandle | element handle} to the first element
    * matching the given selector. Otherwise, `null`.
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async $<Selector extends string>(
     selector: Selector
@@ -346,6 +348,7 @@ export abstract class ElementHandle<
    * @returns An array of {@link ElementHandle | element handles} that point to
    * elements matching the given selector.
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async $$<Selector extends string>(
     selector: Selector
@@ -479,6 +482,7 @@ export abstract class ElementHandle<
    * If there are no such elements, the method will resolve to an empty array.
    * @param expression - Expression to {@link https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate | evaluate}
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async $x(expression: string): Promise<Array<ElementHandle<Node>>> {
     if (expression.startsWith('//')) {
@@ -524,6 +528,7 @@ export abstract class ElementHandle<
    * @returns An element matching the given selector.
    * @throws Throws if an element matching the given selector doesn't appear.
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async waitForSelector<Selector extends string>(
     selector: Selector,
@@ -554,6 +559,7 @@ export abstract class ElementHandle<
    * Checks if an element is visible using the same mechanism as
    * {@link ElementHandle.waitForSelector}.
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async isVisible(): Promise<boolean> {
     return await this.#checkVisibility(true);
@@ -563,6 +569,7 @@ export abstract class ElementHandle<
    * Checks if an element is hidden using the same mechanism as
    * {@link ElementHandle.waitForSelector}.
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async isHidden(): Promise<boolean> {
     return await this.#checkVisibility(false);
@@ -630,6 +637,7 @@ export abstract class ElementHandle<
    *   default value can be changed by using the {@link Page.setDefaultTimeout}
    *   method.
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async waitForXPath(
     xpath: string,
@@ -663,6 +671,7 @@ export abstract class ElementHandle<
    * @throws An error if the handle does not match. **The handle will not be
    * automatically disposed.**
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async toElement<
     K extends keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap,
@@ -686,6 +695,7 @@ export abstract class ElementHandle<
   /**
    * Returns the middle point within an element unless a specific offset is provided.
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async clickablePoint(offset?: Offset): Promise<Point> {
     const box = await this.#clickableBox();
@@ -709,6 +719,7 @@ export abstract class ElementHandle<
    * uses {@link Page} to hover over the center of the element.
    * If the element is detached from DOM, the method throws an error.
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async hover(this: ElementHandle<Element>): Promise<void> {
     await this.scrollIntoViewIfNeeded();
@@ -721,6 +732,7 @@ export abstract class ElementHandle<
    * uses {@link Page | Page.mouse} to click in the center of the element.
    * If the element is detached from DOM, the method throws an error.
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async click(
     this: ElementHandle<Element>,
@@ -878,6 +890,7 @@ export abstract class ElementHandle<
    * `multiple` attribute, all values are considered, otherwise only the first
    * one is taken into account.
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async select(...values: string[]): Promise<string[]> {
     for (const value of values) {
@@ -947,6 +960,7 @@ export abstract class ElementHandle<
    * {@link Touchscreen.tap} to tap in the center of the element.
    * If the element is detached from DOM, the method throws an error.
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async tap(this: ElementHandle<Element>): Promise<void> {
     await this.scrollIntoViewIfNeeded();
@@ -955,6 +969,7 @@ export abstract class ElementHandle<
     await this.frame.page().touchscreen.touchEnd();
   }
 
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async touchStart(this: ElementHandle<Element>): Promise<void> {
     await this.scrollIntoViewIfNeeded();
@@ -962,6 +977,7 @@ export abstract class ElementHandle<
     await this.frame.page().touchscreen.touchStart(x, y);
   }
 
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async touchMove(this: ElementHandle<Element>): Promise<void> {
     await this.scrollIntoViewIfNeeded();
@@ -969,6 +985,7 @@ export abstract class ElementHandle<
     await this.frame.page().touchscreen.touchMove(x, y);
   }
 
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async touchEnd(this: ElementHandle<Element>): Promise<void> {
     await this.scrollIntoViewIfNeeded();
@@ -978,6 +995,7 @@ export abstract class ElementHandle<
   /**
    * Calls {@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus | focus} on the element.
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async focus(): Promise<void> {
     await this.evaluate(element => {
@@ -1013,6 +1031,7 @@ export abstract class ElementHandle<
    *
    * @param options - Delay in milliseconds. Defaults to 0.
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async type(
     text: string,
@@ -1036,6 +1055,7 @@ export abstract class ElementHandle<
    * @param key - Name of key to press, such as `ArrowLeft`.
    * See {@link KeyInput} for a list of all key names.
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async press(
     key: KeyInput,
@@ -1125,6 +1145,7 @@ export abstract class ElementHandle<
    * This method returns the bounding box of the element (relative to the main frame),
    * or `null` if the element is not visible.
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async boundingBox(): Promise<BoundingBox | null> {
     const box = await this.evaluate(element => {
@@ -1161,6 +1182,7 @@ export abstract class ElementHandle<
    * Boxes are represented as an array of points;
    * Each Point is an object `{x, y}`. Box points are sorted clock-wise.
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async boxModel(): Promise<BoxModel | null> {
     const model = await this.evaluate(element => {
@@ -1349,6 +1371,7 @@ export abstract class ElementHandle<
    * @param options - Threshold for the intersection between 0 (no intersection) and 1
    * (full intersection). Defaults to 1.
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async isIntersectingViewport(
     this: ElementHandle<Element>,
@@ -1379,6 +1402,7 @@ export abstract class ElementHandle<
    * Scrolls the element into view using either the automation protocol client
    * or by calling element.scrollIntoView.
    */
+  @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   async scrollIntoView(this: ElementHandle<Element>): Promise<void> {
     await this.assertConnectedElement();
