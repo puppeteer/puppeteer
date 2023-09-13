@@ -26,6 +26,7 @@ import {debugError} from './util.js';
 
 interface ViewportState {
   viewport?: Viewport;
+  active: boolean;
 }
 
 interface IdleOverridesState {
@@ -76,6 +77,39 @@ interface JavascriptEnabledState {
   active: boolean;
 }
 
+interface ClientProvider {
+  clients(): CDPSession[];
+}
+
+class EmulatedState<T extends {active: boolean}> {
+  #state: T;
+  #clientProvider: ClientProvider;
+  #updater: (client: CDPSession, state: T) => Promise<void>;
+
+  constructor(
+    initialState: T,
+    clientProvider: ClientProvider,
+    updater: (client: CDPSession, state: T) => Promise<void>
+  ) {
+    this.#state = initialState;
+    this.#clientProvider = clientProvider;
+    this.#updater = updater;
+  }
+
+  async setState(state: T): Promise<void> {
+    this.#state = state;
+    await this.sync();
+  }
+
+  async sync(): Promise<void> {
+    await Promise.all(
+      this.#clientProvider.clients().map(client => {
+        return this.#updater(client, this.#state);
+      })
+    );
+  }
+}
+
 /**
  * @internal
  */
@@ -85,7 +119,13 @@ export class EmulationManager {
   #emulatingMobile = false;
   #hasTouch = false;
 
-  #viewportState: ViewportState = {};
+  #viewportState = new EmulatedState<ViewportState>(
+    {
+      active: false,
+    },
+    this,
+    this.#applyViewport
+  );
   #idleOverridesState: IdleOverridesState = {
     active: false,
   };
@@ -133,7 +173,7 @@ export class EmulationManager {
     });
     // We don't await here because we want to register all state changes before
     // the target is unpaused.
-    void this.#syncViewport().catch(debugError);
+    void this.#viewportState.sync().catch(debugError);
     void this.#syncIdleState().catch(debugError);
     void this.#syncTimezoneState().catch(debugError);
     void this.#syncVisionDeficiencyState().catch(debugError);
@@ -149,12 +189,15 @@ export class EmulationManager {
     return this.#javascriptEnabledState.javaScriptEnabled;
   }
 
-  async emulateViewport(viewport: Viewport): Promise<boolean> {
-    this.#viewportState = {
-      viewport,
-    };
+  clients(): CDPSession[] {
+    return [this.#client, ...Array.from(this.#secondaryClients)];
+  }
 
-    await this.#syncViewport();
+  async emulateViewport(viewport: Viewport): Promise<boolean> {
+    await this.#viewportState.setState({
+      viewport,
+      active: true,
+    });
 
     const mobile = viewport.isMobile || false;
     const hasTouch = viewport.hasTouch || false;
@@ -164,15 +207,6 @@ export class EmulationManager {
     this.#hasTouch = hasTouch;
 
     return reloadNeeded;
-  }
-
-  async #syncViewport() {
-    await Promise.all([
-      this.#applyViewport(this.#client, this.#viewportState),
-      ...Array.from(this.#secondaryClients).map(client => {
-        return this.#applyViewport(client, this.#viewportState);
-      }),
-    ]);
   }
 
   @invokeAtMostOnceForArguments
