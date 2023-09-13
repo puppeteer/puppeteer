@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/puppeteer/puppeteer/compare/browsers-v1.7.0...browsers-v1.7.1) (2023-09-13)
+
+
+### Bug Fixes
+
+* use supported node range for types ([#10896](https://github.com/puppeteer/puppeteer/issues/10896)) ([2d851c1](https://github.com/puppeteer/puppeteer/commit/2d851c1398e5efcdabdb5304dc78e68cbd3fadd2))
+
 ## [1.7.0](https://github.com/puppeteer/puppeteer/compare/browsers-v1.6.0...browsers-v1.7.0) (2023-08-18)
 
 
