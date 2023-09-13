@@ -37,13 +37,13 @@ import {debugError, isString} from './util.js';
 /**
  * @internal
  */
-export class CDPHTTPRequest extends HTTPRequest {
+export class CdpHTTPRequest extends HTTPRequest {
   override _requestId: string;
   override _interceptionId: string | undefined;
   override _failureText: string | null = null;
   override _response: HTTPResponse | null = null;
   override _fromMemoryCache = false;
-  override _redirectChain: CDPHTTPRequest[];
+  override _redirectChain: CdpHTTPRequest[];
 
   #client: CDPSession;
   #isNavigationRequest: boolean;
@@ -100,7 +100,7 @@ export class CDPHTTPRequest extends HTTPRequest {
        */
       type?: Protocol.Network.ResourceType;
     },
-    redirectChain: CDPHTTPRequest[]
+    redirectChain: CdpHTTPRequest[]
   ) {
     super();
     this.#client = client;
@@ -213,7 +213,7 @@ export class CDPHTTPRequest extends HTTPRequest {
     return this.#initiator;
   }
 
-  override redirectChain(): CDPHTTPRequest[] {
+  override redirectChain(): CdpHTTPRequest[] {
     return this._redirectChain.slice();
   }
 

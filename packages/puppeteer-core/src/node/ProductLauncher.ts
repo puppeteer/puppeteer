@@ -27,7 +27,7 @@ import {
 } from '@puppeteer/browsers';
 
 import {Browser, BrowserCloseCallback} from '../api/Browser.js';
-import {CDPBrowser} from '../common/Browser.js';
+import {CdpBrowser} from '../common/Browser.js';
 import {Connection} from '../common/Connection.js';
 import {TimeoutError} from '../common/Errors.js';
 import {NodeWebSocketTransport as WebSocketTransport} from '../common/NodeWebSocketTransport.js';
@@ -148,20 +148,20 @@ export class ProductLauncher {
         );
       } else {
         if (usePipe) {
-          connection = await this.createCDPPipeConnection(browserProcess, {
+          connection = await this.createCdpPipeConnection(browserProcess, {
             timeout,
             protocolTimeout,
             slowMo,
           });
         } else {
-          connection = await this.createCDPSocketConnection(browserProcess, {
+          connection = await this.createCdpSocketConnection(browserProcess, {
             timeout,
             protocolTimeout,
             slowMo,
           });
         }
         if (protocol === 'webDriverBiDi') {
-          browser = await this.createBiDiOverCDPBrowser(
+          browser = await this.createBiDiOverCdpBrowser(
             browserProcess,
             connection,
             browserCloseCallback,
@@ -174,7 +174,7 @@ export class ProductLauncher {
             }
           );
         } else {
-          browser = await CDPBrowser._create(
+          browser = await CdpBrowser._create(
             this.product,
             connection,
             [],
@@ -285,7 +285,7 @@ export class ProductLauncher {
   /**
    * @internal
    */
-  protected async createCDPSocketConnection(
+  protected async createCdpSocketConnection(
     browserProcess: ReturnType<typeof launch>,
     opts: {timeout: number; protocolTimeout: number | undefined; slowMo: number}
   ): Promise<Connection> {
@@ -305,7 +305,7 @@ export class ProductLauncher {
   /**
    * @internal
    */
-  protected async createCDPPipeConnection(
+  protected async createCdpPipeConnection(
     browserProcess: ReturnType<typeof launch>,
     opts: {timeout: number; protocolTimeout: number | undefined; slowMo: number}
   ): Promise<Connection> {
@@ -322,7 +322,7 @@ export class ProductLauncher {
   /**
    * @internal
    */
-  protected async createBiDiOverCDPBrowser(
+  protected async createBiDiOverCdpBrowser(
     browserProcess: ReturnType<typeof launch>,
     connection: Connection,
     closeCallback: BrowserCloseCallback,
@@ -338,7 +338,7 @@ export class ProductLauncher {
     const BiDi = await import(
       /* webpackIgnore: true */ '../common/bidi/bidi.js'
     );
-    const bidiConnection = await BiDi.connectBidiOverCDP(connection);
+    const bidiConnection = await BiDi.connectBidiOverCdp(connection);
     return await BiDi.BidiBrowser.create({
       connection: bidiConnection,
       closeCallback,

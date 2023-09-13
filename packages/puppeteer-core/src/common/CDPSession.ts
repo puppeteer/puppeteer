@@ -9,19 +9,19 @@ import {
   createProtocolErrorMessage,
 } from './Connection.js';
 import {TargetCloseError} from './Errors.js';
-import {CDPTarget} from './Target.js';
+import {CdpTarget} from './Target.js';
 
 /**
  * @internal
  */
 
-export class CDPCDPSession extends CDPSession {
+export class CdpCDPSession extends CDPSession {
   #sessionId: string;
   #targetType: string;
   #callbacks = new CallbackRegistry();
   #connection?: Connection;
   #parentSessionId?: string;
-  #target?: CDPTarget;
+  #target?: CdpTarget;
 
   /**
    * @internal
@@ -40,20 +40,20 @@ export class CDPCDPSession extends CDPSession {
   }
 
   /**
-   * Sets the CDPTarget associated with the session instance.
+   * Sets the {@link CdpTarget} associated with the session instance.
    *
    * @internal
    */
-  _setTarget(target: CDPTarget): void {
+  _setTarget(target: CdpTarget): void {
     this.#target = target;
   }
 
   /**
-   * Gets the CDPTarget associated with the session instance.
+   * Gets the {@link CdpTarget} associated with the session instance.
    *
    * @internal
    */
-  _target(): CDPTarget {
+  _target(): CdpTarget {
     assert(this.#target, 'Target must exist');
     return this.#target;
   }

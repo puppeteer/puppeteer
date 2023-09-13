@@ -19,7 +19,7 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 import {CDPEvents, CDPSession} from '../../api/CDPSession.js';
-import {Connection as CDPConnection} from '../Connection.js';
+import {Connection as CdpConnection} from '../Connection.js';
 import {TargetCloseError} from '../Errors.js';
 import {Handler} from '../EventEmitter.js';
 
@@ -28,11 +28,11 @@ import {BidiConnection} from './Connection.js';
 /**
  * @internal
  */
-export async function connectBidiOverCDP(
-  cdp: CDPConnection
+export async function connectBidiOverCdp(
+  cdp: CdpConnection
 ): Promise<BidiConnection> {
   const transportBiDi = new NoOpTransport();
-  const cdpConnectionAdapter = new CDPConnectionAdapter(cdp);
+  const cdpConnectionAdapter = new CdpConnectionAdapter(cdp);
   const pptrTransport = {
     send(message: string): void {
       // Forwards a BiDi command sent by Puppeteer to the input of the BidiServer.
@@ -63,17 +63,17 @@ export async function connectBidiOverCDP(
  * Manages CDPSessions for BidiServer.
  * @internal
  */
-class CDPConnectionAdapter {
-  #cdp: CDPConnection;
+class CdpConnectionAdapter {
+  #cdp: CdpConnection;
   #adapters = new Map<CDPSession, CDPClientAdapter<CDPSession>>();
-  #browser: CDPClientAdapter<CDPConnection>;
+  #browser: CDPClientAdapter<CdpConnection>;
 
-  constructor(cdp: CDPConnection) {
+  constructor(cdp: CdpConnection) {
     this.#cdp = cdp;
     this.#browser = new CDPClientAdapter(cdp);
   }
 
-  browserClient(): CDPClientAdapter<CDPConnection> {
+  browserClient(): CDPClientAdapter<CdpConnection> {
     return this.#browser;
   }
 
@@ -104,7 +104,7 @@ class CDPConnectionAdapter {
  *
  * @internal
  */
-class CDPClientAdapter<T extends CDPSession | CDPConnection>
+class CDPClientAdapter<T extends CDPSession | CdpConnection>
   extends BidiMapper.EventEmitter<CDPEvents>
   implements BidiMapper.CdpClient
 {

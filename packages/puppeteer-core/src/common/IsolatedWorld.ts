@@ -23,7 +23,7 @@ import {Deferred} from '../util/Deferred.js';
 
 import {Binding} from './Binding.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {CDPFrame} from './Frame.js';
+import {CdpFrame} from './Frame.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {BindingPayload, EvaluateFunc, HandleFor} from './types.js';
@@ -101,10 +101,10 @@ export class IsolatedWorld extends Realm {
     return this.#bindings;
   }
 
-  readonly #frameOrWorker: CDPFrame | WebWorker;
+  readonly #frameOrWorker: CdpFrame | WebWorker;
 
   constructor(
-    frameOrWorker: CDPFrame | WebWorker,
+    frameOrWorker: CdpFrame | WebWorker,
     timeoutSettings: TimeoutSettings
   ) {
     super(timeoutSettings);
@@ -112,7 +112,7 @@ export class IsolatedWorld extends Realm {
     this.frameUpdated();
   }
 
-  get environment(): CDPFrame | WebWorker {
+  get environment(): CdpFrame | WebWorker {
     return this.#frameOrWorker;
   }
 
@@ -126,7 +126,7 @@ export class IsolatedWorld extends Realm {
 
   clearContext(): void {
     this.#context = Deferred.create();
-    if (this.#frameOrWorker instanceof CDPFrame) {
+    if (this.#frameOrWorker instanceof CdpFrame) {
       this.#frameOrWorker.clearDocumentHandle();
     }
   }

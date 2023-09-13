@@ -37,7 +37,7 @@ import {setPageContent} from './util.js';
 /**
  * @internal
  */
-export class CDPFrame extends Frame {
+export class CdpFrame extends Frame {
   #url = '';
   #detached = false;
   #client!: CDPSession;
@@ -270,11 +270,11 @@ export class CDPFrame extends Frame {
     return this.#url;
   }
 
-  override parentFrame(): CDPFrame | null {
+  override parentFrame(): CdpFrame | null {
     return this._frameManager._frameTree.parentFrame(this._id) || null;
   }
 
-  override childFrames(): CDPFrame[] {
+  override childFrames(): CdpFrame[] {
     return this._frameManager._frameTree.childFrames(this._id);
   }
 

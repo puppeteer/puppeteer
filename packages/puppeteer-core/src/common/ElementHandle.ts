@@ -22,29 +22,29 @@ import {Page, ScreenshotOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {throwIfDisposed} from '../util/decorators.js';
 
-import {CDPFrame} from './Frame.js';
+import {CdpFrame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
-import {CDPJSHandle} from './JSHandle.js';
+import {CdpJSHandle} from './JSHandle.js';
 import {debugError} from './util.js';
 
 /**
- * The CDPElementHandle extends ElementHandle now to keep compatibility
+ * The CdpElementHandle extends ElementHandle now to keep compatibility
  * with `instanceof` because of that we need to have methods for
- * CDPJSHandle to in this implementation as well.
+ * CdpJSHandle to in this implementation as well.
  *
  * @internal
  */
-export class CDPElementHandle<
+export class CdpElementHandle<
   ElementType extends Node = Element,
 > extends ElementHandle<ElementType> {
-  protected declare readonly handle: CDPJSHandle<ElementType>;
+  protected declare readonly handle: CdpJSHandle<ElementType>;
 
   constructor(
     world: IsolatedWorld,
     remoteObject: Protocol.Runtime.RemoteObject
   ) {
-    super(new CDPJSHandle(world, remoteObject));
+    super(new CdpJSHandle(world, remoteObject));
   }
 
   override get realm(): IsolatedWorld {
@@ -67,16 +67,16 @@ export class CDPElementHandle<
     return this.frame.page();
   }
 
-  override get frame(): CDPFrame {
-    return this.realm.environment as CDPFrame;
+  override get frame(): CdpFrame {
+    return this.realm.environment as CdpFrame;
   }
 
   override async contentFrame(
     this: ElementHandle<HTMLIFrameElement>
-  ): Promise<CDPFrame>;
+  ): Promise<CdpFrame>;
 
   @throwIfDisposed()
-  override async contentFrame(): Promise<CDPFrame | null> {
+  override async contentFrame(): Promise<CdpFrame | null> {
     const nodeInfo = await this.client.send('DOM.describeNode', {
       objectId: this.id,
     });
@@ -89,7 +89,7 @@ export class CDPElementHandle<
   @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   override async scrollIntoView(
-    this: CDPElementHandle<Element>
+    this: CdpElementHandle<Element>
   ): Promise<void> {
     await this.assertConnectedElement();
     try {
@@ -109,7 +109,7 @@ export class CDPElementHandle<
   @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   override async drag(
-    this: CDPElementHandle<Element>,
+    this: CdpElementHandle<Element>,
     target: Point
   ): Promise<Protocol.Input.DragData> {
     assert(
@@ -124,7 +124,7 @@ export class CDPElementHandle<
   @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   override async dragEnter(
-    this: CDPElementHandle<Element>,
+    this: CdpElementHandle<Element>,
     data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
   ): Promise<void> {
     await this.scrollIntoViewIfNeeded();
@@ -135,7 +135,7 @@ export class CDPElementHandle<
   @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   override async dragOver(
-    this: CDPElementHandle<Element>,
+    this: CdpElementHandle<Element>,
     data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
   ): Promise<void> {
     await this.scrollIntoViewIfNeeded();
@@ -146,7 +146,7 @@ export class CDPElementHandle<
   @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   override async drop(
-    this: CDPElementHandle<Element>,
+    this: CdpElementHandle<Element>,
     data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
   ): Promise<void> {
     await this.scrollIntoViewIfNeeded();
@@ -157,8 +157,8 @@ export class CDPElementHandle<
   @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   override async dragAndDrop(
-    this: CDPElementHandle<Element>,
-    target: CDPElementHandle<Node>,
+    this: CdpElementHandle<Element>,
+    target: CdpElementHandle<Node>,
     options?: {delay: number}
   ): Promise<void> {
     assert(
@@ -174,7 +174,7 @@ export class CDPElementHandle<
   @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   override async uploadFile(
-    this: CDPElementHandle<HTMLInputElement>,
+    this: CdpElementHandle<HTMLInputElement>,
     ...filePaths: string[]
   ): Promise<void> {
     const isMultiple = await this.evaluate(element => {
@@ -233,7 +233,7 @@ export class CDPElementHandle<
   @throwIfDisposed()
   @ElementHandle.bindIsolatedHandle
   override async screenshot(
-    this: CDPElementHandle<Element>,
+    this: CdpElementHandle<Element>,
     options: ScreenshotOptions = {}
   ): Promise<string | Buffer> {
     let needsViewportReset = false;

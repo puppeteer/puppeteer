@@ -23,8 +23,8 @@ import {Page, PageEvent} from '../api/Page.js';
 import {Target, TargetType} from '../api/Target.js';
 import {Deferred} from '../util/Deferred.js';
 
-import {CDPCDPSession} from './CDPSession.js';
-import {CDPPage} from './Page.js';
+import {CdpCDPSession} from './CDPSession.js';
+import {CdpPage} from './Page.js';
 import {Viewport} from './PuppeteerViewport.js';
 import {TargetManager} from './TargetManager.js';
 import {TaskQueue} from './TaskQueue.js';
@@ -42,7 +42,7 @@ export enum InitializationStatus {
 /**
  * @internal
  */
-export class CDPTarget extends Target {
+export class CdpTarget extends Target {
   #browserContext?: BrowserContext;
   #session?: CDPSession;
   #targetInfo: Protocol.Target.TargetInfo;
@@ -76,7 +76,7 @@ export class CDPTarget extends Target {
     this.#browserContext = browserContext;
     this._targetId = targetInfo.targetId;
     this.#sessionFactory = sessionFactory;
-    if (this.#session && this.#session instanceof CDPCDPSession) {
+    if (this.#session && this.#session instanceof CdpCDPSession) {
       this.#session._setTarget(this);
     }
   }
@@ -103,7 +103,7 @@ export class CDPTarget extends Target {
       throw new Error('sessionFactory is not initialized');
     }
     return this.#sessionFactory(false).then(session => {
-      (session as CDPCDPSession)._setTarget(this);
+      (session as CdpCDPSession)._setTarget(this);
       return session;
     });
   }
@@ -186,7 +186,7 @@ export class CDPTarget extends Target {
 /**
  * @internal
  */
-export class PageTarget extends CDPTarget {
+export class PageTarget extends CdpTarget {
   #defaultViewport?: Viewport;
   protected pagePromise?: Promise<Page>;
   #screenshotTaskQueue: TaskQueue;
@@ -242,7 +242,7 @@ export class PageTarget extends CDPTarget {
           ? Promise.resolve(session)
           : this._sessionFactory()(/* isAutoAttachEmulated=*/ false)
       ).then(client => {
-        return CDPPage._create(
+        return CdpPage._create(
           client,
           this,
           this.#ignoreHTTPSErrors,
@@ -272,7 +272,7 @@ export class DevToolsTarget extends PageTarget {}
 /**
  * @internal
  */
-export class WorkerTarget extends CDPTarget {
+export class WorkerTarget extends CdpTarget {
   #workerPromise?: Promise<WebWorker>;
 
   override async worker(): Promise<WebWorker | null> {
@@ -299,4 +299,4 @@ export class WorkerTarget extends CDPTarget {
 /**
  * @internal
  */
-export class OtherTarget extends CDPTarget {}
+export class OtherTarget extends CdpTarget {}

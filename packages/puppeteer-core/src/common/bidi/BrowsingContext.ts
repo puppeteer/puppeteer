@@ -5,7 +5,7 @@ import {CDPSession} from '../../api/CDPSession.js';
 import {WaitForOptions} from '../../api/Page.js';
 import {assert} from '../../util/assert.js';
 import {Deferred} from '../../util/Deferred.js';
-import {Connection as CDPConnection} from '../Connection.js';
+import {Connection as CdpConnection} from '../Connection.js';
 import {ProtocolError, TargetCloseError, TimeoutError} from '../Errors.js';
 import {EventType} from '../EventEmitter.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
@@ -40,12 +40,12 @@ const lifeCycleToReadinessState = new Map<
 /**
  * @internal
  */
-export const cdpSessions = new Map<string, CDPSessionWrapper>();
+export const cdpSessions = new Map<string, CdpSessionWrapper>();
 
 /**
  * @internal
  */
-export class CDPSessionWrapper extends CDPSession {
+export class CdpSessionWrapper extends CDPSession {
   #context: BrowsingContext;
   #sessionId = Deferred.create<string>();
   #detached = false;
@@ -53,7 +53,7 @@ export class CDPSessionWrapper extends CDPSession {
   constructor(context: BrowsingContext, sessionId?: string) {
     super();
     this.#context = context;
-    if (!this.#context.supportsCDP()) {
+    if (!this.#context.supportsCdp()) {
       return;
     }
     if (sessionId) {
@@ -74,7 +74,7 @@ export class CDPSessionWrapper extends CDPSession {
     }
   }
 
-  override connection(): CDPConnection | undefined {
+  override connection(): CdpConnection | undefined {
     return undefined;
   }
 
@@ -82,7 +82,7 @@ export class CDPSessionWrapper extends CDPSession {
     method: T,
     ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
-    if (!this.#context.supportsCDP()) {
+    if (!this.#context.supportsCdp()) {
       throw new Error(
         'CDP support is required for this feature. The current browser does not support CDP.'
       );
@@ -103,7 +103,7 @@ export class CDPSessionWrapper extends CDPSession {
 
   override async detach(): Promise<void> {
     cdpSessions.delete(this.id());
-    if (!this.#detached && this.#context.supportsCDP()) {
+    if (!this.#detached && this.#context.supportsCdp()) {
       await this.#context.cdpSession.send('Target.detachFromTarget', {
         sessionId: this.id(),
       });
@@ -163,14 +163,14 @@ export class BrowsingContext extends Realm {
     this.#url = info.url;
     this.#parent = info.parent;
     this.#browserName = browserName;
-    this.#cdpSession = new CDPSessionWrapper(this, undefined);
+    this.#cdpSession = new CdpSessionWrapper(this, undefined);
 
     this.on('browsingContext.domContentLoaded', this.#updateUrl.bind(this));
     this.on('browsingContext.fragmentNavigated', this.#updateUrl.bind(this));
     this.on('browsingContext.load', this.#updateUrl.bind(this));
   }
 
-  supportsCDP(): boolean {
+  supportsCdp(): boolean {
     return !this.#browserName.toLowerCase().includes('firefox');
   }
 
@@ -280,7 +280,7 @@ export class BrowsingContext extends Realm {
     ]);
   }
 
-  async sendCDPCommand<T extends keyof ProtocolMapping.Commands>(
+  async sendCdpCommand<T extends keyof ProtocolMapping.Commands>(
     method: T,
     ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {

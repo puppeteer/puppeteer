@@ -24,7 +24,7 @@ import {
 } from '../api/CDPSession.js';
 import {Deferred} from '../util/Deferred.js';
 
-import {CDPCDPSession} from './CDPSession.js';
+import {CdpCDPSession} from './CDPSession.js';
 import {ConnectionTransport} from './ConnectionTransport.js';
 import {debug} from './Debug.js';
 import {ProtocolError, TargetCloseError} from './Errors.js';
@@ -200,7 +200,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
   #transport: ConnectionTransport;
   #delay: number;
   #timeout: number;
-  #sessions = new Map<string, CDPCDPSession>();
+  #sessions = new Map<string, CdpCDPSession>();
   #closed = false;
   #manuallyAttached = new Set<string>();
   #callbacks = new CallbackRegistry();
@@ -310,7 +310,7 @@ export class Connection extends EventEmitter<CDPSessionEvents> {
     const object = JSON.parse(message);
     if (object.method === 'Target.attachedToTarget') {
       const sessionId = object.params.sessionId;
-      const session = new CDPCDPSession(
+      const session = new CdpCDPSession(
         this,
         object.params.targetInfo.type,
         sessionId,

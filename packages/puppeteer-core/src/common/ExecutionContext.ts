@@ -25,9 +25,9 @@ import {stringifyFunction} from '../util/Function.js';
 
 import {ARIAQueryHandler} from './AriaQueryHandler.js';
 import {Binding} from './Binding.js';
-import {CDPElementHandle} from './ElementHandle.js';
+import {CdpElementHandle} from './ElementHandle.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
-import {CDPJSHandle} from './JSHandle.js';
+import {CdpJSHandle} from './JSHandle.js';
 import {LazyArg} from './LazyArg.js';
 import {scriptInjector} from './ScriptInjector.js';
 import {EvaluateFunc, HandleFor} from './types.js';
@@ -345,7 +345,7 @@ export class ExecutionContext {
         return {unserializableValue: 'NaN'};
       }
       const objectHandle =
-        arg && (arg instanceof CDPJSHandle || arg instanceof CDPElementHandle)
+        arg && (arg instanceof CdpJSHandle || arg instanceof CdpElementHandle)
           ? arg
           : null;
       if (objectHandle) {

@@ -21,8 +21,8 @@ import type {Frame} from '../api/Frame.js';
 import {assert} from '../util/assert.js';
 
 import {EventEmitter, EventSubscription, EventType} from './EventEmitter.js';
-import {CDPHTTPRequest} from './HTTPRequest.js';
-import {CDPHTTPResponse} from './HTTPResponse.js';
+import {CdpHTTPRequest} from './HTTPRequest.js';
+import {CdpHTTPResponse} from './HTTPResponse.js';
 import {FetchRequestId, NetworkEventManager} from './NetworkEventManager.js';
 import {debugError, isString} from './util.js';
 
@@ -73,11 +73,11 @@ export namespace NetworkManagerEvent {
  * @internal
  */
 export interface NetworkManagerEvents extends Record<EventType, unknown> {
-  [NetworkManagerEvent.Request]: CDPHTTPRequest;
-  [NetworkManagerEvent.RequestServedFromCache]: CDPHTTPRequest | undefined;
-  [NetworkManagerEvent.Response]: CDPHTTPResponse;
-  [NetworkManagerEvent.RequestFailed]: CDPHTTPRequest;
-  [NetworkManagerEvent.RequestFinished]: CDPHTTPRequest;
+  [NetworkManagerEvent.Request]: CdpHTTPRequest;
+  [NetworkManagerEvent.RequestServedFromCache]: CdpHTTPRequest | undefined;
+  [NetworkManagerEvent.Response]: CdpHTTPResponse;
+  [NetworkManagerEvent.RequestFailed]: CdpHTTPRequest;
+  [NetworkManagerEvent.RequestFinished]: CdpHTTPRequest;
 }
 
 /**
@@ -452,7 +452,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       ? this.#frameManager.frame(event.frameId)
       : null;
 
-    const request = new CDPHTTPRequest(
+    const request = new CdpHTTPRequest(
       client,
       frame,
       event.requestId,
@@ -469,7 +469,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     event: Protocol.Network.RequestWillBeSentEvent,
     fetchRequestId?: FetchRequestId
   ): void {
-    let redirectChain: CDPHTTPRequest[] = [];
+    let redirectChain: CdpHTTPRequest[] = [];
     if (event.redirectResponse) {
       // We want to emit a response and requestfinished for the
       // redirectResponse, but we can't do so unless we have a
@@ -509,7 +509,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       ? this.#frameManager.frame(event.frameId)
       : null;
 
-    const request = new CDPHTTPRequest(
+    const request = new CdpHTTPRequest(
       client,
       frame,
       fetchRequestId,
@@ -535,11 +535,11 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
 
   #handleRequestRedirect(
     client: CDPSession,
-    request: CDPHTTPRequest,
+    request: CdpHTTPRequest,
     responsePayload: Protocol.Network.Response,
     extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null
   ): void {
-    const response = new CDPHTTPResponse(
+    const response = new CdpHTTPResponse(
       client,
       request,
       responsePayload,
@@ -587,7 +587,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
       extraInfo = null;
     }
 
-    const response = new CDPHTTPResponse(
+    const response = new CdpHTTPResponse(
       client,
       request,
       responseReceived.response,
@@ -659,7 +659,7 @@ export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
     this.#networkEventManager.responseExtraInfo(event.requestId).push(event);
   }
 
-  #forgetRequest(request: CDPHTTPRequest, events: boolean): void {
+  #forgetRequest(request: CdpHTTPRequest, events: boolean): void {
     const requestId = request._requestId;
     const interceptionId = request._interceptionId;
 

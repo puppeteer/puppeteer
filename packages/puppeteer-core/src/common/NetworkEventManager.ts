@@ -16,7 +16,7 @@
 
 import {Protocol} from 'devtools-protocol';
 
-import {CDPHTTPRequest} from './HTTPRequest.js';
+import {CdpHTTPRequest} from './HTTPRequest.js';
 
 /**
  * @internal
@@ -92,7 +92,7 @@ export class NetworkEventManager {
     NetworkRequestId,
     Protocol.Fetch.RequestPausedEvent
   >();
-  #httpRequestsMap = new Map<NetworkRequestId, CDPHTTPRequest>();
+  #httpRequestsMap = new Map<NetworkRequestId, CdpHTTPRequest>();
 
   /*
    * The below maps are used to reconcile Network.responseReceivedExtraInfo
@@ -193,13 +193,13 @@ export class NetworkEventManager {
     this.#requestPausedMap.set(networkRequestId, event);
   }
 
-  getRequest(networkRequestId: NetworkRequestId): CDPHTTPRequest | undefined {
+  getRequest(networkRequestId: NetworkRequestId): CdpHTTPRequest | undefined {
     return this.#httpRequestsMap.get(networkRequestId);
   }
 
   storeRequest(
     networkRequestId: NetworkRequestId,
-    request: CDPHTTPRequest
+    request: CdpHTTPRequest
   ): void {
     this.#httpRequestsMap.set(networkRequestId, request);
   }

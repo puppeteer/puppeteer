@@ -18,7 +18,7 @@ import {Browser} from '../api/Browser.js';
 
 import {
   BrowserConnectOptions,
-  _connectToCDPBrowser,
+  _connectToCdpBrowser,
 } from './BrowserConnector.js';
 import {ConnectionTransport} from './ConnectionTransport.js';
 import {CustomQueryHandler, customQueryHandlers} from './CustomQueryHandler.js';
@@ -142,6 +142,6 @@ export class Puppeteer {
    * @returns Promise which resolves to browser instance.
    */
   connect(options: ConnectOptions): Promise<Browser> {
-    return _connectToCDPBrowser(options);
+    return _connectToCdpBrowser(options);
   }
 }

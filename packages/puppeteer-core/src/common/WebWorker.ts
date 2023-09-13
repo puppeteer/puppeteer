@@ -22,7 +22,7 @@ import {ConsoleMessageType} from './ConsoleMessage.js';
 import {EventEmitter, EventType} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
-import {CDPJSHandle} from './JSHandle.js';
+import {CdpJSHandle} from './JSHandle.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {EvaluateFunc, HandleFor} from './types.js';
 import {debugError, withSourcePuppeteerURLIfNone} from './util.js';
@@ -32,7 +32,7 @@ import {debugError, withSourcePuppeteerURLIfNone} from './util.js';
  */
 export type ConsoleAPICalledCallback = (
   eventType: ConsoleMessageType,
-  handles: CDPJSHandle[],
+  handles: CdpJSHandle[],
   trace?: Protocol.Runtime.StackTrace
 ) => void;
 
@@ -103,7 +103,7 @@ export class WebWorker extends EventEmitter<Record<EventType, unknown>> {
         return consoleAPICalled(
           event.type,
           event.args.map((object: Protocol.Runtime.RemoteObject) => {
-            return new CDPJSHandle(this.#world, object);
+            return new CdpJSHandle(this.#world, object);
           }),
           event.stackTrace
         );

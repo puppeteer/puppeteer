@@ -235,7 +235,7 @@ export class BidiConnection extends EventEmitter<BidiEvents> {
       event.params.source.context !== undefined
     ) {
       context = this.#browsingContexts.get(event.params.source.context);
-    } else if (isCDPEvent(event)) {
+    } else if (isCdpEvent(event)) {
       cdpSessions
         .get(event.params.session)
         ?.emit(event.params.event, event.params.params);
@@ -301,6 +301,6 @@ function createProtocolError(object: Bidi.ErrorResponse): string {
   return message;
 }
 
-function isCDPEvent(event: Bidi.ChromiumBidi.Event): event is Bidi.Cdp.Event {
+function isCdpEvent(event: Bidi.ChromiumBidi.Event): event is Bidi.Cdp.Event {
   return event.method.startsWith('cdp.');
 }

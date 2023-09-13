@@ -15,7 +15,7 @@
  */
 
 import expect from 'expect';
-import {CDPBrowser} from 'puppeteer-core/internal/common/Browser.js';
+import {CdpBrowser} from 'puppeteer-core/internal/common/Browser.js';
 
 import {getTestState, launch} from './mocha-utils.js';
 import {attachFrame} from './utils.js';
@@ -23,7 +23,7 @@ import {attachFrame} from './utils.js';
 describe('TargetManager', () => {
   /* We use a special browser for this test as we need the --site-per-process flag */
   let state: Awaited<ReturnType<typeof launch>> & {
-    browser: CDPBrowser;
+    browser: CdpBrowser;
   };
 
   beforeEach(async () => {
@@ -40,7 +40,7 @@ describe('TargetManager', () => {
       }),
       {createPage: false}
     )) as Awaited<ReturnType<typeof launch>> & {
-      browser: CDPBrowser;
+      browser: CdpBrowser;
     };
   });
 
