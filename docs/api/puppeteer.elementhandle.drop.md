@@ -4,7 +4,7 @@ sidebar_label: ElementHandle.drop
 
 # ElementHandle.drop() method
 
-This method triggers a drop on the element.
+Drops the given element into the current one.
 
 #### Signature:
 
@@ -12,17 +12,17 @@ This method triggers a drop on the element.
 class ElementHandle {
   drop(
     this: ElementHandle<Element>,
-    data?: Protocol.Input.DragData
+    element: ElementHandle<Element>
   ): Promise<void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                         | Description  |
-| --------- | ------------------------------------------------------------ | ------------ |
-| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |              |
-| data      | Protocol.Input.DragData                                      | _(Optional)_ |
+| Parameter | Type                                                         | Description |
+| --------- | ------------------------------------------------------------ | ----------- |
+| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |             |
+| element   | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |             |
 
 **Returns:**
 

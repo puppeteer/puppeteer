@@ -4,7 +4,7 @@ sidebar_label: ElementHandle.drag
 
 # ElementHandle.drag() method
 
-This method creates and captures a dragevent from the element.
+Drags an element to the given element or point.
 
 #### Signature:
 
@@ -12,18 +12,20 @@ This method creates and captures a dragevent from the element.
 class ElementHandle {
   drag(
     this: ElementHandle<Element>,
-    target: Point
-  ): Promise<Protocol.Input.DragData>;
+    target: Point | ElementHandle<Element>
+  ): Promise<Protocol.Input.DragData | void>;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                                         | Description |
-| --------- | ------------------------------------------------------------ | ----------- |
-| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |             |
-| target    | [Point](./puppeteer.point.md)                                |             |
+| Parameter | Type                                                                                          | Description |
+| --------- | --------------------------------------------------------------------------------------------- | ----------- |
+| this      | [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt;                                  |             |
+| target    | [Point](./puppeteer.point.md) \| [ElementHandle](./puppeteer.elementhandle.md)&lt;Element&gt; |             |
 
 **Returns:**
 
-Promise&lt;Protocol.Input.DragData&gt;
+Promise&lt;Protocol.Input.DragData \| void&gt;
+
+DEPRECATED. When drag interception is enabled, the drag payload is returned.

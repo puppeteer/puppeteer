@@ -702,6 +702,10 @@ export class BidiPage extends Page {
       'default' in pptrFunction ? pptrFunction.default : pptrFunction
     );
   }
+
+  override isDragInterceptionEnabled(): boolean {
+    return false;
+  }
 }
 
 function isConsoleLogEntry(
