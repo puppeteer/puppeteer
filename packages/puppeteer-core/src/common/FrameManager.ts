@@ -238,19 +238,16 @@ export class FrameManager extends EventEmitter<FrameManagerEvents> {
 
   async initialize(client: CDPSession): Promise<void> {
     try {
-      const networkInit = this.#networkManager.addClient(client);
-      const result = await Promise.all([
-        client.send('Page.enable'),
-        client.send('Page.getFrameTree'),
-      ]);
-      const {frameTree} = result[1];
-      this.#handleFrameTree(client, frameTree);
       await Promise.all([
+        this.#networkManager.addClient(client),
+        client.send('Page.enable'),
+        client.send('Page.getFrameTree').then(({frameTree}) => {
+          this.#handleFrameTree(client, frameTree);
+        }),
         client.send('Page.setLifecycleEventsEnabled', {enabled: true}),
         client.send('Runtime.enable').then(() => {
           return this.#createIsolatedWorld(client, UTILITY_WORLD_NAME);
         }),
-        networkInit,
       ]);
     } catch (error) {
       // The target might have been closed before the initialization finished.
