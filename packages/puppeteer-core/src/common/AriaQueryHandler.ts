@@ -64,7 +64,7 @@ const normalizeValue = (value: string): string => {
  * The following examples showcase how the syntax works wrt. querying:
  *
  * - 'title[role="heading"]' queries for elements with name 'title' and role 'heading'.
- * - '[role="img"]' queries for elements with role 'img' and any name.
+ * - '[role="image"]' queries for elements with role 'image' and any name.
  * - 'label' queries for elements with name 'label' and any role.
  * - '[name=""][role="button"]' queries for elements with no name and role 'button'.
  */
