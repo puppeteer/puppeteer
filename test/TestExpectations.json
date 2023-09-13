@@ -3884,7 +3884,7 @@
   {
     "testIdPattern": "[waittask.spec] waittask specs Frame.waitForFunction should work when resolved right before execution context disposal",
     "platforms": ["darwin", "linux", "win32"],
-    "parameters": ["bidi", "firefox"],
+    "parameters": ["webDriverBiDi", "firefox"],
     "expectations": ["PASS", "FAIL"]
   },
   {
