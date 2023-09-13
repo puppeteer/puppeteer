@@ -118,7 +118,7 @@
     "@types/diff": "5.0.3",
     "@types/mime": "3.0.1",
     "@types/mocha": "10.0.1",
-    "@types/node": "20.5.9",
+    "@types/node": "18.17.15",
     "@types/pixelmatch": "5.2.4",
     "@types/pngjs": "6.0.1",
     "@types/progress": "2.0.5",
