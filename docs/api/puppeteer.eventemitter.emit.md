@@ -10,16 +10,19 @@ Emit an event and call any associated listeners.
 
 ```typescript
 class EventEmitter {
-  emit(event: EventType, eventData?: unknown): boolean;
+  emit<Key extends keyof EventsWithWildcard<Events>>(
+    type: Key,
+    event: EventsWithWildcard<Events>[Key]
+  ): boolean;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                  | Description                                             |
-| --------- | ------------------------------------- | ------------------------------------------------------- |
-| event     | [EventType](./puppeteer.eventtype.md) | the event you'd like to emit                            |
-| eventData | unknown                               | _(Optional)_ any data you'd like to emit with the event |
+| Parameter | Type                                                                         | Description                  |
+| --------- | ---------------------------------------------------------------------------- | ---------------------------- |
+| type      | Key                                                                          | the event you'd like to emit |
+| event     | [EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt;\[Key\] |                              |
 
 **Returns:**
 

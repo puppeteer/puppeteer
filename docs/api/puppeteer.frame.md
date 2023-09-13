@@ -11,16 +11,16 @@ To understand frames, you can think of frames as `<iframe>` elements. Just like 
 #### Signature:
 
 ```typescript
-export declare abstract class Frame extends EventEmitter
+export declare abstract class Frame extends EventEmitter<FrameEvents>
 ```
 
-**Extends:** [EventEmitter](./puppeteer.eventemitter.md)
+**Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;[FrameEvents](./puppeteer.frameevents.md)&gt;
 
 ## Remarks
 
 Frame lifecycles are controlled by three events that are all dispatched on the parent [page](./puppeteer.frame.page.md):
 
-- [PageEmittedEvents.FrameAttached](./puppeteer.pageemittedevents.md) - [PageEmittedEvents.FrameNavigated](./puppeteer.pageemittedevents.md) - [PageEmittedEvents.FrameDetached](./puppeteer.pageemittedevents.md)
+- [PageEvent.FrameAttached](./puppeteer.pageevent.md) - [PageEvent.FrameNavigated](./puppeteer.pageevent.md) - [PageEvent.FrameDetached](./puppeteer.pageevent.md)
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Frame` class.
 

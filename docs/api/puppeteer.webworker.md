@@ -9,10 +9,10 @@ This class represents a [WebWorker](https://developer.mozilla.org/en-US/docs/Web
 #### Signature:
 
 ```typescript
-export declare class WebWorker extends EventEmitter
+export declare class WebWorker extends EventEmitter<Record<EventType, unknown>>
 ```
 
-**Extends:** [EventEmitter](./puppeteer.eventemitter.md)
+**Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;Record&lt;EventType, unknown&gt;&gt;
 
 ## Remarks
 

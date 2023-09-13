@@ -22,7 +22,7 @@ import sinon from 'sinon';
 import {EventEmitter} from './EventEmitter.js';
 
 describe('EventEmitter', () => {
-  let emitter: EventEmitter;
+  let emitter: EventEmitter<Record<string, unknown>>;
 
   beforeEach(() => {
     emitter = new EventEmitter();
@@ -33,7 +33,7 @@ describe('EventEmitter', () => {
       it(`${methodName}: adds an event listener that is fired when the event is emitted`, () => {
         const listener = sinon.spy();
         emitter[methodName]('foo', listener);
-        emitter.emit('foo');
+        emitter.emit('foo', undefined);
         expect(listener.callCount).toEqual(1);
       });
 
@@ -62,10 +62,10 @@ describe('EventEmitter', () => {
       it(`${methodName}: removes the listener so it is no longer called`, () => {
         const listener = sinon.spy();
         emitter.on('foo', listener);
-        emitter.emit('foo');
+        emitter.emit('foo', undefined);
         expect(listener.callCount).toEqual(1);
         emitter.off('foo', listener);
-        emitter.emit('foo');
+        emitter.emit('foo', undefined);
         expect(listener.callCount).toEqual(1);
       });
 
@@ -85,9 +85,9 @@ describe('EventEmitter', () => {
     it('only calls the listener once and then removes it', () => {
       const listener = sinon.spy();
       emitter.once('foo', listener);
-      emitter.emit('foo');
+      emitter.emit('foo', undefined);
       expect(listener.callCount).toEqual(1);
-      emitter.emit('foo');
+      emitter.emit('foo', undefined);
       expect(listener.callCount).toEqual(1);
     });
 
@@ -105,7 +105,7 @@ describe('EventEmitter', () => {
       const listener3 = sinon.spy();
       emitter.on('foo', listener1).on('foo', listener2).on('bar', listener3);
 
-      emitter.emit('foo');
+      emitter.emit('foo', undefined);
 
       expect(listener1.callCount).toEqual(1);
       expect(listener2.callCount).toEqual(1);
@@ -125,13 +125,13 @@ describe('EventEmitter', () => {
     it('returns true if the event has listeners', () => {
       const listener = sinon.spy();
       emitter.on('foo', listener);
-      expect(emitter.emit('foo')).toBe(true);
+      expect(emitter.emit('foo', undefined)).toBe(true);
     });
 
     it('returns false if the event has listeners', () => {
       const listener = sinon.spy();
       emitter.on('foo', listener);
-      expect(emitter.emit('notFoo')).toBe(false);
+      expect(emitter.emit('notFoo', undefined)).toBe(false);
     });
   });
 
@@ -151,8 +151,8 @@ describe('EventEmitter', () => {
       emitter.on('foo', () => {}).on('bar', () => {});
 
       emitter.removeAllListeners();
-      expect(emitter.emit('foo')).toBe(false);
-      expect(emitter.emit('bar')).toBe(false);
+      expect(emitter.emit('foo', undefined)).toBe(false);
+      expect(emitter.emit('bar', undefined)).toBe(false);
     });
 
     it('returns the emitter for chaining', () => {
@@ -166,8 +166,8 @@ describe('EventEmitter', () => {
         .on('bar', () => {});
 
       emitter.removeAllListeners('bar');
-      expect(emitter.emit('foo')).toBe(true);
-      expect(emitter.emit('bar')).toBe(false);
+      expect(emitter.emit('foo', undefined)).toBe(true);
+      expect(emitter.emit('bar', undefined)).toBe(false);
     });
   });
 });

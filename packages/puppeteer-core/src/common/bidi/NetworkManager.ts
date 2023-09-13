@@ -16,40 +16,71 @@
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import {EventEmitter, Handler} from '../EventEmitter.js';
-import {NetworkManagerEmittedEvents} from '../NetworkManager.js';
+import {EventEmitter, EventSubscription, EventType} from '../EventEmitter.js';
+import {NetworkManagerEvent} from '../NetworkManager.js';
 
-import {Connection} from './Connection.js';
+import {BidiConnection} from './Connection.js';
 import {BidiFrame} from './Frame.js';
-import {HTTPRequest} from './HTTPRequest.js';
-import {HTTPResponse} from './HTTPResponse.js';
+import {BidiHTTPRequest} from './HTTPRequest.js';
+import {BidiHTTPResponse} from './HTTPResponse.js';
 import {BidiPage} from './Page.js';
 
 /**
  * @internal
  */
-export class NetworkManager extends EventEmitter {
-  #connection: Connection;
+export interface NetworkManagerEvents extends Record<EventType, unknown> {
+  [NetworkManagerEvent.Request]: BidiHTTPRequest;
+  [NetworkManagerEvent.RequestServedFromCache]: BidiHTTPRequest;
+  [NetworkManagerEvent.Response]: BidiHTTPResponse;
+  [NetworkManagerEvent.RequestFailed]: BidiHTTPRequest;
+  [NetworkManagerEvent.RequestFinished]: BidiHTTPRequest;
+}
+
+/**
+ * @internal
+ */
+export class BidiNetworkManager extends EventEmitter<NetworkManagerEvents> {
+  #connection: BidiConnection;
   #page: BidiPage;
-  #subscribedEvents = new Map<string, Handler<any>>([
-    ['network.beforeRequestSent', this.#onBeforeRequestSent.bind(this)],
-    ['network.responseStarted', this.#onResponseStarted.bind(this)],
-    ['network.responseCompleted', this.#onResponseCompleted.bind(this)],
-    ['network.fetchError', this.#onFetchError.bind(this)],
-  ]) as Map<Bidi.Event['method'], Handler>;
+  #subscriptions = new DisposableStack();
 
-  #requestMap = new Map<string, HTTPRequest>();
-  #navigationMap = new Map<string, HTTPResponse>();
+  #requestMap = new Map<string, BidiHTTPRequest>();
+  #navigationMap = new Map<string, BidiHTTPResponse>();
 
-  constructor(connection: Connection, page: BidiPage) {
+  constructor(connection: BidiConnection, page: BidiPage) {
     super();
     this.#connection = connection;
     this.#page = page;
 
     // TODO: Subscribe to the Frame individually
-    for (const [event, subscriber] of this.#subscribedEvents) {
-      this.#connection.on(event, subscriber);
-    }
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#connection,
+        'network.beforeRequestSent',
+        this.#onBeforeRequestSent.bind(this)
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#connection,
+        'network.responseStarted',
+        this.#onResponseStarted.bind(this)
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#connection,
+        'network.responseCompleted',
+        this.#onResponseCompleted.bind(this)
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
+        this.#connection,
+        'network.fetchError',
+        this.#onFetchError.bind(this)
+      )
+    );
   }
 
   #onBeforeRequestSent(event: Bidi.Network.BeforeRequestSentParameters): void {
@@ -59,35 +90,35 @@ export class NetworkManager extends EventEmitter {
     }
     const request = this.#requestMap.get(event.request.request);
 
-    let upsertRequest: HTTPRequest;
+    let upsertRequest: BidiHTTPRequest;
     if (request) {
       const requestChain = request._redirectChain;
 
-      upsertRequest = new HTTPRequest(event, frame, requestChain);
+      upsertRequest = new BidiHTTPRequest(event, frame, requestChain);
     } else {
-      upsertRequest = new HTTPRequest(event, frame, []);
+      upsertRequest = new BidiHTTPRequest(event, frame, []);
     }
     this.#requestMap.set(event.request.request, upsertRequest);
-    this.emit(NetworkManagerEmittedEvents.Request, upsertRequest);
+    this.emit(NetworkManagerEvent.Request, upsertRequest);
   }
 
-  #onResponseStarted(_event: any) {}
+  #onResponseStarted(_event: Bidi.Network.ResponseStartedParameters) {}
 
   #onResponseCompleted(event: Bidi.Network.ResponseCompletedParameters): void {
     const request = this.#requestMap.get(event.request.request);
     if (!request) {
       return;
     }
-    const response = new HTTPResponse(request, event);
+    const response = new BidiHTTPResponse(request, event);
     request._response = response;
     if (event.navigation) {
       this.#navigationMap.set(event.navigation, response);
     }
     if (response.fromCache()) {
-      this.emit(NetworkManagerEmittedEvents.RequestServedFromCache, request);
+      this.emit(NetworkManagerEvent.RequestServedFromCache, request);
     }
-    this.emit(NetworkManagerEmittedEvents.Response, response);
-    this.emit(NetworkManagerEmittedEvents.RequestFinished, request);
+    this.emit(NetworkManagerEvent.Response, response);
+    this.emit(NetworkManagerEvent.RequestFinished, request);
     this.#requestMap.delete(event.request.request);
   }
 
@@ -97,11 +128,11 @@ export class NetworkManager extends EventEmitter {
       return;
     }
     request._failureText = event.errorText;
-    this.emit(NetworkManagerEmittedEvents.RequestFailed, request);
+    this.emit(NetworkManagerEvent.RequestFailed, request);
     this.#requestMap.delete(event.request.request);
   }
 
-  getNavigationResponse(navigationId: string | null): HTTPResponse | null {
+  getNavigationResponse(navigationId: string | null): BidiHTTPResponse | null {
     if (!navigationId) {
       return null;
     }
@@ -139,9 +170,6 @@ export class NetworkManager extends EventEmitter {
     this.removeAllListeners();
     this.#requestMap.clear();
     this.#navigationMap.clear();
-
-    for (const [event, subscriber] of this.#subscribedEvents) {
-      this.#connection.off(event, subscriber);
-    }
+    this.#subscriptions.dispose();
   }
 }

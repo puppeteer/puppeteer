@@ -19,6 +19,7 @@ import os from 'os';
 import path from 'path';
 
 import expect from 'expect';
+import {CDPSessionEvent} from 'puppeteer-core/internal/api/CDPSession.js';
 import {PuppeteerLaunchOptions} from 'puppeteer-core/internal/node/PuppeteerNode.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 
@@ -268,8 +269,9 @@ const serviceWorkerExtensionPath = path.join(
         flatten: true,
         waitForDebuggerOnStart: true,
       });
-      session.on(
-        'sessionattached',
+      // TODO: Remove any.
+      (session as any).on(
+        CDPSessionEvent.SessionAttached,
         async (session: {
           on: (arg0: string, arg1: (params: any) => number) => void;
           send: (arg0: string) => any;

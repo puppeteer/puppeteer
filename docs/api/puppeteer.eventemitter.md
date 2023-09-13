@@ -9,10 +9,10 @@ The EventEmitter class that many Puppeteer classes extend.
 #### Signature:
 
 ```typescript
-export declare class EventEmitter implements CommonEventEmitter
+export declare class EventEmitter<Events extends Record<EventType, unknown>> implements CommonEventEmitter<EventsWithWildcard<Events>>
 ```
 
-**Implements:** [CommonEventEmitter](./puppeteer.commoneventemitter.md)
+**Implements:** [CommonEventEmitter](./puppeteer.commoneventemitter.md)&lt;[EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt;&gt;
 
 ## Remarks
 
@@ -22,13 +22,13 @@ The constructor for this class is marked as internal. Third-party code should no
 
 ## Methods
 
-| Method                                                                       | Modifiers | Description                                                                                      |
-| ---------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------ |
-| [addListener(event, handler)](./puppeteer.eventemitter.addlistener.md)       |           | Add an event listener.                                                                           |
-| [emit(event, eventData)](./puppeteer.eventemitter.emit.md)                   |           | Emit an event and call any associated listeners.                                                 |
-| [listenerCount(event)](./puppeteer.eventemitter.listenercount.md)            |           | Gets the number of listeners for a given event.                                                  |
-| [off(event, handler)](./puppeteer.eventemitter.off.md)                       |           | Remove an event listener from firing.                                                            |
-| [on(event, handler)](./puppeteer.eventemitter.on.md)                         |           | Bind an event listener to fire when an event occurs.                                             |
-| [once(event, handler)](./puppeteer.eventemitter.once.md)                     |           | Like <code>on</code> but the listener will only be fired once and then it will be removed.       |
-| [removeAllListeners(event)](./puppeteer.eventemitter.removealllisteners.md)  |           | Removes all listeners. If given an event argument, it will remove only listeners for that event. |
-| [removeListener(event, handler)](./puppeteer.eventemitter.removelistener.md) |           | Remove an event listener.                                                                        |
+| Method                                                                      | Modifiers | Description                                                                                      |
+| --------------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------ |
+| [addListener(type, handler)](./puppeteer.eventemitter.addlistener.md)       |           | Add an event listener.                                                                           |
+| [emit(type, event)](./puppeteer.eventemitter.emit.md)                       |           | Emit an event and call any associated listeners.                                                 |
+| [listenerCount(type)](./puppeteer.eventemitter.listenercount.md)            |           | Gets the number of listeners for a given event.                                                  |
+| [off(type, handler)](./puppeteer.eventemitter.off.md)                       |           | Remove an event listener from firing.                                                            |
+| [on(type, handler)](./puppeteer.eventemitter.on.md)                         |           | Bind an event listener to fire when an event occurs.                                             |
+| [once(type, handler)](./puppeteer.eventemitter.once.md)                     |           | Like <code>on</code> but the listener will only be fired once and then it will be removed.       |
+| [removeAllListeners(type)](./puppeteer.eventemitter.removealllisteners.md)  |           | Removes all listeners. If given an event argument, it will remove only listeners for that event. |
+| [removeListener(type, handler)](./puppeteer.eventemitter.removelistener.md) |           | Remove an event listener.                                                                        |

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import {CDPSession} from '../../api/CDPSession.js';
 import {Target, TargetType} from '../../api/Target.js';
-import {CDPSession} from '../Connection.js';
 import type {WebWorker} from '../WebWorker.js';
 
 import {BidiBrowser} from './Browser.js';
@@ -23,6 +23,9 @@ import {BidiBrowserContext} from './BrowserContext.js';
 import {BrowsingContext, CDPSessionWrapper} from './BrowsingContext.js';
 import {BidiPage} from './Page.js';
 
+/**
+ * @internal
+ */
 export class BidiTarget extends Target {
   protected _browserContext: BidiBrowserContext;
 

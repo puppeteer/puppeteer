@@ -16,9 +16,9 @@
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
+import {CDPSession} from '../../api/CDPSession.js';
 import {Frame, throwIfDetached} from '../../api/Frame.js';
 import {Deferred} from '../../util/Deferred.js';
-import {CDPSession} from '../Connection.js';
 import {UTILITY_WORLD_NAME} from '../FrameManager.js';
 import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
@@ -31,7 +31,7 @@ import {
   lifeCycleToSubscribedEvent,
 } from './BrowsingContext.js';
 import {ExposeableFunction} from './ExposedFunction.js';
-import {HTTPResponse} from './HTTPResponse.js';
+import {BidiHTTPResponse} from './HTTPResponse.js';
 import {BidiPage} from './Page.js';
 import {
   MAIN_SANDBOX,
@@ -114,7 +114,7 @@ export class BidiFrame extends Frame {
       timeout?: number;
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
     }
-  ): Promise<HTTPResponse | null> {
+  ): Promise<BidiHTTPResponse | null> {
     const navigationId = await this.#context.goto(url, {
       ...options,
       timeout: options?.timeout ?? this.#timeoutSettings.navigationTimeout(),
@@ -146,7 +146,7 @@ export class BidiFrame extends Frame {
       timeout?: number;
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
     } = {}
-  ): Promise<HTTPResponse | null> {
+  ): Promise<BidiHTTPResponse | null> {
     const {
       waitUntil = 'load',
       timeout = this.#timeoutSettings.navigationTimeout(),

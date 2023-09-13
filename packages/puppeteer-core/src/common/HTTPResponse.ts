@@ -15,24 +15,21 @@
  */
 import {Protocol} from 'devtools-protocol';
 
+import {CDPSession} from '../api/CDPSession.js';
 import {Frame} from '../api/Frame.js';
-import {
-  HTTPResponse as BaseHTTPResponse,
-  RemoteAddress,
-} from '../api/HTTPResponse.js';
+import {HTTPResponse, RemoteAddress} from '../api/HTTPResponse.js';
 import {Deferred} from '../util/Deferred.js';
 
-import {CDPSession} from './Connection.js';
 import {ProtocolError} from './Errors.js';
-import {HTTPRequest} from './HTTPRequest.js';
+import {CDPHTTPRequest} from './HTTPRequest.js';
 import {SecurityDetails} from './SecurityDetails.js';
 
 /**
  * @internal
  */
-export class HTTPResponse extends BaseHTTPResponse {
+export class CDPHTTPResponse extends HTTPResponse {
   #client: CDPSession;
-  #request: HTTPRequest;
+  #request: CDPHTTPRequest;
   #contentPromise: Promise<Buffer> | null = null;
   #bodyLoadedDeferred = Deferred.create<Error | void>();
   #remoteAddress: RemoteAddress;
@@ -47,7 +44,7 @@ export class HTTPResponse extends BaseHTTPResponse {
 
   constructor(
     client: CDPSession,
-    request: HTTPRequest,
+    request: CDPHTTPRequest,
     responsePayload: Protocol.Network.Response,
     extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null
   ) {
@@ -171,7 +168,7 @@ export class HTTPResponse extends BaseHTTPResponse {
     return this.#contentPromise;
   }
 
-  override request(): HTTPRequest {
+  override request(): CDPHTTPRequest {
     return this.#request;
   }
 

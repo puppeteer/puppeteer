@@ -20,7 +20,7 @@ import expect from 'expect';
 
 import {ConnectionTransport} from '../ConnectionTransport.js';
 
-import {Connection} from './Connection.js';
+import {BidiConnection} from './Connection.js';
 
 describe('WebDriver BiDi Connection', () => {
   class TestConnectionTransport implements ConnectionTransport {
@@ -38,7 +38,7 @@ describe('WebDriver BiDi Connection', () => {
 
   it('should work', async () => {
     const transport = new TestConnectionTransport();
-    const connection = new Connection('ws://127.0.0.1', transport);
+    const connection = new BidiConnection('ws://127.0.0.1', transport);
     const responsePromise = connection.send('session.new', {
       capabilities: {},
     });
@@ -48,6 +48,7 @@ describe('WebDriver BiDi Connection', () => {
     const id = JSON.parse(transport.sent[0]!).id;
     const rawResponse = {
       id,
+      type: 'success',
       result: {ready: false, message: 'already connected'},
     };
     (transport as ConnectionTransport).onmessage?.(JSON.stringify(rawResponse));

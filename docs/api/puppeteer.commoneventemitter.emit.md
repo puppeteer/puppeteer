@@ -8,16 +8,16 @@ sidebar_label: CommonEventEmitter.emit
 
 ```typescript
 interface CommonEventEmitter {
-  emit(event: EventType, eventData?: unknown): boolean;
+  emit<Key extends keyof Events>(type: Key, event: Events[Key]): boolean;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                  | Description  |
-| --------- | ------------------------------------- | ------------ |
-| event     | [EventType](./puppeteer.eventtype.md) |              |
-| eventData | unknown                               | _(Optional)_ |
+| Parameter | Type          | Description |
+| --------- | ------------- | ----------- |
+| type      | Key           |             |
+| event     | Events\[Key\] |             |
 
 **Returns:**
 

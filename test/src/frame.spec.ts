@@ -15,8 +15,8 @@
  */
 
 import expect from 'expect';
+import {CDPSession} from 'puppeteer-core/internal/api/CDPSession.js';
 import {Frame} from 'puppeteer-core/internal/api/Frame.js';
-import {CDPSession} from 'puppeteer-core/internal/common/Connection.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {

@@ -16,12 +16,12 @@
 
 import {Protocol} from 'devtools-protocol';
 
+import {CDPSession} from '../api/CDPSession.js';
 import {AutofillData, ElementHandle, Point} from '../api/ElementHandle.js';
 import {Page, ScreenshotOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {throwIfDisposed} from '../util/decorators.js';
 
-import {CDPSession} from './Connection.js';
 import {CDPFrame} from './Frame.js';
 import {FrameManager} from './FrameManager.js';
 import {IsolatedWorld} from './IsolatedWorld.js';

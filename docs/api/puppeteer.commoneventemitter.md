@@ -7,18 +7,18 @@ sidebar_label: CommonEventEmitter
 #### Signature:
 
 ```typescript
-export interface CommonEventEmitter
+export interface CommonEventEmitter<Events extends Record<EventType, unknown>>
 ```
 
 ## Methods
 
-| Method                                                                             | Description |
-| ---------------------------------------------------------------------------------- | ----------- |
-| [addListener(event, handler)](./puppeteer.commoneventemitter.addlistener.md)       |             |
-| [emit(event, eventData)](./puppeteer.commoneventemitter.emit.md)                   |             |
-| [listenerCount(event)](./puppeteer.commoneventemitter.listenercount.md)            |             |
-| [off(event, handler)](./puppeteer.commoneventemitter.off.md)                       |             |
-| [on(event, handler)](./puppeteer.commoneventemitter.on.md)                         |             |
-| [once(event, handler)](./puppeteer.commoneventemitter.once.md)                     |             |
-| [removeAllListeners(event)](./puppeteer.commoneventemitter.removealllisteners.md)  |             |
-| [removeListener(event, handler)](./puppeteer.commoneventemitter.removelistener.md) |             |
+| Method                                                                            | Description |
+| --------------------------------------------------------------------------------- | ----------- |
+| [addListener(type, handler)](./puppeteer.commoneventemitter.addlistener.md)       |             |
+| [emit(type, event)](./puppeteer.commoneventemitter.emit.md)                       |             |
+| [listenerCount(event)](./puppeteer.commoneventemitter.listenercount.md)           |             |
+| [off(type, handler)](./puppeteer.commoneventemitter.off.md)                       |             |
+| [on(type, handler)](./puppeteer.commoneventemitter.on.md)                         |             |
+| [once(type, handler)](./puppeteer.commoneventemitter.once.md)                     |             |
+| [removeAllListeners(event)](./puppeteer.commoneventemitter.removealllisteners.md) |             |
+| [removeListener(type, handler)](./puppeteer.commoneventemitter.removelistener.md) |             |

@@ -20,6 +20,7 @@ import {Protocol} from 'devtools-protocol';
 
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
+import {CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {ElementHandle} from '../api/ElementHandle.js';
 import {Frame} from '../api/Frame.js';
 import {HTTPRequest} from '../api/HTTPRequest.js';
@@ -31,7 +32,7 @@ import {
   Metrics,
   NewDocumentScriptEvaluation,
   Page,
-  PageEmittedEvents,
+  PageEvent,
   ScreenshotClip,
   ScreenshotOptions,
   WaitForOptions,
@@ -43,33 +44,28 @@ import {isErrorLike} from '../util/ErrorLike.js';
 
 import {Accessibility} from './Accessibility.js';
 import {Binding} from './Binding.js';
-import {
-  CDPSession,
-  CDPSessionEmittedEvents,
-  CDPSessionImpl,
-  isTargetClosedError,
-} from './Connection.js';
+import {CDPCDPSession} from './CDPSession.js';
+import {isTargetClosedError} from './Connection.js';
 import {ConsoleMessage, ConsoleMessageType} from './ConsoleMessage.js';
 import {Coverage} from './Coverage.js';
 import {DeviceRequestPrompt} from './DeviceRequestPrompt.js';
 import {CDPDialog} from './Dialog.js';
 import {EmulationManager} from './EmulationManager.js';
 import {TargetCloseError} from './Errors.js';
-import {Handler} from './EventEmitter.js';
 import {FileChooser} from './FileChooser.js';
 import {CDPFrame} from './Frame.js';
-import {FrameManager, FrameManagerEmittedEvents} from './FrameManager.js';
+import {FrameManager, FrameManagerEvent} from './FrameManager.js';
 import {CDPKeyboard, CDPMouse, CDPTouchscreen} from './Input.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
 import {
   Credentials,
   NetworkConditions,
-  NetworkManagerEmittedEvents,
+  NetworkManagerEvent,
 } from './NetworkManager.js';
 import {PDFOptions} from './PDFOptions.js';
 import {Viewport} from './PuppeteerViewport.js';
 import {CDPTarget} from './Target.js';
-import {TargetManagerEmittedEvents} from './TargetManager.js';
+import {TargetManagerEvent} from './TargetManager.js';
 import {TaskQueue} from './TaskQueue.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {Tracing} from './Tracing.js';
@@ -146,58 +142,81 @@ export class CDPPage extends Page {
   #serviceWorkerBypassed = false;
   #userDragInterceptionEnabled = false;
 
-  #frameManagerHandlers = new Map<symbol, Handler<any>>([
+  #frameManagerHandlers = Object.freeze([
     [
-      FrameManagerEmittedEvents.FrameAttached,
-      this.emit.bind(this, PageEmittedEvents.FrameAttached),
+      FrameManagerEvent.FrameAttached,
+      (frame: CDPFrame) => {
+        this.emit(PageEvent.FrameAttached, frame);
+      },
     ],
     [
-      FrameManagerEmittedEvents.FrameDetached,
-      this.emit.bind(this, PageEmittedEvents.FrameDetached),
+      FrameManagerEvent.FrameDetached,
+      (frame: CDPFrame) => {
+        this.emit(PageEvent.FrameDetached, frame);
+      },
     ],
     [
-      FrameManagerEmittedEvents.FrameNavigated,
-      this.emit.bind(this, PageEmittedEvents.FrameNavigated),
+      FrameManagerEvent.FrameNavigated,
+      (frame: CDPFrame) => {
+        this.emit(PageEvent.FrameNavigated, frame);
+      },
     ],
-  ]);
+  ] as const);
 
-  #networkManagerHandlers = new Map<symbol, Handler<any>>([
+  #networkManagerHandlers = Object.freeze([
     [
-      NetworkManagerEmittedEvents.Request,
-      this.emit.bind(this, PageEmittedEvents.Request),
+      NetworkManagerEvent.Request,
+      (request: HTTPRequest) => {
+        this.emit(PageEvent.Request, request);
+      },
     ],
     [
-      NetworkManagerEmittedEvents.RequestServedFromCache,
-      this.emit.bind(this, PageEmittedEvents.RequestServedFromCache),
+      NetworkManagerEvent.RequestServedFromCache,
+      (request: HTTPRequest) => {
+        this.emit(PageEvent.RequestServedFromCache, request);
+      },
     ],
     [
-      NetworkManagerEmittedEvents.Response,
-      this.emit.bind(this, PageEmittedEvents.Response),
+      NetworkManagerEvent.Response,
+      (response: HTTPResponse) => {
+        this.emit(PageEvent.Response, response);
+      },
     ],
     [
-      NetworkManagerEmittedEvents.RequestFailed,
-      this.emit.bind(this, PageEmittedEvents.RequestFailed),
+      NetworkManagerEvent.RequestFailed,
+      (request: HTTPRequest) => {
+        this.emit(PageEvent.RequestFailed, request);
+      },
     ],
     [
-      NetworkManagerEmittedEvents.RequestFinished,
-      this.emit.bind(this, PageEmittedEvents.RequestFinished),
+      NetworkManagerEvent.RequestFinished,
+      (request: HTTPRequest) => {
+        this.emit(PageEvent.RequestFinished, request);
+      },
     ],
-  ]);
+  ] as const);
 
-  #sessionHandlers = new Map<symbol | string, Handler<any>>([
+  #sessionHandlers = Object.freeze([
     [
-      CDPSessionEmittedEvents.Disconnected,
+      CDPSessionEvent.Disconnected,
       () => {
-        return this.#sessionCloseDeferred.resolve(
+        this.#sessionCloseDeferred.resolve(
           new TargetCloseError('Target closed')
         );
       },
     ],
     [
       'Page.domContentEventFired',
-      this.emit.bind(this, PageEmittedEvents.DOMContentLoaded),
+      () => {
+        return this.emit(PageEvent.DOMContentLoaded, undefined);
+      },
     ],
-    ['Page.loadEventFired', this.emit.bind(this, PageEmittedEvents.Load)],
+    [
+      'Page.loadEventFired',
+      () => {
+        return this.emit(PageEvent.Load, undefined);
+      },
+    ],
     ['Runtime.consoleAPICalled', this.#onConsoleAPI.bind(this)],
     ['Runtime.bindingCalled', this.#onBindingCalled.bind(this)],
     ['Page.javascriptDialogOpening', this.#onDialog.bind(this)],
@@ -206,7 +225,7 @@ export class CDPPage extends Page {
     ['Performance.metrics', this.#emitMetrics.bind(this)],
     ['Log.entryAdded', this.#onLogEntryAdded.bind(this)],
     ['Page.fileChooserOpened', this.#onFileChooser.bind(this)],
-  ]);
+  ] as const);
 
   constructor(
     client: CDPSession,
@@ -236,10 +255,10 @@ export class CDPPage extends Page {
 
     this.#setupEventListeners();
 
-    this.#tabSession?.on(CDPSessionEmittedEvents.Swapped, async newSession => {
+    this.#tabSession?.on(CDPSessionEvent.Swapped, async newSession => {
       this.#client = newSession;
       assert(
-        this.#client instanceof CDPSessionImpl,
+        this.#client instanceof CDPCDPSession,
         'CDPSession is not instance of CDPSessionImpl'
       );
       this.#target = this.#client._target();
@@ -254,57 +273,49 @@ export class CDPPage extends Page {
       await this.#frameManager.swapFrameTree(newSession);
       this.#setupEventListeners();
     });
-    this.#tabSession?.on(
-      CDPSessionEmittedEvents.Ready,
-      (session: CDPSessionImpl) => {
-        if (session._target()._subtype() !== 'prerender') {
-          return;
-        }
-        this.#frameManager
-          .registerSpeculativeSession(session)
-          .catch(debugError);
-        this.#emulationManager
-          .registerSpeculativeSession(session)
-          .catch(debugError);
+    this.#tabSession?.on(CDPSessionEvent.Ready, session => {
+      assert(session instanceof CDPCDPSession);
+      if (session._target()._subtype() !== 'prerender') {
+        return;
       }
-    );
+      this.#frameManager.registerSpeculativeSession(session).catch(debugError);
+      this.#emulationManager
+        .registerSpeculativeSession(session)
+        .catch(debugError);
+    });
   }
 
   #setupEventListeners() {
-    this.#client.on(CDPSessionEmittedEvents.Ready, this.#onAttachedToTarget);
+    this.#client.on(CDPSessionEvent.Ready, this.#onAttachedToTarget);
 
     this.#target
       ._targetManager()
-      .on(TargetManagerEmittedEvents.TargetGone, this.#onDetachedFromTarget);
+      .on(TargetManagerEvent.TargetGone, this.#onDetachedFromTarget);
 
     for (const [eventName, handler] of this.#frameManagerHandlers) {
       this.#frameManager.on(eventName, handler);
     }
 
     for (const [eventName, handler] of this.#networkManagerHandlers) {
-      this.#frameManager.networkManager.on(eventName, handler);
+      // TODO: Remove any.
+      this.#frameManager.networkManager.on(eventName, handler as any);
     }
 
     for (const [eventName, handler] of this.#sessionHandlers) {
-      this.#client.on(eventName, handler);
+      // TODO: Remove any.
+      this.#client.on(eventName, handler as any);
     }
 
     this.#target._isClosedDeferred
       .valueOrThrow()
       .then(() => {
-        this.#client.off(
-          CDPSessionEmittedEvents.Ready,
-          this.#onAttachedToTarget
-        );
+        this.#client.off(CDPSessionEvent.Ready, this.#onAttachedToTarget);
 
         this.#target
           ._targetManager()
-          .off(
-            TargetManagerEmittedEvents.TargetGone,
-            this.#onDetachedFromTarget
-          );
+          .off(TargetManagerEvent.TargetGone, this.#onDetachedFromTarget);
 
-        this.emit(PageEmittedEvents.Close);
+        this.emit(PageEvent.Close, undefined);
         this.#closed = true;
       })
       .catch(debugError);
@@ -317,10 +328,11 @@ export class CDPPage extends Page {
       return;
     }
     this.#workers.delete(sessionId!);
-    this.emit(PageEmittedEvents.WorkerDestroyed, worker);
+    this.emit(PageEvent.WorkerDestroyed, worker);
   };
 
-  #onAttachedToTarget = (session: CDPSessionImpl) => {
+  #onAttachedToTarget = (session: CDPSession) => {
+    assert(session instanceof CDPCDPSession);
     this.#frameManager.onAttachedToTarget(session._target());
     if (session._target()._getTargetInfo().type === 'worker') {
       const worker = new WebWorker(
@@ -330,9 +342,9 @@ export class CDPPage extends Page {
         this.#handleException.bind(this)
       );
       this.#workers.set(session.id(), worker);
-      this.emit(PageEmittedEvents.WorkerCreated, worker);
+      this.emit(PageEvent.WorkerCreated, worker);
     }
-    session.on(CDPSessionEmittedEvents.Ready, this.#onAttachedToTarget);
+    session.on(CDPSessionEvent.Ready, this.#onAttachedToTarget);
   };
 
   async #initialize(): Promise<void> {
@@ -434,7 +446,7 @@ export class CDPPage extends Page {
   }
 
   #onTargetCrashed(): void {
-    this.emit('error', new Error('Page crashed!'));
+    this.emit(PageEvent.Error, new Error('Page crashed!'));
   }
 
   #onLogEntryAdded(event: Protocol.Log.EntryAddedEvent): void {
@@ -446,7 +458,7 @@ export class CDPPage extends Page {
     }
     if (source !== 'worker') {
       this.emit(
-        PageEmittedEvents.Console,
+        PageEvent.Console,
         new ConsoleMessage(level, text, [], [{url, lineNumber}])
       );
     }
@@ -703,7 +715,7 @@ export class CDPPage extends Page {
   }
 
   #emitMetrics(event: Protocol.Performance.MetricsEvent): void {
-    this.emit(PageEmittedEvents.Metrics, {
+    this.emit(PageEvent.Metrics, {
       title: event.title,
       metrics: this.#buildMetricsObject(event.metrics),
     });
@@ -724,7 +736,7 @@ export class CDPPage extends Page {
 
   #handleException(exception: Protocol.Runtime.ExceptionThrownEvent): void {
     this.emit(
-      PageEmittedEvents.PageError,
+      PageEvent.PageError,
       createClientError(exception.exceptionDetails)
     );
   }
@@ -801,7 +813,7 @@ export class CDPPage extends Page {
     args: JSHandle[],
     stackTrace?: Protocol.Runtime.StackTrace
   ): void {
-    if (!this.listenerCount(PageEmittedEvents.Console)) {
+    if (!this.listenerCount(PageEvent.Console)) {
       args.forEach(arg => {
         return arg.dispose();
       });
@@ -834,7 +846,7 @@ export class CDPPage extends Page {
       args,
       stackTraceLocations
     );
-    this.emit(PageEmittedEvents.Console, message);
+    this.emit(PageEvent.Console, message);
   }
 
   #onDialog(event: Protocol.Page.JavascriptDialogOpeningEvent): void {
@@ -845,7 +857,7 @@ export class CDPPage extends Page {
       event.message,
       event.defaultPrompt
     );
-    this.emit(PageEmittedEvents.Dialog, dialog);
+    this.emit(PageEvent.Dialog, dialog);
   }
 
   override async reload(
@@ -870,7 +882,7 @@ export class CDPPage extends Page {
     const {timeout = this.#timeoutSettings.timeout()} = options;
     return await waitForEvent(
       this.#frameManager.networkManager,
-      NetworkManagerEmittedEvents.Request,
+      NetworkManagerEvent.Request,
       async request => {
         if (isString(urlOrPredicate)) {
           return urlOrPredicate === request.url();
@@ -894,7 +906,7 @@ export class CDPPage extends Page {
     const {timeout = this.#timeoutSettings.timeout()} = options;
     return await waitForEvent(
       this.#frameManager.networkManager,
-      NetworkManagerEmittedEvents.Response,
+      NetworkManagerEvent.Response,
       async response => {
         if (isString(urlOrPredicate)) {
           return urlOrPredicate === response.url();

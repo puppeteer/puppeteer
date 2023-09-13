@@ -16,14 +16,14 @@
 
 import {Protocol} from 'devtools-protocol';
 
-import {Frame, throwIfDetached} from '../api/Frame.js';
+import {CDPSession} from '../api/CDPSession.js';
+import {Frame, FrameEvent, throwIfDetached} from '../api/Frame.js';
 import {HTTPResponse} from '../api/HTTPResponse.js';
 import {Page, WaitTimeoutOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
-import {CDPSession} from './Connection.js';
 import {
   DeviceRequestPrompt,
   DeviceRequestPromptManager,
@@ -33,21 +33,6 @@ import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher.js';
 import {setPageContent} from './util.js';
-
-/**
- * We use symbols to prevent external parties listening to these events.
- * They are internal to Puppeteer.
- *
- * @internal
- */
-export const FrameEmittedEvents = {
-  FrameNavigated: Symbol('Frame.FrameNavigated'),
-  FrameSwapped: Symbol('Frame.FrameSwapped'),
-  LifecycleEvent: Symbol('Frame.LifecycleEvent'),
-  FrameNavigatedWithinDocument: Symbol('Frame.FrameNavigatedWithinDocument'),
-  FrameDetached: Symbol('Frame.FrameDetached'),
-  FrameSwappedByActivation: Symbol('Frame.FrameSwappedByActivation'),
-};
 
 /**
  * @internal
@@ -80,7 +65,7 @@ export class CDPFrame extends Frame {
 
     this.updateClient(client);
 
-    this.on(FrameEmittedEvents.FrameSwappedByActivation, () => {
+    this.on(FrameEvent.FrameSwappedByActivation, () => {
       // Emulate loading process for swapped frames.
       this._onLoadingStarted();
       this._onLoadingStopped();

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import Protocol from 'devtools-protocol';
+
 import {ClickOptions, ElementHandle} from '../api/ElementHandle.js';
 import {HTTPResponse} from '../api/HTTPResponse.js';
 import {Page, WaitTimeoutOptions} from '../api/Page.js';
-import {CDPSession} from '../common/Connection.js';
 import {DeviceRequestPrompt} from '../common/DeviceRequestPrompt.js';
-import {EventEmitter} from '../common/EventEmitter.js';
+import {EventEmitter, EventType} from '../common/EventEmitter.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {transposeIterableHandle} from '../common/HandleIterator.js';
 import {
@@ -43,6 +44,7 @@ import {
 import {assert} from '../util/assert.js';
 import {throwIfDisposed} from '../util/decorators.js';
 
+import {CDPSession} from './CDPSession.js';
 import {KeyboardTypeOptions} from './Input.js';
 import {FunctionLocator, Locator, NodeLocator} from './locators/locators.js';
 import {Realm} from './Realm.js';
@@ -128,6 +130,44 @@ export interface FrameAddStyleTagOptions {
 }
 
 /**
+ * @public
+ */
+export interface FrameEvents extends Record<EventType, unknown> {
+  /** @internal */
+  [FrameEvent.FrameNavigated]: Protocol.Page.NavigationType;
+  /** @internal */
+  [FrameEvent.FrameSwapped]: undefined;
+  /** @internal */
+  [FrameEvent.LifecycleEvent]: undefined;
+  /** @internal */
+  [FrameEvent.FrameNavigatedWithinDocument]: undefined;
+  /** @internal */
+  [FrameEvent.FrameDetached]: Frame;
+  /** @internal */
+  [FrameEvent.FrameSwappedByActivation]: undefined;
+}
+
+/**
+ * We use symbols to prevent external parties listening to these events.
+ * They are internal to Puppeteer.
+ *
+ * @internal
+ */
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace FrameEvent {
+  export const FrameNavigated = Symbol('Frame.FrameNavigated');
+  export const FrameSwapped = Symbol('Frame.FrameSwapped');
+  export const LifecycleEvent = Symbol('Frame.LifecycleEvent');
+  export const FrameNavigatedWithinDocument = Symbol(
+    'Frame.FrameNavigatedWithinDocument'
+  );
+  export const FrameDetached = Symbol('Frame.FrameDetached');
+  export const FrameSwappedByActivation = Symbol(
+    'Frame.FrameSwappedByActivation'
+  );
+}
+
+/**
  * @internal
  */
 export const throwIfDetached = throwIfDisposed<Frame>(frame => {
@@ -181,13 +221,13 @@ export const throwIfDetached = throwIfDisposed<Frame>(frame => {
  * Frame lifecycles are controlled by three events that are all dispatched on
  * the parent {@link Frame.page | page}:
  *
- * - {@link PageEmittedEvents.FrameAttached}
- * - {@link PageEmittedEvents.FrameNavigated}
- * - {@link PageEmittedEvents.FrameDetached}
+ * - {@link PageEvent.FrameAttached}
+ * - {@link PageEvent.FrameNavigated}
+ * - {@link PageEvent.FrameDetached}
  *
  * @public
  */
-export abstract class Frame extends EventEmitter {
+export abstract class Frame extends EventEmitter<FrameEvents> {
   /**
    * @internal
    */

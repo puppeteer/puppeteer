@@ -371,7 +371,7 @@ export class ProductLauncher {
     const BiDi = await import(
       /* webpackIgnore: true */ '../common/bidi/bidi.js'
     );
-    const bidiConnection = new BiDi.Connection(
+    const bidiConnection = new BiDi.BidiConnection(
       browserWSEndpoint,
       transport,
       opts.slowMo,

@@ -8,15 +8,15 @@ sidebar_label: CommonEventEmitter.listenerCount
 
 ```typescript
 interface CommonEventEmitter {
-  listenerCount(event: string): number;
+  listenerCount(event: keyof Events): number;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type   | Description |
-| --------- | ------ | ----------- |
-| event     | string |             |
+| Parameter | Type         | Description |
+| --------- | ------------ | ----------- |
+| event     | keyof Events |             |
 
 **Returns:**
 

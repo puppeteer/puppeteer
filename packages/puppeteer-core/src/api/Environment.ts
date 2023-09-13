@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import {CDPSession} from '../common/Connection.js';
-
+import {CDPSession} from './CDPSession.js';
 import {Realm} from './Realm.js';
 
 /**

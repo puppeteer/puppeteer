@@ -15,10 +15,10 @@ One Browser instance might have multiple Page instances.
 #### Signature:
 
 ```typescript
-export declare abstract class Page extends EventEmitter implements AsyncDisposable, Disposable
+export declare abstract class Page extends EventEmitter<PageEvents> implements AsyncDisposable, Disposable
 ```
 
-**Extends:** [EventEmitter](./puppeteer.eventemitter.md)
+**Extends:** [EventEmitter](./puppeteer.eventemitter.md)&lt;[PageEvents](./puppeteer.pageevents.md)&gt;
 
 **Implements:** AsyncDisposable, Disposable
 
@@ -42,7 +42,7 @@ import puppeteer from 'puppeteer';
 })();
 ```
 
-The Page class extends from Puppeteer's [EventEmitter](./puppeteer.eventemitter.md) class and will emit various events which are documented in the [PageEmittedEvents](./puppeteer.pageemittedevents.md) enum.
+The Page class extends from Puppeteer's [EventEmitter](./puppeteer.eventemitter.md) class and will emit various events which are documented in the [PageEvent](./puppeteer.pageevent.md) enum.
 
 ## Example 2
 
@@ -52,7 +52,7 @@ This example logs a message for a single page `load` event:
 page.once('load', () => console.log('Page loaded!'));
 ```
 
-To unsubscribe from events use the [Page.off()](./puppeteer.page.off.md) method:
+To unsubscribe from events use the [EventEmitter.off()](./puppeteer.eventemitter.off.md) method:
 
 ```ts
 function logRequest(interceptedRequest) {
@@ -126,9 +126,6 @@ page.off('request', logRequest);
 | [locator(func)](./puppeteer.page.locator_1.md)                                                             |           | Creates a locator for the provided function. See [Locator](./puppeteer.locator.md) for details and supported actions.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | [mainFrame()](./puppeteer.page.mainframe.md)                                                               |           | The page's main frame.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | [metrics()](./puppeteer.page.metrics.md)                                                                   |           | Object containing metrics as key/value pairs.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| [off(eventName, handler)](./puppeteer.page.off.md)                                                         |           |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| [on(eventName, handler)](./puppeteer.page.on.md)                                                           |           | <p>Listen to page events.</p><p>:::note</p><p>This method exists to define event typings and handle proper wireup of cooperative request interception. Actual event listening and dispatching is delegated to [EventEmitter](./puppeteer.eventemitter.md).</p><p>:::</p>                                                                                                                                                                                                                                                                                                                                |
-| [once(eventName, handler)](./puppeteer.page.once.md)                                                       |           |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | [pdf(options)](./puppeteer.page.pdf.md)                                                                    |           | Generates a PDF of the page with the <code>print</code> CSS media type.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | [queryObjects(prototypeHandle)](./puppeteer.page.queryobjects.md)                                          |           | This method iterates the JavaScript heap and finds all objects with the given prototype.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | [reload(options)](./puppeteer.page.reload.md)                                                              |           |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |

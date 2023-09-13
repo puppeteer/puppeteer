@@ -18,6 +18,8 @@ import {describe, it} from 'node:test';
 
 import expect from 'expect';
 
+import {CDPSessionEvents} from '../api/CDPSession.js';
+
 import {
   DeviceRequestPrompt,
   DeviceRequestPromptDevice,
@@ -27,7 +29,7 @@ import {TimeoutError} from './Errors.js';
 import {EventEmitter} from './EventEmitter.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 
-class MockCDPSession extends EventEmitter {
+class MockCDPSession extends EventEmitter<CDPSessionEvents> {
   async send(): Promise<any> {}
   connection() {
     return undefined;

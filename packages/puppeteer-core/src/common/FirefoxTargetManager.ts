@@ -17,16 +17,18 @@
 import {Protocol} from 'devtools-protocol';
 
 import {TargetFilterCallback} from '../api/Browser.js';
+import {CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
-import {CDPSession, CDPSessionEmittedEvents, Connection} from './Connection.js';
+import {Connection} from './Connection.js';
 import {EventEmitter} from './EventEmitter.js';
 import {CDPTarget} from './Target.js';
 import {
   TargetFactory,
-  TargetManagerEmittedEvents,
+  TargetManagerEvent,
   TargetManager,
+  TargetManagerEvents,
 } from './TargetManager.js';
 
 /**
@@ -44,7 +46,7 @@ import {
  *   @internal
  */
 export class FirefoxTargetManager
-  extends EventEmitter
+  extends EventEmitter<TargetManagerEvents>
   implements TargetManager
 {
   #connection: Connection;
@@ -98,7 +100,10 @@ export class FirefoxTargetManager
 
     this.#connection.on('Target.targetCreated', this.#onTargetCreated);
     this.#connection.on('Target.targetDestroyed', this.#onTargetDestroyed);
-    this.#connection.on('sessiondetached', this.#onSessionDetached);
+    this.#connection.on(
+      CDPSessionEvent.SessionDetached,
+      this.#onSessionDetached
+    );
     this.setupAttachmentListeners(this.#connection);
   }
 
@@ -172,7 +177,7 @@ export class FirefoxTargetManager
     }
     target._initialize();
     this.#availableTargetsByTargetId.set(event.targetInfo.targetId, target);
-    this.emit(TargetManagerEmittedEvents.TargetAvailable, target);
+    this.emit(TargetManagerEvent.TargetAvailable, target);
     this.#finishInitializationIfReady(target._targetId);
   };
 
@@ -181,7 +186,7 @@ export class FirefoxTargetManager
     this.#finishInitializationIfReady(event.targetId);
     const target = this.#availableTargetsByTargetId.get(event.targetId);
     if (target) {
-      this.emit(TargetManagerEmittedEvents.TargetGone, target);
+      this.emit(TargetManagerEvent.TargetGone, target);
       this.#availableTargetsByTargetId.delete(event.targetId);
     }
   };
@@ -207,7 +212,7 @@ export class FirefoxTargetManager
       this.#availableTargetsByTargetId.get(targetInfo.targetId)!
     );
 
-    parentSession.emit(CDPSessionEmittedEvents.Ready, session);
+    parentSession.emit(CDPSessionEvent.Ready, session);
   };
 
   #finishInitializationIfReady(targetId: string): void {

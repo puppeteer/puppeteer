@@ -288,7 +288,7 @@ describe('navigation', function () {
       let error!: Error;
       let loaded = false;
       page.once('load', () => {
-        return (loaded = true);
+        loaded = true;
       });
       await page
         .goto(server.PREFIX + '/grid.html', {timeout: 0, waitUntil: ['load']})

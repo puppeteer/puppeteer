@@ -19,6 +19,8 @@ import type {Readable} from 'stream';
 import {Protocol} from 'devtools-protocol';
 
 import {
+  delay,
+  filter,
   filterAsync,
   first,
   firstValueFrom,
@@ -27,30 +29,34 @@ import {
   map,
   merge,
   Observable,
-  raceWith,
-  delay,
-  filter,
   of,
-  switchMap,
+  raceWith,
   startWith,
+  switchMap,
 } from '../../third_party/rxjs/rxjs.js';
 import type {HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
 import type {Accessibility} from '../common/Accessibility.js';
-import type {CDPSession} from '../common/Connection.js';
+import type {BidiNetworkManager} from '../common/bidi/NetworkManager.js';
 import type {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {Coverage} from '../common/Coverage.js';
 import {Device} from '../common/Device.js';
 import {DeviceRequestPrompt} from '../common/DeviceRequestPrompt.js';
 import {TargetCloseError} from '../common/Errors.js';
-import {EventEmitter, Handler} from '../common/EventEmitter.js';
+import {
+  EventEmitter,
+  EventsWithWildcard,
+  EventType,
+  Handler,
+} from '../common/EventEmitter.js';
 import type {FileChooser} from '../common/FileChooser.js';
 import type {WaitForSelectorOptions} from '../common/IsolatedWorld.js';
 import type {PuppeteerLifeCycleEvent} from '../common/LifecycleWatcher.js';
 import {
+  NetworkManager as CdpNetworkManager,
   Credentials,
   NetworkConditions,
-  NetworkManagerEmittedEvents,
+  NetworkManagerEvent,
 } from '../common/NetworkManager.js';
 import {
   LowerCasePaperFormat,
@@ -81,6 +87,7 @@ import {Deferred} from '../util/Deferred.js';
 
 import type {Browser} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';
+import type {CDPSession} from './CDPSession.js';
 import type {Dialog} from './Dialog.js';
 import type {ClickOptions, ElementHandle} from './ElementHandle.js';
 import type {
@@ -249,7 +256,7 @@ export interface ScreenshotOptions {
  *
  * @public
  */
-export const enum PageEmittedEvents {
+export const enum PageEvent {
   /**
    * Emitted when the page closes.
    */
@@ -396,35 +403,51 @@ export const enum PageEmittedEvents {
   WorkerDestroyed = 'workerdestroyed',
 }
 
+export {
+  /**
+   * All the events that a page instance may emit.
+   *
+   * @deprecated Use {@link PageEvent}.
+   */
+  PageEvent as PageEmittedEvents,
+};
+
 /**
  * Denotes the objects received by callback functions for page events.
  *
- * See {@link PageEmittedEvents} for more detail on the events and when they are
+ * See {@link PageEvent} for more detail on the events and when they are
  * emitted.
  *
  * @public
  */
-export interface PageEventObject {
-  close: never;
-  console: ConsoleMessage;
-  dialog: Dialog;
-  domcontentloaded: never;
-  error: Error;
-  frameattached: Frame;
-  framedetached: Frame;
-  framenavigated: Frame;
-  load: never;
-  metrics: {title: string; metrics: Metrics};
-  pageerror: Error;
-  popup: Page;
-  request: HTTPRequest;
-  response: HTTPResponse;
-  requestfailed: HTTPRequest;
-  requestfinished: HTTPRequest;
-  requestservedfromcache: HTTPRequest;
-  workercreated: WebWorker;
-  workerdestroyed: WebWorker;
+export interface PageEvents extends Record<EventType, unknown> {
+  [PageEvent.Close]: undefined;
+  [PageEvent.Console]: ConsoleMessage;
+  [PageEvent.Dialog]: Dialog;
+  [PageEvent.DOMContentLoaded]: undefined;
+  [PageEvent.Error]: Error;
+  [PageEvent.FrameAttached]: Frame;
+  [PageEvent.FrameDetached]: Frame;
+  [PageEvent.FrameNavigated]: Frame;
+  [PageEvent.Load]: undefined;
+  [PageEvent.Metrics]: {title: string; metrics: Metrics};
+  [PageEvent.PageError]: Error;
+  [PageEvent.Popup]: Page | null;
+  [PageEvent.Request]: HTTPRequest;
+  [PageEvent.Response]: HTTPResponse;
+  [PageEvent.RequestFailed]: HTTPRequest;
+  [PageEvent.RequestFinished]: HTTPRequest;
+  [PageEvent.RequestServedFromCache]: HTTPRequest;
+  [PageEvent.WorkerCreated]: WebWorker;
+  [PageEvent.WorkerDestroyed]: WebWorker;
 }
+
+export {
+  /**
+   * @deprecated Use {@link PageEvents}.
+   */
+  PageEvents as PageEventObject,
+};
 
 /**
  * @public
@@ -460,7 +483,7 @@ export interface NewDocumentScriptEvaluation {
  * ```
  *
  * The Page class extends from Puppeteer's {@link EventEmitter} class and will
- * emit various events which are documented in the {@link PageEmittedEvents} enum.
+ * emit various events which are documented in the {@link PageEvent} enum.
  *
  * @example
  * This example logs a message for a single page `load` event:
@@ -469,7 +492,7 @@ export interface NewDocumentScriptEvaluation {
  * page.once('load', () => console.log('Page loaded!'));
  * ```
  *
- * To unsubscribe from events use the {@link Page.off} method:
+ * To unsubscribe from events use the {@link EventEmitter.off} method:
  *
  * ```ts
  * function logRequest(interceptedRequest) {
@@ -483,10 +506,10 @@ export interface NewDocumentScriptEvaluation {
  * @public
  */
 export abstract class Page
-  extends EventEmitter
+  extends EventEmitter<PageEvents>
   implements AsyncDisposable, Disposable
 {
-  #handlerMap = new WeakMap<Handler<any>, Handler<any>>();
+  #requestHandlers = new WeakMap<Handler<HTTPRequest>, Handler<HTTPRequest>>();
 
   /**
    * @internal
@@ -519,52 +542,56 @@ export abstract class Page
   /**
    * Listen to page events.
    *
-   * :::note
-   *
+   * @remarks
    * This method exists to define event typings and handle proper wireup of
    * cooperative request interception. Actual event listening and dispatching is
    * delegated to {@link EventEmitter}.
    *
-   * :::
+   * @internal
    */
-  override on<K extends keyof PageEventObject>(
-    eventName: K,
-    handler: (event: PageEventObject[K]) => void
+  override on<K extends keyof EventsWithWildcard<PageEvents>>(
+    type: K,
+    handler: (event: EventsWithWildcard<PageEvents>[K]) => void
   ): this {
-    if (eventName === 'request') {
-      const wrap =
-        this.#handlerMap.get(handler) ||
-        ((event: HTTPRequest) => {
-          event.enqueueInterceptAction(() => {
-            return handler(event as PageEventObject[K]);
-          });
+    if (type !== PageEvent.Request) {
+      return super.on(type, handler);
+    }
+    let wrapper = this.#requestHandlers.get(
+      handler as (event: PageEvents[PageEvent.Request]) => void
+    );
+    if (wrapper === undefined) {
+      wrapper = (event: HTTPRequest) => {
+        event.enqueueInterceptAction(() => {
+          return handler(event as EventsWithWildcard<PageEvents>[K]);
         });
-
-      this.#handlerMap.set(handler, wrap);
-
-      return super.on(eventName, wrap);
+      };
+      this.#requestHandlers.set(
+        handler as (event: PageEvents[PageEvent.Request]) => void,
+        wrapper
+      );
     }
-    return super.on(eventName, handler);
+    return super.on(
+      type,
+      wrapper as (event: EventsWithWildcard<PageEvents>[K]) => void
+    );
   }
 
-  override once<K extends keyof PageEventObject>(
-    eventName: K,
-    handler: (event: PageEventObject[K]) => void
+  /**
+   * @internal
+   */
+  override off<K extends keyof EventsWithWildcard<PageEvents>>(
+    type: K,
+    handler: (event: EventsWithWildcard<PageEvents>[K]) => void
   ): this {
-    // Note: this method only exists to define the types; we delegate the impl
-    // to EventEmitter.
-    return super.once(eventName, handler);
-  }
-
-  override off<K extends keyof PageEventObject>(
-    eventName: K,
-    handler: (event: PageEventObject[K]) => void
-  ): this {
-    if (eventName === 'request') {
-      handler = this.#handlerMap.get(handler) || handler;
+    if (type === PageEvent.Request) {
+      handler =
+        (this.#requestHandlers.get(
+          handler as (
+            event: EventsWithWildcard<PageEvents>[PageEvent.Request]
+          ) => void
+        ) as (event: EventsWithWildcard<PageEvents>[K]) => void) || handler;
     }
-
-    return super.off(eventName, handler);
+    return super.off(type, handler);
   }
 
   /**
@@ -1696,9 +1723,7 @@ export abstract class Page
    * @internal
    */
   protected async _waitForNetworkIdle(
-    networkManager: EventEmitter & {
-      inFlightRequestsCount: () => number;
-    },
+    networkManager: BidiNetworkManager | CdpNetworkManager,
     idleTime: number,
     ms: number,
     closedDeferred: Deferred<TargetCloseError>
@@ -1707,15 +1732,15 @@ export abstract class Page
       merge(
         fromEvent(
           networkManager,
-          NetworkManagerEmittedEvents.Request as unknown as string
+          NetworkManagerEvent.Request as unknown as string
         ),
         fromEvent(
           networkManager,
-          NetworkManagerEmittedEvents.Response as unknown as string
+          NetworkManagerEvent.Response as unknown as string
         ),
         fromEvent(
           networkManager,
-          NetworkManagerEmittedEvents.RequestFailed as unknown as string
+          NetworkManagerEvent.RequestFailed as unknown as string
         )
       ).pipe(
         startWith(null),
@@ -1755,15 +1780,15 @@ export abstract class Page
 
     return await firstValueFrom(
       merge(
-        fromEvent(this, PageEmittedEvents.FrameAttached) as Observable<Frame>,
-        fromEvent(this, PageEmittedEvents.FrameNavigated) as Observable<Frame>,
+        fromEvent(this, PageEvent.FrameAttached) as Observable<Frame>,
+        fromEvent(this, PageEvent.FrameNavigated) as Observable<Frame>,
         from(this.frames())
       ).pipe(
         filterAsync(urlOrPredicate),
         first(),
         raceWith(
           timeout(ms),
-          fromEvent(this, PageEmittedEvents.Close).pipe(
+          fromEvent(this, PageEvent.Close).pipe(
             map(() => {
               throw new TargetCloseError('Page closed.');
             })

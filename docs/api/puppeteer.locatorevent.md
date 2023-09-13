@@ -1,15 +1,15 @@
 ---
-sidebar_label: LocatorEmittedEvents
+sidebar_label: LocatorEvent
 ---
 
-# LocatorEmittedEvents enum
+# LocatorEvent enum
 
 All the events that a locator instance may emit.
 
 #### Signature:
 
 ```typescript
-export declare enum LocatorEmittedEvents
+export declare enum LocatorEvent
 ```
 
 ## Enumeration Members

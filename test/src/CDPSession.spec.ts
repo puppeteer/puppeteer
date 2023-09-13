@@ -60,7 +60,7 @@ describe('Target.createCDPSession', function () {
     await client.send('Network.enable');
     const events: unknown[] = [];
     client.on('Network.requestWillBeSent', event => {
-      return events.push(event);
+      events.push(event);
     });
     await Promise.all([
       waitEvent(client, 'Network.requestWillBeSent'),

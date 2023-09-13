@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 import {ConnectionTransport} from '../common/ConnectionTransport.js';
-import {
-  addEventListener,
-  debugError,
-  PuppeteerEventListener,
-  removeEventListeners,
-} from '../common/util.js';
+import {EventSubscription} from '../common/EventEmitter.js';
+import {debugError} from '../common/util.js';
 import {assert} from '../util/assert.js';
 
 /**
@@ -27,7 +23,7 @@ import {assert} from '../util/assert.js';
  */
 export class PipeTransport implements ConnectionTransport {
   #pipeWrite: NodeJS.WritableStream;
-  #eventListeners: PuppeteerEventListener[];
+  #subscriptions = new DisposableStack();
 
   #isClosed = false;
   #pendingMessage = '';
@@ -40,18 +36,24 @@ export class PipeTransport implements ConnectionTransport {
     pipeRead: NodeJS.ReadableStream
   ) {
     this.#pipeWrite = pipeWrite;
-    this.#eventListeners = [
-      addEventListener(pipeRead, 'data', buffer => {
+    this.#subscriptions.use(
+      new EventSubscription(pipeRead, 'data', (buffer: Buffer) => {
         return this.#dispatch(buffer);
-      }),
-      addEventListener(pipeRead, 'close', () => {
+      })
+    );
+    this.#subscriptions.use(
+      new EventSubscription(pipeRead, 'close', () => {
         if (this.onclose) {
           this.onclose.call(null);
         }
-      }),
-      addEventListener(pipeRead, 'error', debugError),
-      addEventListener(pipeWrite, 'error', debugError),
-    ];
+      })
+    );
+    this.#subscriptions.use(
+      new EventSubscription(pipeRead, 'error', debugError)
+    );
+    this.#subscriptions.use(
+      new EventSubscription(pipeWrite, 'error', debugError)
+    );
   }
 
   send(message: string): void {
@@ -88,6 +90,6 @@ export class PipeTransport implements ConnectionTransport {
 
   close(): void {
     this.#isClosed = true;
-    removeEventListeners(this.#eventListeners);
+    this.#subscriptions.dispose();
   }
 }

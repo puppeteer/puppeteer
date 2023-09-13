@@ -16,6 +16,7 @@
 
 import {Protocol} from 'devtools-protocol';
 
+import {CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import {JSHandle} from '../api/JSHandle.js';
 import type PuppeteerUtil from '../injected/injected.js';
@@ -24,7 +25,6 @@ import {stringifyFunction} from '../util/Function.js';
 
 import {ARIAQueryHandler} from './AriaQueryHandler.js';
 import {Binding} from './Binding.js';
-import {CDPSession} from './Connection.js';
 import {CDPElementHandle} from './ElementHandle.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {CDPJSHandle} from './JSHandle.js';
@@ -47,25 +47,6 @@ const getSourceUrlComment = (url: string) => {
 };
 
 /**
- * Represents a context for JavaScript execution.
- *
- * @example
- * A {@link Page} can have several execution contexts:
- *
- * - Each {@link Frame} of a {@link Page | page} has a "default" execution
- *   context that is always created after frame is attached to DOM. This context
- *   is returned by the {@link Frame.realm} method.
- * - Each {@link https://developer.chrome.com/extensions | Chrome extensions}
- *   creates additional execution contexts to isolate their code.
- *
- * @remarks
- * By definition, each context is isolated from one another, however they are
- * all able to manipulate non-JavaScript resources (such as DOM).
- *
- * @remarks
- * Besides pages, execution contexts can be found in
- * {@link WebWorker | workers}.
- *
  * @internal
  */
 export class ExecutionContext {

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
+import type {Protocol} from 'devtools-protocol';
 
-import {Frame} from '../api/Frame.js';
+import {CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
+import type {Frame} from '../api/Frame.js';
 import {assert} from '../util/assert.js';
 
-import {CDPSession, CDPSessionEmittedEvents} from './Connection.js';
-import {EventEmitter, Handler} from './EventEmitter.js';
-import {HTTPRequest} from './HTTPRequest.js';
-import {HTTPResponse} from './HTTPResponse.js';
+import {EventEmitter, EventSubscription, EventType} from './EventEmitter.js';
+import {CDPHTTPRequest} from './HTTPRequest.js';
+import {CDPHTTPResponse} from './HTTPResponse.js';
 import {FetchRequestId, NetworkEventManager} from './NetworkEventManager.js';
 import {debugError, isString} from './util.js';
 
@@ -58,13 +58,27 @@ export interface InternalNetworkConditions extends NetworkConditions {
  *
  * @internal
  */
-export const NetworkManagerEmittedEvents = {
-  Request: Symbol('NetworkManager.Request'),
-  RequestServedFromCache: Symbol('NetworkManager.RequestServedFromCache'),
-  Response: Symbol('NetworkManager.Response'),
-  RequestFailed: Symbol('NetworkManager.RequestFailed'),
-  RequestFinished: Symbol('NetworkManager.RequestFinished'),
-} as const;
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace NetworkManagerEvent {
+  export const Request = Symbol('NetworkManager.Request');
+  export const RequestServedFromCache = Symbol(
+    'NetworkManager.RequestServedFromCache'
+  );
+  export const Response = Symbol('NetworkManager.Response');
+  export const RequestFailed = Symbol('NetworkManager.RequestFailed');
+  export const RequestFinished = Symbol('NetworkManager.RequestFinished');
+}
+
+/**
+ * @internal
+ */
+export interface NetworkManagerEvents extends Record<EventType, unknown> {
+  [NetworkManagerEvent.Request]: CDPHTTPRequest;
+  [NetworkManagerEvent.RequestServedFromCache]: CDPHTTPRequest | undefined;
+  [NetworkManagerEvent.Response]: CDPHTTPResponse;
+  [NetworkManagerEvent.RequestFailed]: CDPHTTPRequest;
+  [NetworkManagerEvent.RequestFinished]: CDPHTTPRequest;
+}
 
 /**
  * @internal
@@ -76,7 +90,7 @@ export interface FrameProvider {
 /**
  * @internal
  */
-export class NetworkManager extends EventEmitter {
+export class NetworkManager extends EventEmitter<NetworkManagerEvents> {
   #ignoreHTTPSErrors: boolean;
   #frameManager: FrameProvider;
   #networkEventManager = new NetworkEventManager();
@@ -90,7 +104,7 @@ export class NetworkManager extends EventEmitter {
   #userAgent?: string;
   #userAgentMetadata?: Protocol.Emulation.UserAgentMetadata;
 
-  #handlers = new Map<string, Function>([
+  #handlers = Object.freeze([
     ['Fetch.requestPaused', this.#onRequestPaused],
     ['Fetch.authRequired', this.#onAuthRequired],
     ['Network.requestWillBeSent', this.#onRequestWillBeSent],
@@ -99,12 +113,10 @@ export class NetworkManager extends EventEmitter {
     ['Network.loadingFinished', this.#onLoadingFinished],
     ['Network.loadingFailed', this.#onLoadingFailed],
     ['Network.responseReceivedExtraInfo', this.#onResponseReceivedExtraInfo],
-  ]);
+    [CDPSessionEvent.Disconnected, this.#removeClient],
+  ] as const);
 
-  #clients = new Map<
-    CDPSession,
-    Array<{event: string | symbol; handler: Handler}>
-  >();
+  #clients = new Map<CDPSession, DisposableStack>();
 
   constructor(ignoreHTTPSErrors: boolean, frameManager: FrameProvider) {
     super();
@@ -116,20 +128,16 @@ export class NetworkManager extends EventEmitter {
     if (this.#clients.has(client)) {
       return;
     }
-    const listeners: Array<{event: string | symbol; handler: Handler}> = [];
-    this.#clients.set(client, listeners);
+    const subscriptions = new DisposableStack();
+    this.#clients.set(client, subscriptions);
     for (const [event, handler] of this.#handlers) {
-      listeners.push({
-        event,
-        handler: handler.bind(this, client),
-      });
-      client.on(event, listeners.at(-1)!.handler);
+      subscriptions.use(
+        // TODO: Remove any here.
+        new EventSubscription(client, event, (arg: any) => {
+          return handler.bind(this)(client, arg);
+        })
+      );
     }
-    listeners.push({
-      event: CDPSessionEmittedEvents.Disconnected,
-      handler: this.#removeClient.bind(this, client),
-    });
-    client.on(CDPSessionEmittedEvents.Disconnected, listeners.at(-1)!.handler);
     await Promise.all([
       this.#ignoreHTTPSErrors
         ? client.send('Security.setIgnoreCertificateErrors', {
@@ -146,10 +154,7 @@ export class NetworkManager extends EventEmitter {
   }
 
   async #removeClient(client: CDPSession) {
-    const listeners = this.#clients.get(client);
-    for (const {event, handler} of listeners || []) {
-      client.off(event, handler);
-    }
+    this.#clients.get(client)?.dispose();
     this.#clients.delete(client);
   }
 
@@ -447,7 +452,7 @@ export class NetworkManager extends EventEmitter {
       ? this.#frameManager.frame(event.frameId)
       : null;
 
-    const request = new HTTPRequest(
+    const request = new CDPHTTPRequest(
       client,
       frame,
       event.requestId,
@@ -455,7 +460,7 @@ export class NetworkManager extends EventEmitter {
       event,
       []
     );
-    this.emit(NetworkManagerEmittedEvents.Request, request);
+    this.emit(NetworkManagerEvent.Request, request);
     void request.finalizeInterceptions();
   }
 
@@ -464,7 +469,7 @@ export class NetworkManager extends EventEmitter {
     event: Protocol.Network.RequestWillBeSentEvent,
     fetchRequestId?: FetchRequestId
   ): void {
-    let redirectChain: HTTPRequest[] = [];
+    let redirectChain: CDPHTTPRequest[] = [];
     if (event.redirectResponse) {
       // We want to emit a response and requestfinished for the
       // redirectResponse, but we can't do so unless we have a
@@ -504,7 +509,7 @@ export class NetworkManager extends EventEmitter {
       ? this.#frameManager.frame(event.frameId)
       : null;
 
-    const request = new HTTPRequest(
+    const request = new CDPHTTPRequest(
       client,
       frame,
       fetchRequestId,
@@ -513,7 +518,7 @@ export class NetworkManager extends EventEmitter {
       redirectChain
     );
     this.#networkEventManager.storeRequest(event.requestId, request);
-    this.emit(NetworkManagerEmittedEvents.Request, request);
+    this.emit(NetworkManagerEvent.Request, request);
     void request.finalizeInterceptions();
   }
 
@@ -525,16 +530,16 @@ export class NetworkManager extends EventEmitter {
     if (request) {
       request._fromMemoryCache = true;
     }
-    this.emit(NetworkManagerEmittedEvents.RequestServedFromCache, request);
+    this.emit(NetworkManagerEvent.RequestServedFromCache, request);
   }
 
   #handleRequestRedirect(
     client: CDPSession,
-    request: HTTPRequest,
+    request: CDPHTTPRequest,
     responsePayload: Protocol.Network.Response,
     extraInfo: Protocol.Network.ResponseReceivedExtraInfoEvent | null
   ): void {
-    const response = new HTTPResponse(
+    const response = new CDPHTTPResponse(
       client,
       request,
       responsePayload,
@@ -546,8 +551,8 @@ export class NetworkManager extends EventEmitter {
       new Error('Response body is unavailable for redirect responses')
     );
     this.#forgetRequest(request, false);
-    this.emit(NetworkManagerEmittedEvents.Response, response);
-    this.emit(NetworkManagerEmittedEvents.RequestFinished, request);
+    this.emit(NetworkManagerEvent.Response, response);
+    this.emit(NetworkManagerEvent.RequestFinished, request);
   }
 
   #emitResponseEvent(
@@ -582,14 +587,14 @@ export class NetworkManager extends EventEmitter {
       extraInfo = null;
     }
 
-    const response = new HTTPResponse(
+    const response = new CDPHTTPResponse(
       client,
       request,
       responseReceived.response,
       extraInfo
     );
     request._response = response;
-    this.emit(NetworkManagerEmittedEvents.Response, response);
+    this.emit(NetworkManagerEvent.Response, response);
   }
 
   #onResponseReceived(
@@ -654,7 +659,7 @@ export class NetworkManager extends EventEmitter {
     this.#networkEventManager.responseExtraInfo(event.requestId).push(event);
   }
 
-  #forgetRequest(request: HTTPRequest, events: boolean): void {
+  #forgetRequest(request: CDPHTTPRequest, events: boolean): void {
     const requestId = request._requestId;
     const interceptionId = request._interceptionId;
 
@@ -697,7 +702,7 @@ export class NetworkManager extends EventEmitter {
       request.response()?._resolveBody(null);
     }
     this.#forgetRequest(request, true);
-    this.emit(NetworkManagerEmittedEvents.RequestFinished, request);
+    this.emit(NetworkManagerEvent.RequestFinished, request);
   }
 
   #onLoadingFailed(
@@ -729,6 +734,6 @@ export class NetworkManager extends EventEmitter {
       response._resolveBody(null);
     }
     this.#forgetRequest(request, true);
-    this.emit(NetworkManagerEmittedEvents.RequestFailed, request);
+    this.emit(NetworkManagerEvent.RequestFailed, request);
   }
 }

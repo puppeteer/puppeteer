@@ -10,16 +10,19 @@ Like `on` but the listener will only be fired once and then it will be removed.
 
 ```typescript
 class EventEmitter {
-  once(event: EventType, handler: Handler<any>): this;
+  once<Key extends keyof EventsWithWildcard<Events>>(
+    type: Key,
+    handler: Handler<EventsWithWildcard<Events>[Key]>
+  ): this;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                         | Description                                       |
-| --------- | -------------------------------------------- | ------------------------------------------------- |
-| event     | [EventType](./puppeteer.eventtype.md)        | the event you'd like to listen to                 |
-| handler   | [Handler](./puppeteer.handler.md)&lt;any&gt; | the handler function to run when the event occurs |
+| Parameter | Type                                                                                                                  | Description                                       |
+| --------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| type      | Key                                                                                                                   | the event you'd like to listen to                 |
+| handler   | [Handler](./puppeteer.handler.md)&lt;[EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt;\[Key\]&gt; | the handler function to run when the event occurs |
 
 **Returns:**
 

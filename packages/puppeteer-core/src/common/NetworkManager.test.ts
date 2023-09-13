@@ -18,17 +18,18 @@ import {describe, it} from 'node:test';
 
 import expect from 'expect';
 
+import {CDPSessionEvents} from '../api/CDPSession.js';
 import {HTTPRequest} from '../api/HTTPRequest.js';
 import {HTTPResponse} from '../api/HTTPResponse.js';
 
 import {EventEmitter} from './EventEmitter.js';
 import {CDPFrame} from './Frame.js';
-import {NetworkManager, NetworkManagerEmittedEvents} from './NetworkManager.js';
+import {NetworkManager, NetworkManagerEvent} from './NetworkManager.js';
 
 // TODO: develop a helper to generate fake network events for attributes that
 // are not relevant for the network manager to make tests shorter.
 
-class MockCDPSession extends EventEmitter {
+class MockCDPSession extends EventEmitter<CDPSessionEvents> {
   async send(): Promise<any> {}
   connection() {
     return undefined;
@@ -153,6 +154,7 @@ describe('NetworkManager', () => {
         fromPrefetchCache: false,
         encodedDataLength: 162,
         timing: {
+          receiveHeadersStart: 0,
           requestTime: 2111.557593,
           proxyStart: -1,
           proxyEnd: -1,
@@ -241,6 +243,7 @@ describe('NetworkManager', () => {
         fromPrefetchCache: false,
         encodedDataLength: 162,
         timing: {
+          receiveHeadersStart: 0,
           requestTime: 2111.559346,
           proxyStart: -1,
           proxyEnd: -1,
@@ -344,6 +347,7 @@ describe('NetworkManager', () => {
         fromPrefetchCache: false,
         encodedDataLength: 178,
         timing: {
+          receiveHeadersStart: 0,
           requestTime: 2111.560482,
           proxyStart: -1,
           proxyEnd: -1,
@@ -448,6 +452,7 @@ describe('NetworkManager', () => {
         fromPrefetchCache: false,
         encodedDataLength: 197,
         timing: {
+          receiveHeadersStart: 0,
           requestTime: 2111.561759,
           proxyStart: -1,
           proxyEnd: -1,
@@ -486,13 +491,10 @@ describe('NetworkManager', () => {
     await manager.setRequestInterception(true);
 
     const requests: HTTPRequest[] = [];
-    manager.on(
-      NetworkManagerEmittedEvents.Request,
-      async (request: HTTPRequest) => {
-        requests.push(request);
-        await request.continue();
-      }
-    );
+    manager.on(NetworkManagerEvent.Request, async (request: HTTPRequest) => {
+      requests.push(request);
+      await request.continue();
+    });
 
     /**
      * This sequence was taken from an actual CDP session produced by the following
@@ -519,7 +521,7 @@ describe('NetworkManager', () => {
       request: {
         url: 'https://www.google.com/',
         method: 'GET',
-        headers: [Object],
+        headers: {},
         mixedContentType: 'none',
         initialPriority: 'VeryHigh',
         referrerPolicy: 'strict-origin-when-cross-origin',
@@ -538,7 +540,7 @@ describe('NetworkManager', () => {
       request: {
         url: 'https://www.google.com/',
         method: 'GET',
-        headers: [Object],
+        headers: {},
         initialPriority: 'VeryHigh',
         referrerPolicy: 'strict-origin-when-cross-origin',
       },
@@ -551,7 +553,7 @@ describe('NetworkManager', () => {
       request: {
         url: 'https://www.google.com/',
         method: 'GET',
-        headers: [Object],
+        headers: {},
         initialPriority: 'VeryHigh',
         referrerPolicy: 'strict-origin-when-cross-origin',
       },
@@ -572,12 +574,9 @@ describe('NetworkManager', () => {
     await manager.addClient(mockCDPSession);
 
     const requests: HTTPRequest[] = [];
-    manager.on(
-      NetworkManagerEmittedEvents.RequestFinished,
-      (request: HTTPRequest) => {
-        requests.push(request);
-      }
-    );
+    manager.on(NetworkManagerEvent.RequestFinished, (request: HTTPRequest) => {
+      requests.push(request);
+    });
 
     mockCDPSession.emit('Network.requestWillBeSent', {
       requestId: '1360.2',
@@ -633,6 +632,7 @@ describe('NetworkManager', () => {
         fromPrefetchCache: false,
         encodedDataLength: 66,
         timing: {
+          receiveHeadersStart: 0,
           requestTime: 10959.023904,
           proxyStart: -1,
           proxyEnd: -1,
@@ -692,14 +692,11 @@ describe('NetworkManager', () => {
 
     const finishedRequests: HTTPRequest[] = [];
     const pendingRequests: HTTPRequest[] = [];
-    manager.on(
-      NetworkManagerEmittedEvents.RequestFinished,
-      (request: HTTPRequest) => {
-        finishedRequests.push(request);
-      }
-    );
+    manager.on(NetworkManagerEvent.RequestFinished, (request: HTTPRequest) => {
+      finishedRequests.push(request);
+    });
 
-    manager.on(NetworkManagerEmittedEvents.Request, (request: HTTPRequest) => {
+    manager.on(NetworkManagerEvent.Request, (request: HTTPRequest) => {
       pendingRequests.push(request);
     });
 
@@ -756,6 +753,7 @@ describe('NetworkManager', () => {
         fromPrefetchCache: false,
         encodedDataLength: 197,
         timing: {
+          receiveHeadersStart: 0,
           requestTime: 671.232585,
           proxyStart: -1,
           proxyEnd: -1,
@@ -845,14 +843,11 @@ describe('NetworkManager', () => {
 
     const responses: HTTPResponse[] = [];
     const requests: HTTPRequest[] = [];
-    manager.on(
-      NetworkManagerEmittedEvents.Response,
-      (response: HTTPResponse) => {
-        responses.push(response);
-      }
-    );
+    manager.on(NetworkManagerEvent.Response, (response: HTTPResponse) => {
+      responses.push(response);
+    });
 
-    manager.on(NetworkManagerEmittedEvents.Request, (request: HTTPRequest) => {
+    manager.on(NetworkManagerEvent.Request, (request: HTTPRequest) => {
       requests.push(request);
     });
 
@@ -966,6 +961,7 @@ describe('NetworkManager', () => {
         fromPrefetchCache: false,
         encodedDataLength: 197,
         timing: {
+          receiveHeadersStart: 0,
           requestTime: 504904.000422,
           proxyStart: -1,
           proxyEnd: -1,
@@ -1009,14 +1005,11 @@ describe('NetworkManager', () => {
 
     const responses: HTTPResponse[] = [];
     const requests: HTTPRequest[] = [];
-    manager.on(
-      NetworkManagerEmittedEvents.Response,
-      (response: HTTPResponse) => {
-        responses.push(response);
-      }
-    );
+    manager.on(NetworkManagerEvent.Response, (response: HTTPResponse) => {
+      responses.push(response);
+    });
 
-    manager.on(NetworkManagerEmittedEvents.Request, (request: HTTPRequest) => {
+    manager.on(NetworkManagerEvent.Request, (request: HTTPRequest) => {
       requests.push(request);
     });
 
@@ -1072,6 +1065,7 @@ describe('NetworkManager', () => {
         fromPrefetchCache: false,
         encodedDataLength: 197,
         timing: {
+          receiveHeadersStart: 0,
           requestTime: 510294.106734,
           proxyStart: -1,
           proxyEnd: -1,
@@ -1156,14 +1150,11 @@ describe('NetworkManager', () => {
 
     const responses: HTTPResponse[] = [];
     const requests: HTTPRequest[] = [];
-    manager.on(
-      NetworkManagerEmittedEvents.Response,
-      (response: HTTPResponse) => {
-        responses.push(response);
-      }
-    );
+    manager.on(NetworkManagerEvent.Response, (response: HTTPResponse) => {
+      responses.push(response);
+    });
 
-    manager.on(NetworkManagerEmittedEvents.Request, (request: HTTPRequest) => {
+    manager.on(NetworkManagerEvent.Request, (request: HTTPRequest) => {
       requests.push(request);
     });
 
@@ -1260,6 +1251,7 @@ describe('NetworkManager', () => {
         fromPrefetchCache: false,
         encodedDataLength: 197,
         timing: {
+          receiveHeadersStart: 0,
           requestTime: 31949.959838,
           proxyStart: -1,
           proxyEnd: -1,
@@ -1432,6 +1424,7 @@ describe('NetworkManager', () => {
         fromPrefetchCache: false,
         encodedDataLength: 182,
         timing: {
+          receiveHeadersStart: 0,
           requestTime: 31949.983605,
           proxyStart: -1,
           proxyEnd: -1,
@@ -1492,6 +1485,7 @@ describe('NetworkManager', () => {
         fromPrefetchCache: false,
         encodedDataLength: 0,
         timing: {
+          receiveHeadersStart: 0,
           requestTime: 31949.988855,
           proxyStart: -1,
           proxyEnd: -1,

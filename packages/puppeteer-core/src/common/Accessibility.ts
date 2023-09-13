@@ -16,9 +16,8 @@
 
 import {Protocol} from 'devtools-protocol';
 
+import {CDPSession} from '../api/CDPSession.js';
 import {ElementHandle} from '../api/ElementHandle.js';
-
-import {CDPSession} from './Connection.js';
 
 /**
  * Represents a Node and the properties of it that are relevant to Accessibility.

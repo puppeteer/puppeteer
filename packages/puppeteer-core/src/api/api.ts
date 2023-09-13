@@ -28,3 +28,4 @@ export * from './locators/locators.js';
 export * from './Page.js';
 export * from './Realm.js';
 export * from './Target.js';
+export * from './CDPSession.js';

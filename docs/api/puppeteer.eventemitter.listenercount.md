@@ -10,15 +10,15 @@ Gets the number of listeners for a given event.
 
 ```typescript
 class EventEmitter {
-  listenerCount(event: EventType): number;
+  listenerCount(type: keyof EventsWithWildcard<Events>): number;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                  | Description                             |
-| --------- | ------------------------------------- | --------------------------------------- |
-| event     | [EventType](./puppeteer.eventtype.md) | the event to get the listener count for |
+| Parameter | Type                                                                        | Description                             |
+| --------- | --------------------------------------------------------------------------- | --------------------------------------- |
+| type      | keyof [EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt; | the event to get the listener count for |
 
 **Returns:**
 

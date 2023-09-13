@@ -134,7 +134,7 @@ export const dumpFrames = (frame: Frame, indentation?: string): string[] => {
 };
 
 export const waitEvent = async <T = any>(
-  emitter: EventEmitter,
+  emitter: EventEmitter<any>,
   eventName: string,
   predicate: (event: T) => boolean = () => {
     return true;

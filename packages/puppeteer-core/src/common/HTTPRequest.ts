@@ -15,12 +15,13 @@
  */
 import {Protocol} from 'devtools-protocol';
 
+import {CDPSession} from '../api/CDPSession.js';
 import {Frame} from '../api/Frame.js';
 import {
   ContinueRequestOverrides,
   ErrorCode,
   headersArray,
-  HTTPRequest as BaseHTTPRequest,
+  HTTPRequest,
   InterceptResolutionAction,
   InterceptResolutionState,
   ResourceType,
@@ -30,20 +31,19 @@ import {
 import {HTTPResponse} from '../api/HTTPResponse.js';
 import {assert} from '../util/assert.js';
 
-import {CDPSession} from './Connection.js';
 import {ProtocolError} from './Errors.js';
 import {debugError, isString} from './util.js';
 
 /**
  * @internal
  */
-export class HTTPRequest extends BaseHTTPRequest {
+export class CDPHTTPRequest extends HTTPRequest {
   override _requestId: string;
   override _interceptionId: string | undefined;
   override _failureText: string | null = null;
   override _response: HTTPResponse | null = null;
   override _fromMemoryCache = false;
-  override _redirectChain: HTTPRequest[];
+  override _redirectChain: CDPHTTPRequest[];
 
   #client: CDPSession;
   #isNavigationRequest: boolean;
@@ -100,7 +100,7 @@ export class HTTPRequest extends BaseHTTPRequest {
        */
       type?: Protocol.Network.ResourceType;
     },
-    redirectChain: HTTPRequest[]
+    redirectChain: CDPHTTPRequest[]
   ) {
     super();
     this.#client = client;
@@ -213,7 +213,7 @@ export class HTTPRequest extends BaseHTTPRequest {
     return this.#initiator;
   }
 
-  override redirectChain(): HTTPRequest[] {
+  override redirectChain(): CDPHTTPRequest[] {
     return this._redirectChain.slice();
   }
 

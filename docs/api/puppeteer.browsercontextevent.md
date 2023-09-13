@@ -1,13 +1,13 @@
 ---
-sidebar_label: BrowserContextEmittedEvents
+sidebar_label: BrowserContextEvent
 ---
 
-# BrowserContextEmittedEvents enum
+# BrowserContextEvent enum
 
 #### Signature:
 
 ```typescript
-export declare const enum BrowserContextEmittedEvents
+export declare const enum BrowserContextEvent
 ```
 
 ## Enumeration Members

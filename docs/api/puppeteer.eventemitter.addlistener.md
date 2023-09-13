@@ -14,16 +14,19 @@ Add an event listener.
 
 ```typescript
 class EventEmitter {
-  addListener(event: EventType, handler: Handler<any>): this;
+  addListener<Key extends keyof EventsWithWildcard<Events>>(
+    type: Key,
+    handler: Handler<EventsWithWildcard<Events>[Key]>
+  ): this;
 }
 ```
 
 ## Parameters
 
-| Parameter | Type                                         | Description |
-| --------- | -------------------------------------------- | ----------- |
-| event     | [EventType](./puppeteer.eventtype.md)        |             |
-| handler   | [Handler](./puppeteer.handler.md)&lt;any&gt; |             |
+| Parameter | Type                                                                                                                  | Description |
+| --------- | --------------------------------------------------------------------------------------------------------------------- | ----------- |
+| type      | Key                                                                                                                   |             |
+| handler   | [Handler](./puppeteer.handler.md)&lt;[EventsWithWildcard](./puppeteer.eventswithwildcard.md)&lt;Events&gt;\[Key\]&gt; |             |
 
 **Returns:**
 

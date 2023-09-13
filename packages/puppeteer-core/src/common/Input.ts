@@ -16,6 +16,7 @@
 
 import {Protocol} from 'devtools-protocol';
 
+import {CDPSession} from '../api/CDPSession.js';
 import {Point} from '../api/ElementHandle.js';
 import {
   Keyboard,
@@ -32,7 +33,6 @@ import {
 } from '../api/Input.js';
 import {assert} from '../util/assert.js';
 
-import {CDPSession} from './Connection.js';
 import {_keyDefinitions, KeyDefinition, KeyInput} from './USKeyboardLayout.js';
 
 type KeyDescription = Required<

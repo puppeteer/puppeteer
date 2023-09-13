@@ -16,9 +16,9 @@
 
 import {Protocol} from 'devtools-protocol';
 
+import {CDPSession} from '../api/CDPSession.js';
 import {JSHandle} from '../api/JSHandle.js';
 
-import {CDPSession} from './Connection.js';
 import type {CDPElementHandle} from './ElementHandle.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {releaseObject, valueFromRemoteObject} from './util.js';

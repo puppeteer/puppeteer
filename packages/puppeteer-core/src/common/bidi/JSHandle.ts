@@ -25,6 +25,9 @@ import {Sandbox} from './Sandbox.js';
 import {BidiSerializer} from './Serializer.js';
 import {releaseReference} from './utils.js';
 
+/**
+ * @internal
+ */
 export class BidiJSHandle<T = unknown> extends JSHandle<T> {
   #disposed = false;
   readonly #sandbox: Sandbox;

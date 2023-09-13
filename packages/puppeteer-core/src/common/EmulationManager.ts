@@ -15,12 +15,12 @@
  */
 import {Protocol} from 'devtools-protocol';
 
+import {CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {GeolocationOptions, MediaFeature} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {invokeAtMostOnceForArguments} from '../util/decorators.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
-import {CDPSession, CDPSessionEmittedEvents} from './Connection.js';
 import {Viewport} from './PuppeteerViewport.js';
 import {debugError} from './util.js';
 
@@ -168,8 +168,8 @@ export class EmulationManager {
 
   async registerSpeculativeSession(client: CDPSession): Promise<void> {
     this.#secondaryClients.add(client);
-    client.once(CDPSessionEmittedEvents.Disconnected, () => {
-      return this.#secondaryClients.delete(client);
+    client.once(CDPSessionEvent.Disconnected, () => {
+      this.#secondaryClients.delete(client);
     });
     // We don't await here because we want to register all state changes before
     // the target is unpaused.

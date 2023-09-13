@@ -16,20 +16,17 @@
 
 import Protocol from 'devtools-protocol';
 
+import {Frame, FrameEvent} from '../api/Frame.js';
 import {HTTPResponse} from '../api/HTTPResponse.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
 import {TimeoutError} from './Errors.js';
-import {CDPFrame, FrameEmittedEvents} from './Frame.js';
-import {FrameManagerEmittedEvents} from './FrameManager.js';
-import {HTTPRequest} from './HTTPRequest.js';
-import {NetworkManager, NetworkManagerEmittedEvents} from './NetworkManager.js';
-import {
-  addEventListener,
-  PuppeteerEventListener,
-  removeEventListeners,
-} from './util.js';
+import {EventSubscription} from './EventEmitter.js';
+import {CDPFrame} from './Frame.js';
+import {FrameManagerEvent} from './FrameManager.js';
+import {CDPHTTPRequest} from './HTTPRequest.js';
+import {NetworkManager, NetworkManagerEvent} from './NetworkManager.js';
 /**
  * @public
  */
@@ -65,8 +62,8 @@ export class LifecycleWatcher {
   #expectedLifecycle: ProtocolLifeCycleEvent[];
   #frame: CDPFrame;
   #timeout: number;
-  #navigationRequest: HTTPRequest | null = null;
-  #eventListeners: PuppeteerEventListener[];
+  #navigationRequest: CDPHTTPRequest | null = null;
+  #subscriptions = new DisposableStack();
   #initialLoaderId: string;
 
   #terminationDeferred: Deferred<Error>;
@@ -99,55 +96,70 @@ export class LifecycleWatcher {
 
     this.#frame = frame;
     this.#timeout = timeout;
-    this.#eventListeners = [
-      addEventListener(
-        // Revert if TODO #1 is done
+    this.#subscriptions.use(
+      // Revert if TODO #1 is done
+      new EventSubscription(
         frame._frameManager,
-        FrameManagerEmittedEvents.LifecycleEvent,
+        FrameManagerEvent.LifecycleEvent,
         this.#checkLifecycleComplete.bind(this)
-      ),
-      addEventListener(
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
         frame,
-        FrameEmittedEvents.FrameNavigatedWithinDocument,
+        FrameEvent.FrameNavigatedWithinDocument,
         this.#navigatedWithinDocument.bind(this)
-      ),
-      addEventListener(
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
         frame,
-        FrameEmittedEvents.FrameNavigated,
+        FrameEvent.FrameNavigated,
         this.#navigated.bind(this)
-      ),
-      addEventListener(
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
         frame,
-        FrameEmittedEvents.FrameSwapped,
+        FrameEvent.FrameSwapped,
         this.#frameSwapped.bind(this)
-      ),
-      addEventListener(
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
         frame,
-        FrameEmittedEvents.FrameSwappedByActivation,
+        FrameEvent.FrameSwappedByActivation,
         this.#frameSwapped.bind(this)
-      ),
-      addEventListener(
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
         frame,
-        FrameEmittedEvents.FrameDetached,
+        FrameEvent.FrameDetached,
         this.#onFrameDetached.bind(this)
-      ),
-      addEventListener(
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
         networkManager,
-        NetworkManagerEmittedEvents.Request,
+        NetworkManagerEvent.Request,
         this.#onRequest.bind(this)
-      ),
-      addEventListener(
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
         networkManager,
-        NetworkManagerEmittedEvents.Response,
+        NetworkManagerEvent.Response,
         this.#onResponse.bind(this)
-      ),
-      addEventListener(
+      )
+    );
+    this.#subscriptions.use(
+      new EventSubscription(
         networkManager,
-        NetworkManagerEmittedEvents.RequestFailed,
+        NetworkManagerEvent.RequestFailed,
         this.#onRequestFailed.bind(this)
-      ),
-    ];
-
+      )
+    );
     this.#terminationDeferred = Deferred.create<Error>({
       timeout: this.#timeout,
       message: `Navigation timeout of ${this.#timeout} ms exceeded`,
@@ -156,7 +168,7 @@ export class LifecycleWatcher {
     this.#checkLifecycleComplete();
   }
 
-  #onRequest(request: HTTPRequest): void {
+  #onRequest(request: CDPHTTPRequest): void {
     if (request.frame() !== this.#frame || !request.isNavigationRequest()) {
       return;
     }
@@ -171,7 +183,7 @@ export class LifecycleWatcher {
     }
   }
 
-  #onRequestFailed(request: HTTPRequest): void {
+  #onRequestFailed(request: CDPHTTPRequest): void {
     if (this.#navigationRequest?._requestId !== request._requestId) {
       return;
     }
@@ -185,7 +197,7 @@ export class LifecycleWatcher {
     this.#navigationResponseReceived?.resolve();
   }
 
-  #onFrameDetached(frame: CDPFrame): void {
+  #onFrameDetached(frame: Frame): void {
     if (this.#frame === frame) {
       this.#terminationDeferred.resolve(
         new Error('Navigating frame was detached')
@@ -273,7 +285,7 @@ export class LifecycleWatcher {
   }
 
   dispose(): void {
-    removeEventListeners(this.#eventListeners);
+    this.#subscriptions.dispose();
     this.#terminationDeferred.resolve(new Error('LifecycleWatcher disposed'));
   }
 }

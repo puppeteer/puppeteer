@@ -16,21 +16,19 @@
 
 import {Protocol} from 'devtools-protocol';
 
+import {CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
+import {FrameEvent} from '../api/Frame.js';
 import {Page} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
-import {
-  CDPSession,
-  CDPSessionEmittedEvents,
-  CDPSessionImpl,
-  isTargetClosedError,
-} from './Connection.js';
+import {CDPCDPSession} from './CDPSession.js';
+import {isTargetClosedError} from './Connection.js';
 import {DeviceRequestPromptManager} from './DeviceRequestPrompt.js';
-import {EventEmitter} from './EventEmitter.js';
+import {EventEmitter, EventType} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
-import {CDPFrame, FrameEmittedEvents} from './Frame.js';
+import {CDPFrame} from './Frame.js';
 import {FrameTree} from './FrameTree.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
@@ -50,16 +48,30 @@ export const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
  *
  * @internal
  */
-export const FrameManagerEmittedEvents = {
-  FrameAttached: Symbol('FrameManager.FrameAttached'),
-  FrameNavigated: Symbol('FrameManager.FrameNavigated'),
-  FrameDetached: Symbol('FrameManager.FrameDetached'),
-  FrameSwapped: Symbol('FrameManager.FrameSwapped'),
-  LifecycleEvent: Symbol('FrameManager.LifecycleEvent'),
-  FrameNavigatedWithinDocument: Symbol(
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace FrameManagerEvent {
+  export const FrameAttached = Symbol('FrameManager.FrameAttached');
+  export const FrameNavigated = Symbol('FrameManager.FrameNavigated');
+  export const FrameDetached = Symbol('FrameManager.FrameDetached');
+  export const FrameSwapped = Symbol('FrameManager.FrameSwapped');
+  export const LifecycleEvent = Symbol('FrameManager.LifecycleEvent');
+  export const FrameNavigatedWithinDocument = Symbol(
     'FrameManager.FrameNavigatedWithinDocument'
-  ),
-};
+  );
+}
+
+/**
+ * @internal
+ */
+
+export interface FrameManagerEvents extends Record<EventType, unknown> {
+  [FrameManagerEvent.FrameAttached]: CDPFrame;
+  [FrameManagerEvent.FrameNavigated]: CDPFrame;
+  [FrameManagerEvent.FrameDetached]: CDPFrame;
+  [FrameManagerEvent.FrameSwapped]: CDPFrame;
+  [FrameManagerEvent.LifecycleEvent]: CDPFrame;
+  [FrameManagerEvent.FrameNavigatedWithinDocument]: CDPFrame;
+}
 
 const TIME_FOR_WAITING_FOR_SWAP = 100; // ms.
 
@@ -68,7 +80,7 @@ const TIME_FOR_WAITING_FOR_SWAP = 100; // ms.
  *
  * @internal
  */
-export class FrameManager extends EventEmitter {
+export class FrameManager extends EventEmitter<FrameManagerEvents> {
   #page: Page;
   #networkManager: NetworkManager;
   #timeoutSettings: TimeoutSettings;
@@ -114,7 +126,7 @@ export class FrameManager extends EventEmitter {
     this.#networkManager = new NetworkManager(ignoreHTTPSErrors, this);
     this.#timeoutSettings = timeoutSettings;
     this.setupEventListeners(this.#client);
-    client.once(CDPSessionEmittedEvents.Disconnected, () => {
+    client.once(CDPSessionEvent.Disconnected, () => {
       this.#onClientDisconnect().catch(debugError);
     });
   }
@@ -136,7 +148,7 @@ export class FrameManager extends EventEmitter {
       timeout: TIME_FOR_WAITING_FOR_SWAP,
       message: 'Frame was not swapped',
     });
-    mainFrame.once(FrameEmittedEvents.FrameSwappedByActivation, () => {
+    mainFrame.once(FrameEvent.FrameSwappedByActivation, () => {
       swapped.resolve();
     });
     try {
@@ -156,7 +168,7 @@ export class FrameManager extends EventEmitter {
 
     this.#client = client;
     assert(
-      this.#client instanceof CDPSessionImpl,
+      this.#client instanceof CDPCDPSession,
       'CDPSession is not an instance of CDPSessionImpl.'
     );
     const frame = this._frameTree.getMainFrame();
@@ -170,17 +182,17 @@ export class FrameManager extends EventEmitter {
       frame.updateClient(client, true);
     }
     this.setupEventListeners(client);
-    client.once(CDPSessionEmittedEvents.Disconnected, () => {
+    client.once(CDPSessionEvent.Disconnected, () => {
       this.#onClientDisconnect().catch(debugError);
     });
     await this.initialize(client);
     await this.#networkManager.addClient(client);
     if (frame) {
-      frame.emit(FrameEmittedEvents.FrameSwappedByActivation);
+      frame.emit(FrameEvent.FrameSwappedByActivation, undefined);
     }
   }
 
-  async registerSpeculativeSession(client: CDPSessionImpl): Promise<void> {
+  async registerSpeculativeSession(client: CDPCDPSession): Promise<void> {
     await this.#networkManager.addClient(client);
   }
 
@@ -312,8 +324,8 @@ export class FrameManager extends EventEmitter {
       return;
     }
     frame._onLifecycleEvent(event.loaderId, event.name);
-    this.emit(FrameManagerEmittedEvents.LifecycleEvent, frame);
-    frame.emit(FrameEmittedEvents.LifecycleEvent);
+    this.emit(FrameManagerEvent.LifecycleEvent, frame);
+    frame.emit(FrameEvent.LifecycleEvent, undefined);
   }
 
   #onFrameStartedLoading(frameId: string): void {
@@ -330,8 +342,8 @@ export class FrameManager extends EventEmitter {
       return;
     }
     frame._onLoadingStopped();
-    this.emit(FrameManagerEmittedEvents.LifecycleEvent, frame);
-    frame.emit(FrameEmittedEvents.LifecycleEvent);
+    this.emit(FrameManagerEvent.LifecycleEvent, frame);
+    frame.emit(FrameEvent.LifecycleEvent, undefined);
   }
 
   #handleFrameTree(
@@ -378,7 +390,7 @@ export class FrameManager extends EventEmitter {
 
     frame = new CDPFrame(this, frameId, parentFrameId, session);
     this._frameTree.addFrame(frame);
-    this.emit(FrameManagerEmittedEvents.FrameAttached, frame);
+    this.emit(FrameManagerEvent.FrameAttached, frame);
   }
 
   async #onFrameNavigated(
@@ -412,8 +424,8 @@ export class FrameManager extends EventEmitter {
 
     frame = await this._frameTree.waitForFrame(frameId);
     frame._navigated(framePayload);
-    this.emit(FrameManagerEmittedEvents.FrameNavigated, frame);
-    frame.emit(FrameEmittedEvents.FrameNavigated, navigationType);
+    this.emit(FrameManagerEvent.FrameNavigated, frame);
+    frame.emit(FrameEvent.FrameNavigated, navigationType);
   }
 
   async #createIsolatedWorld(session: CDPSession, name: string): Promise<void> {
@@ -455,10 +467,10 @@ export class FrameManager extends EventEmitter {
       return;
     }
     frame._navigatedWithinDocument(url);
-    this.emit(FrameManagerEmittedEvents.FrameNavigatedWithinDocument, frame);
-    frame.emit(FrameEmittedEvents.FrameNavigatedWithinDocument);
-    this.emit(FrameManagerEmittedEvents.FrameNavigated, frame);
-    frame.emit(FrameEmittedEvents.FrameNavigated);
+    this.emit(FrameManagerEvent.FrameNavigatedWithinDocument, frame);
+    frame.emit(FrameEvent.FrameNavigatedWithinDocument, undefined);
+    this.emit(FrameManagerEvent.FrameNavigated, frame);
+    frame.emit(FrameEvent.FrameNavigated, 'Navigation');
   }
 
   #onFrameDetached(
@@ -466,16 +478,20 @@ export class FrameManager extends EventEmitter {
     reason: Protocol.Page.FrameDetachedEventReason
   ): void {
     const frame = this.frame(frameId);
-    if (reason === 'remove') {
-      // Only remove the frame if the reason for the detached event is
-      // an actual removement of the frame.
-      // For frames that become OOP iframes, the reason would be 'swap'.
-      if (frame) {
+    if (!frame) {
+      return;
+    }
+    switch (reason) {
+      case 'remove':
+        // Only remove the frame if the reason for the detached event is
+        // an actual removement of the frame.
+        // For frames that become OOP iframes, the reason would be 'swap'.
         this.#removeFramesRecursively(frame);
-      }
-    } else if (reason === 'swap') {
-      this.emit(FrameManagerEmittedEvents.FrameSwapped, frame);
-      frame?.emit(FrameEmittedEvents.FrameSwapped);
+        break;
+      case 'swap':
+        this.emit(FrameManagerEvent.FrameSwapped, frame);
+        frame.emit(FrameEvent.FrameSwapped, undefined);
+        break;
     }
   }
 
@@ -555,7 +571,7 @@ export class FrameManager extends EventEmitter {
     }
     frame[Symbol.dispose]();
     this._frameTree.removeFrame(frame);
-    this.emit(FrameManagerEmittedEvents.FrameDetached, frame);
-    frame.emit(FrameEmittedEvents.FrameDetached, frame);
+    this.emit(FrameManagerEvent.FrameDetached, frame);
+    frame.emit(FrameEvent.FrameDetached, frame);
   }
 }

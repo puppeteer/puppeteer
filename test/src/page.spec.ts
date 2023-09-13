@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import assert from 'assert';
 import fs from 'fs';
 import {ServerResponse} from 'http';
 import path from 'path';
 
 import expect from 'expect';
 import {KnownDevices, TimeoutError} from 'puppeteer';
+import {CDPSession} from 'puppeteer-core/internal/api/CDPSession.js';
 import {Metrics, Page} from 'puppeteer-core/internal/api/Page.js';
-import {CDPSession} from 'puppeteer-core/internal/common/Connection.js';
 import {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 import {CDPPage} from 'puppeteer-core/internal/common/Page.js';
 import sinon from 'sinon';
@@ -2329,15 +2330,17 @@ describe('Page', function () {
     it('should work with window.close', async () => {
       const {page, context} = await getTestState();
 
-      const newPagePromise = new Promise<Page>(fulfill => {
+      const newPagePromise = new Promise<Page | null>(fulfill => {
         return context.once('targetcreated', target => {
           return fulfill(target.page());
         });
       });
+      assert(page);
       await page.evaluate(() => {
         return ((window as any)['newPage'] = window.open('about:blank'));
       });
       const newPage = await newPagePromise;
+      assert(newPage);
       const closedPromise = waitEvent(newPage, 'close');
       await page.evaluate(() => {
         return (window as any)['newPage'].close();

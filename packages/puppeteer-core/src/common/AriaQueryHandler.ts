@@ -16,11 +16,11 @@
 
 import {Protocol} from 'devtools-protocol';
 
+import {CDPSession} from '../api/CDPSession.js';
 import {ElementHandle} from '../api/ElementHandle.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 
-import {CDPSession} from './Connection.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {QueryHandler, QuerySelector} from './QueryHandler.js';
 import {AwaitableIterable} from './types.js';

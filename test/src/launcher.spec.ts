@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import assert from 'assert';
 import fs from 'fs';
 import {mkdtemp, readFile, writeFile} from 'fs/promises';
 import os from 'os';
@@ -27,9 +28,9 @@ import sinon from 'sinon';
 
 import {
   getTestState,
+  isHeadless,
   itOnlyRegularInstall,
   launch,
-  isHeadless,
 } from './mocha-utils.js';
 import {dumpFrames, waitEvent} from './utils.js';
 
@@ -821,13 +822,14 @@ describe('Launcher specs', function () {
             browserWSEndpoint: browserOne.wsEndpoint(),
           });
           const [page1, page2] = await Promise.all([
-            new Promise<Page>(x => {
+            new Promise<Page | null>(x => {
               return browserOne.once('targetcreated', target => {
-                return x(target.page());
+                x(target.page());
               });
             }),
             browserTwo.newPage(),
           ]);
+          assert(page1);
           expect(
             await page1.evaluate(() => {
               return 7 * 8;
@@ -929,13 +931,13 @@ describe('Launcher specs', function () {
       try {
         const events: string[] = [];
         browser.on('targetcreated', () => {
-          return events.push('CREATED');
+          events.push('CREATED');
         });
         browser.on('targetchanged', () => {
-          return events.push('CHANGED');
+          events.push('CHANGED');
         });
         browser.on('targetdestroyed', () => {
-          return events.push('DESTROYED');
+          events.push('DESTROYED');
         });
         const page = await browser.newPage();
         await page.goto(server.EMPTY_PAGE);
@@ -963,13 +965,13 @@ describe('Launcher specs', function () {
         let disconnectedRemote1 = 0;
         let disconnectedRemote2 = 0;
         browser.on('disconnected', () => {
-          return ++disconnectedOriginal;
+          ++disconnectedOriginal;
         });
         remoteBrowser1.on('disconnected', () => {
-          return ++disconnectedRemote1;
+          ++disconnectedRemote1;
         });
         remoteBrowser2.on('disconnected', () => {
-          return ++disconnectedRemote2;
+          ++disconnectedRemote2;
         });
 
         await Promise.all([

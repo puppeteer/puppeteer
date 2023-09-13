@@ -17,14 +17,18 @@
 import {Protocol} from 'devtools-protocol';
 import {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
-import {assert} from '../util/assert.js';
+import {
+  CDPSession,
+  CDPSessionEvent,
+  CDPSessionEvents,
+} from '../api/CDPSession.js';
 import {Deferred} from '../util/Deferred.js';
 
+import {CDPCDPSession} from './CDPSession.js';
 import {ConnectionTransport} from './ConnectionTransport.js';
 import {debug} from './Debug.js';
-import {TargetCloseError, ProtocolError} from './Errors.js';
+import {ProtocolError, TargetCloseError} from './Errors.js';
 import {EventEmitter} from './EventEmitter.js';
-import {CDPTarget} from './Target.js';
 import {debugError} from './util.js';
 
 const debugProtocolSend = debug('puppeteer:protocol:SEND ►');
@@ -34,15 +38,6 @@ const debugProtocolReceive = debug('puppeteer:protocol:RECV ◀');
  * @public
  */
 export {ConnectionTransport, ProtocolMapping};
-
-/**
- * Internal events that the Connection class emits.
- *
- * @internal
- */
-export const ConnectionEmittedEvents = {
-  Disconnected: Symbol('Connection.Disconnected'),
-} as const;
 
 /**
  * @internal
@@ -200,12 +195,12 @@ export class CallbackRegistry {
 /**
  * @public
  */
-export class Connection extends EventEmitter {
+export class Connection extends EventEmitter<CDPSessionEvents> {
   #url: string;
   #transport: ConnectionTransport;
   #delay: number;
   #timeout: number;
-  #sessions = new Map<string, CDPSessionImpl>();
+  #sessions = new Map<string, CDPCDPSession>();
   #closed = false;
   #manuallyAttached = new Set<string>();
   #callbacks = new CallbackRegistry();
@@ -315,27 +310,27 @@ export class Connection extends EventEmitter {
     const object = JSON.parse(message);
     if (object.method === 'Target.attachedToTarget') {
       const sessionId = object.params.sessionId;
-      const session = new CDPSessionImpl(
+      const session = new CDPCDPSession(
         this,
         object.params.targetInfo.type,
         sessionId,
         object.sessionId
       );
       this.#sessions.set(sessionId, session);
-      this.emit('sessionattached', session);
+      this.emit(CDPSessionEvent.SessionAttached, session);
       const parentSession = this.#sessions.get(object.sessionId);
       if (parentSession) {
-        parentSession.emit('sessionattached', session);
+        parentSession.emit(CDPSessionEvent.SessionAttached, session);
       }
     } else if (object.method === 'Target.detachedFromTarget') {
       const session = this.#sessions.get(object.params.sessionId);
       if (session) {
         session._onClosed();
         this.#sessions.delete(object.params.sessionId);
-        this.emit('sessiondetached', session);
+        this.emit(CDPSessionEvent.SessionDetached, session);
         const parentSession = this.#sessions.get(object.sessionId);
         if (parentSession) {
-          parentSession.emit('sessiondetached', session);
+          parentSession.emit(CDPSessionEvent.SessionDetached, session);
         }
       }
     }
@@ -371,7 +366,7 @@ export class Connection extends EventEmitter {
       session._onClosed();
     }
     this.#sessions.clear();
-    this.emit(ConnectionEmittedEvents.Disconnected);
+    this.emit(CDPSessionEvent.Disconnected, undefined);
   }
 
   dispose(): void {
@@ -422,240 +417,7 @@ export class Connection extends EventEmitter {
 /**
  * @internal
  */
-export interface CDPSessionOnMessageObject {
-  id?: number;
-  method: string;
-  params: Record<string, unknown>;
-  error: {message: string; data: any; code: number};
-  result?: any;
-}
-
-/**
- * Internal events that the CDPSession class emits.
- *
- * @internal
- */
-export const CDPSessionEmittedEvents = {
-  Disconnected: Symbol('CDPSession.Disconnected'),
-  Swapped: Symbol('CDPSession.Swapped'),
-  /**
-   * Emitted when the session is ready to be configured during the auto-attach
-   * process. Right after the event is handled, the session will be resumed.
-   */
-  Ready: Symbol('CDPSession.Ready'),
-} as const;
-
-/**
- * The `CDPSession` instances are used to talk raw Chrome Devtools Protocol.
- *
- * @remarks
- *
- * Protocol methods can be called with {@link CDPSession.send} method and protocol
- * events can be subscribed to with `CDPSession.on` method.
- *
- * Useful links: {@link https://chromedevtools.github.io/devtools-protocol/ | DevTools Protocol Viewer}
- * and {@link https://github.com/aslushnikov/getting-started-with-cdp/blob/HEAD/README.md | Getting Started with DevTools Protocol}.
- *
- * @example
- *
- * ```ts
- * const client = await page.target().createCDPSession();
- * await client.send('Animation.enable');
- * client.on('Animation.animationCreated', () =>
- *   console.log('Animation created!')
- * );
- * const response = await client.send('Animation.getPlaybackRate');
- * console.log('playback rate is ' + response.playbackRate);
- * await client.send('Animation.setPlaybackRate', {
- *   playbackRate: response.playbackRate / 2,
- * });
- * ```
- *
- * @public
- */
-export class CDPSession extends EventEmitter {
-  /**
-   * @internal
-   */
-  constructor() {
-    super();
-  }
-
-  connection(): Connection | undefined {
-    throw new Error('Not implemented');
-  }
-
-  /**
-   * Parent session in terms of CDP's auto-attach mechanism.
-   *
-   * @internal
-   */
-  parentSession(): CDPSession | undefined {
-    return undefined;
-  }
-
-  send<T extends keyof ProtocolMapping.Commands>(
-    method: T,
-    ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
-  ): Promise<ProtocolMapping.Commands[T]['returnType']>;
-  send<T extends keyof ProtocolMapping.Commands>(): Promise<
-    ProtocolMapping.Commands[T]['returnType']
-  > {
-    throw new Error('Not implemented');
-  }
-
-  /**
-   * Detaches the cdpSession from the target. Once detached, the cdpSession object
-   * won't emit any events and can't be used to send messages.
-   */
-  async detach(): Promise<void> {
-    throw new Error('Not implemented');
-  }
-
-  /**
-   * Returns the session's id.
-   */
-  id(): string {
-    throw new Error('Not implemented');
-  }
-}
-
-/**
- * @internal
- */
-export class CDPSessionImpl extends CDPSession {
-  #sessionId: string;
-  #targetType: string;
-  #callbacks = new CallbackRegistry();
-  #connection?: Connection;
-  #parentSessionId?: string;
-  #target?: CDPTarget;
-
-  /**
-   * @internal
-   */
-  constructor(
-    connection: Connection,
-    targetType: string,
-    sessionId: string,
-    parentSessionId: string | undefined
-  ) {
-    super();
-    this.#connection = connection;
-    this.#targetType = targetType;
-    this.#sessionId = sessionId;
-    this.#parentSessionId = parentSessionId;
-  }
-
-  /**
-   * Sets the CDPTarget associated with the session instance.
-   *
-   * @internal
-   */
-  _setTarget(target: CDPTarget): void {
-    this.#target = target;
-  }
-
-  /**
-   * Gets the CDPTarget associated with the session instance.
-   *
-   * @internal
-   */
-  _target(): CDPTarget {
-    assert(this.#target, 'Target must exist');
-    return this.#target;
-  }
-
-  override connection(): Connection | undefined {
-    return this.#connection;
-  }
-
-  override parentSession(): CDPSession | undefined {
-    if (!this.#parentSessionId) {
-      return;
-    }
-    const parent = this.#connection?.session(this.#parentSessionId);
-    return parent ?? undefined;
-  }
-
-  override send<T extends keyof ProtocolMapping.Commands>(
-    method: T,
-    ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
-  ): Promise<ProtocolMapping.Commands[T]['returnType']> {
-    if (!this.#connection) {
-      return Promise.reject(
-        new TargetCloseError(
-          `Protocol error (${method}): Session closed. Most likely the ${
-            this.#targetType
-          } has been closed.`
-        )
-      );
-    }
-    // See the comment in Connection#send explaining why we do this.
-    const params = paramArgs.length ? paramArgs[0] : undefined;
-    return this.#connection._rawSend(
-      this.#callbacks,
-      method,
-      params,
-      this.#sessionId
-    );
-  }
-
-  /**
-   * @internal
-   */
-  _onMessage(object: CDPSessionOnMessageObject): void {
-    if (object.id) {
-      if (object.error) {
-        this.#callbacks.reject(
-          object.id,
-          createProtocolErrorMessage(object),
-          object.error.message
-        );
-      } else {
-        this.#callbacks.resolve(object.id, object.result);
-      }
-    } else {
-      assert(!object.id);
-      this.emit(object.method, object.params);
-    }
-  }
-
-  /**
-   * Detaches the cdpSession from the target. Once detached, the cdpSession object
-   * won't emit any events and can't be used to send messages.
-   */
-  override async detach(): Promise<void> {
-    if (!this.#connection) {
-      throw new Error(
-        `Session already detached. Most likely the ${
-          this.#targetType
-        } has been closed.`
-      );
-    }
-    await this.#connection.send('Target.detachFromTarget', {
-      sessionId: this.#sessionId,
-    });
-  }
-
-  /**
-   * @internal
-   */
-  _onClosed(): void {
-    this.#callbacks.clear();
-    this.#connection = undefined;
-    this.emit(CDPSessionEmittedEvents.Disconnected);
-  }
-
-  /**
-   * Returns the session's id.
-   */
-  override id(): string {
-    return this.#sessionId;
-  }
-}
-
-function createProtocolErrorMessage(object: {
+export function createProtocolErrorMessage(object: {
   error: {message: string; data: any; code: number};
 }): string {
   let message = `${object.error.message}`;
