@@ -173,7 +173,7 @@ export class EmulationManager {
     });
     // We don't await here because we want to register all state changes before
     // the target is unpaused.
-    void this.#viewportState.sync();
+    void this.#viewportState.sync().catch(debugError);
     void this.#syncIdleState().catch(debugError);
     void this.#syncTimezoneState().catch(debugError);
     void this.#syncVisionDeficiencyState().catch(debugError);
