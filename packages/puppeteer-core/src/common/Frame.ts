@@ -73,6 +73,15 @@ export class CdpFrame extends Frame {
   }
 
   /**
+   * This is used internally in DevTools.
+   *
+   * @internal
+   */
+  _client(): CDPSession {
+    return this.#client;
+  }
+
+  /**
    * Updates the frame ID with the new ID. This happens when the main frame is
    * replaced by a different frame.
    */
