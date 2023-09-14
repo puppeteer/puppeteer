@@ -13,24 +13,21 @@
   <body>
     <div id="drag" draggable="true">drag me</div>
     <div id="drop"></div>
+    <div id="drag-state">0</div>
     <script>
-      window.didDragStart = false;
-      window.didDragEnter = false;
-      window.didDragOver = false;
-      window.didDrop = false;
       const drag = document.getElementById('drag');
       const drop = document.getElementById('drop');
       drag.addEventListener('dragstart', function(event) {
         event.dataTransfer.setData('id', event.target.id);
-        window.didDragStart = true;
+        document.getElementById('drag-state').textContent += '1';
       });
       drop.addEventListener('dragenter', function(event) {
         event.preventDefault();
-        window.didDragEnter = true;
+        document.getElementById('drag-state').textContent += '2';
       });
       drop.addEventListener('dragover', function(event) {
         event.preventDefault();
-        window.didDragOver = true;
+        document.getElementById('drag-state').textContent += '3';
       });
       drop.addEventListener('drop', function(event) {
         event.preventDefault();
@@ -38,7 +35,7 @@
         const el = document.getElementById(id);
         if (el) {
           event.target.appendChild(el);
-          window.didDrop = true;
+          document.getElementById('drag-state').textContent += '4';
         }
       });
     </script>

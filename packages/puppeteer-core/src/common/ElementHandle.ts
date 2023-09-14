@@ -17,7 +17,7 @@
 import {Protocol} from 'devtools-protocol';
 
 import {CDPSession} from '../api/CDPSession.js';
-import {AutofillData, ElementHandle, Point} from '../api/ElementHandle.js';
+import {AutofillData, ElementHandle} from '../api/ElementHandle.js';
 import {Page, ScreenshotOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {throwIfDisposed} from '../util/decorators.js';
@@ -101,74 +101,6 @@ export class CdpElementHandle<
       // Fallback to Element.scrollIntoView if DOM.scrollIntoViewIfNeeded is not supported
       await super.scrollIntoView();
     }
-  }
-
-  /**
-   * This method creates and captures a dragevent from the element.
-   */
-  @throwIfDisposed()
-  @ElementHandle.bindIsolatedHandle
-  override async drag(
-    this: CdpElementHandle<Element>,
-    target: Point
-  ): Promise<Protocol.Input.DragData> {
-    assert(
-      this.#page.isDragInterceptionEnabled(),
-      'Drag Interception is not enabled!'
-    );
-    await this.scrollIntoViewIfNeeded();
-    const start = await this.clickablePoint();
-    return await this.#page.mouse.drag(start, target);
-  }
-
-  @throwIfDisposed()
-  @ElementHandle.bindIsolatedHandle
-  override async dragEnter(
-    this: CdpElementHandle<Element>,
-    data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
-  ): Promise<void> {
-    await this.scrollIntoViewIfNeeded();
-    const target = await this.clickablePoint();
-    await this.#page.mouse.dragEnter(target, data);
-  }
-
-  @throwIfDisposed()
-  @ElementHandle.bindIsolatedHandle
-  override async dragOver(
-    this: CdpElementHandle<Element>,
-    data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
-  ): Promise<void> {
-    await this.scrollIntoViewIfNeeded();
-    const target = await this.clickablePoint();
-    await this.#page.mouse.dragOver(target, data);
-  }
-
-  @throwIfDisposed()
-  @ElementHandle.bindIsolatedHandle
-  override async drop(
-    this: CdpElementHandle<Element>,
-    data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
-  ): Promise<void> {
-    await this.scrollIntoViewIfNeeded();
-    const destination = await this.clickablePoint();
-    await this.#page.mouse.drop(destination, data);
-  }
-
-  @throwIfDisposed()
-  @ElementHandle.bindIsolatedHandle
-  override async dragAndDrop(
-    this: CdpElementHandle<Element>,
-    target: CdpElementHandle<Node>,
-    options?: {delay: number}
-  ): Promise<void> {
-    assert(
-      this.#page.isDragInterceptionEnabled(),
-      'Drag Interception is not enabled!'
-    );
-    await this.scrollIntoViewIfNeeded();
-    const startPoint = await this.clickablePoint();
-    const targetPoint = await target.clickablePoint();
-    await this.#page.mouse.dragAndDrop(startPoint, targetPoint, options);
   }
 
   @throwIfDisposed()

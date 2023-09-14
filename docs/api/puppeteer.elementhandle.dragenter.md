@@ -4,7 +4,9 @@ sidebar_label: ElementHandle.dragEnter
 
 # ElementHandle.dragEnter() method
 
-This method creates a `dragenter` event on the element.
+> Warning: This API is now obsolete.
+>
+> Do not use. `dragenter` will automatically be performed during dragging.
 
 #### Signature:
 

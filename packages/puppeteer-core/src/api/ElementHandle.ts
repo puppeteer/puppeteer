@@ -31,6 +31,7 @@ import {KeyInput} from '../common/USKeyboardLayout.js';
 import {isString, withSourcePuppeteerURLIfNone} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
+import {throwIfDisposed} from '../util/decorators.js';
 
 import {
   KeyboardTypeOptions,
@@ -731,59 +732,134 @@ export abstract class ElementHandle<
   }
 
   /**
-   * This method creates and captures a dragevent from the element.
+   * Drags an element over the given element or point.
+   *
+   * @returns DEPRECATED. When drag interception is enabled, the drag payload is
+   * returned.
    */
+  @throwIfDisposed()
+  @ElementHandle.bindIsolatedHandle
   async drag(
     this: ElementHandle<Element>,
-    target: Point
-  ): Promise<Protocol.Input.DragData>;
-  async drag(this: ElementHandle<Element>): Promise<Protocol.Input.DragData> {
-    throw new Error('Not implemented');
+    target: Point | ElementHandle<Element>
+  ): Promise<Protocol.Input.DragData | void> {
+    await this.scrollIntoViewIfNeeded();
+    const page = this.frame.page();
+    if (page.isDragInterceptionEnabled()) {
+      const source = await this.clickablePoint();
+      if (target instanceof ElementHandle) {
+        target = await target.clickablePoint();
+      }
+      return await page.mouse.drag(source, target);
+    }
+    try {
+      if (!page._isDragging) {
+        page._isDragging = true;
+        await this.hover();
+        await page.mouse.down();
+      }
+      if (target instanceof ElementHandle) {
+        await target.hover();
+      } else {
+        await page.mouse.move(target.x, target.y);
+      }
+    } catch (error) {
+      page._isDragging = false;
+      throw error;
+    }
   }
 
   /**
-   * This method creates a `dragenter` event on the element.
+   * @deprecated Do not use. `dragenter` will automatically be performed during dragging.
    */
+  @throwIfDisposed()
+  @ElementHandle.bindIsolatedHandle
   async dragEnter(
     this: ElementHandle<Element>,
-    data?: Protocol.Input.DragData
-  ): Promise<void>;
-  async dragEnter(this: ElementHandle<Element>): Promise<void> {
-    throw new Error('Not implemented');
+    data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
+  ): Promise<void> {
+    const page = this.frame.page();
+    await this.scrollIntoViewIfNeeded();
+    const target = await this.clickablePoint();
+    await page.mouse.dragEnter(target, data);
   }
 
   /**
-   * This method creates a `dragover` event on the element.
+   * @deprecated Do not use. `dragover` will automatically be performed during dragging.
    */
+  @throwIfDisposed()
+  @ElementHandle.bindIsolatedHandle
   async dragOver(
     this: ElementHandle<Element>,
-    data?: Protocol.Input.DragData
-  ): Promise<void>;
-  async dragOver(this: ElementHandle<Element>): Promise<void> {
-    throw new Error('Not implemented');
+    data: Protocol.Input.DragData = {items: [], dragOperationsMask: 1}
+  ): Promise<void> {
+    const page = this.frame.page();
+    await this.scrollIntoViewIfNeeded();
+    const target = await this.clickablePoint();
+    await page.mouse.dragOver(target, data);
   }
 
   /**
-   * This method triggers a drop on the element.
+   * Drops the given element onto the current one.
+   */
+  async drop(
+    this: ElementHandle<Element>,
+    element: ElementHandle<Element>
+  ): Promise<void>;
+
+  /**
+   * @deprecated No longer supported.
    */
   async drop(
     this: ElementHandle<Element>,
     data?: Protocol.Input.DragData
   ): Promise<void>;
-  async drop(this: ElementHandle<Element>): Promise<void> {
-    throw new Error('Not implemented');
+
+  /**
+   * @internal
+   */
+  @throwIfDisposed()
+  @ElementHandle.bindIsolatedHandle
+  async drop(
+    this: ElementHandle<Element>,
+    dataOrElement: ElementHandle<Element> | Protocol.Input.DragData = {
+      items: [],
+      dragOperationsMask: 1,
+    }
+  ): Promise<void> {
+    const page = this.frame.page();
+    if ('items' in dataOrElement) {
+      await this.scrollIntoViewIfNeeded();
+      const destination = await this.clickablePoint();
+      await page.mouse.drop(destination, dataOrElement);
+    } else {
+      // Note if the rest errors, we still want dragging off because the errors
+      // is most likely something implying the mouse is no longer dragging.
+      await dataOrElement.drag(this);
+      page._isDragging = false;
+      await page.mouse.up();
+    }
   }
 
   /**
-   * This method triggers a dragenter, dragover, and drop on the element.
+   * @deprecated Use `ElementHandle.drop` instead.
    */
+  @throwIfDisposed()
+  @ElementHandle.bindIsolatedHandle
   async dragAndDrop(
     this: ElementHandle<Element>,
     target: ElementHandle<Node>,
     options?: {delay: number}
-  ): Promise<void>;
-  async dragAndDrop(this: ElementHandle<Element>): Promise<void> {
-    throw new Error('Not implemented');
+  ): Promise<void> {
+    const page = this.frame.page();
+    assert(
+      page.isDragInterceptionEnabled(),
+      'Drag Interception is not enabled!'
+    );
+    await this.scrollIntoViewIfNeeded();
+    const startPoint = await this.clickablePoint();
+    const targetPoint = await target.clickablePoint();
+    await page.mouse.dragAndDrop(startPoint, targetPoint, options);
   }
 
   /**

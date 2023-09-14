@@ -1,18 +1,18 @@
 ---
-sidebar_label: ElementHandle.dragOver
+sidebar_label: ElementHandle.drop_1
 ---
 
-# ElementHandle.dragOver() method
+# ElementHandle.drop() method
 
 > Warning: This API is now obsolete.
 >
-> Do not use. `dragover` will automatically be performed during dragging.
+> No longer supported.
 
 #### Signature:
 
 ```typescript
 class ElementHandle {
-  dragOver(
+  drop(
     this: ElementHandle<Element>,
     data?: Protocol.Input.DragData
   ): Promise<void>;

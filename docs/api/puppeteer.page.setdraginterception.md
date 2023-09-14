@@ -4,6 +4,10 @@ sidebar_label: Page.setDragInterception
 
 # Page.setDragInterception() method
 
+> Warning: This API is now obsolete.
+>
+> We no longer support intercepting drag payloads. Use the new drag APIs found on [ElementHandle](./puppeteer.elementhandle.md) to drag (or just use the [Page.mouse](./puppeteer.page.mouse.md)).
+
 #### Signature:
 
 ```typescript
@@ -21,7 +25,3 @@ class Page {
 **Returns:**
 
 Promise&lt;void&gt;
-
-## Remarks
-
-Activating drag interception enables the `Input.drag`, methods This provides the capability to capture drag events emitted on the page, which can then be used to simulate drag-and-drop.
