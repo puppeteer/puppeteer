@@ -24,7 +24,7 @@ import {
   Moveable,
 } from '../common/types.js';
 import {debugError, withSourcePuppeteerURLIfNone} from '../common/util.js';
-import {moveable} from '../util/decorators.js';
+import {moveable, throwIfDisposed} from '../util/decorators.js';
 
 import {ElementHandle} from './ElementHandle.js';
 import {Realm} from './Realm.js';
@@ -124,6 +124,7 @@ export abstract class JSHandle<T = unknown>
   /**
    * @internal
    */
+  @throwIfDisposed()
   async getProperty<K extends keyof T>(
     propertyName: HandleOr<K>
   ): Promise<HandleFor<T[K]>> {
@@ -150,6 +151,7 @@ export abstract class JSHandle<T = unknown>
    * children; // holds elementHandles to all children of document.body
    * ```
    */
+  @throwIfDisposed()
   async getProperties(): Promise<Map<string, JSHandle>> {
     const propertyNames = await this.evaluate(object => {
       const enumerableProperties = [];
