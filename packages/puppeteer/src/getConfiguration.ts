@@ -18,7 +18,7 @@ import {homedir} from 'os';
 import {join} from 'path';
 
 import {cosmiconfigSync} from 'cosmiconfig';
-import {Configuration, Product} from 'puppeteer-core';
+import {type Configuration, type Product} from 'puppeteer-core';
 
 /**
  * @internal

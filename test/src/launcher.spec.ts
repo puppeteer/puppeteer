@@ -18,11 +18,11 @@ import fs from 'fs';
 import {mkdtemp, readFile, writeFile} from 'fs/promises';
 import os from 'os';
 import path from 'path';
-import {TLSSocket} from 'tls';
+import {type TLSSocket} from 'tls';
 
 import expect from 'expect';
 import {TimeoutError} from 'puppeteer';
-import {Page} from 'puppeteer-core/internal/api/Page.js';
+import {type Page} from 'puppeteer-core/internal/api/Page.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 import sinon from 'sinon';
 

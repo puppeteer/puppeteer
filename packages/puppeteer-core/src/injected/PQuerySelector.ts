@@ -20,13 +20,13 @@ import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {ariaQuerySelectorAll} from './ARIAQuerySelector.js';
 import {customQuerySelectors} from './CustomQuerySelector.js';
 import {
-  ComplexPSelector,
-  ComplexPSelectorList,
-  CompoundPSelector,
-  CSSSelector,
+  type ComplexPSelector,
+  type ComplexPSelectorList,
+  type CompoundPSelector,
+  type CSSSelector,
   parsePSelectors,
   PCombinator,
-  PPseudoSelector,
+  type PPseudoSelector,
 } from './PSelectorParser.js';
 import {textQuerySelectorAll} from './TextQuerySelector.js';
 import {pierce, pierceAll} from './util.js';

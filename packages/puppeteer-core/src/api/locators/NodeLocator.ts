@@ -16,7 +16,7 @@
 
 import {
   EMPTY,
-  Observable,
+  type Observable,
   defer,
   filter,
   first,
@@ -26,11 +26,11 @@ import {
   retry,
   throwIfEmpty,
 } from '../../../third_party/rxjs/rxjs.js';
-import {HandleFor, NodeFor} from '../../common/types.js';
-import {Frame} from '../Frame.js';
-import {Page} from '../Page.js';
+import {type HandleFor, type NodeFor} from '../../common/types.js';
+import {type Frame} from '../Frame.js';
+import {type Page} from '../Page.js';
 
-import {ActionOptions, Locator, RETRY_DELAY} from './locators.js';
+import {type ActionOptions, Locator, RETRY_DELAY} from './locators.js';
 
 /**
  * @internal

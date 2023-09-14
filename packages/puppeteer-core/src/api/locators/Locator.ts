@@ -16,8 +16,8 @@
 
 import {
   EMPTY,
-  Observable,
-  OperatorFunction,
+  type Observable,
+  type OperatorFunction,
   catchError,
   defaultIfEmpty,
   defer,
@@ -37,19 +37,23 @@ import {
   retry,
   tap,
 } from '../../../third_party/rxjs/rxjs.js';
-import {EventEmitter, EventType} from '../../common/EventEmitter.js';
-import {HandleFor} from '../../common/types.js';
+import {EventEmitter, type EventType} from '../../common/EventEmitter.js';
+import {type HandleFor} from '../../common/types.js';
 import {debugError, timeout} from '../../common/util.js';
-import {BoundingBox, ClickOptions, ElementHandle} from '../ElementHandle.js';
+import {
+  type BoundingBox,
+  type ClickOptions,
+  type ElementHandle,
+} from '../ElementHandle.js';
 
 import {
-  Action,
-  AwaitedLocator,
+  type Action,
+  type AwaitedLocator,
   FilteredLocator,
-  HandleMapper,
+  type HandleMapper,
   MappedLocator,
-  Mapper,
-  Predicate,
+  type Mapper,
+  type Predicate,
   RaceLocator,
 } from './locators.js';
 

@@ -15,7 +15,7 @@
  */
 
 import expect from 'expect';
-import {KnownDevices, BoundingBox} from 'puppeteer';
+import {KnownDevices, type BoundingBox} from 'puppeteer';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 

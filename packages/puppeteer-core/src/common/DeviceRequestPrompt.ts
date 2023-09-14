@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import Protocol from 'devtools-protocol';
+import type Protocol from 'devtools-protocol';
 
-import {CDPSession} from '../api/CDPSession.js';
-import {WaitTimeoutOptions} from '../api/Page.js';
+import {type CDPSession} from '../api/CDPSession.js';
+import {type WaitTimeoutOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
-import {TimeoutSettings} from './TimeoutSettings.js';
+import {type TimeoutSettings} from './TimeoutSettings.js';
 
 /**
  * Device in a request prompt.

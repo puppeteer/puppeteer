@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {BrowsingContext} from './BrowsingContext.js';
+import {type BrowsingContext} from './BrowsingContext.js';
 
 interface Viewport {
   width: number;

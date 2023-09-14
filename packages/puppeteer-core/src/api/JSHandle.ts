@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import Protocol from 'devtools-protocol';
+import type Protocol from 'devtools-protocol';
 
 import {Symbol} from '../../third_party/disposablestack/disposablestack.js';
 import {
-  EvaluateFuncWith,
-  HandleFor,
-  HandleOr,
-  Moveable,
+  type EvaluateFuncWith,
+  type HandleFor,
+  type HandleOr,
+  type Moveable,
 } from '../common/types.js';
 import {debugError, withSourcePuppeteerURLIfNone} from '../common/util.js';
 import {moveable, throwIfDisposed} from '../util/decorators.js';
 
-import {ElementHandle} from './ElementHandle.js';
-import {Realm} from './Realm.js';
+import {type ElementHandle} from './ElementHandle.js';
+import {type Realm} from './Realm.js';
 
 /**
  * Represents a reference to a JavaScript object. Instances can be created using

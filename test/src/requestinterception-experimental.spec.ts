@@ -19,11 +19,11 @@ import path from 'path';
 
 import expect from 'expect';
 import {
-  ActionResult,
-  HTTPRequest,
+  type ActionResult,
+  type HTTPRequest,
   InterceptResolutionAction,
 } from 'puppeteer-core/internal/api/HTTPRequest.js';
-import {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
+import {type ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 import {isFavicon, waitEvent} from './utils.js';

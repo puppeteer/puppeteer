@@ -16,12 +16,12 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import {ChildProcess} from 'child_process';
+import {type ChildProcess} from 'child_process';
 
-import {Protocol} from 'devtools-protocol';
+import {type Protocol} from 'devtools-protocol';
 
 import {Symbol} from '../../third_party/disposablestack/disposablestack.js';
-import {EventEmitter, EventType} from '../common/EventEmitter.js';
+import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {debugError, waitWithTimeout} from '../common/util.js';
 import {Deferred} from '../util/Deferred.js';
 

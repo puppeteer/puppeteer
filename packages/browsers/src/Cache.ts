@@ -17,7 +17,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import {Browser, BrowserPlatform} from './browser-data/browser-data.js';
+import {Browser, type BrowserPlatform} from './browser-data/browser-data.js';
 import {computeExecutablePath} from './launch.js';
 
 /**

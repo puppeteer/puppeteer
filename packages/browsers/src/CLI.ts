@@ -24,9 +24,9 @@ import yargs from 'yargs/yargs';
 
 import {
   resolveBuildId,
-  Browser,
+  type Browser,
   BrowserPlatform,
-  ChromeReleaseChannel,
+  type ChromeReleaseChannel,
 } from './browser-data/browser-data.js';
 import {Cache} from './Cache.js';
 import {detectBrowserPlatform} from './detectPlatform.js';

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
+import {type Protocol} from 'devtools-protocol';
 
-import {CdpHTTPRequest} from './HTTPRequest.js';
+import {type CdpHTTPRequest} from './HTTPRequest.js';
 
 /**
  * @internal

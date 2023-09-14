@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
+import {type Protocol} from 'devtools-protocol';
 
-import {CDPSession} from '../api/CDPSession.js';
-import {ElementHandle} from '../api/ElementHandle.js';
+import {type CDPSession} from '../api/CDPSession.js';
+import {type ElementHandle} from '../api/ElementHandle.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 
-import {IsolatedWorld} from './IsolatedWorld.js';
-import {QueryHandler, QuerySelector} from './QueryHandler.js';
-import {AwaitableIterable} from './types.js';
+import {type IsolatedWorld} from './IsolatedWorld.js';
+import {QueryHandler, type QuerySelector} from './QueryHandler.js';
+import {type AwaitableIterable} from './types.js';
 
 const queryAXTree = async (
   client: CDPSession,

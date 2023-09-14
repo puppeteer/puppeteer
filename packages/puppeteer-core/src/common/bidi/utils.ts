@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {debug} from '../Debug.js';
 import {PuppeteerURL} from '../util.js';
 
-import {Realm} from './Realm.js';
+import {type Realm} from './Realm.js';
 import {BidiSerializer} from './Serializer.js';
 
 /**

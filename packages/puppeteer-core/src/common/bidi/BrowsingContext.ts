@@ -1,17 +1,17 @@
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
-import ProtocolMapping from 'devtools-protocol/types/protocol-mapping.js';
+import type ProtocolMapping from 'devtools-protocol/types/protocol-mapping.js';
 
 import {CDPSession} from '../../api/CDPSession.js';
-import {WaitForOptions} from '../../api/Page.js';
+import {type WaitForOptions} from '../../api/Page.js';
 import {assert} from '../../util/assert.js';
 import {Deferred} from '../../util/Deferred.js';
-import {Connection as CdpConnection} from '../Connection.js';
+import {type Connection as CdpConnection} from '../Connection.js';
 import {ProtocolError, TargetCloseError, TimeoutError} from '../Errors.js';
-import {EventType} from '../EventEmitter.js';
-import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
+import {type EventType} from '../EventEmitter.js';
+import {type PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
 import {setPageContent, waitWithTimeout} from '../util.js';
 
-import {BidiConnection} from './Connection.js';
+import {type BidiConnection} from './Connection.js';
 import {Realm} from './Realm.js';
 import {debugError} from './utils.js';
 

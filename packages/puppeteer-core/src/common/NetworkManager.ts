@@ -16,14 +16,21 @@
 
 import type {Protocol} from 'devtools-protocol';
 
-import {CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
+import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import type {Frame} from '../api/Frame.js';
 import {assert} from '../util/assert.js';
 
-import {EventEmitter, EventSubscription, EventType} from './EventEmitter.js';
+import {
+  EventEmitter,
+  EventSubscription,
+  type EventType,
+} from './EventEmitter.js';
 import {CdpHTTPRequest} from './HTTPRequest.js';
 import {CdpHTTPResponse} from './HTTPResponse.js';
-import {FetchRequestId, NetworkEventManager} from './NetworkEventManager.js';
+import {
+  type FetchRequestId,
+  NetworkEventManager,
+} from './NetworkEventManager.js';
 import {debugError, isString} from './util.js';
 
 /**

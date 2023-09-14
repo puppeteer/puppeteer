@@ -20,23 +20,23 @@ import {Protocol} from 'devtools-protocol';
 
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
-import {CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
-import {ElementHandle} from '../api/ElementHandle.js';
-import {Frame} from '../api/Frame.js';
-import {HTTPRequest} from '../api/HTTPRequest.js';
-import {HTTPResponse} from '../api/HTTPResponse.js';
-import {JSHandle} from '../api/JSHandle.js';
+import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
+import {type ElementHandle} from '../api/ElementHandle.js';
+import {type Frame} from '../api/Frame.js';
+import {type HTTPRequest} from '../api/HTTPRequest.js';
+import {type HTTPResponse} from '../api/HTTPResponse.js';
+import {type JSHandle} from '../api/JSHandle.js';
 import {
-  GeolocationOptions,
-  MediaFeature,
-  Metrics,
-  NewDocumentScriptEvaluation,
+  type GeolocationOptions,
+  type MediaFeature,
+  type Metrics,
+  type NewDocumentScriptEvaluation,
   Page,
   PageEvent,
-  ScreenshotClip,
-  ScreenshotOptions,
-  WaitForOptions,
-  WaitTimeoutOptions,
+  type ScreenshotClip,
+  type ScreenshotOptions,
+  type WaitForOptions,
+  type WaitTimeoutOptions,
 } from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
@@ -46,30 +46,30 @@ import {Accessibility} from './Accessibility.js';
 import {Binding} from './Binding.js';
 import {CdpCDPSession} from './CDPSession.js';
 import {isTargetClosedError} from './Connection.js';
-import {ConsoleMessage, ConsoleMessageType} from './ConsoleMessage.js';
+import {ConsoleMessage, type ConsoleMessageType} from './ConsoleMessage.js';
 import {Coverage} from './Coverage.js';
-import {DeviceRequestPrompt} from './DeviceRequestPrompt.js';
+import {type DeviceRequestPrompt} from './DeviceRequestPrompt.js';
 import {CdpDialog} from './Dialog.js';
 import {EmulationManager} from './EmulationManager.js';
 import {TargetCloseError} from './Errors.js';
 import {FileChooser} from './FileChooser.js';
-import {CdpFrame} from './Frame.js';
+import {type CdpFrame} from './Frame.js';
 import {FrameManager, FrameManagerEvent} from './FrameManager.js';
 import {CdpKeyboard, CdpMouse, CdpTouchscreen} from './Input.js';
 import {MAIN_WORLD} from './IsolatedWorlds.js';
 import {
-  Credentials,
-  NetworkConditions,
+  type Credentials,
+  type NetworkConditions,
   NetworkManagerEvent,
 } from './NetworkManager.js';
-import {PDFOptions} from './PDFOptions.js';
-import {Viewport} from './PuppeteerViewport.js';
-import {CdpTarget} from './Target.js';
+import {type PDFOptions} from './PDFOptions.js';
+import {type Viewport} from './PuppeteerViewport.js';
+import {type CdpTarget} from './Target.js';
 import {TargetManagerEvent} from './TargetManager.js';
-import {TaskQueue} from './TaskQueue.js';
+import {type TaskQueue} from './TaskQueue.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
 import {Tracing} from './Tracing.js';
-import {BindingPayload, HandleFor} from './types.js';
+import {type BindingPayload, type HandleFor} from './types.js';
 import {
   createCdpHandle,
   createClientError,

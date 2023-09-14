@@ -16,23 +16,23 @@
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import {Point} from '../../api/ElementHandle.js';
+import {type Point} from '../../api/ElementHandle.js';
 import {
   Keyboard as BaseKeyboard,
   Mouse as BaseMouse,
   Touchscreen as BaseTouchscreen,
-  KeyDownOptions,
-  KeyPressOptions,
-  KeyboardTypeOptions,
+  type KeyDownOptions,
+  type KeyPressOptions,
+  type KeyboardTypeOptions,
   MouseButton,
-  MouseClickOptions,
-  MouseMoveOptions,
-  MouseOptions,
-  MouseWheelOptions,
+  type MouseClickOptions,
+  type MouseMoveOptions,
+  type MouseOptions,
+  type MouseWheelOptions,
 } from '../../api/Input.js';
-import {KeyInput} from '../USKeyboardLayout.js';
+import {type KeyInput} from '../USKeyboardLayout.js';
 
-import {BrowsingContext} from './BrowsingContext.js';
+import {type BrowsingContext} from './BrowsingContext.js';
 
 const enum InputId {
   Mouse = '__puppeteer_mouse',

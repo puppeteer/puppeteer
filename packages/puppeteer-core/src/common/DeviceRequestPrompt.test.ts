@@ -18,7 +18,7 @@ import {describe, it} from 'node:test';
 
 import expect from 'expect';
 
-import {CDPSessionEvents} from '../api/CDPSession.js';
+import {type CDPSessionEvents} from '../api/CDPSession.js';
 
 import {
   DeviceRequestPrompt,

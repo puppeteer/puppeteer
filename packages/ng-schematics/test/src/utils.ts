@@ -1,10 +1,10 @@
 import https from 'https';
 import {join} from 'path';
 
-import {JsonObject} from '@angular-devkit/core';
+import {type JsonObject} from '@angular-devkit/core';
 import {
   SchematicTestRunner,
-  UnitTestTree,
+  type UnitTestTree,
 } from '@angular-devkit/schematics/testing';
 import sinon from 'sinon';
 

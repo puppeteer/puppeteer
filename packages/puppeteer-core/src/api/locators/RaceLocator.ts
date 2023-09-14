@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import {Observable, race} from '../../../third_party/rxjs/rxjs.js';
-import {HandleFor} from '../../puppeteer-core.js';
+import {type Observable, race} from '../../../third_party/rxjs/rxjs.js';
+import {type HandleFor} from '../../puppeteer-core.js';
 
-import {ActionOptions, Locator} from './locators.js';
+import {type ActionOptions, Locator} from './locators.js';
 
 /**
  * @public

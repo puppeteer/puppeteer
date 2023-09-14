@@ -16,28 +16,28 @@
 
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import {CDPSession} from '../../api/CDPSession.js';
+import {type CDPSession} from '../../api/CDPSession.js';
 import {Frame, throwIfDetached} from '../../api/Frame.js';
 import {Deferred} from '../../util/Deferred.js';
 import {UTILITY_WORLD_NAME} from '../FrameManager.js';
-import {PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
-import {TimeoutSettings} from '../TimeoutSettings.js';
-import {Awaitable} from '../types.js';
+import {type PuppeteerLifeCycleEvent} from '../LifecycleWatcher.js';
+import {type TimeoutSettings} from '../TimeoutSettings.js';
+import {type Awaitable} from '../types.js';
 import {waitForEvent} from '../util.js';
 
 import {
-  BrowsingContext,
+  type BrowsingContext,
   getWaitUntilSingle,
   lifeCycleToSubscribedEvent,
 } from './BrowsingContext.js';
 import {ExposeableFunction} from './ExposedFunction.js';
-import {BidiHTTPResponse} from './HTTPResponse.js';
-import {BidiPage} from './Page.js';
+import {type BidiHTTPResponse} from './HTTPResponse.js';
+import {type BidiPage} from './Page.js';
 import {
   MAIN_SANDBOX,
   PUPPETEER_SANDBOX,
   Sandbox,
-  SandboxChart,
+  type SandboxChart,
 } from './Sandbox.js';
 
 /**

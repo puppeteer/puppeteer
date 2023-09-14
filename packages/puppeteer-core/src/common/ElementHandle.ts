@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
+import {type Protocol} from 'devtools-protocol';
 
-import {CDPSession} from '../api/CDPSession.js';
-import {AutofillData, ElementHandle} from '../api/ElementHandle.js';
-import {Page, ScreenshotOptions} from '../api/Page.js';
+import {type CDPSession} from '../api/CDPSession.js';
+import {type AutofillData, ElementHandle} from '../api/ElementHandle.js';
+import {type Page, type ScreenshotOptions} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {throwIfDisposed} from '../util/decorators.js';
 
-import {CdpFrame} from './Frame.js';
-import {FrameManager} from './FrameManager.js';
-import {IsolatedWorld} from './IsolatedWorld.js';
+import {type CdpFrame} from './Frame.js';
+import {type FrameManager} from './FrameManager.js';
+import {type IsolatedWorld} from './IsolatedWorld.js';
 import {CdpJSHandle} from './JSHandle.js';
 import {debugError} from './util.js';
 

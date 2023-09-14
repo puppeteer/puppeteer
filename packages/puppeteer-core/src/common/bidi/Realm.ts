@@ -1,20 +1,20 @@
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import PuppeteerUtil from '../../injected/injected.js';
+import type PuppeteerUtil from '../../injected/injected.js';
 import {stringifyFunction} from '../../util/Function.js';
-import {EventEmitter, EventType} from '../EventEmitter.js';
+import {EventEmitter, type EventType} from '../EventEmitter.js';
 import {scriptInjector} from '../ScriptInjector.js';
-import {EvaluateFunc, HandleFor} from '../types.js';
+import {type EvaluateFunc, type HandleFor} from '../types.js';
 import {
   PuppeteerURL,
   getSourcePuppeteerURLIfAvailable,
   isString,
 } from '../util.js';
 
-import {BidiConnection} from './Connection.js';
+import {type BidiConnection} from './Connection.js';
 import {BidiElementHandle} from './ElementHandle.js';
 import {BidiJSHandle} from './JSHandle.js';
-import {Sandbox} from './Sandbox.js';
+import {type Sandbox} from './Sandbox.js';
 import {BidiSerializer} from './Serializer.js';
 import {createEvaluationError} from './utils.js';
 

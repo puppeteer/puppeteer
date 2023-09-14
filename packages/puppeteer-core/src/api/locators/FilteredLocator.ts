@@ -15,17 +15,17 @@
  */
 
 import {
-  Observable,
+  type Observable,
   filter,
   from,
   map,
   mergeMap,
   throwIfEmpty,
 } from '../../../third_party/rxjs/rxjs.js';
-import {Awaitable, HandleFor} from '../../common/common.js';
+import {type Awaitable, type HandleFor} from '../../common/common.js';
 
 import {DelegatedLocator} from './DelegatedLocator.js';
-import {ActionOptions, Locator} from './locators.js';
+import {type ActionOptions, type Locator} from './locators.js';
 
 /**
  * @public

@@ -14,26 +14,30 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
+import {type Protocol} from 'devtools-protocol';
 
-import {CDPSession} from '../api/CDPSession.js';
-import {Point} from '../api/ElementHandle.js';
+import {type CDPSession} from '../api/CDPSession.js';
+import {type Point} from '../api/ElementHandle.js';
 import {
   Keyboard,
-  KeyDownOptions,
-  KeyPressOptions,
+  type KeyDownOptions,
+  type KeyPressOptions,
   Mouse,
   MouseButton,
-  MouseClickOptions,
-  MouseMoveOptions,
-  MouseOptions,
-  MouseWheelOptions,
+  type MouseClickOptions,
+  type MouseMoveOptions,
+  type MouseOptions,
+  type MouseWheelOptions,
   Touchscreen,
-  KeyboardTypeOptions,
+  type KeyboardTypeOptions,
 } from '../api/Input.js';
 import {assert} from '../util/assert.js';
 
-import {_keyDefinitions, KeyDefinition, KeyInput} from './USKeyboardLayout.js';
+import {
+  _keyDefinitions,
+  type KeyDefinition,
+  type KeyInput,
+} from './USKeyboardLayout.js';
 
 type KeyDescription = Required<
   Pick<KeyDefinition, 'keyCode' | 'key' | 'text' | 'code' | 'location'>

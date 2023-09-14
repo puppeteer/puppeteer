@@ -19,7 +19,7 @@ import path from 'path';
 
 import {getJSON} from '../httpUtil.js';
 
-import {BrowserPlatform, ProfileOptions} from './types.js';
+import {BrowserPlatform, type ProfileOptions} from './types.js';
 
 function archive(platform: BrowserPlatform, buildId: string): string {
   switch (platform) {

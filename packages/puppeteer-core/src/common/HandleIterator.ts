@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {JSHandle} from '../api/JSHandle.js';
+import {type JSHandle} from '../api/JSHandle.js';
 
-import {AwaitableIterable, HandleFor} from './types.js';
+import {type AwaitableIterable, type HandleFor} from './types.js';
 
 const DEFAULT_BATCH_SIZE = 20;
 

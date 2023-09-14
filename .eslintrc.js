@@ -220,6 +220,14 @@ module.exports = {
         '@typescript-eslint/prefer-ts-expect-error': 'error',
         // This is more performant; see https://v8.dev/blog/fast-async.
         '@typescript-eslint/return-await': ['error', 'always'],
+        // This optimizes the dependency tracking for type-only files.
+        '@typescript-eslint/consistent-type-imports': [
+          'error',
+          {
+            disallowTypeAnnotations: false,
+            fixStyle: 'inline-type-imports',
+          },
+        ],
       },
       overrides: [
         {

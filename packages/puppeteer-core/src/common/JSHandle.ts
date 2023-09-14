@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
+import {type Protocol} from 'devtools-protocol';
 
-import {CDPSession} from '../api/CDPSession.js';
+import {type CDPSession} from '../api/CDPSession.js';
 import {JSHandle} from '../api/JSHandle.js';
 
 import type {CdpElementHandle} from './ElementHandle.js';
-import {IsolatedWorld} from './IsolatedWorld.js';
+import {type IsolatedWorld} from './IsolatedWorld.js';
 import {releaseObject, valueFromRemoteObject} from './util.js';
 
 /**

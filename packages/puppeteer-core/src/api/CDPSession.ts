@@ -1,7 +1,7 @@
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 import type {Connection} from '../common/Connection.js';
-import {EventEmitter, EventType} from '../common/EventEmitter.js';
+import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 
 /**
  * @public

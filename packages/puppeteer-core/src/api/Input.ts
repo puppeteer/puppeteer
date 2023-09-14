@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
+import {type Protocol} from 'devtools-protocol';
 
-import {KeyInput} from '../common/USKeyboardLayout.js';
+import {type KeyInput} from '../common/USKeyboardLayout.js';
 
-import {Point} from './ElementHandle.js';
+import {type Point} from './ElementHandle.js';
 
 /**
  * @public

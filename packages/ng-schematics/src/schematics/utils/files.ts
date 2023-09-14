@@ -18,8 +18,8 @@ import {relative, resolve} from 'path';
 
 import {getSystemPath, normalize, strings} from '@angular-devkit/core';
 import {
-  SchematicContext,
-  Tree,
+  type SchematicContext,
+  type Tree,
   apply,
   applyTemplates,
   chain,
@@ -28,7 +28,7 @@ import {
   url,
 } from '@angular-devkit/schematics';
 
-import {AngularProject, TestRunner} from './types.js';
+import {type AngularProject, type TestRunner} from './types.js';
 
 export interface FilesOptions {
   options: {

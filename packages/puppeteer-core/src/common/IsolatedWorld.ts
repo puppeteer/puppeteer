@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
+import {type Protocol} from 'devtools-protocol';
 
-import {CDPSession} from '../api/CDPSession.js';
-import {JSHandle} from '../api/JSHandle.js';
+import {type CDPSession} from '../api/CDPSession.js';
+import {type JSHandle} from '../api/JSHandle.js';
 import {Realm} from '../api/Realm.js';
 import {Deferred} from '../util/Deferred.js';
 
-import {Binding} from './Binding.js';
-import {ExecutionContext} from './ExecutionContext.js';
+import {type Binding} from './Binding.js';
+import {type ExecutionContext} from './ExecutionContext.js';
 import {CdpFrame} from './Frame.js';
-import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
-import {TimeoutSettings} from './TimeoutSettings.js';
-import {BindingPayload, EvaluateFunc, HandleFor} from './types.js';
+import {type MAIN_WORLD, type PUPPETEER_WORLD} from './IsolatedWorlds.js';
+import {type TimeoutSettings} from './TimeoutSettings.js';
+import {
+  type BindingPayload,
+  type EvaluateFunc,
+  type HandleFor,
+} from './types.js';
 import {
   addPageBinding,
   createCdpHandle,
@@ -34,7 +38,7 @@ import {
   Mutex,
   withSourcePuppeteerURLIfNone,
 } from './util.js';
-import {WebWorker} from './WebWorker.js';
+import {type WebWorker} from './WebWorker.js';
 
 /**
  * @public

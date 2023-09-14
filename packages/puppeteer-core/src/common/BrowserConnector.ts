@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-import {IsPageTargetCallback, TargetFilterCallback} from '../api/Browser.js';
+import {
+  type IsPageTargetCallback,
+  type TargetFilterCallback,
+} from '../api/Browser.js';
 import {isNode} from '../environment.js';
 import {assert} from '../util/assert.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {CdpBrowser} from './Browser.js';
 import {Connection} from './Connection.js';
-import {ConnectionTransport} from './ConnectionTransport.js';
+import {type ConnectionTransport} from './ConnectionTransport.js';
 import {getFetch} from './fetch.js';
 import type {ConnectOptions} from './Puppeteer.js';
-import {Viewport} from './PuppeteerViewport.js';
+import {type Viewport} from './PuppeteerViewport.js';
 import {debugError} from './util.js';
 /**
  * Generic browser options that can be passed when launching any browser or when
