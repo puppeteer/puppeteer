@@ -52,6 +52,11 @@ interface Commands {
     returnType: Bidi.EmptyResult;
   };
 
+  'browser.close': {
+    params: Bidi.EmptyParams;
+    returnType: Bidi.EmptyResult;
+  };
+
   'browsingContext.activate': {
     params: Bidi.BrowsingContext.ActivateParameters;
     returnType: Bidi.EmptyResult;
@@ -74,7 +79,7 @@ interface Commands {
   };
   'browsingContext.reload': {
     params: Bidi.BrowsingContext.ReloadParameters;
-    returnType: Bidi.EmptyResult;
+    returnType: Bidi.BrowsingContext.NavigateResult;
   };
   'browsingContext.print': {
     params: Bidi.BrowsingContext.PrintParameters;
@@ -281,6 +286,7 @@ export class BidiConnection extends EventEmitter<BidiEvents> {
     this.#closed = true;
     this.#transport.onmessage = undefined;
     this.#transport.onclose = undefined;
+
     this.#callbacks.clear();
   }
 

@@ -231,8 +231,9 @@ export const withSourcePuppeteerURLIfNone = <T extends NonNullable<unknown>>(
   }
   const original = Error.prepareStackTrace;
   Error.prepareStackTrace = (_, stack) => {
-    // First element is the function. Second element is the caller of this
-    // function. Third element is the caller of the caller of this function
+    // First element is the function.
+    // Second element is the caller of this function.
+    // Third element is the caller of the caller of this function
     // which is precisely what we want.
     return stack[2];
   };

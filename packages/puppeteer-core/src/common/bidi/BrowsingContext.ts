@@ -236,21 +236,34 @@ export class BrowsingContext extends Realm {
     }
   }
 
-  async reload(options: WaitForOptions & {timeout: number}): Promise<void> {
+  async reload(
+    options: WaitForOptions & {timeout: number}
+  ): Promise<string | null> {
     const {waitUntil = 'load', timeout} = options;
 
     const readinessState = lifeCycleToReadinessState.get(
       getWaitUntilSingle(waitUntil)
     ) as Bidi.BrowsingContext.ReadinessState;
 
-    await waitWithTimeout(
-      this.connection.send('browsingContext.reload', {
-        context: this.#id,
-        wait: readinessState,
-      }),
-      'Navigation',
-      timeout
-    );
+    try {
+      const {result} = await waitWithTimeout(
+        this.connection.send('browsingContext.reload', {
+          context: this.#id,
+          wait: readinessState,
+        }),
+        'Navigation',
+        timeout
+      );
+
+      return result.navigation;
+    } catch (error) {
+      if (error instanceof ProtocolError) {
+        error.message += ` at ${this.url}`;
+      } else if (error instanceof TimeoutError) {
+        error.message = 'Navigation timeout of ' + timeout + ' ms exceeded';
+      }
+      throw error;
+    }
   }
 
   async setContent(

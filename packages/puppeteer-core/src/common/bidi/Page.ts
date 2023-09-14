@@ -410,23 +410,13 @@ export class BidiPage extends Page {
   override async reload(
     options?: WaitForOptions
   ): Promise<BidiHTTPResponse | null> {
-    const [response] = await Promise.all([
-      this.waitForResponse(response => {
-        return (
-          response.request().isNavigationRequest() &&
-          response.url() === this.url()
-        );
-      }),
-      this.mainFrame()
-        .context()
-        .reload({
-          ...options,
-          timeout:
-            options?.timeout ?? this.#timeoutSettings.navigationTimeout(),
-        }),
-    ]);
-
-    return response;
+    const navigationId = await this.mainFrame()
+      .context()
+      .reload({
+        ...options,
+        timeout: options?.timeout ?? this.#timeoutSettings.navigationTimeout(),
+      });
+    return this.getNavigationResponse(navigationId);
   }
 
   override setDefaultNavigationTimeout(timeout: number): void {
@@ -494,8 +484,7 @@ export class BidiPage extends Page {
       await this.#cdpEmulationManager.emulateViewport(viewport);
     this.#viewport = viewport;
     if (needsReload) {
-      // TODO: reload seems to hang in BiDi.
-      // await this.reload();
+      await this.reload();
     }
   }
 
