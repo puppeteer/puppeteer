@@ -70,8 +70,8 @@ describe("Legacy Drag n' Drop", function () {
     expect(page.isDragInterceptionEnabled()).toBe(true);
     using draggable = (await page.$('#drag'))!;
     const data = await draggable.drag({x: 1, y: 1});
-    using dropzone = (await page.$('#drop'))!;
     assert(data instanceof Object);
+    using dropzone = (await page.$('#drop'))!;
     await dropzone.dragEnter(data);
 
     expect(await getDragState()).toBe(12);
@@ -85,8 +85,8 @@ describe("Legacy Drag n' Drop", function () {
     expect(page.isDragInterceptionEnabled()).toBe(true);
     using draggable = (await page.$('#drag'))!;
     const data = await draggable.drag({x: 1, y: 1});
-    using dropzone = (await page.$('#drop'))!;
     assert(data instanceof Object);
+    using dropzone = (await page.$('#drop'))!;
     await dropzone.dragEnter(data);
     await dropzone.dragOver(data);
 

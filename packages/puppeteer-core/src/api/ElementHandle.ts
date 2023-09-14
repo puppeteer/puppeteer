@@ -732,7 +732,7 @@ export abstract class ElementHandle<
   }
 
   /**
-   * Drags an element to the given element or point.
+   * Drags an element over the given element or point.
    *
    * @returns DEPRECATED. When drag interception is enabled, the drag payload is
    * returned.
@@ -800,7 +800,7 @@ export abstract class ElementHandle<
   }
 
   /**
-   * Drops the given element into the current one.
+   * Drops the given element onto the current one.
    */
   async drop(
     this: ElementHandle<Element>,
