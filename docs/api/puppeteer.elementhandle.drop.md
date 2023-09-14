@@ -4,7 +4,7 @@ sidebar_label: ElementHandle.drop
 
 # ElementHandle.drop() method
 
-Drops the given element into the current one.
+Drops the given element onto the current one.
 
 #### Signature:
 

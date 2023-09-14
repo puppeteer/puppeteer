@@ -4,7 +4,7 @@ sidebar_label: ElementHandle.drag
 
 # ElementHandle.drag() method
 
-Drags an element to the given element or point.
+Drags an element over the given element or point.
 
 #### Signature:
 
