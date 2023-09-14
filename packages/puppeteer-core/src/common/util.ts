@@ -25,8 +25,6 @@ import {
   type Observable,
 } from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
-import type {ElementHandle} from '../api/ElementHandle.js';
-import type {JSHandle} from '../api/JSHandle.js';
 import {type Page} from '../api/Page.js';
 import {isNode} from '../environment.js';
 import {assert} from '../util/assert.js';
@@ -34,11 +32,8 @@ import {Deferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 
 import {debug} from './Debug.js';
-import {CdpElementHandle} from './ElementHandle.js';
 import {TimeoutError} from './Errors.js';
 import {EventSubscription} from './EventEmitter.js';
-import {type IsolatedWorld} from './IsolatedWorld.js';
-import {CdpJSHandle} from './JSHandle.js';
 import {type Awaitable} from './types.js';
 
 /**
@@ -296,25 +291,6 @@ export function valueFromRemoteObject(
 /**
  * @internal
  */
-export async function releaseObject(
-  client: CDPSession,
-  remoteObject: Protocol.Runtime.RemoteObject
-): Promise<void> {
-  if (!remoteObject.objectId) {
-    return;
-  }
-  await client
-    .send('Runtime.releaseObject', {objectId: remoteObject.objectId})
-    .catch(error => {
-      // Exceptions might happen in case of a page been navigated or closed.
-      // Swallow these since they are harmless and we don't leak anything in this case.
-      debugError(error);
-    });
-}
-
-/**
- * @internal
- */
 export const isString = (obj: unknown): obj is string => {
   return typeof obj === 'string' || obj instanceof String;
 };
@@ -378,19 +354,6 @@ export async function waitForEvent<T>(
   } catch (error) {
     throw error;
   }
-}
-
-/**
- * @internal
- */
-export function createCdpHandle(
-  realm: IsolatedWorld,
-  remoteObject: Protocol.Runtime.RemoteObject
-): JSHandle | ElementHandle<Node> {
-  if (remoteObject.subtype === 'node') {
-    return new CdpElementHandle(realm, remoteObject);
-  }
-  return new CdpJSHandle(realm, remoteObject);
 }
 
 /**

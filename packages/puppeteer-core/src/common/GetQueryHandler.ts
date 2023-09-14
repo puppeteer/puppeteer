@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import {ARIAQueryHandler} from './AriaQueryHandler.js';
+import {ARIAQueryHandler} from '../cdp/AriaQueryHandler.js';
+
 import {customQueryHandlers} from './CustomQueryHandler.js';
 import {PierceQueryHandler} from './PierceQueryHandler.js';
 import {PQueryHandler} from './PQueryHandler.js';
@@ -22,6 +23,9 @@ import type {QueryHandler} from './QueryHandler.js';
 import {TextQueryHandler} from './TextQueryHandler.js';
 import {XPathQueryHandler} from './XPathQueryHandler.js';
 
+/**
+ * @internal
+ */
 export const BUILTIN_QUERY_HANDLERS = Object.freeze({
   aria: ARIAQueryHandler,
   pierce: PierceQueryHandler,

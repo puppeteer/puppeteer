@@ -1,6 +1,6 @@
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
-import type {Connection} from '../common/Connection.js';
+import type {Connection} from '../cdp/Connection.js';
 import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 
 /**

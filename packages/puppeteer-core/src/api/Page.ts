@@ -36,12 +36,21 @@ import {
 } from '../../third_party/rxjs/rxjs.js';
 import type {HTTPRequest} from '../api/HTTPRequest.js';
 import type {HTTPResponse} from '../api/HTTPResponse.js';
-import type {Accessibility} from '../common/Accessibility.js';
-import type {BidiNetworkManager} from '../common/bidi/NetworkManager.js';
+import type {BidiNetworkManager} from '../bidi/NetworkManager.js';
+import type {Accessibility} from '../cdp/Accessibility.js';
+import type {Coverage} from '../cdp/Coverage.js';
+import {type DeviceRequestPrompt} from '../cdp/DeviceRequestPrompt.js';
+import type {PuppeteerLifeCycleEvent} from '../cdp/LifecycleWatcher.js';
+import {
+  type NetworkManager as CdpNetworkManager,
+  type Credentials,
+  type NetworkConditions,
+  NetworkManagerEvent,
+} from '../cdp/NetworkManager.js';
+import type {Tracing} from '../cdp/Tracing.js';
+import type {WebWorker} from '../cdp/WebWorker.js';
 import type {ConsoleMessage} from '../common/ConsoleMessage.js';
-import type {Coverage} from '../common/Coverage.js';
 import {type Device} from '../common/Device.js';
-import {type DeviceRequestPrompt} from '../common/DeviceRequestPrompt.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {
   EventEmitter,
@@ -50,22 +59,12 @@ import {
   type Handler,
 } from '../common/EventEmitter.js';
 import type {FileChooser} from '../common/FileChooser.js';
-import type {WaitForSelectorOptions} from '../common/IsolatedWorld.js';
-import type {PuppeteerLifeCycleEvent} from '../common/LifecycleWatcher.js';
-import {
-  type NetworkManager as CdpNetworkManager,
-  type Credentials,
-  type NetworkConditions,
-  NetworkManagerEvent,
-} from '../common/NetworkManager.js';
 import {
   type LowerCasePaperFormat,
   paperFormats,
   type ParsedPDFOptions,
   type PDFOptions,
 } from '../common/PDFOptions.js';
-import type {Viewport} from '../common/PuppeteerViewport.js';
-import type {Tracing} from '../common/Tracing.js';
 import type {
   Awaitable,
   EvaluateFunc,
@@ -81,7 +80,7 @@ import {
   timeout,
   withSourcePuppeteerURLIfNone,
 } from '../common/util.js';
-import type {WebWorker} from '../common/WebWorker.js';
+import type {Viewport} from '../common/Viewport.js';
 import {assert} from '../util/assert.js';
 import {type Deferred} from '../util/Deferred.js';
 
@@ -160,6 +159,38 @@ export interface WaitForOptions {
    */
   timeout?: number;
   waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
+}
+
+/**
+ * @public
+ */
+export interface WaitForSelectorOptions {
+  /**
+   * Wait for the selected element to be present in DOM and to be visible, i.e.
+   * to not have `display: none` or `visibility: hidden` CSS properties.
+   *
+   * @defaultValue `false`
+   */
+  visible?: boolean;
+  /**
+   * Wait for the selected element to not be found in the DOM or to be hidden,
+   * i.e. have `display: none` or `visibility: hidden` CSS properties.
+   *
+   * @defaultValue `false`
+   */
+  hidden?: boolean;
+  /**
+   * Maximum time to wait in milliseconds. Pass `0` to disable timeout.
+   *
+   * The default value can be changed by using {@link Page.setDefaultTimeout}
+   *
+   * @defaultValue `30_000` (30 seconds)
+   */
+  timeout?: number;
+  /**
+   * A signal object that allows you to cancel a waitForSelector call.
+   */
+  signal?: AbortSignal;
 }
 
 /**

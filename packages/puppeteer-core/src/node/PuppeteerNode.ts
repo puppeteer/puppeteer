@@ -23,14 +23,14 @@ import {
 } from '@puppeteer/browsers';
 
 import {type Browser} from '../api/Browser.js';
-import {type BrowserConnectOptions} from '../common/BrowserConnector.js';
-import {type Configuration} from '../common/Configuration.js';
-import {type Product} from '../common/Product.js';
+import {type BrowserConnectOptions} from '../cdp/BrowserConnector.js';
 import {
   type CommonPuppeteerSettings,
   type ConnectOptions,
   Puppeteer,
-} from '../common/Puppeteer.js';
+} from '../cdp/Puppeteer.js';
+import {type Configuration} from '../common/Configuration.js';
+import {type Product} from '../common/Product.js';
 import {PUPPETEER_REVISIONS} from '../revisions.js';
 
 import {ChromeLauncher} from './ChromeLauncher.js';

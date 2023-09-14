@@ -16,12 +16,12 @@
 
 import {ElementHandle} from '../api/ElementHandle.js';
 import type {Frame} from '../api/Frame.js';
+import type {WaitForSelectorOptions} from '../api/Page.js';
 import type PuppeteerUtil from '../injected/injected.js';
 import {isErrorLike} from '../util/ErrorLike.js';
 import {interpolateFunction, stringifyFunction} from '../util/Function.js';
 
 import {transposeIterableHandle} from './HandleIterator.js';
-import type {WaitForSelectorOptions} from './IsolatedWorld.js';
 import {LazyArg} from './LazyArg.js';
 import type {Awaitable, AwaitableIterable} from './types.js';
 
