@@ -5,7 +5,9 @@ import {scriptInjector} from '../common/ScriptInjector.js';
 import {type EvaluateFunc, type HandleFor} from '../common/types.js';
 import {
   PuppeteerURL,
+  SOURCE_URL_REGEX,
   getSourcePuppeteerURLIfAvailable,
+  getSourceUrlComment,
   isString,
 } from '../common/util.js';
 import type PuppeteerUtil from '../injected/injected.js';
@@ -18,16 +20,10 @@ import {type Sandbox} from './Sandbox.js';
 import {BidiSerializer} from './Serializer.js';
 import {createEvaluationError} from './util.js';
 
-export const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
-
-export const getSourceUrlComment = (url: string): string => {
-  return `//# sourceURL=${url}`;
-};
-
 /**
  * @internal
  */
-export class Realm extends EventEmitter<Record<EventType, any>> {
+export class BidiRealm extends EventEmitter<Record<EventType, any>> {
   readonly connection: BidiConnection;
 
   #id!: string;

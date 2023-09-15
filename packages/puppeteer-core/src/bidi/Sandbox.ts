@@ -22,7 +22,7 @@ import {withSourcePuppeteerURLIfNone} from '../common/util.js';
 
 import {type BrowsingContext} from './BrowsingContext.js';
 import {type BidiFrame} from './Frame.js';
-import {type Realm as BidiRealm} from './Realm.js';
+import {type BidiRealm as BidiRealm} from './Realm.js';
 /**
  * A unique key for {@link SandboxChart} to denote the default world.
  * Realms are automatically created in the default sandbox.

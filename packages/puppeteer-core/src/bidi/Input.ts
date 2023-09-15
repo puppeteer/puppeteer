@@ -18,9 +18,9 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {type Point} from '../api/ElementHandle.js';
 import {
-  Keyboard as BaseKeyboard,
-  Mouse as BaseMouse,
-  Touchscreen as BaseTouchscreen,
+  Keyboard,
+  Mouse,
+  Touchscreen,
   type KeyDownOptions,
   type KeyPressOptions,
   type KeyboardTypeOptions,
@@ -284,7 +284,7 @@ const getBidiKeyValue = (key: KeyInput) => {
 /**
  * @internal
  */
-export class Keyboard extends BaseKeyboard {
+export class BidiKeyboard extends Keyboard {
   #context: BrowsingContext;
 
   constructor(context: BrowsingContext) {
@@ -420,21 +420,21 @@ export class Keyboard extends BaseKeyboard {
 /**
  * @internal
  */
-interface BidiMouseClickOptions extends MouseClickOptions {
+export interface BidiMouseClickOptions extends MouseClickOptions {
   origin?: Bidi.Input.Origin;
 }
 
 /**
  * @internal
  */
-interface BidiMouseMoveOptions extends MouseMoveOptions {
+export interface BidiMouseMoveOptions extends MouseMoveOptions {
   origin?: Bidi.Input.Origin;
 }
 
 /**
  * @internal
  */
-interface BidiTouchMoveOptions {
+export interface BidiTouchMoveOptions {
   origin?: Bidi.Input.Origin;
 }
 
@@ -456,7 +456,7 @@ const getBidiButton = (button: MouseButton) => {
 /**
  * @internal
  */
-export class Mouse extends BaseMouse {
+export class BidiMouse extends Mouse {
   #context: BrowsingContext;
   #lastMovePoint?: Point;
 
@@ -610,7 +610,7 @@ export class Mouse extends BaseMouse {
 /**
  * @internal
  */
-export class Touchscreen extends BaseTouchscreen {
+export class BidiTouchscreen extends Touchscreen {
   #context: BrowsingContext;
 
   constructor(context: BrowsingContext) {

@@ -18,11 +18,10 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {type CDPSession} from '../api/CDPSession.js';
 import {Frame, throwIfDetached} from '../api/Frame.js';
-import {UTILITY_WORLD_NAME} from '../cdp/FrameManager.js';
 import {type PuppeteerLifeCycleEvent} from '../cdp/LifecycleWatcher.js';
 import {type TimeoutSettings} from '../common/TimeoutSettings.js';
 import {type Awaitable} from '../common/types.js';
-import {waitForEvent} from '../common/util.js';
+import {UTILITY_WORLD_NAME, waitForEvent} from '../common/util.js';
 import {Deferred} from '../util/Deferred.js';
 
 import {

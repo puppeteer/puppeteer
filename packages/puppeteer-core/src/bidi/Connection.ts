@@ -30,7 +30,7 @@ const debugProtocolReceive = debug('puppeteer:webDriverBiDi:RECV ◀');
 /**
  * @internal
  */
-interface Commands {
+export interface Commands {
   'script.evaluate': {
     params: Bidi.Script.EvaluateParameters;
     returnType: Bidi.Script.EvaluateResult;
@@ -91,6 +91,10 @@ interface Commands {
   };
   'browsingContext.handleUserPrompt': {
     params: Bidi.BrowsingContext.HandleUserPromptParameters;
+    returnType: Bidi.EmptyResult;
+  };
+  'browsingContext.setViewport': {
+    params: Bidi.BrowsingContext.SetViewportParameters;
     returnType: Bidi.EmptyResult;
   };
 

@@ -16,7 +16,6 @@
 
 import {type CDPSession} from '../api/CDPSession.js';
 import {Target, TargetType} from '../api/Target.js';
-import type {WebWorker} from '../cdp/WebWorker.js';
 
 import {type BidiBrowser} from './Browser.js';
 import {type BidiBrowserContext} from './BrowserContext.js';
@@ -34,7 +33,7 @@ export class BidiTarget extends Target {
     this._browserContext = browserContext;
   }
 
-  override async worker(): Promise<WebWorker | null> {
+  override async worker(): Promise<null> {
     return null;
   }
 

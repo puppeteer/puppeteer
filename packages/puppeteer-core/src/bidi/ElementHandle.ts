@@ -21,7 +21,7 @@ import {throwIfDisposed} from '../util/decorators.js';
 
 import {type BidiFrame} from './Frame.js';
 import {BidiJSHandle} from './JSHandle.js';
-import {type Realm} from './Realm.js';
+import {type BidiRealm} from './Realm.js';
 import {type Sandbox} from './Sandbox.js';
 
 /**
@@ -44,7 +44,7 @@ export class BidiElementHandle<
     return this.realm.environment;
   }
 
-  context(): Realm {
+  context(): BidiRealm {
     return this.handle.context();
   }
 

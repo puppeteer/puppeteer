@@ -25,7 +25,10 @@ import {type BidiBrowser} from './Browser.js';
 import {type BidiConnection} from './Connection.js';
 import {type BidiPage} from './Page.js';
 
-interface BrowserContextOptions {
+/**
+ * @internal
+ */
+export interface BidiBrowserContextOptions {
   defaultViewport: Viewport | null;
   isDefault: boolean;
 }
@@ -39,7 +42,7 @@ export class BidiBrowserContext extends BrowserContext {
   #defaultViewport: Viewport | null;
   #isDefault = false;
 
-  constructor(browser: BidiBrowser, options: BrowserContextOptions) {
+  constructor(browser: BidiBrowser, options: BidiBrowserContextOptions) {
     super();
     this.#browser = browser;
     this.#connection = this.#browser.connection;

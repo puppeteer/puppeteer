@@ -44,7 +44,7 @@ import {debugError} from './util.js';
 /**
  * @internal
  */
-interface Options {
+export interface BidiBrowserOptions {
   process?: ChildProcess;
   closeCallback?: BrowserCloseCallback;
   connection: BidiConnection;
@@ -75,7 +75,7 @@ export class BidiBrowser extends Browser {
     'cdp.Debugger.scriptParsed',
   ];
 
-  static async create(opts: Options): Promise<BidiBrowser> {
+  static async create(opts: BidiBrowserOptions): Promise<BidiBrowser> {
     let browserName = '';
     let browserVersion = '';
 
@@ -135,7 +135,7 @@ export class BidiBrowser extends Browser {
   ]);
 
   constructor(
-    opts: Options & {
+    opts: BidiBrowserOptions & {
       browserName: string;
       browserVersion: string;
     }
