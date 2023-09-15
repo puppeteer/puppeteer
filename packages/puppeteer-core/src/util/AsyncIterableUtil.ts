@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {AwaitableIterable} from '../common/types.js';
+import {type AwaitableIterable} from '../common/types.js';
 
 /**
  * @internal

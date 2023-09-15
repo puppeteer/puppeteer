@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
+import {type Protocol} from 'devtools-protocol';
 import {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
 import {
-  CDPSession,
+  type CDPSession,
   CDPSessionEvent,
-  CDPSessionEvents,
+  type CDPSessionEvents,
 } from '../api/CDPSession.js';
 import {Deferred} from '../util/Deferred.js';
 

@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
+import {
+  chain,
+  type Rule,
+  type SchematicContext,
+  type Tree,
+} from '@angular-devkit/schematics';
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
 import {of} from 'rxjs';
 import {concatMap, map, scan} from 'rxjs/operators';

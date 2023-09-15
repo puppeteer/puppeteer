@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {CallbackRegistry} from '../Connection.js';
-import {ConnectionTransport} from '../ConnectionTransport.js';
+import {type ConnectionTransport} from '../ConnectionTransport.js';
 import {debug} from '../Debug.js';
 import {EventEmitter} from '../EventEmitter.js';
 
-import {BrowsingContext, cdpSessions} from './BrowsingContext.js';
+import {type BrowsingContext, cdpSessions} from './BrowsingContext.js';
 import {debugError} from './utils.js';
 
 const debugProtocolSend = debug('puppeteer:webDriverBiDi:SEND ►');

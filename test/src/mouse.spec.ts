@@ -17,8 +17,8 @@ import os from 'os';
 
 import expect from 'expect';
 import {MouseButton} from 'puppeteer-core/internal/api/Input.js';
-import {Page} from 'puppeteer-core/internal/api/Page.js';
-import {KeyInput} from 'puppeteer-core/internal/common/USKeyboardLayout.js';
+import {type Page} from 'puppeteer-core/internal/api/Page.js';
+import {type KeyInput} from 'puppeteer-core/internal/common/USKeyboardLayout.js';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';
 

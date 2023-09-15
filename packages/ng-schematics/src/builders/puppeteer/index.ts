@@ -2,16 +2,16 @@ import {spawn} from 'child_process';
 
 import {
   createBuilder,
-  BuilderContext,
-  BuilderOutput,
+  type BuilderContext,
+  type BuilderOutput,
   targetFromTargetString,
-  BuilderRun,
+  type BuilderRun,
 } from '@angular-devkit/architect';
-import {JsonObject} from '@angular-devkit/core';
+import {type JsonObject} from '@angular-devkit/core';
 
 import {TestRunner} from '../../schematics/utils/types.js';
 
-import {PuppeteerBuilderOptions} from './types.js';
+import {type PuppeteerBuilderOptions} from './types.js';
 
 const terminalStyles = {
   cyan: '\u001b[36;1m',

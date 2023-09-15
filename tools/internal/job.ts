@@ -1,5 +1,5 @@
 import {createHash} from 'crypto';
-import {existsSync, Stats} from 'fs';
+import {existsSync, type Stats} from 'fs';
 import {mkdir, readFile, stat, writeFile} from 'fs/promises';
 import {tmpdir} from 'os';
 import {dirname, join} from 'path';

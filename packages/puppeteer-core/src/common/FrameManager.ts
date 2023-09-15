@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
+import {type Protocol} from 'devtools-protocol';
 
-import {CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
+import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
 import {FrameEvent} from '../api/Frame.js';
-import {Page} from '../api/Page.js';
+import {type Page} from '../api/Page.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 import {isErrorLike} from '../util/ErrorLike.js';
@@ -26,15 +26,15 @@ import {isErrorLike} from '../util/ErrorLike.js';
 import {CdpCDPSession} from './CDPSession.js';
 import {isTargetClosedError} from './Connection.js';
 import {DeviceRequestPromptManager} from './DeviceRequestPrompt.js';
-import {EventEmitter, EventType} from './EventEmitter.js';
+import {EventEmitter, type EventType} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {CdpFrame} from './Frame.js';
 import {FrameTree} from './FrameTree.js';
-import {IsolatedWorld} from './IsolatedWorld.js';
+import {type IsolatedWorld} from './IsolatedWorld.js';
 import {MAIN_WORLD, PUPPETEER_WORLD} from './IsolatedWorlds.js';
 import {NetworkManager} from './NetworkManager.js';
-import {CdpTarget} from './Target.js';
-import {TimeoutSettings} from './TimeoutSettings.js';
+import {type CdpTarget} from './Target.js';
+import {type TimeoutSettings} from './TimeoutSettings.js';
 import {debugError, PuppeteerURL} from './util.js';
 
 /**

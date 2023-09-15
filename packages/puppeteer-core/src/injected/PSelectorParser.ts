@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Token, tokenize, TOKENS, stringify} from 'parsel-js';
+import {type Token, tokenize, TOKENS, stringify} from 'parsel-js';
 
 export type CSSSelector = string;
 export interface PPseudoSelector {

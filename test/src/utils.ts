@@ -17,9 +17,9 @@
 import path from 'path';
 
 import expect from 'expect';
-import {Frame} from 'puppeteer-core/internal/api/Frame.js';
-import {Page} from 'puppeteer-core/internal/api/Page.js';
-import {EventEmitter} from 'puppeteer-core/internal/common/EventEmitter.js';
+import {type Frame} from 'puppeteer-core/internal/api/Frame.js';
+import {type Page} from 'puppeteer-core/internal/api/Page.js';
+import {type EventEmitter} from 'puppeteer-core/internal/common/EventEmitter.js';
 import {Deferred} from 'puppeteer-core/internal/util/Deferred.js';
 
 import {compare} from './golden-utils.js';

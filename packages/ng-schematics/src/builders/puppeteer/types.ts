@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {JsonObject} from '@angular-devkit/core';
+import {type JsonObject} from '@angular-devkit/core';
 
-import {TestRunner} from '../../schematics/utils/types.js';
+import {type TestRunner} from '../../schematics/utils/types.js';
 
 export interface PuppeteerBuilderOptions extends JsonObject {
   testRunner: TestRunner;

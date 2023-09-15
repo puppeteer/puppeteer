@@ -1,15 +1,19 @@
-import {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
+import {type ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
-import {CDPEvents, CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
+import {
+  type CDPEvents,
+  CDPSession,
+  CDPSessionEvent,
+} from '../api/CDPSession.js';
 import {assert} from '../util/assert.js';
 
 import {
   CallbackRegistry,
-  Connection,
+  type Connection,
   createProtocolErrorMessage,
 } from './Connection.js';
 import {TargetCloseError} from './Errors.js';
-import {CdpTarget} from './Target.js';
+import {type CdpTarget} from './Target.js';
 
 /**
  * @internal

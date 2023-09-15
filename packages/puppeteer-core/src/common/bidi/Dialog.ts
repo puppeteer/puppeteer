@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {Dialog} from '../../api/Dialog.js';
 
-import {BrowsingContext} from './BrowsingContext.js';
+import {type BrowsingContext} from './BrowsingContext.js';
 
 /**
  * @internal

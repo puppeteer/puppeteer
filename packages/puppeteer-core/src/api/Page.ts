@@ -16,7 +16,7 @@
 
 import type {Readable} from 'stream';
 
-import {Protocol} from 'devtools-protocol';
+import {type Protocol} from 'devtools-protocol';
 
 import {
   delay,
@@ -28,7 +28,7 @@ import {
   fromEvent,
   map,
   merge,
-  Observable,
+  type Observable,
   of,
   raceWith,
   startWith,
@@ -40,29 +40,29 @@ import type {Accessibility} from '../common/Accessibility.js';
 import type {BidiNetworkManager} from '../common/bidi/NetworkManager.js';
 import type {ConsoleMessage} from '../common/ConsoleMessage.js';
 import type {Coverage} from '../common/Coverage.js';
-import {Device} from '../common/Device.js';
-import {DeviceRequestPrompt} from '../common/DeviceRequestPrompt.js';
+import {type Device} from '../common/Device.js';
+import {type DeviceRequestPrompt} from '../common/DeviceRequestPrompt.js';
 import {TargetCloseError} from '../common/Errors.js';
 import {
   EventEmitter,
-  EventsWithWildcard,
-  EventType,
-  Handler,
+  type EventsWithWildcard,
+  type EventType,
+  type Handler,
 } from '../common/EventEmitter.js';
 import type {FileChooser} from '../common/FileChooser.js';
 import type {WaitForSelectorOptions} from '../common/IsolatedWorld.js';
 import type {PuppeteerLifeCycleEvent} from '../common/LifecycleWatcher.js';
 import {
-  NetworkManager as CdpNetworkManager,
-  Credentials,
-  NetworkConditions,
+  type NetworkManager as CdpNetworkManager,
+  type Credentials,
+  type NetworkConditions,
   NetworkManagerEvent,
 } from '../common/NetworkManager.js';
 import {
-  LowerCasePaperFormat,
+  type LowerCasePaperFormat,
   paperFormats,
-  ParsedPDFOptions,
-  PDFOptions,
+  type ParsedPDFOptions,
+  type PDFOptions,
 } from '../common/PDFOptions.js';
 import type {Viewport} from '../common/PuppeteerViewport.js';
 import type {Tracing} from '../common/Tracing.js';
@@ -83,7 +83,7 @@ import {
 } from '../common/util.js';
 import type {WebWorker} from '../common/WebWorker.js';
 import {assert} from '../util/assert.js';
-import {Deferred} from '../util/Deferred.js';
+import {type Deferred} from '../util/Deferred.js';
 
 import type {Browser} from './Browser.js';
 import type {BrowserContext} from './BrowserContext.js';
@@ -96,10 +96,15 @@ import type {
   FrameAddStyleTagOptions,
   FrameWaitForFunctionOptions,
 } from './Frame.js';
-import {Keyboard, KeyboardTypeOptions, Mouse, Touchscreen} from './Input.js';
+import {
+  type Keyboard,
+  type KeyboardTypeOptions,
+  type Mouse,
+  type Touchscreen,
+} from './Input.js';
 import type {JSHandle} from './JSHandle.js';
 import {
-  AwaitedLocator,
+  type AwaitedLocator,
   FunctionLocator,
   Locator,
   NodeLocator,

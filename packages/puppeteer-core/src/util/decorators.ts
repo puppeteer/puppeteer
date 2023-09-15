@@ -15,7 +15,7 @@
  */
 
 import {Symbol} from '../../third_party/disposablestack/disposablestack.js';
-import {Disposed, Moveable} from '../common/types.js';
+import {type Disposed, type Moveable} from '../common/types.js';
 
 const instances = new WeakSet<object>();
 

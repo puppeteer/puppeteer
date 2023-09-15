@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-import Protocol from 'devtools-protocol';
+import type Protocol from 'devtools-protocol';
 
-import {ClickOptions, ElementHandle} from '../api/ElementHandle.js';
-import {HTTPResponse} from '../api/HTTPResponse.js';
-import {Page, WaitTimeoutOptions} from '../api/Page.js';
-import {DeviceRequestPrompt} from '../common/DeviceRequestPrompt.js';
-import {EventEmitter, EventType} from '../common/EventEmitter.js';
+import {type ClickOptions, type ElementHandle} from '../api/ElementHandle.js';
+import {type HTTPResponse} from '../api/HTTPResponse.js';
+import {type Page, type WaitTimeoutOptions} from '../api/Page.js';
+import {type DeviceRequestPrompt} from '../common/DeviceRequestPrompt.js';
+import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
 import {transposeIterableHandle} from '../common/HandleIterator.js';
 import {
-  IsolatedWorldChart,
-  WaitForSelectorOptions,
+  type IsolatedWorldChart,
+  type WaitForSelectorOptions,
 } from '../common/IsolatedWorld.js';
 import {LazyArg} from '../common/LazyArg.js';
-import {PuppeteerLifeCycleEvent} from '../common/LifecycleWatcher.js';
+import {type PuppeteerLifeCycleEvent} from '../common/LifecycleWatcher.js';
 import {
-  Awaitable,
-  EvaluateFunc,
-  EvaluateFuncWith,
-  HandleFor,
-  NodeFor,
+  type Awaitable,
+  type EvaluateFunc,
+  type EvaluateFuncWith,
+  type HandleFor,
+  type NodeFor,
 } from '../common/types.js';
 import {
   getPageContent,
@@ -44,10 +44,14 @@ import {
 import {assert} from '../util/assert.js';
 import {throwIfDisposed} from '../util/decorators.js';
 
-import {CDPSession} from './CDPSession.js';
-import {KeyboardTypeOptions} from './Input.js';
-import {FunctionLocator, Locator, NodeLocator} from './locators/locators.js';
-import {Realm} from './Realm.js';
+import {type CDPSession} from './CDPSession.js';
+import {type KeyboardTypeOptions} from './Input.js';
+import {
+  FunctionLocator,
+  type Locator,
+  NodeLocator,
+} from './locators/locators.js';
+import {type Realm} from './Realm.js';
 
 /**
  * @public

@@ -21,11 +21,11 @@ import path from 'path';
 import readline from 'readline';
 
 import {
-  Browser,
-  BrowserPlatform,
+  type Browser,
+  type BrowserPlatform,
   executablePathByBrowser,
   resolveSystemExecutablePath,
-  ChromeReleaseChannel,
+  type ChromeReleaseChannel,
 } from './browser-data/browser-data.js';
 import {Cache} from './Cache.js';
 import {debug} from './debug.js';

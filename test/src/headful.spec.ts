@@ -20,7 +20,7 @@ import path from 'path';
 
 import expect from 'expect';
 import {CDPSessionEvent} from 'puppeteer-core/internal/api/CDPSession.js';
-import {PuppeteerLaunchOptions} from 'puppeteer-core/internal/node/PuppeteerNode.js';
+import {type PuppeteerLaunchOptions} from 'puppeteer-core/internal/node/PuppeteerNode.js';
 import {rmSync} from 'puppeteer-core/internal/node/util/fs.js';
 
 import {getTestState, isHeadless, launch} from './mocha-utils.js';

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import {EventEmitter, EventType} from '../common/EventEmitter.js';
+import {EventEmitter, type EventType} from '../common/EventEmitter.js';
 
 import type {Browser, Permission} from './Browser.js';
-import {Page} from './Page.js';
+import {type Page} from './Page.js';
 import type {Target} from './Target.js';
 
 /**

@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import {Frame} from '../../api/Frame.js';
-import {HTTPRequest, ResourceType} from '../../api/HTTPRequest.js';
+import {type Frame} from '../../api/Frame.js';
+import {HTTPRequest, type ResourceType} from '../../api/HTTPRequest.js';
 
-import {BidiHTTPResponse} from './HTTPResponse.js';
+import {type BidiHTTPResponse} from './HTTPResponse.js';
 
 /**
  * @internal

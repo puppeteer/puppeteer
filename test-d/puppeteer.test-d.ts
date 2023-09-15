@@ -1,8 +1,8 @@
 import puppeteer, {
-  connect,
-  defaultArgs,
-  executablePath,
-  launch,
+  type connect,
+  type defaultArgs,
+  type executablePath,
+  type launch,
 } from 'puppeteer';
 import {expectType} from 'tsd';
 

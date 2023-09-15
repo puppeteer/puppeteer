@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
-import Protocol from 'devtools-protocol';
+import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type Protocol from 'devtools-protocol';
 
-import {ElementHandle} from '../../api/ElementHandle.js';
+import {type ElementHandle} from '../../api/ElementHandle.js';
 import {JSHandle} from '../../api/JSHandle.js';
 
-import {Realm} from './Realm.js';
-import {Sandbox} from './Sandbox.js';
+import {type Realm} from './Realm.js';
+import {type Sandbox} from './Sandbox.js';
 import {BidiSerializer} from './Serializer.js';
 import {releaseReference} from './utils.js';
 

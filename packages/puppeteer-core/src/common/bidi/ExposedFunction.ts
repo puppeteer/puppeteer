@@ -19,10 +19,10 @@ import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 import {assert} from '../../util/assert.js';
 import {Deferred} from '../../util/Deferred.js';
 import {interpolateFunction, stringifyFunction} from '../../util/Function.js';
-import {Awaitable, FlattenHandle} from '../types.js';
+import {type Awaitable, type FlattenHandle} from '../types.js';
 
-import {BidiConnection} from './Connection.js';
-import {BidiFrame} from './Frame.js';
+import {type BidiConnection} from './Connection.js';
+import {type BidiFrame} from './Frame.js';
 import {BidiSerializer} from './Serializer.js';
 import {debugError} from './utils.js';
 

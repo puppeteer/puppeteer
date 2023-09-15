@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-import {ChildProcess} from 'child_process';
+import {type ChildProcess} from 'child_process';
 
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {
   Browser,
-  BrowserCloseCallback,
-  BrowserContextOptions,
+  type BrowserCloseCallback,
+  type BrowserContextOptions,
   BrowserEvent,
 } from '../../api/Browser.js';
 import {BrowserContextEvent} from '../../api/BrowserContext.js';
-import {Page} from '../../api/Page.js';
-import {Target} from '../../api/Target.js';
-import {Handler} from '../EventEmitter.js';
-import {Viewport} from '../PuppeteerViewport.js';
+import {type Page} from '../../api/Page.js';
+import {type Target} from '../../api/Target.js';
+import {type Handler} from '../EventEmitter.js';
+import {type Viewport} from '../PuppeteerViewport.js';
 
 import {BidiBrowserContext} from './BrowserContext.js';
 import {BrowsingContext, BrowsingContextEvent} from './BrowsingContext.js';
-import {BidiConnection} from './Connection.js';
+import {type BidiConnection} from './Connection.js';
 import {
   BiDiBrowserTarget,
   BiDiBrowsingContextTarget,
   BiDiPageTarget,
-  BidiTarget,
+  type BidiTarget,
 } from './Target.js';
 import {debugError} from './utils.js';
 

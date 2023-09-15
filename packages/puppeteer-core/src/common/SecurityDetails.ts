@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
+import {type Protocol} from 'devtools-protocol';
 
 /**
  * The SecurityDetails class represents the security details of a

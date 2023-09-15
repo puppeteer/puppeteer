@@ -18,11 +18,16 @@ import type {Readable} from 'stream';
 
 import type {Protocol} from 'devtools-protocol';
 
-import {map, NEVER, Observable, timer} from '../../third_party/rxjs/rxjs.js';
+import {
+  map,
+  NEVER,
+  timer,
+  type Observable,
+} from '../../third_party/rxjs/rxjs.js';
 import type {CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
 import type {JSHandle} from '../api/JSHandle.js';
-import {Page} from '../api/Page.js';
+import {type Page} from '../api/Page.js';
 import {isNode} from '../environment.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
@@ -32,9 +37,9 @@ import {debug} from './Debug.js';
 import {CdpElementHandle} from './ElementHandle.js';
 import {TimeoutError} from './Errors.js';
 import {EventSubscription} from './EventEmitter.js';
-import {IsolatedWorld} from './IsolatedWorld.js';
+import {type IsolatedWorld} from './IsolatedWorld.js';
 import {CdpJSHandle} from './JSHandle.js';
-import {Awaitable} from './types.js';
+import {type Awaitable} from './types.js';
 
 /**
  * @internal

@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Protocol} from 'devtools-protocol';
+import {type Protocol} from 'devtools-protocol';
 
-import {CDPSession} from '../api/CDPSession.js';
-import {Frame} from '../api/Frame.js';
+import {type CDPSession} from '../api/CDPSession.js';
+import {type Frame} from '../api/Frame.js';
 import {
-  ContinueRequestOverrides,
-  ErrorCode,
+  type ContinueRequestOverrides,
+  type ErrorCode,
   headersArray,
   HTTPRequest,
   InterceptResolutionAction,
-  InterceptResolutionState,
-  ResourceType,
-  ResponseForRequest,
+  type InterceptResolutionState,
+  type ResourceType,
+  type ResponseForRequest,
   STATUS_TEXTS,
 } from '../api/HTTPRequest.js';
-import {HTTPResponse} from '../api/HTTPResponse.js';
+import {type HTTPResponse} from '../api/HTTPResponse.js';
 import {assert} from '../util/assert.js';
 
-import {ProtocolError} from './Errors.js';
+import {type ProtocolError} from './Errors.js';
 import {debugError, isString} from './util.js';
 
 /**

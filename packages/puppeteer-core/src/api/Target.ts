@@ -16,10 +16,10 @@
 
 import type {Browser} from '../api/Browser.js';
 import type {BrowserContext} from '../api/BrowserContext.js';
-import {Page} from '../api/Page.js';
-import {WebWorker} from '../common/WebWorker.js';
+import {type Page} from '../api/Page.js';
+import {type WebWorker} from '../common/WebWorker.js';
 
-import {CDPSession} from './CDPSession.js';
+import {type CDPSession} from './CDPSession.js';
 
 /**
  * @public

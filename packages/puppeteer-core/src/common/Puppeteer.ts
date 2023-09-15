@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import {Browser} from '../api/Browser.js';
+import {type Browser} from '../api/Browser.js';
 
 import {
-  BrowserConnectOptions,
+  type BrowserConnectOptions,
   _connectToCdpBrowser,
 } from './BrowserConnector.js';
-import {ConnectionTransport} from './ConnectionTransport.js';
-import {CustomQueryHandler, customQueryHandlers} from './CustomQueryHandler.js';
+import {type ConnectionTransport} from './ConnectionTransport.js';
+import {
+  type CustomQueryHandler,
+  customQueryHandlers,
+} from './CustomQueryHandler.js';
 
 /**
  * Settings that are common to the Puppeteer class, regardless of environment.

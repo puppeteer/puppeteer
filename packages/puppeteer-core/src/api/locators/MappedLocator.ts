@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-import {Observable, from, mergeMap} from '../../../third_party/rxjs/rxjs.js';
-import {Awaitable, HandleFor} from '../../common/common.js';
+import {
+  type Observable,
+  from,
+  mergeMap,
+} from '../../../third_party/rxjs/rxjs.js';
+import {type Awaitable, type HandleFor} from '../../common/common.js';
 
-import {ActionOptions, DelegatedLocator, Locator} from './locators.js';
+import {
+  type ActionOptions,
+  DelegatedLocator,
+  type Locator,
+} from './locators.js';
 
 /**
  * @public

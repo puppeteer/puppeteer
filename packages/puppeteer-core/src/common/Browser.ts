@@ -14,40 +14,40 @@
  * limitations under the License.
  */
 
-import {ChildProcess} from 'child_process';
+import {type ChildProcess} from 'child_process';
 
-import {Protocol} from 'devtools-protocol';
+import {type Protocol} from 'devtools-protocol';
 
 import {
   Browser as BrowserBase,
-  BrowserCloseCallback,
-  BrowserContextOptions,
+  type BrowserCloseCallback,
+  type BrowserContextOptions,
   BrowserEvent,
-  IsPageTargetCallback,
-  Permission,
-  TargetFilterCallback,
+  type IsPageTargetCallback,
+  type Permission,
+  type TargetFilterCallback,
   WEB_PERMISSION_TO_PROTOCOL_PERMISSION,
 } from '../api/Browser.js';
 import {BrowserContext, BrowserContextEvent} from '../api/BrowserContext.js';
-import {CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
-import {Page} from '../api/Page.js';
-import {Target} from '../api/Target.js';
+import {type CDPSession, CDPSessionEvent} from '../api/CDPSession.js';
+import {type Page} from '../api/Page.js';
+import {type Target} from '../api/Target.js';
 import {USE_TAB_TARGET} from '../environment.js';
 import {assert} from '../util/assert.js';
 
 import {ChromeTargetManager} from './ChromeTargetManager.js';
-import {Connection} from './Connection.js';
+import {type Connection} from './Connection.js';
 import {FirefoxTargetManager} from './FirefoxTargetManager.js';
-import {Viewport} from './PuppeteerViewport.js';
+import {type Viewport} from './PuppeteerViewport.js';
 import {
-  CdpTarget,
+  type CdpTarget,
   DevToolsTarget,
   InitializationStatus,
   OtherTarget,
   PageTarget,
   WorkerTarget,
 } from './Target.js';
-import {TargetManager, TargetManagerEvent} from './TargetManager.js';
+import {type TargetManager, TargetManagerEvent} from './TargetManager.js';
 import {TaskQueue} from './TaskQueue.js';
 
 /**

@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import Protocol from 'devtools-protocol';
+import type Protocol from 'devtools-protocol';
 
-import {Frame, FrameEvent} from '../api/Frame.js';
-import {HTTPResponse} from '../api/HTTPResponse.js';
+import {type Frame, FrameEvent} from '../api/Frame.js';
+import {type HTTPResponse} from '../api/HTTPResponse.js';
 import {assert} from '../util/assert.js';
 import {Deferred} from '../util/Deferred.js';
 
-import {TimeoutError} from './Errors.js';
+import {type TimeoutError} from './Errors.js';
 import {EventSubscription} from './EventEmitter.js';
-import {CdpFrame} from './Frame.js';
+import {type CdpFrame} from './Frame.js';
 import {FrameManagerEvent} from './FrameManager.js';
-import {CdpHTTPRequest} from './HTTPRequest.js';
-import {NetworkManager, NetworkManagerEvent} from './NetworkManager.js';
+import {type CdpHTTPRequest} from './HTTPRequest.js';
+import {type NetworkManager, NetworkManagerEvent} from './NetworkManager.js';
 /**
  * @public
  */

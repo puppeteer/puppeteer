@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Protocol} from 'devtools-protocol';
+import {type Protocol} from 'devtools-protocol';
 
-import {CDPSession} from '../api/CDPSession.js';
-import {Realm} from '../api/Realm.js';
+import {type CDPSession} from '../api/CDPSession.js';
+import {type Realm} from '../api/Realm.js';
 
-import {ConsoleMessageType} from './ConsoleMessage.js';
-import {EventEmitter, EventType} from './EventEmitter.js';
+import {type ConsoleMessageType} from './ConsoleMessage.js';
+import {EventEmitter, type EventType} from './EventEmitter.js';
 import {ExecutionContext} from './ExecutionContext.js';
 import {IsolatedWorld} from './IsolatedWorld.js';
 import {CdpJSHandle} from './JSHandle.js';
 import {TimeoutSettings} from './TimeoutSettings.js';
-import {EvaluateFunc, HandleFor} from './types.js';
+import {type EvaluateFunc, type HandleFor} from './types.js';
 import {debugError, withSourcePuppeteerURLIfNone} from './util.js';
 
 /**

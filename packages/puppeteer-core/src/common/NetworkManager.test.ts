@@ -18,12 +18,12 @@ import {describe, it} from 'node:test';
 
 import expect from 'expect';
 
-import {CDPSessionEvents} from '../api/CDPSession.js';
-import {HTTPRequest} from '../api/HTTPRequest.js';
-import {HTTPResponse} from '../api/HTTPResponse.js';
+import {type CDPSessionEvents} from '../api/CDPSession.js';
+import {type HTTPRequest} from '../api/HTTPRequest.js';
+import {type HTTPResponse} from '../api/HTTPResponse.js';
 
 import {EventEmitter} from './EventEmitter.js';
-import {CdpFrame} from './Frame.js';
+import {type CdpFrame} from './Frame.js';
 import {NetworkManager, NetworkManagerEvent} from './NetworkManager.js';
 
 // TODO: develop a helper to generate fake network events for attributes that

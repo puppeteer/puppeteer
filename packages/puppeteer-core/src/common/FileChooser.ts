@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
+import {type Protocol} from 'devtools-protocol';
 
-import {ElementHandle} from '../api/ElementHandle.js';
+import {type ElementHandle} from '../api/ElementHandle.js';
 import {assert} from '../util/assert.js';
 
 /**

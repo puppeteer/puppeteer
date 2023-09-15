@@ -16,34 +16,37 @@
 
 import type {Readable} from 'stream';
 
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
-import Protocol from 'devtools-protocol';
+import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type Protocol from 'devtools-protocol';
 
-import {CDPSession} from '../../api/CDPSession.js';
+import {type CDPSession} from '../../api/CDPSession.js';
 import {
-  GeolocationOptions,
-  MediaFeature,
-  NewDocumentScriptEvaluation,
+  type GeolocationOptions,
+  type MediaFeature,
+  type NewDocumentScriptEvaluation,
   Page,
   PageEvent,
-  ScreenshotOptions,
-  WaitForOptions,
+  type ScreenshotOptions,
+  type WaitForOptions,
 } from '../../api/Page.js';
 import {assert} from '../../util/assert.js';
 import {Deferred} from '../../util/Deferred.js';
 import {Accessibility} from '../Accessibility.js';
-import {ConsoleMessage, ConsoleMessageLocation} from '../ConsoleMessage.js';
+import {
+  ConsoleMessage,
+  type ConsoleMessageLocation,
+} from '../ConsoleMessage.js';
 import {Coverage} from '../Coverage.js';
 import {EmulationManager as CdpEmulationManager} from '../EmulationManager.js';
 import {TargetCloseError} from '../Errors.js';
-import {Handler} from '../EventEmitter.js';
+import {type Handler} from '../EventEmitter.js';
 import {FrameTree} from '../FrameTree.js';
 import {NetworkManagerEvent} from '../NetworkManager.js';
-import {PDFOptions} from '../PDFOptions.js';
-import {Viewport} from '../PuppeteerViewport.js';
+import {type PDFOptions} from '../PDFOptions.js';
+import {type Viewport} from '../PuppeteerViewport.js';
 import {TimeoutSettings} from '../TimeoutSettings.js';
 import {Tracing} from '../Tracing.js';
-import {Awaitable} from '../types.js';
+import {type Awaitable} from '../types.js';
 import {
   debugError,
   evaluationString,
@@ -53,19 +56,19 @@ import {
   waitWithTimeout,
 } from '../util.js';
 
-import {BidiBrowser} from './Browser.js';
-import {BidiBrowserContext} from './BrowserContext.js';
+import {type BidiBrowser} from './Browser.js';
+import {type BidiBrowserContext} from './BrowserContext.js';
 import {
-  BrowsingContext,
+  type BrowsingContext,
   BrowsingContextEvent,
   CdpSessionWrapper,
 } from './BrowsingContext.js';
-import {BidiConnection} from './Connection.js';
+import {type BidiConnection} from './Connection.js';
 import {BidiDialog} from './Dialog.js';
 import {EmulationManager} from './EmulationManager.js';
 import {BidiFrame} from './Frame.js';
-import {BidiHTTPRequest} from './HTTPRequest.js';
-import {BidiHTTPResponse} from './HTTPResponse.js';
+import {type BidiHTTPRequest} from './HTTPRequest.js';
+import {type BidiHTTPResponse} from './HTTPResponse.js';
 import {Keyboard, Mouse, Touchscreen} from './Input.js';
 import {BidiNetworkManager} from './NetworkManager.js';
 import {createBidiHandle} from './Realm.js';

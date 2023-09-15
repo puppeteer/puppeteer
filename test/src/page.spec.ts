@@ -15,15 +15,15 @@
  */
 import assert from 'assert';
 import fs from 'fs';
-import {ServerResponse} from 'http';
+import {type ServerResponse} from 'http';
 import path from 'path';
 
 import expect from 'expect';
 import {KnownDevices, TimeoutError} from 'puppeteer';
 import {CDPSession} from 'puppeteer-core/internal/api/CDPSession.js';
-import {Metrics, Page} from 'puppeteer-core/internal/api/Page.js';
-import {ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
-import {CdpPage} from 'puppeteer-core/internal/common/Page.js';
+import {type Metrics, type Page} from 'puppeteer-core/internal/api/Page.js';
+import {type ConsoleMessage} from 'puppeteer-core/internal/common/ConsoleMessage.js';
+import {type CdpPage} from 'puppeteer-core/internal/common/Page.js';
 import sinon from 'sinon';
 
 import {getTestState, setupTestBrowserHooks} from './mocha-utils.js';

@@ -17,13 +17,13 @@
 import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {BrowserContext} from '../../api/BrowserContext.js';
-import {Page} from '../../api/Page.js';
-import {Target} from '../../api/Target.js';
-import {Viewport} from '../PuppeteerViewport.js';
+import {type Page} from '../../api/Page.js';
+import {type Target} from '../../api/Target.js';
+import {type Viewport} from '../PuppeteerViewport.js';
 
-import {BidiBrowser} from './Browser.js';
-import {BidiConnection} from './Connection.js';
-import {BidiPage} from './Page.js';
+import {type BidiBrowser} from './Browser.js';
+import {type BidiConnection} from './Connection.js';
+import {type BidiPage} from './Page.js';
 
 interface BrowserContextOptions {
   defaultViewport: Viewport | null;

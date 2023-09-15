@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {QueryHandler, QuerySelectorAll} from './QueryHandler.js';
+import {QueryHandler, type QuerySelectorAll} from './QueryHandler.js';
 
 /**
  * @internal

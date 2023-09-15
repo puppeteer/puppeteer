@@ -16,7 +16,7 @@
 
 import {z} from 'zod';
 
-import {RecommendedExpectation} from './utils.js';
+import {type RecommendedExpectation} from './utils.js';
 
 export const zPlatform = z.enum(['win32', 'linux', 'darwin']);
 

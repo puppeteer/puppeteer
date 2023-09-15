@@ -16,7 +16,7 @@
 
 import {get} from 'https';
 
-import {Tree} from '@angular-devkit/schematics';
+import {type Tree} from '@angular-devkit/schematics';
 
 import {getNgCommandName} from './files.js';
 import {
@@ -25,7 +25,7 @@ import {
   getJsonFileAsObject,
   getObjectAsJson,
 } from './json.js';
-import {SchematicsOptions, TestRunner} from './types.js';
+import {type SchematicsOptions, TestRunner} from './types.js';
 export interface NodePackage {
   name: string;
   version: string;

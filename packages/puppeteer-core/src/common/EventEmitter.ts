@@ -16,9 +16,9 @@
 
 import {Symbol} from '../../third_party/disposablestack/disposablestack.js';
 import mitt, {
-  Emitter,
-  EventHandlerMap,
-  EventType,
+  type Emitter,
+  type EventHandlerMap,
+  type EventType,
 } from '../../third_party/mitt/index.js';
 
 export {

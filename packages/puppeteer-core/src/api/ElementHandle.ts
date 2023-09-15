@@ -14,32 +14,32 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
+import {type Protocol} from 'devtools-protocol';
 
-import {Frame} from '../api/Frame.js';
+import {type Frame} from '../api/Frame.js';
 import {getQueryHandlerAndSelector} from '../common/GetQueryHandler.js';
-import {WaitForSelectorOptions} from '../common/IsolatedWorld.js';
+import {type WaitForSelectorOptions} from '../common/IsolatedWorld.js';
 import {LazyArg} from '../common/LazyArg.js';
 import {
-  ElementFor,
-  EvaluateFuncWith,
-  HandleFor,
-  HandleOr,
-  NodeFor,
+  type ElementFor,
+  type EvaluateFuncWith,
+  type HandleFor,
+  type HandleOr,
+  type NodeFor,
 } from '../common/types.js';
-import {KeyInput} from '../common/USKeyboardLayout.js';
+import {type KeyInput} from '../common/USKeyboardLayout.js';
 import {isString, withSourcePuppeteerURLIfNone} from '../common/util.js';
 import {assert} from '../util/assert.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {throwIfDisposed} from '../util/decorators.js';
 
 import {
-  KeyboardTypeOptions,
-  KeyPressOptions,
-  MouseClickOptions,
+  type KeyboardTypeOptions,
+  type KeyPressOptions,
+  type MouseClickOptions,
 } from './Input.js';
 import {JSHandle} from './JSHandle.js';
-import {ScreenshotOptions} from './Page.js';
+import {type ScreenshotOptions} from './Page.js';
 
 /**
  * @public

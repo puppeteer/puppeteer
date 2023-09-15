@@ -21,8 +21,8 @@ import os from 'os';
 import path from 'path';
 
 import {
-  Browser,
-  BrowserPlatform,
+  type Browser,
+  type BrowserPlatform,
   downloadUrls,
 } from './browser-data/browser-data.js';
 import {Cache, InstalledBrowser} from './Cache.js';

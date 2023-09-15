@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {Protocol} from 'devtools-protocol';
+import {type Protocol} from 'devtools-protocol';
 
-import {CDPSession} from '../api/CDPSession.js';
+import {type CDPSession} from '../api/CDPSession.js';
 import type {ElementHandle} from '../api/ElementHandle.js';
-import {JSHandle} from '../api/JSHandle.js';
+import {type JSHandle} from '../api/JSHandle.js';
 import type PuppeteerUtil from '../injected/injected.js';
 import {AsyncIterableUtil} from '../util/AsyncIterableUtil.js';
 import {stringifyFunction} from '../util/Function.js';
@@ -26,11 +26,11 @@ import {stringifyFunction} from '../util/Function.js';
 import {ARIAQueryHandler} from './AriaQueryHandler.js';
 import {Binding} from './Binding.js';
 import {CdpElementHandle} from './ElementHandle.js';
-import {IsolatedWorld} from './IsolatedWorld.js';
+import {type IsolatedWorld} from './IsolatedWorld.js';
 import {CdpJSHandle} from './JSHandle.js';
 import {LazyArg} from './LazyArg.js';
 import {scriptInjector} from './ScriptInjector.js';
-import {EvaluateFunc, HandleFor} from './types.js';
+import {type EvaluateFunc, type HandleFor} from './types.js';
 import {
   PuppeteerURL,
   createEvaluationError,

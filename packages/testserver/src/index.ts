@@ -18,23 +18,23 @@ import assert from 'assert';
 import {readFile, readFileSync} from 'fs';
 import {
   createServer as createHttpServer,
-  IncomingMessage,
-  RequestListener,
-  Server as HttpServer,
-  ServerResponse,
+  type IncomingMessage,
+  type RequestListener,
+  type Server as HttpServer,
+  type ServerResponse,
 } from 'http';
 import {
   createServer as createHttpsServer,
-  Server as HttpsServer,
-  ServerOptions as HttpsServerOptions,
+  type Server as HttpsServer,
+  type ServerOptions as HttpsServerOptions,
 } from 'https';
-import {AddressInfo} from 'net';
+import {type AddressInfo} from 'net';
 import {join} from 'path';
-import {Duplex} from 'stream';
+import {type Duplex} from 'stream';
 import {gzip} from 'zlib';
 
 import {getType as getMimeType} from 'mime';
-import {Server as WebSocketServer, WebSocket} from 'ws';
+import {Server as WebSocketServer, type WebSocket} from 'ws';
 
 interface Subscriber {
   resolve: (msg: IncomingMessage) => void;

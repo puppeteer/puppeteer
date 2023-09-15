@@ -23,7 +23,7 @@
 
 import * as path from 'path';
 
-import {DocumenterConfig} from '@microsoft/api-documenter/lib/documenters/DocumenterConfig';
+import {type DocumenterConfig} from '@microsoft/api-documenter/lib/documenters/DocumenterConfig';
 import {CustomMarkdownEmitter} from '@microsoft/api-documenter/lib/markdown/CustomMarkdownEmitter';
 import {CustomDocNodes} from '@microsoft/api-documenter/lib/nodes/CustomDocNodeKind';
 import {DocEmphasisSpan} from '@microsoft/api-documenter/lib/nodes/DocEmphasisSpan';
@@ -34,7 +34,7 @@ import {DocTableCell} from '@microsoft/api-documenter/lib/nodes/DocTableCell';
 import {DocTableRow} from '@microsoft/api-documenter/lib/nodes/DocTableRow';
 import {MarkdownDocumenterAccessor} from '@microsoft/api-documenter/lib/plugin/MarkdownDocumenterAccessor';
 import {
-  IMarkdownDocumenterFeatureOnBeforeWritePageArgs,
+  type IMarkdownDocumenterFeatureOnBeforeWritePageArgs,
   MarkdownDocumenterFeatureContext,
 } from '@microsoft/api-documenter/lib/plugin/MarkdownDocumenterFeature';
 import {PluginLoader} from '@microsoft/api-documenter/lib/plugin/PluginLoader';
@@ -43,15 +43,15 @@ import {
   ApiClass,
   ApiDeclaredItem,
   ApiDocumentedItem,
-  ApiEnum,
+  type ApiEnum,
   ApiInitializerMixin,
   ApiInterface,
-  ApiItem,
+  type ApiItem,
   ApiItemKind,
-  ApiModel,
-  ApiNamespace,
+  type ApiModel,
+  type ApiNamespace,
   ApiOptionalMixin,
-  ApiPackage,
+  type ApiPackage,
   ApiParameterListMixin,
   ApiPropertyItem,
   ApiProtectedMixin,
@@ -60,26 +60,26 @@ import {
   ApiReturnTypeMixin,
   ApiStaticMixin,
   ApiTypeAlias,
-  Excerpt,
-  ExcerptToken,
+  type Excerpt,
+  type ExcerptToken,
   ExcerptTokenKind,
-  IResolveDeclarationReferenceResult,
+  type IResolveDeclarationReferenceResult,
   ReleaseTag,
 } from '@microsoft/api-extractor-model';
 import {
-  DocBlock,
+  type DocBlock,
   DocCodeSpan,
-  DocComment,
+  type DocComment,
   DocFencedCode,
   DocLinkTag,
-  DocNodeContainer,
+  type DocNodeContainer,
   DocNodeKind,
   DocParagraph,
   DocPlainText,
   DocSection,
   StandardTags,
   StringBuilder,
-  TSDocConfiguration,
+  type TSDocConfiguration,
 } from '@microsoft/tsdoc';
 import {
   FileSystem,

@@ -16,18 +16,18 @@
 
 import {randomUUID} from 'crypto';
 import fs from 'fs';
-import {spawn, SpawnOptions} from 'node:child_process';
+import {spawn, type SpawnOptions} from 'node:child_process';
 import os from 'os';
 import path from 'path';
 
 import {
-  TestExpectation,
-  MochaResults,
+  type TestExpectation,
+  type MochaResults,
   zTestSuiteFile,
   zPlatform,
-  TestSuite,
-  TestSuiteFile,
-  Platform,
+  type TestSuite,
+  type TestSuiteFile,
+  type Platform,
 } from './types.js';
 import {
   extendProcessEnv,
@@ -36,7 +36,7 @@ import {
   filterByParameters,
   getExpectationUpdates,
   printSuggestions,
-  RecommendedExpectation,
+  type RecommendedExpectation,
   writeJSON,
 } from './utils.js';
 

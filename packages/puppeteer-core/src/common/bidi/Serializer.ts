@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
 import {LazyArg} from '../LazyArg.js';
 import {debugError, isDate, isPlainObject, isRegExp} from '../util.js';
 
 import {BidiElementHandle} from './ElementHandle.js';
 import {BidiJSHandle} from './JSHandle.js';
-import {Sandbox} from './Sandbox.js';
+import {type Sandbox} from './Sandbox.js';
 
 /**
  * @internal

@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-import {chain, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
+import {
+  chain,
+  type Rule,
+  type SchematicContext,
+  type Tree,
+} from '@angular-devkit/schematics';
 
 import {addFilesSingle} from '../utils/files.js';
-import {TestRunner, AngularProject} from '../utils/types.js';
+import {TestRunner, type AngularProject} from '../utils/types.js';
 
 // You don't have to export the function as default. You can also have more than one rule
 // factory per file.

@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-import * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
 
-import {EventEmitter, EventSubscription, EventType} from '../EventEmitter.js';
+import {
+  EventEmitter,
+  EventSubscription,
+  type EventType,
+} from '../EventEmitter.js';
 import {NetworkManagerEvent} from '../NetworkManager.js';
 
-import {BidiConnection} from './Connection.js';
-import {BidiFrame} from './Frame.js';
+import {type BidiConnection} from './Connection.js';
+import {type BidiFrame} from './Frame.js';
 import {BidiHTTPRequest} from './HTTPRequest.js';
 import {BidiHTTPResponse} from './HTTPResponse.js';
-import {BidiPage} from './Page.js';
+import {type BidiPage} from './Page.js';
 
 /**
  * @internal
